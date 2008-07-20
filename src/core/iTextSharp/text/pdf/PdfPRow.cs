@@ -457,10 +457,20 @@ namespace iTextSharp.text.pdf {
                                 leftLimit -= 10000;
                                 break;
                             case Element.ALIGN_RIGHT:
-                                leftLimit -= 20000;
+                                if (cell.Rotation == 180) {
+                                    rightLimit += 20000;
+                                }
+                                else {
+                                    leftLimit -= 20000;
+                                }
                                 break;
                             default:
-                                rightLimit += 20000;
+                                if (cell.Rotation == 180) {
+                                    leftLimit -= 20000;
+                                }
+                                else {
+                                    rightLimit += 20000;
+                                }
                                 break;
                             }
                         }
