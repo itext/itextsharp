@@ -8,6 +8,22 @@ namespace Org.BouncyCastle.Asn1.X509
 	{
 		private Asn1Sequence permitted, excluded;
 
+		public static NameConstraints GetInstance(
+			object obj)
+		{
+			if (obj == null || obj is NameConstraints)
+			{
+				return (NameConstraints) obj;
+			}
+
+			if (obj is Asn1Sequence)
+			{
+				return new NameConstraints((Asn1Sequence) obj);
+			}
+
+			throw new ArgumentException("unknown object in factory: " + obj.GetType().Name, "obj");
+		}
+
 		public NameConstraints(
 			Asn1Sequence seq)
 		{

@@ -70,12 +70,27 @@ namespace Org.BouncyCastle.Asn1.Pkcs
 			get { return iterationCount; }
 		}
 
+		/**
+		 * <pre>
+		 * MacData ::= SEQUENCE {
+		 *     mac      DigestInfo,
+		 *     macSalt  OCTET STRING,
+		 *     iterations INTEGER DEFAULT 1
+		 *     -- Note: The default is for historic reasons and its use is deprecated. A
+		 *     -- higher value, like 1024 is recommended.
+		 * </pre>
+		 * @return the basic DERObject construction.
+		 */
 		public override Asn1Object ToAsn1Object()
         {
-			return new DerSequence(
-				digInfo,
-				new DerOctetString(salt),
-				new DerInteger(iterationCount));
+			Asn1EncodableVector v = new Asn1EncodableVector(digInfo, new DerOctetString(salt));
+
+			if (!iterationCount.Equals(BigInteger.One))
+			{
+				v.Add(new DerInteger(iterationCount));
+			}
+
+			return new DerSequence(v);
         }
     }
 }

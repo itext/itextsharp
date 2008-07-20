@@ -22,7 +22,7 @@ namespace Org.BouncyCastle.X509
 		 * 
 		 * @param issuer The issuer
 		 */
-		internal AttributeCertificateIssuer(
+		public AttributeCertificateIssuer(
 			AttCertIssuer issuer)
 		{
 			form = issuer.Issuer;

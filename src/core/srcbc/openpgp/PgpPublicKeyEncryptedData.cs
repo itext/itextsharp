@@ -71,74 +71,22 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			get { return keyData.KeyId; }
         }
 
+		/// <summary>
+		/// Return the algorithm code for the symmetric algorithm used to encrypt the data.
+		/// </summary>
+		public SymmetricKeyAlgorithmTag GetSymmetricAlgorithm(
+			PgpPrivateKey privKey)
+		{
+			byte[] plain = fetchSymmetricKeyData(privKey);
+
+			return (SymmetricKeyAlgorithmTag) plain[0];
+		}
+
 		/// <summary>Return the decrypted data stream for the packet.</summary>
         public Stream GetDataStream(
             PgpPrivateKey privKey)
         {
-			IBufferedCipher c1 = GetKeyCipher(keyData.Algorithm);
-
-			try
-            {
-                c1.Init(false, privKey.Key);
-            }
-            catch (InvalidKeyException e)
-            {
-                throw new PgpException("error setting asymmetric cipher", e);
-            }
-
-			BigInteger[] keyD = keyData.GetEncSessionKey();
-
-			if (keyData.Algorithm == PublicKeyAlgorithmTag.RsaEncrypt
-                || keyData.Algorithm == PublicKeyAlgorithmTag.RsaGeneral)
-            {
-				c1.ProcessBytes(keyD[0].ToByteArrayUnsigned());
-            }
-            else
-            {
-                ElGamalPrivateKeyParameters k = (ElGamalPrivateKeyParameters)privKey.Key;
-                int size = (k.Parameters.P.BitLength + 7) / 8;
-
-				byte[] bi = keyD[0].ToByteArray();
-
-				int diff = bi.Length - size;
-				if (diff >= 0)
-				{
-					c1.ProcessBytes(bi, diff, size);
-				}
-				else
-				{
-					byte[] zeros = new byte[-diff];
-					c1.ProcessBytes(zeros);
-					c1.ProcessBytes(bi);
-				}
-
-				bi = keyD[1].ToByteArray();
-
-				diff = bi.Length - size;
-				if (diff >= 0)
-				{
-					c1.ProcessBytes(bi, diff, size);
-				}
-                else
-                {
-					byte[] zeros = new byte[-diff];
-					c1.ProcessBytes(zeros);
-					c1.ProcessBytes(bi);
-				}
-            }
-
-			byte[] plain;
-            try
-            {
-                plain = c1.DoFinal();
-            }
-            catch (Exception e)
-            {
-                throw new PgpException("exception decrypting secret key", e);
-            }
-
-			if (!ConfirmCheckSum(plain))
-                throw new PgpKeyValidationException("key checksum failed");
+			byte[] plain = fetchSymmetricKeyData(privKey);
 
 			IBufferedCipher c2;
 			string cipherName = PgpUtilities.GetSymmetricCipherName((SymmetricKeyAlgorithmTag) plain[0]);
@@ -228,6 +176,77 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             {
                 throw new PgpException("Exception starting decryption", e);
             }
+		}
+
+		private byte[] fetchSymmetricKeyData(
+			PgpPrivateKey privKey)
+		{
+			IBufferedCipher c1 = GetKeyCipher(keyData.Algorithm);
+
+			try
+			{
+				c1.Init(false, privKey.Key);
+			}
+			catch (InvalidKeyException e)
+			{
+				throw new PgpException("error setting asymmetric cipher", e);
+			}
+
+			BigInteger[] keyD = keyData.GetEncSessionKey();
+
+			if (keyData.Algorithm == PublicKeyAlgorithmTag.RsaEncrypt
+				|| keyData.Algorithm == PublicKeyAlgorithmTag.RsaGeneral)
+			{
+				c1.ProcessBytes(keyD[0].ToByteArrayUnsigned());
+			}
+			else
+			{
+				ElGamalPrivateKeyParameters k = (ElGamalPrivateKeyParameters)privKey.Key;
+				int size = (k.Parameters.P.BitLength + 7) / 8;
+
+				byte[] bi = keyD[0].ToByteArray();
+
+				int diff = bi.Length - size;
+				if (diff >= 0)
+				{
+					c1.ProcessBytes(bi, diff, size);
+				}
+				else
+				{
+					byte[] zeros = new byte[-diff];
+					c1.ProcessBytes(zeros);
+					c1.ProcessBytes(bi);
+				}
+
+				bi = keyD[1].ToByteArray();
+
+				diff = bi.Length - size;
+				if (diff >= 0)
+				{
+					c1.ProcessBytes(bi, diff, size);
+				}
+				else
+				{
+					byte[] zeros = new byte[-diff];
+					c1.ProcessBytes(zeros);
+					c1.ProcessBytes(bi);
+				}
+			}
+
+			byte[] plain;
+			try
+			{
+				plain = c1.DoFinal();
+			}
+			catch (Exception e)
+			{
+				throw new PgpException("exception decrypting secret key", e);
+			}
+
+			if (!ConfirmCheckSum(plain))
+				throw new PgpKeyValidationException("key checksum failed");
+
+			return plain;
 		}
 	}
 }

@@ -8,7 +8,6 @@ using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
-using Org.BouncyCastle.Security.Certificates;
 using Org.BouncyCastle.X509;
 
 namespace Org.BouncyCastle.Ocsp
@@ -268,7 +267,7 @@ namespace Org.BouncyCastle.Ocsp
 				{
 					throw new OcspException("error processing certs", e);
 				}
-				catch (CertificateEncodingException e)
+				catch (Security.Certificates.CertificateEncodingException e)
 				{
 					throw new OcspException("error encoding certs", e);
 				}

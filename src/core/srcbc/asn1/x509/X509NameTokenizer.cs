@@ -73,7 +73,11 @@ namespace Org.BouncyCastle.Asn1.X509
 						{
 							buffer.Append('\\');
 						}
-                        buffer.Append(c);
+						else if (c == '+' && separator != '+')
+						{
+							buffer.Append('\\');
+						}
+						buffer.Append(c);
                         escaped = false;
                     }
                     else if (c == '\\')
