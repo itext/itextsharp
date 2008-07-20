@@ -370,7 +370,7 @@ namespace iTextSharp.text.pdf {
                 field.MKRotation = rotation;
             if (fieldName != null) {
                 field.FieldName = fieldName;
-                if ((options & REQUIRED) == 0 && !"".Equals(text))
+                if (!"".Equals(text))
                     field.ValueAsString = text;
                 if (defaultText != null)
                     field.DefaultValueAsString = defaultText;
