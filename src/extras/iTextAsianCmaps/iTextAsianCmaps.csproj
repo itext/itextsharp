@@ -1,0 +1,619 @@
+<VisualStudioProject>
+    <CSHARP
+        ProjectType = "Local"
+        ProductVersion = "7.10.3077"
+        SchemaVersion = "2.0"
+        ProjectGuid = "{2F467830-A94B-4C44-B17B-0A81CBDB8CB2}"
+    >
+        <Build>
+            <Settings
+                ApplicationIcon = ""
+                AssemblyKeyContainerName = ""
+                AssemblyName = "iTextAsianCmaps"
+                AssemblyOriginatorKeyFile = ""
+                DefaultClientScript = "JScript"
+                DefaultHTMLPageLayout = "Grid"
+                DefaultTargetSchema = "IE50"
+                DelaySign = "false"
+                OutputType = "Library"
+                PreBuildEvent = ""
+                PostBuildEvent = ""
+                RootNamespace = "iTextSharp.text.pdf.fonts.cmaps"
+                RunPostBuildEvent = "OnBuildSuccess"
+                StartupObject = ""
+            >
+                <Config
+                    Name = "Debug"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "DEBUG;TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "true"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "false"
+                    OutputPath = "bin\Debug\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+                <Config
+                    Name = "Release"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "false"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "true"
+                    OutputPath = "bin\Release\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+            </Settings>
+            <References>
+                <Reference
+                    Name = "System"
+                    AssemblyName = "System"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.dll"
+                />
+                <Reference
+                    Name = "System.Data"
+                    AssemblyName = "System.Data"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
+                />
+                <Reference
+                    Name = "System.XML"
+                    AssemblyName = "System.XML"
+                    HintPath = "..\..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
+                />
+            </References>
+        </Build>
+        <Files>
+            <Include>
+                <File
+                    RelPath = "78-EUC-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "78-EUC-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "78-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "78ms-RKSJ-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "78ms-RKSJ-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "78-RKSJ-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "78-RKSJ-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "78-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "83pv-RKSJ-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "90msp-RKSJ-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "90msp-RKSJ-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "90ms-RKSJ-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "90ms-RKSJ-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "90pv-RKSJ-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "90pv-RKSJ-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Add-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Add-RKSJ-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Add-RKSJ-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Add-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "B5-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "B5pc-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "B5pc-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "B5-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CNS1-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CNS1-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CNS2-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CNS2-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CNS-EUC-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "CNS-EUC-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ETen-B5-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ETen-B5-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ETHK-B5-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ETHK-B5-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "EUC-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "EUC-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Ext-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Ext-RKSJ-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Ext-RKSJ-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Ext-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GB-EUC-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GB-EUC-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GB-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GBK2K-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GBK2K-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GBK-EUC-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GBK-EUC-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GBKp-EUC-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GBKp-EUC-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GBpc-EUC-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GBpc-EUC-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GBT-EUC-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GBT-EUC-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GBT-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GBTpc-EUC-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GBTpc-EUC-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GBT-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "GB-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Hankaku"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Hiragana"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HKdla-B5-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HKdla-B5-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HKdlb-B5-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HKdlb-B5-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HKgccs-B5-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HKgccs-B5-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HKm314-B5-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HKm314-B5-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HKm471-B5-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HKm471-B5-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HKscs-B5-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HKscs-B5-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Katakana"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "KSC-EUC-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "KSC-EUC-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "KSC-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "KSC-Johab-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "KSC-Johab-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "KSCms-UHC-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "KSCms-UHC-HW-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "KSCms-UHC-HW-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "KSCms-UHC-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "KSCpc-EUC-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "KSCpc-EUC-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "KSC-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NWP-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "NWP-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "RKSJ-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "RKSJ-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Roman"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniCNS-UCS2-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniCNS-UCS2-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniCNS-UTF16-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniCNS-UTF16-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniCNS-UTF32-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniCNS-UTF32-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniCNS-UTF8-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniCNS-UTF8-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniGB-UCS2-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniGB-UCS2-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniGB-UTF16-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniGB-UTF16-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniGB-UTF32-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniGB-UTF32-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniGB-UTF8-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniGB-UTF8-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJISPro-UCS2-HW-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJISPro-UCS2-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJISPro-UTF8-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJIS-UCS2-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJIS-UCS2-HW-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJIS-UCS2-HW-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJIS-UCS2-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJIS-UTF16-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJIS-UTF16-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJIS-UTF32-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJIS-UTF32-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJIS-UTF8-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJIS-UTF8-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJISX0213-UTF32-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJISX0213-UTF32-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniKS-UCS2-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniKS-UCS2-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniKS-UTF16-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniKS-UTF16-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniKS-UTF32-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniKS-UTF32-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniKS-UTF8-H"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniKS-UTF8-V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "V"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "WP-Symbol"
+                    BuildAction = "EmbeddedResource"
+                />
+            </Include>
+        </Files>
+    </CSHARP>
+</VisualStudioProject>
+

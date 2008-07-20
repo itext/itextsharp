@@ -1,0 +1,203 @@
+<VisualStudioProject>
+    <CSHARP
+        ProjectType = "Local"
+        ProductVersion = "7.10.3077"
+        SchemaVersion = "2.0"
+        ProjectGuid = "{3127C54E-8DF7-4AD4-8603-F424EE647B87}"
+    >
+        <Build>
+            <Settings
+                ApplicationIcon = ""
+                AssemblyKeyContainerName = ""
+                AssemblyName = "iTextAsian"
+                AssemblyOriginatorKeyFile = ""
+                DefaultClientScript = "JScript"
+                DefaultHTMLPageLayout = "Grid"
+                DefaultTargetSchema = "IE50"
+                DelaySign = "false"
+                OutputType = "Library"
+                PreBuildEvent = ""
+                PostBuildEvent = ""
+                RootNamespace = "iTextSharp.text.pdf.fonts"
+                RunPostBuildEvent = "OnBuildSuccess"
+                StartupObject = ""
+            >
+                <Config
+                    Name = "Debug"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "DEBUG;TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "true"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "false"
+                    OutputPath = "bin\Debug\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+                <Config
+                    Name = "Release"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "false"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "true"
+                    OutputPath = "bin\Release\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+            </Settings>
+            <References>
+                <Reference
+                    Name = "System"
+                    AssemblyName = "System"
+                    HintPath = "..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.dll"
+                />
+                <Reference
+                    Name = "System.Data"
+                    AssemblyName = "System.Data"
+                    HintPath = "..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
+                />
+                <Reference
+                    Name = "System.XML"
+                    AssemblyName = "System.Xml"
+                    HintPath = "..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
+                />
+            </References>
+        </Build>
+        <Files>
+            <Include>
+                <File
+                    RelPath = "Adobe-CNS1-UCS2.cmap"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Adobe-GB1-UCS2.cmap"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Adobe-Japan1-UCS2.cmap"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Adobe-Korea1-UCS2.cmap"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "cjkencodings.properties"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "cjkfonts.properties"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HeiseiKakuGo-W5.properties"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HeiseiMin-W3.properties"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HYGoThic-Medium.properties"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HYSMyeongJo-Medium.properties"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "HYSMyeongJoStd-Medium.properties"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "KozMinPro-Regular.properties"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "MHei-Medium.properties"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "MSung-Light.properties"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "MSungStd-Light.properties"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "STSong-Light.properties"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "STSongStd-Light.properties"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniCNS-UCS2-H.cmap"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniCNS-UCS2-V.cmap"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniGB-UCS2-H.cmap"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniGB-UCS2-V.cmap"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJIS-UCS2-H.cmap"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJIS-UCS2-HW-H.cmap"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJIS-UCS2-HW-V.cmap"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniJIS-UCS2-V.cmap"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniKS-UCS2-H.cmap"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "UniKS-UCS2-V.cmap"
+                    BuildAction = "EmbeddedResource"
+                />
+            </Include>
+        </Files>
+    </CSHARP>
+</VisualStudioProject>
+

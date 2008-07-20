@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iTextAsian", "iTextAsian.csproj", "{3127C54E-8DF7-4AD4-8603-F424EE647B87}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{3127C54E-8DF7-4AD4-8603-F424EE647B87}.Debug.ActiveCfg = Debug|.NET
+		{3127C54E-8DF7-4AD4-8603-F424EE647B87}.Debug.Build.0 = Debug|.NET
+		{3127C54E-8DF7-4AD4-8603-F424EE647B87}.Release.ActiveCfg = Release|.NET
+		{3127C54E-8DF7-4AD4-8603-F424EE647B87}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

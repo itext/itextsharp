@@ -1,0 +1,21 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itext-hyph-xml", "itext-hyph-xml.csproj", "{63217779-2BD4-45B5-993C-2696F6EF5BBC}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{63217779-2BD4-45B5-993C-2696F6EF5BBC}.Debug.ActiveCfg = Debug|.NET
+		{63217779-2BD4-45B5-993C-2696F6EF5BBC}.Debug.Build.0 = Debug|.NET
+		{63217779-2BD4-45B5-993C-2696F6EF5BBC}.Release.ActiveCfg = Release|.NET
+		{63217779-2BD4-45B5-993C-2696F6EF5BBC}.Release.Build.0 = Release|.NET
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

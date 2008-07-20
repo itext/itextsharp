@@ -1,0 +1,167 @@
+<VisualStudioProject>
+    <CSHARP
+        ProjectType = "Local"
+        ProductVersion = "7.10.3077"
+        SchemaVersion = "2.0"
+        ProjectGuid = "{63217779-2BD4-45B5-993C-2696F6EF5BBC}"
+    >
+        <Build>
+            <Settings
+                ApplicationIcon = ""
+                AssemblyKeyContainerName = ""
+                AssemblyName = "itext-hyph-xml"
+                AssemblyOriginatorKeyFile = ""
+                DefaultClientScript = "JScript"
+                DefaultHTMLPageLayout = "Grid"
+                DefaultTargetSchema = "IE50"
+                DelaySign = "false"
+                OutputType = "Library"
+                PreBuildEvent = ""
+                PostBuildEvent = ""
+                RootNamespace = "iTextSharp.text.pdf.hyphenation.hyph"
+                RunPostBuildEvent = "OnBuildSuccess"
+                StartupObject = ""
+            >
+                <Config
+                    Name = "Debug"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "DEBUG;TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "true"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "false"
+                    OutputPath = "bin\Debug\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+                <Config
+                    Name = "Release"
+                    AllowUnsafeBlocks = "false"
+                    BaseAddress = "285212672"
+                    CheckForOverflowUnderflow = "false"
+                    ConfigurationOverrideFile = ""
+                    DefineConstants = "TRACE"
+                    DocumentationFile = ""
+                    DebugSymbols = "false"
+                    FileAlignment = "4096"
+                    IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
+                    Optimize = "true"
+                    OutputPath = "bin\Release\"
+                    RegisterForComInterop = "false"
+                    RemoveIntegerChecks = "false"
+                    TreatWarningsAsErrors = "false"
+                    WarningLevel = "4"
+                />
+            </Settings>
+            <References>
+                <Reference
+                    Name = "System"
+                    AssemblyName = "System"
+                    HintPath = "..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.dll"
+                />
+                <Reference
+                    Name = "System.Data"
+                    AssemblyName = "System.Data"
+                    HintPath = "..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
+                />
+                <Reference
+                    Name = "System.XML"
+                    AssemblyName = "System.XML"
+                    HintPath = "..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
+                />
+            </References>
+        </Build>
+        <Files>
+            <Include>
+                <File
+                    RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "da.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "de.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "de_DR.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "el.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "en.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "en_GB.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "en_US.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "es.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "fi.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "fr.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "hu.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "it.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "nl.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "no.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "pl.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "pt.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "ru.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "sk.xml"
+                    BuildAction = "EmbeddedResource"
+                />
+            </Include>
+        </Files>
+    </CSHARP>
+</VisualStudioProject>
+
