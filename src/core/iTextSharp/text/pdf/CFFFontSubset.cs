@@ -36,6 +36,12 @@ namespace iTextSharp.text.pdf {
         };
         
         /**
+        *  Operator codes for unused  CharStrings and unused local and global Subrs
+        */
+        internal const byte ENDCHAR_OP = 14;
+        internal const byte RETURN_OP = 11;
+
+        /**
         * A HashMap containing the glyphs used in the text after being converted
         * to glyph number by the CMap 
         */
@@ -364,7 +370,7 @@ namespace iTextSharp.text.pdf {
         */
         protected void BuildNewCharString(int FontIndex) 
         {
-            NewCharStringsIndex = BuildNewIndex(fonts[FontIndex].charstringsOffsets,GlyphsUsed);
+            NewCharStringsIndex = BuildNewIndex(fonts[FontIndex].charstringsOffsets,GlyphsUsed,ENDCHAR_OP);
         }
         
         /**
@@ -409,7 +415,7 @@ namespace iTextSharp.text.pdf {
                         // by the glyphs. Scans the Subrs recursivley. 
                         BuildSubrUsed(Font,FD,fonts[Font].PrivateSubrsOffset[FD],fonts[Font].PrivateSubrsOffsetsArray[FD],hSubrsUsed[FD],lSubrsUsed[FD]);
                         // Builds the New Local Subrs index
-                        NewLSubrsIndex[FD] = BuildNewIndex(fonts[Font].PrivateSubrsOffsetsArray[FD],hSubrsUsed[FD]);
+                        NewLSubrsIndex[FD] = BuildNewIndex(fonts[Font].PrivateSubrsOffsetsArray[FD],hSubrsUsed[FD],RETURN_OP);
                     }
                 }
             }
@@ -427,9 +433,9 @@ namespace iTextSharp.text.pdf {
             BuildGSubrsUsed(Font);
             if (fonts[Font].privateSubrs>=0)
                 // Builds the New Local Subrs index
-                NewSubrsIndexNonCID = BuildNewIndex(fonts[Font].SubrsOffsets,hSubrsUsedNonCID);
+                NewSubrsIndexNonCID = BuildNewIndex(fonts[Font].SubrsOffsets,hSubrsUsedNonCID,RETURN_OP);
             //Builds the New Global Subrs index
-            NewGSubrsIndex = BuildNewIndex(gsubrOffsets,hGSubrsUsed);
+            NewGSubrsIndex = BuildNewIndex(gsubrOffsets,hGSubrsUsed,RETURN_OP);
         }
 
         /**
@@ -871,11 +877,13 @@ namespace iTextSharp.text.pdf {
         * used for creating the glyph and subrs subsetted index 
         * @param Offsets the offset array of the original index  
         * @param Used the hashmap of the used objects
+        * @param OperatorForUnusedEntries the operator inserted into the data stream for unused entries
         * @return the new index subset version 
         * @throws IOException
         */
-        protected byte[] BuildNewIndex(int[] Offsets,Hashtable Used) 
+        protected byte[] BuildNewIndex(int[] Offsets,Hashtable Used,byte OperatorForUnusedEntries) 
         {
+            int unusedCount = 0;
             int Offset=0;
             int[] NewOffsets = new int[Offsets.Length];
             // Build the Offsets Array for the Subset
@@ -884,17 +892,22 @@ namespace iTextSharp.text.pdf {
                 NewOffsets[i] = Offset;
                 // If the object in the offset is also present in the used
                 // HashMap then increment the offset var by its size
-                if (Used.ContainsKey(i))
+                if (Used.ContainsKey(i)) {
                     Offset += Offsets[i+1] - Offsets[i];
+                } else {
                     // Else the same offset is kept in i+1.
+                    unusedCount++;
+                }
             }
             // Offset var determines the size of the object array
-            byte[] NewObjects = new byte[Offset];
+            byte[] NewObjects = new byte[Offset+unusedCount];
             // Build the new Object array
+            int unusedOffset = 0;
             for (int i=0;i<Offsets.Length-1;++i)
             {
                 int start = NewOffsets[i];
                 int end = NewOffsets[i+1];
+                NewOffsets[i] = start+unusedOffset;
                 // If start != End then the Object is used
                 // So, we will copy the object data from the font file
                 if (start != end)
@@ -903,9 +916,13 @@ namespace iTextSharp.text.pdf {
                     // Jump the file pointer to the start address to read from.
                     buf.Seek(Offsets[i]);
                     // Read from the buffer and write into the array at start.  
-                    buf.ReadFully(NewObjects, start, end-start);
+                    buf.ReadFully(NewObjects, start+unusedOffset, end-start);
+                } else {
+                    NewObjects[start+unusedOffset] = OperatorForUnusedEntries;
+                    unusedOffset++;
                 }
             }
+            NewOffsets[Offsets.Length-1] += unusedOffset;
             // Use AssembleIndex to build the index from the offset & object arrays
             return AssembleIndex(NewOffsets,NewObjects);
         }
