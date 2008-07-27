@@ -66,18 +66,17 @@ namespace iTextSharp.text.pdf {
         /**
         * Gets the stream representing this object.
         *
-        * @return the stream representing this object
+        * @param   compressionLevel    the compressionLevel
+        * @return the stream representing this template
+        * @since   2.1.3   (replacing the method without param compressionLevel)
         * @throws IOException
         */
-        
-        internal override PdfStream FormXObject {
-            get {
-                PdfStream s = new PdfStream(content.ToByteArray());
-                s.Put(PdfName.TYPE, PdfName.XOBJECT);
-                s.Put(PdfName.SUBTYPE, PdfName.PS);
-                s.FlateCompress();
-                return s;
-            }
+        internal override PdfStream GetFormXObject(int compressionLevel) {
+            PdfStream s = new PdfStream(content.ToByteArray());
+            s.Put(PdfName.TYPE, PdfName.XOBJECT);
+            s.Put(PdfName.SUBTYPE, PdfName.PS);
+            s.FlateCompress(compressionLevel);
+            return s;
         }
             
         /**

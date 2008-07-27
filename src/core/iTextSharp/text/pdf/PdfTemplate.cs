@@ -224,13 +224,12 @@ namespace iTextSharp.text.pdf {
         /**
         * Gets the stream representing this template.
         *
+        * @param   compressionLevel    the compressionLevel
         * @return the stream representing this template
+        * @since   2.1.3   (replacing the method without param compressionLevel)
         */
-        
-        internal virtual PdfStream FormXObject {
-            get {
-                return new PdfFormXObject(this);
-            }
+        internal virtual PdfStream GetFormXObject(int compressionLevel) {
+            return new PdfFormXObject(this, compressionLevel);
         }
         
         /**

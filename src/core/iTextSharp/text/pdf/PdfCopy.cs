@@ -593,7 +593,7 @@ namespace iTextSharp.text.pdf {
                 if (over != null)
                     out_p.Append(PdfContents.SAVESTATE);
                 PdfStream stream = new PdfStream(out_p.ToByteArray());
-                stream.FlateCompress();
+                stream.FlateCompress(cstp.CompressionLevel);
                 PdfIndirectReference ref1 = cstp.AddToBody(stream).IndirectReference;
                 ar.AddFirst(ref1);
                 out_p.Reset();
@@ -605,7 +605,7 @@ namespace iTextSharp.text.pdf {
                     out_p.Append(over.InternalBuffer);
                     out_p.Append(PdfContents.RESTORESTATE);
                     stream = new PdfStream(out_p.ToByteArray());
-                    stream.FlateCompress();
+                    stream.FlateCompress(cstp.CompressionLevel);
                     ar.Add(cstp.AddToBody(stream).IndirectReference);
                 }
                 pageN.Put(PdfName.RESOURCES, pageResources.Resources);

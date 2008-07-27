@@ -161,7 +161,7 @@ namespace iTextSharp.text.pdf {
                         if (image.Deflated)
                             Put(PdfName.FILTER, PdfName.FLATEDECODE);
                         else {
-                            FlateCompress();
+                            FlateCompress(image.CompressionLevel);
                         }
                     }
                     return;
@@ -273,6 +273,7 @@ namespace iTextSharp.text.pdf {
         protected void ImportAll(PdfImage dup) {
             name = dup.name;
             compressed = dup.compressed;
+            compressionLevel = dup.compressionLevel;
             streamBytes = dup.streamBytes;
             bytes = dup.bytes;
             hashMap = dup.hashMap;

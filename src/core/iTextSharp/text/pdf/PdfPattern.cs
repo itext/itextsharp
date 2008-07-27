@@ -54,7 +54,20 @@ namespace iTextSharp.text.pdf {
 
     public class PdfPattern : PdfStream {
     
-        internal PdfPattern(PdfPatternPainter painter) : base() {
+        /**
+        * Creates a PdfPattern object.
+        * @param   painter a pattern painter instance
+        */
+        internal PdfPattern(PdfPatternPainter painter) : this(painter, DEFAULT_COMPRESSION) {
+        }
+
+        /**
+        * Creates a PdfPattern object.
+        * @param   painter a pattern painter instance
+        * @param   compressionLevel the compressionLevel for the stream
+        * @since   2.1.3
+        */
+        internal PdfPattern(PdfPatternPainter painter, int compressionLevel) : base() {
             PdfNumber one = new PdfNumber(1);
             PdfArray matrix = painter.Matrix;
             if ( matrix != null ) {
@@ -73,7 +86,7 @@ namespace iTextSharp.text.pdf {
             Put(PdfName.YSTEP, new PdfNumber(painter.YStep));
             bytes = painter.ToPdf(null);
             Put(PdfName.LENGTH, new PdfNumber(bytes.Length));
-            FlateCompress();
+            FlateCompress(compressionLevel);
         }
     }
 }

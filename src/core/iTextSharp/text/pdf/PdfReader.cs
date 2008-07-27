@@ -1957,6 +1957,15 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         */    
         public void SetPageContent(int pageNum, byte[] content) {
+    	    SetPageContent(pageNum, content, PdfStream.DEFAULT_COMPRESSION);
+        }
+
+        /** Sets the contents of the page.
+        * @param content the new page content
+        * @param pageNum the page number. 1 is the first
+        * @since   2.1.3   (the method already existed without param compressionLevel)
+        */
+        public void SetPageContent(int pageNum, byte[] content, int compressionLevel) {
             PdfDictionary page = GetPageN(pageNum);
             if (page == null)
                 return;
@@ -1968,7 +1977,7 @@ namespace iTextSharp.text.pdf {
                 freeXref = xrefObj.Count - 1;
             }
             page.Put(PdfName.CONTENTS, new PRIndirectReference(this, freeXref));
-            xrefObj[freeXref] = new PRStream(this, content);
+            xrefObj[freeXref] = new PRStream(this, content, compressionLevel);
         }
         
         /** Get the content from a stream applying the required filters.

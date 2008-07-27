@@ -110,16 +110,23 @@ namespace iTextSharp.text.pdf {
         public void SetPatternMatrix(float a, float b, float c, float d, float e, float f) {
             SetMatrix(a, b, c, d, e, f);
         }
+
         /**
-         * Gets the stream representing this pattern
-         *
-         * @return the stream representing this pattern
-         */
-    
-        internal PdfPattern Pattern {
-            get {
-                return new PdfPattern(this);
-            }
+        * Gets the stream representing this pattern
+        * @return the stream representing this pattern
+        */
+        internal PdfPattern GetPattern() {
+            return new PdfPattern(this);
+        }
+        
+        /**
+        * Gets the stream representing this pattern
+        * @param   compressionLevel    the compression level of the stream
+        * @return the stream representing this pattern
+        * @since   2.1.3
+        */
+        internal PdfPattern GetPattern(int compressionLevel) {
+            return new PdfPattern(this, compressionLevel);
         }
     
         /**

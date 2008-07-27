@@ -79,7 +79,7 @@ namespace iTextSharp.text.pdf {
             int bitsPerSample, int order, float[] encode, float[] decode, byte[] stream) {
             PdfFunction func = new PdfFunction(writer);
             func.dictionary = new PdfStream(stream);
-            ((PdfStream)func.dictionary).FlateCompress();
+            ((PdfStream)func.dictionary).FlateCompress(writer.CompressionLevel);
             func.dictionary.Put(PdfName.FUNCTIONTYPE, new PdfNumber(0));
             func.dictionary.Put(PdfName.DOMAIN, new PdfArray(domain));
             func.dictionary.Put(PdfName.RANGE, new PdfArray(range));
@@ -131,7 +131,7 @@ namespace iTextSharp.text.pdf {
                     b[k] = (byte)postscript[k];
             PdfFunction func = new PdfFunction(writer);
             func.dictionary = new PdfStream(b);
-            ((PdfStream)func.dictionary).FlateCompress();
+            ((PdfStream)func.dictionary).FlateCompress(writer.CompressionLevel);
             func.dictionary.Put(PdfName.FUNCTIONTYPE, new PdfNumber(4));
             func.dictionary.Put(PdfName.DOMAIN, new PdfArray(domain));
             func.dictionary.Put(PdfName.RANGE, new PdfArray(range));

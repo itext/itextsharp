@@ -3,7 +3,7 @@ using System;
 using iTextSharp.text;
 
 /*
- * $Id: PdfImportedPage.cs,v 1.4 2008/07/05 09:34:43 psoares33 Exp $
+ * $Id: PdfImportedPage.cs,v 1.3 2008/05/13 11:25:21 psoares33 Exp $
  * 
  *
  * Copyright 2001, 2002 Paulo Soares
@@ -123,10 +123,15 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        internal override PdfStream FormXObject {
-            get {
-                return readerInstance.GetFormXObject(pageNumber);
-            }
+        /**
+        * Gets the stream representing this page.
+        *
+        * @param   compressionLevel    the compressionLevel
+        * @return the stream representing this page
+        * @since   2.1.3   (replacing the method without param compressionLevel)
+        */
+        internal override PdfStream GetFormXObject(int compressionLevel) {
+            return readerInstance.GetFormXObject(pageNumber, compressionLevel);
         }
     
         public override void SetColorFill(PdfSpotColor sp, float tint) {

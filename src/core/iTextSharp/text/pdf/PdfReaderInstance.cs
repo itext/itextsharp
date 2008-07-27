@@ -113,8 +113,14 @@ namespace iTextSharp.text.pdf {
             return obj;
         }
         
-        
-        internal PdfStream GetFormXObject(int pageNumber) {
+        /**
+        * Gets the content stream of a page as a PdfStream object.
+        * @param   pageNumber          the page of which you want the stream
+        * @param   compressionLevel    the compression level you want to apply to the stream
+        * @return  a PdfStream object
+        * @since   2.1.3 (the method already existed without param compressionLevel)
+        */
+        internal PdfStream GetFormXObject(int pageNumber, int compressionLevel) {
             PdfDictionary page = reader.GetPageNRelease(pageNumber);
             PdfObject contents = PdfReader.GetPdfObjectRelease(page.Get(PdfName.CONTENTS));
             PdfDictionary dic = new PdfDictionary();
@@ -167,7 +173,7 @@ namespace iTextSharp.text.pdf {
             try {
                 file.ReOpen();
                 foreach (PdfImportedPage ip in importedPages.Values) {
-                    writer.AddToBody(ip.FormXObject, ip.IndirectReference);
+                    writer.AddToBody(ip.GetFormXObject(writer.CompressionLevel), ip.IndirectReference);
                 }
                 WriteAllVisited();
             }

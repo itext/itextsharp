@@ -177,6 +177,12 @@ namespace iTextSharp.text {
         /// <summary> This is the original height of the image taking rotation into account. </summary>
         protected float scaledHeight;
     
+        /**
+        * The compression level of the content streams.
+        * @since   2.1.3
+        */
+        protected int compressionLevel = PdfStream.DEFAULT_COMPRESSION;
+
         /// <summary> This is the rotation of the image. </summary>
         protected float rotationRadians;
     
@@ -1477,6 +1483,23 @@ namespace iTextSharp.text {
             }
             get {
                 return directReference;
+            }
+        }
+
+        /**
+        * Sets the compression level to be used if the image is written as a compressed stream.
+        * @param compressionLevel a value between 0 (best speed) and 9 (best compression)
+        * @since   2.1.3
+        */
+        public int CompressionLevel {
+            set {
+                if (compressionLevel < PdfStream.NO_COMPRESSION || compressionLevel > PdfStream.BEST_COMPRESSION)
+                    compressionLevel = PdfStream.DEFAULT_COMPRESSION;
+                else
+                    compressionLevel = compressionLevel;
+            }
+            get {
+                return compressionLevel;
             }
         }
     }

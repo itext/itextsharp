@@ -69,18 +69,15 @@ namespace iTextSharp.text.pdf {
         /** This is the 1 - matrix. */
         public static PdfLiteral MATRIX = new PdfLiteral("[1 0 0 1 0 0]");
     
-        // membervariables
-    
-    
-        // constructor
-    
         /**
          * Constructs a <CODE>PdfFormXObject</CODE>-object.
          *
          * @param        template        the template
+         * @param   compressionLevel    the compression level for the stream
+         * @since   2.1.3 (Replacing the existing constructor with param compressionLevel)
          */
     
-        internal PdfFormXObject(PdfTemplate template) : base() {
+        internal PdfFormXObject(PdfTemplate template, int compressionLevel) : base() {
             Put(PdfName.TYPE, PdfName.XOBJECT);
             Put(PdfName.SUBTYPE, PdfName.FORM);
             Put(PdfName.RESOURCES, template.Resources);
@@ -97,7 +94,7 @@ namespace iTextSharp.text.pdf {
                 Put(PdfName.MATRIX, matrix);
             bytes = template.ToPdf(null);
             Put(PdfName.LENGTH, new PdfNumber(bytes.Length));
-            FlateCompress();
+            FlateCompress(compressionLevel);
         }
     
     }
