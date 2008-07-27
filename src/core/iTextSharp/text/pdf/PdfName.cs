@@ -357,6 +357,12 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName EARLYCHANGE = new PdfName("EarlyChange");
         /** A name */
         public static readonly PdfName EF = new PdfName("EF");
+        /** A name
+        * @since   2.1.3 */
+        public static readonly PdfName EFF = new PdfName("EFF");
+        /** A name
+        * @since   2.1.3 */
+        public static readonly PdfName EFOPEN = new PdfName("EFOpen");
         /** A name */
         public static readonly PdfName EMBEDDEDFILE = new PdfName("EmbeddedFile");
         /** A name */

@@ -9,7 +9,7 @@ using System.util;
 using iTextSharp.text.xml.simpleparser;
 
 /*
- * $Id: BaseFont.cs,v 1.18 2008/06/01 13:17:07 psoares33 Exp $
+ * $Id: BaseFont.cs,v 1.17 2008/05/13 11:25:17 psoares33 Exp $
  * 
  *
  * Copyright 2000-2006 by Paulo Soares.
@@ -259,6 +259,12 @@ namespace iTextSharp.text.pdf {
         protected bool embedded;
     
         /**
+        * The compression level for the font stream.
+        * @since   2.1.3
+        */
+        protected int compressionLevel = PdfStream.DEFAULT_COMPRESSION;
+
+        /**
          * true if the font must use it's built in encoding. In that case the
          * <CODE>encoding</CODE> is only used to map a char to the position inside
          * the font, not to the expected char name.
@@ -321,25 +327,36 @@ namespace iTextSharp.text.pdf {
         internal class StreamFont : PdfStream {
         
             /** Generates the PDF stream with the Type1 and Truetype fonts returning
-             * a PdfStream.
-             * @param contents the content of the stream
-             * @param lengths an array of int that describes the several lengths of each part of the font
-             */
-            internal StreamFont(byte[] contents, int[] lengths) {
+            * a PdfStream.
+            * @param contents the content of the stream
+            * @param lengths an array of int that describes the several lengths of each part of the font
+            * @param compressionLevel  the compression level of the Stream
+            * @throws DocumentException error in the stream compression
+            * @since   2.1.3 (replaces the constructor without param compressionLevel)
+            */
+            internal StreamFont(byte[] contents, int[] lengths, int compressionLevel) {
                 bytes = contents;
                 Put(PdfName.LENGTH, new PdfNumber(bytes.Length));
                 for (int k = 0; k < lengths.Length; ++k) {
                     Put(new PdfName("Length" + (k + 1)), new PdfNumber(lengths[k]));
                 }
-                FlateCompress();
+                FlateCompress(compressionLevel);
             }
         
-            internal StreamFont(byte[] contents, string subType) {
+            /**
+            * Generates the PDF stream for a font.
+            * @param contents the content of a stream
+            * @param subType the subtype of the font.
+            * @param compressionLevel  the compression level of the Stream
+            * @throws DocumentException error in the stream compression
+            * @since   2.1.3 (replaces the constructor without param compressionLevel)
+            */
+            internal StreamFont(byte[] contents, string subType, int compressionLevel) {
                 bytes = contents;
                 Put(PdfName.LENGTH, new PdfNumber(bytes.Length));
                 if (subType != null)
                     Put(PdfName.SUBTYPE, new PdfName(subType));
-                FlateCompress();
+                FlateCompress(compressionLevel);
             }
         }
     
@@ -1437,6 +1454,23 @@ namespace iTextSharp.text.pdf {
             if (subsetRanges == null)
                 subsetRanges = new ArrayList();
             subsetRanges.Add(range);
+        }
+
+        /**
+        * Sets the compression level to be used for the font streams.
+        * @param compressionLevel a value between 0 (best speed) and 9 (best compression)
+        * @since 2.1.3
+        */
+        public int CompressionLevel {
+            set {
+                if (compressionLevel < PdfStream.NO_COMPRESSION || compressionLevel > PdfStream.BEST_COMPRESSION)
+                    compressionLevel = PdfStream.DEFAULT_COMPRESSION;
+                else
+                    compressionLevel = compressionLevel;
+            }
+            get {
+                return compressionLevel;
+            }
         }
     }
 }

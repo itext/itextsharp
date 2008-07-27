@@ -4,7 +4,7 @@ using System.Text;
 using System.Collections;
 
 /*
- * $Id: TrueTypeFontUnicode.cs,v 1.13 2008/06/01 13:17:07 psoares33 Exp $
+ * $Id: TrueTypeFontUnicode.cs,v 1.12 2008/05/13 11:25:23 psoares33 Exp $
  * 
  *
  * Copyright 2001, 2002 Paulo Soares
@@ -207,7 +207,7 @@ namespace iTextSharp.text.pdf {
                 "end end\n");
             string s = buf.ToString();
             PdfStream stream = new PdfStream(PdfEncodings.ConvertToBytes(s, null));
-            stream.FlateCompress();
+            stream.FlateCompress(compressionLevel);
             return stream;
         }
     
@@ -351,7 +351,7 @@ namespace iTextSharp.text.pdf {
                         bt[v / 8] |= rotbits[v % 8];
                     }
                     stream = new PdfStream(bt);
-                    stream.FlateCompress();
+                    stream.FlateCompress(compressionLevel);
                 }
                 cidset = writer.AddToBody(stream).IndirectReference;
             }
@@ -363,7 +363,7 @@ namespace iTextSharp.text.pdf {
                     b = cffs.Process((cffs.GetNames())[0] );
                 }
                 
-                pobj = new StreamFont(b, "CIDFontType0C");
+                pobj = new StreamFont(b, "CIDFontType0C", compressionLevel);
                 obj = writer.AddToBody(pobj);
                 ind_font = obj.IndirectReference;
             } else {
@@ -376,7 +376,7 @@ namespace iTextSharp.text.pdf {
                     b = GetFullFont();
                 }
                 int[] lengths = new int[]{b.Length};
-                pobj = new StreamFont(b, lengths);
+                pobj = new StreamFont(b, lengths, compressionLevel);
                 obj = writer.AddToBody(pobj);
                 ind_font = obj.IndirectReference;
             }
@@ -409,7 +409,7 @@ namespace iTextSharp.text.pdf {
         */
         public override PdfStream GetFullFontStream() {
             if (cff) {
-                return new StreamFont(ReadCffFont(), "CIDFontType0C");
+                return new StreamFont(ReadCffFont(), "CIDFontType0C", compressionLevel);
             }
             return base.GetFullFontStream();
         }

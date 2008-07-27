@@ -4,7 +4,7 @@ using System.Collections;
 using System.util;
 
 /*
- * $Id: Type1Font.cs,v 1.14 2008/06/01 13:17:07 psoares33 Exp $
+ * $Id: Type1Font.cs,v 1.13 2008/05/13 11:25:23 psoares33 Exp $
  * 
  *
  * Copyright 2001, 2002 Paulo Soares
@@ -503,7 +503,7 @@ namespace iTextSharp.text.pdf {
                         size -= got;
                     }
                 }
-                return new StreamFont(st, lengths);
+                return new StreamFont(st, lengths, compressionLevel);
             }
             finally {
                 if (rf != null) {

@@ -86,7 +86,7 @@ namespace iTextSharp.text.pdf {
             streamBytes = new MemoryStream();
             if (Document.Compress) {
                 compressed = true;
-                ostr = new ZDeflaterOutputStream(streamBytes);
+                ostr = new ZDeflaterOutputStream(streamBytes, text.PdfWriter.CompressionLevel);
             }
             else
                 ostr = streamBytes;

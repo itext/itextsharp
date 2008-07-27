@@ -101,6 +101,12 @@ public class PdfEncryption {
     /** The generic key length. It may be 40 or 128. */
     private int keyLength;
     private bool encryptMetadata;
+    /**
+     * Indicates if the encryption is only necessary for embedded files.
+     * @since 2.1.3
+     */
+    private bool embeddedFilesOnly;
+
     private int cryptoMode;
     
     public PdfEncryption() {
@@ -118,20 +124,24 @@ public class PdfEncryption {
         revision = enc.revision;
         keyLength = enc.keyLength;
         encryptMetadata = enc.encryptMetadata;
+        embeddedFilesOnly = enc.embeddedFilesOnly;
         publicKeyHandler = enc.publicKeyHandler;
     }
 
     public void SetCryptoMode(int mode, int kl) {
         cryptoMode = mode;
         encryptMetadata = (mode & PdfWriter.DO_NOT_ENCRYPT_METADATA) == 0;
+        embeddedFilesOnly = (mode & PdfWriter.EMBEDDED_FILES_ONLY) != 0;
         mode &= PdfWriter.ENCRYPTION_MASK;
         switch (mode) {
             case PdfWriter.STANDARD_ENCRYPTION_40:
                 encryptMetadata = true;
+                embeddedFilesOnly = false;
                 keyLength = 40;
                 revision = STANDARD_ENCRYPTION_40;
                 break;
             case PdfWriter.STANDARD_ENCRYPTION_128:
+                embeddedFilesOnly = false;
                 if (kl > 0)
                     keyLength = kl;
                 else
@@ -153,6 +163,15 @@ public class PdfEncryption {
     
     public bool IsMetadataEncrypted() {
         return encryptMetadata;
+    }
+
+    /**
+     * Indicates if only the embedded files have to be encrypted.
+     * @return  if true only the embedded files will be encrypted
+     * @since   2.1.3
+     */
+    public bool IsEmbeddedFilesOnly() {
+        return embeddedFilesOnly;
     }
 
     private byte[] PadPassword(byte[] userPassword) {
@@ -390,9 +409,16 @@ public class PdfEncryption {
                 PdfDictionary cf = new PdfDictionary();
                 cf.Put(PdfName.DEFAULTCRYPTFILER, stdcf);                
                 dic.Put(PdfName.CF, cf);
-                dic.Put(PdfName.STRF, PdfName.DEFAULTCRYPTFILER);
-                dic.Put(PdfName.STMF, PdfName.DEFAULTCRYPTFILER);                  
-            }            
+                if (embeddedFilesOnly) {
+                    dic.Put(PdfName.EFF, PdfName.DEFAULTCRYPTFILER);
+                    dic.Put(PdfName.STRF, PdfName.IDENTITY);
+                    dic.Put(PdfName.STMF, PdfName.IDENTITY);
+                }
+                else {
+                    dic.Put(PdfName.STRF, PdfName.DEFAULTCRYPTFILER);
+                    dic.Put(PdfName.STMF, PdfName.DEFAULTCRYPTFILER);
+                }
+            }
             
             SHA1 sh = new SHA1CryptoServiceProvider();
             byte[] encodedRecipient = null;
@@ -431,7 +457,17 @@ public class PdfEncryption {
                 dic.Put(PdfName.LENGTH, new PdfNumber(128));
                 PdfDictionary stdcf = new PdfDictionary();
                 stdcf.Put(PdfName.LENGTH, new PdfNumber(16));
-                stdcf.Put(PdfName.AUTHEVENT, PdfName.DOCOPEN);
+                if (embeddedFilesOnly) {
+                    stdcf.Put(PdfName.AUTHEVENT, PdfName.EFOPEN);
+                    dic.Put(PdfName.EFF, PdfName.STDCF);
+                    dic.Put(PdfName.STRF, PdfName.IDENTITY);
+                    dic.Put(PdfName.STMF, PdfName.IDENTITY);
+                }
+                else {
+                    stdcf.Put(PdfName.AUTHEVENT, PdfName.DOCOPEN);
+                    dic.Put(PdfName.STRF, PdfName.STDCF);
+                    dic.Put(PdfName.STMF, PdfName.STDCF);
+                }
                 if (revision == AES_128)
                     stdcf.Put(PdfName.CFM, PdfName.AESV2);
                 else
@@ -439,8 +475,6 @@ public class PdfEncryption {
                 PdfDictionary cf = new PdfDictionary();
                 cf.Put(PdfName.STDCF, stdcf);
                 dic.Put(PdfName.CF, cf);
-                dic.Put(PdfName.STRF, PdfName.STDCF);
-                dic.Put(PdfName.STMF, PdfName.STDCF);
             }
         }
         return dic;

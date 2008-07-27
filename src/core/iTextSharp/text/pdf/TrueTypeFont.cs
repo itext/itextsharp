@@ -6,7 +6,7 @@ using System.Collections;
 using iTextSharp.text;
 
 /*
- * $Id: TrueTypeFont.cs,v 1.13 2008/06/01 13:17:07 psoares33 Exp $
+ * $Id: TrueTypeFont.cs,v 1.12 2008/05/13 11:25:23 psoares33 Exp $
  * 
  *
  * Copyright 2001, 2002 Paulo Soares
@@ -1258,7 +1258,7 @@ namespace iTextSharp.text.pdf {
             string subsetPrefix = "";
             if (embedded) {
                 if (cff) {
-                    pobj = new StreamFont(ReadCffFont(), "Type1C");
+                    pobj = new StreamFont(ReadCffFont(), "Type1C", compressionLevel);
                     obj = writer.AddToBody(pobj);
                     ind_font = obj.IndirectReference;
                 }
@@ -1294,7 +1294,7 @@ namespace iTextSharp.text.pdf {
                         b = GetFullFont();
                     }
                     int[] lengths = new int[]{b.Length};
-                    pobj = new StreamFont(b, lengths);
+                    pobj = new StreamFont(b, lengths, compressionLevel);
                     obj = writer.AddToBody(pobj);
                     ind_font = obj.IndirectReference;
                 }
@@ -1341,12 +1341,12 @@ namespace iTextSharp.text.pdf {
         */
         public override PdfStream GetFullFontStream() {
             if (cff) {
-                return new StreamFont(ReadCffFont(), "Type1C");
+                return new StreamFont(ReadCffFont(), "Type1C", compressionLevel);
             }
             else {
                 byte[] b = GetFullFont();
                 int[] lengths = new int[]{b.Length};
-                return new StreamFont(b, lengths);
+                return new StreamFont(b, lengths, compressionLevel);
             }
         }
         

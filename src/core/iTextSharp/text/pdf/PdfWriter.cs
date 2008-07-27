@@ -277,7 +277,7 @@ namespace iTextSharp.text.pdf {
                 int first = index.Size;
                 index.Append(streamObjects);
                 PdfStream stream = new PdfStream(index.ToByteArray());
-                stream.FlateCompress();
+                stream.FlateCompress(writer.CompressionLevel);
                 stream.Put(PdfName.TYPE, PdfName.OBJSTM);
                 stream.Put(PdfName.N, new PdfNumber(numObj));
                 stream.Put(PdfName.FIRST, new PdfNumber(first));
@@ -452,7 +452,7 @@ namespace iTextSharp.text.pdf {
                     }
                     PdfStream xr = new PdfStream(buf.ToByteArray());
                     buf = null;
-                    xr.FlateCompress();
+                    xr.FlateCompress(writer.CompressionLevel);
                     xr.Put(PdfName.SIZE, new PdfNumber(Size));
                     xr.Put(PdfName.ROOT, root);
                     if (info != null) {
@@ -1182,7 +1182,7 @@ namespace iTextSharp.text.pdf {
                 if (template != null && template.IndirectReference is PRIndirectReference)
                     continue;
                 if (template != null && template.Type == PdfTemplate.TYPE_TEMPLATE) {
-                    AddToBody(template.FormXObject, template.IndirectReference);
+                    AddToBody(template.GetFormXObject(compressionLevel), template.IndirectReference);
                 }
             }
             // add all the dependencies in the imported pages
@@ -1197,7 +1197,7 @@ namespace iTextSharp.text.pdf {
             }
             // add the pattern
             foreach (PdfPatternPainter pat in documentPatterns.Keys) {
-                AddToBody(pat.Pattern, pat.IndirectReference);
+                AddToBody(pat.GetPattern(compressionLevel), pat.IndirectReference);
             }
             // add the shading patterns
             foreach (PdfShadingPattern shadingPattern in documentShadingPatterns.Keys) {
@@ -1746,7 +1746,7 @@ namespace iTextSharp.text.pdf {
                 outa.Put(PdfName.INFO, new PdfString(info, PdfObject.TEXT_UNICODE));
             if (destOutputProfile != null) {
                 PdfStream stream = new PdfStream(destOutputProfile);
-                stream.FlateCompress();
+                stream.FlateCompress(compressionLevel);
                 outa.Put(PdfName.DESTOUTPUTPROFILE, AddToBody(stream).IndirectReference);
             }
             outa.Put(PdfName.S, PdfName.GTS_PDFX);
@@ -1809,6 +1809,11 @@ namespace iTextSharp.text.pdf {
         internal const int ENCRYPTION_MASK = 7;
         /** Add this to the mode to keep the metadata in clear text */
         public const int DO_NOT_ENCRYPT_METADATA = 8;
+        /**
+        * Add this to the mode to keep encrypt only the embedded files.
+        * @since 2.1.3
+        */
+        public const int EMBEDDED_FILES_ONLY = 24;
         
         // permissions
         
@@ -2018,6 +2023,29 @@ namespace iTextSharp.text.pdf {
             SetAtLeastPdfVersion(VERSION_1_5);
         }
 
+        /**
+        * The compression level of the content streams.
+        * @since   2.1.3
+        */
+        protected internal int compressionLevel = PdfStream.DEFAULT_COMPRESSION;
+
+        /**
+        * Sets the compression level to be used for streams written by this writer.
+        * @param compressionLevel a value between 0 (best speed) and 9 (best compression)
+        * @since   2.1.3
+        */
+        public int CompressionLevel {
+            set {
+                if (compressionLevel < PdfStream.NO_COMPRESSION || compressionLevel > PdfStream.BEST_COMPRESSION)
+                    compressionLevel = PdfStream.DEFAULT_COMPRESSION;
+                else
+                    compressionLevel = value;
+            }
+            get {
+                return compressionLevel;
+            }
+        }
+
     //  [F3] adding fonts
 
         /** The fonts of this document */
@@ -2111,7 +2139,7 @@ namespace iTextSharp.text.pdf {
             if (template.IndirectReference is PRIndirectReference)
                 return;
             if (template.Type == PdfTemplate.TYPE_TEMPLATE) {
-                AddToBody(template.FormXObject, template.IndirectReference);
+                AddToBody(template.GetFormXObject(compressionLevel), template.IndirectReference);
                 objs[1] = null;
             }
         }
@@ -2841,7 +2869,7 @@ namespace iTextSharp.text.pdf {
                     }
                     PdfImage i = new PdfImage(image, "img" + images.Count, maskRef);
                     if (image.HasICCProfile()) {
-                        PdfICCBased icc = new PdfICCBased(image.TagICC);
+                        PdfICCBased icc = new PdfICCBased(image.TagICC, image.CompressionLevel);
                         PdfIndirectReference iccRef = Add(icc);
                         PdfArray iccArray = new PdfArray();
                         iccArray.Add(PdfName.ICCBASED);

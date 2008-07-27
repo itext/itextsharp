@@ -238,7 +238,7 @@ namespace iTextSharp.text.pdf {
                 diffs.Add(n);
                 Type3Glyph glyph = (Type3Glyph)char2glyph[(char)c2];
                 PdfStream stream = new PdfStream(glyph.ToPdf(null));
-                stream.FlateCompress();
+                stream.FlateCompress(compressionLevel);
                 PdfIndirectReference refp = writer.AddToBody(stream).IndirectReference;
                 charprocs.Put(n, refp);
             }
