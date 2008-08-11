@@ -1,3 +1,5 @@
+#if INCLUDE_IDEA
+
 using System;
 
 using Org.BouncyCastle.Crypto.Parameters;
@@ -15,13 +17,17 @@ namespace Org.BouncyCastle.Crypto.Engines
     * It can be found at ftp://ftp.funet.fi/pub/crypt/cryptography/symmetric/idea/
 	* </p>
     * <p>
-    * Note: This algorithm is patented in the USA, Japan, and Europe including
+	* Note 1: This algorithm is patented in the USA, Japan, and Europe including
     * at least Austria, France, Germany, Italy, Netherlands, Spain, Sweden, Switzerland
     * and the United Kingdom. Non-commercial use is free, however any commercial
     * products are liable for royalties. Please see
     * <a href="http://www.mediacrypt.com">www.mediacrypt.com</a> for
     * further details. This announcement has been included at the request of
     * the patent holders.
+	* </p>
+	* <p>
+	* Note 2: Due to the requests concerning the above, this algorithm is now only
+	* included in the extended assembly. It is not included in the default distributions.
 	* </p>
     */
     public class IdeaEngine
@@ -331,3 +337,5 @@ namespace Org.BouncyCastle.Crypto.Engines
         }
     }
 }
+
+#endif

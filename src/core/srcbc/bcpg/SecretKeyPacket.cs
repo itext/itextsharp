@@ -23,7 +23,14 @@ namespace Org.BouncyCastle.Bcpg
 		internal SecretKeyPacket(
             BcpgInputStream bcpgIn)
         {
-            pubKeyPacket = new PublicKeyPacket(bcpgIn);
+			if (this is SecretSubkeyPacket)
+			{
+				pubKeyPacket = new PublicSubkeyPacket(bcpgIn);
+			}
+			else
+			{
+				pubKeyPacket = new PublicKeyPacket(bcpgIn);
+			}
 
 			s2kUsage = bcpgIn.ReadByte();
 

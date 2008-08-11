@@ -4358,6 +4358,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\cms\PKCS5Scheme2UTF8PBEKey.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\cms\RecipientId.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -6019,6 +6024,11 @@
                 />
                 <File
                     RelPath = "srcbc\pkcs\PKCS12Store.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkcs\PKCS12StoreBuilder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

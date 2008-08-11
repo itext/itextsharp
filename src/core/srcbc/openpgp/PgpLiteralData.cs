@@ -11,6 +11,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
     {
         public const char Binary = 'b';
         public const char Text = 't';
+		public const char Utf8 = 'u';
 
 		/// <summary>The special name indicating a "for your eyes only" packet.</summary>
         public const string Console = "_CONSOLE";

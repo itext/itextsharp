@@ -358,9 +358,16 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			return (byte[]) fingerprint.Clone();
         }
 
-
-		/// <summary>True, if this key is marked as suitable for encryption</summary>
-		/// <returns>True, if this key is marked as suitable for using for encryption.</returns>
+		/// <summary>
+		/// Check if this key has an algorithm type that makes it suitable to use for encryption.
+		/// </summary>
+		/// <remarks>
+		/// Note: with version 4 keys KeyFlags subpackets should also be considered when present for
+		/// determining the preferred use of the key.
+		/// </remarks>
+		/// <returns>
+		/// <c>true</c> if this key algorithm is suitable for encryption.
+		/// </returns>
 		public bool IsEncryptionKey
         {
             get

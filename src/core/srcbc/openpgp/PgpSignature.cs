@@ -322,6 +322,18 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             return sigPck.GetSignatureTrailer();
         }
 
+		/// <summary>
+		/// Return true if the signature has either hashed or unhashed subpackets.
+		/// </summary>
+		public bool HasSubpackets
+		{
+			get
+			{
+				return sigPck.GetHashedSubPackets() != null
+					|| sigPck.GetUnhashedSubPackets() != null;
+			}
+		}
+
 		public PgpSignatureSubpacketVector GetHashedSubPackets()
         {
             return createSubpacketVector(sigPck.GetHashedSubPackets());

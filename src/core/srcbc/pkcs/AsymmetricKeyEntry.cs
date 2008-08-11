@@ -28,5 +28,20 @@ namespace Org.BouncyCastle.Pkcs
         {
             get { return this.key; }
         }
-    }
+
+		public override bool Equals(object obj)
+		{
+			AsymmetricKeyEntry other = obj as AsymmetricKeyEntry;
+
+			if (other == null)
+				return false;
+
+			return key.Equals(other.key);
+		}
+
+		public override int GetHashCode()
+		{
+			return ~key.GetHashCode();
+		}
+	}
 }

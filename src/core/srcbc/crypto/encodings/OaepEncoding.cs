@@ -14,6 +14,7 @@ namespace Org.BouncyCastle.Crypto.Encodings
 	{
 		private byte[] defHash;
 		private IDigest hash;
+		private IDigest mgf1Hash;
 
 		private IAsymmetricBlockCipher engine;
 		private SecureRandom random;
@@ -36,9 +37,19 @@ namespace Org.BouncyCastle.Crypto.Encodings
 			IAsymmetricBlockCipher	cipher,
 			IDigest					hash,
 			byte[]					encodingParams)
+			: this(cipher, hash, hash, encodingParams)
+		{
+		}
+
+		public OaepEncoding(
+			IAsymmetricBlockCipher	cipher,
+			IDigest					hash,
+			IDigest					mgf1Hash,
+			byte[]					encodingParams)
 		{
 			this.engine = cipher;
 			this.hash = hash;
+			this.mgf1Hash = mgf1Hash;
 			this.defHash = new byte[hash.GetDigestSize()];
 
 			if (encodingParams != null)
@@ -191,7 +202,7 @@ namespace Org.BouncyCastle.Crypto.Encodings
 			int		inLen)
 		{
 			byte[] data = engine.ProcessBlock(inBytes, inOff, inLen);
-			byte[] block = null;
+			byte[] block;
 
 			//
 			// as we may have zeros in our leading bytes for the block we produced
@@ -298,7 +309,7 @@ namespace Org.BouncyCastle.Crypto.Encodings
 			int		length)
 		{
 			byte[] mask = new byte[length];
-			byte[] hashBuf = new byte[defHash.Length];
+			byte[] hashBuf = new byte[mgf1Hash.GetDigestSize()];
 			byte[] C = new byte[4];
 			int counter = 0;
 
@@ -308,23 +319,23 @@ namespace Org.BouncyCastle.Crypto.Encodings
 			{
 				ItoOSP(counter, C);
 
-				hash.BlockUpdate(Z, zOff, zLen);
-				hash.BlockUpdate(C, 0, C.Length);
-				hash.DoFinal(hashBuf, 0);
+				mgf1Hash.BlockUpdate(Z, zOff, zLen);
+				mgf1Hash.BlockUpdate(C, 0, C.Length);
+				mgf1Hash.DoFinal(hashBuf, 0);
 
-				Array.Copy(hashBuf, 0, mask, counter * defHash.Length, defHash.Length);
+				Array.Copy(hashBuf, 0, mask, counter * hashBuf.Length, hashBuf.Length);
 			}
-			while (++counter < (length / defHash.Length));
+			while (++counter < (length / hashBuf.Length));
 
-			if ((counter * defHash.Length) < length)
+			if ((counter * hashBuf.Length) < length)
 			{
 				ItoOSP(counter, C);
 
-				hash.BlockUpdate(Z, zOff, zLen);
-				hash.BlockUpdate(C, 0, C.Length);
-				hash.DoFinal(hashBuf, 0);
+				mgf1Hash.BlockUpdate(Z, zOff, zLen);
+				mgf1Hash.BlockUpdate(C, 0, C.Length);
+				mgf1Hash.DoFinal(hashBuf, 0);
 
-				Array.Copy(hashBuf, 0, mask, counter * defHash.Length, mask.Length - (counter * defHash.Length));
+				Array.Copy(hashBuf, 0, mask, counter * hashBuf.Length, mask.Length - (counter * hashBuf.Length));
 			}
 
 			return mask;

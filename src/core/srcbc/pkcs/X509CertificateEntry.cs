@@ -28,5 +28,20 @@ namespace Org.BouncyCastle.Pkcs
         {
 			get { return this.cert; }
         }
-    }
+
+		public override bool Equals(object obj)
+		{
+			X509CertificateEntry other = obj as X509CertificateEntry;
+
+			if (other == null)
+				return false;
+
+			return cert.Equals(other.cert);
+		}
+
+		public override int GetHashCode()
+		{
+			return ~cert.GetHashCode();
+		}
+	}
 }

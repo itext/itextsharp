@@ -988,9 +988,7 @@ namespace Org.BouncyCastle.Asn1.X509
             bool		reverse,
             Hashtable	oidSymbols)
         {
-			StringBuilder buf = new StringBuilder();
 			ArrayList components = new ArrayList();
-			bool first = true;
 
 			StringBuilder ava = null;
 
@@ -1015,33 +1013,18 @@ namespace Org.BouncyCastle.Asn1.X509
 
 			if (reverse)
 			{
-				for (int i = components.Count - 1; i >= 0; i--)
-				{
-					if (first)
-					{
-						first = false;
-					}
-					else
-					{
-						buf.Append(',');
-					}
-
-					buf.Append(components[i].ToString());
-				}
+				components.Reverse();
 			}
-			else
-			{
-				for (int i = 0; i < components.Count; i++)
-				{
-					if (first)
-					{
-						first = false;
-					}
-					else
-					{
-						buf.Append(',');
-					}
 
+			StringBuilder buf = new StringBuilder();
+
+			if (components.Count > 0)
+			{
+				buf.Append(components[0].ToString());
+
+				for (int i = 1; i < components.Count; ++i)
+				{
+					buf.Append(',');
 					buf.Append(components[i].ToString());
 				}
 			}

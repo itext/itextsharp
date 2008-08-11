@@ -32,6 +32,20 @@ namespace Org.BouncyCastle.Cms
 		}
 
 		/**
+		 * return the object identifier for the key derivation algorithm, or null
+		 * if there is none present.
+		 *
+		 * @return OID for key derivation algorithm, if present.
+		 */
+		public virtual AlgorithmIdentifier KeyDerivationAlgorithm
+		{
+			get
+			{
+				return _info.KeyDerivationAlgorithm;
+			}
+		}
+
+		/**
 		 * decrypt the content and return an input stream.
 		 */
 		public override CmsTypedStream GetContentStream(

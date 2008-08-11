@@ -25,11 +25,11 @@ namespace Org.BouncyCastle.Pkcs
 		private readonly IgnoresCaseHashtable	certs = new IgnoresCaseHashtable();
 		private readonly Hashtable				chainCerts = new Hashtable();
 		private readonly Hashtable				keyCerts = new Hashtable();
+		private readonly DerObjectIdentifier	keyAlgorithm;
+		private readonly DerObjectIdentifier	certAlgorithm;
 
-		private static readonly DerObjectIdentifier	keyAlgorithm = PkcsObjectIdentifiers.PbeWithShaAnd3KeyTripleDesCbc;
-		private static readonly DerObjectIdentifier	CertAlgorithm = PkcsObjectIdentifiers.PbewithShaAnd40BitRC2Cbc;
-		private int					MinIterations = 1024;
-		private int					saltSize = 20;
+		private const int MinIterations = 1024;
+		private const int SaltSize = 20;
 
 		private static SubjectKeyIdentifier CreateSubjectKeyID(
 			AsymmetricKeyParameter pubKey)
@@ -79,11 +79,33 @@ namespace Org.BouncyCastle.Pkcs
 			}
 		}
 
+		internal Pkcs12Store(
+			DerObjectIdentifier	keyAlgorithm,
+			DerObjectIdentifier	certAlgorithm)
+		{
+			this.keyAlgorithm = keyAlgorithm;
+			this.certAlgorithm = certAlgorithm;
+		}
+
+		// TODO Consider making obsolete
+//		[Obsolete("User 'Pkcs12StoreBuilder' instead")]
 		public Pkcs12Store()
+			: this(PkcsObjectIdentifiers.PbeWithShaAnd3KeyTripleDesCbc,
+				PkcsObjectIdentifiers.PbewithShaAnd40BitRC2Cbc)
 		{
 		}
 
+		// TODO Consider making obsolete
+//		[Obsolete("User 'Pkcs12StoreBuilder' and 'Load' method instead")]
 		public Pkcs12Store(
+			Stream	input,
+			char[]	password)
+			: this()
+		{
+			Load(input, password);
+		}
+
+		public void Load(
 			Stream	input,
 			char[]	password)
 		{
@@ -125,6 +147,9 @@ namespace Org.BouncyCastle.Pkcs
 					wrongPkcs12Zero = true;
 				}
 			}
+
+			keys.Clear();
+			localIds.Clear();
 
 			ArrayList chain = new ArrayList();
 
@@ -372,9 +397,9 @@ namespace Org.BouncyCastle.Pkcs
 				}
 			}
 
-			certs = new IgnoresCaseHashtable();
-			chainCerts = new Hashtable();
-			keyCerts = new Hashtable();
+			certs.Clear();
+			chainCerts.Clear();
+			keyCerts.Clear();
 
 			foreach (SafeBag b in chain)
 			{
@@ -781,7 +806,7 @@ namespace Org.BouncyCastle.Pkcs
 			Asn1EncodableVector keyS = new Asn1EncodableVector();
 			foreach (string name in keys.Keys)
 			{
-				byte[] kSalt = new byte[saltSize];
+				byte[] kSalt = new byte[SaltSize];
 				random.NextBytes(kSalt);
 
 				AsymmetricKeyEntry privKey = (AsymmetricKeyEntry) keys[name];
@@ -843,13 +868,13 @@ namespace Org.BouncyCastle.Pkcs
 			//
 			// certificate processing
 			//
-			byte[] cSalt = new byte[saltSize];
+			byte[] cSalt = new byte[SaltSize];
 
 			random.NextBytes(cSalt);
 
 			Asn1EncodableVector	certSeq = new Asn1EncodableVector();
 			Pkcs12PbeParams		cParams = new Pkcs12PbeParams(cSalt, MinIterations);
-			AlgorithmIdentifier	cAlgId = new AlgorithmIdentifier(CertAlgorithm, cParams.ToAsn1Object());
+			AlgorithmIdentifier	cAlgId = new AlgorithmIdentifier(certAlgorithm, cParams.ToAsn1Object());
 			ISet				doneCerts = new HashSet();
 
 			foreach (string name in keys.Keys)
@@ -924,6 +949,13 @@ namespace Org.BouncyCastle.Pkcs
 
 				foreach (string oid in cert.BagAttributeKeys)
 				{
+					// a certificate not immediately linked to a key doesn't require
+					// a localKeyID and will confuse some PKCS12 implementations.
+					//
+					// If we find one, we'll prune it out.
+					if (oid.Equals(PkcsObjectIdentifiers.Pkcs9AtLocalKeyID.Id))
+						continue;
+
 					Asn1Encodable entry = cert[oid];
 
 					// NB: Ignore any existing FriendlyName
@@ -971,6 +1003,13 @@ namespace Org.BouncyCastle.Pkcs
 
 				foreach (string oid in cert.BagAttributeKeys)
 				{
+					// a certificate not immediately linked to a key doesn't require
+					// a localKeyID and will confuse some PKCS12 implementations.
+					//
+					// If we find one, we'll prune it out.
+					if (oid.Equals(PkcsObjectIdentifiers.Pkcs9AtLocalKeyID.Id))
+						continue;
+
 					fName.Add(
 						new DerSequence(
 							new DerObjectIdentifier(oid),
@@ -1067,6 +1106,12 @@ namespace Org.BouncyCastle.Pkcs
 		{
 			private readonly Hashtable orig = new Hashtable();
 			private readonly Hashtable keys = new Hashtable();
+
+			public void Clear()
+			{
+				orig.Clear();
+				keys.Clear();
+			}
 
 			public IEnumerator GetEnumerator()
 			{

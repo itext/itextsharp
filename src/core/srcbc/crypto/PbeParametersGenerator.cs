@@ -138,6 +138,25 @@ namespace Org.BouncyCastle.Crypto
 
 		/**
 		 * converts a password to a byte array according to the scheme in
+		 * PKCS5 (UTF-8, no padding)
+		 *
+		 * @param password a character array reqpresenting the password.
+		 * @return a byte array representing the password.
+		 */
+		public static byte[] Pkcs5PasswordToUtf8Bytes(
+			char[] password)
+		{
+			return Encoding.UTF8.GetBytes(password);
+		}
+
+		public static byte[] Pkcs5PasswordToUtf8Bytes(
+			string password)
+		{
+			return Encoding.UTF8.GetBytes(password);
+		}
+
+		/**
+		 * converts a password to a byte array according to the scheme in
 		 * Pkcs12 (unicode, big endian, 2 zero pad bytes at the end).
 		 *
 		 * @param password a character array representing the password.
