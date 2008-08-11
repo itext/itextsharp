@@ -279,8 +279,17 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 		{
 		}
 
-		/// <summary>True, if this key is marked as suitable for signature generation.</summary>
-        public bool IsSigningKey
+		/// <summary>
+		/// Check if this key has an algorithm type that makes it suitable to use for signing.
+		/// </summary>
+		/// <remarks>
+		/// Note: with version 4 keys KeyFlags subpackets should also be considered when present for
+		/// determining the preferred use of the key.
+		/// </remarks>
+		/// <returns>
+		/// <c>true</c> if this key algorithm is suitable for use with signing.
+		/// </returns>
+		public bool IsSigningKey
         {
 			get
 			{

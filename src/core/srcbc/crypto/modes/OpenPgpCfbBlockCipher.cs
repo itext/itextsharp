@@ -19,7 +19,6 @@ namespace Org.BouncyCastle.Crypto.Modes
         private byte[] IV;
         private byte[] FR;
         private byte[] FRE;
-        private byte[] tmp;
 
 		private readonly IBlockCipher cipher;
 		private readonly int blockSize;
@@ -42,7 +41,6 @@ namespace Org.BouncyCastle.Crypto.Modes
             this.IV = new byte[blockSize];
             this.FR = new byte[blockSize];
             this.FRE = new byte[blockSize];
-            this.tmp = new byte[blockSize];
         }
 
 		/**
@@ -208,10 +206,8 @@ namespace Org.BouncyCastle.Crypto.Modes
 
                 for (int n = 2; n < blockSize; n++)
                 {
-                    outBytes[outOff + n] = EncryptByte(input[inOff + n], n - 2);
+					FR[n - 2] = outBytes[outOff + n] = EncryptByte(input[inOff + n], n - 2);
                 }
-
-                Array.Copy(outBytes, outOff + 2, FR, 0, blockSize - 2);
             }
             else if (count == 0)
             {
@@ -219,12 +215,10 @@ namespace Org.BouncyCastle.Crypto.Modes
 
 				for (int n = 0; n < blockSize; n++)
                 {
-                    outBytes[outOff + n] = EncryptByte(input[inOff + n], n);
+					FR[n] = outBytes[outOff + n] = EncryptByte(input[inOff + n], n);
                 }
 
-                Array.Copy(outBytes, outOff, FR, 0, blockSize);
-
-                count += blockSize;
+				count += blockSize;
             }
             else if (count == blockSize)
             {
@@ -243,12 +237,10 @@ namespace Org.BouncyCastle.Crypto.Modes
 
                 for (int n = 2; n < blockSize; n++)
                 {
-                    outBytes[outOff + n] = EncryptByte(input[inOff + n], n - 2);
+					FR[n - 2] = outBytes[outOff + n] = EncryptByte(input[inOff + n], n - 2);
                 }
 
-                Array.Copy(outBytes, outOff + 2, FR, 0, blockSize - 2);
-
-                count += blockSize;
+				count += blockSize;
             }
 
             return blockSize;
@@ -284,22 +276,22 @@ namespace Org.BouncyCastle.Crypto.Modes
 
             if (count > blockSize)
             {
-                // copy in buffer so that this mode works if in and out are the same
-                Array.Copy(input, inOff, tmp, 0, blockSize);
+				byte inVal = input[inOff];
+				FR[blockSize - 2] = inVal;
+				outBytes[outOff] = EncryptByte(inVal, blockSize - 2);
 
-                outBytes[outOff] = EncryptByte(tmp[0], blockSize - 2);
-                outBytes[outOff + 1] = EncryptByte(tmp[1], blockSize - 1);
-
-                Array.Copy(tmp, 0, FR, blockSize - 2, 2);
+				inVal = input[inOff + 1];
+				FR[blockSize - 1] = inVal;
+				outBytes[outOff + 1] = EncryptByte(inVal, blockSize - 1);
 
                 cipher.ProcessBlock(FR, 0, FRE, 0);
 
                 for (int n = 2; n < blockSize; n++)
                 {
-                    outBytes[outOff + n] = EncryptByte(tmp[n], n - 2);
-                }
-
-                Array.Copy(tmp, 2, FR, 0, blockSize - 2);
+					inVal = input[inOff + n];
+					FR[n - 2] = inVal;
+					outBytes[outOff + n] = EncryptByte(inVal, n - 2);
+				}
             }
             else if (count == 0)
             {
@@ -315,24 +307,25 @@ namespace Org.BouncyCastle.Crypto.Modes
             }
             else if (count == blockSize)
             {
-                Array.Copy(input, inOff, tmp, 0, blockSize);
-
                 cipher.ProcessBlock(FR, 0, FRE, 0);
 
-                outBytes[outOff] = EncryptByte(tmp[0], 0);
-                outBytes[outOff + 1] = EncryptByte(tmp[1], 1);
+				byte inVal1 = input[inOff];
+				byte inVal2 = input[inOff + 1];
+				outBytes[outOff    ] = EncryptByte(inVal1, 0);
+				outBytes[outOff + 1] = EncryptByte(inVal2, 1);
 
                 Array.Copy(FR, 2, FR, 0, blockSize - 2);
 
-                FR[blockSize - 2] = tmp[0];
-                FR[blockSize - 1] = tmp[1];
+				FR[blockSize - 2] = inVal1;
+				FR[blockSize - 1] = inVal2;
 
                 cipher.ProcessBlock(FR, 0, FRE, 0);
 
                 for (int n = 2; n < blockSize; n++)
                 {
-                    FR[n - 2] = input[inOff + n];
-                    outBytes[outOff + n] = EncryptByte(input[inOff + n], n - 2);
+					byte inVal = input[inOff + n];
+					FR[n - 2] = inVal;
+					outBytes[outOff + n] = EncryptByte(inVal, n - 2);
                 }
 
                 count += blockSize;

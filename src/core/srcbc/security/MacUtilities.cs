@@ -168,6 +168,7 @@ namespace Org.BouncyCastle.Security
 			{
 				return new CfbBlockCipherMac(new SkipjackEngine());
 			}
+#if INCLUDE_IDEA
 			if (mechanism == "IDEAMAC")
 			{
 				return new CbcBlockCipherMac(new IdeaEngine());
@@ -176,6 +177,7 @@ namespace Org.BouncyCastle.Security
 			{
 				return new CfbBlockCipherMac(new IdeaEngine());
 			}
+#endif
 			if (mechanism == "RC2MAC")
 			{
 				return new CbcBlockCipherMac(new RC2Engine());

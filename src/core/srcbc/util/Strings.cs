@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 
 namespace Org.BouncyCastle.Utilities
 {
@@ -29,6 +30,24 @@ namespace Org.BouncyCastle.Utilities
 				bs[i] = Convert.ToByte(s[i]);
 			}
 			return bs;
+		}
+
+		public static string FromUtf8ByteArray(
+			byte[] bytes)
+		{
+			return Encoding.UTF8.GetString(bytes, 0, bytes.Length);
+		}
+
+		public static byte[] ToUtf8ByteArray(
+			string s)
+		{
+			return Encoding.UTF8.GetBytes(s);
+		}
+
+		public static byte[] ToUtf8ByteArray(
+			char[] cs)
+		{
+			return Encoding.UTF8.GetBytes(cs);
 		}
 	}
 }

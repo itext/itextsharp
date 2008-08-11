@@ -189,7 +189,17 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             return null;
         }
 
-        public byte[] GetEncoded()
+		/// <summary>
+		/// Return true if a key matching the passed in key ID is present, false otherwise.
+		/// </summary>
+		/// <param name="keyID">key ID to look for.</param>
+		public bool Contains(
+			long keyID)
+		{
+			return GetSecretKey(keyID) != null;
+		}
+
+		public byte[] GetEncoded()
         {
             MemoryStream bOut = new MemoryStream();
 

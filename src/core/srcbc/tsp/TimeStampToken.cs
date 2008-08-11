@@ -37,7 +37,7 @@ namespace Org.BouncyCastle.Tsp
 		{
 			this.tsToken = signedData;
 
-			if (!this.tsToken.SignedContentTypeOid.Equals(PkcsObjectIdentifiers.IdCTTstInfo.Id))
+			if (!this.tsToken.SignedContentType.Equals(PkcsObjectIdentifiers.IdCTTstInfo))
 			{
 				throw new TspValidationException("ContentInfo object not for a time stamp.");
 			}

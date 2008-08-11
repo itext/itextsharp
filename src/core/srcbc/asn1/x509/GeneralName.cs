@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
+using System.Globalization;
 using System.Text;
 
-using Org.BouncyCastle.Utilities.Net;
+using NetUtils = Org.BouncyCastle.Utilities.Net;
 
 namespace Org.BouncyCastle.Asn1.X509
 {
@@ -95,7 +97,7 @@ namespace Org.BouncyCastle.Asn1.X509
         }
 
 		/**
-		 * Create a GeneralName for the given tag from the passed in String.
+		 * Create a GeneralName for the given tag from the passed in string.
 		 * <p>
 		 * This constructor can handle:
 		 * <ul>
@@ -139,10 +141,11 @@ namespace Org.BouncyCastle.Asn1.X509
 			}
 			else if (tag == IPAddress)
 			{
-				if (!Org.BouncyCastle.Utilities.Net.IPAddress.IsValid(name))
+				byte[] enc = toGeneralNameEncoding(name);
+				if (enc == null)
 					throw new ArgumentException("IP Address is invalid", "name");
 
-				this.obj = new DerOctetString(Encoding.UTF8.GetBytes(name));
+				this.obj = new DerOctetString(enc);
 			}
 			else
 			{
@@ -231,10 +234,173 @@ namespace Org.BouncyCastle.Asn1.X509
 			return buf.ToString();
 		}
 
+		private byte[] toGeneralNameEncoding(
+			string ip)
+		{
+			if (NetUtils.IPAddress.IsValidIPv6WithNetmask(ip) || NetUtils.IPAddress.IsValidIPv6(ip))
+			{
+				int slashIndex = ip.IndexOf('/');
+
+				if (slashIndex < 0)
+				{
+					byte[] addr = new byte[16];
+					int[]  parsedIp = parseIPv6(ip);
+					copyInts(parsedIp, addr, 0);
+
+					return addr;
+				}
+				else
+				{
+					byte[] addr = new byte[32];
+					int[]  parsedIp = parseIPv6(ip.Substring(0, slashIndex));
+					copyInts(parsedIp, addr, 0);
+					string mask = ip.Substring(slashIndex + 1);
+					if (mask.IndexOf(':') > 0)
+					{
+						parsedIp = parseIPv6(mask);
+					}
+					else
+					{
+						parsedIp = parseMask(mask);
+					}
+					copyInts(parsedIp, addr, 16);
+
+					return addr;
+				}
+			}
+			else if (NetUtils.IPAddress.IsValidIPv4WithNetmask(ip) || NetUtils.IPAddress.IsValidIPv4(ip))
+			{
+				int slashIndex = ip.IndexOf('/');
+
+				if (slashIndex < 0)
+				{
+					byte[] addr = new byte[4];
+
+					parseIPv4(ip, addr, 0);
+
+					return addr;
+				}
+				else
+				{
+					byte[] addr = new byte[8];
+
+					parseIPv4(ip.Substring(0, slashIndex), addr, 0);
+
+					string mask = ip.Substring(slashIndex + 1);
+					if (mask.IndexOf('.') > 0)
+					{
+						parseIPv4(mask, addr, 4);
+					}
+					else
+					{
+						parseIPv4Mask(mask, addr, 4);
+					}
+
+					return addr;
+				}
+			}
+
+			return null;
+		}
+
+		private void parseIPv4Mask(string mask, byte[] addr, int offset)
+		{
+			int maskVal = Int32.Parse(mask);
+
+			for (int i = 0; i != maskVal; i++)
+			{
+				addr[(i / 8) + offset] |= (byte)(1 << (i % 8));
+			}
+		}
+
+		private void parseIPv4(string ip, byte[] addr, int offset)
+		{
+			foreach (string token in ip.Split('.', '/'))
+			{
+				addr[offset++] = (byte)Int32.Parse(token);
+			}
+		}
+
+		private int[] parseMask(string mask)
+		{
+			int[] res = new int[8];
+			int   maskVal = Int32.Parse(mask);
+
+			for (int i = 0; i != maskVal; i++)
+			{
+				res[i / 16] |= 1 << (i % 16);
+			}
+			return res;
+		}
+
+		private void copyInts(int[] parsedIp, byte[] addr, int offSet)
+		{
+			for (int i = 0; i != parsedIp.Length; i++)
+			{
+				addr[(i * 2) + offSet] = (byte)(parsedIp[i] >> 8);
+				addr[(i * 2 + 1) + offSet] = (byte)parsedIp[i];
+			}
+		}
+
+		private int[] parseIPv6(string ip)
+		{
+			if (ip.StartsWith("::"))
+			{
+				ip = ip.Substring(1);
+			}
+			else if (ip.EndsWith("::"))
+			{
+				ip = ip.Substring(0, ip.Length - 1);
+			}
+
+			IEnumerator sEnum = ip.Split(':').GetEnumerator();
+
+			int index = 0;
+			int[] val = new int[8];
+
+			int doubleColon = -1;
+
+			while (sEnum.MoveNext())
+			{
+				string e = (string) sEnum.Current;
+
+				if (e.Length == 0)
+				{
+					doubleColon = index;
+					val[index++] = 0;
+				}
+				else
+				{
+					if (e.IndexOf('.') < 0)
+					{
+						val[index++] = Int32.Parse(e, NumberStyles.AllowHexSpecifier);
+					}
+					else
+					{
+						string[] tokens = e.Split('.');
+
+						val[index++] = (Int32.Parse(tokens[0]) << 8) | Int32.Parse(tokens[1]);
+						val[index++] = (Int32.Parse(tokens[2]) << 8) | Int32.Parse(tokens[3]);
+					}
+				}
+			}
+
+			if (index != val.Length)
+			{
+				Array.Copy(val, doubleColon, val, val.Length - (index - doubleColon), index - doubleColon);
+				for (int i = doubleColon; i != val.Length - (index - doubleColon); i++)
+				{
+					val[i] = 0;
+				}
+			}
+
+			return val;
+		}
+
 		public override Asn1Object ToAsn1Object()
         {
 			// Explicitly tagged if DirectoryName
-			return new DerTaggedObject(tag == 4, tag, obj);
+			return new DerTaggedObject(tag == DirectoryName, tag, obj);
         }
     }
 }

@@ -244,15 +244,19 @@ namespace Org.BouncyCastle.Cms
 			return crlStore;
 		}
 
-		/**
-		* Return the a string representation of the OID associated with the
-		* encapsulated content info structure carried in the signed data.
-		*
-		* @return the OID for the content type.
-		*/
+		[Obsolete("Use 'SignedContentType' property instead.")]
 		public string SignedContentTypeOid
 		{
 			get { return signedData.EncapContentInfo.ContentType.Id; }
+		}
+
+		/// <summary>
+		/// Return the <c>DerObjectIdentifier</c> associated with the encapsulated
+		/// content info structure carried in the signed data.
+		/// </summary>
+		public DerObjectIdentifier SignedContentType
+		{
+			get { return signedData.EncapContentInfo.ContentType; }
 		}
 
 		public CmsProcessable SignedContent

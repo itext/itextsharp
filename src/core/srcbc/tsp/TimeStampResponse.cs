@@ -146,9 +146,17 @@ namespace Org.BouncyCastle.Tsp
 					throw new TspValidationException("response for different message imprint algorithm.");
 				}
 
-				if (tok.SignedAttributes[PkcsObjectIdentifiers.IdAASigningCertificate] == null)
+				Asn1.Cms.Attribute scV1 = tok.SignedAttributes[PkcsObjectIdentifiers.IdAASigningCertificate];
+				Asn1.Cms.Attribute scV2 = tok.SignedAttributes[PkcsObjectIdentifiers.IdAASigningCertificateV2];
+
+				if (scV1 == null && scV2 == null)
 				{
 					throw new TspValidationException("no signing certificate attribute present.");
+				}
+
+				if (scV1 != null && scV2 != null)
+				{
+					throw new TspValidationException("conflicting signing certificate attributes present.");
 				}
 
 				if (request.ReqPolicy != null && !request.ReqPolicy.Equals(tstInfo.Policy))

@@ -165,7 +165,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
         }
 
 		/// <summary>Return the public key ring which contains the key referred to by keyId</summary>
-		/// <param name="keyId">The ID of the public key</param>
+		/// <param name="keyId">key ID to match against</param>
         public PgpPublicKeyRing GetPublicKeyRing(
             long keyId)
         {
@@ -186,6 +186,16 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 
 			return null;
         }
+
+		/// <summary>
+		/// Return true if a key matching the passed in key ID is present, false otherwise.
+		/// </summary>
+		/// <param name="keyID">key ID to look for.</param>
+		public bool Contains(
+			long keyID)
+		{
+			return GetPublicKey(keyID) != null;
+		}
 
 		public byte[] GetEncoded()
         {

@@ -289,9 +289,11 @@ namespace Org.BouncyCastle.Security
 				case "HC256":
 					streamCipher = new HC256Engine();
 					break;
+#if INCLUDE_IDEA
 				case "IDEA":
 					blockCipher = new IdeaEngine();
 					break;
+#endif
 				case "NOEKEON":
 					blockCipher = new NoekeonEngine();
 					break;
@@ -396,18 +398,23 @@ namespace Org.BouncyCastle.Security
 						asymBlockCipher = new OaepEncoding(asymBlockCipher, new MD5Digest());
 						break;
 					case "OAEPWITHSHA1ANDMGF1PADDING":
+					case "OAEPWITHSHA-1ANDMGF1PADDING":
 						asymBlockCipher = new OaepEncoding(asymBlockCipher, new Sha1Digest());
 						break;
 					case "OAEPWITHSHA224ANDMGF1PADDING":
+					case "OAEPWITHSHA-224ANDMGF1PADDING":
 						asymBlockCipher = new OaepEncoding(asymBlockCipher, new Sha224Digest());
 						break;
 					case "OAEPWITHSHA256ANDMGF1PADDING":
+					case "OAEPWITHSHA-256ANDMGF1PADDING":
 						asymBlockCipher = new OaepEncoding(asymBlockCipher, new Sha256Digest());
 						break;
 					case "OAEPWITHSHA384ANDMGF1PADDING":
+					case "OAEPWITHSHA-384ANDMGF1PADDING":
 						asymBlockCipher = new OaepEncoding(asymBlockCipher, new Sha384Digest());
 						break;
 					case "OAEPWITHSHA512ANDMGF1PADDING":
+					case "OAEPWITHSHA-512ANDMGF1PADDING":
 						asymBlockCipher = new OaepEncoding(asymBlockCipher, new Sha512Digest());
 						break;
 					case "PKCS1":

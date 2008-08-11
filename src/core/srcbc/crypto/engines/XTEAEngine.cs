@@ -14,15 +14,15 @@ namespace Org.BouncyCastle.Crypto.Engines
 			rounds		= 32,
 			block_size	= 8,
 			key_size	= 16,
-			delta		= unchecked((int) 0x9E3779B9),
-			d_sum		= unchecked((int) 0xC6EF3720); // sum on decrypt
+			delta		= unchecked((int) 0x9E3779B9);
 
 		/*
 		* the expanded key array of 4 subkeys
 		*/
-		private int[] _S = new int[4];
-		private bool _initialised;
-		private bool _forEncryption;
+		private uint[] _S = new uint[4],
+			_sum0 = new uint[32],
+			_sum1 = new uint[32];
+		private bool _initialised, _forEncryption;
 
 		/**
 		* Create an instance of the TEA encryption algorithm
@@ -106,10 +106,18 @@ namespace Org.BouncyCastle.Crypto.Engines
 		private void setKey(
 			byte[] key)
 		{
-			_S[0] = bytesToInt(key, 0);
-			_S[1] = bytesToInt(key, 4);
-			_S[2] = bytesToInt(key, 8);
-			_S[3] = bytesToInt(key, 12);
+			int i, j;
+			for (i = j = 0; i < 4; i++,j+=4)
+			{
+				_S[i] = bytesToUint(key, j);
+			}
+
+			for (i = j = 0; i < rounds; i++)
+			{
+				_sum0[i] = ((uint)j + _S[j & 3]);
+				j += delta;
+				_sum1[i] = ((uint)j + _S[j >> 11 & 3]);
+			}
 		}
 
 		private int encryptBlock(
@@ -119,20 +127,17 @@ namespace Org.BouncyCastle.Crypto.Engines
 			int     outOff)
 		{
 			// Pack bytes into integers
-			int v0 = bytesToInt(inBytes, inOff);
-			int v1 = bytesToInt(inBytes, inOff + 4);
+			uint v0 = bytesToUint(inBytes, inOff);
+			uint v1 = bytesToUint(inBytes, inOff + 4);
 
-			int sum = 0;
-
-			for (int i = 0; i != rounds; i++)
+			for (int i = 0; i < rounds; i++)
 			{
-				v0    += ((v1 << 4 ^ (int)((uint)v1 >> 5)) + v1) ^ (sum + _S[sum & 3]);
-				sum += delta;
-				v1    += ((v0 << 4 ^ (int)((uint)v0 >> 5)) + v0) ^ (sum + _S[(int)((uint)sum >> 11) & 3]);
+				v0 += ((v1 << 4 ^ v1 >> 5) + v1) ^ _sum0[i];
+				v1 += ((v0 << 4 ^ v0 >> 5) + v0) ^ _sum1[i];
 			}
 
-			unpackInt(v0, outBytes, outOff);
-			unpackInt(v1, outBytes, outOff + 4);
+			unpackUint(v0, outBytes, outOff);
+			unpackUint(v1, outBytes, outOff + 4);
 
 			return block_size;
 		}
@@ -144,42 +149,35 @@ namespace Org.BouncyCastle.Crypto.Engines
 			int		outOff)
 		{
 			// Pack bytes into integers
-			int v0 = bytesToInt(inBytes, inOff);
-			int v1 = bytesToInt(inBytes, inOff + 4);
+			uint v0 = bytesToUint(inBytes, inOff);
+			uint v1 = bytesToUint(inBytes, inOff + 4);
 
-			int sum = d_sum;
-
-			for (int i = 0; i != rounds; i++)
+			for (int i = rounds-1; i >= 0; i--)
 			{
-				v1  -= ((v0 << 4 ^ (int)((uint)v0 >> 5)) + v0) ^ (sum + _S[(int)((uint)sum >> 11) & 3]);
-				sum -= delta;
-				v0  -= ((v1 << 4 ^ (int)((uint)v1 >> 5)) + v1) ^ (sum + _S[sum & 3]);
+				v1  -= ((v0 << 4 ^ v0 >> 5) + v0) ^ _sum1[i];
+				v0  -= ((v1 << 4 ^ v1 >> 5) + v1) ^ _sum0[i];
 			}
 
-			unpackInt(v0, outBytes, outOff);
-			unpackInt(v1, outBytes, outOff + 4);
+			unpackUint(v0, outBytes, outOff);
+			unpackUint(v1, outBytes, outOff + 4);
 
 			return block_size;
 		}
 
-		private int bytesToInt(byte[] b, int inOff)
+		private uint bytesToUint(byte[] b, int inOff)
 		{
-			return ((b[inOff++]) << 24) |
-					((b[inOff++] & 255) << 16) |
-					((b[inOff++] & 255) <<  8) |
-					((b[inOff] & 255));
+			return ((uint)b[inOff++] << 24)
+				| ((uint)b[inOff++] << 16)
+				| ((uint)b[inOff++] << 8)
+				| ((uint)b[inOff]);
 		}
 
-		private void unpackInt(
-			int		v,
-			byte[]	b,
-			int		outOff)
+		private void unpackUint(uint v, byte[] b, int outOff)
 		{
-			uint uv = (uint) v;
-			b[outOff++] = (byte)(uv >> 24);
-			b[outOff++] = (byte)(uv >> 16);
-			b[outOff++] = (byte)(uv >>  8);
-			b[outOff  ] = (byte)uv;
+			b[outOff++] = (byte)(v >> 24);
+			b[outOff++] = (byte)(v >> 16);
+			b[outOff++] = (byte)(v >>  8);
+			b[outOff] = (byte)v;
 		}
 	}
 }

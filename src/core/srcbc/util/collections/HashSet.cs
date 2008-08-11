@@ -25,6 +25,19 @@ namespace Org.BouncyCastle.Utilities.Collections
 			impl[o] = null;
 		}
 
+		public void AddAll(IEnumerable e)
+		{
+			foreach (object o in e)
+			{
+				Add(o);
+			}
+		}
+
+		public void Clear()
+		{
+			impl.Clear();
+		}
+
 		public bool Contains(object o)
 		{
 			return impl.ContainsKey(o);
@@ -45,6 +58,11 @@ namespace Org.BouncyCastle.Utilities.Collections
 			return impl.Keys.GetEnumerator();
 		}
 
+		public bool IsEmpty
+		{
+			get { return impl.Count == 0; }
+		}
+
 		public bool IsSynchronized
 		{
 			get { return impl.IsSynchronized; }
@@ -53,6 +71,14 @@ namespace Org.BouncyCastle.Utilities.Collections
 		public void Remove(object o)
 		{
 			impl.Remove(o);
+		}
+
+		public void RemoveAll(IEnumerable e)
+		{
+			foreach (object o in e)
+			{
+				Remove(o);
+			}
 		}
 
 		public object SyncRoot

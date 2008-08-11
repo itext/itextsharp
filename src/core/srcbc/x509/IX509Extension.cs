@@ -10,13 +10,13 @@ namespace Org.BouncyCastle.X509
 		/// <summary>
 		/// Get all critical extension values, by oid
 		/// </summary>
-		/// <returns>IDictionary with DerObjectIdentifier keys and Asn1OctetString values</returns>
+		/// <returns>IDictionary with string (OID) keys and Asn1OctetString values</returns>
 		ISet GetCriticalExtensionOids();
 
 		/// <summary>
 		/// Get all non-critical extension values, by oid
 		/// </summary>
-		/// <returns>IDictionary with DerObjectIdentifier keys and Asn1OctetString values</returns>
+		/// <returns>IDictionary with string (OID) keys and Asn1OctetString values</returns>
 		ISet GetNonCriticalExtensionOids();
 
 		[Obsolete("Use version taking a DerObjectIdentifier instead")]

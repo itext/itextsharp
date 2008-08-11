@@ -31,6 +31,18 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
         }
 
 		/**
+		 * Return true if a particular subpacket type exists.
+		 *
+		 * @param type type to look for.
+		 * @return true if present, false otherwise.
+		 */
+		public bool HasSubpacket(
+			SignatureSubpacketTag type)
+		{
+			return GetSubpacket(type) != null;
+		}
+
+		/**
 		 * Return all signature subpackets of the passed in type.
 		 * @param type subpacket type code
 		 * @return an array of zero or more matching subpackets.
@@ -146,6 +158,19 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 
 			return p == null ? null : ((SignerUserId) p).GetId();
         }
+
+		public bool IsPrimaryUserId()
+		{
+			PrimaryUserId primaryId = (PrimaryUserId)
+				this.GetSubpacket(SignatureSubpacketTag.PrimaryUserId);
+
+			if (primaryId != null)
+			{
+				return primaryId.IsPrimaryUserId();
+			}
+
+			return false;
+		}
 
 		public SignatureSubpacketTag[] GetCriticalTags()
         {

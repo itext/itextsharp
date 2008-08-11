@@ -220,9 +220,10 @@ namespace Org.BouncyCastle.Cms
 		public void AddSigners(
 			SignerInformationStore signerStore)
 		{
-			foreach (object o in signerStore.GetSigners())
+			foreach (SignerInformation o in signerStore.GetSigners())
 			{
 				_signers.Add(o);
+				AddSignerCallback(o);
 			}
 		}
 
@@ -235,6 +236,11 @@ namespace Org.BouncyCastle.Cms
 		public IDictionary GetGeneratedDigests()
 		{
 			return new Hashtable(_digests);
+		}
+
+		internal virtual void AddSignerCallback(
+			SignerInformation si)
+		{
 		}
 	}
 }

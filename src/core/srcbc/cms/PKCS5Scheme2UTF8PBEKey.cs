@@ -6,13 +6,13 @@ using Org.BouncyCastle.Crypto.Parameters;
 
 namespace Org.BouncyCastle.Cms
 {
-	/// <summary>
-	/// PKCS5 scheme-2 - password converted to bytes assuming ASCII.
-	/// </summary>
-	public class Pkcs5Scheme2PbeKey
+	/**
+	 * PKCS5 scheme-2 - password converted to bytes using UTF-8.
+	 */
+	public class Pkcs5Scheme2Utf8PbeKey
 		: CmsPbeKey
 	{
-		public Pkcs5Scheme2PbeKey(
+		public Pkcs5Scheme2Utf8PbeKey(
 			string	password,
 			byte[]	salt,
 			int		iterationCount)
@@ -26,7 +26,7 @@ namespace Org.BouncyCastle.Cms
 			Pkcs5S2ParametersGenerator gen = new Pkcs5S2ParametersGenerator();
 
 			gen.Init(
-				PbeParametersGenerator.Pkcs5PasswordToBytes(this.Password),
+				PbeParametersGenerator.Pkcs5PasswordToUtf8Bytes(this.Password),
 				this.Salt,
 				this.IterationCount);
 
