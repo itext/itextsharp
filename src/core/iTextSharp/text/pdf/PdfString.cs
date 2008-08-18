@@ -137,7 +137,7 @@ namespace iTextSharp.text.pdf {
             PdfEncryption crypto = null;
             if (writer != null)
                 crypto = writer.Encryption;
-            if (crypto != null) {
+            if (crypto != null && !crypto.IsEmbeddedFilesOnly()) {
                 b = crypto.EncryptByteArray(b);
             }
             if (hexWriting) {

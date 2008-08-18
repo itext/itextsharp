@@ -68,13 +68,13 @@ namespace iTextSharp.text.html.simpleparser {
                 foreach (DictionaryEntry dc in temp)
                     props[dc.Key] = dc.Value;
             }
-            String cm = (String)props["class"];
+            String cm = (String)props[Markup.HTML_ATTR_CSS_CLASS];
             if (cm == null)
                 return;
             map = (Hashtable)classMap[cm.ToLower(System.Globalization.CultureInfo.InvariantCulture)];
             if (map == null)
                 return;
-            props.Remove("class");
+            props.Remove(Markup.HTML_ATTR_CSS_CLASS);
             temp = new Hashtable(map);
             foreach (DictionaryEntry dc in props)
                 temp[dc.Key] = dc.Value;

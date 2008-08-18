@@ -213,7 +213,7 @@ namespace iTextSharp.text.html {
             this[peer.Alias] = peer;
             
             peer = new HtmlPeer(ElementTags.IMAGE, HtmlTags.IMAGE);
-            peer.AddAlias(ElementTags.URL, HtmlTags.URL);
+            peer.AddAlias(ElementTags.URL, ElementTags.SRC); // contributed by Lubos Strapko
             peer.AddAlias(ElementTags.ALT, HtmlTags.ALT);
             peer.AddAlias(ElementTags.PLAINWIDTH, HtmlTags.PLAINWIDTH);
             peer.AddAlias(ElementTags.PLAINHEIGHT, HtmlTags.PLAINHEIGHT);

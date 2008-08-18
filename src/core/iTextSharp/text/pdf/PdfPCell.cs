@@ -478,7 +478,7 @@ namespace iTextSharp.text.pdf {
         * Getter for property table.
         * @return Value of property table.
         */
-        internal PdfPTable Table {
+        public PdfPTable Table {
             get {
                 return table;
             }

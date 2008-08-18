@@ -268,12 +268,79 @@ namespace iTextSharp.text.html {
         /** a CSS value for text decoration */
         public const string CSS_VALUE_UNDERLINE = "underline";
 
+        /** a default value for font-size 
+         * @since 2.1.3
+         */
+        public const float DEFAULT_FONT_SIZE = 12f;
+
         /// <summary>
         /// Parses a length.
         /// </summary>
         /// <param name="str">a length in the form of an optional + or -, followed by a number and a unit.</param>
         /// <returns>a float</returns>
         public static float ParseLength(string str) {
+            // TODO: Evaluate the effect of this.
+            // It may change the default behavour of the methd if this is changed.
+            // return ParseLength(string, Markup.DEFAULT_FONT_SIZE);
+            int pos = 0;
+            int length = str.Length;
+            bool ok = true;
+            while (ok && pos < length) {
+                switch (str[pos]) {
+                case '+':
+                case '-':
+                case '0':
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                case '9':
+                case '.':
+                    pos++;
+                    break;
+                default:
+                    ok = false;
+                    break;
+                }
+            }
+            if (pos == 0)
+                return 0f;
+            if (pos == length)
+                return float.Parse(str, System.Globalization.NumberFormatInfo.InvariantInfo);
+            float f = float.Parse(str.Substring(0, pos), System.Globalization.NumberFormatInfo.InvariantInfo);
+            str = str.Substring(pos);
+            // inches
+            if (str.StartsWith("in")) {
+                return f * 72f;
+            }
+            // centimeters
+            if (str.StartsWith("cm")) {
+                return (f / 2.54f) * 72f;
+            }
+            // millimeters
+            if (str.StartsWith("mm")) {
+                return (f / 25.4f) * 72f;
+            }
+            // picas
+            if (str.StartsWith("pc")) {
+                return f * 12f;
+            }
+            // default: we assume the length was measured in points
+            return f;
+        }
+
+        /**
+        * New method contributed by: Lubos Strapko
+        * 
+        * @since 2.1.3
+        */
+        public static float ParseLength(String str, float actualFontSize) {
+            if (str == null)
+                return 0f;
             int pos = 0;
             int length = str.Length;
             bool ok = true;
@@ -318,6 +385,15 @@ namespace iTextSharp.text.html {
             // picas
             if (str.StartsWith("pc")) {
                 return f * 12f;
+            }
+            // 1em is equal to the current font size
+            if (str.StartsWith("em")) {
+                return f * actualFontSize;
+            }
+            // one ex is the x-height of a font (x-height is usually about half the
+            // font-size)
+            if (str.StartsWith("ex")) {
+                return f * actualFontSize / 2;
             }
             // default: we assume the length was measured in points
             return f;
