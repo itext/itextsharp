@@ -83,10 +83,10 @@ public class ChainedProperties {
         
         public void AddToChain(String key, Hashtable prop) {
             // adjust the font size
-            String value = (String)prop["size"];
+            String value = (String)prop[ElementTags.SIZE];
             if (value != null) {
                 if (value.EndsWith("px")) {
-                    prop["size"] = value.Substring(0, value.Length - 2);
+                    prop[ElementTags.SIZE] = value.Substring(0, value.Length - 2);
                 }
                 else {
                     int s = 0;
@@ -117,7 +117,7 @@ public class ChainedProperties {
                         s = 0;
                     else if (s >= fontSizes.Length)
                         s = fontSizes.Length - 1;
-                    prop["size"] = fontSizes[s].ToString();
+                    prop[ElementTags.SIZE] = fontSizes[s].ToString();
                 }
             }
             chain.Add(new Object[]{key, prop});

@@ -105,6 +105,18 @@ public class PdfArray : PdfObject {
         Add(values);
     }
     
+    /**
+     * Constructs a PdfArray with the elements of an ArrayList.
+     * Throws a ClassCastException if the ArrayList contains something
+     * that isn't a PdfObject.
+     * @param   l   an ArrayList with PdfObjects
+     * @since 2.1.3
+     */
+    public PdfArray(ArrayList l) : this() {
+        foreach (PdfObject o in l)
+            Add(o);
+    }
+
 /**
  * Constructs an <CODE>PdfArray</CODE>-object, containing all the <CODE>PdfObject</CODE>s in a given <CODE>PdfArray</CODE>.
  *

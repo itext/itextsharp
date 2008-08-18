@@ -122,7 +122,7 @@ namespace iTextSharp.text.factories {
             }
             value = attributes[Markup.CSS_KEY_LINEHEIGHT];
             if (value != null) {
-                phrase.Leading = Markup.ParseLength(value);
+                phrase.Leading = Markup.ParseLength(value, Markup.DEFAULT_FONT_SIZE);
             }
             value = attributes[ElementTags.ITEXT];
             if (value != null) {

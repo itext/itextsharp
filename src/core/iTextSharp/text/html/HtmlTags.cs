@@ -321,5 +321,9 @@ namespace iTextSharp.text.html {
 
         /** This is a possible HTML attribute. */
         public const string STYLESHEET = "stylesheet";
+	    /** This is a possible HTML attribute for auto-formated 
+        * @since 2.1.3
+        */
+	    public const String PRE = "pre";
     }
 }

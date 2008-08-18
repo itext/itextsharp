@@ -445,6 +445,17 @@ namespace iTextSharp.text
 	    /** a possible list attribute */
 	    public const String LOWERCASE = "lowercase";
 
+        /**
+            * a possible list attribute
+            * @since 2.1.3
+            */
+        public const String FACE = "face";
+
+        /** attribute of the image or iframe tag
+            * @since 2.1.3
+            */
+        public const String SRC = "src";
+
         // methods
     
         /// <summary>
