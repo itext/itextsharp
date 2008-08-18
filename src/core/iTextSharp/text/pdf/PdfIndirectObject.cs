@@ -79,7 +79,7 @@ public class PdfIndirectObject {
     /** the generation number */
         protected int generation = 0;
         
-        internal static byte[] STARTOBJ = DocWriter.GetISOBytes(" obj");
+        internal static byte[] STARTOBJ = DocWriter.GetISOBytes(" obj\n");
         internal static byte[] ENDOBJ = DocWriter.GetISOBytes("\nendobj\n");
         internal static int SIZEOBJ = STARTOBJ.Length + ENDOBJ.Length;
         internal PdfObject objecti;
@@ -147,9 +147,6 @@ public class PdfIndirectObject {
             tmp = DocWriter.GetISOBytes(generation.ToString());
             os.Write(tmp, 0, tmp.Length);
             os.Write(STARTOBJ, 0, STARTOBJ.Length);
-            int type = objecti.Type;
-            if (type != PdfObject.ARRAY && type != PdfObject.DICTIONARY && type != PdfObject.NAME && type != PdfObject.STRING)
-                os.WriteByte((byte)' ');
             objecti.ToPdf(writer, os);
             os.Write(ENDOBJ, 0, ENDOBJ.Length);
         }
