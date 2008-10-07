@@ -1521,7 +1521,11 @@ namespace iTextSharp.text.pdf {
                     int pos = tokens.FilePointer;
                     // be careful in the trailer. May not be a "next" token.
                     if (tokens.NextToken() && tokens.StringValue.Equals("stream")) {
-                        int ch = tokens.Read();
+                        //skip whitespaces
+                        int ch;
+                        do {
+                            ch = tokens.Read();                        
+                        } while (ch == 32 || ch == 9 || ch == 0 || ch == 12);
                         if (ch != '\n')
                             ch = tokens.Read();
                         if (ch != '\n')
