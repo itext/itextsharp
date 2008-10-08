@@ -405,7 +405,6 @@ namespace iTextSharp.text.pdf {
             }
             else
                 AddFieldResources(theCat);
-            WriteOutlines(theCat, false);
             return theCat;
         }
         
