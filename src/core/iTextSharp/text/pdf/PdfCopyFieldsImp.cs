@@ -509,7 +509,6 @@ namespace iTextSharp.text.pdf {
                 PdfIndirectReference refi = AddToBody(form).IndirectReference;
                 cat.Put(PdfName.ACROFORM, refi);
             }
-            WriteOutlines(cat, false);
             return cat;
         }
 
