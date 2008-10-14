@@ -104,7 +104,9 @@ namespace iTextSharp.text.xml.xmp {
         * @param title
         */
         public void AddTitle(String title) {
-            this[TITLE] = title;
+            XmpArray array = new XmpArray(XmpArray.ALTERNATIVE);
+            array.Add(title);
+            SetProperty(TITLE, array);
         }
         
         /**
@@ -112,7 +114,9 @@ namespace iTextSharp.text.xml.xmp {
         * @param desc
         */
         public void AddDescription(String desc) {
-            this[DESCRIPTION] = desc;
+            XmpArray array = new XmpArray(XmpArray.ALTERNATIVE);
+            array.Add(desc);
+            SetProperty(DESCRIPTION, array);
         }
 
         /**
