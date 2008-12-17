@@ -751,8 +751,7 @@ namespace iTextSharp.text.pdf.codec {
                         dstX = xOffset;
                         for (srcX = 0; srcX < width; srcX++) {
                             int idx = outp[srcX];
-                            if (idx < trans.Length)
-                                v[0] = (trans[idx] == 0 ? 1 : 0);
+                            v[0] = ((idx < trans.Length && trans[idx] == 0) ? 1 : 0);
                             SetPixel(smask, v, 0, 1, dstX, y, 1, yStride);
                             dstX += step;
                         }
