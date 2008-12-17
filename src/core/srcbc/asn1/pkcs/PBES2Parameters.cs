@@ -9,25 +9,38 @@ namespace Org.BouncyCastle.Asn1.Pkcs
         private readonly KeyDerivationFunc func;
         private readonly EncryptionScheme scheme;
 
+		public static PbeS2Parameters GetInstance(
+			object obj)
+		{
+			if (obj == null || obj is PbeS2Parameters)
+				return (PbeS2Parameters) obj;
+
+			if (obj is Asn1Sequence)
+				return new PbeS2Parameters((Asn1Sequence) obj);
+
+			throw new ArgumentException("Unknown object in factory: " + obj.GetType().FullName, "obj");
+		}
+
 		public PbeS2Parameters(
-            Asn1Sequence obj)
+            Asn1Sequence seq)
         {
-            IEnumerator e = obj.GetEnumerator();
+			if (seq.Count != 2)
+				throw new ArgumentException("Wrong number of elements in sequence", "seq");
 
-			e.MoveNext();
-            Asn1Sequence funcSeq = (Asn1Sequence) e.Current;
+			Asn1Sequence funcSeq = (Asn1Sequence)seq[0];
 
+			// TODO Not sure if this special case is really necessary/appropriate
 			if (funcSeq[0].Equals(PkcsObjectIdentifiers.IdPbkdf2))
             {
-                func = new KeyDerivationFunc(PkcsObjectIdentifiers.IdPbkdf2, funcSeq[1]);
-            }
+				func = new KeyDerivationFunc(PkcsObjectIdentifiers.IdPbkdf2,
+					Pbkdf2Params.GetInstance(funcSeq[1]));
+			}
             else
             {
                 func = new KeyDerivationFunc(funcSeq);
             }
 
-			e.MoveNext();
-            scheme = new EncryptionScheme((Asn1Sequence) e.Current);
+			scheme = new EncryptionScheme((Asn1Sequence) seq[1]);
         }
 
 		public KeyDerivationFunc KeyDerivationFunc

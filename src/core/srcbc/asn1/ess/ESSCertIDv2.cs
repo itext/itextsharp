@@ -14,7 +14,7 @@ namespace Org.BouncyCastle.Asn1.Ess
 		private readonly IssuerSerial        issuerSerial;
 
 		private static readonly AlgorithmIdentifier DefaultAlgID = new AlgorithmIdentifier(
-			NistObjectIdentifiers.IdSha256, DerNull.Instance);
+			NistObjectIdentifiers.IdSha256);
 
 		public static EssCertIDv2 GetInstance(
 			object o)
@@ -102,7 +102,7 @@ namespace Org.BouncyCastle.Asn1.Ess
 		 * <pre>
 		 * EssCertIDv2 ::=  SEQUENCE {
 		 *     hashAlgorithm     AlgorithmIdentifier
-		 *              DEFAULT {algorithm id-sha256 parameters NULL},
+		 *              DEFAULT {algorithm id-sha256},
 		 *     certHash          Hash,
 		 *     issuerSerial      IssuerSerial OPTIONAL
 		 * }

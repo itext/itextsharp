@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.IO;
 
+using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Bcpg.OpenPgp
@@ -16,15 +17,24 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 	public class PgpSecretKeyRing
 		: PgpKeyRing
     {
-        private readonly ArrayList keys;
+        private readonly IList keys;
+		private readonly IList extraPubKeys;
 
 		internal PgpSecretKeyRing(
-			ArrayList keys)
-        {
-            this.keys = keys;
-        }
+			IList keys)
+			: this(keys, new ArrayList())
+		{
+		}
 
-        public PgpSecretKeyRing(
+		private PgpSecretKeyRing(
+			IList	keys,
+			IList	extraPubKeys)
+		{
+			this.keys = keys;
+			this.extraPubKeys = extraPubKeys;
+		}
+
+		public PgpSecretKeyRing(
             byte[] encoding)
             : this(new MemoryStream(encoding))
         {
@@ -34,6 +44,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             Stream inputStream)
         {
 			this.keys = new ArrayList();
+			this.extraPubKeys = new ArrayList();
 
 			BcpgInputStream bcpgInput = BcpgInputStream.Wrap(inputStream);
 
@@ -62,26 +73,39 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			ArrayList ids, idTrusts, idSigs;
 			ReadUserIDs(bcpgInput, out ids, out idTrusts, out idSigs);
 
-			keys.Add(new PgpSecretKey(secret, trust, keySigs, ids, idTrusts, idSigs));
+			keys.Add(new PgpSecretKey(secret, new PgpPublicKey(secret.PublicKeyPacket, trust, keySigs, ids, idTrusts, idSigs)));
 
 
 			// Read subkeys
-			while (bcpgInput.NextPacketTag() == PacketTag.SecretSubkey)
+			while (bcpgInput.NextPacketTag() == PacketTag.SecretSubkey
+				|| bcpgInput.NextPacketTag() == PacketTag.PublicSubkey)
             {
-                SecretSubkeyPacket sub = (SecretSubkeyPacket) bcpgInput.ReadPacket();
+				if (bcpgInput.NextPacketTag() == PacketTag.SecretSubkey)
+				{
+					SecretSubkeyPacket sub = (SecretSubkeyPacket) bcpgInput.ReadPacket();
 
-                //
-                // ignore GPG comment packets if found.
-                //
-                while (bcpgInput.NextPacketTag() == PacketTag.Experimental2)
-                {
-                    bcpgInput.ReadPacket();
-                }
+					//
+					// ignore GPG comment packets if found.
+					//
+					while (bcpgInput.NextPacketTag() == PacketTag.Experimental2)
+					{
+						bcpgInput.ReadPacket();
+					}
 
-				TrustPacket subTrust = ReadOptionalTrustPacket(bcpgInput);
-				ArrayList sigList = ReadSignaturesAndTrust(bcpgInput);
+					TrustPacket subTrust = ReadOptionalTrustPacket(bcpgInput);
+					ArrayList sigList = ReadSignaturesAndTrust(bcpgInput);
 
-				keys.Add(new PgpSecretKey(sub, subTrust, sigList));
+					keys.Add(new PgpSecretKey(sub, new PgpPublicKey(sub.PublicKeyPacket, subTrust, sigList)));
+				}
+				else
+				{
+					PublicSubkeyPacket sub = (PublicSubkeyPacket) bcpgInput.ReadPacket();
+
+					TrustPacket subTrust = ReadOptionalTrustPacket(bcpgInput);
+					ArrayList sigList = ReadSignaturesAndTrust(bcpgInput);
+
+					extraPubKeys.Add(new PgpPublicKey(sub, subTrust, sigList));
+				}
             }
         }
 
@@ -118,6 +142,17 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			return null;
         }
 
+		/// <summary>
+		/// Return an iterator of the public keys in the secret key ring that
+		/// have no matching private key. At the moment only personal certificate data
+		/// appears in this fashion.
+		/// </summary>
+		/// <returns>An <c>IEnumerable</c> of unattached, or extra, public keys.</returns>
+		public IEnumerable GetExtraPublicKeys()
+		{
+			return new EnumerableProxy(extraPubKeys);
+		}
+
 		public byte[] GetEncoded()
         {
             MemoryStream bOut = new MemoryStream();
@@ -133,11 +168,69 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			if (outStr == null)
 				throw new ArgumentNullException("outStr");
 
-			foreach (PgpSecretKey k in keys)
+			foreach (PgpSecretKey key in keys)
 			{
-				k.Encode(outStr);
+				key.Encode(outStr);
+			}
+			foreach (PgpPublicKey extraPubKey in extraPubKeys)
+			{
+				extraPubKey.Encode(outStr);
 			}
         }
+
+		/// <summary>
+		/// Replace the public key set on the secret ring with the corresponding key off the public ring.
+		/// </summary>
+		/// <param name="secretRing">Secret ring to be changed.</param>
+		/// <param name="publicRing">Public ring containing the new public key set.</param>
+		public static PgpSecretKeyRing ReplacePublicKeys(
+			PgpSecretKeyRing	secretRing,
+			PgpPublicKeyRing	publicRing)
+		{
+			IList newList = new ArrayList(secretRing.keys.Count);
+
+			foreach (PgpSecretKey sk in secretRing.keys)
+			{
+				PgpPublicKey pk = null;
+				try
+				{
+					pk = publicRing.GetPublicKey(sk.KeyId);
+				}
+				catch (PgpException e)
+				{
+					throw new InvalidOperationException(e.Message, e);
+				}
+
+				newList.Add(PgpSecretKey.ReplacePublicKey(sk, pk));
+			}
+
+			return new PgpSecretKeyRing(newList);
+		}
+
+		/// <summary>
+		/// Return a copy of the passed in secret key ring, with the master key and sub keys encrypted
+		/// using a new password and the passed in algorithm.
+		/// </summary>
+		/// <param name="ring">The <c>PgpSecretKeyRing</c> to be copied.</param>
+		/// <param name="oldPassPhrase">The current password for key.</param>
+		/// <param name="newPassPhrase">The new password for the key.</param>
+		/// <param name="newEncAlgorithm">The algorithm to be used for the encryption.</param>
+		/// <param name="rand">Source of randomness.</param>
+		public static PgpSecretKeyRing CopyWithNewPassword(
+			PgpSecretKeyRing			ring,
+			char[]						oldPassPhrase,
+			char[]						newPassPhrase,
+			SymmetricKeyAlgorithmTag	newEncAlgorithm,
+			SecureRandom				rand)
+		{
+			IList newKeys = new ArrayList(ring.keys.Count);
+			foreach (PgpSecretKey secretKey in ring.GetSecretKeys())
+			{
+				newKeys.Add(PgpSecretKey.CopyWithNewPassword(secretKey, oldPassPhrase, newPassPhrase, newEncAlgorithm, rand));
+			}
+
+			return new PgpSecretKeyRing(newKeys, ring.extraPubKeys);
+		}
 
 		/// <summary>
 		/// Returns a new key ring with the secret key passed in either added or
@@ -171,14 +264,21 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 
             if (!found)
             {
-				if (secKey.IsMasterKey && masterFound)
-					throw new ArgumentException("cannot add a master key to a ring that already has one");
+				if (secKey.IsMasterKey)
+				{
+					if (masterFound)
+						throw new ArgumentException("cannot add a master key to a ring that already has one");
 
-				keys.Add(secKey);
+					keys.Insert(0, secKey);
+				}
+				else
+				{
+					keys.Add(secKey);
+				}
             }
 
-            return new PgpSecretKeyRing(keys);
-        }
+			return new PgpSecretKeyRing(keys, secRing.extraPubKeys);
+		}
 
 		/// <summary>Returns a new key ring with the secret key passed in removed from the key ring.</summary>
 		/// <param name="secRing">The secret key ring to be modified.</param>
@@ -202,7 +302,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
                 }
             }
 
-			return found ? new PgpSecretKeyRing(keys) : null;
+			return found ? new PgpSecretKeyRing(keys, secRing.extraPubKeys) : null;
         }
     }
 }

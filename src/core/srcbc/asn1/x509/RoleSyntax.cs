@@ -115,7 +115,7 @@ namespace Org.BouncyCastle.Asn1.X509
 						roleAuthority = GeneralNames.GetInstance(taggedObject, false);
 						break;
 					case 1:
-						roleName = GeneralName.GetInstance(taggedObject, false);
+						roleName = GeneralName.GetInstance(taggedObject, true);
 						break;
 					default:
 						throw new ArgumentException("Unknown tag in RoleSyntax");
@@ -203,7 +203,7 @@ namespace Org.BouncyCastle.Asn1.X509
 				v.Add(new DerTaggedObject(false, 0, roleAuthority));
 			}
 
-			v.Add(new DerTaggedObject(false, 1, roleName));
+			v.Add(new DerTaggedObject(true, 1, roleName));
 
 			return new DerSequence(v);
 		}

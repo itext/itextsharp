@@ -1,63 +1,55 @@
 using System;
-using System.Collections;
 
-using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Math;
 
 namespace Org.BouncyCastle.Asn1.Pkcs
 {
-    public class Pbkdf2Params
+	public class Pbkdf2Params
 		: Asn1Encodable
-    {
-        internal Asn1OctetString	octStr;
-        internal DerInteger			iterationCount;
-        internal DerInteger			keyLength;
+	{
+		private readonly Asn1OctetString	octStr;
+		private readonly DerInteger			iterationCount;
+		private readonly DerInteger			keyLength;
 
 		public static Pbkdf2Params GetInstance(
-            object obj)
-        {
-            if (obj is Pbkdf2Params || obj == null)
-            {
-                return (Pbkdf2Params) obj;
-            }
+			object obj)
+		{
+			if (obj == null || obj is Pbkdf2Params)
+				return (Pbkdf2Params)obj;
 
 			if (obj is Asn1Sequence)
-            {
-                return new Pbkdf2Params((Asn1Sequence) obj);
-            }
+				return new Pbkdf2Params((Asn1Sequence)obj);
 
 			throw new ArgumentException("Unknown object in factory: " + obj.GetType().FullName, "obj");
 		}
 
 		public Pbkdf2Params(
 			Asn1Sequence seq)
-        {
-            IEnumerator e = seq.GetEnumerator();
+		{
+			if (seq.Count < 2 || seq.Count > 3)
+				throw new ArgumentException("Wrong number of elements in sequence", "seq");
 
-			e.MoveNext();
-            octStr = (Asn1OctetString) e.Current;
+			octStr = (Asn1OctetString)seq[0];
+			iterationCount = (DerInteger)seq[1];
 
-			e.MoveNext();
-            iterationCount = (DerInteger) e.Current;
+			if (seq.Count > 2)
+			{
+				keyLength = (DerInteger)seq[2];
+			}
+		}
 
-			if (e.MoveNext())
-            {
-                keyLength = (DerInteger) e.Current;
-            }
-        }
-
-        public Pbkdf2Params(
-            byte[] salt,
-            int iterationCount)
-        {
-            this.octStr = new DerOctetString(salt);
-            this.iterationCount = new DerInteger(iterationCount);
-        }
+		public Pbkdf2Params(
+			byte[] salt,
+			int iterationCount)
+		{
+			this.octStr = new DerOctetString(salt);
+			this.iterationCount = new DerInteger(iterationCount);
+		}
 
 		public byte[] GetSalt()
-        {
-            return octStr.GetOctets();
-        }
+		{
+			return octStr.GetOctets();
+		}
 
 		public BigInteger IterationCount
 		{
@@ -67,19 +59,19 @@ namespace Org.BouncyCastle.Asn1.Pkcs
 		public BigInteger KeyLength
 		{
 			get { return keyLength == null ? null : keyLength.Value; }
-        }
+		}
 
 		public override Asn1Object ToAsn1Object()
-        {
-            Asn1EncodableVector v = new Asn1EncodableVector(
+		{
+			Asn1EncodableVector v = new Asn1EncodableVector(
 				octStr, iterationCount);
 
 			if (keyLength != null)
-            {
-                v.Add(keyLength);
-            }
+			{
+				v.Add(keyLength);
+			}
 
 			return new DerSequence(v);
-        }
-    }
+		}
+	}
 }

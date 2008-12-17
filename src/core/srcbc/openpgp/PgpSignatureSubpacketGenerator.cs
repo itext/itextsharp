@@ -116,6 +116,28 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			list.Add(new SignerUserId(isCritical, userId));
         }
 
+		public void SetEmbeddedSignature(
+			bool			isCritical,
+			PgpSignature	pgpSignature)
+		{
+			byte[] sig = pgpSignature.GetEncoded();
+			byte[] data;
+
+			// TODO Should be >= ?
+			if (sig.Length - 1 > 256)
+			{
+				data = new byte[sig.Length - 3];
+			}
+			else
+			{
+				data = new byte[sig.Length - 2];
+			}
+
+			Array.Copy(sig, sig.Length - data.Length, data, 0, data.Length);
+
+			list.Add(new EmbeddedSignature(isCritical, data));
+		}
+
 		public void SetPrimaryUserId(
             bool	isCritical,
             bool	isPrimaryUserId)

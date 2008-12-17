@@ -108,14 +108,15 @@ namespace Org.BouncyCastle.Cms
 
         private class SignerInf
         {
-            CmsSignedGenerator			outer;
-            AsymmetricKeyParameter		key;
-            X509Certificate				cert;
-            string						digestOID;
-            string						encOID;
-			CmsAttributeTableGenerator	sAttr;
-			CmsAttributeTableGenerator	unsAttr;
-			Asn1.Cms.AttributeTable		baseSignedTable;
+            private CmsSignedGenerator			outer;
+            private AsymmetricKeyParameter		key;
+            private X509Certificate				cert;
+            private string						digestOID;
+            private string						encOID;
+			private CmsAttributeTableGenerator	sAttr;
+			private CmsAttributeTableGenerator	unsAttr;
+			private Asn1.Cms.AttributeTable		baseSignedTable;
+			private byte[]						keyIdentifier;
 
 			internal SignerInf(
                 CmsSignedGenerator		outer,
@@ -123,18 +124,44 @@ namespace Org.BouncyCastle.Cms
                 X509Certificate			cert,
                 string					digestOID,
                 string					encOID)
+				: this(outer, key, cert, digestOID, encOID, null, null, null)
             {
+	        }
+
+	        internal SignerInf(
+                CmsSignedGenerator		outer,
+	            AsymmetricKeyParameter	key,
+	            byte[]					keyIdentifier,
+	            string					digestOID,
+	            string					encOID)
+				: this(outer, key, keyIdentifier, digestOID, encOID, null, null, null)
+	        {
+	        }
+
+	        internal SignerInf(
+                CmsSignedGenerator			outer,
+	            AsymmetricKeyParameter		key,
+	            X509Certificate				cert,
+	            string						digestOID,
+	            string						encOID,
+	            CmsAttributeTableGenerator	sAttr,
+	            CmsAttributeTableGenerator	unsAttr,
+	            Asn1.Cms.AttributeTable		baseSignedTable)
+	        {
                 this.outer = outer;
                 this.key = key;
                 this.cert = cert;
                 this.digestOID = digestOID;
                 this.encOID = encOID;
+	            this.sAttr = sAttr;
+	            this.unsAttr = unsAttr;
+	            this.baseSignedTable = baseSignedTable;
             }
 
             internal SignerInf(
                 CmsSignedGenerator			outer,
                 AsymmetricKeyParameter		key,
-                X509Certificate				cert,
+            	byte[]						keyIdentifier,
                 string						digestOID,
                 string						encOID,
 				CmsAttributeTableGenerator	sAttr,
@@ -143,7 +170,7 @@ namespace Org.BouncyCastle.Cms
             {
                 this.outer = outer;
                 this.key = key;
-                this.cert = cert;
+                this.keyIdentifier = keyIdentifier;
                 this.digestOID = digestOID;
                 this.encOID = encOID;
                 this.sAttr = sAttr;
@@ -270,12 +297,21 @@ namespace Org.BouncyCastle.Cms
 				Asn1Set unsignedAttr = outer.GetAttributeSet(unsigned);
 
                 X509Certificate cert = this.GetCertificate();
-                TbsCertificateStructure tbs = TbsCertificateStructure.GetInstance(
-					Asn1Object.FromByteArray(cert.GetTbsCertificate()));
-                Asn1.Cms.IssuerAndSerialNumber encSid = new Asn1.Cms.IssuerAndSerialNumber(
-                    tbs.Issuer, tbs.SerialNumber.Value);
+	            SignerIdentifier identifier;
+	            if (cert != null)
+	            {
+					TbsCertificateStructure tbs = TbsCertificateStructure.GetInstance(
+						Asn1Object.FromByteArray(cert.GetTbsCertificate()));
+					Asn1.Cms.IssuerAndSerialNumber encSid = new Asn1.Cms.IssuerAndSerialNumber(
+						tbs.Issuer, tbs.SerialNumber.Value);
+	            	identifier = new SignerIdentifier(encSid);
+	            }
+	            else
+	            {
+	                identifier = new SignerIdentifier(new DerOctetString(keyIdentifier));
+	            }
 
-                return new Asn1.Cms.SignerInfo(new SignerIdentifier(encSid), digAlgId,
+                return new Asn1.Cms.SignerInfo(identifier, digAlgId,
                     signedAttr, encAlgId, encDigest, unsignedAttr);
             }
         }
@@ -307,6 +343,21 @@ namespace Org.BouncyCastle.Cms
 				new DefaultSignedAttributeTableGenerator(), null, null));
 		}
 
+	    /**
+	     * add a signer - no attributes other than the default ones will be
+	     * provided here.
+	     */
+	    public void AddSigner(
+            AsymmetricKeyParameter	privateKey,
+	        byte[]					subjectKeyID,
+            string					digestOID)
+	    {
+	        string encOID = GetEncOid(privateKey, digestOID);
+	
+	        signerInfs.Add(new SignerInf(this, privateKey, subjectKeyID, digestOID, encOID,
+				new DefaultSignedAttributeTableGenerator(), null, null));
+	    }
+
         /**
         * add a signer with extra signed/unsigned attributes.
         */
@@ -325,6 +376,24 @@ namespace Org.BouncyCastle.Cms
 				signedAttr));
 		}
 
+	    /**
+	     * add a signer with extra signed/unsigned attributes.
+	     */
+	    public void AddSigner(
+            AsymmetricKeyParameter	privateKey,
+	        byte[]					subjectKeyID,
+	        string					digestOID,
+	        Asn1.Cms.AttributeTable	signedAttr,
+	        Asn1.Cms.AttributeTable	unsignedAttr)
+	    {
+	        string encOID = GetEncOid(privateKey, digestOID);
+
+	        signerInfs.Add(new SignerInf(this, privateKey, subjectKeyID, digestOID, encOID,
+				new DefaultSignedAttributeTableGenerator(signedAttr),
+				new SimpleAttributeTableGenerator(unsignedAttr),
+				signedAttr));
+	    }
+
 		/**
 		 * add a signer with extra signed/unsigned attributes based on generators.
 		 */
@@ -340,6 +409,22 @@ namespace Org.BouncyCastle.Cms
 			signerInfs.Add(new SignerInf(this, privateKey, cert, digestOID, encOID,
 				signedAttrGen, unsignedAttrGen, null));
 		}
+
+	    /**
+	     * add a signer with extra signed/unsigned attributes based on generators.
+	     */
+	    public void AddSigner(
+			AsymmetricKeyParameter		privateKey,
+	        byte[]						subjectKeyID,
+	        string						digestOID,
+	        CmsAttributeTableGenerator	signedAttrGen,
+	        CmsAttributeTableGenerator	unsignedAttrGen)
+	    {
+	        string encOID = GetEncOid(privateKey, digestOID);
+
+	        signerInfs.Add(new SignerInf(this, privateKey, subjectKeyID, digestOID, encOID,
+				signedAttrGen, unsignedAttrGen, null));
+	    }
 
 		/**
         * generate a signed object that for a CMS Signed Data object

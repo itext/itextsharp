@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.10.3077"
+        ProductVersion = "7.10.6030"
         SchemaVersion = "2.0"
         ProjectGuid = "{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}"
     >
@@ -2518,6 +2518,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\asn1\IAsn1Choice.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\asn1\IAsn1Convertible.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2894,6 +2899,11 @@
                 />
                 <File
                     RelPath = "srcbc\asn1\esf\SignaturePolicyIdentifier.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\asn1\esf\SignerAttribute.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -4123,6 +4133,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\bcpg\sig\EmbeddedSignature.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\bcpg\sig\Exportable.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -4724,6 +4739,11 @@
                 />
                 <File
                     RelPath = "srcbc\crypto\engines\CamelliaEngine.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\crypto\engines\CamelliaLightEngine.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

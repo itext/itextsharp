@@ -38,8 +38,7 @@ namespace Org.BouncyCastle.Asn1.IsisMtt.Ocsp
 	* </pre>
 	*/
 	public class RequestedCertificate
-		: Asn1Encodable
-		//, ASN1Choice
+		: Asn1Encodable, IAsn1Choice
 	{
 		public enum Choice
 		{

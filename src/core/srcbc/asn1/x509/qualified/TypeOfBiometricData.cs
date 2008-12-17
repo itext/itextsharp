@@ -17,7 +17,7 @@ namespace Org.BouncyCastle.Asn1.X509.Qualified
     * </pre>
     */
     public class TypeOfBiometricData
-        : Asn1Encodable
+        : Asn1Encodable, IAsn1Choice
     {
         public const int Picture				= 0;
         public const int HandwrittenSignature	= 1;

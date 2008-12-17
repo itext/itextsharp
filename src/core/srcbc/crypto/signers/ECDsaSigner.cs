@@ -142,9 +142,15 @@ namespace Org.BouncyCastle.Crypto.Signers
 			BigInteger	n,
 			byte[]		message)
 		{
-			int length = System.Math.Min(message.Length, n.BitLength / 8);
+			int messageBitLength = message.Length * 8;
+			BigInteger trunc = new BigInteger(1, message);
 
-			return new BigInteger(1, message, 0, length);
+			if (n.BitLength < messageBitLength)
+			{
+				trunc = trunc.ShiftRight(messageBitLength - n.BitLength);
+			}
+
+			return trunc;
 		}
 	}
 }

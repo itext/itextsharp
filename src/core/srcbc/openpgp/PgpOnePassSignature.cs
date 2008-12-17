@@ -25,16 +25,6 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
         {
             this.sigPack = sigPack;
             this.signatureType = sigPack.SignatureType;
-
-            try
-            {
-                this.sig = SignerUtilities.GetSigner(
-					PgpUtilities.GetSignatureName(sigPack.KeyAlgorithm, sigPack.HashAlgorithm));
-            }
-            catch (Exception e)
-            {
-                throw new PgpException("can't set up signature object.",  e);
-            }
         }
 
 		/// <summary>Initialise the signature object for verification.</summary>
@@ -42,6 +32,16 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             PgpPublicKey pubKey)
         {
 			lastb = 0;
+
+			try
+			{
+				sig = SignerUtilities.GetSigner(
+					PgpUtilities.GetSignatureName(sigPack.KeyAlgorithm, sigPack.HashAlgorithm));
+			}
+			catch (Exception e)
+			{
+				throw new PgpException("can't set up signature object.",  e);
+			}
 
 			try
             {

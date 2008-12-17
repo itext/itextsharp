@@ -120,8 +120,8 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 
 				subSigs.Add(sGen.GenerateCertification(masterKey.PublicKey, keyPair.PublicKey));
 
-				keys.Add(new PgpSecretKey(keyPair, null, subSigs, encAlgorithm, passPhrase, useSha1, rand));
-            }
+				keys.Add(new PgpSecretKey(keyPair.PrivateKey, new PgpPublicKey(keyPair.PublicKey, null, subSigs), encAlgorithm, passPhrase, useSha1, rand));
+			}
             catch (PgpException e)
             {
                 throw e;

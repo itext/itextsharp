@@ -49,6 +49,7 @@ namespace Org.BouncyCastle.Security
 			switch (mechanism)
 			{
 				case "DH":
+				case "DIFFIEHELLMAN":
 					return new DHBasicAgreement();
 				case "ECDH":
 					return new ECDHBasicAgreement();

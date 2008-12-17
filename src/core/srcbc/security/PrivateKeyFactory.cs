@@ -15,6 +15,7 @@ using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Pkcs;
 
 namespace Org.BouncyCastle.Security
 {
@@ -177,5 +178,33 @@ namespace Org.BouncyCastle.Security
 				throw new SecurityUtilityException("algorithm identifier in key not recognised");
 			}
         }
-    }
+
+		public static AsymmetricKeyParameter DecryptKey(
+			char[]					passPhrase,
+			EncryptedPrivateKeyInfo	encInfo)
+		{
+			return CreateKey(PrivateKeyInfoFactory.CreatePrivateKeyInfo(passPhrase, encInfo));
+		}
+
+		public static AsymmetricKeyParameter DecryptKey(
+			char[]	passPhrase,
+			byte[]	encryptedPrivateKeyInfoData)
+		{
+			return DecryptKey(passPhrase, Asn1Object.FromByteArray(encryptedPrivateKeyInfoData));
+		}
+
+		public static AsymmetricKeyParameter DecryptKey(
+			char[]	passPhrase,
+			Stream	encryptedPrivateKeyInfoStream)
+		{
+			return DecryptKey(passPhrase, Asn1Object.FromStream(encryptedPrivateKeyInfoStream));
+		}
+
+		private static AsymmetricKeyParameter DecryptKey(
+			char[]		passPhrase,
+			Asn1Object	asn1Object)
+		{
+			return DecryptKey(passPhrase, EncryptedPrivateKeyInfo.GetInstance(asn1Object));
+		}
+	}
 }

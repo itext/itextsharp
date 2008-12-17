@@ -63,7 +63,8 @@ namespace Org.BouncyCastle.Asn1
             int             tagNo,
             Asn1Encodable   obj)
         {
-            this.explicitly = explicitly;
+			// IAsn1Choice marker interface 'insists' on explicit tagging
+            this.explicitly = explicitly || (obj is IAsn1Choice);
             this.tagNo = tagNo;
             this.obj = obj;
         }

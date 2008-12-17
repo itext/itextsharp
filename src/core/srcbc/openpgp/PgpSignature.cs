@@ -22,7 +22,8 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
         public const int PositiveCertification = 0x13;
 
         public const int SubkeyBinding = 0x18;
-        public const int DirectKey = 0x1f;
+		public const int PrimaryKeyBinding = 0x19;
+		public const int DirectKey = 0x1f;
         public const int KeyRevocation = 0x20;
         public const int SubkeyRevocation = 0x28;
         public const int CertificationRevocation = 0x30;

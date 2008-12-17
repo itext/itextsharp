@@ -5,7 +5,7 @@ using Org.BouncyCastle.Asn1;
 namespace Org.BouncyCastle.Asn1.Ocsp
 {
     public class CertStatus
-        : Asn1Encodable
+        : Asn1Encodable, IAsn1Choice
     {
         private readonly int			tagNo;
         private readonly Asn1Encodable	value;

@@ -134,7 +134,8 @@ namespace Org.BouncyCastle.Security
 			//
 			// key pair generators.
 			//
-			AddKpgAlgorithm("DH");
+			AddKpgAlgorithm("DH",
+				"DIFFIEHELLMAN");
 			AddKpgAlgorithm("DSA");
 			AddKpgAlgorithm("EC");
 			AddKpgAlgorithm("ECDH",

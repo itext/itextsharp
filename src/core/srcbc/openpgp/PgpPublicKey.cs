@@ -26,12 +26,12 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
         private int					keyStrength;
 
 		internal PublicKeyPacket	publicPk;
-        private TrustPacket			trustPk;
-        private ArrayList			keySigs = new ArrayList();
-        private ArrayList			ids = new ArrayList();
-        private ArrayList			idTrusts = new ArrayList();
-        private ArrayList			idSigs = new ArrayList();
-        private ArrayList			subSigs;
+        internal TrustPacket		trustPk;
+        internal ArrayList			keySigs = new ArrayList();
+        internal ArrayList			ids = new ArrayList();
+        internal ArrayList			idTrusts = new ArrayList();
+        internal ArrayList			idSigs = new ArrayList();
+        internal ArrayList			subSigs;
 
 		private void Init()
         {
@@ -648,33 +648,8 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             string			id,
             PgpSignature	certification)
         {
-            PgpPublicKey returnKey = new PgpPublicKey(key);
-            ArrayList sigList = null;
-
-			for (int i = 0; i != returnKey.ids.Count; i++)
-            {
-                if (id.Equals(returnKey.ids[i]))
-                {
-                    sigList = (ArrayList) returnKey.idSigs[i];
-                }
-            }
-
-			if (sigList != null)
-            {
-                sigList.Add(certification);
-            }
-            else
-            {
-                sigList = new ArrayList();
-
-				sigList.Add(certification);
-                returnKey.ids.Add(id);
-                returnKey.idTrusts.Add(null);
-                returnKey.idSigs.Add(sigList);
-            }
-
-			return returnKey;
-        }
+			return AddCert(key, id, certification);
+		}
 
 		/// <summary>Add a certification for the given UserAttributeSubpackets to the given public key.</summary>
 		/// <param name="key">The key the certification is to be added to.</param>
@@ -686,12 +661,20 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			PgpUserAttributeSubpacketVector	userAttributes,
 			PgpSignature					certification)
 		{
+			return AddCert(key, userAttributes, certification);
+		}
+
+		private static PgpPublicKey AddCert(
+			PgpPublicKey	key,
+			object			id,
+			PgpSignature	certification)
+		{
 			PgpPublicKey returnKey = new PgpPublicKey(key);
 			IList sigList = null;
 
 			for (int i = 0; i != returnKey.ids.Count; i++)
 			{
-				if (userAttributes.Equals(returnKey.ids[i]))
+				if (id.Equals(returnKey.ids[i]))
 				{
 					sigList = (IList) returnKey.idSigs[i];
 				}
@@ -705,7 +688,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			{
 				sigList = new ArrayList();
 				sigList.Add(certification);
-				returnKey.ids.Add(userAttributes);
+				returnKey.ids.Add(id);
 				returnKey.idTrusts.Add(null);
 				returnKey.idSigs.Add(sigList);
 			}
@@ -725,26 +708,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			PgpPublicKey					key,
 			PgpUserAttributeSubpacketVector	userAttributes)
 		{
-			PgpPublicKey returnKey = new PgpPublicKey(key);
-			bool found = false;
-        
-			for (int i = 0; i < returnKey.ids.Count; i++)
-			{
-				if (userAttributes.Equals(returnKey.ids[i]))
-				{
-					found = true;
-					returnKey.ids.RemoveAt(i);
-					returnKey.idTrusts.RemoveAt(i);
-					returnKey.idSigs.RemoveAt(i);
-				}
-			}
-
-			if (!found)
-			{
-				return null;
-			}
-
-			return returnKey;
+			return RemoveCert(key, userAttributes);
 		}
 
 		/// <summary>Remove any certifications associated with a given ID on a key.</summary>
@@ -755,7 +719,14 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             PgpPublicKey	key,
             string			id)
         {
-            PgpPublicKey returnKey = new PgpPublicKey(key);
+			return RemoveCert(key, id);
+		}
+
+		private static PgpPublicKey RemoveCert(
+			PgpPublicKey	key,
+			object			id)
+		{
+			PgpPublicKey returnKey = new PgpPublicKey(key);
             bool found = false;
 
 			for (int i = 0; i < returnKey.ids.Count; i++)
@@ -772,7 +743,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			return found ? returnKey : null;
         }
 
-		/// <summary>Remove any certifications associated with a given ID on a key.</summary>
+		/// <summary>Remove a certification associated with a given ID on a key.</summary>
 		/// <param name="key">The key the certifications are to be removed from.</param>
 		/// <param name="id">The ID that the certfication is to be removed from.</param>
 		/// <param name="certification">The certfication to be removed.</param>
@@ -782,7 +753,28 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             string			id,
             PgpSignature	certification)
         {
-            PgpPublicKey returnKey = new PgpPublicKey(key);
+			return RemoveCert(key, id, certification);
+		}
+
+		/// <summary>Remove a certification associated with a given user attributes on a key.</summary>
+		/// <param name="key">The key the certifications are to be removed from.</param>
+		/// <param name="userAttributes">The user attributes that the certfication is to be removed from.</param>
+		/// <param name="certification">The certification to be removed.</param>
+		/// <returns>The re-certified key, or null if the certification was not found.</returns>
+		public static PgpPublicKey RemoveCertification(
+			PgpPublicKey					key,
+			PgpUserAttributeSubpacketVector	userAttributes,
+			PgpSignature					certification)
+		{
+			return RemoveCert(key, userAttributes, certification);
+		}
+
+		private static PgpPublicKey RemoveCert(
+			PgpPublicKey	key,
+			object			id,
+			PgpSignature	certification)
+		{
+			PgpPublicKey returnKey = new PgpPublicKey(key);
             bool found = false;
 
 			for (int i = 0; i < returnKey.ids.Count; i++)
@@ -838,5 +830,61 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 
 			return returnKey;
         }
-    }
+
+		/// <summary>Remove a certification from the key.</summary>
+		/// <param name="key">The key the certifications are to be removed from.</param>
+		/// <param name="certification">The certfication to be removed.</param>
+		/// <returns>The modified key, null if the certification was not found.</returns>
+		public static PgpPublicKey RemoveCertification(
+			PgpPublicKey	key,
+			PgpSignature	certification)
+		{
+			PgpPublicKey returnKey = new PgpPublicKey(key);
+			ArrayList sigs = returnKey.subSigs != null
+				?	returnKey.subSigs
+				:	returnKey.keySigs;
+
+//			bool found = sigs.Remove(certification);
+			int pos = sigs.IndexOf(certification);
+			bool found = pos >= 0;
+
+			if (found)
+			{
+				sigs.RemoveAt(pos);
+			}
+			else
+			{
+				foreach (String id in key.GetUserIds())
+				{
+					foreach (object sig in key.GetSignaturesForId(id))
+					{
+						// TODO Is this the right type of equality test?
+						if (certification == sig)
+						{
+							found = true;
+							returnKey = PgpPublicKey.RemoveCertification(returnKey, id, certification);
+						}
+					}
+				}
+
+				if (!found)
+				{
+					foreach (PgpUserAttributeSubpacketVector id in key.GetUserAttributes())
+					{
+						foreach (object sig in key.GetSignaturesForUserAttribute(id))
+						{
+							// TODO Is this the right type of equality test?
+							if (certification == sig)
+							{
+								found = true;
+								returnKey = PgpPublicKey.RemoveCertification(returnKey, id, certification);
+							}
+						}
+					}
+				}
+			}
+
+			return returnKey;
+		}
+	}
 }

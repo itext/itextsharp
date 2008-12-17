@@ -11,6 +11,7 @@ using Org.BouncyCastle.Crypto.IO;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.Utilities.IO;
 using Org.BouncyCastle.X509;
 
@@ -42,44 +43,66 @@ namespace Org.BouncyCastle.Cms
 		private static readonly CmsSignedHelper Helper = CmsSignedHelper.Instance;
 
 		private readonly ArrayList _signerInfs = new ArrayList();
-        private readonly ArrayList _messageDigests = new ArrayList();
+		private readonly ISet       _messageDigestOids = new HashSet();
+		private readonly Hashtable _messageDigests = new Hashtable();
+		private readonly Hashtable _messageHashes = new Hashtable();
+		private bool _messageDigestsLocked;
         private int _bufferSize;
 
 		private class SignerInf
         {
 			private readonly CmsSignedDataStreamGenerator outer;
 
-			AsymmetricKeyParameter		_key;
-            X509Certificate				_cert;
-            string						_digestOID;
-            string						_encOID;
-			CmsAttributeTableGenerator	_sAttr;
-			CmsAttributeTableGenerator	_unsAttr;
-            IDigest						_digest;
-            ISigner						_signature;
+			private AsymmetricKeyParameter		_key;
+            private X509Certificate				_cert;
+            private string						_digestOID;
+            private string						_encOID;
+			private CmsAttributeTableGenerator	_sAttr;
+			private CmsAttributeTableGenerator	_unsAttr;
+            private ISigner						_signature;
+            private byte[]						_subjectKeyID;
 
             internal SignerInf(
 				CmsSignedDataStreamGenerator	outer,
 				AsymmetricKeyParameter			key,
-                X509Certificate					cert,
-                string							digestOID,
-                string							encOID,
+				X509Certificate					cert,
+				string							digestOID,
+				string							encOID,
 				CmsAttributeTableGenerator		sAttr,
 				CmsAttributeTableGenerator		unsAttr,
-                IDigest							digest,
-                ISigner							signature)
-            {
+				ISigner							signature)
+			{
 				this.outer = outer;
 
 				_key = key;
-                _cert = cert;
-                _digestOID = digestOID;
-                _encOID = encOID;
-                _sAttr = sAttr;
-                _unsAttr = unsAttr;
-                _digest = digest;
-                _signature = signature;
-            }
+				_cert = cert;
+				_digestOID = digestOID;
+				_encOID = encOID;
+				_sAttr = sAttr;
+				_unsAttr = unsAttr;
+				_signature = signature;
+			}
+
+			internal SignerInf(
+				CmsSignedDataStreamGenerator	outer,
+				AsymmetricKeyParameter			key,
+				byte[]							subjectKeyID,
+				string							digestOID,
+				string							encOID,
+				CmsAttributeTableGenerator		sAttr,
+				CmsAttributeTableGenerator		unsAttr,
+				ISigner							signature)
+	        {
+				this.outer = outer;
+
+	            _key = key;
+	            _subjectKeyID = subjectKeyID;
+	            _digestOID = digestOID;
+	            _encOID = encOID;
+	            _sAttr = sAttr;
+	            _unsAttr = unsAttr;
+	            _signature = signature;
+	        }
 
             internal AsymmetricKeyParameter Key
             {
@@ -91,46 +114,21 @@ namespace Org.BouncyCastle.Cms
 				get { return _cert; }
             }
 
-			internal AlgorithmIdentifier DigestAlgorithmID
-			{
-				get { return new AlgorithmIdentifier(new DerObjectIdentifier(_digestOID), null); }
-			}
-
-			internal string DigestAlgOid
-            {
-				get { return _digestOID; }
-            }
-
-			internal Asn1Object DigestAlgParams
-            {
-				get { return null; }
-            }
-
 			internal string EncryptionAlgOid
             {
 				get { return _encOID; }
             }
 
-//			internal Asn1.Cms.AttributeTable SignedAttributes
-//            {
-//				get { return _sAttr; }
-//            }
-//
-//			internal Asn1.Cms.AttributeTable UnsignedAttributes
-//            {
-//				get { return _unsAttr; }
-//            }
-
 			internal SignerInfo ToSignerInfo(
                 DerObjectIdentifier contentType)
             {
                 AlgorithmIdentifier digAlgId = new AlgorithmIdentifier(
-                    new DerObjectIdentifier(this.DigestAlgOid), DerNull.Instance);
+                    new DerObjectIdentifier(this._digestOID), DerNull.Instance);
 				AlgorithmIdentifier encAlgId = CmsSignedGenerator.GetEncAlgorithmIdentifier(this.EncryptionAlgOid);
 
-				byte[] hash = DigestUtilities.DoFinal(_digest);
+				byte[] hash = (byte[])outer._messageHashes[Helper.GetDigestAlgName(this._digestOID)];
 
-				outer._digests.Add(_digestOID, hash.Clone());
+				outer._digests[_digestOID] = hash.Clone();
 
 				IDictionary parameters = outer.GetBaseParameters(contentType, digAlgId, hash);
 
@@ -169,12 +167,22 @@ namespace Org.BouncyCastle.Cms
 				Asn1Set unsignedAttr = outer.GetAttributeSet(unsigned);
 
                 X509Certificate cert = this.Certificate;
-                TbsCertificateStructure tbs = TbsCertificateStructure.GetInstance(
-					Asn1Object.FromByteArray(cert.GetTbsCertificate()));
-                IssuerAndSerialNumber encSid = new IssuerAndSerialNumber(
-					tbs.Issuer, tbs.SerialNumber.Value);
+				SignerIdentifier signerIdentifier;
+				if (cert != null)
+				{
+	                TbsCertificateStructure tbs = TbsCertificateStructure.GetInstance(
+						Asn1Object.FromByteArray(cert.GetTbsCertificate()));
+	                IssuerAndSerialNumber encSid = new IssuerAndSerialNumber(
+						tbs.Issuer, tbs.SerialNumber.Value);
 
-				return new SignerInfo(new SignerIdentifier(encSid), digAlgId,
+					signerIdentifier = new SignerIdentifier(encSid);
+				}
+				else
+				{
+					signerIdentifier = new SignerIdentifier(new DerOctetString(_subjectKeyID));
+				}
+
+				return new SignerInfo(signerIdentifier, digAlgId,
 					signedAttr, encAlgId, encDigest, unsignedAttr);
             }
 
@@ -203,7 +211,22 @@ namespace Org.BouncyCastle.Cms
             _bufferSize = bufferSize;
         }
 
-        /**
+		public void AddDigests(
+       		params string[] digestOids)
+		{
+       		AddDigests((IEnumerable) digestOids);
+		}
+
+		public void AddDigests(
+			IEnumerable digestOids)
+		{
+			foreach (string digestOid in digestOids)
+			{
+				ConfigureDigest(digestOid);
+			}
+		}
+
+		/**
         * add a signer - no attributes other than the default ones will be
         * provided here.
         * @throws NoSuchAlgorithmException
@@ -212,9 +235,9 @@ namespace Org.BouncyCastle.Cms
         public void AddSigner(
             AsymmetricKeyParameter	privateKey,
             X509Certificate			cert,
-            string					digestOID)
+            string					digestOid)
         {
-			AddSigner(privateKey, cert, digestOID,
+			AddSigner(privateKey, cert, digestOid,
 				new DefaultSignedAttributeTableGenerator(), null);
 		}
 
@@ -226,11 +249,11 @@ namespace Org.BouncyCastle.Cms
         public void AddSigner(
             AsymmetricKeyParameter	privateKey,
             X509Certificate			cert,
-            string					digestOID,
+            string					digestOid,
             Asn1.Cms.AttributeTable	signedAttr,
             Asn1.Cms.AttributeTable	unsignedAttr)
         {
-			AddSigner(privateKey, cert, digestOID,
+			AddSigner(privateKey, cert, digestOid,
 				new DefaultSignedAttributeTableGenerator(signedAttr),
 				new SimpleAttributeTableGenerator(unsignedAttr));
 		}
@@ -238,22 +261,79 @@ namespace Org.BouncyCastle.Cms
 		public void AddSigner(
 			AsymmetricKeyParameter		privateKey,
 			X509Certificate				cert,
-			string						digestOID,
+			string						digestOid,
 			CmsAttributeTableGenerator  signedAttrGenerator,
 			CmsAttributeTableGenerator  unsignedAttrGenerator)
 		{
-            string encOID = GetEncOid(privateKey, digestOID);
-            string digestName = Helper.GetDigestAlgName(digestOID);
+			ConfigureDigest(digestOid);
+
+            string digestName = Helper.GetDigestAlgName(digestOid);
+            string encOID = GetEncOid(privateKey, digestOid);
             string signatureName = digestName + "with" + Helper.GetEncryptionAlgName(encOID);
             ISigner sig = Helper.GetSignatureInstance(signatureName);
-            IDigest dig = Helper.GetDigestInstance(digestName);
-
             sig.Init(true, new ParametersWithRandom(privateKey, rand));
 
-			_signerInfs.Add(new SignerInf(this, privateKey, cert, digestOID, encOID,
-				signedAttrGenerator, unsignedAttrGenerator, dig, sig));
-			_messageDigests.Add(dig);
+			_signerInfs.Add(new SignerInf(this, privateKey, cert, digestOid, encOID,
+				signedAttrGenerator, unsignedAttrGenerator, sig));
         }
+
+		/**
+		* add a signer - no attributes other than the default ones will be
+		* provided here.
+		* @throws NoSuchAlgorithmException
+		* @throws InvalidKeyException
+		*/
+		public void AddSigner(
+			AsymmetricKeyParameter	privateKey,
+			byte[]					subjectKeyID,
+			string					digestOid)
+		{
+			AddSigner(privateKey, subjectKeyID, digestOid, new DefaultSignedAttributeTableGenerator(),
+				(CmsAttributeTableGenerator)null);
+		}
+
+		/**
+		* add a signer with extra signed/unsigned attributes.
+		* @throws NoSuchAlgorithmException
+		* @throws InvalidKeyException
+		*/
+		public void AddSigner(
+			AsymmetricKeyParameter	privateKey,
+			byte[]					subjectKeyID,
+			string					digestOid,
+			Asn1.Cms.AttributeTable	signedAttr,
+			Asn1.Cms.AttributeTable	unsignedAttr)
+	    {
+	        AddSigner(privateKey, subjectKeyID, digestOid,
+				new DefaultSignedAttributeTableGenerator(signedAttr),
+				new SimpleAttributeTableGenerator(unsignedAttr));
+		}
+
+		public void AddSigner(
+			AsymmetricKeyParameter		privateKey,
+			byte[]						subjectKeyID,
+			string						digestOid,
+			CmsAttributeTableGenerator	signedAttrGenerator,
+			CmsAttributeTableGenerator	unsignedAttrGenerator)
+		{
+			ConfigureDigest(digestOid);
+
+            string digestName = Helper.GetDigestAlgName(digestOid);
+            string encOID = GetEncOid(privateKey, digestOid);
+            string signatureName = digestName + "with" + Helper.GetEncryptionAlgName(encOID);
+            ISigner sig = Helper.GetSignatureInstance(signatureName);
+            sig.Init(true, new ParametersWithRandom(privateKey, rand));
+
+			_signerInfs.Add(new SignerInf(this, privateKey, subjectKeyID, digestOid, encOID,
+				signedAttrGenerator, unsignedAttrGenerator, sig));
+		}
+
+		internal override void AddSignerCallback(
+			SignerInformation si)
+		{
+			// For precalculated signers, just need to register the algorithm, not configure a digest
+			RegisterDigestOid(si.DigestAlgOid);
+		}
 
 		/**
         * generate a signed object that for a CMS Signed Data object
@@ -332,6 +412,8 @@ namespace Org.BouncyCastle.Cms
 			if (dataOutputStream != null && !dataOutputStream.CanWrite)
 				throw new ArgumentException("Expected writeable stream", "dataOutputStream");
 
+			_messageDigestsLocked = true;
+			
 			//
             // ContentInfo
             //
@@ -349,23 +431,13 @@ namespace Org.BouncyCastle.Cms
 
 			Asn1EncodableVector digestAlgs = new Asn1EncodableVector();
 
-			//
-            // add the precalculated SignerInfo digest algorithms.
-            //
-			foreach (SignerInformation signer in _signers)
-			{
-				digestAlgs.Add(Helper.FixAlgID(signer.DigestAlgorithmID));
-			}
+			foreach (string digestOid in _messageDigestOids)
+            {
+				digestAlgs.Add(
+            		new AlgorithmIdentifier(new DerObjectIdentifier(digestOid), DerNull.Instance));
+            }
 
-			//
-            // add the new digests
-            //
-			foreach (SignerInf signer in _signerInfs)
-			{
-				digestAlgs.Add(Helper.FixAlgID(signer.DigestAlgorithmID));
-			}
-
-			{
+            {
 				byte[] tmp = new DerSet(digestAlgs).GetEncoded();
 				sigGen.GetRawOutputStream().Write(tmp, 0, tmp.Length);
 			}
@@ -399,13 +471,44 @@ namespace Org.BouncyCastle.Cms
 				}
 			}
 
-			foreach (IDigest d in _messageDigests)
+			foreach (IDigest d in _messageDigests.Values)
 			{
                 digStream = new DigestStream(digStream, null, d);
             }
 
 			return new CmsSignedDataOutputStream(this, digStream, signedContentType, sGen, sigGen, eiGen);
         }
+
+		private void RegisterDigestOid(
+			string digestOid)
+		{
+       		if (_messageDigestsLocked)
+       		{
+       			if (!_messageDigestOids.Contains(digestOid))
+					throw new InvalidOperationException("Cannot register new digest OIDs after the data stream is opened");
+       		}
+       		else
+       		{
+				_messageDigestOids.Add(digestOid);
+       		}
+		}
+
+		private void ConfigureDigest(
+			string digestOid)
+		{
+       		RegisterDigestOid(digestOid);
+
+       		string digestName = Helper.GetDigestAlgName(digestOid);
+			IDigest dig = (IDigest)_messageDigests[digestName];
+			if (dig == null)
+			{
+				if (_messageDigestsLocked)
+					throw new InvalidOperationException("Cannot configure new digests after the data stream is opened");
+
+            	dig = Helper.GetDigestInstance(digestName);
+            	_messageDigests[digestName] = dig;
+            }
+		}
 
 		// RFC3852, section 5.1:
 		// IF ((certificates is present) AND
@@ -630,6 +733,17 @@ namespace Org.BouncyCastle.Cms
 				}
 
 				//
+				// Calculate the digest hashes
+				//
+				foreach (DictionaryEntry de in outer._messageDigests)
+				{
+					outer._messageHashes.Add(de.Key, DigestUtilities.DoFinal((IDigest)de.Value));
+				}
+
+				// TODO If the digest OIDs for precalculated signers weren't mixed in with
+				// the others, we could fill in outer._digests here, instead of SignerInf.ToSignerInfo
+
+				//
                 // add the precalculated SignerInfo objects.
                 //
                 Asn1EncodableVector signerInfos = new Asn1EncodableVector();
@@ -638,7 +752,7 @@ namespace Org.BouncyCastle.Cms
 				{
                     signerInfos.Add(signer.ToSignerInfo());
                 }
-
+				
 				//
                 // add the SignerInfo objects
                 //

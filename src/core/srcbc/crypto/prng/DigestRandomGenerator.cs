@@ -5,25 +5,33 @@ using Org.BouncyCastle.Crypto.Digests;
 namespace Org.BouncyCastle.Crypto.Prng
 {
 	/**
-	 * Random generation based on the digest with counter. Calling addSeedMaterial will
+	 * Random generation based on the digest with counter. Calling AddSeedMaterial will
 	 * always increase the entropy of the hash.
 	 * <p>
-	 * Internal access to the digest is syncrhonized so a single one of these can be shared.
+	 * Internal access to the digest is synchronized so a single one of these can be shared.
 	 * </p>
 	 */
 	public class DigestRandomGenerator
 		: IRandomGenerator
 	{
-		private long	counter;
+		private const long CYCLE_COUNT = 10;
+
+		private long	stateCounter;
+		private long	seedCounter;
 		private IDigest	digest;
 		private byte[]	state;
+		private byte[]	seed;
 
 		public DigestRandomGenerator(
 			IDigest digest)
 		{
 			this.digest = digest;
+
+			this.seed = new byte[digest.GetDigestSize()];
+			this.seedCounter = 1;
+
 			this.state = new byte[digest.GetDigestSize()];
-			this.counter = 1;
+			this.stateCounter = 1;
 		}
 
 		public void AddSeedMaterial(
@@ -32,6 +40,8 @@ namespace Org.BouncyCastle.Crypto.Prng
 			lock (this)
 			{
 				DigestUpdate(inSeed);
+				DigestUpdate(seed);
+				DigestDoFinal(seed);
 			}
 		}
 
@@ -40,12 +50,9 @@ namespace Org.BouncyCastle.Crypto.Prng
 		{
 			lock (this)
 			{
-				for (int i = 0; i != 8; i++)
-				{
-					DigestUpdate((byte)rSeed);
-//					rSeed >>>= 8;
-					rSeed >>= 8;
-				}
+				DigestAddCounter(rSeed);
+				DigestUpdate(seed);
+				DigestDoFinal(seed);
 			}
 		}
 
@@ -64,32 +71,47 @@ namespace Org.BouncyCastle.Crypto.Prng
 			{
 				int stateOff = 0;
 
-				DigestDoFinal(state);
+				GenerateState();
 
 				int end = start + len;
 				for (int i = start; i < end; ++i)
 				{
 					if (stateOff == state.Length)
 					{
-						DigestUpdate(counter++);
-						DigestUpdate(state);
-						DigestDoFinal(state);
+						GenerateState();
 						stateOff = 0;
 					}
 					bytes[i] = state[stateOff++];
 				}
-
-				DigestUpdate(counter++);
-				DigestUpdate(state);
 			}
 		}
 
-		private void DigestUpdate(long seed)
+		private void CycleSeed()
 		{
+			DigestUpdate(seed);
+			DigestAddCounter(seedCounter++);
+			DigestDoFinal(seed);
+		}
+
+		private void GenerateState()
+		{
+			DigestAddCounter(stateCounter++);
+			DigestUpdate(state);
+			DigestUpdate(seed);
+			DigestDoFinal(state);
+
+			if ((stateCounter % CYCLE_COUNT) == 0)
+			{
+				CycleSeed();
+			}
+		}
+
+		private void DigestAddCounter(long seedVal)
+		{
+			ulong seed = (ulong)seedVal;
 			for (int i = 0; i != 8; i++)
 			{
 				digest.Update((byte)seed);
-//				seed >>>= 8;
 				seed >>= 8;
 			}
 		}

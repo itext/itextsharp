@@ -15,6 +15,8 @@ namespace Org.BouncyCastle.Asn1.Ocsp
         private readonly Asn1Sequence    requestList;
         private readonly X509Extensions  requestExtensions;
 
+		private bool versionSet;
+
 		public static TbsRequest GetInstance(
 			Asn1TaggedObject	obj,
 			bool				explicitly)
@@ -61,7 +63,8 @@ namespace Org.BouncyCastle.Asn1.Ocsp
 
 				if (o.TagNo == 0)
                 {
-                    version = DerInteger.GetInstance(o, true);
+					versionSet = true;
+					version = DerInteger.GetInstance(o, true);
                     index++;
                 }
                 else
@@ -122,10 +125,11 @@ namespace Org.BouncyCastle.Asn1.Ocsp
             Asn1EncodableVector v = new Asn1EncodableVector();
 
 			//
-            // if default don't include.
-            //
-            if (!version.Equals(V1))
-            {
+			// if default don't include - unless explicitly provided. Not strictly correct
+			// but required for some requests
+			//
+			if (!version.Equals(V1) || versionSet)
+			{
                 v.Add(new DerTaggedObject(true, 0, version));
             }
 

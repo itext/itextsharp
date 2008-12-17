@@ -18,7 +18,7 @@ namespace Org.BouncyCastle.Asn1.X509
 	 * @see PolicyInformation
 	 */
 	public class DisplayText
-		: Asn1Encodable
+		: Asn1Encodable, IAsn1Choice
 	{
 		/**
 		 * Constant corresponding to ia5String encoding.

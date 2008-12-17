@@ -22,8 +22,7 @@ namespace Org.BouncyCastle.Asn1.X509.SigI
 	* 
 	*/
 	public class NameOrPseudonym
-		: Asn1Encodable
-		//, Asn1Choice
+		: Asn1Encodable, IAsn1Choice
 	{
 		private readonly DirectoryString	pseudonym;
 		private readonly DirectoryString	surname;

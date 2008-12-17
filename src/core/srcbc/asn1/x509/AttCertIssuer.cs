@@ -5,7 +5,7 @@ using Org.BouncyCastle.Asn1;
 namespace Org.BouncyCastle.Asn1.X509
 {
     public class AttCertIssuer
-        : Asn1Encodable
+        : Asn1Encodable, IAsn1Choice
     {
         internal readonly Asn1Encodable	obj;
         internal readonly Asn1Object	choiceObj;
