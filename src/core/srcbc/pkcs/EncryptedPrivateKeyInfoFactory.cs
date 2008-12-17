@@ -46,7 +46,7 @@ namespace Org.BouncyCastle.Pkcs
             PrivateKeyInfo	keyInfo)
         {
             if (!PbeUtilities.IsPbeAlgorithm(algorithm))
-                throw new ArgumentException("attempt to use non-Pbe algorithm with Pbe EncryptedPrivateKeyInfo generation");
+                throw new ArgumentException("attempt to use non-PBE algorithm with PBE EncryptedPrivateKeyInfo generation");
 
 			IBufferedCipher cipher = PbeUtilities.CreateEngine(algorithm) as IBufferedCipher;
 

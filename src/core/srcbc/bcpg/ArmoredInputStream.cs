@@ -98,6 +98,7 @@ namespace Org.BouncyCastle.Bcpg
         bool        restart = false;
         ArrayList   headerList= new ArrayList();
         int         lastC = 0;
+		bool		isEndOfStream;
 
         /**
         * Create a stream for reading a PGP armoured message, parsing up to a header
@@ -242,6 +243,14 @@ namespace Org.BouncyCastle.Bcpg
         }
 
 		/**
+		 * @return true if the stream is actually at end of file.
+		 */
+		public bool IsEndOfStream()
+		{
+			return isEndOfStream;
+		}
+
+		/**
         * Return the armor header line (if there is one)
         * @return the armor header line, null if none present.
         */
@@ -327,7 +336,12 @@ namespace Org.BouncyCastle.Bcpg
 
             lastC = c;
 
-            return c;
+			if (c < 0)
+			{
+				isEndOfStream = true;
+			}
+
+			return c;
         }
 
         private int ReadClearText(byte[] buffer, int offset, int count)
@@ -404,13 +418,19 @@ namespace Org.BouncyCastle.Bcpg
                         start = true;
                         bufPtr = 3;
 
-                        return -1;
+						if (c < 0)
+						{
+							isEndOfStream = true;
+						}
+
+						return -1;
                     }
                 }
 
                 if (c < 0)
                 {
-                    return -1;
+					isEndOfStream = true;
+					return -1;
                 }
 
                 bufPtr = Decode(c, ReadIgnoreSpace(), ReadIgnoreSpace(), ReadIgnoreSpace(), outBuf);

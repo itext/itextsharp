@@ -1,5 +1,7 @@
 using System;
 
+using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -17,6 +19,13 @@ namespace Org.BouncyCastle.Cms
 			byte[]	salt,
 			int		iterationCount)
 			: base(password, salt, iterationCount)
+		{
+		}
+
+		public Pkcs5Scheme2PbeKey(
+			string				password,
+			AlgorithmIdentifier keyDerivationAlgorithm)
+			: base(password, keyDerivationAlgorithm)
 		{
 		}
 

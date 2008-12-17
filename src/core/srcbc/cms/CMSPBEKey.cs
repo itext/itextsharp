@@ -1,5 +1,7 @@
 using System;
 
+using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Utilities;
@@ -25,6 +27,22 @@ namespace Org.BouncyCastle.Cms
 			this.password = password;
 			this.salt = Arrays.Clone(salt);
 			this.iterationCount = iterationCount;
+		}
+
+		public CmsPbeKey(
+			string				password,
+			AlgorithmIdentifier keyDerivationAlgorithm)
+		{
+			if (!keyDerivationAlgorithm.ObjectID.Equals(PkcsObjectIdentifiers.IdPbkdf2))
+				throw new ArgumentException("Unsupported key derivation algorithm: "
+					+ keyDerivationAlgorithm.ObjectID);
+
+			Pbkdf2Params kdfParams = Pbkdf2Params.GetInstance(
+				keyDerivationAlgorithm.Parameters.ToAsn1Object());
+
+			this.password = password;
+			this.salt = kdfParams.GetSalt();
+			this.iterationCount = kdfParams.IterationCount.IntValue;
 		}
 
 		public string Password

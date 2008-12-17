@@ -1,10 +1,13 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+
 using Org.BouncyCastle.Crypto;
+
 namespace Org.BouncyCastle.Crypto.IO
 {
-    public class CipherStream : Stream
+    public class CipherStream
+		: Stream
     {
         internal Stream stream;
         internal IBufferedCipher inCipher, outCipher;
@@ -13,9 +16,9 @@ namespace Org.BouncyCastle.Crypto.IO
 		private bool inStreamEnded;
 
 		public CipherStream(
-            Stream stream,
-            IBufferedCipher readCipher,
-            IBufferedCipher writeCipher)
+            Stream			stream,
+            IBufferedCipher	readCipher,
+            IBufferedCipher	writeCipher)
         {
             this.stream = stream;
 
@@ -44,79 +47,60 @@ namespace Org.BouncyCastle.Crypto.IO
 		public override int ReadByte()
         {
             if (inCipher == null)
-            {
                 return stream.ReadByte();
-            }
 
 			if (mInBuf == null || mInPos >= mInBuf.Length)
 			{
 				if (!FillInBuf())
-				{
 					return -1;
-				}
             }
 
 			return mInBuf[mInPos++];
         }
 
-		public override int Read(byte[] buffer, int offset, int count)
+		public override int Read(
+			byte[]	buffer,
+			int		offset,
+			int		count)
         {
             if (inCipher == null)
-            {
                 return stream.Read(buffer, offset, count);
-            }
 
-//			int pos = offset;
-//            int end = offset + count;
-//            try
-//            {
-//                while (pos < end)
-//                {
-//                    if (mInPos >= mInBufEnd && !FillInBuf()) break;
-//
-//					int len = System.Math.Min(end - pos, mInBufEnd - mInPos);
-//                    Array.Copy(mInBuf, mInPos, buffer, pos, len);
-//                    mInPos += len;
-//                    pos += len;
-//                }
-//            }
-//            catch (IOException)
-//            {
-//                if (pos == offset) throw;
-//            }
-//            return pos - offset;
-
-			// TODO Optimise
-			int i = 0;
-			while (i < count)
+			int num = 0;
+			while (num < count)
 			{
-				int c = ReadByte();
+				if (mInBuf == null || mInPos >= mInBuf.Length)
+				{
+					if (!FillInBuf())
+						break;
+				}
 
-				if (c < 0) break;
-
-				buffer[offset + i++] = (byte) c;
+				int numToCopy = System.Math.Min(count - num, mInBuf.Length - mInPos);
+				Array.Copy(mInBuf, mInPos, buffer, offset + num, numToCopy);
+				mInPos += numToCopy;
+				num += numToCopy;
 			}
 
-			return i;
+			return num;
 		}
-        private bool FillInBuf()
+
+		private bool FillInBuf()
         {
 			if (inStreamEnded)
-			{
 				return false;
-			}
 
 			mInPos = 0;
 
 			do
 			{
-				mInBuf = readAndProcessBlock();
+				mInBuf = ReadAndProcessBlock();
 			}
 			while (!inStreamEnded && mInBuf == null);
 
 			return mInBuf != null;
 		}
-		private byte[] readAndProcessBlock()
+
+		private byte[] ReadAndProcessBlock()
 		{
 			int blockSize = inCipher.GetBlockSize();
 			int readSize = (blockSize == 0) ? 256 : blockSize;
@@ -148,7 +132,11 @@ namespace Org.BouncyCastle.Crypto.IO
 
 			return bytes;
 		}
-        public override void Write(byte[] buffer, int offset, int count)
+
+		public override void Write(
+			byte[]	buffer,
+			int		offset,
+			int		count)
         {
 			Debug.Assert(buffer != null);
 			Debug.Assert(0 <= offset && offset <= buffer.Length);
@@ -170,40 +158,50 @@ namespace Org.BouncyCastle.Crypto.IO
 				stream.Write(data, 0, data.Length);
 			}
 		}
+
 		public override void WriteByte(
-			byte value)
+			byte b)
         {
             if (outCipher == null)
             {
-                stream.WriteByte(value);
+                stream.WriteByte(b);
                 return;
             }
 
-			byte[] data = outCipher.ProcessByte(value);
+			byte[] data = outCipher.ProcessByte(b);
 			if (data != null)
 			{
 				stream.Write(data, 0, data.Length);
 			}
 		}
-        public override bool CanRead
+
+		public override bool CanRead
         {
-            get { return stream.CanRead && (inCipher != null);     }
+            get { return stream.CanRead && (inCipher != null); }
         }
-        public override bool CanWrite
+
+		public override bool CanWrite
         {
-            get { return stream.CanWrite && (outCipher != null);     }
+            get { return stream.CanWrite && (outCipher != null); }
         }
-        public override bool CanSeek
+
+		public override bool CanSeek
         {
             get { return false; }
         }
-        public sealed override long Length { get { throw new NotSupportedException(); } }
-        public sealed override long Position
+
+		public sealed override long Length
+		{
+			get { throw new NotSupportedException(); }
+		}
+
+		public sealed override long Position
         {
             get { throw new NotSupportedException(); }
             set { throw new NotSupportedException(); }
         }
-        public override void Close()
+
+		public override void Close()
         {
 			if (outCipher != null)
 			{
@@ -213,12 +211,24 @@ namespace Org.BouncyCastle.Crypto.IO
 			}
 			stream.Close();
         }
-        public override void Flush()
+
+		public override void Flush()
         {
 			// Note: outCipher.DoFinal is only called during Close()
 			stream.Flush();
         }
-        public sealed override long Seek(long offset, SeekOrigin origin) { throw new NotSupportedException(); }
-        public sealed override void SetLength(long value) { throw new NotSupportedException(); }
+
+		public sealed override long Seek(
+			long		offset,
+			SeekOrigin	origin)
+		{
+			throw new NotSupportedException();
+		}
+
+		public sealed override void SetLength(
+			long length)
+		{
+			throw new NotSupportedException();
+		}
     }
 }

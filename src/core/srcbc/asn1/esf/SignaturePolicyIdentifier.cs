@@ -13,8 +13,7 @@ namespace Org.BouncyCastle.Asn1.Esf
 	/// </code>
 	/// </remarks>
 	public class SignaturePolicyIdentifier
-		: Asn1Encodable
-		//, Asn1Choice
+		: Asn1Encodable, IAsn1Choice
 	{
 		private readonly SignaturePolicyId sigPolicy;
 

@@ -119,7 +119,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		private byte[] serverRandom;
 		private byte[] ms;
 
-		private TlsCipherSuite choosenCipherSuite = null;
+		private TlsCipherSuite chosenCipherSuite = null;
 
 		private BigInteger Yc;
 		private byte[] pms;
@@ -379,7 +379,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 										* the TlsCipherSuiteManager will throw an
 										* exception.
 										*/
-										this.choosenCipherSuite = TlsCipherSuiteManager.GetCipherSuite(
+										this.chosenCipherSuite = TlsCipherSuiteManager.GetCipherSuite(
 											TlsUtilities.ReadUint16(inStr), this);
 
 										/*
@@ -415,7 +415,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 											* There was no server key exchange message, check
 											* that we are doing RSA key exchange.
 											*/
-											if (this.choosenCipherSuite.KeyExchangeAlgorithm != TlsCipherSuite.KE_RSA)
+											if (this.chosenCipherSuite.KeyExchangeAlgorithm != TlsCipherSuite.KE_RSA)
 											{
 												this.FailWithError(AL_fatal, AP_unexpected_message);
 											}
@@ -435,7 +435,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 										* on the key exchange we are using in our
 										* ciphersuite.
 										*/
-										short ke = this.choosenCipherSuite.KeyExchangeAlgorithm;
+										short ke = this.chosenCipherSuite.KeyExchangeAlgorithm;
 
 										switch (ke)
 										{
@@ -535,7 +535,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 										/*
 										* Initialize our cipher suite
 										*/
-										rs.writeSuite = this.choosenCipherSuite;
+										rs.writeSuite = this.chosenCipherSuite;
 										rs.writeSuite.Init(this.ms, clientRandom, serverRandom);
 
 										/*
@@ -569,7 +569,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 										/*
 										* Check that we are doing DHE key exchange
 										*/
-										if (this.choosenCipherSuite.KeyExchangeAlgorithm != TlsCipherSuite.KE_DHE_RSA)
+										if (this.chosenCipherSuite.KeyExchangeAlgorithm != TlsCipherSuite.KE_DHE_RSA)
 										{
 											this.FailWithError(AL_fatal, AP_unexpected_message);
 										}
@@ -687,7 +687,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 											* There was no server key exchange message, check
 											* that we are doing RSA key exchange.
 											*/
-											if (this.choosenCipherSuite.KeyExchangeAlgorithm != TlsCipherSuite.KE_RSA)
+											if (this.chosenCipherSuite.KeyExchangeAlgorithm != TlsCipherSuite.KE_RSA)
 											{
 												this.FailWithError(AL_fatal, AP_unexpected_message);
 											}

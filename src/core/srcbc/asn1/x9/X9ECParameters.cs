@@ -59,10 +59,6 @@ namespace Org.BouncyCastle.Asn1.X9
             {
                 this.h = ((DerInteger) seq[5]).Value;
             }
-            else
-            {
-                this.h = BigInteger.One;
-            }
         }
 
 		public X9ECParameters(
@@ -124,7 +120,16 @@ namespace Org.BouncyCastle.Asn1.X9
 
 		public BigInteger H
         {
-            get { return h; }
+            get
+			{
+				if (h == null)
+				{
+					// TODO - this should be calculated, it will cause issues with custom curves.
+					return BigInteger.One;
+				}
+
+				return h;
+			}
         }
 
 		public byte[] GetSeed()
@@ -154,7 +159,7 @@ namespace Org.BouncyCastle.Asn1.X9
 				new X9ECPoint(g),
 				new DerInteger(n));
 
-			if (!h.Equals(BigInteger.One))
+			if (h != null)
             {
                 v.Add(new DerInteger(h));
             }

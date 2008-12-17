@@ -14,24 +14,19 @@ namespace Org.BouncyCastle.Asn1.X509
 		: Asn1Encodable
 	{
 		public readonly static DerObjectIdentifier IdADCAIssuers = new DerObjectIdentifier("1.3.6.1.5.5.7.48.2");
-
 		public readonly static DerObjectIdentifier IdADOcsp = new DerObjectIdentifier("1.3.6.1.5.5.7.48.1");
 
-		internal DerObjectIdentifier accessMethod;
-		internal GeneralName accessLocation;
+		private readonly DerObjectIdentifier accessMethod;
+		private readonly GeneralName accessLocation;
 
 		public static AccessDescription GetInstance(
 			object obj)
 		{
 			if (obj is AccessDescription)
-			{
 				return (AccessDescription) obj;
-			}
 
 			if (obj is Asn1Sequence)
-			{
 				return new AccessDescription((Asn1Sequence) obj);
-			}
 
 			throw new ArgumentException("unknown object in factory: " + obj.GetType().Name, "obj");
 		}
@@ -40,7 +35,7 @@ namespace Org.BouncyCastle.Asn1.X509
 			Asn1Sequence seq)
 		{
 			if (seq.Count != 2)
-				throw new ArgumentException("wrong number of elements in inner sequence");
+				throw new ArgumentException("wrong number of elements in sequence");
 
 			accessMethod = DerObjectIdentifier.GetInstance(seq[0]);
 			accessLocation = GeneralName.GetInstance(seq[1]);
@@ -82,7 +77,7 @@ namespace Org.BouncyCastle.Asn1.X509
 
 		public override string ToString()
 		{
-			return ("AccessDescription: Oid(" + this.accessMethod.Id + ")");
+			return "AccessDescription: Oid(" + this.accessMethod.Id + ")";
 		}
 	}
 }

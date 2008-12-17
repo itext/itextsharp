@@ -39,10 +39,7 @@ namespace Org.BouncyCastle.Cms
 		 */
 		public virtual AlgorithmIdentifier KeyDerivationAlgorithm
 		{
-			get
-			{
-				return _info.KeyDerivationAlgorithm;
-			}
+			get { return _info.KeyDerivationAlgorithm; }
 		}
 
 		/**

@@ -15,7 +15,7 @@ namespace Org.BouncyCastle.Asn1.X509.Qualified
     * </pre>
     */
     public class Iso4217CurrencyCode
-        : Asn1Encodable
+        : Asn1Encodable, IAsn1Choice
     {
         internal const int AlphabeticMaxSize = 3;
         internal const int NumericMinSize = 1;

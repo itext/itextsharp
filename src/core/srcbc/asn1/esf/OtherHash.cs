@@ -16,8 +16,7 @@ namespace Org.BouncyCastle.Asn1.Esf
 	/// </code>
 	/// </remarks>
 	public class OtherHash
-		: Asn1Encodable
-		//, Asn1Choice
+		: Asn1Encodable, IAsn1Choice
 	{
 		private readonly Asn1OctetString		sha1Hash;
 		private readonly OtherHashAlgAndValue	otherHash;

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text;
 
 using Org.BouncyCastle.Utilities;
@@ -88,19 +89,20 @@ namespace Org.BouncyCastle.Bcpg
         private bool            clearText = false;
         private bool            newLine = false;
 
-        private string          nl = Platform.NewLine;
-
         private string          type;
-        private string          headerStart = "-----BEGIN PGP ";
-        private string          headerTail = "-----";
-        private string          footerStart = "-----END PGP ";
-        private string          footerTail = "-----";
 
-        private string          version = "BCPG v1.32";
+        private static readonly string	nl = Platform.NewLine;
+        private static readonly string	headerStart = "-----BEGIN PGP ";
+        private static readonly string	headerTail = "-----";
+        private static readonly string	footerStart = "-----END PGP ";
+        private static readonly string	footerTail = "-----";
 
-        private readonly IDictionary headers;
+        private static readonly string version = "BCPG C# v"
+			+ Assembly.GetExecutingAssembly().GetName().Version;
 
-        public ArmoredOutputStream(Stream outStream)
+		private readonly IDictionary headers;
+
+		public ArmoredOutputStream(Stream outStream)
         {
             this.outStream = outStream;
             this.headers = new Hashtable();

@@ -31,7 +31,7 @@ namespace Org.BouncyCastle.Asn1.X509
      * </pre>
      */
     public class GeneralName
-        : Asn1Encodable
+        : Asn1Encodable, IAsn1Choice
     {
         public const int OtherName					= 0;
         public const int Rfc822Name					= 1;
@@ -197,7 +197,7 @@ namespace Org.BouncyCastle.Asn1.X509
             Asn1TaggedObject	tagObj,
             bool				explicitly)
         {
-            return GetInstance(Asn1TaggedObject.GetInstance(tagObj, explicitly));
+            return GetInstance(Asn1TaggedObject.GetInstance(tagObj, true));
         }
 
 		public int TagNo

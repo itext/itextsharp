@@ -22,8 +22,7 @@ namespace Org.BouncyCastle.Asn1.IsisMtt.X509
 	* of a specific country.
 	*/
 	public class DeclarationOfMajority
-		: Asn1Encodable
-		//, ASN1Choice
+		: Asn1Encodable, IAsn1Choice
 	{
 		public enum Choice
 		{

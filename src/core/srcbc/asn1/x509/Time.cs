@@ -3,7 +3,7 @@ using System;
 namespace Org.BouncyCastle.Asn1.X509
 {
     public class Time
-        : Asn1Encodable
+        : Asn1Encodable, IAsn1Choice
     {
         internal Asn1Object time;
 

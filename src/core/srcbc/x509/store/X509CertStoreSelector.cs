@@ -212,7 +212,7 @@ namespace Org.BouncyCastle.X509.Store
 				}
 			}
 
-			if (issuer != null && !issuer.Equivalent(c.IssuerDN))
+			if (issuer != null && !issuer.Equivalent(c.IssuerDN, true))
 				return false;
 
 			if (keyUsage != null)
@@ -277,7 +277,7 @@ namespace Org.BouncyCastle.X509.Store
 			if (serialNumber != null && !serialNumber.Equals(c.SerialNumber))
 				return false;
 
-			if (subject != null && !subject.Equivalent(c.SubjectDN))
+			if (subject != null && !subject.Equivalent(c.SubjectDN, true))
 				return false;
 
 			if (!MatchExtension(subjectKeyIdentifier, c, X509Extensions.SubjectKeyIdentifier))
@@ -297,7 +297,7 @@ namespace Org.BouncyCastle.X509.Store
 			X509Name	a,
 			X509Name	b)
 		{
-			return a == null ? b == null : a.Equivalent(b);
+			return a == null ? b == null : a.Equivalent(b, true);
 		}
 
 		private static bool[] CopyBoolArray(
@@ -331,7 +331,7 @@ namespace Org.BouncyCastle.X509.Store
 			if (extVal == null)
 				return false;
 
-			return extVal != null && Arrays.AreEqual(b, extVal.GetEncoded());
+			return Arrays.AreEqual(b, extVal.GetOctets());
 		}
 	}
 }

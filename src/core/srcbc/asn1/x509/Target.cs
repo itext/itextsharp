@@ -19,8 +19,7 @@ namespace Org.BouncyCastle.Asn1.X509
 	 * according to RFC 3281.</p>
 	 */
 	public class Target
-		: Asn1Encodable
-		//, ASN1Choice
+		: Asn1Encodable, IAsn1Choice
 	{
 		public enum Choice
 		{

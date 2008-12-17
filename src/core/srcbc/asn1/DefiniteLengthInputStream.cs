@@ -21,24 +21,29 @@ namespace Org.BouncyCastle.Asn1
 				throw new ArgumentException("negative lengths not allowed", "length");
 
 			this._length = length;
+
+			if (length == 0)
+			{
+				SetParentEofDetect(true);
+			}
         }
 
 		public override int ReadByte()
         {
-            if (_length > 0)
-            {
-				int b = _in.ReadByte();
+			if (_length == 0)
+				return -1;
 
-				if (b < 0)
-					throw new EndOfStreamException();
+			int b = _in.ReadByte();
 
-				--_length;
-				return b;
-            }
+			if (b < 0)
+				throw new EndOfStreamException();
 
-			SetParentEofDetect(true);
+			if (--_length == 0)
+			{
+				SetParentEofDetect(true);
+			}
 
-			return -1;
+			return b;
         }
 
 		public override int Read(
@@ -46,40 +51,33 @@ namespace Org.BouncyCastle.Asn1
 			int		off,
 			int		len)
 		{
-			if (_length > 0)
+			if (_length == 0)
+				return 0;
+
+			int toRead = System.Math.Min(len, _length);
+			int numRead = _in.Read(buf, off, toRead);
+
+			if (numRead < 1)
+				throw new EndOfStreamException();
+
+			if ((_length -= numRead) == 0)
 			{
-				int toRead = System.Math.Min(len, _length);
-				int numRead = _in.Read(buf, off, toRead);
-
-				if (numRead < 1)
-					throw new EndOfStreamException();
-
-				_length -= numRead;
-				return numRead;
+				SetParentEofDetect(true);
 			}
 
-			SetParentEofDetect(true);
-
-			return 0;
+			return numRead;
 		}
 
 		internal byte[] ToArray()
 		{
-			byte[] bytes;
-			if (_length > 0)
-			{
-				bytes = new byte[_length];
-				if (Streams.ReadFully(_in, bytes) < _length)
-					throw new EndOfStreamException();
-				_length = 0;
-			}
-			else
-			{
-				bytes = EmptyBytes;
-			}
+			if (_length == 0)
+				return EmptyBytes;
 
+			byte[] bytes = new byte[_length];
+			if (Streams.ReadFully(_in, bytes) < _length)
+				throw new EndOfStreamException();
+			_length = 0;
 			SetParentEofDetect(true);
-
 			return bytes;
 		}
     }

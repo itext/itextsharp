@@ -10,6 +10,7 @@ using Org.BouncyCastle.Crypto.IO;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Security.Certificates;
 using Org.BouncyCastle.Utilities;
+using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.Utilities.IO;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.X509.Store;
@@ -60,8 +61,10 @@ namespace Org.BouncyCastle.Cms
 		private static readonly CmsSignedHelper Helper = CmsSignedHelper.Instance;
 
 		private SignedDataParser        _signedData;
+		private DerObjectIdentifier		_signedContentType;
 		private CmsTypedStream          _signedContent;
-		private IDictionary _digests;
+		private IDictionary				_digests;
+		private ISet					_digestOids;
 
 		private SignerInformationStore  _signerInfoStore;
 		private Asn1Set                 _certSet, _crlSet;
@@ -108,6 +111,7 @@ namespace Org.BouncyCastle.Cms
 				this._signedContent = signedContent;
 				this._signedData = SignedDataParser.GetInstance(this.contentInfo.GetContent(Asn1Tags.Sequence));
 				this._digests = new Hashtable();
+				this._digestOids = new HashSet();
 
 				Asn1SetParser digAlgs = _signedData.GetDigestAlgorithms();
 				IAsn1Convertible o;
@@ -118,14 +122,18 @@ namespace Org.BouncyCastle.Cms
 
 					try
 					{
-						string digestName = Helper.GetDigestAlgName(id.ObjectID.Id);
-						IDigest dig = Helper.GetDigestInstance(digestName);
+						string digestOid = id.ObjectID.Id;
+						string digestName = Helper.GetDigestAlgName(digestOid);
 
-						this._digests[digestName] = dig;
+						if (!this._digests.Contains(digestName))
+						{
+							this._digests[digestName] = Helper.GetDigestInstance(digestName);
+							this._digestOids.Add(digestOid);
+						}
 					}
 					catch (SecurityUtilityException)
 					{
-						//  ignore
+						// TODO Should do something other than ignore it
 					}
 				}
 
@@ -153,6 +161,10 @@ namespace Org.BouncyCastle.Cms
 						ctStr.Drain();
 					}
 				}
+
+				_signedContentType = _signedContent == null
+					?	cont.ContentType
+					:	new DerObjectIdentifier(_signedContent.ContentType);
 			}
 			catch (IOException e)
 			{
@@ -173,6 +185,11 @@ namespace Org.BouncyCastle.Cms
 		public int Version
 		{
 			get { return _signedData.Version.Value.IntValue; }
+		}
+
+		public ISet DigestOids
+		{
+			get { return new HashSet(_digestOids); }
 		}
 
 		/**
@@ -207,9 +224,8 @@ namespace Org.BouncyCastle.Cms
 							info.DigestAlgorithm.ObjectID.Id);
 
 						byte[] hash = (byte[]) hashes[digestName];
-						DerObjectIdentifier oid = new DerObjectIdentifier(_signedContent.ContentType);
 
-						signerInfos.Add(new SignerInformation(info, oid, null, new BaseDigestCalculator(hash)));
+						signerInfos.Add(new SignerInformation(info, _signedContentType, null, new BaseDigestCalculator(hash)));
 					}
 				}
 				catch (IOException e)
@@ -308,6 +324,15 @@ namespace Org.BouncyCastle.Cms
 			}
 		}
 
+		/// <summary>
+		/// Return the <c>DerObjectIdentifier</c> associated with the encapsulated
+		/// content info structure carried in the signed data.
+		/// </summary>
+		public DerObjectIdentifier SignedContentType
+		{
+			get { return _signedContentType; }
+		}
+
 		public CmsTypedStream GetSignedContent()
 		{
 			if (_signedContent == null)
@@ -343,63 +368,28 @@ namespace Org.BouncyCastle.Cms
 			SignerInformationStore	signerInformationStore,
 			Stream					outStr)
 		{
-			Asn1StreamParser inStr = new Asn1StreamParser(original, CmsUtilities.MaximumMemory);
-			ContentInfoParser contentInfo = new ContentInfoParser((Asn1SequenceParser)inStr.ReadObject());
-			SignedDataParser signedData = SignedDataParser.GetInstance(contentInfo.GetContent(Asn1Tags.Sequence));
+			// NB: SecureRandom would be ignored since using existing signatures only
+			CmsSignedDataStreamGenerator gen = new CmsSignedDataStreamGenerator();
+			CmsSignedDataParser parser = new CmsSignedDataParser(original);
 
-			BerSequenceGenerator sGen = new BerSequenceGenerator(outStr);
+//			gen.AddDigests(parser.DigestOids);
+			gen.AddSigners(signerInformationStore);
 
-			sGen.AddObject(CmsObjectIdentifiers.SignedData);
-
-			BerSequenceGenerator sigGen = new BerSequenceGenerator(sGen.GetRawOutputStream(), 0, true);
-
-			// version number
-			sigGen.AddObject(signedData.Version);
-
-			// digests
-			signedData.GetDigestAlgorithms().ToAsn1Object();  // skip old ones
-
-			Asn1EncodableVector digestAlgs = new Asn1EncodableVector();
-
-			foreach (SignerInformation signer in signerInformationStore.GetSigners())
+			CmsTypedStream signedContent = parser.GetSignedContent();
+			bool encapsulate = (signedContent != null);
+			Stream contentOut = gen.Open(outStr, parser.SignedContentType.Id, encapsulate);
+			if (encapsulate)
 			{
-				digestAlgs.Add(Helper.FixAlgID(signer.DigestAlgorithmID));
+				Streams.PipeAll(signedContent.ContentStream, contentOut);
 			}
 
-			WriteToGenerator(sigGen, new DerSet(digestAlgs));
+			gen.AddAttributeCertificates(parser.GetAttributeCertificates("Collection"));
+			gen.AddCertificates(parser.GetCertificates("Collection"));
+			gen.AddCrls(parser.GetCrls("Collection"));
 
-			// encap content info
-			ContentInfoParser encapContentInfo = signedData.GetEncapContentInfo();
+//			gen.AddSigners(parser.GetSignerInfos());
 
-			BerSequenceGenerator eiGen = new BerSequenceGenerator(sigGen.GetRawOutputStream());
-
-			eiGen.AddObject(encapContentInfo.ContentType);
-
-			Asn1OctetStringParser octs = (Asn1OctetStringParser)encapContentInfo.GetContent(Asn1Tags.OctetString);
-
-			if (octs != null)
-			{
-				PipeOctetString(octs, eiGen.GetRawOutputStream());
-			}
-
-			eiGen.Close();
-
-
-			WriteSetToGeneratorTagged(sigGen, signedData.GetCertificates(), 0);
-			WriteSetToGeneratorTagged(sigGen, signedData.GetCrls(), 1);
-
-
-			Asn1EncodableVector signerInfos = new Asn1EncodableVector();
-			foreach (SignerInformation signer in signerInformationStore.GetSigners())
-			{
-				signerInfos.Add(signer.ToSignerInfo());
-			}
-
-			WriteToGenerator(sigGen, new DerSet(signerInfos));
-
-			sigGen.Close();
-
-			sGen.Close();
+			contentOut.Close();
 
 			return outStr;
 		}
@@ -423,107 +413,35 @@ namespace Org.BouncyCastle.Cms
 			IX509Store		x509AttrCerts,
 			Stream			outStr)
 		{
+			// NB: SecureRandom would be ignored since using existing signatures only
+			CmsSignedDataStreamGenerator gen = new CmsSignedDataStreamGenerator();
+			CmsSignedDataParser parser = new CmsSignedDataParser(original);
+
+			gen.AddDigests(parser.DigestOids);
+
+			CmsTypedStream signedContent = parser.GetSignedContent();
+			bool encapsulate = (signedContent != null);
+			Stream contentOut = gen.Open(outStr, parser.SignedContentType.Id, encapsulate);
+			if (encapsulate)
+			{
+				Streams.PipeAll(signedContent.ContentStream, contentOut);
+			}
+
+//			gen.AddAttributeCertificates(parser.GetAttributeCertificates("Collection"));
+//			gen.AddCertificates(parser.GetCertificates("Collection"));
+//			gen.AddCrls(parser.GetCrls("Collection"));
 			if (x509AttrCerts != null)
-				throw Platform.CreateNotImplementedException("Currently can't replace attribute certificates");
+				gen.AddAttributeCertificates(x509AttrCerts);
+			if (x509Certs != null)
+				gen.AddCertificates(x509Certs);
+			if (x509Crls != null)
+				gen.AddCrls(x509Crls);
 
-			Asn1StreamParser inStr = new Asn1StreamParser(original, CmsUtilities.MaximumMemory);
-			ContentInfoParser contentInfo = new ContentInfoParser((Asn1SequenceParser)inStr.ReadObject());
-			SignedDataParser signedData = SignedDataParser.GetInstance(contentInfo.GetContent(Asn1Tags.Sequence));
+			gen.AddSigners(parser.GetSignerInfos());
 
-			BerSequenceGenerator sGen = new BerSequenceGenerator(outStr);
-
-			sGen.AddObject(CmsObjectIdentifiers.SignedData);
-
-			BerSequenceGenerator sigGen = new BerSequenceGenerator(sGen.GetRawOutputStream(), 0, true);
-
-			// version number
-			sigGen.AddObject(signedData.Version);
-
-			// digests
-			WriteToGenerator(sigGen, signedData.GetDigestAlgorithms().ToAsn1Object());
-
-			// encap content info
-			ContentInfoParser encapContentInfo = signedData.GetEncapContentInfo();
-
-			BerSequenceGenerator eiGen = new BerSequenceGenerator(sigGen.GetRawOutputStream());
-
-			eiGen.AddObject(encapContentInfo.ContentType);
-
-			Asn1OctetStringParser octs = (Asn1OctetStringParser)
-				encapContentInfo.GetContent(Asn1Tags.OctetString);
-
-			if (octs != null)
-			{
-				PipeOctetString(octs, eiGen.GetRawOutputStream());
-			}
-
-			eiGen.Close();
-
-			//
-			// skip existing certs and CRLs
-			//
-			GetAsn1Set(signedData.GetCertificates());
-			GetAsn1Set(signedData.GetCrls());
-
-			//
-			// replace the certs and crls in the SignedData object
-			//
-			Asn1Set certs;
-			try
-			{
-				certs = CmsUtilities.CreateBerSetFromList(
-					CmsUtilities.GetCertificatesFromStore(x509Certs));
-			}
-			catch (X509StoreException e)
-			{
-				throw new CmsException("error getting certs from certStore", e);
-			}
-
-			if (certs.Count > 0)
-			{
-				WriteToGenerator(sigGen, new DerTaggedObject(false, 0, certs));
-			}
-
-			Asn1Set crls;
-			try
-			{
-				crls = CmsUtilities.CreateBerSetFromList(
-					CmsUtilities.GetCrlsFromStore(x509Crls));
-			}
-			catch (X509StoreException e)
-			{
-				throw new CmsException("error getting crls from certStore", e);
-			}
-
-			if (crls.Count > 0)
-			{
-				WriteToGenerator(sigGen, new DerTaggedObject(false, 1, crls));
-			}
-
-			WriteToGenerator(sigGen, signedData.GetSignerInfos().ToAsn1Object());
-
-			sigGen.Close();
-
-			sGen.Close();
+			contentOut.Close();
 
 			return outStr;
-		}
-
-		private static void WriteSetToGeneratorTagged(
-			Asn1Generator		asn1Gen,
-			Asn1SetParser		asn1SetParser,
-			int					tagNo)
-		{
-			Asn1Set asn1Set = GetAsn1Set(asn1SetParser);
-
-			if (asn1Set != null)
-			{
-				Asn1TaggedObject taggedObj = (asn1SetParser is BerSetParser)
-					?	new BerTaggedObject(false, tagNo, asn1Set)
-					:	new DerTaggedObject(false, tagNo, asn1Set);
-
-				WriteToGenerator(asn1Gen, taggedObj);
-			}
 		}
 
 		private static Asn1Set GetAsn1Set(
@@ -532,25 +450,6 @@ namespace Org.BouncyCastle.Cms
 			return asn1SetParser == null
 				?	null
 				:	Asn1Set.GetInstance(asn1SetParser.ToAsn1Object());
-		}
-
-		private static void WriteToGenerator(
-			Asn1Generator	ag,
-			Asn1Encodable	ae)
-		{
-			byte[] encoded = ae.GetEncoded();
-			ag.GetRawOutputStream().Write(encoded, 0, encoded.Length);
-		}
-
-		private static void PipeOctetString(
-			Asn1OctetStringParser	octs,
-			Stream					output)
-		{
-			BerOctetStringGenerator octGen = new BerOctetStringGenerator(output, 0, true);
-			// TODO Allow specification of a specific fragment size?
-			Stream outOctets = octGen.GetOctetOutputStream();
-			Streams.PipeAll(octs.GetOctetStream(), outOctets);
-			outOctets.Close();
 		}
 	}
 }

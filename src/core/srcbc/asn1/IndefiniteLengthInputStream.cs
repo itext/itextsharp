@@ -1,40 +1,49 @@
+using System;
 using System.IO;
 
 namespace Org.BouncyCastle.Asn1
 {
-    class IndefiniteLengthInputStream
-        : LimitedInputStream
-    {
-        private int     _b1;
-        private int     _b2;
-        private bool _eofReached = false;
-        private bool _eofOn00 = true;
+	class IndefiniteLengthInputStream
+		: LimitedInputStream
+	{
+		private int		_b1;
+		private int		_b2;
+		private bool	_eofReached = false;
+		private bool	_eofOn00 = true;
 
-        internal IndefiniteLengthInputStream(
-            Stream inStream)
-            : base(inStream)
-        {
-            _b1 = inStream.ReadByte();
-            _b2 = inStream.ReadByte();
-            _eofReached = (_b2 < 0);
-        }
+		internal IndefiniteLengthInputStream(
+			Stream inStream)
+			: base(inStream)
+		{
+			_b1 = inStream.ReadByte();
+			_b2 = inStream.ReadByte();
 
-        internal void SetEofOn00(
-            bool eofOn00)
-        {
-            _eofOn00 = eofOn00;
-        }
+			if (_b2 < 0)
+			{
+				// Corrupted stream
+				throw new EndOfStreamException();
+			}
 
-        internal bool CheckForEof()
-        {
-            if (_eofOn00 && (_b1 == 0x00 && _b2 == 0x00))
-            {
-                _eofReached = true;
-                SetParentEofDetect(true);
-            }
+			CheckForEof();
+		}
+
+		internal void SetEofOn00(
+			bool eofOn00)
+		{
+			_eofOn00 = eofOn00;
+			CheckForEof();
+		}
+
+		private bool CheckForEof()
+		{
+			if (!_eofReached && _eofOn00 && (_b1 == 0x00 && _b2 == 0x00))
+			{
+				_eofReached = true;
+				SetParentEofDetect(true);
+			}
 
 			return _eofReached;
-        }
+		}
 
 		public override int Read(
 			byte[]	buffer,
@@ -72,24 +81,24 @@ namespace Org.BouncyCastle.Asn1
 		}
 
 		public override int ReadByte()
-        {
-            if (CheckForEof())
-                return -1;
+		{
+			if (CheckForEof())
+				return -1;
 
 			int b = _in.ReadByte();
 
 			if (b < 0)
-            {
+			{
 				// Corrupted stream
 				throw new EndOfStreamException();
-            }
+			}
 
 			int v = _b1;
 
-            _b1 = _b2;
-            _b2 = b;
+			_b1 = _b2;
+			_b2 = b;
 
-            return v;
-        }
-    }
+			return v;
+		}
+	}
 }

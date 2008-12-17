@@ -15,7 +15,7 @@ namespace Org.BouncyCastle.Asn1.X509
      * </pre>
      */
     public class DistributionPointName
-        : Asn1Encodable
+        : Asn1Encodable, IAsn1Choice
     {
         internal readonly Asn1Encodable	name;
         internal readonly int			type;
@@ -27,7 +27,7 @@ namespace Org.BouncyCastle.Asn1.X509
             Asn1TaggedObject	obj,
             bool				explicitly)
         {
-            return GetInstance(Asn1TaggedObject.GetInstance(obj, explicitly));
+            return GetInstance(Asn1TaggedObject.GetInstance(obj, true));
         }
 
 		public static DistributionPointName GetInstance(

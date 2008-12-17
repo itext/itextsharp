@@ -6,7 +6,7 @@ using Org.BouncyCastle.Asn1.X509;
 namespace Org.BouncyCastle.Asn1.Ocsp
 {
     public class ResponderID
-        : Asn1Encodable
+        : Asn1Encodable, IAsn1Choice
     {
         private readonly Asn1Encodable id;
 

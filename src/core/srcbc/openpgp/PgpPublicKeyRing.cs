@@ -150,11 +150,18 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 
 			if (!found)
             {
-				if (pubKey.IsMasterKey && masterFound)
-					throw new ArgumentException("cannot add a master key to a ring that already has one");
+				if (pubKey.IsMasterKey)
+				{
+					if (masterFound)
+						throw new ArgumentException("cannot add a master key to a ring that already has one");
 
-				keys.Add(pubKey);
-            }
+					keys.Insert(0, pubKey);
+				}
+				else
+				{
+					keys.Add(pubKey);
+				}
+			}
 
 			return new PgpPublicKeyRing(keys);
         }

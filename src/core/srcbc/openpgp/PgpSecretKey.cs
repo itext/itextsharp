@@ -11,124 +11,56 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 	/// <remarks>General class to handle a PGP secret key object.</remarks>
     public class PgpSecretKey
     {
-        private SecretKeyPacket secret;
-        private TrustPacket     trust;
-        private ArrayList       keySigs;
-        private ArrayList       ids;
-        private ArrayList       idTrusts;
-        private ArrayList       idSigs;
-        private PgpPublicKey    pub;
-        private ArrayList       subSigs;
-
-		/// <summary>Copy constructor - master key.</summary>
-        private PgpSecretKey(
-            SecretKeyPacket secret,
-            TrustPacket     trust,
-            ArrayList       keySigs,
-            ArrayList       ids,
-            ArrayList       idTrusts,
-            ArrayList       idSigs,
-            PgpPublicKey    pub)
-        {
-            this.secret = secret;
-            this.trust = trust;
-            this.keySigs = keySigs;
-            this.ids = ids;
-            this.idTrusts = idTrusts;
-            this.idSigs = idSigs;
-            this.pub = pub;
-        }
-
-		/// <summary>Copy constructor - subkey.</summary>
-        private PgpSecretKey(
-            SecretKeyPacket secret,
-            TrustPacket     trust,
-            ArrayList       subSigs,
-            PgpPublicKey    pub)
-        {
-            this.secret = secret;
-            this.trust = trust;
-            this.subSigs = subSigs;
-            this.pub = pub;
-        }
+        private readonly SecretKeyPacket	secret;
+        private readonly PgpPublicKey		pub;
 
 		internal PgpSecretKey(
-            SecretKeyPacket	secret,
-            TrustPacket		trust,
-            ArrayList		keySigs,
-            ArrayList		ids,
-            ArrayList		idTrusts,
-            ArrayList		idSigs)
-        {
-            this.secret = secret;
-            this.trust = trust;
-            this.keySigs = keySigs;
-            this.ids = ids;
-            this.idTrusts = idTrusts;
-            this.idSigs = idSigs;
-            this.pub = new PgpPublicKey(secret.PublicKeyPacket, trust, keySigs, ids, idTrusts, idSigs);
-        }
-
-		internal PgpSecretKey(
-            SecretKeyPacket	secret,
-            TrustPacket		trust,
-            ArrayList		subSigs)
-        {
-            this.secret = secret;
-            this.trust = trust;
-            this.subSigs = subSigs;
-            this.pub = new PgpPublicKey(secret.PublicKeyPacket, trust, subSigs);
-        }
-
-		/// <summary>Create a subkey</summary>
-        internal PgpSecretKey(
-            PgpKeyPair					keyPair,
-            TrustPacket					trust,
-            ArrayList					subSigs,
-            SymmetricKeyAlgorithmTag	encAlgorithm,
-            char[]						passPhrase,
-			bool						useSHA1,
-			SecureRandom				rand)
-            : this(keyPair, encAlgorithm, passPhrase, useSHA1, rand)
+			SecretKeyPacket	secret,
+			PgpPublicKey	pub)
 		{
-			this.secret = new SecretSubkeyPacket(
-				secret.PublicKeyPacket,
-				secret.EncAlgorithm,
-				secret.S2kUsage,
-				secret.S2k,
-				secret.GetIV(),
-				secret.GetSecretKeyData());
-
-			this.trust = trust;
-            this.subSigs = subSigs;
-            this.pub = new PgpPublicKey(keyPair.PublicKey, trust, subSigs);
-        }
+			this.secret = secret;
+			this.pub = pub;
+		}
 
 		internal PgpSecretKey(
-            PgpKeyPair					keyPair,
-            SymmetricKeyAlgorithmTag	encAlgorithm,
-            char[]						passPhrase,
-			bool						useSHA1,
+			PgpPrivateKey				privKey,
+			PgpPublicKey				pubKey,
+			SymmetricKeyAlgorithmTag	encAlgorithm,
+			char[]						passPhrase,
+			bool						useSha1,
 			SecureRandom				rand)
-        {
-			PublicKeyPacket pubPk = keyPair.PublicKey.publicPk;
+			: this(privKey, pubKey, encAlgorithm, passPhrase, useSha1, rand, false)
+		{
+		}
 
+		internal PgpSecretKey(
+			PgpPrivateKey				privKey,
+			PgpPublicKey				pubKey,
+			SymmetricKeyAlgorithmTag	encAlgorithm,
+            char[]						passPhrase,
+			bool						useSha1,
+			SecureRandom				rand,
+			bool						isMasterKey)
+        {
 			BcpgObject secKey;
-			switch (keyPair.PublicKey.Algorithm)
+
+			this.pub = pubKey;
+
+			switch (pubKey.Algorithm)
             {
 				case PublicKeyAlgorithmTag.RsaEncrypt:
 				case PublicKeyAlgorithmTag.RsaSign:
 				case PublicKeyAlgorithmTag.RsaGeneral:
-					RsaPrivateCrtKeyParameters rsK = (RsaPrivateCrtKeyParameters) keyPair.PrivateKey.Key;
+					RsaPrivateCrtKeyParameters rsK = (RsaPrivateCrtKeyParameters) privKey.Key;
 					secKey = new RsaSecretBcpgKey(rsK.Exponent, rsK.P, rsK.Q);
 					break;
 				case PublicKeyAlgorithmTag.Dsa:
-					DsaPrivateKeyParameters dsK = (DsaPrivateKeyParameters) keyPair.PrivateKey.Key;
+					DsaPrivateKeyParameters dsK = (DsaPrivateKeyParameters) privKey.Key;
 					secKey = new DsaSecretBcpgKey(dsK.X);
 					break;
 				case PublicKeyAlgorithmTag.ElGamalEncrypt:
 				case PublicKeyAlgorithmTag.ElGamalGeneral:
-					ElGamalPrivateKeyParameters esK = (ElGamalPrivateKeyParameters) keyPair.PrivateKey.Key;
+					ElGamalPrivateKeyParameters esK = (ElGamalPrivateKeyParameters) privKey.Key;
 					secKey = new ElGamalSecretBcpgKey(esK.X);
 					break;
 				default:
@@ -143,7 +75,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 				pOut.WriteObject(secKey);
 
 				byte[] keyData = bOut.ToArray();
-				byte[] checksumBytes = Checksum(useSHA1, keyData, keyData.Length);
+				byte[] checksumBytes = Checksum(useSha1, keyData, keyData.Length);
 
 				pOut.Write(checksumBytes);
 
@@ -151,7 +83,14 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 
 				if (encAlgorithm == SymmetricKeyAlgorithmTag.Null)
 				{
-					this.secret = new SecretKeyPacket(pubPk, encAlgorithm, null, null, bOutData);
+					if (isMasterKey)
+					{
+						this.secret = new SecretKeyPacket(pub.publicPk, encAlgorithm, null, null, bOutData);
+					}
+					else
+					{
+						this.secret = new SecretSubkeyPacket(pub.publicPk, encAlgorithm, null, null, bOutData);
+					}
 				}
 				else
                 {
@@ -159,14 +98,19 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 					byte[] iv;
 					byte[] encData = EncryptKeyData(bOutData, encAlgorithm, passPhrase, rand, out s2k, out iv);
 
-					int usage = useSHA1
+					int s2kUsage = useSha1
 						?	SecretKeyPacket.UsageSha1
 						:	SecretKeyPacket.UsageChecksum;
 
-					this.secret = new SecretKeyPacket(pubPk, encAlgorithm, usage, s2k, iv, encData);
+					if (isMasterKey)
+					{
+						this.secret = new SecretKeyPacket(pub.publicPk, encAlgorithm, s2kUsage, s2k, iv, encData);
+					}
+					else
+					{
+						this.secret = new SecretSubkeyPacket(pub.publicPk, encAlgorithm, s2kUsage, s2k, iv, encData);
+					}
 				}
-
-				this.trust = null;
             }
             catch (PgpException e)
             {
@@ -174,10 +118,9 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             }
             catch (Exception e)
             {
+				Console.WriteLine(e.StackTrace);
                 throw new PgpException("Exception encrypting key", e);
             }
-
-			this.keySigs = new ArrayList();
         }
 
 		public PgpSecretKey(
@@ -199,49 +142,48 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			string						id,
 			SymmetricKeyAlgorithmTag	encAlgorithm,
 			char[]						passPhrase,
-			bool						useSHA1,
+			bool						useSha1,
 			PgpSignatureSubpacketVector	hashedPackets,
 			PgpSignatureSubpacketVector	unhashedPackets,
 			SecureRandom				rand)
-			: this(keyPair, encAlgorithm, passPhrase, useSHA1, rand)
+			: this(keyPair.PrivateKey, certifiedPublicKey(certificationLevel, keyPair, id, hashedPackets, unhashedPackets), encAlgorithm, passPhrase, useSha1, rand, true)
 		{
+		}
+
+		private static PgpPublicKey certifiedPublicKey(
+			int							certificationLevel,
+			PgpKeyPair					keyPair,
+			string						id,
+			PgpSignatureSubpacketVector	hashedPackets,
+			PgpSignatureSubpacketVector	unhashedPackets)
+		{
+			PgpSignatureGenerator sGen;
+			try
+			{
+				sGen = new PgpSignatureGenerator(keyPair.PublicKey.Algorithm, HashAlgorithmTag.Sha1);
+			}
+			catch (Exception e)
+			{
+				throw new PgpException("Creating signature generator: " + e.Message, e);
+			}
+
+			//
+			// Generate the certification
+			//
+			sGen.InitSign(certificationLevel, keyPair.PrivateKey);
+
+			sGen.SetHashedSubpackets(hashedPackets);
+			sGen.SetUnhashedSubpackets(unhashedPackets);
+
 			try
             {
-                this.trust = null;
-                this.ids = new ArrayList();
-                ids.Add(id);
-
-				this.idTrusts = new ArrayList();
-                idTrusts.Add(null);
-
-				this.idSigs = new ArrayList();
-
-				PgpSignatureGenerator sGen = new PgpSignatureGenerator(
-					keyPair.PublicKey.Algorithm, HashAlgorithmTag.Sha1);
-
-				//
-                // Generate the certification
-                //
-                sGen.InitSign(certificationLevel, keyPair.PrivateKey);
-
-				sGen.SetHashedSubpackets(hashedPackets);
-                sGen.SetUnhashedSubpackets(unhashedPackets);
-
 				PgpSignature certification = sGen.GenerateCertification(id, keyPair.PublicKey);
-                this.pub = PgpPublicKey.AddCertification(keyPair.PublicKey, id, certification);
-
-				ArrayList sigList = new ArrayList();
-                sigList.Add(certification);
-                idSigs.Add(sigList);
-            }
-            catch (PgpException e)
-            {
-                throw e;
+                return PgpPublicKey.AddCertification(keyPair.PublicKey, id, certification);
             }
             catch (Exception e)
             {
-                throw new PgpException("Exception encrypting key", e);
-            }
+				throw new PgpException("Exception doing certification: " + e.Message, e);
+			}
         }
 
 		public PgpSecretKey(
@@ -271,11 +213,11 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			string						id,
 			SymmetricKeyAlgorithmTag	encAlgorithm,
 			char[]						passPhrase,
-			bool						useSHA1,
+			bool						useSha1,
 			PgpSignatureSubpacketVector	hashedPackets,
 			PgpSignatureSubpacketVector	unhashedPackets,
 			SecureRandom				rand)
-			: this(certificationLevel, new PgpKeyPair(algorithm, pubKey, privKey, time), id, encAlgorithm, passPhrase, useSHA1, hashedPackets, unhashedPackets, rand)
+			: this(certificationLevel, new PgpKeyPair(algorithm, pubKey, privKey, time), id, encAlgorithm, passPhrase, useSha1, hashedPackets, unhashedPackets, rand)
 		{
 		}
 
@@ -310,7 +252,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 		/// <summary>True, if this is a master key.</summary>
         public bool IsMasterKey
 		{
-			get { return subSigs == null; }
+			get { return pub.IsMasterKey; }
         }
 
 		/// <summary>The algorithm the key is encrypted with.</summary>
@@ -378,8 +320,8 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 
 					data = c.DoFinal(encData);
 
-					bool useSHA1 = secret.S2kUsage == SecretKeyPacket.UsageSha1;
-					byte[] check = Checksum(useSHA1, data, (useSHA1) ? data.Length - 20 : data.Length - 2);
+					bool useSha1 = secret.S2kUsage == SecretKeyPacket.UsageSha1;
+					byte[] check = Checksum(useSha1, data, (useSha1) ? data.Length - 20 : data.Length - 2);
 
 					for (int i = 0; i != check.Length; i++)
 					{
@@ -510,11 +452,11 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
         }
 
 		private static byte[] Checksum(
-			bool	useSHA1,
+			bool	useSha1,
 			byte[]	bytes,
 			int		length)
 		{
-			if (useSHA1)
+			if (useSha1)
 			{
 				try
 				{
@@ -553,38 +495,38 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             BcpgOutputStream bcpgOut = BcpgOutputStream.Wrap(outStr);
 
 			bcpgOut.WritePacket(secret);
-            if (trust != null)
+            if (pub.trustPk != null)
             {
-                bcpgOut.WritePacket(trust);
+                bcpgOut.WritePacket(pub.trustPk);
             }
 
-			if (subSigs == null) // is not a sub key
+			if (pub.subSigs == null) // is not a sub key
             {
-				foreach (PgpSignature keySig in keySigs)
+				foreach (PgpSignature keySig in pub.keySigs)
 				{
 					keySig.Encode(bcpgOut);
                 }
 
-				for (int i = 0; i != ids.Count; i++)
+				for (int i = 0; i != pub.ids.Count; i++)
                 {
-                    if (ids[i] is string)
+					object pubID = pub.ids[i];
+                    if (pubID is string)
                     {
-                        string id = (string) ids[i];
-
+                        string id = (string) pubID;
                         bcpgOut.WritePacket(new UserIdPacket(id));
                     }
                     else
                     {
-                        PgpUserAttributeSubpacketVector v = (PgpUserAttributeSubpacketVector)ids[i];
+                        PgpUserAttributeSubpacketVector v = (PgpUserAttributeSubpacketVector) pubID;
                         bcpgOut.WritePacket(new UserAttributePacket(v.ToSubpacketArray()));
                     }
 
-					if (idTrusts[i] != null)
+					if (pub.idTrusts[i] != null)
                     {
-                        bcpgOut.WritePacket((ContainedPacket)idTrusts[i]);
+                        bcpgOut.WritePacket((ContainedPacket)pub.idTrusts[i]);
                     }
 
-					foreach (PgpSignature sig in (ArrayList) idSigs[i])
+					foreach (PgpSignature sig in (ArrayList) pub.idSigs[i])
 					{
 						sig.Encode(bcpgOut);
                     }
@@ -592,7 +534,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             }
             else
             {
-				foreach (PgpSignature subSig in subSigs)
+				foreach (PgpSignature subSig in pub.subSigs)
 				{
 					subSig.Encode(bcpgOut);
                 }
@@ -671,14 +613,23 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 	                newEncAlgorithm, s2kUsage, s2k, iv, keyData);
             }
 
-			if (key.subSigs == null)
-            {
-                return new PgpSecretKey(secret, key.trust, key.keySigs, key.ids,
-                    key.idTrusts, key.idSigs, key.pub);
-            }
-
-			return new PgpSecretKey(secret, key.trust, key.subSigs, key.pub);
+			return new PgpSecretKey(secret, key.pub);
         }
+
+		/// <summary>Replace the passed the public key on the passed in secret key.</summary>
+		/// <param name="secretKey">Secret key to change.</param>
+		/// <param name="publicKey">New public key.</param>
+		/// <returns>A new secret key.</returns>
+		/// <exception cref="ArgumentException">If KeyId's do not match.</exception>
+		public static PgpSecretKey ReplacePublicKey(
+			PgpSecretKey	secretKey,
+			PgpPublicKey	publicKey)
+		{
+			if (publicKey.KeyId != secretKey.KeyId)
+				throw new ArgumentException("KeyId's do not match");
+
+			return new PgpSecretKey(secretKey.secret, publicKey);
+		}
 
 		private static byte[] EncryptKeyData(
 			byte[]						rawKeyData, 

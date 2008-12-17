@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Globalization;
+using System.IO;
 using System.Text;
 
 using Org.BouncyCastle.Asn1.Pkcs;
@@ -878,19 +879,19 @@ namespace Org.BouncyCastle.Asn1.X509
 			return true;
 		}
 
-		private bool equivalentStrings(
+		private static bool equivalentStrings(
 			string	s1,
 			string	s2)
 		{
-			string value = s1.ToLower(CultureInfo.InvariantCulture).Trim();
-			string oValue = s2.ToLower(CultureInfo.InvariantCulture).Trim();
+			string v1 = canonicalize(s1);
+			string v2 = canonicalize(s2);
 
-			if (!value.Equals(oValue))
+			if (!v1.Equals(v2))
 			{
-				value = stripInternalSpaces(value);
-				oValue = stripInternalSpaces(oValue);
+				v1 = stripInternalSpaces(v1);
+				v2 = stripInternalSpaces(v2);
 
-				if (!value.Equals(oValue))
+				if (!v1.Equals(v2))
 				{
 					return false;
 				}
@@ -899,7 +900,38 @@ namespace Org.BouncyCastle.Asn1.X509
 			return true;
 		}
 
-		private string stripInternalSpaces(
+		private static string canonicalize(
+			string s)
+		{
+			string v = s.ToLower(CultureInfo.InvariantCulture).Trim();
+
+			if (v.StartsWith("#"))
+			{
+				Asn1Object obj = decodeObject(v);
+
+				if (obj is IAsn1String)
+				{
+					v = ((IAsn1String)obj).GetString().ToLower(CultureInfo.InvariantCulture).Trim();
+				}
+			}
+
+			return v;
+		}
+
+		private static Asn1Object decodeObject(
+			string v)
+		{
+			try
+			{
+				return Asn1Object.FromByteArray(Hex.Decode(v.Substring(1)));
+			}
+			catch (IOException e)
+			{
+				throw new InvalidOperationException("unknown encoding in name: " + e.Message, e);
+			}
+		}
+
+		private static string stripInternalSpaces(
 			string str)
 		{
 			StringBuilder res = new StringBuilder();

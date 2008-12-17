@@ -129,7 +129,10 @@ namespace Org.BouncyCastle.Crypto.Encodings
 			int		inOff,
 			int		inLen)
 		{
-			byte[] block = new byte[engine.GetInputBlockSize()];
+	        if (inLen > GetInputBlockSize())
+	            throw new ArgumentException("input data too large", "inLen");
+
+	        byte[] block = new byte[engine.GetInputBlockSize()];
 
 			if (forPrivateKey)
 			{

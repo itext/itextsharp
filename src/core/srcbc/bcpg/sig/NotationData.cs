@@ -39,10 +39,10 @@ namespace Org.BouncyCastle.Bcpg.Sig
 		{
 			MemoryStream os = new MemoryStream();
 
-			//		(4 octets of flags, 2 octets of name length (M),
-			//		2 octets of value length (N),
-			//		M octets of name data,
-			//		N octets of value data)
+			// (4 octets of flags, 2 octets of name length (M),
+			// 2 octets of value length (N),
+			// M octets of name data,
+			// N octets of value data)
 
 			// flags
 			os.WriteByte(humanReadable ? (byte)0x80 : (byte)0x00);
@@ -96,6 +96,17 @@ namespace Org.BouncyCastle.Bcpg.Sig
 			int valuePos = HeaderFlagLength + HeaderNameLength + HeaderValueLength + nameLength;
 
 			return Encoding.UTF8.GetString(data, valuePos, valueLength);
+		}
+
+		public byte[] GetNotationValueBytes()
+		{
+			int nameLength = ((data[HeaderFlagLength] << 8) + (data[HeaderFlagLength + 1] << 0));
+			int valueLength = ((data[HeaderFlagLength + HeaderNameLength] << 8) + (data[HeaderFlagLength + HeaderNameLength + 1] << 0));
+			int valuePos = HeaderFlagLength + HeaderNameLength + HeaderValueLength + nameLength;
+
+			byte[] bytes = new byte[valueLength];
+			Array.Copy(data, valuePos, bytes, 0, valueLength);
+			return bytes;
 		}
 	}
 }

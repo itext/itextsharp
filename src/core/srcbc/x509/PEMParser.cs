@@ -59,7 +59,7 @@ namespace Org.BouncyCastle.X509
 
 			while ((line = ReadLine(inStream)) != null)
 			{
-				if (line.Equals(_header1) || line.Equals(_header2))
+				if (line.StartsWith(_header1) || line.StartsWith(_header2))
 				{
 					break;
 				}
@@ -67,7 +67,7 @@ namespace Org.BouncyCastle.X509
 
 			while ((line = ReadLine(inStream)) != null)
 			{
-				if (line.Equals(_footer1) || line.Equals(_footer2))
+				if (line.StartsWith(_footer1) || line.StartsWith(_footer2))
 				{
 					break;
 				}

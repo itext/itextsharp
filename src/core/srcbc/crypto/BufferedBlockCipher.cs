@@ -278,6 +278,10 @@ namespace Org.BouncyCastle.Crypto
 					outBytes = tmp;
 				}
 			}
+			else
+			{
+				Reset();
+			}
 
 			return outBytes;
 		}
@@ -310,6 +314,10 @@ namespace Org.BouncyCastle.Crypto
 					Array.Copy(outBytes, 0, tmp, 0, pos);
 					outBytes = tmp;
 				}
+			}
+			else
+			{
+				Reset();
 			}
 
 			return outBytes;
