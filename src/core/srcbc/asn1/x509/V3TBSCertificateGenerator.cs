@@ -32,6 +32,8 @@ namespace Org.BouncyCastle.Asn1.X509
         internal X509Extensions          extensions;
 
 		private bool altNamePresentAndCritical;
+		private DerBitString issuerUniqueID;
+		private DerBitString subjectUniqueID;
 
 		public V3TbsCertificateGenerator()
         {
@@ -85,6 +87,18 @@ namespace Org.BouncyCastle.Asn1.X509
             this.subject = subject;
         }
 
+		public void SetIssuerUniqueID(
+			DerBitString uniqueID)
+		{
+			this.issuerUniqueID = uniqueID;
+		}
+
+		public void SetSubjectUniqueID(
+			DerBitString uniqueID)
+		{
+			this.subjectUniqueID = uniqueID;
+		}
+
 		public void SetSubjectPublicKeyInfo(
             SubjectPublicKeyInfo pubKeyInfo)
         {
@@ -132,6 +146,16 @@ namespace Org.BouncyCastle.Asn1.X509
 			}
 
 			v.Add(subjectPublicKeyInfo);
+
+			if (issuerUniqueID != null)
+			{
+				v.Add(new DerTaggedObject(false, 1, issuerUniqueID));
+			}
+
+			if (subjectUniqueID != null)
+			{
+				v.Add(new DerTaggedObject(false, 2, subjectUniqueID));
+			}
 
 			if (extensions != null)
             {

@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Bcpg
 {
 	/// <remarks>Generic literal data packet.</remarks>
@@ -47,5 +49,10 @@ namespace Org.BouncyCastle.Bcpg
 		{
 			get { return fileName; }
 		}
-    }
+
+		public byte[] GetRawFileName()
+		{
+			return Strings.ToByteArray(fileName);
+		}
+	}
 }

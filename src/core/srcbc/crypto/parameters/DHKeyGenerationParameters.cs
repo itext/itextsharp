@@ -12,7 +12,7 @@ namespace Org.BouncyCastle.Crypto.Parameters
 		public DHKeyGenerationParameters(
             SecureRandom	random,
             DHParameters	parameters)
-			: base(random, parameters.P.BitLength)
+			: base(random, GetStrength(parameters))
         {
             this.parameters = parameters;
         }
@@ -21,5 +21,11 @@ namespace Org.BouncyCastle.Crypto.Parameters
         {
             get { return parameters; }
         }
+
+		internal static int GetStrength(
+			DHParameters parameters)
+		{
+			return parameters.L != 0 ? parameters.L : parameters.P.BitLength;
+		}
     }
 }

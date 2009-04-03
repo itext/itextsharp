@@ -14,6 +14,9 @@ namespace Org.BouncyCastle.Asn1.X509
         public static readonly DerObjectIdentifier Organization            = new DerObjectIdentifier(ID + ".10");
         public static readonly DerObjectIdentifier OrganizationalUnitName  = new DerObjectIdentifier(ID + ".11");
 
+		public static readonly DerObjectIdentifier id_at_telephoneNumber   = new DerObjectIdentifier(ID + ".20");
+		public static readonly DerObjectIdentifier id_at_name              = new DerObjectIdentifier(ID + ".41");
+
 		// id-SHA1 OBJECT IDENTIFIER ::=
         //   {iso(1) identified-organization(3) oiw(14) secsig(3) algorithms(2) 26 }    //
         public static readonly DerObjectIdentifier IdSha1 = new DerObjectIdentifier("1.3.14.3.2.26");

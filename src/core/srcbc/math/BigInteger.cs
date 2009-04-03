@@ -2101,9 +2101,7 @@ namespace Org.BouncyCastle.Math
 				return this.sign > 0 ? result : result.Negate();
 			}
 
-			int maxBitLength = this.BitLength + val.BitLength;
-			int resLength = (maxBitLength + BitsPerInt - 1) / BitsPerInt;
-
+			int resLength = (this.BitLength + val.BitLength) / BitsPerInt + 1;
 			int[] res = new int[resLength];
 
 			if (val == this)

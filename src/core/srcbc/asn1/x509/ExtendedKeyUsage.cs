@@ -58,6 +58,17 @@ namespace Org.BouncyCastle.Asn1.X509
         }
 
 		public ExtendedKeyUsage(
+			params KeyPurposeID[] usages)
+		{
+			this.seq = new DerSequence(usages);
+
+			foreach (KeyPurposeID usage in usages)
+			{
+				this.usageTable.Add(usage, usage);
+			}
+		}
+
+		public ExtendedKeyUsage(
             ArrayList usages)
         {
             Asn1EncodableVector v = new Asn1EncodableVector();

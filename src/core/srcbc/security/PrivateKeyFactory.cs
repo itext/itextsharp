@@ -68,9 +68,11 @@ namespace Org.BouncyCastle.Security
 					Asn1Sequence.GetInstance(algID.Parameters.ToAsn1Object()));
 				DerInteger derX = (DerInteger)keyInfo.PrivateKey;
 
-				return new DHPrivateKeyParameters(
-					derX.Value,
-					new DHParameters(para.P, para.G));
+				BigInteger lVal = para.L;
+				int l = lVal == null ? 0 : lVal.IntValue;
+				DHParameters dhParams = new DHParameters(para.P, para.G, null, l);
+
+				return new DHPrivateKeyParameters(derX.Value, dhParams);
 			}
 			else if (algOid.Equals(OiwObjectIdentifiers.ElGamalAlgorithm))
 			{

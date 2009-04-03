@@ -130,6 +130,49 @@ namespace Org.BouncyCastle.X509
 		}
 
 		/// <summary>
+		/// Set the subject unique ID - note: it is very rare that it is correct to do this.
+		/// </summary>
+		/// <param name="uniqueID"/>
+		public void SetSubjectUniqueID(
+			bool[] uniqueID)
+		{
+			tbsGen.SetSubjectUniqueID(booleanToBitString(uniqueID));
+		}
+
+		/// <summary>
+		/// Set the issuer unique ID - note: it is very rare that it is correct to do this.
+		/// </summary>
+		/// <param name="uniqueID"/>
+		public void SetIssuerUniqueID(
+			bool[] uniqueID)
+		{
+			tbsGen.SetIssuerUniqueID(booleanToBitString(uniqueID));
+		}
+
+		private DerBitString booleanToBitString(
+			bool[] id)
+		{
+			byte[] bytes = new byte[(id.Length + 7) / 8];
+
+			for (int i = 0; i != id.Length; i++)
+			{
+				if (id[i])
+				{
+					bytes[i / 8] |= (byte)(1 << ((7 - (i % 8))));
+				}
+			}
+
+			int pad = id.Length % 8;
+
+			if (pad == 0)
+			{
+				return new DerBitString(bytes);
+			}
+
+			return new DerBitString(bytes, 8 - pad);
+		}
+
+		/// <summary>
 		/// Add a given extension field for the standard extensions tag (tag 3).
 		/// </summary>
 		/// <param name="oid">string containing a dotted decimal Object Identifier.</param>

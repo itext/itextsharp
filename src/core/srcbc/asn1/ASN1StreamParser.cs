@@ -59,8 +59,16 @@ namespace Org.BouncyCastle.Asn1
 
 				IndefiniteLengthInputStream indIn = new IndefiniteLengthInputStream(_in);
 
+				if ((tag & Asn1Tags.Application) != 0)
+				{
+					Asn1StreamParser sp2 = new Asn1StreamParser(indIn);
+
+					return new BerApplicationSpecificParser(tagNo, sp2);
+				}
+
 				if ((tag & Asn1Tags.Tagged) != 0)
 				{
+					// TODO Investigate passing an Asn1StreamParser into this constructor
 					return new BerTaggedObjectParser(tag, tagNo, indIn);
 				}
 

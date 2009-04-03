@@ -199,6 +199,13 @@ namespace Org.BouncyCastle.Cms
 		*/
 		public SignerInformationStore GetCounterSignatures()
 		{
+			// TODO There are several checks implied by the RFC3852 comments that are missing
+
+			/*
+			The countersignature attribute MUST be an unsigned attribute; it MUST
+			NOT be a signed attribute, an authenticated attribute, an
+			unauthenticated attribute, or an unprotected attribute.
+			*/        
 			Asn1.Cms.AttributeTable unsignedAttributeTable = UnsignedAttributes;
 			if (unsignedAttributeTable == null)
 			{
@@ -207,14 +214,42 @@ namespace Org.BouncyCastle.Cms
 
 			IList counterSignatures = new ArrayList();
 
-			Asn1.Cms.Attribute counterSignatureAttribute = unsignedAttributeTable[CmsAttributes.CounterSignature];
-			if (counterSignatureAttribute != null)
+			/*
+			The UnsignedAttributes syntax is defined as a SET OF Attributes.  The
+			UnsignedAttributes in a signerInfo may include multiple instances of
+			the countersignature attribute.
+			*/
+			Asn1EncodableVector allCSAttrs = unsignedAttributeTable.GetAll(CmsAttributes.CounterSignature);
+
+			foreach (Asn1.Cms.Attribute counterSignatureAttribute in allCSAttrs)
 			{
+				/*
+				A countersignature attribute can have multiple attribute values.  The
+				syntax is defined as a SET OF AttributeValue, and there MUST be one
+				or more instances of AttributeValue present.
+				*/
 				Asn1Set values = counterSignatureAttribute.AttrValues;
-				counterSignatures = new ArrayList(values.Count);
+				if (values.Count < 1)
+				{
+					// TODO Throw an appropriate exception?
+				}
 
 				foreach (Asn1Encodable asn1Obj in values)
 				{
+					/*
+					Countersignature values have the same meaning as SignerInfo values
+					for ordinary signatures, except that:
+					
+					   1. The signedAttributes field MUST NOT contain a content-type
+					      attribute; there is no content type for countersignatures.
+					
+					   2. The signedAttributes field MUST contain a message-digest
+					      attribute if it contains any other attributes.
+					
+					   3. The input to the message-digesting process is the contents
+					      octets of the DER encoding of the signatureValue field of the
+					      SignerInfo value with which the attribute is associated.
+					*/
 					SignerInfo si = SignerInfo.GetInstance(asn1Obj.ToAsn1Object());
 
 					string digestName = CmsSignedHelper.Instance.GetDigestAlgName(si.DigestAlgorithm.ObjectID.Id);

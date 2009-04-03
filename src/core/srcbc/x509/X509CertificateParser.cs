@@ -157,7 +157,7 @@ namespace Org.BouncyCastle.X509
 			}
 			catch (Exception e)
 			{
-				throw new CertificateException(e.ToString());
+				throw new CertificateException("Failed to read certificate", e);
 			}
 		}
 

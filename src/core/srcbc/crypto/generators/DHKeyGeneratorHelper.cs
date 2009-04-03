@@ -1,14 +1,14 @@
 using System;
 
+using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Generators
 {
 	class DHKeyGeneratorHelper
 	{
-		private const int MAX_ITERATIONS = 1000;
-
 		internal static readonly DHKeyGeneratorHelper Instance = new DHKeyGeneratorHelper();
 
 		private DHKeyGeneratorHelper()
@@ -16,63 +16,38 @@ namespace Org.BouncyCastle.Crypto.Generators
 		}
 
 		internal BigInteger CalculatePrivate(
-			BigInteger		p,
-			SecureRandom	random,
-			int				limit)
-		{
-			//
-			// calculate the private key
-			//
-			BigInteger pSub2 = p.Subtract(BigInteger.Two);
-			BigInteger x;
-
-			if (limit == 0)
-			{
-				x = createInRange(pSub2, random);
-			}
-			else
-			{
-				do
-				{
-					// TODO Check this (should the generated numbers always be odd,
-					// and length 'limit'?)
-					x = new BigInteger(limit, 0, random);
-				}
-				while (x.SignValue == 0);
-			}
-
-			return x;
-		}
-
-		private BigInteger createInRange(
-			BigInteger		max,
+			DHParameters	dhParams,
 			SecureRandom	random)
 		{
-			BigInteger x;
-			int maxLength = max.BitLength;
-			int count = 0;
+			int limit = dhParams.L;
 
-			do
+			if (limit != 0)
 			{
-				x = new BigInteger(maxLength, random);
-				count++;
-			}
-			while ((x.SignValue == 0 || x.CompareTo(max) > 0) && count != MAX_ITERATIONS);
-
-			if (count == MAX_ITERATIONS)  // fall back to a faster (restricted) method
-			{
-				return new BigInteger(maxLength - 1, random).SetBit(0);
+				return new BigInteger(limit, random).SetBit(limit - 1);
 			}
 
-			return x;
+			BigInteger min = BigInteger.Two;
+			int m = dhParams.M;
+			if (m != 0)
+			{
+				min = BigInteger.One.ShiftLeft(m - 1);
+			}
+
+			BigInteger max = dhParams.P.Subtract(BigInteger.Two);
+			BigInteger q = dhParams.Q;
+			if (q != null)
+			{
+				max = q.Subtract(BigInteger.Two);
+			}
+
+			return BigIntegers.CreateRandomInRange(min, max, random);
 		}
 
 		internal BigInteger CalculatePublic(
-			BigInteger	p,
-			BigInteger	g,
-			BigInteger	x)
+			DHParameters	dhParams,
+			BigInteger		x)
 		{
-			return g.ModPow(x, p);
+			return dhParams.G.ModPow(x, dhParams.P);
 		}
 	}
 }

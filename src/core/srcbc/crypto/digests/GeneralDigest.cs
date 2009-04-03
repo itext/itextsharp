@@ -100,7 +100,7 @@ namespace Org.BouncyCastle.Crypto.Digests
         {
             byteCount = 0;
             xBufOff = 0;
-            for ( int i = 0; i < xBuf.Length; i++ ) xBuf[i] = 0;
+			Array.Clear(xBuf, 0, xBuf.Length);
         }
 
 		public int GetByteLength()

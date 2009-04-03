@@ -151,6 +151,7 @@ namespace Org.BouncyCastle.Asn1.Pkcs
         //
         public const string IdCT = "1.2.840.113549.1.9.16.1";
 
+        public static readonly DerObjectIdentifier IdCTAuthData          = new DerObjectIdentifier(IdCT + ".2");
         public static readonly DerObjectIdentifier IdCTTstInfo           = new DerObjectIdentifier(IdCT + ".4");
         public static readonly DerObjectIdentifier IdCTCompressedData    = new DerObjectIdentifier(IdCT + ".9");
 

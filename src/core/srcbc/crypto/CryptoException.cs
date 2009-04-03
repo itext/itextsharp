@@ -2,20 +2,20 @@ using System;
 
 namespace Org.BouncyCastle.Crypto
 {
-    public abstract class CryptoException
+    public class CryptoException
 		: Exception
     {
-        protected CryptoException()
+        public CryptoException()
         {
         }
 
-		protected CryptoException(
+		public CryptoException(
             string message)
 			: base(message)
         {
         }
 
-		protected CryptoException(
+		public CryptoException(
             string		message,
             Exception	exception)
 			: base(message, exception)

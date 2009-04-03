@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.10.6030"
+        ProductVersion = "7.10.3077"
         SchemaVersion = "2.0"
         ProjectGuid = "{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}"
     >
@@ -2283,6 +2283,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\asn1\BerApplicationSpecific.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\asn1\BerApplicationSpecificParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\asn1\BERGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2518,6 +2528,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\asn1\IAsn1ApplicationSpecificParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\asn1\IAsn1Choice.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2589,6 +2604,16 @@
                 />
                 <File
                     RelPath = "srcbc\asn1\cms\AttributeTable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\asn1\cms\AuthenticatedData.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\asn1\cms\AuthenticatedDataParser.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -2784,6 +2809,11 @@
                 />
                 <File
                     RelPath = "srcbc\asn1\cryptopro\GOST3410PublicKeyAlgParameters.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\asn1\eac\EACObjectIdentifiers.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -4608,6 +4638,26 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\crypto\agreement\srp\SRP6Client.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\crypto\agreement\srp\SRP6Server.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\crypto\agreement\srp\SRP6Utilities.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\crypto\agreement\srp\SRP6VerifierGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\crypto\digests\GeneralDigest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -5083,6 +5133,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\crypto\io\SignerStream.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\crypto\macs\CBCBlockCipherMac.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -5523,6 +5578,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\crypto\signers\GenericSigner.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\crypto\signers\GOST3410DigestSigner.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -5598,6 +5658,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\crypto\tls\TlsDssSigner.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\crypto\tls\TlsException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -5624,6 +5689,11 @@
                 />
                 <File
                     RelPath = "srcbc\crypto\tls\TlsProtocolHandler.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\crypto\tls\TlsRsaSigner.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -6003,7 +6073,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\openssl\EncryptionException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\openssl\IPasswordFinder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\openssl\PasswordException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -6059,6 +6139,116 @@
                 />
                 <File
                     RelPath = "srcbc\pkcs\X509CertificateEntry.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\CertStatus.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixAttrCertChecker.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixAttrCertPathBuilder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixAttrCertPathValidator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixBuilderParameters.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixCertPath.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixCertPathBuilder.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixCertPathBuilderException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixCertPathBuilderResult.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixCertPathChecker.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixCertPathValidator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixCertPathValidatorException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixCertPathValidatorResult.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixCertPathValidatorUtilities.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixNameConstraintValidator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixNameConstraintValidatorException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixParameters.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\PkixPolicyNode.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\ReasonsMask.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\Rfc3280CertPathUtilities.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\Rfc3281CertPathUtilities.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\pkix\TrustAnchor.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

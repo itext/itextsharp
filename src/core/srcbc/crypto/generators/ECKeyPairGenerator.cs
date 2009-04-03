@@ -2,6 +2,7 @@ using System;
 using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.Sec;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -59,11 +60,20 @@ namespace Org.BouncyCastle.Crypto.Generators
 					case 192:
 						oid = X9ObjectIdentifiers.Prime192v1;
 						break;
+					case 224:
+						oid = SecObjectIdentifiers.SecP224r1;
+						break;
 					case 239:
 						oid = X9ObjectIdentifiers.Prime239v1;
 						break;
 					case 256:
 						oid = X9ObjectIdentifiers.Prime256v1;
+						break;
+					case 384:
+						oid = SecObjectIdentifiers.SecP384r1;
+						break;
+					case 521:
+						oid = SecObjectIdentifiers.SecP521r1;
 						break;
 					default:
 						throw new InvalidParameterException("unknown key size.");

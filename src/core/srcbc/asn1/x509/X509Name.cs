@@ -147,7 +147,12 @@ namespace Org.BouncyCastle.Asn1.X509
 		/**
 		 * id-at-telephoneNumber
 		 */
-		public static readonly DerObjectIdentifier TelephoneNumber = new DerObjectIdentifier("2.5.4.20");
+		public static readonly DerObjectIdentifier TelephoneNumber = X509ObjectIdentifiers.id_at_telephoneNumber;
+
+		/**
+		 * id-at-name
+		 */
+		public static readonly DerObjectIdentifier Name = X509ObjectIdentifiers.id_at_name;
 
 		/**
         * Email address (RSA PKCS#9 extension) - IA5String.
@@ -992,6 +997,7 @@ namespace Org.BouncyCastle.Asn1.X509
                 || (buf[index] == '"')
                 || (buf[index] == '\\')
                 || (buf[index] == '+')
+				|| (buf[index] == '=')
                 || (buf[index] == '<')
                 || (buf[index] == '>')
                 || (buf[index] == ';'))

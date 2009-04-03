@@ -37,9 +37,10 @@ namespace Org.BouncyCastle.Asn1.Nist
 			DefineCurve("B-233", SecObjectIdentifiers.SecT233r1);
 			DefineCurve("B-163", SecObjectIdentifiers.SecT163r2);
 			DefineCurve("P-521", SecObjectIdentifiers.SecP521r1);
+			DefineCurve("P-384", SecObjectIdentifiers.SecP384r1);
 			DefineCurve("P-256", SecObjectIdentifiers.SecP256r1);
 			DefineCurve("P-224", SecObjectIdentifiers.SecP224r1);
-			DefineCurve("P-384", SecObjectIdentifiers.SecP384r1);
+			DefineCurve("P-192", SecObjectIdentifiers.SecP192r1);
 		}
 
 		public static X9ECParameters GetByName(

@@ -29,7 +29,8 @@ namespace Org.BouncyCastle.Crypto.Generators
         protected override void engineInit(
 			KeyGenerationParameters parameters)
         {
-            base.engineInit(parameters);
+			this.random = parameters.Random;
+			this.strength = (parameters.Strength + 7) / 8;
 
 			if (strength == 0 || strength == (168 / 8))
             {

@@ -25,15 +25,15 @@ namespace Org.BouncyCastle.Crypto.Generators
         public AsymmetricCipherKeyPair GenerateKeyPair()
         {
 			DHKeyGeneratorHelper helper = DHKeyGeneratorHelper.Instance;
-			ElGamalParameters elParams = param.Parameters;
+			ElGamalParameters egp = param.Parameters;
+			DHParameters dhp = new DHParameters(egp.P, egp.G, null, 0, egp.L);
 
-			BigInteger p = elParams.P;
-			BigInteger x = helper.CalculatePrivate(p, param.Random, elParams.L);
-			BigInteger y = helper.CalculatePublic(p, elParams.G, x);
+			BigInteger x = helper.CalculatePrivate(dhp, param.Random);
+			BigInteger y = helper.CalculatePublic(dhp, x);
 
 			return new AsymmetricCipherKeyPair(
-                new ElGamalPublicKeyParameters(y, elParams),
-                new ElGamalPrivateKeyParameters(x, elParams));
+                new ElGamalPublicKeyParameters(y, egp),
+                new ElGamalPrivateKeyParameters(x, egp));
         }
     }
 

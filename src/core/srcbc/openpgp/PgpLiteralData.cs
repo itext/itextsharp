@@ -36,6 +36,12 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			get { return data.FileName; }
         }
 
+		/// Return the file name as an unintrepreted byte array.
+		public byte[] GetRawFileName()
+		{
+			return data.GetRawFileName();
+		}
+
 		/// <summary>The modification time for the file.</summary>
         public DateTime ModificationTime
         {

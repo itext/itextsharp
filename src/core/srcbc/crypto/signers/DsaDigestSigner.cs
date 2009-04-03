@@ -49,14 +49,10 @@ namespace Org.BouncyCastle.Crypto.Signers
             }
 
             if (forSigning && !k.IsPrivate)
-            {
                 throw new InvalidKeyException("Signing Requires Private Key.");
-            }
 
             if (!forSigning && k.IsPrivate)
-            {
                 throw new InvalidKeyException("Verification Requires Public Key.");
-            }
 
             Reset();
 
@@ -95,16 +91,9 @@ namespace Org.BouncyCastle.Crypto.Signers
 			byte[] hash = new byte[digest.GetDigestSize()];
 			digest.DoFinal(hash, 0);
 
-			try
-			{
-				BigInteger[] sig = dsaSigner.GenerateSignature(hash);
+			BigInteger[] sig = dsaSigner.GenerateSignature(hash);
 
-				return DerEncode(sig[0], sig[1]);
-			}
-			catch (Exception e)
-			{
-				throw new SignatureException(e.Message, e);
-			}
+			return DerEncode(sig[0], sig[1]);
 		}
 
 		/// <returns>true if the internal state represents the signature described in the passed in array.</returns>
@@ -117,17 +106,15 @@ namespace Org.BouncyCastle.Crypto.Signers
 			byte[] hash = new byte[digest.GetDigestSize()];
 			digest.DoFinal(hash, 0);
 
-			BigInteger[] sig;
 			try
 			{
-				sig = DerDecode(signature);
+				BigInteger[] sig = DerDecode(signature);
+				return dsaSigner.VerifySignature(hash, sig[0], sig[1]);
 			}
-			catch (Exception e)
+			catch (IOException)
 			{
-				throw new SignatureException("error decoding signature bytes.", e);
+				return false;
 			}
-
-			return dsaSigner.VerifySignature(hash, sig[0], sig[1]);
         }
 
 		/// <summary>Reset the internal state</summary>

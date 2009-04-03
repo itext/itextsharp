@@ -315,12 +315,12 @@ namespace Org.BouncyCastle.OpenSsl
 			if (procType == "4,ENCRYPTED")
 			{
 				if (pFinder == null)
-					throw new InvalidOperationException("No password finder specified, but a password is required");
+					throw new PasswordException("No password finder specified, but a password is required");
 
 				char[] password = pFinder.GetPassword();
 
 				if (password == null)
-					throw new IOException("Password is null, but a password is required");
+					throw new PasswordException("Password is null, but a password is required");
 
 				string dekInfo = (string) fields["DEK-Info"];
 				string[] tknz = dekInfo.Split(',');

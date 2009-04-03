@@ -11,6 +11,28 @@ namespace Org.BouncyCastle.Utilities
         {
         }
 
+		public static bool AreEqual(
+			bool[]  a,
+			bool[]  b)
+		{
+			if (a == b)
+				return true;
+
+			if (a == null || b == null)
+				return false;
+
+			if (a.Length != b.Length)
+				return false;
+
+			for (int i = 0; i < a.Length; i++)
+			{
+				if (a[i] != b[i])
+					return false;
+			}
+
+			return true;
+		}
+
         /// <summary>
         /// Are two arrays equal.
         /// </summary>

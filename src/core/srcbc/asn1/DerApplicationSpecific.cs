@@ -44,9 +44,6 @@ namespace Org.BouncyCastle.Asn1
 			int				tag,
 			Asn1Encodable	obj)
 		{
-			if (tag >= 0x1f)
-				throw new IOException("unsupported tag number");
-
 			byte[] data = obj.GetDerEncoded();
 
 			this.isConstructed = isExplicit;
@@ -63,6 +60,29 @@ namespace Org.BouncyCastle.Asn1
 				Array.Copy(data, lenBytes, tmp, 0, tmp.Length);
 				this.octets = tmp;
 			}
+		}
+
+		public DerApplicationSpecific(
+			int					tagNo,
+			Asn1EncodableVector	vec)
+		{
+			this.tag = tagNo;
+			this.isConstructed = true;
+			MemoryStream bOut = new MemoryStream();
+
+			for (int i = 0; i != vec.Count; i++)
+			{
+				try
+				{
+					byte[] bs = vec[i].GetEncoded();
+					bOut.Write(bs, 0, bs.Length);
+				}
+				catch (IOException e)
+				{
+					throw new InvalidOperationException("malformed object", e);
+				}
+			}
+			this.octets = bOut.ToArray();
 		}
 
 		private int GetLengthOfLength(
@@ -93,6 +113,12 @@ namespace Org.BouncyCastle.Asn1
             get { return tag; }
         }
 
+		/**
+		 * Return the enclosed object assuming explicit tagging.
+		 *
+		 * @return  the resulting object
+		 * @throws IOException if reconstruction fails.
+		 */
 		public Asn1Object GetObject()
         {
 			return FromByteArray(GetContents());
@@ -108,11 +134,16 @@ namespace Org.BouncyCastle.Asn1
 		public Asn1Object GetObject(
 			int derTagNo)
 		{
-			if (tag >= 0x1f)
+			if (derTagNo >= 0x1f)
 				throw new IOException("unsupported tag number");
 
-			byte[] tmp = this.GetEncoded();
-			tmp[0] = (byte) derTagNo;
+			byte[] orig = this.GetEncoded();
+			byte[] tmp = ReplaceTagNumber(derTagNo, orig);
+
+			if ((orig[0] & Asn1Tags.Constructed) != 0)
+			{
+				tmp[0] |= Asn1Tags.Constructed;
+			}
 
 			return FromByteArray(tmp);;
 		}
@@ -146,5 +177,46 @@ namespace Org.BouncyCastle.Asn1
 		{
 			return isConstructed.GetHashCode() ^ tag.GetHashCode() ^ Arrays.GetHashCode(octets);
         }
+
+		private byte[] ReplaceTagNumber(
+			int		newTag,
+			byte[]	input)
+		{
+			int tagNo = input[0] & 0x1f;
+			int index = 1;
+			//
+			// with tagged object tag number is bottom 5 bits, or stored at the start of the content
+			//
+			if (tagNo == 0x1f)
+			{
+				tagNo = 0;
+
+				int b = input[index++] & 0xff;
+
+				// X.690-0207 8.1.2.4.2
+				// "c) bits 7 to 1 of the first subsequent octet shall not all be zero."
+				if ((b & 0x7f) == 0) // Note: -1 will pass
+				{
+					throw new InvalidOperationException("corrupted stream - invalid high tag number found");
+				}
+
+				while ((b >= 0) && ((b & 0x80) != 0))
+				{
+					tagNo |= (b & 0x7f);
+					tagNo <<= 7;
+					b = input[index++] & 0xff;
+				}
+
+				tagNo |= (b & 0x7f);
+			}
+
+			byte[] tmp = new byte[input.Length - index + 1];
+
+			Array.Copy(input, index, tmp, 1, tmp.Length - 1);
+
+			tmp[0] = (byte)newTag;
+
+			return tmp;
+		}
     }
 }
