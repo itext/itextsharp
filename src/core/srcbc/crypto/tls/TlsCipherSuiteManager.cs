@@ -14,25 +14,36 @@ namespace Org.BouncyCastle.Crypto.Tls
 	public class TlsCipherSuiteManager
 	{
 		private const int TLS_RSA_WITH_3DES_EDE_CBC_SHA = 0x000a;
+		private const int TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA = 0x0013;
 		private const int TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA = 0x0016;
 		private const int TLS_RSA_WITH_AES_128_CBC_SHA = 0x002f;
+		private const int TLS_DHE_DSS_WITH_AES_128_CBC_SHA = 0x0032;
 		private const int TLS_DHE_RSA_WITH_AES_128_CBC_SHA = 0x0033;
 		private const int TLS_RSA_WITH_AES_256_CBC_SHA = 0x0035;
+		private const int TLS_DHE_DSS_WITH_AES_256_CBC_SHA = 0x0038;
 		private const int TLS_DHE_RSA_WITH_AES_256_CBC_SHA = 0x0039;
 
 		internal static void WriteCipherSuites(
 			Stream outStr)
 		{
-			TlsUtilities.WriteUint16(2 * 6, outStr);
+			int[] suites = new int[]
+			{
+				TLS_DHE_RSA_WITH_AES_256_CBC_SHA,
+				TLS_DHE_DSS_WITH_AES_256_CBC_SHA,
+				TLS_DHE_RSA_WITH_AES_128_CBC_SHA,
+				TLS_DHE_DSS_WITH_AES_128_CBC_SHA,
+				TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA,
+				TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA,
+				TLS_RSA_WITH_AES_256_CBC_SHA,
+				TLS_RSA_WITH_AES_128_CBC_SHA,
+				TLS_RSA_WITH_3DES_EDE_CBC_SHA,
+			};
 
-			TlsUtilities.WriteUint16(TLS_DHE_RSA_WITH_AES_256_CBC_SHA, outStr);
-			TlsUtilities.WriteUint16(TLS_DHE_RSA_WITH_AES_128_CBC_SHA, outStr);
-			TlsUtilities.WriteUint16(TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA, outStr);
-
-			TlsUtilities.WriteUint16(TLS_RSA_WITH_AES_256_CBC_SHA, outStr);
-			TlsUtilities.WriteUint16(TLS_RSA_WITH_AES_128_CBC_SHA, outStr);
-			TlsUtilities.WriteUint16(TLS_RSA_WITH_3DES_EDE_CBC_SHA, outStr);
-
+			TlsUtilities.WriteUint16(2 * suites.Length, outStr);
+			for (int i = 0; i < suites.Length; ++i)
+			{
+				TlsUtilities.WriteUint16(suites[i], outStr);
+			}
 		}
 
 		internal static TlsCipherSuite GetCipherSuite(
@@ -44,17 +55,26 @@ namespace Org.BouncyCastle.Crypto.Tls
 				case TLS_RSA_WITH_3DES_EDE_CBC_SHA:
 					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new DesEdeEngine()), new CbcBlockCipher(new DesEdeEngine()), new Sha1Digest(), new Sha1Digest(), 24, TlsCipherSuite.KE_RSA);
 
+				case TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA:
+					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new DesEdeEngine()), new CbcBlockCipher(new DesEdeEngine()), new Sha1Digest(), new Sha1Digest(), 24, TlsCipherSuite.KE_DHE_DSS);
+
 				case TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA:
 					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new DesEdeEngine()), new CbcBlockCipher(new DesEdeEngine()), new Sha1Digest(), new Sha1Digest(), 24, TlsCipherSuite.KE_DHE_RSA);
 
 				case TLS_RSA_WITH_AES_128_CBC_SHA:
 					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new AesFastEngine()), new CbcBlockCipher(new AesFastEngine()), new Sha1Digest(), new Sha1Digest(), 16, TlsCipherSuite.KE_RSA);
 
+				case TLS_DHE_DSS_WITH_AES_128_CBC_SHA:
+					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new AesFastEngine()), new CbcBlockCipher(new AesFastEngine()), new Sha1Digest(), new Sha1Digest(), 16, TlsCipherSuite.KE_DHE_DSS);
+
 				case TLS_DHE_RSA_WITH_AES_128_CBC_SHA:
 					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new AesFastEngine()), new CbcBlockCipher(new AesFastEngine()), new Sha1Digest(), new Sha1Digest(), 16, TlsCipherSuite.KE_DHE_RSA);
 
 				case TLS_RSA_WITH_AES_256_CBC_SHA:
 					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new AesFastEngine()), new CbcBlockCipher(new AesFastEngine()), new Sha1Digest(), new Sha1Digest(), 32, TlsCipherSuite.KE_RSA);
+
+				case TLS_DHE_DSS_WITH_AES_256_CBC_SHA:
+					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new AesFastEngine()), new CbcBlockCipher(new AesFastEngine()), new Sha1Digest(), new Sha1Digest(), 32, TlsCipherSuite.KE_DHE_DSS);
 
 				case TLS_DHE_RSA_WITH_AES_256_CBC_SHA:
 					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new AesFastEngine()), new CbcBlockCipher(new AesFastEngine()), new Sha1Digest(), new Sha1Digest(), 32, TlsCipherSuite.KE_DHE_RSA);

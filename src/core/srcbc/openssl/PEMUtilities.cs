@@ -39,7 +39,7 @@ namespace Org.BouncyCastle.OpenSsl
 		{
 			string baseAlg, mode;
 			if (!ParseDekAlgName(dekAlgName, out baseAlg, out mode))
-				throw new ArgumentException("Unknown DEK algorithm: " + dekAlgName, "dekAlgName");
+				throw new EncryptionException("Unknown DEK algorithm: " + dekAlgName);
 
 			string padding;
 			switch (mode)
@@ -53,7 +53,7 @@ namespace Org.BouncyCastle.OpenSsl
 					padding = "NoPadding";
 					break;
 				default:
-					throw new ArgumentException("Unknown DEK algorithm: " + dekAlgName, "dekAlgName");
+					throw new EncryptionException("Unknown DEK algorithm: " + dekAlgName);
 			}
 
 			string algorithm;
@@ -87,7 +87,7 @@ namespace Org.BouncyCastle.OpenSsl
 					algorithm = "RC2";
 					break;
 				default:
-					throw new ArgumentException("Unknown DEK algorithm: " + dekAlgName, "dekAlgName");
+					throw new EncryptionException("Unknown DEK algorithm: " + dekAlgName);
 			}
 
 			string cipherName = algorithm + "/" + mode + "/" + padding;

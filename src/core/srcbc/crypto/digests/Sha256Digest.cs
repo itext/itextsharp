@@ -17,16 +17,15 @@ namespace Org.BouncyCastle.Crypto.Digests
     public class Sha256Digest
 		: GeneralDigest
     {
-        private const int    DigestLength = 32;
+        private const int DigestLength = 32;
 
-        private int     H1, H2, H3, H4, H5, H6, H7, H8;
-
-        private int[]   X = new int[64];
-        private int     xOff;
+        private uint H1, H2, H3, H4, H5, H6, H7, H8;
+        private uint[] X = new uint[64];
+        private int xOff;
 
         public Sha256Digest()
         {
-            Reset();
+			initHs();
         }
 
         /**
@@ -61,9 +60,11 @@ namespace Org.BouncyCastle.Crypto.Digests
 		internal override void ProcessWord(
             byte[]  input,
             int     inOff)
-        {
-            X[xOff++] = ((input[inOff] & 0xff) << 24) | ((input[inOff + 1] & 0xff) << 16)
-                | ((input[inOff + 2] & 0xff) << 8) | ((input[inOff + 3] & 0xff));
+		{
+            X[xOff++] = (((uint)input[inOff]) << 24)
+				| (((uint)input[inOff + 1]) << 16)
+                | (((uint)input[inOff + 2]) << 8)
+				| ((uint)input[inOff + 3]);
 
             if (xOff == 16)
             {
@@ -72,26 +73,26 @@ namespace Org.BouncyCastle.Crypto.Digests
         }
 
         private void UnpackWord(
-            int     word,
+            uint	word,
             byte[]  outBytes,
             int     outOff)
         {
-            outBytes[outOff]     = (byte)((uint) word >> 24);
-            outBytes[outOff + 1] = (byte)((uint) word >> 16);
-            outBytes[outOff + 2] = (byte)((uint) word >> 8);
+            outBytes[outOff]     = (byte)(word >> 24);
+            outBytes[outOff + 1] = (byte)(word >> 16);
+            outBytes[outOff + 2] = (byte)(word >> 8);
             outBytes[outOff + 3] = (byte)word;
         }
 
         internal override void ProcessLength(
-            long    bitLength)
+            long bitLength)
         {
             if (xOff > 14)
             {
                 ProcessBlock();
             }
 
-            X[14] = (int)((ulong) bitLength >> 32);
-            X[15] = (int)(bitLength & 0xffffffff);
+            X[14] = (uint)((ulong)bitLength >> 32);
+            X[15] = (uint)((ulong)bitLength);
         }
 
         public override int DoFinal(
@@ -121,28 +122,27 @@ namespace Org.BouncyCastle.Crypto.Digests
         {
             base.Reset();
 
+			initHs();
+
+            xOff = 0;
+			Array.Clear(X, 0, X.Length);
+        }
+
+		private void initHs()
+		{
             /* SHA-256 initial hash value
             * The first 32 bits of the fractional parts of the square roots
             * of the first eight prime numbers
             */
-            unchecked
-            {
-                H1 = (int) 0x6a09e667;
-                H2 = (int) 0xbb67ae85;
-                H3 = (int) 0x3c6ef372;
-                H4 = (int) 0xa54ff53a;
-                H5 = (int) 0x510e527f;
-                H6 = (int) 0x9b05688c;
-                H7 = (int) 0x1f83d9ab;
-                H8 = (int) 0x5be0cd19;
-            }
-
-            xOff = 0;
-            for (int i = 0; i != X.Length; i++)
-            {
-                X[i] = 0;
-            }
-        }
+            H1 = 0x6a09e667;
+            H2 = 0xbb67ae85;
+            H3 = 0x3c6ef372;
+            H4 = 0xa54ff53a;
+            H5 = 0x510e527f;
+            H6 = 0x9b05688c;
+            H7 = 0x1f83d9ab;
+            H8 = 0x5be0cd19;
+		}
 
         internal override void ProcessBlock()
         {
@@ -157,57 +157,57 @@ namespace Org.BouncyCastle.Crypto.Digests
             //
             // set up working variables.
             //
-            int a = H1;
-            int b = H2;
-            int c = H3;
-            int d = H4;
-            int e = H5;
-            int f = H6;
-            int g = H7;
-            int h = H8;
+            uint a = H1;
+            uint b = H2;
+            uint c = H3;
+            uint d = H4;
+            uint e = H5;
+            uint f = H6;
+            uint g = H7;
+            uint h = H8;
 
 			int t = 0;
-			for(int i = 0; i < 8; i ++)
+			for(int i = 0; i < 8; ++i)
 			{
 				// t = 8 * i
-				h += Sum1(e) + Ch(e, f, g) + K[t] + X[t++];
+				h += Sum1Ch(e, f, g) + K[t] + X[t++];
 				d += h;
-				h += Sum0(a) + Maj(a, b, c);
+				h += Sum0Maj(a, b, c);
 
 				// t = 8 * i + 1
-				g += Sum1(d) + Ch(d, e, f) + K[t] + X[t++];
+				g += Sum1Ch(d, e, f) + K[t] + X[t++];
 				c += g;
-				g += Sum0(h) + Maj(h, a, b);
+				g += Sum0Maj(h, a, b);
 
 				// t = 8 * i + 2
-				f += Sum1(c) + Ch(c, d, e) + K[t] + X[t++];
+				f += Sum1Ch(c, d, e) + K[t] + X[t++];
 				b += f;
-				f += Sum0(g) + Maj(g, h, a);
+				f += Sum0Maj(g, h, a);
 
 				// t = 8 * i + 3
-				e += Sum1(b) + Ch(b, c, d) + K[t] + X[t++];
+				e += Sum1Ch(b, c, d) + K[t] + X[t++];
 				a += e;
-				e += Sum0(f) + Maj(f, g, h);
+				e += Sum0Maj(f, g, h);
 
 				// t = 8 * i + 4
-				d += Sum1(a) + Ch(a, b, c) + K[t] + X[t++];
+				d += Sum1Ch(a, b, c) + K[t] + X[t++];
 				h += d;
-				d += Sum0(e) + Maj(e, f, g);
+				d += Sum0Maj(e, f, g);
 
 				// t = 8 * i + 5
-				c += Sum1(h) + Ch(h, a, b) + K[t] + X[t++];
+				c += Sum1Ch(h, a, b) + K[t] + X[t++];
 				g += c;
-				c += Sum0(d) + Maj(d, e, f);
+				c += Sum0Maj(d, e, f);
 
 				// t = 8 * i + 6
-				b += Sum1(g) + Ch(g, h, a) + K[t] + X[t++];
+				b += Sum1Ch(g, h, a) + K[t] + X[t++];
 				f += b;
-				b += Sum0(c) + Maj(c, d, e);
+				b += Sum0Maj(c, d, e);
 
 				// t = 8 * i + 7
-				a += Sum1(f) + Ch(f, g, h) + K[t] + X[t++];
+				a += Sum1Ch(f, g, h) + K[t] + X[t++];
 				e += a;
-				a += Sum0(b) + Maj(b, c, d);
+				a += Sum0Maj(b, c, d);
 			}
 
 			H1 += a;
@@ -227,84 +227,88 @@ namespace Org.BouncyCastle.Crypto.Digests
 			Array.Clear(X, 0, 16);
         }
 
-		/* SHA-256 functions */
-        private static int Ch(
-            int    x,
-            int    y,
-            int    z)
+		private static uint Sum1Ch(
+            uint    x,
+            uint    y,
+            uint    z)
+		{
+//			return Sum1(x) + Ch(x, y, z);
+	        return (((x >> 6) | (x << 26)) ^ ((x >> 11) | (x << 21)) ^ ((x >> 25) | (x << 7)))
+				+ ((x & y) ^ ((~x) & z));
+		}
+
+		private static uint Sum0Maj(
+            uint	x,
+            uint    y,
+            uint    z)
+		{
+//			return Sum0(x) + Maj(x, y, z);
+	        return (((x >> 2) | (x << 30)) ^ ((x >> 13) | (x << 19)) ^ ((x >> 22) | (x << 10)))
+				+ ((x & y) ^ (x & z) ^ (y & z));
+		}
+
+//		/* SHA-256 functions */
+//        private static uint Ch(
+//            uint    x,
+//            uint    y,
+//            uint    z)
+//        {
+//            return ((x & y) ^ ((~x) & z));
+//        }
+//
+//        private static uint Maj(
+//            uint	x,
+//            uint    y,
+//            uint    z)
+//        {
+//            return ((x & y) ^ (x & z) ^ (y & z));
+//        }
+//
+//        private static uint Sum0(
+//            uint x)
+//        {
+//	        return ((x >> 2) | (x << 30)) ^ ((x >> 13) | (x << 19)) ^ ((x >> 22) | (x << 10));
+//        }
+//
+//        private static uint Sum1(
+//            uint x)
+//        {
+//	        return ((x >> 6) | (x << 26)) ^ ((x >> 11) | (x << 21)) ^ ((x >> 25) | (x << 7));
+//        }
+
+        private static uint Theta0(
+            uint x)
         {
-            return ((x & y) ^ ((~x) & z));
+	        return ((x >> 7) | (x << 25)) ^ ((x >> 18) | (x << 14)) ^ (x >> 3);
         }
 
-        private static int Maj(
-            int    x,
-            int    y,
-            int    z)
+        private static uint Theta1(
+            uint x)
         {
-            return ((x & y) ^ (x & z) ^ (y & z));
-        }
-
-        private static int Sum0(
-            int    x)
-        {
-	        return (((int)((uint)x >> 2)) | (x << 30)) ^ (((int)((uint)x >> 13)) | (x << 19)) ^ (((int)((uint)x >> 22)) | (x << 10));
-        }
-
-        private static int Sum1(
-            int    x)
-        {
-	        return (((int)((uint)x >> 6)) | (x << 26)) ^ (((int)((uint)x >> 11)) | (x << 21)) ^ (((int)((uint)x >> 25)) | (x << 7));
-        }
-
-        private static int Theta0(
-            int    x)
-        {
-	        return (((int)((uint)x >> 7)) | (x << 25)) ^ (((int)((uint)x >> 18)) | (x << 14)) ^ ((int)((uint)x >> 3));
-        }
-
-        private static int Theta1(
-            int    x)
-        {
-	        return (((int)((uint)x >> 17)) | (x << 15)) ^ (((int)((uint)x >> 19)) | (x << 13)) ^ ((int)((uint)x >> 10));
+	        return ((x >> 17) | (x << 15)) ^ ((x >> 19) | (x << 13)) ^ (x >> 10);
         }
 
         /* SHA-256 Constants
         * (represent the first 32 bits of the fractional parts of the
         * cube roots of the first sixty-four prime numbers)
         */
-        internal static readonly int[] K = {
-            unchecked ((int) 0x428a2f98), unchecked ((int) 0x71374491),
-            unchecked ((int) 0xb5c0fbcf), unchecked ((int) 0xe9b5dba5),
-            unchecked ((int) 0x3956c25b), unchecked ((int) 0x59f111f1),
-            unchecked ((int) 0x923f82a4), unchecked ((int) 0xab1c5ed5),
-            unchecked ((int) 0xd807aa98), unchecked ((int) 0x12835b01),
-            unchecked ((int) 0x243185be), unchecked ((int) 0x550c7dc3),
-            unchecked ((int) 0x72be5d74), unchecked ((int) 0x80deb1fe),
-            unchecked ((int) 0x9bdc06a7), unchecked ((int) 0xc19bf174),
-            unchecked ((int) 0xe49b69c1), unchecked ((int) 0xefbe4786),
-            unchecked ((int) 0x0fc19dc6), unchecked ((int) 0x240ca1cc),
-            unchecked ((int) 0x2de92c6f), unchecked ((int) 0x4a7484aa),
-            unchecked ((int) 0x5cb0a9dc), unchecked ((int) 0x76f988da),
-            unchecked ((int) 0x983e5152), unchecked ((int) 0xa831c66d),
-            unchecked ((int) 0xb00327c8), unchecked ((int) 0xbf597fc7),
-            unchecked ((int) 0xc6e00bf3), unchecked ((int) 0xd5a79147),
-            unchecked ((int) 0x06ca6351), unchecked ((int) 0x14292967),
-            unchecked ((int) 0x27b70a85), unchecked ((int) 0x2e1b2138),
-            unchecked ((int) 0x4d2c6dfc), unchecked ((int) 0x53380d13),
-            unchecked ((int) 0x650a7354), unchecked ((int) 0x766a0abb),
-            unchecked ((int) 0x81c2c92e), unchecked ((int) 0x92722c85),
-            unchecked ((int) 0xa2bfe8a1), unchecked ((int) 0xa81a664b),
-            unchecked ((int) 0xc24b8b70), unchecked ((int) 0xc76c51a3),
-            unchecked ((int) 0xd192e819), unchecked ((int) 0xd6990624),
-            unchecked ((int) 0xf40e3585), unchecked ((int) 0x106aa070),
-            unchecked ((int) 0x19a4c116), unchecked ((int) 0x1e376c08),
-            unchecked ((int) 0x2748774c), unchecked ((int) 0x34b0bcb5),
-            unchecked ((int) 0x391c0cb3), unchecked ((int) 0x4ed8aa4a),
-            unchecked ((int) 0x5b9cca4f), unchecked ((int) 0x682e6ff3),
-            unchecked ((int) 0x748f82ee), unchecked ((int) 0x78a5636f),
-            unchecked ((int) 0x84c87814), unchecked ((int) 0x8cc70208),
-            unchecked ((int) 0x90befffa), unchecked ((int) 0xa4506ceb),
-            unchecked ((int) 0xbef9a3f7), unchecked ((int) 0xc67178f2)
+        private static readonly uint[] K = {
+            0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
+			0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+            0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+            0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+            0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
+            0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+            0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
+            0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+            0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+            0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+            0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,
+            0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+            0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
+            0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+            0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+            0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2
         };
     }
 }

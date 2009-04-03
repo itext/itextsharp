@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 
+using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
@@ -56,12 +57,13 @@ namespace Org.BouncyCastle.Crypto.Agreement
 		 */
 		public BigInteger CalculateMessage()
 		{
-			int bits = dhParams.P.BitLength - 1;
+			DHKeyPairGenerator dhGen = new DHKeyPairGenerator();
+			dhGen.Init(new DHKeyGenerationParameters(random, dhParams));
+			AsymmetricCipherKeyPair dhPair = dhGen.GenerateKeyPair();
 
-			// TODO Should the generated numbers always have length 'P.BitLength - 1'?
-			this.privateValue = new BigInteger(bits, random).SetBit(bits - 1);
+			this.privateValue = ((DHPrivateKeyParameters)dhPair.Private).X;
 
-			return dhParams.G.ModPow(privateValue, dhParams.P);
+			return ((DHPublicKeyParameters)dhPair.Public).Y;
 		}
 
 		/**
@@ -83,7 +85,9 @@ namespace Org.BouncyCastle.Crypto.Agreement
 				throw new ArgumentException("Diffie-Hellman public key has wrong parameters.");
 			}
 
-			return message.ModPow(key.X, dhParams.P).Multiply(pub.Y.ModPow(privateValue, dhParams.P)).Mod(dhParams.P);
+			BigInteger p = dhParams.P;
+
+			return message.ModPow(key.X, p).Multiply(pub.Y.ModPow(privateValue, p)).Mod(p);
 		}
 	}
 }

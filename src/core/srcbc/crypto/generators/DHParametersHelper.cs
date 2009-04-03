@@ -2,6 +2,7 @@ using System;
 
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Generators
 {
@@ -208,7 +209,7 @@ namespace Org.BouncyCastle.Crypto.Generators
 			// Handbook of Applied Cryptography 4.86
 			do
 			{
-				g = CreateInRange(BigInteger.Two, pMinusTwo, random);
+				g = BigIntegers.CreateRandomInRange(BigInteger.Two, pMinusTwo, random);
 			}
 			while (g.ModPow(BigInteger.Two, p).Equals(BigInteger.One)
 				|| g.ModPow(q, p).Equals(BigInteger.One));
@@ -225,20 +226,6 @@ namespace Org.BouncyCastle.Crypto.Generators
 */
 
 			return g;
-		}
-
-		private static BigInteger CreateInRange(
-			BigInteger		min,
-			BigInteger		max,
-			SecureRandom	random)
-		{
-			BigInteger x;
-			do
-			{
-				x = new BigInteger(max.BitLength, random);
-			}
-			while (x.CompareTo(min) < 0 || x.CompareTo(max) > 0);
-			return x;
 		}
 	}
 }

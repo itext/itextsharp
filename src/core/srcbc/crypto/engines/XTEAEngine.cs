@@ -13,7 +13,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 		private const int
 			rounds		= 32,
 			block_size	= 8,
-			key_size	= 16,
+//			key_size	= 16,
 			delta		= unchecked((int) 0x9E3779B9);
 
 		/*

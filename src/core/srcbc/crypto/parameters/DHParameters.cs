@@ -14,21 +14,19 @@ namespace Org.BouncyCastle.Crypto.Parameters
 		private readonly int m, l;
 		private readonly DHValidationParameters validation;
 
-		private static int GetDefaultM(
-			BigInteger	p,
-			int			l)
+		private static int GetDefaultMParam(
+			int lParam)
 		{
-			int effectiveL = l != 0 ? l : p.BitLength - 1;
+			if (lParam == 0)
+				return DefaultMinimumLength;
 
-			return System.Math.Min(DefaultMinimumLength, effectiveL);
-
-//			return DefaultMinimumLength;
+			return System.Math.Min(lParam, DefaultMinimumLength);
 		}
 
 		public DHParameters(
 			BigInteger	p,
 			BigInteger	g)
-			: this(p, g, null, GetDefaultM(p, 0), 0, null, null)
+			: this(p, g, null, 0)
 		{
 		}
 
@@ -36,7 +34,7 @@ namespace Org.BouncyCastle.Crypto.Parameters
 			BigInteger	p,
 			BigInteger	g,
 			BigInteger	q)
-			: this(p, g, q, GetDefaultM(p, 0), 0, null, null)
+			: this(p, g, q, 0)
 		{
 		}
 
@@ -45,9 +43,9 @@ namespace Org.BouncyCastle.Crypto.Parameters
 			BigInteger	g,
 			BigInteger	q,
 			int			l)
-			: this(p, g, q, GetDefaultM(p, l), l, null, null)
+			: this(p, g, q, GetDefaultMParam(l), l, null, null)
 		{
-		}   
+		}
 
 		public DHParameters(
 			BigInteger  p,
@@ -65,7 +63,7 @@ namespace Org.BouncyCastle.Crypto.Parameters
 			BigInteger				q,
 			BigInteger				j,
 			DHValidationParameters	validation)
-			: this(p, g, q,  GetDefaultM(p, 0), 0, j, validation)
+			: this(p, g, q,  DefaultMinimumLength, 0, j, validation)
 		{
 		}
 
@@ -87,12 +85,21 @@ namespace Org.BouncyCastle.Crypto.Parameters
 			if (g.CompareTo(BigInteger.Two) < 0
 				|| g.CompareTo(p.Subtract(BigInteger.Two)) > 0)
 				throw new ArgumentException("generator must in the range [2, p - 2]", "g");
+			if (q != null && q.BitLength >= p.BitLength)
+				throw new ArgumentException("q too big to be a factor of (p-1)", "q");
 			if (m >= p.BitLength)
 				throw new ArgumentException("m value must be < bitlength of p", "m");
-			if (l != 0 && l < m)
-				throw new ArgumentException("l value must be >= m, or zero", "l");
+			if (l != 0)
+			{ 
+	            if (l >= p.BitLength)
+                	throw new ArgumentException("when l value specified, it must be less than bitlength(p)", "l");
+				if (l < m)
+					throw new ArgumentException("when l value specified, it may not be less than m value", "l");
+			}
 			if (j != null && j.CompareTo(BigInteger.Two) < 0)
 				throw new ArgumentException("subgroup factor must be >= 2", "j");
+
+			// TODO If q, j both provided, validate p = jq + 1 ?
 
 			this.p = p;
 			this.g = g;
@@ -130,7 +137,6 @@ namespace Org.BouncyCastle.Crypto.Parameters
 		}
 
 		/// <summary>The bitlength of the private value.</summary>
-		/// <remarks>If zero, bitLength(p) - 1 will be used.</remarks>
 		public int L
 		{
 			get { return l; }

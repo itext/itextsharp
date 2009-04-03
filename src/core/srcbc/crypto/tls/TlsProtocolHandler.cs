@@ -2,13 +2,18 @@ using System;
 using System.IO;
 using System.Text;
 
+using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Crypto.Agreement;
 using Org.BouncyCastle.Crypto.Encodings;
 using Org.BouncyCastle.Crypto.Engines;
+using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Crypto.IO;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Prng;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Date;
 
 namespace Org.BouncyCastle.Crypto.Tls
@@ -104,9 +109,9 @@ namespace Org.BouncyCastle.Crypto.Tls
 		private SecureRandom random;
 
 		/*
-		* The public rsa-key of the server.
+		* The public key of the server.
 		*/
-		private RsaKeyParameters serverRsaKey = null;
+		private AsymmetricKeyParameter serverPublicKey = null;
 
 		private TlsInputStream tlsInputStream = null;
 		private TlsOuputStream tlsOutputStream = null;
@@ -253,14 +258,66 @@ namespace Org.BouncyCastle.Crypto.Tls
 						switch (type)
 						{
 							case HP_CERTIFICATE:
+							{
 								switch (connection_state)
 								{
 									case CS_SERVER_HELLO_RECEIVED:
+									{
 										/*
 										* Parse the certificates.
 										*/
 										Certificate cert = Certificate.Parse(inStr);
 										AssertEmpty(inStr);
+
+										X509CertificateStructure x509Cert = cert.certs[0];
+										SubjectPublicKeyInfo keyInfo = x509Cert.SubjectPublicKeyInfo;
+
+										try
+										{
+											this.serverPublicKey = PublicKeyFactory.CreateKey(keyInfo);
+										}
+										catch (Exception e)
+										{
+											this.FailWithError(AL_fatal, AP_unsupported_certificate);
+										}
+
+										// Sanity check the PublicKeyFactory
+										if (this.serverPublicKey.IsPrivate)
+										{
+											this.FailWithError(AL_fatal, AP_internal_error);
+										}
+
+										/*
+										* Perform various checks per RFC2246 7.4.2
+										* TODO "Unless otherwise specified, the signing algorithm for the certificate
+										* must be the same as the algorithm for the certificate key."
+										*/
+										switch (this.chosenCipherSuite.KeyExchangeAlgorithm)
+										{
+											case TlsCipherSuite.KE_RSA:
+												if (!(this.serverPublicKey is RsaKeyParameters))
+												{
+													this.FailWithError(AL_fatal, AP_certificate_unknown);
+												}
+												validateKeyUsage(x509Cert, KeyUsage.KeyEncipherment);
+												break;
+											case TlsCipherSuite.KE_DHE_RSA:
+												if (!(this.serverPublicKey is RsaKeyParameters))
+												{
+													this.FailWithError(AL_fatal, AP_certificate_unknown);
+												}
+												validateKeyUsage(x509Cert, KeyUsage.DigitalSignature);
+												break;
+											case TlsCipherSuite.KE_DHE_DSS:
+												if (!(this.serverPublicKey is DsaPublicKeyParameters))
+												{
+													this.FailWithError(AL_fatal, AP_certificate_unknown);
+												}
+												break;
+											default:
+												this.FailWithError(AL_fatal, AP_unsupported_certificate);
+												break;
+										}
 
 										/*
 										* Verify them.
@@ -270,40 +327,17 @@ namespace Org.BouncyCastle.Crypto.Tls
 											this.FailWithError(AL_fatal, AP_user_canceled);
 										}
 
-										/*
-										* We only support RSA certificates. Lets hope
-										* this is one.
-										*/
-										RsaPublicKeyStructure rsaKey = null;
-										try
-										{
-											rsaKey = RsaPublicKeyStructure.GetInstance(
-												cert.certs[0].TbsCertificate.SubjectPublicKeyInfo.GetPublicKey());
-										}
-										catch (Exception)
-										{
-											/*
-											* Sorry, we have to fail ;-(
-											*/
-											this.FailWithError(AL_fatal, AP_unsupported_certificate);
-										}
-
-										/*
-										* Parse the servers public RSA key.
-										*/
-										this.serverRsaKey = new RsaKeyParameters(
-											false,
-											rsaKey.Modulus,
-											rsaKey.PublicExponent);
-
-										connection_state = CS_SERVER_CERTIFICATE_RECEIVED;
-										read = true;
 										break;
+									}
 									default:
 										this.FailWithError(AL_fatal, AP_unexpected_message);
 										break;
 								}
+
+								connection_state = CS_SERVER_CERTIFICATE_RECEIVED;
+								read = true;
 								break;
+							}
 							case HP_FINISHED:
 								switch (connection_state)
 								{
@@ -435,11 +469,10 @@ namespace Org.BouncyCastle.Crypto.Tls
 										* on the key exchange we are using in our
 										* ciphersuite.
 										*/
-										short ke = this.chosenCipherSuite.KeyExchangeAlgorithm;
-
-										switch (ke)
+										switch (this.chosenCipherSuite.KeyExchangeAlgorithm)
 										{
 											case TlsCipherSuite.KE_RSA:
+											{
 												/*
 												* We are doing RSA key exchange. We will
 												* choose a pre master secret and send it
@@ -460,7 +493,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 												*/
 												RsaBlindedEngine rsa = new RsaBlindedEngine();
 												Pkcs1Encoding encoding = new Pkcs1Encoding(rsa);
-												encoding.Init(true, new ParametersWithRandom(this.serverRsaKey, this.random));
+												encoding.Init(true, new ParametersWithRandom(this.serverPublicKey, this.random));
 												byte[] encrypted = null;
 												try
 												{
@@ -477,31 +510,22 @@ namespace Org.BouncyCastle.Crypto.Tls
 												/*
 												* Send the encrypted pms.
 												*/
-												MemoryStream bos = new MemoryStream();
-												TlsUtilities.WriteUint8(HP_CLIENT_KEY_EXCHANGE, bos);
-												TlsUtilities.WriteUint24(encrypted.Length + 2, bos);
-												TlsUtilities.WriteUint16(encrypted.Length, bos);
-												bos.Write(encrypted, 0, encrypted.Length);
-												byte[] message = bos.ToArray();
-
-												rs.WriteMessage((short)RL_HANDSHAKE, message, 0, message.Length);
+												sendClientKeyExchange(encrypted);
 												break;
+											}
+											case TlsCipherSuite.KE_DHE_DSS:
 											case TlsCipherSuite.KE_DHE_RSA:
+											{
 												/*
 												* Send the Client Key Exchange message for
 												* DHE key exchange.
 												*/
-												byte[] YcByte = this.Yc.ToByteArray();
-												MemoryStream DHbos = new MemoryStream();
-												TlsUtilities.WriteUint8(HP_CLIENT_KEY_EXCHANGE, DHbos);
-												TlsUtilities.WriteUint24(YcByte.Length + 2, DHbos);
-												TlsUtilities.WriteUint16(YcByte.Length, DHbos);
-												DHbos.Write(YcByte, 0, YcByte.Length);
-												byte[] DHmessage = DHbos.ToArray();
+												byte[] YcByte = BigIntegers.AsUnsignedByteArray(this.Yc);
 
-												rs.WriteMessage((short)RL_HANDSHAKE, DHmessage, 0, DHmessage.Length);
+												sendClientKeyExchange(YcByte);
 
 												break;
+											}
 											default:
 												/*
 												* Problem during handshake, we don't know
@@ -563,123 +587,47 @@ namespace Org.BouncyCastle.Crypto.Tls
 								}
 								break;
 							case HP_SERVER_KEY_EXCHANGE:
+							{
 								switch (connection_state)
 								{
 									case CS_SERVER_CERTIFICATE_RECEIVED:
+									{
 										/*
 										* Check that we are doing DHE key exchange
 										*/
-										if (this.chosenCipherSuite.KeyExchangeAlgorithm != TlsCipherSuite.KE_DHE_RSA)
+										switch (this.chosenCipherSuite.KeyExchangeAlgorithm)
 										{
-											this.FailWithError(AL_fatal, AP_unexpected_message);
-										}
-
-										/*
-										* Parse the Structure
-										*/
-										int pLength = TlsUtilities.ReadUint16(inStr);
-										byte[] pByte = new byte[pLength];
-										TlsUtilities.ReadFully(pByte, inStr);
-
-										int gLength = TlsUtilities.ReadUint16(inStr);
-										byte[] gByte = new byte[gLength];
-										TlsUtilities.ReadFully(gByte, inStr);
-
-										int YsLength = TlsUtilities.ReadUint16(inStr);
-										byte[] YsByte = new byte[YsLength];
-										TlsUtilities.ReadFully(YsByte, inStr);
-
-										int sigLength = TlsUtilities.ReadUint16(inStr);
-										byte[] sigByte = new byte[sigLength];
-										TlsUtilities.ReadFully(sigByte, inStr);
-
-										AssertEmpty(inStr);
-
-										/*
-										* Verify the Signature.
-										*
-										* First, calculate the hash.
-										*/
-										CombinedHash sigDigest = new CombinedHash();
-										MemoryStream signedData = new MemoryStream();
-										TlsUtilities.WriteUint16(pLength, signedData);
-										signedData.Write(pByte, 0, pByte.Length);
-										TlsUtilities.WriteUint16(gLength, signedData);
-										signedData.Write(gByte, 0, gByte.Length);
-										TlsUtilities.WriteUint16(YsLength, signedData);
-										signedData.Write(YsByte, 0, YsByte.Length);
-										byte[] signed = signedData.ToArray();
-
-										sigDigest.BlockUpdate(this.clientRandom, 0, this.clientRandom.Length);
-										sigDigest.BlockUpdate(this.serverRandom, 0, this.serverRandom.Length);
-										sigDigest.BlockUpdate(signed, 0, signed.Length);
-										byte[] hash = new byte[sigDigest.GetDigestSize()];
-										sigDigest.DoFinal(hash, 0);
-
-										/*
-										* Now, do the RSA operation
-										*/
-										RsaBlindedEngine rsa = new RsaBlindedEngine();
-										Pkcs1Encoding encoding = new Pkcs1Encoding(rsa);
-										encoding.Init(false, this.serverRsaKey);
-
-										/*
-										* The data which was signed
-										*/
-										byte[] sigHash = null;
-
-										try
-										{
-											sigHash = encoding.ProcessBlock(sigByte, 0, sigByte.Length);
-										}
-										catch (InvalidCipherTextException)
-										{
-											this.FailWithError(AL_fatal, AP_bad_certificate);
-										}
-
-										/*
-										* Check if the data which was signed is equal to
-										* the hash we calculated.
-										*/
-										if (sigHash.Length != hash.Length)
-										{
-											this.FailWithError(AL_fatal, AP_bad_certificate);
-										}
-
-										for (int i = 0; i < sigHash.Length; i++)
-										{
-											if (sigHash[i] != hash[i])
+											case TlsCipherSuite.KE_DHE_RSA:
 											{
-												this.FailWithError(AL_fatal, AP_bad_certificate);
+												processDHEKeyExchange(inStr, new TlsRsaSigner());
+												break;
 											}
+											case TlsCipherSuite.KE_DHE_DSS:
+											{
+												processDHEKeyExchange(inStr, new TlsDssSigner());
+												break;
+											}
+											default:
+												this.FailWithError(AL_fatal, AP_unexpected_message);
+												break;
 										}
-
-										/*
-										* OK, Signature was correct.
-										*
-										* Do the DH calculation.
-										*/
-										BigInteger p = new BigInteger(1, pByte);
-										BigInteger g = new BigInteger(1, gByte);
-										BigInteger Ys = new BigInteger(1, YsByte);
-										BigInteger x = new BigInteger(p.BitLength - 1, this.random);
-										Yc = g.ModPow(x, p);
-										this.pms = Ys.ModPow(x, p).ToByteArrayUnsigned();
-
-										this.connection_state = CS_SERVER_KEY_EXCHANGE_RECEIVED;
-										read = true;
 										break;
+									}
 									default:
 										this.FailWithError(AL_fatal, AP_unexpected_message);
 										break;
 								}
+
+								this.connection_state = CS_SERVER_KEY_EXCHANGE_RECEIVED;
+								read = true;
 								break;
+							}
 							case HP_CERTIFICATE_REQUEST:
 								switch (connection_state)
 								{
 									case CS_SERVER_CERTIFICATE_RECEIVED:
 									case CS_SERVER_KEY_EXCHANGE_RECEIVED:
-
+									{
 										// NB: Original code used case label fall-through
 										if (connection_state == CS_SERVER_CERTIFICATE_RECEIVED)
 										{
@@ -702,14 +650,15 @@ namespace Org.BouncyCastle.Crypto.Tls
 										TlsUtilities.ReadFully(auths, inStr);
 
 										AssertEmpty(inStr);
-
-										this.connection_state = CS_CERTIFICATE_REQUEST_RECEIVED;
-										read = true;
 										break;
+									}
 									default:
 										this.FailWithError(AL_fatal, AP_unexpected_message);
 										break;
 								}
+
+								this.connection_state = CS_CERTIFICATE_REQUEST_RECEIVED;
+								read = true;
 								break;
 							case HP_HELLO_REQUEST:
 							case HP_CLIENT_KEY_EXCHANGE:
@@ -719,14 +668,11 @@ namespace Org.BouncyCastle.Crypto.Tls
 								// We do not support this!
 								this.FailWithError(AL_fatal, AP_unexpected_message);
 								break;
-
 						}
-
 					}
 				}
 			}
 			while (read);
-
 		}
 
 		private void processApplicationData()
@@ -787,7 +733,6 @@ namespace Org.BouncyCastle.Crypto.Tls
 					*/
 				}
 			}
-
 		}
 
 		/**
@@ -836,6 +781,119 @@ namespace Org.BouncyCastle.Crypto.Tls
 			}
 		}
 
+		private void processDHEKeyExchange(
+			MemoryStream	inStr,
+			ISigner			signer)
+		{
+			Stream sigIn = inStr;
+			if (signer != null)
+			{
+				signer.Init(false, this.serverPublicKey);
+				signer.BlockUpdate(this.clientRandom, 0, this.clientRandom.Length);
+				signer.BlockUpdate(this.serverRandom, 0, this.serverRandom.Length);
+
+				sigIn = new SignerStream(inStr, signer, null);
+			}
+
+			/*
+			* Parse the Structure
+			*/
+			int pLength = TlsUtilities.ReadUint16(sigIn);
+			byte[] pByte = new byte[pLength];
+			TlsUtilities.ReadFully(pByte, sigIn);
+
+			int gLength = TlsUtilities.ReadUint16(sigIn);
+			byte[] gByte = new byte[gLength];
+			TlsUtilities.ReadFully(gByte, sigIn);
+
+			int YsLength = TlsUtilities.ReadUint16(sigIn);
+			byte[] YsByte = new byte[YsLength];
+			TlsUtilities.ReadFully(YsByte, sigIn);
+
+			if (signer != null)
+			{
+				int sigLength = TlsUtilities.ReadUint16(inStr);
+				byte[] sigByte = new byte[sigLength];
+				TlsUtilities.ReadFully(sigByte, inStr);
+
+				/*
+				* Verify the Signature.
+				*/
+				if (!signer.VerifySignature(sigByte))
+				{
+					this.FailWithError(AL_fatal, AP_bad_certificate);
+				}
+			}
+
+			this.AssertEmpty(inStr);
+
+			/*
+			* Do the DH calculation.
+			*/
+			BigInteger p = new BigInteger(1, pByte);
+			BigInteger g = new BigInteger(1, gByte);
+			BigInteger Ys = new BigInteger(1, YsByte);
+
+			/*
+			* Check the DH parameter values
+			*/
+			if (!p.IsProbablePrime(10))
+			{
+				this.FailWithError(AL_fatal, AP_illegal_parameter);
+			}
+			if (g.CompareTo(BigInteger.Two) < 0 || g.CompareTo(p.Subtract(BigInteger.Two)) > 0)
+			{
+				this.FailWithError(AL_fatal, AP_illegal_parameter);
+			}
+			// TODO For static DH public values, see additional checks in RFC 2631 2.1.5 
+			if (Ys.CompareTo(BigInteger.Two) < 0 || Ys.CompareTo(p.Subtract(BigInteger.One)) > 0)
+			{
+				this.FailWithError(AL_fatal, AP_illegal_parameter);
+			}
+
+			/*
+			* Diffie-Hellman basic key agreement
+			*/
+			DHParameters dhParams = new DHParameters(p, g);
+
+			// Generate a keypair
+			DHBasicKeyPairGenerator dhGen = new DHBasicKeyPairGenerator();
+			dhGen.Init(new DHKeyGenerationParameters(random, dhParams));
+
+			AsymmetricCipherKeyPair dhPair = dhGen.GenerateKeyPair();
+
+			// Store the public value to send to server
+			this.Yc = ((DHPublicKeyParameters)dhPair.Public).Y;
+
+			// Calculate the shared secret
+			DHBasicAgreement dhAgree = new DHBasicAgreement();
+			dhAgree.Init(dhPair.Private);
+
+			BigInteger agreement = dhAgree.CalculateAgreement(new DHPublicKeyParameters(Ys, dhParams));
+
+			this.pms = BigIntegers.AsUnsignedByteArray(agreement);
+		}
+
+		private void validateKeyUsage(
+			X509CertificateStructure	c,
+			int							keyUsageBits)
+		{
+			X509Extensions exts = c.TbsCertificate.Extensions;
+			if (exts != null)
+			{
+				X509Extension ext = exts.GetExtension(X509Extensions.KeyUsage);
+				if (ext != null)
+				{
+					DerBitString ku = KeyUsage.GetInstance(ext);
+					int bits = ku.GetBytes()[0];
+					if ((bits & keyUsageBits) != keyUsageBits)
+					{
+						this.FailWithError(AL_fatal, AP_certificate_unknown);
+					}
+				}
+			}
+		}
+
 		private void sendClientCertificate()
 		{
 			/*
@@ -846,6 +904,19 @@ namespace Org.BouncyCastle.Crypto.Tls
 			TlsUtilities.WriteUint8(HP_CERTIFICATE, bos);
 			TlsUtilities.WriteUint24(3, bos);
 			TlsUtilities.WriteUint24(0, bos);
+			byte[] message = bos.ToArray();
+
+			rs.WriteMessage((short)RL_HANDSHAKE, message, 0, message.Length);
+		}
+
+		private void sendClientKeyExchange(
+			byte[] keData)
+		{
+			MemoryStream bos = new MemoryStream();
+			TlsUtilities.WriteUint8(HP_CLIENT_KEY_EXCHANGE, bos);
+			TlsUtilities.WriteUint24(keData.Length + 2, bos);
+			TlsUtilities.WriteUint16(keData.Length, bos);
+			bos.Write(keData, 0, keData.Length);
 			byte[] message = bos.ToArray();
 
 			rs.WriteMessage((short)RL_HANDSHAKE, message, 0, message.Length);
@@ -898,7 +969,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			*/
 			byte[] compressionMethods = new byte[]{0x00};
 			TlsUtilities.WriteUint8((short)compressionMethods.Length, outStr);
-			outStr.Write(compressionMethods,0, compressionMethods.Length);
+			outStr.Write(compressionMethods, 0, compressionMethods.Length);
 
 
 			MemoryStream bos = new MemoryStream();
@@ -1039,12 +1110,10 @@ namespace Org.BouncyCastle.Crypto.Tls
 					throw e;
 				}
 
-
 				offset += toWrite;
 				len -= toWrite;
 			}
 			while (len > 0);
-
 		}
 
 		[Obsolete("Use 'OutputStream' property instead")]
@@ -1110,7 +1179,6 @@ namespace Org.BouncyCastle.Crypto.Tls
 				{
 					throw new IOException(TLS_ERROR_MESSAGE);
 				}
-
 			}
 			else
 			{
@@ -1137,7 +1205,6 @@ namespace Org.BouncyCastle.Crypto.Tls
 		internal void AssertEmpty(
 			MemoryStream inStr)
 		{
-//			if (inStr.available() > 0)
 			if (inStr.Position < inStr.Length)
 			{
 				this.FailWithError(AL_fatal, AP_decode_error);

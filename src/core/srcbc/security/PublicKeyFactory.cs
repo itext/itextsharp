@@ -62,7 +62,11 @@ namespace Org.BouncyCastle.Security
 					Asn1Sequence.GetInstance(algID.Parameters.ToAsn1Object()));
 				DerInteger derY = (DerInteger) keyInfo.GetPublicKey();
 
-				return new DHPublicKeyParameters(derY.Value, new DHParameters(para.P, para.G));
+				BigInteger lVal = para.L;
+				int l = lVal == null ? 0 : lVal.IntValue;
+				DHParameters dhParams = new DHParameters(para.P, para.G, null, l);
+
+				return new DHPublicKeyParameters(derY.Value, dhParams);
 			}
 			else if (algOid.Equals(OiwObjectIdentifiers.ElGamalAlgorithm))
 			{
@@ -119,7 +123,7 @@ namespace Org.BouncyCastle.Security
 				}
 				else
 				{
-					ecP = new X9ECParameters((Asn1Sequence)para.Parameters.ToAsn1Object());
+					ecP = new X9ECParameters((Asn1Sequence)para.Parameters);
 				}
 
 				ECDomainParameters dParams = new ECDomainParameters(
