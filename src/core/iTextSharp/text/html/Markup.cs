@@ -408,41 +408,8 @@ namespace iTextSharp.text.html {
             if (s == null)
                 return null;
             s = s.ToLower(CultureInfo.InvariantCulture).Trim();
-            Color c = (Color)WebColors.GetRGBColor(s);
-            if (c != null)
-                return c;
             try {
-                if (s.StartsWith("#")) {
-                    if (s.Length == 4)
-                        s = "#" + s.Substring(1, 1) + s.Substring(1, 1)
-                            + s.Substring(2, 1) + s.Substring(2, 1) 
-                            + s.Substring(3, 1) + s.Substring(3, 1);
-                    if (s.Length == 7)
-                        return new Color(int.Parse(s.Substring(1), NumberStyles.HexNumber));
-                }
-                else if (s.StartsWith("rgb")) {
-                    StringTokenizer tk = new StringTokenizer(s.Substring(3), " \t\r\n\f(),");
-                    int[] cc = new int [3];
-                    for (int k = 0; k < 3; ++k) {
-                        if (!tk.HasMoreTokens())
-                            return null;
-                        String t = tk.NextToken();
-                        float n;
-                        if (t.EndsWith("%")) {
-                            n = float.Parse(t.Substring(0, t.Length - 1), System.Globalization.NumberFormatInfo.InvariantInfo);
-                            n = n * 255f / 100f;
-                        }
-                        else
-                            n = float.Parse(t, System.Globalization.NumberFormatInfo.InvariantInfo);
-                        int ni = (int)n;
-                        if (ni > 255)
-                            ni = 255;
-                        else if (ni < 0)
-                            ni = 0;
-                        cc[k] = ni;
-                    }
-                    return new Color(cc[0], cc[1], cc[2]);
-                }
+                return WebColors.GetRGBColor(s);
             }
             catch {
             }

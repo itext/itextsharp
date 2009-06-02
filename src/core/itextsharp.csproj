@@ -368,6 +368,26 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "iTextSharp\text\exceptions\BadPasswordException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "iTextSharp\text\exceptions\IllegalPdfSyntaxException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "iTextSharp\text\exceptions\InvalidPdfException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "iTextSharp\text\exceptions\UnsupportedPdfException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "iTextSharp\text\factories\ElementFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

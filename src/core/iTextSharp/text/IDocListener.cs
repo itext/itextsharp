@@ -107,6 +107,14 @@ namespace iTextSharp.text {
         */
         bool SetMarginMirroring(bool marginMirroring);
 
+        /**
+        * Parameter that allows you to do top/bottom margin mirroring (odd/even pages)
+        * @param marginMirroringTopBottom
+        * @return true if successful
+        * @since	2.1.6
+        */
+        bool SetMarginMirroringTopBottom(bool marginMirroringTopBottom); // [L6]
+
         /// <summary>
         /// Sets the page number.
         /// </summary>

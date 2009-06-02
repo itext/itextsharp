@@ -57,6 +57,12 @@ namespace iTextSharp.text {
     public class ChapterAutoNumber : Chapter {
 
         /**
+        * Is the chapter number already set?
+        * @since	2.1.4
+        */
+        protected bool numberSet = false;
+
+        /**
         * Create a new object.
         *
         * @param para     the Chapter title (as a <CODE>Paragraph</CODE>)
@@ -96,6 +102,20 @@ namespace iTextSharp.text {
     		    throw new InvalidOperationException("This LargeElement has already been added to the Document.");
     	    }
             return AddSection(title, 2);
+        }
+
+        /**
+        * Changes the Chapter number.
+        * @param	number	the new chapter number
+        * @since 2.1.4
+        */
+        public int SetAutomaticNumber(int number) {
+    	    if (!numberSet) {
+        	    number++;
+        	    base.SetChapterNumber(number);
+        	    numberSet = true;
+    	    }
+		    return number;
         }
     }
 }

@@ -5,7 +5,9 @@ using System.Collections;
 using System.Globalization;
 using System.util;
 using iTextSharp.text;
+using iTextSharp.text.html;
 using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.draw;
 using iTextSharp.text.xml.simpleparser;
 /*
  * Copyright 2004 Paulo Soares
@@ -145,8 +147,8 @@ namespace iTextSharp.text.html.simpleparser {
                 cprops.AddToChain(follow, prop);
                 return;
             }
-            FactoryProperties.InsertStyle(h);
-            if (tag.Equals("a")) {
+            FactoryProperties.InsertStyle(h, cprops);
+            if (tag.Equals(HtmlTags.ANCHOR)) {
                 cprops.AddToChain(tag, h);
                 if (currentParagraph == null)
                     currentParagraph = new Paragraph();
@@ -154,18 +156,63 @@ namespace iTextSharp.text.html.simpleparser {
                 currentParagraph = new Paragraph();
                 return;
             }
-            if (tag.Equals("br")) {
+            if (tag.Equals(HtmlTags.NEWLINE)) {
                 if (currentParagraph == null)
                     currentParagraph = new Paragraph();
                 currentParagraph.Add(factoryProperties.CreateChunk("\n", cprops));
                 return;
             }
-            if (tag.Equals("font") || tag.Equals("span")) {
+            if (tag.Equals(HtmlTags.HORIZONTALRULE)) {
+                // Attempting to duplicate the behavior seen on Firefox with
+                // http://www.w3schools.com/tags/tryit.asp?filename=tryhtml_hr_test
+                // where an initial break is only inserted when the preceding element doesn't
+                // end with a break, but a trailing break is always inserted.
+                bool addLeadingBreak = true;
+                if (currentParagraph == null) {
+                    currentParagraph = new Paragraph();
+                    addLeadingBreak = false;
+                }
+                if (addLeadingBreak) { // Not a new paragraph
+                    int numChunks = currentParagraph.Chunks.Count;
+                    if (numChunks == 0 ||
+                        ((Chunk)currentParagraph.Chunks[numChunks - 1]).Content.EndsWith("\n"))
+                        addLeadingBreak = false;
+                }
+                String align = (String)h["align"];
+                int hrAlign = Element.ALIGN_CENTER;
+                if (align != null) {
+                    if (Util.EqualsIgnoreCase(align, "left"))
+                        hrAlign = Element.ALIGN_LEFT; 
+                    if (Util.EqualsIgnoreCase(align, "right"))
+                        hrAlign = Element.ALIGN_RIGHT;
+                }
+                String width = (String)h["width"];
+                float hrWidth = 1;
+                if (width != null) {
+                    float tmpWidth = Markup.ParseLength(width, Markup.DEFAULT_FONT_SIZE);
+                    if (tmpWidth > 0) hrWidth = tmpWidth;
+                    if (!width.EndsWith("%"))
+                        hrWidth = 100; // Treat a pixel width as 100% for now.
+                }
+                String size = (String)h["size"];
+                float hrSize = 1;
+                if (size != null) {
+                    float tmpSize = Markup.ParseLength(size, Markup.DEFAULT_FONT_SIZE);
+                    if (tmpSize > 0)
+                        hrSize = tmpSize;
+                }
+                if (addLeadingBreak)
+                    currentParagraph.Add(Chunk.NEWLINE);
+                currentParagraph.Add(new LineSeparator(hrSize, hrWidth, null, hrAlign, currentParagraph.Leading/2));
+                currentParagraph.Add(Chunk.NEWLINE);
+                return;
+            }
+            if (tag.Equals(HtmlTags.CHUNK) || tag.Equals(HtmlTags.SPAN)) {
                 cprops.AddToChain(tag, h);
                 return;
             }
-            if (tag.Equals("img")) {
-                String src = (String)h["src"];
+            if (tag.Equals(HtmlTags.IMAGE)) {
+                String src = (String)h[ElementTags.SRC];
                 if (src == null)
                     return;
                 cprops.AddToChain(tag, h);
@@ -209,14 +256,20 @@ namespace iTextSharp.text.html.simpleparser {
                     img.SpacingBefore = float.Parse(before, System.Globalization.NumberFormatInfo.InvariantInfo);
                 if (after != null)
                     img.SpacingAfter = float.Parse(after, System.Globalization.NumberFormatInfo.InvariantInfo);
-                float wp = LengthParse(width, (int)img.Width);
-                float lp = LengthParse(height, (int)img.Height);
-                if (wp > 0 && lp > 0)
-                    img.ScalePercent(wp > lp ? lp : wp);
-                else if (wp > 0)
-                    img.ScalePercent(wp);
-                else if (lp > 0)
-                    img.ScalePercent(lp);
+                float actualFontSize = Markup.ParseLength(cprops[ElementTags.SIZE], Markup.DEFAULT_FONT_SIZE);
+                if (actualFontSize <= 0f)
+                    actualFontSize = Markup.DEFAULT_FONT_SIZE;
+                float widthInPoints = Markup.ParseLength(width, actualFontSize);
+                float heightInPoints = Markup.ParseLength(height, actualFontSize);
+                if (widthInPoints > 0 && heightInPoints > 0) {
+                    img.ScaleAbsolute(widthInPoints, heightInPoints);
+                } else if (widthInPoints > 0) {
+                    heightInPoints = img.Height * widthInPoints / img.Width;
+                    img.ScaleAbsolute(widthInPoints, heightInPoints);
+                } else if (heightInPoints > 0) {
+                    widthInPoints = img.Width * heightInPoints / img.Height;
+                    img.ScaleAbsolute(widthInPoints, heightInPoints);
+                }
                 img.WidthPercentage = 0;
                 if (align != null) {
                     EndElement("p");
@@ -248,16 +301,16 @@ namespace iTextSharp.text.html.simpleparser {
 
             EndElement("p");
             if (tag.Equals("h1") || tag.Equals("h2") || tag.Equals("h3") || tag.Equals("h4") || tag.Equals("h5") || tag.Equals("h6")) {
-                if (!h.ContainsKey("size")) {
+                if (!h.ContainsKey(ElementTags.SIZE)) {
                     int v = 7 - int.Parse(tag.Substring(1));
-                    h["size"] = v.ToString();
+                    h[ElementTags.SIZE] = v.ToString();
                 }
                 cprops.AddToChain(tag, h);
                 return;
             }
-            if (tag.Equals("ul")) {
+            if (tag.Equals(HtmlTags.UNORDEREDLIST)) {
                 if (pendingLI)
-                    EndElement("li");
+                    EndElement(HtmlTags.LISTITEM);
                 skipText = true;
                 cprops.AddToChain(tag, h);
                 List list = new List(false, 10);
@@ -265,39 +318,34 @@ namespace iTextSharp.text.html.simpleparser {
                 stack.Push(list);
                 return;
             }
-            if (tag.Equals("ol")) {
+            if (tag.Equals(HtmlTags.ORDEREDLIST)) {
                 if (pendingLI)
-                    EndElement("li");
+                    EndElement(HtmlTags.LISTITEM);
                 skipText = true;
                 cprops.AddToChain(tag, h);
                 List list = new List(true, 10);
                 stack.Push(list);
                 return;
             }
-            if (tag.Equals("li")) {
+            if (tag.Equals(HtmlTags.LISTITEM)) {
                 if (pendingLI)
-                    EndElement("li");
+                    EndElement(HtmlTags.LISTITEM);
                 skipText = false;
                 pendingLI = true;
                 cprops.AddToChain(tag, h);
                 stack.Push(FactoryProperties.CreateListItem(cprops));
                 return;
             }
-            if (tag.Equals("div") || tag.Equals("body")) {
+            if (tag.Equals(HtmlTags.DIV) || tag.Equals(HtmlTags.BODY) || tag.Equals("p")) {
                 cprops.AddToChain(tag, h);
                 return;
             }
-            if (tag.Equals("pre")) {
-                if (!h.ContainsKey("face")) {
-                    h["face"] = "Courier";
+            if (tag.Equals(HtmlTags.PRE)) {
+                if (!h.ContainsKey(ElementTags.FACE)) {
+                    h[ElementTags.FACE] = "Courier";
                 }
                 cprops.AddToChain(tag, h);
                 isPRE = true;
-                return;
-            }
-            if (tag.Equals("p")) {
-                cprops.AddToChain(tag, h);
-                currentParagraph = FactoryProperties.CreateParagraph(h);
                 return;
             }
             if (tag.Equals("tr")) {
@@ -384,9 +432,9 @@ namespace iTextSharp.text.html.simpleparser {
                 }
             }
             currentParagraph = null;
-            if (tag.Equals("ul") || tag.Equals("ol")) {
+            if (tag.Equals(HtmlTags.UNORDEREDLIST) || tag.Equals(HtmlTags.ORDEREDLIST)) {
                 if (pendingLI)
-                    EndElement("li");
+                    EndElement(HtmlTags.LISTITEM);
                 skipText = false;
                 cprops.RemoveChain(tag);
                 if (stack.Count == 0)
@@ -402,7 +450,7 @@ namespace iTextSharp.text.html.simpleparser {
                     ((ITextElementArray)stack.Peek()).Add(obj);
                 return;
             }
-            if (tag.Equals("li")) {
+            if (tag.Equals(HtmlTags.LISTITEM)) {
                 pendingLI = false;
                 skipText = true;
                 cprops.RemoveChain(tag);
@@ -434,7 +482,7 @@ namespace iTextSharp.text.html.simpleparser {
                 cprops.RemoveChain(tag);
                 return;
             }
-            if (tag.Equals("pre")) {
+            if (tag.Equals(HtmlTags.PRE)) {
                 cprops.RemoveChain(tag);
                 isPRE = false;
                 return;
@@ -569,9 +617,17 @@ namespace iTextSharp.text.html.simpleparser {
         }
         
         public bool SetMarginMirroring(bool marginMirroring) {
-            return true;
+            return false;
         }
         
+        /**
+         * @see com.lowagie.text.DocListener#setMarginMirroring(boolean)
+         * @since	2.1.6
+         */
+        public bool SetMarginMirroringTopBottom(bool marginMirroring) {
+            return false;
+        }
+
         public bool SetMargins(float marginLeft, float marginRight, float marginTop, float marginBottom) {
             return true;
         }
@@ -581,7 +637,7 @@ namespace iTextSharp.text.html.simpleparser {
         }
         
         public const String tagsSupportedString = "ol ul li a pre font span br p div body table td th tr i b u sub sup em strong s strike"
-            + " h1 h2 h3 h4 h5 h6 img";
+            + " h1 h2 h3 h4 h5 h6 img hr";
         
         public static Hashtable tagsSupported = new Hashtable();
         
@@ -604,21 +660,6 @@ namespace iTextSharp.text.html.simpleparser {
         public int PageCount {
             set {
             }
-        }
-
-        private static float LengthParse(String txt, int c) {
-            if (txt == null)
-                return -1;
-            if (txt.EndsWith("%")) {
-                float vf = float.Parse(txt.Substring(0, txt.Length - 1), System.Globalization.NumberFormatInfo.InvariantInfo);
-                return vf;
-            }
-            if (txt.EndsWith("px")) {
-                float vf = float.Parse(txt.Substring(0, txt.Length - 2), System.Globalization.NumberFormatInfo.InvariantInfo);
-                return vf;
-            }
-            int v = int.Parse(txt);
-            return (float)v / c * 100f;
         }
     }
 }

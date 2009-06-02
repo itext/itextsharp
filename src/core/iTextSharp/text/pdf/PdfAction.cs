@@ -274,10 +274,15 @@ namespace iTextSharp.text.pdf {
                 js.Put(PdfName.JS, new PdfString(code));
             }
             else {
-                byte[] b = PdfEncodings.ConvertToBytes(code, unicode ? PdfObject.TEXT_UNICODE : PdfObject.TEXT_PDFDOCENCODING);
-                PdfStream stream = new PdfStream(b);
-                stream.FlateCompress(writer.CompressionLevel);
-                js.Put(PdfName.JS, writer.AddToBody(stream).IndirectReference);
+                try {
+                    byte[] b = PdfEncodings.ConvertToBytes(code, unicode ? PdfObject.TEXT_UNICODE : PdfObject.TEXT_PDFDOCENCODING);
+                    PdfStream stream = new PdfStream(b);
+                    stream.FlateCompress(writer.CompressionLevel);
+                    js.Put(PdfName.JS, writer.AddToBody(stream).IndirectReference);
+                }
+                catch {
+                    js.Put(PdfName.JS, new PdfString(code));
+                }
             }
             return js;
         }
