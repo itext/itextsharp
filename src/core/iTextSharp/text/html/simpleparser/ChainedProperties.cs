@@ -85,7 +85,7 @@ public class ChainedProperties {
             // adjust the font size
             String value = (String)prop[ElementTags.SIZE];
             if (value != null) {
-                if (value.EndsWith("px")) {
+                if (value.EndsWith("pt")) {
                     prop[ElementTags.SIZE] = value.Substring(0, value.Length - 2);
                 }
                 else {

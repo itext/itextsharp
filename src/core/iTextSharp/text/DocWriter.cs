@@ -412,5 +412,13 @@ namespace iTextSharp.text {
         public virtual bool SetMarginMirroring(bool marginMirroring) {
             return false;
         }
+
+        /**
+         * @see com.lowagie.text.DocListener#setMarginMirroring(boolean)
+         * @since	2.1.6
+         */
+        public virtual bool SetMarginMirroringTopBottom(bool MarginMirroring) {
+            return false;
+        }
     }
 }

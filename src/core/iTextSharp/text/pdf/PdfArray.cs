@@ -124,7 +124,7 @@ public class PdfArray : PdfObject {
  */
     
     public PdfArray(PdfArray array) : base(ARRAY) {
-        arrayList = new ArrayList(array.ArrayList);
+        arrayList = new ArrayList(array.arrayList);
     }
     
     // methods overriding some methods in PdfObject
@@ -152,6 +152,40 @@ public class PdfArray : PdfObject {
     
     // methods concerning the ArrayList-membervalue
     
+    // ARRAY CONTENT METHODS
+    
+    /**
+     * Overwrites a specified location of the array, returning the previous
+     * value
+     * 
+     * @param idx The index of the element to be overwritten
+     * @param obj new value for the specified index
+     * @throws IndexOutOfBoundsException if the specified position doesn't exist
+     * @return the previous value
+     * @since 2.1.5
+     */
+    public PdfObject SetPdfObject(int idx, PdfObject obj) {
+        PdfObject tmp = (PdfObject)arrayList[idx];
+        arrayList[idx] = obj;
+        return tmp;
+    }
+
+    /**
+     * Remove the element at the specified position from the array.
+     * 
+     * Shifts any subsequent elements to the left (subtracts one from their
+     * indices).
+     * 
+     * @param idx The index of the element to be removed.
+     * @throws IndexOutOfBoundsException the specified position doesn't exist
+     * @since 2.1.5
+     */
+    public PdfObject Remove(int idx) {
+        PdfObject tmp = (PdfObject)arrayList[idx];
+        arrayList.RemoveAt(idx);
+        return tmp;
+    }
+
 /**
  * Returns an ArrayList containing <CODE>PdfObject</CODE>s.
  *
@@ -176,6 +210,16 @@ public class PdfArray : PdfObject {
         }
     }
     
+    /**
+     * Returns <CODE>true</CODE> if the array is empty.
+     * 
+     * @return <CODE>true</CODE> if the array is empty
+     * @since 2.1.5
+     */
+    public bool IsEmpty() {
+        return arrayList.Count == 0;
+    }
+
 /**
  * Adds a <CODE>PdfObject</CODE> to the <CODE>PdfArray</CODE>.
  *
@@ -200,14 +244,31 @@ public class PdfArray : PdfObject {
         return true;
     }
     
-/**
- * Adds a <CODE>PdfObject</CODE> to the <CODE>PdfArray</CODE>.
- * <P>
- * The newly added object will be the first element in the <CODE>ArrayList</CODE>.
- *
- * @param        object            <CODE>PdfObject</CODE> to add
- */
-    
+    /**
+     * Inserts the specified element at the specified position.
+     * 
+     * Shifts the element currently at that position (if any) and
+     * any subsequent elements to the right (adds one to their indices).
+     *
+     * @param index The index at which the specified element is to be inserted
+     * @param element The element to be inserted
+     * @throws IndexOutOfBoundsException if the specified index is larger than the
+     *   last position currently set, plus 1. 
+     * @since 2.1.5
+     */
+    public void Add(int index, PdfObject element) {
+        arrayList.Insert(index, element);
+    }
+
+    /**
+     * Inserts a <CODE>PdfObject</CODE> at the beginning of the
+     * <CODE>PdfArray</CODE>.
+     * 
+     * The <CODE>PdfObject</CODE> will be the first element, any other elements
+     * will be shifted to the right (adds one to their indices).
+     *
+     * @param object The <CODE>PdfObject</CODE> to add
+     */
     public void AddFirst(PdfObject obj) {
         arrayList.Insert(0, obj);
     }

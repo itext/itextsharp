@@ -100,9 +100,18 @@ namespace iTextSharp.text {
     public class Document : IDocListener {
 
         // membervariables
-
-        ///<summary> This constant may only be changed by Paulo Soares and/or Bruno Lowagie. </summary>
-        private const string ITEXT_VERSION = "iTextSharp 4.1.2 (based on iText 2.1.2u)";
+        /**
+        * This constant may only be changed by Paulo Soares and/or Bruno Lowagie.
+        * @since	2.1.6
+        */
+	    private const String ITEXT = "iText";
+        /**
+        * This constant may only be changed by Paulo Soares and/or Bruno Lowagie.
+        * @since	2.1.6
+        */
+	    private const String RELEASE = "2.1.6_SNAPSHOT";
+	    /** This constant may only be changed by Paulo Soares and/or Bruno Lowagie. */
+	    private const String ITEXT_VERSION = ITEXT + " " + RELEASE + " by 1T3XT";
 
         ///<summary> Allows the pdf documents to be produced without compression for debugging purposes. </summary>
         public static bool Compress = true;
@@ -137,6 +146,13 @@ namespace iTextSharp.text {
         protected float marginBottom = 0;
 
         protected bool marginMirroring = false;
+
+        /**
+        * mirroring of the top/bottom margins
+        * @since	2.1.6
+        */
+        protected bool marginMirroringTopBottom = false;
+
         ///<summary> Content of JavaScript onLoad function </summary>
         protected string javaScript_onLoad = null;
 
@@ -156,6 +172,9 @@ namespace iTextSharp.text {
 
         ///<summary> This is the textual part of the footer </summary>
         protected HeaderFooter footer = null;
+
+        /** This is a chapter number in case ChapterAutoNumber is used. */
+        protected int chapternumber = 0;
 
         // constructor
 
@@ -222,6 +241,9 @@ namespace iTextSharp.text {
                 throw new DocumentException("The document is not open yet; you can only add Meta information.");
             }
             bool success = false;
+            if (element is ChapterAutoNumber) {
+        	    chapternumber = ((ChapterAutoNumber)element).SetAutomaticNumber(chapternumber);
+            }
             foreach (IDocListener listener in listeners) {
                 success |= listener.Add(element);
             }
@@ -603,6 +625,30 @@ namespace iTextSharp.text {
             return open;
         }
 
+        /**
+        * Gets the product name.
+        * This method may only be changed by Paulo Soares and/or Bruno Lowagie.
+        * @return the product name
+        * @since	2.1.6
+        */    
+        public static String Product {
+            get {
+                    return ITEXT;
+                }
+        }
+        
+        /**
+        * Gets the release number.
+        * This method may only be changed by Paulo Soares and/or Bruno Lowagie.
+        * @return the product name
+        * @since	2.1.6
+        */    
+        public static String Release {
+            get {
+                    return RELEASE;
+                }
+        }
+        
         /// <summary>
         /// Gets the iText version.
         /// </summary>
@@ -656,7 +702,7 @@ namespace iTextSharp.text {
         }
 
         /**
-        * Set the margin mirroring. It will mirror margins for odd/even pages.
+        * Set the margin mirroring. It will mirror right/left margins for odd/even pages.
         * <p>
         * Note: it will not work with {@link Table}.
         * 
@@ -672,6 +718,24 @@ namespace iTextSharp.text {
             return true;
         }
         
+        /**
+        * Set the margin mirroring. It will mirror top/bottom margins for odd/even pages.
+        * <p>
+        * Note: it will not work with {@link Table}.
+	    * 
+	    * @param marginMirroringTopBottom
+	    *            <CODE>true</CODE> to mirror the margins
+        * @return always <CODE>true</CODE>
+        * @since	2.1.6
+        */    
+        public virtual bool SetMarginMirroringTopBottom(bool marginMirroringTopBottom) {
+            this.marginMirroringTopBottom = marginMirroringTopBottom;
+            foreach (IDocListener listener in listeners) {
+                listener.SetMarginMirroringTopBottom(marginMirroringTopBottom);
+            }
+            return true;
+        }
+
         /**
         * Gets the margin mirroring flag.
         * 

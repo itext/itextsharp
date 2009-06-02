@@ -479,8 +479,7 @@ namespace iTextSharp.text {
         */
             
         public virtual void SetStyle(int style) {
-            if (this.style == UNDEFINED) this.style = NORMAL;
-            this.style |= style;
+            this.style = style;
         }
             
         /// <summary>

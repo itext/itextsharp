@@ -3,8 +3,8 @@ using System.Collections;
 using System.Globalization;
 using System.util;
 using iTextSharp.text;
-using iTextSharp.text.pdf;
 using iTextSharp.text.html;
+using iTextSharp.text.pdf;
 /*
  * Copyright 2004 Paulo Soares
  *
@@ -102,22 +102,6 @@ namespace iTextSharp.text.html.simpleparser {
 
         }
 
-        public static Paragraph CreateParagraph(Hashtable props) {
-            Paragraph p = new Paragraph();
-            String value = (String)props["align"];
-            if (value != null) {
-                if (Util.EqualsIgnoreCase(value, "center"))
-                    p.Alignment = Element.ALIGN_CENTER;
-                else if (Util.EqualsIgnoreCase(value, "right"))
-                    p.Alignment = Element.ALIGN_RIGHT;
-                else if (Util.EqualsIgnoreCase(value, "justify"))
-                    p.Alignment = Element.ALIGN_JUSTIFIED;
-            }
-            SetParagraphLeading(p, (String)props["leading"]);
-            p.Hyphenation = GetHyphenation(props);
-            return p;
-        }
-
         public static void CreateParagraph(Paragraph p, ChainedProperties props) {
             String value = props["align"];
             if (value != null) {
@@ -166,7 +150,7 @@ namespace iTextSharp.text.html.simpleparser {
         }
 
         public Font GetFont(ChainedProperties props) {
-            String face = props["face"];
+            String face = props[ElementTags.FACE];
             if (face != null) {
                 StringTokenizer tok = new StringTokenizer(face, ",");
                 while (tok.HasMoreTokens()) {
@@ -180,16 +164,16 @@ namespace iTextSharp.text.html.simpleparser {
                 }
             }
             int style = 0;
-            if (props.HasProperty("i"))
+            if (props.HasProperty(HtmlTags.I))
                 style |= Font.ITALIC;
-            if (props.HasProperty("b"))
+            if (props.HasProperty(HtmlTags.B))
                 style |= Font.BOLD;
-            if (props.HasProperty("u"))
+            if (props.HasProperty(HtmlTags.U))
                 style |= Font.UNDERLINE;
-            if (props.HasProperty("s"))
+            if (props.HasProperty(HtmlTags.S))
                 style |= Font.STRIKETHRU ;
 
-            String value = props["size"];
+            String value = props[ElementTags.SIZE];
             float size = 12;
             if (value != null)
                 size = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
@@ -259,6 +243,14 @@ namespace iTextSharp.text.html.simpleparser {
             return new HyphenationAuto(lang, country, leftMin, rightMin);
         }
         
+	    /**
+	    * This method isn't used by iText, but you can use it to analyze
+	    * the value of a style attribute inside a HashMap.
+	    * The different elements of the style attribute are added to the
+	    * HashMap as key-value pairs.
+	    * @param	h	a HashMap that should have at least a key named
+	    * style. After this method is invoked, more keys could be added.
+	    */
         public static void InsertStyle(Hashtable h) {
             String style = (String)h["style"];
             if (style == null)
@@ -269,7 +261,7 @@ namespace iTextSharp.text.html.simpleparser {
                     h["face"] = prop[key];
                 }
                 else if (key.Equals(Markup.CSS_KEY_FONTSIZE)) {
-                    h["size"] = Markup.ParseLength(prop[key]).ToString(NumberFormatInfo.InvariantInfo) + "px";
+                    h["size"] = Markup.ParseLength(prop[key]).ToString(NumberFormatInfo.InvariantInfo) + "pt";
                 }
                 else if (key.Equals(Markup.CSS_KEY_FONTSTYLE)) {
                     String ss = prop[key].Trim().ToLower(CultureInfo.InvariantCulture);
@@ -281,9 +273,9 @@ namespace iTextSharp.text.html.simpleparser {
                     if (ss.Equals("bold") || ss.Equals("700") || ss.Equals("800") || ss.Equals("900"))
                         h["b"] = null;
                 }
-                else if (key.Equals(Markup.CSS_KEY_FONTWEIGHT)) {
+                else if (key.Equals(Markup.CSS_KEY_TEXTDECORATION)) {
                     String ss = prop[key].Trim().ToLower(CultureInfo.InvariantCulture);
-                    if (ss.Equals("underline"))
+                    if (ss.Equals(Markup.CSS_VALUE_UNDERLINE))
                         h["u"] = null;
                 }
                 else if (key.Equals(Markup.CSS_KEY_COLOR)) {
@@ -300,6 +292,77 @@ namespace iTextSharp.text.html.simpleparser {
                     if (ss.EndsWith("%")) {
                         v /= 100;
                         h["leading"] = "0," + v.ToString(NumberFormatInfo.InvariantInfo);
+                    } 
+                    else if (Util.EqualsIgnoreCase("normal", ss)) {
+                        h["leading"] = "0,1.5";
+                    }
+                    else {
+                        h["leading"] = v.ToString(NumberFormatInfo.InvariantInfo) + ",0";
+                    }
+                }
+                else if (key.Equals(Markup.CSS_KEY_TEXTALIGN)) {
+                    String ss = prop[key].Trim().ToLower(System.Globalization.CultureInfo.InvariantCulture);
+                    h["align"] = ss;
+                }
+            }
+        }
+        
+	    /**
+	    * New method contributed by Lubos Strapko
+	    * @param h
+	    * @param cprops
+	    * @since 2.1.3
+	    */
+        public static void InsertStyle(Hashtable h, ChainedProperties cprops) {
+            String style = (String)h["style"];
+            if (style == null)
+                return;
+            Properties prop = Markup.ParseAttributes(style);
+            foreach (String key in prop.Keys) {
+                if (key.Equals(Markup.CSS_KEY_FONTFAMILY)) {
+                    h["face"] = prop[key];
+                }
+                else if (key.Equals(Markup.CSS_KEY_FONTSIZE)) {
+                    float actualFontSize = Markup.ParseLength(cprops[ElementTags.SIZE], Markup.DEFAULT_FONT_SIZE);
+                    if (actualFontSize <= 0f)
+                        actualFontSize = Markup.DEFAULT_FONT_SIZE;
+                    h[ElementTags.SIZE] = Markup.ParseLength(prop[key], actualFontSize).ToString(NumberFormatInfo.InvariantInfo) + "pt";
+                }
+                else if (key.Equals(Markup.CSS_KEY_FONTSTYLE)) {
+                    String ss = prop[key].Trim().ToLower(CultureInfo.InvariantCulture);
+                    if (ss.Equals("italic") || ss.Equals("oblique"))
+                        h["i"] = null;
+                }
+                else if (key.Equals(Markup.CSS_KEY_FONTWEIGHT)) {
+                    String ss = prop[key].Trim().ToLower(CultureInfo.InvariantCulture);
+                    if (ss.Equals("bold") || ss.Equals("700") || ss.Equals("800") || ss.Equals("900"))
+                        h["b"] = null;
+                }
+                else if (key.Equals(Markup.CSS_KEY_TEXTDECORATION)) {
+                    String ss = prop[key].Trim().ToLower(CultureInfo.InvariantCulture);
+                    if (ss.Equals(Markup.CSS_VALUE_UNDERLINE))
+                        h["u"] = null;
+                }
+                else if (key.Equals(Markup.CSS_KEY_COLOR)) {
+                    Color c = Markup.DecodeColor(prop[key]);
+                    if (c != null) {
+                        int hh = c.ToArgb() & 0xffffff;
+                        String hs = "#" + hh.ToString("X06", NumberFormatInfo.InvariantInfo);
+                        h["color"] = hs;
+                    }
+                }
+                else if (key.Equals(Markup.CSS_KEY_LINEHEIGHT)) {
+                    String ss = prop[key].Trim();
+                    float actualFontSize = Markup.ParseLength(cprops[ElementTags.SIZE], Markup.DEFAULT_FONT_SIZE);
+                    if (actualFontSize <= 0f)
+                        actualFontSize = Markup.DEFAULT_FONT_SIZE;
+                    float v = Markup.ParseLength(prop[key], actualFontSize);
+                    if (ss.EndsWith("%")) {
+                        v /= 100;
+                        h["leading"] = "0," + v.ToString(NumberFormatInfo.InvariantInfo);
+                    } 
+                    else if (Util.EqualsIgnoreCase("normal", ss)) {
+                        h["leading"] = "0,1.5";
                     }
                     else {
                         h["leading"] = v.ToString(NumberFormatInfo.InvariantInfo) + ",0";
