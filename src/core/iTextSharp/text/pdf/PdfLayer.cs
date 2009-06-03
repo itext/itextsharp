@@ -263,9 +263,9 @@ namespace iTextSharp.text.pdf {
             PdfDictionary usage = Usage;
             PdfDictionary dic = new PdfDictionary();
             if (min > 0)
-                dic.Put(PdfName.MIN, new PdfNumber(min));
+                dic.Put(PdfName.MIN_LOWER_CASE, new PdfNumber(min));
             if (max >= 0)
-                dic.Put(PdfName.MAX, new PdfNumber(max));
+                dic.Put(PdfName.MAX_LOWER_CASE, new PdfNumber(max));
             usage.Put(PdfName.ZOOM, dic);
         }
 

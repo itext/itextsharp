@@ -407,16 +407,16 @@ public class PdfEncryption {
                 else
                     stdcf.Put(PdfName.CFM, PdfName.V2);                  
                 PdfDictionary cf = new PdfDictionary();
-                cf.Put(PdfName.DEFAULTCRYPTFILER, stdcf);                
+                cf.Put(PdfName.DEFAULTCRYPTFILTER, stdcf);                
                 dic.Put(PdfName.CF, cf);
                 if (embeddedFilesOnly) {
-                    dic.Put(PdfName.EFF, PdfName.DEFAULTCRYPTFILER);
+                    dic.Put(PdfName.EFF, PdfName.DEFAULTCRYPTFILTER);
                     dic.Put(PdfName.STRF, PdfName.IDENTITY);
                     dic.Put(PdfName.STMF, PdfName.IDENTITY);
                 }
                 else {
-                    dic.Put(PdfName.STRF, PdfName.DEFAULTCRYPTFILER);
-                    dic.Put(PdfName.STMF, PdfName.DEFAULTCRYPTFILER);
+                    dic.Put(PdfName.STRF, PdfName.DEFAULTCRYPTFILTER);
+                    dic.Put(PdfName.STMF, PdfName.DEFAULTCRYPTFILTER);
                 }
             }
             

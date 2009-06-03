@@ -657,7 +657,7 @@ namespace iTextSharp.text.pdf {
                     PdfDictionary dic = (PdfDictionary)enc.Get(PdfName.CF);
                     if (dic == null)
                         throw new IOException("/CF not found (encryption)");
-                    dic = (PdfDictionary)dic.Get(PdfName.DEFAULTCRYPTFILER);
+                    dic = (PdfDictionary)dic.Get(PdfName.DEFAULTCRYPTFILTER);
                     if (dic == null)
                         throw new IOException("/DefaultCryptFilter not found (encryption)");
                     if (PdfName.V2.Equals(dic.Get(PdfName.CFM)))
