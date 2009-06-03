@@ -197,6 +197,10 @@ namespace iTextSharp.text.pdf {
         
         public PdfIndirectReference IndirectReference {
             get {
+    	        // uncomment the null check as soon as we're sure all examples still work
+    	        if (thisReference == null /* && writer != null */) {
+    		        thisReference = writer.PdfIndirectReference;
+    	        }
                 return thisReference;
             }
         }

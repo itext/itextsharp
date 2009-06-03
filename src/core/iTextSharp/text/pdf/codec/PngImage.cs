@@ -143,7 +143,7 @@ namespace iTextSharp.text.pdf.codec {
         private const int PNG_FILTER_AVERAGE = 3;
         private const int PNG_FILTER_PAETH = 4;
         private static PdfName[] intents = {PdfName.PERCEPTUAL,
-            PdfName.RELATIVECALORIMETRIC,PdfName.SATURATION,PdfName.ABSOLUTECALORIMETRIC};
+            PdfName.RELATIVECOLORIMETRIC,PdfName.SATURATION,PdfName.ABSOLUTECOLORIMETRIC};
         
         Stream isp;
         Stream dataStream;
@@ -738,6 +738,8 @@ namespace iTextSharp.text.pdf.codec {
                         int idx = outp[srcX];
                         if (idx < trans.Length)
                             v[0] = trans[idx];
+                        else
+                            v[0] = 255; // Patrick Valsecchi
                         SetPixel(smask, v, 0, 1, dstX, y, 8, yStride);
                         dstX += step;
                     }
@@ -751,8 +753,7 @@ namespace iTextSharp.text.pdf.codec {
                         dstX = xOffset;
                         for (srcX = 0; srcX < width; srcX++) {
                             int idx = outp[srcX];
-                            if (idx < trans.Length)
-                                v[0] = (trans[idx] == 0 ? 1 : 0);
+                            v[0] = ((idx < trans.Length && trans[idx] == 0) ? 1 : 0);
                             SetPixel(smask, v, 0, 1, dstX, y, 1, yStride);
                             dstX += step;
                         }

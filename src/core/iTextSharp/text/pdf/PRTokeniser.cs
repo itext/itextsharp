@@ -263,18 +263,23 @@ namespace iTextSharp.text.pdf {
                     }
                 }
             }
-            ThrowError("Unexpected end of file");
+            // if we hit here, the file is either corrupt (stream ended unexpectedly),
+            // or the last token ended exactly at the end of a stream.  This last
+            // case can occur inside an Object Stream.
         }
     
         public bool NextToken() {
-            StringBuilder outBuf = null;
-            stringValue = EMPTY;
             int ch = 0;
             do {
                 ch = file.Read();
             } while (ch != -1 && IsWhitespace(ch));
             if (ch == -1)
                 return false;
+            // Note:  We have to initialize stringValue here, after we've looked for the end of the stream,
+            // to ensure that we don't lose the value of a token that might end exactly at the end
+            // of the stream
+            StringBuilder outBuf = null;
+            stringValue = EMPTY;
             switch (ch) {
                 case '[':
                     type = TK_START_ARRAY;
