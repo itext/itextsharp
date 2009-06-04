@@ -202,7 +202,7 @@ namespace iTextSharp.text {
                     if (!font.IsStandardFont()) {
                         chunk.Font = font.Difference(chunk.Font);
                     }
-                    if (hyphenation != null) {
+                    if (hyphenation != null && chunk.GetHyphenation() == null && !chunk.IsEmpty()) {
                         chunk.SetHyphenation(hyphenation);
                     }
                     base.Insert(index, chunk);
@@ -323,7 +323,7 @@ namespace iTextSharp.text {
             }
             Chunk newChunk = new Chunk(c, f);
             newChunk.Attributes = chunk.Attributes;
-            if (newChunk.GetHyphenation() == null) {
+            if (hyphenation != null && newChunk.GetHyphenation() == null && !newChunk.IsEmpty()) {
                 newChunk.SetHyphenation(hyphenation);
             }
             base.Add(newChunk);
