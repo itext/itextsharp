@@ -185,18 +185,6 @@ namespace iTextSharp.text
         }
         
         /**
-        * @param rectangle
-        * @param spacing
-        * @return a rectangle
-        */
-        public static SimpleTable GetDimensionlessInstance(Rectangle rectangle, float spacing) {
-            SimpleTable ev = new SimpleTable();
-            ev.CloneNonPositionParameters(rectangle);
-            ev.Cellspacing = spacing;
-            return ev;
-        }
-        
-        /**
         * @see com.lowagie.text.pdf.PdfPTableEvent#tableLayout(com.lowagie.text.pdf.PdfPTable, float[][], float[], int, int, com.lowagie.text.pdf.PdfContentByte[])
          */
         public void TableLayout(PdfPTable table, float[][] widths, float[] heights, int headerRows, int rowStart, PdfContentByte[] canvases) {

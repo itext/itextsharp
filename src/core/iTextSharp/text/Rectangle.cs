@@ -1,4 +1,4 @@
-using System;
+    using System;
 using System.Collections;
 using System.Text;
 using System.util;
@@ -560,9 +560,14 @@ namespace iTextSharp.text {
         /// </summary>
         /// <returns>a bool</returns>
         public bool HasBorders() {
-            return (border > 0)
-                && ((borderWidth > 0) || (borderWidthLeft > 0)
-                || (borderWidthRight > 0) || (borderWidthTop > 0) || (borderWidthBottom > 0));
+            switch (border) {
+                case UNDEFINED:
+                case NO_BORDER:
+                    return false;
+                default:
+                    return borderWidth > 0 || borderWidthLeft > 0
+                        || borderWidthRight > 0 || borderWidthTop > 0 || borderWidthBottom > 0;
+            }
         }
     
         /// <summary>
@@ -571,7 +576,9 @@ namespace iTextSharp.text {
         /// <param name="type">the type of border</param>
         /// <returns>a bool</returns>
         public bool HasBorder(int type) {
-            return border != UNDEFINED && (border & type) == type;
+            if (border == UNDEFINED)
+                return false;
+            return (border & type) == type;
         }
     
         /// <summary>
@@ -696,12 +703,9 @@ namespace iTextSharp.text {
         }
 
         private float GetVariableBorderWidth(float variableWidthValue, int side) {
-            if ((border & side) != 0) {
-                return variableWidthValue != UNDEFINED ? variableWidthValue
-                        : borderWidth;
-            } else {
-                return 0;
-            }
+            if ((border & side) != 0)
+                return variableWidthValue != UNDEFINED ? variableWidthValue : borderWidth;
+            return 0;
         }
 
         /**
