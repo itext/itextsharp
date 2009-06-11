@@ -161,7 +161,7 @@ namespace iTextSharp.text.pdf {
          * @throws DocumentException the AFM file is invalid
          * @throws IOException the AFM file could not be read
          */
-        internal Type1Font(string afmFile, string enc, bool emb, byte[] ttfAfm, byte[] pfb) {
+        internal Type1Font(string afmFile, string enc, bool emb, byte[] ttfAfm, byte[] pfb, bool forceRead) {
             if (emb && ttfAfm != null && pfb == null)
                 throw new DocumentException("Two byte arrays are needed if the Type1 font is embedded.");
             if (emb && ttfAfm != null)
@@ -219,7 +219,7 @@ namespace iTextSharp.text.pdf {
             else if (afmFile.ToLower(System.Globalization.CultureInfo.InvariantCulture).EndsWith(".afm")) {
                 try {
                     if (ttfAfm == null)
-                        rf = new RandomAccessFileOrArray(afmFile);
+                        rf = new RandomAccessFileOrArray(afmFile, forceRead);
                     else
                         rf = new RandomAccessFileOrArray(ttfAfm);
                     Process(rf);
@@ -239,7 +239,7 @@ namespace iTextSharp.text.pdf {
                 try {
                     MemoryStream ba = new MemoryStream();
                     if (ttfAfm == null)
-                        rf = new RandomAccessFileOrArray(afmFile);
+                        rf = new RandomAccessFileOrArray(afmFile, forceRead);
                     else
                         rf = new RandomAccessFileOrArray(ttfAfm);
                     Pfm2afm.Convert(rf, ba);
@@ -478,7 +478,7 @@ namespace iTextSharp.text.pdf {
             try {
                 string filePfb = fileName.Substring(0, fileName.Length - 3) + "pfb";
                 if (pfb == null)
-                    rf = new RandomAccessFileOrArray(filePfb);
+                    rf = new RandomAccessFileOrArray(filePfb, true);
                 else
                     rf = new RandomAccessFileOrArray(pfb);
                 int fileLength = rf.Length;

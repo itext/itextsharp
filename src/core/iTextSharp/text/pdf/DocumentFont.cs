@@ -107,8 +107,8 @@ namespace iTextSharp.text.pdf {
             this.refFont = refFont;
             fontType = FONT_TYPE_DOCUMENT;
             font = (PdfDictionary)PdfReader.GetPdfObject(refFont);
-            fontName = PdfName.DecodeName(((PdfName)PdfReader.GetPdfObject(font.Get(PdfName.BASEFONT))).ToString());
-            PdfName subType = (PdfName)PdfReader.GetPdfObject(font.Get(PdfName.SUBTYPE));
+            fontName = PdfName.DecodeName(font.GetAsName(PdfName.BASEFONT).ToString());
+            PdfName subType = font.GetAsName(PdfName.SUBTYPE);
             if (PdfName.TYPE1.Equals(subType) || PdfName.TRUETYPE.Equals(subType))
                 DoType1TT();
             else {
@@ -119,7 +119,7 @@ namespace iTextSharp.text.pdf {
                         return;
                     }
                 }
-                String enc = PdfName.DecodeName(((PdfName)PdfReader.GetPdfObject(font.Get(PdfName.ENCODING))).ToString());
+                String enc = PdfName.DecodeName(font.GetAsName(PdfName.ENCODING).ToString());
                 for (int k = 0; k < cjkEncs2.Length; ++k) {
                     if (enc.StartsWith(cjkEncs2[k])) {
                         if (k > 3)
@@ -138,7 +138,7 @@ namespace iTextSharp.text.pdf {
         private void ProcessType0(PdfDictionary font) {
             byte[] touni = PdfReader.GetStreamBytes((PRStream)PdfReader.GetPdfObjectRelease(font.Get(PdfName.TOUNICODE)));
             PdfArray df = (PdfArray)PdfReader.GetPdfObjectRelease(font.Get(PdfName.DESCENDANTFONTS));
-            PdfDictionary cidft = (PdfDictionary)PdfReader.GetPdfObjectRelease((PdfObject)df.ArrayList[0]);
+            PdfDictionary cidft = (PdfDictionary)PdfReader.GetPdfObjectRelease(df[0]);
             PdfNumber dwo = (PdfNumber)PdfReader.GetPdfObjectRelease(cidft.Get(PdfName.DW));
             int dw = 1000;
             if (dwo != null)
@@ -153,20 +153,19 @@ namespace iTextSharp.text.pdf {
             IntHashtable hh = new IntHashtable();
             if (ws == null)
                 return hh;
-            ArrayList ar = ws.ArrayList;
-            for (int k = 0; k < ar.Count; ++k) {
-                int c1 = ((PdfNumber)PdfReader.GetPdfObjectRelease((PdfObject)ar[k])).IntValue;
-                PdfObject obj = PdfReader.GetPdfObjectRelease((PdfObject)ar[++k]);
+            for (int k = 0; k < ws.Size; ++k) {
+                int c1 = ((PdfNumber)PdfReader.GetPdfObjectRelease(ws[k])).IntValue;
+                PdfObject obj = PdfReader.GetPdfObjectRelease(ws[++k]);
                 if (obj.IsArray()) {
-                    ArrayList ar2 = ((PdfArray)obj).ArrayList;
-                    for (int j = 0; j < ar2.Count; ++j) {
-                        int c2 = ((PdfNumber)PdfReader.GetPdfObjectRelease((PdfObject)ar2[j])).IntValue;
+                    PdfArray a2 = (PdfArray)obj;
+                    for (int j = 0; j < a2.Size; ++j) {
+                        int c2 = ((PdfNumber)PdfReader.GetPdfObjectRelease(a2[j])).IntValue;
                         hh[c1++] = c2;
                     }
                 }
                 else {
                     int c2 = ((PdfNumber)obj).IntValue;
-                    int w = ((PdfNumber)PdfReader.GetPdfObjectRelease((PdfObject)ar[++k])).IntValue;
+                    int w = ((PdfNumber)PdfReader.GetPdfObjectRelease(ws[++k])).IntValue;
                     for (; c1 <= c2; ++c1)
                         hh[c1] = w;
                 }
@@ -223,9 +222,9 @@ namespace iTextSharp.text.pdf {
                                 }
                             }
                             else {
-                                ArrayList ar = ((PdfArray)ob2).ArrayList;
-                                for (int j = 0; j < ar.Count; ++j, ++cid1c) {
-                                    String uni = DecodeString((PdfString)ar[j]);
+                                PdfArray a = (PdfArray)ob2;
+                                for (int j = 0; j < a.Size; ++j, ++cid1c) {
+                                    String uni = DecodeString(a.GetAsString(j));
                                     if (uni.Length == 1) {
                                         int unic = (int)uni[uni.Length - 1];
                                         int w = dw;
@@ -257,13 +256,12 @@ namespace iTextSharp.text.pdf {
                         FillEncoding(null);
                     else
                         FillEncoding((PdfName)enc);
-                    PdfArray diffs = (PdfArray)PdfReader.GetPdfObject(encDic.Get(PdfName.DIFFERENCES));
+                    PdfArray diffs = encDic.GetAsArray(PdfName.DIFFERENCES);
                     if (diffs != null) {
                         diffmap = new IntHashtable();
-                        ArrayList dif = diffs.ArrayList;
                         int currentNumber = 0;
-                        for (int k = 0; k < dif.Count; ++k) {
-                            PdfObject obj = (PdfObject)dif[k];
+                        for (int k = 0; k < diffs.Size; ++k) {
+                            PdfObject obj = diffs[k];
                             if (obj.IsNumber())
                                 currentNumber = ((PdfNumber)obj).IntValue;
                             else {
@@ -278,9 +276,9 @@ namespace iTextSharp.text.pdf {
                     }
                 }
             }
-            PdfArray newWidths = (PdfArray)PdfReader.GetPdfObject(font.Get(PdfName.WIDTHS));
-            PdfNumber first = (PdfNumber)PdfReader.GetPdfObject(font.Get(PdfName.FIRSTCHAR));
-            PdfNumber last = (PdfNumber)PdfReader.GetPdfObject(font.Get(PdfName.LASTCHAR));
+            PdfArray newWidths = font.GetAsArray(PdfName.WIDTHS);
+            PdfNumber first = font.GetAsNumber(PdfName.FIRSTCHAR);
+            PdfNumber last = font.GetAsNumber(PdfName.LASTCHAR);
             if (BuiltinFonts14.ContainsKey(fontName)) {
                 BaseFont bf;
                     bf = BaseFont.CreateFont(fontName, WINANSI, false);
@@ -308,36 +306,34 @@ namespace iTextSharp.text.pdf {
             }
             if (first != null && last != null && newWidths != null) {
                 int f = first.IntValue;
-                ArrayList ar = newWidths.ArrayList;
-                for (int k = 0; k < ar.Count; ++k) {
-                    widths[f + k] = ((PdfNumber)ar[k]).IntValue;
+                for (int k = 0; k < newWidths.Size; ++k) {
+                    widths[f + k] = newWidths.GetAsNumber(k).IntValue;
                 }
             }
-            FillFontDesc((PdfDictionary)PdfReader.GetPdfObject(font.Get(PdfName.FONTDESCRIPTOR)));
+            FillFontDesc(font.GetAsDict(PdfName.FONTDESCRIPTOR));
         }
         
         private void FillFontDesc(PdfDictionary fontDesc) {
             if (fontDesc == null)
                 return;
-            PdfNumber v = (PdfNumber)PdfReader.GetPdfObject(fontDesc.Get(PdfName.ASCENT));
+            PdfNumber v = fontDesc.GetAsNumber(PdfName.ASCENT);
             if (v != null)
                 Ascender = v.FloatValue;
-            v = (PdfNumber)PdfReader.GetPdfObject(fontDesc.Get(PdfName.CAPHEIGHT));
+            v = fontDesc.GetAsNumber(PdfName.CAPHEIGHT);
             if (v != null)
                 CapHeight = v.FloatValue;
-            v = (PdfNumber)PdfReader.GetPdfObject(fontDesc.Get(PdfName.DESCENT));
+            v = fontDesc.GetAsNumber(PdfName.DESCENT);
             if (v != null)
                 Descender = v.FloatValue;
-            v = (PdfNumber)PdfReader.GetPdfObject(fontDesc.Get(PdfName.ITALICANGLE));
+            v = fontDesc.GetAsNumber(PdfName.ITALICANGLE);
             if (v != null)
                 ItalicAngle = v.FloatValue;
-            PdfArray bbox = (PdfArray)PdfReader.GetPdfObject(fontDesc.Get(PdfName.FONTBBOX));
+            PdfArray bbox = fontDesc.GetAsArray(PdfName.FONTBBOX);
             if (bbox != null) {
-                ArrayList ar = bbox.ArrayList;
-                llx = ((PdfNumber)ar[0]).FloatValue;
-                lly = ((PdfNumber)ar[1]).FloatValue;
-                urx = ((PdfNumber)ar[2]).FloatValue;
-                ury = ((PdfNumber)ar[3]).FloatValue;
+                llx = bbox.GetAsNumber(0).FloatValue;
+                lly = bbox.GetAsNumber(1).FloatValue;
+                urx = bbox.GetAsNumber(2).FloatValue;
+                ury = bbox.GetAsNumber(3).FloatValue;
                 if (llx > urx) {
                     float t = llx;
                     llx = urx;

@@ -77,7 +77,7 @@ namespace iTextSharp.text.pdf {
          * @throws DocumentException the font is invalid
          * @throws IOException the font file could not be read
          */
-        internal TrueTypeFontUnicode(string ttFile, string enc, bool emb, byte[] ttfAfm) {
+        internal TrueTypeFontUnicode(string ttFile, string enc, bool emb, byte[] ttfAfm, bool forceRead) {
             string nameBase = GetBaseName(ttFile);
             string ttcName = GetTTCName(nameBase);
             if (nameBase.Length < ttFile.Length) {
@@ -91,7 +91,7 @@ namespace iTextSharp.text.pdf {
                 ttcIndex = nameBase.Substring(ttcName.Length + 1);
             FontType = FONT_TYPE_TTUNI;
             if ((fileName.ToLower(System.Globalization.CultureInfo.InvariantCulture).EndsWith(".ttf") || fileName.ToLower(System.Globalization.CultureInfo.InvariantCulture).EndsWith(".otf") || fileName.ToLower(System.Globalization.CultureInfo.InvariantCulture).EndsWith(".ttc")) && ((enc.Equals(IDENTITY_H) || enc.Equals(IDENTITY_V)) && emb)) {
-                Process(ttfAfm);
+                Process(ttfAfm, forceRead);
                 if (os_2.fsType == 2)
                     throw new DocumentException(fileName + style + " cannot be embedded due to licensing restrictions.");
                 // Sivan
