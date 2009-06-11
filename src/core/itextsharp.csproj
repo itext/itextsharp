@@ -228,6 +228,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "iTextSharp\text\ImgJBIG2.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "iTextSharp\text\ImgRaw.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1329,6 +1334,16 @@
                 />
                 <File
                     RelPath = "iTextSharp\text\pdf\codec\GifImage.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "iTextSharp\text\pdf\codec\JBIG2Image.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "iTextSharp\text\pdf\codec\JBIG2SegmentReader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

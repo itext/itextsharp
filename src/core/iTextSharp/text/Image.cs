@@ -138,6 +138,12 @@ namespace iTextSharp.text {
 	    /** type of image */
 	    public const int ORIGINAL_JPEG2000 = 8;
 
+	    /**
+	    * type of image
+	    * @since	2.1.5
+	    */
+	    public const int ORIGINAL_JBIG2 = 9;
+
         /** Image color inversion */
         protected bool invert = false;
     
@@ -347,6 +353,11 @@ namespace iTextSharp.text {
                 int c2 = istr.ReadByte();
                 int c3 = istr.ReadByte();
                 int c4 = istr.ReadByte();
+			    // jbig2
+			    int c5 = istr.ReadByte();
+			    int c6 = istr.ReadByte();
+			    int c7 = istr.ReadByte();
+			    int c8 = istr.ReadByte();
                 istr.Close();
 
                 istr = null;
@@ -395,6 +406,23 @@ namespace iTextSharp.text {
                     }
 
                 }
+                if ( c1 == 0x97 && c2 == 'J' && c3 == 'B' && c4 == '2' &&
+                        c5 == '\r' && c6 == '\n' && c7 == 0x1a && c8 == '\n' ) {
+                    RandomAccessFileOrArray ra = null;
+                    try {
+                        if (url.IsFile) {
+                            String file = url.LocalPath;
+                            ra = new RandomAccessFileOrArray(file);
+                        } else
+                            ra = new RandomAccessFileOrArray(url);
+                        Image img = JBIG2Image.GetJbig2Image(ra, 1);
+                        img.url = url;
+                        return img;
+                    } finally {
+                        if (ra != null)
+                            ra.Close();
+                    }
+                }
                 throw new IOException(url.ToString()
                         + " is not a recognized imageformat.");
             } finally {
@@ -410,6 +438,19 @@ namespace iTextSharp.text {
             return GetInstance(a);
         }
 
+        /**
+        * Creates a JBIG2 Image.
+        * @param   width   the width of the image
+        * @param   height  the height of the image
+        * @param   data    the raw image data
+        * @param   globals JBIG2 globals
+        * @since   2.1.5
+        */
+        public static Image GetInstance(int width, int height, byte[] data, byte[] globals) {
+            Image img = new ImgJBIG2(width, height, data, globals);
+            return img;
+        }
+        
         /// <summary>
         /// Gets an instance of an Image.
         /// </summary>
@@ -1426,10 +1467,10 @@ namespace iTextSharp.text {
             }
         }
 
-        private PdfObject SimplifyColorspace(PdfObject obj) {
-            if (obj == null || !obj.IsArray())
+        private PdfObject SimplifyColorspace(PdfArray obj) {
+            if (obj == null)
                 return obj;
-            PdfObject first = (PdfObject)(((PdfArray)obj).ArrayList[0]);
+            PdfObject first = obj.GetAsName(0);
             if (PdfName.CALGRAY.Equals(first))
                 return PdfName.DEVICEGRAY;
             else if (PdfName.CALRGB.Equals(first))
@@ -1444,18 +1485,22 @@ namespace iTextSharp.text {
         public void SimplifyColorspace() {
             if (additional == null)
                 return;
-            PdfObject value = additional.Get(PdfName.COLORSPACE);
-            if (value == null || !value.IsArray())
+            PdfArray value = additional.GetAsArray(PdfName.COLORSPACE);
+            if (value == null)
                 return;
             PdfObject cs = SimplifyColorspace(value);
+            PdfObject newValue;
             if (cs.IsName())
-                value = cs;
+                newValue = cs;
             else {
-                PdfObject first = (PdfObject)(((PdfArray)value).ArrayList[0]);
+                newValue = value;
+                PdfName first = value.GetAsName(0);
                 if (PdfName.INDEXED.Equals(first)) {
-                    ArrayList array = ((PdfArray)value).ArrayList;
-                    if (array.Count >= 2 && ((PdfObject)array[1]).IsArray()) {
-                        array[1] = SimplifyColorspace((PdfObject)array[1]);
+                    if (value.Size >= 2) {
+                        PdfArray second = value.GetAsArray(1);
+                        if (second != null) {
+                            value[1] = SimplifyColorspace(second);
+                        }
                     }
                 }
             }

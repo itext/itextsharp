@@ -155,8 +155,7 @@ public class PdfArray : PdfObject {
     // ARRAY CONTENT METHODS
     
     /**
-     * Overwrites a specified location of the array, returning the previous
-     * value
+     * Overwrites a specified location of the array.
      * 
      * @param idx The index of the element to be overwritten
      * @param obj new value for the specified index
@@ -164,10 +163,13 @@ public class PdfArray : PdfObject {
      * @return the previous value
      * @since 2.1.5
      */
-    public PdfObject SetPdfObject(int idx, PdfObject obj) {
-        PdfObject tmp = (PdfObject)arrayList[idx];
-        arrayList[idx] = obj;
-        return tmp;
+    public PdfObject this[int idx] {
+        get {
+            return (PdfObject)arrayList[idx];
+        }
+        set {
+            arrayList[idx] = value;
+        }
     }
 
     /**
@@ -292,12 +294,12 @@ public class PdfArray : PdfObject {
         return arrayList.ToString();
     }
 
-    public PdfObject GetPdfObject( int idx ) {
-        return (PdfObject)arrayList[idx];
-    }
+//    public PdfObject GetPdfObject( int idx ) {
+//        return (PdfObject)arrayList[idx];
+//    }
     
     public PdfObject GetDirectObject( int idx ) {
-        return PdfReader.GetPdfObject(GetPdfObject(idx));
+        return PdfReader.GetPdfObject(this[idx]);
     }
     
     // more of the same like PdfDictionary. (MAS 2/17/06)
@@ -359,7 +361,7 @@ public class PdfArray : PdfObject {
     
     public PdfIndirectReference GetAsIndirectObject(int idx) {
         PdfIndirectReference refi = null;
-        PdfObject orig = GetPdfObject(idx); // not getDirect this time.
+        PdfObject orig = this[idx]; // not getDirect this time.
         if (orig != null && orig.IsIndirect())
             refi = (PdfIndirectReference) orig;
         return refi;

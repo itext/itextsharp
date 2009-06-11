@@ -1524,7 +1524,7 @@ namespace iTextSharp.text.pdf {
             PdfObject obj;
             PdfLayer layer;
             for (int i = 0; i < arr.Size; i++) {
-                obj = arr.GetPdfObject(i);
+                obj = arr[i];
                 if (obj.IsIndirect()) {
                     layer = (PdfLayer)ocgmap[obj.ToString()];
                     layer.OnPanel = true;
@@ -1532,9 +1532,9 @@ namespace iTextSharp.text.pdf {
                     if (parent != null) {
                         parent.AddChild(layer);
                     }
-                    if (arr.Size > i + 1 && arr.GetPdfObject(i + 1).IsArray()) {
+                    if (arr.Size > i + 1 && arr[i + 1].IsArray()) {
                         i++;
-                        AddOrder(layer, (PdfArray)arr.GetPdfObject(i), ocgmap);
+                        AddOrder(layer, (PdfArray)arr[i], ocgmap);
                     }
                 }
                 else if (obj.IsArray()) {
