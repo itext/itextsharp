@@ -4,7 +4,7 @@ using System.util;
 using iTextSharp.text.factories;
 
 /*
- * $Id: Paragraph.cs,v 1.14 2008/06/01 13:10:51 psoares33 Exp $
+ * $Id: Paragraph.cs,v 1.13 2008/05/13 11:25:12 psoares33 Exp $
  * 
  *
  * Copyright 1999, 2000, 2001, 2002 by Bruno Lowagie.
@@ -218,8 +218,9 @@ namespace iTextSharp.text {
             }
             else if (o is Paragraph) {
                 base.Add(o);
-                if (Count > 0) {
-                    Chunk tmp = (Chunk)Chunks[Count - 1];
+                ArrayList chunks = this.Chunks;
+                if (chunks.Count > 0) {
+                    Chunk tmp = (Chunk)chunks[chunks.Count - 1];
                     base.Add(new Chunk("\n", tmp.Font));
                 }
                 else {

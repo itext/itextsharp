@@ -93,6 +93,7 @@ namespace iTextSharp.text
                     || element.Type == Element.MARKED
                     || element.Type == Element.JPEG
     				|| element.Type == Element.JPEG2000
+                    || element.Type == Element.JBIG2
                     || element.Type == Element.IMGRAW
                     || element.Type == Element.IMGTEMPLATE) {
                 content.Add(element);
@@ -183,18 +184,6 @@ namespace iTextSharp.text
             return cell;
         }
         
-        /**
-        * @param rectangle
-        * @param spacing
-        * @return a rectangle
-        */
-        public static SimpleCell GetDimensionlessInstance(Rectangle rectangle, float spacing) {
-            SimpleCell cell = new SimpleCell(CELL);
-            cell.CloneNonPositionParameters(rectangle);
-            cell.Spacing = spacing * 2;
-            return cell;
-        }
-
         /**
         * @see com.lowagie.text.pdf.PdfPCellEvent#cellLayout(com.lowagie.text.pdf.PdfPCell, com.lowagie.text.Rectangle, com.lowagie.text.pdf.PdfContentByte[])
         */

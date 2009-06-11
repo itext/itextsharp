@@ -1474,7 +1474,10 @@ namespace iTextSharp.text {
             pdfptable.ElementComplete = complete;
             if (NotAddedYet)
                 pdfptable.SkipFirstHeader = true;
-            pdfptable.TableEvent = SimpleTable.GetDimensionlessInstance(this, cellspacing);
+            SimpleTable t_evt = new SimpleTable();
+            t_evt.CloneNonPositionParameters(this);
+            t_evt.Cellspacing = cellspacing;
+            pdfptable.TableEvent = t_evt;
             pdfptable.HeaderRows = lastHeaderRow + 1;
             pdfptable.SplitLate = cellsFitPage;
             pdfptable.KeepTogether = tableFitsPage;
@@ -1500,7 +1503,10 @@ namespace iTextSharp.text {
                         else if (cell is Cell) {
                             pcell = ((Cell)cell).CreatePdfPCell();
                             pcell.Padding = cellpadding + cellspacing / 2f;
-                            pcell.CellEvent = SimpleCell.GetDimensionlessInstance((Cell)cell, cellspacing);
+                            SimpleCell c_evt = new SimpleCell(SimpleCell.CELL);
+                            c_evt.CloneNonPositionParameters((Cell)cell);
+                            c_evt.Spacing = cellspacing * 2f;
+                            pcell.CellEvent = c_evt;
                         }
                         else {
                             pcell = new PdfPCell();

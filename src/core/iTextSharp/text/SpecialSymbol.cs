@@ -137,7 +137,7 @@ namespace iTextSharp.text
                 case (char)933:
                     return 'U'; // UPSILON
                 case (char)934:
-                    return 'J'; // PHI
+                    return 'F'; // PHI
                 case (char)935:
                     return 'C'; // CHI
                 case (char)936:
@@ -187,7 +187,7 @@ namespace iTextSharp.text
                 case (char)965:
                     return 'u'; // upsilon
                 case (char)966:
-                    return 'j'; // phi
+                    return 'f'; // phi
                 case (char)967:
                     return 'c'; // chi
                 case (char)968:
