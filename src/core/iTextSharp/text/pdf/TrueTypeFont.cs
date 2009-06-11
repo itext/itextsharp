@@ -350,8 +350,6 @@ namespace iTextSharp.text.pdf {
         protected TrueTypeFont() {
         }
     
-        internal TrueTypeFont(string ttFile, string enc, bool emb, byte[] ttfAfm) : this(ttFile, enc, emb, ttfAfm, false) {}
-    
         /** Creates a new TrueType font.
          * @param ttFile the location of the font on file. The file must end in '.ttf' or
          * '.ttc' but can have modifiers after the name
@@ -361,7 +359,7 @@ namespace iTextSharp.text.pdf {
          * @throws DocumentException the font is invalid
          * @throws IOException the font file could not be read
          */
-        internal TrueTypeFont(string ttFile, string enc, bool emb, byte[] ttfAfm, bool justNames) {
+        internal TrueTypeFont(string ttFile, string enc, bool emb, byte[] ttfAfm, bool justNames, bool forceRead) {
             this.justNames = justNames;
             string nameBase = GetBaseName(ttFile);
             string ttcName = GetTTCName(nameBase);
@@ -376,7 +374,7 @@ namespace iTextSharp.text.pdf {
             if (ttcName.Length < nameBase.Length)
                 ttcIndex = nameBase.Substring(ttcName.Length + 1);
             if (fileName.ToLower(System.Globalization.CultureInfo.InvariantCulture).EndsWith(".ttf") || fileName.ToLower(System.Globalization.CultureInfo.InvariantCulture).EndsWith(".otf") || fileName.ToLower(System.Globalization.CultureInfo.InvariantCulture).EndsWith(".ttc")) {
-                Process(ttfAfm);
+                Process(ttfAfm, forceRead);
                 if (!justNames && embedded && os_2.fsType == 2)
                     throw new DocumentException(fileName + style + " cannot be embedded due to licensing restrictions.");
             }
@@ -630,12 +628,12 @@ namespace iTextSharp.text.pdf {
          * @throws DocumentException the font is invalid
          * @throws IOException the font file could not be read
          */
-        internal void Process(byte[] ttfAfm) {
+        internal void Process(byte[] ttfAfm, bool preload) {
             tables = new Hashtable();
         
             try {
                 if (ttfAfm == null)
-                    rf = new RandomAccessFileOrArray(fileName);
+                    rf = new RandomAccessFileOrArray(fileName, preload);
                 else
                     rf = new RandomAccessFileOrArray(ttfAfm);
                 if (ttcIndex.Length > 0) {
