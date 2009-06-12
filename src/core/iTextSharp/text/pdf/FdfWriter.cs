@@ -222,6 +222,22 @@ namespace iTextSharp.text.pdf {
             return SetField(field, new PdfString(value, PdfObject.TEXT_UNICODE));
         }
         
+        /**
+         * Sets the field value as a <CODE>PDFAction</CODE>. 
+         * For example, this method allows setting a form submit button action using {@link PdfAction#createSubmitForm(String, Object[], int)}.
+         * This method creates an <CODE>A</CODE> entry for the specified field in the underlying FDF file.
+         * Method contributed by Philippe Laflamme (plaflamme)
+         * @param field the fully qualified field name
+         * @param action the field's action
+         * @return <CODE>true</CODE> if the value was inserted,
+         * <CODE>false</CODE> if the name is incompatible with
+         * an existing field
+         * @since	2.1.5
+         */
+        public bool SetFieldAsAction(String field, PdfAction action) {
+            return SetField(field, action);
+        }
+    
         /** Sets all the fields from this <CODE>FdfReader</CODE>
         * @param fdf the <CODE>FdfReader</CODE>
         */    
@@ -233,6 +249,10 @@ namespace iTextSharp.text.pdf {
                 PdfObject v = dic.Get(PdfName.V);
                 if (v != null) {
                     SetField(key, v);
+                }
+                v = dic.Get(PdfName.A); // (plaflamme)
+                if (v != null) {
+            	    SetField(key, v);
                 }
             }
         }
@@ -252,6 +272,7 @@ namespace iTextSharp.text.pdf {
                 String fn = (String)entry.Key;
                 AcroFields.Item item = (AcroFields.Item)entry.Value;
                 PdfDictionary dic = (PdfDictionary)item.merged[0];
+                //PdfDictionary dic = item.GetMerged(0);
                 PdfObject v = PdfReader.GetPdfObjectRelease(dic.Get(PdfName.V));
                 if (v == null)
                     continue;
@@ -311,6 +332,9 @@ namespace iTextSharp.text.pdf {
                     dic.Put(PdfName.T, new PdfString(key, PdfObject.TEXT_UNICODE));
                     if (v is Hashtable) {
                         dic.Put(PdfName.KIDS, Calculate((Hashtable)v));
+                    }
+                    else if (v is PdfAction) {	// (plaflamme)
+                        dic.Put(PdfName.A, (PdfAction)v);
                     }
                     else {
                         dic.Put(PdfName.V, (PdfObject)v);

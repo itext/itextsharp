@@ -75,6 +75,11 @@ namespace iTextSharp.text.pdf.intern {
         protected char header_version = PdfWriter.VERSION_1_4;
         /** The version that will be written to the catalog. */
         protected PdfName catalog_version = null;
+        /**
+         * The extensions dictionary.
+         * @since	2.1.6
+         */
+        protected PdfDictionary extensions = null;
         
         /**
         * @see com.lowagie.text.pdf.interfaces.PdfVersion#setPdfVersion(char)
@@ -167,6 +172,31 @@ namespace iTextSharp.text.pdf.intern {
 		    if(catalog_version != null) {
 			    catalog.Put(PdfName.VERSION, catalog_version);
 		    }
-	    }
+            if (extensions != null) {
+                catalog.Put(PdfName.EXTENSIONS, extensions);
+            }
+        }
+
+        /**
+        * @see com.lowagie.text.pdf.interfaces.PdfVersion#addDeveloperExtension(com.lowagie.text.pdf.PdfDeveloperExtension)
+        * @since   2.1.6
+        */
+        public void AddDeveloperExtension(PdfDeveloperExtension de) {
+            if (extensions == null) {
+                extensions = new PdfDictionary();
+            }
+            else {
+                PdfDictionary extension = extensions.GetAsDict(de.Prefix);
+                if (extension != null) {
+                    int diff = de.Baseversion.CompareTo(extension.GetAsName(PdfName.BASEVERSION));
+                    if (diff < 0)
+                        return;
+                    diff = de.ExtensionLevel - extension.GetAsNumber(PdfName.EXTENSIONLEVEL).IntValue;
+                    if (diff <= 0)
+                        return;
+                }
+            }
+            extensions.Put(de.Prefix, de.GetDeveloperExtensions());
+        }
     }
 }

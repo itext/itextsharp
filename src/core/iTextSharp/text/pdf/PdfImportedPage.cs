@@ -66,7 +66,7 @@ namespace iTextSharp.text.pdf {
         internal PdfImportedPage(PdfReaderInstance readerInstance, PdfWriter writer, int pageNumber) {
             this.readerInstance = readerInstance;
             this.pageNumber = pageNumber;
-            thisReference = writer.PdfIndirectReference;
+            this.writer = writer;
             bBox = readerInstance.Reader.GetPageSize(pageNumber);
             SetMatrix(1, 0, 0, 1, -bBox.Left, -bBox.Bottom);
             type = TYPE_IMPORTED;
@@ -155,6 +155,12 @@ namespace iTextSharp.text.pdf {
             ThrowError();
         }
     
+        public override PdfTransparencyGroup Group {
+            set {
+                ThrowError();
+            }
+        }
+
         internal void ThrowError() {
             throw new Exception("Content can not be added to a PdfImportedPage.");
         }

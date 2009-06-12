@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Text;
 using System.util;
 using iTextSharp.text;
 /*
@@ -812,12 +813,33 @@ namespace iTextSharp.text.pdf {
                 PdfAnnotation annotation = new PdfAnnotation(writer, new Rectangle(llx, lly, urx, ury));
                 if (newPage != 0) {
                     PdfIndirectReference refi = writer.GetPageReference(newPage);
-                    destination.ArrayList[0] = refi;
+                    destination[0] = refi;
                 }
                 if (destination != null) annotation.Put(PdfName.DEST, destination);
                 foreach (object key in parameters.Keys)
                     annotation.hashMap[key] = parameters[key];
                 return annotation;
+            }
+
+            /**
+             * Returns a String representation of the link.
+             * @return	a String representation of the imported link
+             * @since	2.1.6
+             */
+            public override String ToString() {
+                StringBuilder buf = new StringBuilder("Imported link: location [");
+                buf.Append(llx);
+                buf.Append(' ');
+                buf.Append(lly);
+                buf.Append(' ');
+                buf.Append(urx);
+                buf.Append(' ');
+                buf.Append(ury);
+                buf.Append("] destination ");
+                buf.Append(destination);
+                buf.Append(" parameters ");
+                buf.Append(parameters);
+                return buf.ToString();
             }
         }
     }

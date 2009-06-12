@@ -90,5 +90,12 @@ namespace iTextSharp.text.pdf.interfaces {
         * @param version   the PDF name that will be used for the Version key in the catalog
         */
         void SetPdfVersion(PdfName version);
+        /**
+        * Adds a developer extension to the Extensions dictionary
+        * in the Catalog.
+        * @param de an object that contains the extensions prefix and dictionary
+        * @since    2.1.6
+        */
+        void AddDeveloperExtension(PdfDeveloperExtension de);
     }
 }

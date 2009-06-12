@@ -136,16 +136,14 @@ namespace iTextSharp.text.pdf {
         private static void IterateItems(PdfDictionary dic, Hashtable items) {
             PdfArray nn = (PdfArray)PdfReader.GetPdfObjectRelease(dic.Get(PdfName.NAMES));
             if (nn != null) {
-                ArrayList arr = nn.ArrayList;
-                for (int k = 0; k < arr.Count; ++k) {
-                    PdfString s = (PdfString)PdfReader.GetPdfObjectRelease((PdfObject)arr[k++]);
-                    items[PdfEncodings.ConvertToString(s.GetBytes(), null)] = arr[k];
+                for (int k = 0; k < nn.Size; ++k) {
+                    PdfString s = (PdfString)PdfReader.GetPdfObjectRelease(nn[k++]);
+                    items[PdfEncodings.ConvertToString(s.GetBytes(), null)] = nn[k];
                 }
             }
             else if ((nn = (PdfArray)PdfReader.GetPdfObjectRelease(dic.Get(PdfName.KIDS))) != null) {
-                ArrayList arr = nn.ArrayList;
-                for (int k = 0; k < arr.Count; ++k) {
-                    PdfDictionary kid = (PdfDictionary)PdfReader.GetPdfObjectRelease((PdfObject)arr[k]);
+                for (int k = 0; k < nn.Size; ++k) {
+                    PdfDictionary kid = (PdfDictionary)PdfReader.GetPdfObjectRelease(nn[k]);
                     IterateItems(kid, items);
                 }
             }

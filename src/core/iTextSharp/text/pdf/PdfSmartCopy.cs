@@ -183,9 +183,8 @@ namespace iTextSharp.text.pdf {
                 bb.Append("$A");
                 if (level <= 0)
                     return;
-                ArrayList ar = array.ArrayList;
-                for (int k = 0; k < ar.Count; ++k) {
-                    SerObject((PdfObject)ar[k], level, bb);
+                for (int k = 0; k < array.Size; ++k) {
+                    SerObject(array[k], level, bb);
                 }
             }
             

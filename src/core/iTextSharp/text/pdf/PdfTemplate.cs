@@ -272,7 +272,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public PdfTransparencyGroup Group {
+        public virtual PdfTransparencyGroup Group {
             get {
                 return this.group;
             }

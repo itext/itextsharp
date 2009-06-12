@@ -553,6 +553,7 @@ public class ColumnText {
     public void SetColumns(float[] leftLine, float[] rightLine) {
         maxY = -10e20f;
         minY = 10e20f;
+        YLine = Math.Max(leftLine[1], leftLine[leftLine.Length - 1]);
         rightWall = ConvertColumn(rightLine);
         leftWall = ConvertColumn(leftLine);
         rectangularWidth = -1;

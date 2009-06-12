@@ -135,6 +135,9 @@ namespace iTextSharp.text.pdf {
                             nextParents.Add(writer.PdfIndirectReference);
                         top.Put(PdfName.PARENT, (PdfIndirectReference)nextParents[p / leafSize]);
                     }
+                    else {
+                        top.Put(PdfName.ITXT, new PdfString(Document.Release));
+                    }
                     writer.AddToBody(top, (PdfIndirectReference)tParents[p]);
                 }
                 if (tParents.Count == 1) {

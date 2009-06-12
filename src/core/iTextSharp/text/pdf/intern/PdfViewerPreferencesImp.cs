@@ -336,6 +336,8 @@ namespace iTextSharp.text.pdf.intern {
                     prefs |= PdfWriter.PageModeUseOutlines;
                 else if (name.Equals(PdfName.USETHUMBS))
                     prefs |= PdfWriter.PageModeUseThumbs;
+                else if (name.Equals(PdfName.FULLSCREEN))
+                    prefs |= PdfWriter.PageModeFullScreen;
                 else if (name.Equals(PdfName.USEOC))
                     prefs |= PdfWriter.PageModeUseOC;
                 else if (name.Equals(PdfName.USEATTACHMENTS))

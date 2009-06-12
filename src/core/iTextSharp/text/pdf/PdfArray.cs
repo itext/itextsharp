@@ -234,13 +234,13 @@ public class PdfArray : PdfObject {
         return true;
     }
     
-    public bool Add(float[] values) {
+    public virtual bool Add(float[] values) {
         for (int k = 0; k < values.Length; ++k)
             arrayList.Add(new PdfNumber(values[k]));
         return true;
     }
     
-    public bool Add(int[] values) {
+    public virtual bool Add(int[] values) {
         for (int k = 0; k < values.Length; ++k)
             arrayList.Add(new PdfNumber(values[k]));
         return true;
@@ -258,7 +258,7 @@ public class PdfArray : PdfObject {
      *   last position currently set, plus 1. 
      * @since 2.1.5
      */
-    public void Add(int index, PdfObject element) {
+    public virtual void Add(int index, PdfObject element) {
         arrayList.Insert(index, element);
     }
 
@@ -271,7 +271,7 @@ public class PdfArray : PdfObject {
      *
      * @param object The <CODE>PdfObject</CODE> to add
      */
-    public void AddFirst(PdfObject obj) {
+    public virtual void AddFirst(PdfObject obj) {
         arrayList.Insert(0, obj);
     }
     

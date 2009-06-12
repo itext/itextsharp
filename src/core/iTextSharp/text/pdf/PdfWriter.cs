@@ -80,7 +80,13 @@ namespace iTextSharp.text.pdf {
         IPdfRunDirection,
         IPdfAnnotations {
         
-    // INNER CLASSES
+        /**
+         * The highest generation number possible.
+         * @since   iText 2.1.6
+         */
+        public const int GENERATION_MAX = 65535;
+
+        // INNER CLASSES
         
         /**
         * This class generates the structure of a PDF document.
@@ -165,7 +171,7 @@ namespace iTextSharp.text.pdf {
                     String s1 = offset.ToString().PadLeft(10, '0');
                     String s2 = generation.ToString().PadLeft(5, '0');
                     ByteBuffer buf = new ByteBuffer(40);
-                    if (generation == 65535) {
+                    if (generation == GENERATION_MAX) {
                         buf.Append(s1).Append(' ').Append(s2).Append(" f \n");
                     }
                     else {
@@ -237,7 +243,7 @@ namespace iTextSharp.text.pdf {
             */
             internal PdfBody(PdfWriter writer) {
                 xrefs = new k_Tree();
-                xrefs[new PdfCrossReference(0, 0, 65535)] = null;
+                xrefs[new PdfCrossReference(0, 0, GENERATION_MAX)] = null;
                 position = writer.Os.Counter;
                 refnum = 1;
                 this.writer = writer;
@@ -323,7 +329,7 @@ namespace iTextSharp.text.pdf {
             internal int IndirectReferenceNumber {
                 get {
                     int n = refnum++;
-                    xrefs[new PdfCrossReference(n, 0, 65536)] = null;
+                    xrefs[new PdfCrossReference(n, 0, GENERATION_MAX)] = null;
                     return n;
                 }
             }
@@ -909,6 +915,11 @@ namespace iTextSharp.text.pdf {
         protected ArrayList pageReferences = new ArrayList();
         /** The current page number. */
         protected int currentPageNumber = 1;
+        /**
+         * The value of the Tabs entry in the page dictionary.
+         * @since   2.1.5
+         */
+        protected PdfName tabs = null;
 
         /**
         * Use this method to make sure the page tree has a lineair structure
@@ -988,6 +999,22 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
+        * Sets the value for the Tabs entry in the page tree.
+        * @param	tabs	Can be PdfName.R, PdfName.C or PdfName.S.
+        * Since the Adobe Extensions Level 3, it can also be PdfName.A
+        * or PdfName.W
+        * @since	2.1.5
+        */
+        public PdfName Tabs {
+            get{
+                return tabs;
+            }
+            set {
+                tabs = value;
+            }
+        }
+
+       /**
         * Adds some <CODE>PdfContents</CODE> to this Writer.
         * <P>
         * The document has to be open before you can begin to add content
@@ -1325,6 +1352,14 @@ namespace iTextSharp.text.pdf {
             pdf_version.SetPdfVersion(version);
         }
 
+        /**
+         * @see com.lowagie.text.pdf.interfaces.PdfVersion#addDeveloperExtension(com.lowagie.text.pdf.PdfDeveloperExtension)
+         * @since   2.1.6
+         */
+        public void AddDeveloperExtension(PdfDeveloperExtension de) {
+            pdf_version.AddDeveloperExtension(de);
+        }
+    
         /**
         * Returns the version information.
         */
@@ -1733,7 +1768,7 @@ namespace iTextSharp.text.pdf {
         * @param destOutputProfile a value
         * @throws IOException on error
         */    
-        public void SetOutputIntents(String outputConditionIdentifier, String outputCondition, String registryName, String info, byte[] destOutputProfile) {
+        public void SetOutputIntents(String outputConditionIdentifier, String outputCondition, String registryName, String info, ICC_Profile colorProfile) {
             PdfDictionary outa = ExtraCatalog; //force the creation
             outa = new PdfDictionary(PdfName.OUTPUTINTENT);
             if (outputCondition != null)
@@ -1744,15 +1779,42 @@ namespace iTextSharp.text.pdf {
                 outa.Put(PdfName.REGISTRYNAME, new PdfString(registryName, PdfObject.TEXT_UNICODE));
             if (info != null)
                 outa.Put(PdfName.INFO, new PdfString(info, PdfObject.TEXT_UNICODE));
-            if (destOutputProfile != null) {
-                PdfStream stream = new PdfStream(destOutputProfile);
-                stream.FlateCompress(compressionLevel);
+            if (colorProfile != null) {
+                PdfStream stream = new PdfICCBased(colorProfile, compressionLevel);
                 outa.Put(PdfName.DESTOUTPUTPROFILE, AddToBody(stream).IndirectReference);
             }
-            outa.Put(PdfName.S, PdfName.GTS_PDFX);
+
+            PdfName intentSubtype;
+            if (pdfxConformance.IsPdfA1() || "PDFA/1".Equals(outputCondition)) {
+                intentSubtype = PdfName.GTS_PDFA1;
+            }
+            else {
+                intentSubtype = PdfName.GTS_PDFX;
+            }
+
+            outa.Put(PdfName.S, intentSubtype);
+
             extraCatalog.Put(PdfName.OUTPUTINTENTS, new PdfArray(outa));
         }
         
+    /**
+        * Sets the values of the output intent dictionary. Null values are allowed to
+        * suppress any key.
+        *
+        * Prefer the <CODE>ICC_Profile</CODE>-based version of this method.
+        * @param outputConditionIdentifier a value
+        * @param outputCondition           a value, "PDFA/A" to force GTS_PDFA1, otherwise cued by pdfxConformance.
+        * @param registryName              a value
+        * @param info                      a value
+        * @param destOutputProfile         a value
+        * @since 1.x
+        *
+        * @throws IOException
+        */
+        public void SetOutputIntents(String outputConditionIdentifier, String outputCondition, String registryName, String info, byte[] destOutputProfile) {
+            ICC_Profile colorProfile = (destOutputProfile == null) ? null : ICC_Profile.GetInstance(destOutputProfile);
+            SetOutputIntents(outputConditionIdentifier, outputCondition, registryName, info, colorProfile);
+        }
         /**
         * Copies the output intent dictionary from other document to this one.
         * @param reader the other document
@@ -1764,13 +1826,13 @@ namespace iTextSharp.text.pdf {
         */    
         public bool SetOutputIntents(PdfReader reader, bool checkExistence) {
             PdfDictionary catalog = reader.Catalog;
-            PdfArray outs = (PdfArray)PdfReader.GetPdfObject(catalog.Get(PdfName.OUTPUTINTENTS));
+            PdfArray outs = catalog.GetAsArray(PdfName.OUTPUTINTENTS);
             if (outs == null)
                 return false;
             ArrayList arr = outs.ArrayList;
-            if (arr.Count == 0)
+            if (outs.Size == 0)
                 return false;
-            PdfDictionary outa = (PdfDictionary)PdfReader.GetPdfObject((PdfObject)arr[0]);
+            PdfDictionary outa = outs.GetAsDict(0);
             PdfObject obj = PdfReader.GetPdfObject(outa.Get(PdfName.S));
             if (obj == null || !PdfName.GTS_PDFX.Equals(obj))
                 return false;
@@ -2868,17 +2930,24 @@ namespace iTextSharp.text.pdf {
                         maskRef = GetImageReference(mname);
                     }
                     PdfImage i = new PdfImage(image, "img" + images.Count, maskRef);
+                    if (image is ImgJBIG2) {
+                        byte[] globals = ((ImgJBIG2) image).GlobalBytes;
+                        if (globals != null) {
+                            PdfDictionary decodeparms = new PdfDictionary();
+                            decodeparms.Put(PdfName.JBIG2GLOBALS, GetReferenceJBIG2Globals(globals));
+                            i.Put(PdfName.DECODEPARMS, decodeparms);
+                        }
+                    }
                     if (image.HasICCProfile()) {
                         PdfICCBased icc = new PdfICCBased(image.TagICC, image.CompressionLevel);
                         PdfIndirectReference iccRef = Add(icc);
                         PdfArray iccArray = new PdfArray();
                         iccArray.Add(PdfName.ICCBASED);
                         iccArray.Add(iccRef);
-                        PdfObject colorspace = i.Get(PdfName.COLORSPACE);
-                        if (colorspace != null && colorspace.IsArray()) {
-                            ArrayList ar = ((PdfArray)colorspace).ArrayList;
-                            if (ar.Count > 1 && PdfName.INDEXED.Equals(ar[0]))
-                                ar[1] = iccArray;
+                        PdfArray colorspace = i.GetAsArray(PdfName.COLORSPACE);
+                        if (colorspace != null) {
+                            if (colorspace.Size > 1 && PdfName.INDEXED.Equals(colorspace[0]))
+                                colorspace[1] = iccArray;
                             else
                                 i.Put(PdfName.COLORSPACE, iccArray);
                         }
@@ -2933,6 +3002,35 @@ namespace iTextSharp.text.pdf {
             return objecta.IndirectReference;
         }
         
+        /**
+        * A Hashtable with Stream objects containing JBIG2 Globals
+        * @since 2.1.5
+        */
+        protected Hashtable JBIG2Globals = new Hashtable();
+        /**
+        * Gets an indirect reference to a JBIG2 Globals stream.
+        * Adds the stream if it hasn't already been added to the writer.
+        * @param   content a byte array that may already been added to the writer inside a stream object.
+        * @since  2.1.5
+        */
+        protected PdfIndirectReference GetReferenceJBIG2Globals(byte[] content) {
+            if (content == null) return null;
+            foreach (PdfStream str in JBIG2Globals.Keys) {
+                if (Org.BouncyCastle.Utilities.Arrays.AreEqual(content, str.GetBytes())) {
+                    return (PdfIndirectReference) JBIG2Globals[str];
+                }
+            }
+            PdfStream stream = new PdfStream(content);
+            PdfIndirectObject refi;
+            try {
+                refi = AddToBody(stream);
+            } catch (IOException) {
+                return null;
+            }
+            JBIG2Globals[stream] = refi.IndirectReference;
+            return refi.IndirectReference;
+        }
+
     //  [M4] Old table functionality; do we still need it?
 
         /**

@@ -88,11 +88,6 @@ namespace iTextSharp.text.pdf {
         private float top;
 
         /**
-        * used to store the y position of the bottom of the page
-        */
-        private float pageBottom;
-
-        /**
         * ColumnText object used to do all the real work.  This same object is used for all columns
         */
         private ColumnText columnText;
@@ -188,7 +183,7 @@ namespace iTextSharp.text.pdf {
         */
         public void AddColumn(float[] left, float[] right) {
             ColumnDef nextDef = new ColumnDef(left, right, this);
-            simple = nextDef.IsSimple();
+            if (!nextDef.IsSimple()) simple = false;
             columnDefs.Add(nextDef);
         }
 
@@ -223,6 +218,25 @@ namespace iTextSharp.text.pdf {
             }
         }
 
+        /**
+          * Adds a <CODE>Phrase</CODE> to the current text array.
+          * Will not have any effect if addElement() was called before.
+          * @param phrase the text
+          * @since	2.1.5
+          */
+        public void AddText(Phrase phrase) {
+            columnText.AddText(phrase);
+        }
+    
+        /**
+         * Adds a <CODE>Chunk</CODE> to the current text array.
+         * Will not have any effect if addElement() was called before.
+         * @param chunk the text
+         * @since	2.1.5
+         */
+        public void AddText(Chunk chunk) {
+            columnText.AddText(chunk);
+        }
         /**
         * Add an element to be rendered in a column.
         * Note that you can only add a <CODE>Phrase</CODE>
@@ -262,7 +276,6 @@ namespace iTextSharp.text.pdf {
                 throw new DocumentException("MultiColumnText has no columns");
             }
             overflow = false;
-            pageBottom = document.Bottom;
             float currentHeight = 0;
             bool done = false;
             while (!done) {
@@ -421,10 +434,10 @@ namespace iTextSharp.text.pdf {
         */
         private float GetColumnBottom() {
             if (desiredHeight == AUTOMATIC) {
-                return pageBottom;
+                return document.Bottom;
             } else {
-                return Math.Max(top - (desiredHeight - totalHeight), pageBottom);
-            }
+                return Math.Max(top - (desiredHeight - totalHeight), document.Bottom);
+            }        
         }
 
         /**
@@ -580,6 +593,7 @@ namespace iTextSharp.text.pdf {
 
             internal float[] ResolvePositions(float[] positions) {
                 if (!IsSimple()) {
+                    positions[1] = mc.top;
                     return positions;
                 }
                 if (mc.top == AUTOMATIC) {

@@ -108,20 +108,19 @@ namespace iTextSharp.text.pdf {
         }
         
         protected virtual void KidNode(PdfDictionary merged, String name) {
-            PdfArray kids = (PdfArray)GetPdfObject(merged.Get(PdfName.KIDS));
-            if (kids == null || kids.ArrayList.Count == 0) {
+            PdfArray kids = merged.GetAsArray(PdfName.KIDS);
+            if (kids == null || kids.Size == 0) {
                 if (name.Length > 0)
                     name = name.Substring(1);
                 fields[name] = merged;
             }
             else {
                 merged.Remove(PdfName.KIDS);
-                ArrayList ar = kids.ArrayList;
-                for (int k = 0; k < ar.Count; ++k) {
+                for (int k = 0; k < kids.Size; ++k) {
                     PdfDictionary dic = new PdfDictionary();
                     dic.Merge(merged);
-                    PdfDictionary newDic = (PdfDictionary)GetPdfObject((PdfObject)ar[k]);
-                    PdfString t = (PdfString)GetPdfObject(newDic.Get(PdfName.T));
+                    PdfDictionary newDic = kids.GetAsDict(k);
+                    PdfString t = newDic.GetAsString(PdfName.T);
                     String newName = name;
                     if (t != null)
                         newName += "." + t.ToUnicodeString();
@@ -133,17 +132,17 @@ namespace iTextSharp.text.pdf {
         }
         
         protected virtual void ReadFields() {
-            catalog = (PdfDictionary)GetPdfObject(trailer.Get(PdfName.ROOT));
-            PdfDictionary fdf = (PdfDictionary)GetPdfObject(catalog.Get(PdfName.FDF));
+            catalog = trailer.GetAsDict(PdfName.ROOT);
+            PdfDictionary fdf = catalog.GetAsDict(PdfName.FDF);
             if (fdf == null)
                 return;
-            PdfString fs = (PdfString)GetPdfObject(fdf.Get(PdfName.F));
+            PdfString fs = fdf.GetAsString(PdfName.F);
             if (fs != null)
                 fileSpec = fs.ToUnicodeString();
-            PdfArray fld = (PdfArray)GetPdfObject(fdf.Get(PdfName.FIELDS));
+            PdfArray fld = fdf.GetAsArray(PdfName.FIELDS);
             if (fld == null)
                 return;
-            encoding = (PdfName)GetPdfObject(fdf.Get(PdfName.ENCODING));
+            encoding = fdf.GetAsName(PdfName.ENCODING);
             PdfDictionary merged = new PdfDictionary();
             merged.Put(PdfName.KIDS, fld);
             KidNode(merged, "");

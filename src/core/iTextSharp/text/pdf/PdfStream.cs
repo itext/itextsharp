@@ -273,8 +273,8 @@ namespace iTextSharp.text.pdf {
                     if (PdfName.CRYPT.Equals(filter))
                         crypto = null;
                     else if (filter.IsArray()) {
-                        ArrayList af = ((PdfArray)filter).ArrayList;
-                        if (af.Count > 0 && PdfName.CRYPT.Equals(af[0]))
+                        PdfArray a = ((PdfArray)filter);
+                        if (a.Size > 0 && PdfName.CRYPT.Equals(a[0]))
                             crypto = null;
                     }
                 }
