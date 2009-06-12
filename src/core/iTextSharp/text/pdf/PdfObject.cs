@@ -190,7 +190,20 @@ namespace iTextSharp.text.pdf {
          * @return true if this object can be in an object stream.
          */
         public bool CanBeInObjStm() {
-            return (type >= 1 && type <= 6) || type == 8;
+            switch (type) {
+                case NULL:
+                case BOOLEAN:
+                case NUMBER:
+                case STRING:
+                case NAME:
+                case ARRAY:
+                case DICTIONARY:
+                    return true;
+                case STREAM:
+                case INDIRECT:
+                default:
+                    return false;
+            }
         }
     
         /**

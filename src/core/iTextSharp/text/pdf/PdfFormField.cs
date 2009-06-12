@@ -314,7 +314,7 @@ namespace iTextSharp.text.pdf {
             PdfName target = null;
             for (int k = 0; k < mergeTarget.Length; ++k) {
                 target = mergeTarget[k];
-                PdfDictionary pdfDict = (PdfDictionary)PdfReader.GetPdfObject(source.Get(target));
+                PdfDictionary pdfDict = source.GetAsDict(target);
                 if ((dic = pdfDict) != null) {
                     if ((res = (PdfDictionary)PdfReader.GetPdfObject(result.Get(target), result)) == null) {
                         res = new PdfDictionary();

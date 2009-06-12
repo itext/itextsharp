@@ -233,13 +233,17 @@ namespace iTextSharp.text.pdf {
                     foreach (DictionaryEntry entry in localDestinations) {
                         String name = (String)entry.Key;
                         Object[] obj = (Object[])entry.Value;
+                        if (obj[2] == null) //no destination
+                            continue;
                         PdfIndirectReference refi = (PdfIndirectReference)obj[1];
                         ar.Add(new PdfString(name, null));
                         ar.Add(refi);
                     }
-                    PdfDictionary dests = new PdfDictionary();
-                    dests.Put(PdfName.NAMES, ar);
-                    names.Put(PdfName.DESTS, writer.AddToBody(dests).IndirectReference);
+                    if (ar.Size > 0) {
+                        PdfDictionary dests = new PdfDictionary();
+                        dests.Put(PdfName.NAMES, ar);
+                        names.Put(PdfName.DESTS, writer.AddToBody(dests).IndirectReference);
+                    }
                 }
                 if (documentLevelJS.Count > 0) {
                     PdfDictionary tree = PdfNameTree.WriteTree(documentLevelJS, writer);
@@ -248,7 +252,8 @@ namespace iTextSharp.text.pdf {
                 if (documentFileAttachment.Count > 0) {
                     names.Put(PdfName.EMBEDDEDFILES, writer.AddToBody(PdfNameTree.WriteTree(documentFileAttachment, writer)).IndirectReference);
                 }
-                Put(PdfName.NAMES, writer.AddToBody(names).IndirectReference);
+                if (names.Size > 0)
+                    Put(PdfName.NAMES, writer.AddToBody(names).IndirectReference);
             }
             
             internal PdfAction OpenAction {
@@ -319,6 +324,9 @@ namespace iTextSharp.text.pdf {
         public float Leading {
             get {
                 return leading;
+            }
+            set {
+                leading = value;
             }
         }
         /** This is the current height of the document. */
@@ -683,6 +691,7 @@ namespace iTextSharp.text.pdf {
                 }
                 case Element.JPEG:
                 case Element.JPEG2000:
+                case Element.JBIG2:
                 case Element.IMGRAW:
                 case Element.IMGTEMPLATE: {
                     //carriageReturn(); suggestion by Marc Campforts
@@ -835,6 +844,7 @@ namespace iTextSharp.text.pdf {
             // we create the page dictionary
             
             PdfPage page = new PdfPage(new PdfRectangle(pageSize, rotation), thisBoxSize, resources, rotation);
+            page.Put(PdfName.TABS, writer.Tabs);
 
             // we complete the page dictionary
             
@@ -959,6 +969,16 @@ namespace iTextSharp.text.pdf {
             return base.SetMarginMirroring(MarginMirroring);
         }
 
+       /**
+        * @see com.lowagie.text.DocListener#setMarginMirroring(boolean)
+        * @since    2.1.6
+        */
+        public override bool SetMarginMirroringTopBottom(bool MarginMirroringTopBottom) {
+            if (writer != null && writer.IsPaused()) {
+                return false;
+            }
+            return base.SetMarginMirroringTopBottom(MarginMirroringTopBottom);
+        }
     //  [L7] DocListener interface
         
         /**
@@ -1697,7 +1717,6 @@ namespace iTextSharp.text.pdf {
                 int style = f.Style;
                 style &= ~Font.UNDERLINE;
                 style &= ~Font.STRIKETHRU;
-                f.SetStyle(Font.UNDEFINED);
                 f.SetStyle(style);
             }
             Chunk space = new Chunk(" ", f);
@@ -2160,8 +2179,14 @@ namespace iTextSharp.text.pdf {
                 marginLeft = nextMarginLeft;
                 marginRight = nextMarginRight;
             }
-            marginTop = nextMarginTop;
-            marginBottom = nextMarginBottom;
+            if (marginMirroringTopBottom && (PageNumber & 1) == 0) {
+                marginTop = nextMarginBottom;
+                marginBottom = nextMarginTop;
+            }
+            else {
+                marginTop = nextMarginTop;
+                marginBottom = nextMarginBottom;
+            }
         }
 
         /**
@@ -2364,14 +2389,17 @@ namespace iTextSharp.text.pdf {
         */
         internal void AddPTable(PdfPTable ptable) {
             ColumnText ct = new ColumnText(writer.DirectContent);
+            // if the table prefers to be on a single page, and it wouldn't
+            //fit on the current page, start a new page.
+            if (ptable.KeepTogether && !FitsPage(ptable, 0f) && currentHeight > 0)  {
+                NewPage();
+            }
+            // add dummy paragraph if we aren't at the top of a page, so that
+            // spacingBefore will be taken into account by ColumnText
             if (currentHeight > 0) {
                 Paragraph p = new Paragraph();
                 p.Leading = 0;
                 ct.AddElement(p);
-                //if the table prefers to be on a single page, and it wouldn't
-                //fit on the current page, start a new page.
-                if (ptable.KeepTogether && !FitsPage(ptable, 0f))
-                    NewPage();
             }
             ct.AddElement(ptable);
             bool he = ptable.HeadersInEvent;
@@ -2405,7 +2433,8 @@ namespace iTextSharp.text.pdf {
             }
             // ensuring that a new line has been started.
             EnsureNewLine();
-            return table.TotalHeight <= IndentTop - currentHeight - IndentBottom - margin;
+            return table.TotalHeight + ((currentHeight > 0) ? table.SpacingBefore : 0f)
+                <= IndentTop - currentHeight - IndentBottom - margin;
         }
         
     //	[M4'] Adding a Table

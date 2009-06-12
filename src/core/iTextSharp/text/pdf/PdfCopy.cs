@@ -362,6 +362,21 @@ namespace iTextSharp.text.pdf {
         }
         
         /**
+         * Adds a blank page.
+         * @param	rect The page dimension
+         * @param	rotation The rotation angle in degrees
+         * @since	2.1.5
+         */
+        public void AddPage(Rectangle rect, int rotation) {
+            PdfRectangle mediabox = new PdfRectangle(rect, rotation);
+            PageResources resources = new PageResources();
+            PdfPage page = new PdfPage(mediabox, new Hashtable(), resources.Resources, 0);
+            page.Put(PdfName.TABS, Tabs);
+            root.AddPage(page);
+            ++currentPageNumber;
+        }
+
+        /**
         * Copy the acroform for an input document. Note that you can only have one,
         * we make no effort to merge them.
         * @param reader The reader of the input file that is being copied
@@ -422,9 +437,7 @@ namespace iTextSharp.text.pdf {
             foreach (PdfTemplate template in fieldTemplates.Keys) {
                 PdfFormField.MergeResources(dr, (PdfDictionary)template.Resources);
             }
-            if (dr.Get(PdfName.ENCODING) == null)
-                dr.Put(PdfName.ENCODING, PdfName.WIN_ANSI_ENCODING);
-            PdfDictionary fonts = (PdfDictionary)PdfReader.GetPdfObject(dr.Get(PdfName.FONT));
+            PdfDictionary fonts = dr.GetAsDict(PdfName.FONT);
             if (fonts == null) {
                 fonts = new PdfDictionary();
                 dr.Put(PdfName.FONT, fonts);
@@ -541,7 +554,7 @@ namespace iTextSharp.text.pdf {
                 if (under == null) {
                     if (pageResources == null) {
                         pageResources = new PageResources();
-                        PdfDictionary resources = (PdfDictionary)PdfReader.GetPdfObject(pageN.Get(PdfName.RESOURCES));
+                        PdfDictionary resources = pageN.GetAsDict(PdfName.RESOURCES);
                         pageResources.SetOriginalResources(resources, cstp.namePtr);
                     }
                     under = new PdfCopy.StampContent(cstp, pageResources);
@@ -553,7 +566,7 @@ namespace iTextSharp.text.pdf {
                 if (over == null) {
                     if (pageResources == null) {
                         pageResources = new PageResources();
-                        PdfDictionary resources = (PdfDictionary)PdfReader.GetPdfObject(pageN.Get(PdfName.RESOURCES));
+                        PdfDictionary resources = pageN.GetAsDict(PdfName.RESOURCES);
                         pageResources.SetOriginalResources(resources, cstp.namePtr);
                     }
                     over = new PdfCopy.StampContent(cstp, pageResources);

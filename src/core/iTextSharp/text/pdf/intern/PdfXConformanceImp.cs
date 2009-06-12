@@ -212,7 +212,7 @@ namespace iTextSharp.text.pdf.intern {
                     break;
                 case PDFXKEY_FONT:
                     if (!((BaseFont)obj1).IsEmbedded())
-                        throw new PdfXConformanceException("All the fonts must be embedded.");
+                        throw new PdfXConformanceException("All the fonts must be embedded. This one isn't: " + ((BaseFont)obj1).PostscriptFontName);
                     break;
                 case PDFXKEY_IMAGE:
                     PdfImage image = (PdfImage)obj1;
@@ -228,7 +228,7 @@ namespace iTextSharp.text.pdf.intern {
                                     throw new PdfXConformanceException("Colorspace RGB is not allowed.");
                             }
                             else if (cs.IsArray()) {
-                                if (PdfName.CALRGB.Equals(((PdfArray)cs).ArrayList[0]))
+                                if (PdfName.CALRGB.Equals(((PdfArray)cs)[0]))
                                     throw new PdfXConformanceException("Colorspace CalRGB is not allowed.");
                             }
                             break;

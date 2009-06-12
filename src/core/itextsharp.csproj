@@ -858,6 +858,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "iTextSharp\text\pdf\PdfDeveloperExtension.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "iTextSharp\text\pdf\PdfDictionary.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

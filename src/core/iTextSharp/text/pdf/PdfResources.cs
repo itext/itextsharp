@@ -82,7 +82,7 @@ namespace iTextSharp.text.pdf {
         internal void Add(PdfName key, PdfDictionary resource) {
             if (resource.Size == 0)
                 return;
-            PdfDictionary dic = (PdfDictionary)PdfReader.GetPdfObject(Get(key));
+            PdfDictionary dic = GetAsDict(key);
             if (dic == null)
                 Put(key, resource);
             else

@@ -170,6 +170,7 @@ namespace iTextSharp.text.pdf {
                 switch (ele.Type) {
                     case Element.JPEG:
                     case Element.JPEG2000:
+                    case Element.JBIG2:
                     case Element.IMGRAW:
                     case Element.IMGTEMPLATE:
                         AddImage((Image)ele, left, right, 0.4f * leading, alignment);

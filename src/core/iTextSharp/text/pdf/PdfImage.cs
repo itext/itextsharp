@@ -227,6 +227,18 @@ namespace iTextSharp.text.pdf {
                         streamBytes = new MemoryStream();
                         TransferBytes(isp, streamBytes, -1);
                         break;
+                    case Image.JBIG2:
+                        Put(PdfName.FILTER, PdfName.JBIG2DECODE);
+                        Put(PdfName.COLORSPACE, PdfName.DEVICEGRAY);
+                        Put(PdfName.BITSPERCOMPONENT, new PdfNumber(1));
+                        if (image.RawData != null){
+                            bytes = image.RawData;
+                            Put(PdfName.LENGTH, new PdfNumber(bytes.Length));
+                            return;
+                        }
+                        streamBytes = new MemoryStream();
+                        TransferBytes(isp, streamBytes, -1);
+                        break;
                     default:
                         throw new IOException(errorID + " is an unknown Image format.");
                 }

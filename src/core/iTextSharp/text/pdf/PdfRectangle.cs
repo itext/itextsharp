@@ -160,6 +160,37 @@ namespace iTextSharp.text.pdf {
         }
     
         /**
+        * Block changes to the underlying PdfArray
+        * @param values stuff we'll ignore.  Ha!
+        * @return false.  You can't add anything to a PdfRectangle
+        * @since 2.1.5
+        */
+
+        public override bool Add( float[] values ) {
+            return false;
+        }
+
+        /**
+        * Block changes to the underlying PdfArray
+        * @param values stuff we'll ignore.  Ha!
+        * @return false.  You can't add anything to a PdfRectangle
+        * @since 2.1.5
+        */
+
+        public override bool Add( int[] values ) {
+            return false;
+        }
+
+        /**
+        * Block changes to the underlying PdfArray
+        * @param object Ignored.
+        * @since 2.1.5
+        */
+
+        public override void AddFirst( PdfObject obj ) {
+        }
+
+        /**
          * Returns the lower left x-coordinate.
          *
          * @return      the lower left x-coordinaat
