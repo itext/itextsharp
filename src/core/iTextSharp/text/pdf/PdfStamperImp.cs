@@ -1573,7 +1573,7 @@ namespace iTextSharp.text.pdf {
             }
             Hashtable map = new Hashtable();
             String key;
-            foreach (PdfLayer layer in documentOCG.Values) {
+            foreach (PdfLayer layer in documentOCG.Keys) {
                 if (layer.Title == null) {
                     key = layer.GetAsString(PdfName.NAME).ToString();
                 }
