@@ -73,12 +73,12 @@ namespace iTextSharp.text.pdf {
             String[] keys = new String[names.Count];
             names.Keys.CopyTo(keys, 0);
             foreach (String name in keys) {
-                ArrayList arr = ((PdfArray)names[name]).ArrayList;
+                PdfArray arr = (PdfArray)names[name];
                 StringBuilder s = new StringBuilder();
                 try {
-                    s.Append(pages[((PdfIndirectReference)arr[0]).Number]);
+                    s.Append(pages[(arr.GetAsIndirectObject(0)).Number]);
                     s.Append(' ').Append(arr[1].ToString().Substring(1));
-                    for (int k = 2; k < arr.Count; ++k)
+                    for (int k = 2; k < arr.Size; ++k)
                         s.Append(' ').Append(arr[k].ToString());
                     names[name] = s.ToString();
                 }

@@ -63,7 +63,11 @@ namespace iTextSharp.text.pdf {
 
         // storage for the field list and their values
         internal Hashtable fields;
-        
+        /**
+        * Storage for field values if there's more than one value for a field.
+        * @since    2.1.4
+        */
+        protected Hashtable listFields;        
         // storage for the path to referenced PDF, if any
         internal String fileSpec;
         
@@ -122,6 +126,17 @@ namespace iTextSharp.text.pdf {
                 return field;
         }
         
+        /**
+        * Gets the field values for a list or <CODE>null</CODE> if the field does not
+        * exist or has no value defined.
+        * @param name the fully qualified field name
+        * @return the field values or <CODE>null</CODE>
+        * @since   2.1.4
+        */    
+        public ArrayList GetListValues(String name) {
+            return (ArrayList)listFields[name];
+        }
+        
         /** Gets the PDF file specification contained in the FDF.
         * @return the PDF file specification contained in the FDF
         */    
@@ -150,6 +165,7 @@ namespace iTextSharp.text.pdf {
                 fileSpec = (String)h[ "href" ];
             } else if ( tag.Equals("fields") ) {
                 fields = new Hashtable();     // init it!
+                listFields = new Hashtable();
             } else if ( tag.Equals("field") ) {
                 String  fName = (String) h[ "name" ];
                 fieldNames.Push( fName );
@@ -170,7 +186,17 @@ namespace iTextSharp.text.pdf {
                 if (fName.StartsWith("."))
                     fName = fName.Substring(1);
                 String  fVal = (String) fieldValues.Pop();
+                String old = (String)fields[fName];
                 fields[fName] = fVal;
+                if (old != null) {
+                    ArrayList l = (ArrayList) listFields[fName];
+                    if (l == null) {
+                        l = new ArrayList();
+                        l.Add(old);
+                    }
+                    l.Add(fVal);
+                    listFields[fName] = l;
+                }
             }
             else if (tag.Equals("field") ) {
                 if (fieldNames.Count != 0)

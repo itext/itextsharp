@@ -129,6 +129,13 @@ namespace iTextSharp.text.xml.simpleparser {
         internal int columns = 0;
         /** was the last character equivalent to a newline? */
         internal bool eol = false;
+        /**
+        * A boolean indicating if the next character should be taken into account
+        * if it's a space character. When nospace is false, the previous character
+        * wasn't whitespace.
+        * @since 2.1.5
+        */
+        internal bool nowhite = false;
         /** the current state */
         internal int state;
         /** Are we parsing HTML? */
@@ -231,8 +238,14 @@ namespace iTextSharp.text.xml.simpleparser {
                         SaveState(state);
                         entity.Length = 0;
                         state = ENTITY;
-                    } else
+                    } else if (Char.IsWhiteSpace((char)character)) {
+                        if (nowhite)
+                            text.Append((char)character);
+                        nowhite = false;
+                    } else {
                         text.Append((char)character);
+                        nowhite = true;
+                    }
                     break;
                 // we have just seen a < and are wondering what we are looking at
                 // <foo>, </foo>, <!-- ... --->, etc.
@@ -658,10 +671,15 @@ namespace iTextSharp.text.xml.simpleparser {
                         sb.Append("&apos;");
                         break;
                     default:
-                        if (onlyASCII && c > 127)
-                            sb.Append("&#").Append(c).Append(';');
-                        else
-                            sb.Append((char)c);
+                        if ((c == 0x9) || (c == 0xA) || (c == 0xD)
+                            || ((c >= 0x20) && (c <= 0xD7FF))
+                            || ((c >= 0xE000) && (c <= 0xFFFD))
+                            || ((c >= 0x10000) && (c <= 0x10FFFF))) { 
+                            if (onlyASCII && c > 127)
+                                sb.Append("&#").Append(c).Append(';');
+                            else 
+                                sb.Append((char)c);
+                        }
                         break;
                 }
             }

@@ -439,8 +439,8 @@ namespace iTextSharp.text.pdf {
                 else if (iconReference != null) {
                     PdfDictionary dic = (PdfDictionary)PdfReader.GetPdfObject(iconReference);
                     if (dic != null) {
-                        Rectangle r2 = PdfReader.GetNormalizedRectangle((PdfArray)PdfReader.GetPdfObject(dic.Get(PdfName.BBOX)));
-                        matrix = (PdfArray)PdfReader.GetPdfObject(dic.Get(PdfName.MATRIX));
+                        Rectangle r2 = PdfReader.GetNormalizedRectangle(dic.GetAsArray(PdfName.BBOX));
+                        matrix = dic.GetAsArray(PdfName.MATRIX);
                         haveIcon = true;
                         boundingBoxWidth = r2.Width;
                         boundingBoxHeight = r2.Height;
@@ -498,10 +498,10 @@ namespace iTextSharp.text.pdf {
                     float cox = 0;
                     float coy = 0;
                     if (matrix != null && matrix.Size == 6) {
-                        PdfNumber nm = (PdfNumber)PdfReader.GetPdfObject((PdfObject)matrix.ArrayList[4]);
+                        PdfNumber nm = matrix.GetAsNumber(4);
                         if (nm != null)
                             cox = nm.FloatValue;
-                        nm = (PdfNumber)PdfReader.GetPdfObject((PdfObject)matrix.ArrayList[5]);
+                        nm = matrix.GetAsNumber(5);
                         if (nm != null)
                             coy = nm.FloatValue;
                     }
