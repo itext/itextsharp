@@ -401,7 +401,27 @@ namespace iTextSharp.text.pdf {
         public void AddAnnotation(PdfAnnotation annot, int page) {
             stamper.AddAnnotation(annot, page);
         }
-        
+
+        /**
+        * Adds an empty signature.
+        * @param name   the name of the signature
+        * @param page   the page number
+        * @param llx    lower left x coordinate of the signature's position
+        * @param lly    lower left y coordinate of the signature's position
+        * @param urx    upper right x coordinate of the signature's position
+        * @param ury    upper right y coordinate of the signature's position
+        * @return   a signature form field
+        * @since    2.1.4
+        */
+        public PdfFormField AddSignature(String name, int page, float llx, float lly, float urx, float ury) {
+            PdfAcroForm acroForm = stamper.AcroForm;
+            PdfFormField signature = PdfFormField.CreateSignature(stamper);
+            acroForm.SetSignatureParams(signature, name, llx, lly, urx, ury);
+            acroForm.DrawSignatureAppearences(signature, llx, lly, urx, ury);
+            AddAnnotation(signature, page);
+            return signature;
+        }
+            
         /**
         * Adds the comments present in an FDF file.
         * @param fdf the FDF file

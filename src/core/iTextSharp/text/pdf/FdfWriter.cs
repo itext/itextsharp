@@ -271,8 +271,7 @@ namespace iTextSharp.text.pdf {
             foreach (DictionaryEntry entry in af.Fields) {
                 String fn = (String)entry.Key;
                 AcroFields.Item item = (AcroFields.Item)entry.Value;
-                PdfDictionary dic = (PdfDictionary)item.merged[0];
-                //PdfDictionary dic = item.GetMerged(0);
+                PdfDictionary dic = item.GetMerged(0);
                 PdfObject v = PdfReader.GetPdfObjectRelease(dic.Get(PdfName.V));
                 if (v == null)
                     continue;

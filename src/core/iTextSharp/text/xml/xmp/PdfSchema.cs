@@ -64,7 +64,7 @@ namespace iTextSharp.text.xml.xmp {
         /** default namespace uri*/
         public const String DEFAULT_XPATH_URI = "http://ns.adobe.com/pdf/1.3/";
         /** Keywords. */
-        public const String KEYWORDS = "pdf:Keywords";
+        public const String KEYWORDS = "pdf:keywords";
         /** The PDF file version (for example: 1.0, 1.3, and so on). */
         public const String VERSION = "pdf:PDFVersion";
         /** The Producer. */

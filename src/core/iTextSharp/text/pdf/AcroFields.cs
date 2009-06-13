@@ -130,22 +130,19 @@ namespace iTextSharp.text.pdf {
             PdfArray arrfds = (PdfArray)PdfReader.GetPdfObjectRelease(top.Get(PdfName.FIELDS));
             if (arrfds == null || arrfds.Size == 0)
                 return;
-            arrfds = null;
             for (int k = 1; k <= reader.NumberOfPages; ++k) {
                 PdfDictionary page = reader.GetPageNRelease(k);
                 PdfArray annots = (PdfArray)PdfReader.GetPdfObjectRelease(page.Get(PdfName.ANNOTS), page);
                 if (annots == null)
                     continue;
-                ArrayList arr = annots.ArrayList;
-                for (int j = 0; j < arr.Count; ++j) {
-                    PdfObject annoto = PdfReader.GetPdfObject((PdfObject)arr[j], annots);
-                    if (!(annoto is PdfDictionary)) {
-                        PdfReader.ReleaseLastXrefPartial((PdfObject)arr[j]);
+                for (int j = 0; j < annots.Size; ++j) {
+                    PdfDictionary annot = annots.GetAsDict(j);
+                    if (annot == null) {
+                        PdfReader.ReleaseLastXrefPartial(annots.GetAsIndirectObject(j));
                         continue;
                     }
-                    PdfDictionary annot = (PdfDictionary)annoto;
-                    if (!PdfName.WIDGET.Equals(annot.Get(PdfName.SUBTYPE))) {
-                        PdfReader.ReleaseLastXrefPartial((PdfObject)arr[j]);
+                    if (!PdfName.WIDGET.Equals(annot.GetAsName(PdfName.SUBTYPE))) {
+                        PdfReader.ReleaseLastXrefPartial(annots.GetAsIndirectObject(j));
                         continue;
                     }
                     PdfDictionary widget = annot;
@@ -156,7 +153,7 @@ namespace iTextSharp.text.pdf {
                     PdfObject lastV = null;
                     while (annot != null) {
                         dic.MergeDifferent(annot);
-                        PdfString t = (PdfString)PdfReader.GetPdfObject(annot.Get(PdfName.T));
+                        PdfString t = annot.GetAsString(PdfName.T);
                         if (t != null)
                             name = t.ToUnicodeString() + "." + name;
                         if (lastV == null && annot.Get(PdfName.V) != null)
@@ -166,7 +163,7 @@ namespace iTextSharp.text.pdf {
                             if (annot.Get(PdfName.V) == null && lastV  != null)
                                 value.Put(PdfName.V, lastV);
                         }
-                        annot = (PdfDictionary)PdfReader.GetPdfObject(annot.Get(PdfName.PARENT), annot);
+                        annot = annot.GetAsDict(PdfName.PARENT);
                     }
                     if (name.Length > 0)
                         name = name.Substring(0, name.Length - 1);
@@ -176,17 +173,52 @@ namespace iTextSharp.text.pdf {
                         fields[name] = item;
                     }
                     if (value == null)
-                        item.values.Add(widget);
+                        item.AddValue(widget);
                     else
-                        item.values.Add(value);
-                    item.widgets.Add(widget);
-                    item.widget_refs.Add(arr[j]); // must be a reference
+                        item.AddValue(value);
+                    item.AddWidget(widget);
+                    item.AddWidgetRef(annots.GetAsIndirectObject(j)); // must be a reference
                     if (top != null)
                         dic.MergeDifferent(top);
-                    item.merged.Add(dic);
-                    item.page.Add(k);
-                    item.tabOrder.Add(j);
+                    item.AddMerged(dic);
+                    item.AddPage(k);
+                    item.AddTabOrder(j);
                 }
+            }
+            // some tools produce invisible signatures without an entry in the page annotation array
+            // look for a single level annotation
+            PdfNumber sigFlags = top.GetAsNumber(PdfName.SIGFLAGS);
+            if (sigFlags == null || (sigFlags.IntValue & 1) != 1)
+                return;
+            for (int j = 0; j < arrfds.Size; ++j) {
+                PdfDictionary annot = arrfds.GetAsDict(j);
+                if (annot == null) {
+                    PdfReader.ReleaseLastXrefPartial(arrfds.GetAsIndirectObject(j));
+                    continue;
+                }
+                if (!PdfName.WIDGET.Equals(annot.GetAsName(PdfName.SUBTYPE))) {
+                    PdfReader.ReleaseLastXrefPartial(arrfds.GetAsIndirectObject(j));
+                    continue;
+                }
+                PdfArray kids = (PdfArray)PdfReader.GetPdfObjectRelease(annot.Get(PdfName.KIDS));
+                if (kids != null)
+                    continue;
+                PdfDictionary dic = new PdfDictionary();
+                dic.Merge(annot);
+                PdfString t = annot.GetAsString(PdfName.T);
+                if (t == null)
+                    continue;
+                String name = t.ToUnicodeString();
+                if (fields.ContainsKey(name))
+                    continue;
+                Item item = new Item();
+                fields[name] = item;
+                item.AddValue(dic);
+                item.AddWidget(dic);
+                item.AddWidgetRef(arrfds.GetAsIndirectObject(j)); // must be a reference
+                item.AddMerged(dic);
+                item.AddPage(-1);
+                item.AddTabOrder(-1);
             }
         }
         
@@ -202,31 +234,30 @@ namespace iTextSharp.text.pdf {
             if (fd == null)
                 return null;
             Hashtable names = new Hashtable();
-            PdfDictionary vals = (PdfDictionary)fd.values[0];
-            PdfObject opts = PdfReader.GetPdfObject(vals.Get(PdfName.OPT));
-            if (opts != null) {
-                if (opts.IsString())
-                    names[((PdfString)opts).ToUnicodeString()] = null;
-                else if (opts.IsArray()) {
-                    ArrayList list = ((PdfArray)opts).ArrayList;
-                    for (int k = 0; k < list.Count; ++k) {
-                        PdfObject v = PdfReader.GetPdfObject((PdfObject)list[k]);
-                        if (v != null && v.IsString())
-                            names[((PdfString)v).ToUnicodeString()] =  null;
+            PdfDictionary vals = fd.GetValue(0);
+            PdfString stringOpt = vals.GetAsString( PdfName.OPT );
+            if (stringOpt != null) {
+                names[stringOpt.ToUnicodeString()] = null;
+            }
+            else {
+                PdfArray arrayOpt = vals.GetAsArray(PdfName.OPT);
+                if (arrayOpt != null) {
+                    for (int k = 0; k < arrayOpt.Size; ++k) {
+                        PdfString valStr = arrayOpt.GetAsString( k );
+                        if (valStr != null)
+                            names[valStr.ToUnicodeString()] = null;
                     }
                 }
             }
-            ArrayList wd = fd.widgets;
-            for (int k = 0; k < wd.Count; ++k) {
-                PdfDictionary dic = (PdfDictionary)wd[k];
-                dic = (PdfDictionary)PdfReader.GetPdfObject(dic.Get(PdfName.AP));
+            for (int k = 0; k < fd.Size; ++k) {
+                PdfDictionary dic = fd.GetWidget( k );
+                dic = dic.GetAsDict(PdfName.AP);
                 if (dic == null)
                     continue;
-                PdfObject ob = PdfReader.GetPdfObject(dic.Get(PdfName.N));
-                if (ob == null || !ob.IsDictionary())
+                dic = dic.GetAsDict(PdfName.N);
+                if (dic == null)
                     continue;
-                dic = (PdfDictionary)ob;
-                foreach (PdfName pname in dic.Keys) {
+            foreach (PdfName pname in dic.Keys) {
                     String name = PdfName.DecodeName(pname.ToString());
                     names[name] = null;
                 }
@@ -236,33 +267,31 @@ namespace iTextSharp.text.pdf {
             return outs;
         }
         
-    private String[] GetListOption(String fieldName, int idx) {
-        Item fd = GetFieldItem(fieldName);
-        if (fd == null)
-            return null;
-        PdfObject obj = PdfReader.GetPdfObject(((PdfDictionary)fd.merged[0]).Get(PdfName.OPT));
-        if (obj == null || !obj.IsArray())
-            return null;
-        PdfArray ar = (PdfArray)obj;
-        String[] ret = new String[ar.Size];
-        ArrayList a = ar.ArrayList;
-        for (int k = 0; k < a.Count; ++k) {
-            obj = PdfReader.GetPdfObject((PdfObject)a[k]);
-            try {
-                if (obj.IsArray()) {
-                    obj = (PdfObject)((PdfArray)obj).ArrayList[idx];
+        private String[] GetListOption(String fieldName, int idx) {
+            Item fd = GetFieldItem(fieldName);
+            if (fd == null)
+                return null;
+            PdfArray ar = fd.GetMerged(0).GetAsArray(PdfName.OPT);
+            if (ar == null)
+                return null;
+            String[] ret = new String[ar.Size];
+            for (int k = 0; k < ar.Size; ++k) {
+                PdfObject obj = ar.GetDirectObject( k );
+                try {
+                    if (obj.IsArray()) {
+                        obj = ((PdfArray)obj).GetDirectObject(idx);
+                    }
+                    if (obj.IsString())
+                        ret[k] = ((PdfString)obj).ToUnicodeString();
+                    else
+                        ret[k] = obj.ToString();
                 }
-                if (obj.IsString())
-                    ret[k] = ((PdfString)obj).ToUnicodeString();
-                else
-                    ret[k] = obj.ToString();
+                catch {
+                    ret[k] = "";
+                }
             }
-            catch {
-                ret[k] = "";
-            }
+            return ret;
         }
-        return ret;
-    }
     
         /**
         * Gets the list of export option values from fields of type list or combo.
@@ -334,9 +363,7 @@ namespace iTextSharp.text.pdf {
                     opt.Add(a);
                 }
             }
-            ((PdfDictionary)fd.values[0]).Put(PdfName.OPT, opt);
-            for (int j = 0; j < fd.merged.Count; ++j)
-                ((PdfDictionary)fd.merged[j]).Put(PdfName.OPT, opt);
+            fd.WriteToAll( PdfName.OPT, opt, Item.WRITE_VALUE | Item.WRITE_MERGED );
             return true;
         }
         
@@ -355,13 +382,15 @@ namespace iTextSharp.text.pdf {
             Item fd = GetFieldItem(fieldName);
             if (fd == null)
                 return FIELD_TYPE_NONE;
-            PdfObject type = PdfReader.GetPdfObject(((PdfDictionary)fd.merged[0]).Get(PdfName.FT));
+            PdfDictionary merged = fd.GetMerged( 0 );
+            PdfName type = merged.GetAsName(PdfName.FT);
             if (type == null)
                 return FIELD_TYPE_NONE;
             int ff = 0;
-            PdfObject ffo = PdfReader.GetPdfObject(((PdfDictionary)fd.merged[0]).Get(PdfName.FF));
-            if (ffo != null && ffo.Type == PdfObject.NUMBER)
-                ff = ((PdfNumber)ffo).IntValue;
+            PdfNumber ffo = merged.GetAsNumber(PdfName.FF);
+            if (ffo != null) {
+                ff = ffo.IntValue;
+            }
             if (PdfName.BTN.Equals(type)) {
                 if ((ff & PdfFormField.FF_PUSHBUTTON) != 0)
                     return FIELD_TYPE_PUSHBUTTON;
@@ -393,7 +422,7 @@ namespace iTextSharp.text.pdf {
             foreach (DictionaryEntry entry in fields) {
                 Item item = (Item)entry.Value;
                 string name = (String)entry.Key;
-                PdfObject v = PdfReader.GetPdfObject(((PdfDictionary)item.merged[0]).Get(PdfName.V));
+                PdfObject v = item.GetMerged(0).Get(PdfName.V);
                 if (v == null)
                     continue;
                 string value = GetField(name);
@@ -426,13 +455,8 @@ namespace iTextSharp.text.pdf {
                 return false;
             newName = newName.Substring(idx2);
             PdfString ss = new PdfString(newName, PdfObject.TEXT_UNICODE);
-            for (int k = 0; k < item.merged.Count; ++k) {
-                PdfDictionary dic = (PdfDictionary)item.values[k];
-                dic.Put(PdfName.T, ss);
-                MarkUsed(dic);
-                dic = (PdfDictionary)item.merged[k];
-                dic.Put(PdfName.T, ss);
-            }
+            item.WriteToAll( PdfName.T, ss, Item.WRITE_VALUE | Item.WRITE_MERGED);
+            item.MarkUsed( this, Item.WRITE_VALUE );
             fields.Remove(oldName);
             fields[newName] = item;
             return true;
@@ -488,7 +512,7 @@ namespace iTextSharp.text.pdf {
         public void DecodeGenericDictionary(PdfDictionary merged, BaseField tx) {
             int flags = 0;
             // the text size and color
-            PdfString da = (PdfString)PdfReader.GetPdfObject(merged.Get(PdfName.DA));
+            PdfString da = merged.GetAsString(PdfName.DA);
             if (da != null) {
                 Object[] dab = SplitDAelements(da.ToUnicodeString());
                 if (dab[DA_SIZE] != null)
@@ -496,9 +520,9 @@ namespace iTextSharp.text.pdf {
                 if (dab[DA_COLOR] != null)
                     tx.TextColor = (Color)dab[DA_COLOR];
                 if (dab[DA_FONT] != null) {
-                    PdfDictionary font = (PdfDictionary)PdfReader.GetPdfObject(merged.Get(PdfName.DR));
+                    PdfDictionary font = merged.GetAsDict(PdfName.DR);
                     if (font != null) {
-                        font = (PdfDictionary)PdfReader.GetPdfObject(font.Get(PdfName.FONT));
+                        font = font.GetAsDict(PdfName.FONT);
                         if (font != null) {
                             PdfObject po = font.Get(new PdfName((String)dab[DA_FONT]));
                             if (po != null && po.Type == PdfObject.INDIRECT) {
@@ -510,7 +534,7 @@ namespace iTextSharp.text.pdf {
                                 if (porf == null) {
                                     if (!extensionFonts.ContainsKey(porkey)) {
                                         PdfDictionary fo = (PdfDictionary)PdfReader.GetPdfObject(po);
-                                        PdfDictionary fd = (PdfDictionary)PdfReader.GetPdfObject(fo.Get(PdfName.FONTDESCRIPTOR));
+                                        PdfDictionary fd = fo.GetAsDict(PdfName.FONTDESCRIPTOR);
                                         if (fd != null) {
                                             PRStream prs = (PRStream)PdfReader.GetPdfObject(fd.Get(PdfName.FONTFILE2));
                                             if (prs == null)
@@ -557,21 +581,21 @@ namespace iTextSharp.text.pdf {
                 }
             }
             //rotation, border and backgound color
-            PdfDictionary mk = (PdfDictionary)PdfReader.GetPdfObject(merged.Get(PdfName.MK));
+            PdfDictionary mk = merged.GetAsDict(PdfName.MK);
             if (mk != null) {
-                PdfArray ar = (PdfArray)PdfReader.GetPdfObject(mk.Get(PdfName.BC));
+                PdfArray ar = mk.GetAsArray(PdfName.BC);
                 Color border = GetMKColor(ar);
                 tx.BorderColor = border;
                 if (border != null)
                     tx.BorderWidth = 1;
-                ar = (PdfArray)PdfReader.GetPdfObject(mk.Get(PdfName.BG));
+                ar = mk.GetAsArray(PdfName.BG);
                 tx.BackgroundColor = GetMKColor(ar);
-                PdfNumber rotation = (PdfNumber)PdfReader.GetPdfObject(mk.Get(PdfName.R));
+                PdfNumber rotation = mk.GetAsNumber(PdfName.R);
                 if (rotation != null)
                     tx.Rotation = rotation.IntValue;
             }
             //flags
-            PdfNumber nfl = (PdfNumber)PdfReader.GetPdfObject(merged.Get(PdfName.F));
+            PdfNumber nfl = merged.GetAsNumber(PdfName.F);
             flags = 0;
             tx.Visibility = BaseField.VISIBLE_BUT_DOES_NOT_PRINT;
             if (nfl != null) {
@@ -584,20 +608,20 @@ namespace iTextSharp.text.pdf {
                     tx.Visibility = BaseField.VISIBLE;
             }
             //multiline
-            nfl = (PdfNumber)PdfReader.GetPdfObject(merged.Get(PdfName.FF));
+            nfl = merged.GetAsNumber(PdfName.FF);
             flags = 0;
             if (nfl != null)
                 flags = nfl.IntValue;
             tx.Options = flags;
             if ((flags & PdfFormField.FF_COMB) != 0) {
-                PdfNumber maxLen = (PdfNumber)PdfReader.GetPdfObject(merged.Get(PdfName.MAXLEN));
+                PdfNumber maxLen = merged.GetAsNumber(PdfName.MAXLEN);
                 int len = 0;
                 if (maxLen != null)
                     len = maxLen.IntValue;
                 tx.MaxCharacterLength = len;
             }
             //alignment
-            nfl = (PdfNumber)PdfReader.GetPdfObject(merged.Get(PdfName.Q));
+            nfl = merged.GetAsNumber(PdfName.Q);
             if (nfl != null) {
                 if (nfl.IntValue == PdfFormField.Q_CENTER)
                     tx.Alignment = Element.ALIGN_CENTER;
@@ -605,12 +629,12 @@ namespace iTextSharp.text.pdf {
                     tx.Alignment = Element.ALIGN_RIGHT;
             }
             //border styles
-            PdfDictionary bs = (PdfDictionary)PdfReader.GetPdfObject(merged.Get(PdfName.BS));
+            PdfDictionary bs = merged.GetAsDict(PdfName.BS);
             if (bs != null) {
-                PdfNumber w = (PdfNumber)PdfReader.GetPdfObject(bs.Get(PdfName.W));
+                PdfNumber w = bs.GetAsNumber(PdfName.W);
                 if (w != null)
                     tx.BorderWidth = w.FloatValue;
-                PdfName s = (PdfName)PdfReader.GetPdfObject(bs.Get(PdfName.S));
+                PdfName s = bs.GetAsName(PdfName.S);
                 if (PdfName.D.Equals(s))
                     tx.BorderStyle = PdfBorderDictionary.STYLE_DASHED;
                 else if (PdfName.B.Equals(s))
@@ -621,12 +645,11 @@ namespace iTextSharp.text.pdf {
                     tx.BorderStyle = PdfBorderDictionary.STYLE_UNDERLINE;
             }
             else {
-                PdfArray bd = (PdfArray)PdfReader.GetPdfObject(merged.Get(PdfName.BORDER));
+                PdfArray bd = merged.GetAsArray(PdfName.BORDER);
                 if (bd != null) {
-                    ArrayList ar = bd.ArrayList;
-                    if (ar.Count >= 3)
-                        tx.BorderWidth = ((PdfNumber)ar[2]).FloatValue;
-                    if (ar.Count >= 4)
+                    if (bd.Size >= 3)
+                        tx.BorderWidth = bd.GetAsNumber(2).FloatValue;
+                    if (bd.Size >= 4)
                         tx.BorderStyle = PdfBorderDictionary.STYLE_DASHED;
                 }
             }
@@ -642,7 +665,7 @@ namespace iTextSharp.text.pdf {
                 tx.SubstitutionFonts = substitutionFonts;
                 DecodeGenericDictionary(merged, tx);
                 //rect
-                PdfArray rect = (PdfArray)PdfReader.GetPdfObject(merged.Get(PdfName.RECT));
+                PdfArray rect = merged.GetAsArray(PdfName.RECT);
                 Rectangle box = PdfReader.GetNormalizedRectangle(rect);
                 if (tx.Rotation == 90 || tx.Rotation == 270)
                     box = box.Rotate();
@@ -654,16 +677,16 @@ namespace iTextSharp.text.pdf {
                 tx = (TextField)fieldCache[fieldName];
                 tx.Writer = writer;
             }
-            PdfName fieldType = (PdfName)PdfReader.GetPdfObject(merged.Get(PdfName.FT));
+            PdfName fieldType = merged.GetAsName(PdfName.FT);
             if (PdfName.TX.Equals(fieldType)) {
                 tx.Text = text;
                 return tx.GetAppearance();
             }
             if (!PdfName.CH.Equals(fieldType))
                 throw new DocumentException("An appearance was requested without a variable text field.");
-            PdfArray opt = (PdfArray)PdfReader.GetPdfObject(merged.Get(PdfName.OPT));
+            PdfArray opt = merged.GetAsArray(PdfName.OPT);
             int flags = 0;
-            PdfNumber nfl = (PdfNumber)PdfReader.GetPdfObject(merged.Get(PdfName.FF));
+            PdfNumber nfl = merged.GetAsNumber(PdfName.FF);
             if (nfl != null)
                 flags = nfl.IntValue;
             if ((flags & PdfFormField.FF_COMBO) != 0 && opt == null) {
@@ -671,18 +694,17 @@ namespace iTextSharp.text.pdf {
                 return tx.GetAppearance();
             }
             if (opt != null) {
-                ArrayList op = opt.ArrayList;
-                String[] choices = new String[op.Count];
-                String[] choicesExp = new String[op.Count];
-                for (int k = 0; k < op.Count; ++k) {
-                    PdfObject obj = (PdfObject)op[k];
+                String[] choices = new String[opt.Size];
+                String[] choicesExp = new String[opt.Size];
+                for (int k = 0; k < opt.Size; ++k) {
+                    PdfObject obj = opt[k];
                     if (obj.IsString()) {
-                        choices[k] = choicesExp[k] = ((PdfString)obj).ToUnicodeString();
+                            choices[k] = choicesExp[k] = ((PdfString)obj).ToUnicodeString();
                     }
                     else {
-                        ArrayList opar = ((PdfArray)obj).ArrayList;
-                        choicesExp[k] = ((PdfString)opar[0]).ToUnicodeString();
-                        choices[k] = ((PdfString)opar[1]).ToUnicodeString();
+                        PdfArray a = (PdfArray) obj;
+                        choicesExp[k] = a.GetAsString(0).ToUnicodeString();
+                        choices[k] = a.GetAsString(1).ToUnicodeString();
                     }
                 }
                 if ((flags & PdfFormField.FF_COMBO) != 0) {
@@ -714,14 +736,13 @@ namespace iTextSharp.text.pdf {
         internal Color GetMKColor(PdfArray ar) {
             if (ar == null)
                 return null;
-            ArrayList cc = ar.ArrayList;
-            switch (cc.Count) {
+            switch (ar.Size) {
                 case 1:
-                    return new GrayColor(((PdfNumber)cc[0]).FloatValue);
+                    return new GrayColor(ar.GetAsNumber(0).FloatValue);
                 case 3:
-                    return new Color(ExtendedColor.Normalize(((PdfNumber)cc[0]).FloatValue), ExtendedColor.Normalize(((PdfNumber)cc[1]).FloatValue), ExtendedColor.Normalize(((PdfNumber)cc[2]).FloatValue));
+                    return new Color(ExtendedColor.Normalize(ar.GetAsNumber(0).FloatValue), ExtendedColor.Normalize(ar.GetAsNumber(1).FloatValue), ExtendedColor.Normalize(ar.GetAsNumber(2).FloatValue));
                 case 4:
-                    return new CMYKColor(((PdfNumber)cc[0]).FloatValue, ((PdfNumber)cc[1]).FloatValue, ((PdfNumber)cc[2]).FloatValue, ((PdfNumber)cc[3]).FloatValue);
+                    return new CMYKColor(ar.GetAsNumber(0).FloatValue, ar.GetAsNumber(1).FloatValue, ar.GetAsNumber(2).FloatValue, ar.GetAsNumber(3).FloatValue);
                 default:
                     return null;
             }
@@ -743,29 +764,42 @@ namespace iTextSharp.text.pdf {
             if (item == null)
                 return null;
             lastWasString = false;
-            PdfObject v = PdfReader.GetPdfObject(((PdfDictionary)item.merged[0]).Get(PdfName.V));
+            PdfDictionary mergedDict = item.GetMerged( 0 );
+
+            // Jose A. Rodriguez posted a fix to the mailing list (May 11, 2009)
+            // explaining that the value can also be a stream value
+            // the fix was made against an old iText version. Bruno adapted it.
+            PdfObject v = PdfReader.GetPdfObject(mergedDict.Get(PdfName.V));
             if (v == null)
                 return "";
-            PdfName type = (PdfName)PdfReader.GetPdfObject(((PdfDictionary)item.merged[0]).Get(PdfName.FT));
+            if (v is PRStream) {
+                try {
+                    byte[] valBytes = PdfReader.GetStreamBytes((PRStream)v);
+                    return PdfEncodings.ConvertToString(valBytes, BaseFont.WINANSI);
+                } catch {
+                    return "";
+                }
+            }
+            
+            PdfName type = mergedDict.GetAsName(PdfName.FT);
             if (PdfName.BTN.Equals(type)) {
-                PdfNumber ff = (PdfNumber)PdfReader.GetPdfObject(((PdfDictionary)item.merged[0]).Get(PdfName.FF));
-                int flags = 0;
+                PdfNumber ff = mergedDict.GetAsNumber(PdfName.FF);
+            int flags = 0;
                 if (ff != null)
                     flags = ff.IntValue;
                 if ((flags & PdfFormField.FF_PUSHBUTTON) != 0)
                     return "";
                 String value = "";
-                if (v.IsName())
+                if (v is PdfName)
                     value = PdfName.DecodeName(v.ToString());
-                else if (v.IsString())
+                else if (v is PdfString)
                     value = ((PdfString)v).ToUnicodeString();
-                PdfObject opts = PdfReader.GetPdfObject(((PdfDictionary)item.values[0]).Get(PdfName.OPT));
-                if (opts != null && opts.IsArray()) {
-                    ArrayList list = ((PdfArray)opts).ArrayList;
+                PdfArray opts = item.GetValue(0).GetAsArray(PdfName.OPT);
+                if (opts != null) {
                     int idx = 0;
                     try {
                         idx = int.Parse(value);
-                        PdfString ps = (PdfString)list[idx];
+                        PdfString ps = opts.GetAsString(idx);
                         value = ps.ToUnicodeString();
                         lastWasString = true;
                     }
@@ -774,11 +808,13 @@ namespace iTextSharp.text.pdf {
                 }
                 return value;
             }
-            if (v.IsString()) {
+            if (v is PdfString) {
                 lastWasString = true;
                 return ((PdfString)v).ToUnicodeString();
-            }
-            return PdfName.DecodeName(v.ToString());
+            } else if (v is PdfName) {
+                return PdfName.DecodeName(v.ToString());
+            } else
+                return "";
         }
 
         /**
@@ -799,7 +835,7 @@ namespace iTextSharp.text.pdf {
             Item item = (Item)fields[name];
             if (item == null)
                 return ret;
-            PdfArray values = (PdfArray)PdfReader.GetPdfObject(((PdfDictionary)item.merged[0]).Get(PdfName.I));
+            PdfArray values = item.GetMerged(0).GetAsArray(PdfName.I);
             if (values == null)
                 return ret;
             ret = new String[values.Size];
@@ -837,11 +873,14 @@ namespace iTextSharp.text.pdf {
             if (item == null)
                 return false;
             InstHit hit = new InstHit(inst);
+            PdfDictionary merged;
+            PdfString da;
             if (Util.EqualsIgnoreCase(name, "textfont")) {
-                for (int k = 0; k < item.merged.Count; ++k) {
+                for (int k = 0; k < item.Size; ++k) {
                     if (hit.IsHit(k)) {
-                        PdfString da = (PdfString)PdfReader.GetPdfObject(((PdfDictionary)item.merged[k]).Get(PdfName.DA));
-                        PdfDictionary dr = (PdfDictionary)PdfReader.GetPdfObject(((PdfDictionary)item.merged[k]).Get(PdfName.DR));
+                        merged = item.GetMerged( k );
+                        da = merged.GetAsString(PdfName.DA);
+                        PdfDictionary dr = merged.GetAsDict(PdfName.DR);
                         if (da != null && dr != null) {
                             Object[] dao = SplitDAelements(da.ToUnicodeString());
                             PdfAppearance cb = new PdfAppearance();
@@ -851,21 +890,21 @@ namespace iTextSharp.text.pdf {
                                 if (psn == null) {
                                     psn = new PdfName(bf.PostscriptFontName);
                                 }
-                                PdfDictionary fonts = (PdfDictionary)PdfReader.GetPdfObject(dr.Get(PdfName.FONT));
+                                PdfDictionary fonts = dr.GetAsDict(PdfName.FONT);
                                 if (fonts == null) {
                                     fonts = new PdfDictionary();
                                     dr.Put(PdfName.FONT, fonts);
                                 }
                                 PdfIndirectReference fref = (PdfIndirectReference)fonts.Get(psn);
-                                PdfDictionary top = (PdfDictionary)PdfReader.GetPdfObject(reader.Catalog.Get(PdfName.ACROFORM));
+                                PdfDictionary top = reader.Catalog.GetAsDict(PdfName.ACROFORM);
                                 MarkUsed(top);
-                                dr = (PdfDictionary)PdfReader.GetPdfObject(top.Get(PdfName.DR));
+                                dr = top.GetAsDict(PdfName.DR);
                                 if (dr == null) {
                                     dr = new PdfDictionary();
                                     top.Put(PdfName.DR, dr);
                                 }
                                 MarkUsed(dr);
-                                PdfDictionary fontsTop = (PdfDictionary)PdfReader.GetPdfObject(dr.Get(PdfName.FONT));
+                                PdfDictionary fontsTop = dr.GetAsDict(PdfName.FONT);
                                 if (fontsTop == null) {
                                     fontsTop = new PdfDictionary();
                                     dr.Put(PdfName.FONT, fontsTop);
@@ -894,18 +933,19 @@ namespace iTextSharp.text.pdf {
                                 if (dao[DA_COLOR] != null)
                                     cb.SetColorFill((Color)dao[DA_COLOR]);
                                 PdfString s = new PdfString(cb.ToString());
-                                ((PdfDictionary)item.merged[k]).Put(PdfName.DA, s);
-                                ((PdfDictionary)item.widgets[k]).Put(PdfName.DA, s);
-                                MarkUsed((PdfDictionary)item.widgets[k]);
+                                item.GetMerged(k).Put(PdfName.DA, s);
+                                item.GetWidget(k).Put(PdfName.DA, s);
+                                MarkUsed(item.GetWidget(k));
                             }
                         }
                     }
                 }
             }
             else if (Util.EqualsIgnoreCase(name, "textcolor")) {
-                for (int k = 0; k < item.merged.Count; ++k) {
+                for (int k = 0; k < item.Size; ++k) {
                     if (hit.IsHit(k)) {
-                        PdfString da = (PdfString)PdfReader.GetPdfObject(((PdfDictionary)item.merged[k]).Get(PdfName.DA));
+                        merged = item.GetMerged( k );
+                        da = merged.GetAsString(PdfName.DA);
                         if (da != null) {
                             Object[] dao = SplitDAelements(da.ToUnicodeString());
                             PdfAppearance cb = new PdfAppearance();
@@ -914,18 +954,19 @@ namespace iTextSharp.text.pdf {
                                 buf.Append(new PdfName((String)dao[DA_FONT]).GetBytes()).Append(' ').Append((float)dao[DA_SIZE]).Append(" Tf ");
                                 cb.SetColorFill((Color)value);
                                 PdfString s = new PdfString(cb.ToString());
-                                ((PdfDictionary)item.merged[k]).Put(PdfName.DA, s);
-                                ((PdfDictionary)item.widgets[k]).Put(PdfName.DA, s);
-                                MarkUsed((PdfDictionary)item.widgets[k]);
+                                item.GetMerged(k).Put(PdfName.DA, s);
+                                item.GetWidget(k).Put(PdfName.DA, s);
+                                MarkUsed(item.GetWidget(k));
                             }
                         }
                     }
                 }
             }
             else if (Util.EqualsIgnoreCase(name, "textsize")) {
-                for (int k = 0; k < item.merged.Count; ++k) {
+                for (int k = 0; k < item.Size; ++k) {
                     if (hit.IsHit(k)) {
-                        PdfString da = (PdfString)PdfReader.GetPdfObject(((PdfDictionary)item.merged[k]).Get(PdfName.DA));
+                        merged = item.GetMerged( k );
+                        da = merged.GetAsString(PdfName.DA);
                         if (da != null) {
                             Object[] dao = SplitDAelements(da.ToUnicodeString());
                             PdfAppearance cb = new PdfAppearance();
@@ -935,9 +976,9 @@ namespace iTextSharp.text.pdf {
                                 if (dao[DA_COLOR] != null)
                                     cb.SetColorFill((Color)dao[DA_COLOR]);
                                 PdfString s = new PdfString(cb.ToString());
-                                ((PdfDictionary)item.merged[k]).Put(PdfName.DA, s);
-                                ((PdfDictionary)item.widgets[k]).Put(PdfName.DA, s);
-                                MarkUsed((PdfDictionary)item.widgets[k]);
+                                item.GetMerged(k).Put(PdfName.DA, s);
+                                item.GetWidget(k).Put(PdfName.DA, s);
+                                MarkUsed(item.GetWidget(k));
                             }
                         }
                     }
@@ -945,18 +986,19 @@ namespace iTextSharp.text.pdf {
             }
             else if (Util.EqualsIgnoreCase(name, "bgcolor") || Util.EqualsIgnoreCase(name, "bordercolor")) {
                 PdfName dname = (Util.EqualsIgnoreCase(name, "bgcolor") ? PdfName.BG : PdfName.BC);
-                for (int k = 0; k < item.merged.Count; ++k) {
+                for (int k = 0; k < item.Size; ++k) {
                     if (hit.IsHit(k)) {
-                        PdfObject obj = PdfReader.GetPdfObject(((PdfDictionary)item.merged[k]).Get(PdfName.MK));
-                        MarkUsed(obj);
-                        PdfDictionary mk = (PdfDictionary)obj;
+                        merged = item.GetMerged( k );
+                        PdfDictionary mk = merged.GetAsDict(PdfName.MK);
                         if (mk == null) {
                             if (value == null)
                                 return true;
                             mk = new PdfDictionary();
-                            ((PdfDictionary)item.merged[k]).Put(PdfName.MK, mk);
-                            ((PdfDictionary)item.widgets[k]).Put(PdfName.MK, mk);
-                            MarkUsed((PdfDictionary)item.widgets[k]);
+                            item.GetMerged(k).Put(PdfName.MK, mk);
+                            item.GetWidget(k).Put(PdfName.MK, mk);
+                            MarkUsed(item.GetWidget(k));
+                        } else {
+                            MarkUsed( mk );
                         }
                         if (value == null)
                             mk.Remove(dname);
@@ -1005,77 +1047,80 @@ namespace iTextSharp.text.pdf {
             InstHit hit = new InstHit(inst);
             if (Util.EqualsIgnoreCase(name, "flags")) {
                 PdfNumber num = new PdfNumber(value);
-                for (int k = 0; k < item.merged.Count; ++k) {
+                for (int k = 0; k < item.Size; ++k) {
                     if (hit.IsHit(k)) {
-                        ((PdfDictionary)item.merged[k]).Put(PdfName.F, num);
-                        ((PdfDictionary)item.widgets[k]).Put(PdfName.F, num);
-                        MarkUsed((PdfDictionary)item.widgets[k]);
+                        item.GetMerged(k).Put(PdfName.F, num);
+                        item.GetWidget(k).Put(PdfName.F, num);
+                        MarkUsed(item.GetWidget(k));
                     }
                 }
             }
             else if (Util.EqualsIgnoreCase(name, "setflags")) {
-                for (int k = 0; k < item.merged.Count; ++k) {
+                for (int k = 0; k < item.Size; ++k) {
                     if (hit.IsHit(k)) {
-                        PdfNumber num = (PdfNumber)PdfReader.GetPdfObject(((PdfDictionary)item.widgets[k]).Get(PdfName.F));
+                        PdfNumber num = item.GetWidget(k).GetAsNumber(PdfName.F);
                         int val = 0;
                         if (num != null)
                             val = num.IntValue;
                         num = new PdfNumber(val | value);
-                        ((PdfDictionary)item.merged[k]).Put(PdfName.F, num);
-                        ((PdfDictionary)item.widgets[k]).Put(PdfName.F, num);
-                        MarkUsed((PdfDictionary)item.widgets[k]);
+                        item.GetMerged(k).Put(PdfName.F, num);
+                        item.GetWidget(k).Put(PdfName.F, num);
+                        MarkUsed(item.GetWidget(k));
                     }
                 }
             }
             else if (Util.EqualsIgnoreCase(name, "clrflags")) {
-                for (int k = 0; k < item.merged.Count; ++k) {
+                for (int k = 0; k < item.Size; ++k) {
                     if (hit.IsHit(k)) {
-                        PdfNumber num = (PdfNumber)PdfReader.GetPdfObject(((PdfDictionary)item.widgets[k]).Get(PdfName.F));
+                        PdfDictionary widget = item.GetWidget( k );
+                        PdfNumber num = widget.GetAsNumber(PdfName.F);
                         int val = 0;
                         if (num != null)
                             val = num.IntValue;
                         num = new PdfNumber(val & (~value));
-                        ((PdfDictionary)item.merged[k]).Put(PdfName.F, num);
-                        ((PdfDictionary)item.widgets[k]).Put(PdfName.F, num);
-                        MarkUsed((PdfDictionary)item.widgets[k]);
+                        item.GetMerged(k).Put(PdfName.F, num);
+                        widget.Put(PdfName.F, num);
+                        MarkUsed(widget);
                     }
                 }
             }
             else if (Util.EqualsIgnoreCase(name, "fflags")) {
                 PdfNumber num = new PdfNumber(value);
-                for (int k = 0; k < item.merged.Count; ++k) {
+                for (int k = 0; k < item.Size; ++k) {
                     if (hit.IsHit(k)) {
-                        ((PdfDictionary)item.merged[k]).Put(PdfName.FF, num);
-                        ((PdfDictionary)item.values[k]).Put(PdfName.FF, num);
-                        MarkUsed((PdfDictionary)item.values[k]);
+                        item.GetMerged(k).Put(PdfName.FF, num);
+                        item.GetValue(k).Put(PdfName.FF, num);
+                        MarkUsed(item.GetValue(k));
                     }
                 }
             }
             else if (Util.EqualsIgnoreCase(name, "setfflags")) {
-                for (int k = 0; k < item.merged.Count; ++k) {
+                for (int k = 0; k < item.Size; ++k) {
                     if (hit.IsHit(k)) {
-                        PdfNumber num = (PdfNumber)PdfReader.GetPdfObject(((PdfDictionary)item.values[k]).Get(PdfName.FF));
+                        PdfDictionary valDict = item.GetValue( k );
+                        PdfNumber num = valDict.GetAsNumber( PdfName.FF );
                         int val = 0;
                         if (num != null)
                             val = num.IntValue;
                         num = new PdfNumber(val | value);
-                        ((PdfDictionary)item.merged[k]).Put(PdfName.FF, num);
-                        ((PdfDictionary)item.values[k]).Put(PdfName.FF, num);
-                        MarkUsed((PdfDictionary)item.values[k]);
+                        item.GetMerged(k).Put(PdfName.FF, num);
+                        valDict.Put(PdfName.FF, num);
+                        MarkUsed(valDict);
                     }
                 }
             }
             else if (Util.EqualsIgnoreCase(name, "clrfflags")) {
-                for (int k = 0; k < item.merged.Count; ++k) {
+                for (int k = 0; k < item.Size; ++k) {
                     if (hit.IsHit(k)) {
-                        PdfNumber num = (PdfNumber)PdfReader.GetPdfObject(((PdfDictionary)item.values[k]).Get(PdfName.FF));
+                        PdfDictionary valDict = item.GetValue( k );
+                        PdfNumber num = valDict.GetAsNumber(PdfName.FF);
                         int val = 0;
                         if (num != null)
                             val = num.IntValue;
                         num = new PdfNumber(val & (~value));
-                        ((PdfDictionary)item.merged[k]).Put(PdfName.FF, num);
-                        ((PdfDictionary)item.values[k]).Put(PdfName.FF, num);
-                        MarkUsed((PdfDictionary)item.values[k]);
+                        item.GetMerged(k).Put(PdfName.FF, num);
+                        valDict.Put(PdfName.FF, num);
+                        MarkUsed(valDict);
                     }
                 }
             }
@@ -1124,6 +1169,11 @@ namespace iTextSharp.text.pdf {
                 String v = xfdf.GetFieldValue(f);
                 if (v != null)
                     SetField(f, v);
+                ArrayList l = xfdf.GetListValues(f);
+                if (l != null) {
+                    string[] ar = (string[])l.ToArray(typeof(string[]));
+                    SetListSelection(v, ar);
+                }
             }
         }
 
@@ -1187,9 +1237,10 @@ namespace iTextSharp.text.pdf {
             Item item = (Item)fields[name];
             if (item == null)
                 return false;
-            PdfName type = (PdfName)PdfReader.GetPdfObject(((PdfDictionary)item.merged[0]).Get(PdfName.FT));
+            PdfDictionary merged = item.GetMerged( 0 );
+            PdfName type = merged.GetAsName(PdfName.FT);
             if (PdfName.TX.Equals(type)) {
-                PdfNumber maxLen = (PdfNumber)PdfReader.GetPdfObject(((PdfDictionary)item.merged[0]).Get(PdfName.MAXLEN));
+                PdfNumber maxLen = merged.GetAsNumber(PdfName.MAXLEN);
                 int len = 0;
                 if (maxLen != null)
                     len = maxLen.IntValue;
@@ -1200,15 +1251,15 @@ namespace iTextSharp.text.pdf {
                 display = value;
             if (PdfName.TX.Equals(type) || PdfName.CH.Equals(type)) {
                 PdfString v = new PdfString(value, PdfObject.TEXT_UNICODE);
-                for (int idx = 0; idx < item.values.Count; ++idx) {
-                    PdfDictionary valueDic = (PdfDictionary)item.values[idx];
+                for (int idx = 0; idx < item.Size; ++idx) {
+                    PdfDictionary valueDic = item.GetValue(idx);
                     valueDic.Put(PdfName.V, v);
                     valueDic.Remove(PdfName.I);
                     MarkUsed(valueDic);                
-                    PdfDictionary merged = (PdfDictionary)item.merged[idx];
+                    merged = item.GetMerged(idx);
                     merged.Remove(PdfName.I);
                     merged.Put(PdfName.V, v);
-                    PdfDictionary widget = (PdfDictionary)item.widgets[idx];
+                    PdfDictionary widget = item.GetWidget(idx);
                     if (generateAppearances) {
                         PdfAppearance app = GetAppearance(merged, display, name);
                         if (PdfName.CH.Equals(type)) {
@@ -1216,7 +1267,7 @@ namespace iTextSharp.text.pdf {
                             widget.Put(PdfName.TI, n);
                             merged.Put(PdfName.TI, n);
                         }
-                        PdfDictionary appDic = (PdfDictionary)PdfReader.GetPdfObject(widget.Get(PdfName.AP));
+                        PdfDictionary appDic = widget.GetAsDict(PdfName.AP);
                         if (appDic == null) {
                             appDic = new PdfDictionary();
                             widget.Put(PdfName.AP, appDic);
@@ -1234,7 +1285,7 @@ namespace iTextSharp.text.pdf {
                 return true;
             }
             else if (PdfName.BTN.Equals(type)) {
-                PdfNumber ff = (PdfNumber)PdfReader.GetPdfObject(((PdfDictionary)item.merged[0]).Get(PdfName.FF));
+                PdfNumber ff = item.GetMerged(0).GetAsNumber(PdfName.FF);
                 int flags = 0;
                 if (ff != null)
                     flags = ff.IntValue;
@@ -1254,13 +1305,12 @@ namespace iTextSharp.text.pdf {
                 }
                 PdfName v = new PdfName(value);
                 ArrayList lopt = new ArrayList();
-                PdfObject opts = PdfReader.GetPdfObject(((PdfDictionary)item.values[0]).Get(PdfName.OPT));
-                if (opts != null && opts.IsArray()) {
-                    ArrayList list = ((PdfArray)opts).ArrayList;
-                    for (int k = 0; k < list.Count; ++k) {
-                        PdfObject vv = PdfReader.GetPdfObject((PdfObject)list[k]);
-                        if (vv != null && vv.IsString())
-                            lopt.Add(((PdfString)vv).ToUnicodeString());
+                PdfArray opts = item.GetValue(0).GetAsArray(PdfName.OPT);
+                if (opts != null) {
+                    for (int k = 0; k < opts.Size; ++k) {
+                        PdfString valStr = opts.GetAsString(k);
+                        if (valStr != null)
+                            lopt.Add(valStr.ToUnicodeString());
                         else
                             lopt.Add(null);
                     }
@@ -1273,17 +1323,18 @@ namespace iTextSharp.text.pdf {
                 }
                 else
                     vt = v;
-                for (int idx = 0; idx < item.values.Count; ++idx) {
-                    PdfDictionary merged = (PdfDictionary)item.merged[idx];
-                    PdfDictionary widget = (PdfDictionary)item.widgets[idx];
-                    MarkUsed((PdfDictionary)item.values[idx]);
+                for (int idx = 0; idx < item.Size; ++idx) {
+                    merged = item.GetMerged(idx);
+                    PdfDictionary widget = item.GetWidget(idx);
+                    PdfDictionary valDict = item.GetValue(idx);
+                    MarkUsed(item.GetValue(idx));
                     if (valt != null) {
                         PdfString ps = new PdfString(value, PdfObject.TEXT_UNICODE);
-                        ((PdfDictionary)item.values[idx]).Put(PdfName.V, ps);
+                        valDict.Put(PdfName.V, ps);
                         merged.Put(PdfName.V, ps);
                     }
                     else {
-                        ((PdfDictionary)item.values[idx]).Put(PdfName.V, v);
+                        valDict.Put(PdfName.V, v);
                         merged.Put(PdfName.V, v);
                     }
                     MarkUsed(widget);
@@ -1301,11 +1352,44 @@ namespace iTextSharp.text.pdf {
             return false;
         }
         
+        /**
+        * Sets different values in a list selection.
+        * No appearance is generated yet; nor does the code check if multiple select is allowed.
+        * 
+        * @param    name    the name of the field
+        * @param    value   an array with values that need to be selected
+        * @return   true only if the field value was changed
+        * @since 2.1.4
+        */
+        public bool SetListSelection(String name, String[] value) {
+            Item item = GetFieldItem(name);
+            if (item == null)
+                return false;
+            PdfName type = item.GetMerged(0).GetAsName(PdfName.FT);
+            if (!PdfName.CH.Equals(type)) {
+                return false;
+            }
+            String[] options = GetListOptionExport(name);
+            PdfArray array = new PdfArray();
+            for (int i = 0; i < value.Length; i++) {
+                for (int j = 0; j < options.Length; j++) {
+                    if (options[j].Equals(value[i])) {
+                        array.Add(new PdfNumber(j));
+                    }
+                }
+            }
+            item.WriteToAll(PdfName.I, array, Item.WRITE_MERGED | Item.WRITE_VALUE);
+            item.WriteToAll(PdfName.V, null, Item.WRITE_MERGED | Item.WRITE_VALUE);
+            item.WriteToAll(PdfName.AP, null, Item.WRITE_MERGED | Item.WRITE_WIDGET);
+            item.MarkUsed( this, Item.WRITE_VALUE | Item.WRITE_WIDGET );
+            return true;
+        }
+
         internal bool IsInAP(PdfDictionary dic, PdfName check) {
-            PdfDictionary appDic = (PdfDictionary)PdfReader.GetPdfObject(dic.Get(PdfName.AP));
+            PdfDictionary appDic = dic.GetAsDict(PdfName.AP);
             if (appDic == null)
                 return false;
-            PdfDictionary NDic = (PdfDictionary)PdfReader.GetPdfObject(appDic.Get(PdfName.N));
+            PdfDictionary NDic = appDic.GetAsDict(PdfName.N);
             return (NDic != null && NDic.Get(check) != null);
         }
         
@@ -1359,16 +1443,16 @@ namespace iTextSharp.text.pdf {
             Item item = GetFieldItem(name);
             if (item == null)
                 return null;
-            float[] ret = new float[item.page.Count * 5];
+            float[] ret = new float[item.Size * 5];
             int ptr = 0;
-            for (int k = 0; k < item.page.Count; ++k) {
+            for (int k = 0; k < item.Size; ++k) {
                 try {
-                    PdfDictionary wd = (PdfDictionary)item.widgets[k];
-                    PdfArray rect = (PdfArray)wd.Get(PdfName.RECT);
+                    PdfDictionary wd = item.GetWidget(k);
+                    PdfArray rect = wd.GetAsArray(PdfName.RECT);
                     if (rect == null)
                         continue;
                     Rectangle r = PdfReader.GetNormalizedRectangle(rect);
-                    int page = (int)item.page[k];
+                    int page = item.GetPage(k);
                     int rotation = reader.GetPageRotation(page);
                     ret[ptr++] = page;
                     if (rotation != 0) {
@@ -1416,18 +1500,17 @@ namespace iTextSharp.text.pdf {
         }
         
         private int RemoveRefFromArray(PdfArray array, PdfObject refo) {
-            ArrayList ar = array.ArrayList;
             if (refo == null || !refo.IsIndirect())
-                return ar.Count;
+                return array.Size;
             PdfIndirectReference refi = (PdfIndirectReference)refo;
-            for (int j = 0; j < ar.Count; ++j) {
-                PdfObject obj = (PdfObject)ar[j];
+            for (int j = 0; j < array.Size; ++j) {
+                PdfObject obj = array[j];
                 if (!obj.IsIndirect())
                     continue;
                 if (((PdfIndirectReference)obj).Number == refi.Number)
-                    ar.RemoveAt(j--);
+                    array.Remove(j--);
             }
-            return ar.Count;
+            return array.Size;
         }
         
         /**
@@ -1464,17 +1547,17 @@ namespace iTextSharp.text.pdf {
             
             if (acroForm == null)
                 return false;
-            PdfArray arrayf = (PdfArray)PdfReader.GetPdfObject(acroForm.Get(PdfName.FIELDS), acroForm);
+            PdfArray arrayf = acroForm.GetAsArray(PdfName.FIELDS);
             if (arrayf == null)
                 return false;
-            for (int k = 0; k < item.widget_refs.Count; ++k) {
-                int pageV = (int)item.page[k];
+            for (int k = 0; k < item.Size; ++k) {
+                int pageV = item.GetPage(k);
                 if (page != -1 && page != pageV)
                     continue;
-                PdfIndirectReference refi = (PdfIndirectReference)item.widget_refs[k];
-                PdfDictionary wd = (PdfDictionary)PdfReader.GetPdfObject(refi);
+                PdfIndirectReference refi = item.GetWidgetRef(k);
+                PdfDictionary wd = item.GetWidget( k );
                 PdfDictionary pageDic = reader.GetPageN(pageV);
-                PdfArray annots = (PdfArray)PdfReader.GetPdfObject(pageDic.Get(PdfName.ANNOTS), pageDic);
+                PdfArray annots = pageDic.GetAsArray(PdfName.ANNOTS);
                 if (annots != null) {
                     if (RemoveRefFromArray(annots, refi) == 0) {
                         pageDic.Remove(PdfName.ANNOTS);
@@ -1485,9 +1568,9 @@ namespace iTextSharp.text.pdf {
                 }
                 PdfReader.KillIndirect(refi);
                 PdfIndirectReference kid = refi;
-                while ((refi = (PdfIndirectReference)wd.Get(PdfName.PARENT)) != null) {
-                    wd = (PdfDictionary)PdfReader.GetPdfObject(refi);
-                    PdfArray kids = (PdfArray)PdfReader.GetPdfObject(wd.Get(PdfName.KIDS));
+                while ((refi = wd.GetAsIndirectObject(PdfName.PARENT)) != null) {
+                    wd = wd.GetAsDict( PdfName.PARENT );
+                    PdfArray kids = wd.GetAsArray(PdfName.KIDS);
                     if (RemoveRefFromArray(kids, kid) != 0)
                         break;
                     kid = refi;
@@ -1498,15 +1581,11 @@ namespace iTextSharp.text.pdf {
                     MarkUsed(arrayf);
                 }
                 if (page != -1) {
-                    item.merged.RemoveAt(k);
-                    item.page.RemoveAt(k);
-                    item.values.RemoveAt(k);
-                    item.widget_refs.RemoveAt(k);
-                    item.widgets.RemoveAt(k);
+                    item.Remove( k );
                     --k;
                 }
             }
-            if (page == -1 || item.merged.Count == 0)
+            if (page == -1 || item.Size == 0)
                 fields.Remove(name);
             return true;
         }
@@ -1529,7 +1608,7 @@ namespace iTextSharp.text.pdf {
         public bool GenerateAppearances {
             set {
                 generateAppearances = value;
-                PdfDictionary top = (PdfDictionary)PdfReader.GetPdfObject(reader.Catalog.Get(PdfName.ACROFORM));
+                PdfDictionary top = reader.Catalog.GetAsDict(PdfName.ACROFORM);
                 if (generateAppearances)
                     top.Remove(PdfName.NEEDAPPEARANCES);
                 else
@@ -1542,27 +1621,291 @@ namespace iTextSharp.text.pdf {
         
         /** The field representations for retrieval and modification. */    
         public class Item {
-            /** An array of <CODE>PdfDictionary</CODE> where the value tag /V
+            
+            /**
+            * <CODE>writeToAll</CODE> constant.
+            * 
+            *  @since 2.1.5
+            */
+            public const int WRITE_MERGED = 1;
+            
+            /**
+            * <CODE>writeToAll</CODE> and <CODE>markUsed</CODE> constant.
+            * 
+            *  @since 2.1.5
+            */
+            public const int WRITE_WIDGET = 2;
+            
+            /**
+            * <CODE>writeToAll</CODE> and <CODE>markUsed</CODE> constant.
+            * 
+            *  @since 2.1.5
+            */
+            public const int WRITE_VALUE = 4;
+
+            /**
+            * This function writes the given key/value pair to all the instances
+            * of merged, widget, and/or value, depending on the <code>writeFlags</code> setting
+            *
+            * @since 2.1.5
+            *
+            * @param key        you'll never guess what this is for.
+            * @param value      if value is null, the key will be removed
+            * @param writeFlags ORed together WRITE_* flags
+            */
+            public void WriteToAll(PdfName key, PdfObject value, int writeFlags) {
+                int i;
+                PdfDictionary curDict = null;
+                if ((writeFlags & WRITE_MERGED) != 0) {
+                    for (i = 0; i < merged.Count; ++i) {
+                        curDict = GetMerged(i);
+                        curDict.Put(key, value);
+                    }
+                }
+                if ((writeFlags & WRITE_WIDGET) != 0) {
+                    for (i = 0; i < widgets.Count; ++i) {
+                        curDict = GetWidget(i);
+                        curDict.Put(key, value);
+                    }
+                }
+                if ((writeFlags & WRITE_VALUE) != 0) {
+                    for (i = 0; i < values.Count; ++i) {
+                        curDict = GetValue(i);
+                        curDict.Put(key, value);
+                    }
+                }
+            }
+
+            /**
+            * Mark all the item dictionaries used matching the given flags
+            * 
+            * @since 2.1.5
+            * @param writeFlags WRITE_MERGED is ignored
+            */
+            public void MarkUsed( AcroFields parentFields, int writeFlags ) {
+                if ((writeFlags & WRITE_VALUE) != 0) {
+                    for (int i = 0; i < Size; ++i) {
+                        parentFields.MarkUsed( GetValue( i ) );
+                    }
+                }
+                if ((writeFlags & WRITE_WIDGET) != 0) {
+                    for (int i = 0; i < Size; ++i) {
+                        parentFields.MarkUsed(GetWidget(i));
+                    }
+                }
+            }
+
+            /**
+            * An array of <CODE>PdfDictionary</CODE> where the value tag /V
             * is present.
-            */        
+            * 
+            * @deprecated (will remove 'public' in the future)
+            */
             public ArrayList values = new ArrayList();
-            /** An array of <CODE>PdfDictionary</CODE> with the widgets.
-            */        
+            
+            /**
+            * An array of <CODE>PdfDictionary</CODE> with the widgets.
+            * 
+            * @deprecated (will remove 'public' in the future)
+            */
             public ArrayList widgets = new ArrayList();
-            /** An array of <CODE>PdfDictionary</CODE> with the widget references.
+            
+            /**
+            * An array of <CODE>PdfDictionary</CODE> with the widget references.
+            * 
+            * @deprecated (will remove 'public' in the future)
             */
             public ArrayList widget_refs = new ArrayList();
-            /** An array of <CODE>PdfDictionary</CODE> with all the field
+            
+            /**
+            * An array of <CODE>PdfDictionary</CODE> with all the field
             * and widget tags merged.
-            */        
+            * 
+            * @deprecated (will remove 'public' in the future)
+            */
             public ArrayList merged = new ArrayList();
-            /** An array of <CODE>Integer</CODE> with the page numbers where
+            
+            /**
+            * An array of <CODE>Integer</CODE> with the page numbers where
             * the widgets are displayed.
-            */        
+            * 
+            * @deprecated (will remove 'public' in the future)
+            */
             public ArrayList page = new ArrayList();
-            /** An array of <CODE>Integer</CODE> with the tab order of the field in the page.
-            */        
+            /**
+            * An array of <CODE>Integer</CODE> with the tab order of the field in the page.
+            * 
+            * @deprecated (will remove 'public' in the future)
+            */
             public ArrayList tabOrder = new ArrayList();
+
+            /**
+            * Preferred method of determining the number of instances
+            * of a given field.
+            * 
+            * @since 2.1.5
+            * @return number of instances
+            */
+            public int Size {
+                get {
+                    return values.Count;
+                }
+            }
+
+            /**
+            * Remove the given instance from this item.  It is possible to
+            * remove all instances using this function.
+            * 
+            * @since 2.1.5
+            * @param killIdx
+            */
+            internal void Remove(int killIdx) {
+                values.RemoveAt(killIdx);
+                widgets.RemoveAt(killIdx);
+                widget_refs.RemoveAt(killIdx);
+                merged.RemoveAt(killIdx);
+                page.RemoveAt(killIdx);
+                tabOrder.RemoveAt(killIdx);
+            }
+
+            /**
+            * Retrieve the value dictionary of the given instance
+            * 
+            * @since 2.1.5
+            * @param idx instance index
+            * @return dictionary storing this instance's value.  It may be shared across instances.
+            */
+            public PdfDictionary GetValue(int idx) {
+                return (PdfDictionary) values[idx];
+            }
+
+            /**
+            * Add a value dict to this Item
+            * 
+            * @since 2.1.5
+            * @param value new value dictionary
+            */
+            internal void AddValue(PdfDictionary value) {
+                values.Add(value);
+            }
+
+            /**
+            * Retrieve the widget dictionary of the given instance
+            * 
+            * @since 2.1.5
+            * @param idx instance index
+            * @return The dictionary found in the appropriate page's Annot array.
+            */
+            public PdfDictionary GetWidget(int idx) {
+                return (PdfDictionary) widgets[idx];
+            }
+
+            /**
+            * Add a widget dict to this Item
+            * 
+            * @since 2.1.5
+            * @param widget
+            */
+            internal void AddWidget(PdfDictionary widget) {
+                widgets.Add(widget);
+            }
+
+            /**
+            * Retrieve the reference to the given instance
+            * 
+            * @since 2.1.5
+            * @param idx instance index
+            * @return reference to the given field instance
+            */
+            public PdfIndirectReference GetWidgetRef(int idx) {
+                return (PdfIndirectReference) widget_refs[idx];
+            }
+
+            /**
+            * Add a widget ref to this Item
+            * 
+            * @since 2.1.5
+            * @param widgRef
+            */
+            internal void AddWidgetRef(PdfIndirectReference widgRef) {
+                widget_refs.Add(widgRef);
+            }
+
+            /**
+            * Retrieve the merged dictionary for the given instance.  The merged
+            * dictionary contains all the keys present in parent fields, though they
+            * may have been overwritten (or modified?) by children.
+            * Example: a merged radio field dict will contain /V
+            * 
+            * @since 2.1.5
+            * @param idx  instance index
+            * @return the merged dictionary for the given instance
+            */
+            public PdfDictionary GetMerged(int idx) {
+                return (PdfDictionary) merged[idx];
+            }
+
+            /**
+            * Adds a merged dictionary to this Item.
+            * 
+            * @since 2.1.5
+            * @param mergeDict
+            */
+            internal void AddMerged(PdfDictionary mergeDict) {
+                merged.Add(mergeDict);
+            }
+
+            /**
+            * Retrieve the page number of the given instance
+            * 
+            * @since 2.1.5
+            * @param idx
+            * @return remember, pages are "1-indexed", not "0-indexed" like field instances.
+            */
+            public int GetPage(int idx) {
+                return (int) page[idx];
+            }
+
+            /**
+            * Adds a page to the current Item.
+            * 
+            * @since 2.1.5
+            * @param pg
+            */
+            internal void AddPage(int pg) {
+                page.Add(pg);
+            }
+
+            /**
+            * forces a page value into the Item.
+            * 
+            * @since 2.1.5
+            * @param idx
+            */
+            internal void ForcePage(int idx, int pg) {
+                page[idx] = pg;
+            }
+
+            /**
+            * Gets the tabOrder.
+            * 
+            * @since 2.1.5
+            * @param idx
+            * @return tab index of the given field instance
+            */
+            public int GetTabOrder(int idx) {
+                return (int) tabOrder[idx];
+            }
+
+            /**
+            * Adds a tab order value to this Item.
+            * 
+            * @since 2.1.5
+            * @param order
+            */
+            internal void AddTabOrder(int order) {
+                tabOrder.Add(order);
+            }
         }
         
         private class InstHit {
@@ -1589,23 +1932,22 @@ namespace iTextSharp.text.pdf {
             ArrayList sorter = new ArrayList();
             foreach (DictionaryEntry entry in fields) {
                 Item item = (Item)entry.Value;
-                PdfDictionary merged = (PdfDictionary)item.merged[0];
+                PdfDictionary merged = item.GetMerged(0);
                 if (!PdfName.SIG.Equals(merged.Get(PdfName.FT)))
                     continue;
-                PdfObject vo = PdfReader.GetPdfObject(merged.Get(PdfName.V));
-                if (vo == null || vo.Type != PdfObject.DICTIONARY)
+                PdfDictionary v = merged.GetAsDict(PdfName.V);
+                if (v == null)
                     continue;
-                PdfDictionary v = (PdfDictionary)vo;
-                PdfObject contents = v.Get(PdfName.CONTENTS);
-                if (contents == null || contents.Type != PdfObject.STRING)
+                PdfString contents = v.GetAsString(PdfName.CONTENTS);
+                if (contents == null)
                     continue;
-                PdfObject ro = v.Get(PdfName.BYTERANGE);
-                if (ro == null || ro.Type != PdfObject.ARRAY)
+                PdfArray ro = v.GetAsArray(PdfName.BYTERANGE);
+                if (ro == null)
                     continue;
-                ArrayList ra = ((PdfArray)ro).ArrayList;
-                if (ra.Count < 2)
+                int rangeSize = ro.Size;
+                if (rangeSize < 2)
                     continue;
-                int length = ((PdfNumber)ra[ra.Count - 1]).IntValue + ((PdfNumber)ra[ra.Count - 2]).IntValue;
+                int length = ro.GetAsNumber(rangeSize - 1).IntValue + ro.GetAsNumber(rangeSize - 2).IntValue;
                 sorter.Add(new Object[]{entry.Key, new int[]{length, 0}});
             }
             sorter.Sort(new AcroFields.ISorterComparator());
@@ -1642,8 +1984,8 @@ namespace iTextSharp.text.pdf {
             ArrayList sigs = new ArrayList();
             foreach (DictionaryEntry entry in fields) {
                 Item item = (Item)entry.Value;
-                PdfDictionary merged = (PdfDictionary)item.merged[0];
-                if (!PdfName.SIG.Equals(merged.Get(PdfName.FT)))
+                PdfDictionary merged = item.GetMerged(0);
+                if (!PdfName.SIG.Equals(merged.GetAsName(PdfName.FT)))
                     continue;
                 if (sigNames.ContainsKey(entry.Key))
                     continue;
@@ -1664,8 +2006,8 @@ namespace iTextSharp.text.pdf {
             if (!sigNames.ContainsKey(name))
                 return null;
             Item item = (Item)fields[name];
-            PdfDictionary merged = (PdfDictionary)item.merged[0];
-            return (PdfDictionary)PdfReader.GetPdfObject(merged.Get(PdfName.V));
+            PdfDictionary merged = item.GetMerged(0);
+            return merged.GetAsDict(PdfName.V);
         }
         
         /**
@@ -1713,17 +2055,17 @@ namespace iTextSharp.text.pdf {
             PdfDictionary v = GetSignatureDictionary(name);
             if (v == null)
                 return null;
-            PdfName sub = (PdfName)PdfReader.GetPdfObject(v.Get(PdfName.SUBFILTER));
-            PdfString contents = (PdfString)PdfReader.GetPdfObject(v.Get(PdfName.CONTENTS));
+            PdfName sub = v.GetAsName(PdfName.SUBFILTER);
+            PdfString contents = v.GetAsString(PdfName.CONTENTS);
             PdfPKCS7 pk = null;
             if (sub.Equals(PdfName.ADBE_X509_RSA_SHA1)) {
-                PdfString cert = (PdfString)PdfReader.GetPdfObject(v.Get(PdfName.CERT));
+                PdfString cert = v.GetAsString(PdfName.CERT);
                 pk = new PdfPKCS7(contents.GetOriginalBytes(), cert.GetBytes());
             }
             else
                 pk = new PdfPKCS7(contents.GetOriginalBytes());
             UpdateByteRange(pk, v);
-            PdfString str = (PdfString)PdfReader.GetPdfObject(v.Get(PdfName.M));
+            PdfString str = v.GetAsString(PdfName.M);
             if (str != null)
                 pk.SignDate = PdfDate.Decode(str.ToString());
             PdfObject obj = PdfReader.GetPdfObject(v.Get(PdfName.NAME));
@@ -1733,25 +2075,24 @@ namespace iTextSharp.text.pdf {
               else if(obj.IsName())
                 pk.SignName = PdfName.DecodeName(obj.ToString());
             }
-            str = (PdfString)PdfReader.GetPdfObject(v.Get(PdfName.REASON));
+            str = v.GetAsString(PdfName.REASON);
             if (str != null)
                 pk.Reason = str.ToUnicodeString();
-            str = (PdfString)PdfReader.GetPdfObject(v.Get(PdfName.LOCATION));
+            str = v.GetAsString(PdfName.LOCATION);
             if (str != null)
                 pk.Location = str.ToUnicodeString();
             return pk;
         }
         
         private void UpdateByteRange(PdfPKCS7 pkcs7, PdfDictionary v) {
-            PdfArray b = (PdfArray)PdfReader.GetPdfObject(v.Get(PdfName.BYTERANGE));
+            PdfArray b = v.GetAsArray(PdfName.BYTERANGE);
             RandomAccessFileOrArray rf = reader.SafeFile;
             try {
                 rf.ReOpen();
                 byte[] buf = new byte[8192];
-                ArrayList ar = b.ArrayList;
-                for (int k = 0; k < ar.Count; ++k) {
-                    int start = ((PdfNumber)ar[k]).IntValue;
-                    int length = ((PdfNumber)ar[++k]).IntValue;
+                for (int k = 0; k < b.Size; ++k) {
+                    int start = b.GetAsNumber(k).IntValue;
+                    int length = b.GetAsNumber(++k).IntValue;
                     rf.Seek(start);
                     while (length > 0) {
                         int rd = rf.Read(buf, 0, Math.Min(length, buf.Length));
@@ -2052,25 +2393,25 @@ namespace iTextSharp.text.pdf {
             if (GetFieldType(field) != FIELD_TYPE_PUSHBUTTON)
                 return null;
             Item item = GetFieldItem(field);
-            if (order >= item.merged.Count)
+            if (order >= item.Size)
                 return null;
             int posi = order * 5;
             float[] pos = GetFieldPositions(field);
             Rectangle box = new Rectangle(pos[posi + 1], pos[posi + 2], pos[posi + 3], pos[posi + 4]);
             PushbuttonField newButton = new PushbuttonField(writer, box, null);
-            PdfDictionary dic = (PdfDictionary)item.merged[order];
+            PdfDictionary dic = item.GetMerged(order);
             DecodeGenericDictionary(dic, newButton);
-            PdfDictionary mk = (PdfDictionary)PdfReader.GetPdfObject(dic.Get(PdfName.MK));
+            PdfDictionary mk = dic.GetAsDict(PdfName.MK);
             if (mk != null) {
-                PdfString text = (PdfString)PdfReader.GetPdfObject(mk.Get(PdfName.CA));
+                PdfString text = mk.GetAsString(PdfName.CA);
                 if (text != null)
                     newButton.Text = text.ToUnicodeString();
-                PdfNumber tp = (PdfNumber)PdfReader.GetPdfObject(mk.Get(PdfName.TP));
+                PdfNumber tp = mk.GetAsNumber(PdfName.TP);
                 if (tp != null)
                     newButton.Layout = tp.IntValue + 1;
-                PdfDictionary ifit = (PdfDictionary)PdfReader.GetPdfObject(mk.Get(PdfName.IF));
+                PdfDictionary ifit = mk.GetAsDict(PdfName.IF);
                 if (ifit != null) {
-                    PdfName sw = (PdfName)PdfReader.GetPdfObject(ifit.Get(PdfName.SW));
+                    PdfName sw = ifit.GetAsName(PdfName.SW);
                     if (sw != null) {
                         int scale = PushbuttonField.SCALE_ICON_ALWAYS;
                         if (sw.Equals(PdfName.B))
@@ -2081,20 +2422,20 @@ namespace iTextSharp.text.pdf {
                             scale = PushbuttonField.SCALE_ICON_NEVER;
                         newButton.ScaleIcon = scale;
                     }
-                    sw = (PdfName)PdfReader.GetPdfObject(ifit.Get(PdfName.S));
+                    sw = ifit.GetAsName(PdfName.S);
                     if (sw != null) {
                         if (sw.Equals(PdfName.A))
                             newButton.ProportionalIcon = false;
                     }
-                    PdfArray aj = (PdfArray)PdfReader.GetPdfObject(ifit.Get(PdfName.A));
+                    PdfArray aj = ifit.GetAsArray(PdfName.A);
                     if (aj != null && aj.Size == 2) {
-                        float left = ((PdfNumber)PdfReader.GetPdfObject((PdfObject)aj.ArrayList[0])).FloatValue;
-                        float bottom = ((PdfNumber)PdfReader.GetPdfObject((PdfObject)aj.ArrayList[1])).FloatValue;
+                        float left = aj.GetAsNumber(0).FloatValue;
+                        float bottom = aj.GetAsNumber(1).FloatValue;
                         newButton.IconHorizontalAdjustment = left;
                         newButton.IconVerticalAdjustment = bottom;
                     }
-                    PdfObject fb = PdfReader.GetPdfObject(ifit.Get(PdfName.FB));
-                    if (fb != null && fb.ToString().Equals("true"))
+                    PdfBoolean fb = ifit.GetAsBoolean(PdfName.FB);
+                    if (fb != null && fb.BooleanValue)
                         newButton.IconFitToBounds = true;
                 }
                 PdfObject i = mk.Get(PdfName.I);
@@ -2131,11 +2472,11 @@ namespace iTextSharp.text.pdf {
             if (GetFieldType(field) != FIELD_TYPE_PUSHBUTTON)
                 return false;
             Item item = GetFieldItem(field);
-            if (order >= item.merged.Count)
+            if (order >= item.Size)
                 return false;
-            PdfDictionary merged = (PdfDictionary)item.merged[order];
-            PdfDictionary values = (PdfDictionary)item.values[order];
-            PdfDictionary widgets = (PdfDictionary)item.widgets[order];
+            PdfDictionary merged = item.GetMerged(order);
+            PdfDictionary values = item.GetValue(order);
+            PdfDictionary widgets = item.GetWidget(order);
             for (int k = 0; k < buttonRemove.Length; ++k) {
                 merged.Remove(buttonRemove[k]);
                 values.Remove(buttonRemove[k]);

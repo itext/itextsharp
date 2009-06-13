@@ -109,12 +109,11 @@ namespace iTextSharp.text.pdf {
                 PdfString title = (PdfString)PdfReader.GetPdfObjectRelease(outline.Get(PdfName.TITLE));
                 map["Title"] = title.ToUnicodeString();
                 PdfArray color = (PdfArray)PdfReader.GetPdfObjectRelease(outline.Get(PdfName.C));
-                if (color != null && color.ArrayList.Count == 3) {
+                if (color != null && color.Size == 3) {
                     ByteBuffer outp = new ByteBuffer();
-                    ArrayList arr = color.ArrayList;
-                    outp.Append(((PdfNumber)arr[0]).FloatValue).Append(' ');
-                    outp.Append(((PdfNumber)arr[1]).FloatValue).Append(' ');
-                    outp.Append(((PdfNumber)arr[2]).FloatValue);
+                    outp.Append(color.GetAsNumber(0).FloatValue).Append(' ');
+                    outp.Append(color.GetAsNumber(1).FloatValue).Append(' ');
+                    outp.Append(color.GetAsNumber(2).FloatValue);
                     map["Color"] = PdfEncodings.ConvertToString(outp.ToByteArray(), null);
                 }
                 PdfNumber style = (PdfNumber)PdfReader.GetPdfObjectRelease(outline.Get(PdfName.F));
@@ -158,11 +157,11 @@ namespace iTextSharp.text.pdf {
                                     else if (dest.IsName())
                                         map["NamedN"] = PdfName.DecodeName(dest.ToString());
                                     else if (dest.IsArray()) {
-                                        ArrayList arr = ((PdfArray)dest).ArrayList;
+                                        PdfArray arr = (PdfArray)dest;
                                         StringBuilder s = new StringBuilder();
                                         s.Append(arr[0].ToString());
                                         s.Append(' ').Append(arr[1].ToString());
-                                        for (int k = 2; k < arr.Count; ++k)
+                                        for (int k = 2; k < arr.Size; ++k)
                                             s.Append(' ').Append(arr[k].ToString());
                                         map["Page"] = s.ToString();
                                     }
@@ -226,15 +225,15 @@ namespace iTextSharp.text.pdf {
 
         private static String MakeBookmarkParam(PdfArray dest, IntHashtable pages)
         {
-            ArrayList arr = dest.ArrayList;
             StringBuilder s = new StringBuilder();
-            if (((PdfObject)arr[0]).IsNumber())
-                s.Append(((PdfNumber)arr[0]).IntValue + 1);
+            PdfObject obj = dest[0];
+            if (obj.IsNumber())
+                s.Append(((PdfNumber)obj).IntValue + 1);
             else
-                s.Append(pages[GetNumber((PdfIndirectReference)arr[0])]); //changed by ujihara 2004-06-13
-            s.Append(' ').Append(arr[1].ToString().Substring(1));
-            for (int k = 2; k < arr.Count; ++k)
-                s.Append(' ').Append(arr[k].ToString());
+                s.Append(pages[GetNumber((PdfIndirectReference)obj)]); //changed by ujihara 2004-06-13
+            s.Append(' ').Append(dest[1].ToString().Substring(1));
+            for (int k = 2; k < dest.Size; ++k)
+                s.Append(' ').Append(dest[k].ToString());
             return s.ToString();
         }
         
@@ -250,7 +249,7 @@ namespace iTextSharp.text.pdf {
             if (pdfObj.Contains(PdfName.TYPE) && pdfObj.Get(PdfName.TYPE).Equals(PdfName.PAGES) && pdfObj.Contains(PdfName.KIDS)) 
             {
                 PdfArray kids = (PdfArray)pdfObj.Get(PdfName.KIDS);
-                indirect = (PdfIndirectReference)kids.ArrayList[0];
+                indirect = (PdfIndirectReference)kids[0];
             }
             return indirect.Number;
         }
