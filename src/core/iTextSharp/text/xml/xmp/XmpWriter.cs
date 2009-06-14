@@ -83,6 +83,24 @@ namespace iTextSharp.text.xml.xmp {
         /** The about string that goes into the rdf:Description tags. */
         protected String about;
         
+        /**
+        * Processing Instruction required at the start of an XMP stream
+        * @since iText 2.1.6
+        */
+        public const String XPACKET_PI_BEGIN = "<?xpacket begin=\"\uFEFF\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n";
+        
+        /**
+        * Processing Instruction required at the end of an XMP stream for XMP streams that can be updated
+        * @since iText 2.1.6
+        */
+        public const String XPACKET_PI_END_W = "<?xpacket end=\"w\"?>";
+        
+        /**
+        * Processing Instruction required at the end of an XMP stream for XMP streams that are read only
+        * @since iText 2.1.6
+        */
+        public const String XPACKET_PI_END_R = "<?xpacket end=\"r\"?>";
+	        
         /** The end attribute. */
         protected char end = 'w';
         
@@ -96,7 +114,7 @@ namespace iTextSharp.text.xml.xmp {
         public XmpWriter(Stream os, string utfEncoding, int extraSpace) {
             this.extraSpace = extraSpace;
             writer = new StreamWriter(os, new EncodingNoPreamble(IanaEncodings.GetEncodingEncoding(utfEncoding)));
-            writer.Write("<?xpacket begin=\"\uFEFF\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n");
+            writer.Write(XPACKET_PI_BEGIN);
             writer.Write("<x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n");
             writer.Write("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n");
             about = "";
@@ -165,7 +183,7 @@ namespace iTextSharp.text.xml.xmp {
             for (int i = 0; i < extraSpace; i++) {
                 writer.Write(EXTRASPACE);
             }
-            writer.Write("<?xpacket end=\"" + end + "\"?>");
+            writer.Write(end == 'r' ? XPACKET_PI_END_R : XPACKET_PI_END_W);
             writer.Flush();
             writer.Close();
         }
