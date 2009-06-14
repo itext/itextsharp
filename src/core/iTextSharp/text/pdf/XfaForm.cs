@@ -4,7 +4,7 @@ using System.Text;
 using System.IO;
 using System.Xml;
 /*
- * $Id: XfaForm.cs,v 1.9 2008/06/28 18:48:46 psoares33 Exp $
+ * $Id: XfaForm.cs,v 1.8 2008/06/06 14:57:18 psoares33 Exp $
  *
  * Copyright 2006 Paulo Soares
  *
@@ -61,6 +61,7 @@ namespace iTextSharp.text.pdf {
     public class XfaForm {
 
         private Xml2SomTemplate templateSom;
+        private XmlNode templateNode;
         private Xml2SomDatasets datasetsSom;
         private AcroFieldsSearch acroFieldsSom;
         private PdfReader reader;
@@ -77,6 +78,21 @@ namespace iTextSharp.text.pdf {
         }
         
         /**
+        * Return the XFA Object, could be an array, could be a Stream.
+        * Returns null f no XFA Object is present.
+        * @param    reader  a PdfReader instance
+        * @return   the XFA object
+        * @since    2.1.3
+        */
+        public static PdfObject GetXfaObject(PdfReader reader) {
+            PdfDictionary af = (PdfDictionary)PdfReader.GetPdfObjectRelease(reader.Catalog.Get(PdfName.ACROFORM));
+            if (af == null) {
+                return null;
+            }
+            return PdfReader.GetPdfObjectRelease(af.Get(PdfName.XFA));
+        }
+        
+        /**
         * A constructor from a <CODE>PdfReader</CODE>. It basically does everything
         * from finding the XFA stream to the XML parsing.
         * @param reader the reader
@@ -86,12 +102,7 @@ namespace iTextSharp.text.pdf {
         */
         public XfaForm(PdfReader reader) {
             this.reader = reader;
-            PdfDictionary af = (PdfDictionary)PdfReader.GetPdfObjectRelease(reader.Catalog.Get(PdfName.ACROFORM));
-            if (af == null) {
-                xfaPresent = false;
-                return;
-            }
-            PdfObject xfa = PdfReader.GetPdfObjectRelease(af.Get(PdfName.XFA));
+            PdfObject xfa = GetXfaObject(reader);
             if (xfa == null) {
                 xfaPresent = false;
                 return;
@@ -99,9 +110,9 @@ namespace iTextSharp.text.pdf {
             xfaPresent = true;
             MemoryStream bout = new MemoryStream();
             if (xfa.IsArray()) {
-                ArrayList ar = ((PdfArray)xfa).ArrayList;
-                for (int k = 1; k < ar.Count; k += 2) {
-                    PdfObject ob = PdfReader.GetPdfObject((PdfObject)ar[k]);
+                PdfArray ar = (PdfArray)xfa;
+                for (int k = 1; k < ar.Size; k += 2) {
+                    PdfObject ob = ar.GetDirectObject(k);
                     if (ob is PRStream) {
                         byte[] b = PdfReader.GetStreamBytes((PRStream)ob);
                         bout.Write(b, 0, b.Length);
@@ -117,6 +128,14 @@ namespace iTextSharp.text.pdf {
             domDocument = new XmlDocument();
             domDocument.PreserveWhitespace = true;
             domDocument.Load(xtr);
+            ExtractNodes();
+        }
+        
+        /**
+        * Extracts the nodes from the domDocument.
+        * @since    2.1.5
+        */
+        private void ExtractNodes() {
             XmlNode n = domDocument.FirstChild;
             while (n.NodeType != XmlNodeType.Element || n.ChildNodes.Count == 0)
                 n = n.NextSibling;
@@ -125,6 +144,7 @@ namespace iTextSharp.text.pdf {
                 if (n.NodeType == XmlNodeType.Element) {
                     String s = n.LocalName;
                     if (s.Equals("template")) {
+                        templateNode = n;
                         templateSom = new Xml2SomTemplate(n);
                     }
                     else if (s.Equals("datasets")) {
@@ -138,19 +158,46 @@ namespace iTextSharp.text.pdf {
         
         /**
         * Sets the XFA key from a byte array. The old XFA is erased.
-        * @param xfaData the data
+        * @param form the data
         * @param reader the reader
         * @param writer the writer
         * @throws java.io.IOException on error
         */
-        public static void SetXfa(byte[] xfaData, PdfReader reader, PdfWriter writer) {
+        public static void SetXfa(XfaForm form, PdfReader reader, PdfWriter writer) {
             PdfDictionary af = (PdfDictionary)PdfReader.GetPdfObjectRelease(reader.Catalog.Get(PdfName.ACROFORM));
             if (af == null) {
                 return;
             }
+            PdfObject xfa = GetXfaObject(reader);
+            if (xfa.IsArray()) {
+                PdfArray ar = (PdfArray)xfa;
+                int t = -1;
+                int d = -1;
+                for (int k = 0; k < ar.Size; k += 2) {
+                    PdfString s = ar.GetAsString(k);
+                    if ("template".Equals(s.ToString())) {
+                        t = k + 1;
+                    }
+                    if ("datasets".Equals(s.ToString())) {
+                        d = k + 1;
+                    }
+                }
+                if (t > -1 && d > -1) {
+                    reader.KillXref(ar.GetAsIndirectObject(t));
+                    reader.KillXref(ar.GetAsIndirectObject(d));
+                    PdfStream tStream = new PdfStream(SerializeDoc(form.templateNode));
+                    tStream.FlateCompress(writer.CompressionLevel);
+                    ar[t] = writer.AddToBody(tStream).IndirectReference;
+                    PdfStream dStream = new PdfStream(SerializeDoc(form.datasetsNode));
+                    dStream.FlateCompress(writer.CompressionLevel);
+                    ar[d] = writer.AddToBody(dStream).IndirectReference;
+                    af.Put(PdfName.XFA, new PdfArray(ar));
+                    return;
+                }
+            }
             reader.KillXref(af.Get(PdfName.XFA));
-            PdfStream str = new PdfStream(xfaData);
-            str.FlateCompress();
+            PdfStream str = new PdfStream(SerializeDoc(form.domDocument));
+            str.FlateCompress(writer.CompressionLevel);
             PdfIndirectReference refe = writer.AddToBody(str).IndirectReference;
             af.Put(PdfName.XFA, refe);
         }
@@ -161,7 +208,7 @@ namespace iTextSharp.text.pdf {
         * @throws java.io.IOException on error
         */
         public void SetXfa(PdfWriter writer) {
-            SetXfa(SerializeDoc(domDocument), reader, writer);
+            SetXfa(this, reader, writer);
         }
 
         /**
@@ -201,6 +248,7 @@ namespace iTextSharp.text.pdf {
             }
             set {
                 domDocument = value;
+                ExtractNodes();
             }
         }
         
@@ -217,7 +265,10 @@ namespace iTextSharp.text.pdf {
             if (items.ContainsKey(name))
                 return name;
             if (acroFieldsSom == null) {
-                acroFieldsSom = new AcroFieldsSearch(items.Keys);
+        	    if (items.Count == 0 && xfaPresent)
+                    acroFieldsSom = new AcroFieldsSearch(datasetsSom.Name2Node.Keys);
+                else
+                    acroFieldsSom = new AcroFieldsSearch(items.Keys);
             }
             if (acroFieldsSom.AcroShort2LongName.ContainsKey(name))
                 return (String)acroFieldsSom.AcroShort2LongName[name];

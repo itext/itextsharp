@@ -873,6 +873,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "iTextSharp\text\pdf\PdfEFStream.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "iTextSharp\text\pdf\PdfEncodings.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2219,6 +2224,11 @@
                 />
                 <File
                     RelPath = "iTextSharp\text\xml\xmp\XmpMMSchema.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "iTextSharp\text\xml\xmp\XmpReader.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -5364,7 +5374,7 @@
                 />
                 <File
                     RelPath = "srcbc\crypto\parameters\DSAKeyParameters.cs"
-                    SubType = "Code"
+                    SubType = ""
                     BuildAction = "Compile"
                 />
                 <File

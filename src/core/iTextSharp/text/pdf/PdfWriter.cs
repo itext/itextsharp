@@ -3013,7 +3013,7 @@ namespace iTextSharp.text.pdf {
         * @param   content a byte array that may already been added to the writer inside a stream object.
         * @since  2.1.5
         */
-        protected PdfIndirectReference GetReferenceJBIG2Globals(byte[] content) {
+        protected internal PdfIndirectReference GetReferenceJBIG2Globals(byte[] content) {
             if (content == null) return null;
             foreach (PdfStream str in JBIG2Globals.Keys) {
                 if (Org.BouncyCastle.Utilities.Arrays.AreEqual(content, str.GetBytes())) {

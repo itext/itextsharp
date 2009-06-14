@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Text;
+using iTextSharp.text;
+using iTextSharp.text.exceptions;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.intern;
 
@@ -175,6 +177,9 @@ namespace iTextSharp.text.pdf {
          */    
         protected int separator = '\n';
     
+        private int mcDepth = 0;
+        private bool inText = false;
+
         private static Hashtable abrev = new Hashtable();
         
         static PdfContentByte() {
@@ -234,6 +239,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public byte[] ToPdf(PdfWriter writer) {
+            SanityCheck();
             return content.ToByteArray();
         }
     
@@ -1169,6 +1175,14 @@ namespace iTextSharp.text.pdf {
                 if (inlineImage) {
                     content.Append("\nBI\n");
                     PdfImage pimage = new PdfImage(image, "", null);
+                    if (image is ImgJBIG2) {
+                        byte[] globals = ((ImgJBIG2)image).GlobalBytes;
+                        if (globals != null) {
+                            PdfDictionary decodeparms = new PdfDictionary();
+                            decodeparms.Put(PdfName.JBIG2GLOBALS, writer.GetReferenceJBIG2Globals(globals));
+                            pimage.Put(PdfName.DECODEPARMS, decodeparms);
+                        }
+                    }
                     foreach (PdfName key in pimage.Keys) {
                         PdfObject value = pimage.Get(key);
                         String s = (String)abrev[key];
@@ -1177,12 +1191,12 @@ namespace iTextSharp.text.pdf {
                         content.Append(s);
                         bool check = true;
                         if (key.Equals(PdfName.COLORSPACE) && value.IsArray()) {
-                            ArrayList ar = ((PdfArray)value).ArrayList;
-                            if (ar.Count == 4 
-                                && PdfName.INDEXED.Equals(ar[0]) 
-                                && ((PdfObject)ar[1]).IsName()
-                                && ((PdfObject)ar[2]).IsNumber()
-                                && ((PdfObject)ar[3]).IsString()
+                            PdfArray ar = (PdfArray)value;
+                            if (ar.Size == 4 
+                                && PdfName.INDEXED.Equals(ar.GetAsName(0)) 
+                                && ar[1].IsName()
+                                && ar[2].IsNumber()
+                                && ar[3].IsString()
                             ) {
                                 check = false;
                             }
@@ -1251,11 +1265,23 @@ namespace iTextSharp.text.pdf {
         }
     
         /**
-         * Makes this <CODE>PdfContentByte</CODE> empty.
-         */
+        * Makes this <CODE>PdfContentByte</CODE> empty.
+        * Calls <code>reset( true )</code>
+        */
         public void Reset() {
+            Reset( true );
+        }
+
+        /**
+        * Makes this <CODE>PdfContentByte</CODE> empty.
+        * @param validateContent will call <code>sanityCheck()</code> if true.
+        * @since 2.1.6
+        */
+        public void Reset( bool validateContent ) {
             content.Reset();
-            stateList.Clear();
+            if (validateContent) {
+                SanityCheck();
+            }
             state = new GraphicState();
         }
     
@@ -1263,6 +1289,10 @@ namespace iTextSharp.text.pdf {
          * Starts the writing of text.
          */
         public void BeginText() {
+            if (inText) {
+                throw new IllegalPdfSyntaxException("Unbalanced begin/end text operators." );
+            }
+            inText = true;
             state.xTLM = 0;
             state.yTLM = 0;
             content.Append("BT").Append_i(separator);
@@ -1272,6 +1302,10 @@ namespace iTextSharp.text.pdf {
          * Ends the writing of text and makes the current font invalid.
          */
         public void EndText() {
+            if (!inText) {
+                throw new IllegalPdfSyntaxException("Unbalanced begin/end text operators." );
+            }
+            inText = false;
             content.Append("ET").Append_i(separator);
         }
     
@@ -1292,7 +1326,7 @@ namespace iTextSharp.text.pdf {
             content.Append('Q').Append_i(separator);
             int idx = stateList.Count - 1;
             if (idx < 0)
-                throw new Exception("Unbalanced save/restore state operators.");
+                throw new IllegalPdfSyntaxException("Unbalanced save/restore state operators.");
             state = (GraphicState)stateList[idx];
             stateList.RemoveAt(idx);
         }
@@ -2788,6 +2822,8 @@ namespace iTextSharp.text.pdf {
             if (layerDepth != null && layerDepth.Count > 0) {
                 n = (int)layerDepth[layerDepth.Count - 1];
                 layerDepth.RemoveAt(layerDepth.Count - 1);
+            } else {
+                throw new IllegalPdfSyntaxException("Unbalanced layer operators." );
             }
             while (n-- > 0)
                 content.Append("EMC").Append_i(separator);
@@ -2831,7 +2867,7 @@ namespace iTextSharp.text.pdf {
                 }
                 else if (obj.IsArray()) {
                     ar = (PdfArray)obj;
-                    if (!((PdfObject)ar.ArrayList[0]).IsNumber())
+                    if (!ar[0].IsNumber())
                         throw new ArgumentException("The structure has kids.");
                 }
                 else
@@ -2847,6 +2883,7 @@ namespace iTextSharp.text.pdf {
                 struc.Put(PdfName.PG, writer.CurrentPage);
             }
             pdf.IncMarkPoint();
+            mcDepth++;
             content.Append(struc.Get(PdfName.S).GetBytes()).Append(" <</MCID ").Append(mark).Append(">> BDC").Append_i(separator);
         }
         
@@ -2854,6 +2891,10 @@ namespace iTextSharp.text.pdf {
         * Ends a marked content sequence
         */    
         public void EndMarkedContentSequence() {
+            if (mcDepth == 0) {
+                throw new IllegalPdfSyntaxException("Unbalanced begin/end marked content operators." );
+            }
+            --mcDepth;
             content.Append("EMC").Append_i(separator);
         }
         
@@ -2885,6 +2926,7 @@ namespace iTextSharp.text.pdf {
                 content.Append(name.GetBytes());
             }
             content.Append(" BDC").Append_i(separator);
+            ++mcDepth;
         }
         
         /**
@@ -2893,6 +2935,32 @@ namespace iTextSharp.text.pdf {
         */    
         public void BeginMarkedContentSequence(PdfName tag) {
             BeginMarkedContentSequence(tag, null, false);
+        }
+
+        /**
+        * Checks for any dangling state: Mismatched save/restore state, begin/end text,
+        * begin/end layer, or begin/end marked content sequence.
+        * If found, this function will throw.  This function is called automatically
+        * during a reset() (from Document.newPage() for example), and before writing 
+        * itself out in toPdf().
+        * One possible cause: not calling myPdfGraphics2D.dispose() will leave dangling
+        *                     saveState() calls.
+        * @since 2.1.6
+        * @throws IllegalPdfSyntaxException (a runtime exception)
+        */
+        public void SanityCheck() {
+            if (mcDepth != 0) {
+                throw new IllegalPdfSyntaxException("Unbalanced marked content operators." );
+            }
+            if (inText) {
+                throw new IllegalPdfSyntaxException("Unbalanced begin/end text operators." );
+            }
+            if (layerDepth != null && layerDepth.Count > 0) {
+                throw new IllegalPdfSyntaxException("Unbalanced layer operators." );
+            }
+            if (stateList.Count > 0) {
+                throw new IllegalPdfSyntaxException("Unbalanced save/restore state operators." );
+            }
         }
     }
 }
