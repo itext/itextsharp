@@ -771,11 +771,12 @@ public class ColumnText {
                 ratio = 0.001f;
         }
         float firstIndent = 0;
-        
+        PdfLine line;
+        float x1;
         int status = 0;
-        if (rectangularMode) {
-            for (;;) {
-                firstIndent = (lastWasNewline ? indent : followingIndent);
+        while(true) {
+            firstIndent = (lastWasNewline ? indent : followingIndent); //
+            if (rectangularMode) {
                 if (rectangularWidth <= firstIndent + rightIndent) {
                     status = NO_MORE_COLUMN;
                     if (bidiLine.IsEmpty())
@@ -786,18 +787,16 @@ public class ColumnText {
                     status = NO_MORE_TEXT;
                     break;
                 }
-                PdfLine line = bidiLine.ProcessLine(leftX, rectangularWidth - firstIndent - rightIndent, alignment, localRunDirection, arabicOptions);
+                line = bidiLine.ProcessLine(leftX, rectangularWidth - firstIndent - rightIndent, alignment, localRunDirection, arabicOptions);
                 if (line == null) {
                     status = NO_MORE_TEXT;
                     break;
                 }
-                float maxSize = line.MaxSizeSimple;
-                if (UseAscender && float.IsNaN(firstLineY)) {
+                float[] maxSize = line.GetMaxSize();
+                if (UseAscender && float.IsNaN(firstLineY))
                     currentLeading = line.Ascender;
-                }
-                else {
-                    currentLeading = fixedLeading + maxSize * multipliedLeading;
-                }
+                else
+                    currentLeading = Math.Max(fixedLeading + maxSize[0] * multipliedLeading, maxSize[1]);
                 if (yLine > maxY || yLine - currentLeading < minY ) {
                     status = NO_MORE_COLUMN;
                     bidiLine.Restore();
@@ -808,26 +807,12 @@ public class ColumnText {
                     text.BeginText();
                     dirty = true;
                 }
-                if (float.IsNaN(firstLineY)) {
+                if (float.IsNaN(firstLineY))
                     firstLineY = yLine;
-                }
                 UpdateFilledWidth(rectangularWidth - line.WidthLeft);
-                if (!simulate) {
-                    currentValues[0] = currentFont;
-                    text.SetTextMatrix(leftX + (line.RTL ? rightIndent : firstIndent) + line.IndentLeft, yLine);
-                    pdf.WriteLineToContent(line, text, graphics, currentValues, ratio);
-                    currentFont = (PdfFont)currentValues[0];
-                }
-                lastWasNewline = line.NewlineSplit;
-                yLine -= line.NewlineSplit ? extraParagraphSpace : 0;
-                ++linesWritten;
-                descender = line.Descender;
+                x1 = leftX;
             }
-        }
-        else {
-            currentLeading = fixedLeading;
-            for (;;) {
-                firstIndent = (lastWasNewline ? indent : followingIndent);
+            else {
                 float yTemp = yLine;
                 float[] xx = FindLimitsTwoLines();
                 if (xx == null) {
@@ -842,7 +827,7 @@ public class ColumnText {
                     yLine = yTemp;
                     break;
                 }
-                float x1 = Math.Max(xx[0], xx[2]);
+                x1 = Math.Max(xx[0], xx[2]);
                 float x2 = Math.Min(xx[1], xx[3]);
                 if (x2 - x1 <= firstIndent + rightIndent)
                     continue;
@@ -850,23 +835,23 @@ public class ColumnText {
                     text.BeginText();
                     dirty = true;
                 }
-                PdfLine line = bidiLine.ProcessLine(x1, x2 - x1 - firstIndent - rightIndent, alignment, localRunDirection, arabicOptions);
+                line = bidiLine.ProcessLine(x1, x2 - x1 - firstIndent - rightIndent, alignment, localRunDirection, arabicOptions);
                 if (line == null) {
                     status = NO_MORE_TEXT;
                     yLine = yTemp;
                     break;
                 }
-                if (!simulate) {
-                    currentValues[0] = currentFont;
-                    text.SetTextMatrix(x1 + (line.RTL ? rightIndent : firstIndent) + line.IndentLeft, yLine);
-                    pdf.WriteLineToContent(line, text, graphics, currentValues, ratio);
-                    currentFont = (PdfFont)currentValues[0];
-                }
-                lastWasNewline = line.NewlineSplit;
-                yLine -= line.NewlineSplit ? extraParagraphSpace : 0;
-                ++linesWritten;
-                descender = line.Descender;
             }
+            if (!simulate) {
+                currentValues[0] = currentFont;
+                text.SetTextMatrix(x1 + (line.RTL ? rightIndent : firstIndent) + line.IndentLeft, yLine);
+                pdf.WriteLineToContent(line, text, graphics, currentValues, ratio);
+                currentFont = (PdfFont)currentValues[0];
+            }
+            lastWasNewline = line.NewlineSplit;
+            yLine -= line.NewlineSplit ? extraParagraphSpace : 0;
+            ++linesWritten;
+            descender = line.Descender;
         }
         if (dirty) {
             text.EndText();
@@ -1001,26 +986,37 @@ public class ColumnText {
             alignment = Element.ALIGN_LEFT;
         canvas.SaveState();
         ColumnText ct = new ColumnText(canvas);
+        float lly = -1;
+        float ury = 2;
+        float llx;
+        float urx;
+        switch (alignment) {
+            case Element.ALIGN_LEFT:
+                llx = 0;
+                urx = 20000;
+                break;
+            case Element.ALIGN_RIGHT:
+                llx = -20000;
+                urx = 0;
+                break;
+            default:
+                llx = -20000;
+                urx = 20000;
+                break;
+        }
         if (rotation == 0) {
-            if (alignment == Element.ALIGN_LEFT)
-                ct.SetSimpleColumn(phrase, x, y - 1, 20000 + x, y + 2, 2, alignment);
-            else if (alignment == Element.ALIGN_RIGHT)
-                ct.SetSimpleColumn(phrase, x-20000, y-1, x, y+2, 2, alignment);
-            else
-                ct.SetSimpleColumn(phrase, x-20000, y-1, x+20000, y+2, 2, alignment);
+            llx += x;
+            lly += y;
+            urx += x;
+            ury += y;
         }
         else {
             double alpha = rotation * Math.PI / 180.0;
             float cos = (float)Math.Cos(alpha);
             float sin = (float)Math.Sin(alpha);
             canvas.ConcatCTM(cos, sin, -sin, cos, x, y);
-            if (alignment == Element.ALIGN_LEFT)
-                ct.SetSimpleColumn(phrase, 0, -1, 20000, 2, 2, alignment);
-            else if (alignment == Element.ALIGN_RIGHT)
-                ct.SetSimpleColumn(phrase, -20000, -1, 0, 2, 2, alignment);
-            else
-                ct.SetSimpleColumn(phrase, -20000, -1, 20000, 2, 2, alignment);
         }
+        ct.SetSimpleColumn(phrase, llx, lly, urx, ury, 2, alignment);
         if (runDirection == PdfWriter.RUN_DIRECTION_RTL) {
             if (alignment == Element.ALIGN_LEFT)
                 alignment = Element.ALIGN_RIGHT;
@@ -1308,7 +1304,7 @@ public class ColumnText {
                                 rows[i] = null;
                         }
                         float h = yTemp - minY;
-                        PdfPRow newRow = table.GetRow(k).SplitRow(h);
+                        PdfPRow newRow = table.GetRow(k).SplitRow(table, k, h);
                         if (newRow == null) {
                             if (k == listIdx) {
                                 return NO_MORE_COLUMN;
@@ -1345,13 +1341,12 @@ public class ColumnText {
                     }
                     // copy the rows that fit on the page in a new table nt
                     PdfPTable nt = PdfPTable.ShallowCopy(table);
-                    ArrayList rows = table.Rows;
                     ArrayList sub = nt.Rows;
                     
                     // first we add the real header rows (if necessary)
                     if (!skipHeader) {
                         for (int j = 0; j < realHeaderRows; ++j) {
-                            PdfPRow headerRow = (PdfPRow)rows[j];
+                            PdfPRow headerRow = table.GetRow(j);
                             sub.Add(headerRow);
                         }
                     }
@@ -1359,23 +1354,23 @@ public class ColumnText {
                         nt.HeaderRows = footerRows;
                     }
                     // then we add the real content
-                    for (int j = listIdx; j < k; ++j) {
-                        sub.Add(rows[j]);
-                    }
+                    sub.AddRange(table.GetRows(listIdx, k));
                     // if k < table.size(), we must indicate that the new table is complete;
                     // otherwise no footers will be added (because iText thinks the table continues on the same page)
+                    bool showFooter = !table.SkipLastFooter;
                     if (k < table.Size) {
                         nt.ElementComplete = true;
+                        showFooter = true;
                     }
                     // we add the footer rows if necessary (not for incomplete tables)
-                    for (int j = 0; j < footerRows && nt.ElementComplete; ++j) {
-                        sub.Add(rows[j + realHeaderRows]);
+                    for (int j = 0; j < footerRows && nt.ElementComplete && showFooter; ++j) {
+                        sub.Add(table.GetRow(j + realHeaderRows));
                     }
 
                     // we need a correction if the last row needs to be extended
                     float rowHeight = 0;
+                    PdfPRow last = (PdfPRow)sub[sub.Count - 1 - footerRows];
                     if (table.ExtendLastRow) {
-                        PdfPRow last = (PdfPRow)sub[sub.Count - 1 - footerRows];
                         rowHeight = last.MaxHeights;
                         last.MaxHeights = yTemp - minY + rowHeight;
                         yTemp = minY;
@@ -1387,7 +1382,6 @@ public class ColumnText {
                     else
                         nt.WriteSelectedRows(0, -1, x1, yLineWrite, canvas);
                     if (table.ExtendLastRow) {
-                        PdfPRow last = (PdfPRow)sub[sub.Count - 1 - footerRows];
                         last.MaxHeights = rowHeight;
                     }
                 }

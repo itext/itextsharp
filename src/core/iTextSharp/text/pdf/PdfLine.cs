@@ -168,7 +168,7 @@ namespace iTextSharp.text.pdf {
                 AddToLine(chunk);
             }
             // if the length of the chunk > 0 we add it to the line
-            else if (chunk.Length > 0) {
+            else if (chunk.Length > 0 || chunk.IsImage()) {
                 if (overflow != null)
                     chunk.TrimLastSpace();
                 width -= chunk.Width;
@@ -260,16 +260,15 @@ namespace iTextSharp.text.pdf {
                             return left;
                     }
                 }
-                else {
+                else if (this.GetSeparatorCount() == 0) {
                     switch (alignment) {
                         case Element.ALIGN_RIGHT:
                             return left + width;
                         case Element.ALIGN_CENTER:
                             return left + (width / 2f);
-                        default:
-                            return left;
                     }
                 }
+                return left;
             }
         }
     
@@ -443,24 +442,25 @@ namespace iTextSharp.text.pdf {
         }
     
         /**
-         * Gets the maximum size of all the fonts used in this line
-         * including images.
-         * @return maximum size of all the fonts used in this line
-         */
-        internal float MaxSizeSimple {
-            get {
-                float maxSize = 0;
-                for (int k = 0; k < line.Count; ++k) {
-                    PdfChunk chunk = (PdfChunk)line[k];
-                    if (!chunk.IsImage()) {
-                        maxSize = Math.Max(chunk.Font.Size, maxSize);
-                    }
-                    else {
-                        maxSize = Math.Max(chunk.Image.ScaledHeight + chunk.ImageOffsetY , maxSize);
-                    }
+        * Gets the difference between the "normal" leading and the maximum
+        * size (for instance when there are images in the chunk).
+        * @return   an extra leading for images
+        * @since    2.1.5
+        */
+        internal float[] GetMaxSize() {
+            float normal_leading = 0;
+            float image_leading = -10000;
+            PdfChunk chunk;
+            for (int k = 0; k < line.Count; ++k) {
+                chunk = (PdfChunk)line[k];
+                if (!chunk.IsImage()) {
+                    normal_leading = Math.Max(chunk.Font.Size, normal_leading);
                 }
-                return maxSize;
+                else {
+                    image_leading = Math.Max(chunk.Image.ScaledHeight + chunk.ImageOffsetY, image_leading);
+                }
             }
+            return new float[]{normal_leading, image_leading};
         }
     
         internal bool RTL {
