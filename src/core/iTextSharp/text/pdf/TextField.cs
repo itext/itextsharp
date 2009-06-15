@@ -118,7 +118,7 @@ namespace iTextSharp.text.pdf {
             return phrase;
         }
         
-        private static String RemoveCRLF(String text) {
+        public static String RemoveCRLF(String text) {
             if (text.IndexOf('\n') >= 0 || text.IndexOf('\r') >= 0) {
                 char[] p = text.ToCharArray();
                 StringBuilder sb = new StringBuilder(p.Length);
@@ -140,10 +140,22 @@ namespace iTextSharp.text.pdf {
         }
         
         /**
-        * Gets the appearance for this TextField.
-        * @return the appearance object for this TextField
-        * @throws IOException
-        * @throws DocumentException
+        * Obfuscates a password <code>String</code>.
+        * Every character is replaced by an asterisk (*).
+        * 
+        * @param text 
+        * @return String
+        * @since   2.1.5
+        */
+        public static String ObfuscatePassword(String text) {
+            return new string('*', text.Length);
+        }
+        
+        /**
+        * Get the <code>PdfAppearance</code> of a text or combo field
+        * @throws IOException on error
+        * @throws DocumentException on error
+        * @return A <code>PdfAppearance</code>
         */
         public PdfAppearance GetAppearance() {
             PdfAppearance app = GetBorderAppearance();
@@ -152,34 +164,32 @@ namespace iTextSharp.text.pdf {
                 app.EndVariableText();
                 return app;
             }
-            BaseFont ufont = RealFont;
             bool borderExtra = borderStyle == PdfBorderDictionary.STYLE_BEVELED || borderStyle == PdfBorderDictionary.STYLE_INSET;
-            float h = box.Height - borderWidth * 2;
+            float h = box.Height - borderWidth * 2 - extraMarginTop;
             float bw2 = borderWidth;
             if (borderExtra) {
                 h -= borderWidth * 2;
                 bw2 *= 2;
             }
-            h -= extraMarginTop;
-            float offsetX = (borderExtra ? 2 * borderWidth : borderWidth);
-            offsetX = Math.Max(offsetX, 1);
+            float offsetX = Math.Max(bw2, 1);
             float offX = Math.Min(bw2, offsetX);
             app.SaveState();
             app.Rectangle(offX, offX, box.Width - 2 * offX, box.Height - 2 * offX);
             app.Clip();
             app.NewPath();
-            Color fcolor = (textColor == null) ? GrayColor.GRAYBLACK : textColor;
-            String ptext = text; //fixed by Kazuya Ujihara (ujihara.jp)
-            if ((options & PASSWORD) != 0) {
-                ptext = new String('*', ptext.Length);
-            }
-            int rtl = CheckRTL(ptext) ? PdfWriter.RUN_DIRECTION_LTR : PdfWriter.RUN_DIRECTION_NO_BIDI;
-            if ((options & MULTILINE) == 0) {
+            String ptext;
+            if ((options & PASSWORD) != 0)
+                ptext = ObfuscatePassword(text);
+            else if ((options & MULTILINE) == 0)
                 ptext = RemoveCRLF(text);
-            }
-            Phrase phrase = ComposePhrase(ptext, ufont, fcolor, fontSize);
+            else
+                ptext = text; //fixed by Kazuya Ujihara (ujihara.jp)
+            BaseFont ufont = RealFont;
+            Color fcolor = (textColor == null) ? GrayColor.GRAYBLACK : textColor;
+            int rtl = CheckRTL(ptext) ? PdfWriter.RUN_DIRECTION_LTR : PdfWriter.RUN_DIRECTION_NO_BIDI;
+            float usize = fontSize;
+            Phrase phrase = ComposePhrase(ptext, ufont, fcolor, usize);
             if ((options & MULTILINE) != 0) {
-                float usize = fontSize;
                 float width = box.Width - 4 * offsetX - extraMarginLeft;
                 float factor = ufont.GetFontDescriptor(BaseFont.BBOXURY, 1) - ufont.GetFontDescriptor(BaseFont.BBOXLLY, 1);
                 ColumnText ct = new ColumnText(null);
@@ -218,7 +228,6 @@ namespace iTextSharp.text.pdf {
                 ct.Go();
             }
             else {
-                float usize = fontSize;
                 if (usize == 0) {
                     float maxCalculatedSize = h / (ufont.GetFontDescriptor(BaseFont.BBOXURX, 1) - ufont.GetFontDescriptor(BaseFont.BBOXLLY, 1));
                     ChangeFontSize(phrase, 1);
@@ -226,9 +235,7 @@ namespace iTextSharp.text.pdf {
                     if (wd == 0)
                         usize = maxCalculatedSize;
                     else
-                        usize = (box.Width - extraMarginLeft - 4 * offsetX) / wd;
-                    if (usize > maxCalculatedSize)
-                        usize = maxCalculatedSize;
+                        usize = Math.Min(maxCalculatedSize, (box.Width - extraMarginLeft - 4 * offsetX) / wd);
                     if (usize < 4)
                         usize = 4;
                 }
@@ -272,14 +279,19 @@ namespace iTextSharp.text.pdf {
                     app.EndText();
                 }
                 else {
-                    if (alignment == Element.ALIGN_RIGHT) {
-                        ColumnText.ShowTextAligned(app, Element.ALIGN_RIGHT, phrase, extraMarginLeft + box.Width - 2 * offsetX, offsetY - extraMarginTop, 0, rtl, 0);
+                    float x;
+                    switch (alignment) {
+                        case Element.ALIGN_RIGHT:
+                            x = extraMarginLeft + box.Width - (2 * offsetX);
+                            break;
+                        case Element.ALIGN_CENTER:
+                            x = extraMarginLeft + (box.Width / 2);
+                            break;
+                        default:
+                            x = extraMarginLeft + (2 * offsetX);
+                            break;
                     }
-                    else if (alignment == Element.ALIGN_CENTER) {
-                        ColumnText.ShowTextAligned(app, Element.ALIGN_CENTER, phrase, extraMarginLeft + box.Width / 2, offsetY - extraMarginTop, 0, rtl, 0);
-                    }
-                    else
-                        ColumnText.ShowTextAligned(app, Element.ALIGN_LEFT, phrase, extraMarginLeft + 2 * offsetX, offsetY - extraMarginTop, 0, rtl, 0);
+                    ColumnText.ShowTextAligned(app, alignment, phrase, x, offsetY - extraMarginTop, 0, rtl, 0);
                 }
             }
             app.RestoreState();
@@ -287,6 +299,12 @@ namespace iTextSharp.text.pdf {
             return app;
         }
 
+        /**
+        * Get the <code>PdfAppearance</code> of a list field
+        * @throws IOException on error
+        * @throws DocumentException on error
+        * @return A <code>PdfAppearance</code>
+        */
         internal PdfAppearance GetListAppearance() {
             PdfAppearance app = GetBorderAppearance();
             app.BeginVariableText();
@@ -306,9 +324,11 @@ namespace iTextSharp.text.pdf {
                 usize = 12;
             bool borderExtra = borderStyle == PdfBorderDictionary.STYLE_BEVELED || borderStyle == PdfBorderDictionary.STYLE_INSET;
             float h = box.Height - borderWidth * 2;
-            if (borderExtra)
+            float offsetX = borderWidth;
+            if (borderExtra) {
                 h -= borderWidth * 2;
-            float offsetX = (borderExtra ? 2 * borderWidth : borderWidth);
+                offsetX *= 2;
+            }
             float leading = ufont.GetFontDescriptor(BaseFont.BBOXURY, usize) - ufont.GetFontDescriptor(BaseFont.BBOXLLY, usize);
             int maxFit = (int)(h / leading) + 1;
             int first = 0;

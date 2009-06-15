@@ -89,6 +89,12 @@ namespace iTextSharp.text.pdf {
         /** Holds value of property colspan. */
         private int colspan = 1;
         
+        /**
+        * Holds value of property rowspan.
+        * @since    2.1.6
+        */
+        private int rowspan = 1;
+
         /** Holds value of property image. */
         private Image image;
         
@@ -104,6 +110,12 @@ namespace iTextSharp.text.pdf {
 
         /** The text in the cell. */
         protected Phrase phrase;
+
+        /**
+        * The rotation of the cell. Possible values are
+        * 0, 90, 180 and 270.
+        */
+        private new int rotation;
 
         /** Constructs an empty <CODE>PdfPCell</CODE>.
         * The default padding is 2.
@@ -138,16 +150,14 @@ namespace iTextSharp.text.pdf {
         * @param fit <CODE>true</CODE> to fit the image to the cell
         */
         public PdfPCell(Image image, bool fit) : base(0, 0, 0, 0) {
+            borderWidth = 0.5f;
+            border = BOX;
             if (fit) {
-                borderWidth = 0.5f;
-                border = BOX;
                 this.image = image;
                 column.SetLeading(0, 1);
                 Padding = borderWidth / 2;
             }
             else {
-                borderWidth = 0.5f;
-                border = BOX;
                 column.AddText(this.phrase = new Phrase(new Chunk(image, 0, 0)));
                 column.SetLeading(0, 1);
                 Padding = 0;
@@ -185,6 +195,7 @@ namespace iTextSharp.text.pdf {
                 paddingTop = style.paddingTop;
                 paddingBottom = style.paddingBottom;
                 colspan = style.colspan;
+                rowspan = style.rowspan;
                 cellEvent = style.cellEvent;
                 useDescender = style.useDescender;
                 useBorderPadding = style.useBorderPadding;
@@ -210,6 +221,7 @@ namespace iTextSharp.text.pdf {
             minimumHeight = cell.minimumHeight;
             noWrap = cell.noWrap;
             colspan = cell.colspan;
+            rowspan = cell.rowspan;
             if (cell.table != null)
                 table = new PdfPTable(cell.table);
             image = Image.GetInstance(cell.image);
@@ -278,7 +290,11 @@ namespace iTextSharp.text.pdf {
         */
         public float EffectivePaddingLeft {
             get {
-                return paddingLeft + (UseBorderPadding ? (BorderWidthLeft/(UseVariableBorders?1f:2f)) : 0);
+                if (UseBorderPadding) {
+                    float border = BorderWidthLeft / (UseVariableBorders ? 1f : 2f);
+                    return paddingLeft + border;
+                }
+                return paddingLeft;
             }
         }
         
@@ -300,7 +316,11 @@ namespace iTextSharp.text.pdf {
         */
         public float EffectivePaddingRight {
             get {
-                return paddingRight + (UseBorderPadding ? (BorderWidthRight/(UseVariableBorders?1f:2f)) : 0);
+                if (UseBorderPadding) {
+                    float border = BorderWidthRight / (UseVariableBorders ? 1f : 2f);
+                    return paddingRight + border;
+                }
+                return paddingRight;
             }
         }
         
@@ -323,7 +343,11 @@ namespace iTextSharp.text.pdf {
         */
         public float EffectivePaddingTop {
             get {
-                return paddingTop + (UseBorderPadding ? (BorderWidthTop/(UseVariableBorders?1f:2f)) : 0);
+                if (UseBorderPadding) {
+                    float border = BorderWidthTop/(UseVariableBorders?1f:2f);
+                    return paddingTop + border;
+                }
+                return paddingTop;
             }
         }
         
@@ -347,7 +371,11 @@ namespace iTextSharp.text.pdf {
         */
         public float EffectivePaddingBottom {
             get {
-                return paddingBottom + (UseBorderPadding ? (BorderWidthBottom/(UseVariableBorders?1f:2f)) : 0);
+                if (UseBorderPadding) {
+                    float border = BorderWidthBottom/(UseVariableBorders?1f:2f);
+                    return paddingBottom + border;
+                }
+                return paddingBottom;
             }
         }
         
@@ -462,6 +490,16 @@ namespace iTextSharp.text.pdf {
         }
         
         /**
+        * Tells you whether the cell has a fixed height.
+        * 
+        * @return   true is a fixed height was set.
+        * @since 2.1.5
+        */
+        public bool HasFixedHeight() {
+            return FixedHeight > 0;
+        }
+
+        /**
         * Setter for property noWrap.
         * @param noWrap New value of property noWrap.
         */
@@ -507,6 +545,16 @@ namespace iTextSharp.text.pdf {
             }
         }
         
+        /**
+        * Tells you whether the cell has a minimum height.
+        * 
+        * @return   true if a minimum height was set.
+        * @since 2.1.5
+        */
+        public bool HasMinimumHeight() {
+            return MinimumHeight > 0;
+        }
+
         /** Getter for property colspan.
         * @return Value of property colspan.
         */
@@ -516,6 +564,18 @@ namespace iTextSharp.text.pdf {
             }
             set {
                 colspan = value;
+            }
+        }
+                
+        /** Getter for property rowspan.
+        * @return Value of property rowspan.
+        */
+        public int Rowspan {
+            get {
+                return rowspan;
+            }
+            set {
+                rowspan = value;
             }
         }
                 
@@ -669,12 +729,6 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
-        * The rotation of the cell. Possible values are
-        * 0, 90, 180 and 270.
-        */
-        private new int rotation;
-
-        /**
         * Sets the rotation of the cell. Possible values are
         * 0, 90, 180 and 270.
         * @param rotation the rotation of the cell
@@ -690,6 +744,28 @@ namespace iTextSharp.text.pdf {
             }
             get {
                 return rotation;
+            }
+        }
+
+        /**
+        * Consumes part of the content of the cell.
+        * @param   height  the hight of the part that has to be consumed
+        * @since   2.1.6
+        */
+        internal void ConsumeHeight(float height) {
+            float rightLimit = Right - EffectivePaddingRight;
+            float leftLimit = Left + EffectivePaddingLeft;
+            float bry = height - EffectivePaddingTop - EffectivePaddingBottom;
+            if (Rotation != 90 && Rotation != 270) {
+                column.SetSimpleColumn(leftLimit, bry + 0.001f, rightLimit, 0);
+            }
+            else {
+                column.SetSimpleColumn(0, leftLimit, bry + 0.001f, rightLimit);
+            }
+            try {
+                column.Go(true);
+            } catch (DocumentException) {
+                // do nothing
             }
         }
     }
