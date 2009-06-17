@@ -773,12 +773,8 @@ namespace iTextSharp.text.pdf {
             if (v == null)
                 return "";
             if (v is PRStream) {
-                try {
-                    byte[] valBytes = PdfReader.GetStreamBytes((PRStream)v);
-                    return PdfEncodings.ConvertToString(valBytes, BaseFont.WINANSI);
-                } catch {
-                    return "";
-                }
+                byte[] valBytes = PdfReader.GetStreamBytes((PRStream)v);
+                return PdfEncodings.ConvertToString(valBytes, BaseFont.WINANSI);
             }
             
             PdfName type = mergedDict.GetAsName(PdfName.FT);
