@@ -326,8 +326,11 @@ namespace iTextSharp.text {
                     System.Array.Copy(icc[k], 14, ficc, total, icc[k].Length - 14);
                     total += icc[k].Length - 14;
                 }
-                ICC_Profile icc_prof = ICC_Profile.GetInstance(ficc);
-                TagICC = icc_prof;
+                try {
+                    ICC_Profile icc_prof = ICC_Profile.GetInstance(ficc);
+                    TagICC = icc_prof;
+                }
+                catch {}
                 icc = null;
             }
         }

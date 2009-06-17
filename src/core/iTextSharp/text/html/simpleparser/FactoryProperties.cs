@@ -371,6 +371,9 @@ namespace iTextSharp.text.html.simpleparser {
                 else if (key.Equals(Markup.CSS_KEY_TEXTALIGN)) {
                     String ss = prop[key].Trim().ToLower(System.Globalization.CultureInfo.InvariantCulture);
                     h["align"] = ss;
+                } else if (key.Equals(Markup.CSS_KEY_PADDINGLEFT)) {
+                    String ss = prop[key].Trim().ToLower(System.Globalization.CultureInfo.InvariantCulture);
+                    h["indent"] = ss;
                 }
             }
         }

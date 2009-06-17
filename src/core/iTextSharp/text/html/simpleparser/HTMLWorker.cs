@@ -313,7 +313,12 @@ namespace iTextSharp.text.html.simpleparser {
                     EndElement(HtmlTags.LISTITEM);
                 skipText = true;
                 cprops.AddToChain(tag, h);
-                List list = new List(false, 10);
+                List list = new List(false);
+                try{
+                    list.IndentationLeft = float.Parse(cprops["indent"], System.Globalization.NumberFormatInfo.InvariantInfo);
+                }catch {
+                    list.Autoindent = true;
+                }
                 list.SetListSymbol("\u2022");
                 stack.Push(list);
                 return;
@@ -323,7 +328,12 @@ namespace iTextSharp.text.html.simpleparser {
                     EndElement(HtmlTags.LISTITEM);
                 skipText = true;
                 cprops.AddToChain(tag, h);
-                List list = new List(true, 10);
+                List list = new List(true);
+                try{
+                    list.IndentationLeft = float.Parse(cprops["indent"], System.Globalization.NumberFormatInfo.InvariantInfo);
+                }catch {
+                    list.Autoindent = true;
+                }
                 stack.Push(list);
                 return;
             }
