@@ -253,19 +253,18 @@ namespace iTextSharp.text.pdf {
             AcroFields.Item item = af.GetFieldItem(fieldName);
             if (item == null)
                 throw new ArgumentException("The field " + fieldName + " does not exist.");
-            PdfDictionary merged = (PdfDictionary)item.merged[0];
+            PdfDictionary merged = item.GetMerged(0);
             if (!PdfName.SIG.Equals(PdfReader.GetPdfObject(merged.Get(PdfName.FT))))
                 throw new ArgumentException("The field " + fieldName + " is not a signature field.");
             this.fieldName = fieldName;
-            PdfArray r = (PdfArray)PdfReader.GetPdfObject(merged.Get(PdfName.RECT));
-            ArrayList ar = r.ArrayList;
-            float llx = ((PdfNumber)PdfReader.GetPdfObject((PdfObject)ar[0])).FloatValue;
-            float lly = ((PdfNumber)PdfReader.GetPdfObject((PdfObject)ar[1])).FloatValue;
-            float urx = ((PdfNumber)PdfReader.GetPdfObject((PdfObject)ar[2])).FloatValue;
-            float ury = ((PdfNumber)PdfReader.GetPdfObject((PdfObject)ar[3])).FloatValue;
+            PdfArray r = merged.GetAsArray(PdfName.RECT);
+            float llx = r.GetAsNumber(0).FloatValue;
+            float lly = r.GetAsNumber(1).FloatValue;
+            float urx = r.GetAsNumber(2).FloatValue;
+            float ury = r.GetAsNumber(3).FloatValue;
             pageRect = new Rectangle(llx, lly, urx, ury);
             pageRect.Normalize();
-            page = (int)item.page[0];
+            page = item.GetPage(0);
             int rotation = writer.reader.GetPageRotation(page);
             Rectangle pageSize = writer.reader.GetPageSizeWithRotation(page);
             switch (rotation) {
@@ -828,8 +827,7 @@ namespace iTextSharp.text.pdf {
             PdfIndirectReference refSig = writer.PdfIndirectReference;
             writer.SigFlags = 3;
             if (fieldExists) {
-                ArrayList widgets = af.GetFieldItem(name).widgets;
-                PdfDictionary widget = (PdfDictionary)widgets[0];
+                PdfDictionary widget = af.GetFieldItem(name).GetWidget(0);
                 writer.MarkUsed(widget);
                 widget.Put(PdfName.P, writer.GetPageReference(Page));
                 widget.Put(PdfName.V, refSig);
