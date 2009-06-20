@@ -1,5 +1,7 @@
 using System;
 
+using Org.BouncyCastle.Crypto.Utilities;
+
 namespace Org.BouncyCastle.Crypto.Engines
 {
     /**
@@ -26,14 +28,14 @@ namespace Org.BouncyCastle.Crypto.Engines
         * Kr0[i] => _Kr[i*4 + 0]
         */
         private int []_Kr = new int[ROUNDS*4]; // the rotating round key(s)
-        private int []_Km = new int[ROUNDS*4]; // the masking round key(s)
+        private uint []_Km = new uint[ROUNDS*4]; // the masking round key(s)
 
 		/*
         * Key setup
         */
         private int []_Tr = new int[24 * 8];
-        private int []_Tm = new int[24 * 8];
-        private int[] _workingKey = new int[8];
+        private uint []_Tm = new uint[24 * 8];
+        private uint[] _workingKey = new uint[8];
 
 		public Cast6Engine()
         {
@@ -65,8 +67,8 @@ namespace Org.BouncyCastle.Crypto.Engines
         internal override void SetKey(
 			byte[] key)
         {
-            int Cm = 0x5a827999;
-            int Mm = 0x6ed9eba1;
+            uint Cm = 0x5a827999;
+            uint Mm = 0x6ed9eba1;
             int Cr = 19;
             int Mr = 17;
             /*
@@ -93,7 +95,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 			// now create ABCDEFGH
             for (int i = 0; i < 8; i++)
             {
-                _workingKey[i] = BytesTo32bits(tmpKey, i*4);
+                _workingKey[i] = Pack.BE_To_UInt32(tmpKey, i*4);
             }
 
 			// Generate the key schedule
@@ -120,10 +122,10 @@ namespace Org.BouncyCastle.Crypto.Engines
                 _workingKey[0] ^= F1(_workingKey[1], _Tm[i2+6], _Tr[i2+6]);
                 _workingKey[7] ^= F2(_workingKey[0], _Tm[i2+7], _Tr[i2+7]);
                 // Kr_(i) <- KAPPA
-                _Kr[i*4] = _workingKey[0] & 0x1f;
-                _Kr[i*4 + 1] = _workingKey[2] & 0x1f;
-                _Kr[i*4 + 2] = _workingKey[4] & 0x1f;
-                _Kr[i*4 + 3] = _workingKey[6] & 0x1f;
+                _Kr[i*4] = (int)(_workingKey[0] & 0x1f);
+                _Kr[i*4 + 1] = (int)(_workingKey[2] & 0x1f);
+                _Kr[i*4 + 2] = (int)(_workingKey[4] & 0x1f);
+                _Kr[i*4 + 3] = (int)(_workingKey[6] & 0x1f);
                 // Km_(i) <- KAPPA
                 _Km[i*4] = _workingKey[7];
                 _Km[i*4 + 1] = _workingKey[5];
@@ -147,19 +149,19 @@ namespace Org.BouncyCastle.Crypto.Engines
             byte[]	dst,
             int		dstIndex)
         {
-            int[] result = new int[4];
             // process the input block
             // batch the units up into 4x32 bit chunks and go for it
-            int A = BytesTo32bits(src, srcIndex);
-            int B = BytesTo32bits(src, srcIndex + 4);
-            int C = BytesTo32bits(src, srcIndex + 8);
-            int D = BytesTo32bits(src, srcIndex + 12);
+            uint A = Pack.BE_To_UInt32(src, srcIndex);
+            uint B = Pack.BE_To_UInt32(src, srcIndex + 4);
+            uint C = Pack.BE_To_UInt32(src, srcIndex + 8);
+            uint D = Pack.BE_To_UInt32(src, srcIndex + 12);
+            uint[] result = new uint[4];
             CAST_Encipher(A, B, C, D, result);
             // now stuff them into the destination block
-            Bits32ToBytes(result[0], dst, dstIndex);
-            Bits32ToBytes(result[1], dst, dstIndex + 4);
-            Bits32ToBytes(result[2], dst, dstIndex + 8);
-            Bits32ToBytes(result[3], dst, dstIndex + 12);
+            Pack.UInt32_To_BE(result[0], dst, dstIndex);
+            Pack.UInt32_To_BE(result[1], dst, dstIndex + 4);
+            Pack.UInt32_To_BE(result[2], dst, dstIndex + 8);
+            Pack.UInt32_To_BE(result[3], dst, dstIndex + 12);
             return BLOCK_SIZE;
         }
 
@@ -178,19 +180,19 @@ namespace Org.BouncyCastle.Crypto.Engines
             byte[]	dst,
             int		dstIndex)
         {
-            int[] result = new int[4];
             // process the input block
             // batch the units up into 4x32 bit chunks and go for it
-            int A = BytesTo32bits(src, srcIndex);
-            int B = BytesTo32bits(src, srcIndex + 4);
-            int C = BytesTo32bits(src, srcIndex + 8);
-            int D = BytesTo32bits(src, srcIndex + 12);
+            uint A = Pack.BE_To_UInt32(src, srcIndex);
+            uint B = Pack.BE_To_UInt32(src, srcIndex + 4);
+            uint C = Pack.BE_To_UInt32(src, srcIndex + 8);
+            uint D = Pack.BE_To_UInt32(src, srcIndex + 12);
+            uint[] result = new uint[4];
             CAST_Decipher(A, B, C, D, result);
             // now stuff them into the destination block
-            Bits32ToBytes(result[0], dst, dstIndex);
-            Bits32ToBytes(result[1], dst, dstIndex + 4);
-            Bits32ToBytes(result[2], dst, dstIndex + 8);
-            Bits32ToBytes(result[3], dst, dstIndex + 12);
+            Pack.UInt32_To_BE(result[0], dst, dstIndex);
+            Pack.UInt32_To_BE(result[1], dst, dstIndex + 4);
+            Pack.UInt32_To_BE(result[2], dst, dstIndex + 8);
+            Pack.UInt32_To_BE(result[3], dst, dstIndex + 12);
             return BLOCK_SIZE;
         }
 
@@ -204,11 +206,11 @@ namespace Org.BouncyCastle.Crypto.Engines
         * @param result the resulting ciphertext
         */
         private void CAST_Encipher(
-			int		A,
-			int		B,
-			int		C,
-			int		D,
-			int[]	result)
+			uint	A,
+			uint	B,
+			uint	C,
+			uint	D,
+			uint[]	result)
         {
             for (int i = 0; i < 6; i++)
             {
@@ -244,11 +246,11 @@ namespace Org.BouncyCastle.Crypto.Engines
         * @param result the resulting plaintext
         */
         private void CAST_Decipher(
-			int		A,
-			int		B,
-			int		C,
-			int		D,
-			int[]	result)
+			uint	A,
+			uint	B,
+			uint	C,
+			uint	D,
+			uint[]	result)
         {
             for (int i = 0; i < 6; i++)
             {

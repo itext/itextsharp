@@ -3,6 +3,7 @@ using System;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Engines
 {
@@ -94,15 +95,18 @@ namespace Org.BouncyCastle.Crypto.Engines
 			if (key is RsaPrivateCrtKeyParameters)
 			{
 				RsaPrivateCrtKeyParameters k = (RsaPrivateCrtKeyParameters)key;
-				if (k.PublicExponent != null)   // can't do blinding without a public exponent
+				BigInteger e = k.PublicExponent;
+				if (e != null)   // can't do blinding without a public exponent
 				{
 					BigInteger m = k.Modulus;
-					BigInteger r = calculateR(m);
+					BigInteger r = BigIntegers.CreateRandomInRange(
+						BigInteger.One, m.Subtract(BigInteger.One), random);
 
-					BigInteger blindedInput = r.ModPow(k.PublicExponent, m).Multiply(input).Mod(m);
+					BigInteger blindedInput = r.ModPow(e, m).Multiply(input).Mod(m);
 					BigInteger blindedResult = core.ProcessBlock(blindedInput);
 
-					result = blindedResult.Multiply(r.ModInverse(m)).Mod(m);
+					BigInteger rInv = r.ModInverse(m);
+					result = blindedResult.Multiply(rInv).Mod(m);
 				}
 				else
 				{
@@ -115,25 +119,6 @@ namespace Org.BouncyCastle.Crypto.Engines
 			}
 
 			return core.ConvertOutput(result);
-		}
-
-		/*
-		 * calculate a random mess-with-their-heads value.
-		 */
-		private BigInteger calculateR(
-			BigInteger m)
-		{
-			int max = m.BitLength - 1; // must be less than m.BitLength
-			int min = max / 2;
-			int length = ((random.NextInt() & 0xff) * ((max - min) / 0xff)) + min;
-			BigInteger factor = new BigInteger(length, random);
-
-			while (factor.SignValue == 0)
-			{
-				factor = new BigInteger(length, random);
-			}
-
-			return factor;
 		}
 	}
 }

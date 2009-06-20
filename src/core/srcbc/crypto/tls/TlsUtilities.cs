@@ -5,6 +5,7 @@ using System.Text;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Utilities;
 using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.IO;
 
@@ -52,22 +53,6 @@ namespace Org.BouncyCastle.Crypto.Tls
 			buf[offset] = (byte)(i >> 16);
 			buf[offset + 1] = (byte)(i >> 8);
 			buf[offset + 2] = (byte)(i);
-		}
-
-		internal static void WriteUint32(long i, Stream os)
-		{
-			os.WriteByte((byte)(i >> 24));
-			os.WriteByte((byte)(i >> 16));
-			os.WriteByte((byte)(i >> 8));
-			os.WriteByte((byte)i);
-		}
-
-		internal static void WriteUint32(long i, byte[] buf, int offset)
-		{
-			buf[offset] = (byte)(i >> 24);
-			buf[offset + 1] = (byte)(i >> 16);
-			buf[offset + 2] = (byte)(i >> 8);
-			buf[offset + 3] = (byte)(i);
 		}
 
 		internal static void WriteUint64(long i, Stream os)
@@ -125,21 +110,6 @@ namespace Org.BouncyCastle.Crypto.Tls
 				throw new EndOfStreamException();
 			}
 			return (i1 << 16) | (i2 << 8) | i3;
-		}
-
-		internal static long ReadUint32(Stream inStr)
-		{
-			int i1 = inStr.ReadByte();
-			int i2 = inStr.ReadByte();
-			int i3 = inStr.ReadByte();
-			int i4 = inStr.ReadByte();
-			if ((i1 | i2 | i3 | i4) < 0)
-			{
-				throw new EndOfStreamException();
-			}
-			// TODO Examine this
-//			return (((long)i1) << 24) | (((long)i2) << 16) | (((long)i3) << 8) | ((long)i4);
-			return ((long)i1 << 24) | ((long)i2 << 16) | ((long)i3 <<  8) | (uint)i4;
 		}
 
 		internal static void ReadFully(byte[] buf, Stream inStr)

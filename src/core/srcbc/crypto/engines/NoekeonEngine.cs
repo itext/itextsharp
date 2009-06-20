@@ -1,6 +1,7 @@
 using System;
 
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Engines
 {
@@ -109,10 +110,10 @@ namespace Org.BouncyCastle.Crypto.Engines
 		*/
 		private void setKey(byte[] key)
 		{
-			subKeys[0] = bytesToIntBig(key, 0);
-			subKeys[1] = bytesToIntBig(key, 4);
-			subKeys[2] = bytesToIntBig(key, 8);
-			subKeys[3] = bytesToIntBig(key, 12);
+			subKeys[0] = Pack.BE_To_UInt32(key, 0);
+			subKeys[1] = Pack.BE_To_UInt32(key, 4);
+			subKeys[2] = Pack.BE_To_UInt32(key, 8);
+			subKeys[3] = Pack.BE_To_UInt32(key, 12);
 		}
 
 		private int encryptBlock(
@@ -121,10 +122,10 @@ namespace Org.BouncyCastle.Crypto.Engines
 			byte[]	output,
 			int		outOff)
 		{
-			state[0] = bytesToIntBig(input, inOff);
-			state[1] = bytesToIntBig(input, inOff+4);
-			state[2] = bytesToIntBig(input, inOff+8);
-			state[3] = bytesToIntBig(input, inOff+12);
+			state[0] = Pack.BE_To_UInt32(input, inOff);
+			state[1] = Pack.BE_To_UInt32(input, inOff+4);
+			state[2] = Pack.BE_To_UInt32(input, inOff+8);
+			state[3] = Pack.BE_To_UInt32(input, inOff+12);
 
 			int i;
 			for (i = 0; i < GenericSize; i++)
@@ -139,10 +140,10 @@ namespace Org.BouncyCastle.Crypto.Engines
 			state[0] ^= roundConstants[i];
 			theta(state, subKeys);
 
-			intToBytesBig(state[0], output, outOff);
-			intToBytesBig(state[1], output, outOff+4);
-			intToBytesBig(state[2], output, outOff+8);
-			intToBytesBig(state[3], output, outOff+12);
+			Pack.UInt32_To_BE(state[0], output, outOff);
+			Pack.UInt32_To_BE(state[1], output, outOff+4);
+			Pack.UInt32_To_BE(state[2], output, outOff+8);
+			Pack.UInt32_To_BE(state[3], output, outOff+12);
 
 			return GenericSize;
 		}
@@ -153,10 +154,10 @@ namespace Org.BouncyCastle.Crypto.Engines
 			byte[]	output,
 			int		outOff)
 		{
-			state[0] = bytesToIntBig(input, inOff);
-			state[1] = bytesToIntBig(input, inOff+4);
-			state[2] = bytesToIntBig(input, inOff+8);
-			state[3] = bytesToIntBig(input, inOff+12);
+			state[0] = Pack.BE_To_UInt32(input, inOff);
+			state[1] = Pack.BE_To_UInt32(input, inOff+4);
+			state[2] = Pack.BE_To_UInt32(input, inOff+8);
+			state[3] = Pack.BE_To_UInt32(input, inOff+12);
 
 			Array.Copy(subKeys, 0, decryptKeys, 0, subKeys.Length);
 			theta(decryptKeys, nullVector);
@@ -174,10 +175,10 @@ namespace Org.BouncyCastle.Crypto.Engines
 			theta(state, decryptKeys);
 			state[0] ^= roundConstants[i];
 
-			intToBytesBig(state[0], output, outOff);
-			intToBytesBig(state[1], output, outOff+4);
-			intToBytesBig(state[2], output, outOff+8);
-			intToBytesBig(state[3], output, outOff+12);
+			Pack.UInt32_To_BE(state[0], output, outOff);
+			Pack.UInt32_To_BE(state[1], output, outOff+4);
+			Pack.UInt32_To_BE(state[2], output, outOff+8);
+			Pack.UInt32_To_BE(state[3], output, outOff+12);
 
 			return GenericSize;
 		}
@@ -230,23 +231,6 @@ namespace Org.BouncyCastle.Crypto.Engines
 		}
 
 		// Helpers
-
-		private uint bytesToIntBig(byte[] input, int off)
-		{
-			int result = ((input[off++]) << 24) |
-			((input[off++] & 0xff) << 16) |
-			((input[off++] & 0xff) <<  8) |
-			(input[off  ] & 0xff);
-			return (uint) result;
-		}
-
-		private void intToBytesBig(uint x, byte[] output, int off)
-		{
-			output[off++] = (byte)(x >> 24);
-			output[off++] = (byte)(x >> 16);
-			output[off++] = (byte)(x >>  8);
-			output[off  ] = (byte)x;
-		}
 
 		private uint rotl(uint x, int y)
 		{

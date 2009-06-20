@@ -1,6 +1,7 @@
 using System;
 
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Engines
 {
@@ -125,164 +126,164 @@ namespace Org.BouncyCastle.Crypto.Engines
             43, 48, 38, 55, 33, 52, 45, 41, 49, 35, 28, 31
         };
 
-		private static readonly int[] SP1 =
+		private static readonly uint[] SP1 =
 		{
-            unchecked((int) 0x01010400), unchecked((int) 0x00000000), unchecked((int) 0x00010000), unchecked((int) 0x01010404),
-            unchecked((int) 0x01010004), unchecked((int) 0x00010404), unchecked((int) 0x00000004), unchecked((int) 0x00010000),
-            unchecked((int) 0x00000400), unchecked((int) 0x01010400), unchecked((int) 0x01010404), unchecked((int) 0x00000400),
-            unchecked((int) 0x01000404), unchecked((int) 0x01010004), unchecked((int) 0x01000000), unchecked((int) 0x00000004),
-            unchecked((int) 0x00000404), unchecked((int) 0x01000400), unchecked((int) 0x01000400), unchecked((int) 0x00010400),
-            unchecked((int) 0x00010400), unchecked((int) 0x01010000), unchecked((int) 0x01010000), unchecked((int) 0x01000404),
-            unchecked((int) 0x00010004), unchecked((int) 0x01000004), unchecked((int) 0x01000004), unchecked((int) 0x00010004),
-            unchecked((int) 0x00000000), unchecked((int) 0x00000404), unchecked((int) 0x00010404), unchecked((int) 0x01000000),
-            unchecked((int) 0x00010000), unchecked((int) 0x01010404), unchecked((int) 0x00000004), unchecked((int) 0x01010000),
-            unchecked((int) 0x01010400), unchecked((int) 0x01000000), unchecked((int) 0x01000000), unchecked((int) 0x00000400),
-            unchecked((int) 0x01010004), unchecked((int) 0x00010000), unchecked((int) 0x00010400), unchecked((int) 0x01000004),
-            unchecked((int) 0x00000400), unchecked((int) 0x00000004), unchecked((int) 0x01000404), unchecked((int) 0x00010404),
-            unchecked((int) 0x01010404), unchecked((int) 0x00010004), unchecked((int) 0x01010000), unchecked((int) 0x01000404),
-            unchecked((int) 0x01000004), unchecked((int) 0x00000404), unchecked((int) 0x00010404), unchecked((int) 0x01010400),
-            unchecked((int) 0x00000404), unchecked((int) 0x01000400), unchecked((int) 0x01000400), unchecked((int) 0x00000000),
-            unchecked((int) 0x00010004), unchecked((int) 0x00010400), unchecked((int) 0x00000000), unchecked((int) 0x01010004)
+            0x01010400, 0x00000000, 0x00010000, 0x01010404,
+            0x01010004, 0x00010404, 0x00000004, 0x00010000,
+            0x00000400, 0x01010400, 0x01010404, 0x00000400,
+            0x01000404, 0x01010004, 0x01000000, 0x00000004,
+            0x00000404, 0x01000400, 0x01000400, 0x00010400,
+            0x00010400, 0x01010000, 0x01010000, 0x01000404,
+            0x00010004, 0x01000004, 0x01000004, 0x00010004,
+            0x00000000, 0x00000404, 0x00010404, 0x01000000,
+            0x00010000, 0x01010404, 0x00000004, 0x01010000,
+            0x01010400, 0x01000000, 0x01000000, 0x00000400,
+            0x01010004, 0x00010000, 0x00010400, 0x01000004,
+            0x00000400, 0x00000004, 0x01000404, 0x00010404,
+            0x01010404, 0x00010004, 0x01010000, 0x01000404,
+            0x01000004, 0x00000404, 0x00010404, 0x01010400,
+            0x00000404, 0x01000400, 0x01000400, 0x00000000,
+            0x00010004, 0x00010400, 0x00000000, 0x01010004
         };
 
-		private static readonly int[] SP2 =
+		private static readonly uint[] SP2 =
 		{
-            unchecked((int) 0x80108020), unchecked((int) 0x80008000), unchecked((int) 0x00008000), unchecked((int) 0x00108020),
-            unchecked((int) 0x00100000), unchecked((int) 0x00000020), unchecked((int) 0x80100020), unchecked((int) 0x80008020),
-            unchecked((int) 0x80000020), unchecked((int) 0x80108020), unchecked((int) 0x80108000), unchecked((int) 0x80000000),
-            unchecked((int) 0x80008000), unchecked((int) 0x00100000), unchecked((int) 0x00000020), unchecked((int) 0x80100020),
-            unchecked((int) 0x00108000), unchecked((int) 0x00100020), unchecked((int) 0x80008020), unchecked((int) 0x00000000),
-            unchecked((int) 0x80000000), unchecked((int) 0x00008000), unchecked((int) 0x00108020), unchecked((int) 0x80100000),
-            unchecked((int) 0x00100020), unchecked((int) 0x80000020), unchecked((int) 0x00000000), unchecked((int) 0x00108000),
-            unchecked((int) 0x00008020), unchecked((int) 0x80108000), unchecked((int) 0x80100000), unchecked((int) 0x00008020),
-            unchecked((int) 0x00000000), unchecked((int) 0x00108020), unchecked((int) 0x80100020), unchecked((int) 0x00100000),
-            unchecked((int) 0x80008020), unchecked((int) 0x80100000), unchecked((int) 0x80108000), unchecked((int) 0x00008000),
-            unchecked((int) 0x80100000), unchecked((int) 0x80008000), unchecked((int) 0x00000020), unchecked((int) 0x80108020),
-            unchecked((int) 0x00108020), unchecked((int) 0x00000020), unchecked((int) 0x00008000), unchecked((int) 0x80000000),
-            unchecked((int) 0x00008020), unchecked((int) 0x80108000), unchecked((int) 0x00100000), unchecked((int) 0x80000020),
-            unchecked((int) 0x00100020), unchecked((int) 0x80008020), unchecked((int) 0x80000020), unchecked((int) 0x00100020),
-            unchecked((int) 0x00108000), unchecked((int) 0x00000000), unchecked((int) 0x80008000), unchecked((int) 0x00008020),
-            unchecked((int) 0x80000000), unchecked((int) 0x80100020), unchecked((int) 0x80108020), unchecked((int) 0x00108000)
+            0x80108020, 0x80008000, 0x00008000, 0x00108020,
+            0x00100000, 0x00000020, 0x80100020, 0x80008020,
+            0x80000020, 0x80108020, 0x80108000, 0x80000000,
+            0x80008000, 0x00100000, 0x00000020, 0x80100020,
+            0x00108000, 0x00100020, 0x80008020, 0x00000000,
+            0x80000000, 0x00008000, 0x00108020, 0x80100000,
+            0x00100020, 0x80000020, 0x00000000, 0x00108000,
+            0x00008020, 0x80108000, 0x80100000, 0x00008020,
+            0x00000000, 0x00108020, 0x80100020, 0x00100000,
+            0x80008020, 0x80100000, 0x80108000, 0x00008000,
+            0x80100000, 0x80008000, 0x00000020, 0x80108020,
+            0x00108020, 0x00000020, 0x00008000, 0x80000000,
+            0x00008020, 0x80108000, 0x00100000, 0x80000020,
+            0x00100020, 0x80008020, 0x80000020, 0x00100020,
+            0x00108000, 0x00000000, 0x80008000, 0x00008020,
+            0x80000000, 0x80100020, 0x80108020, 0x00108000
         };
 
-		private static readonly int[] SP3 =
+		private static readonly uint[] SP3 =
 		{
-            unchecked((int) 0x00000208), unchecked((int) 0x08020200), unchecked((int) 0x00000000), unchecked((int) 0x08020008),
-            unchecked((int) 0x08000200), unchecked((int) 0x00000000), unchecked((int) 0x00020208), unchecked((int) 0x08000200),
-            unchecked((int) 0x00020008), unchecked((int) 0x08000008), unchecked((int) 0x08000008), unchecked((int) 0x00020000),
-            unchecked((int) 0x08020208), unchecked((int) 0x00020008), unchecked((int) 0x08020000), unchecked((int) 0x00000208),
-            unchecked((int) 0x08000000), unchecked((int) 0x00000008), unchecked((int) 0x08020200), unchecked((int) 0x00000200),
-            unchecked((int) 0x00020200), unchecked((int) 0x08020000), unchecked((int) 0x08020008), unchecked((int) 0x00020208),
-            unchecked((int) 0x08000208), unchecked((int) 0x00020200), unchecked((int) 0x00020000), unchecked((int) 0x08000208),
-            unchecked((int) 0x00000008), unchecked((int) 0x08020208), unchecked((int) 0x00000200), unchecked((int) 0x08000000),
-            unchecked((int) 0x08020200), unchecked((int) 0x08000000), unchecked((int) 0x00020008), unchecked((int) 0x00000208),
-            unchecked((int) 0x00020000), unchecked((int) 0x08020200), unchecked((int) 0x08000200), unchecked((int) 0x00000000),
-            unchecked((int) 0x00000200), unchecked((int) 0x00020008), unchecked((int) 0x08020208), unchecked((int) 0x08000200),
-            unchecked((int) 0x08000008), unchecked((int) 0x00000200), unchecked((int) 0x00000000), unchecked((int) 0x08020008),
-            unchecked((int) 0x08000208), unchecked((int) 0x00020000), unchecked((int) 0x08000000), unchecked((int) 0x08020208),
-            unchecked((int) 0x00000008), unchecked((int) 0x00020208), unchecked((int) 0x00020200), unchecked((int) 0x08000008),
-            unchecked((int) 0x08020000), unchecked((int) 0x08000208), unchecked((int) 0x00000208), unchecked((int) 0x08020000),
-            unchecked((int) 0x00020208), unchecked((int) 0x00000008), unchecked((int) 0x08020008), unchecked((int) 0x00020200)
+            0x00000208, 0x08020200, 0x00000000, 0x08020008,
+            0x08000200, 0x00000000, 0x00020208, 0x08000200,
+            0x00020008, 0x08000008, 0x08000008, 0x00020000,
+            0x08020208, 0x00020008, 0x08020000, 0x00000208,
+            0x08000000, 0x00000008, 0x08020200, 0x00000200,
+            0x00020200, 0x08020000, 0x08020008, 0x00020208,
+            0x08000208, 0x00020200, 0x00020000, 0x08000208,
+            0x00000008, 0x08020208, 0x00000200, 0x08000000,
+            0x08020200, 0x08000000, 0x00020008, 0x00000208,
+            0x00020000, 0x08020200, 0x08000200, 0x00000000,
+            0x00000200, 0x00020008, 0x08020208, 0x08000200,
+            0x08000008, 0x00000200, 0x00000000, 0x08020008,
+            0x08000208, 0x00020000, 0x08000000, 0x08020208,
+            0x00000008, 0x00020208, 0x00020200, 0x08000008,
+            0x08020000, 0x08000208, 0x00000208, 0x08020000,
+            0x00020208, 0x00000008, 0x08020008, 0x00020200
         };
 
-		private static readonly int[] SP4 =
+		private static readonly uint[] SP4 =
 		{
-            unchecked((int) 0x00802001), unchecked((int) 0x00002081), unchecked((int) 0x00002081), unchecked((int) 0x00000080),
-            unchecked((int) 0x00802080), unchecked((int) 0x00800081), unchecked((int) 0x00800001), unchecked((int) 0x00002001),
-            unchecked((int) 0x00000000), unchecked((int) 0x00802000), unchecked((int) 0x00802000), unchecked((int) 0x00802081),
-            unchecked((int) 0x00000081), unchecked((int) 0x00000000), unchecked((int) 0x00800080), unchecked((int) 0x00800001),
-            unchecked((int) 0x00000001), unchecked((int) 0x00002000), unchecked((int) 0x00800000), unchecked((int) 0x00802001),
-            unchecked((int) 0x00000080), unchecked((int) 0x00800000), unchecked((int) 0x00002001), unchecked((int) 0x00002080),
-            unchecked((int) 0x00800081), unchecked((int) 0x00000001), unchecked((int) 0x00002080), unchecked((int) 0x00800080),
-            unchecked((int) 0x00002000), unchecked((int) 0x00802080), unchecked((int) 0x00802081), unchecked((int) 0x00000081),
-            unchecked((int) 0x00800080), unchecked((int) 0x00800001), unchecked((int) 0x00802000), unchecked((int) 0x00802081),
-            unchecked((int) 0x00000081), unchecked((int) 0x00000000), unchecked((int) 0x00000000), unchecked((int) 0x00802000),
-            unchecked((int) 0x00002080), unchecked((int) 0x00800080), unchecked((int) 0x00800081), unchecked((int) 0x00000001),
-            unchecked((int) 0x00802001), unchecked((int) 0x00002081), unchecked((int) 0x00002081), unchecked((int) 0x00000080),
-            unchecked((int) 0x00802081), unchecked((int) 0x00000081), unchecked((int) 0x00000001), unchecked((int) 0x00002000),
-            unchecked((int) 0x00800001), unchecked((int) 0x00002001), unchecked((int) 0x00802080), unchecked((int) 0x00800081),
-            unchecked((int) 0x00002001), unchecked((int) 0x00002080), unchecked((int) 0x00800000), unchecked((int) 0x00802001),
-            unchecked((int) 0x00000080), unchecked((int) 0x00800000), unchecked((int) 0x00002000), unchecked((int) 0x00802080)
+            0x00802001, 0x00002081, 0x00002081, 0x00000080,
+            0x00802080, 0x00800081, 0x00800001, 0x00002001,
+            0x00000000, 0x00802000, 0x00802000, 0x00802081,
+            0x00000081, 0x00000000, 0x00800080, 0x00800001,
+            0x00000001, 0x00002000, 0x00800000, 0x00802001,
+            0x00000080, 0x00800000, 0x00002001, 0x00002080,
+            0x00800081, 0x00000001, 0x00002080, 0x00800080,
+            0x00002000, 0x00802080, 0x00802081, 0x00000081,
+            0x00800080, 0x00800001, 0x00802000, 0x00802081,
+            0x00000081, 0x00000000, 0x00000000, 0x00802000,
+            0x00002080, 0x00800080, 0x00800081, 0x00000001,
+            0x00802001, 0x00002081, 0x00002081, 0x00000080,
+            0x00802081, 0x00000081, 0x00000001, 0x00002000,
+            0x00800001, 0x00002001, 0x00802080, 0x00800081,
+            0x00002001, 0x00002080, 0x00800000, 0x00802001,
+            0x00000080, 0x00800000, 0x00002000, 0x00802080
         };
 
-		private static readonly int[] SP5 =
+		private static readonly uint[] SP5 =
 		{
-            unchecked((int) 0x00000100), unchecked((int) 0x02080100), unchecked((int) 0x02080000), unchecked((int) 0x42000100),
-            unchecked((int) 0x00080000), unchecked((int) 0x00000100), unchecked((int) 0x40000000), unchecked((int) 0x02080000),
-            unchecked((int) 0x40080100), unchecked((int) 0x00080000), unchecked((int) 0x02000100), unchecked((int) 0x40080100),
-            unchecked((int) 0x42000100), unchecked((int) 0x42080000), unchecked((int) 0x00080100), unchecked((int) 0x40000000),
-            unchecked((int) 0x02000000), unchecked((int) 0x40080000), unchecked((int) 0x40080000), unchecked((int) 0x00000000),
-            unchecked((int) 0x40000100), unchecked((int) 0x42080100), unchecked((int) 0x42080100), unchecked((int) 0x02000100),
-            unchecked((int) 0x42080000), unchecked((int) 0x40000100), unchecked((int) 0x00000000), unchecked((int) 0x42000000),
-            unchecked((int) 0x02080100), unchecked((int) 0x02000000), unchecked((int) 0x42000000), unchecked((int) 0x00080100),
-            unchecked((int) 0x00080000), unchecked((int) 0x42000100), unchecked((int) 0x00000100), unchecked((int) 0x02000000),
-            unchecked((int) 0x40000000), unchecked((int) 0x02080000), unchecked((int) 0x42000100), unchecked((int) 0x40080100),
-            unchecked((int) 0x02000100), unchecked((int) 0x40000000), unchecked((int) 0x42080000), unchecked((int) 0x02080100),
-            unchecked((int) 0x40080100), unchecked((int) 0x00000100), unchecked((int) 0x02000000), unchecked((int) 0x42080000),
-            unchecked((int) 0x42080100), unchecked((int) 0x00080100), unchecked((int) 0x42000000), unchecked((int) 0x42080100),
-            unchecked((int) 0x02080000), unchecked((int) 0x00000000), unchecked((int) 0x40080000), unchecked((int) 0x42000000),
-            unchecked((int) 0x00080100), unchecked((int) 0x02000100), unchecked((int) 0x40000100), unchecked((int) 0x00080000),
-            unchecked((int) 0x00000000), unchecked((int) 0x40080000), unchecked((int) 0x02080100), unchecked((int) 0x40000100)
+            0x00000100, 0x02080100, 0x02080000, 0x42000100,
+            0x00080000, 0x00000100, 0x40000000, 0x02080000,
+            0x40080100, 0x00080000, 0x02000100, 0x40080100,
+            0x42000100, 0x42080000, 0x00080100, 0x40000000,
+            0x02000000, 0x40080000, 0x40080000, 0x00000000,
+            0x40000100, 0x42080100, 0x42080100, 0x02000100,
+            0x42080000, 0x40000100, 0x00000000, 0x42000000,
+            0x02080100, 0x02000000, 0x42000000, 0x00080100,
+            0x00080000, 0x42000100, 0x00000100, 0x02000000,
+            0x40000000, 0x02080000, 0x42000100, 0x40080100,
+            0x02000100, 0x40000000, 0x42080000, 0x02080100,
+            0x40080100, 0x00000100, 0x02000000, 0x42080000,
+            0x42080100, 0x00080100, 0x42000000, 0x42080100,
+            0x02080000, 0x00000000, 0x40080000, 0x42000000,
+            0x00080100, 0x02000100, 0x40000100, 0x00080000,
+            0x00000000, 0x40080000, 0x02080100, 0x40000100
         };
 
-		private static readonly int[] SP6 =
+		private static readonly uint[] SP6 =
 		{
-            unchecked((int) 0x20000010), unchecked((int) 0x20400000), unchecked((int) 0x00004000), unchecked((int) 0x20404010),
-            unchecked((int) 0x20400000), unchecked((int) 0x00000010), unchecked((int) 0x20404010), unchecked((int) 0x00400000),
-            unchecked((int) 0x20004000), unchecked((int) 0x00404010), unchecked((int) 0x00400000), unchecked((int) 0x20000010),
-            unchecked((int) 0x00400010), unchecked((int) 0x20004000), unchecked((int) 0x20000000), unchecked((int) 0x00004010),
-            unchecked((int) 0x00000000), unchecked((int) 0x00400010), unchecked((int) 0x20004010), unchecked((int) 0x00004000),
-            unchecked((int) 0x00404000), unchecked((int) 0x20004010), unchecked((int) 0x00000010), unchecked((int) 0x20400010),
-            unchecked((int) 0x20400010), unchecked((int) 0x00000000), unchecked((int) 0x00404010), unchecked((int) 0x20404000),
-            unchecked((int) 0x00004010), unchecked((int) 0x00404000), unchecked((int) 0x20404000), unchecked((int) 0x20000000),
-            unchecked((int) 0x20004000), unchecked((int) 0x00000010), unchecked((int) 0x20400010), unchecked((int) 0x00404000),
-            unchecked((int) 0x20404010), unchecked((int) 0x00400000), unchecked((int) 0x00004010), unchecked((int) 0x20000010),
-            unchecked((int) 0x00400000), unchecked((int) 0x20004000), unchecked((int) 0x20000000), unchecked((int) 0x00004010),
-            unchecked((int) 0x20000010), unchecked((int) 0x20404010), unchecked((int) 0x00404000), unchecked((int) 0x20400000),
-            unchecked((int) 0x00404010), unchecked((int) 0x20404000), unchecked((int) 0x00000000), unchecked((int) 0x20400010),
-            unchecked((int) 0x00000010), unchecked((int) 0x00004000), unchecked((int) 0x20400000), unchecked((int) 0x00404010),
-            unchecked((int) 0x00004000), unchecked((int) 0x00400010), unchecked((int) 0x20004010), unchecked((int) 0x00000000),
-            unchecked((int) 0x20404000), unchecked((int) 0x20000000), unchecked((int) 0x00400010), unchecked((int) 0x20004010)
+            0x20000010, 0x20400000, 0x00004000, 0x20404010,
+            0x20400000, 0x00000010, 0x20404010, 0x00400000,
+            0x20004000, 0x00404010, 0x00400000, 0x20000010,
+            0x00400010, 0x20004000, 0x20000000, 0x00004010,
+            0x00000000, 0x00400010, 0x20004010, 0x00004000,
+            0x00404000, 0x20004010, 0x00000010, 0x20400010,
+            0x20400010, 0x00000000, 0x00404010, 0x20404000,
+            0x00004010, 0x00404000, 0x20404000, 0x20000000,
+            0x20004000, 0x00000010, 0x20400010, 0x00404000,
+            0x20404010, 0x00400000, 0x00004010, 0x20000010,
+            0x00400000, 0x20004000, 0x20000000, 0x00004010,
+            0x20000010, 0x20404010, 0x00404000, 0x20400000,
+            0x00404010, 0x20404000, 0x00000000, 0x20400010,
+            0x00000010, 0x00004000, 0x20400000, 0x00404010,
+            0x00004000, 0x00400010, 0x20004010, 0x00000000,
+            0x20404000, 0x20000000, 0x00400010, 0x20004010
         };
 
-		private static readonly int[] SP7 =
+		private static readonly uint[] SP7 =
 		{
-            unchecked((int) 0x00200000), unchecked((int) 0x04200002), unchecked((int) 0x04000802), unchecked((int) 0x00000000),
-            unchecked((int) 0x00000800), unchecked((int) 0x04000802), unchecked((int) 0x00200802), unchecked((int) 0x04200800),
-            unchecked((int) 0x04200802), unchecked((int) 0x00200000), unchecked((int) 0x00000000), unchecked((int) 0x04000002),
-            unchecked((int) 0x00000002), unchecked((int) 0x04000000), unchecked((int) 0x04200002), unchecked((int) 0x00000802),
-            unchecked((int) 0x04000800), unchecked((int) 0x00200802), unchecked((int) 0x00200002), unchecked((int) 0x04000800),
-            unchecked((int) 0x04000002), unchecked((int) 0x04200000), unchecked((int) 0x04200800), unchecked((int) 0x00200002),
-            unchecked((int) 0x04200000), unchecked((int) 0x00000800), unchecked((int) 0x00000802), unchecked((int) 0x04200802),
-            unchecked((int) 0x00200800), unchecked((int) 0x00000002), unchecked((int) 0x04000000), unchecked((int) 0x00200800),
-            unchecked((int) 0x04000000), unchecked((int) 0x00200800), unchecked((int) 0x00200000), unchecked((int) 0x04000802),
-            unchecked((int) 0x04000802), unchecked((int) 0x04200002), unchecked((int) 0x04200002), unchecked((int) 0x00000002),
-            unchecked((int) 0x00200002), unchecked((int) 0x04000000), unchecked((int) 0x04000800), unchecked((int) 0x00200000),
-            unchecked((int) 0x04200800), unchecked((int) 0x00000802), unchecked((int) 0x00200802), unchecked((int) 0x04200800),
-            unchecked((int) 0x00000802), unchecked((int) 0x04000002), unchecked((int) 0x04200802), unchecked((int) 0x04200000),
-            unchecked((int) 0x00200800), unchecked((int) 0x00000000), unchecked((int) 0x00000002), unchecked((int) 0x04200802),
-            unchecked((int) 0x00000000), unchecked((int) 0x00200802), unchecked((int) 0x04200000), unchecked((int) 0x00000800),
-            unchecked((int) 0x04000002), unchecked((int) 0x04000800), unchecked((int) 0x00000800), unchecked((int) 0x00200002)
+            0x00200000, 0x04200002, 0x04000802, 0x00000000,
+            0x00000800, 0x04000802, 0x00200802, 0x04200800,
+            0x04200802, 0x00200000, 0x00000000, 0x04000002,
+            0x00000002, 0x04000000, 0x04200002, 0x00000802,
+            0x04000800, 0x00200802, 0x00200002, 0x04000800,
+            0x04000002, 0x04200000, 0x04200800, 0x00200002,
+            0x04200000, 0x00000800, 0x00000802, 0x04200802,
+            0x00200800, 0x00000002, 0x04000000, 0x00200800,
+            0x04000000, 0x00200800, 0x00200000, 0x04000802,
+            0x04000802, 0x04200002, 0x04200002, 0x00000002,
+            0x00200002, 0x04000000, 0x04000800, 0x00200000,
+            0x04200800, 0x00000802, 0x00200802, 0x04200800,
+            0x00000802, 0x04000002, 0x04200802, 0x04200000,
+            0x00200800, 0x00000000, 0x00000002, 0x04200802,
+            0x00000000, 0x00200802, 0x04200000, 0x00000800,
+            0x04000002, 0x04000800, 0x00000800, 0x00200002
         };
 
-		private static readonly int[] SP8 =
+		private static readonly uint[] SP8 =
 		{
-            unchecked((int) 0x10001040), unchecked((int) 0x00001000), unchecked((int) 0x00040000), unchecked((int) 0x10041040),
-            unchecked((int) 0x10000000), unchecked((int) 0x10001040), unchecked((int) 0x00000040), unchecked((int) 0x10000000),
-            unchecked((int) 0x00040040), unchecked((int) 0x10040000), unchecked((int) 0x10041040), unchecked((int) 0x00041000),
-            unchecked((int) 0x10041000), unchecked((int) 0x00041040), unchecked((int) 0x00001000), unchecked((int) 0x00000040),
-            unchecked((int) 0x10040000), unchecked((int) 0x10000040), unchecked((int) 0x10001000), unchecked((int) 0x00001040),
-            unchecked((int) 0x00041000), unchecked((int) 0x00040040), unchecked((int) 0x10040040), unchecked((int) 0x10041000),
-            unchecked((int) 0x00001040), unchecked((int) 0x00000000), unchecked((int) 0x00000000), unchecked((int) 0x10040040),
-            unchecked((int) 0x10000040), unchecked((int) 0x10001000), unchecked((int) 0x00041040), unchecked((int) 0x00040000),
-            unchecked((int) 0x00041040), unchecked((int) 0x00040000), unchecked((int) 0x10041000), unchecked((int) 0x00001000),
-            unchecked((int) 0x00000040), unchecked((int) 0x10040040), unchecked((int) 0x00001000), unchecked((int) 0x00041040),
-            unchecked((int) 0x10001000), unchecked((int) 0x00000040), unchecked((int) 0x10000040), unchecked((int) 0x10040000),
-            unchecked((int) 0x10040040), unchecked((int) 0x10000000), unchecked((int) 0x00040000), unchecked((int) 0x10001040),
-            unchecked((int) 0x00000000), unchecked((int) 0x10041040), unchecked((int) 0x00040040), unchecked((int) 0x10000040),
-            unchecked((int) 0x10040000), unchecked((int) 0x10001000), unchecked((int) 0x10001040), unchecked((int) 0x00000000),
-            unchecked((int) 0x10041040), unchecked((int) 0x00041000), unchecked((int) 0x00041000), unchecked((int) 0x00001040),
-            unchecked((int) 0x00001040), unchecked((int) 0x00040040), unchecked((int) 0x10000000), unchecked((int) 0x10041000)
+            0x10001040, 0x00001000, 0x00040000, 0x10041040,
+            0x10000000, 0x10001040, 0x00000040, 0x10000000,
+            0x00040040, 0x10040000, 0x10041040, 0x00041000,
+            0x10041000, 0x00041040, 0x00001000, 0x00000040,
+            0x10040000, 0x10000040, 0x10001000, 0x00001040,
+            0x00041000, 0x00040040, 0x10040040, 0x10041000,
+            0x00001040, 0x00000000, 0x00000000, 0x10040040,
+            0x10000040, 0x10001000, 0x00041040, 0x00040000,
+            0x00041040, 0x00040000, 0x10041000, 0x00001000,
+            0x00000040, 0x10040040, 0x00001000, 0x00041040,
+            0x10001000, 0x00000040, 0x10000040, 0x10040000,
+            0x10040040, 0x10000000, 0x00040000, 0x10001040,
+            0x00000000, 0x10041040, 0x00040040, 0x10000040,
+            0x10040000, 0x10001000, 0x10001040, 0x00000000,
+            0x10041040, 0x00041000, 0x00041000, 0x00001040,
+            0x00001040, 0x00040040, 0x10000000, 0x10041000
         };
 
 		/**
@@ -397,97 +398,78 @@ namespace Org.BouncyCastle.Crypto.Engines
             byte[]	outBytes,
             int		outOff)
         {
-            int work, right, left;
+			uint left = Pack.BE_To_UInt32(input, inOff);
+			uint right = Pack.BE_To_UInt32(input, inOff + 4);
+			uint work;
 
-            left = (input[inOff + 0] & 0xff) << 24;
-            left |= (input[inOff + 1] & 0xff) << 16;
-            left |= (input[inOff + 2] & 0xff) << 8;
-            left |= (input[inOff + 3] & 0xff);
-
-            right = (input[inOff + 4] & 0xff) << 24;
-            right |= (input[inOff + 5] & 0xff) << 16;
-            right |= (input[inOff + 6] & 0xff) << 8;
-            right |= (input[inOff + 7] & 0xff);
-
-            work = (int) (((uint) left >> 4) ^ right) & unchecked((int) 0x0f0f0f0f);
+            work = ((left >> 4) ^ right) & 0x0f0f0f0f;
             right ^= work;
             left ^= (work << 4);
-            work = (int) (((uint) left >> 16) ^ right) & unchecked((int) 0x0000ffff);
+            work = ((left >> 16) ^ right) & 0x0000ffff;
             right ^= work;
             left ^= (work << 16);
-            work = (int) (((uint) right >> 2) ^ left) & unchecked((int) 0x33333333);
+            work = ((right >> 2) ^ left) & 0x33333333;
             left ^= work;
             right ^= (work << 2);
-            work = (int) (((uint) right >> 8) ^ left) & unchecked((int) 0x00ff00ff);
+            work = ((right >> 8) ^ left) & 0x00ff00ff;
             left ^= work;
             right ^= (work << 8);
-            right = (int) (  (uint) (right << 1) |
-                             (  ((uint) right >> 31)  & 1 )
-                          ) &
-                    unchecked((int) 0xffffffff);
-            work = (left ^ right) & unchecked((int) 0xaaaaaaaa);
+            right = (right << 1) | (right >> 31);
+            work = (left ^ right) & 0xaaaaaaaa;
             left ^= work;
             right ^= work;
-            left =  (int) (   (uint) (left << 1) |
-                              ( ((uint) left >> 31) & 1)) &
-                    unchecked((int) 0xffffffff);
+            left = (left << 1) | (left >> 31);
 
             for (int round = 0; round < 8; round++)
             {
-                int fval;
+                uint fval;
 
-                work  = (int) ((uint) (right << 28) | ((uint) right >> 4));
-                work ^= wKey[round * 4 + 0];
-                fval  = SP7[ work      & 0x3f];
-                fval |= SP5[((uint) work >>  8) & 0x3f];
-                fval |= SP3[((uint) work >> 16) & 0x3f];
-                fval |= SP1[((uint) work >> 24) & 0x3f];
-                work  = right ^ wKey[round * 4 + 1];
-                fval |= SP8[ work      & 0x3f];
-                fval |= SP6[((uint) work >>  8) & 0x3f];
-                fval |= SP4[((uint) work >> 16) & 0x3f];
-                fval |= SP2[((uint) work >> 24) & 0x3f];
+                work  = (right << 28) | (right >> 4);
+                work ^= (uint)wKey[round * 4 + 0];
+                fval  = SP7[work         & 0x3f];
+                fval |= SP5[(work >>  8) & 0x3f];
+                fval |= SP3[(work >> 16) & 0x3f];
+                fval |= SP1[(work >> 24) & 0x3f];
+                work  = right ^ (uint)wKey[round * 4 + 1];
+                fval |= SP8[ work        & 0x3f];
+                fval |= SP6[(work >>  8) & 0x3f];
+                fval |= SP4[(work >> 16) & 0x3f];
+                fval |= SP2[(work >> 24) & 0x3f];
                 left ^= fval;
-                work  = (int) ((uint) (left << 28) | ((uint) left >> 4));
-                work ^= wKey[round * 4 + 2];
-                fval  = SP7[ work      & 0x3f];
-                fval |= SP5[((uint) work >>  8) & 0x3f];
-                fval |= SP3[((uint) work >> 16) & 0x3f];
-                fval |= SP1[((uint) work >> 24) & 0x3f];
-                work  = left ^ wKey[round * 4 + 3];
-                fval |= SP8[ work      & 0x3f];
-                fval |= SP6[((uint) work >>  8) & 0x3f];
-                fval |= SP4[((uint) work >> 16) & 0x3f];
-                fval |= SP2[((uint) work >> 24) & 0x3f];
+                work  = (left << 28) | (left >> 4);
+                work ^= (uint)wKey[round * 4 + 2];
+                fval  = SP7[ work        & 0x3f];
+                fval |= SP5[(work >>  8) & 0x3f];
+                fval |= SP3[(work >> 16) & 0x3f];
+                fval |= SP1[(work >> 24) & 0x3f];
+                work  = left ^ (uint)wKey[round * 4 + 3];
+                fval |= SP8[ work        & 0x3f];
+                fval |= SP6[(work >>  8) & 0x3f];
+                fval |= SP4[(work >> 16) & 0x3f];
+                fval |= SP2[(work >> 24) & 0x3f];
                 right ^= fval;
             }
 
-            right = (int)  ((uint) (right << 31) | ((uint) right >> 1));
-            work = (left ^ right) & unchecked((int) 0xaaaaaaaa);
+            right = (right << 31) | (right >> 1);
+            work = (left ^ right) & 0xaaaaaaaa;
             left ^= work;
             right ^= work;
-            left = (int) ((uint) (left << 31) | ((uint) left >> 1));
-            work = (int) ((((uint) left >> 8) ^ right) & 0x00ff00ff);
+            left = (left << 31) | (left >> 1);
+            work = ((left >> 8) ^ right) & 0x00ff00ff;
             right ^= work;
             left ^= (work << 8);
-            work = (int) ((((uint) left >> 2) ^ right) & 0x33333333);
+            work = ((left >> 2) ^ right) & 0x33333333;
             right ^= work;
             left ^= (work << 2);
-            work = (int) ((((uint) right >> 16) ^ left) & 0x0000ffff);
+            work = ((right >> 16) ^ left) & 0x0000ffff;
             left ^= work;
             right ^= (work << 16);
-            work = (int) ((((uint) right >> 4) ^ left) & 0x0f0f0f0f);
+            work = ((right >> 4) ^ left) & 0x0f0f0f0f;
             left ^= work;
             right ^= (work << 4);
 
-            outBytes[outOff + 0] = (byte)(((uint) right >> 24) & 0xff);
-            outBytes[outOff + 1] = (byte)(((uint) right >> 16) & 0xff);
-            outBytes[outOff + 2] = (byte)(((uint) right >>  8) & 0xff);
-            outBytes[outOff + 3] = (byte)( right         & 0xff);
-            outBytes[outOff + 4] = (byte)(((uint) left >> 24) & 0xff);
-            outBytes[outOff + 5] = (byte)(((uint) left >> 16) & 0xff);
-            outBytes[outOff + 6] = (byte)(((uint) left >>  8) & 0xff);
-            outBytes[outOff + 7] = (byte)( left         & 0xff);
+			Pack.UInt32_To_BE(right, outBytes, outOff);
+			Pack.UInt32_To_BE(left, outBytes, outOff + 4);
         }
     }
 }

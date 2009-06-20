@@ -5374,7 +5374,6 @@
                 />
                 <File
                     RelPath = "srcbc\crypto\parameters\DSAKeyParameters.cs"
-                    SubType = ""
                     BuildAction = "Compile"
                 />
                 <File
@@ -5749,6 +5748,11 @@
                 />
                 <File
                     RelPath = "srcbc\crypto\tls\TlsUtilities.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\crypto\util\Pack.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

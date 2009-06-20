@@ -12,9 +12,7 @@ namespace Org.BouncyCastle.Cms
 		internal static readonly CmsEnvelopedHelper Instance = new CmsEnvelopedHelper();
 
 		private static readonly IDictionary KeySizes = new Hashtable();
-		private static readonly IDictionary Ciphers = new Hashtable();
 		private static readonly IDictionary BaseCipherNames = new Hashtable();
-//		private static readonly IDictionary CipherAlgNames = new Hashtable();
 
 		static CmsEnvelopedHelper()
 		{
@@ -27,11 +25,6 @@ namespace Org.BouncyCastle.Cms
 			BaseCipherNames.Add(CmsEnvelopedGenerator.Aes128Cbc,  "AES");
 			BaseCipherNames.Add(CmsEnvelopedGenerator.Aes192Cbc,  "AES");
 			BaseCipherNames.Add(CmsEnvelopedGenerator.Aes256Cbc,  "AES");
-
-//			CipherAlgNames.Add(CmsEnvelopedGenerator.DesEde3Cbc,  "DESEDE/CBC/PKCS5Padding");
-//			CipherAlgNames.Add(CmsEnvelopedGenerator.Aes128Cbc,  "AES/CBC/PKCS5Padding");
-//			CipherAlgNames.Add(CmsEnvelopedGenerator.Aes192Cbc,  "AES/CBC/PKCS5Padding");
-//			CipherAlgNames.Add(CmsEnvelopedGenerator.Aes256Cbc,  "AES/CBC/PKCS5Padding");
 		}
 
 		private string GetAsymmetricEncryptionAlgName(

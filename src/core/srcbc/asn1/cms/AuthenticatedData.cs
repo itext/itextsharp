@@ -35,7 +35,7 @@ namespace Org.BouncyCastle.Asn1.Cms
 	            }
 	        }
 
-	        version = new DerInteger(calculateVersion(originatorInfo));
+	        version = new DerInteger(CalculateVersion(originatorInfo));
 
 	        this.originatorInfo = originatorInfo;
 	        this.macAlgorithm = macAlgorithm;
@@ -224,7 +224,7 @@ namespace Org.BouncyCastle.Asn1.Cms
 	        return new BerSequence(v);
 	    }
 
-	    public static int calculateVersion(OriginatorInfo origInfo)
+	    public static int CalculateVersion(OriginatorInfo origInfo)
 	    {
 	        if (origInfo == null)
 	        {

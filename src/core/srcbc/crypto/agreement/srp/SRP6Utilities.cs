@@ -49,7 +49,7 @@ namespace Org.BouncyCastle.Crypto.Agreement.Srp
 
 	        // Check that val % N != 0
 	        if (val.Equals(BigInteger.Zero))
-	            throw new CryptoException("Server credentials invalid");
+	            throw new CryptoException("Invalid public value: 0");
 
 		    return val;
 		}
