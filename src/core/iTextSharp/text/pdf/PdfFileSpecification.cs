@@ -88,7 +88,25 @@ namespace iTextSharp.text.pdf {
         * @return the file specification
         */    
         public static PdfFileSpecification FileEmbedded(PdfWriter writer, String filePath, String fileDisplay, byte[] fileStore) {
-            return FileEmbedded(writer, filePath, fileDisplay, fileStore, true);
+            return FileEmbedded(writer, filePath, fileDisplay, fileStore, PdfStream.BEST_COMPRESSION);
+        }
+
+        /**
+        * Creates a file specification with the file embedded. The file may
+        * come from the file system or from a byte array. The data is flate compressed.
+        * @param writer the <CODE>PdfWriter</CODE>
+        * @param filePath the file path
+        * @param fileDisplay the file information that is presented to the user
+        * @param fileStore the byte array with the file. If it is not <CODE>null</CODE>
+        * it takes precedence over <CODE>filePath</CODE>
+        * @param compressionLevel   the compression level to be used for compressing the file
+        * it takes precedence over <CODE>filePath</CODE>
+        * @throws IOException on error
+        * @return the file specification
+        * @since    2.1.3
+        */    
+        public static PdfFileSpecification FileEmbedded(PdfWriter writer, String filePath, String fileDisplay, byte[] fileStore, int compressionLevel) {
+            return FileEmbedded(writer, filePath, fileDisplay, fileStore, null, null, compressionLevel);
         }
         
         
@@ -106,7 +124,7 @@ namespace iTextSharp.text.pdf {
         * @return the file specification
         */    
         public static PdfFileSpecification FileEmbedded(PdfWriter writer, String filePath, String fileDisplay, byte[] fileStore, bool compress) {
-            return FileEmbedded(writer, filePath, fileDisplay, fileStore, compress, null, null);
+            return FileEmbedded(writer, filePath, fileDisplay, fileStore, null, null, compress ? PdfStream.BEST_COMPRESSION : PdfStream.NO_COMPRESSION);
         }
         
         /**
@@ -125,10 +143,29 @@ namespace iTextSharp.text.pdf {
         * @return the file specification
         */    
         public static PdfFileSpecification FileEmbedded(PdfWriter writer, String filePath, String fileDisplay, byte[] fileStore, bool compress, String mimeType, PdfDictionary fileParameter) {
+            return FileEmbedded(writer, filePath, fileDisplay, fileStore, null, null, compress ? PdfStream.BEST_COMPRESSION : PdfStream.NO_COMPRESSION);
+        }
+        
+        /**
+        * Creates a file specification with the file embedded. The file may
+        * come from the file system or from a byte array.
+        * @param writer the <CODE>PdfWriter</CODE>
+        * @param filePath the file path
+        * @param fileDisplay the file information that is presented to the user
+        * @param fileStore the byte array with the file. If it is not <CODE>null</CODE>
+        * it takes precedence over <CODE>filePath</CODE>
+        * @param mimeType the optional mimeType
+        * @param fileParameter the optional extra file parameters such as the creation or modification date
+        * @param compressionLevel the level of compression
+        * @throws IOException on error
+        * @return the file specification
+        * @since   2.1.3
+        */    
+        public static PdfFileSpecification FileEmbedded(PdfWriter writer, String filePath, String fileDisplay, byte[] fileStore, String mimeType, PdfDictionary fileParameter, int compressionLevel) {
             PdfFileSpecification fs = new PdfFileSpecification();
             fs.writer = writer;
             fs.Put(PdfName.F, new PdfString(fileDisplay));
-            PdfStream stream;
+            PdfEFStream stream;
             Stream inp = null;
             PdfIndirectReference refi;
             PdfIndirectReference refFileLength;
@@ -149,13 +186,12 @@ namespace iTextSharp.text.pdf {
                                 throw new IOException(filePath + " not found as file or resource.");
                         }
                     }
-                    stream = new PdfStream(inp, writer);
+                    stream = new PdfEFStream(inp, writer);
                 }
                 else
-                    stream = new PdfStream(fileStore);
+                    stream = new PdfEFStream(fileStore);
                 stream.Put(PdfName.TYPE, PdfName.EMBEDDEDFILE);
-                if (compress)
-                    stream.FlateCompress();
+                stream.FlateCompress(compressionLevel);
                 stream.Put(PdfName.PARAMS, refFileLength);
                 if (mimeType != null)
                     stream.Put(PdfName.SUBTYPE, new PdfName(mimeType));
