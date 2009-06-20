@@ -1,6 +1,7 @@
 using System;
 
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Engines
 {
@@ -64,8 +65,31 @@ namespace Org.BouncyCastle.Crypto.Engines
 
 		private void Init()
 		{
+			if (key.Length != 32 && key.Length != 16)
+				throw new ArgumentException("The key must be 128/256 bits long");
+
+			if (iv.Length < 16)
+				throw new ArgumentException("The IV must be at least 128 bits long");
+
 			if (key.Length != 32)
-				throw new ArgumentException("The key must be 256 bit long");
+	        {
+				byte[] k = new byte[32];
+
+				Array.Copy(key, 0, k, 0, key.Length);
+				Array.Copy(key, 0, k, 16, key.Length);
+
+				key = k;
+			}
+
+			if (iv.Length < 32)
+			{
+				byte[] newIV = new byte[32];
+
+				Array.Copy(iv, 0, newIV, 0, iv.Length);
+				Array.Copy(iv, 0, newIV, iv.Length, newIV.Length - iv.Length);
+
+				iv = newIV;
+			}
 
 			cnt = 0;
 
@@ -73,12 +97,12 @@ namespace Org.BouncyCastle.Crypto.Engines
 
 			for (int i = 0; i < 32; i++)
 			{
-				w[i >> 3] |= ((uint)key[i] << (i & 0x7));
+				w[i >> 2] |= ((uint)key[i] << (8 * (i & 0x3)));
 			}
 
-			for (int i = 0; i < iv.Length && i < 32; i++)
+			for (int i = 0; i < 32; i++)
 			{
-				w[(i >> 3) + 8] |= ((uint)iv[i] << (i & 0x7));
+				w[(i >> 2) + 8] |= ((uint)iv[i] << (8 * (i & 0x3)));
 			}
 
 			for (uint i = 16; i < 2560; i++)
@@ -154,14 +178,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 		{
 			if (idx == 0)
 			{
-				uint step = Step();
-				buf[3] = (byte)step;
-				step >>= 8;
-				buf[2] = (byte)step;
-				step >>= 8;
-				buf[1] = (byte)step;
-				step >>= 8;
-				buf[0] = (byte)step;
+				Pack.UInt32_To_LE(Step(), buf);
 			}
 			byte ret = buf[idx];
 			idx = idx + 1 & 0x3;

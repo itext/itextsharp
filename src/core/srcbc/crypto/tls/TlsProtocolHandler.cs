@@ -276,7 +276,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 										{
 											this.serverPublicKey = PublicKeyFactory.CreateKey(keyInfo);
 										}
-										catch (Exception e)
+										catch (Exception)
 										{
 											this.FailWithError(AL_fatal, AP_unsupported_certificate);
 										}

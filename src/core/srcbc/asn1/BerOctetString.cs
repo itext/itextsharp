@@ -78,30 +78,17 @@ namespace Org.BouncyCastle.Asn1
 
 		private ArrayList GenerateOcts()
         {
-            int start = 0;
-            int end = 0;
             ArrayList vec = new ArrayList();
+			for (int i = 0; i < str.Length; i += MaxLength)
+			{
+				int end = System.Math.Min(str.Length, i + MaxLength);
 
-            while ((end + 1) < str.Length)
-            {
-                if (str[end] == 0 && str[end + 1] == 0)
-                {
-                    byte[] nStr = new byte[end - start + 1];
+				byte[] nStr = new byte[end - i];
 
-                    Array.Copy(str, start, nStr, 0, nStr.Length);
+				Array.Copy(str, i, nStr, 0, nStr.Length);
 
-                    vec.Add(new DerOctetString(nStr));
-                    start = end + 1;
-                }
-                end++;
-            }
-
-			byte[] nStr2 = new byte[str.Length - start];
-
-			Array.Copy(str, start, nStr2, 0, nStr2.Length);
-
-			vec.Add(new DerOctetString(nStr2));
-
+				vec.Add(new DerOctetString(nStr));
+			}
 			return vec;
         }
 
@@ -117,28 +104,12 @@ namespace Org.BouncyCastle.Asn1
                 //
                 // write out the octet array
                 //
-                if (octs != null)
+                foreach (DerOctetString oct in this)
                 {
-                    foreach (DerOctetString oct in octs)
-                    {
-                        derOut.WriteObject(oct);
-                    }
-                }
-                else
-                {
-					for (int i = 0; i < str.Length; i += MaxLength)
-					{
-						int end = System.Math.Min(str.Length, i + MaxLength);
-
-						byte[] nStr = new byte[end - i];
-
-						Array.Copy(str, i, nStr, 0, nStr.Length);
-
-						derOut.WriteObject(new DerOctetString(nStr));
-					}
+                    derOut.WriteObject(oct);
                 }
 
-                derOut.WriteByte(0x00);
+				derOut.WriteByte(0x00);
                 derOut.WriteByte(0x00);
             }
             else

@@ -10,7 +10,8 @@ namespace Org.BouncyCastle.Asn1
     {
 		private static readonly byte[] EmptyBytes = new byte[0];
 
-		private int _length;
+		private readonly int _originalLength;
+		private int _remaining;
 
         internal DefiniteLengthInputStream(
             Stream	inStream,
@@ -20,7 +21,8 @@ namespace Org.BouncyCastle.Asn1
 			if (length < 0)
 				throw new ArgumentException("negative lengths not allowed", "length");
 
-			this._length = length;
+			this._originalLength = length;
+			this._remaining = length;
 
 			if (length == 0)
 			{
@@ -30,15 +32,15 @@ namespace Org.BouncyCastle.Asn1
 
 		public override int ReadByte()
         {
-			if (_length == 0)
+			if (_remaining == 0)
 				return -1;
 
 			int b = _in.ReadByte();
 
 			if (b < 0)
-				throw new EndOfStreamException();
+				throw new EndOfStreamException("DEF length " + _originalLength + " object truncated by " + _remaining);
 
-			if (--_length == 0)
+			if (--_remaining == 0)
 			{
 				SetParentEofDetect(true);
 			}
@@ -51,16 +53,16 @@ namespace Org.BouncyCastle.Asn1
 			int		off,
 			int		len)
 		{
-			if (_length == 0)
+			if (_remaining == 0)
 				return 0;
 
-			int toRead = System.Math.Min(len, _length);
+			int toRead = System.Math.Min(len, _remaining);
 			int numRead = _in.Read(buf, off, toRead);
 
 			if (numRead < 1)
-				throw new EndOfStreamException();
+				throw new EndOfStreamException("DEF length " + _originalLength + " object truncated by " + _remaining);
 
-			if ((_length -= numRead) == 0)
+			if ((_remaining -= numRead) == 0)
 			{
 				SetParentEofDetect(true);
 			}
@@ -70,13 +72,12 @@ namespace Org.BouncyCastle.Asn1
 
 		internal byte[] ToArray()
 		{
-			if (_length == 0)
+			if (_remaining == 0)
 				return EmptyBytes;
 
-			byte[] bytes = new byte[_length];
-			if (Streams.ReadFully(_in, bytes) < _length)
-				throw new EndOfStreamException();
-			_length = 0;
+			byte[] bytes = new byte[_remaining];
+			if ((_remaining -= Streams.ReadFully(_in, bytes)) != 0)
+				throw new EndOfStreamException("DEF length " + _originalLength + " object truncated by " + _remaining);
 			SetParentEofDetect(true);
 			return bytes;
 		}

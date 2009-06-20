@@ -1,6 +1,7 @@
 using System;
 
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Engines
 {
@@ -9,7 +10,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 	* generates keystream from a 128-bit secret key and a 128-bit initialization
 	* vector.
 	* <p>
-	* http://www.ecrypt.eu.org/stream/p3ciphers/hc/hc256_p3.pdf
+	* http://www.ecrypt.eu.org/stream/p3ciphers/hc/hc128_p3.pdf
 	* </p><p>
 	* It is a third phase candidate in the eStream contest, and is patent-free.
 	* No attacks are known as of today (April 2007). See
@@ -103,7 +104,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 		private void Init()
 		{
 			if (key.Length != 16)
-				throw new ArgumentException("The key must be 128 bit long");
+				throw new ArgumentException("The key must be 128 bits long");
 
 			cnt = 0;
 
@@ -111,13 +112,13 @@ namespace Org.BouncyCastle.Crypto.Engines
 
 			for (int i = 0; i < 16; i++)
 			{
-				w[i >> 3] |= ((uint)key[i] << (i & 0x7));
+				w[i >> 2] |= ((uint)key[i] << (8 * (i & 0x3)));
 			}
 			Array.Copy(w, 0, w, 4, 4);
 
 			for (int i = 0; i < iv.Length && i < 16; i++)
 			{
-				w[(i >> 3) + 8] |= ((uint)iv[i] << (i & 0x7));
+				w[(i >> 2) + 8] |= ((uint)iv[i] << (8 * (i & 0x3)));
 			}
 			Array.Copy(w, 8, w, 12, 4);
 
@@ -193,14 +194,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 		{
 			if (idx == 0)
 			{
-				uint step = Step();
-				buf[3] = (byte)step;
-				step >>= 8;
-				buf[2] = (byte)step;
-				step >>= 8;
-				buf[1] = (byte)step;
-				step >>= 8;
-				buf[0] = (byte)step;
+				Pack.UInt32_To_LE(Step(), buf);				
 			}
 			byte ret = buf[idx];
 			idx = idx + 1 & 0x3;

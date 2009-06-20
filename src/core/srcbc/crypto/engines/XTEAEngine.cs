@@ -1,6 +1,7 @@
 using System;
 
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Engines
 {
@@ -109,7 +110,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 			int i, j;
 			for (i = j = 0; i < 4; i++,j+=4)
 			{
-				_S[i] = bytesToUint(key, j);
+				_S[i] = Pack.BE_To_UInt32(key, j);
 			}
 
 			for (i = j = 0; i < rounds; i++)
@@ -127,8 +128,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 			int     outOff)
 		{
 			// Pack bytes into integers
-			uint v0 = bytesToUint(inBytes, inOff);
-			uint v1 = bytesToUint(inBytes, inOff + 4);
+			uint v0 = Pack.BE_To_UInt32(inBytes, inOff);
+			uint v1 = Pack.BE_To_UInt32(inBytes, inOff + 4);
 
 			for (int i = 0; i < rounds; i++)
 			{
@@ -136,8 +137,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 				v1 += ((v0 << 4 ^ v0 >> 5) + v0) ^ _sum1[i];
 			}
 
-			unpackUint(v0, outBytes, outOff);
-			unpackUint(v1, outBytes, outOff + 4);
+			Pack.UInt32_To_BE(v0, outBytes, outOff);
+			Pack.UInt32_To_BE(v1, outBytes, outOff + 4);
 
 			return block_size;
 		}
@@ -149,8 +150,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 			int		outOff)
 		{
 			// Pack bytes into integers
-			uint v0 = bytesToUint(inBytes, inOff);
-			uint v1 = bytesToUint(inBytes, inOff + 4);
+			uint v0 = Pack.BE_To_UInt32(inBytes, inOff);
+			uint v1 = Pack.BE_To_UInt32(inBytes, inOff + 4);
 
 			for (int i = rounds-1; i >= 0; i--)
 			{
@@ -158,26 +159,10 @@ namespace Org.BouncyCastle.Crypto.Engines
 				v0  -= ((v1 << 4 ^ v1 >> 5) + v1) ^ _sum0[i];
 			}
 
-			unpackUint(v0, outBytes, outOff);
-			unpackUint(v1, outBytes, outOff + 4);
+			Pack.UInt32_To_BE(v0, outBytes, outOff);
+			Pack.UInt32_To_BE(v1, outBytes, outOff + 4);
 
 			return block_size;
-		}
-
-		private uint bytesToUint(byte[] b, int inOff)
-		{
-			return ((uint)b[inOff++] << 24)
-				| ((uint)b[inOff++] << 16)
-				| ((uint)b[inOff++] << 8)
-				| ((uint)b[inOff]);
-		}
-
-		private void unpackUint(uint v, byte[] b, int outOff)
-		{
-			b[outOff++] = (byte)(v >> 24);
-			b[outOff++] = (byte)(v >> 16);
-			b[outOff++] = (byte)(v >>  8);
-			b[outOff] = (byte)v;
 		}
 	}
 }

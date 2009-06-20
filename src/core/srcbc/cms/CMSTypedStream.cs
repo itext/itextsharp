@@ -12,7 +12,6 @@ namespace Org.BouncyCastle.Cms
 
 		private readonly string	_oid;
 		private readonly Stream	_in;
-		private readonly int	_bufSize;
 
 		public CmsTypedStream(
 			Stream inStream)
@@ -33,7 +32,6 @@ namespace Org.BouncyCastle.Cms
 			int		bufSize)
 		{
 			_oid = oid;
-			_bufSize = bufSize;
 			_in = new FullReaderStream(inStream, bufSize);
 		}
 

@@ -226,10 +226,10 @@ namespace Org.BouncyCastle.Cms
 		private class CmsEnvelopedDataOutputStream
 			: BaseOutputStream
 		{
-			private CipherStream			_out;
-			private BerSequenceGenerator	_cGen;
-			private BerSequenceGenerator	_envGen;
-			private BerSequenceGenerator	_eiGen;
+			private readonly CipherStream			_out;
+			private readonly BerSequenceGenerator	_cGen;
+			private readonly BerSequenceGenerator	_envGen;
+			private readonly BerSequenceGenerator	_eiGen;
 
 			public CmsEnvelopedDataOutputStream(
 				CipherStream			outStream,

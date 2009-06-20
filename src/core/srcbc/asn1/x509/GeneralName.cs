@@ -177,7 +177,7 @@ namespace Org.BouncyCastle.Asn1.X509
 					case X400Address:
 						throw new ArgumentException("unknown tag: " + tag);
 					case DirectoryName:
-						return new GeneralName(tag, Asn1Sequence.GetInstance(tagObj, true));
+						return new GeneralName(tag, X509Name.GetInstance(tagObj, true));
 					case EdiPartyName:
 						return new GeneralName(tag, Asn1Sequence.GetInstance(tagObj, false));
 					case UniformResourceIdentifier:
