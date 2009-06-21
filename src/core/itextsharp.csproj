@@ -708,6 +708,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "iTextSharp\text\pdf\IOcspClient.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "iTextSharp\text\pdf\IPdfOCG.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -728,12 +733,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "iTextSharp\text\pdf\ITSAClient.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "iTextSharp\text\pdf\LZWDecoder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "iTextSharp\text\pdf\MultiColumnText.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "iTextSharp\text\pdf\OcspClientBouncyCastle.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -1299,6 +1314,11 @@
                 />
                 <File
                     RelPath = "iTextSharp\text\pdf\TrueTypeFontUnicode.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "iTextSharp\text\pdf\TSAClientBouncyCastle.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
