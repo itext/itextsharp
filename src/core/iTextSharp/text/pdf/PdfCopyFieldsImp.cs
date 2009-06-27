@@ -74,6 +74,7 @@ namespace iTextSharp.text.pdf {
         private Hashtable tabOrder;
         private ArrayList calculationOrder = new ArrayList();
         private ArrayList calculationOrderRefs;
+        private bool hasSignature;
         
         internal PdfCopyFieldsImp(Stream os) : this(os, '\0') {
         }
@@ -99,7 +100,7 @@ namespace iTextSharp.text.pdf {
         
         internal void AddDocument(PdfReader reader) {
             if (!reader.IsOpenedWithFullPermissions)
-                throw new ArgumentException("PdfReader not opened with owner password");
+                throw new BadPasswordException("PdfReader not opened with owner password");
             OpenDoc();
             if (readers2intrefs.ContainsKey(reader)) {
                 reader = new PdfReader(reader);
@@ -132,7 +133,7 @@ namespace iTextSharp.text.pdf {
                 if (obj == null || obj.Type != PdfObject.DICTIONARY)
                     break;
                 PdfDictionary dic = (PdfDictionary)obj;
-                PdfString t = (PdfString)PdfReader.GetPdfObject(dic.Get(PdfName.T));
+                PdfString t = dic.GetAsString(PdfName.T);
                 if (t != null) {
                     name = t.ToUnicodeString()+ "." + name;
                 }
@@ -143,18 +144,17 @@ namespace iTextSharp.text.pdf {
             return name;
         }
         
-        private void UpdateCalculationOrder(PdfReader reader) {
+        protected internal void UpdateCalculationOrder(PdfReader reader) {
             PdfDictionary catalog = reader.Catalog;
-            PdfDictionary acro = (PdfDictionary)PdfReader.GetPdfObject(catalog.Get(PdfName.ACROFORM));
+            PdfDictionary acro = catalog.GetAsDict(PdfName.ACROFORM);
             if (acro == null)
                 return;
-            PdfArray co = (PdfArray)PdfReader.GetPdfObject(acro.Get(PdfName.CO));
+            PdfArray co = acro.GetAsArray(PdfName.CO);
             if (co == null || co.Size == 0)
                 return;
             AcroFields af = reader.AcroFields;
-            ArrayList coa = co.ArrayList;
-            for (int k = 0; k < coa.Count; ++k) {
-                PdfObject obj = (PdfObject)coa[k];
+            for (int k = 0; k < co.Size; ++k) {
+                PdfObject obj = co[k];
                 if (obj == null || !obj.IsIndirect())
                     continue;
                 String name = GetCOName(reader, (PRIndirectReference)obj) ;
@@ -195,9 +195,9 @@ namespace iTextSharp.text.pdf {
                     break;
                 }
                 case PdfObject.ARRAY: {
-                    ArrayList list = ((PdfArray)obj).ArrayList;
                     //PdfArray arr = new PdfArray();
-                    foreach (PdfObject ob in list) {
+                    for (ListIterator it = ((PdfArray)obj).GetListIterator(); it.HasNext();) {
+                        PdfObject ob = (PdfObject)it.Next();
                         if (ob != null && ob.IsIndirect()) {
                             PRIndirectReference ind = (PRIndirectReference)ob;
                             if (!IsVisited(ind) && !IsPage(ind)) {
@@ -234,14 +234,14 @@ namespace iTextSharp.text.pdf {
                 for (int k = size; k >= 0; --k) {
                     if ((int)t[k] <= v) {
                         t.Insert(k + 1, v);
-                        annots.ArrayList.Insert(k + 1, ind);
+                        annots.Add(k + 1, ind);
                         size = -2;
                         break;
                     }
                 }
                 if (size != -2) {
                     t.Insert(0, v);
-                    annots.ArrayList.Insert(0, ind);
+                    annots.Add(0, ind);
                 }
             }
         }
@@ -272,7 +272,7 @@ namespace iTextSharp.text.pdf {
                         dic.MergeDifferent((PdfDictionary)list[2]);
                         int page = (int)list[1];
                         PdfDictionary pageDic = (PdfDictionary)pageDics[page - 1];
-                        PdfArray annots = (PdfArray)PdfReader.GetPdfObject(pageDic.Get(PdfName.ANNOTS));
+                        PdfArray annots = pageDic.GetAsArray(PdfName.ANNOTS);
                         if (annots == null) {
                             annots = new PdfArray();
                             pageDic.Put(PdfName.ANNOTS, annots);
@@ -286,7 +286,7 @@ namespace iTextSharp.text.pdf {
                         for (int k = 1; k < list.Count; k += 2) {
                             int page = (int)list[k];
                             PdfDictionary pageDic = (PdfDictionary)pageDics[page - 1];
-                            PdfArray annots = (PdfArray)PdfReader.GetPdfObject(pageDic.Get(PdfName.ANNOTS));
+                            PdfArray annots = pageDic.GetAsArray(PdfName.ANNOTS);
                             if (annots == null) {
                                 annots = new PdfArray();
                                 pageDic.Put(PdfName.ANNOTS, annots);
@@ -321,6 +321,8 @@ namespace iTextSharp.text.pdf {
             tabOrder = new Hashtable();
             calculationOrderRefs = new ArrayList(calculationOrder);
             form.Put(PdfName.FIELDS, BranchForm(fieldTree, null, ""));
+            if (hasSignature)
+                form.Put(PdfName.SIGFLAGS, new PdfNumber(3));
             PdfArray co = new PdfArray();
             for (int k = 0; k < calculationOrderRefs.Count; ++k) {
                 Object obj = calculationOrderRefs[k];
@@ -393,15 +395,17 @@ namespace iTextSharp.text.pdf {
                 return;
             foreach (AcroFields.Item item in fd.Values) {
                 ArrayList page = item.page;
-                for (int k = 0; k < page.Count; ++k)
-                    page[k] = (int)page[k] + pageOffset;
+                for (int k = 0; k < page.Count; ++k) {
+                    int p = item.GetPage(k);
+                    item.ForcePage(k, p + pageOffset);
+                }
             }
         }
 
         internal void CreateWidgets(ArrayList list, AcroFields.Item item) {
-            for (int k = 0; k < item.merged.Count; ++k) {
-                list.Add(item.page[k]);
-                PdfDictionary merged = (PdfDictionary)item.merged[k];
+            for (int k = 0; k < item.Size; ++k) {
+                list.Add(item.GetPage(k));
+                PdfDictionary merged = item.GetMerged(k);
                 PdfObject dr = merged.Get(PdfName.DR);
                 if (dr != null)
                     PdfFormField.MergeResources(resources, (PdfDictionary)PdfReader.GetPdfObject(dr));
@@ -410,7 +414,7 @@ namespace iTextSharp.text.pdf {
                     if (widgetKeys.ContainsKey(key))
                         widget.Put(key, merged.Get(key));
                 }
-                widget.Put(iTextTag, new PdfNumber((int)item.tabOrder[k] + 1));
+                widget.Put(iTextTag, new PdfNumber(item.GetTabOrder(k) + 1));
                 list.Add(widget);
             }
         }
@@ -438,9 +442,11 @@ namespace iTextSharp.text.pdf {
                 else {
                     if (obj is Hashtable)
                         return;
-                    PdfDictionary merged = (PdfDictionary)item.merged[0];
+                    PdfDictionary merged = item.GetMerged(0);
                     if (obj == null) {
                         PdfDictionary field = new PdfDictionary();
+                        if (PdfName.SIG.Equals(merged.Get(PdfName.FT)))
+                            hasSignature = true;
                         foreach (PdfName key in merged.Keys) {
                             if (fieldKeys.ContainsKey(key))
                                 field.Put(key, merged.Get(key));
@@ -526,26 +532,51 @@ namespace iTextSharp.text.pdf {
             return n;
         }
         
-        protected bool IsVisited(PdfReader reader, int number, int generation) {
+        /**
+        * Sets a reference to "visited" in the copy process.
+        * @param   ref the reference that needs to be set to "visited"
+        * @return  true if the reference was set to visited
+        */
+        protected internal bool SetVisited(PRIndirectReference refi) {
+            IntHashtable refs = (IntHashtable)visited[refi.Reader];
+            if (refs != null) {
+                int old = refs[refi.Number];
+                refs[refi.Number] = 1;
+                return (old != 0);
+            }
+            else
+                return false;
+        }
+        
+        /**
+        * Checks if a reference has already been "visited" in the copy process.
+        * @param   ref the reference that needs to be checked
+        * @return  true if the reference was already visited
+        */
+        protected internal bool IsVisited(PRIndirectReference refi) {
+            IntHashtable refs = (IntHashtable)visited[refi.Reader];
+            if (refs != null)
+                return refs.ContainsKey(refi.Number);
+            else
+                return false;
+        }
+        
+        protected internal bool IsVisited(PdfReader reader, int number, int generation) {
             IntHashtable refs = (IntHashtable)readers2intrefs[reader];
             return refs.ContainsKey(number);
         }
         
-        protected bool IsVisited(PRIndirectReference refi) {
-            IntHashtable refs = (IntHashtable)visited[refi.Reader];
-            return refs.ContainsKey(refi.Number);
-        }
-        
-        protected bool SetVisited(PRIndirectReference refi) {
-            IntHashtable refs = (IntHashtable)visited[refi.Reader];
-            int old = refs[refi.Number];
-            refs[refi.Number] = 1;
-            return (old != 0);
-        }
-        
-        protected bool IsPage(PRIndirectReference refi) {
-            IntHashtable refs = (IntHashtable)pages2intrefs[refi.Reader] ;
-            return refs.ContainsKey(refi.Number);
+        /**
+        * Checks if a reference refers to a page object.
+        * @param   ref the reference that needs to be checked
+        * @return  true is the reference refers to a page object.
+        */
+        protected internal bool IsPage(PRIndirectReference refi) {
+            IntHashtable refs = (IntHashtable)pages2intrefs[refi.Reader];
+            if (refs != null)
+                return refs.ContainsKey(refi.Number);
+            else
+                return false;
         }
 
         internal override RandomAccessFileOrArray GetReaderFile(PdfReader reader) {
