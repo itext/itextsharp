@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections;
 using System.util;
 using iTextSharp.text;
+using iTextSharp.text.pdf;
 using iTextSharp.text.rtf;
 using iTextSharp.text.rtf.document;
 using iTextSharp.text.rtf.style;
@@ -131,6 +132,28 @@ namespace iTextSharp.text.rtf.table {
         private bool deleted = false;
 
         /**
+        * Whether to use generic padding or individual 
+        * padding values (cellPaddingLeft, cellPaddingTop, cellPaddingBottom, cellPaddingRight)
+        */
+        //private bool usePadding = false;
+        /*
+        * Cell padding left
+        */
+        private float cellPaddingLeft = 0;
+        /*
+        * Cell padding top
+        */
+        private float cellPaddingTop = 0;
+        /*
+        * Cell padding bottom
+        */
+        private float cellPaddingBottom = 0;
+        /*
+        * Cell padding right
+        */
+        private float cellPaddingRight = 0;
+
+        /**
         * Constructs an empty RtfCell
         */
         public RtfCell() : base() {
@@ -183,6 +206,19 @@ namespace iTextSharp.text.rtf.table {
         }
 
         /**
+        * Constructs a RtfCell based on a Cell.
+        * 
+        * @param doc The RtfDocument this RtfCell belongs to
+        * @param row The RtfRow this RtfCell lies in
+        * @param cell The PdfPCell to base this RtfCell on
+        * @since 2.1.3
+        */
+        protected internal RtfCell(RtfDocument doc, RtfRow row, PdfPCell cell) {
+            this.document = doc;
+            this.parentRow = row;
+            ImportCell(cell);
+        }
+        /**
         * Imports the Cell properties into the RtfCell
         * 
         * @param cell The Cell to import
@@ -229,7 +265,7 @@ namespace iTextSharp.text.rtf.table {
                     } else {
                         if (container != null) {
                             IRtfBasicElement[] rtfElements = this.document.GetMapper().MapElement(container);
-                            for(int i = 0; i < rtfElements.Length; i++) {
+                            for (int i = 0; i < rtfElements.Length; i++) {
                                 rtfElements[i].SetInTable(true);
                                 this.content.Add(rtfElements[i]);
                             }
@@ -242,7 +278,7 @@ namespace iTextSharp.text.rtf.table {
                         }
                         
                         IRtfBasicElement[] rtfElements2 = this.document.GetMapper().MapElement(element);
-                        for(int i = 0; i < rtfElements2.Length; i++) {
+                        for (int i = 0; i < rtfElements2.Length; i++) {
                             rtfElements2[i].SetInTable(true);
                             this.content.Add(rtfElements2[i]);
                         }
@@ -253,7 +289,7 @@ namespace iTextSharp.text.rtf.table {
             if (container != null) {
                 try {
                     IRtfBasicElement[] rtfElements = this.document.GetMapper().MapElement(container);
-                    for(int i = 0; i < rtfElements.Length; i++) {
+                    for (int i = 0; i < rtfElements.Length; i++) {
                         rtfElements[i].SetInTable(true);
                         this.content.Add(rtfElements[i]);
                     }
@@ -262,6 +298,157 @@ namespace iTextSharp.text.rtf.table {
             }
         }
         
+        /**
+        * Imports the Cell properties into the RtfCell
+        * 
+        * @param cell The PdfPCell to import
+        * @since 2.1.3
+        */
+        private void ImportCell(PdfPCell cell) {
+            this.content = new ArrayList();
+            
+            if (cell == null) {
+                this.borders = new RtfBorderGroup(this.document, RtfBorder.CELL_BORDER, this.parentRow.GetParentTable().GetBorders());
+                return;
+            }
+            
+            // padding
+            this.cellPadding = (int) this.parentRow.GetParentTable().GetCellPadding();
+            this.cellPaddingBottom = cell.PaddingBottom;
+            this.cellPaddingTop = cell.PaddingTop;
+            this.cellPaddingRight = cell.PaddingRight;
+            this.cellPaddingLeft = cell.PaddingLeft;
+            
+            // BORDERS
+            this.borders = new RtfBorderGroup(this.document, RtfBorder.CELL_BORDER, cell.Border, cell.BorderWidth, cell.BorderColor);
+
+            // border colors
+            this.border = cell.Border;
+            this.borderColor = cell.BorderColor;
+            this.borderColorBottom = cell.BorderColorBottom;
+            this.borderColorTop = cell.BorderColorTop;
+            this.borderColorLeft = cell.BorderColorLeft;
+            this.borderColorRight = cell.BorderColorRight;
+            
+            // border widths
+            this.borderWidth = cell.BorderWidth;
+            this.borderWidthBottom = cell.BorderWidthBottom;
+            this.borderWidthTop = cell.BorderWidthTop;
+            this.borderWidthLeft = cell.BorderWidthLeft;
+            this.borderWidthRight = cell.BorderWidthRight;
+            
+           
+            this.colspan = cell.Colspan;
+            this.rowspan = 1; //cell.GetRowspan();
+    //        if (cell.GetRowspan() > 1) {
+    //            this.mergeType = MERGE_VERT_PARENT;
+    //        }
+
+            
+            this.verticalAlignment = cell.VerticalAlignment;
+            
+            if (cell.BackgroundColor == null) {
+                this.backgroundColor = new RtfColor(this.document, 255, 255, 255);
+            } else {
+                this.backgroundColor = new RtfColor(this.document, cell.BackgroundColor);
+            }
+            
+            
+            // does it have column composite info?
+            ArrayList compositeElements = cell.CompositeElements;
+            if (compositeElements != null) {
+                // does it have column info?
+                Paragraph container = null;
+                foreach (IElement element in compositeElements) {
+                    try {
+                        // should we wrap it in a paragraph
+                        if (!(element is Paragraph) && !(element is List)) {
+                            if (container != null) {
+                                container.Add(element);
+                            } else {
+                                container = new Paragraph();
+                                container.Alignment = cell.HorizontalAlignment;
+                                container.Add(element);
+                            }
+                        } else {
+                            IRtfBasicElement[] rtfElements = null;
+                            if (container != null) {
+                                rtfElements = this.document.GetMapper().MapElement(container);
+                                for (int i = 0; i < rtfElements.Length; i++) {
+                                    rtfElements[i].SetInTable(true);
+                                    this.content.Add(rtfElements[i]);
+                                }
+                                container = null;
+                            }
+                            // if horizontal alignment is undefined overwrite
+                            // with that of enclosing cell
+                            if (element is Paragraph && ((Paragraph) element).Alignment == Element.ALIGN_UNDEFINED) {
+                                ((Paragraph) element).Alignment = cell.HorizontalAlignment;
+                            }
+        
+                            rtfElements = this.document.GetMapper().MapElement(element);
+                            for (int i = 0; i < rtfElements.Length; i++) {
+                                rtfElements[i].SetInTable(true);
+                                this.content.Add(rtfElements[i]);
+                            }
+                        }
+                    } catch (DocumentException) {
+                    }
+                }
+                if (container != null) {
+                    try {
+                        IRtfBasicElement[] rtfElements = this.document.GetMapper().MapElement(container);
+                        for (int i = 0; i < rtfElements.Length; i++) {
+                            rtfElements[i].SetInTable(true);
+                            this.content.Add(rtfElements[i]);
+                        }
+                    } catch (DocumentException) {
+                    }
+                }
+            }
+
+            // does it have image info?
+
+            Image img = cell.Image;
+            if (img != null) {
+                try {
+                    IRtfBasicElement[] rtfElements = this.document.GetMapper().MapElement(img);
+                    for (int i = 0; i < rtfElements.Length; i++) {
+                        rtfElements[i].SetInTable(true);
+                        this.content.Add(rtfElements[i]);
+                    }
+                } catch (DocumentException) {
+                }
+            }
+            // does it have phrase info?
+            Phrase phrase = cell.Phrase;
+            if (phrase != null) {
+                try {
+                    IRtfBasicElement[] rtfElements = this.document.GetMapper().MapElement(phrase);
+                    for (int i = 0; i < rtfElements.Length; i++) {
+                        rtfElements[i].SetInTable(true);
+                        this.content.Add(rtfElements[i]);
+                    }
+                } catch (DocumentException) {
+                }
+            }
+            // does it have table info?
+            PdfPTable table = cell.Table;
+            if (table != null) {
+                this.Add(table);
+    //            try {
+    //              RtfBasicElement[] rtfElements = this.document.GetMapper().MapElement(table);
+    //              for (int i = 0; i < rtfElements.length; i++) {
+    //                  rtfElements[i].SetInTable(true);
+    //                  this.content.Add(rtfElements[i]);
+    //              }
+    //          } catch (DocumentException e) {
+    //              // TODO Auto-generated catch block
+    //              e.PrintStackTrace();
+    //          }
+            }
+
+        }
         /**
         * Write the cell definition part of this RtfCell
         * 
@@ -292,14 +479,14 @@ namespace iTextSharp.text.rtf.table {
                 result.Write(t = DocWriter.GetISOBytes("\\clcbpat"), 0, t.Length);
                 result.Write(t = IntToByteArray(this.backgroundColor.GetColorNumber()), 0, t.Length);
             }
-            result.WriteByte((byte)'\n');
+            this.document.OutputDebugLinebreak(result);
             
             result.Write(t = DocWriter.GetISOBytes("\\clftsWidth3"), 0, t.Length);
-            result.WriteByte((byte)'\n');
+            this.document.OutputDebugLinebreak(result);
             
             result.Write(t = DocWriter.GetISOBytes("\\clwWidth"), 0, t.Length);
             result.Write(t = IntToByteArray(this.cellWidth), 0, t.Length);
-            result.WriteByte((byte)'\n');
+            this.document.OutputDebugLinebreak(result);
             
             if (this.cellPadding > 0) {
                 result.Write(t = DocWriter.GetISOBytes("\\clpadl"), 0, t.Length);

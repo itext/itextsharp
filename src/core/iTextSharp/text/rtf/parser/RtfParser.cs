@@ -80,6 +80,11 @@ namespace iTextSharp.text.rtf.parser {
         private bool logAppend = false;
         
         /**
+        * The iText element to add the RTF document to.
+        * @since 2.1.3
+        */
+        private IElement elem = null;
+        /**
         * The iText document to add the RTF document to.
         */
         private Document document = null;
@@ -246,7 +251,7 @@ namespace iTextSharp.text.rtf.parser {
         /**
         * Currently a blipuid control word is being parsed.
         */
-        public const int PARSER_IN_BLIPUID = PARSER_IN_DOCUMENT | 0x000013; //18
+        public const int PARSER_IN_BLIPUID = PARSER_IN_DOCUMENT | 0x000013; //19
 
         /* other states */
         /**
@@ -287,6 +292,11 @@ namespace iTextSharp.text.rtf.parser {
         */
         public const int TYPE_CONVERT = 2;
 
+        /**
+        * Conversion type to import a document into an element. i.e. Chapter, Section, Table Cell, etc.
+        * @since 2.1.4
+        */
+        public const int TYPE_IMPORT_INTO_ELEMENT = 3;
         
         /**
         * Destination is normal. Text is processed.
@@ -438,6 +448,14 @@ namespace iTextSharp.text.rtf.parser {
         /** The <code>RtfCtrlWordListener</code>. */
         private ArrayList listeners = new ArrayList();
 
+        /**
+        * Constructor 
+        * @param doc
+        * @since 2.1.3
+        */
+        public RtfParser(Document doc) {
+            this.document = doc;
+        }
         /* *********
         *  READER *
         ***********/
@@ -452,7 +470,33 @@ namespace iTextSharp.text.rtf.parser {
         */
         public void ImportRtfDocument(Stream readerIn, RtfDocument rtfDoc) {
             if (readerIn == null || rtfDoc == null) return;
-            this.Init(TYPE_IMPORT_FULL, rtfDoc, readerIn, null);
+            this.Init(TYPE_IMPORT_FULL, rtfDoc, readerIn, this.document, null);
+            this.SetCurrentDestination(RtfDestinationMgr.DESTINATION_NULL);
+            startDate = DateTime.Now;
+            startTime = startDate.Ticks / 10000L;
+            this.groupLevel = 0;
+            try {
+                this.Tokenise();
+            } catch  {
+            }
+            endDate = DateTime.Now;
+            endTime = endDate.Ticks / 10000L;
+        }
+
+        /**
+        * Imports a complete RTF document into an Element, i.e. Chapter, section, Table Cell, etc.
+        * 
+        * @param elem The Element the document is to be imported into.
+        * @param readerIn 
+        *       The Reader to read the RTF document from.
+        * @param rtfDoc 
+        *       The RtfDocument to add the imported document to.
+        * @throws IOException On I/O errors.
+        * @since 2.1.4
+        */
+        public void ImportRtfDocumentIntoElement(IElement elem, Stream readerIn, RtfDocument rtfDoc) {
+            if(readerIn == null || rtfDoc == null || elem == null) return;
+            this.Init(TYPE_IMPORT_INTO_ELEMENT, rtfDoc, readerIn, this.document, elem);
             this.SetCurrentDestination(RtfDestinationMgr.DESTINATION_NULL);
             startDate = DateTime.Now;
             startTime = startDate.Ticks / 10000L;
@@ -480,7 +524,7 @@ namespace iTextSharp.text.rtf.parser {
         */
         public void ConvertRtfDocument(Stream readerIn, Document doc) {
             if (readerIn == null || doc == null) return;
-            this.Init(TYPE_CONVERT, null, readerIn, doc);
+            this.Init(TYPE_CONVERT, null, readerIn, doc, null);
             this.SetCurrentDestination(RtfDestinationMgr.DESTINATION_DOCUMENT);
             startDate = DateTime.Now;
             startTime = startDate.Ticks / 10000L;
@@ -505,7 +549,7 @@ namespace iTextSharp.text.rtf.parser {
         public void ImportRtfFragment(Stream readerIn, RtfDocument rtfDoc, RtfImportMappings importMappings) {
         //public void ImportRtfFragment2(Reader readerIn, RtfDocument rtfDoc, RtfImportMappings importMappings) throws IOException {
             if (readerIn == null || rtfDoc == null || importMappings==null) return;
-            this.Init(TYPE_IMPORT_FRAGMENT, rtfDoc, readerIn, null);
+            this.Init(TYPE_IMPORT_FRAGMENT, rtfDoc, readerIn, null, null);
             this.HandleImportMappings(importMappings);
             this.SetCurrentDestination(RtfDestinationMgr.DESTINATION_DOCUMENT);
             this.groupLevel = 1;
@@ -547,7 +591,7 @@ namespace iTextSharp.text.rtf.parser {
         * @param readerIn The input stream
         * @param doc The iText <code>Document</code>
         */
-        private void Init(int type, RtfDocument rtfDoc, Stream readerIn, Document doc) {
+        private void Init(int type, RtfDocument rtfDoc, Stream readerIn, Document doc, IElement elem) {
 
             Init_stats();
             // initialize reader to a PushbackReader
@@ -556,6 +600,7 @@ namespace iTextSharp.text.rtf.parser {
             this.conversionType = type;
             this.rtfDoc = rtfDoc;
             this.document = doc;
+            this.elem = elem;
             this.currentState = new RtfParserState();
             this.stackState = new Stack();
             this.SetParserState(PARSER_STARTSTOP);
@@ -728,7 +773,7 @@ namespace iTextSharp.text.rtf.parser {
                 this.importMgr.ImportColor(colorNr, (Color) importMappings.GetColorMappings()[colorNr]);
             }
             foreach (String listNr in importMappings.GetListMappings().Keys) {
-                this.importMgr.ImportList(listNr, (List) importMappings.GetListMappings()[listNr]);
+                this.importMgr.ImportList(listNr, (String)importMappings.GetListMappings()[listNr]);
             }
             foreach (String stylesheetListNr in importMappings.GetStylesheetListMappings().Keys) {
                 this.importMgr.ImportStylesheetList(stylesheetListNr, (List) importMappings.GetStylesheetListMappings()[stylesheetListNr]);
@@ -762,7 +807,7 @@ namespace iTextSharp.text.rtf.parser {
                 this.groupSkippedCount++;
             }
         
-            RtfDestination dest = (RtfDestination)this.GetCurrentDestination();
+            RtfDestination dest = this.GetCurrentDestination();
             bool handled = false;
             
             if (dest != null) {
@@ -781,7 +826,7 @@ namespace iTextSharp.text.rtf.parser {
             // do not set this true until after the state is pushed
             // otherwise it inserts a { where one does not belong.
             this.currentState.newGroup = true;
-            dest = (RtfDestination)this.GetCurrentDestination();
+            dest = this.GetCurrentDestination();
             
             if (debugParser) {
                 RtfParser.OutputDebug(this.rtfDoc, groupLevel, "DEBUG: HandleOpenGroup()");
@@ -834,7 +879,7 @@ namespace iTextSharp.text.rtf.parser {
                     RtfParser.OutputDebug(this.rtfDoc, groupLevel, "DEBUG: destination=" + this.GetCurrentDestination().ToString());
                     RtfParser.OutputDebug(this.rtfDoc, groupLevel, "");
                 }
-                RtfDestination dest = (RtfDestination)this.GetCurrentDestination();
+                RtfDestination dest = this.GetCurrentDestination();
                 bool handled = false;
                 
                 if (dest != null) {
@@ -923,7 +968,7 @@ namespace iTextSharp.text.rtf.parser {
 
             bool handled = false;
 
-            RtfDestination dest = (RtfDestination)this.GetCurrentDestination();
+            RtfDestination dest = this.GetCurrentDestination();
             if (dest != null) {
                 handled = dest.HandleCharacter(nextChar);
             }
@@ -1128,7 +1173,7 @@ namespace iTextSharp.text.rtf.parser {
     //          if (groupLevel < 0 && this.IsConvert()) return; //return errStackUnderflow;
                 
             }// end while (reader.Read(nextChar) != -1)
-            RtfDestination dest = (RtfDestination)this.GetCurrentDestination();
+            RtfDestination dest = this.GetCurrentDestination();
             if (dest != null) {
                 dest.CloseDestination();
             }

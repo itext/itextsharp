@@ -343,5 +343,16 @@ namespace iTextSharp.text.rtf.document {
         public IRtfBasicElement GetLastElementWritten() {
             return this.lastElementWritten;
         }
+
+        /**
+        * Helper method outputs linebreak in document if debugging is turned on.
+        * @param result the OutputStream to write the linebreak to.
+        * @throws IOException
+        * @since 2.1.3
+        */
+        public void OutputDebugLinebreak(Stream result) {
+            if(this.GetDocumentSettings().IsOutputDebugLineBreaks())
+                result.WriteByte((byte)'\n');
+        }
     }
 }

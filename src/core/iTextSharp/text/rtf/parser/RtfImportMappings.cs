@@ -118,7 +118,7 @@ namespace iTextSharp.text.rtf.parser {
         * @param listNr The List number.
         * @param list The List.
         */
-        public void AddList(String listNr, Color list) {
+        public void AddList(String listNr, string list) {
             this.listMappings[listNr] = list;
         }
         /**
@@ -127,7 +127,7 @@ namespace iTextSharp.text.rtf.parser {
         * @param stylesheetListNr The Stylesheet List number.
         * @param list The StylesheetList.
         */
-        public void AddStylesheetList(String stylesheetListNr, Color list) {
+        public void AddStylesheetList(String stylesheetListNr, string list) {
             this.stylesheetListMappings[stylesheetListNr] = list;
         }   
         

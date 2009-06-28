@@ -258,6 +258,8 @@ namespace iTextSharp.text.rtf.parser.destinations {
                 if (ctrlWordData.ctrlWord.Equals("trcbpat")) { ctrlWordData.param = this.rtfParser.GetImportManager().MapColorNr(ctrlWordData.param);}
                 //paragraph border
                 if (ctrlWordData.ctrlWord.Equals("brdrcf")) { ctrlWordData.param = this.rtfParser.GetImportManager().MapColorNr(ctrlWordData.param);}
+                // map lists
+                if(ctrlWordData.ctrlWord.Equals("ls")) { ctrlWordData.param = this.rtfParser.GetImportManager().MapListNr(ctrlWordData.param);}
             }
             
 

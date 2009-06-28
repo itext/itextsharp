@@ -66,29 +66,9 @@ namespace iTextSharp.text.rtf.list {
     public class RtfListTable : RtfElement, IRtfExtendedElement {
 
         /**
-        * Constant for the list number
-        */
-        protected internal static byte[] LIST_NUMBER = DocWriter.GetISOBytes("\\ls");
-        /**
         * Constant for the list table
         */
         private static byte[] LIST_TABLE = DocWriter.GetISOBytes("\\*\\listtable");
-        /**
-        * Constant for the list
-        */
-        private static byte[] LIST = DocWriter.GetISOBytes("\\list");
-        /**
-        * Constant for the list template id
-        */
-        private static byte[] LIST_TEMPLATE_ID = DocWriter.GetISOBytes("\\listtemplateid");
-        /**
-        * Constant for the hybrid list
-        */
-        private static byte[] LIST_HYBRID = DocWriter.GetISOBytes("\\listhybrid");
-        /**
-        * Constant for the list id
-        */
-        private static byte[] LIST_ID = DocWriter.GetISOBytes("\\listid");
         /**
         * Constant for the list override table
         */
@@ -108,12 +88,18 @@ namespace iTextSharp.text.rtf.list {
         private ArrayList lists;
         
         /**
+        * The RtfPictureList lists managed by this RtfListTable
+        */
+        private ArrayList picturelists;
+
+        /**
         * Constructs a RtfListTable for a RtfDocument
         * 
         * @param doc The RtfDocument this RtfListTable belongs to
         */
         public RtfListTable(RtfDocument doc) : base(doc) {
             this.lists = new ArrayList();
+            this.picturelists = new ArrayList();
         }
 
         /**
@@ -127,44 +113,47 @@ namespace iTextSharp.text.rtf.list {
         */
         public virtual void WriteDefinition(Stream result) {
             byte[] t;
-            int[] listIds = new int[lists.Count];
             result.Write(OPEN_GROUP, 0, OPEN_GROUP.Length);
             result.Write(LIST_TABLE, 0, LIST_TABLE.Length);
-            result.WriteByte((byte)'\n');
+            this.document.OutputDebugLinebreak(result);
+            
+            for (int i = 0; i < picturelists.Count; i++) {
+                RtfPictureList l = (RtfPictureList)picturelists[i];
+    //          l.SetID(document.GetRandomInt());
+                l.WriteDefinition(result);
+                this.document.OutputDebugLinebreak(result);
+            }
+
             for (int i = 0; i < lists.Count; i++) {
-                result.Write(OPEN_GROUP, 0, OPEN_GROUP.Length);
-                result.Write(LIST, 0, LIST.Length);
-                result.Write(LIST_TEMPLATE_ID, 0, LIST_TEMPLATE_ID.Length);
-                result.Write(t = IntToByteArray(document.GetRandomInt()), 0, t.Length);
-                result.Write(LIST_HYBRID, 0, LIST_HYBRID.Length);
-                result.WriteByte((byte)'\n');
-                RtfList rList = (RtfList)lists[i]; 
-                rList.WriteDefinition(result);
-                result.Write(LIST_ID, 0, LIST_ID.Length);
-                listIds[i] = document.GetRandomInt();
-                result.Write(t = IntToByteArray(listIds[i]), 0, t.Length);
-                result.Write(CLOSE_GROUP, 0, CLOSE_GROUP.Length);
-                result.WriteByte((byte)'\n');
+                RtfList l = (RtfList)lists[i];
+                l.SetID(document.GetRandomInt());
+                l.WriteDefinition(result);
+                this.document.OutputDebugLinebreak(result);
             }
             result.Write(CLOSE_GROUP, 0, CLOSE_GROUP.Length);
-            result.WriteByte((byte)'\n');
+            this.document.OutputDebugLinebreak(result);
+            
             result.Write(OPEN_GROUP, 0, OPEN_GROUP.Length);
             result.Write(LIST_OVERRIDE_TABLE, 0, LIST_OVERRIDE_TABLE.Length);
-            result.WriteByte((byte)'\n');
+            this.document.OutputDebugLinebreak(result);
+            
+            // list override index values are 1-based, not 0.
+            // valid list override index values \ls are 1 to 2000.
+            // if there are more then 2000 lists, the result is undefined.
             for (int i = 0; i < lists.Count; i++) {
                 result.Write(OPEN_GROUP, 0, OPEN_GROUP.Length);
                 result.Write(LIST_OVERRIDE, 0, LIST_OVERRIDE.Length);
-                result.Write(LIST_ID, 0, LIST_ID.Length);
-                result.Write(t = IntToByteArray(listIds[i]), 0, t.Length);
+                result.Write(RtfList.LIST_ID, 0, RtfList.LIST_ID.Length);
+                result.Write(t = IntToByteArray( ((RtfList) lists[i]).GetID() ), 0, t.Length);
                 result.Write(LIST_OVERRIDE_COUNT, 0, LIST_OVERRIDE_COUNT.Length);
-                result.Write(t = IntToByteArray(0), 0, t.Length);
-                result.Write(LIST_NUMBER, 0, LIST_NUMBER.Length);
-                result.Write(t = IntToByteArray(((RtfList) lists[i]).GetListNumber()), 0, t.Length);
+                result.Write(t = IntToByteArray(0), 0, t.Length);    // is this correct? Spec says valid values are 1 or 9.
+                result.Write(RtfList.LIST_NUMBER, 0, RtfList.LIST_NUMBER.Length);
+                result.Write(t = IntToByteArray( ((RtfList) lists[i]).GetListNumber()) , 0, t.Length);
                 result.Write(CLOSE_GROUP, 0, CLOSE_GROUP.Length);
-                result.WriteByte((byte)'\n');
+                this.document.OutputDebugLinebreak(result);
             }
             result.Write(CLOSE_GROUP, 0, CLOSE_GROUP.Length);
-            result.WriteByte((byte)'\n');
+            this.document.OutputDebugLinebreak(result);
         }
 
         /**

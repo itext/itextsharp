@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections;
 using iTextSharp.text;
+using iTextSharp.text.pdf;
 using iTextSharp.text.rtf;
 using iTextSharp.text.rtf.document;
 /*
@@ -192,6 +193,21 @@ namespace iTextSharp.text.rtf.table {
         }
         
         /**
+        * Constructs a RtfRow for a Row.
+        * 
+        * @param doc The RtfDocument this RtfRow belongs to
+        * @param rtfTable The RtfTable this RtfRow belongs to
+        * @param row The Row this RtfRow is based on
+        * @param rowNumber The number of this row
+        * @since 2.1.3
+        */
+        protected internal RtfRow(RtfDocument doc, RtfTable rtfTable, PdfPRow row, int rowNumber) : base(doc) {
+            this.parentTable = rtfTable;
+            this.rowNumber = rowNumber;
+            ImportRow(row);
+        }
+        
+        /**
         * Imports a Row and copies all settings
         * 
         * @param row The Row to import
@@ -215,6 +231,32 @@ namespace iTextSharp.text.rtf.table {
             }
         }
         
+        /**
+        * Imports a PdfPRow and copies all settings
+        * 
+        * @param row The PdfPRow to import
+        * @since 2.1.3
+        */
+        private void ImportRow(PdfPRow row) {
+            this.cells = new ArrayList();
+            this.width = this.document.GetDocumentHeader().GetPageSetting().GetPageWidth() - this.document.GetDocumentHeader().GetPageSetting().GetMarginLeft() - this.document.GetDocumentHeader().GetPageSetting().GetMarginRight();
+            this.width = (int) (this.width * this.parentTable.GetTableWidthPercent() / 100);
+            
+            int cellRight = 0;
+            int cellWidth = 0;
+            PdfPCell[] cells = row.GetCells();
+            for (int i = 0; i < cells.Length; i++) {
+                cellWidth = (int) (this.width * this.parentTable.GetProportionalWidths()[i] / 100);
+                cellRight = cellRight + cellWidth;
+                
+                PdfPCell cell = cells[i];
+                RtfCell rtfCell = new RtfCell(this.document, this, cell);
+                rtfCell.SetCellRight(cellRight);
+                rtfCell.SetCellWidth(cellWidth);
+                this.cells.Add(rtfCell);
+            }
+        }
+
         /**
         * Performs a second pass over all cells to handle cell row/column spanning.
         */
@@ -271,12 +313,12 @@ namespace iTextSharp.text.rtf.table {
         /**
         * Writes the row definition/settings.
         *
-        * @param result The <code>OutputStream</code> to write the definitions to.
+        * @param result The <code>Stream</code> to write the definitions to.
         */
         private void WriteRowDefinition(Stream result) {
             byte[] t;
             result.Write(ROW_BEGIN, 0, ROW_BEGIN.Length);
-            result.WriteByte((byte)'\n');
+            this.document.OutputDebugLinebreak(result);
             result.Write(ROW_WIDTH_STYLE, 0, ROW_WIDTH_STYLE.Length);
             result.Write(ROW_WIDTH, 0, ROW_WIDTH.Length);
             result.Write(t = IntToByteArray(this.width), 0, t.Length);
@@ -303,7 +345,10 @@ namespace iTextSharp.text.rtf.table {
             }
             result.Write(ROW_GRAPH, 0, ROW_GRAPH.Length);
             
-            this.parentTable.GetBorders().WriteContent(result);
+            RtfBorderGroup borders = this.parentTable.GetBorders();
+            if (borders != null) {
+                borders.WriteContent(result);
+            }
             
             if (this.parentTable.GetCellSpacing() > 0) {
                 result.Write(ROW_CELL_SPACING_LEFT, 0, ROW_CELL_SPACING_LEFT.Length);
@@ -327,7 +372,7 @@ namespace iTextSharp.text.rtf.table {
             result.Write(ROW_CELL_PADDING_LEFT_STYLE, 0, ROW_CELL_PADDING_LEFT_STYLE.Length);
             result.Write(ROW_CELL_PADDING_RIGHT_STYLE, 0, ROW_CELL_PADDING_RIGHT_STYLE.Length);
             
-            result.WriteByte((byte)'\n');
+            this.document.OutputDebugLinebreak(result);
             
             for (int i = 0; i < this.cells.Count; i++) {
                 RtfCell rtfCell = (RtfCell) this.cells[i];
@@ -353,7 +398,7 @@ namespace iTextSharp.text.rtf.table {
             }
 
             result.Write(ROW_END, 0, ROW_END.Length);
-            result.WriteByte((byte)'\n');
+            this.document.OutputDebugLinebreak(result);
         }
         
         /**

@@ -141,7 +141,7 @@ namespace iTextSharp.text.rtf.style {
                 result.Write(CLOSE_GROUP, 0, CLOSE_GROUP.Length);
             }
             result.Write(CLOSE_GROUP, 0, CLOSE_GROUP.Length);
-            result.WriteByte((byte)'\n');
+            this.document.OutputDebugLinebreak(result);
         }
     }
 }

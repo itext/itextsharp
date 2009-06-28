@@ -806,7 +806,7 @@ namespace iTextSharp.text.rtf.parser.ctrlwords {
             ctrlWords["levelnfc"] = new RtfCtrlWordHandler(rtfParser, "levelnfc", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);
             ctrlWords["levelnfcn"] = new RtfCtrlWordHandler(rtfParser, "levelnfcn", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);
             ctrlWords["levelnorestart"] = new RtfCtrlWordHandler(rtfParser, "levelnorestart", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);
-            ctrlWords["levelnumbers"] = new RtfCtrlWordHandler(rtfParser, "levelnumbers", 0, false, RtfCtrlWordType.DESTINATION, "\\", " ", "RtfDestinationNull");
+            ctrlWords["levelnumbers"] = new RtfCtrlWordHandler(rtfParser, "levelnumbers", 0, false, RtfCtrlWordType.VALUE, "\\", " ", null);
             ctrlWords["levelold"] = new RtfCtrlWordHandler(rtfParser, "levelold", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);
             ctrlWords["levelpicture"] = new RtfCtrlWordHandler(rtfParser, "levelpicture", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);
             ctrlWords["levelprev"] = new RtfCtrlWordHandler(rtfParser, "levelprev", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);
@@ -833,6 +833,7 @@ namespace iTextSharp.text.rtf.parser.ctrlwords {
             ctrlWords["lisa"] = new RtfCtrlWordHandler(rtfParser, "lisa", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);
             ctrlWords["lisb"] = new RtfCtrlWordHandler(rtfParser, "lisb", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);
             ctrlWords["list"] = new RtfCtrlWordHandler(rtfParser, "list", 0, false, RtfCtrlWordType.VALUE, "\\", " ", null);
+            ctrlWords["listlevel"] = new RtfCtrlWordHandler(rtfParser, "listlevel", 0, false, RtfCtrlWordType.VALUE, "\\", " ", null);
             ctrlWords["listhybrid"] = new RtfCtrlWordHandler(rtfParser, "listhybrid", 0, false, RtfCtrlWordType.FLAG, "\\", " ", null);
             ctrlWords["listid"] = new RtfCtrlWordHandler(rtfParser, "listid", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);
             ctrlWords["listname"] = new RtfCtrlWordHandler(rtfParser, "listname", 0, false, RtfCtrlWordType.DESTINATION, "\\", " ", "RtfDestinationNull");
@@ -849,7 +850,7 @@ namespace iTextSharp.text.rtf.parser.ctrlwords {
             ctrlWords["liststylename"] = new RtfCtrlWordHandler(rtfParser, "liststylename", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);
             ctrlWords["listtable"] = new RtfCtrlWordHandler(rtfParser, "listtable", 0, false, RtfCtrlWordType.DESTINATION_EX, "\\*\\", " ", "RtfDestinationListTable");
             ctrlWords["listtemplateid"] = new RtfCtrlWordHandler(rtfParser, "listtemplateid", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);
-            ctrlWords["listtext"] = new RtfCtrlWordHandler(rtfParser, "listtext", 0, false, RtfCtrlWordType.DESTINATION, "\\", " ", "RtfDestinationDocument");
+            ctrlWords["listtext"] = new RtfCtrlWordHandler(rtfParser, "listtext", 0, false, RtfCtrlWordType.DESTINATION, "\\", " ", "RtfDestinationNull");
             ctrlWords["lnbrkrule"] = new RtfCtrlWordHandler(rtfParser, "lnbrkrule", 0, false, RtfCtrlWordType.FLAG, "\\", " ", null);
             ctrlWords["lndscpsxn"] = new RtfCtrlWordHandler(rtfParser, "lndscpsxn", 0, false, RtfCtrlWordType.FLAG, "\\", " ", null);
             ctrlWords["lnongrid"] = new RtfCtrlWordHandler(rtfParser, "lnongrid", 0, false, RtfCtrlWordType.FLAG, "\\", " ", null);
@@ -1553,7 +1554,7 @@ namespace iTextSharp.text.rtf.parser.ctrlwords {
             ctrlWords["shplockanchor"] = new RtfCtrlWordHandler(rtfParser, "shplockanchor", 0, false, RtfCtrlWordType.FLAG, "\\", " ", null);
             ctrlWords["shppict"] = new RtfCtrlWordHandler(rtfParser, "shppict", 0, false, RtfCtrlWordType.DESTINATION_EX, "\\*\\", " ", "RtfDestinationShppict" );//"RtfDestinationShppict";
             ctrlWords["shpright"] = new RtfCtrlWordHandler(rtfParser, "shpright", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);
-            ctrlWords["shprslt"] = new RtfCtrlWordHandler(rtfParser, "shprslt", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);
+            ctrlWords["shprslt"] = new RtfCtrlWordHandler(rtfParser, "shprslt", 0, true, RtfCtrlWordType.DESTINATION, "\\", " ", "RtfDestinationNull");
             ctrlWords["shptop"] = new RtfCtrlWordHandler(rtfParser, "shptop", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);
             ctrlWords["shptxt"] = new RtfCtrlWordHandler(rtfParser, "shptxt", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);
             ctrlWords["shpwr"] = new RtfCtrlWordHandler(rtfParser, "shpwr", 0, true, RtfCtrlWordType.VALUE, "\\", " ", null);

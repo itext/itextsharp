@@ -76,7 +76,7 @@ namespace iTextSharp.text.rtf.document {
         /**
         * Whether to output the line breaks that make the rtf document source more readable.
         */
-        private bool outputDebugLineBreaks = true;
+        private bool outputDebugLineBreaks = false;
         /**
         * Whether to always generate soft linebreaks for \n in Chunks.
         */

@@ -451,7 +451,7 @@ namespace iTextSharp.text.rtf.table {
                 result.Write(t = IntToByteArray(this.borderWidth), 0, t.Length);
                 result.Write(BORDER_COLOR_NUMBER, 0, BORDER_COLOR_NUMBER.Length);
                 result.Write(t = IntToByteArray(this.borderColor.GetColorNumber()), 0, t.Length);
-                result.WriteByte((byte)'\n');
+                this.document.OutputDebugLinebreak(result);
             } else if (this.borderType == CELL_BORDER) {
                 switch (this.borderPosition) {
                     case LEFT_BORDER:
@@ -474,7 +474,7 @@ namespace iTextSharp.text.rtf.table {
                 result.Write(t = IntToByteArray(this.borderWidth), 0, t.Length);
                 result.Write(BORDER_COLOR_NUMBER, 0, BORDER_COLOR_NUMBER.Length);
                 result.Write(t = IntToByteArray(this.borderColor.GetColorNumber()), 0, t.Length);
-                result.WriteByte((byte)'\n');
+                this.document.OutputDebugLinebreak(result);
             }
         }
         

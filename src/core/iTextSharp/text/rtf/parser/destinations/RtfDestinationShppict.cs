@@ -216,6 +216,10 @@ namespace iTextSharp.text.rtf.parser.destinations {
                 return true;
             }
             if (this.rtfParser.IsConvert()) {
+                if (dataOS != null) {
+                    AddImage();
+                    dataOS = null;
+                }
             }
             return true;
         }
@@ -243,13 +247,12 @@ namespace iTextSharp.text.rtf.parser.destinations {
                 if (img != null) {      
                     img.ScaleAbsolute((float)this.desiredWidth/PIXEL_TWIPS_FACTOR, (float)this.desiredHeight/PIXEL_TWIPS_FACTOR);
                     img.ScaleAbsolute((float)this.width/PIXEL_TWIPS_FACTOR, (float)this.height/PIXEL_TWIPS_FACTOR);
-                    img.ScalePercent((float)this.scaleX, this.scaleY);
+                    img.ScalePercent((float)this.scaleX, (float)this.scaleY);
                     
                     try {
                         if (this.rtfParser.IsImport()) {
-                            RtfDocument rtfDoc = this.rtfParser.GetRtfDocument();
-                            RtfImage rtfImage = new RtfImage(rtfDoc, img);
-                            rtfDoc.Add(rtfImage);
+                            Document doc = this.rtfParser.GetDocument();
+                            doc.Add(img);
                         }
                         if (this.rtfParser.IsConvert()) {
                             this.rtfParser.GetDocument().Add(img);

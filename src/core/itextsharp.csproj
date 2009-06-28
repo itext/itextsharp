@@ -858,6 +858,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "iTextSharp\text\pdf\PdfCopyForms.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "iTextSharp\text\pdf\PdfCopyFormsImp.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "iTextSharp\text\pdf\PdfDashPattern.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -1898,7 +1908,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "iTextSharp\text\rtf\list\RtfListLevel.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "iTextSharp\text\rtf\list\RtfListTable.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "iTextSharp\text\rtf\list\RtfPictureList.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

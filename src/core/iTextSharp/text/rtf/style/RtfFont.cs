@@ -297,6 +297,9 @@ namespace iTextSharp.text.rtf.style {
                 Size = font.Size;
                 SetStyle(font.Style);
                 Color = font.Color;
+                if(document != null) {
+                    this.fontNumber = document.GetDocumentHeader().GetFontNumber(this);
+                }
             }
             if (Util.EqualsIgnoreCase(this.fontName, "unknown")) {
                 return;
