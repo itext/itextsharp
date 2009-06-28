@@ -167,9 +167,9 @@ namespace iTextSharp.text.pdf {
             algorithmNames["1.2.840.10040.4.3"] = "DSA";
             algorithmNames["2.16.840.1.101.3.4.3.1"] = "DSA";
             algorithmNames["2.16.840.1.101.3.4.3.2"] = "DSA";
-            digestNames["1.3.36.3.3.1.3"] = "RSA";
-            digestNames["1.3.36.3.3.1.2"] = "RSA";
-            digestNames["1.3.36.3.3.1.4"] = "RSA";
+            algorithmNames["1.3.36.3.3.1.3"] = "RSA";
+            algorithmNames["1.3.36.3.3.1.2"] = "RSA";
+            algorithmNames["1.3.36.3.3.1.4"] = "RSA";
             
             allowedDigests["MD5"] = "1.2.840.113549.2.5";
             allowedDigests["MD2"] = "1.2.840.113549.2.2";
@@ -416,19 +416,8 @@ namespace iTextSharp.text.pdf {
             next = 3;
             if (signerInfo[next] is Asn1TaggedObject) {
                 Asn1TaggedObject tagsig = (Asn1TaggedObject)signerInfo[next];
-                Asn1Sequence sseq = (Asn1Sequence)tagsig.GetObject();
-                MemoryStream bOut = new MemoryStream();            
-                Asn1OutputStream dout = new Asn1OutputStream(bOut);
-                try {
-                    Asn1EncodableVector attribute = new Asn1EncodableVector();
-                    for (int k = 0; k < sseq.Count; ++k) {
-                        attribute.Add(sseq[k]);
-                    }
-                    dout.WriteObject(new DerSet(attribute));
-                    dout.Close();
-                }
-                catch (IOException){}
-                sigAttr = bOut.ToArray();
+                Asn1Set sseq = Asn1Set.GetInstance(tagsig, false);
+                sigAttr = sseq.GetEncoded(Asn1Encodable.Der);
                 
                 for (int k = 0; k < sseq.Count; ++k) {
                     Asn1Sequence seq2 = (Asn1Sequence)sseq[k];
@@ -456,16 +445,14 @@ namespace iTextSharp.text.pdf {
             digest = ((DerOctetString)signerInfo[next++]).GetOctets();
             if (next < signerInfo.Count && (signerInfo[next] is DerTaggedObject)) {
                 DerTaggedObject taggedObject = (DerTaggedObject) signerInfo[next];
-                Asn1Object obje = taggedObject.GetObject();
-                if (obje is DerSequence) {
-                    DerSequence sequence = (DerSequence) obje;
-                    DerObjectIdentifier oid = (DerObjectIdentifier)sequence[0];
-                    if (PkcsObjectIdentifiers.IdAASignatureTimeStampToken.Id.Equals(oid.Id)) {
-                        Asn1Set attributeValues = Asn1Set.GetInstance(sequence[1]);
-                        Asn1Sequence tokenSequence = Asn1Sequence.GetInstance(attributeValues[0]);
-                        Org.BouncyCastle.Asn1.Cms.ContentInfo contentInfo = Org.BouncyCastle.Asn1.Cms.ContentInfo.GetInstance(tokenSequence);
-                        this.timeStampToken = new TimeStampToken(contentInfo);
-                    }
+                Asn1Set unat = Asn1Set.GetInstance(taggedObject, false);
+                Org.BouncyCastle.Asn1.Cms.AttributeTable attble = new Org.BouncyCastle.Asn1.Cms.AttributeTable(unat);
+                Org.BouncyCastle.Asn1.Cms.Attribute ts = attble[PkcsObjectIdentifiers.IdAASignatureTimeStampToken];
+                if (ts != null) {
+                    Asn1Set attributeValues = ts.AttrValues;
+                    Asn1Sequence tokenSequence = Asn1Sequence.GetInstance(attributeValues[0]);
+                    Org.BouncyCastle.Asn1.Cms.ContentInfo contentInfo = Org.BouncyCastle.Asn1.Cms.ContentInfo.GetInstance(tokenSequence);
+                    this.timeStampToken = new TimeStampToken(contentInfo);
                 }
             }
             if (RSAdata != null || digestAttr != null) {
@@ -1243,13 +1230,7 @@ namespace iTextSharp.text.pdf {
         * @return the byte array representation of the authenticatedAttributes ready to be signed
         */    
         public byte[] GetAuthenticatedAttributeBytes(byte[] secondDigest, DateTime signingTime, byte[] ocsp) {
-            MemoryStream bOut = new MemoryStream();
-            
-            Asn1OutputStream dout = new Asn1OutputStream(bOut);
-            dout.WriteObject(GetAuthenticatedAttributeSet(secondDigest, signingTime, ocsp));
-            dout.Close();
-            
-            return bOut.ToArray();
+            return GetAuthenticatedAttributeSet(secondDigest, signingTime, ocsp).GetEncoded(Asn1Encodable.Der);
         }
         
         private DerSet GetAuthenticatedAttributeSet(byte[] secondDigest, DateTime signingTime, byte[] ocsp) {

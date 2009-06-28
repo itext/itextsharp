@@ -180,55 +180,7 @@ namespace iTextSharp.text.pdf {
                     continue;
                 }
                 else {
-                    bool pivoted = (cell.Rotation == 90 || cell.Rotation == 270);
-                    Image img = cell.Image;
-                    if (img != null) {
-                        img.ScalePercent(100);
-                        float refWidth = pivoted ? img.ScaledHeight : img.ScaledWidth;
-                        float scale = (cell.Right - cell.EffectivePaddingRight
-                            - cell.EffectivePaddingLeft - cell.Left) / refWidth;
-                        img.ScalePercent(scale * 100);
-                        float refHeight = pivoted ? img.ScaledWidth : img.ScaledHeight;
-                        cell.Bottom = cell.Top - cell.EffectivePaddingTop
-                            - cell.EffectivePaddingBottom - refHeight;
-                    }
-                    else {
-                        if (pivoted && cell.HasFixedHeight())
-                            cell.Bottom = cell.Top - cell.FixedHeight;
-                        else {
-                            ColumnText ct = ColumnText.Duplicate(cell.Column);
-                            float right, top, left, bottom;
-                            if (pivoted) {
-                                right = RIGHT_LIMIT;
-                                top = cell.Right - cell.EffectivePaddingRight;
-                                left = 0;
-                                bottom = cell.Left + cell.EffectivePaddingLeft;
-                            }
-                            else {
-                                right = cell.NoWrap ? RIGHT_LIMIT : cell.Right - cell.EffectivePaddingRight;
-                                top = cell.Top - cell.EffectivePaddingTop;
-                                left = cell.Left + cell.EffectivePaddingLeft;
-                                bottom = cell.HasFixedHeight() ? top + cell.EffectivePaddingBottom - cell.FixedHeight : BOTTOM_LIMIT;
-                            }
-                            SetColumn(ct, left, bottom, right, top);
-                            ct.Go(true);
-                            if (pivoted)
-                                cell.Bottom = cell.Top - cell.EffectivePaddingTop - cell.EffectivePaddingBottom - ct.FilledWidth;
-                            else {
-                                float yLine = ct.YLine;
-                                if (cell.UseDescender)
-                                    yLine += ct.Descender;
-                                cell.Bottom = yLine - cell.EffectivePaddingBottom;
-                            }
-                        }
-                    }
-                    height = cell.FixedHeight;
-                    if (height <= 0)
-                        height = cell.Height;
-                    if (height < cell.FixedHeight)
-                        height = cell.FixedHeight;
-                    else if (height < cell.MinimumHeight)
-                        height = cell.MinimumHeight;
+                    height = cell.GetMaxHeight();
                     if ((height > maxHeight) && (cell.Rowspan == 1))
                         maxHeight = height;
                 }
@@ -305,9 +257,9 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
-        * @since    2.1.6 private is now protected
+        * @since	3.0.0 protected is now public static
         */
-        protected internal float SetColumn(ColumnText ct, float left, float bottom, float right, float top) {
+        public static float SetColumn(ColumnText ct, float left, float bottom, float right, float top) {
             if (left > right)
                 right = left;
             if (bottom > top)

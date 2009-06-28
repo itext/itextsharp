@@ -768,5 +768,60 @@ namespace iTextSharp.text.pdf {
                 // do nothing
             }
         }
+
+        /**
+        * Returns the height of the cell.
+        * @return  the height of the cell
+        * @since   3.0.0
+        */
+        public float GetMaxHeight() {
+            bool pivoted = (Rotation == 90 || Rotation == 270);
+            Image img = this.Image;
+            if (img != null) {
+                img.ScalePercent(100);
+                float refWidth = pivoted ? img.ScaledHeight : img.ScaledWidth;
+                float scale = (Right - EffectivePaddingRight
+                        - EffectivePaddingLeft - Left) / refWidth;
+                img.ScalePercent(scale * 100);
+                float refHeight = pivoted ? img.ScaledWidth : img.ScaledHeight;
+                Bottom = Top - EffectivePaddingTop - EffectivePaddingBottom - refHeight;
+            }
+            else {
+                if (pivoted && HasFixedHeight())
+                    Bottom = Top - FixedHeight;
+                else {
+                    ColumnText ct = ColumnText.Duplicate(Column);
+                    float right, top, left, bottom;
+                    if (pivoted) {
+                        right = PdfPRow.RIGHT_LIMIT;
+                        top = Right - EffectivePaddingRight;
+                        left = 0;
+                        bottom = Left + EffectivePaddingLeft;
+                    }
+                    else {
+                        right = NoWrap ? PdfPRow.RIGHT_LIMIT : Right - EffectivePaddingRight;
+                        top = Top - EffectivePaddingTop;
+                        left = Left + EffectivePaddingLeft;
+                        bottom = HasFixedHeight() ? top + EffectivePaddingBottom - FixedHeight : PdfPRow.BOTTOM_LIMIT;
+                    }
+                    PdfPRow.SetColumn(ct, left, bottom, right, top);
+                    ct.Go(true);
+                    if (pivoted)
+                        Bottom = Top - EffectivePaddingTop - EffectivePaddingBottom - ct.FilledWidth;
+                    else {
+                        float yLine = ct.YLine;
+                        if (UseDescender)
+                            yLine += ct.Descender;
+                        Bottom = yLine - EffectivePaddingBottom;
+                    }
+                }
+            }
+            float height = Height;
+            if (height < FixedHeight)
+                height = FixedHeight;
+            else if (height < MinimumHeight)
+                height = MinimumHeight;
+            return height;
+        }
     }
 }

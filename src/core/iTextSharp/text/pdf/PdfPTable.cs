@@ -358,12 +358,7 @@ namespace iTextSharp.text.pdf {
                 return 0;
             totalHeight = 0;
             for (int k = 0; k < rows.Count; ++k) {
-                PdfPRow row = (PdfPRow)rows[k];
-                if (row != null) {
-                    if (firsttime)
-                        row.SetWidths(absoluteWidths);
-                    totalHeight += row.MaxHeights;
-                }
+                totalHeight += GetRowHeight(k, firsttime);
             }
             return totalHeight;
         }
@@ -761,12 +756,49 @@ namespace iTextSharp.text.pdf {
         * @return the height of a particular row
         */    
         public float GetRowHeight(int idx) {
+            return GetRowHeight(idx, false);
+        }
+        /**
+        * Gets the height of a particular row.
+        * 
+        * @param idx the row index (starts at 0)
+        * @param firsttime  is this the first time the row heigh is calculated?
+        * @return the height of a particular row
+        * @since    3.0.0
+        */    
+        public float GetRowHeight(int idx, bool firsttime) {
             if (totalWidth <= 0 || idx < 0 || idx >= rows.Count)
                 return 0;
             PdfPRow row = (PdfPRow)rows[idx];
             if (row == null)
                 return 0;
-            return row.MaxHeights;
+            if (firsttime)
+                row.SetWidths(absoluteWidths);
+            float height = row.MaxHeights;
+            PdfPCell cell;
+            PdfPRow tmprow;
+            for (int i = 0; i < relativeWidths.Length; i++) {
+                if(!RowSpanAbove(idx, i))
+                    continue;
+                int rs = 1;
+                while (RowSpanAbove(idx - rs, i)) {
+                    rs++;
+                }
+                tmprow = (PdfPRow)rows[idx - rs];
+                cell = tmprow.GetCells()[i];
+                float tmp = 0;
+                if (cell.Rowspan == rs + 1) {
+                    tmp = cell.GetMaxHeight();
+                    while (rs > 0) {
+                        tmp -= GetRowHeight(idx - rs);
+                        rs--;
+                    }
+                }
+                if (tmp > height)
+                    height = tmp;
+            }
+            row.MaxHeights = height;
+            return height;
         }
         
         /**
