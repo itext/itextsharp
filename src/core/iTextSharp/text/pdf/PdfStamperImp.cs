@@ -199,7 +199,7 @@ namespace iTextSharp.text.pdf {
             String producer = null;
             if (iInfo != null)
                 skipInfo = iInfo.Number;
-            if (oldInfo != null)
+            if (oldInfo != null && oldInfo.Get(PdfName.PRODUCER) != null)
                 producer = oldInfo.GetAsString(PdfName.PRODUCER).ToString();
             if (producer == null) {
                 producer = Document.Version;

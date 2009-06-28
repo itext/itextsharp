@@ -200,7 +200,7 @@ namespace iTextSharp.text.pdf {
     
         private void AddToLine(PdfChunk chunk) {
             if (chunk.ChangeLeading && chunk.IsImage()) {
-                float f = chunk.Image.ScaledHeight + chunk.ImageOffsetY;
+                float f = chunk.Image.ScaledHeight + chunk.ImageOffsetY + chunk.Image.BorderWidthTop;
                 if (f > height) height = f;
             }
             line.Add(chunk);

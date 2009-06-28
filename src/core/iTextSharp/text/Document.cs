@@ -109,7 +109,7 @@ namespace iTextSharp.text {
         * This constant may only be changed by Paulo Soares and/or Bruno Lowagie.
         * @since	2.1.6
         */
-	    private const String RELEASE = "2.1.6_SNAPSHOT";
+	    private const String RELEASE = "4.1.6_C#";
 	    /** This constant may only be changed by Paulo Soares and/or Bruno Lowagie. */
 	    private const String ITEXT_VERSION = ITEXT + " " + RELEASE + " by 1T3XT";
 
@@ -478,7 +478,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <returns>true if successful, false otherwise</returns>
         public bool AddProducer() {
-            return Add(new Meta(Element.PRODUCER, "iText# by lowagie.com"));
+            return Add(new Meta(Element.PRODUCER, Version));
         }
 
         /// <summary>
