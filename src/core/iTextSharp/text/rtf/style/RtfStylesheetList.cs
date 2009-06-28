@@ -96,15 +96,11 @@ namespace iTextSharp.text.rtf.style {
             result.Write(t = DocWriter.GetISOBytes("{"), 0, t.Length);
             result.Write(t = DocWriter.GetISOBytes("\\stylesheet"), 0, t.Length);
             result.Write(t = RtfElement.DELIMITER, 0, t.Length);
-            if (this.document.GetDocumentSettings().IsOutputDebugLineBreaks()) {
-                result.Write(t = DocWriter.GetISOBytes("\n"), 0, t.Length);
-            }
+            this.document.OutputDebugLinebreak(result);
             foreach (RtfParagraphStyle rps in this.styleMap.Values)
                 rps.WriteDefinition(result);
             result.Write(t = DocWriter.GetISOBytes("}"), 0, t.Length);
-            if (this.document.GetDocumentSettings().IsOutputDebugLineBreaks()) {
-                result.WriteByte((byte)'\n');
-            }
+            this.document.OutputDebugLinebreak(result);
         }
     }
 }

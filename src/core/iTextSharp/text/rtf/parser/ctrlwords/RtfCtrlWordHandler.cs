@@ -229,14 +229,14 @@ namespace iTextSharp.text.rtf.parser.ctrlwords {
             case RtfCtrlWordType.FLAG:
             case RtfCtrlWordType.TOGGLE:
             case RtfCtrlWordType.VALUE:
-                dest = (RtfDestination)this.rtfParser.GetCurrentDestination();
+                dest = this.rtfParser.GetCurrentDestination();
                 if (dest != null) {
                     handled = dest.HandleControlWord(this.ctrlWordData);
                 }
                 break;
             
             case RtfCtrlWordType.SYMBOL:
-                dest = (RtfDestination)this.rtfParser.GetCurrentDestination();
+                dest = this.rtfParser.GetCurrentDestination();
                 if (dest != null) {
                     String data = null;
                     // if doing an import, then put the control word in the output stream through the character handler
@@ -268,7 +268,7 @@ namespace iTextSharp.text.rtf.parser.ctrlwords {
                 }
                 handled = this.rtfParser.SetCurrentDestination(this.ctrlWord);
                 // let destination handle the ctrl word now.
-                dest = (RtfDestination)this.rtfParser.GetCurrentDestination();
+                dest = this.rtfParser.GetCurrentDestination();
                 if(dest != null) {
                     if(dest.GetNewTokeniserState() == RtfParser.TOKENISER_IGNORE_RESULT) {
                         handled = dest.HandleControlWord(this.ctrlWordData);

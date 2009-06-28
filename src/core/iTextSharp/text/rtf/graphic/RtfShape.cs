@@ -257,6 +257,7 @@ namespace iTextSharp.text.rtf.graphic {
         * @param property The property to set for this RtfShape.
         */
         public void SetProperty(RtfShapeProperty property) {
+            property.SetRtfDocument(this.doc);
             this.properties[property.GetName()] = property;
         }
         
@@ -370,9 +371,7 @@ namespace iTextSharp.text.rtf.graphic {
                 result.Write(RtfElement.CLOSE_GROUP, 0, RtfElement.CLOSE_GROUP.Length);
             }
             result.Write(RtfElement.CLOSE_GROUP, 0, RtfElement.CLOSE_GROUP.Length);
-            if (this.doc.GetDocumentSettings().IsOutputDebugLineBreaks()) {
-                result.WriteByte((byte)'\n');
-            }
+            this.doc.OutputDebugLinebreak(result);
             result.Write(RtfElement.CLOSE_GROUP, 0, RtfElement.CLOSE_GROUP.Length);
         }
     }

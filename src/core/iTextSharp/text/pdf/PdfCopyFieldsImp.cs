@@ -495,7 +495,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        internal void MergeFields() {
+        internal virtual void MergeFields() {
             int pageOffset = 0;
             for (int k = 0; k < fields.Count; ++k) {
                 Hashtable fd = ((AcroFields)fields[k]).Fields;

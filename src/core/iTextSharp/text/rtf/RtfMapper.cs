@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using iTextSharp.text;
+using iTextSharp.text.pdf;
 using iTextSharp.text.rtf.document;
 using iTextSharp.text.rtf.field;
 using iTextSharp.text.rtf.graphic;
@@ -104,7 +105,7 @@ namespace iTextSharp.text.rtf {
                     Chunk chunk = (Chunk) element;
                     if (chunk.HasAttributes()) {
                         if (chunk.Attributes.ContainsKey(Chunk.IMAGE)) {
-                            rtfElements.Add(new RtfImage(rtfDoc, (Image) chunk.Attributes[Chunk.IMAGE]));
+                            rtfElements.Add(new RtfImage(rtfDoc, chunk.GetImage()));
                         } else if (chunk.Attributes.ContainsKey(Chunk.NEWPAGE)) {
                             rtfElements.Add(new RtfNewPage(rtfDoc));
                         } else if (chunk.Attributes.ContainsKey(Chunk.TAB)) {
@@ -162,6 +163,14 @@ namespace iTextSharp.text.rtf {
                         rtfElements.Add(new RtfTable(rtfDoc, (Table) element));
                     }
                     catch (InvalidCastException) {
+                        rtfElements.Add(new RtfTable(rtfDoc, ((SimpleTable) element).CreateTable()));
+                    }
+                    break;
+                case Element.PTABLE:
+                    try {
+                        rtfElements.Add(new RtfTable(rtfDoc, (PdfPTable) element));
+                    }
+                    catch(InvalidCastException) {
                         rtfElements.Add(new RtfTable(rtfDoc, ((SimpleTable) element).CreateTable()));
                     }
                     break;

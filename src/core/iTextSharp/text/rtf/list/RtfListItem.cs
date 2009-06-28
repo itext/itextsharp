@@ -68,7 +68,7 @@ namespace iTextSharp.text.rtf.list {
         /**
         * The RtfList this RtfListItem belongs to.
         */
-        private RtfList parentList = null;
+        private RtfListLevel parentList = null;
         /**
         * Whether this RtfListItem contains further RtfLists.
         */
@@ -96,6 +96,10 @@ namespace iTextSharp.text.rtf.list {
                 result.Write(RtfParagraphStyle.SPACING_AFTER, 0, RtfParagraphStyle.SPACING_AFTER.Length);
                 result.Write(t = IntToByteArray(this.paragraphStyle.GetSpacingAfter()), 0, t.Length);
             }
+            if (this.paragraphStyle.GetLineLeading() > 0) {
+                result.Write(RtfParagraph.LINE_SPACING, 0, RtfParagraph.LINE_SPACING.Length);
+                result.Write(t = IntToByteArray(this.paragraphStyle.GetLineLeading()), 0, t.Length);
+            }
             for (int i = 0; i < chunks.Count; i++) {
                 IRtfBasicElement rtfElement = (IRtfBasicElement) chunks[i];
                 if (rtfElement is RtfChunk) {
@@ -106,22 +110,32 @@ namespace iTextSharp.text.rtf.list {
                 }
                 rtfElement.WriteContent(result);
                 if (rtfElement is RtfList) {
-                    this.parentList.WriteListBeginning(result);
-                    result.Write(t = DocWriter.GetISOBytes("\\tab"), 0, t.Length);
+                    switch (this.parentList.GetLevelFollowValue()) {
+                    case RtfListLevel.LIST_LEVEL_FOLLOW_NOTHING:
+                        break;
+                    case RtfListLevel.LIST_LEVEL_FOLLOW_TAB:
+                        this.parentList.WriteListBeginning(result);
+                        result.Write(RtfList.TAB, 0, RtfList.TAB.Length);
+                        break;
+                    case RtfListLevel.LIST_LEVEL_FOLLOW_SPACE:
+                        this.parentList.WriteListBeginning(result);
+                        result.Write(t = DocWriter.GetISOBytes(" "), 0, t.Length);
+                        break;
+                    }
                 }
             }
         }
 
         /**
         * Writes the definition of the first element in this RtfListItem that is
-        * an instanceof {@link RtfList} to the given stream.<br> 
+        * an is {@link RtfList} to the given stream.<br> 
         * If this item does not contain a {@link RtfList} element nothing is written
         * and the method returns <code>false</code>.
         * 
         * @param out destination stream
         * @return <code>true</code> if a RtfList definition was written, <code>false</code> otherwise
         * @throws IOException
-        * @see {@link RtfList#writeDefinition(OutputStream)}
+        * @see {@link RtfList#writeDefinition(Stream)}
         */
         public bool WriteDefinition(Stream outp) {
             for (int i = 0; i < chunks.Count; i++) {
@@ -135,6 +149,8 @@ namespace iTextSharp.text.rtf.list {
             return false;
         }
 
+        private int level=0;
+
         /**
         * Inherit the list settings from the parent list to RtfLists that
         * are contained in this RtfListItem.
@@ -147,8 +163,7 @@ namespace iTextSharp.text.rtf.list {
                 IRtfBasicElement rtfElement = (IRtfBasicElement) chunks[i];
                 if (rtfElement is RtfList) {
                     ((RtfList) rtfElement).SetListNumber(listNumber);
-                    ((RtfList) rtfElement).SetListLevel(listLevel);
-                    ((RtfList) rtfElement).SetParent(this.parentList);
+                    SetLevel(listLevel);
                 }
             }
         }
@@ -171,8 +186,18 @@ namespace iTextSharp.text.rtf.list {
         * 
         * @param parentList The parent RtfList to use.
         */
-        public void SetParent(RtfList parentList) {
+        public void SetParent(RtfListLevel parentList) {
             this.parentList = parentList;
+        }
+
+        /**
+        * Set the parent RtfList.
+        * 
+        * @return  The parent RtfList to use.
+        * @since 2.1.3
+        */
+        public RtfListLevel GetParent() {
+            return this.parentList;
         }
 
         /**
@@ -182,6 +207,22 @@ namespace iTextSharp.text.rtf.list {
         */
         public bool IsContainsInnerList() {
             return this.containsInnerList;
+        }
+
+        /**
+        * @return the level
+        * @since 2.1.3
+        */
+        public int GetLevel() {
+            return level;
+        }
+
+        /**
+        * @param level the level to set
+        * @since 2.1.3
+        */
+        public void SetLevel(int level) {
+            this.level = level;
         }
     }
 }

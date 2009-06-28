@@ -140,13 +140,9 @@ namespace iTextSharp.text.rtf.parser {
             RtfFont rtfFont = new RtfFont(fontName);
             if (charset>= 0)
                 rtfFont.SetCharset(charset);
-            if (rtfFont != null){
-                rtfFont.SetRtfDocument(this.rtfDoc);
-                this.importFontMapping[fontNr] = this.rtfDoc.GetDocumentHeader().GetFontNumber(rtfFont).ToString();
-                return true;
-            } else {
-                return false;
-            }
+            rtfFont.SetRtfDocument(this.rtfDoc);
+            this.importFontMapping[fontNr] = this.rtfDoc.GetDocumentHeader().GetFontNumber(rtfFont).ToString();
+            return true;
         }
         /**
         * Imports a font. The font name is looked up in the RtfDocumentHeader and
@@ -163,13 +159,9 @@ namespace iTextSharp.text.rtf.parser {
                 rtfFont.SetCharset(charset);
             if (fontFamily != null && fontFamily.Length > 0)
                 rtfFont.SetFamily(fontFamily);
-            if (rtfFont != null){
-                rtfFont.SetRtfDocument(this.rtfDoc);
-                this.importFontMapping[fontNr] = this.rtfDoc.GetDocumentHeader().GetFontNumber(rtfFont).ToString();
-                return true;
-            } else {
-                return false;
-            }
+            rtfFont.SetRtfDocument(this.rtfDoc);
+            this.importFontMapping[fontNr] = this.rtfDoc.GetDocumentHeader().GetFontNumber(rtfFont).ToString();
+            return true;
         }
         /**
         * Performs the mapping from the original font number to the actual
@@ -222,16 +214,8 @@ namespace iTextSharp.text.rtf.parser {
         * Imports a List value. The List number for the List defined
         * is determined and then the resulting mapping is added.
         */
-        public void ImportList(String listNr, List list) {
-            RtfList rtfList = new RtfList(this.rtfDoc, list);
-
-            //if(rtfList != null){
-            //rtfList.SetRtfDocument(this.rtfDoc);
-            this.importStylesheetListMapping[listNr] = this.rtfDoc.GetDocumentHeader().GetListNumber(rtfList).ToString();
-    //      return true;
-    //      } else {
-    //      return false;
-    //      }
+        public void ImportList(String origListNr, String newListNr) {
+            this.importListMapping[origListNr] = newListNr;
         }
 
         /**
@@ -244,7 +228,7 @@ namespace iTextSharp.text.rtf.parser {
             if (this.importListMapping.ContainsKey(listNr)) {
                 return (String) this.importListMapping[listNr];
             } else {
-                return "0";
+                return null;
             }
         }
 
@@ -254,14 +238,8 @@ namespace iTextSharp.text.rtf.parser {
         */
         public bool ImportStylesheetList(String listNr, List listIn) {
             RtfList rtfList = new RtfList(this.rtfDoc, listIn);
-
-            if (rtfList != null){
-                rtfList.SetRtfDocument(this.rtfDoc);
-                //this.importStylesheetListMapping[listNr] = Integer.ToString(this.rtfDoc.GetDocumentHeader().GetRtfParagraphStyle(styleName)(rtfList));
-                return true;
-            } else {
-                return false;
-            }
+            rtfList.SetRtfDocument(this.rtfDoc);
+            return true;
         }
         /**
         * Performs the mapping from the original stylesheet number to the actual

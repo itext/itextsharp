@@ -93,7 +93,7 @@ namespace iTextSharp.text.rtf.document {
             result.Write(ANSI_CODEPAGE, 0, ANSI_CODEPAGE.Length);
             byte[] t = IntToByteArray(1252);
             result.Write(t, 0, t.Length);
-            result.WriteByte((byte)'\n');
+            this.document.OutputDebugLinebreak(result);
         }
     }
 }

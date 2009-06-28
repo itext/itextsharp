@@ -275,7 +275,7 @@ namespace iTextSharp.text.rtf {
             if(!this.open) {
                 throw new DocumentException("The document must be open to import RTF documents.");
             }
-            RtfParser rtfImport = new RtfParser();
+            RtfParser rtfImport = new RtfParser(this.document);
             if(events != null) {
                 for(int idx=0;idx<events.Length;idx++) {
                     rtfImport.AddListener(events[idx]);
@@ -322,13 +322,51 @@ namespace iTextSharp.text.rtf {
             if(!this.open) {
                 throw new DocumentException("The document must be open to import RTF fragments.");
             }
-            RtfParser rtfImport = new RtfParser();
+            RtfParser rtfImport = new RtfParser(this.document);
             if(events != null) {
                 for(int idx=0;idx<events.Length;idx++) {
                     rtfImport.AddListener(events[idx]);
                 }
             }
             rtfImport.ImportRtfFragment(documentSource, this.rtfDoc, mappings);
+        }
+
+        /**
+        * Adds the complete RTF document to the current RTF element being generated.
+        * It will parse the font and color tables and correct the font and color references
+        * so that the imported RTF document retains its formattings.
+        * 
+        * @param elem The Element the RTF document is to be imported into.
+        * @param documentSource The Reader to read the RTF document from.
+        * @throws IOException On errors reading the RTF document.
+        * @throws DocumentException On errors adding to this RTF document.
+        * @since 2.1.4
+        */
+        public void ImportRtfDocumentIntoElement(IElement elem, FileStream documentSource) {
+            ImportRtfDocumentIntoElement(elem, documentSource, null);
+        }
+        
+        /**
+        * Adds the complete RTF document to the current RTF element being generated.
+        * It will parse the font and color tables and correct the font and color references
+        * so that the imported RTF document retains its formattings.
+        * 
+        * @param elem The Element the RTF document is to be imported into.
+        * @param documentSource The Reader to read the RTF document from.
+        * @param events The event array for listeners.
+        * @throws IOException On errors reading the RTF document.
+        * @throws DocumentException On errors adding to this RTF document.
+        * @since 2.1.4
+        */
+        public void ImportRtfDocumentIntoElement(IElement elem, FileStream documentSource, IEventListener[] events) {
+
+            RtfParser rtfImport = new RtfParser(this.document);
+            if(events != null) {
+                for(int idx=0;idx<events.Length;idx++) {
+                    rtfImport.AddListener(events[idx]);
+                }
+            }
+            rtfImport.ImportRtfDocumentIntoElement(elem, documentSource, rtfDoc);
         }
     }
 }

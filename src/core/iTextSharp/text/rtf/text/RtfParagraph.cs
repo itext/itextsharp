@@ -152,9 +152,7 @@ namespace iTextSharp.text.rtf.text {
             if (!inTable) {
                 result.Write(PARAGRAPH, 0, PARAGRAPH.Length);
             }
-            if(this.document.GetDocumentSettings().IsOutputDebugLineBreaks()) {
-                result.WriteByte((byte)'\n');
-            }
+            this.document.OutputDebugLinebreak(result);
         }
 
         /**

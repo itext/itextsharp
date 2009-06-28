@@ -177,7 +177,7 @@ namespace iTextSharp.text.rtf.document {
             result.Write(t = IntToByteArray(marginTop), 0, t.Length);
             result.Write(MARGIN_BOTTOM, 0, MARGIN_BOTTOM.Length);
             result.Write(t = IntToByteArray(marginBottom), 0, t.Length);
-            result.WriteByte((byte)'\n');
+            this.document.OutputDebugLinebreak(result);
         }
         
         /**
@@ -193,13 +193,13 @@ namespace iTextSharp.text.rtf.document {
                 result.Write(t = IntToByteArray(pageWidth), 0, t.Length);
                 result.Write(SECTION_PAGE_HEIGHT, 0, SECTION_PAGE_HEIGHT.Length);
                 result.Write(t = IntToByteArray(pageHeight), 0, t.Length);
-                result.WriteByte((byte)'\n');
+                this.document.OutputDebugLinebreak(result);
             } else {
                 result.Write(SECTION_PAGE_WIDTH, 0, SECTION_PAGE_WIDTH.Length);
                 result.Write(t = IntToByteArray(pageWidth), 0, t.Length);
                 result.Write(SECTION_PAGE_HEIGHT, 0, SECTION_PAGE_HEIGHT.Length);
                 result.Write(t = IntToByteArray(pageHeight), 0, t.Length);
-                result.WriteByte((byte)'\n');
+                this.document.OutputDebugLinebreak(result);
             }
             result.Write(SECTION_MARGIN_LEFT, 0, SECTION_MARGIN_LEFT.Length);
             result.Write(t = IntToByteArray(marginLeft), 0, t.Length);

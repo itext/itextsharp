@@ -317,5 +317,15 @@ namespace iTextSharp.text.rtf.document {
                 return new RtfHeaderFooterGroup(this.document, type);
             }
         }
+
+        /**
+        * Get the <code>RtfListTable</code> object.
+        * 
+        * @return the ListTable object.
+        * @since 2.1.3
+        */
+        public RtfListTable GetListTable() {
+            return this.listTable;
+        }
     }
 }

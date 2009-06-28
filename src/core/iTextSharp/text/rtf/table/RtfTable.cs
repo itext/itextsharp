@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections;
 using iTextSharp.text;
+using iTextSharp.text.pdf;
 using iTextSharp.text.rtf;
 using iTextSharp.text.rtf.document;
 using iTextSharp.text.rtf.text;
@@ -126,6 +127,17 @@ namespace iTextSharp.text.rtf.table {
         }
         
         /**
+        * Constructs a RtfTable based on a PdfTable for a RtfDocument.
+        * 
+        * @param doc The RtfDocument this RtfTable belongs to
+        * @param table The PdfPTable that this RtfTable wraps
+        * @since 2.1.3
+        */
+        public RtfTable(RtfDocument doc, PdfPTable table) : base(doc) {
+            ImportTable(table);
+        }
+
+        /**
         * Imports the rows and settings from the Table into this
         * RtfTable.
         * 
@@ -157,6 +169,35 @@ namespace iTextSharp.text.rtf.table {
             }
         }
         
+        /**
+        * Imports the rows and settings from the Table into this
+        * RtfTable.
+        * 
+        * @param table The source PdfPTable
+        * @since 2.1.3
+        */
+        private void ImportTable(PdfPTable table) {
+            this.rows = new ArrayList();
+            this.tableWidthPercent = table.WidthPercentage;
+            this.proportionalWidths = table.AbsoluteWidths;
+            this.cellPadding = (float) (table.SpacingAfter * TWIPS_FACTOR);
+            this.cellSpacing = (float) (table.SpacingAfter * TWIPS_FACTOR);
+            this.alignment = table.HorizontalAlignment;
+            
+            int i = 0;
+            foreach (PdfPRow row in table.Rows) {
+                this.rows.Add(new RtfRow(this.document, this, row, i));
+                i++;
+            }
+            foreach (RtfRow row in this.rows) {
+                row.HandleCellSpanning();
+                row.CleanRow();
+            }
+            
+            this.headerRows = table.HeaderRows;
+            this.cellsFitToPage = table.KeepTogether;
+        }
+
         /**
         * Writes the content of this RtfTable
         */    

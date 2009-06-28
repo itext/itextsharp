@@ -86,7 +86,7 @@ namespace iTextSharp.text.rtf.document {
             byte[] t;
             result.Write(t = DocWriter.GetISOBytes(Document.Version), 0, t.Length);
             result.Write(CLOSE_GROUP, 0, CLOSE_GROUP.Length);
-            result.WriteByte((byte)'\n');
+            this.document.OutputDebugLinebreak(result);
         }                
     }
 }

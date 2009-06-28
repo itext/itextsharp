@@ -604,9 +604,7 @@ namespace iTextSharp.text.rtf.style {
             result.Write(t = DocWriter.GetISOBytes(this.styleName), 0, t.Length);
             result.Write(t = DocWriter.GetISOBytes(";"), 0, t.Length);
             result.Write(t = DocWriter.GetISOBytes("}"), 0, t.Length);
-            if (this.document.GetDocumentSettings().IsOutputDebugLineBreaks()) {
-                result.WriteByte((byte)'\n');
-            }
+            this.document.OutputDebugLinebreak(result);
         }
         
         /**
