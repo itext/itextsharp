@@ -383,7 +383,7 @@ namespace iTextSharp.text.pdf {
                                 calcHeight -= ct.Descender;
                             ct = ColumnText.Duplicate(cell.Column);
                             ct.Canvases = canvases;
-                            ct.SetSimpleColumn(-0.001f, -0.001f, netWidth + 0.001f, calcHeight);
+                            ct.SetSimpleColumn(-0.003f, -0.001f, netWidth + 0.003f, calcHeight);
                             float pivotX;
                             float pivotY;
                             if (cell.Rotation == 90) {
