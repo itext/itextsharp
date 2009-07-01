@@ -7,6 +7,7 @@ using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Asn1.Oiw;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.TeleTrust;
+using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Engines;
@@ -14,6 +15,7 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Modes;
 using Org.BouncyCastle.Crypto.Paddings;
+using Org.BouncyCastle.Crypto.Parameters;
 
 namespace Org.BouncyCastle.Security
 {
@@ -39,6 +41,8 @@ namespace Org.BouncyCastle.Security
 		{
 			algorithms["PKCS5SCHEME1"] = "Pkcs5scheme1";
 			algorithms["PKCS5SCHEME2"] = "Pkcs5scheme2";
+			algorithms[PkcsObjectIdentifiers.IdPbeS2.Id] = "Pkcs5scheme2";
+//			algorithms[PkcsObjectIdentifiers.IdPbkdf2.Id] = "Pkcs5scheme2";
 			algorithms["PBEWITHMD2ANDDES-CBC"] = "PBEwithMD2andDES-CBC";
 			algorithms[PkcsObjectIdentifiers.PbeWithMD2AndDesCbc.Id] = "PBEwithMD2andDES-CBC";
 			algorithms["PBEWITHMD2ANDRC2-CBC"] = "PBEwithMD2andRC2-CBC";
@@ -323,6 +327,14 @@ namespace Org.BouncyCastle.Security
 		}
 
 		public static ICipherParameters GenerateCipherParameters(
+			AlgorithmIdentifier algID,
+			char[]              password,
+			bool				wrongPkcs12Zero)
+		{
+			return GenerateCipherParameters(algID.ObjectID.Id, password, wrongPkcs12Zero, algID.Parameters);
+		}
+
+		public static ICipherParameters GenerateCipherParameters(
 			string          algorithm,
 			char[]          password,
 			Asn1Encodable   pbeParameters)
@@ -494,6 +506,12 @@ namespace Org.BouncyCastle.Security
 			DerObjectIdentifier algorithmOid)
 		{
 			return CreateEngine(algorithmOid.Id);
+		}
+
+		public static object CreateEngine(
+			AlgorithmIdentifier algID)
+		{
+			return CreateEngine(algID.ObjectID.Id);
 		}
 
 		private static bool EndsWith(

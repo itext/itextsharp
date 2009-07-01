@@ -55,6 +55,10 @@ namespace Org.BouncyCastle.Crypto.Modes
 				Reset();
 				cipher.Init(true, ivParam.Parameters);
 			}
+	        else
+	        {
+	            throw new ArgumentException("SIC mode requires ParametersWithIV", "parameters");
+	        }
 		}
 
 		public string AlgorithmName

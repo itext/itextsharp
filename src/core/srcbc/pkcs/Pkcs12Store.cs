@@ -88,7 +88,7 @@ namespace Org.BouncyCastle.Pkcs
 		}
 
 		// TODO Consider making obsolete
-//		[Obsolete("User 'Pkcs12StoreBuilder' instead")]
+//		[Obsolete("Use 'Pkcs12StoreBuilder' instead")]
 		public Pkcs12Store()
 			: this(PkcsObjectIdentifiers.PbeWithShaAnd3KeyTripleDesCbc,
 				PkcsObjectIdentifiers.PbewithShaAnd40BitRC2Cbc)
@@ -96,7 +96,7 @@ namespace Org.BouncyCastle.Pkcs
 		}
 
 		// TODO Consider making obsolete
-//		[Obsolete("User 'Pkcs12StoreBuilder' and 'Load' method instead")]
+//		[Obsolete("Use 'Pkcs12StoreBuilder' and 'Load' method instead")]
 		public Pkcs12Store(
 			Stream	input,
 			char[]	password)
@@ -202,8 +202,19 @@ namespace Org.BouncyCastle.Pkcs
 											attr = attrSet[0];
 
 											// TODO We might want to "merge" attribute sets with
-											// the same OID - currently, it is an error
-											attributes.Add(aOid.Id, attr);
+											// the same OID - currently, differing values give an error
+											if (attributes.ContainsKey(aOid.Id))
+											{
+												// OK, but the value has to be the same
+												if (!attributes[aOid.Id].Equals(attr))
+												{
+													throw new IOException("attempt to add existing attribute with different value");
+												}
+											}
+											else
+											{
+											    attributes.Add(aOid.Id, attr);
+											}
 
 											if (aOid.Equals(PkcsObjectIdentifiers.Pkcs9AtFriendlyName))
 											{
@@ -293,8 +304,19 @@ namespace Org.BouncyCastle.Pkcs
 										attr = attrSet[0];
 
 										// TODO We might want to "merge" attribute sets with
-										// the same OID - currently, it is an error
-										attributes.Add(aOid.Id, attr);
+										// the same OID - currently, differing values give an error
+										if (attributes.ContainsKey(aOid.Id))
+										{
+											// OK, but the value has to be the same
+											if (!attributes[aOid.Id].Equals(attr))
+											{
+												throw new IOException("attempt to add existing attribute with different value");
+											}
+										}
+										else
+										{
+										    attributes.Add(aOid.Id, attr);
+										}
 
 										if (aOid.Equals(PkcsObjectIdentifiers.Pkcs9AtFriendlyName))
 										{
@@ -350,8 +372,19 @@ namespace Org.BouncyCastle.Pkcs
 										attr = attrSet[0];
 
 										// TODO We might want to "merge" attribute sets with
-										// the same OID - currently, it is an error
-										attributes.Add(aOid.Id, attr);
+										// the same OID - currently, differing values give an error
+										if (attributes.ContainsKey(aOid.Id))
+										{
+											// OK, but the value has to be the same
+											if (!attributes[aOid.Id].Equals(attr))
+											{
+												throw new IOException("attempt to add existing attribute with different value");
+											}
+										}
+										else
+										{
+										    attributes.Add(aOid.Id, attr);
+										}
 
 										if (aOid.Equals(PkcsObjectIdentifiers.Pkcs9AtFriendlyName))
 										{
@@ -427,8 +460,19 @@ namespace Org.BouncyCastle.Pkcs
 							Asn1Encodable attr = attrSet[0];
 
 							// TODO We might want to "merge" attribute sets with
-							// the same OID - currently, it is an error
-							attributes.Add(aOid.Id, attr);
+							// the same OID - currently, differing values give an error
+							if (attributes.ContainsKey(aOid.Id))
+							{
+								// OK, but the value has to be the same
+								if (!attributes[aOid.Id].Equals(attr))
+								{
+									throw new IOException("attempt to add existing attribute with different value");
+								}
+							}
+							else
+							{
+							    attributes.Add(aOid.Id, attr);
+							}
 
 							if (aOid.Equals(PkcsObjectIdentifiers.Pkcs9AtFriendlyName))
 							{

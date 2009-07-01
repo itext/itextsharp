@@ -15,47 +15,47 @@ using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Pkcs
 {
-    public sealed class PrivateKeyInfoFactory
-    {
-        private PrivateKeyInfoFactory()
-        {
-        }
+	public sealed class PrivateKeyInfoFactory
+	{
+		private PrivateKeyInfoFactory()
+		{
+		}
 
-        public static PrivateKeyInfo CreatePrivateKeyInfo(
+		public static PrivateKeyInfo CreatePrivateKeyInfo(
 			AsymmetricKeyParameter key)
-        {
+		{
 			if (key == null)
 				throw new ArgumentNullException("key");
 			if (!key.IsPrivate)
 				throw new ArgumentException("Public key passed - private key expected", "key");
 
 			if (key is ElGamalPrivateKeyParameters)
-            {
-                ElGamalPrivateKeyParameters _key = (ElGamalPrivateKeyParameters)key;
-                return new PrivateKeyInfo(
-                    new AlgorithmIdentifier(
-                        OiwObjectIdentifiers.ElGamalAlgorithm,
-                        new ElGamalParameter(
-                            _key.Parameters.P,
-                            _key.Parameters.G).ToAsn1Object()),
+			{
+				ElGamalPrivateKeyParameters _key = (ElGamalPrivateKeyParameters)key;
+				return new PrivateKeyInfo(
+					new AlgorithmIdentifier(
+					OiwObjectIdentifiers.ElGamalAlgorithm,
+					new ElGamalParameter(
+					_key.Parameters.P,
+					_key.Parameters.G).ToAsn1Object()),
 					new DerInteger(_key.X));
 			}
 
 			if (key is DsaPrivateKeyParameters)
-            {
-                DsaPrivateKeyParameters _key = (DsaPrivateKeyParameters)key;
-                return new PrivateKeyInfo(
-                    new AlgorithmIdentifier(
-                        X9ObjectIdentifiers.IdDsa,
-                        new DsaParameter(
-                            _key.Parameters.P,
-                            _key.Parameters.Q,
-                            _key.Parameters.G).ToAsn1Object()),
+			{
+				DsaPrivateKeyParameters _key = (DsaPrivateKeyParameters)key;
+				return new PrivateKeyInfo(
+					new AlgorithmIdentifier(
+					X9ObjectIdentifiers.IdDsa,
+					new DsaParameter(
+					_key.Parameters.P,
+					_key.Parameters.Q,
+					_key.Parameters.G).ToAsn1Object()),
 					new DerInteger(_key.X));
-            }
+			}
 
 			if (key is DHPrivateKeyParameters)
-            {
+			{
 				/*
 					Process DH private key.
 					The value for L was set to zero implicitly.
@@ -68,11 +68,11 @@ namespace Org.BouncyCastle.Pkcs
 					_key.Parameters.P, _key.Parameters.G, 0);
 
 				return new PrivateKeyInfo(
-                    new AlgorithmIdentifier(
-						PkcsObjectIdentifiers.DhKeyAgreement,
-						withNewL.ToAsn1Object()),
+					new AlgorithmIdentifier(
+					PkcsObjectIdentifiers.DhKeyAgreement,
+					withNewL.ToAsn1Object()),
 					new DerInteger(_key.X));
-            }
+			}
 
 			if (key is RsaKeyParameters)
 			{
@@ -113,8 +113,8 @@ namespace Org.BouncyCastle.Pkcs
 			}
 
 			if (key is ECPrivateKeyParameters)
-            {
-                ECPrivateKeyParameters _key = (ECPrivateKeyParameters)key;
+			{
+				ECPrivateKeyParameters _key = (ECPrivateKeyParameters)key;
 				AlgorithmIdentifier algID;
 
 				if (_key.AlgorithmName == "ECGOST3410")
@@ -174,7 +174,7 @@ namespace Org.BouncyCastle.Pkcs
 			}
 
 			throw new ArgumentException("Class provided is not convertible: " + key.GetType().FullName);
-        }
+		}
 
 		public static PrivateKeyInfo CreatePrivateKeyInfo(
 			char[]					passPhrase,
@@ -187,9 +187,9 @@ namespace Org.BouncyCastle.Pkcs
 			char[]					passPhrase,
 			bool					wrongPkcs12Zero,
 			EncryptedPrivateKeyInfo	encInfo)
-        {
+		{
 			AlgorithmIdentifier algID = encInfo.EncryptionAlgorithm;
-			IBufferedCipher cipher = PbeUtilities.CreateEngine(algID.ObjectID) as IBufferedCipher;
+			IBufferedCipher cipher = PbeUtilities.CreateEngine(algID) as IBufferedCipher;
 
 			if (cipher == null)
 			{
@@ -197,7 +197,7 @@ namespace Org.BouncyCastle.Pkcs
 			}
 
 			ICipherParameters keyParameters = PbeUtilities.GenerateCipherParameters(
-				algID.ObjectID, passPhrase, wrongPkcs12Zero, algID.Parameters);
+				algID, passPhrase, wrongPkcs12Zero);
 
 			cipher.Init(false, keyParameters);
 
@@ -206,6 +206,6 @@ namespace Org.BouncyCastle.Pkcs
 			Asn1Object asn1Data = Asn1Object.FromByteArray(encoding);
 
 			return PrivateKeyInfo.GetInstance(asn1Data);
-        }
-    }
+		}
+	}
 }

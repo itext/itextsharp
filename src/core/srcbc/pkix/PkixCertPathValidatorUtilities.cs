@@ -301,14 +301,14 @@ namespace Org.BouncyCastle.Pkix
 						// use all purpose parameters
 						//X509LDAPCertStoreParameters ldapParams = new X509LDAPCertStoreParameters.Builder(
 						//                                url, baseDN).build();
-						//pkixParams.addAddionalStore(X509Store.getInstance(
-						//    "CERTIFICATE/LDAP", ldapParams, "BC"));
-						//pkixParams.addAddionalStore(X509Store.getInstance(
-						//    "CRL/LDAP", ldapParams, "BC"));
-						//pkixParams.addAddionalStore(X509Store.getInstance(
-						//    "ATTRIBUTECERTIFICATE/LDAP", ldapParams, "BC"));
-						//pkixParams.addAddionalStore(X509Store.getInstance(
-						//    "CERTIFICATEPAIR/LDAP", ldapParams, "BC"));
+						//pkixParams.AddAdditionalStore(X509Store.getInstance(
+						//    "CERTIFICATE/LDAP", ldapParams));
+						//pkixParams.AddAdditionalStore(X509Store.getInstance(
+						//    "CRL/LDAP", ldapParams));
+						//pkixParams.AddAdditionalStore(X509Store.getInstance(
+						//    "ATTRIBUTECERTIFICATE/LDAP", ldapParams));
+						//pkixParams.AddAdditionalStore(X509Store.getInstance(
+						//    "CERTIFICATEPAIR/LDAP", ldapParams));
 					}
 				}
 				catch (Exception)
@@ -938,7 +938,6 @@ namespace Org.BouncyCastle.Pkix
 			{
 				crls.AddAll(PkixCertPathValidatorUtilities.FindCrls(crlselect, paramsPKIX.GetStores()));
 				crls.AddAll(PkixCertPathValidatorUtilities.FindCrls(crlselect, paramsPKIX.GetAdditionalStores()));
-				crls.AddAll(PkixCertPathValidatorUtilities.FindCrls(crlselect, paramsPKIX.GetX509Stores()));
 			}
 			catch (Exception e)
 			{
@@ -1040,7 +1039,6 @@ namespace Org.BouncyCastle.Pkix
 			{
 				temp.AddAll(PkixCertPathValidatorUtilities.FindCrls(deltaSelect, paramsPKIX.GetAdditionalStores()));
 				temp.AddAll(PkixCertPathValidatorUtilities.FindCrls(deltaSelect, paramsPKIX.GetStores()));
-				temp.AddAll(PkixCertPathValidatorUtilities.FindCrls(deltaSelect, paramsPKIX.GetX509Stores()));
 			}
 			catch (Exception e)
 			{
@@ -1235,7 +1233,6 @@ namespace Org.BouncyCastle.Pkix
 			{
 				ArrayList matches = new ArrayList();
 
-				matches.AddRange(PkixCertPathValidatorUtilities.FindCertificates(certSelect, pkixParams.GetX509Stores()));
 				matches.AddRange(PkixCertPathValidatorUtilities.FindCertificates(certSelect, pkixParams.GetStores()));
 				matches.AddRange(PkixCertPathValidatorUtilities.FindCertificates(certSelect, pkixParams.GetAdditionalStores()));
 

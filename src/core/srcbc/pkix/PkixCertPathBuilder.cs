@@ -48,7 +48,6 @@ namespace Org.BouncyCastle.Pkix
 			try
 			{
 				targets.AddAll(PkixCertPathValidatorUtilities.FindCertificates((X509CertStoreSelector)certSelect, pkixParams.GetStores()));
-				targets.AddAll(PkixCertPathValidatorUtilities.FindCertificates((X509CertStoreSelector)certSelect, pkixParams.GetX509Stores()));
 				// TODO Should this include an entry for pkixParams.GetAdditionalStores() too?
 			}
 			catch (Exception e)

@@ -53,31 +53,31 @@ namespace Org.BouncyCastle.Crypto.Tls
 			switch (number)
 			{
 				case TLS_RSA_WITH_3DES_EDE_CBC_SHA:
-					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new DesEdeEngine()), new CbcBlockCipher(new DesEdeEngine()), new Sha1Digest(), new Sha1Digest(), 24, TlsCipherSuite.KE_RSA);
+					return createDesEdeCipherSuite(24, TlsCipherSuite.KE_RSA);
 
 				case TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA:
-					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new DesEdeEngine()), new CbcBlockCipher(new DesEdeEngine()), new Sha1Digest(), new Sha1Digest(), 24, TlsCipherSuite.KE_DHE_DSS);
+					return createDesEdeCipherSuite(24, TlsCipherSuite.KE_DHE_DSS);
 
 				case TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA:
-					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new DesEdeEngine()), new CbcBlockCipher(new DesEdeEngine()), new Sha1Digest(), new Sha1Digest(), 24, TlsCipherSuite.KE_DHE_RSA);
+					return createDesEdeCipherSuite(24, TlsCipherSuite.KE_DHE_RSA);
 
 				case TLS_RSA_WITH_AES_128_CBC_SHA:
-					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new AesFastEngine()), new CbcBlockCipher(new AesFastEngine()), new Sha1Digest(), new Sha1Digest(), 16, TlsCipherSuite.KE_RSA);
+					return createAesCipherSuite(16, TlsCipherSuite.KE_RSA);
 
 				case TLS_DHE_DSS_WITH_AES_128_CBC_SHA:
-					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new AesFastEngine()), new CbcBlockCipher(new AesFastEngine()), new Sha1Digest(), new Sha1Digest(), 16, TlsCipherSuite.KE_DHE_DSS);
+					return createAesCipherSuite(16, TlsCipherSuite.KE_DHE_DSS);
 
 				case TLS_DHE_RSA_WITH_AES_128_CBC_SHA:
-					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new AesFastEngine()), new CbcBlockCipher(new AesFastEngine()), new Sha1Digest(), new Sha1Digest(), 16, TlsCipherSuite.KE_DHE_RSA);
+					return createAesCipherSuite(16, TlsCipherSuite.KE_DHE_RSA);
 
 				case TLS_RSA_WITH_AES_256_CBC_SHA:
-					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new AesFastEngine()), new CbcBlockCipher(new AesFastEngine()), new Sha1Digest(), new Sha1Digest(), 32, TlsCipherSuite.KE_RSA);
+					return createAesCipherSuite(32, TlsCipherSuite.KE_RSA);
 
 				case TLS_DHE_DSS_WITH_AES_256_CBC_SHA:
-					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new AesFastEngine()), new CbcBlockCipher(new AesFastEngine()), new Sha1Digest(), new Sha1Digest(), 32, TlsCipherSuite.KE_DHE_DSS);
+					return createAesCipherSuite(32, TlsCipherSuite.KE_DHE_DSS);
 
 				case TLS_DHE_RSA_WITH_AES_256_CBC_SHA:
-					return new TlsBlockCipherCipherSuite(new CbcBlockCipher(new AesFastEngine()), new CbcBlockCipher(new AesFastEngine()), new Sha1Digest(), new Sha1Digest(), 32, TlsCipherSuite.KE_DHE_RSA);
+					return createAesCipherSuite(32, TlsCipherSuite.KE_DHE_RSA);
 
 				default:
 					handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_handshake_failure);
@@ -88,5 +88,27 @@ namespace Org.BouncyCastle.Crypto.Tls
 					return null;
 			}
 		}
+
+	    private static TlsCipherSuite createAesCipherSuite(int cipherKeySize, short keyExchange)
+	    {
+	        return new TlsBlockCipherCipherSuite(createAesCipher(), createAesCipher(),
+	            new Sha1Digest(), new Sha1Digest(), cipherKeySize, keyExchange);
+	    }
+
+	    private static TlsCipherSuite createDesEdeCipherSuite(int cipherKeySize, short keyExchange)
+	    {
+	        return new TlsBlockCipherCipherSuite(createDesEdeCipher(), createDesEdeCipher(),
+	            new Sha1Digest(), new Sha1Digest(), cipherKeySize, keyExchange);
+	    }
+
+	    private static CbcBlockCipher createAesCipher()
+	    {
+	        return new CbcBlockCipher(new AesFastEngine());
+	    }
+
+	    private static CbcBlockCipher createDesEdeCipher()
+	    {
+	        return new CbcBlockCipher(new DesEdeEngine());
+	    }
 	}
 }
