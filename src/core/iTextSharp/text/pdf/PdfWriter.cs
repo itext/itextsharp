@@ -225,7 +225,7 @@ namespace iTextSharp.text.pdf {
             private const int OBJSINSTREAM = 200;
             
             /** array containing the cross-reference table of the normal objects. */
-            private k_Tree xrefs;
+            private OrderedTree xrefs;
             private int refnum;
             /** the current byteposition in the body. */
             private int position;
@@ -242,7 +242,7 @@ namespace iTextSharp.text.pdf {
             * @param writer
             */
             internal PdfBody(PdfWriter writer) {
-                xrefs = new k_Tree();
+                xrefs = new OrderedTree();
                 xrefs[new PdfCrossReference(0, 0, GENERATION_MAX)] = null;
                 position = writer.Os.Counter;
                 refnum = 1;
@@ -401,9 +401,7 @@ namespace iTextSharp.text.pdf {
             
             internal int Size {
                 get {
-                    k_Iterator it = xrefs.End.Clone();
-                    it.Prev();
-                    return Math.Max(((PdfCrossReference)((DictionaryEntry)it.Current).Key).Refnum + 1, refnum);
+                    return Math.Max(((PdfCrossReference)xrefs.GetMaxKey()).Refnum + 1, refnum);
                 }
             }
             
@@ -425,12 +423,10 @@ namespace iTextSharp.text.pdf {
                     refNumber = IndirectReferenceNumber;
                     xrefs[new PdfCrossReference(refNumber, position)] = null;
                 }
-                PdfCrossReference entry = (PdfCrossReference)((DictionaryEntry)xrefs.Begin.Current).Key;
-                int first = entry.Refnum;
+                int first = ((PdfCrossReference)xrefs.GetMinKey()).Refnum;
                 int len = 0;
                 ArrayList sections = new ArrayList();
-                for (k_Iterator i = xrefs.Begin.Clone(); i != xrefs.End; i.Next()) {
-                    entry = (PdfCrossReference)((DictionaryEntry)i.Current).Key;
+                foreach (PdfCrossReference entry in xrefs.Keys) {
                     if (first + len == entry.Refnum)
                         ++len;
                     else {
@@ -452,8 +448,7 @@ namespace iTextSharp.text.pdf {
                     }
                     ByteBuffer buf = new ByteBuffer();
                     
-                    for (k_Iterator i = xrefs.Begin.Clone(); i != xrefs.End; i.Next()) {
-                        entry = (PdfCrossReference)((DictionaryEntry)i.Current).Key;
+                    foreach (PdfCrossReference entry in xrefs.Keys) {
                         entry.ToPdf(mid, buf);
                     }
                     PdfStream xr = new PdfStream(buf.ToByteArray());
@@ -485,7 +480,8 @@ namespace iTextSharp.text.pdf {
                 else {
                     byte[] tmp = GetISOBytes("xref\n");
                     os.Write(tmp, 0, tmp.Length);
-                    k_Iterator i = xrefs.Begin.Clone();
+                    IEnumerator i = xrefs.Keys;
+                    i.MoveNext();
                     for (int k = 0; k < sections.Count; k += 2) {
                         first = (int)sections[k];
                         len = (int)sections[k + 1];
@@ -496,9 +492,8 @@ namespace iTextSharp.text.pdf {
                         os.Write(tmp, 0, tmp.Length);
                         os.WriteByte((byte)'\n');
                         while (len-- > 0) {
-                            entry = (PdfCrossReference)((DictionaryEntry)i.Current).Key;
-                            entry.ToPdf(os);
-                            i.Next();
+                            ((PdfCrossReference)i.Current).ToPdf(os);
+                            i.MoveNext();
                         }
                     }
                 }
@@ -743,7 +738,7 @@ namespace iTextSharp.text.pdf {
         * @param dest the <CODE>Hashtable</CODE> containing the destinations
         * @throws IOException on error
         */
-        internal void AddLocalDestinations(k_Tree dest) {
+        internal void AddLocalDestinations(OrderedTree dest) {
             foreach (String name in dest.Keys) {
                 Object[] obj = (Object[])dest[name];
                 PdfDestination destination = (PdfDestination)obj[2];

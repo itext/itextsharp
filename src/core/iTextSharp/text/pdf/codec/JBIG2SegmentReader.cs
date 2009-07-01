@@ -92,9 +92,9 @@ namespace iTextSharp.text.pdf.codec {
         public const int TABLES = 53; //see 7.4.13.                                                        
         public const int EXTENSION = 62; //see 7.4.14.                                                     
         
-        private k_Tree segments = new k_Tree();
-        private k_Tree pages = new k_Tree();
-        private k_Tree globals = new k_Tree();
+        private OrderedTree segments = new OrderedTree();
+        private OrderedTree pages = new OrderedTree();
+        private OrderedTree globals = new OrderedTree();
         private RandomAccessFileOrArray ra;
         private bool sequential;
         private bool number_of_pages_known;
@@ -140,7 +140,7 @@ namespace iTextSharp.text.pdf.codec {
         public class JBIG2Page {
             public int page;
             private JBIG2SegmentReader sr;
-            private k_Tree segs = new k_Tree();
+            private OrderedTree segs = new OrderedTree();
             public int pageBitmapWidth = -1;
             public int pageBitmapHeight = -1;
             public JBIG2Page(int page, JBIG2SegmentReader sr) {
@@ -337,7 +337,7 @@ namespace iTextSharp.text.pdf.codec {
             s.page_association_size = page_association_size;
             s.page_association_offset = page_association_offset;
             
-            if ( segment_page_association > 0 && ! pages.Contains(segment_page_association) ) {
+            if ( segment_page_association > 0 && ! pages.ContainsKey(segment_page_association) ) {
                 pages[segment_page_association] =  new JBIG2Page(segment_page_association, this);
             }
             if ( segment_page_association > 0 ) {

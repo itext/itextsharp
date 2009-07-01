@@ -224,15 +224,14 @@ namespace iTextSharp.text.pdf {
             * @param documentJavaScript the javascript used in the document
             * @param writer the writer the catalog applies to
             */
-            internal void AddNames(k_Tree localDestinations, Hashtable documentLevelJS, Hashtable documentFileAttachment, PdfWriter writer) {
+            internal void AddNames(OrderedTree localDestinations, Hashtable documentLevelJS, Hashtable documentFileAttachment, PdfWriter writer) {
                 if (localDestinations.Count == 0 && documentLevelJS.Count == 0 && documentFileAttachment.Count == 0)
                     return;
                 PdfDictionary names = new PdfDictionary();
                 if (localDestinations.Count > 0) {
                     PdfArray ar = new PdfArray();
-                    foreach (DictionaryEntry entry in localDestinations) {
-                        String name = (String)entry.Key;
-                        Object[] obj = (Object[])entry.Value;
+                    foreach (String name in localDestinations.Keys) {
+                        Object[] obj = (Object[])localDestinations[name];
                         if (obj[2] == null) //no destination
                             continue;
                         PdfIndirectReference refi = (PdfIndirectReference)obj[1];
@@ -1966,7 +1965,7 @@ namespace iTextSharp.text.pdf {
         * Stores the destinations keyed by name. Value is
         * <CODE>Object[]{PdfAction,PdfIndirectReference,PdfDestintion}</CODE>.
         */
-        protected internal k_Tree localDestinations = new k_Tree();
+        protected internal OrderedTree localDestinations = new OrderedTree();
 
         internal PdfAction GetLocalGotoAction(String name) {
             PdfAction action;
