@@ -67,9 +67,13 @@ namespace Org.BouncyCastle.Security
 				"1.2.840.113533.7.66.10");
 			AddKgAlgorithm("CAST6");
 			AddKgAlgorithm("DES",
-				OiwObjectIdentifiers.DesCbc);
+				OiwObjectIdentifiers.DesCbc,
+				OiwObjectIdentifiers.DesCfb,
+				OiwObjectIdentifiers.DesEcb,
+				OiwObjectIdentifiers.DesOfb);
 			AddKgAlgorithm("DESEDE",
 				"DESEDEWRAP",
+				OiwObjectIdentifiers.DesEde,
 				PkcsObjectIdentifiers.IdAlgCms3DesWrap);
 			AddKgAlgorithm("DESEDE3",
 				PkcsObjectIdentifiers.DesEde3Cbc);

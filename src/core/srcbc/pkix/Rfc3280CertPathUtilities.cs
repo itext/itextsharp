@@ -747,7 +747,6 @@ namespace Org.BouncyCastle.Pkix
 			{
 				coll.AddRange(PkixCertPathValidatorUtilities.FindCertificates(selector, paramsPKIX.GetStores()));
 				coll.AddRange(PkixCertPathValidatorUtilities.FindCertificates(selector, paramsPKIX.GetAdditionalStores()));
-				coll.AddRange(PkixCertPathValidatorUtilities.FindCertificates(selector, paramsPKIX.GetX509Stores()));
 			}
 			catch (Exception e)
 			{
@@ -1445,7 +1444,6 @@ namespace Org.BouncyCastle.Pkix
 			{
 				completeSet.AddAll(PkixCertPathValidatorUtilities.FindCrls(crlselect, paramsPKIX.GetAdditionalStores()));
 				completeSet.AddAll(PkixCertPathValidatorUtilities.FindCrls(crlselect, paramsPKIX.GetStores()));
-				completeSet.AddAll(PkixCertPathValidatorUtilities.FindCrls(crlselect, paramsPKIX.GetX509Stores()));
 			}
 			catch (Exception e)
 			{

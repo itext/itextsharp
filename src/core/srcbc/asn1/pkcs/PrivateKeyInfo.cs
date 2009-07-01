@@ -96,7 +96,7 @@ namespace Org.BouncyCastle.Asn1.Pkcs
     	}
 
 		/**
-         * write out an RSA private key with it's asscociated information
+         * write out an RSA private key with its associated information
          * as described in Pkcs8.
          * <pre>
          *      PrivateKeyInfo ::= Sequence {

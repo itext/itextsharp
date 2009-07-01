@@ -21,13 +21,13 @@ using Org.BouncyCastle.Crypto.Paddings;
 
 namespace Org.BouncyCastle.Security
 {
-    /// <remarks>
-    ///  Cipher Utility class contains methods that can not be specifically grouped into other classes.
-    /// </remarks>
-    public sealed class CipherUtilities
-    {
-        private static readonly Hashtable algorithms = new Hashtable();
-        private static readonly Hashtable oids = new Hashtable();
+	/// <remarks>
+	///  Cipher Utility class contains methods that can not be specifically grouped into other classes.
+	/// </remarks>
+	public sealed class CipherUtilities
+	{
+		private static readonly Hashtable algorithms = new Hashtable();
+		private static readonly Hashtable oids = new Hashtable();
 
 		static CipherUtilities()
 		{
@@ -71,6 +71,10 @@ namespace Org.BouncyCastle.Security
 			algorithms[PkcsObjectIdentifiers.RsaEncryption.Id] = "RSA//PKCS1PADDING";
 
 			algorithms[OiwObjectIdentifiers.DesCbc.Id] = "DES/CBC";
+			algorithms[OiwObjectIdentifiers.DesCfb.Id] = "DES/CFB";
+			algorithms[OiwObjectIdentifiers.DesEcb.Id] = "DES/ECB";
+			algorithms[OiwObjectIdentifiers.DesOfb.Id] = "DES/OFB";
+			algorithms[OiwObjectIdentifiers.DesEde.Id] = "DESEDE";
 			algorithms[PkcsObjectIdentifiers.DesEde3Cbc.Id] = "DESEDE/CBC";
 			algorithms[PkcsObjectIdentifiers.RC2Cbc.Id] = "RC2/CBC";
 			algorithms["1.3.6.1.4.1.188.7.1.1.2"] = "IDEA/CBC";
@@ -134,18 +138,18 @@ namespace Org.BouncyCastle.Security
 		}
 
 		private CipherUtilities()
-        {
-        }
+		{
+		}
 
 		/// <summary>
-        /// Returns a ObjectIdentifier for a give encoding.
-        /// </summary>
-        /// <param name="mechanism">A string representation of the encoding.</param>
-        /// <returns>A DerObjectIdentifier, null if the Oid is not available.</returns>
+		/// Returns a ObjectIdentifier for a give encoding.
+		/// </summary>
+		/// <param name="mechanism">A string representation of the encoding.</param>
+		/// <returns>A DerObjectIdentifier, null if the Oid is not available.</returns>
 		// TODO Don't really want to support this
 		public static DerObjectIdentifier GetObjectIdentifier(
-            string mechanism)
-        {
+			string mechanism)
+		{
 			if (mechanism == null)
 				throw new ArgumentNullException("mechanism");
 
@@ -156,22 +160,22 @@ namespace Org.BouncyCastle.Security
 				mechanism = aliased;
 
 			return (DerObjectIdentifier) oids[mechanism];
-        }
+		}
 
 		public static ICollection Algorithms
-        {
-            get { return oids.Keys; }
-        }
+		{
+			get { return oids.Keys; }
+		}
 
 		public static IBufferedCipher GetCipher(
-            DerObjectIdentifier oid)
-        {
-            return GetCipher(oid.Id);
-        }
+			DerObjectIdentifier oid)
+		{
+			return GetCipher(oid.Id);
+		}
 
 		public static IBufferedCipher GetCipher(
-            string algorithm)
-        {
+			string algorithm)
+		{
 			if (algorithm == null)
 				throw new ArgumentNullException("algorithm");
 
@@ -198,11 +202,11 @@ namespace Org.BouncyCastle.Security
 			{
 				return new BufferedIesCipher(
 					new IesEngine(
-						iesAgreement,
-						new Kdf2BytesGenerator(
-							new Sha1Digest()),
-						new HMac(
-							new Sha1Digest())));
+					iesAgreement,
+					new Kdf2BytesGenerator(
+					new Sha1Digest()),
+					new HMac(
+					new Sha1Digest())));
 			}
 
 
@@ -248,7 +252,7 @@ namespace Org.BouncyCastle.Security
 			string[] parts = algorithm.Split('/');
 
 			IBlockCipher blockCipher = null;
-            IAsymmetricBlockCipher asymBlockCipher = null;
+			IAsymmetricBlockCipher asymBlockCipher = null;
 			IStreamCipher streamCipher = null;
 
 			switch (parts[0])
@@ -365,7 +369,7 @@ namespace Org.BouncyCastle.Security
 			IAeadBlockCipher aeadBlockCipher = null;
 
 			if (parts.Length > 2)
-            {
+			{
 				if (streamCipher != null)
 					throw new ArgumentException("Paddings not used for stream ciphers");
 
@@ -443,11 +447,11 @@ namespace Org.BouncyCastle.Security
 					default:
 						throw new SecurityUtilityException("Cipher " + algorithm + " not recognised.");
 				}
-            }
+			}
 
 			string mode = "";
 			if (parts.Length > 1)
-            {
+			{
 				mode = parts[1];
 
 				int di = GetDigitIndex(mode);
@@ -512,7 +516,7 @@ namespace Org.BouncyCastle.Security
 					default:
 						throw new SecurityUtilityException("Cipher " + algorithm + " not recognised.");
 				}
-            }
+			}
 
 			if (aeadBlockCipher != null)
 			{
@@ -525,7 +529,7 @@ namespace Org.BouncyCastle.Security
 			}
 
 			if (blockCipher != null)
-            {
+			{
 				if (cts)
 				{
 					return new CtsBlockCipher(blockCipher);
@@ -542,21 +546,21 @@ namespace Org.BouncyCastle.Security
 				}
 
 				return new PaddedBufferedBlockCipher(blockCipher);
-            }
+			}
 
 			if (asymBlockCipher != null)
-            {
-                return new BufferedAsymmetricBlockCipher(asymBlockCipher);
-            }
+			{
+				return new BufferedAsymmetricBlockCipher(asymBlockCipher);
+			}
 
 			throw new SecurityUtilityException("Cipher " + algorithm + " not recognised.");
-        }
+		}
 
-        public static string GetAlgorithmName(
+		public static string GetAlgorithmName(
 			DerObjectIdentifier oid)
-        {
-            return (string) algorithms[oid.Id];
-        }
+		{
+			return (string) algorithms[oid.Id];
+		}
 
 		private static int GetDigitIndex(
 			string s)

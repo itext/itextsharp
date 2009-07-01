@@ -64,7 +64,6 @@ namespace Org.BouncyCastle.Pkix
 						selector.Subject = principals[i];
 
 						issuers.AddAll(PkixCertPathValidatorUtilities.FindCertificates(selector, pkixParams.GetStores()));
-						issuers.AddAll(PkixCertPathValidatorUtilities.FindCertificates(selector, pkixParams.GetX509Stores()));
 					}
 					catch (Exception e)
 					{

@@ -13,7 +13,6 @@ namespace Org.BouncyCastle.Pkix
 	public class PkixParameters
 //		: ICertPathParameters
 	{
-		// TODO Put the validity models in an enumeration?
 		/**
 		* This is the default PKIX validity model. Actually there are two variants
 		* of this: The PKIX model and the modified PKIX model. The PKIX model
@@ -42,9 +41,6 @@ namespace Org.BouncyCastle.Pkix
 		private ISet trustAnchors;
 		private DateTimeObject date;
 		private IList certPathCheckers;
-		// TODO Decide whether to separate into certs/crl stores
-		// TODO ExtendedPkixParameters already has stores?
-		private ArrayList x509Stores;
 		private bool revocationEnabled = true;
 		private ISet initialPolicies;
 		//private bool checkOnlyEECertificateCrl = false; 
@@ -53,7 +49,7 @@ namespace Org.BouncyCastle.Pkix
 		private bool policyMappingInhibited = false;
 		private bool policyQualifiersRejected = true;
 		private IX509Selector certSelector;
-		private IList stores; /// TODO Redundant with other stores above?
+		private IList stores;
 		private IX509Selector selector;
 		private bool additionalLocationsEnabled;
 		private IList additionalStores;
@@ -89,7 +85,6 @@ namespace Org.BouncyCastle.Pkix
 
 			this.initialPolicies = new HashSet();
 			this.certPathCheckers = new ArrayList();
-			this.x509Stores = new ArrayList();
 			this.stores = new ArrayList();
 			this.additionalStores = new ArrayList();
 			this.trustedACIssuers = new HashSet();
@@ -98,7 +93,7 @@ namespace Org.BouncyCastle.Pkix
 			this.attrCertCheckers = new HashSet();
 		}
 
-		// TODO implement for Pkcs12Store?
+//		// TODO implement for other keystores (see Java build)?
 //		/**
 //		 * Creates an instance of <code>PKIXParameters</code> that 
 //		 * populates the set of most-trusted CAs from the trusted 
@@ -114,27 +109,30 @@ namespace Org.BouncyCastle.Pkix
 //		 * @throws NullPointerException if the keystore is <code>null</code>
 //		 */
 //		public PkixParameters(
-//			KeyStore keystore) 
+//			Pkcs12Store keystore) 
 ////			throws KeyStoreException, InvalidAlgorithmParameterException 
 //		{
 //			if (keystore == null)
 //				throw new ArgumentNullException("keystore");
-//			ISet hashSet = new HashSet();
-//			foreach (string alias in keystore.aliases())
+//			ISet trustAnchors = new HashSet();
+//			foreach (string alias in keystore.Aliases)
 //			{
-//				if (keystore.isCertificateEntry(alias)) 
+//				if (keystore.IsCertificateEntry(alias)) 
 //				{
-//					Certificate cert = keystore.getCertificate(alias);
-//					if (cert is X509Certificate)
-//					{
-//						hashSet.add(new TrustAnchor((X509Certificate)cert, null));
-//					}
+//					X509CertificateEntry x509Entry = keystore.GetCertificate(alias);
+//					trustAnchors.Add(new TrustAnchor(x509Entry.Certificate, null));
 //				}
 //			}
-//			SetTrustAnchors(hashSet);
+//			SetTrustAnchors(trustAnchors);
+//
 //			this.initialPolicies = new HashSet();
 //			this.certPathCheckers = new ArrayList();
-//			this.x509Stores = new ArrayList();
+//			this.stores = new ArrayList();
+//			this.additionalStores = new ArrayList();
+//			this.trustedACIssuers = new HashSet();
+//			this.necessaryACAttributes = new HashSet();
+//			this.prohibitedACAttributes = new HashSet();
+//			this.attrCertCheckers = new HashSet();
 //		}
 
 		public virtual bool IsRevocationEnabled 
@@ -204,58 +202,6 @@ namespace Org.BouncyCastle.Pkix
 					trustAnchors.Add(ta);
 				}
 			}
-		}
-
-		/**
-		* Sets the list of IX509Store's to be used in finding certificates and CRLs.
-		* May be null, in which case no IX509Store's will be used. The first
-		* IX509Store's in the list may be preferred to those that appear later.<br />
-		* <br />
-		* Note that the IList is copied to protect against subsequent modifications.<br />
-		* <br />
-		*
-		* @param stores
-		*            a IList of IX509Store's (or <code>null</code>)
-		*
-		* @exception InvalidCastException
-		*                if any of the elements in the list are not of type
-		*                <code>IX509Store</code>
-		*
-		* @see #GetX509Stores()
-		*/
-		public virtual void SetX509Stores(
-			IList stores)
-		{
-			ArrayList newStores = new ArrayList();
-
-			if (stores != null && stores.Count != 0)
-			{
-				foreach (IX509Store obj in stores)
-				{
-					newStores.Add(obj);
-				}
-
-				this.x509Stores = newStores;
-			}
-		}
-
-		public virtual void AddX509Store(
-			IX509Store x509Store)
-		{			
-			this.x509Stores.Add(x509Store);
-		}
-
-		/**
-		* Returns an immutable List of IX509Stores that are used to find certificates.
-		* 
-		* @return an immutable List of IX509Stores (may be empty, but never
-		*         <code>null</code>)
-		* 
-		* @see #setCertStores(java.util.List)
-		*/
-		public virtual IList GetX509Stores()
-		{
-			return new ArrayList(x509Stores);
 		}
 
 		/**
@@ -506,7 +452,6 @@ namespace Org.BouncyCastle.Pkix
 		{
 			Date = parameters.Date;
 			SetCertPathCheckers(parameters.GetCertPathCheckers());
-			SetX509Stores(parameters.GetX509Stores());
 			IsAnyPolicyInhibited = parameters.IsAnyPolicyInhibited;
 			IsExplicitPolicyRequired = parameters.IsExplicitPolicyRequired;
 			IsPolicyMappingInhibited = parameters.IsPolicyMappingInhibited;
@@ -608,7 +553,7 @@ namespace Org.BouncyCastle.Pkix
 		}
 
 		/**
-		* Adds a additional Bouncy Castle {@link Store} to find CRLs, certificates,
+		* Adds an additional Bouncy Castle {@link Store} to find CRLs, certificates,
 		* attribute certificates or cross certificates.
 		* <p>
 		* You should not use this method. This method is used for adding additional
@@ -622,7 +567,7 @@ namespace Org.BouncyCastle.Pkix
 		* @param store The store to add.
 		* @see #getStores()
 		*/
-		public virtual void AddAddionalStore(
+		public virtual void AddAdditionalStore(
 			IX509Store store)
 		{
 			if (store != null)
