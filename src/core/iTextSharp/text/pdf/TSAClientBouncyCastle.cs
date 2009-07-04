@@ -187,7 +187,7 @@ namespace iTextSharp.text.pdf {
             HttpWebRequest con = (HttpWebRequest)WebRequest.Create(tsaURL);
             con.ContentLength = requestBytes.Length;
             con.ContentType = "application/timestamp-query";
-            con.TransferEncoding = "binary";
+            con.Method = "POST";
             if ((tsaUsername != null) && !tsaUsername.Equals("") ) {
                 string authInfo = tsaUsername + ":" + tsaPassword;
                 authInfo = Convert.ToBase64String(Encoding.Default.GetBytes(authInfo));
