@@ -124,6 +124,7 @@ namespace iTextSharp.text.pdf {
             con.ContentLength = array.Length;
             con.ContentType = "application/ocsp-request";
             con.Accept = "application/ocsp-response";
+            con.Method = "POST";
             Stream outp = con.GetRequestStream();
             outp.Write(array, 0, array.Length);
             outp.Close();
