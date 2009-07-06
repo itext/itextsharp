@@ -136,7 +136,7 @@ namespace iTextSharp.text.pdf {
         }
         
         private void ProcessType0(PdfDictionary font) {
-            byte[] touni = PdfReader.GetStreamBytes((PRStream)PdfReader.GetPdfObjectRelease(font.Get(PdfName.TOUNICODE)));
+            PdfObject toUniObject = PdfReader.GetPdfObjectRelease(font.Get(PdfName.TOUNICODE));
             PdfArray df = (PdfArray)PdfReader.GetPdfObjectRelease(font.Get(PdfName.DESCENDANTFONTS));
             PdfDictionary cidft = (PdfDictionary)PdfReader.GetPdfObjectRelease(df[0]);
             PdfNumber dwo = (PdfNumber)PdfReader.GetPdfObjectRelease(cidft.Get(PdfName.DW));
@@ -146,7 +146,9 @@ namespace iTextSharp.text.pdf {
             IntHashtable widths = ReadWidths((PdfArray)PdfReader.GetPdfObjectRelease(cidft.Get(PdfName.W)));
             PdfDictionary fontDesc = (PdfDictionary)PdfReader.GetPdfObjectRelease(cidft.Get(PdfName.FONTDESCRIPTOR));
             FillFontDesc(fontDesc);
-            FillMetrics(touni, widths, dw);
+            if (toUniObject != null){
+                FillMetrics(PdfReader.GetStreamBytes((PRStream)toUniObject), widths, dw);
+            }
         }
         
         private IntHashtable ReadWidths(PdfArray ws) {
@@ -638,5 +640,16 @@ namespace iTextSharp.text.pdf {
         protected override int[] GetRawCharBBox(int c, String name) {
             return null;
         }    
+
+        /**
+        * Exposes the unicode - > CID map that is constructed from the font's encoding
+        * @return the unicode to CID map
+        * @since 2.1.7
+        */
+        internal IntHashtable Uni2Byte {
+            get {
+                return uni2byte;
+            }
+        }
     }
 }
