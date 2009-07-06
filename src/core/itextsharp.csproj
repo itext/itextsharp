@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.10.6030"
+        ProductVersion = "7.10.3077"
         SchemaVersion = "2.0"
         ProjectGuid = "{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}"
     >
@@ -6178,6 +6178,11 @@
                 />
                 <File
                     RelPath = "srcbc\openssl\PasswordException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\openssl\PEMException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

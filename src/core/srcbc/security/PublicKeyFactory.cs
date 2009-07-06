@@ -47,8 +47,11 @@ namespace Org.BouncyCastle.Security
             AlgorithmIdentifier algID = keyInfo.AlgorithmID;
 			DerObjectIdentifier algOid = algID.ObjectID;
 
+			// TODO See RSAUtil.isRsaOid in Java build
 			if (algOid.Equals(PkcsObjectIdentifiers.RsaEncryption)
-				|| algOid.Equals(X509ObjectIdentifiers.IdEARsa))
+				|| algOid.Equals(X509ObjectIdentifiers.IdEARsa)
+				|| algOid.Equals(PkcsObjectIdentifiers.IdRsassaPss)
+				|| algOid.Equals(PkcsObjectIdentifiers.IdRsaesOaep))
 			{
 				RsaPublicKeyStructure pubKey = RsaPublicKeyStructure.GetInstance(
 					keyInfo.GetPublicKey());

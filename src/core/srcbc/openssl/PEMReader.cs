@@ -213,7 +213,7 @@ namespace Org.BouncyCastle.OpenSsl
 			}
 			catch (Exception e)
 			{
-				throw new IOException("problem parsing cert: " + e.ToString());
+				throw new PemException("problem parsing cert: " + e.ToString());
 			}
 		}
 
@@ -234,7 +234,7 @@ namespace Org.BouncyCastle.OpenSsl
 			}
 			catch (Exception e)
 			{
-				throw new IOException("problem parsing cert: " + e.ToString());
+				throw new PemException("problem parsing cert: " + e.ToString());
 			}
 		}
 
@@ -255,7 +255,7 @@ namespace Org.BouncyCastle.OpenSsl
 			}
 			catch (Exception e)
 			{
-				throw new IOException("problem parsing cert: " + e.ToString());
+				throw new PemException("problem parsing cert: " + e.ToString());
 			}
 		}
 
@@ -293,7 +293,7 @@ namespace Org.BouncyCastle.OpenSsl
 			}
 			catch (Exception e)
 			{
-				throw new IOException("problem parsing PKCS7 object: " + e.ToString());
+				throw new PemException("problem parsing PKCS7 object: " + e.ToString());
 			}
 		}
 
@@ -377,7 +377,7 @@ namespace Org.BouncyCastle.OpenSsl
 			}
 			catch (Exception e)
 			{
-				throw new IOException(
+				throw new PemException(
 					"problem creating " + type + " private key: " + e.ToString());
 			}
 		}
@@ -446,7 +446,7 @@ namespace Org.BouncyCastle.OpenSsl
 			}
 			catch (Exception e)
 			{
-				throw new IOException("problem parsing EC private key.", e);
+				throw new PemException("problem parsing EC private key.", e);
 			}
 		}
 	}

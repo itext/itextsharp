@@ -51,7 +51,8 @@ namespace Org.BouncyCastle.Security
 				NistObjectIdentifiers.IdAes256Ecb,
 				NistObjectIdentifiers.IdAes256Ofb,
 				NistObjectIdentifiers.IdAes256Wrap);
-			AddKgAlgorithm("BLOWFISH");
+			AddKgAlgorithm("BLOWFISH",
+				"1.3.6.1.4.1.3029.1.2");	
 			AddKgAlgorithm("CAMELLIA",
 				"CAMELLIAWRAP");
 			AddKgAlgorithm("CAMELLIA128",
@@ -225,94 +226,21 @@ namespace Org.BouncyCastle.Security
 			if (canonicalName == null)
 				throw new SecurityUtilityException("KeyGenerator " + algorithm + " not recognised.");
 
+			int defaultKeySize = FindDefaultKeySize(canonicalName);
+			if (defaultKeySize == -1)
+				throw new SecurityUtilityException("KeyGenerator " + algorithm
+					+ " (" + canonicalName + ") not supported.");
+
 			switch (canonicalName)
 			{
 				case "DES":
-					return new DesKeyGenerator(64);
+					return new DesKeyGenerator(defaultKeySize);
 				case "DESEDE":
-					return new DesEdeKeyGenerator(128);
 				case "DESEDE3":
-					return new DesEdeKeyGenerator(192);
-				case "AES":
-					return new CipherKeyGenerator(192);
-				case "AES128":
-					return new CipherKeyGenerator(128);
-				case "AES192":
-					return new CipherKeyGenerator(192);
-				case "AES256":
-					return new CipherKeyGenerator(256);
-				case "BLOWFISH":
-					return new CipherKeyGenerator(448);
-				case "CAMELLIA":
-					return new CipherKeyGenerator(256);
-				case "CAMELLIA128":
-					return new CipherKeyGenerator(128);
-				case "CAMELLIA192":
-					return new CipherKeyGenerator(192);
-				case "CAMELLIA256":
-					return new CipherKeyGenerator(256);
-				case "CAST5":
-					return new CipherKeyGenerator(128);
-				case "CAST6":
-					return new CipherKeyGenerator(256);
-				case "GOST28147":
-					return new CipherKeyGenerator(256);
-				case "HC128":
-					return new CipherKeyGenerator(128);
-				case "HC256":
-					return new CipherKeyGenerator(256);
-				case "HMACMD2":
-				case "HMACMD4":
-				case "HMACMD5":
-					return new CipherKeyGenerator(128);
-				case "HMACSHA1":
-					return new CipherKeyGenerator(160);
-				case "HMACSHA224":
-					return new CipherKeyGenerator(224);
-				case "HMACSHA256":
-					return new CipherKeyGenerator(256);
-				case "HMACSHA384":
-					return new CipherKeyGenerator(384);
-				case "HMACSHA512":
-					return new CipherKeyGenerator(512);
-				case "HMACRIPEMD128":
-					return new CipherKeyGenerator(128);
-				case "HMACRIPEMD160":
-					return new CipherKeyGenerator(160);
-				case "HMACTIGER":
-					return new CipherKeyGenerator(192);
-				case "IDEA":
-					return new CipherKeyGenerator(128);
-				case "NOEKEON":
-					return new CipherKeyGenerator(128);
-				case "RC2":
-				case "RC4":
-				case "RC5":
-					return new CipherKeyGenerator(128);
-				case "RC5-64":
-				case "RC6":
-					return new CipherKeyGenerator(256);
-				case "RIJNDAEL":
-					return new CipherKeyGenerator(192);
-				case "SALSA20":
-					return new CipherKeyGenerator(128);
-				case "SEED":
-					return new CipherKeyGenerator(128);
-				case "SERPENT":
-					return new CipherKeyGenerator(192);
-				case "SKIPJACK":
-					return new CipherKeyGenerator(80);
-				case "TEA":
-				case "XTEA":
-					return new CipherKeyGenerator(128);
-				case "TWOFISH":
-					return new CipherKeyGenerator(256);
-				case "VMPC":
-				case "VMPC-KSA3":
-					return new CipherKeyGenerator(128);
+					return new DesEdeKeyGenerator(defaultKeySize);
+				default:
+					return new CipherKeyGenerator(defaultKeySize);
 			}
-
-			throw new SecurityUtilityException("KeyGenerator " + algorithm + " not recognised.");
 		}
 
 		public static IAsymmetricCipherKeyPairGenerator GetKeyPairGenerator(
@@ -351,7 +279,94 @@ namespace Org.BouncyCastle.Security
 					break;
 			}
 
-			throw new SecurityUtilityException("KeyPairGenerator " + algorithm + " not recognised.");
+			throw new SecurityUtilityException("KeyPairGenerator " + algorithm
+				+ " (" + canonicalName + ") not supported.");
+		}
+
+		internal static int GetDefaultKeySize(
+			DerObjectIdentifier oid)
+		{
+			return GetDefaultKeySize(oid.Id);
+		}
+
+		internal static int GetDefaultKeySize(
+			string algorithm)
+		{
+			string canonicalName = GetCanonicalKeyGeneratorAlgorithm(algorithm);
+
+			if (canonicalName == null)
+				throw new SecurityUtilityException("KeyGenerator " + algorithm + " not recognised.");
+
+			int defaultKeySize = FindDefaultKeySize(canonicalName);
+			if (defaultKeySize == -1)
+				throw new SecurityUtilityException("KeyGenerator " + algorithm
+					+ " (" + canonicalName + ") not supported.");
+
+			return defaultKeySize;
+		}
+
+		private static int FindDefaultKeySize(
+			string canonicalName)
+		{
+			switch (canonicalName)
+			{
+				case "DES":
+					return 64;
+				case "BLOWFISH":
+				case "SKIPJACK":
+					return 80;
+				case "AES128":
+				case "CAMELLIA128":
+				case "CAST5":
+				case "DESEDE":
+				case "HC128":
+				case "HMACMD2":
+				case "HMACMD4":
+				case "HMACMD5":
+				case "HMACRIPEMD128":
+				case "IDEA":
+				case "NOEKEON":
+				case "RC2":
+				case "RC4":
+				case "RC5":
+				case "SALSA20":
+				case "SEED":
+				case "TEA":
+				case "XTEA":
+				case "VMPC":
+				case "VMPC-KSA3":
+					return 128;
+				case "HMACRIPEMD160":
+				case "HMACSHA1":
+					return 160;
+				case "AES":
+				case "AES192":
+				case "CAMELLIA192":
+				case "DESEDE3":
+				case "HMACTIGER":
+				case "RIJNDAEL":
+				case "SERPENT":
+					return 192;
+				case "HMACSHA224":
+					return 224;
+				case "AES256":
+				case "CAMELLIA":
+				case "CAMELLIA256":
+				case "CAST6":
+				case "GOST28147":
+				case "HC256":
+				case "HMACSHA256":
+				case "RC5-64":
+				case "RC6":
+				case "TWOFISH":
+					return 256;
+				case "HMACSHA384":
+					return 384;
+				case "HMACSHA512":
+					return 512;
+				default:
+					return -1;
+			}
 		}
 	}
 }

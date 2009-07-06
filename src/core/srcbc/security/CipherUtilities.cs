@@ -135,6 +135,8 @@ namespace Org.BouncyCastle.Security
 			algorithms[NttObjectIdentifiers.IdCamellia256Cbc.Id] = "CAMELLIA/CBC/PKCS7PADDING";
 
 			algorithms[KisaObjectIdentifiers.IdSeedCbc.Id] = "SEED/CBC/PKCS7PADDING";
+
+			algorithms["1.3.6.1.4.1.3029.1.2"] = "BLOWFISH/CBC";
 		}
 
 		private CipherUtilities()

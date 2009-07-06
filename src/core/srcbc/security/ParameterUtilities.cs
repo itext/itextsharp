@@ -48,7 +48,8 @@ namespace Org.BouncyCastle.Security
 				NistObjectIdentifiers.IdAes256Ecb,
 				NistObjectIdentifiers.IdAes256Ofb,
 				NistObjectIdentifiers.IdAes256Wrap);
-			AddAlgorithm("BLOWFISH");
+			AddAlgorithm("BLOWFISH",
+				"1.3.6.1.4.1.3029.1.2");
 			AddAlgorithm("CAMELLIA",
 				"CAMELLIAWRAP");
 			AddAlgorithm("CAMELLIA128",
@@ -269,7 +270,6 @@ namespace Org.BouncyCastle.Security
 			{
 				// TODO These algorithms support an IV (see GetCipherParameters)
 				// but JCE doesn't seem to provide an AlgorithmParametersGenerator for them
-//				case "BLOWFISH":
 //				case "RIJNDAEL":
 //				case "SKIPJACK":
 //				case "TWOFISH":
@@ -279,6 +279,8 @@ namespace Org.BouncyCastle.Security
 				case "AES192":
 				case "AES256":
 					return CreateIVOctetString(random, 16);
+				case "BLOWFISH":
+					return CreateIVOctetString(random, 8);
 				case "CAMELLIA":
 				case "CAMELLIA128":
 				case "CAMELLIA192":

@@ -1141,7 +1141,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		}
 
 		/**
-		* Terminate this connection whith an alert.
+		* Terminate this connection with an alert.
 		* <p/>
 		* Can be used for normal closure too.
 		*
