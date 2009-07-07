@@ -169,9 +169,14 @@ namespace iTextSharp.text.rtf.style {
         public const int STYLE_HIDDEN = 512;
 
         /**
+        * Default font
+        */
+        public const String DEFAULT_FONT = "Times New Roman";
+
+        /**
         * The font name. Defaults to "Times New Roman"
         */
-        private String fontName = "Times New Roman";
+        private String fontName = DEFAULT_FONT;
         /**
         * The font size. Defaults to 10
         */
@@ -294,15 +299,15 @@ namespace iTextSharp.text.rtf.style {
                         }
                     }
                 }
+                if (Util.EqualsIgnoreCase(this.fontName, "unknown")) {
+                    this.fontName = DEFAULT_FONT;
+                }
                 Size = font.Size;
                 SetStyle(font.Style);
                 Color = font.Color;
                 if(document != null) {
                     this.fontNumber = document.GetDocumentHeader().GetFontNumber(this);
                 }
-            }
-            if (Util.EqualsIgnoreCase(this.fontName, "unknown")) {
-                return;
             }
 
             if (document != null) {
