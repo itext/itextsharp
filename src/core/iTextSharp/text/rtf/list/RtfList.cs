@@ -449,8 +449,8 @@ namespace iTextSharp.text.rtf.list {
             }
             if (!this.inTable) {
                 result.Write(CLOSE_GROUP, 0, CLOSE_GROUP.Length);
-                result.Write(RtfParagraph.PARAGRAPH_DEFAULTS, 0, RtfParagraph.PARAGRAPH_DEFAULTS.Length);
             }
+            result.Write(RtfParagraph.PARAGRAPH_DEFAULTS, 0, RtfParagraph.PARAGRAPH_DEFAULTS.Length);
         }        
         /**
         * 
