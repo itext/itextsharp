@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("Copyright (C) 1999-2008 by Bruno Lowagie and Paulo Soares. All Rights Reserved.")]
+[assembly: AssemblyCopyright("Copyright (C) 1999-2009 by Bruno Lowagie and Paulo Soares. All Rights Reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]        
 
@@ -26,7 +26,7 @@ using System.Runtime.CompilerServices;
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
 
-[assembly: AssemblyVersion("4.1.2")]
+[assembly: AssemblyVersion("4.1.6")]
 
 //
 // In order to sign your assembly you must specify a key to use. Refer to the 
