@@ -666,6 +666,21 @@ namespace iTextSharp.text.pdf {
             return pdf.GetVerticalPosition(ensureNewLine);
         }
 
+       /**
+       * Sets the initial leading for the PDF document.
+       * This has to be done before the document is opened.
+       * @param   leading the initial leading
+       * @since   2.1.6
+       * @throws  DocumentException       if you try setting the leading after the document was opened.
+       */
+        public float InitialLeading {
+            set {
+                if (open)
+                    throw new DocumentException("You can't set the initial leading if the document is already open.");
+                pdf.Leading = value;
+            }
+        }
+
     //  the PdfDirectContentByte instances
         
     /*
