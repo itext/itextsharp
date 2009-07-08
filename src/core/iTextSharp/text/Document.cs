@@ -275,6 +275,19 @@ namespace iTextSharp.text {
         }
 
         /// <summary>
+        /// Opens the document.
+        /// </summary>
+        /// <remarks>
+        /// Version for languages that are not case-dependant.
+        /// Once the document is opened, you can't write any Header- or Meta-information
+        /// anymore. You have to open the document before you can begin to add content
+        /// to the body of the document.
+        /// </remarks>
+        public virtual void OpenDocument() {
+            Open();
+        }
+
+        /// <summary>
         /// Sets the pagesize.
         /// </summary>
         /// <param name="pageSize">the new pagesize</param>
@@ -414,6 +427,18 @@ namespace iTextSharp.text {
             foreach (IDocListener listener in listeners) {
                 listener.Close();
             }
+        }
+
+        /// <summary>
+        /// Closes the document.
+        /// </summary>
+        /// <remarks>
+        /// Version for languages that are not case-dependant.
+        /// Once all the content has been written in the body, you have to close
+        /// the body. After that nothing can be written to the body anymore.
+        /// </remarks>
+        public virtual void CloseDocument() {
+            Close();
         }
 
         // methods concerning the header or some meta information
