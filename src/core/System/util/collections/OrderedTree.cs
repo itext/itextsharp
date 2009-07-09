@@ -61,7 +61,6 @@ namespace System.util.collections {
         public static OrderedTreeNode sentinelNode;          
         // the node that was last found; used to optimize searches
         private OrderedTreeNode lastNodeFound;          
-        private Random rand = new Random();
 
         static OrderedTree() {
             // set up the sentinel node. the sentinel node is the key to a successfull
