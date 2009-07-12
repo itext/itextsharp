@@ -159,6 +159,10 @@ namespace iTextSharp.text.xml.xmp {
             XmlTextWriter xw = new XmlTextWriter(fout, new UTF8Encoding(false));
             xw.WriteNode(new XmlNodeReader(xmpmeta[0]), true);
             xw.Flush();
+            b = new UTF8Encoding(false).GetBytes(XmpWriter.EXTRASPACE);
+            for (int i = 0; i < 20; i++) {
+                fout.Write(b, 0, b.Length);
+            }
             b = new UTF8Encoding(false).GetBytes(XmpWriter.XPACKET_PI_END_W);
             fout.Write(b, 0, b.Length);
             fout.Close();
