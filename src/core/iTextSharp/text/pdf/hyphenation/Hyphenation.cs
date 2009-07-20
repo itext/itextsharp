@@ -69,7 +69,7 @@ namespace iTextSharp.text.pdf.hyphenation {
             StringBuilder str = new StringBuilder();
             int start = 0;
             for (int i = 0; i < len; i++) {
-                str.Append(word.Substring(start, hyphenPoints[i]) + "-");
+                str.Append(word.Substring(start, hyphenPoints[i] - start) + "-");
                 start = hyphenPoints[i];
             }
             str.Append(word.Substring(start));
