@@ -1312,11 +1312,9 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 int vidx = lopt.IndexOf(value);
-                PdfName valt = null;
                 PdfName vt;
-                if (vidx >= 0) {
-                    vt = valt = new PdfName(vidx.ToString());
-                }
+                if (vidx >= 0)
+                    vt = new PdfName(vidx.ToString());
                 else
                     vt = v;
                 for (int idx = 0; idx < item.Size; ++idx) {
@@ -1324,15 +1322,8 @@ namespace iTextSharp.text.pdf {
                     PdfDictionary widget = item.GetWidget(idx);
                     PdfDictionary valDict = item.GetValue(idx);
                     MarkUsed(item.GetValue(idx));
-                    if (valt != null) {
-                        PdfString ps = new PdfString(value, PdfObject.TEXT_UNICODE);
-                        valDict.Put(PdfName.V, ps);
-                        merged.Put(PdfName.V, ps);
-                    }
-                    else {
-                        valDict.Put(PdfName.V, v);
-                        merged.Put(PdfName.V, v);
-                    }
+                    valDict.Put(PdfName.V, vt);
+                    merged.Put(PdfName.V, vt);
                     MarkUsed(widget);
                     if (IsInAP(widget,  vt)) {
                         merged.Put(PdfName.AS, vt);
