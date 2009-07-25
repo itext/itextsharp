@@ -128,7 +128,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Holds value of property extendLastRow.
         */
-        private bool extendLastRow;
+        private bool[] extendLastRow = {false, false};
         
         /**
         * Holds value of property headersInEvent.
@@ -1246,13 +1246,42 @@ namespace iTextSharp.text.pdf {
 
         public bool ExtendLastRow {
             get {
-                return extendLastRow;
+                return extendLastRow[0];
             }
             set {
-                extendLastRow = value;
+                extendLastRow[0] = value;
+                extendLastRow[1] = value;
             }
         }
         
+        /**
+        * When set the last row on every page will be extended to fill
+        * all the remaining space to the bottom boundary; except maybe the
+        * final row.
+        * 
+        * @param extendLastRows true to extend the last row on each page; false otherwise
+        * @param extendFinalRow false if you don't want to extend the final row of the complete table
+        * @since iText 5.0.0
+        */
+        public void SetExtendLastRow(bool extendLastRows, bool extendFinalRow) {
+            extendLastRow[0] = extendLastRows;
+            extendLastRow[1] = extendFinalRow;
+        }
+        
+        /**
+        * Gets the value of the last row extension, taking into account
+        * if the final row is reached or not.
+        * 
+        * @return true if the last row will extend; false otherwise
+        * @since iText 5.0.0
+        */
+        public bool IsExtendLastRow(bool newPageFollows) {
+            if (newPageFollows) {
+                return extendLastRow[0];    
+            }
+            return extendLastRow[1];
+        }
+
         public bool HeadersInEvent {
             get {
                 return headersInEvent;

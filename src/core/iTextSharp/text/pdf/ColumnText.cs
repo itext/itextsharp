@@ -1355,9 +1355,11 @@ public class ColumnText {
                     // if k < table.size(), we must indicate that the new table is complete;
                     // otherwise no footers will be added (because iText thinks the table continues on the same page)
                     bool showFooter = !table.SkipLastFooter;
+                    bool newPageFollows = false;
                     if (k < table.Size) {
                         nt.ElementComplete = true;
                         showFooter = true;
+                        newPageFollows = true;
                     }
                     // we add the footer rows if necessary (not for incomplete tables)
                     for (int j = 0; j < footerRows && nt.ElementComplete && showFooter; ++j) {
@@ -1367,7 +1369,7 @@ public class ColumnText {
                     // we need a correction if the last row needs to be extended
                     float rowHeight = 0;
                     PdfPRow last = (PdfPRow)sub[sub.Count - 1 - footerRows];
-                    if (table.ExtendLastRow) {
+                    if (table.IsExtendLastRow(newPageFollows)) {
                         rowHeight = last.MaxHeights;
                         last.MaxHeights = yTemp - minY + rowHeight;
                         yTemp = minY;
@@ -1378,7 +1380,7 @@ public class ColumnText {
                         nt.WriteSelectedRows(0, -1, x1, yLineWrite, canvases);
                     else
                         nt.WriteSelectedRows(0, -1, x1, yLineWrite, canvas);
-                    if (table.ExtendLastRow) {
+                    if (table.IsExtendLastRow(newPageFollows)) {
                         last.MaxHeights = rowHeight;
                     }
                 }
