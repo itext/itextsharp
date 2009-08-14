@@ -936,6 +936,7 @@ namespace iTextSharp.text.pdf {
                 PdfReader.KillIndirect(iFields);
                 acrodic.Put(PdfName.FIELDS, new PdfArray());
             }
+            acrodic.Remove(PdfName.SIGFLAGS);
     //        PdfReader.KillIndirect(acro);
     //        reader.GetCatalog().Remove(PdfName.ACROFORM);
         }
