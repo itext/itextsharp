@@ -2608,12 +2608,20 @@ namespace iTextSharp.text.pdf {
     //  [U2] take care of empty pages
         
         /**
-        * If you use SetPageEmpty(false), invoking NewPage() after a blank page will add a newPage.
+        * Use this method to make sure a page is added,
+        * even if it's empty. If you use setPageEmpty(false),
+        * invoking newPage() after a blank page will add a newPage.
+        * setPageEmpty(true) won't have any effect.
         * @param pageEmpty the state
         */
         public bool PageEmpty {
             set {
+                if (value)
+                    return;
                 pdf.PageEmpty = value;
+            }
+            get {
+                return pdf.PageEmpty;
             }
         }
         

@@ -794,7 +794,7 @@ namespace iTextSharp.text.pdf {
         */
         public override bool NewPage() {
             lastElementType = -1;
-            if (writer == null || (writer.DirectContent.Size == 0 && writer.DirectContentUnder.Size == 0 && (pageEmpty || writer.IsPaused()))) {
+            if (PageEmpty) {
                 SetNewPageSizeAndMargins();
                 return false;
             }
@@ -2201,11 +2201,14 @@ namespace iTextSharp.text.pdf {
     //	[U2] empty pages
 
         /** This checks if the page is empty. */
-        protected internal bool pageEmpty = true;
+        private bool pageEmpty = true;
         
         internal bool PageEmpty {
             set {
                 this.pageEmpty = value;
+            }
+            get {
+                return writer == null || (writer.DirectContent.Size == 0 && writer.DirectContentUnder.Size == 0 && (pageEmpty || writer.IsPaused()));
             }
         }
 
