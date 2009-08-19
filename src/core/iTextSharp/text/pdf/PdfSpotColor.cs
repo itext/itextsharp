@@ -93,7 +93,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        protected internal PdfObject GetSpotObject(PdfWriter writer) {
+        protected internal virtual PdfObject GetSpotObject(PdfWriter writer) {
             PdfArray array = new PdfArray(PdfName.SEPARATION);
             array.Add(name);
             PdfFunction func = null;
