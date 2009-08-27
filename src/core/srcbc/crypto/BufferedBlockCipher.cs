@@ -114,13 +114,8 @@ namespace Org.BouncyCastle.Crypto
 		public override int GetOutputSize(
 			int length)
 		{
-			int total = length + bufOff;
-			int leftOver = total % buf.Length;
-			if (leftOver == 0)
-			{
-				return total;
-			}
-			return total - leftOver + buf.Length;
+			// Note: Can assume IsPartialBlockOkay is true for purposes of this calculation
+			return length + bufOff;
 		}
 
 		/**

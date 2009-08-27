@@ -79,6 +79,18 @@ namespace Org.BouncyCastle.Crypto.Tls
 			buf[offset + 7] = (byte)(i);
 		}
 
+		internal static void WriteOpaque8(byte[] buf, Stream os)
+		{
+			WriteUint8((short)buf.Length, os);
+			os.Write(buf, 0, buf.Length);
+		}
+
+		internal static void WriteOpaque16(byte[] buf, Stream os)
+		{
+			WriteUint16(buf.Length, os);
+			os.Write(buf, 0, buf.Length);
+		}
+
 		internal static short ReadUint8(Stream inStr)
 		{
 			int i = inStr.ReadByte();
@@ -116,6 +128,22 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			if (Streams.ReadFully(inStr, buf, 0, buf.Length) < buf.Length)
 				throw new EndOfStreamException();
+		}
+
+		internal static byte[] ReadOpaque8(Stream inStr)
+		{
+			short length = ReadUint8(inStr);
+			byte[] bytes = new byte[length];
+			ReadFully(bytes, inStr);
+			return bytes;
+		}
+
+		internal static byte[] ReadOpaque16(Stream inStr)
+		{
+			int length = ReadUint16(inStr);
+			byte[] bytes = new byte[length];
+			ReadFully(bytes, inStr);
+			return bytes;
 		}
 
 		internal static void CheckVersion(byte[] readVersion, TlsProtocolHandler handler)

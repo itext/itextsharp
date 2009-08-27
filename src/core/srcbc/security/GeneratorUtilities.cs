@@ -312,10 +312,10 @@ namespace Org.BouncyCastle.Security
 			{
 				case "DES":
 					return 64;
-				case "BLOWFISH":
 				case "SKIPJACK":
 					return 80;
 				case "AES128":
+				case "BLOWFISH":
 				case "CAMELLIA128":
 				case "CAST5":
 				case "DESEDE":

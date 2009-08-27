@@ -133,6 +133,7 @@ namespace Org.BouncyCastle.Crypto.Modes
         public void Reset()
         {
             Array.Copy(IV, 0, cbcV, 0, IV.Length);
+			Array.Clear(cbcNextV, 0, cbcNextV.Length);
 
             cipher.Reset();
         }

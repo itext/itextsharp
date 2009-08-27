@@ -40,7 +40,8 @@ namespace Org.BouncyCastle.Crypto.Paddings
 		*
 		* @param cipher the underlying block cipher this buffering object wraps.
 		*/
-		public PaddedBufferedBlockCipher(IBlockCipher     cipher)
+		public PaddedBufferedBlockCipher(
+			IBlockCipher cipher)
 			: this(cipher, new Pkcs7Padding())    { }
 
 		/**
