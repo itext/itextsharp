@@ -23,6 +23,16 @@ namespace Org.BouncyCastle.Crypto.Tls
 		private const int TLS_DHE_DSS_WITH_AES_256_CBC_SHA = 0x0038;
 		private const int TLS_DHE_RSA_WITH_AES_256_CBC_SHA = 0x0039;
 
+//		private const int TLS_SRP_SHA_WITH_3DES_EDE_CBC_SHA = 0xC01A;    
+//		private const int TLS_SRP_SHA_RSA_WITH_3DES_EDE_CBC_SHA = 0xC01B;
+//		private const int TLS_SRP_SHA_DSS_WITH_3DES_EDE_CBC_SHA = 0xC01C;
+//		private const int TLS_SRP_SHA_WITH_AES_128_CBC_SHA = 0xC01D;
+//		private const int TLS_SRP_SHA_RSA_WITH_AES_128_CBC_SHA = 0xC01E;
+//		private const int TLS_SRP_SHA_DSS_WITH_AES_128_CBC_SHA = 0xC01F;
+//		private const int TLS_SRP_SHA_WITH_AES_256_CBC_SHA = 0xC020;
+//		private const int TLS_SRP_SHA_RSA_WITH_AES_256_CBC_SHA = 0xC021;
+//		private const int TLS_SRP_SHA_DSS_WITH_AES_256_CBC_SHA = 0xC022;
+
 		internal static void WriteCipherSuites(
 			Stream outStr)
 		{
@@ -37,6 +47,16 @@ namespace Org.BouncyCastle.Crypto.Tls
 				TLS_RSA_WITH_AES_256_CBC_SHA,
 				TLS_RSA_WITH_AES_128_CBC_SHA,
 				TLS_RSA_WITH_3DES_EDE_CBC_SHA,
+
+//				TLS_SRP_SHA_DSS_WITH_AES_256_CBC_SHA,
+//				TLS_SRP_SHA_DSS_WITH_AES_128_CBC_SHA,
+//				TLS_SRP_SHA_DSS_WITH_3DES_EDE_CBC_SHA,
+//				TLS_SRP_SHA_RSA_WITH_AES_256_CBC_SHA,
+//				TLS_SRP_SHA_RSA_WITH_AES_128_CBC_SHA,
+//				TLS_SRP_SHA_RSA_WITH_3DES_EDE_CBC_SHA,
+//				TLS_SRP_SHA_WITH_AES_256_CBC_SHA,
+//				TLS_SRP_SHA_WITH_AES_128_CBC_SHA,
+//				TLS_SRP_SHA_WITH_3DES_EDE_CBC_SHA,
 			};
 
 			TlsUtilities.WriteUint16(2 * suites.Length, outStr);
@@ -78,6 +98,33 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 				case TLS_DHE_RSA_WITH_AES_256_CBC_SHA:
 					return createAesCipherSuite(32, TlsCipherSuite.KE_DHE_RSA);
+
+//				case TLS_SRP_SHA_WITH_3DES_EDE_CBC_SHA:
+//					return createDesEdeCipherSuite(24, TlsCipherSuite.KE_SRP);
+//				
+//				case TLS_SRP_SHA_RSA_WITH_3DES_EDE_CBC_SHA:
+//					return createDesEdeCipherSuite(24, TlsCipherSuite.KE_SRP_RSA);
+//				
+//				case TLS_SRP_SHA_DSS_WITH_3DES_EDE_CBC_SHA:
+//					return createDesEdeCipherSuite(24, TlsCipherSuite.KE_SRP_DSS);
+//				
+//				case TLS_SRP_SHA_WITH_AES_128_CBC_SHA:
+//					return createAesCipherSuite(16, TlsCipherSuite.KE_SRP);
+//				
+//				case TLS_SRP_SHA_RSA_WITH_AES_128_CBC_SHA:
+//					return createAesCipherSuite(16, TlsCipherSuite.KE_SRP_RSA);
+//				
+//				case TLS_SRP_SHA_DSS_WITH_AES_128_CBC_SHA:
+//					return createAesCipherSuite(16, TlsCipherSuite.KE_SRP_DSS);
+//				
+//				case TLS_SRP_SHA_WITH_AES_256_CBC_SHA:
+//					return createAesCipherSuite(32, TlsCipherSuite.KE_SRP);
+//				
+//				case TLS_SRP_SHA_RSA_WITH_AES_256_CBC_SHA:
+//					return createAesCipherSuite(32, TlsCipherSuite.KE_SRP_RSA);
+//				
+//				case TLS_SRP_SHA_DSS_WITH_AES_256_CBC_SHA:
+//					return createAesCipherSuite(32, TlsCipherSuite.KE_SRP_DSS);
 
 				default:
 					handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_handshake_failure);

@@ -111,7 +111,7 @@ namespace Org.BouncyCastle.Crypto.Modes
 				A = new byte[0];
 			}
 
-			// Cipher always used input forward mode
+			// Cipher always used in forward mode
 			cipher.Init(true, keyParam);
 
 			// TODO This should be configurable by Init parameters
@@ -267,7 +267,7 @@ namespace Org.BouncyCastle.Crypto.Modes
 				this.macBlock = new byte[macSize];
 				Array.Copy(bufBlock, extra, macBlock, 0, macSize);
 				if (!Arrays.AreEqual(tag, this.macBlock))
-					throw new InvalidCipherTextException("mac check input GCM failed");
+					throw new InvalidCipherTextException("mac check in GCM failed");
 			}
 
 			Reset(false);

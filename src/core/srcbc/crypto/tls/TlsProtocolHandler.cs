@@ -1,10 +1,13 @@
 using System;
+using System.Collections;
 using System.IO;
 using System.Text;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto.Agreement;
+using Org.BouncyCastle.Crypto.Agreement.Srp;
+using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Encodings;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Generators;
@@ -56,10 +59,11 @@ namespace Org.BouncyCastle.Crypto.Tls
 		private const short CS_CERTIFICATE_REQUEST_RECEIVED = 5;
 		private const short CS_SERVER_HELLO_DONE_RECEIVED = 6;
 		private const short CS_CLIENT_KEY_EXCHANGE_SEND = 7;
-		private const short CS_CLIENT_CHANGE_CIPHER_SPEC_SEND = 8;
-		private const short CS_CLIENT_FINISHED_SEND = 9;
-		private const short CS_SERVER_CHANGE_CIPHER_SPEC_RECEIVED = 10;
-		private const short CS_DONE = 11;
+		private const short CS_CLIENT_VERIFICATION_SEND = 8;
+		private const short CS_CLIENT_CHANGE_CIPHER_SPEC_SEND = 9;
+		private const short CS_CLIENT_FINISHED_SEND = 10;
+		private const short CS_SERVER_CHANGE_CIPHER_SPEC_RECEIVED = 11;
+		private const short CS_DONE = 12;
 
 		internal const short AP_close_notify = 0;
 		internal const short AP_unexpected_message = 10;
@@ -119,6 +123,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		private bool closed = false;
 		private bool failedWithError = false;
 		private bool appDataReady = false;
+		private bool extendedClientHello;
 
 		private byte[] clientRandom;
 		private byte[] serverRandom;
@@ -126,6 +131,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 		private TlsCipherSuite chosenCipherSuite = null;
 
+		private BigInteger SRP_A;
+		private byte[] SRP_identity, SRP_password;
 		private BigInteger Yc;
 		private byte[] pms;
 
@@ -302,6 +309,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 												validateKeyUsage(x509Cert, KeyUsage.KeyEncipherment);
 												break;
 											case TlsCipherSuite.KE_DHE_RSA:
+											case TlsCipherSuite.KE_SRP_RSA:
 												if (!(this.serverPublicKey is RsaKeyParameters))
 												{
 													this.FailWithError(AL_fatal, AP_certificate_unknown);
@@ -309,6 +317,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 												validateKeyUsage(x509Cert, KeyUsage.DigitalSignature);
 												break;
 											case TlsCipherSuite.KE_DHE_DSS:
+											case TlsCipherSuite.KE_SRP_DSS:
 												if (!(this.serverPublicKey is DsaPublicKeyParameters))
 												{
 													this.FailWithError(AL_fatal, AP_certificate_unknown);
@@ -403,9 +412,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 										/*
 										* Currently, we don't support session ids
 										*/
-										short sessionIdLength = TlsUtilities.ReadUint8(inStr);
-										byte[] sessionId = new byte[sessionIdLength];
-										TlsUtilities.ReadFully(sessionId, inStr);
+										byte[] sessionId = TlsUtilities.ReadOpaque8(inStr);
 
 										/*
 										* Find out which ciphersuite the server has
@@ -425,6 +432,48 @@ namespace Org.BouncyCastle.Crypto.Tls
 										{
 											this.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_illegal_parameter);
 										}
+
+	                                    /*
+	                                     * RFC4366 2.2
+	                                     * The extended server hello message format MAY be sent
+	                                     * in place of the server hello message when the client
+	                                     * has requested extended functionality via the extended
+	                                     * client hello message specified in Section 2.1.
+	                                     */
+	                                    if (extendedClientHello && inStr.Position < inStr.Length)
+	                                    {
+	                                        // Process extensions from extended server hello
+	                                        byte[] extBytes = TlsUtilities.ReadOpaque16(inStr);
+	
+	                                        // Int32 -> byte[]
+	                                        Hashtable serverExtensions = new Hashtable();
+
+	                                        MemoryStream ext = new MemoryStream(extBytes, false);
+	                                        while (ext.Position < ext.Length)
+	                                        {
+	                                            int extType = TlsUtilities.ReadUint16(ext);
+	                                            byte[] extValue = TlsUtilities.ReadOpaque16(ext);
+
+	                                            serverExtensions[extType] = extValue;
+	                                        }
+
+	                                        // TODO Validate/process serverExtensions (via client?)
+	                                        // TODO[SRP]
+	                                    }
+
+										/*
+										* Process any extensions
+										*/
+										// TODO[SRP]
+//										if (inStr.Position < inStr.Length)
+//										{
+//											int extensionsLength = TlsUtilities.ReadUint16(inStr);
+//											byte[] extensions = new byte[extensionsLength];
+//											TlsUtilities.ReadFully(extensions, inStr);
+//
+//											// TODO Validate/process
+//										}
+
 										AssertEmpty(inStr);
 
 										connection_state = CS_SERVER_HELLO_RECEIVED;
@@ -526,6 +575,20 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 												break;
 											}
+											case TlsCipherSuite.KE_SRP:
+											case TlsCipherSuite.KE_SRP_RSA:
+											case TlsCipherSuite.KE_SRP_DSS:
+											{
+												/*
+												* Send the Client Key Exchange message for
+												* SRP key exchange.
+												*/
+												byte[] bytes = BigIntegers.AsUnsignedByteArray(this.SRP_A);
+
+												sendClientKeyExchange(bytes);
+
+												break;
+											}
 											default:
 												/*
 												* Problem during handshake, we don't know
@@ -590,8 +653,22 @@ namespace Org.BouncyCastle.Crypto.Tls
 							{
 								switch (connection_state)
 								{
+									case CS_SERVER_HELLO_RECEIVED:
 									case CS_SERVER_CERTIFICATE_RECEIVED:
 									{
+										// NB: Original code used case label fall-through
+										if (connection_state == CS_SERVER_HELLO_RECEIVED)
+										{
+											/*
+											* There was no server certificate message, check
+											* that we are doing SRP key exchange.
+											*/
+											if (this.chosenCipherSuite.KeyExchangeAlgorithm != TlsCipherSuite.KE_SRP)
+											{
+												this.FailWithError(AL_fatal, AP_unexpected_message);
+											}
+										}
+
 										/*
 										* Check that we are doing DHE key exchange
 										*/
@@ -605,6 +682,21 @@ namespace Org.BouncyCastle.Crypto.Tls
 											case TlsCipherSuite.KE_DHE_DSS:
 											{
 												processDHEKeyExchange(inStr, new TlsDssSigner());
+												break;
+											}
+											case TlsCipherSuite.KE_SRP:
+											{
+												processSRPKeyExchange(inStr, null);
+												break;
+											}
+											case TlsCipherSuite.KE_SRP_RSA:
+											{
+												processSRPKeyExchange(inStr, new TlsRsaSigner());
+												break;
+											}
+											case TlsCipherSuite.KE_SRP_DSS:
+											{
+												processSRPKeyExchange(inStr, new TlsDssSigner());
 												break;
 											}
 											default:
@@ -641,13 +733,10 @@ namespace Org.BouncyCastle.Crypto.Tls
 											}
 										}
 
-										int typesLength = TlsUtilities.ReadUint8(inStr);
-										byte[] types = new byte[typesLength];
-										TlsUtilities.ReadFully(types, inStr);
+										byte[] types = TlsUtilities.ReadOpaque8(inStr);
+										byte[] auths = TlsUtilities.ReadOpaque8(inStr);
 
-										int authsLength = TlsUtilities.ReadUint16(inStr);
-										byte[] auths = new byte[authsLength];
-										TlsUtilities.ReadFully(auths, inStr);
+										// TODO Validate/process
 
 										AssertEmpty(inStr);
 										break;
@@ -798,23 +887,13 @@ namespace Org.BouncyCastle.Crypto.Tls
 			/*
 			* Parse the Structure
 			*/
-			int pLength = TlsUtilities.ReadUint16(sigIn);
-			byte[] pByte = new byte[pLength];
-			TlsUtilities.ReadFully(pByte, sigIn);
-
-			int gLength = TlsUtilities.ReadUint16(sigIn);
-			byte[] gByte = new byte[gLength];
-			TlsUtilities.ReadFully(gByte, sigIn);
-
-			int YsLength = TlsUtilities.ReadUint16(sigIn);
-			byte[] YsByte = new byte[YsLength];
-			TlsUtilities.ReadFully(YsByte, sigIn);
+			byte[] pByte = TlsUtilities.ReadOpaque16(sigIn);
+			byte[] gByte = TlsUtilities.ReadOpaque16(sigIn);
+			byte[] YsByte = TlsUtilities.ReadOpaque16(sigIn);
 
 			if (signer != null)
 			{
-				int sigLength = TlsUtilities.ReadUint16(inStr);
-				byte[] sigByte = new byte[sigLength];
-				TlsUtilities.ReadFully(sigByte, inStr);
+				byte[] sigByte = TlsUtilities.ReadOpaque16(sigIn);
 
 				/*
 				* Verify the Signature.
@@ -874,6 +953,65 @@ namespace Org.BouncyCastle.Crypto.Tls
 			this.pms = BigIntegers.AsUnsignedByteArray(agreement);
 		}
 
+		private void processSRPKeyExchange(
+			MemoryStream	inStr,
+			ISigner			signer)
+		{
+			Stream sigIn = inStr;
+			if (signer != null)
+			{
+				signer.Init(false, this.serverPublicKey);
+				signer.BlockUpdate(this.clientRandom, 0, this.clientRandom.Length);
+				signer.BlockUpdate(this.serverRandom, 0, this.serverRandom.Length);
+
+				sigIn = new SignerStream(inStr, signer, null);
+			}
+
+			/*
+			* Parse the Structure
+			*/
+			byte[] NByte = TlsUtilities.ReadOpaque16(sigIn);
+			byte[] gByte = TlsUtilities.ReadOpaque16(sigIn);
+			byte[] sByte = TlsUtilities.ReadOpaque8(sigIn);
+			byte[] BByte = TlsUtilities.ReadOpaque16(sigIn);
+
+			if (signer != null)
+			{
+				byte[] sigByte = TlsUtilities.ReadOpaque16(sigIn);
+
+				/*
+				* Verify the Signature.
+				*/
+				if (!signer.VerifySignature(sigByte))
+				{
+					this.FailWithError(AL_fatal, AP_bad_certificate);
+				}
+			}
+
+			this.AssertEmpty(inStr);
+
+			BigInteger N = new BigInteger(1, NByte);
+			BigInteger g = new BigInteger(1, gByte);
+			byte[] s = sByte;
+			BigInteger B = new BigInteger(1, BByte);
+
+			Srp6Client srpClient = new Srp6Client();
+			srpClient.Init(N, g, new Sha1Digest(), random);
+
+			this.SRP_A = srpClient.GenerateClientCredentials(s, this.SRP_identity,
+				this.SRP_password);
+
+			try
+			{
+				BigInteger S = srpClient.CalculateSecret(B);
+				this.pms = BigIntegers.AsUnsignedByteArray(S);
+			}
+			catch (CryptoException)
+			{
+				this.FailWithError(AL_fatal, AP_illegal_parameter);
+			}
+		}
+
 		private void validateKeyUsage(
 			X509CertificateStructure	c,
 			int							keyUsageBits)
@@ -915,8 +1053,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			MemoryStream bos = new MemoryStream();
 			TlsUtilities.WriteUint8(HP_CLIENT_KEY_EXCHANGE, bos);
 			TlsUtilities.WriteUint24(keData.Length + 2, bos);
-			TlsUtilities.WriteUint16(keData.Length, bos);
-			bos.Write(keData, 0, keData.Length);
+			TlsUtilities.WriteOpaque16(keData, bos);
 			byte[] message = bos.ToArray();
 
 			rs.WriteMessage((short)RL_HANDSHAKE, message, 0, message.Length);
@@ -968,9 +1105,40 @@ namespace Org.BouncyCastle.Crypto.Tls
 			* Compression methods, just the null method.
 			*/
 			byte[] compressionMethods = new byte[]{0x00};
-			TlsUtilities.WriteUint8((short)compressionMethods.Length, outStr);
-			outStr.Write(compressionMethods, 0, compressionMethods.Length);
+			TlsUtilities.WriteOpaque8(compressionMethods, outStr);
 
+			/*
+			* Extensions
+			*/
+			// TODO Collect extensions from client
+			// Int32 -> byte[]
+			Hashtable clientExtensions = new Hashtable();
+
+			// TODO[SRP]
+//			{
+//				MemoryStream srpData = new MemoryStream();
+//				TlsUtilities.WriteOpaque8(SRP_identity, srpData);
+//
+//				// TODO[SRP] RFC5054 2.8.1: ExtensionType.srp = 12
+//				clientExtensions[12] = srpData.ToArray();
+//			}
+
+			this.extendedClientHello = (clientExtensions.Count > 0);
+
+			if (extendedClientHello)
+			{
+				MemoryStream ext = new MemoryStream();
+
+				foreach (int extType in clientExtensions.Keys)
+				{
+					byte[] extValue = (byte[])clientExtensions[extType];
+
+					TlsUtilities.WriteUint16(extType, ext);
+					TlsUtilities.WriteOpaque16(extValue, ext);
+				}
+
+				TlsUtilities.WriteOpaque16(ext.ToArray(), outStr);
+			}
 
 			MemoryStream bos = new MemoryStream();
 			TlsUtilities.WriteUint8(HP_CLIENT_HELLO, bos);

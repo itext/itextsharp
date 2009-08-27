@@ -87,6 +87,12 @@ namespace Org.BouncyCastle.OpenSsl
 
 				string endMarker = "-----END " + headerName;
 
+				if (headerName.EndsWith(" PRIVATE KEY"))
+				{
+					string type = headerName.Substring(0, headerName.Length - " PRIVATE KEY".Length);
+					return ReadKeyPair(type, endMarker);
+				}
+
 				switch (headerName)
 				{
 					case "PUBLIC KEY":
@@ -105,15 +111,9 @@ namespace Org.BouncyCastle.OpenSsl
 						return ReadCrl(endMarker);
 					case "ATTRIBUTE CERTIFICATE":
 						return ReadAttributeCertificate(endMarker);
-					case "RSA PRIVATE KEY":
-						return ReadKeyPair("RSA", endMarker);
-					case "DSA PRIVATE KEY":
-						return ReadKeyPair("DSA", endMarker);
 					// TODO Add back in when tests done, and return type issue resolved
 					//case "EC PARAMETERS":
 					//	return ReadECParameters(endMarker);
-					case "EC PRIVATE KEY":
-						return ReadECPrivateKey(endMarker);
 					default:
 						// TODO Throw an exception for an unknown header?
 
@@ -369,6 +369,24 @@ namespace Org.BouncyCastle.OpenSsl
 						break;
 					}
 
+					case "EC":
+					{
+						ECPrivateKeyStructure pKey = new ECPrivateKeyStructure(seq);
+						AlgorithmIdentifier algId = new AlgorithmIdentifier(
+							X9ObjectIdentifiers.IdECPublicKey, pKey.GetParameters());
+
+						PrivateKeyInfo privInfo = new PrivateKeyInfo(algId, pKey.ToAsn1Object());
+						DerBitString pubKey = pKey.GetPublicKey();
+						//Console.WriteLine(pubKey == null);
+						SubjectPublicKeyInfo pubInfo = new SubjectPublicKeyInfo(algId, pubKey.GetBytes());
+
+						// TODO Are the keys returned here ECDSA, as Java version forces?
+						privSpec = PrivateKeyFactory.CreateKey(privInfo);
+						pubSpec = PublicKeyFactory.CreateKey(pubInfo);
+
+						break;
+					}
+
 					default:
 						throw new ArgumentException("Unknown key type: " + type, "type");
 				}
@@ -419,35 +437,6 @@ namespace Org.BouncyCastle.OpenSsl
 
 			//return new ECDomainParameters(ecP.Curve, ecP.G, ecP.N, ecP.H, ecP.GetSeed());
 			return ecP;
-		}
-
-		private AsymmetricCipherKeyPair ReadECPrivateKey(
-			string endMarker)
-		{
-			try
-			{
-				byte[] bytes = ReadBytes(endMarker);
-				ECPrivateKeyStructure pKey = new ECPrivateKeyStructure(
-					(Asn1Sequence) Asn1Object.FromByteArray(bytes));
-				AlgorithmIdentifier algId = new AlgorithmIdentifier(
-					X9ObjectIdentifiers.IdECPublicKey, pKey.GetParameters());
-
-				PrivateKeyInfo privInfo = new PrivateKeyInfo(algId, pKey.ToAsn1Object());
-				SubjectPublicKeyInfo pubInfo = new SubjectPublicKeyInfo(algId, pKey.GetPublicKey().GetBytes());
-
-				// TODO Are the keys returned here ECDSA, as Java version forces?
-				return new AsymmetricCipherKeyPair(
-					PublicKeyFactory.CreateKey(pubInfo),
-					PrivateKeyFactory.CreateKey(privInfo));
-			}
-			catch (InvalidCastException e)
-			{ 
-				throw new IOException("wrong ASN.1 object found in stream.", e);
-			}
-			catch (Exception e)
-			{
-				throw new PemException("problem parsing EC private key.", e);
-			}
 		}
 	}
 }

@@ -36,36 +36,23 @@ namespace Org.BouncyCastle.Security
 			algorithms[NistObjectIdentifiers.IdAes128Ecb.Id] = "AES/ECB/PKCS7PADDING";
 			algorithms[NistObjectIdentifiers.IdAes192Ecb.Id] = "AES/ECB/PKCS7PADDING";
 			algorithms[NistObjectIdentifiers.IdAes256Ecb.Id] = "AES/ECB/PKCS7PADDING";
-			algorithms["AES/ECB/PKCS7"] = "AES/ECB/PKCS7PADDING";
 			algorithms["AES//PKCS7"] = "AES/ECB/PKCS7PADDING";
 			algorithms["AES//PKCS7PADDING"] = "AES/ECB/PKCS7PADDING";
-			algorithms["AES/ECB/PKCS5"] = "AES/ECB/PKCS7PADDING";
-			algorithms["AES/ECB/PKCS5PADDING"] = "AES/ECB/PKCS7PADDING";
 			algorithms["AES//PKCS5"] = "AES/ECB/PKCS7PADDING";
 			algorithms["AES//PKCS5PADDING"] = "AES/ECB/PKCS7PADDING";
 
 			algorithms[NistObjectIdentifiers.IdAes128Cbc.Id] = "AES/CBC/PKCS7PADDING";
 			algorithms[NistObjectIdentifiers.IdAes192Cbc.Id] = "AES/CBC/PKCS7PADDING";
 			algorithms[NistObjectIdentifiers.IdAes256Cbc.Id] = "AES/CBC/PKCS7PADDING";
-			algorithms["AES/CBC/PKCS7"] = "AES/CBC/PKCS7PADDING";
-			algorithms["AES/CBC/PKCS5"] = "AES/CBC/PKCS7PADDING";
-			algorithms["AES/CBC/PKCS5PADDING"] = "AES/CBC/PKCS7PADDING";
 
-			algorithms[NistObjectIdentifiers.IdAes128Ofb.Id] = "AES/OFB/PKCS7PADDING";
-			algorithms[NistObjectIdentifiers.IdAes192Ofb.Id] = "AES/OFB/PKCS7PADDING";
-			algorithms[NistObjectIdentifiers.IdAes256Ofb.Id] = "AES/OFB/PKCS7PADDING";
-			algorithms["AES/OFB/PKCS7"] = "AES/OFB/PKCS7PADDING";
-			algorithms["AES/OFB/PKCS5"] = "AES/OFB/PKCS7PADDING";
-			algorithms["AES/OFB/PKCS5PADDING"] = "AES/OFB/PKCS7PADDING";
+			algorithms[NistObjectIdentifiers.IdAes128Ofb.Id] = "AES/OFB/NOPADDING";
+			algorithms[NistObjectIdentifiers.IdAes192Ofb.Id] = "AES/OFB/NOPADDING";
+			algorithms[NistObjectIdentifiers.IdAes256Ofb.Id] = "AES/OFB/NOPADDING";
 
-			algorithms[NistObjectIdentifiers.IdAes128Cfb.Id] = "AES/CFB/PKCS7PADDING";
-			algorithms[NistObjectIdentifiers.IdAes192Cfb.Id] = "AES/CFB/PKCS7PADDING";
-			algorithms[NistObjectIdentifiers.IdAes256Cfb.Id] = "AES/CFB/PKCS7PADDING";
-			algorithms["AES/CFB/PKCS7"] = "AES/CFB/PKCS7PADDING";
-			algorithms["AES/CFB/PKCS5"] = "AES/CFB/PKCS7PADDING";
-			algorithms["AES/CFB/PKCS5PADDING"] = "AES/CFB/PKCS7PADDING";
+			algorithms[NistObjectIdentifiers.IdAes128Cfb.Id] = "AES/CFB/NOPADDING";
+			algorithms[NistObjectIdentifiers.IdAes192Cfb.Id] = "AES/CFB/NOPADDING";
+			algorithms[NistObjectIdentifiers.IdAes256Cfb.Id] = "AES/CFB/NOPADDING";
 
-			algorithms["RSA//PKCS1"] = "RSA//PKCS1PADDING";
 			algorithms["RSA/ECB/PKCS1"] = "RSA//PKCS1PADDING";
 			algorithms["RSA/ECB/PKCS1PADDING"] = "RSA//PKCS1PADDING";
 			algorithms[PkcsObjectIdentifiers.RsaEncryption.Id] = "RSA//PKCS1PADDING";
@@ -524,7 +511,7 @@ namespace Org.BouncyCastle.Security
 			{
 				if (cts)
 					throw new SecurityUtilityException("CTS mode not valid for AEAD ciphers.");
-				if (padded && parts.Length > 1 && parts[2] != "")
+				if (padded && parts.Length > 2 && parts[2] != "")
 					throw new SecurityUtilityException("Bad padding specified for AEAD cipher.");
 
 				return new BufferedAeadBlockCipher(aeadBlockCipher);

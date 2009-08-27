@@ -14,6 +14,9 @@ namespace Org.BouncyCastle.Crypto.Tls
 		internal const short KE_DH_DSS = 7;
 		internal const short KE_DH_RSA = 8;
 		internal const short KE_DH_anon = 9;
+		internal const short KE_SRP = 10;
+		internal const short KE_SRP_RSA = 11;
+		internal const short KE_SRP_DSS = 12;
 
 		internal abstract void Init(byte[] ms, byte[] cr, byte[] sr);
 

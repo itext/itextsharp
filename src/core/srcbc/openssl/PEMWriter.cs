@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 
 using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.CryptoPro;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Asn1.X9;
@@ -213,10 +214,18 @@ namespace Org.BouncyCastle.OpenSsl
 			if (oid.Equals(PkcsObjectIdentifiers.RsaEncryption))
 			{
 				keyType = "RSA";
-				return info.PrivateKey.GetEncoded();
+			}
+			else if (oid.Equals(CryptoProObjectIdentifiers.GostR3410x2001)
+				|| oid.Equals(X9ObjectIdentifiers.IdECPublicKey))
+			{
+				keyType = "EC";
+			}
+			else
+			{
+				throw new ArgumentException("Cannot handle private key of type: " + akp.GetType().FullName, "akp");
 			}
 
-			throw new ArgumentException("Cannot handle private key of type: " + akp.GetType().FullName, "akp");
+			return info.PrivateKey.GetEncoded();
 		}
 
 		private void WritePemBlock(

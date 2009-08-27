@@ -81,7 +81,7 @@ namespace Org.BouncyCastle.Pkix
 	public class PkixCertPath
 //		: CertPath
 	{
-		internal static IList certPathEncodings;
+		internal static readonly IList certPathEncodings;
 
         static PkixCertPath()
         {

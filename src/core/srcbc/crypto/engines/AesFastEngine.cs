@@ -621,9 +621,8 @@ namespace Org.BouncyCastle.Crypto.Engines
             bool	forEncryption)
         {
             int KC = key.Length / 4;  // key length in words
-            int t;
 
-            if ((KC != 4) && (KC != 6) && (KC != 8))
+            if (((KC != 4) && (KC != 6) && (KC != 8)) || ((KC * 4) != key.Length))
                 throw new ArgumentException("Key length not 128/192/256 bits.");
 
 			ROUNDS = KC + 6;  // This is not always true for the generalized Rijndael that allows larger block sizes
@@ -633,7 +632,7 @@ namespace Org.BouncyCastle.Crypto.Engines
             // copy the key into the round key array
             //
 
-            t = 0;
+            int t = 0;
             for (int i = 0; i < key.Length; t++)
 			{
 				W[t >> 2,t & 3] = Pack.LE_To_UInt32(key, i);
@@ -646,20 +645,23 @@ namespace Org.BouncyCastle.Crypto.Engines
             //
             int k = (ROUNDS + 1) << 2;
             for (int i = KC; (i < k); i++)
-                {
-                    uint temp = W[(i-1)>>2,(i-1)&3];
-                    if ((i % KC) == 0) {
-                        temp = SubWord(Shift(temp, 8)) ^ rcon[(i / KC)-1];
-                    } else if ((KC > 6) && ((i % KC) == 4)) {
-                        temp = SubWord(temp);
-                    }
-
-                    W[i>>2,i&3] = W[(i - KC)>>2,(i-KC)&3] ^ temp;
+            {
+                uint temp = W[(i-1)>>2,(i-1)&3];
+                if ((i % KC) == 0) {
+                    temp = SubWord(Shift(temp, 8)) ^ rcon[(i / KC)-1];
+                } else if ((KC > 6) && ((i % KC) == 4)) {
+                    temp = SubWord(temp);
                 }
 
-            if (!forEncryption) {
-                for (int j = 1; j < ROUNDS; j++) {
-                    for (int i = 0; i < 4; i++){
+                W[i>>2,i&3] = W[(i - KC)>>2,(i-KC)&3] ^ temp;
+            }
+
+            if (!forEncryption)
+			{
+                for (int j = 1; j < ROUNDS; j++)
+				{
+                    for (int i = 0; i < 4; i++)
+					{
                         W[j,i] = Inv_Mcol(W[j,i]);
                     }
                 }
@@ -737,20 +739,20 @@ namespace Org.BouncyCastle.Crypto.Engines
                 throw new DataLengthException("output buffer too short");
             }
 
+            UnPackBlock(input, inOff);
+
             if (forEncryption)
             {
-                UnPackBlock(input, inOff);
                 EncryptBlock(WorkingKey);
-                PackBlock(output, outOff);
             }
             else
             {
-                UnPackBlock(input, inOff);
                 DecryptBlock(WorkingKey);
-                PackBlock(output, outOff);
             }
 
-            return BLOCK_SIZE;
+            PackBlock(output, outOff);
+
+			return BLOCK_SIZE;
         }
 
         public void Reset()
@@ -788,28 +790,29 @@ namespace Org.BouncyCastle.Crypto.Engines
             C2 ^= KW[0,2];
             C3 ^= KW[0,3];
 
-            for (r = 1; r < ROUNDS - 1;) {
-                r0 = T0[C0&255] ^ T1[(C1>>8)&255] ^ T2[(C2>>16)&255] ^ T3[(C3>>24)&255] ^ KW[r,0];
-                r1 = T0[C1&255] ^ T1[(C2>>8)&255] ^ T2[(C3>>16)&255] ^ T3[(C0>>24)&255] ^ KW[r,1];
-                r2 = T0[C2&255] ^ T1[(C3>>8)&255] ^ T2[(C0>>16)&255] ^ T3[(C1>>24)&255] ^ KW[r,2];
-                r3 = T0[C3&255] ^ T1[(C0>>8)&255] ^ T2[(C1>>16)&255] ^ T3[(C2>>24)&255] ^ KW[r++,3];
-                C0 = T0[r0&255] ^ T1[(r1>>8)&255] ^ T2[(r2>>16)&255] ^ T3[(r3>>24)&255] ^ KW[r,0];
-                C1 = T0[r1&255] ^ T1[(r2>>8)&255] ^ T2[(r3>>16)&255] ^ T3[(r0>>24)&255] ^ KW[r,1];
-                C2 = T0[r2&255] ^ T1[(r3>>8)&255] ^ T2[(r0>>16)&255] ^ T3[(r1>>24)&255] ^ KW[r,2];
-                C3 = T0[r3&255] ^ T1[(r0>>8)&255] ^ T2[(r1>>16)&255] ^ T3[(r2>>24)&255] ^ KW[r++,3];
+            for (r = 1; r < ROUNDS - 1;)
+			{
+                r0 = T0[C0&255] ^ T1[(C1>>8)&255] ^ T2[(C2>>16)&255] ^ T3[C3>>24] ^ KW[r,0];
+                r1 = T0[C1&255] ^ T1[(C2>>8)&255] ^ T2[(C3>>16)&255] ^ T3[C0>>24] ^ KW[r,1];
+                r2 = T0[C2&255] ^ T1[(C3>>8)&255] ^ T2[(C0>>16)&255] ^ T3[C1>>24] ^ KW[r,2];
+                r3 = T0[C3&255] ^ T1[(C0>>8)&255] ^ T2[(C1>>16)&255] ^ T3[C2>>24] ^ KW[r++,3];
+                C0 = T0[r0&255] ^ T1[(r1>>8)&255] ^ T2[(r2>>16)&255] ^ T3[r3>>24] ^ KW[r,0];
+                C1 = T0[r1&255] ^ T1[(r2>>8)&255] ^ T2[(r3>>16)&255] ^ T3[r0>>24] ^ KW[r,1];
+                C2 = T0[r2&255] ^ T1[(r3>>8)&255] ^ T2[(r0>>16)&255] ^ T3[r1>>24] ^ KW[r,2];
+                C3 = T0[r3&255] ^ T1[(r0>>8)&255] ^ T2[(r1>>16)&255] ^ T3[r2>>24] ^ KW[r++,3];
             }
 
-            r0 = T0[C0&255] ^ T1[(C1>>8)&255] ^ T2[(C2>>16)&255] ^ T3[(C3>>24)&255] ^ KW[r,0];
-            r1 = T0[C1&255] ^ T1[(C2>>8)&255] ^ T2[(C3>>16)&255] ^ T3[(C0>>24)&255] ^ KW[r,1];
-            r2 = T0[C2&255] ^ T1[(C3>>8)&255] ^ T2[(C0>>16)&255] ^ T3[(C1>>24)&255] ^ KW[r,2];
-            r3 = T0[C3&255] ^ T1[(C0>>8)&255] ^ T2[(C1>>16)&255] ^ T3[(C2>>24)&255] ^ KW[r++,3];
+            r0 = T0[C0&255] ^ T1[(C1>>8)&255] ^ T2[(C2>>16)&255] ^ T3[C3>>24] ^ KW[r,0];
+            r1 = T0[C1&255] ^ T1[(C2>>8)&255] ^ T2[(C3>>16)&255] ^ T3[C0>>24] ^ KW[r,1];
+            r2 = T0[C2&255] ^ T1[(C3>>8)&255] ^ T2[(C0>>16)&255] ^ T3[C1>>24] ^ KW[r,2];
+            r3 = T0[C3&255] ^ T1[(C0>>8)&255] ^ T2[(C1>>16)&255] ^ T3[C2>>24] ^ KW[r++,3];
 
             // the final round's table is a simple function of S so we don't use a whole other four tables for it
 
-			C0 = (uint)S[r0&255] ^ (((uint)S[(r1>>8)&255])<<8) ^ (((uint)S[(r2>>16)&255])<<16) ^ (((uint)S[(r3>>24)&255])<<24) ^ KW[r,0];
-			C1 = (uint)S[r1&255] ^ (((uint)S[(r2>>8)&255])<<8) ^ (((uint)S[(r3>>16)&255])<<16) ^ (((uint)S[(r0>>24)&255])<<24) ^ KW[r,1];
-			C2 = (uint)S[r2&255] ^ (((uint)S[(r3>>8)&255])<<8) ^ (((uint)S[(r0>>16)&255])<<16) ^ (((uint)S[(r1>>24)&255])<<24) ^ KW[r,2];
-			C3 = (uint)S[r3&255] ^ (((uint)S[(r0>>8)&255])<<8) ^ (((uint)S[(r1>>16)&255])<<16) ^ (((uint)S[(r2>>24)&255])<<24) ^ KW[r,3];
+			C0 = (uint)S[r0&255] ^ (((uint)S[(r1>>8)&255])<<8) ^ (((uint)S[(r2>>16)&255])<<16) ^ (((uint)S[r3>>24])<<24) ^ KW[r,0];
+			C1 = (uint)S[r1&255] ^ (((uint)S[(r2>>8)&255])<<8) ^ (((uint)S[(r3>>16)&255])<<16) ^ (((uint)S[r0>>24])<<24) ^ KW[r,1];
+			C2 = (uint)S[r2&255] ^ (((uint)S[(r3>>8)&255])<<8) ^ (((uint)S[(r0>>16)&255])<<16) ^ (((uint)S[r1>>24])<<24) ^ KW[r,2];
+			C3 = (uint)S[r3&255] ^ (((uint)S[(r0>>8)&255])<<8) ^ (((uint)S[(r1>>16)&255])<<16) ^ (((uint)S[r2>>24])<<24) ^ KW[r,3];
 		}
 
         private  void DecryptBlock(
@@ -824,27 +827,27 @@ namespace Org.BouncyCastle.Crypto.Engines
             C3 ^= KW[ROUNDS,3];
 
             for (r = ROUNDS-1; r>1;) {
-                r0 = Tinv0[C0&255] ^ Tinv1[(C3>>8)&255] ^ Tinv2[(C2>>16)&255] ^ Tinv3[(C1>>24)&255] ^ KW[r,0];
-                r1 = Tinv0[C1&255] ^ Tinv1[(C0>>8)&255] ^ Tinv2[(C3>>16)&255] ^ Tinv3[(C2>>24)&255] ^ KW[r,1];
-                r2 = Tinv0[C2&255] ^ Tinv1[(C1>>8)&255] ^ Tinv2[(C0>>16)&255] ^ Tinv3[(C3>>24)&255] ^ KW[r,2];
-                r3 = Tinv0[C3&255] ^ Tinv1[(C2>>8)&255] ^ Tinv2[(C1>>16)&255] ^ Tinv3[(C0>>24)&255] ^ KW[r--,3];
-                C0 = Tinv0[r0&255] ^ Tinv1[(r3>>8)&255] ^ Tinv2[(r2>>16)&255] ^ Tinv3[(r1>>24)&255] ^ KW[r,0];
-                C1 = Tinv0[r1&255] ^ Tinv1[(r0>>8)&255] ^ Tinv2[(r3>>16)&255] ^ Tinv3[(r2>>24)&255] ^ KW[r,1];
-                C2 = Tinv0[r2&255] ^ Tinv1[(r1>>8)&255] ^ Tinv2[(r0>>16)&255] ^ Tinv3[(r3>>24)&255] ^ KW[r,2];
-                C3 = Tinv0[r3&255] ^ Tinv1[(r2>>8)&255] ^ Tinv2[(r1>>16)&255] ^ Tinv3[(r0>>24)&255] ^ KW[r--,3];
+                r0 = Tinv0[C0&255] ^ Tinv1[(C3>>8)&255] ^ Tinv2[(C2>>16)&255] ^ Tinv3[C1>>24] ^ KW[r,0];
+                r1 = Tinv0[C1&255] ^ Tinv1[(C0>>8)&255] ^ Tinv2[(C3>>16)&255] ^ Tinv3[C2>>24] ^ KW[r,1];
+                r2 = Tinv0[C2&255] ^ Tinv1[(C1>>8)&255] ^ Tinv2[(C0>>16)&255] ^ Tinv3[C3>>24] ^ KW[r,2];
+                r3 = Tinv0[C3&255] ^ Tinv1[(C2>>8)&255] ^ Tinv2[(C1>>16)&255] ^ Tinv3[C0>>24] ^ KW[r--,3];
+                C0 = Tinv0[r0&255] ^ Tinv1[(r3>>8)&255] ^ Tinv2[(r2>>16)&255] ^ Tinv3[r1>>24] ^ KW[r,0];
+                C1 = Tinv0[r1&255] ^ Tinv1[(r0>>8)&255] ^ Tinv2[(r3>>16)&255] ^ Tinv3[r2>>24] ^ KW[r,1];
+                C2 = Tinv0[r2&255] ^ Tinv1[(r1>>8)&255] ^ Tinv2[(r0>>16)&255] ^ Tinv3[r3>>24] ^ KW[r,2];
+                C3 = Tinv0[r3&255] ^ Tinv1[(r2>>8)&255] ^ Tinv2[(r1>>16)&255] ^ Tinv3[r0>>24] ^ KW[r--,3];
             }
 
-            r0 = Tinv0[C0&255] ^ Tinv1[(C3>>8)&255] ^ Tinv2[(C2>>16)&255] ^ Tinv3[(C1>>24)&255] ^ KW[r,0];
-            r1 = Tinv0[C1&255] ^ Tinv1[(C0>>8)&255] ^ Tinv2[(C3>>16)&255] ^ Tinv3[(C2>>24)&255] ^ KW[r,1];
-            r2 = Tinv0[C2&255] ^ Tinv1[(C1>>8)&255] ^ Tinv2[(C0>>16)&255] ^ Tinv3[(C3>>24)&255] ^ KW[r,2];
-            r3 = Tinv0[C3&255] ^ Tinv1[(C2>>8)&255] ^ Tinv2[(C1>>16)&255] ^ Tinv3[(C0>>24)&255] ^ KW[r,3];
+            r0 = Tinv0[C0&255] ^ Tinv1[(C3>>8)&255] ^ Tinv2[(C2>>16)&255] ^ Tinv3[C1>>24] ^ KW[r,0];
+            r1 = Tinv0[C1&255] ^ Tinv1[(C0>>8)&255] ^ Tinv2[(C3>>16)&255] ^ Tinv3[C2>>24] ^ KW[r,1];
+            r2 = Tinv0[C2&255] ^ Tinv1[(C1>>8)&255] ^ Tinv2[(C0>>16)&255] ^ Tinv3[C3>>24] ^ KW[r,2];
+            r3 = Tinv0[C3&255] ^ Tinv1[(C2>>8)&255] ^ Tinv2[(C1>>16)&255] ^ Tinv3[C0>>24] ^ KW[r,3];
 
             // the final round's table is a simple function of Si so we don't use a whole other four tables for it
 
-			C0 = (uint)Si[r0&255] ^ (((uint)Si[(r3>>8)&255])<<8) ^ (((uint)Si[(r2>>16)&255])<<16) ^ (((uint)Si[(r1>>24)&255])<<24) ^ KW[0,0];
-			C1 = (uint)Si[r1&255] ^ (((uint)Si[(r0>>8)&255])<<8) ^ (((uint)Si[(r3>>16)&255])<<16) ^ (((uint)Si[(r2>>24)&255])<<24) ^ KW[0,1];
-			C2 = (uint)Si[r2&255] ^ (((uint)Si[(r1>>8)&255])<<8) ^ (((uint)Si[(r0>>16)&255])<<16) ^ (((uint)Si[(r3>>24)&255])<<24) ^ KW[0,2];
-			C3 = (uint)Si[r3&255] ^ (((uint)Si[(r2>>8)&255])<<8) ^ (((uint)Si[(r1>>16)&255])<<16) ^ (((uint)Si[(r0>>24)&255])<<24) ^ KW[0,3];
+			C0 = (uint)Si[r0&255] ^ (((uint)Si[(r3>>8)&255])<<8) ^ (((uint)Si[(r2>>16)&255])<<16) ^ (((uint)Si[r1>>24])<<24) ^ KW[0,0];
+			C1 = (uint)Si[r1&255] ^ (((uint)Si[(r0>>8)&255])<<8) ^ (((uint)Si[(r3>>16)&255])<<16) ^ (((uint)Si[r2>>24])<<24) ^ KW[0,1];
+			C2 = (uint)Si[r2&255] ^ (((uint)Si[(r1>>8)&255])<<8) ^ (((uint)Si[(r0>>16)&255])<<16) ^ (((uint)Si[r3>>24])<<24) ^ KW[0,2];
+			C3 = (uint)Si[r3&255] ^ (((uint)Si[(r2>>8)&255])<<8) ^ (((uint)Si[(r1>>16)&255])<<16) ^ (((uint)Si[r0>>24])<<24) ^ KW[0,3];
 		}
     }
 }

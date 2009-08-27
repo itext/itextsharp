@@ -151,7 +151,7 @@ namespace Org.BouncyCastle.Crypto.Modes
             }
             cipher.ProcessBlock(cfbV, 0, cfbOutV, 0);
             //
-            // XOR the cfbV with the plaintext producing the cipher text
+            // XOR the cfbV with the plaintext producing the ciphertext
             //
             for (int i = 0; i < blockSize; i++)
             {
@@ -197,7 +197,7 @@ namespace Org.BouncyCastle.Crypto.Modes
             Array.Copy(cfbV, blockSize, cfbV, 0, cfbV.Length - blockSize);
             Array.Copy(input, inOff, cfbV, cfbV.Length - blockSize, blockSize);
             //
-            // XOR the cfbV with the plaintext producing the plain text
+            // XOR the cfbV with the ciphertext producing the plaintext
             //
             for (int i = 0; i < blockSize; i++)
             {

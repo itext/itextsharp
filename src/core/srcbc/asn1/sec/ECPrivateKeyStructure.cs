@@ -1,41 +1,77 @@
+using System;
+
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Math;
-
-using System;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Asn1.Sec
 {
-    /**
-     * the elliptic curve private key object from SEC 1
-     */
-    public class ECPrivateKeyStructure
-        : Asn1Encodable
-    {
-        private readonly Asn1Sequence seq;
+	/**
+	 * the elliptic curve private key object from SEC 1
+	 */
+	public class ECPrivateKeyStructure
+		: Asn1Encodable
+	{
+		private readonly Asn1Sequence seq;
 
-        public ECPrivateKeyStructure(
-            Asn1Sequence seq)
-        {
+		public ECPrivateKeyStructure(
+			Asn1Sequence seq)
+		{
 			if (seq == null)
 				throw new ArgumentNullException("seq");
 
 			this.seq = seq;
-        }
+		}
 
 		public ECPrivateKeyStructure(
-            BigInteger key)
-        {
+			BigInteger key)
+		{
+			if (key == null)
+				throw new ArgumentNullException("key");
+
 			this.seq = new DerSequence(
 				new DerInteger(1),
 				new DerOctetString(key.ToByteArrayUnsigned()));
-        }
+		}
+
+		public ECPrivateKeyStructure(
+			BigInteger		key,
+			Asn1Encodable	parameters)
+			: this(key, null, parameters)
+		{
+		}
+
+		public ECPrivateKeyStructure(
+			BigInteger		key,
+			DerBitString	publicKey,
+			Asn1Encodable	parameters)
+		{
+			if (key == null)
+				throw new ArgumentNullException("key");
+
+			Asn1EncodableVector v = new Asn1EncodableVector(
+				new DerInteger(1),
+				new DerOctetString(key.ToByteArrayUnsigned()));
+
+			if (parameters != null)
+			{
+				v.Add(new DerTaggedObject(true, 0, parameters));
+			}
+
+			if (publicKey != null)
+			{
+				v.Add(new DerTaggedObject(true, 1, publicKey));
+			}
+
+			this.seq = new DerSequence(v);
+		}
 
 		public BigInteger GetKey()
-        {
-            Asn1OctetString octs = (Asn1OctetString) seq[1];
+		{
+			Asn1OctetString octs = (Asn1OctetString) seq[1];
 
 			return new BigInteger(1, octs.GetOctets());
-        }
+		}
 
 		public DerBitString GetPublicKey()
 		{
@@ -75,8 +111,8 @@ namespace Org.BouncyCastle.Asn1.Sec
 		 *     publicKey [1] BIT STRING OPTIONAL }
 		 */
 		public override Asn1Object ToAsn1Object()
-        {
-            return seq;
-        }
-    }
+		{
+			return seq;
+		}
+	}
 }

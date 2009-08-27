@@ -16,6 +16,7 @@ using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Modes;
 using Org.BouncyCastle.Crypto.Paddings;
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Security
 {
@@ -328,6 +329,13 @@ namespace Org.BouncyCastle.Security
 
 		public static ICipherParameters GenerateCipherParameters(
 			AlgorithmIdentifier algID,
+			char[]              password)
+		{
+			return GenerateCipherParameters(algID.ObjectID.Id, password, false, algID.Parameters);
+		}
+
+		public static ICipherParameters GenerateCipherParameters(
+			AlgorithmIdentifier algID,
 			char[]              password,
 			bool				wrongPkcs12Zero)
 		{
@@ -349,10 +357,10 @@ namespace Org.BouncyCastle.Security
 			Asn1Encodable   pbeParameters)
 		{
 			string	mechanism = (string) algorithms[algorithm.ToUpper(CultureInfo.InvariantCulture)];
-			byte[]	keyBytes;
-			//string	type = (string)algorithmType[mechanism];
-			byte[]	salt;
-			int		iterationCount;
+
+			byte[] keyBytes = null;
+			byte[] salt = null;
+			int iterationCount = 0;
 
 			if (IsPkcs12(mechanism))
 			{
@@ -363,10 +371,7 @@ namespace Org.BouncyCastle.Security
 			}
 			else if (IsPkcs5Scheme2(mechanism))
 			{
-				Pbkdf2Params pbeParams = Pbkdf2Params.GetInstance(pbeParameters);
-				salt = pbeParams.GetSalt();
-				iterationCount = pbeParams.IterationCount.IntValue;
-				keyBytes = PbeParametersGenerator.Pkcs5PasswordToBytes(password);
+				// See below
 			}
 			else
 			{
@@ -378,7 +383,54 @@ namespace Org.BouncyCastle.Security
 
 			ICipherParameters parameters = null;
 
-			if (mechanism.StartsWith("PBEwithSHA-1"))
+			if (IsPkcs5Scheme2(mechanism))
+			{
+				PbeS2Parameters s2p = PbeS2Parameters.GetInstance(pbeParameters.ToAsn1Object());
+				AlgorithmIdentifier encScheme = s2p.EncryptionScheme;
+				DerObjectIdentifier encOid = encScheme.ObjectID;
+				Asn1Object encParams = encScheme.Parameters.ToAsn1Object();
+
+				// TODO What about s2p.KeyDerivationFunc.ObjectID?
+				Pbkdf2Params pbeParams = Pbkdf2Params.GetInstance(s2p.KeyDerivationFunc.Parameters.ToAsn1Object());
+
+				byte[] iv;
+				if (encOid.Equals(PkcsObjectIdentifiers.RC2Cbc)) // PKCS5.B.2.3
+				{
+					RC2CbcParameter rc2Params = RC2CbcParameter.GetInstance(encParams);
+					iv = rc2Params.GetIV();
+				}
+				else
+				{
+					iv = Asn1OctetString.GetInstance(encParams).GetOctets();
+				}
+
+				salt = pbeParams.GetSalt();
+				iterationCount = pbeParams.IterationCount.IntValue;
+				keyBytes = PbeParametersGenerator.Pkcs5PasswordToBytes(password);
+
+				int keyLength = pbeParams.KeyLength != null
+					?	pbeParams.KeyLength.IntValue * 8
+					:	GeneratorUtilities.GetDefaultKeySize(encOid);
+
+				PbeParametersGenerator gen = MakePbeGenerator(
+					(string)algorithmType[mechanism], null, keyBytes, salt, iterationCount);
+
+				parameters = gen.GenerateDerivedParameters(encOid.Id, keyLength);
+
+				if (iv != null)
+				{
+					// FIXME? OpenSSL weirdness with IV of zeros (for ECB keys?)
+					if (Arrays.AreEqual(iv, new byte[iv.Length]))
+					{
+						//Console.Error.Write("***** IV all 0 (length " + iv.Length + ") *****");
+					}
+					else
+					{
+						parameters = new ParametersWithIV(parameters, iv);
+					}
+				}
+			}
+			else if (mechanism.StartsWith("PBEwithSHA-1"))
 			{
 				PbeParametersGenerator generator = MakePbeGenerator(
 					(string) algorithmType[mechanism], new Sha1Digest(), keyBytes, salt, iterationCount);
@@ -511,7 +563,16 @@ namespace Org.BouncyCastle.Security
 		public static object CreateEngine(
 			AlgorithmIdentifier algID)
 		{
-			return CreateEngine(algID.ObjectID.Id);
+			string algorithm = algID.ObjectID.Id;
+
+			if (IsPkcs5Scheme2(algorithm))
+			{
+				PbeS2Parameters s2p = PbeS2Parameters.GetInstance(algID.Parameters.ToAsn1Object());
+				AlgorithmIdentifier encScheme = s2p.EncryptionScheme;
+				return CipherUtilities.GetCipher(encScheme.ObjectID);
+			}
+
+			return CreateEngine(algorithm);
 		}
 
 		private static bool EndsWith(

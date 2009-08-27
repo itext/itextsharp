@@ -85,7 +85,7 @@ namespace Org.BouncyCastle.Crypto.Agreement.Srp
 	    private BigInteger CalculateS()
 	    {
 	        BigInteger k = Srp6Utilities.CalculateK(digest, N, g);
-	        BigInteger exp = u.Multiply(x).Mod(N).Add(privA).Mod(N);
+	        BigInteger exp = u.Multiply(x).Add(privA);
 	        BigInteger tmp = g.ModPow(x, N).Multiply(k).Mod(N);
 	        return B.Subtract(tmp).Mod(N).ModPow(exp, N);
 	    }
