@@ -104,7 +104,7 @@ namespace iTextSharp.text {
         // membervariables
     
         /// <summary> this is the symbol that wil proceed the listitem. </summary>
-        private Chunk symbol;
+        protected Chunk symbol;
     
         // constructors
     
