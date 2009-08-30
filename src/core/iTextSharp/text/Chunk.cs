@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using System.Collections;
 using System.util;
+using iTextSharp.text.error_messages;
 
 using iTextSharp.text.pdf;
 using iTextSharp.text.html;
@@ -228,7 +229,7 @@ namespace iTextSharp.text {
         */
         public Chunk(IDrawInterface separator, float tabPosition, bool newline) : this(OBJECT_REPLACEMENT_CHARACTER, new Font()) {
             if (tabPosition < 0) {
-                throw new ArgumentException("A tab position may not be lower than 0; yours is " + tabPosition);
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("a.tab.position.may.not.be.lower.than.0.yours.is.1", tabPosition));
             }
             SetAttribute(TAB, new Object[] {separator, tabPosition, newline, 0});
         }

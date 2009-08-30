@@ -4,6 +4,7 @@ using System.Collections;
 using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.collection;
 using Org.BouncyCastle.X509;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2003, 2004 by Paulo Soares.
  *
@@ -251,9 +252,9 @@ namespace iTextSharp.text.pdf {
         */
         public void SetEncryption(byte[] userPassword, byte[] ownerPassword, int permissions, bool strength128Bits) {
             if (stamper.append)
-                throw new DocumentException("Append mode does not support changing the encryption status.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("append.mode.does.not.support.changing.the.encryption.status"));
             if (stamper.ContentWritten)
-                throw new DocumentException("Content was already written to the output.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("content.was.already.written.to.the.output"));
             stamper.SetEncryption(userPassword, ownerPassword, permissions, strength128Bits ? PdfWriter.STANDARD_ENCRYPTION_128 : PdfWriter.STANDARD_ENCRYPTION_40);
         }
         
@@ -272,9 +273,9 @@ namespace iTextSharp.text.pdf {
         */
         public void SetEncryption(byte[] userPassword, byte[] ownerPassword, int permissions, int encryptionType) {
             if (stamper.IsAppend())
-                throw new DocumentException("Append mode does not support changing the encryption status.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("append.mode.does.not.support.changing.the.encryption.status"));
             if (stamper.ContentWritten)
-                throw new DocumentException("Content was already written to the output.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("content.was.already.written.to.the.output"));
             stamper.SetEncryption(userPassword, ownerPassword, permissions, encryptionType);
         }
 
@@ -328,9 +329,9 @@ namespace iTextSharp.text.pdf {
         */
         public void SetEncryption(X509Certificate[] certs, int[] permissions, int encryptionType) {
             if (stamper.IsAppend())
-                throw new DocumentException("Append mode does not support changing the encryption status.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("append.mode.does.not.support.changing.the.encryption.status"));
             if (stamper.ContentWritten)
-                throw new DocumentException("Content was already written to the output.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("content.was.already.written.to.the.output"));
             stamper.SetEncryption(certs, permissions, encryptionType);
         }
 

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
 
@@ -237,7 +238,7 @@ namespace iTextSharp.text.pdf {
             rf.Seek(directoryOffset);
             int id = rf.ReadInt();
             if (id != 0x00010000)
-                throw new DocumentException(fileName + " is not a true type file.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("1.is.not.a.true.type.file", fileName));
             int num_tables = rf.ReadUnsignedShort();
             rf.SkipBytes(6);
             for (int k = 0; k < num_tables; ++k) {
@@ -254,12 +255,12 @@ namespace iTextSharp.text.pdf {
             int[] tableLocation;
             tableLocation = (int[])tableDirectory["head"];
             if (tableLocation == null)
-                throw new DocumentException("Table 'head' does not exist in " + fileName);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.head.does.not.exist.in.1", fileName));
             rf.Seek(tableLocation[TABLE_OFFSET] + HEAD_LOCA_FORMAT_OFFSET);
             locaShortTable = (rf.ReadUnsignedShort() == 0);
             tableLocation = (int[])tableDirectory["loca"];
             if (tableLocation == null)
-                throw new DocumentException("Table 'loca' does not exist in " + fileName);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.loca.does.not.exist.in.1", fileName));
             rf.Seek(tableLocation[TABLE_OFFSET]);
             if (locaShortTable) {
                 int entries = tableLocation[TABLE_LENGTH] / 2;
@@ -328,7 +329,7 @@ namespace iTextSharp.text.pdf {
             int[] tableLocation;
             tableLocation = (int[])tableDirectory["glyf"];
             if (tableLocation == null)
-                throw new DocumentException("Table 'glyf' does not exist in " + fileName);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.glyf.does.not.exist.in.1", fileName));
             int glyph0 = 0;
             if (!glyphsUsed.ContainsKey(glyph0)) {
                 glyphsUsed[glyph0] = null;

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Net;
+using iTextSharp.text.error_messages;
 /*
  * $Id: RandomAccessFileOrArray.cs,v 1.9 2008/05/13 11:25:23 psoares33 Exp $
  * 
@@ -88,7 +89,7 @@ namespace iTextSharp.text.pdf {
                 else {
                     Stream isp = BaseFont.GetResourceStream(filename);
                     if (isp == null)
-                        throw new IOException(filename + " not found as file or resource.");
+                        throw new IOException(MessageLocalization.GetComposedMessage("1.not.found.as.file.or.resource", filename));
                     try {
                         this.arrayIn = InputStreamToArray(isp);
                         return;

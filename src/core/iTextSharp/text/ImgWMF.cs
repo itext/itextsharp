@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net;
+using iTextSharp.text.error_messages;
 
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.codec.wmf;
@@ -122,7 +123,7 @@ namespace iTextSharp.text {
                 }
                 InputMeta im = new InputMeta(istr);
                 if (im.ReadInt() != unchecked((int)0x9AC6CDD7))    {
-                    throw new BadElementException(errorID + " is not a valid placeable windows metafile.");
+                    throw new BadElementException(MessageLocalization.GetComposedMessage("1.is.not.a.valid.placeable.windows.metafile", errorID));
                 }
                 im.ReadWord();
                 int left = im.ReadShort();

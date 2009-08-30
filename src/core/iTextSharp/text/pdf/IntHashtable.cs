@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 
 // IntHashtable - a Hashtable that uses ints as the keys
 //
@@ -43,8 +44,12 @@ namespace iTextSharp.text.pdf {
         // @exception IllegalArgumentException If the load factor is
         // less than or equal to zero.
         public IntHashtable( int initialCapacity, float loadFactor ) {
-            if ( initialCapacity <= 0 || loadFactor <= 0.0 )
-                throw new ArgumentException();
+            if (initialCapacity < 0) {
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("illegal.capacity.1", initialCapacity));
+            }
+            if (loadFactor <= 0) {
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("illegal.load.1", loadFactor));
+            }
             this.loadFactor = loadFactor;
             table = new IntHashtableEntry[initialCapacity];
             threshold = (int) ( initialCapacity * loadFactor );
@@ -305,7 +310,7 @@ namespace iTextSharp.text.pdf {
                     entry = e.next;
                     return e;
                 }
-                throw new InvalidOperationException("IntHashtableIterator");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("inthashtableiterator"));
             }
         }        
     }

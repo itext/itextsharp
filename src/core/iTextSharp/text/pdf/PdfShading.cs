@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2002 Paulo Soares
  *
@@ -117,16 +118,16 @@ namespace iTextSharp.text.pdf {
         }
 
         public static void ThrowColorSpaceError() {
-            throw new ArgumentException("A tiling or shading pattern cannot be used as a color space in a shading pattern");
+            throw new ArgumentException(MessageLocalization.GetComposedMessage("a.tiling.or.shading.pattern.cannot.be.used.as.a.color.space.in.a.shading.pattern"));
         }
     
         public static void CheckCompatibleColors(Color c1, Color c2) {
             int type1 = ExtendedColor.GetType(c1);
             int type2 = ExtendedColor.GetType(c2);
             if (type1 != type2)
-                throw new ArgumentException("Both colors must be of the same type.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("both.colors.must.be.of.the.same.type"));
             if (type1 == ExtendedColor.TYPE_SEPARATION && ((SpotColor)c1).PdfSpotColor != ((SpotColor)c2).PdfSpotColor)
-                throw new ArgumentException("The spot color must be the same, only the tint can vary.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.spot.color.must.be.the.same.only.the.tint.can.vary"));
             if (type1 == ExtendedColor.TYPE_PATTERN || type1 == ExtendedColor.TYPE_SHADING)
                 ThrowColorSpaceError();
         }
@@ -259,7 +260,7 @@ namespace iTextSharp.text.pdf {
             }
             set {
                 if (value.Length != 4)
-                    throw new ArgumentException("BBox must be a 4 element array.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("bbox.must.be.a.4.element.array"));
                 this.bBox = value;
             }
         }

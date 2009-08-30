@@ -4,6 +4,7 @@ using System.Collections;
 using System.Text;
 using System.util;
 using iTextSharp.text.xml.simpleparser;
+using iTextSharp.text.error_messages;
 
 /*
  * Copyright 2003 by Paulo Soares.
@@ -743,10 +744,10 @@ namespace iTextSharp.text.pdf {
                 if (attr.Count == 0)
                     return;
                 else
-                    throw new Exception("Bookmark end tag out of place.");
+                    throw new Exception(MessageLocalization.GetComposedMessage("bookmark.end.tag.out.of.place"));
             }
             if (!tag.Equals("Title"))
-                throw new Exception("Invalid end tag - " + tag);
+                throw new Exception(MessageLocalization.GetComposedMessage("invalid.end.tag.1", tag));
             Hashtable attributes = (Hashtable)attr.Pop();
             String title = (String)attributes["Title"];
             attributes["Title"] = title.Trim();
@@ -779,10 +780,10 @@ namespace iTextSharp.text.pdf {
                     return;
                 }
                 else
-                    throw new Exception("Root element is not Bookmark: " + tag);
+                    throw new Exception(MessageLocalization.GetComposedMessage("root.element.is.not.bookmark.1", tag));
             }
             if (!tag.Equals("Title"))
-                throw new Exception("Tag " + tag + " not allowed.");
+                throw new Exception(MessageLocalization.GetComposedMessage("tag.1.not.allowed", tag));
             Hashtable attributes = new Hashtable(h);
             attributes["Title"] = "";
             attributes.Remove("Kids");

@@ -5,6 +5,7 @@ using iTextSharp.text;
 using iTextSharp.text.exceptions;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.intern;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: PdfContentByte.cs,v 1.23 2008/05/13 11:25:19 psoares33 Exp $
@@ -253,7 +254,7 @@ namespace iTextSharp.text.pdf {
     
         public void Add(PdfContentByte other) {
             if (other.writer != null && writer != other.writer)
-                throw new Exception("Inconsistent writers. Are you mixing two documents?");
+                throw new Exception(MessageLocalization.GetComposedMessage("inconsistent.writers.are.you.mixing.two.documents"));
             content.Append(other.content);
         }
     
@@ -1116,7 +1117,7 @@ namespace iTextSharp.text.pdf {
         */
         public virtual void AddImage(Image image, bool inlineImage) {
             if (!image.HasAbsolutePosition())
-                throw new DocumentException("The image must have absolute positioning.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("the.image.must.have.absolute.positioning"));
             float[] matrix = image.Matrix;
             matrix[Image.CX] = image.AbsoluteX - matrix[Image.CX];
             matrix[Image.CY] = image.AbsoluteY - matrix[Image.CY];
@@ -1290,7 +1291,7 @@ namespace iTextSharp.text.pdf {
          */
         public void BeginText() {
             if (inText) {
-                throw new IllegalPdfSyntaxException("Unbalanced begin/end text operators." );
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.begin.end.text.operators"));
             }
             inText = true;
             state.xTLM = 0;
@@ -1303,7 +1304,7 @@ namespace iTextSharp.text.pdf {
          */
         public void EndText() {
             if (!inText) {
-                throw new IllegalPdfSyntaxException("Unbalanced begin/end text operators." );
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.begin.end.text.operators"));
             }
             inText = false;
             content.Append("ET").Append_i(separator);
@@ -1326,7 +1327,7 @@ namespace iTextSharp.text.pdf {
             content.Append('Q').Append_i(separator);
             int idx = stateList.Count - 1;
             if (idx < 0)
-                throw new IllegalPdfSyntaxException("Unbalanced save/restore state operators.");
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.save.restore.state.operators"));
             state = (GraphicState)stateList[idx];
             stateList.RemoveAt(idx);
         }
@@ -1370,7 +1371,7 @@ namespace iTextSharp.text.pdf {
         public virtual void SetFontAndSize(BaseFont bf, float size) {
             CheckWriter();
             if (size < 0.0001f && size > -0.0001f)
-                throw new ArgumentException("Font size too small: " + size);
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("font.size.too.small.1", size));
             state.size = size;
             state.fontDetails = writer.AddSimple(bf);
             PageResources prs = PageResources;
@@ -1407,7 +1408,7 @@ namespace iTextSharp.text.pdf {
          */
         private void ShowText2(string text) {
             if (state.fontDetails == null)
-                throw new Exception("Font and size must be set before writing any text");
+                throw new Exception(MessageLocalization.GetComposedMessage("font.and.size.must.be.set.before.writing.any.text"));
             byte[] b = state.fontDetails.ConvertToBytes(text);
             EscapeString(b, content);
         }
@@ -1459,7 +1460,7 @@ namespace iTextSharp.text.pdf {
         */
         public void ShowTextKerned(String text) {
             if (state.fontDetails == null)
-                throw new ArgumentNullException("Font and size must be set before writing any text");
+                throw new ArgumentNullException(MessageLocalization.GetComposedMessage("font.and.size.must.be.set.before.writing.any.text"));
             BaseFont bf = state.fontDetails.BaseFont;
             if (bf.HasKernPairs())
                 ShowText(GetKernArray(text, bf));
@@ -1699,7 +1700,7 @@ namespace iTextSharp.text.pdf {
         
         private void ShowTextAligned(int alignment, String text, float x, float y, float rotation, bool kerned) {
             if (state.fontDetails == null)
-                throw new Exception("Font and size must be set before writing any text");
+                throw new Exception(MessageLocalization.GetComposedMessage("font.and.size.must.be.set.before.writing.any.text"));
             if (rotation == 0) {
                 switch (alignment) {
                     case ALIGN_CENTER:
@@ -1902,7 +1903,7 @@ namespace iTextSharp.text.pdf {
         public PdfPatternPainter CreatePattern(float width, float height, float xstep, float ystep) {
             CheckWriter();
             if ( xstep == 0.0f || ystep == 0.0f )
-                throw new Exception("XStep or YStep can not be ZERO.");
+                throw new Exception(MessageLocalization.GetComposedMessage("xstep.or.ystep.can.not.be.zero"));
             PdfPatternPainter painter = new PdfPatternPainter(writer);
             painter.Width = width;
             painter.Height = height;
@@ -1938,7 +1939,7 @@ namespace iTextSharp.text.pdf {
         public PdfPatternPainter CreatePattern(float width, float height, float xstep, float ystep, Color color) {
             CheckWriter();
             if ( xstep == 0.0f || ystep == 0.0f )
-                throw new Exception("XStep or YStep can not be ZERO.");
+                throw new Exception(MessageLocalization.GetComposedMessage("xstep.or.ystep.can.not.be.zero"));
             PdfPatternPainter painter = new PdfPatternPainter(writer, color);
             painter.Width = width;
             painter.Height = height;
@@ -2318,7 +2319,7 @@ namespace iTextSharp.text.pdf {
                     content.Append(tint);
                     break;
                 default:
-                    throw new Exception("Invalid color type.");                
+                    throw new Exception(MessageLocalization.GetComposedMessage("invalid.color.type"));
             }
         }
     
@@ -2341,7 +2342,7 @@ namespace iTextSharp.text.pdf {
         public virtual void SetPatternFill(PdfPatternPainter p, Color color, float tint) {
             CheckWriter();
             if (!p.IsStencil())
-                throw new Exception("An uncolored pattern was expected.");
+                throw new Exception(MessageLocalization.GetComposedMessage("an.uncolored.pattern.was.expected"));
             PageResources prs = PageResources;
             PdfName name = writer.AddSimplePattern(p);
             name = prs.AddPattern(name, p.IndirectReference);
@@ -2371,7 +2372,7 @@ namespace iTextSharp.text.pdf {
         public virtual void SetPatternStroke(PdfPatternPainter p, Color color, float tint) {
             CheckWriter();
             if (!p.IsStencil())
-                throw new Exception("An uncolored pattern was expected.");
+                throw new Exception(MessageLocalization.GetComposedMessage("an.uncolored.pattern.was.expected"));
             PageResources prs = PageResources;
             PdfName name = writer.AddSimplePattern(p);
             name = prs.AddPattern(name, p.IndirectReference);
@@ -2453,7 +2454,7 @@ namespace iTextSharp.text.pdf {
          */
         protected virtual void CheckWriter() {
             if (writer == null)
-                throw new ArgumentNullException("The writer in PdfContentByte is null.");
+                throw new ArgumentNullException(MessageLocalization.GetComposedMessage("the.writer.in.pdfcontentbyte.is.null"));
         }
     
         /**
@@ -2462,7 +2463,7 @@ namespace iTextSharp.text.pdf {
          */
         public void ShowText(PdfTextArray text) {
             if (state.fontDetails == null)
-                throw new ArgumentNullException("Font and size must be set before writing any text");
+                throw new ArgumentNullException(MessageLocalization.GetComposedMessage("font.and.size.must.be.set.before.writing.any.text"));
             content.Append('[');
             ArrayList arrayList = text.ArrayList;
             bool lastWasNumber = false;
@@ -2635,7 +2636,7 @@ namespace iTextSharp.text.pdf {
          */    
         internal void CheckNoPattern(PdfTemplate t) {
             if (t.Type == PdfTemplate.TYPE_PATTERN)
-                throw new ArgumentException("Invalid use of a pattern. A template was expected.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.use.of.a.pattern.a.template.was.expected"));
         }
     
         /**
@@ -2787,7 +2788,7 @@ namespace iTextSharp.text.pdf {
         */    
         public void BeginLayer(IPdfOCG layer) {
             if ((layer is PdfLayer) && ((PdfLayer)layer).Title != null)
-                throw new ArgumentException("A title is not a layer");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("a.title.is.not.a.layer"));
             if (layerDepth == null)
                 layerDepth = new ArrayList();
             if (layer is PdfLayerMembership) {
@@ -2823,7 +2824,7 @@ namespace iTextSharp.text.pdf {
                 n = (int)layerDepth[layerDepth.Count - 1];
                 layerDepth.RemoveAt(layerDepth.Count - 1);
             } else {
-                throw new IllegalPdfSyntaxException("Unbalanced layer operators." );
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.layer.operators"));
             }
             while (n-- > 0)
                 content.Append("EMC").Append_i(separator);
@@ -2868,10 +2869,10 @@ namespace iTextSharp.text.pdf {
                 else if (obj.IsArray()) {
                     ar = (PdfArray)obj;
                     if (!ar[0].IsNumber())
-                        throw new ArgumentException("The structure has kids.");
+                        throw new ArgumentException(MessageLocalization.GetComposedMessage("the.structure.has.kids"));
                 }
                 else
-                    throw new ArgumentException("Unknown object at /K " + obj.GetType().ToString());
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.object.at.k.1", obj.GetType().ToString()));
                 PdfDictionary dic = new PdfDictionary(PdfName.MCR);
                 dic.Put(PdfName.PG, writer.CurrentPage);
                 dic.Put(PdfName.MCID, new PdfNumber(mark));
@@ -2892,7 +2893,7 @@ namespace iTextSharp.text.pdf {
         */    
         public void EndMarkedContentSequence() {
             if (mcDepth == 0) {
-                throw new IllegalPdfSyntaxException("Unbalanced begin/end marked content operators." );
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.begin.end.marked.content.operators"));
             }
             --mcDepth;
             content.Append("EMC").Append_i(separator);
@@ -2950,16 +2951,16 @@ namespace iTextSharp.text.pdf {
         */
         public void SanityCheck() {
             if (mcDepth != 0) {
-                throw new IllegalPdfSyntaxException("Unbalanced marked content operators." );
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.marked.content.operators"));
             }
             if (inText) {
-                throw new IllegalPdfSyntaxException("Unbalanced begin/end text operators." );
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.begin.end.text.operators"));
             }
             if (layerDepth != null && layerDepth.Count > 0) {
-                throw new IllegalPdfSyntaxException("Unbalanced layer operators." );
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.layer.operators"));
             }
             if (stateList.Count > 0) {
-                throw new IllegalPdfSyntaxException("Unbalanced save/restore state operators." );
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.save.restore.state.operators"));
             }
         }
     }

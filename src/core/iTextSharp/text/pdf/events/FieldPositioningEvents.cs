@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 
 /*
  * Copyright 2005 by Bruno Lowagie
@@ -172,7 +173,7 @@ namespace iTextSharp.text.pdf.events {
         * @see com.lowagie.text.pdf.PdfPCellEvent#cellLayout(com.lowagie.text.pdf.PdfPCell, com.lowagie.text.Rectangle, com.lowagie.text.pdf.PdfContentByte[])
         */
         public void CellLayout(PdfPCell cell, Rectangle rect, PdfContentByte[] canvases) {
-            if (cellField == null || (fieldWriter == null && parent == null)) throw new ArgumentException("You have used the wrong constructor for this FieldPositioningEvents class.");
+            if (cellField == null || (fieldWriter == null && parent == null)) throw new ArgumentException(MessageLocalization.GetComposedMessage("you.have.used.the.wrong.constructor.for.this.fieldpositioningevents.class"));
             cellField.Put(PdfName.RECT, new PdfRectangle(rect.GetLeft(padding), rect.GetBottom(padding), rect.GetRight(padding), rect.GetTop(padding)));
             if (parent == null)
                 fieldWriter.AddAnnotation(cellField);

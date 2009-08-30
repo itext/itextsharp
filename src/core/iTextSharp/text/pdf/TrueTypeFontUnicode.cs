@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: TrueTypeFontUnicode.cs,v 1.12 2008/05/13 11:25:23 psoares33 Exp $
@@ -93,11 +94,11 @@ namespace iTextSharp.text.pdf {
             if ((fileName.ToLower(System.Globalization.CultureInfo.InvariantCulture).EndsWith(".ttf") || fileName.ToLower(System.Globalization.CultureInfo.InvariantCulture).EndsWith(".otf") || fileName.ToLower(System.Globalization.CultureInfo.InvariantCulture).EndsWith(".ttc")) && ((enc.Equals(IDENTITY_H) || enc.Equals(IDENTITY_V)) && emb)) {
                 Process(ttfAfm, forceRead);
                 if (os_2.fsType == 2)
-                    throw new DocumentException(fileName + style + " cannot be embedded due to licensing restrictions.");
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("1.cannot.be.embedded.due.to.licensing.restrictions", fileName + style));
                 // Sivan
                 if ((cmap31 == null && !fontSpecific) || (cmap10 == null && fontSpecific))
                     directTextToByte=true;
-                    //throw new DocumentException(fileName + " " + style + " does not contain an usable cmap.");
+                    //throw new DocumentException(MessageLocalization.GetComposedMessage("1.2.does.not.contain.an.usable.cmap", fileName, style));
                 if (fontSpecific) {
                     fontSpecific = false;
                     String tempEncoding = encoding;
@@ -108,7 +109,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             else
-                throw new DocumentException(fileName + " " + style + " is not a TTF font file.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("1.2.is.not.a.ttf.font.file", fileName, style));
             vertical = enc.EndsWith("V");
         }
     

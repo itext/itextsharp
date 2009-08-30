@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Globalization;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: ByteBuffer.cs,v 1.7 2008/05/13 11:25:17 psoares33 Exp $
@@ -561,7 +562,7 @@ namespace iTextSharp.text.pdf {
             }
             set {
                 if (value > count || value < 0)
-                    throw new ArgumentOutOfRangeException("The new size must be positive and <= of the current size");
+                    throw new ArgumentOutOfRangeException(MessageLocalization.GetComposedMessage("the.new.size.must.be.positive.and.lt.eq.of.the.current.size"));
                 count = value;
             }
         }

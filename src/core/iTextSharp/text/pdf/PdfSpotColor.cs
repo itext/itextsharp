@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 
 /*
  * Copyright 2001, 2002 Paulo Soares
@@ -111,7 +112,7 @@ namespace iTextSharp.text.pdf {
                             new float[]{cmyk.Cyan, cmyk.Magenta, cmyk.Yellow, cmyk.Black}, 1);
                         break;
                     default:
-                        throw new Exception("Only RGB, Gray and CMYK are supported as alternative color spaces.");
+                        throw new Exception(MessageLocalization.GetComposedMessage("only.rgb.gray.and.cmyk.are.supported.as.alternative.color.spaces"));
                 }
             }
             else {

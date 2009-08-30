@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.util;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: Row.cs,v 1.10 2008/05/13 11:25:12 psoares33 Exp $
@@ -168,7 +169,7 @@ namespace iTextSharp.text {
         /// <param name="column">the number of the column to delete</param>
         internal void DeleteColumn(int column) {
             if ((column >= columns) || (column < 0)) {
-                throw new Exception("getCell at illegal index : " + column);
+                throw new Exception(MessageLocalization.GetComposedMessage("getcell.at.illegal.index.1", column));
             }
             columns--;
             bool[] newReserved = new bool[columns];
@@ -217,9 +218,9 @@ namespace iTextSharp.text {
         ///        or -1 if the Cell couldn't be added.
         /// </returns>
         internal int AddElement(Object element, int column) {
-            if (element == null) throw new Exception("addCell - null argument");
-            if ((column < 0) || (column > columns)) throw new Exception("addCell - illegal column argument");
-            if ( !((GetObjectID(element) == CELL) || (GetObjectID(element) == TABLE)) ) throw new ArgumentException("addCell - only Cells or Tables allowed");
+            if (element == null) throw new Exception(MessageLocalization.GetComposedMessage("addcell.null.argument"));
+            if ((column < 0) || (column > columns)) throw new Exception(MessageLocalization.GetComposedMessage("addcell.illegal.column.argument"));
+            if ( !((GetObjectID(element) == CELL) || (GetObjectID(element) == TABLE)) ) throw new ArgumentException(MessageLocalization.GetComposedMessage("addcell.only.cells.or.tables.allowed"));
         
             int lColspan = ((element is Cell) ? ((Cell)element).Colspan : 1);
         
@@ -239,7 +240,7 @@ namespace iTextSharp.text {
         /// <param name="aElement">the cell to add.</param>
         /// <param name="column">the position where to add the cell.</param>
         internal void SetElement(Object aElement, int column) {
-            if (reserved[column]) throw new ArgumentException("setElement - position already taken");
+            if (reserved[column]) throw new ArgumentException(MessageLocalization.GetComposedMessage("setelement.position.already.taken"));
         
             cells[column] = aElement;
             if (aElement != null) {
@@ -264,7 +265,7 @@ namespace iTextSharp.text {
         /// <param name="size">the number of columns</param>
         /// <returns>true if the column was reserved, false if not.</returns>
         internal bool Reserve(int column, int size) {
-            if ((column < 0) || ((column + size) > columns)) throw new Exception("reserve - incorrect column/size");
+            if ((column < 0) || ((column + size) > columns)) throw new Exception(MessageLocalization.GetComposedMessage("reserve.incorrect.column.size"));
         
             for (int i=column; i < column + size; i++) {
                 if (reserved[i]) {
@@ -328,7 +329,7 @@ namespace iTextSharp.text {
         /// </returns>
         public Object GetCell(int column) {
             if ((column < 0) || (column > columns)) {
-                throw new Exception("getCell at illegal index :" + column + " max is " + columns);
+                throw new Exception(MessageLocalization.GetComposedMessage("getcell.at.illegal.index.1.max.is.2", column, columns));
             }
             return cells[column];
         }

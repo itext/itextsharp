@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 using System.util;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: Rectangle.cs,v 1.18 2008/05/13 11:25:12 psoares33 Exp $
@@ -541,7 +542,7 @@ namespace iTextSharp.text {
                 return urx - llx;
             }
             set {
-                throw new InvalidOperationException("The width cannot be set.");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("the.width.cannot.be.set"));
             }
         }
     

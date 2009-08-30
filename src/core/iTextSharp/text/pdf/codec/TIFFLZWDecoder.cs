@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2003-2008 by Paulo Soares.
  * 
@@ -87,7 +88,7 @@ namespace iTextSharp.text.pdf.codec {
         public byte[] Decode(byte[] data, byte[] uncompData, int h) {
             
             if (data[0] == (byte)0x00 && data[1] == (byte)0x01) {
-                throw new InvalidOperationException("TIFF 5.0-style LZW codes are not supported.");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("tiff.5.0.style.lzw.codes.are.not.supported"));
             }
             
             InitializeStringTable();

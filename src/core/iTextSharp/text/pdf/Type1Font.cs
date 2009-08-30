@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections;
 using System.util;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: Type1Font.cs,v 1.13 2008/05/13 11:25:23 psoares33 Exp $
@@ -163,7 +164,7 @@ namespace iTextSharp.text.pdf {
          */
         internal Type1Font(string afmFile, string enc, bool emb, byte[] ttfAfm, byte[] pfb, bool forceRead) {
             if (emb && ttfAfm != null && pfb == null)
-                throw new DocumentException("Two byte arrays are needed if the Type1 font is embedded.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("two.byte.arrays.are.needed.if.the.type1.font.is.embedded"));
             if (emb && ttfAfm != null)
                 this.pfb = pfb;
             encoding = enc;
@@ -179,8 +180,9 @@ namespace iTextSharp.text.pdf {
                 try {
                     istr = GetResourceStream(RESOURCE_PATH + afmFile + ".afm");
                     if (istr == null) {
-                        Console.Error.WriteLine(afmFile + " not found as resource.");
-                        throw new DocumentException(afmFile + " not found as resource.");
+                        string msg = MessageLocalization.GetComposedMessage("1.not.found.as.resource", afmFile);
+                        Console.Error.WriteLine(msg);
+                        throw new DocumentException(msg);
                     }
                     MemoryStream ostr = new MemoryStream();
                     while (true) {
@@ -259,7 +261,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             else
-                throw new DocumentException(afmFile + " is not an AFM or PFM font file.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("1.is.not.an.afm.or.pfm.font.file", afmFile));
             EncodingScheme = EncodingScheme.Trim();
             if (EncodingScheme.Equals("AdobeStandardEncoding") || EncodingScheme.Equals("StandardEncoding")) {
                 fontSpecific = false;
@@ -373,7 +375,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             if (!isMetrics)
-                throw new DocumentException("Missing StartCharMetrics in " + fileName);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("missing.startcharmetrics.in.1", fileName));
             while ((line = rf.ReadLine()) != null) {
                 StringTokenizer tok = new StringTokenizer(line);
                 if (!tok.HasMoreTokens())
@@ -414,7 +416,7 @@ namespace iTextSharp.text.pdf {
                 CharMetrics[N] = metrics;
             }
             if (isMetrics)
-                throw new DocumentException("Missing EndCharMetrics in " + fileName);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("missing.endcharmetrics.in.1", fileName));
             if (!CharMetrics.ContainsKey("nonbreakingspace")) {
                 Object[] space = (Object[])CharMetrics["space"];
                 if (space != null)
@@ -433,7 +435,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             if (!isMetrics)
-                throw new DocumentException("Missing EndFontMetrics in " + fileName);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("missing.endfontmetrics.in.1", fileName));
             while ((line = rf.ReadLine()) != null) {
                 StringTokenizer tok = new StringTokenizer(line);
                 if (!tok.HasMoreTokens())
@@ -461,7 +463,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             if (isMetrics)
-                throw new DocumentException("Missing EndKernPairs in " + fileName);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("missing.endkernpairs.in.1", fileName));
             rf.Close();
         }
     
@@ -487,9 +489,9 @@ namespace iTextSharp.text.pdf {
                 int bytePtr = 0;
                 for (int k = 0; k < 3; ++k) {
                     if (rf.Read() != 0x80)
-                        throw new DocumentException("Start marker missing in " + filePfb);
+                        throw new DocumentException(MessageLocalization.GetComposedMessage("start.marker.missing.in.1", filePfb));
                     if (rf.Read() != PFB_TYPES[k])
-                        throw new DocumentException("Incorrect segment type in " + filePfb);
+                        throw new DocumentException(MessageLocalization.GetComposedMessage("incorrect.segment.type.in.1", filePfb));
                     int size = rf.Read();
                     size += rf.Read() << 8;
                     size += rf.Read() << 16;
@@ -498,7 +500,7 @@ namespace iTextSharp.text.pdf {
                     while (size != 0) {
                         int got = rf.Read(st, bytePtr, size);
                         if (got < 0)
-                            throw new DocumentException("Premature end in " + filePfb);
+                            throw new DocumentException(MessageLocalization.GetComposedMessage("premature.end.in.1", filePfb));
                         bytePtr += got;
                         size -= got;
                     }

@@ -7,6 +7,7 @@ using iTextSharp.text.rtf;
 using iTextSharp.text.rtf.document.output;
 using iTextSharp.text.rtf.document;
 using iTextSharp.text.rtf.graphic;
+using iTextSharp.text.error_messages;
 /*
  * $Id: RtfDocument.cs,v 1.12 2008/05/16 19:30:50 psoares33 Exp $
  * 
@@ -165,7 +166,7 @@ namespace iTextSharp.text.rtf.document {
                         this.data = new RtfDiskCache();
                         break;
                     default:
-                        throw new ArgumentException("unknown");
+                        throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown"));
                 }
             } catch (IOException) {
                 this.data = new RtfMemoryCache();
@@ -238,7 +239,7 @@ namespace iTextSharp.text.rtf.document {
         */
         public void FilterSpecialChar(Stream outp, String str, bool useHex, bool softLineBreaks) {
             if (outp == null) {
-                throw new ArgumentException("null OutpuStream");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("null.outpustream"));
             }
 
             bool alwaysUseUniCode = this.documentSettings.IsAlwaysUseUnicode();

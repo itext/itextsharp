@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using iTextSharp.text.error_messages;
 /*
  * $Id: PdfPages.cs,v 1.3 2008/05/13 11:25:21 psoares33 Exp $
  * 
@@ -102,7 +103,7 @@ namespace iTextSharp.text.pdf {
         // returns the top parent to include in the catalog
         internal PdfIndirectReference WritePageTree() {
             if (pages.Count == 0)
-                throw new IOException("The document has no pages.");
+                throw new IOException(MessageLocalization.GetComposedMessage("the.document.has.no.pages"));
             int leaf = 1;
             ArrayList tParents = parents;
             ArrayList tPages = pages;
@@ -158,7 +159,7 @@ namespace iTextSharp.text.pdf {
         
         internal void SetLinearMode(PdfIndirectReference topParent) {
             if (parents.Count > 1)
-                throw new Exception("Linear page mode can only be called with a single parent.");
+                throw new Exception(MessageLocalization.GetComposedMessage("linear.page.mode.can.only.be.called.with.a.single.parent"));
             if (topParent != null) {
                 this.topParent = topParent;
                 parents.Clear();
@@ -175,17 +176,17 @@ namespace iTextSharp.text.pdf {
             if (order == null)
                 return pages.Count;
             if (parents.Count > 1)
-                throw new DocumentException("Page reordering requires a single parent in the page tree. Call PdfWriter.SetLinearMode() after open.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("page.reordering.requires.a.single.parent.in.the.page.tree.call.pdfwriter.setlinearmode.after.open"));
             if (order.Length != pages.Count)
-                throw new DocumentException("Page reordering requires an array with the same size as the number of pages.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("page.reordering.requires.an.array.with.the.same.size.as.the.number.of.pages"));
             int max = pages.Count;
             bool[] temp = new bool[max];
             for (int k = 0; k < max; ++k) {
                 int p = order[k];
                 if (p < 1 || p > max)
-                    throw new DocumentException("Page reordering requires pages between 1 and " + max + ". Found " + p + ".");
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("page.reordering.requires.pages.between.1.and.1.found.2", max, p));
                 if (temp[p - 1])
-                    throw new DocumentException("Page reordering requires no page repetition. Page " + p + " is repeated.");
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("page.reordering.requires.no.page.repetition.page.1.is.repeated", p));
                 temp[p - 1] = true;
             }
             Object[] copy = pages.ToArray();

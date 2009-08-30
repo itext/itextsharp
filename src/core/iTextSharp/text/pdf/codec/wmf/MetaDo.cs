@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using iTextSharp.text;
 using System.Collections;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: MetaDo.cs,v 1.4 2008/05/13 11:25:36 psoares33 Exp $
@@ -147,7 +148,7 @@ namespace iTextSharp.text.pdf.codec.wmf
     
     public void ReadAll() {
         if (meta.ReadInt() != unchecked((int)0x9AC6CDD7)) {
-            throw new DocumentException("Not a placeable windows metafile");
+            throw new DocumentException(MessageLocalization.GetComposedMessage("not.a.placeable.windows.metafile"));
         }
         meta.ReadWord();
         left = meta.ReadShort();
@@ -676,7 +677,7 @@ namespace iTextSharp.text.pdf.codec.wmf
 
     public static byte[] WrapBMP(Image image)  {
         if (image.OriginalType != Image.ORIGINAL_BMP)
-            throw new IOException("Only BMP can be wrapped in WMF.");
+            throw new IOException(MessageLocalization.GetComposedMessage("only.bmp.can.be.wrapped.in.wmf"));
         Stream imgIn;
         byte[] data = null;
         if (image.OriginalData == null) {

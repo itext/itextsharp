@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text
 {
@@ -38,7 +39,7 @@ namespace iTextSharp.text
         */
         public void AddElement(SimpleCell element) {
             if (!element.Cellgroup) {
-                throw new BadElementException("You can't add cells to a table directly, add them to a row first.");
+                throw new BadElementException(MessageLocalization.GetComposedMessage("you.can.t.add.cells.to.a.table.directly.add.them.to.a.row.first"));
             }
             content.Add(element);
         }
@@ -49,7 +50,7 @@ namespace iTextSharp.text
         * @throws BadElementException
         */
         public Table CreateTable() {
-            if (content.Count == 0) throw new BadElementException("Trying to create a table without rows.");
+            if (content.Count == 0) throw new BadElementException(MessageLocalization.GetComposedMessage("trying.to.create.a.table.without.rows"));
             SimpleCell rowx = (SimpleCell)content[0];
             int columns = 0;
             foreach (SimpleCell cell in rowx.Content) {
@@ -115,7 +116,7 @@ namespace iTextSharp.text
         * @throws DocumentException
         */
         public PdfPTable CreatePdfPTable() {
-            if (content.Count == 0) throw new BadElementException("Trying to create a table without rows.");
+            if (content.Count == 0) throw new BadElementException(MessageLocalization.GetComposedMessage("trying.to.create.a.table.without.rows"));
             SimpleCell rowx = (SimpleCell)content[0];
             int columns = 0;
             foreach (SimpleCell cell in rowx.Content) {

@@ -308,7 +308,7 @@ namespace iTextSharp.text.xml {
                 }
                 catch (BadElementException bee) {
                     // this shouldn't happen
-                    throw new Exception("", bee);
+                    throw bee;
                 }
                 stack.Push(table);
                 return;
@@ -332,25 +332,15 @@ namespace iTextSharp.text.xml {
         
             // images
             if (ElementTags.IMAGE.Equals(name)) {
+                Image img = ElementFactory.GetImage(attributes);
                 try {
-                    Image img = ElementFactory.GetImage(attributes);
-                    try {
-                        AddImage(img);
-                        return;
-                    }
-                    catch {
-                        // if there is no element on the stack, the Image is added to the document
-                        try {
-                            document.Add(img);
-                        }
-                        catch (DocumentException de) {
-                            throw new Exception("", de);
-                        }
-                        return;
-                    }
+                    AddImage(img);
+                    return;
                 }
-                catch (Exception e) {
-                    throw new Exception("", e);
+                catch {
+                    // if there is no element on the stack, the Image is added to the document
+                    document.Add(img);
+                    return;
                 }
             }
         
@@ -359,24 +349,19 @@ namespace iTextSharp.text.xml {
                 Annotation annotation = ElementFactory.GetAnnotation(attributes);
                 ITextElementArray current;
                 try {
+                    current = (ITextElementArray) stack.Pop();
                     try {
-                        current = (ITextElementArray) stack.Pop();
-                        try {
-                            current.Add(annotation);
-                        }
-                        catch {
-                            document.Add(annotation);
-                        }
-                        stack.Push(current);
+                        current.Add(annotation);
                     }
                     catch {
                         document.Add(annotation);
                     }
-                    return;
+                    stack.Push(current);
                 }
-                catch (DocumentException de) {
-                    throw de;
+                catch {
+                    document.Add(annotation);
                 }
+                return;
             }
         
             // newlines
@@ -389,12 +374,7 @@ namespace iTextSharp.text.xml {
                 }
                 catch {
                     if (currentChunk == null) {
-                        try {
-                            document.Add(Chunk.NEWLINE);
-                        }
-                        catch (DocumentException de) {
-                            throw de;
-                        }
+                        document.Add(Chunk.NEWLINE);
                     }
                     else {
                         currentChunk.Append("\n");

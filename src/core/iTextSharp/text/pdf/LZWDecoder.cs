@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using iTextSharp.text.error_messages;
 
 /*
  * Copyright 2002-2008 by Paulo Soares.
@@ -82,7 +83,7 @@ namespace iTextSharp.text.pdf {
         public void Decode(byte[] data, Stream uncompData) {
         
             if (data[0] == (byte)0x00 && data[1] == (byte)0x01) {
-                throw new Exception("LZW flavour not supported.");
+                throw new Exception(MessageLocalization.GetComposedMessage("lzw.flavour.not.supported"));
             }
         
             InitializeStringTable();

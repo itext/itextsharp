@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
 
@@ -82,7 +83,7 @@ namespace iTextSharp.text.pdf {
             try {
                 String mainTag = ReadStandardString(4);
                 if (!mainTag.Equals("ttcf"))
-                    throw new DocumentException(fileName + " is not a valid TTC file.");
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("1.is.not.a.valid.ttc.file", fileName));
                 rf.SkipBytes(4);
                 int dirCount = rf.ReadInt();
                 names = new String[dirCount];
@@ -94,7 +95,7 @@ namespace iTextSharp.text.pdf {
                     directoryOffset = rf.ReadInt();
                     rf.Seek(directoryOffset);
                     if (rf.ReadInt() != 0x00010000)
-                        throw new DocumentException(fileName + " is not a valid TTF file.");
+                        throw new DocumentException(MessageLocalization.GetComposedMessage("1.is.not.a.valid.ttf.file", fileName));
                     int num_tables = rf.ReadUnsignedShort();
                     rf.SkipBytes(6);
                     for (int k = 0; k < num_tables; ++k) {

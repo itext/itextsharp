@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using System.Collections;
 using System.Reflection;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: PdfName.cs,v 1.31 2008/05/24 18:41:23 psoares33 Exp $
@@ -1768,7 +1769,7 @@ namespace iTextSharp.text.pdf {
             // The minimum number of characters in a name is 0, the maximum is 127 (the '/' not included)
             int length = name.Length;
             if (lengthCheck && length > 127) {
-                throw new ArgumentException("The name '" + name + "' is too long (" + length + " characters).");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.name.1.is.too.long.2.characters", name, length));
             }
             bytes = EncodeName(name);
         }

@@ -11,6 +11,7 @@ using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Asn1.Cmp;
 using Org.BouncyCastle.Asn1.Tsp;
+using iTextSharp.text.error_messages;
 /*
  * $Id: TSAClientBouncyCastle.java 3973 2009-06-16 10:30:31Z psoares33 $
  *
@@ -161,7 +162,7 @@ namespace iTextSharp.text.pdf {
             int value = (failure == null) ? 0 : failure.IntValue;
             if (value != 0) {
                 // @todo: Translate value of 15 error codes defined by PKIFailureInfo to string
-                throw new Exception("Invalid TSA '" + tsaURL + "' response, code " + value);
+                throw new Exception(MessageLocalization.GetComposedMessage("invalid.tsa.1.response.code.2", tsaURL, value));
             }
             // @todo: validate the time stap certificate chain (if we want
             //        assure we do not sign using an invalid timestamp).
@@ -169,7 +170,7 @@ namespace iTextSharp.text.pdf {
             // extract just the time stamp token (removes communication status info)
             TimeStampToken  tsToken = response.TimeStampToken;
             if (tsToken == null) {
-                throw new Exception("TSA '" + tsaURL + "' failed to return time stamp token: " + response.GetStatusString());
+                throw new Exception(MessageLocalization.GetComposedMessage("tsa.1.failed.to.return.time.stamp.token.2", tsaURL, response.GetStatusString()));
             }
             TimeStampTokenInfo info = tsToken.TimeStampInfo; // to view details
             byte[] encoded = tsToken.GetEncoded();
@@ -198,7 +199,7 @@ namespace iTextSharp.text.pdf {
             outp.Close();
             HttpWebResponse response = (HttpWebResponse)con.GetResponse();
             if (response.StatusCode != HttpStatusCode.OK)
-                throw new IOException("Invalid HTTP response: " + (int)response.StatusCode);
+                throw new IOException(MessageLocalization.GetComposedMessage("invalid.http.response.1", (int)response.StatusCode));
             Stream inp = response.GetResponseStream();
 
             MemoryStream baos = new MemoryStream();

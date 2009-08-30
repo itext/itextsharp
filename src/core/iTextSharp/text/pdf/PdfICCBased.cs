@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf {
 
@@ -39,7 +40,7 @@ namespace iTextSharp.text.pdf {
                     Put(PdfName.ALTERNATE, PdfName.DEVICECMYK);
                     break;
                 default:
-                    throw new PdfException(numberOfComponents + " Component(s) is not supported in iText");
+                    throw new PdfException(MessageLocalization.GetComposedMessage("1.component.s.is.not.supported", numberOfComponents));
             }
             Put(PdfName.N, new PdfNumber(numberOfComponents));
             bytes = profile.Data;

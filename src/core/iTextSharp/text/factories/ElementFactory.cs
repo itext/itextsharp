@@ -4,6 +4,7 @@ using System.util;
 using iTextSharp.text;
 using iTextSharp.text.html;
 using iTextSharp.text.factories;
+using iTextSharp.text.error_messages;
 /*
  * $Id: ElementFactory.cs,v 1.9 2008/05/13 11:25:14 psoares33 Exp $
  * 
@@ -428,7 +429,7 @@ namespace iTextSharp.text.factories {
             
             value = attributes[ElementTags.URL];
             if (value == null)
-                throw new ArgumentException("The URL of the image is missing.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.url.of.the.image.is.missing"));
             Image image = Image.GetInstance(value);
             
             value = attributes[ElementTags.ALIGN];

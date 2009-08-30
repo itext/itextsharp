@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2007 Thomas Bickel
  *
@@ -65,7 +66,7 @@ namespace iTextSharp.text.rtf.document.output {
         * @param bufferSize desired initial size in bytes
         */
         public RtfByteArrayBuffer(int bufferSize) {
-            if ((bufferSize <= 0) || (bufferSize > 1<<30)) throw(new ArgumentException("bufferSize "+bufferSize));
+            if ((bufferSize <= 0) || (bufferSize > 1<<30)) throw(new ArgumentException(MessageLocalization.GetComposedMessage("buffersize.1", bufferSize)));
             
             int n = 1<<5;
             while(n < bufferSize) {

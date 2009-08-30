@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Collections;
 using System.util;
 using System.Reflection;
+using iTextSharp.text.error_messages;
 
 using iTextSharp.text.pdf;
 using iTextSharp.text.factories;
@@ -501,7 +502,7 @@ namespace iTextSharp.text {
                 }
 
             }
-            throw new IOException("The byte array is not a recognized imageformat.");
+            throw new IOException(MessageLocalization.GetComposedMessage("the.byte.array.is.not.a.recognized.imageformat"));
         }
         /// <summary>
         /// Converts a .NET image to a Native(PNG, JPG, GIF, WMF) image
@@ -772,7 +773,7 @@ namespace iTextSharp.text {
         /// <returns></returns>
         public static Image GetInstance(int width, int height, bool reverseBits, int typeCCITT, int parameters, byte[] data, int[] transparency) {
             if (transparency != null && transparency.Length != 2)
-                throw new BadElementException("Transparency length must be equal to 2 with CCITT images");
+                throw new BadElementException(MessageLocalization.GetComposedMessage("transparency.length.must.be.equal.to.2.with.ccitt.images"));
             Image img = new ImgCCITT(width, height, reverseBits, typeCCITT, parameters, data);
             img.transparency = transparency;
             return img;
@@ -793,7 +794,7 @@ namespace iTextSharp.text {
         /// <returns>an object of type ImgRaw</returns>
         public static Image GetInstance(int width, int height, int components, int bpc, byte[] data, int[] transparency) {
             if (transparency != null && transparency.Length != components * 2)
-                throw new BadElementException("Transparency length must be equal to (componentes * 2)");
+                throw new BadElementException(MessageLocalization.GetComposedMessage("transparency.length.must.be.equal.to.componentes.2"));
             if (components == 1 && bpc == 1) {
                 byte[] g4 = CCITTG4Encoder.Compress(data, width, height);
                 return Image.GetInstance(width, height, false, Element.CCITTG4, Element.CCITT_BLACKIS1, g4, transparency);
@@ -1282,7 +1283,7 @@ namespace iTextSharp.text {
         /// </summary>
         public void MakeMask() {
             if (!IsMaskCandidate())
-                throw new DocumentException("This image can not be an image mask.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("this.image.can.not.be.an.image.mask"));
             mask = true;
         }
     
@@ -1297,9 +1298,9 @@ namespace iTextSharp.text {
 
             set {
                 if (this.mask)
-                    throw new DocumentException("An image mask cannot contain another image mask.");
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("an.image.mask.cannot.contain.another.image.mask"));
                 if (!value.mask)
-                    throw new DocumentException("The image mask is not a mask. Did you do MakeMask()?");
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("the.image.mask.is.not.a.mask.did.you.do.makemask"));
                 imageMask = value;
                 smask = (value.bpc > 1 && value.bpc <= 8);
             }

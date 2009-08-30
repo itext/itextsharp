@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: Document.cs,v 1.45 2008/05/25 13:08:44 psoares33 Exp $
@@ -235,10 +236,10 @@ namespace iTextSharp.text {
         /// <returns>true if the element was added, false if not</returns>
         public virtual bool Add(IElement element) {
             if (close) {
-                throw new DocumentException("The document has been closed. You can't add any Elements.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("the.document.has.been.closed.you.can.t.add.any.elements"));
             }
             if (!open && element.IsContent()) {
-                throw new DocumentException("The document is not open yet; you can only add Meta information.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("the.document.is.not.open.yet.you.can.only.add.meta.information"));
             }
             bool success = false;
             if (element is ChapterAutoNumber) {

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 using System.util;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: RectangleReadOnly.cs,v 1.2 2008/05/13 11:25:12 psoares33 Exp $
@@ -104,7 +105,7 @@ namespace iTextSharp.text {
         }
 
         private void ThrowReadOnlyError() {
-            throw new InvalidOperationException("RectangleReadOnly: this Rectangle is read only.");
+            throw new InvalidOperationException(MessageLocalization.GetComposedMessage("rectanglereadonly.this.rectangle.is.read.only"));
         }
 
         /**

@@ -4,6 +4,7 @@ using System.Collections;
 using System.Text;
 using System.util;
 using iTextSharp.text.xml.simpleparser;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2004 by Paulo Soares.
  *
@@ -282,14 +283,14 @@ namespace iTextSharp.text.pdf {
                 if (xmlLast == null && xmlNames != null)
                     return;
                 else
-                    throw new ArgumentException("Destination end tag out of place.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("destination.end.tag.out.of.place"));
             }
             if (!tag.Equals("Name"))
-                throw new ArgumentException("Invalid end tag - " + tag);
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.end.tag.1", tag));
             if (xmlLast == null || xmlNames == null)
-                throw new ArgumentException("Name end tag out of place.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("name.end.tag.out.of.place"));
             if (!xmlLast.ContainsKey("Page"))
-                throw new ArgumentException("Page attribute missing.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("page.attribute.missing"));
             xmlNames[UnEscapeBinaryString((String)xmlLast["Name"])] = xmlLast["Page"];
             xmlLast = null;
         }
@@ -304,12 +305,12 @@ namespace iTextSharp.text.pdf {
                     return;
                 }
                 else
-                    throw new ArgumentException("Root element is not Destination.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("root.element.is.not.destination"));
             }
             if (!tag.Equals("Name"))
-                throw new ArgumentException("Tag " + tag + " not allowed.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("tag.1.not.allowed", tag));
             if (xmlLast != null)
-                throw new ArgumentException("Nested tags are not allowed.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("nested.tags.are.not.allowed"));
             xmlLast = new Hashtable(h);
             xmlLast["Name"] = "";
         }

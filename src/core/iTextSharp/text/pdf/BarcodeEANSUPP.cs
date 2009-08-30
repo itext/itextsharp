@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 
 /*
  * Copyright 2002 by Paulo Soares.
@@ -144,7 +145,7 @@ namespace iTextSharp.text.pdf {
         }
 
         public override System.Drawing.Image CreateDrawingImage(System.Drawing.Color foreground, System.Drawing.Color background) {
-            throw new InvalidOperationException("The two barcodes must be composed externally.");
+            throw new InvalidOperationException(MessageLocalization.GetComposedMessage("the.two.barcodes.must.be.composed.externally"));
         }
     }
 }

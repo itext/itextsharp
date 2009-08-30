@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using iTextSharp.text.error_messages;
 
 using System.util.zlib;
 
@@ -180,9 +181,9 @@ namespace iTextSharp.text.pdf {
          */
         public void WriteLength() {
             if (inputStream == null)
-                throw new PdfException("WriteLength() can only be called in a contructed PdfStream(InputStream,PdfWriter).");
+                throw new PdfException(MessageLocalization.GetComposedMessage("writelength.can.only.be.called.in.a.contructed.pdfstream.inputstream.pdfwriter"));
             if (inputStreamLength == -1)
-                throw new PdfException("WriteLength() can only be called after output of the stream body.");
+                throw new PdfException(MessageLocalization.GetComposedMessage("writelength.can.only.be.called.after.output.of.the.stream.body"));
             writer.AddToBody(new PdfNumber(inputStreamLength), iref, false);
         }
     
@@ -230,7 +231,7 @@ namespace iTextSharp.text.pdf {
                         return;
                 }
                 else {
-                    throw new PdfException("Stream could not be compressed: filter is not a name or array.");
+                    throw new PdfException(MessageLocalization.GetComposedMessage("stream.could.not.be.compressed.filter.is.not.a.name.or.array"));
                 }
             }
             // compress

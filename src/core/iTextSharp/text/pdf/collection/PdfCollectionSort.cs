@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf.collection {
 
@@ -35,7 +36,7 @@ namespace iTextSharp.text.pdf.collection {
                 Put(PdfName.A, new PdfBoolean(ascending));
             }
             else {
-                throw new InvalidOperationException("You have to define a bool array for this collection sort dictionary.");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("you.have.to.define.a.bool.array.for.this.collection.sort.dictionary"));
             }
         }
         
@@ -47,7 +48,7 @@ namespace iTextSharp.text.pdf.collection {
             PdfObject o = (PdfObject)Get(PdfName.S);
             if (o is PdfArray) {
                 if (((PdfArray)o).Size != ascending.Length) {
-                    throw new InvalidOperationException("The number of booleans in this array doesn't correspond with the number of fields.");
+                    throw new InvalidOperationException(MessageLocalization.GetComposedMessage("the.number.of.booleans.in.this.array.doesn.t.correspond.with.the.number.of.fields"));
                 }
                 PdfArray array = new PdfArray();
                 for (int i = 0; i < ascending.Length; i++) {
@@ -56,7 +57,7 @@ namespace iTextSharp.text.pdf.collection {
                 Put(PdfName.A, array);
             }
             else {
-                throw new InvalidOperationException("You need a single bool for this collection sort dictionary.");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("you.need.a.single.bool.for.this.collection.sort.dictionary"));
             }
         }
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.IO;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: PdfContentParser.cs,v 1.4 2006/09/17 15:55:03 psoares33 Exp $
@@ -128,18 +129,18 @@ namespace iTextSharp.text.pdf {
             PdfDictionary dic = new PdfDictionary();
             while (true) {
                 if (!NextValidToken())
-                    throw new IOException("Unexpected end of file.");
+                    throw new IOException(MessageLocalization.GetComposedMessage("unexpected.end.of.file"));
                     if (tokeniser.TokenType == PRTokeniser.TK_END_DIC)
                         break;
                     if (tokeniser.TokenType != PRTokeniser.TK_NAME)
-                        throw new IOException("Dictionary key is not a name.");
+                        throw new IOException(MessageLocalization.GetComposedMessage("dictionary.key.is.not.a.name"));
                     PdfName name = new PdfName(tokeniser.StringValue, false);
                     PdfObject obj = ReadPRObject();
                     int type = obj.Type;
                     if (-type == PRTokeniser.TK_END_DIC)
-                        throw new IOException("Unexpected '>>'");
+                        throw new IOException(MessageLocalization.GetComposedMessage("unexpected.gt.gt"));
                     if (-type == PRTokeniser.TK_END_ARRAY)
-                        throw new IOException("Unexpected ']'");
+                        throw new IOException(MessageLocalization.GetComposedMessage("unexpected"));
                     dic.Put(name, obj);
             }
             return dic;
@@ -158,7 +159,7 @@ namespace iTextSharp.text.pdf {
                 if (-type == PRTokeniser.TK_END_ARRAY)
                     break;
                 if (-type == PRTokeniser.TK_END_DIC)
-                    throw new IOException("Unexpected '>>'");
+                    throw new IOException(MessageLocalization.GetComposedMessage("unexpected.gt.gt"));
                 array.Add(obj);
             }
             return array;

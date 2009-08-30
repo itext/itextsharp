@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 /*
  * $Id: PdfImage.cs,v 1.6 2008/05/13 11:25:21 psoares33 Exp $
  * 
@@ -240,7 +241,7 @@ namespace iTextSharp.text.pdf {
                         TransferBytes(isp, streamBytes, -1);
                         break;
                     default:
-                        throw new IOException(errorID + " is an unknown Image format.");
+                        throw new IOException(MessageLocalization.GetComposedMessage("1.is.an.unknown.image.format", errorID));
                 }
                 Put(PdfName.LENGTH, new PdfNumber(streamBytes.Length));
             }

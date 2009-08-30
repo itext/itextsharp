@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
 using iTextSharp.text.pdf.events;
@@ -168,9 +169,9 @@ namespace iTextSharp.text.pdf {
         */    
         public PdfPTable(float[] relativeWidths) {
             if (relativeWidths == null)
-                throw new ArgumentNullException("The widths array in PdfPTable constructor can not be null.");
+                throw new ArgumentNullException(MessageLocalization.GetComposedMessage("the.widths.array.in.pdfptable.constructor.can.not.be.null"));
             if (relativeWidths.Length == 0)
-                throw new ArgumentException("The widths array in PdfPTable constructor can not have zero length.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.widths.array.in.pdfptable.constructor.can.not.have.zero.length"));
             this.relativeWidths = new float[relativeWidths.Length];
             Array.Copy(relativeWidths, 0, this.relativeWidths, 0, relativeWidths.Length);
             absoluteWidths = new float[relativeWidths.Length];
@@ -184,7 +185,7 @@ namespace iTextSharp.text.pdf {
         */    
         public PdfPTable(int numColumns) {
             if (numColumns <= 0)
-                throw new ArgumentException("The number of columns in PdfPTable constructor must be greater than zero.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.number.of.columns.in.pdfptable.constructor.must.be.greater.than.zero"));
             relativeWidths = new float[numColumns];
             for (int k = 0; k < numColumns; ++k)
                 relativeWidths[k] = 1;
@@ -264,7 +265,7 @@ namespace iTextSharp.text.pdf {
         */    
         public void SetWidths(float[] relativeWidths) {
             if (relativeWidths.Length != NumberOfColumns)
-                throw new DocumentException("Wrong number of columns.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("wrong.number.of.columns"));
             this.relativeWidths = new float[relativeWidths.Length];
             Array.Copy(relativeWidths, 0, this.relativeWidths, 0, relativeWidths.Length);
             absoluteWidths = new float[relativeWidths.Length];
@@ -303,7 +304,7 @@ namespace iTextSharp.text.pdf {
         */    
         public void SetTotalWidth(float[] columnWidth) {
             if (columnWidth.Length != NumberOfColumns)
-                throw new DocumentException("Wrong number of columns.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("wrong.number.of.columns"));
             totalWidth = 0;
             for (int k = 0; k < columnWidth.Length; ++k)
                 totalWidth += columnWidth[k];
@@ -317,7 +318,7 @@ namespace iTextSharp.text.pdf {
         */    
         public void SetWidthPercentage(float[] columnWidth, Rectangle pageSize) {
             if (columnWidth.Length != NumberOfColumns)
-                throw new ArgumentException("Wrong number of columns.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("wrong.number.of.columns"));
             float totalWidth = 0;
             for (int k = 0; k < columnWidth.Length; ++k)
                 totalWidth += columnWidth[k];
@@ -581,7 +582,7 @@ namespace iTextSharp.text.pdf {
         */    
         public float WriteSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos, PdfContentByte[] canvases) {
             if (totalWidth <= 0)
-                throw new ArgumentException("The table width must be greater than zero.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.table.width.must.be.greater.than.zero"));
             int totalRows = rows.Count;
             if (rowStart < 0)
                 rowStart = 0;
@@ -1203,7 +1204,7 @@ namespace iTextSharp.text.pdf {
                         this.runDirection = runDirection;
                         break;
                     default:
-                        throw new ArgumentException("Invalid run direction: " + runDirection);
+                        throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.run.direction.1", runDirection));
                 }
             }
         }

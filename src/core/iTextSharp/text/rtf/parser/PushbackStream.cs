@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.rtf.parser {
     public class PushbackStream : Stream {
@@ -78,7 +79,7 @@ namespace iTextSharp.text.rtf.parser {
 
         public virtual void Unread(int b) {
             if (buf != -1)
-                throw new InvalidOperationException("Can only push back one byte");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("can.only.push.back.one.byte"));
 
             buf = b & 0xFF;
         }

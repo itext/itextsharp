@@ -4,6 +4,7 @@ using iTextSharp.text;
 using iTextSharp.text.rtf.document;
 using iTextSharp.text.rtf.text;
 using iTextSharp.text.rtf.parser;
+using iTextSharp.text.error_messages;
 /*
  * $Id: RtfWriter2.cs,v 1.11 2008/05/23 17:24:11 psoares33 Exp $
  * 
@@ -273,7 +274,7 @@ namespace iTextSharp.text.rtf {
         */
         public void ImportRtfDocument(Stream documentSource, IEventListener[] events ) {
             if(!this.open) {
-                throw new DocumentException("The document must be open to import RTF documents.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("the.document.must.be.open.to.import.rtf.documents"));
             }
             RtfParser rtfImport = new RtfParser(this.document);
             if(events != null) {
@@ -320,7 +321,7 @@ namespace iTextSharp.text.rtf {
         */
         public void ImportRtfFragment(Stream documentSource, RtfImportMappings mappings, IEventListener[] events ) {
             if(!this.open) {
-                throw new DocumentException("The document must be open to import RTF fragments.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("the.document.must.be.open.to.import.rtf.fragments"));
             }
             RtfParser rtfImport = new RtfParser(this.document);
             if(events != null) {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text
 {
@@ -76,13 +77,13 @@ namespace iTextSharp.text
             if (cellgroup) {
                 if (element is SimpleCell) {
                     if (((SimpleCell)element).Cellgroup) {
-                        throw new BadElementException("You can't add one row to another row.");
+                        throw new BadElementException(MessageLocalization.GetComposedMessage("you.can.t.add.one.row.to.another.row"));
                     }
                     content.Add(element);
                     return;
                 }
                 else {
-                    throw new BadElementException("You can only add cells to rows, no objects of type " + element.GetType().ToString());
+                    throw new BadElementException(MessageLocalization.GetComposedMessage("you.can.only.add.cells.to.rows.no.objects.of.type.1", element.GetType().ToString()));
                 }
             }
             if (element.Type == Element.PARAGRAPH
@@ -99,7 +100,7 @@ namespace iTextSharp.text
                 content.Add(element);
             }
             else {
-                throw new BadElementException("You can't add an element of type " + element.GetType().ToString() + " to a SimpleCell.");
+                throw new BadElementException(MessageLocalization.GetComposedMessage("you.can.t.add.an.element.of.type.1.to.a.simplecell", element.GetType().ToString()));
             }
         }
         

@@ -3,6 +3,7 @@ using System.Collections;
 using iTextSharp.text.pdf;
 using iTextSharp.text;
 using iTextSharp.text.pdf.interfaces;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: PdfXConformanceImp.cs,v 1.3 2007/06/05 15:00:44 psoares33 Exp $
@@ -184,7 +185,7 @@ namespace iTextSharp.text.pdf.intern {
                                     case ExtendedColor.TYPE_GRAY:
                                         return;
                                     case ExtendedColor.TYPE_RGB:
-                                        throw new PdfXConformanceException("Colorspace RGB is not allowed.");
+                                        throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("colorspace.rgb.is.not.allowed"));
                                     case ExtendedColor.TYPE_SEPARATION:
                                         SpotColor sc = (SpotColor)ec;
                                         CheckPDFXConformance(writer, PDFXKEY_COLOR, sc.PdfSpotColor.AlternativeCS);
@@ -200,7 +201,7 @@ namespace iTextSharp.text.pdf.intern {
                                 }
                             }
                             else if (obj1 is Color)
-                                throw new PdfXConformanceException("Colorspace RGB is not allowed.");
+                                throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("colorspace.rgb.is.not.allowed"));
                             break;
                     }
                     break;
@@ -208,16 +209,16 @@ namespace iTextSharp.text.pdf.intern {
                     break;
                 case PDFXKEY_RGB:
                     if (conf == PdfWriter.PDFX1A2001)
-                        throw new PdfXConformanceException("Colorspace RGB is not allowed.");
+                        throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("colorspace.rgb.is.not.allowed"));
                     break;
                 case PDFXKEY_FONT:
                     if (!((BaseFont)obj1).IsEmbedded())
-                        throw new PdfXConformanceException("All the fonts must be embedded. This one isn't: " + ((BaseFont)obj1).PostscriptFontName);
+                        throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("all.the.fonts.must.be.embedded.this.one.isn.t.1", ((BaseFont)obj1).PostscriptFontName));
                     break;
                 case PDFXKEY_IMAGE:
                     PdfImage image = (PdfImage)obj1;
                     if (image.Get(PdfName.SMASK) != null)
-                        throw new PdfXConformanceException("The /SMask key is not allowed in images.");
+                        throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("the.smask.key.is.not.allowed.in.images"));
                     switch (conf) {
                         case PdfWriter.PDFX1A2001:
                             PdfObject cs = image.Get(PdfName.COLORSPACE);
@@ -225,11 +226,11 @@ namespace iTextSharp.text.pdf.intern {
                                 return;
                             if (cs.IsName()) {
                                 if (PdfName.DEVICERGB.Equals(cs))
-                                    throw new PdfXConformanceException("Colorspace RGB is not allowed.");
+                                    throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("colorspace.rgb.is.not.allowed"));
                             }
                             else if (cs.IsArray()) {
                                 if (PdfName.CALRGB.Equals(((PdfArray)cs)[0]))
-                                    throw new PdfXConformanceException("Colorspace CalRGB is not allowed.");
+                                    throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("colorspace.calrgb.is.not.allowed"));
                             }
                             break;
                     }
@@ -238,18 +239,18 @@ namespace iTextSharp.text.pdf.intern {
                     PdfDictionary gs = (PdfDictionary)obj1;
                     PdfObject obj = gs.Get(PdfName.BM);
                     if (obj != null && !PdfGState.BM_NORMAL.Equals(obj) && !PdfGState.BM_COMPATIBLE.Equals(obj))
-                        throw new PdfXConformanceException("Blend mode " + obj.ToString() + " not allowed.");
+                        throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("blend.mode.1.not.allowed", obj.ToString()));
                     obj = gs.Get(PdfName.CA);
                     double v = 0.0;
                     if (obj != null && (v = ((PdfNumber)obj).DoubleValue) != 1.0)
-                        throw new PdfXConformanceException("Transparency is not allowed: /CA = " + v);
+                        throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("transparency.is.not.allowed.ca.eq.1", v));
                     obj = gs.Get(PdfName.ca_);
                     v = 0.0;
                     if (obj != null && (v = ((PdfNumber)obj).DoubleValue) != 1.0)
-                        throw new PdfXConformanceException("Transparency is not allowed: /ca = " + v);
+                        throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("transparency.is.not.allowed.ca.eq.1", v));
                     break;
                 case PDFXKEY_LAYER:
-                    throw new PdfXConformanceException("Layers are not allowed.");
+                    throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("layers.are.not.allowed"));
             }
         }
     }

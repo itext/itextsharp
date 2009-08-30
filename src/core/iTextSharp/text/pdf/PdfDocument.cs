@@ -7,6 +7,7 @@ using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.draw;
 using iTextSharp.text.pdf.collection;
 using System.util;
+using iTextSharp.text.error_messages;
 /*
  * 
  * $Id: PdfDocument.cs,v 1.75 2008/05/13 11:25:19 psoares33 Exp $
@@ -299,7 +300,7 @@ namespace iTextSharp.text.pdf {
                 annotationsImp = new PdfAnnotationsImp(writer);
                 return;
             }
-            throw new DocumentException("You can only add a writer to a PdfDocument once.");
+            throw new DocumentException(MessageLocalization.GetComposedMessage("you.can.only.add.a.writer.to.a.pdfdocument.once"));
         }
         
     // LISTENER METHODS START
@@ -756,7 +757,7 @@ namespace iTextSharp.text.pdf {
             NewPage();
             if (imageWait != null || wasImage) NewPage();
             if (annotationsImp.HasUnusedAnnotations())
-                throw new Exception("Not all annotations could be added to the document (the document doesn't have enough pages).");
+                throw new Exception(MessageLocalization.GetComposedMessage("not.all.annotations.could.be.added.to.the.document.the.document.doesn.t.have.enough.pages"));
             IPdfPageEvent pageEvent = writer.PageEvent;
             if (pageEvent != null)
                 pageEvent.OnCloseDocument(writer, this);
@@ -799,7 +800,7 @@ namespace iTextSharp.text.pdf {
                 return false;
             }
             if (!open || close) {
-                throw new Exception("The document isn't open.");
+                throw new Exception(MessageLocalization.GetComposedMessage("the.document.isn.t.open"));
             }
             IPdfPageEvent pageEvent = writer.PageEvent;
             if (pageEvent != null)
@@ -822,7 +823,7 @@ namespace iTextSharp.text.pdf {
             // [C10]
             if (writer.IsPdfX()) {
                 if (thisBoxSize.ContainsKey("art") && thisBoxSize.ContainsKey("trim"))
-                    throw new PdfXConformanceException("Only one of ArtBox or TrimBox can exist in the page.");
+                    throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("only.one.of.artbox.or.trimbox.can.exist.in.the.page"));
                 if (!thisBoxSize.ContainsKey("art") && !thisBoxSize.ContainsKey("trim")) {
                     if (thisBoxSize.ContainsKey("crop"))
                         thisBoxSize["trim"] = thisBoxSize["crop"];
@@ -2015,14 +2016,14 @@ namespace iTextSharp.text.pdf {
 
         internal void AddJavaScript(PdfAction js) {
             if (js.Get(PdfName.JS) == null)
-                throw new ArgumentException("Only JavaScript actions are allowed.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("only.javascript.actions.are.allowed"));
             documentLevelJS[jsCounter.ToString().PadLeft(16, '0')] = writer.AddToBody(js).IndirectReference;
             jsCounter++;
         }
         
         internal void AddJavaScript(String name, PdfAction js) {
             if (js.Get(PdfName.JS) == null)
-                throw new ArgumentException("Only JavaScript actions are allowed.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("only.javascript.actions.are.allowed"));
             documentLevelJS[name] = writer.AddToBody(js).IndirectReference;
         }
 

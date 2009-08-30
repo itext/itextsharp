@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf.collection {
 
@@ -102,7 +103,7 @@ namespace iTextSharp.text.pdf.collection {
             PdfName fieldname = new PdfName(key);
             PdfObject o = Get(fieldname);
             if (o == null)
-                throw new InvalidOperationException("You must set a value before adding a prefix.");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("you.must.set.a.value.before.adding.a.prefix"));
             PdfDictionary dict = new PdfDictionary(PdfName.COLLECTIONSUBITEM);
             dict.Put(PdfName.D, o);
             dict.Put(PdfName.P, new PdfString(prefix, PdfObject.TEXT_UNICODE));

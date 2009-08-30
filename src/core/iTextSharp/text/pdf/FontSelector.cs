@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2003 by Paulo Soares.
  *
@@ -85,7 +86,7 @@ namespace iTextSharp.text.pdf {
         public Phrase Process(String text) {
             int fsize = fonts.Count;
             if (fsize == 0)
-                throw new ArgumentException("No font is defined.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("no.font.is.defined"));
             char[] cc = text.ToCharArray();
             int len = cc.Length;
             StringBuilder sb = new StringBuilder();

@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.util;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 /*
  * $Id: Jpeg2000.cs,v 1.5 2008/05/13 11:25:11 psoares33 Exp $
  * 
@@ -142,14 +143,14 @@ namespace iTextSharp.text {
             boxType = Cio_read(4);
             if (boxLength == 1) {
                 if (Cio_read(4) != 0) {
-                    throw new IOException("Cannot handle box sizes higher than 2^32");
+                    throw new IOException(MessageLocalization.GetComposedMessage("cannot.handle.box.sizes.higher.than.2.32"));
                 }
                 boxLength = Cio_read(4);
                 if (boxLength == 0) 
-                    throw new IOException("Unsupported box size == 0");
+                    throw new IOException(MessageLocalization.GetComposedMessage("unsupported.box.size.eq.eq.0"));
             }
             else if (boxLength == 0) {
-                throw new IOException("Unsupported box size == 0");
+                throw new IOException(MessageLocalization.GetComposedMessage("unsupported.box.size.eq.eq.0"));
             }
         }
         
@@ -177,22 +178,22 @@ namespace iTextSharp.text {
                 if (boxLength == 0x0000000c) {
                     boxType = Cio_read(4);
                     if (JP2_JP != boxType) {
-                        throw new IOException("Expected JP Marker");
+                        throw new IOException(MessageLocalization.GetComposedMessage("expected.jp.marker"));
                     }
                     if (0x0d0a870a != Cio_read(4)) {
-                        throw new IOException("Error with JP Marker");
+                        throw new IOException(MessageLocalization.GetComposedMessage("error.with.jp.marker"));
                     }
 
                     Jp2_read_boxhdr();
                     if (JP2_FTYP != boxType) {
-                        throw new IOException("Expected FTYP Marker");
+                        throw new IOException(MessageLocalization.GetComposedMessage("expected.ftyp.marker"));
                     }
                     Utilities.Skip(inp, boxLength - 8);
                     Jp2_read_boxhdr();
                     do {
                         if (JP2_JP2H != boxType) {
                             if (boxType == JP2_JP2C) {
-                                throw new IOException("Expected JP2H Marker");
+                                throw new IOException(MessageLocalization.GetComposedMessage("expected.jp2h.marker"));
                             }
                             Utilities.Skip(inp, boxLength - 8);
                             Jp2_read_boxhdr();
@@ -200,7 +201,7 @@ namespace iTextSharp.text {
                     } while (JP2_JP2H != boxType);
                     Jp2_read_boxhdr();
                     if (JP2_IHDR != boxType) {
-                        throw new IOException("Expected IHDR Marker");
+                        throw new IOException(MessageLocalization.GetComposedMessage("expected.ihdr.marker"));
                     }
                     scaledHeight = Cio_read(4);
                     Top = scaledHeight;
@@ -223,7 +224,7 @@ namespace iTextSharp.text {
                     Right = scaledWidth;
                 }
                 else {
-                    throw new IOException("Not a valid Jpeg2000 file");
+                    throw new IOException(MessageLocalization.GetComposedMessage("not.a.valid.jpeg2000.file"));
                 }
             }
             finally {

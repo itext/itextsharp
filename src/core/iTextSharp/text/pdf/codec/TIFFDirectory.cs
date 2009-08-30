@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Text;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2003-2008 by Paulo Soares.
  * 
@@ -118,15 +119,13 @@ namespace iTextSharp.text.pdf.codec {
             stream.Seek(0L);
             int endian = stream.ReadUnsignedShort();
             if (!IsValidEndianTag(endian)) {
-                throw new
-                ArgumentException("Bad endianness tag (not 0x4949 or 0x4d4d).");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("bad.endianness.tag.not.0x4949.or.0x4d4d"));
             }
             isBigEndian = (endian == 0x4d4d);
             
             int magic = ReadUnsignedShort(stream);
             if (magic != 42) {
-                throw new
-                ArgumentException("Bad magic number, should be 42.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("bad.magic.number.should.be.42"));
             }
             
             // Get the initial ifd offset as an unsigned int (using a long)
@@ -134,8 +133,7 @@ namespace iTextSharp.text.pdf.codec {
             
             for (int i = 0; i < directory; i++) {
                 if (ifd_offset == 0L) {
-                    throw new
-                    ArgumentException("Directory number too large.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("directory.number.too.large"));
                 }
                 
                 stream.Seek(ifd_offset);
@@ -170,8 +168,7 @@ namespace iTextSharp.text.pdf.codec {
             stream.Seek(0L);
             int endian = stream.ReadUnsignedShort();
             if (!IsValidEndianTag(endian)) {
-                throw new
-                ArgumentException("Bad endianness tag (not 0x4949 or 0x4d4d).");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("bad.endianness.tag.not.0x4949.or.0x4d4d"));
             }
             isBigEndian = (endian == 0x4d4d);
             
@@ -609,13 +606,12 @@ namespace iTextSharp.text.pdf.codec {
             stream.Seek(0L);
             int endian = stream.ReadUnsignedShort();
             if (!IsValidEndianTag(endian)) {
-                throw new ArgumentException("Bad endianness tag (not 0x4949 or 0x4d4d).");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("bad.endianness.tag.not.0x4949.or.0x4d4d"));
             }
             bool isBigEndian = (endian == 0x4d4d);
             int magic = ReadUnsignedShort(stream, isBigEndian);
             if (magic != 42) {
-                throw new
-                ArgumentException("Bad magic number, should be 42.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("bad.magic.number.should.be.42"));
             }
             
             stream.Seek(4L);

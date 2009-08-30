@@ -6,6 +6,7 @@ using System.util.zlib;
 using System.util;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2003-2008 by Paulo Soares.
  *
@@ -248,7 +249,7 @@ namespace iTextSharp.text.pdf.codec {
         void ReadPng() {
             for (int i = 0; i < PNGID.Length; i++) {
                 if (PNGID[i] != isp.ReadByte())	{
-                    throw new IOException("File is not a valid PNG.");
+                    throw new IOException(MessageLocalization.GetComposedMessage("file.is.not.a.valid.png"));
                 }
             }
             byte[] buffer = new byte[TRANSFERSIZE];
@@ -256,7 +257,7 @@ namespace iTextSharp.text.pdf.codec {
                 int len = GetInt(isp);
                 String marker = GetString(isp);
                 if (len < 0 || !CheckMarker(marker))
-                    throw new IOException("Corrupted PNG file.");
+                    throw new IOException(MessageLocalization.GetComposedMessage("corrupted.png.file"));
                 if (IDAT.Equals(marker)) {
                     int size;
                     while (len != 0) {
@@ -398,7 +399,7 @@ namespace iTextSharp.text.pdf.codec {
                     while (len > 0) {
                         int r = isp.Read(icccom, p, len);
                         if (r < 0)
-                            throw new IOException("Premature end of file.");
+                            throw new IOException(MessageLocalization.GetComposedMessage("premature.end.of.file"));
                         p += r;
                         len -= r;
                     }
@@ -679,7 +680,7 @@ namespace iTextSharp.text.pdf.codec {
                         break;
                     default:
                         // Error -- uknown filter type
-                        throw new Exception("PNG filter unknown.");
+                        throw new Exception(MessageLocalization.GetComposedMessage("png.filter.unknown"));
                 }
                 
                 ProcessPixels(curr, xOffset, xStep, dstY, passWidth);
@@ -967,7 +968,7 @@ namespace iTextSharp.text.pdf.codec {
             while (count > 0) {
                 int n = inp.Read(b, offset, count);
                 if (n <= 0)
-                    throw new IOException("Insufficient data.");
+                    throw new IOException(MessageLocalization.GetComposedMessage("insufficient.data"));
                 count -= n;
                 offset += n;
             }

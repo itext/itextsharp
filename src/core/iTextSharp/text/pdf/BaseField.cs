@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Text;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2005 by Paulo Soares.
  *
@@ -527,7 +528,7 @@ namespace iTextSharp.text.pdf
         public int Rotation {
             set {
                 if (value % 90 != 0)
-                    throw new ArgumentException("Rotation must be a multiple of 90.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("rotation.must.be.a.multiple.of.90"));
                 rotation = (value % 360);
                 if (rotation < 0)
                     rotation += 360;

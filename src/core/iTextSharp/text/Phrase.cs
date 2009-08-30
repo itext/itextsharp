@@ -5,6 +5,7 @@ using System.util;
 using iTextSharp.text.html;
 using iTextSharp.text.pdf;
 using iTextSharp.text.factories;
+using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text {
     /// <summary>
@@ -220,7 +221,7 @@ namespace iTextSharp.text {
                 }
             }
             catch (Exception cce) {
-                throw new Exception("Insertion of illegal Element: " + cce.Message);
+                throw new Exception(MessageLocalization.GetComposedMessage("insertion.of.illegal.element.1", cce.Message));
             }
         }
     
@@ -273,7 +274,7 @@ namespace iTextSharp.text {
                 }
             }
             catch (Exception cce) {
-                throw new Exception("Insertion of illegal Element: " + cce.Message);
+                throw new Exception(MessageLocalization.GetComposedMessage("insertion.of.illegal.element.1", cce.Message));
             }
         }
     

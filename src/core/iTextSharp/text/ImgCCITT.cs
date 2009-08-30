@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.text.pdf.codec;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: ImgCCITT.cs,v 1.6 2008/05/13 11:25:11 psoares33 Exp $
@@ -89,7 +90,7 @@ namespace iTextSharp.text {
         /// <param name="data">the image data</param>
         public ImgCCITT(int width, int height, bool reverseBits, int typeCCITT, int parameters, byte[] data) : base((Uri)null) {
             if (typeCCITT != Element.CCITTG4 && typeCCITT != Element.CCITTG3_1D && typeCCITT != Element.CCITTG3_2D)
-                throw new BadElementException("The CCITT compression type must be CCITTG4, CCITTG3_1D or CCITTG3_2D");
+                throw new BadElementException(MessageLocalization.GetComposedMessage("the.ccitt.compression.type.must.be.ccittg4.ccittg3.1d.or.ccittg3.2d"));
             if (reverseBits)
                 TIFFFaxDecoder.ReverseBits(data);
             type = Element.IMGRAW;

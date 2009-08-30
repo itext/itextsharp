@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net;
 using iTextSharp.text.pdf.collection;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2003 Paulo Soares
  *
@@ -183,7 +184,7 @@ namespace iTextSharp.text.pdf {
                         else {
                             inp = BaseFont.GetResourceStream(filePath);
                             if (inp == null)
-                                throw new IOException(filePath + " not found as file or resource.");
+                                throw new IOException(MessageLocalization.GetComposedMessage("1.not.found.as.file.or.resource", filePath));
                         }
                     }
                     stream = new PdfEFStream(inp, writer);

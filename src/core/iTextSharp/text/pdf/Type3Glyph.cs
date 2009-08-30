@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2005 by Paulo Soares.
  *
@@ -78,7 +79,7 @@ namespace iTextSharp.text.pdf {
         
         public override void AddImage(Image image, float a, float b, float c, float d, float e, float f, bool inlineImage) {
             if (!colorized && (!image.IsMask() || !(image.Bpc == 1 || image.Bpc > 0xff)))
-                throw new DocumentException("Not colorized Typed3 fonts only accept mask images.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("not.colorized.typed3.fonts.only.accept.mask.images"));
             base.AddImage(image, a, b, c, d, e, f, inlineImage);
         }
 

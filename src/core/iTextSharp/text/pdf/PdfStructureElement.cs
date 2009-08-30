@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: PdfStructureElement.cs,v 1.3 2005/11/02 12:24:06 psoares33 Exp $
@@ -95,7 +96,7 @@ namespace iTextSharp.text.pdf {
             PdfObject kido = parent.Get(PdfName.K);
             PdfArray kids = null;
             if (kido != null && !kido.IsArray())
-                throw new ArgumentException("The parent has already another function.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.parent.has.already.another.function"));
             if (kido == null) {
                 kids = new PdfArray();
                 parent.Put(PdfName.K, kids);

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections;
 using iTextSharp.text.xml.simpleparser;
+using iTextSharp.text.error_messages;
 /*
  *
  * Copyright 2004 by Leonard Rosenthol.
@@ -154,7 +155,7 @@ namespace iTextSharp.text.pdf {
         public void StartElement(String tag, Hashtable h) {
             if ( !foundRoot ) {
                 if (!tag.Equals("xfdf"))
-                    throw new Exception("Root element is not Bookmark.");
+                    throw new Exception(MessageLocalization.GetComposedMessage("root.element.is.not.bookmark"));
                 else 
                     foundRoot = true;
             }
@@ -239,7 +240,7 @@ namespace iTextSharp.text.pdf {
 
             internal object Pop() {
                 if (Count == 0)
-                    throw new InvalidOperationException("The stack is empty.");
+                    throw new InvalidOperationException(MessageLocalization.GetComposedMessage("the.stack.is.empty"));
                 object obj = this[Count - 1];
                 RemoveAt(Count - 1);
                 return obj;

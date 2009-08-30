@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: PdfBorderDictionary.cs,v 1.3 2008/05/13 11:25:19 psoares33 Exp $
@@ -92,7 +93,7 @@ namespace iTextSharp.text.pdf {
                     Put(PdfName.S, PdfName.U);
                     break;
                 default:
-                    throw new ArgumentException("Invalid border style.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.border.style"));
             }
         }
     

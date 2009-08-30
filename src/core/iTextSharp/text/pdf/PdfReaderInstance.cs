@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
 
@@ -83,9 +84,9 @@ namespace iTextSharp.text.pdf {
         
         internal PdfImportedPage GetImportedPage(int pageNumber) {
             if (!reader.IsOpenedWithFullPermissions)
-                throw new ArgumentException("PdfReader not opened with owner password");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("pdfreader.not.opened.with.owner.password"));
             if (pageNumber < 1 || pageNumber > reader.NumberOfPages)
-                throw new ArgumentException("Invalid page number: " + pageNumber);
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.page.number.1", pageNumber));
             PdfImportedPage pageT = (PdfImportedPage)importedPages[pageNumber];
             if (pageT == null) {
                 pageT = new PdfImportedPage(this, writer, pageNumber);
