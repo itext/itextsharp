@@ -3,6 +3,7 @@ using System.Text;
 using System.Collections;
 using System.util;
 using iTextSharp.text.factories;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: Section.cs,v 1.17 2008/05/13 11:25:13 psoares33 Exp $
@@ -257,7 +258,7 @@ namespace iTextSharp.text {
         /// <param name="o">an object of type Paragraph, List or Table</param>
         public void Add(int index, Object o) {
             if (AddedCompletely) {
-                throw new InvalidOperationException("This LargeElement has already been added to the Document.");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("this.largeelement.has.already.been.added.to.the.document"));
             }
             try {
                 IElement element = (IElement) o;
@@ -269,7 +270,7 @@ namespace iTextSharp.text {
                 }
             }
             catch (Exception cce) {
-                throw new Exception("Insertion of illegal Element: " + cce.Message);
+                throw new Exception(MessageLocalization.GetComposedMessage("insertion.of.illegal.element.1", cce.Message));
             }
         }
     
@@ -300,11 +301,11 @@ namespace iTextSharp.text {
                     return true;
                 }
                 else {
-                    throw new Exception(element.Type.ToString());
+                    throw new InvalidCastException(MessageLocalization.GetComposedMessage("you.can.t.add.a.1.to.a.section", element.Type.ToString()));
                 }
             }
-            catch (Exception cce) {
-                throw new Exception("Insertion of illegal Element: " + cce.Message);
+            catch (InvalidCastException cce) {
+                throw new InvalidCastException(MessageLocalization.GetComposedMessage("insertion.of.illegal.element.1", cce.Message));
             }
         }
     
@@ -332,7 +333,7 @@ namespace iTextSharp.text {
         /// <returns>the newly added Section</returns>
         public virtual Section AddSection(float indentation, Paragraph title, int numberDepth) {
             if (AddedCompletely) {
-                throw new InvalidOperationException("This LargeElement has already been added to the Document.");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("this.largeelement.has.already.been.added.to.the.document"));
             }
             Section section = new Section(title, numberDepth);
             section.Indentation = indentation;

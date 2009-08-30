@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.util;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2004 by Paulo Soares.
  *
@@ -89,7 +90,7 @@ namespace iTextSharp.text.pdf {
         
         internal void AddDocument(PdfReader reader, ArrayList pagesToKeep) {
             if (!readers2intrefs.ContainsKey(reader) && reader.Tampered)
-                throw new DocumentException("The document was reused.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("the.document.was.reused"));
             reader = new PdfReader(reader);        
             reader.SelectPages(pagesToKeep);
             if (reader.NumberOfPages == 0)
@@ -100,14 +101,14 @@ namespace iTextSharp.text.pdf {
         
         internal void AddDocument(PdfReader reader) {
             if (!reader.IsOpenedWithFullPermissions)
-                throw new BadPasswordException("PdfReader not opened with owner password");
+                throw new BadPasswordException(MessageLocalization.GetComposedMessage("pdfreader.not.opened.with.owner.password"));
             OpenDoc();
             if (readers2intrefs.ContainsKey(reader)) {
                 reader = new PdfReader(reader);
             }
             else {
                 if (reader.Tampered)
-                    throw new DocumentException("The document was reused.");
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("the.document.was.reused"));
                 reader.ConsolidateNamedDestinations();
                 reader.Tampered = true;
             }
@@ -211,7 +212,7 @@ namespace iTextSharp.text.pdf {
                     break;
                 }
                 case PdfObject.INDIRECT: {
-                    throw new Exception("Reference pointing to reference.");
+                    throw new Exception(MessageLocalization.GetComposedMessage("reference.pointing.to.reference"));
                 }
             }
         }

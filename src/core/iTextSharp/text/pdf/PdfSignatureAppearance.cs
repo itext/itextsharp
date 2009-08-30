@@ -5,6 +5,7 @@ using System.IO;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.Crypto;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 /*
  * $Id: PdfSignatureAppearance.cs,v 1.13 2008/04/17 15:32:39 psoares33 Exp $
  * 
@@ -228,15 +229,15 @@ namespace iTextSharp.text.pdf {
         public void SetVisibleSignature(Rectangle pageRect, int page, String fieldName) {
             if (fieldName != null) {
                 if (fieldName.IndexOf('.') >= 0)
-                    throw new ArgumentException("Field names cannot contain a dot.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("field.names.cannot.contain.a.dot"));
                 AcroFields af = writer.AcroFields;
                 AcroFields.Item item = af.GetFieldItem(fieldName);
                 if (item != null)
-                    throw new ArgumentException("The field " + fieldName + " already exists.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("the.field.1.already.exists", fieldName));
                 this.fieldName = fieldName;
             }
             if (page < 1 || page > writer.reader.NumberOfPages)
-                throw new ArgumentException("Invalid page number: " + page);
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.page.number.1", page));
             this.pageRect = new Rectangle(pageRect);
             this.pageRect.Normalize();
             rect = new Rectangle(this.pageRect.Width, this.pageRect.Height);
@@ -252,10 +253,10 @@ namespace iTextSharp.text.pdf {
             AcroFields af = writer.AcroFields;
             AcroFields.Item item = af.GetFieldItem(fieldName);
             if (item == null)
-                throw new ArgumentException("The field " + fieldName + " does not exist.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.field.1.does.not.exist", fieldName));
             PdfDictionary merged = item.GetMerged(0);
             if (!PdfName.SIG.Equals(PdfReader.GetPdfObject(merged.Get(PdfName.FT))))
-                throw new ArgumentException("The field " + fieldName + " is not a signature field.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.field.1.is.not.a.signature.field", fieldName));
             this.fieldName = fieldName;
             PdfArray r = merged.GetAsArray(PdfName.RECT);
             float llx = r.GetAsNumber(0).FloatValue;
@@ -819,7 +820,7 @@ namespace iTextSharp.text.pdf {
         */    
         public void PreClose(Hashtable exclusionSizes) {
             if (preClosed)
-                throw new DocumentException("Document already pre closed.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("document.already.pre.closed"));
             preClosed = true;
             AcroFields af = writer.AcroFields;
             String name = FieldName;
@@ -866,7 +867,7 @@ namespace iTextSharp.text.pdf {
                 else if (PdfName.VERISIGN_PPKVS.Equals(Filter))
                     sigStandard = new PdfSigGenericPKCS.VeriSign();
                 else
-                    throw new ArgumentException("Unknown filter: " + Filter);
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.filter.1", Filter));
                 sigStandard.SetExternalDigest(externalDigest, externalRSAdata, digestEncryptionAlgorithm);
                 if (Reason != null)
                     sigStandard.Reason = Reason;
@@ -973,17 +974,17 @@ namespace iTextSharp.text.pdf {
         public void Close(PdfDictionary update) {
             try {
                 if (!preClosed)
-                    throw new DocumentException("preClose() must be called first.");
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("preclose.must.be.called.first"));
                 ByteBuffer bf = new ByteBuffer();
                 foreach (PdfName key in update.Keys) {
                     PdfObject obj = update.Get(key);
                     PdfLiteral lit = (PdfLiteral)exclusionLocations[key];
                     if (lit == null)
-                        throw new ArgumentException("The key " + key.ToString() + " didn't reserve space in PreClose().");
+                        throw new ArgumentException(MessageLocalization.GetComposedMessage("the.key.1.didn.t.reserve.space.in.preclose", key.ToString()));
                     bf.Reset();
                     obj.ToPdf(null, bf);
                     if (bf.Size > lit.PosLength)
-                        throw new ArgumentException("The key " + key.ToString() + " is too big. Is " + bf.Size + ", reserved " + lit.PosLength);
+                        throw new ArgumentException(MessageLocalization.GetComposedMessage("the.key.1.is.too.big.is.2.reserved.3", key.ToString(), bf.Size, lit.PosLength));
                     if (tempFile == null)
                         Array.Copy(bf.Buffer, 0, bout, lit.Position, bf.Size);
                     else {
@@ -992,7 +993,7 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 if (update.Size != exclusionLocations.Count)
-                    throw new ArgumentException("The update dictionary has less keys than required.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("the.update.dictionary.has.less.keys.than.required"));
                 if (tempFile == null) {
                     originalout.Write(bout, 0, boutLen);
                 }
@@ -1004,7 +1005,7 @@ namespace iTextSharp.text.pdf {
                         while (length > 0) {
                             int r = raf.Read(buf, 0, Math.Min(buf.Length, length));
                             if (r < 0)
-                                throw new EndOfStreamException("Unexpected EOF");
+                                throw new EndOfStreamException(MessageLocalization.GetComposedMessage("unexpected.eof"));
                             originalout.Write(buf, 0, r);
                             length -= r;
                         }
@@ -1149,7 +1150,7 @@ namespace iTextSharp.text.pdf {
         public int RunDirection {
             set {
                 if (value < PdfWriter.RUN_DIRECTION_DEFAULT || value > PdfWriter.RUN_DIRECTION_RTL)
-                    throw new ArgumentException("Invalid run direction: " + runDirection);
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.run.direction.1", runDirection));
                 this.runDirection = value;
             }
             get {
@@ -1358,7 +1359,7 @@ namespace iTextSharp.text.pdf {
                 while (count > 0) {
                     int n = raf.Read(b, offset, count);
                     if (n <= 0)
-                        throw new IOException("Insufficient data.");
+                        throw new IOException(MessageLocalization.GetComposedMessage("insufficient.data"));
                     count -= n;
                     offset += n;
                 }

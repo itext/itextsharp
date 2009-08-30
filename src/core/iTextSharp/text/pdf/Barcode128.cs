@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 /*
  * $Id: Barcode128.cs,v 1.6 2007/10/24 16:31:54 psoares33 Exp $
  *
@@ -373,7 +374,7 @@ namespace iTextSharp.text.pdf {
             for (int k = 0; k < tLen; ++k) {
                 c = text[k];
                 if (c > 127 && c != FNC1)
-                    throw new ArgumentException("There are illegal characters for barcode 128 in '" + text + "'.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("there.are.illegal.characters.for.barcode.128.in.1", text));
             }
             c = text[0];
             char currentCode = START_B;
@@ -719,14 +720,14 @@ namespace iTextSharp.text.pdf {
                     while (idx >= 0) {
                         int end = code.IndexOf(')', idx);
                         if (end < 0)
-                            throw new ArgumentException("Badly formed UCC string: " + code);
+                            throw new ArgumentException(MessageLocalization.GetComposedMessage("badly.formed.ucc.string.1", code));
                         String sai = code.Substring(idx + 1, end - (idx + 1));
                         if (sai.Length < 2)
-                            throw new ArgumentException("AI too short: (" + sai + ")");
+                            throw new ArgumentException(MessageLocalization.GetComposedMessage("ai.too.short.1", sai));
                         int ai = int.Parse(sai);
                         int len = ais[ai];
                         if (len == 0)
-                            throw new ArgumentException("AI not found: (" + sai + ")");
+                            throw new ArgumentException(MessageLocalization.GetComposedMessage("ai.not.found.1", sai));
                         sai = ai.ToString();
                         if (sai.Length == 1)
                             sai = "0" + sai;
@@ -738,7 +739,7 @@ namespace iTextSharp.text.pdf {
                                 ret += FNC1;
                         }
                         else if (next - end - 1 + sai.Length != len)
-                            throw new ArgumentException("Invalid AI length: (" + sai + ")");
+                            throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.ai.length.1", sai));
                     }
                     base.Code = ret;
                 }

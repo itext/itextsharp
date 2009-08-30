@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
 
@@ -162,7 +163,7 @@ namespace iTextSharp.text.pdf {
         }
 
         internal void ThrowError() {
-            throw new Exception("Content can not be added to a PdfImportedPage.");
+            throw new Exception(MessageLocalization.GetComposedMessage("content.can.not.be.added.to.a.pdfimportedpage"));
         }
     
         internal PdfReaderInstance PdfReaderInstance {

@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: PdfBoolean.cs,v 1.5 2008/05/13 11:25:18 psoares33 Exp $
@@ -112,7 +113,7 @@ namespace iTextSharp.text.pdf {
                 this.value = false;
             }
             else {
-                throw new BadPdfFormatException("The value has to be 'true' of 'false', instead of '" + value + "'.");
+                throw new BadPdfFormatException(MessageLocalization.GetComposedMessage("the.value.has.to.be.true.of.false.instead.of.1", value));
             }
         }
     

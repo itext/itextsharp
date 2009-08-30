@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections;
 using System.util;
 using System.Globalization;
+using iTextSharp.text.error_messages;
 
 using iTextSharp.text.html;
 using iTextSharp.text.pdf;
@@ -418,7 +419,7 @@ namespace iTextSharp.text {
             }
             set {
                 if (value == null)
-                    throw new ArgumentNullException("FontFactoryImp cannot be null.");
+                    throw new ArgumentNullException(MessageLocalization.GetComposedMessage("fontfactoryimp.cannot.be.null"));
                 fontImp = value;
             }
         }

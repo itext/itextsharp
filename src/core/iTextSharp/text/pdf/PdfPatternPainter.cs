@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 /*
  * The contents of this file are subject to the Mozilla Public License Version 1.1
  * (the "License"); you may not use this file except in compliance with the License.
@@ -361,7 +362,7 @@ namespace iTextSharp.text.pdf {
     
         internal void CheckNoColor() {
             if (stencil)
-                throw new ArgumentException("Colors are not allowed in uncolored tile patterns.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("colors.are.not.allowed.in.uncolored.tile.patterns"));
         }
     }
 }

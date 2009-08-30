@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using System.Collections;
 using System.IO;
+using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf
 {
@@ -20,7 +21,7 @@ namespace iTextSharp.text.pdf
         public static ICC_Profile GetInstance(byte[] data) {
             if (data.Length < 128 | data[36] != 0x61 || data[37] != 0x63 
                 || data[38] != 0x73 || data[39] != 0x70)
-                throw new ArgumentException("Invalid ICC profile");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.icc.profile"));
             ICC_Profile icc = new ICC_Profile();
             icc.data = data;
             object cs = cstags[Encoding.ASCII.GetString(data, 16, 4)];
@@ -35,13 +36,13 @@ namespace iTextSharp.text.pdf
             while (remain > 0) {
                 int n = file.Read(head, ptr, remain);
                 if (n <= 0)
-                    throw new ArgumentException("Invalid ICC profile");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.icc.profile"));
                 remain -= n;
                 ptr += n;
             }
             if (head[36] != 0x61 || head[37] != 0x63 
                 || head[38] != 0x73 || head[39] != 0x70)
-                throw new ArgumentException("Invalid ICC profile");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.icc.profile"));
             remain = ((head[0] & 0xff) << 24) | ((head[1] & 0xff) << 16)
                       | ((head[2] & 0xff) <<  8) | (head[3] & 0xff);
             byte[] icc = new byte[remain];
@@ -51,7 +52,7 @@ namespace iTextSharp.text.pdf
             while (remain > 0) {
                 int n = file.Read(icc, ptr, remain);
                 if (n <= 0)
-                    throw new ArgumentException("Invalid ICC profile");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.icc.profile"));
                 remain -= n;
                 ptr += n;
             }

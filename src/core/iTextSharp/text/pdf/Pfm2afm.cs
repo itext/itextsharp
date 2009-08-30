@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2005 by Paulo Soares.
  *
@@ -266,7 +267,7 @@ namespace iTextSharp.text.pdf {
             res2 = inp.ReadIntLE();
             fontname = inp.ReadIntLE();
             if (h_len != inp.Length || extlen != 30 || fontname < 75 || fontname > 512)
-                throw new IOException("Not a valid PFM file.");
+                throw new IOException(MessageLocalization.GetComposedMessage("not.a.valid.pfm.file"));
             inp.Seek(psext + 14);
             capheight = inp.ReadShortLE();
             xheight = inp.ReadShortLE();

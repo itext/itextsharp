@@ -4,6 +4,7 @@ using System.Text;
 using System.Collections;
 using System.Globalization;
 using System.util;
+using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
 using iTextSharp.text.pdf;
@@ -199,7 +200,7 @@ namespace iTextSharp.text.html {
                 return false;
             }
             if (open && !element.IsContent()) {
-                throw new DocumentException("The document is open; you can only add Elements with content.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("the.document.is.open.you.can.only.add.elements.with.content"));
             }
             switch (element.Type) {
                 case Element.HEADER:

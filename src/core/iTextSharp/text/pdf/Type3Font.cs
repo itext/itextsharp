@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2005 by Paulo Soares.
  *
@@ -122,7 +123,7 @@ namespace iTextSharp.text.pdf {
         */    
         public PdfContentByte DefineGlyph(char c, float wx, float llx, float lly, float urx, float ury) {
             if (c == 0 || c > 255)
-                throw new ArgumentException("The char " + (int)c + " doesn't belong in this Type3 font");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.char.1.doesn.t.belong.in.this.type3.font", (int)c));
             usedSlot[c] = true;
             Type3Glyph glyph = (Type3Glyph)char2glyph[c];
             if (glyph != null)
@@ -199,13 +200,13 @@ namespace iTextSharp.text.pdf {
                 
         internal override void WriteFont(PdfWriter writer, PdfIndirectReference piRef, Object[] oParams) {
             if (this.writer != writer)
-                throw new ArgumentException("Type3 font used with the wrong PdfWriter");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("type3.font.used.with.the.wrong.pdfwriter"));
             // Get first & lastchar ...
             int firstChar = 0;
             while( firstChar < usedSlot.Length && !usedSlot[firstChar] ) firstChar++;
             
             if ( firstChar == usedSlot.Length ) {
-                throw new DocumentException( "No glyphs defined for Type3 font" );
+                throw new DocumentException(MessageLocalization.GetComposedMessage("no.glyphs.defined.for.type3.font"));
             }
             int lastChar = usedSlot.Length - 1;
             while( lastChar >= firstChar && !usedSlot[lastChar] ) lastChar--;
@@ -294,7 +295,7 @@ namespace iTextSharp.text.pdf {
         
         public override int GetWidth(int char1) {
             if (!widths3.ContainsKey(char1))
-                throw new ArgumentException("The char " + (int)char1 + " is not defined in a Type3 font");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.char.1.is.not.defined.in.a.type3.font", (int)char1));
             return widths3[char1];
         }
         

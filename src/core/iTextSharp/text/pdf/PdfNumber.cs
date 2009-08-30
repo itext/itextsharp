@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: PdfNumber.cs,v 1.4 2008/05/13 11:25:21 psoares33 Exp $
@@ -83,7 +84,7 @@ namespace iTextSharp.text.pdf {
                 this.Content = content;
             }
             catch (Exception nfe){
-                throw new Exception(content + " is not a valid number - " + nfe.ToString());
+                throw new Exception(MessageLocalization.GetComposedMessage("1.is.not.a.valid.number.2", content, nfe.ToString()));
             }
         }
     

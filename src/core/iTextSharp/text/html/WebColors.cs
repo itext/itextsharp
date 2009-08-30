@@ -3,6 +3,7 @@ using System.Collections;
 using System.Globalization;
 using iTextSharp.text;
 using System.util;
+using iTextSharp.text.error_messages;
 /*
  * $Id: WebColors.cs,v 1.3 2008/05/13 11:25:16 psoares33 Exp $
  * 
@@ -234,8 +235,7 @@ namespace iTextSharp.text.html {
                     c[2] = int.Parse(name.Substring(5), NumberStyles.HexNumber);
                     return new Color(c[0], c[1], c[2], c[3]);
                 }
-                throw new ArgumentException(
-                        "Unknown color format. Must be #RGB or #RRGGBB");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.color.format.must.be.rgb.or.rrggbb"));
             }
             else if (name.StartsWith("rgb(")) {
                 StringTokenizer tok = new StringTokenizer(name, "rgb(), \t\r\n\f");

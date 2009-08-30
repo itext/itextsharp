@@ -3,6 +3,7 @@ using System.Collections;
 using System.IO;
 using System.Xml;
 using System.util;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2003-2005 by Paulo Soares.
  *
@@ -340,7 +341,7 @@ namespace iTextSharp.text.pdf {
             if (exportValues == null && displayValues == null)
                 return false;
             if (exportValues != null && displayValues != null && exportValues.Length != displayValues.Length)
-                throw new ArgumentException("The export and the display array must have the same size.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.export.and.the.display.array.must.have.the.same.size"));
             int ftype = GetFieldType(fieldName);
             if (ftype != FIELD_TYPE_COMBO && ftype != FIELD_TYPE_LIST)
                 return false;
@@ -683,7 +684,7 @@ namespace iTextSharp.text.pdf {
                 return tx.GetAppearance();
             }
             if (!PdfName.CH.Equals(fieldType))
-                throw new DocumentException("An appearance was requested without a variable text field.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("an.appearance.was.requested.without.a.variable.text.field"));
             PdfArray opt = merged.GetAsArray(PdfName.OPT);
             int flags = 0;
             PdfNumber nfl = merged.GetAsNumber(PdfName.FF);
@@ -864,7 +865,7 @@ namespace iTextSharp.text.pdf {
         */    
         public bool SetFieldProperty(String field, String name, Object value, int[] inst) {
             if (writer == null)
-                throw new Exception("This AcroFields instance is read-only.");
+                throw new Exception(MessageLocalization.GetComposedMessage("this.acrofields.instance.is.read.only"));
             Item item = (Item)fields[field];
             if (item == null)
                 return false;
@@ -1036,7 +1037,7 @@ namespace iTextSharp.text.pdf {
         */    
         public bool SetFieldProperty(String field, String name, int value, int[] inst) {
             if (writer == null)
-                throw new Exception("This AcroFields instance is read-only.");
+                throw new Exception(MessageLocalization.GetComposedMessage("this.acrofields.instance.is.read.only"));
             Item item = (Item)fields[field];
             if (item == null)
                 return false;
@@ -1218,7 +1219,7 @@ namespace iTextSharp.text.pdf {
         */    
         public bool SetField(String name, String value, String display) {
             if (writer == null)
-                throw new DocumentException("This AcroFields instance is read-only.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("this.acrofields.instance.is.read.only"));
             if (xfa.XfaPresent) {
                 name = xfa.FindFieldName(name, this);
                 if (name == null)

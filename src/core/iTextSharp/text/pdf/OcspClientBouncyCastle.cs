@@ -8,6 +8,7 @@ using Org.BouncyCastle.Ocsp;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Asn1.Ocsp;
+using iTextSharp.text.error_messages;
 /*
  * $Id: OcspClientBouncyCastle.java 3959 2009-06-09 08:31:05Z blowagie $
  *
@@ -130,14 +131,14 @@ namespace iTextSharp.text.pdf {
             outp.Close();
             HttpWebResponse response = (HttpWebResponse)con.GetResponse();
             if (response.StatusCode != HttpStatusCode.OK)
-                throw new IOException("Invalid HTTP response: " + (int)response.StatusCode);
+                throw new IOException(MessageLocalization.GetComposedMessage("invalid.http.response.1", (int)response.StatusCode));
             Stream inp = response.GetResponseStream();
             OcspResp ocspResponse = new OcspResp(inp);
             inp.Close();
             response.Close();
 
             if (ocspResponse.Status != 0)
-                throw new IOException("Invalid status: " + ocspResponse.Status);
+                throw new IOException(MessageLocalization.GetComposedMessage("invalid.status.1", ocspResponse.Status));
             BasicOcspResp basicResponse = (BasicOcspResp) ocspResponse.GetResponseObject();
             if (basicResponse != null) {
                 SingleResp[] responses = basicResponse.Responses;
@@ -148,10 +149,10 @@ namespace iTextSharp.text.pdf {
                         return basicResponse.GetEncoded();
                     }
                     else if (status is Org.BouncyCastle.Ocsp.RevokedStatus) {
-                        throw new IOException("OCSP Status is revoked!");
+                        throw new IOException(MessageLocalization.GetComposedMessage("ocsp.status.is.revoked"));
                     }
                     else {
-                        throw new IOException("OCSP Status is unknown!");
+                        throw new IOException(MessageLocalization.GetComposedMessage("ocsp.status.is.unknown"));
                     }
                 }
             }

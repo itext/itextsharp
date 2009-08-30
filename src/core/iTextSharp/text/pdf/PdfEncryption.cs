@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using iTextSharp.text.pdf.crypto;
 using Org.BouncyCastle.X509;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: PdfEncryption.cs,v 1.13 2007/06/14 20:01:48 psoares33 Exp $
@@ -153,7 +154,7 @@ public class PdfEncryption {
                 revision = AES_128;
                 break;
             default:
-                throw new ArgumentException("No valid encryption mode");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("no.valid.encryption.mode"));
         }
     }
     

@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 /*
  * $Id: BarcodeCodabar.cs,v 1.7 2007/02/22 20:48:38 psoares33 Exp $
  *
@@ -123,16 +124,16 @@ namespace iTextSharp.text.pdf
             text = text.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
             int len = text.Length;
             if (len < 2)
-                throw new ArgumentException("Codabar must have at least a start and stop character.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("codabar.must.have.at.least.a.start.and.stop.character"));
             if (CHARS.IndexOf(text[0]) < START_STOP_IDX || CHARS.IndexOf(text[len - 1]) < START_STOP_IDX)
-                throw new ArgumentException("Codabar must have one of 'ABCD' as start/stop character.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("codabar.must.have.one.of.abcd.as.start.stop.character"));
             byte[] bars = new byte[text.Length * 8 - 1];
             for (int k = 0; k < len; ++k) {
                 int idx = CHARS.IndexOf(text[k]);
                 if (idx >= START_STOP_IDX && k > 0 && k < len - 1)
-                    throw new ArgumentException("In codabar, start/stop characters are only allowed at the extremes.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("in.codabar.start.stop.characters.are.only.allowed.at.the.extremes"));
                 if (idx < 0)
-                    throw new ArgumentException("The character '" + text[k] + "' is illegal in codabar.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("the.character.1.is.illegal.in.codabar", text[k]));
                 Array.Copy(BARS[idx], 0, bars, k * 8, 7);
             }
             return bars;

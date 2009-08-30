@@ -13,6 +13,7 @@ using System.util.zlib;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Cms;
 using Org.BouncyCastle.X509;
+using iTextSharp.text.error_messages;
 /*
  * $Id: PdfReader.cs,v 1.50 2008/05/13 11:25:23 psoares33 Exp $
  * 
@@ -483,7 +484,7 @@ namespace iTextSharp.text.pdf {
                         lastXref = -1;
                     }
                     catch (Exception ne) {
-                        throw new InvalidPdfException("Rebuild failed: " + ne.Message + "; Original message: " + e.Message);
+                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("rebuild.failed.1.original.message.2", ne.Message, e.Message));
                     }
                 }
                 try {
@@ -530,7 +531,7 @@ namespace iTextSharp.text.pdf {
                         lastXref = -1;
                     }
                     catch (Exception ne) {
-                        throw new InvalidPdfException("Rebuild failed: " + ne.Message + "; Original message: " + e.Message);
+                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("rebuild.failed.1.original.message.2", ne.Message, e.Message));
                     }
                 }
                 ReadDocObjPartial();
@@ -599,12 +600,12 @@ namespace iTextSharp.text.pdf {
                 
                 o = enc.Get(PdfName.P);
                 if (!o.IsNumber())
-                    throw new InvalidPdfException("Illegal P value.");
+                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.p.value"));
                 pValue = ((PdfNumber)o).IntValue;
 
                 o = enc.Get(PdfName.R);
                 if (!o.IsNumber())
-                    throw new InvalidPdfException("Illegal R value.");
+                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.r.value"));
                 rValue = ((PdfNumber)o).IntValue;
 
                 switch (rValue) {
@@ -614,31 +615,31 @@ namespace iTextSharp.text.pdf {
                 case 3:
                     o = enc.Get(PdfName.LENGTH);
                     if (!o.IsNumber())
-                        throw new InvalidPdfException("Illegal Length value.");
+                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.length.value"));
                     lengthValue = ( (PdfNumber) o).IntValue;
                     if (lengthValue > 128 || lengthValue < 40 || lengthValue % 8 != 0)
-                        throw new InvalidPdfException("Illegal Length value.");
+                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.length.value"));
                     cryptoMode = PdfWriter.STANDARD_ENCRYPTION_128;
                     break;
                 case 4:
                     PdfDictionary dic = (PdfDictionary)enc.Get(PdfName.CF);
                     if (dic == null)
-                        throw new InvalidPdfException("/CF not found (encryption)");
+                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("cf.not.found.encryption"));
                     dic = (PdfDictionary)dic.Get(PdfName.STDCF);
                     if (dic == null)
-                        throw new InvalidPdfException("/StdCF not found (encryption)");
+                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("stdcf.not.found.encryption"));
                     if (PdfName.V2.Equals(dic.Get(PdfName.CFM)))
                         cryptoMode = PdfWriter.STANDARD_ENCRYPTION_128;
                     else if (PdfName.AESV2.Equals(dic.Get(PdfName.CFM)))
                         cryptoMode = PdfWriter.ENCRYPTION_AES_128;
                     else
-                        throw new UnsupportedPdfException("No compatible encryption found");
+                        throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("no.compatible.encryption.found"));
                     PdfObject em = enc.Get(PdfName.ENCRYPTMETADATA);
                     if (em != null && em.ToString().Equals("false"))
                         cryptoMode |= PdfWriter.DO_NOT_ENCRYPT_METADATA;
                     break;
                 default:
-                    throw new UnsupportedPdfException("Unknown encryption type R = " + rValue);
+                    throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("unknown.encryption.type.r.eq.1", rValue));
                 }
             } else if (filter.Equals(PdfName.PUBSEC)) {
                 bool foundRecipient = false;
@@ -647,7 +648,7 @@ namespace iTextSharp.text.pdf {
 
                 o = enc.Get(PdfName.V);
                 if (!o.IsNumber())
-                    throw new InvalidPdfException("Illegal V value.");
+                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.v.value"));
                 int vValue = ((PdfNumber)o).IntValue;
                 switch(vValue) {
                 case 1:
@@ -658,20 +659,20 @@ namespace iTextSharp.text.pdf {
                 case 2:
                     o = enc.Get(PdfName.LENGTH);
                     if (!o.IsNumber())
-                        throw new InvalidPdfException("Illegal Length value.");
+                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.length.value"));
                     lengthValue = ( (PdfNumber) o).IntValue;
                     if (lengthValue > 128 || lengthValue < 40 || lengthValue % 8 != 0)
-                        throw new InvalidPdfException("Illegal Length value.");
+                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.length.value"));
                     cryptoMode = PdfWriter.STANDARD_ENCRYPTION_128;
                     recipients = (PdfArray)enc.Get(PdfName.RECIPIENTS);
                     break;
                 case 4:
                     PdfDictionary dic = (PdfDictionary)enc.Get(PdfName.CF);
                     if (dic == null)
-                        throw new InvalidPdfException("/CF not found (encryption)");
+                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("cf.not.found.encryption"));
                     dic = (PdfDictionary)dic.Get(PdfName.DEFAULTCRYPTFILTER);
                     if (dic == null)
-                        throw new InvalidPdfException("/DefaultCryptFilter not found (encryption)");
+                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("defaultcryptfilter.not.found.encryption"));
                     if (PdfName.V2.Equals(dic.Get(PdfName.CFM))) {
                         cryptoMode = PdfWriter.STANDARD_ENCRYPTION_128;
                         lengthValue = 128;
@@ -681,7 +682,7 @@ namespace iTextSharp.text.pdf {
                         lengthValue = 128;
                     }
                     else
-                        throw new UnsupportedPdfException("No compatible encryption found");
+                        throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("no.compatible.encryption.found"));
                     PdfObject em = dic.Get(PdfName.ENCRYPTMETADATA);
                     if (em != null && em.ToString().Equals("false"))
                         cryptoMode |= PdfWriter.DO_NOT_ENCRYPT_METADATA;
@@ -689,7 +690,7 @@ namespace iTextSharp.text.pdf {
                     recipients = (PdfArray)dic.Get(PdfName.RECIPIENTS);
                     break;
                 default:
-                    throw new UnsupportedPdfException("Unknown encryption type V = " + rValue);
+                    throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("unknown.encryption.type.v.eq.1", rValue));
                 }
 
                 for (int i = 0; i<recipients.Size; i++)
@@ -711,7 +712,7 @@ namespace iTextSharp.text.pdf {
                 
                 if (!foundRecipient || envelopedData == null)
                 {
-                    throw new UnsupportedPdfException("Bad certificate and key.");
+                    throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("bad.certificate.and.key"));
                 }            
 
                 SHA1 sh = new SHA1CryptoServiceProvider();
@@ -737,7 +738,7 @@ namespace iTextSharp.text.pdf {
                     //check by user password
                     decrypt.SetupByUserPassword(documentID, password, oValue, pValue);
                     if (!EqualsArray(uValue, decrypt.userKey, (rValue == 3 || rValue == 4) ? 16 : 32)) {
-                        throw new BadPasswordException("Bad user password");
+                        throw new BadPasswordException(MessageLocalization.GetComposedMessage("bad.user.password"));
                     }
                 }
                 else
@@ -960,15 +961,15 @@ namespace iTextSharp.text.pdf {
             tokens.Seek(pos);
             tokens.NextValidToken();
             if (tokens.TokenType != PRTokeniser.TK_NUMBER)
-                tokens.ThrowError("Invalid object number.");
+                tokens.ThrowError(MessageLocalization.GetComposedMessage("invalid.object.number"));
             objNum = tokens.IntValue;
             tokens.NextValidToken();
             if (tokens.TokenType != PRTokeniser.TK_NUMBER)
-                tokens.ThrowError("Invalid generation number.");
+                tokens.ThrowError(MessageLocalization.GetComposedMessage("invalid.generation.number"));
             objGen = tokens.IntValue;
             tokens.NextValidToken();
             if (!tokens.StringValue.Equals("obj"))
-                tokens.ThrowError("Token 'obj' expected.");
+                tokens.ThrowError(MessageLocalization.GetComposedMessage("token.obj.expected"));
             PdfObject obj;
             try {
                 obj = ReadPRObject();
@@ -1017,7 +1018,7 @@ namespace iTextSharp.text.pdf {
                     address = tokens.IntValue + first;
                 }
                 if (!ok)
-                    throw new InvalidPdfException("Error reading ObjStm");
+                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage("error.reading.objstm"));
                 tokens.Seek(address);
                 return ReadPRObject();
             }
@@ -1048,15 +1049,15 @@ namespace iTextSharp.text.pdf {
                 tokens.Seek(pos);
                 tokens.NextValidToken();
                 if (tokens.TokenType != PRTokeniser.TK_NUMBER)
-                    tokens.ThrowError("Invalid object number.");
+                    tokens.ThrowError(MessageLocalization.GetComposedMessage("invalid.object.number"));
                 objNum = tokens.IntValue;
                 tokens.NextValidToken();
                 if (tokens.TokenType != PRTokeniser.TK_NUMBER)
-                    tokens.ThrowError("Invalid generation number.");
+                    tokens.ThrowError(MessageLocalization.GetComposedMessage("invalid.generation.number"));
                 objGen = tokens.IntValue;
                 tokens.NextValidToken();
                 if (!tokens.StringValue.Equals("obj"))
-                    tokens.ThrowError("Token 'obj' expected.");
+                    tokens.ThrowError(MessageLocalization.GetComposedMessage("token.obj.expected"));
                 PdfObject obj;
                 try {
                     obj = ReadPRObject();
@@ -1161,7 +1162,7 @@ namespace iTextSharp.text.pdf {
                     address[k] = tokens.IntValue + first;
                 }
                 if (!ok)
-                    throw new InvalidPdfException("Error reading ObjStm");
+                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage("error.reading.objstm"));
                 for (int k = 0; k < n; ++k) {
                     if (map.ContainsKey(k)) {
                         tokens.Seek(address[k]);
@@ -1216,10 +1217,10 @@ namespace iTextSharp.text.pdf {
             tokens.Seek(tokens.Startxref);
             tokens.NextToken();
             if (!tokens.StringValue.Equals("startxref"))
-                throw new InvalidPdfException("startxref not found.");
+                throw new InvalidPdfException(MessageLocalization.GetComposedMessage("startxref.not.found"));
             tokens.NextToken();
             if (tokens.TokenType != PRTokeniser.TK_NUMBER)
-                throw new InvalidPdfException("startxref is not followed by a number.");
+                throw new InvalidPdfException(MessageLocalization.GetComposedMessage("startxref.is.not.followed.by.a.number"));
             int startxref = tokens.IntValue;
             lastXref = startxref;
             eofPos = tokens.FilePointer;
@@ -1246,7 +1247,7 @@ namespace iTextSharp.text.pdf {
         protected internal PdfDictionary ReadXrefSection() {
             tokens.NextValidToken();
             if (!tokens.StringValue.Equals("xref"))
-                tokens.ThrowError("xref subsection not found");
+                tokens.ThrowError(MessageLocalization.GetComposedMessage("xref.subsection.not.found"));
             int start = 0;
             int end = 0;
             int pos = 0;
@@ -1256,11 +1257,11 @@ namespace iTextSharp.text.pdf {
                 if (tokens.StringValue.Equals("trailer"))
                     break;
                 if (tokens.TokenType != PRTokeniser.TK_NUMBER)
-                    tokens.ThrowError("Object number of the first object in this xref subsection not found");
+                    tokens.ThrowError(MessageLocalization.GetComposedMessage("object.number.of.the.first.object.in.this.xref.subsection.not.found"));
                 start = tokens.IntValue;
                 tokens.NextValidToken();
                 if (tokens.TokenType != PRTokeniser.TK_NUMBER)
-                    tokens.ThrowError("Number of entries in this xref subsection not found");
+                    tokens.ThrowError(MessageLocalization.GetComposedMessage("number.of.entries.in.this.xref.subsection.not.found"));
                 end = tokens.IntValue + start;
                 if (start == 1) { // fix incorrect start number
                     int back = tokens.FilePointer;
@@ -1285,7 +1286,7 @@ namespace iTextSharp.text.pdf {
                     if (tokens.StringValue.Equals("n")) {
                         if (xref[p] == 0 && xref[p + 1] == 0) {
     //                        if (pos == 0)
-    //                            tokens.ThrowError("File position 0 cross-reference entry in this xref subsection");
+    //                            tokens.ThrowError(MessageLocalization.GetComposedMessage("file.position.0.cross.reference.entry.in.this.xref.subsection"));
                             xref[p] = pos;
                         }
                     }
@@ -1294,7 +1295,7 @@ namespace iTextSharp.text.pdf {
                             xref[p] = -1;
                     }
                     else
-                        tokens.ThrowError("Invalid cross-reference entry in this xref subsection");
+                        tokens.ThrowError(MessageLocalization.GetComposedMessage("invalid.cross.reference.entry.in.this.xref.subsection"));
                 }
             }
             PdfDictionary trailer = (PdfDictionary)ReadPRObject();
@@ -1477,7 +1478,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             if (trailer == null)
-                throw new InvalidPdfException("trailer not found.");
+                throw new InvalidPdfException(MessageLocalization.GetComposedMessage("trailer.not.found"));
             xref = new int[top * 2];
             for (int k = 0; k < top; ++k) {
                 int[] obj = xr[k];
@@ -1493,14 +1494,14 @@ namespace iTextSharp.text.pdf {
                 if (tokens.TokenType == PRTokeniser.TK_END_DIC)
                     break;
                 if (tokens.TokenType != PRTokeniser.TK_NAME)
-                    tokens.ThrowError("Dictionary key is not a name.");
+                    tokens.ThrowError(MessageLocalization.GetComposedMessage("dictionary.key.is.not.a.name"));
                 PdfName name = new PdfName(tokens.StringValue, false);
                 PdfObject obj = ReadPRObject();
                 int type = obj.Type;
                 if (-type == PRTokeniser.TK_END_DIC)
-                    tokens.ThrowError("Unexpected '>>'");
+                    tokens.ThrowError(MessageLocalization.GetComposedMessage("unexpected.gt.gt"));
                 if (-type == PRTokeniser.TK_END_ARRAY)
-                    tokens.ThrowError("Unexpected ']'");
+                    tokens.ThrowError(MessageLocalization.GetComposedMessage("unexpected"));
                 dic.Put(name, obj);
             }
             return dic;
@@ -1514,7 +1515,7 @@ namespace iTextSharp.text.pdf {
                 if (-type == PRTokeniser.TK_END_ARRAY)
                     break;
                 if (-type == PRTokeniser.TK_END_DIC)
-                    tokens.ThrowError("Unexpected '>>'");
+                    tokens.ThrowError(MessageLocalization.GetComposedMessage("unexpected.gt.gt"));
                 array.Add(obj);
             }
             return array;
@@ -1727,7 +1728,7 @@ namespace iTextSharp.text.pdf {
                         break;
                     default:
                         // Error -- uknown filter type
-                        throw new Exception("PNG filter unknown.");
+                        throw new Exception(MessageLocalization.GetComposedMessage("png.filter.unknown"));
                 }
                 fout.Write(curr, 0, curr.Length);
                 
@@ -1781,7 +1782,7 @@ namespace iTextSharp.text.pdf {
                     continue;
                 int n = PRTokeniser.GetHex(ch);
                 if (n == -1)
-                    throw new ArgumentException("Illegal character in ASCIIHexDecode.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("illegal.character.in.asciihexdecode"));
                 if (first)
                     n1 = n;
                 else
@@ -1815,7 +1816,7 @@ namespace iTextSharp.text.pdf {
                     continue;
                 }
                 if (ch < '!' || ch > 'u')
-                    throw new ArgumentException("Illegal character in ASCII85Decode.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("illegal.character.in.ascii85decode"));
                 chn[state] = ch - '!';
                 ++state;
                 if (state == 5) {
@@ -1832,7 +1833,7 @@ namespace iTextSharp.text.pdf {
             int r = 0;
             // We'll ignore the next two lines for the sake of perpetuating broken PDFs
 //            if (state == 1)
-//                throw new ArgumentException("Illegal length in ASCII85Decode.");
+//                throw new ArgumentException(MessageLocalization.GetComposedMessage("illegal.length.in.ascii85decode"));
             if (state == 2) {
                 r = chn[0] * 85 * 85 * 85 * 85 + chn[1] * 85 * 85 * 85 + 85 * 85 * 85  + 85 * 85 + 85;
                 outp.WriteByte((byte)(r >> 24));
@@ -2078,7 +2079,7 @@ namespace iTextSharp.text.pdf {
                 else if (name.Equals("/Crypt")) {
                 }
                 else
-                    throw new UnsupportedPdfException("The filter " + name + " is not supported.");
+                    throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("the.filter.1.is.not.supported", name));
             }
             return b;
         }

@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 /*
  * $Id: PdfCopyFormsImp.java 3665 2009-01-26 22:32:15Z xlv $
  *
@@ -75,13 +76,13 @@ namespace iTextSharp.text.pdf {
         */
         public void CopyDocumentFields(PdfReader reader) {
             if (!reader.IsOpenedWithFullPermissions)
-                throw new BadPasswordException("PdfReader not opened with owner password");
+                throw new BadPasswordException(MessageLocalization.GetComposedMessage("pdfreader.not.opened.with.owner.password"));
             if (readers2intrefs.ContainsKey(reader)) {
                 reader = new PdfReader(reader);
             }
             else {
                 if (reader.Tampered)
-                    throw new DocumentException("The document was reused.");
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("the.document.was.reused"));
                 reader.ConsolidateNamedDestinations();
                 reader.Tampered = true;
             }

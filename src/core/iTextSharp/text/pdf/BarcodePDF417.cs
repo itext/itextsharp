@@ -3,6 +3,7 @@ using iTextSharp.text;
 using iTextSharp.text.pdf.codec;
 using System.Collections;
 using System.Text;
+using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf {
     /** Generates the 2D barcode PDF417. Supports dimensioning auto-sizing, fixed
@@ -356,7 +357,7 @@ namespace iTextSharp.text.pdf {
                 dest[ptr++] = PS;
             size = (ptr + fullBytes) / 2;
             if (size + cwPtr > MAX_DATA_CODEWORDS) {
-                throw new ArgumentOutOfRangeException("The text is too big.");
+                throw new ArgumentOutOfRangeException(MessageLocalization.GetComposedMessage("the.text.is.too.big"));
             }
             length = ptr;
             ptr = 0;
@@ -411,7 +412,7 @@ namespace iTextSharp.text.pdf {
             else
                 size = full + size / 3 + 1;
             if (size + cwPtr > MAX_DATA_CODEWORDS) {
-                throw new ArgumentOutOfRangeException("The text is too big.");
+                throw new ArgumentOutOfRangeException(MessageLocalization.GetComposedMessage("the.text.is.too.big"));
             }
             length += start;
             for (k = start; k < length; k += 44) {
@@ -451,7 +452,7 @@ namespace iTextSharp.text.pdf {
             int k, j;
             int size = (length / 6) * 5 + (length % 6);
             if (size + cwPtr > MAX_DATA_CODEWORDS) {
-                throw new ArgumentOutOfRangeException("The text is too big.");
+                throw new ArgumentOutOfRangeException(MessageLocalization.GetComposedMessage("the.text.is.too.big"));
             }
             length += start;
             for (k = start; k < length; k += 6) {
@@ -636,13 +637,13 @@ namespace iTextSharp.text.pdf {
         
         private void MacroCodes() {
             if (macroSegmentId < 0) {
-                throw new InvalidOperationException("macroSegmentId must be >=0");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("macrosegmentid.must.be.gt.eq.0"));
             }
             if (macroSegmentId >= macroSegmentCount) {
-                throw new InvalidOperationException("macroSegmentId must be < macroSemgentCount");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("macrosegmentid.must.be.lt.macrosemgentcount"));
             }
             if (macroSegmentCount < 1) {
-                throw new InvalidOperationException("macroSemgentCount must be > 0");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("macrosemgentcount.must.be.gt.0"));
             }
 
             macroIndex = cwPtr;
@@ -720,14 +721,14 @@ namespace iTextSharp.text.pdf {
             int maxErr, lenErr, tot, pad;
             if ((options & PDF417_USE_RAW_CODEWORDS) != 0) {
                 if (lenCodewords > MAX_DATA_CODEWORDS || lenCodewords < 1 || lenCodewords != codewords[0]) {
-                    throw new ArgumentException("Invalid codeword size.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.codeword.size"));
                 }
             }
             else {
                 if (text == null)
-                    throw new ArgumentNullException("Text cannot be null.");
+                    throw new ArgumentNullException(MessageLocalization.GetComposedMessage("text.cannot.be.null"));
                 if (text.Length > ABSOLUTE_MAX_TEXT_SIZE) {
-                    throw new ArgumentOutOfRangeException("The text is too big.");
+                    throw new ArgumentOutOfRangeException(MessageLocalization.GetComposedMessage("the.text.is.too.big"));
                 }
                 segmentList = new SegmentList();
                 BreakString();

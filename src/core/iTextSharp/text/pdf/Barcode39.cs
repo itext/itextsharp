@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 /*
  * $Id: Barcode39.cs,v 1.6 2007/05/03 19:36:07 psoares33 Exp $
  *
@@ -160,7 +161,7 @@ namespace iTextSharp.text.pdf {
             for (int k = 0; k < text.Length; ++k) {
                 int idx = CHARS.IndexOf(text[k]);
                 if (idx < 0)
-                    throw new ArgumentException("The character '" + text[k] + "' is illegal in code 39.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("the.character.1.is.illegal.in.code.39", text[k]));
                 Array.Copy(BARS[idx], 0, bars, k * 10, 9);
             }
             return bars;
@@ -176,7 +177,7 @@ namespace iTextSharp.text.pdf {
             for (int k = 0; k < text.Length; ++k) {
                 char c = text[k];
                 if (c > 127)
-                    throw new ArgumentException("The character '" + c + "' is illegal in code 39 extended.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("the.character.1.is.illegal.in.code.39.extended", c));
                 char c1 = EXTENDED[c * 2];
                 char c2 = EXTENDED[c * 2 + 1];
                 if (c1 != ' ')
@@ -195,7 +196,7 @@ namespace iTextSharp.text.pdf {
             for (int k = 0; k < text.Length; ++k) {
                 int idx = CHARS.IndexOf(text[k]);
                 if (idx < 0)
-                    throw new ArgumentException("The character '" + text[k] + "' is illegal in code 39.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("the.character.1.is.illegal.in.code.39", text[k]));
                 chk += idx;
             }
             return CHARS[chk % 43];

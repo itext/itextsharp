@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 
 /*
  * Copyright 2002 Paulo Soares
@@ -116,7 +117,7 @@ namespace iTextSharp.text.pdf {
 
             set {
                 if (value.Length != 6)
-                    throw new Exception("The matrix size must be 6.");
+                    throw new Exception(MessageLocalization.GetComposedMessage("the.matrix.size.must.be.6"));
                 this.matrix = value;
             }
         }

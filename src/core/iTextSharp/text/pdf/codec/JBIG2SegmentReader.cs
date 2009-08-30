@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.util.collections;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 /*
  * $Id: JBIG2SegmentReader.java 3714 2009-02-20 21:04:16Z xlv $
  *
@@ -204,7 +205,7 @@ namespace iTextSharp.text.pdf.codec {
 
         public void Read() {
             if ( this.read ) {
-                throw new InvalidOperationException("already attempted a Read() on this Jbig2 File");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("already.attempted.a.read.on.this.jbig2.file"));
             }
             this.read = true;
             
@@ -250,7 +251,7 @@ namespace iTextSharp.text.pdf.codec {
                 ra.Seek(last);
                 JBIG2Page p = (JBIG2Page)pages[s.page];
                 if ( p == null ) {
-                    throw new InvalidOperationException("referring to widht/height of page we havent seen yet? " + s.page);
+                    throw new InvalidOperationException(MessageLocalization.GetComposedMessage("referring.to.widht.height.of.page.we.havent.seen.yet.1", s.page));
                 }
                 
                 p.pageBitmapWidth = page_bitmap_width;
@@ -303,7 +304,7 @@ namespace iTextSharp.text.pdf.codec {
                 }
                 
             } else if ( count_of_referred_to_segments == 5 || count_of_referred_to_segments == 6 ) {
-                throw new InvalidOperationException("count of referred-to segments had bad value in header for segment " + segment_number + " starting at " + ptr);
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("count.of.referred.to.segments.had.bad.value.in.header.for.segment.1.starting.at.2", segment_number, ptr));
             }
             s.segmentRetentionFlags = segment_retention_flags;
             s.countOfReferredToSegments = count_of_referred_to_segments;
@@ -330,7 +331,7 @@ namespace iTextSharp.text.pdf.codec {
                 segment_page_association = ra.Read();
             }
             if ( segment_page_association < 0 ) {
-                throw new InvalidOperationException("page " + segment_page_association + " invalid for segment " + segment_number + " starting at " + ptr);
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("page.1.invalid.for.segment.2.starting.at.3", segment_page_association, segment_number, ptr));
             }
             s.page = segment_page_association;
             // so we can change the page association at embedding time.
@@ -369,7 +370,7 @@ namespace iTextSharp.text.pdf.codec {
             
             for ( int i = 0; i < idstring.Length; i++ ) {
                 if ( idstring[i] != refidstring[i] ) {
-                    throw new InvalidOperationException("file header idstring not good at byte " + i);
+                    throw new InvalidOperationException(MessageLocalization.GetComposedMessage("file.header.idstring.not.good.at.byte.1", i));
                 }
             }
             
@@ -379,7 +380,7 @@ namespace iTextSharp.text.pdf.codec {
             this.number_of_pages_known = (( fileheaderflags & 0x2) == 0x0);
             
             if ( (fileheaderflags & 0xfc) != 0x0 ) {
-                throw new InvalidOperationException("file header flags bits 2-7 not 0");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("file.header.flags.bits.2.7.not.0"));
             }
             
             if ( this.number_of_pages_known ) {

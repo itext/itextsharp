@@ -3,6 +3,7 @@ using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using System.util.zlib;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2003 by Paulo Soares.
  *
@@ -101,10 +102,10 @@ namespace iTextSharp.text.pdf.codec {
         */    
         public static Image GetTiffImage(RandomAccessFileOrArray s, int page, bool direct) {
             if (page < 1)
-                throw new ArgumentException("The page number must be >= 1.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.page.number.must.be.gt.eq.1"));
             TIFFDirectory dir = new TIFFDirectory(s, page - 1);
             if (dir.IsTagPresent(TIFFConstants.TIFFTAG_TILEWIDTH))
-                throw new ArgumentException("Tiles are not supported.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("tiles.are.not.supported"));
             int compression = (int)dir.GetFieldAsLong(TIFFConstants.TIFFTAG_COMPRESSION);
             switch (compression) {
                 case TIFFConstants.COMPRESSION_CCITTRLEW:
@@ -275,7 +276,7 @@ namespace iTextSharp.text.pdf.codec {
                 case TIFFConstants.COMPRESSION_JPEG:
                     break;
                 default:
-                    throw new ArgumentException("The compression " + compression + " is not supported.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("the.compression.1.is.not.supported", compression));
             }
             int photometric = (int)dir.GetFieldAsLong(TIFFConstants.TIFFTAG_PHOTOMETRIC);
             switch (photometric) {
@@ -287,7 +288,7 @@ namespace iTextSharp.text.pdf.codec {
                     break;
                 default:
                     if (compression != TIFFConstants.COMPRESSION_OJPEG && compression != TIFFConstants.COMPRESSION_JPEG)
-                        throw new ArgumentException("The photometric " + photometric + " is not supported.");
+                        throw new ArgumentException(MessageLocalization.GetComposedMessage("the.photometric.1.is.not.supported", photometric));
                     break;
             }
             float rotation = 0;
@@ -303,9 +304,9 @@ namespace iTextSharp.text.pdf.codec {
 
             if (dir.IsTagPresent(TIFFConstants.TIFFTAG_PLANARCONFIG)
                 && dir.GetFieldAsLong(TIFFConstants.TIFFTAG_PLANARCONFIG) == TIFFConstants.PLANARCONFIG_SEPARATE)
-                throw new ArgumentException("Planar images are not supported.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("planar.images.are.not.supported"));
             if (dir.IsTagPresent(TIFFConstants.TIFFTAG_EXTRASAMPLES))
-                throw new ArgumentException("Extra samples are not supported.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("extra.samples.are.not.supported"));
             int samplePerPixel = 1;
             if (dir.IsTagPresent(TIFFConstants.TIFFTAG_SAMPLESPERPIXEL)) // 1,3,4
                 samplePerPixel = (int)dir.GetFieldAsLong(TIFFConstants.TIFFTAG_SAMPLESPERPIXEL);
@@ -319,7 +320,7 @@ namespace iTextSharp.text.pdf.codec {
                 case 8:
                     break;
                 default:
-                    throw new ArgumentException("Bits per sample " + bitsPerSample + " is not supported.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("bits.per.sample.1.is.not.supported", bitsPerSample));
             }
             Image img = null;
 
@@ -353,10 +354,10 @@ namespace iTextSharp.text.pdf.codec {
                 if (predictorField != null) {
                     predictor = predictorField.GetAsInt(0);
                     if (predictor != 1 && predictor != 2) {
-                        throw new Exception("Illegal value for Predictor in TIFF file."); 
+                        throw new Exception(MessageLocalization.GetComposedMessage("illegal.value.for.predictor.in.tiff.file"));
                     }
                     if (predictor == 2 && bitsPerSample != 8) {
-                        throw new Exception(bitsPerSample + "-bit samples are not supported for Horizontal differencing Predictor.");
+                        throw new Exception(MessageLocalization.GetComposedMessage("1.bit.samples.are.not.supported.for.horizontal.differencing.predictor", bitsPerSample));
                     }
                 }
                 lzwDecoder = new TIFFLZWDecoder(w, predictor, 
@@ -380,7 +381,7 @@ namespace iTextSharp.text.pdf.codec {
                 // is often missing
 
                 if ((!dir.IsTagPresent(TIFFConstants.TIFFTAG_JPEGIFOFFSET))) {
-                    throw new IOException("Missing tag(s) for OJPEG compression.");
+                    throw new IOException(MessageLocalization.GetComposedMessage("missing.tag.s.for.ojpeg.compression"));
                 }
                 int jpegOffset = (int)dir.GetFieldAsLong(TIFFConstants.TIFFTAG_JPEGIFOFFSET);
                 int jpegLength = s.Length - jpegOffset;
@@ -400,7 +401,7 @@ namespace iTextSharp.text.pdf.codec {
             } 
             else if (compression == TIFFConstants.COMPRESSION_JPEG) {
                 if (size.Length > 1)
-                    throw new IOException("Compression JPEG is only supported with a single strip. This image has " + size.Length + " strips.");
+                    throw new IOException(MessageLocalization.GetComposedMessage("compression.jpeg.is.only.supported.with.a.single.strip.this.image.has.1.strips", size.Length));
                 byte[] jpeg = new byte[(int)size[0]];
                 s.Seek(offset[0]);
                 s.ReadFully(jpeg);

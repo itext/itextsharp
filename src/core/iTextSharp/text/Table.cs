@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.util;
+using iTextSharp.text.error_messages;
 
 using iTextSharp.text.html;
 using iTextSharp.text.pdf;
@@ -249,7 +250,7 @@ namespace iTextSharp.text {
 
             // a table should have at least 1 column
             if (columns <= 0) {
-                throw new BadElementException("A table should have at least 1 column.");
+                throw new BadElementException(MessageLocalization.GetComposedMessage("a.table.should.have.at.least.1.column"));
             }
             this.columns = columns;
 
@@ -425,9 +426,9 @@ namespace iTextSharp.text {
         /// <param name="aLocation">The location where the Cell will be added</param>
         public void AddCell(Cell aCell, object aLocation) {
             System.Drawing.Point p;
-            if (aCell == null) throw new Exception("addCell - cell has null-value");
+            if (aCell == null) throw new Exception(MessageLocalization.GetComposedMessage("addcell.cell.has.null.value"));
             if (aLocation == null)
-                throw new Exception("addCell - point has null-value");
+                throw new Exception(MessageLocalization.GetComposedMessage("addcell.point.has.null.value"));
             else
                 p = (System.Drawing.Point)aLocation;
 
@@ -436,9 +437,9 @@ namespace iTextSharp.text {
                 i.MoveNext();
                 InsertTable((Table)i.Current, p);
             }
-            if (p.X < 0) throw new BadElementException("row coordinate of location must be >= 0");
-            if ((p.Y <= 0) && (p.Y > columns)) throw new BadElementException("column coordinate of location must be >= 0 and < nr of columns");
-            if (!IsValidLocation(aCell, p)) throw new BadElementException("Adding a cell at the location (" + p.X + "," + p.Y + ") with a colspan of " + aCell.Colspan + " and a rowspan of " + aCell.Rowspan + " is illegal (beyond boundaries/overlapping).");
+            if (p.X < 0) throw new BadElementException(MessageLocalization.GetComposedMessage("row.coordinate.of.location.must.be.gt.eq.0"));
+            if ((p.Y <= 0) && (p.Y > columns)) throw new BadElementException(MessageLocalization.GetComposedMessage("column.coordinate.of.location.must.be.gt.eq.0.and.lt.nr.of.columns"));
+            if (!IsValidLocation(aCell, p)) throw new BadElementException(MessageLocalization.GetComposedMessage("adding.a.cell.at.the.location.1.2.with.a.colspan.of.3.and.a.rowspan.of.4.is.illegal.beyond.boundaries.overlapping", p.X, p.Y, aCell.Colspan, aCell.Rowspan));
             if (aCell.Border == UNDEFINED) aCell.Border = defaultCell.Border;
             aCell.Fill();
             PlaceCell(rows, aCell, p);
@@ -520,7 +521,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="aTable">the table you want to insert</param>
         public void InsertTable(Table aTable) {
-            if (aTable == null) throw new Exception("insertTable - table has null-value");
+            if (aTable == null) throw new Exception(MessageLocalization.GetComposedMessage("inserttable.table.has.null.value"));
             InsertTable(aTable, curPosition);
         }
 
@@ -532,7 +533,7 @@ namespace iTextSharp.text {
         /// <param name="row">The row where the Cell will be added</param>
         /// <param name="column">The column where the Cell will be added</param>
         public void InsertTable(Table aTable, int row, int column) {
-            if (aTable == null) throw new Exception("insertTable - table has null-value");
+            if (aTable == null) throw new Exception(MessageLocalization.GetComposedMessage("inserttable.table.has.null.value"));
             InsertTable(aTable, new System.Drawing.Point(row, column));
         }
 
@@ -543,12 +544,12 @@ namespace iTextSharp.text {
         /// <param name="aTable">the table you want to insert</param>
         /// <param name="aLocation">a System.Drawing.Point</param>
         public void InsertTable(Table aTable, System.Drawing.Point p) {
-            if (aTable == null) throw new Exception("insertTable - table has null-value");
+            if (aTable == null) throw new Exception(MessageLocalization.GetComposedMessage("inserttable.table.has.null.value"));
 
             mTableInserted = true;
             aTable.Complete();
             if (p.Y > columns) 
-                throw new ArgumentException("insertTable -- wrong columnposition("+ p.Y + ") of location; max =" + columns);
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("inserttable.wrong.columnposition.1.of.location.max.eq.2", p.Y, columns));
             int rowCount = p.X + 1 - rows.Count;
             int i = 0;
             if ( rowCount > 0 ) {   //create new rows ?
@@ -844,7 +845,7 @@ namespace iTextSharp.text {
         public float[] Widths {
             set {
                 if (value.Length != columns) {
-                    throw new BadElementException("Wrong number of columns.");
+                    throw new BadElementException(MessageLocalization.GetComposedMessage("wrong.number.of.columns"));
                 }
 
                 // The sum of all values is 100%
@@ -1261,7 +1262,7 @@ namespace iTextSharp.text {
                 if ( !((Row) someRows[i]).Reserve(aPosition.Y, aCell.Colspan)) {
 
                     // should be impossible to come here :-)
-                    throw new Exception("addCell - error in reserve");
+                    throw new Exception(MessageLocalization.GetComposedMessage("addcell.error.in.reserve"));
                 }
             }
             row = (Row) someRows[aPosition.X];
@@ -1374,7 +1375,7 @@ namespace iTextSharp.text {
         }
 
         private void ErrorDimensions() {
-            throw new Exception("Dimensions of a Table can't be calculated. See the FAQ.");
+            throw new Exception(MessageLocalization.GetComposedMessage("dimensions.of.a.table.can.t.be.calculated.see.the.faq"));
         }
 
         /**
@@ -1466,7 +1467,7 @@ namespace iTextSharp.text {
         */
         public PdfPTable CreatePdfPTable() {
             if (!convert2pdfptable) {
-                throw new BadElementException("No error, just an old style table");
+                throw new BadElementException(MessageLocalization.GetComposedMessage("no.error.just.an.old.style.table"));
             }
             AutoFillEmptyCells = true;
             Complete();

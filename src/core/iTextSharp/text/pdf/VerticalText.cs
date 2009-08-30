@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
 
@@ -223,7 +224,7 @@ namespace iTextSharp.text.pdf {
 				graphics = text.Duplicate;
 			}
 			else if (!simulate)
-				throw new Exception("VerticalText.go with simulate==false and text==null.");
+				throw new Exception(MessageLocalization.GetComposedMessage("verticaltext.go.with.simulate.eq.eq.false.and.text.eq.eq.null"));
 			int status = 0;
 			for (;;) {
 				if (maxLines <= 0) {

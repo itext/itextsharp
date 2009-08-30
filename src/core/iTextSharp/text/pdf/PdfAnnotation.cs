@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 using System.util;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 /*
  * $Id: PdfAnnotation.cs,v 1.12 2008/05/24 18:41:23 psoares33 Exp $
  * 
@@ -582,7 +583,7 @@ namespace iTextSharp.text.pdf {
                 case ExtendedColor.TYPE_SEPARATION:
                 case ExtendedColor.TYPE_PATTERN:
                 case ExtendedColor.TYPE_SHADING:
-                    throw new Exception("Separations, patterns and shadings are not allowed in MK dictionary.");
+                    throw new Exception(MessageLocalization.GetComposedMessage("separations.patterns.and.shadings.are.not.allowed.in.mk.dictionary"));
                 default:
                     array.Add(new PdfNumber(color.R / 255f));
                     array.Add(new PdfNumber(color.G / 255f));
@@ -748,7 +749,7 @@ namespace iTextSharp.text.pdf {
                     destination = (PdfArray)parameters[PdfName.DEST];
                     parameters.Remove(PdfName.DEST);
                 } catch (Exception) {
-                    throw new ArgumentException("You have to consolidate the named destinations of your reader.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("you.have.to.consolidate.the.named.destinations.of.your.reader"));
                 }
                 if (destination != null) {
                     destination = new PdfArray(destination);
@@ -778,16 +779,16 @@ namespace iTextSharp.text.pdf {
                     PRIndirectReference pp = r.GetPageOrigRef(i);
                     if (pp.Generation == pr.Generation && pp.Number == pr.Number) return i;
                 }
-                throw new ArgumentException("Page not found.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("page.not.found"));
             }
             
             public void SetDestinationPage(int newPage) {
-                if (!IsInternal()) throw new ArgumentException("Cannot change destination of external link");
+                if (!IsInternal()) throw new ArgumentException(MessageLocalization.GetComposedMessage("cannot.change.destination.of.external.link"));
                 this.newPage=newPage;
             }
             
             public void TransformDestination(float a, float b, float c, float d, float e, float f) {
-                if (!IsInternal()) throw new ArgumentException("Cannot change destination of external link");
+                if (!IsInternal()) throw new ArgumentException(MessageLocalization.GetComposedMessage("cannot.change.destination.of.external.link"));
                 if (destination.GetAsName(1).Equals(PdfName.XYZ)) {
                     float x = destination.GetAsNumber(2).FloatValue;
                     float y = destination.GetAsNumber(3).FloatValue;

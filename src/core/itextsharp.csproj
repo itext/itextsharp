@@ -373,6 +373,23 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "iTextSharp\text\error_messages\en.lng"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "iTextSharp\text\error_messages\MessageLocalization.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "iTextSharp\text\error_messages\nl.lng"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "iTextSharp\text\error_messages\pt.lng"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "iTextSharp\text\exceptions\BadPasswordException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

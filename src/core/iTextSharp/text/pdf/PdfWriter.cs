@@ -11,6 +11,7 @@ using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.collection;
 using iTextSharp.text.xml.xmp;
 using Org.BouncyCastle.X509;
+using iTextSharp.text.error_messages;
 /*
  * $Id: PdfWriter.cs,v 1.48 2008/05/13 11:25:23 psoares33 Exp $
  * 
@@ -676,7 +677,7 @@ namespace iTextSharp.text.pdf {
         public float InitialLeading {
             set {
                 if (open)
-                    throw new DocumentException("You can't set the initial leading if the document is already open.");
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("you.can.t.set.the.initial.leading.if.the.document.is.already.open"));
                 pdf.Leading = value;
             }
         }
@@ -707,7 +708,7 @@ namespace iTextSharp.text.pdf {
         public virtual PdfContentByte DirectContent {
             get {
                 if (!open)
-                    throw new Exception("The document is not open.");
+                    throw new Exception(MessageLocalization.GetComposedMessage("the.document.is.not.open"));
                 return directContent;
             }
         }
@@ -721,7 +722,7 @@ namespace iTextSharp.text.pdf {
         public virtual PdfContentByte DirectContentUnder {
             get {
                 if (!open)
-                    throw new Exception("The document is not open.");
+                    throw new Exception(MessageLocalization.GetComposedMessage("the.document.is.not.open"));
                 return directContentUnder;
             }
         }
@@ -757,11 +758,12 @@ namespace iTextSharp.text.pdf {
             foreach (String name in dest.Keys) {
                 Object[] obj = (Object[])dest[name];
                 PdfDestination destination = (PdfDestination)obj[2];
-                if (destination == null)
-                    throw new Exception("The name '" + name + "' has no local destination.");
                 if (obj[1] == null)
                     obj[1] = PdfIndirectReference;
-                AddToBody(destination, (PdfIndirectReference)obj[1]);
+                if (destination == null)
+                    AddToBody(new PdfString("invalid_" + name), (PdfIndirectReference)obj[1]);
+                else
+                    AddToBody(destination, (PdfIndirectReference)obj[1]);
             }
         }
 
@@ -965,7 +967,7 @@ namespace iTextSharp.text.pdf {
         public virtual PdfIndirectReference GetPageReference(int page) {
             --page;
             if (page < 0)
-                throw new ArgumentOutOfRangeException("The page numbers start at 1.");
+                throw new ArgumentOutOfRangeException(MessageLocalization.GetComposedMessage("the.page.numbers.start.at.1"));
             PdfIndirectReference refa;
             if (page < pageReferences.Count) {
                 refa = (PdfIndirectReference)pageReferences[page];
@@ -1037,7 +1039,7 @@ namespace iTextSharp.text.pdf {
         */
         internal virtual PdfIndirectReference Add(PdfPage page, PdfContents contents) {
             if (!open) {
-                throw new PdfException("The document isn't open.");
+                throw new PdfException(MessageLocalization.GetComposedMessage("the.document.isn.t.open"));
             }
             PdfIndirectObject objecta;
             objecta = AddToBody(contents);
@@ -1608,7 +1610,7 @@ namespace iTextSharp.text.pdf {
             actionType.Equals(DID_SAVE) ||
             actionType.Equals(WILL_PRINT) ||
             actionType.Equals(DID_PRINT))) {
-                throw new PdfException("Invalid additional action type: " + actionType.ToString());
+                throw new PdfException(MessageLocalization.GetComposedMessage("invalid.additional.action.type.1", actionType.ToString()));
             }
             pdf.AddAdditionalAction(actionType, action);
         }
@@ -1747,9 +1749,9 @@ namespace iTextSharp.text.pdf {
                 if (pdfxConformance.PDFXConformance == value)
                     return;
                 if (pdf.IsOpen())
-                    throw new PdfXConformanceException("PDFX conformance can only be set before opening the document.");
+                    throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("pdfx.conformance.can.only.be.set.before.opening.the.document"));
                 if (crypto != null)
-                    throw new PdfXConformanceException("A PDFX conforming document cannot be encrypted.");
+                    throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("a.pdfx.conforming.document.cannot.be.encrypted"));
                 if (value == PDFA1A || value == PDFA1B)
                     PdfVersion = VERSION_1_4;
                 else if (value != PDFXNONE)
@@ -1984,7 +1986,7 @@ namespace iTextSharp.text.pdf {
         */
         public void SetEncryption(byte[] userPassword, byte[] ownerPassword, int permissions, int encryptionType) {
             if (pdf.IsOpen())
-                throw new DocumentException("Encryption can only be added before opening the document.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("encryption.can.only.be.added.before.opening.the.document"));
             crypto = new PdfEncryption();
             crypto.SetCryptoMode(encryptionType, 0);
             crypto.SetupAllKeys(userPassword, ownerPassword, permissions);
@@ -2005,7 +2007,7 @@ namespace iTextSharp.text.pdf {
         */
         public void SetEncryption(X509Certificate[] certs, int[] permissions, int encryptionType) {
             if (pdf.IsOpen())
-                throw new DocumentException("Encryption can only be added before opening the document.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("encryption.can.only.be.added.before.opening.the.document"));
             crypto = new PdfEncryption();
             if (certs != null) {
                 for (int i=0; i < certs.Length; i++) {
@@ -2382,7 +2384,7 @@ namespace iTextSharp.text.pdf {
         */    
         public void SetTagged() {
             if (open)
-                throw new ArgumentException("Tagging must be set before opening the document.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("tagging.must.be.set.before.opening.the.document"));
             tagged = true;
         }
         
@@ -2560,7 +2562,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             else
-                throw new ArgumentException("Only PdfLayer is accepted.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("only.pdflayer.is.accepted"));
         }
         
     //  User methods to change aspects of the page
@@ -2640,7 +2642,7 @@ namespace iTextSharp.text.pdf {
         */    
         public virtual void SetPageAction(PdfName actionType, PdfAction action) {
             if (!actionType.Equals(PAGE_OPEN) && !actionType.Equals(PAGE_CLOSE))
-                throw new PdfException("Invalid page additional action type: " + actionType.ToString());
+                throw new PdfException(MessageLocalization.GetComposedMessage("invalid.page.additional.action.type.1", actionType.ToString()));
             pdf.SetPageAction(actionType, action);
         }
         
@@ -2751,7 +2753,7 @@ namespace iTextSharp.text.pdf {
         public virtual int RunDirection {
             set {
                 if (value < RUN_DIRECTION_NO_BIDI || value > RUN_DIRECTION_RTL)
-                    throw new Exception("Invalid run direction: " + value);
+                    throw new Exception(MessageLocalization.GetComposedMessage("invalid.run.direction.1", value));
                 this.runDirection = value;
             }
             get {
@@ -2774,7 +2776,7 @@ namespace iTextSharp.text.pdf {
                 return userunit;
             }
             set {
-                if (value < 1f || value > 75000f) throw new DocumentException("UserUnit should be a value between 1 and 75000.");
+                if (value < 1f || value > 75000f) throw new DocumentException(MessageLocalization.GetComposedMessage("userunit.should.be.a.value.between.1.and.75000"));
                 this.userunit = value;
                 SetAtLeastPdfVersion(VERSION_1_6);
             }
@@ -2823,7 +2825,7 @@ namespace iTextSharp.text.pdf {
         internal ColorDetails AddSimplePatternColorspace(Color color) {
             int type = ExtendedColor.GetType(color);
             if (type == ExtendedColor.TYPE_PATTERN || type == ExtendedColor.TYPE_SHADING)
-                throw new Exception("An uncolored tile pattern can not have another pattern or shading as color.");
+                throw new Exception(MessageLocalization.GetComposedMessage("an.uncolored.tile.pattern.can.not.have.another.pattern.or.shading.as.color"));
             switch (type) {
                 case ExtendedColor.TYPE_RGB:
                     if (patternColorspaceRGB == null) {
@@ -2862,7 +2864,7 @@ namespace iTextSharp.text.pdf {
                     return patternDetails;
                 }
                 default:
-                    throw new Exception("Invalid color type in PdfWriter.AddSimplePatternColorspace().");
+                    throw new Exception(MessageLocalization.GetComposedMessage("invalid.color.type.in.pdfwriter.addsimplepatterncolorspace"));
             }
         }
         

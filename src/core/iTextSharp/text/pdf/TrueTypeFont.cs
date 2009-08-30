@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections;
+using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
 
@@ -376,10 +377,10 @@ namespace iTextSharp.text.pdf {
             if (fileName.ToLower(System.Globalization.CultureInfo.InvariantCulture).EndsWith(".ttf") || fileName.ToLower(System.Globalization.CultureInfo.InvariantCulture).EndsWith(".otf") || fileName.ToLower(System.Globalization.CultureInfo.InvariantCulture).EndsWith(".ttc")) {
                 Process(ttfAfm, forceRead);
                 if (!justNames && embedded && os_2.fsType == 2)
-                    throw new DocumentException(fileName + style + " cannot be embedded due to licensing restrictions.");
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("1.cannot.be.embedded.due.to.licensing.restrictions", fileName + style));
             }
             else
-                throw new DocumentException(fileName + style + " is not a TTF, OTF or TTC font file.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("1.is.not.a.ttf.otf.or.ttc.font.file", fileName + style));
             if (!encoding.StartsWith("#"))
                 PdfEncodings.ConvertToBytes(" ", enc); // check if the encoding exists
             CreateEncoding();
@@ -409,7 +410,7 @@ namespace iTextSharp.text.pdf {
             int[] table_location;
             table_location = (int[])tables["head"];
             if (table_location == null)
-                throw new DocumentException("Table 'head' does not exist in " + fileName + style);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.head.does.not.exist.in.1", fileName + style));
             rf.Seek(table_location[0] + 16);
             head.flags = rf.ReadUnsignedShort();
             head.unitsPerEm = rf.ReadUnsignedShort();
@@ -422,7 +423,7 @@ namespace iTextSharp.text.pdf {
         
             table_location = (int[])tables["hhea"];
             if (table_location == null)
-                throw new DocumentException("Table 'hhea' does not exist " + fileName + style);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.hhea.does.not.exist.1", fileName + style));
             rf.Seek(table_location[0] + 4);
             hhea.Ascender = rf.ReadShort();
             hhea.Descender = rf.ReadShort();
@@ -438,7 +439,7 @@ namespace iTextSharp.text.pdf {
         
             table_location = (int[])tables["OS/2"];
             if (table_location == null)
-                throw new DocumentException("Table 'OS/2' does not exist in " + fileName + style);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.os.2.does.not.exist.in.1", fileName + style));
             rf.Seek(table_location[0]);
             int version = rf.ReadUnsignedShort();
             os_2.xAvgCharWidth = rf.ReadShort();
@@ -507,7 +508,7 @@ namespace iTextSharp.text.pdf {
                 int[] table_location;
                 table_location = (int[])tables["name"];
                 if (table_location == null)
-                    throw new DocumentException("Table 'name' does not exist in " + fileName + style);
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("table.name.does.not.exist.in.1", fileName + style));
                 rf.Seek(table_location[0] + 2);
                 int numRecords = rf.ReadUnsignedShort();
                 int startOfStorage = rf.ReadUnsignedShort();
@@ -540,7 +541,7 @@ namespace iTextSharp.text.pdf {
             int[] table_location;
             table_location = (int[])tables["name"];
             if (table_location == null)
-                throw new DocumentException("Table 'name' does not exist in " + fileName + style);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.name.does.not.exist.in.1", fileName + style));
             rf.Seek(table_location[0] + 2);
             int numRecords = rf.ReadUnsignedShort();
             int startOfStorage = rf.ReadUnsignedShort();
@@ -582,7 +583,7 @@ namespace iTextSharp.text.pdf {
             int[] table_location;
             table_location = (int[])tables["name"];
             if (table_location == null)
-                throw new DocumentException("Table 'name' does not exist in " + fileName + style);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.name.does.not.exist.in.1", fileName + style));
             rf.Seek(table_location[0] + 2);
             int numRecords = rf.ReadUnsignedShort();
             int startOfStorage = rf.ReadUnsignedShort();
@@ -639,21 +640,21 @@ namespace iTextSharp.text.pdf {
                 if (ttcIndex.Length > 0) {
                     int dirIdx = int.Parse(ttcIndex);
                     if (dirIdx < 0)
-                        throw new DocumentException("The font index for " + fileName + " must be positive.");
+                        throw new DocumentException(MessageLocalization.GetComposedMessage("the.font.index.for.1.must.be.positive", fileName));
                     string mainTag = ReadStandardString(4);
                     if (!mainTag.Equals("ttcf"))
-                        throw new DocumentException(fileName + " is not a valid TTC file.");
+                        throw new DocumentException(MessageLocalization.GetComposedMessage("1.is.not.a.valid.ttc.file", fileName));
                     rf.SkipBytes(4);
                     int dirCount = rf.ReadInt();
                     if (dirIdx >= dirCount)
-                        throw new DocumentException("The font index for " + fileName + " must be between 0 and " + (dirCount - 1) + ". It was " + dirIdx + ".");
+                        throw new DocumentException(MessageLocalization.GetComposedMessage("the.font.index.for.1.must.be.between.0.and.2.it.was.3", fileName, (dirCount - 1), dirIdx));
                     rf.SkipBytes(dirIdx * 4);
                     directoryOffset = rf.ReadInt();
                 }
                 rf.Seek(directoryOffset);
                 int ttId = rf.ReadInt();
                 if (ttId != 0x00010000 && ttId != 0x4F54544F)
-                    throw new DocumentException(fileName + " is not a valid TTF or OTF file.");
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("1.is.not.a.valid.ttf.or.otf.file", fileName));
                 int num_tables = rf.ReadUnsignedShort();
                 rf.SkipBytes(6);
                 for (int k = 0; k < num_tables; ++k) {
@@ -724,7 +725,7 @@ namespace iTextSharp.text.pdf {
             int[] table_location;
             table_location = (int[])tables["hmtx"];
             if (table_location == null)
-                throw new DocumentException("Table 'hmtx' does not exist in " + fileName + style);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.hmtx.does.not.exist.in.1", fileName + style));
             rf.Seek(table_location[0]);
             GlyphWidths = new int[hhea.numberOfHMetrics];
             for (int k = 0; k < hhea.numberOfHMetrics; ++k) {
@@ -747,7 +748,7 @@ namespace iTextSharp.text.pdf {
             int[] tableLocation;
             tableLocation = (int[])tables["head"];
             if (tableLocation == null)
-                throw new DocumentException("Table 'head' does not exist in " + fileName + style);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.head.does.not.exist.in.1", fileName + style));
             rf.Seek(tableLocation[0] + TrueTypeFontSubSet.HEAD_LOCA_FORMAT_OFFSET);
             bool locaShortTable = (rf.ReadUnsignedShort() == 0);
             tableLocation = (int[])tables["loca"];
@@ -769,7 +770,7 @@ namespace iTextSharp.text.pdf {
             }
             tableLocation = (int[])tables["glyf"];
             if (tableLocation == null)
-                throw new DocumentException("Table 'glyf' does not exist in " + fileName + style);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.glyf.does.not.exist.in.1", fileName + style));
             int tableGlyphOffset = tableLocation[0];
             bboxes = new int[locaTable.Length - 1][];
             for (int glyph = 0; glyph < locaTable.Length - 1; ++glyph) {
@@ -794,7 +795,7 @@ namespace iTextSharp.text.pdf {
             int[] table_location;
             table_location = (int[])tables["cmap"];
             if (table_location == null)
-                throw new DocumentException("Table 'cmap' does not exist in " + fileName + style);
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.cmap.does.not.exist.in.1", fileName + style));
             rf.Seek(table_location[0]);
             rf.SkipBytes(2);
             int num_tables = rf.ReadUnsignedShort();

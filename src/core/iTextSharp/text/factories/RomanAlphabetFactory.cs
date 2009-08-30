@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 /*
  * $Id: RomanAlphabetFactory.cs,v 1.2 2008/05/13 11:25:14 psoares33 Exp $
  * 
@@ -64,7 +65,7 @@ namespace iTextSharp.text.factories {
         * 1 = a, 2 = b, ..., 26 = z, 27 = aa, 28 = ab,...
         */
         public static String GetString(int index) {
-            if (index < 1) throw new FormatException("You can't translate a negative number into an alphabetical value.");
+            if (index < 1) throw new FormatException(MessageLocalization.GetComposedMessage("you.can.t.translate.a.negative.number.into.an.alphabetical.value"));
             
             index--;
             int bytes = 1;

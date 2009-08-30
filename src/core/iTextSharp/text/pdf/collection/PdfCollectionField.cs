@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf.collection {
 
@@ -121,7 +122,7 @@ namespace iTextSharp.text.pdf.collection {
             case NUMBER:
                 return new PdfNumber(v);
             }
-            throw new InvalidOperationException(v + " is not an acceptable value for the field " + Get(PdfName.N).ToString());
+            throw new InvalidOperationException(MessageLocalization.GetComposedMessage("1.is.not.an.acceptable.value.for.the.field.2", v, Get(PdfName.N).ToString()));
         }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.util;
 using iTextSharp.text.pdf.collection;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: PdfAction.cs,v 1.6 2008/05/13 11:25:18 psoares33 Exp $
@@ -191,7 +192,7 @@ namespace iTextSharp.text.pdf {
                     Put(PdfName.JS, new PdfString("this.print(true);\r"));
                     break;
                 default:
-                    throw new ArgumentException("Invalid named action.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.named.action"));
             }
         }
     
@@ -324,7 +325,7 @@ namespace iTextSharp.text.pdf {
                 else if (obj is PdfAnnotation)
                     array.Add(((PdfAnnotation)obj).IndirectReference);
                 else
-                    throw new ArgumentException("The array must contain string or PdfAnnotation.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("the.array.must.contain.string.or.pdfannotation"));
             }
             return array;
         }
@@ -511,11 +512,11 @@ namespace iTextSharp.text.pdf {
                     else if (Util.EqualsIgnoreCase(s, "toggle"))
                         name = PdfName.TOGGLE;
                     else
-                        throw new ArgumentException("A string '" + s + " was passed in state. Only 'ON', 'OFF' and 'Toggle' are allowed.");
+                        throw new ArgumentException(MessageLocalization.GetComposedMessage("a.string.1.was.passed.in.state.only.on.off.and.toggle.are.allowed", s));
                     a.Add(name);
                 }
                 else
-                    throw new ArgumentException("Invalid type was passed in state: " + o.GetType().ToString());
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.type.was.passed.in.state.1", o.GetType().ToString()));
             }
             action.Put(PdfName.STATE, a);
             if (!preserveRB)

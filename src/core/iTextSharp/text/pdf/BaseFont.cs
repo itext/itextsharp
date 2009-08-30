@@ -7,6 +7,7 @@ using System.Text;
 using System.Collections;
 using System.util;
 using iTextSharp.text.xml.simpleparser;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: BaseFont.cs,v 1.17 2008/05/13 11:25:17 psoares33 Exp $
@@ -685,7 +686,7 @@ namespace iTextSharp.text.pdf {
             else if (noThrow)
                 return null;
             else
-                throw new DocumentException("Font '" + name + "' with '" + encoding + "' is not recognized.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("font.1.with.2.is.not.recognized", name, encoding));
             if (cached) {
                 lock (fontCache) {
                     fontFound = (BaseFont)fontCache[key];

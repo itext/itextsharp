@@ -7,6 +7,7 @@ using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.collection;
 using iTextSharp.text.xml.xmp;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2003 by Paulo Soares.
  *
@@ -92,16 +93,16 @@ namespace iTextSharp.text.pdf {
         */
         internal PdfStamperImp(PdfReader reader, Stream os, char pdfVersion, bool append) : base(new PdfDocument(), os) {
             if (!reader.IsOpenedWithFullPermissions)
-                throw new BadPasswordException("PdfReader not opened with owner password");
+                throw new BadPasswordException(MessageLocalization.GetComposedMessage("pdfreader.not.opened.with.owner.password"));
             if (reader.Tampered)
-                throw new DocumentException("The original document was reused. Read it again from file.");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("the.original.document.was.reused.read.it.again.from.file"));
             reader.Tampered = true;
             this.reader = reader;
             file = reader.SafeFile;
             this.append = append;
             if (append) {
                 if (reader.IsRebuilt())
-                    throw new DocumentException("Append mode requires a document without errors even if recovery was possible.");
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("append.mode.requires.a.document.without.errors.even.if.recovery.was.possible"));
                 if (reader.IsEncrypted())
                     crypto = new PdfEncryption(reader.Decrypt);
                 pdf_version.SetAppendmode(true);
@@ -658,7 +659,7 @@ namespace iTextSharp.text.pdf {
         internal void ReplacePage(PdfReader r, int pageImported, int pageReplaced) {
             PdfDictionary pageN = reader.GetPageN(pageReplaced);
             if (pagesToContent.ContainsKey(pageN))
-                throw new InvalidOperationException("This page cannot be replaced: new content was already added");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("this.page.cannot.be.replaced.new.content.was.already.added"));
             PdfImportedPage p = GetImportedPage(r, pageImported);
             PdfDictionary dic2 = reader.GetPageNRelease(pageReplaced);
             dic2.Remove(PdfName.RESOURCES);
@@ -723,7 +724,7 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 if (len == kids.Size)
-                    throw new Exception("Internal inconsistence.");
+                    throw new Exception(MessageLocalization.GetComposedMessage("internal.inconsistence"));
                 MarkUsed(kids);
                 reader.pageRefs.InsertPage(pageNumber, pref);
                 CorrectAcroFieldPages(pageNumber);
@@ -776,7 +777,7 @@ namespace iTextSharp.text.pdf {
         internal bool PartialFormFlattening(String name) {
             AcroFields af = AcroFields;
             if (acroFields.Xfa.XfaPresent)
-                throw new InvalidOperationException("Partial form flattening is not supported with XFA forms.");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("partial.form.flattening.is.not.supported.with.xfa.forms"));
             if (!acroFields.Fields.ContainsKey(name))
                 return false;
             partialFlattening[name] = null;
@@ -785,7 +786,7 @@ namespace iTextSharp.text.pdf {
         
         internal void FlatFields() {
             if (append)
-                throw new ArgumentException("Field flattening is not supported in append mode.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("field.flattening.is.not.supported.in.append.mode"));
             AcroFields af = AcroFields;
             Hashtable fields = acroFields.Fields;
             if (fieldsAdded && partialFlattening.Count == 0) {
@@ -956,7 +957,7 @@ namespace iTextSharp.text.pdf {
         
         private void FlatFreeTextFields() {
             if (append)
-                throw new ArgumentException("FreeText flattening is not supported in append mode.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("freetext.flattening.is.not.supported.in.append.mode"));
             
             for (int page = 1; page <= reader.NumberOfPages; ++page) {
                 PdfDictionary pageDic = reader.GetPageN(page);
@@ -1038,7 +1039,7 @@ namespace iTextSharp.text.pdf {
         public override PdfIndirectReference GetPageReference(int page) {
             PdfIndirectReference ref_p = reader.GetPageOrigRef(page);
             if (ref_p == null)
-                throw new ArgumentException("Invalid page number " + page);
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.page.number.1", page));
             return ref_p;
         }
         
@@ -1046,7 +1047,7 @@ namespace iTextSharp.text.pdf {
         * @see com.lowagie.text.pdf.PdfWriter#addAnnotation(com.lowagie.text.pdf.PdfAnnotation)
         */
         public override void AddAnnotation(PdfAnnotation annot) {
-            throw new Exception("Unsupported in this context. Use PdfStamper.AddAnnotation()");
+            throw new Exception(MessageLocalization.GetComposedMessage("unsupported.in.this.context.use.pdfstamper.addannotation"));
         }
         
         internal void AddDocumentField(PdfIndirectReference ref_p) {
@@ -1340,7 +1341,7 @@ namespace iTextSharp.text.pdf {
         * @see PdfStamper#setPageAction(PdfName, PdfAction, int)
         */    
         public override void SetPageAction(PdfName actionType, PdfAction action) {
-            throw new InvalidOperationException("Use SetPageAction(PdfName actionType, PdfAction action, int page)");
+            throw new InvalidOperationException(MessageLocalization.GetComposedMessage("use.setpageaction.pdfname.actiontype.pdfaction.action.int.page"));
         }
 
         /**
@@ -1353,7 +1354,7 @@ namespace iTextSharp.text.pdf {
         */    
         internal void SetPageAction(PdfName actionType, PdfAction action, int page) {
             if (!actionType.Equals(PAGE_OPEN) && !actionType.Equals(PAGE_CLOSE))
-                throw new PdfException("Invalid page additional action type: " + actionType.ToString());
+                throw new PdfException(MessageLocalization.GetComposedMessage("invalid.page.additional.action.type.1", actionType.ToString()));
             PdfDictionary pg = reader.GetPageN(page);
             PdfDictionary aa = (PdfDictionary)PdfReader.GetPdfObject(pg.Get(PdfName.AA), pg);
             if (aa == null) {
@@ -1371,7 +1372,7 @@ namespace iTextSharp.text.pdf {
         */
         public override int Duration {
             set {
-                throw new InvalidOperationException("Use the methods at Pdfstamper.");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("use.the.methods.at.pdfstamper"));
             }
         }
         
@@ -1381,7 +1382,7 @@ namespace iTextSharp.text.pdf {
         */
         public override PdfTransition Transition {
             set {
-                throw new InvalidOperationException("Use the methods at Pdfstamper.");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("use.the.methods.at.pdfstamper"));
             }
         }
 
@@ -1454,7 +1455,7 @@ namespace iTextSharp.text.pdf {
             actionType.Equals(DID_SAVE) ||
             actionType.Equals(WILL_PRINT) ||
             actionType.Equals(DID_PRINT))) {
-                throw new PdfException("Invalid additional action type: " + actionType.ToString());
+                throw new PdfException(MessageLocalization.GetComposedMessage("invalid.additional.action.type.1", actionType.ToString()));
             }
             PdfDictionary aa = reader.Catalog.GetAsDict(PdfName.AA);
             if (aa == null) {
@@ -1481,7 +1482,7 @@ namespace iTextSharp.text.pdf {
         * @see com.lowagie.text.pdf.PdfWriter#setOpenAction(java.lang.String)
         */
         public override void SetOpenAction(String name) {
-            throw new InvalidOperationException("Open actions by name are not supported.");
+            throw new InvalidOperationException(MessageLocalization.GetComposedMessage("open.actions.by.name.are.not.supported"));
         }
         
         /**
@@ -1489,7 +1490,7 @@ namespace iTextSharp.text.pdf {
         */
         public override Image Thumbnail {
             set {
-                throw new InvalidOperationException("Use PdfStamper.Thumbnail");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("use.pdfstamper.thumbnail"));
             }
         }
         
@@ -1647,13 +1648,13 @@ namespace iTextSharp.text.pdf {
     
         public override PdfContentByte DirectContent {
             get {
-                throw new InvalidOperationException("Use PdfStamper.GetUnderContent() or PdfStamper.GetOverContent()");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("use.pdfstamper.getundercontent.or.pdfstamper.getovercontent"));
             }
         }
     
         public override PdfContentByte DirectContentUnder {
             get {
-                throw new InvalidOperationException("Use PdfStamper.GetUnderContent() or PdfStamper.GetOverContent()");
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("use.pdfstamper.getundercontent.or.pdfstamper.getovercontent"));
             }
         }
     }

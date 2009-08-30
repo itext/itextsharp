@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using iTextSharp.text;
 using iTextSharp.text.pdf.events;
+using iTextSharp.text.error_messages;
 
 /*
  * Copyright 2001, 2002 Paulo Soares
@@ -739,7 +740,7 @@ namespace iTextSharp.text.pdf {
                 if (rot < 0)
                     rot += 360;
                 if ((rot % 90) != 0)
-                    throw new ArgumentException("Rotation must be a multiple of 90.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("rotation.must.be.a.multiple.of.90"));
                 rotation = rot;
             }
             get {

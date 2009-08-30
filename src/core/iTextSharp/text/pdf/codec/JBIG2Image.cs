@@ -1,6 +1,7 @@
 using System;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 /*
  * $Id: JBIG2Image.java 3715 2009-02-23 15:02:23Z blowagie $
  *
@@ -84,7 +85,7 @@ namespace iTextSharp.text.pdf.codec {
         */
         public static Image GetJbig2Image(RandomAccessFileOrArray ra, int page) {
             if (page < 1)
-                throw new ArgumentException("The page number must be >= 1.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.page.number.must.be.gt.eq.1"));
             
             JBIG2SegmentReader sr = new JBIG2SegmentReader(ra);
             sr.Read();

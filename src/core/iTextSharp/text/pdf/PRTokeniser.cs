@@ -1,6 +1,8 @@
 using System;
 using System.IO;
 using System.Text;
+using iTextSharp.text.exceptions;
+using iTextSharp.text.error_messages;
 
 /*
  * Copyright 2001, 2002 by Paulo Soares.
@@ -176,7 +178,7 @@ namespace iTextSharp.text.pdf {
         }
     
         public void ThrowError(string error) {
-            throw new IOException(error + " at file pointer " + file.FilePointer);
+            throw new InvalidPdfException(MessageLocalization.GetComposedMessage("PRTokeniser.throw.error", error, file.FilePointer));
         }
     
         public char CheckPdfHeader() {
@@ -184,7 +186,7 @@ namespace iTextSharp.text.pdf {
             String str = ReadString(1024);
             int idx = str.IndexOf("%PDF-");
             if (idx < 0)
-                throw new IOException("PDF header signature not found.");
+                throw new InvalidPdfException(MessageLocalization.GetComposedMessage("PRTokeniser.pdf.header.not.found"));
             file.StartOffset = idx;
             return str[idx + 7];
         }
@@ -194,7 +196,7 @@ namespace iTextSharp.text.pdf {
             String str = ReadString(1024);
             int idx = str.IndexOf("%FDF-1.2");
             if (idx < 0)
-                throw new IOException("FDF header signature not found.");
+                throw new InvalidPdfException(MessageLocalization.GetComposedMessage("PRTokeniser.fdf.header.not.found"));
             file.StartOffset = idx;
         }
 
@@ -206,7 +208,7 @@ namespace iTextSharp.text.pdf {
                 string str = ReadString(1024);
                 int idx = str.LastIndexOf("startxref");
                 if (idx < 0)
-                    throw new IOException("PDF startxref not found.");
+                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage("PRTokeniser.pdf.startxref.not.found"));
                 return pos + idx;
             }
         }
@@ -305,7 +307,7 @@ namespace iTextSharp.text.pdf {
                 case '>':
                     ch = file.Read();
                     if (ch != '>')
-                        ThrowError("'>' not expected");
+                        ThrowError(MessageLocalization.GetComposedMessage("PRTokeniser.greaterthan.not.expected"));
                     type = TK_END_DIC;
                     break;
                 case '<': {
@@ -342,7 +344,7 @@ namespace iTextSharp.text.pdf {
                         v1 = file.Read();
                     }
                     if (v1 < 0 || v2 < 0)
-                        ThrowError("Error reading string");
+                        ThrowError(MessageLocalization.GetComposedMessage("PRTokeniser.error.reading.string"));
                     break;
                 }
                 case '%':
@@ -440,7 +442,7 @@ namespace iTextSharp.text.pdf {
                         outBuf.Append((char)ch);
                     }
                     if (ch == -1)
-                        ThrowError("Error reading string");
+                        ThrowError(MessageLocalization.GetComposedMessage("PRTokeniser.error.reading.string"));
                     break;
                 }
                 default: {

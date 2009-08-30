@@ -4,6 +4,7 @@ using System.IO;
 using System.Collections;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2003 by Paulo Soares.
  *
@@ -195,7 +196,7 @@ namespace iTextSharp.text.pdf.codec {
             ReadHeader();
             ReadContents();
             if (frames.Count == 0)
-                throw new IOException("The file does not contain any valid image.");
+                throw new IOException(MessageLocalization.GetComposedMessage("the.file.does.not.contain.any.valid.image"));
         }
         
         /**
@@ -206,7 +207,7 @@ namespace iTextSharp.text.pdf.codec {
             for (int i = 0; i < 6; i++)
                 id += (char)inp.ReadByte();
             if (!id.StartsWith("GIF8")) {
-                throw new IOException("Gif signature nor found.");
+                throw new IOException(MessageLocalization.GetComposedMessage("gif.signature.nor.found"));
             }
             
             ReadLSD();
@@ -582,7 +583,7 @@ namespace iTextSharp.text.pdf.codec {
             while (count > 0) {
                 int n = inp.Read(b, offset, count);
                 if (n <= 0)
-                    throw new IOException("Insufficient data.");
+                    throw new IOException(MessageLocalization.GetComposedMessage("insufficient.data"));
                 count -= n;
                 offset += n;
             }

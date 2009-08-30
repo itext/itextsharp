@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2004 by Paulo Soares.
  *
@@ -84,7 +85,7 @@ namespace iTextSharp.text.pdf {
         */    
         public static PdfLayer CreateTitle(String title, PdfWriter writer) {
             if (title == null)
-                throw new ArgumentNullException("Title cannot be null.");
+                throw new ArgumentNullException(MessageLocalization.GetComposedMessage("title.cannot.be.null"));
             PdfLayer layer = new PdfLayer(title);
             writer.RegisterLayer(layer);
             return layer;
@@ -112,7 +113,7 @@ namespace iTextSharp.text.pdf {
         */    
         public void AddChild(PdfLayer child) {
             if (child.parent != null)
-                throw new ArgumentException("The layer '" + ((PdfString)child.Get(PdfName.NAME)).ToUnicodeString() + "' already has a parent.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.layer.1.already.has.a.parent", ((PdfString)child.Get(PdfName.NAME)).ToUnicodeString()));
             child.parent = this;
             if (children == null)
                 children = new ArrayList();

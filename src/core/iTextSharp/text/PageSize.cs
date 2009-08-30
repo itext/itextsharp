@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: PageSize.cs,v 1.9 2008/05/13 11:25:12 psoares33 Exp $
@@ -227,7 +228,7 @@ namespace iTextSharp.text {
                 try {            
                     return (Rectangle)typeof(PageSize).GetField(name).GetValue(null);
                 } catch (Exception) {
-                    throw new ArgumentException("Can't find page size " + name);          
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("can.t.find.page.size.1", name));
                 }
             }
             else {
@@ -236,7 +237,7 @@ namespace iTextSharp.text {
                     String height = name.Substring(pos + 1);
                     return new Rectangle(float.Parse(width, System.Globalization.NumberFormatInfo.InvariantInfo), float.Parse(height, System.Globalization.NumberFormatInfo.InvariantInfo));
                 } catch(Exception e) {
-                    throw new ArgumentException(name + " is not a valid page size format: " + e.Message);
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("1.is.not.a.valid.page.size.format.2", name, e.Message));
                 }
             }
         }    

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.util.collections;
 using iTextSharp.text.pdf.draw;
+using iTextSharp.text.error_messages;
 
 /*
  * Copyright 2001-2005 by Paulo Soares.
@@ -423,11 +424,11 @@ public class ColumnText {
             try {
                 element = ((SimpleTable)element).CreatePdfPTable();
             } catch (DocumentException) {
-                throw new ArgumentException("Element not allowed.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("element.not.allowed"));
             }
         }
         else if (element.Type != Element.PARAGRAPH && element.Type != Element.LIST && element.Type != Element.PTABLE && element.Type != Element.YMARK)
-            throw new ArgumentException("Element not allowed.");
+            throw new ArgumentException(MessageLocalization.GetComposedMessage("element.not.allowed"));
         if (!composite) {
             composite = true;
             compositeElements = new ArrayList();
@@ -448,7 +449,7 @@ public class ColumnText {
      */
     protected ArrayList ConvertColumn(float[] cLine) {
         if (cLine.Length < 4)
-            throw new Exception("No valid column line found.");
+            throw new Exception(MessageLocalization.GetComposedMessage("no.valid.column.line.found"));
         ArrayList cc = new ArrayList();
         for (int k = 0; k < cLine.Length - 2; k += 2) {
             float x1 = cLine[k];
@@ -470,7 +471,7 @@ public class ColumnText {
             minY = Math.Min(minY, r[0]);
         }
         if (cc.Count == 0)
-            throw new Exception("No valid column line found.");
+            throw new Exception(MessageLocalization.GetComposedMessage("no.valid.column.line.found"));
         return cc;
     }
     
@@ -763,7 +764,7 @@ public class ColumnText {
             text = canvas.Duplicate;
         }
         else if (!simulate)
-            throw new Exception("ColumnText.go with simulate==false and text==null.");
+            throw new Exception(MessageLocalization.GetComposedMessage("columntext.go.with.simulate.eq.eq.false.and.text.eq.eq.null"));
         if (!simulate) {
             if (ratio == GLOBAL_SPACE_CHAR_RATIO)
                 ratio = text.PdfWriter.SpaceCharRatio;
@@ -907,7 +908,7 @@ public class ColumnText {
 
         set {
             if (value < PdfWriter.RUN_DIRECTION_DEFAULT || value > PdfWriter.RUN_DIRECTION_RTL)
-                throw new Exception("Invalid run direction: " + value);
+                throw new Exception(MessageLocalization.GetComposedMessage("invalid.run.direction.1", value));
             this.runDirection = value;
         }
     }
@@ -1044,7 +1045,7 @@ public class ColumnText {
 
     protected int GoComposite(bool simulate) {
         if (!rectangularMode)
-            throw new DocumentException("Irregular columns are not supported in composite mode.");
+            throw new DocumentException(MessageLocalization.GetComposedMessage("irregular.columns.are.not.supported.in.composite.mode"));
         linesWritten = 0;
         descender = 0;
         bool firstPass = adjustFirstLine;

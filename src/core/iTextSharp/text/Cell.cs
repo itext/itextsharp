@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.util;
+using iTextSharp.text.error_messages;
 
 using iTextSharp.text.html;
 using iTextSharp.text.pdf;
@@ -284,7 +285,7 @@ namespace iTextSharp.text {
                 case Element.LISTITEM:
                 case Element.ROW:
                 case Element.CELL:
-                    throw new BadElementException("You can't add listitems, rows or cells to a cell.");
+                    throw new BadElementException(MessageLocalization.GetComposedMessage("you.can.t.add.listitems.rows.or.cells.to.a.cell"));
                 case Element.JPEG:
                 case Element.IMGRAW:
                 case Element.IMGTEMPLATE:
@@ -374,7 +375,7 @@ namespace iTextSharp.text {
                 throw new Exception(bee.Message);
             }
             catch {
-                throw new Exception("You can only add objects that implement the Element interface.");
+                throw new Exception(MessageLocalization.GetComposedMessage("you.can.only.add.objects.that.implement.the.element.interface"));
             }
         }
 
@@ -649,11 +650,11 @@ namespace iTextSharp.text {
         /// <value>none</value>
         public override float Top {
             get {
-                throw new Exception("Dimensions of a Cell can't be calculated. See the FAQ.");
+                throw new Exception(MessageLocalization.GetComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
             }
 
             set {
-                throw new Exception("Dimensions of a Cell can't be calculated. See the FAQ.");
+                throw new Exception(MessageLocalization.GetComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
             }
         }
 
@@ -663,11 +664,11 @@ namespace iTextSharp.text {
         /// <value>none</value>
         public override float Bottom {
             get {
-                throw new Exception("Dimensions of a Cell can't be calculated. See the FAQ.");
+                throw new Exception(MessageLocalization.GetComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
             }
 
             set {
-                throw new Exception("Dimensions of a Cell can't be calculated. See the FAQ.");
+                throw new Exception(MessageLocalization.GetComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
             }
         }
 
@@ -677,11 +678,11 @@ namespace iTextSharp.text {
         /// <value>none</value>
         public override float Left {
             get {
-                throw new Exception("Dimensions of a Cell can't be calculated. See the FAQ.");
+                throw new Exception(MessageLocalization.GetComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
             }
 
             set {
-                throw new Exception("Dimensions of a Cell can't be calculated. See the FAQ.");
+                throw new Exception(MessageLocalization.GetComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
             }
         }
 
@@ -691,11 +692,11 @@ namespace iTextSharp.text {
         /// <value>none</value>
         public override float Right {
             get {
-                throw new Exception("Dimensions of a Cell can't be calculated. See the FAQ.");
+                throw new Exception(MessageLocalization.GetComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
             }
 
             set {
-                throw new Exception("Dimensions of a Cell can't be calculated. See the FAQ.");
+                throw new Exception(MessageLocalization.GetComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
             }
         }
 
@@ -705,7 +706,7 @@ namespace iTextSharp.text {
         /// <param name="margin">new value</param>
         /// <returns>none</returns>
         public float GetTop(int margin) {
-            throw new Exception("Dimensions of a Cell can't be calculated. See the FAQ.");
+            throw new Exception(MessageLocalization.GetComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
         }
 
         /// <summary>
@@ -714,7 +715,7 @@ namespace iTextSharp.text {
         /// <param name="margin">new value</param>
         /// <returns>none</returns>
         public float GetBottom(int margin) {
-            throw new Exception("Dimensions of a Cell can't be calculated. See the FAQ.");
+            throw new Exception(MessageLocalization.GetComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
         }
 
         /// <summary>
@@ -723,7 +724,7 @@ namespace iTextSharp.text {
         /// <param name="margin">new value</param>
         /// <returns>none</returns>
         public float GetLeft(int margin) {
-            throw new Exception("Dimensions of a Cell can't be calculated. See the FAQ.");
+            throw new Exception(MessageLocalization.GetComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
         }
 
         /// <summary>
@@ -732,7 +733,7 @@ namespace iTextSharp.text {
         /// <param name="margin">new value</param>
         /// <returns>none</returns>
         public float GetRight(int margin) {
-            throw new Exception("Dimensions of a Cell can't be calculated. See the FAQ.");
+            throw new Exception(MessageLocalization.GetComposedMessage("dimensions.of.a.cell.can.t.be.calculated.see.the.faq"));
         }
 
         /// <summary>
@@ -847,7 +848,7 @@ namespace iTextSharp.text {
         * @throws BadElementException
         */
         public PdfPCell CreatePdfPCell() {
-            if (rowspan > 1) throw new BadElementException("PdfPCells can't have a rowspan > 1");
+            if (rowspan > 1) throw new BadElementException(MessageLocalization.GetComposedMessage("pdfpcells.can.t.have.a.rowspan.gt.1"));
             if (IsTable()) return new PdfPCell(((Table)arrayList[0]).CreatePdfPTable());
             PdfPCell cell = new PdfPCell();
             cell.VerticalAlignment = verticalAlignment;

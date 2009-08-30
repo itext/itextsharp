@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: BarcodeInter25.cs,v 1.5 2006/09/17 15:58:51 psoares33 Exp $
@@ -134,7 +135,7 @@ namespace iTextSharp.text.pdf {
         public static byte[] GetBarsInter25(string text) {
             text = KeepNumbers(text);
             if ((text.Length & 1) != 0)
-                throw new ArgumentException("The text length must be even.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.text.length.must.be.even"));
             byte[] bars = new byte[text.Length * 5 + 7];
             int pb = 0;
             bars[pb++] = 0;

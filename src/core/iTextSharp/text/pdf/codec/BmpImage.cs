@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.util;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2003-2008 by Paulo Soares.
  *
@@ -235,7 +236,7 @@ namespace iTextSharp.text.pdf.codec {
                 // Start File Header
                 if (!(ReadUnsignedByte(inputStream) == 'B' &&
                 ReadUnsignedByte(inputStream) == 'M')) {
-                    throw new Exception("Invalid magic value for BMP file.");
+                    throw new Exception(MessageLocalization.GetComposedMessage("invalid.magic.value.for.bmp.file"));
                 }
 
                 // Read file size
@@ -770,7 +771,7 @@ namespace iTextSharp.text.pdf.codec {
             while (bytesRead < sizeOfPalette) {
                 int r = inputStream.Read(palette, bytesRead, sizeOfPalette - bytesRead);
                 if (r <= 0) {
-                    throw new IOException("incomplete palette");
+                    throw new IOException(MessageLocalization.GetComposedMessage("incomplete.palette"));
                 }
                 bytesRead += r;
             }

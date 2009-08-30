@@ -3,9 +3,10 @@ using System.IO;
 using System.Text;
 using System.Collections;
 using System.util;
+using iTextSharp.text.error_messages;
 
 /*
- * $Id: CJKFont.cs,v 1.10 2008/06/01 13:17:07 psoares33 Exp $
+ * $Id: CJKFont.cs,v 1.9 2008/05/13 11:25:17 psoares33 Exp $
  * 
  *
  * Copyright 2000, 2001, 2002 by Paulo Soares.
@@ -126,7 +127,7 @@ internal class CJKFont : BaseFont {
         this.FontType = FONT_TYPE_CJK;
         string nameBase = GetBaseName(fontName);
         if (!IsCJKFont(nameBase, enc))
-            throw new DocumentException("Font '" + fontName + "' with '" + enc + "' encoding is not a CJK font.");
+            throw new DocumentException(MessageLocalization.GetComposedMessage("font.1.with.2.encoding.is.not.a.cjk.font", fontName, enc));
         if (nameBase.Length < fontName.Length) {
             style = fontName.Substring(nameBase.Length);
             fontName = nameBase;
@@ -143,7 +144,7 @@ internal class CJKFont : BaseFont {
             if (c == null) {
                 c = ReadCMap(s);
                 if (c == null)
-                    throw new DocumentException("The cmap " + s + " does not exist as a resource.");
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("the.cmap.1.does.not.exist.as.a.resource", s));
                 c[CID_NEWLINE] = '\n';
                 allCMaps.Add(s, c);
             }
@@ -154,7 +155,7 @@ internal class CJKFont : BaseFont {
             if (c == null) {
                 string s = cjkEncodings[enc];
                 if (s == null)
-                    throw new DocumentException("The resource cjkencodings.properties does not contain the encoding " + enc);
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("the.resource.cjkencodings.properties.does.not.contain.the.encoding.1", enc));
                 StringTokenizer tk = new StringTokenizer(s);
                 string nt = tk.NextToken();
                 c = (char[])allCMaps[nt];

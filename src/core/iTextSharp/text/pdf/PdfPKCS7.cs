@@ -19,6 +19,7 @@ using Org.BouncyCastle.Ocsp;
 using Org.BouncyCastle.Tsp;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Utilities;
+using iTextSharp.text.error_messages;
 
 /*
  * Copyright 2004 by Paulo Soares.
@@ -339,15 +340,15 @@ namespace iTextSharp.text.pdf {
                 pkcs = din.ReadObject();
             }
             catch  {
-                throw new ArgumentException("can't decode PKCS7SignedData object");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("can.t.decode.pkcs7signeddata.object"));
             }
             if (!(pkcs is Asn1Sequence)) {
-                throw new ArgumentException("Not a valid PKCS#7 object - not a sequence");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("not.a.valid.pkcs.7.object.not.a.sequence"));
             }
             Asn1Sequence signedData = (Asn1Sequence)pkcs;
             DerObjectIdentifier objId = (DerObjectIdentifier)signedData[0];
             if (!objId.Id.Equals(ID_PKCS7_SIGNED_DATA))
-                throw new ArgumentException("Not a valid PKCS#7 object - not signed data");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("not.a.valid.pkcs.7.object.not.signed.data"));
             Asn1Sequence content = (Asn1Sequence)((DerTaggedObject)signedData[1]).GetObject();
             // the positions that we care are:
             //     0 - version
@@ -390,7 +391,7 @@ namespace iTextSharp.text.pdf {
                 ++next;
             Asn1Set signerInfos = (Asn1Set)content[next];
             if (signerInfos.Count != 1)
-                throw new ArgumentException("This PKCS#7 object has multiple SignerInfos - only one is supported at this time");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("this.pkcs.7.object.has.multiple.signerinfos.only.one.is.supported.at.this.time"));
             Asn1Sequence signerInfo = (Asn1Sequence)signerInfos[0];
             // the positions that we care are
             //     0 - version
@@ -409,7 +410,7 @@ namespace iTextSharp.text.pdf {
                 }                                                                                                
             }
             if (signCert == null) {
-                throw new ArgumentException("Can't find signing certificate with serial " + serialNumber.ToString(16));
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("can.t.find.signing.certificate.with.serial.1", serialNumber.ToString(16)));
             }
             CalcSignCertificateChain();
             digestAlgorithm = ((DerObjectIdentifier)((Asn1Sequence)signerInfo[2])[0]).Id;
@@ -438,7 +439,7 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 if (digestAttr == null)
-                    throw new ArgumentException("Authenticated attribute is missing the digest.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("authenticated.attribute.is.missing.the.digest"));
                 ++next;
             }
             digestEncryptionAlgorithm = ((DerObjectIdentifier)((Asn1Sequence)signerInfo[next++])[0]).Id;
@@ -481,7 +482,7 @@ namespace iTextSharp.text.pdf {
             
             digestAlgorithm = (String)allowedDigests[hashAlgorithm.ToUpper(CultureInfo.InvariantCulture)];
             if (digestAlgorithm == null)
-                throw new ArgumentException("Unknown Hash Algorithm "+hashAlgorithm);
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.hash.algorithm.1", hashAlgorithm));
             
             version = signerversion = 1;
             certs = new ArrayList();
@@ -512,7 +513,7 @@ namespace iTextSharp.text.pdf {
                 else if (privKey is DsaKeyParameters)
                     digestEncryptionAlgorithm = ID_DSA;
                 else
-                    throw new ArgumentException("Unknown Key Algorithm "+privKey.ToString());
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.key.algorithm.1", privKey.ToString()));
 
             }
             if (hasRSAdata) {
@@ -1013,7 +1014,7 @@ namespace iTextSharp.text.pdf {
                     this.digestEncryptionAlgorithm = ID_DSA;
                 }
                 else
-                    throw new ArgumentException("Unknown Key Algorithm "+digestEncryptionAlgorithm);
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.key.algorithm.1", digestEncryptionAlgorithm));
             }
         }
         
@@ -1437,7 +1438,7 @@ namespace iTextSharp.text.pdf {
                     int index = token.IndexOf('=');
                     
                     if (index == -1) {
-                        throw new ArgumentException("badly formated directory string");
+                        throw new ArgumentException(MessageLocalization.GetComposedMessage("badly.formated.directory.string"));
                     }
                     
                     String id = token.Substring(0, index).ToUpper(System.Globalization.CultureInfo.InvariantCulture);

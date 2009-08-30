@@ -3,6 +3,7 @@ using System.Collections;
 using System.util;
 using iTextSharp.text;
 using iTextSharp.text.factories;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: PdfPageLabels.cs,v 1.9 2008/05/13 11:25:21 psoares33 Exp $
@@ -106,7 +107,7 @@ namespace iTextSharp.text.pdf {
          */    
         public void AddPageLabel(int page, int numberStyle, string text, int firstPage) {
             if (page < 1 || firstPage < 1)
-                throw new ArgumentException("In a page label the page numbers must be greater or equal to 1.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("in.a.page.label.the.page.numbers.must.be.greater.or.equal.to.1"));
             PdfDictionary dic = new PdfDictionary();
             if (numberStyle >= 0 && numberStyle < numberingStyle.Length)
                 dic.Put(PdfName.S, numberingStyle[numberStyle]);

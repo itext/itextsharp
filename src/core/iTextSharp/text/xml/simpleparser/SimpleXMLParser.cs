@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Collections;
 using System.Globalization;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2003 Paulo Soares
  *
@@ -197,7 +198,7 @@ namespace iTextSharp.text.xml.simpleparser {
                             Flush();
                         doc.EndDocument();
                     } else {
-                        ThrowException("Missing end tag");
+                        ThrowException(MessageLocalization.GetComposedMessage("missing.end.tag"));
                     }
                     return;
                 }
@@ -320,7 +321,7 @@ namespace iTextSharp.text.xml.simpleparser {
                 // and are looking for the final >.
                 case SINGLE_TAG:
                     if (character != '>')
-                        ThrowException("Expected > for tag: <"+tag+"/>");
+                        ThrowException(MessageLocalization.GetComposedMessage("expected.gt.for.tag.lt.1.gt", tag));
                     DoTag();
                     ProcessTag(true);
                     ProcessTag(false);
@@ -449,7 +450,7 @@ namespace iTextSharp.text.xml.simpleparser {
                         text.Append((char)character);
                         state = ATTRIBUTE_KEY;
                     } else {
-                        ThrowException("Error in attribute processing.");
+                        ThrowException(MessageLocalization.GetComposedMessage("error.in.attribute.processing"));
                     }
                     break;
                     
@@ -469,7 +470,7 @@ namespace iTextSharp.text.xml.simpleparser {
                         quoteCharacter = ' ';
                         state = QUOTE;
                     } else {
-                        ThrowException("Error in attribute processing");
+                        ThrowException(MessageLocalization.GetComposedMessage("error.in.attribute.processing"));
                     }
                     break;
                 }
@@ -558,7 +559,7 @@ namespace iTextSharp.text.xml.simpleparser {
         }
         /** Throws an exception */
         private void ThrowException(String s) {
-            throw new IOException(s+" near line " + lines + ", column " + columns);
+            throw new IOException(MessageLocalization.GetComposedMessage("1.near.line.2.column.3", s, lines, columns));
         }
         
         /**
@@ -582,7 +583,7 @@ namespace iTextSharp.text.xml.simpleparser {
             byte[] b4 = new byte[4];
             int count = inp.Read(b4, 0, b4.Length);
             if (count != 4)
-                throw new IOException("Insufficient length.");
+                throw new IOException(MessageLocalization.GetComposedMessage("insufficient.length"));
             String encoding = GetEncodingName(b4);
             String decl = null;
             if (encoding.Equals("UTF-8")) {

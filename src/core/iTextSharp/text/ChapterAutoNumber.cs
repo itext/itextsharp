@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 
 /*
  * Copyright 2005 by Michael Niedermair.
@@ -86,7 +87,7 @@ namespace iTextSharp.text {
         */
         public override Section AddSection(String title) {
     	    if (AddedCompletely) {
-    		    throw new InvalidOperationException("This LargeElement has already been added to the Document.");
+    		    throw new InvalidOperationException(MessageLocalization.GetComposedMessage("this.largeelement.has.already.been.added.to.the.document"));
     	    }
             return AddSection(title, 2);
         }
@@ -99,7 +100,7 @@ namespace iTextSharp.text {
         */
         public override Section AddSection(Paragraph title) {
     	    if (AddedCompletely) {
-    		    throw new InvalidOperationException("This LargeElement has already been added to the Document.");
+    		    throw new InvalidOperationException(MessageLocalization.GetComposedMessage("this.largeelement.has.already.been.added.to.the.document"));
     	    }
             return AddSection(title, 2);
         }

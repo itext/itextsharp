@@ -3,6 +3,7 @@ using System.IO;
 using System.Net;
 using System.util;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id: Jpeg.cs,v 1.11 2008/05/13 11:25:11 psoares33 Exp $
@@ -201,14 +202,14 @@ namespace iTextSharp.text {
                     errorID = "Byte array";
                 }
                 if (istr.ReadByte() != 0xFF || istr.ReadByte() != 0xD8)    {
-                    throw new BadElementException(errorID + " is not a valid JPEG-file.");
+                    throw new BadElementException(MessageLocalization.GetComposedMessage("1.is.not.a.valid.jpeg.file", errorID));
                 }
                 bool firstPass = true;
                 int len;
                 while (true) {
                     int v = istr.ReadByte();
                     if (v < 0)
-                        throw new IOException("Premature EOF while reading JPG.");
+                        throw new IOException(MessageLocalization.GetComposedMessage("premature.eof.while.reading.jpg"));
                     if (v == 0xFF) {
                         int marker = istr.ReadByte();
                         if (firstPass && marker == M_APP0) {
@@ -221,7 +222,7 @@ namespace iTextSharp.text {
                             byte[] bcomp = new byte[JFIF_ID.Length];
                             int r = istr.Read(bcomp, 0, bcomp.Length);
                             if (r != bcomp.Length)
-                                throw new BadElementException(errorID + " corrupted JFIF marker.");
+                                throw new BadElementException(MessageLocalization.GetComposedMessage("1.corrupted.jfif.marker", errorID));
                             bool found = true;
                             for (int k = 0; k < bcomp.Length; ++k) {
                                 if (bcomp[k] != JFIF_ID[k]) {
@@ -285,7 +286,7 @@ namespace iTextSharp.text {
                         if (markertype == VALID_MARKER) {
                             Utilities.Skip(istr, 2);
                             if (istr.ReadByte() != 0x08) {
-                                throw new BadElementException(errorID + " must have 8 bits per component.");
+                                throw new BadElementException(MessageLocalization.GetComposedMessage("1.must.have.8.bits.per.component", errorID));
                             }
                             scaledHeight = GetShort(istr);
                             Top = scaledHeight;
@@ -296,7 +297,7 @@ namespace iTextSharp.text {
                             break;
                         }
                         else if (markertype == UNSUPPORTED_MARKER) {
-                            throw new BadElementException(errorID + ": unsupported JPEG marker: " + marker);
+                            throw new BadElementException(MessageLocalization.GetComposedMessage("1.unsupported.jpeg.marker.2", errorID, marker));
                         }
                         else if (markertype != NOPARAM_MARKER) {
                             Utilities.Skip(istr, GetShort(istr) - 2);

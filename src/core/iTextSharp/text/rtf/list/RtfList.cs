@@ -7,6 +7,7 @@ using iTextSharp.text.rtf.document;
 using iTextSharp.text.rtf.style;
 using iTextSharp.text.rtf.text;
 using iTextSharp.text.factories;
+using iTextSharp.text.error_messages;
 /*
  * $Id: RtfList.cs,v 1.18 2008/05/16 19:31:01 psoares33 Exp $
  * 
@@ -636,7 +637,7 @@ namespace iTextSharp.text.rtf.list {
                 this.listType = listType;
             }
             else {
-                throw new ArgumentException("Invalid listType value.");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.listtype.value"));
             }
         }
 

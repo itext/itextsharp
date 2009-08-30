@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 /*
  * $Id: MultiColumnText.cs,v 1.13 2008/05/13 11:25:18 psoares33 Exp $
  * 
@@ -255,7 +256,7 @@ namespace iTextSharp.text.pdf {
             } else if (element is Chunk) {
                 columnText.AddText((Chunk) element);
             } else {
-                throw new DocumentException("Can't add " + element.GetType().ToString() + " to MultiColumnText with complex columns");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("can.t.add.1.to.multicolumntext.with.complex.columns", element.GetType().ToString()));
             }
         }
 
@@ -273,7 +274,7 @@ namespace iTextSharp.text.pdf {
             this.document = document;
             columnText.Canvas = canvas;
             if (columnDefs.Count == 0) {
-                throw new DocumentException("MultiColumnText has no columns");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("multicolumntext.has.no.columns"));
             }
             overflow = false;
             float currentHeight = 0;

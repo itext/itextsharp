@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2003 Paulo Soares
  *
@@ -1096,16 +1097,16 @@ namespace iTextSharp.text.pdf {
         */
         private static void ValidateTypes(sbyte[] types) {
             if (types == null) {
-                throw new ArgumentException("types is null");
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("types.is.null"));
             }
             for (int i = 0; i < types.Length; ++i) {
                 if (types[i] < TYPE_MIN || types[i] > TYPE_MAX) {
-                    throw new ArgumentException("illegal type value at " + i + ": " + types[i]);
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("illegal.type.value.at.1.2", i, types[i]));
                 }
             }
             for (int i = 0; i < types.Length - 1; ++i) {
                 if (types[i] == B) {
-                    throw new ArgumentException("B type before end of paragraph at index: " + i);
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("b.type.before.end.of.paragraph.at.index.1", i));
                 }
             }
         }
@@ -1118,7 +1119,7 @@ namespace iTextSharp.text.pdf {
             if (paragraphEmbeddingLevel != -1 &&
             paragraphEmbeddingLevel != 0 &&
             paragraphEmbeddingLevel != 1) {
-                throw new ArgumentException("illegal paragraph embedding level: " + paragraphEmbeddingLevel);
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("illegal.paragraph.embedding.level.1", paragraphEmbeddingLevel));
             }
         }
         
@@ -1130,12 +1131,12 @@ namespace iTextSharp.text.pdf {
             for (int i = 0; i < linebreaks.Length; ++i) {
                 int next = linebreaks[i];
                 if (next <= prev) {
-                    throw new ArgumentException("bad linebreak: " + next + " at index: " + i);
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("bad.linebreak.1.at.index.2", next, i));
                 }
                 prev = next;
             }
             if (prev != textLength) {
-                throw new ArgumentException("last linebreak must be at " + textLength);
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("last.linebreak.must.be.at.1", textLength));
             }
         }
         

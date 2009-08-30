@@ -8,6 +8,7 @@ using iTextSharp.text.rtf.document.output;
 using iTextSharp.text.rtf.text;
 using iTextSharp.text.rtf.style;
 using iTextSharp.text.pdf.codec.wmf;
+using iTextSharp.text.error_messages;
 /*
  * $Id: RtfImage.cs,v 1.11 2008/05/16 19:30:59 psoares33 Exp $
  * 
@@ -167,7 +168,7 @@ namespace iTextSharp.text.rtf.graphic {
             imageType = image.OriginalType;
             if (!(imageType == Image.ORIGINAL_JPEG || imageType == Image.ORIGINAL_BMP
                     || imageType == Image.ORIGINAL_PNG || imageType == Image.ORIGINAL_WMF || imageType == Image.ORIGINAL_GIF)) {
-                throw new DocumentException("Only BMP, PNG, WMF, GIF and JPEG images are supported by the RTF Writer");
+                throw new DocumentException(MessageLocalization.GetComposedMessage("only.bmp.png.wmf.gif.and.jpeg.images.are.supported.by.the.rtf.writer"));
             }
             alignment = image.Alignment;
             width = image.Width;
@@ -197,7 +198,7 @@ namespace iTextSharp.text.rtf.graphic {
                         Stream imageIn = WebRequest.Create(image.Url).GetResponse().GetResponseStream();
                         if (imageType == Image.ORIGINAL_WMF) { //remove the placeable header first
                             for (int k = 0; k < WMF_PLACEABLE_HEADER_SIZE; k++) {
-                                if (imageIn.ReadByte() < 0) throw (new IOException("while removing wmf placeable header"));
+                                if (imageIn.ReadByte() < 0) throw new EndOfStreamException(MessageLocalization.GetComposedMessage("while.removing.wmf.placeable.header"));
                             }
                         }
                         bab.Write(imageIn);

@@ -1,6 +1,7 @@
 using System;
 using iTextSharp.text;
 using System.Collections;
+using iTextSharp.text.error_messages;
 
 /*
  * Copyright 2002 by Paulo Soares.
@@ -468,7 +469,7 @@ namespace iTextSharp.text.pdf {
                         width = x * (4 + 5 * 7 + 4 * 2);
                         break;
                     default:
-                        throw new ArgumentException("Invalid code type.");
+                        throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.code.type"));
                 }
                 return new Rectangle(width, height);
             }
@@ -674,7 +675,7 @@ namespace iTextSharp.text.pdf {
                     width = 4 + 5 * 7 + 4 * 2;
                     break;
                 default:
-                    throw new InvalidOperationException("Invalid code type.");
+                    throw new InvalidOperationException(MessageLocalization.GetComposedMessage("invalid.code.type"));
             }
             int height = (int)barHeight;
             System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(width, height);

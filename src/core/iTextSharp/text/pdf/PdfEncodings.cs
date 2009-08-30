@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.util;
 using iTextSharp.text.xml.simpleparser;
+using iTextSharp.text.error_messages;
 
 /*
  * Copyright 2002-2006 Paulo Soares
@@ -414,7 +415,7 @@ public class PdfEncodings {
         String fullName = BaseFont.RESOURCE_PATH + "cmaps." + name;
         Stream inp = BaseFont.GetResourceStream(fullName);
         if (inp == null)
-            throw new IOException("The Cmap " + name + " was not found.");
+            throw new IOException(MessageLocalization.GetComposedMessage("the.cmap.1.was.not.found", name));
         EncodeStream(inp, planes);
         inp.Close();
     }
@@ -494,7 +495,7 @@ public class PdfEncodings {
             int one = (int)seqs[idx] & 0xff;
             char c = plane[one];
             if (c != 0 && (c & 0x8000) == 0)
-                throw new Exception("Inconsistent mapping.");
+                throw new Exception(MessageLocalization.GetComposedMessage("inconsistent.mapping"));
             if (c == 0) {
                 planes.Add(new char[256]);
                 c = (char)((planes.Count - 1) | 0x8000);
@@ -506,7 +507,7 @@ public class PdfEncodings {
         int ones = (int)seqs[size] & 0xff;
         char cc = plane[ones];
         if ((cc & 0x8000) != 0)
-            throw new Exception("Inconsistent mapping.");
+            throw new Exception(MessageLocalization.GetComposedMessage("inconsistent.mapping"));
         plane[ones] = cid;
     }
 

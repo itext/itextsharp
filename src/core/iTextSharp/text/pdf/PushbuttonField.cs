@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2005 by Paulo Soares.
  *
@@ -165,7 +166,7 @@ namespace iTextSharp.text.pdf {
         public int Layout {
             set {
                 if (value < LAYOUT_LABEL_ONLY || value > LAYOUT_LABEL_OVER_ICON)
-                    throw new ArgumentException("Layout out of bounds.");
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("layout.out.of.bounds"));
                 this.layout = value;
             }
             get {

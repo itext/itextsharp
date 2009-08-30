@@ -1,4 +1,5 @@
 using System;
+using iTextSharp.text.error_messages;
 /*
  * Copyright 2003-2008 by Paulo Soares.
  * 
@@ -647,9 +648,9 @@ namespace iTextSharp.text.pdf.codec {
                         
                         UpdatePointer(4 - bits);
                     } else if (bits == 0) {     // ERROR
-                        throw new Exception("Invalid code encountered.");
+                        throw new Exception(MessageLocalization.GetComposedMessage("invalid.code.encountered"));
                     } else if (bits == 15) {    // EOL
-                        throw new Exception("EOL code word encountered in White run.");
+                        throw new Exception(MessageLocalization.GetComposedMessage("eol.code.word.encountered.in.white.run"));
                     } else {
                         // 11 bits - 0000 0111 1111 1111 = 0x07ff
                         code = (entry >> 5) & 0x07ff;
@@ -705,7 +706,7 @@ namespace iTextSharp.text.pdf.codec {
                             UpdatePointer(4 - bits);
                         } else if (bits == 15) {
                             // EOL code
-                            throw new Exception("EOL code word encountered in Black run.");
+                            throw new Exception(MessageLocalization.GetComposedMessage("eol.code.word.encountered.in.black.run"));
                         } else {
                             SetToBlack(buffer, lineOffset, bitOffset, code);
                             bitOffset += code;
@@ -786,7 +787,7 @@ namespace iTextSharp.text.pdf.codec {
             
             // The data must start with an EOL code
             if (ReadEOL(true) != 1) {
-                throw new Exception("First scanline must be 1D encoded.");
+                throw new Exception(MessageLocalization.GetComposedMessage("first.scanline.must.be.1d.encoded"));
             }
             
             int lineOffset = 0;
@@ -888,7 +889,7 @@ namespace iTextSharp.text.pdf.codec {
                             
                             UpdatePointer(7 - bits);
                         } else {
-                            throw new Exception("Invalid code encountered while decoding 2D group 3 compressed data.");
+                            throw new Exception(MessageLocalization.GetComposedMessage("invalid.code.encountered.while.decoding.2d.group.3.compressed.data"));
                         }
                     }
                     
@@ -1035,7 +1036,7 @@ namespace iTextSharp.text.pdf.codec {
                         UpdatePointer(7 - bits);
                     } else if (code == 11) {
                         if (NextLesserThan8Bits(3) != 7) {
-                            throw new Exception("Invalid code encountered while decoding 2D group 4 compressed data.");
+                            throw new Exception(MessageLocalization.GetComposedMessage("invalid.code.encountered.while.decoding.2d.group.4.compressed.data"));
                         }
                         
                         int zeros = 0;
@@ -1184,9 +1185,9 @@ namespace iTextSharp.text.pdf.codec {
                     runLength += code;
                     UpdatePointer(4 - bits);
                 } else if (bits == 0) {     // ERROR
-                    throw new Exception("Invalid code encountered.");
+                    throw new Exception(MessageLocalization.GetComposedMessage("invalid.code.encountered"));
                 } else if (bits == 15) {    // EOL
-                    throw new Exception("EOL code word encountered in White run.");
+                    throw new Exception(MessageLocalization.GetComposedMessage("eol.code.word.encountered.in.white.run"));
                 } else {
                     // 11 bits - 0000 0111 1111 1111 = 0x07ff
                     code = (entry >> 5) & 0x07ff;
@@ -1237,7 +1238,7 @@ namespace iTextSharp.text.pdf.codec {
                         UpdatePointer(4 - bits);
                     } else if (bits == 15) {
                         // EOL code
-                        throw new Exception("EOL code word encountered in Black run.");
+                        throw new Exception(MessageLocalization.GetComposedMessage("eol.code.word.encountered.in.black.run"));
                     } else {
                         runLength += code;
                         UpdatePointer(9 - bits);
@@ -1284,7 +1285,7 @@ namespace iTextSharp.text.pdf.codec {
                     }
                 }
                 if (next12Bits != 1) {
-                    throw new Exception("Scanline must begin with EOL code word.");
+                    throw new Exception(MessageLocalization.GetComposedMessage("scanline.must.begin.with.eol.code.word"));
                 }
             } else if (fillBits == 1) {
                 
@@ -1295,7 +1296,7 @@ namespace iTextSharp.text.pdf.codec {
                 int bitsLeft = 8 - bitPointer;
                 
                 if (NextNBits(bitsLeft) != 0) {
-                    throw new Exception("All fill bits preceding EOL code must be 0.");
+                    throw new Exception(MessageLocalization.GetComposedMessage("all.fill.bits.preceding.eol.code.must.be.0"));
                 }
                 
                 // If the number of bitsLeft is less than 8, then to have a 12
@@ -1304,7 +1305,7 @@ namespace iTextSharp.text.pdf.codec {
                 // that.
                 if (bitsLeft < 4) {
                     if (NextNBits(8) != 0) {
-                        throw new Exception("All fill bits preceding EOL code must be 0.");
+                        throw new Exception(MessageLocalization.GetComposedMessage("all.fill.bits.preceding.eol.code.must.be.0"));
                     }
                 }
                 
@@ -1316,7 +1317,7 @@ namespace iTextSharp.text.pdf.codec {
                     
                     // If not all zeros
                     if (n != 0) {
-                        throw new Exception("All fill bits preceding EOL code must be 0.");
+                        throw new Exception(MessageLocalization.GetComposedMessage("all.fill.bits.preceding.eol.code.must.be.0"));
                     }
                 }
             }
@@ -1393,7 +1394,7 @@ namespace iTextSharp.text.pdf.codec {
                     next2next = flipTable[data[bp + 2] & 0xff];
                 }
             } else {
-                throw new Exception("TIFF_FILL_ORDER tag must be either 1 or 2.");
+                throw new Exception(MessageLocalization.GetComposedMessage("tiff.fill.order.tag.must.be.either.1.or.2"));
             }
             
             int bitsLeft = 8 - bitPointer;
@@ -1450,7 +1451,7 @@ namespace iTextSharp.text.pdf.codec {
                     next = flipTable[data[bp + 1] & 0xff];
                 }
             } else {
-                throw new Exception("TIFF_FILL_ORDER tag must be either 1 or 2.");
+                throw new Exception(MessageLocalization.GetComposedMessage("tiff.fill.order.tag.must.be.either.1.or.2"));
             }
             
             int bitsLeft = 8 - bitPointer;
