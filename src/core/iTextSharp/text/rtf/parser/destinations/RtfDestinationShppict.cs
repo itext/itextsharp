@@ -74,7 +74,7 @@ namespace iTextSharp.text.rtf.parser.destinations {
         private StringBuilder buffer = new StringBuilder();
 
         /* picttype */
-        private int pictureType = Image.ORIGINAL_NONE;
+        protected int pictureType = Image.ORIGINAL_NONE;//made protected to get rid of warning
         public const int ORIGINAL_NONE = 0;
         public const int ORIGINAL_GIF = 3;
         public const int ORIGINAL_TIFF = 5;
@@ -178,7 +178,6 @@ namespace iTextSharp.text.rtf.parser.destinations {
         private MemoryStream dataOS = null;
         
         public RtfDestinationShppict() : base(null) {
-            this.pictureType = pictureType; //get rid of a warning
         }
 
         /**

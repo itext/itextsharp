@@ -1542,7 +1542,7 @@ namespace iTextSharp.text {
                 if (compressionLevel < PdfStream.NO_COMPRESSION || compressionLevel > PdfStream.BEST_COMPRESSION)
                     compressionLevel = PdfStream.DEFAULT_COMPRESSION;
                 else
-                    compressionLevel = compressionLevel;
+                    compressionLevel = value;
             }
             get {
                 return compressionLevel;
