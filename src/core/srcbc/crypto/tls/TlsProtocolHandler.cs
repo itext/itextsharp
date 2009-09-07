@@ -132,7 +132,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		private TlsCipherSuite chosenCipherSuite = null;
 
 		private BigInteger SRP_A;
-		private byte[] SRP_identity, SRP_password;
+		protected byte[] SRP_identity, SRP_password;//made protected to get rid of warning
 		private BigInteger Yc;
 		private byte[] pms;
 
