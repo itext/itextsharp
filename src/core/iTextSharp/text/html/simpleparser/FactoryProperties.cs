@@ -60,7 +60,10 @@ namespace iTextSharp.text.html.simpleparser {
     */
     public class FactoryProperties {
         
-        private FontFactoryImp fontImp = FontFactory.FontImp;
+        /**
+        * @since    iText 5.0   This used to be a FontFactoryImp
+        */
+        private IFontProvider fontImp = FontFactory.FontImp;
 
         /** Creates a new instance of FactoryProperties */
         public FactoryProperties() {
@@ -378,7 +381,7 @@ namespace iTextSharp.text.html.simpleparser {
             }
         }
         
-        public FontFactoryImp FontImp {
+        public IFontProvider FontImp {
             get {
                 return fontImp;
             }
