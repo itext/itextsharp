@@ -92,9 +92,9 @@ namespace iTextSharp.text.html.simpleparser {
         public Hashtable InterfaceProps {
             set {
                 interfaceProps = value;
-                FontFactoryImp ff = null;
+                IFontProvider ff = null;
                 if (interfaceProps != null)
-                    ff = (FontFactoryImp)interfaceProps["font_factory"];
+                    ff = (IFontProvider)interfaceProps["font_factory"];
                 if (ff != null)
                     factoryProperties.FontImp = ff;
             }

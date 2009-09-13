@@ -63,7 +63,7 @@ namespace iTextSharp.text {
     /// to this class first and then create fonts in your code using one of the getFont method
     /// without having to enter a path as parameter.
     /// </summary>
-    public class FontFactoryImp {
+    public class FontFactoryImp : IFontProvider {
         
         /// <summary> This is a map of postscriptfontnames of True Type fonts and the path of their ttf- or ttc-file. </summary>
         private Properties trueTypeFonts = new Properties();

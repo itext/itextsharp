@@ -213,6 +213,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "iTextSharp\text\IFontProvider.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "iTextSharp\text\ILargeElement.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
