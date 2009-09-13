@@ -956,10 +956,11 @@ namespace iTextSharp.text.pdf {
             // the backgroundcolor is set
             Color background = rectangle.BackgroundColor;
             if (background != null) {
+                SaveState();
                 SetColorFill(background);
                 Rectangle(x1, y1, x2 - x1, y2 - y1);
                 Fill();
-                ResetRGBColorFill();
+                RestoreState();
             }
 
             // if the element hasn't got any borders, nothing is added
