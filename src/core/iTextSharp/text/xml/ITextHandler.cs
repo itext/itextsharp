@@ -722,6 +722,7 @@ namespace iTextSharp.text.xml {
                             try {
                                 cellWidths[j] = float.Parse(width.Substring(0, width.Length - 1), System.Globalization.NumberFormatInfo.InvariantInfo);
                                 total += cellWidths[j];
+                                cellNulls[j] = false;
                             }
                             catch {
                                 // empty on purpose
