@@ -70,8 +70,6 @@ namespace iTextSharp.text.pdf {
             this.tint = tint;
         }
     
-        public SpotColor(PdfSpotColor spot) : this(spot, spot.Tint) {}
-    
         public PdfSpotColor PdfSpotColor {
             get {
                 return spot;
