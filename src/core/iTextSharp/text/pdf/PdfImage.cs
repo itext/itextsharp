@@ -272,7 +272,7 @@ namespace iTextSharp.text.pdf {
         internal static void TransferBytes(Stream inp, Stream outp, int len) {
             byte[] buffer = new byte[TRANSFERSIZE];
             if (len < 0)
-                len = 0x7ffffff;
+                len = 0x7fff0000;
             int size;
             while (len != 0) {
                 size = inp.Read(buffer, 0, Math.Min(len, TRANSFERSIZE));
