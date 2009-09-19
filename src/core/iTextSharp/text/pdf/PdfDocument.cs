@@ -800,7 +800,7 @@ namespace iTextSharp.text.pdf {
                 return false;
             }
             if (!open || close) {
-                throw new Exception(MessageLocalization.GetComposedMessage("the.document.isn.t.open"));
+                throw new Exception(MessageLocalization.GetComposedMessage("the.document.is.not.open"));
             }
             IPdfPageEvent pageEvent = writer.PageEvent;
             if (pageEvent != null)

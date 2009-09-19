@@ -140,7 +140,7 @@ namespace iTextSharp.text.pdf {
                     if (-type == PRTokeniser.TK_END_DIC)
                         throw new IOException(MessageLocalization.GetComposedMessage("unexpected.gt.gt"));
                     if (-type == PRTokeniser.TK_END_ARRAY)
-                        throw new IOException(MessageLocalization.GetComposedMessage("unexpected"));
+                        throw new IOException(MessageLocalization.GetComposedMessage("unexpected.close.bracket"));
                     dic.Put(name, obj);
             }
             return dic;

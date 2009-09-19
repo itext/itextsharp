@@ -410,7 +410,7 @@ namespace iTextSharp.text.pdf {
             int[] table_location;
             table_location = (int[])tables["head"];
             if (table_location == null)
-                throw new DocumentException(MessageLocalization.GetComposedMessage("table.head.does.not.exist.in.1", fileName + style));
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "head", fileName + style));
             rf.Seek(table_location[0] + 16);
             head.flags = rf.ReadUnsignedShort();
             head.unitsPerEm = rf.ReadUnsignedShort();
@@ -423,7 +423,7 @@ namespace iTextSharp.text.pdf {
         
             table_location = (int[])tables["hhea"];
             if (table_location == null)
-                throw new DocumentException(MessageLocalization.GetComposedMessage("table.hhea.does.not.exist.1", fileName + style));
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "hhea", fileName + style));
             rf.Seek(table_location[0] + 4);
             hhea.Ascender = rf.ReadShort();
             hhea.Descender = rf.ReadShort();
@@ -439,7 +439,7 @@ namespace iTextSharp.text.pdf {
         
             table_location = (int[])tables["OS/2"];
             if (table_location == null)
-                throw new DocumentException(MessageLocalization.GetComposedMessage("table.os.2.does.not.exist.in.1", fileName + style));
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "OS/2", fileName + style));
             rf.Seek(table_location[0]);
             int version = rf.ReadUnsignedShort();
             os_2.xAvgCharWidth = rf.ReadShort();
@@ -508,7 +508,7 @@ namespace iTextSharp.text.pdf {
                 int[] table_location;
                 table_location = (int[])tables["name"];
                 if (table_location == null)
-                    throw new DocumentException(MessageLocalization.GetComposedMessage("table.name.does.not.exist.in.1", fileName + style));
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "name", fileName + style));
                 rf.Seek(table_location[0] + 2);
                 int numRecords = rf.ReadUnsignedShort();
                 int startOfStorage = rf.ReadUnsignedShort();
@@ -541,7 +541,7 @@ namespace iTextSharp.text.pdf {
             int[] table_location;
             table_location = (int[])tables["name"];
             if (table_location == null)
-                throw new DocumentException(MessageLocalization.GetComposedMessage("table.name.does.not.exist.in.1", fileName + style));
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "name", fileName + style));
             rf.Seek(table_location[0] + 2);
             int numRecords = rf.ReadUnsignedShort();
             int startOfStorage = rf.ReadUnsignedShort();
@@ -583,7 +583,7 @@ namespace iTextSharp.text.pdf {
             int[] table_location;
             table_location = (int[])tables["name"];
             if (table_location == null)
-                throw new DocumentException(MessageLocalization.GetComposedMessage("table.name.does.not.exist.in.1", fileName + style));
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "name", fileName + style));
             rf.Seek(table_location[0] + 2);
             int numRecords = rf.ReadUnsignedShort();
             int startOfStorage = rf.ReadUnsignedShort();
@@ -725,7 +725,7 @@ namespace iTextSharp.text.pdf {
             int[] table_location;
             table_location = (int[])tables["hmtx"];
             if (table_location == null)
-                throw new DocumentException(MessageLocalization.GetComposedMessage("table.hmtx.does.not.exist.in.1", fileName + style));
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "hmtx", fileName + style));
             rf.Seek(table_location[0]);
             GlyphWidths = new int[hhea.numberOfHMetrics];
             for (int k = 0; k < hhea.numberOfHMetrics; ++k) {
@@ -748,7 +748,7 @@ namespace iTextSharp.text.pdf {
             int[] tableLocation;
             tableLocation = (int[])tables["head"];
             if (tableLocation == null)
-                throw new DocumentException(MessageLocalization.GetComposedMessage("table.head.does.not.exist.in.1", fileName + style));
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "head", fileName + style));
             rf.Seek(tableLocation[0] + TrueTypeFontSubSet.HEAD_LOCA_FORMAT_OFFSET);
             bool locaShortTable = (rf.ReadUnsignedShort() == 0);
             tableLocation = (int[])tables["loca"];
@@ -770,7 +770,7 @@ namespace iTextSharp.text.pdf {
             }
             tableLocation = (int[])tables["glyf"];
             if (tableLocation == null)
-                throw new DocumentException(MessageLocalization.GetComposedMessage("table.glyf.does.not.exist.in.1", fileName + style));
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "glyf", fileName + style));
             int tableGlyphOffset = tableLocation[0];
             bboxes = new int[locaTable.Length - 1][];
             for (int glyph = 0; glyph < locaTable.Length - 1; ++glyph) {
@@ -795,7 +795,7 @@ namespace iTextSharp.text.pdf {
             int[] table_location;
             table_location = (int[])tables["cmap"];
             if (table_location == null)
-                throw new DocumentException(MessageLocalization.GetComposedMessage("table.cmap.does.not.exist.in.1", fileName + style));
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "cmap", fileName + style));
             rf.Seek(table_location[0]);
             rf.SkipBytes(2);
             int num_tables = rf.ReadUnsignedShort();
