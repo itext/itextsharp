@@ -239,6 +239,7 @@ namespace iTextSharp.text.xml.simpleparser {
                         SaveState(state);
                         entity.Length = 0;
                         state = ENTITY;
+                        nowhite = true;
                     } else if (Char.IsWhiteSpace((char)character)) {
                         if (nowhite)
                             text.Append((char)character);
