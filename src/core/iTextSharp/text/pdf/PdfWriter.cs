@@ -967,7 +967,7 @@ namespace iTextSharp.text.pdf {
         public virtual PdfIndirectReference GetPageReference(int page) {
             --page;
             if (page < 0)
-                throw new ArgumentOutOfRangeException(MessageLocalization.GetComposedMessage("the.page.numbers.start.at.1"));
+                throw new ArgumentOutOfRangeException(MessageLocalization.GetComposedMessage("the.page.number.must.be.gt.eq.1"));
             PdfIndirectReference refa;
             if (page < pageReferences.Count) {
                 refa = (PdfIndirectReference)pageReferences[page];
@@ -1039,7 +1039,7 @@ namespace iTextSharp.text.pdf {
         */
         internal virtual PdfIndirectReference Add(PdfPage page, PdfContents contents) {
             if (!open) {
-                throw new PdfException(MessageLocalization.GetComposedMessage("the.document.isn.t.open"));
+                throw new PdfException(MessageLocalization.GetComposedMessage("the.document.is.not.open"));
             }
             PdfIndirectObject objecta;
             objecta = AddToBody(contents);
@@ -2864,7 +2864,7 @@ namespace iTextSharp.text.pdf {
                     return patternDetails;
                 }
                 default:
-                    throw new Exception(MessageLocalization.GetComposedMessage("invalid.color.type.in.pdfwriter.addsimplepatterncolorspace"));
+                    throw new Exception(MessageLocalization.GetComposedMessage("invalid.color.type"));
             }
         }
         

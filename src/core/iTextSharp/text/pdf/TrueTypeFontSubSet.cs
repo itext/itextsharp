@@ -255,12 +255,12 @@ namespace iTextSharp.text.pdf {
             int[] tableLocation;
             tableLocation = (int[])tableDirectory["head"];
             if (tableLocation == null)
-                throw new DocumentException(MessageLocalization.GetComposedMessage("table.head.does.not.exist.in.1", fileName));
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "head", fileName));
             rf.Seek(tableLocation[TABLE_OFFSET] + HEAD_LOCA_FORMAT_OFFSET);
             locaShortTable = (rf.ReadUnsignedShort() == 0);
             tableLocation = (int[])tableDirectory["loca"];
             if (tableLocation == null)
-                throw new DocumentException(MessageLocalization.GetComposedMessage("table.loca.does.not.exist.in.1", fileName));
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "loca", fileName));
             rf.Seek(tableLocation[TABLE_OFFSET]);
             if (locaShortTable) {
                 int entries = tableLocation[TABLE_LENGTH] / 2;
@@ -329,7 +329,7 @@ namespace iTextSharp.text.pdf {
             int[] tableLocation;
             tableLocation = (int[])tableDirectory["glyf"];
             if (tableLocation == null)
-                throw new DocumentException(MessageLocalization.GetComposedMessage("table.glyf.does.not.exist.in.1", fileName));
+                throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "glyf", fileName));
             int glyph0 = 0;
             if (!glyphsUsed.ContainsKey(glyph0)) {
                 glyphsUsed[glyph0] = null;

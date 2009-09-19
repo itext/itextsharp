@@ -155,7 +155,7 @@ namespace iTextSharp.text.pdf {
         public void StartElement(String tag, Hashtable h) {
             if ( !foundRoot ) {
                 if (!tag.Equals("xfdf"))
-                    throw new Exception(MessageLocalization.GetComposedMessage("root.element.is.not.bookmark"));
+                    throw new Exception(MessageLocalization.GetComposedMessage("root.element.is.not.xfdf.1", tag));
                 else 
                     foundRoot = true;
             }
