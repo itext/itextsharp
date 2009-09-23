@@ -1579,7 +1579,7 @@ namespace iTextSharp.text.pdf {
         */
         public int CompressionLevel {
             set {
-                if (compressionLevel < PdfStream.NO_COMPRESSION || compressionLevel > PdfStream.BEST_COMPRESSION)
+                if (value < PdfStream.NO_COMPRESSION || value > PdfStream.BEST_COMPRESSION)
                     compressionLevel = PdfStream.DEFAULT_COMPRESSION;
                 else
                     compressionLevel = value;
