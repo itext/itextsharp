@@ -1279,6 +1279,13 @@ namespace iTextSharp.text.pdf {
                 old[nn] = entry.Value;
             }
             PdfDictionary tree = PdfNameTree.WriteTree(old, this);
+            // Remove old EmbeddedFiles object if preset
+            PdfObject oldEmbeddedFiles = names.Get(PdfName.EMBEDDEDFILES);
+            if (oldEmbeddedFiles != null) {
+                PdfReader.KillIndirect(oldEmbeddedFiles);
+            }
+			
+            // Add new EmbeddedFiles object
             names.Put(PdfName.EMBEDDEDFILES, AddToBody(tree).IndirectReference);
         }
 
