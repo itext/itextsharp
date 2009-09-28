@@ -639,7 +639,7 @@ namespace iTextSharp.text.pdf {
          * Headers may allways be removed, even if they are drawn only partially:
          * they will be repeated on each following page anyway!
          *
-         * @return  <CODE>true</CODE> if all the lines are allready drawn; <CODE>false</CODE> otherwise.
+         * @return  <CODE>true</CODE> if all the lines are already drawn; <CODE>false</CODE> otherwise.
          */
     
         internal bool MayBeRemoved() {

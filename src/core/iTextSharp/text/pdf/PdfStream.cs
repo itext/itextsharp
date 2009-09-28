@@ -210,7 +210,7 @@ namespace iTextSharp.text.pdf {
         public void FlateCompress(int compressionLevel) {
             if (!Document.Compress)
                 return;
-            // check if the flateCompress-method has allready been
+            // check if the flateCompress-method has already been
             if (compressed) {
                 return;
             }
@@ -219,7 +219,7 @@ namespace iTextSharp.text.pdf {
                 compressed = true;
                 return;
             }
-            // check if a filter allready exists
+            // check if a filter already exists
             PdfObject filter = PdfReader.GetPdfObject(Get(PdfName.FILTER));
             if (filter != null) {
                 if (filter.IsName()) {
