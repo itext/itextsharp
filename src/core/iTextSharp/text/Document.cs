@@ -126,7 +126,7 @@ namespace iTextSharp.text {
         ///<summary> Is the document open or not? </summary>
         protected bool open;
 
-        ///<summary> Has the document allready been closed? </summary>
+        ///<summary> Has the document already been closed? </summary>
         protected bool close;
 
         // membervariables concerning the layout

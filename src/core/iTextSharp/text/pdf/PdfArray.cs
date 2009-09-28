@@ -276,7 +276,7 @@ public class PdfArray : PdfObject {
     }
     
 /**
- * Checks if the <CODE>PdfArray</CODE> allready contains a certain <CODE>PdfObject</CODE>.
+ * Checks if the <CODE>PdfArray</CODE> already contains a certain <CODE>PdfObject</CODE>.
  *
  * @param        object            <CODE>PdfObject</CODE> to check
  * @return        <CODE>true</CODE>
