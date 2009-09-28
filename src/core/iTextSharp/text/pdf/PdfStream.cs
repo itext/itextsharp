@@ -72,6 +72,7 @@ namespace iTextSharp.text.pdf {
      * Remark: In this version only the FLATEDECODE-filter is supported.<BR>
      * This object is described in the 'Portable Document Format Reference Manual version 1.3'
      * section 4.8 (page 41-53).<BR>
+     * </P>
      *
      * @see        PdfObject
      * @see        PdfDictionary
@@ -141,7 +142,6 @@ namespace iTextSharp.text.pdf {
         /**
          * Creates an efficient stream. No temporary array is ever created. The <CODE>InputStream</CODE>
          * is totally consumed but is not closed. The general usage is:
-         * <p>
          * <pre>
          * InputStream in = ...;
          * PdfStream stream = new PdfStream(in, writer);
@@ -176,6 +176,7 @@ namespace iTextSharp.text.pdf {
          * <p>
          * This method must be called and can only be called if the contructor {@link #PdfStream(InputStream,PdfWriter)}
          * is used to create the stream.
+         * </p>
          * @throws IOException on error
          * @see #PdfStream(InputStream,PdfWriter)
          */
@@ -210,7 +211,7 @@ namespace iTextSharp.text.pdf {
         public void FlateCompress(int compressionLevel) {
             if (!Document.Compress)
                 return;
-            // check if the flateCompress-method has already been
+            // check if the flateCompress-method has already been used
             if (compressed) {
                 return;
             }

@@ -337,6 +337,7 @@ namespace iTextSharp.text.pdf {
         * <p>
         * Consult <A HREF="http://partners.adobe.com/asn/developer/pdfs/tn/PPKAppearances.pdf">PPKAppearances.pdf</A>
         * for further details.
+        * </p>
         * @return the main appearance layer
         * @throws DocumentException on error
         * @throws IOException on error
