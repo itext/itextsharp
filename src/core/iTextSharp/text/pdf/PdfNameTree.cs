@@ -73,7 +73,7 @@ namespace iTextSharp.text.pdf {
                 return null;
             String[] names = new String[items.Count];
             items.Keys.CopyTo(names, 0);
-            Array.Sort(names);
+            Array.Sort(names, new CompareSrt());
             if (names.Length <= leafSize) {
                 PdfDictionary dic = new PdfDictionary();
                 PdfArray ar = new PdfArray();
@@ -154,6 +154,26 @@ namespace iTextSharp.text.pdf {
             if (dic != null)
                 IterateItems(dic, items);
             return items;
+        }
+
+        internal class CompareSrt : IComparer  {
+            int IComparer.Compare(Object x, Object y){
+                char[] a = ((string)x).ToCharArray();
+                char[] b = ((string)y).ToCharArray();
+                int m = Math.Min(a.Length, b.Length);
+                for (int k = 0; k < m; ++k) {
+                    if (a[k] < b[k])
+                        return -1;
+                    if (a[k] > b[k])
+                        return 1;
+                }
+                if (a.Length < b.Length)
+                    return -1;
+                if (a.Length > b.Length)
+                    return 1;
+                return 0;
+            }
+
         }
     }
 }
