@@ -449,7 +449,7 @@ namespace iTextSharp.text.pdf {
                 Asn1Set unat = Asn1Set.GetInstance(taggedObject, false);
                 Org.BouncyCastle.Asn1.Cms.AttributeTable attble = new Org.BouncyCastle.Asn1.Cms.AttributeTable(unat);
                 Org.BouncyCastle.Asn1.Cms.Attribute ts = attble[PkcsObjectIdentifiers.IdAASignatureTimeStampToken];
-                if (ts != null) {
+                if (ts != null && ts.AttrValues.Count > 0) {
                     Asn1Set attributeValues = ts.AttrValues;
                     Asn1Sequence tokenSequence = Asn1Sequence.GetInstance(attributeValues[0]);
                     Org.BouncyCastle.Asn1.Cms.ContentInfo contentInfo = Org.BouncyCastle.Asn1.Cms.ContentInfo.GetInstance(tokenSequence);
