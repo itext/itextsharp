@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Collections;
-using System.Security.Cryptography;
 using iTextSharp.text;
 /*
  * $Id: PdfSmartCopy.cs,v 1.7 2008/05/13 11:25:23 psoares33 Exp $
@@ -132,7 +131,6 @@ namespace iTextSharp.text.pdf {
         internal class ByteStore {
             private byte[] b;
             private int hash;
-            private MD5 md5;
             
             private void SerObject(PdfObject obj, int level, ByteBuffer bb) {
                 if (level <= 0)
@@ -146,8 +144,7 @@ namespace iTextSharp.text.pdf {
                     bb.Append("$B");
                     SerDic((PdfDictionary)obj, level - 1, bb);
                     if (level > 0) {
-                        md5.Initialize();
-                        bb.Append(md5.ComputeHash(PdfReader.GetStreamBytesRaw((PRStream)obj)));
+                        bb.Append(PdfEncryption.DigestComputeHash("MD5", PdfReader.GetStreamBytesRaw((PRStream)obj)));
                     }
                 }
                 else if (obj.IsDictionary()) {
@@ -189,12 +186,10 @@ namespace iTextSharp.text.pdf {
             }
             
             internal ByteStore(PRStream str) {
-                md5 = new MD5CryptoServiceProvider();
                 ByteBuffer bb = new ByteBuffer();
                 int level = 100;
                 SerObject(str, level, bb);
                 this.b = bb.ToByteArray();
-                md5 = null;
             }
 
             public override bool Equals(Object obj) {

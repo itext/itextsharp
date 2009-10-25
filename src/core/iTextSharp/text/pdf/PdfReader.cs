@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Security.Cryptography;
 using System.Net;
 using System.Text;
 using System.IO;
@@ -11,6 +10,7 @@ using iTextSharp.text.pdf.interfaces;
 using System.util;
 using System.util.zlib;
 using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Cms;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
@@ -715,17 +715,17 @@ namespace iTextSharp.text.pdf {
                     throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("bad.certificate.and.key"));
                 }            
 
-                SHA1 sh = new SHA1CryptoServiceProvider();
+                IDigest sh = DigestUtilities.GetDigest("SHA1");
 
-                sh.TransformBlock(envelopedData, 0, 20, envelopedData, 0);
+                sh.BlockUpdate(envelopedData, 0, 20);
                 for (int i=0; i<recipients.Size; i++) {
                     byte[] encodedRecipient = recipients[i].GetBytes();  
-                    sh.TransformBlock(encodedRecipient, 0, encodedRecipient.Length, encodedRecipient, 0);
+                    sh.BlockUpdate(encodedRecipient, 0, encodedRecipient.Length);
                 }
                 if ((cryptoMode & PdfWriter.DO_NOT_ENCRYPT_METADATA) != 0)
-                    sh.TransformBlock(PdfEncryption.metadataPad, 0, PdfEncryption.metadataPad.Length, PdfEncryption.metadataPad, 0);
-                sh.TransformFinalBlock(envelopedData, 0, 0);        
-                encryptionKey = sh.Hash;
+                    sh.BlockUpdate(PdfEncryption.metadataPad, 0, PdfEncryption.metadataPad.Length);
+                encryptionKey = new byte[sh.GetDigestSize()];
+                sh.DoFinal(encryptionKey, 0);
             }
             decrypt = new PdfEncryption();
             decrypt.SetCryptoMode(cryptoMode, lengthValue);
