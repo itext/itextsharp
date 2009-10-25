@@ -1,10 +1,11 @@
 using System;
 using System.Collections;
-using System.Security.Cryptography;
 using System.Text;
 using System.IO;
 using iTextSharp.text.pdf.crypto;
 using Org.BouncyCastle.X509;
+using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Security;
 using iTextSharp.text.error_messages;
 
 /*
@@ -87,7 +88,7 @@ public class PdfEncryption {
     /** Work area to prepare the object/generation bytes */
     internal byte[] extra = new byte[5];
     /** The message digest algorithm MD5 */
-    internal MD5 md5;
+    internal IDigest md5;
     /** The encryption key for the owner */
     internal byte[] ownerKey = new byte[32];
     /** The encryption key for the user */
@@ -111,7 +112,7 @@ public class PdfEncryption {
     private int cryptoMode;
     
     public PdfEncryption() {
-        md5 = new MD5CryptoServiceProvider();
+        md5 = DigestUtilities.GetDigest("MD5");
         publicKeyHandler = new PdfPublicKeySecurityHandler();
     }
 
@@ -194,12 +195,12 @@ public class PdfEncryption {
     private byte[] ComputeOwnerKey(byte[] userPad, byte[] ownerPad) {
         byte[] ownerKey = new byte[32];
 
-        byte[] digest = md5.ComputeHash(ownerPad);
+        byte[] digest = DigestComputeHash("MD5", ownerPad);
         if (revision == STANDARD_ENCRYPTION_128 || revision == AES_128) {
             byte[] mkey = new byte[keyLength / 8];
             // only use for the input as many bit as the key consists of
             for (int k = 0; k < 50; ++k)
-                Array.Copy(md5.ComputeHash(digest), 0, digest, 0, mkey.Length);
+                Array.Copy(DigestComputeHash("MD5", digest), 0, digest, 0, mkey.Length);
             Array.Copy(userPad, 0, ownerKey, 0, 32);
             for (int i = 0; i < 20; ++i) {
                 for (int j = 0; j < mkey.Length ; ++j)
@@ -228,32 +229,32 @@ public class PdfEncryption {
         mkey = new byte[keyLength / 8];
 
         //fixed by ujihara in order to follow PDF refrence
-        md5.Initialize();
-        md5.TransformBlock(userPad, 0, userPad.Length, userPad, 0);
-        md5.TransformBlock(ownerKey, 0, ownerKey.Length, ownerKey, 0);
+        md5.Reset();
+        md5.BlockUpdate(userPad, 0, userPad.Length);
+        md5.BlockUpdate(ownerKey, 0, ownerKey.Length);
 
         byte[] ext = new byte[4];
         ext[0] = (byte)permissions;
         ext[1] = (byte)(permissions >> 8);
         ext[2] = (byte)(permissions >> 16);
         ext[3] = (byte)(permissions >> 24);
-        md5.TransformBlock(ext, 0, 4, ext, 0);
+        md5.BlockUpdate(ext, 0, 4);
         if (documentID != null) 
-            md5.TransformBlock(documentID, 0, documentID.Length, documentID, 0);
+            md5.BlockUpdate(documentID, 0, documentID.Length);
         if (!encryptMetadata)
-            md5.TransformBlock(metadataPad, 0, metadataPad.Length, metadataPad, 0);
-        md5.TransformFinalBlock(ext, 0, 0);
+            md5.BlockUpdate(metadataPad, 0, metadataPad.Length);
+        byte[] hash = new byte[md5.GetDigestSize()];
+        md5.DoFinal(hash, 0);
 
         byte[] digest = new byte[mkey.Length];
-        Array.Copy(md5.Hash, 0, digest, 0, mkey.Length);
+        Array.Copy(hash, 0, digest, 0, mkey.Length);
 
         
-        md5.Initialize();
+        md5.Reset();
         // only use the really needed bits as input for the hash
         if (revision == STANDARD_ENCRYPTION_128 || revision == AES_128) {
             for (int k = 0; k < 50; ++k) {
-                Array.Copy(md5.ComputeHash(digest), 0, digest, 0, mkey.Length);
-                md5.Initialize();
+                Array.Copy(DigestComputeHash("MD5", digest), 0, digest, 0, mkey.Length);
             }
         }
         Array.Copy(digest, 0, mkey, 0, mkey.Length);
@@ -266,10 +267,11 @@ public class PdfEncryption {
     // use the revision to choose the setup method
     private void SetupUserKey() {
         if (revision == STANDARD_ENCRYPTION_128 || revision == AES_128) {
-            md5.TransformBlock(pad, 0, pad.Length, pad, 0);
-            md5.TransformFinalBlock(documentID, 0, documentID.Length);
-            byte[] digest = md5.Hash;
-            md5.Initialize();
+            md5.BlockUpdate(pad, 0, pad.Length);
+            md5.BlockUpdate(documentID, 0, documentID.Length);
+            byte[] digest = new byte[md5.GetDigestSize()];
+            md5.DoFinal(digest, 0);
+            md5.Reset();
             Array.Copy(digest, 0, userKey, 0, 16);
             for (int k = 16; k < 32; ++k)
                 userKey[k] = 0;
@@ -289,8 +291,8 @@ public class PdfEncryption {
     // gets keylength and revision and uses revison to choose the initial values for permissions
     public void SetupAllKeys(byte[] userPassword, byte[] ownerPassword, int permissions) {
         if (ownerPassword == null || ownerPassword.Length == 0)
-            ownerPassword = md5.ComputeHash(CreateDocumentId());
-        md5.Initialize();
+            ownerPassword = DigestComputeHash("MD5", CreateDocumentId());
+        md5.Reset();
         permissions |= (int)((revision == STANDARD_ENCRYPTION_128 || revision == AES_128) ? (uint)0xfffff0c0 : (uint)0xffffffc0);
         permissions &= unchecked((int)0xfffffffc);
         //PDF refrence 3.5.2 Standard Security Handler, Algorithum 3.3-1
@@ -304,11 +306,11 @@ public class PdfEncryption {
     }
 
     public static byte[] CreateDocumentId() {
-        MD5 md5 = new MD5CryptoServiceProvider();
         long time = DateTime.Now.Ticks + Environment.TickCount;
         long mem = GC.GetTotalMemory(false);
         String s = time + "+" + mem + "+" + (seq++);
-        return md5.ComputeHash(Encoding.ASCII.GetBytes(s));
+        byte[] b = Encoding.ASCII.GetBytes(s);            
+        return DigestComputeHash("MD5", b);
     }
 
     public void SetupByUserPassword(byte[] documentID, byte[] userPassword, byte[] ownerKey, int permissions) {
@@ -340,19 +342,19 @@ public class PdfEncryption {
     }    
 
     public void SetHashKey(int number, int generation) {
-        md5.Initialize();    //added by ujihara
+        md5.Reset();    //added by ujihara
         extra[0] = (byte)number;
         extra[1] = (byte)(number >> 8);
         extra[2] = (byte)(number >> 16);
         extra[3] = (byte)generation;
         extra[4] = (byte)(generation >> 8);
-        md5.TransformBlock(mkey, 0, mkey.Length, mkey, 0);
-        md5.TransformBlock(extra, 0, extra.Length, extra, 0);
+        md5.BlockUpdate(mkey, 0, mkey.Length);
+        md5.BlockUpdate(extra, 0, extra.Length);
         if (revision == AES_128)
-            md5.TransformBlock(salt, 0, salt.Length, salt, 0);
-        md5.TransformFinalBlock(extra, 0, 0);
-        key = md5.Hash;
-        md5.Initialize();
+            md5.BlockUpdate(salt, 0, salt.Length);
+        key = new byte[md5.GetDigestSize()];
+        md5.DoFinal(key, 0);
+        md5.Reset();
         keySize = mkey.Length + 5;
         if (keySize > 16)
             keySize = 16;
@@ -421,20 +423,19 @@ public class PdfEncryption {
                 }
             }
             
-            SHA1 sh = new SHA1CryptoServiceProvider();
+            IDigest sh = DigestUtilities.GetDigest("SHA1");
             byte[] encodedRecipient = null;
             byte[] seed = publicKeyHandler.GetSeed();
-            sh.TransformBlock(seed, 0, seed.Length, seed, 0);
+            sh.BlockUpdate(seed, 0, seed.Length);
             for (int i=0; i<publicKeyHandler.GetRecipientsSize(); i++)
             {
                 encodedRecipient = publicKeyHandler.GetEncodedRecipient(i);
-                sh.TransformBlock(encodedRecipient, 0, encodedRecipient.Length, encodedRecipient, 0);
+                sh.BlockUpdate(encodedRecipient, 0, encodedRecipient.Length);
             }
             if (!encryptMetadata)
-                sh.TransformBlock(metadataPad, 0, metadataPad.Length, metadataPad, 0);
-            sh.TransformFinalBlock(seed, 0, 0);        
-            byte[] mdResult = sh.Hash;
-            
+                sh.BlockUpdate(metadataPad, 0, metadataPad.Length);
+            byte[] mdResult = new byte[sh.GetDigestSize()];
+            sh.DoFinal(mdResult, 0);            
             SetupByEncryptionKey(mdResult, keyLength);              
         } else {
             dic.Put(PdfName.FILTER, PdfName.STANDARD);
@@ -543,5 +544,17 @@ public class PdfEncryption {
 		}
 		return userPad;
 	}
+
+    public static byte[] DigestComputeHash(string algo, byte[] b, int offset, int len) {
+        IDigest d = DigestUtilities.GetDigest(algo);
+        d.BlockUpdate(b, offset, len);
+        byte[] r = new byte[d.GetDigestSize()];
+        d.DoFinal(r, 0);
+        return r;
+    }
+
+    public static byte[] DigestComputeHash(string algo, byte[] b) {
+        return DigestComputeHash(algo, b, 0, b.Length);
+    }
 }
 }
