@@ -295,6 +295,8 @@ namespace iTextSharp.text.pdf {
         /** A name */
         public static readonly PdfName CHARPROCS = new PdfName("CharProcs");
         /** A name */
+        public static readonly PdfName CHECKSUM = new PdfName("CheckSum");
+        /** A name */
         public static readonly PdfName CI = new PdfName("CI");
         /** A name */
         public static readonly PdfName CIDFONTTYPE0 = new PdfName("CIDFontType0");
@@ -461,6 +463,8 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName DISPLAYDOCTITLE = new PdfName("DisplayDocTitle");
         /** A name */
         public static readonly PdfName DIV = new PdfName("Div");
+        /** A name */
+        public static readonly PdfName DL = new PdfName("DL");
         /** A name */
         public static readonly PdfName DM = new PdfName("Dm");
         /** A name */
