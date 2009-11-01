@@ -347,6 +347,18 @@ namespace iTextSharp.text {
             }
         }
 
+        /// <summary>
+        /// Alias for VB.NET compatibility.
+        /// </summary>
+        public bool IsLowercase {
+            set {
+                lowercase = value;
+            }
+            get {
+                return lowercase;
+            }
+        }
+
         public bool Autoindent {
             set {
                 autoindent = value;
