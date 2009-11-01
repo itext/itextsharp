@@ -1589,6 +1589,8 @@ namespace iTextSharp.text.pdf {
                     int num = tokens.Reference;
                     PRIndirectReference refi = new PRIndirectReference(this, num, tokens.Generation);
                     return refi;
+                case PRTokeniser.TK_ENDOFFILE:
+                    throw new IOException(MessageLocalization.GetComposedMessage("unexpected.end.of.file"));
                 default:
                     String sv = tokens.StringValue;
                     if ("null".Equals(sv)) {
