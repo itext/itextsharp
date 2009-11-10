@@ -1369,7 +1369,9 @@ public class ColumnText {
 
                     // we need a correction if the last row needs to be extended
                     float rowHeight = 0;
-                    PdfPRow last = (PdfPRow)sub[sub.Count - 1 - footerRows];
+                    int index = sub.Count - 1;
+                    if (showFooter) index -= footerRows;
+                    PdfPRow last = (PdfPRow)sub[index];
                     if (table.IsExtendLastRow(newPageFollows)) {
                         rowHeight = last.MaxHeights;
                         last.MaxHeights = yTemp - minY + rowHeight;
