@@ -96,6 +96,7 @@ namespace iTextSharp.text.pdf {
             keysAttributes.Add(Chunk.HSCALE, null);
             keysAttributes.Add(Chunk.SEPARATOR, null);
             keysAttributes.Add(Chunk.TAB, null);
+            keysAttributes.Add(Chunk.CHAR_SPACING, null);
             keysNoStroke.Add(Chunk.SUBSUPSCRIPT, null);
             keysNoStroke.Add(Chunk.SPLITCHARACTER, null);
             keysNoStroke.Add(Chunk.HYPHENATION, null);
@@ -341,7 +342,7 @@ namespace iTextSharp.text.pdf {
                         PdfChunk pc = new PdfChunk(returnValue, this);
                         return pc;
                     }
-                    currentWidth += font.Width(cidChar);
+                    currentWidth += GetCharWidth(cidChar);
                     if (character == ' ') {
                         lastSpace = currentPosition + 1;
                         lastSpaceWidth = currentWidth;
@@ -374,9 +375,9 @@ namespace iTextSharp.text.pdf {
                     }
                     surrogate = Utilities.IsSurrogatePair(valueArray, currentPosition);
                     if (surrogate)
-                        currentWidth += font.Width(Utilities.ConvertToUtf32(valueArray[currentPosition], valueArray[currentPosition + 1]));
+                        currentWidth += GetCharWidth(Utilities.ConvertToUtf32(valueArray[currentPosition], valueArray[currentPosition + 1]));
                     else
-                        currentWidth += font.Width(character);
+                        currentWidth += GetCharWidth(character);
                     if (character == ' ') {
                         lastSpace = currentPosition + 1;
                         lastSpaceWidth = currentWidth;
@@ -466,9 +467,9 @@ namespace iTextSharp.text.pdf {
                 // the width of every character is added to the currentWidth
                 surrogate = Utilities.IsSurrogatePair(value, currentPosition);
                 if (surrogate)
-                    currentWidth += font.Width(Utilities.ConvertToUtf32(value, currentPosition));
+                    currentWidth += GetCharWidth(Utilities.ConvertToUtf32(value, currentPosition));
                 else
-                    currentWidth += font.Width(value[currentPosition]);
+                    currentWidth += GetCharWidth(value[currentPosition]);
                 if (currentWidth > width)
                     break;
                 if (surrogate)
@@ -529,6 +530,10 @@ namespace iTextSharp.text.pdf {
     
         internal float Width {
             get {
+                if (IsAttribute(Chunk.CHAR_SPACING)) {
+        	        float cs = (float) GetAttribute(Chunk.CHAR_SPACING);
+                    return font.Width(value) + value.Length * cs;
+		        }
                 return font.Width(this.value);
             }
         }
@@ -831,6 +836,10 @@ namespace iTextSharp.text.pdf {
         internal float GetCharWidth(int c) {
             if (NoPrint(c))
                 return 0;
+            if (IsAttribute(Chunk.CHAR_SPACING)) {
+        	    float cs = (float) GetAttribute(Chunk.CHAR_SPACING);
+			    return font.Width(c) + cs;
+		    }
             return font.Width(c);
         }
     

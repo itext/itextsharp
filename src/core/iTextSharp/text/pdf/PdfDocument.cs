@@ -1505,6 +1505,10 @@ namespace iTextSharp.text.pdf {
                                 hScale = (float)hs;
                             text.SetTextMatrix(hScale, b, c, 1, xMarker, yMarker);
                         }
+                        if (chunk.IsAttribute(Chunk.CHAR_SPACING)) {
+                    	    float cs = (float) chunk.GetAttribute(Chunk.CHAR_SPACING);
+						    text.SetCharacterSpacing(cs);
+					    }
                         if (chunk.IsImage()) {
                             Image image = chunk.Image;
                             float[] matrix = image.Matrix;
@@ -1568,7 +1572,7 @@ namespace iTextSharp.text.pdf {
                     if (hScale != lastHScale) {
                         lastHScale = hScale;
                         text.SetWordSpacing(baseWordSpacing / hScale);
-                        text.SetCharacterSpacing(baseCharacterSpacing / hScale);
+                        text.SetCharacterSpacing(baseCharacterSpacing / hScale + text.CharacterSpacing);
                     }
                     String s = chunk.ToString();
                     int idx = s.IndexOf(' ');
@@ -1592,7 +1596,7 @@ namespace iTextSharp.text.pdf {
                     if (isJustified && hScale != lastHScale) {
                         lastHScale = hScale;
                         text.SetWordSpacing(baseWordSpacing / hScale);
-                        text.SetCharacterSpacing(baseCharacterSpacing / hScale);
+                        text.SetCharacterSpacing(baseCharacterSpacing / hScale + text.CharacterSpacing);
                     }
                     text.ShowText(chunk.ToString());
                 }
@@ -1610,6 +1614,9 @@ namespace iTextSharp.text.pdf {
                 if (chunk.IsAttribute(Chunk.SKEW) || chunk.IsAttribute(Chunk.HSCALE)) {
                     adjustMatrix = true;
                     text.SetTextMatrix(xMarker, yMarker);
+                }
+                if (chunk.IsAttribute(Chunk.CHAR_SPACING)) {
+				    text.SetCharacterSpacing(baseCharacterSpacing);
                 }
             }
             if (isJustified) {

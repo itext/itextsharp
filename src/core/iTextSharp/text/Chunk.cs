@@ -730,5 +730,33 @@ namespace iTextSharp.text {
 
         ///<summary> Key for encoding. </summary>
         public const string ENCODING = "ENCODING";
+
+	    /**
+	    * Key for character spacing.
+	    */
+	    public const String CHAR_SPACING = "CHAR_SPACING";
+
+	    /**
+	    * Sets the character spacing.
+	    * 
+	    * @param charSpace the character spacing value
+	    * @return this <CODE>Chunk</CODE>
+	    */
+	    public Chunk SetCharacterSpacing(float charSpace) {
+		    return SetAttribute(CHAR_SPACING, charSpace);
+	    }
+    	
+	    /**
+	    * Gets the character spacing.
+	    * 
+	    * @return a value in float
+	    */
+	    public float GetCharacterSpacing() {
+		    if (attributes != null && attributes.ContainsKey(CHAR_SPACING)) {
+			    float f = (float) attributes[CHAR_SPACING];
+			    return f;
+		    }
+		    return 0.0f;
+	    }
     }
 }
