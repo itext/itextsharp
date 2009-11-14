@@ -1475,7 +1475,42 @@ namespace iTextSharp.text.pdf {
         }
 
     //  [C5] named objects: named destinations, javascript, embedded files
-         
+             
+        /**
+        * Adds named destinations in bulk.
+        * Valid keys and values of the map can be found in the map
+        * that is created by SimpleNamedDestination.
+        * @param    map a map with strings as keys for the names,
+        *           and structured strings as values for the destinations
+        * @param    page_offset number of pages that has to be added to
+        *           the page numbers in the destinations (useful if you
+        *          use this method in combination with PdfCopy).
+        * @since    iText 5.0
+        */
+        public void AddNamedDestinations(Hashtable map, int page_offset) {
+            int page;
+            String dest;
+            PdfDestination destination;
+            foreach (string key in map.Keys) {
+                dest = (string)map[key];
+                page = int.Parse(dest.Substring(0, dest.IndexOf(" ")));
+                destination = new PdfDestination(dest.Substring(dest.IndexOf(" ") + 1));
+                AddNamedDestination(key, page + page_offset, destination);
+            }
+        }
+        
+        /**
+        * Adds one named destination.
+        * @param    name    the name for the destination
+        * @param    page    the page number where you want to jump to
+        * @param    dest    an explicit destination
+        * @since    iText 5.0
+        */
+        public void AddNamedDestination(String name, int page, PdfDestination dest) {
+            dest.AddPage(GetPageReference(page));
+            pdf.LocalDestination(name, dest);
+        }
+        
         /**
         * Use this method to add a JavaScript action at the document level.
         * When the document opens, all this JavaScript runs.

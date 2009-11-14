@@ -191,6 +191,24 @@ namespace iTextSharp.text.pdf {
             Add(new PdfNumber(top));
         }
     
+        /**
+        * Creates a PdfDestination based on a String.
+        * Valid Strings are for instance the values returned by SimpleNamedDestination:
+        * "Fit", "XYZ 36 806 0",...
+        * @param    dest    a String notation of a destination.
+        * @since    iText 5.0
+        */
+        public PdfDestination(String dest) : base() {
+            string[] ss = dest.Trim().Split(null);
+            if (ss.Length > 0)
+                Add(new PdfName(ss[0]));
+            for (int k = 1; k < ss.Length; ++k) {
+                if (ss[k].Length == 0)
+                    continue;
+                Add(new PdfNumber(ss[k]));
+            }
+        }
+
         // methods
     
         /**
