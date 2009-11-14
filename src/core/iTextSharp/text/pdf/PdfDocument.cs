@@ -2011,7 +2011,8 @@ namespace iTextSharp.text.pdf {
                 return false;
             obj[2] = destination;
             localDestinations[name] = obj;
-            destination.AddPage(writer.CurrentPage);
+            if (!destination.HasPage())
+                destination.AddPage(writer.CurrentPage);
             return true;
         }
         

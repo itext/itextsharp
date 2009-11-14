@@ -108,6 +108,7 @@ namespace iTextSharp.text.pdf {
         protected internal ArrayList strings = new ArrayList();
         protected internal bool sharedStreams = true;
         protected internal bool consolidateNamedDestinations = false;
+        protected bool remoteToLocalNamedDestinations = false;
         protected internal int rValue;
         protected internal int pValue;
         private int objNum;
@@ -2577,55 +2578,6 @@ namespace iTextSharp.text.pdf {
             return new Hashtable();
         }
         
-        private bool ReplaceNamedDestination(PdfObject obj, Hashtable names) {
-            obj = GetPdfObject(obj);
-            int objIdx = lastXrefPartial;
-            ReleaseLastXrefPartial();
-            if (obj != null && obj.IsDictionary()) {
-                PdfObject ob2 = GetPdfObjectRelease(((PdfDictionary)obj).Get(PdfName.DEST));
-                Object name = null;
-                if (ob2 != null) {
-                    if (ob2.IsName())
-                        name = ob2;
-                    else if (ob2.IsString())
-                        name = ob2.ToString();
-                    if (name != null) {
-                        PdfArray dest = (PdfArray)names[name];
-                        if (dest != null) {
-                            ((PdfDictionary)obj).Put(PdfName.DEST, dest);
-                            SetXrefPartialObject(objIdx, obj);
-                            return true;
-                        }
-                    }
-                }
-                else if ((ob2 = GetPdfObject(((PdfDictionary)obj).Get(PdfName.A))) != null) {
-                    int obj2Idx = lastXrefPartial;
-                    ReleaseLastXrefPartial();
-                    PdfDictionary dic = (PdfDictionary)ob2;
-                    PdfName type = (PdfName)GetPdfObjectRelease(dic.Get(PdfName.S));
-                    if (PdfName.GOTO.Equals(type)) {
-                        PdfObject ob3 = GetPdfObjectRelease(dic.Get(PdfName.D));
-                        if (ob3 != null) {
-                            if (ob3.IsName())
-                                name = ob3;
-                            else if (ob3.IsString())
-                                name = ob3.ToString();
-                        }
-                        if (name != null) {
-                            PdfArray dest = (PdfArray)names[name];
-                            if (dest != null) {
-                                dic.Put(PdfName.D, dest);
-                                SetXrefPartialObject(obj2Idx, ob2);
-                                SetXrefPartialObject(objIdx, obj);
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-            return false;
-        }
-        
         /**
         * Removes all the fields from the document.
         */    
@@ -2702,6 +2654,82 @@ namespace iTextSharp.text.pdf {
             }
         }
         
+        /**
+        * Replaces remote named links with local destinations that have the same name.
+        * @since   5.0
+        */
+        public void MakeRemoteNamedDestinationsLocal() {
+            if (remoteToLocalNamedDestinations)
+                return;
+            remoteToLocalNamedDestinations = true;
+            Hashtable names = GetNamedDestination(true);
+            if (names.Count == 0)
+                return;
+            for (int k = 1; k <= pageRefs.Size; ++k) {
+                PdfDictionary page = pageRefs.GetPageN(k);
+                PdfObject annotsRef;
+                PdfArray annots = (PdfArray)GetPdfObject(annotsRef = page.Get(PdfName.ANNOTS));
+                int annotIdx = lastXrefPartial;
+                ReleaseLastXrefPartial();
+                if (annots == null) {
+                    pageRefs.ReleasePage(k);
+                    continue;
+                }
+                bool commitAnnots = false;
+                for (int an = 0; an < annots.Size; ++an) {
+                    PdfObject objRef = annots[an];
+                    if (ConvertNamedDestination(objRef, names) && !objRef.IsIndirect())
+                        commitAnnots = true;
+                }
+                if (commitAnnots)
+                    SetXrefPartialObject(annotIdx,  annots);
+                if (!commitAnnots || annotsRef.IsIndirect())
+                    pageRefs.ReleasePage(k);
+            }
+        }
+        
+        /**
+        * Converts a remote named destination GoToR with a local named destination
+        * if there's a corresponding name.
+        * @param   obj an annotation that needs to be screened for links to external named destinations.
+        * @param   names   a map with names of local named destinations
+        * @since   iText 5.0
+        */
+        private bool ConvertNamedDestination(PdfObject obj, Hashtable names) {
+            obj = GetPdfObject(obj);
+            int objIdx = lastXrefPartial;
+            ReleaseLastXrefPartial();
+            if (obj != null && obj.IsDictionary()) {
+                PdfObject ob2 = GetPdfObject(((PdfDictionary)obj).Get(PdfName.A));
+                if (ob2 != null) {
+                    int obj2Idx = lastXrefPartial;
+                    ReleaseLastXrefPartial();
+                    PdfDictionary dic = (PdfDictionary)ob2;
+                    PdfName type = (PdfName)GetPdfObjectRelease(dic.Get(PdfName.S));
+                    if (PdfName.GOTOR.Equals(type)) {
+                        PdfObject ob3 = GetPdfObjectRelease(dic.Get(PdfName.D));
+                        Object name = null;
+                        if (ob3 != null) {
+                            if (ob3.IsName())
+                                name = ob3;
+                            else if (ob3.IsString())
+                                name = ob3.ToString();
+                            PdfArray dest = (PdfArray)names[name];
+                            if (dest != null) {
+                                dic.Remove(PdfName.F);
+                                dic.Remove(PdfName.NEWWINDOW);
+                                dic.Put(PdfName.S, PdfName.GOTO);
+                                SetXrefPartialObject(obj2Idx, ob2);
+                                SetXrefPartialObject(objIdx, obj);
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
+        }
+
         /** Replaces all the local named links with the actual destinations. */    
         public void ConsolidateNamedDestinations() {
             if (consolidateNamedDestinations)
@@ -2735,6 +2763,55 @@ namespace iTextSharp.text.pdf {
             if (outlines == null)
                 return;
             IterateBookmarks(outlines.Get(PdfName.FIRST), names);
+        }
+        
+        private bool ReplaceNamedDestination(PdfObject obj, Hashtable names) {
+            obj = GetPdfObject(obj);
+            int objIdx = lastXrefPartial;
+            ReleaseLastXrefPartial();
+            if (obj != null && obj.IsDictionary()) {
+                PdfObject ob2 = GetPdfObjectRelease(((PdfDictionary)obj).Get(PdfName.DEST));
+                Object name = null;
+                if (ob2 != null) {
+                    if (ob2.IsName())
+                        name = ob2;
+                    else if (ob2.IsString())
+                        name = ob2.ToString();
+                    if (name != null) {
+                        PdfArray dest = (PdfArray)names[name];
+                        if (dest != null) {
+                            ((PdfDictionary)obj).Put(PdfName.DEST, dest);
+                            SetXrefPartialObject(objIdx, obj);
+                            return true;
+                        }
+                    }
+                }
+                else if ((ob2 = GetPdfObject(((PdfDictionary)obj).Get(PdfName.A))) != null) {
+                    int obj2Idx = lastXrefPartial;
+                    ReleaseLastXrefPartial();
+                    PdfDictionary dic = (PdfDictionary)ob2;
+                    PdfName type = (PdfName)GetPdfObjectRelease(dic.Get(PdfName.S));
+                    if (PdfName.GOTO.Equals(type)) {
+                        PdfObject ob3 = GetPdfObjectRelease(dic.Get(PdfName.D));
+                        if (ob3 != null) {
+                            if (ob3.IsName())
+                                name = ob3;
+                            else if (ob3.IsString())
+                                name = ob3.ToString();
+                        }
+                        if (name != null) {
+                            PdfArray dest = (PdfArray)names[name];
+                            if (dest != null) {
+                                dic.Put(PdfName.D, dest);
+                                SetXrefPartialObject(obj2Idx, ob2);
+                                SetXrefPartialObject(objIdx, obj);
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+            return false;
         }
         
         protected internal static PdfDictionary DuplicatePdfDictionary(PdfDictionary original, PdfDictionary copy, PdfReader newReader) {
