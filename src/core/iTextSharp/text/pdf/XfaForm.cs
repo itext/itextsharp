@@ -1043,5 +1043,40 @@ namespace iTextSharp.text.pdf {
                 return datasetsNode;
             }
         }
-    }
+
+        public void FillXfaForm(string file) {
+            using (FileStream fs = new FileStream(file, FileMode.Open)) {
+		        FillXfaForm(fs);
+            }
+        }
+        
+        public void FillXfaForm(Stream stream) {
+    	    FillXfaForm(new XmlTextReader(stream));
+        }
+    		
+        
+        public void FillXfaForm(XmlReader reader) {
+            XmlDocument doc = new XmlDocument();
+            doc.PreserveWhitespace = true;
+            doc.Load(reader);
+    	    FillXfaForm(doc.DocumentElement);
+        }
+        
+        /**
+        * Replaces the data under datasets/data.
+        * @since	iText 5.0.0
+        */
+        public void FillXfaForm(XmlNode node) {
+		    XmlNode data = datasetsNode.FirstChild;
+		    XmlNodeList list = data.ChildNodes;
+		    if (list.Count == 0) {
+			    data.AppendChild(domDocument.ImportNode(node, true));
+		    }
+		    else {
+			    data.ReplaceChild(domDocument.ImportNode(node, true), data.FirstChild);
+		    }
+            ExtractNodes();
+		    Changed = true;
+        }
+}
 }

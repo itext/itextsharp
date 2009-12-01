@@ -437,7 +437,7 @@ namespace iTextSharp.text.pdf {
                     Annotation annot = (Annotation) element;
                     Rectangle rect = new Rectangle(0, 0);
                     if (line != null)
-                        rect = new Rectangle(annot.GetLlx(IndentRight - line.WidthLeft), annot.GetLly(IndentTop - currentHeight), annot.GetUrx(IndentRight - line.WidthLeft + 20), annot.GetUry(IndentTop - currentHeight - 20));
+                        rect = new Rectangle(annot.GetLlx(IndentRight - line.WidthLeft), annot.GetUry(IndentTop - currentHeight - 20), annot.GetUrx(IndentRight - line.WidthLeft + 20), annot.GetLly(IndentTop - currentHeight));
                     PdfAnnotation an = PdfAnnotationsImp.ConvertAnnotation(writer, annot, rect);
                     annotationsImp.AddPlainAnnotation(an);
                     pageEmpty = false;

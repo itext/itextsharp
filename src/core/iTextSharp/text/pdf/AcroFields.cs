@@ -656,8 +656,9 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        internal PdfAppearance GetAppearance(PdfDictionary merged, String text, String fieldName) {
+        internal PdfAppearance GetAppearance(PdfDictionary merged, String[] values, String fieldName) {
             topFirst = 0;
+            String text = (values.Length > 0) ? values[0] : null;
             TextField tx = null;
             if (fieldCache == null || !fieldCache.ContainsKey(fieldName)) {
                 tx = new TextField(writer, null, null);
@@ -680,7 +681,9 @@ namespace iTextSharp.text.pdf {
             }
             PdfName fieldType = merged.GetAsName(PdfName.FT);
             if (PdfName.TX.Equals(fieldType)) {
-                tx.Text = text;
+                if (values.Length > 0 && values[0] != null) {
+                    tx.Text = values[0];
+                }
                 return tx.GetAppearance();
             }
             if (!PdfName.CH.Equals(fieldType))
@@ -718,22 +721,30 @@ namespace iTextSharp.text.pdf {
                     tx.Text = text;
                     return tx.GetAppearance();
                 }
-                int idx = 0;
+                ArrayList indexes = new ArrayList();
                 for (int k = 0; k < choicesExp.Length; ++k) {
-                    if (text.Equals(choicesExp[k])) {
-                        idx = k;
-                        break;
+                    for (int j = 0; j < values.Length; ++j) {
+                        String val = values[j];
+                        if (val != null && val.Equals(choicesExp[k])) {
+                            indexes.Add(k);
+                            break;
+                        }
                     }
                 }
                 tx.Choices = choices;
                 tx.ChoiceExports = choicesExp;
-                tx.ChoiceSelection = idx;
+                tx.ChoiceSelections = indexes;
             }
             PdfAppearance app = tx.GetListAppearance();
             topFirst = tx.TopFirst;
             return app;
         }
         
+        internal PdfAppearance GetAppearance(PdfDictionary merged, String text, String fieldName) {
+            String[] valueArr = new String[]{text};
+            return GetAppearance( merged, valueArr, fieldName );
+        }
+
         internal Color GetMKColor(PdfArray ar) {
             if (ar == null)
                 return null;
@@ -1353,7 +1364,8 @@ namespace iTextSharp.text.pdf {
             Item item = GetFieldItem(name);
             if (item == null)
                 return false;
-            PdfName type = item.GetMerged(0).GetAsName(PdfName.FT);
+            PdfDictionary merged = item.GetMerged(0);
+            PdfName type = merged.GetAsName(PdfName.FT);
             if (!PdfName.CH.Equals(type)) {
                 return false;
             }
@@ -1367,8 +1379,21 @@ namespace iTextSharp.text.pdf {
                 }
             }
             item.WriteToAll(PdfName.I, array, Item.WRITE_MERGED | Item.WRITE_VALUE);
-            item.WriteToAll(PdfName.V, null, Item.WRITE_MERGED | Item.WRITE_VALUE);
-            item.WriteToAll(PdfName.AP, null, Item.WRITE_MERGED | Item.WRITE_WIDGET);
+        
+            PdfArray vals = new PdfArray();
+            for (int i = 0; i < value.Length; ++i) {
+                vals.Add( new PdfString( value[i] ) );
+            }
+            item.WriteToAll(PdfName.V, vals, Item.WRITE_MERGED | Item.WRITE_VALUE);
+            
+            PdfAppearance app = GetAppearance( merged, value, name ); 
+            
+            PdfDictionary apDic = new PdfDictionary();
+            apDic.Put( PdfName.N, app.IndirectReference);
+            item.WriteToAll(PdfName.AP, apDic, Item.WRITE_MERGED | Item.WRITE_WIDGET);
+            
+            writer.ReleaseTemplate( app );
+            
             item.MarkUsed( this, Item.WRITE_VALUE | Item.WRITE_WIDGET );
             return true;
         }

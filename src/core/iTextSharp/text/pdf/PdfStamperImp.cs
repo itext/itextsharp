@@ -1179,10 +1179,10 @@ namespace iTextSharp.text.pdf {
                             switch (rotation) {
                                 case 90:
                                     annot.Put(PdfName.RECT, new PdfRectangle(
-                                        pageSize.Top - rect.Bottom,
-                                        rect.Left,
                                         pageSize.Top - rect.Top,
-                                        rect.Right));
+                                        rect.Right,
+                                        pageSize.Top - rect.Bottom,
+                                        rect.Left));
                                     break;
                                 case 180:
                                     annot.Put(PdfName.RECT, new PdfRectangle(

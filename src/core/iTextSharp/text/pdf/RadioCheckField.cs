@@ -360,6 +360,7 @@ namespace iTextSharp.text.pdf {
                 if ((options & REQUIRED) != 0)
                     field.SetFieldFlags(PdfFormField.FF_REQUIRED);
                 field.ValueAsName = vchecked ? onValue : "Off";
+                CheckType = TYPE_CHECK;
             }
             if (text != null)
                 field.MKNormalCaption = text;
