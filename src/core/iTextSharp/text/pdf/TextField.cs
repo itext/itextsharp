@@ -65,7 +65,7 @@ namespace iTextSharp.text.pdf {
         private String[] choiceExports;
         
         /** Holds value of property choiceSelection. */
-        private int choiceSelection;
+        private ArrayList choiceSelections = new ArrayList();
         
         private int topFirst;
 
@@ -307,17 +307,13 @@ namespace iTextSharp.text.pdf {
         */
         internal PdfAppearance GetListAppearance() {
             PdfAppearance app = GetBorderAppearance();
-            app.BeginVariableText();
             if (choices == null || choices.Length == 0) {
-                app.EndVariableText();
                 return app;
             }
-            int topChoice = choiceSelection;
-            if (topChoice >= choices.Length) {
-                topChoice = choices.Length - 1;
-            }
-            if (topChoice < 0)
-                topChoice = 0;
+            app.BeginVariableText();
+
+            int topChoice = GetTopChoice();
+
             BaseFont ufont = RealFont;
             float usize = fontSize;
             if (usize == 0)
@@ -333,13 +329,7 @@ namespace iTextSharp.text.pdf {
             int maxFit = (int)(h / leading) + 1;
             int first = 0;
             int last = 0;
-            last = topChoice + maxFit / 2 + 1;
-            first = last - maxFit;
-            if (first < 0) {
-                last += first;
-                first = 0;
-            }
-    //        first = topChoice;
+            first = topChoice;
             last = first + maxFit;
             if (last > choices.Length)
                 last = choices.Length;
@@ -349,16 +339,27 @@ namespace iTextSharp.text.pdf {
             app.Clip();
             app.NewPath();
             Color fcolor = (textColor == null) ? GrayColor.GRAYBLACK : textColor;
+        
+            // background boxes for selected value[s]
             app.SetColorFill(new Color(10, 36, 106));
-            app.Rectangle(offsetX, offsetX + h - (topChoice - first + 1) * leading, box.Width - 2 * offsetX, leading);
-            app.Fill();
+            for (int curVal = 0; curVal < choiceSelections.Count; ++curVal) {
+                int curChoice = (int)choiceSelections[curVal];
+                // only draw selections within our display range... not strictly necessary with 
+                // that clipping rect from above, but it certainly doesn't hurt either 
+                if (curChoice >= first && curChoice <= last) {
+                    app.Rectangle(offsetX, offsetX + h - (curChoice - first + 1) * leading, box.Width - 2 * offsetX, leading);
+                    app.Fill();
+                }
+            }
             float xp = offsetX * 2;
             float yp = offsetX + h - ufont.GetFontDescriptor(BaseFont.BBOXURY, usize);
             for (int idx = first; idx < last; ++idx, yp -= leading) {
                 String ptext = choices[idx];
                 int rtl = CheckRTL(ptext) ? PdfWriter.RUN_DIRECTION_LTR : PdfWriter.RUN_DIRECTION_NO_BIDI;
                 ptext = RemoveCRLF(ptext);
-                Phrase phrase = ComposePhrase(ptext, ufont, (idx == topChoice) ? GrayColor.GRAYWHITE : fcolor, usize);
+                // highlight selected values against their (presumably) darker background
+                Color textCol = choiceSelections.Contains(idx) ? GrayColor.GRAYWHITE : fcolor;
+                Phrase phrase = ComposePhrase(ptext, ufont, textCol, usize);
                 ColumnText.ShowTextAligned(app, Element.ALIGN_LEFT, phrase, xp, yp, 0, rtl, 0);
             }
             app.RestoreState();
@@ -459,19 +460,32 @@ namespace iTextSharp.text.pdf {
             return GetChoiceField(true);
         }
 
+        private int GetTopChoice() {
+    	    if (choiceSelections == null || choiceSelections.Count ==0) {
+    		    return 0;
+    	    }
+        	
+    	    int firstValue = (int)choiceSelections[0];
+        	
+    	    int topChoice = 0;
+    	    if (choices != null) {
+    		    topChoice = firstValue;
+    		    topChoice = Math.Min( topChoice, choices.Length );
+    		    topChoice = Math.Max( 0, topChoice);
+    	    } // else topChoice still 0
+    	    return topChoice;
+        }
+
         protected PdfFormField GetChoiceField(bool isList) {
             options &= (~MULTILINE) & (~COMB);
             String[] uchoices = choices;
             if (uchoices == null)
                 uchoices = new String[0];
-            int topChoice = choiceSelection;
-            if (topChoice >= uchoices.Length)
-                topChoice = uchoices.Length - 1;
-            if (text == null) text = ""; //fixed by Kazuya Ujihara (ujihara.jp)
+            int topChoice = GetTopChoice();
+            if (text == null)
+                text = ""; //fixed by Kazuya Ujihara (ujihara.jp)
             if (topChoice >= 0)
                 text = uchoices[topChoice];
-            if (topChoice < 0)
-                topChoice = 0;
             PdfFormField field = null;
             String[,] mix = null;
             if (choiceExports == null) {
@@ -501,12 +515,19 @@ namespace iTextSharp.text.pdf {
                 field.FieldName = fieldName;
                 if (uchoices.Length > 0) {
                     if (mix != null) {
-                        field.ValueAsString = mix[topChoice, 0];
-                        field.DefaultValueAsString = mix[topChoice, 0];
-                    }
-                    else {
-                        field.ValueAsString = text;
-                        field.DefaultValueAsString = text;
+                        if (choiceSelections.Count < 2) {
+                            field.ValueAsString = mix[topChoice,0];
+                            field.DefaultValueAsString = mix[topChoice,0];
+                        } else {
+                            WriteMultipleValues( field, mix);
+                        }
+                    } else {
+                        if (choiceSelections.Count < 2) {
+                            field.ValueAsString = text;
+                            field.DefaultValueAsString = text;
+                        } else {
+                            WriteMultipleValues( field, null );
+                        }
                     }
                 }
                 if ((options & READ_ONLY) != 0)
@@ -515,6 +536,9 @@ namespace iTextSharp.text.pdf {
                     field.SetFieldFlags(PdfFormField.FF_REQUIRED);
                 if ((options & DO_NOT_SPELL_CHECK) != 0)
                     field.SetFieldFlags(PdfFormField.FF_DONOTSPELLCHECK);
+                if ((options & MULTISELECT) != 0) {
+                    field.SetFieldFlags( PdfFormField.FF_MULTISELECT );
+                }
             }
             field.BorderStyle = new PdfBorderDictionary(borderWidth, borderStyle, new PdfDashPattern(3));
             PdfAppearance tp;
@@ -551,6 +575,23 @@ namespace iTextSharp.text.pdf {
                     break;
             }
             return field;
+        }
+        
+        private void WriteMultipleValues( PdfFormField field, String[,] mix ) {
+            PdfArray indexes = new PdfArray();
+            PdfArray values = new PdfArray();
+            for (int i = 0; i < choiceSelections.Count; ++i) {
+                int idx = (int)choiceSelections[i];
+                indexes.Add( new PdfNumber( idx ) );
+                
+                if (mix != null) 
+                    values.Add( new PdfString( mix[idx,0] ) );
+                else if (choices != null)
+                    values.Add( new PdfString( choices[ idx ] ) );
+            }
+            
+            field.Put( PdfName.V, values );
+            field.Put( PdfName.I, indexes );
         }
         
         /** Sets the default text. It is only meaningful for text fields.
@@ -597,10 +638,41 @@ namespace iTextSharp.text.pdf {
         */
         public int ChoiceSelection {
             get {
-                return choiceSelection;
+                return GetTopChoice();
             }
             set {
-                choiceSelection = value;
+                choiceSelections = new ArrayList();
+                choiceSelections.Add(value);
+            }
+        }
+        
+        public ArrayList ChoiceSelections {
+            get {
+                return choiceSelections;
+            }
+            set {
+                if (value != null) {
+                    choiceSelections = new ArrayList(value);
+                    if (choiceSelections.Count > 1 && (options & BaseField.MULTISELECT) == 0 ) {
+                        // can't have multiple selections in a single-select field
+                        while (choiceSelections.Count > 1) {
+                            choiceSelections.RemoveAt(1);
+                        }
+                    }
+                } else { 
+                    choiceSelections.Clear();
+                }
+            }
+        }
+
+        /**
+        * adds another (or a first I suppose) selection to a MULTISELECT list.
+        * This doesn't do anything unless this.options & MUTLISELECT != 0 
+        * @param selection new selection
+        */
+        public void AddChoiceSelection(int selection) {
+            if ((this.options & BaseField.MULTISELECT) != 0) {
+                choiceSelections.Add(selection);
             }
         }
         

@@ -101,6 +101,11 @@ namespace iTextSharp.text.pdf
         * This flag is only meaningful with combo fields.
         */    
         public const int EDIT = PdfFormField.FF_EDIT;
+    
+        /** whether or not a list may have multiple selections.  Only applies to /CH LIST
+        * fields, not combo boxes.
+        */
+        public const int MULTISELECT = PdfFormField.FF_MULTISELECT;
 
         /**
         * combo box flag.
