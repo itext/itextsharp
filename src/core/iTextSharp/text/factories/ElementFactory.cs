@@ -9,50 +9,45 @@ using iTextSharp.text.error_messages;
  * $Id: ElementFactory.cs,v 1.9 2008/05/13 11:25:14 psoares33 Exp $
  * 
  *
- * Copyright 2007 by Bruno Lowagie.
+ * This file is part of the iText project.
+ * Copyright (c) 1998-2009 1T3XT BVBA
+ * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
- * The contents of this file are subject to the Mozilla Public License Version 1.1
- * (the "License"); you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at http://www.mozilla.org/MPL/
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License version 3
+ * as published by the Free Software Foundation with the addition of the
+ * following permission added to Section 15 as permitted in Section 7(a):
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
+ * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the License.
+ * This program is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+ * or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Affero General Public License for more details.
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program; if not, see http://www.gnu.org/licenses or write to
+ * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
+ * Boston, MA, 02110-1301 USA, or download the license from the following URL:
+ * http://itextpdf.com/terms-of-use/
  *
- * The Original Code is 'iText, a free JAVA-PDF library'.
+ * The interactive user interfaces in modified source and object code versions
+ * of this program must display Appropriate Legal Notices, as required under
+ * Section 5 of the GNU Affero General Public License.
  *
- * The Initial Developer of the Original Code is Bruno Lowagie. Portions created by
- * the Initial Developer are Copyright (C) 1999, 2000, 2001, 2002 by Bruno Lowagie.
- * All Rights Reserved.
- * Co-Developer of the code is Paulo Soares. Portions created by the Co-Developer
- * are Copyright (C) 2000, 2001, 2002 by Paulo Soares. All Rights Reserved.
+ * In accordance with Section 7(b) of the GNU Affero General Public License,
+ * you must retain the producer line in every PDF that is created or manipulated
+ * using iText.
  *
- * Contributor(s): all the names of the contributors are added in the source code
- * where applicable.
+ * You can be released from the requirements of the license by purchasing
+ * a commercial license. Buying such a license is mandatory as soon as you
+ * develop commercial activities involving the iText software without
+ * disclosing the source code of your own applications.
+ * These activities include: offering paid services to customers as an ASP,
+ * serving PDFs on the fly in a web application, shipping iText with a closed
+ * source product.
  *
- * Alternatively, the contents of this file may be used under the terms of the
- * LGPL license (the "GNU LIBRARY GENERAL PUBLIC LICENSE"), in which case the
- * provisions of LGPL are applicable instead of those above.  If you wish to
- * allow use of your version of this file only under the terms of the LGPL
- * License and not to allow others to use your version of this file under
- * the MPL, indicate your decision by deleting the provisions above and
- * replace them with the notice and other provisions required by the LGPL.
- * If you do not delete the provisions above, a recipient may use your version
- * of this file under either the MPL or the GNU LIBRARY GENERAL PUBLIC LICENSE.
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of the MPL as stated above or under the terms of the GNU
- * Library General Public License as published by the Free Software Foundation;
- * either version 2 of the License, or any later version.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
- * FOR A PARTICULAR PURPOSE. See the GNU Library general Public License for more
- * details.
- *
- * If you didn't download this code from the following link, you should check if
- * you aren't using an obsolete version:
- * http://www.lowagie.com/iText/
+ * For more information, please contact iText Software Corp. at this
+ * address: sales@itextpdf.com
  */
 namespace iTextSharp.text.factories {
 
@@ -218,174 +213,6 @@ namespace iTextSharp.text.factories {
             return list;
         }
 
-        public static Cell GetCell(Properties attributes) {
-            Cell cell = new Cell();
-            String value;
-
-            cell.SetHorizontalAlignment(attributes[ElementTags.HORIZONTALALIGN]);
-            cell.SetVerticalAlignment(attributes[ElementTags.VERTICALALIGN]);
-            value = attributes[ElementTags.WIDTH];
-            if (value != null) {
-                cell.SetWidth(value);
-            }
-            value = attributes[ElementTags.COLSPAN];
-            if (value != null) {
-                cell.Colspan = int.Parse(value);
-            }
-            value = attributes[ElementTags.ROWSPAN];
-            if (value != null) {
-                cell.Rowspan = int.Parse(value);
-            }
-            value = attributes[ElementTags.LEADING];
-            if (value != null) {
-                cell.Leading = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            }
-            cell.Header = Utilities.CheckTrueOrFalse(attributes, ElementTags.HEADER);
-            if (Utilities.CheckTrueOrFalse(attributes, ElementTags.NOWRAP)) {
-                cell.MaxLines = 1;
-            }
-            SetRectangleProperties(cell, attributes);
-            return cell;
-        }
-
-        /**
-        * Creates an Table object based on a list of properties.
-        * @param attributes
-        * @return a Table
-        */
-        public static Table GetTable(Properties attributes) {
-            String value;
-            Table table;
-
-            value = attributes[ElementTags.WIDTHS];
-            if (value != null) {
-                StringTokenizer widthTokens = new StringTokenizer(value, ";");
-                ArrayList values = new ArrayList();
-                while (widthTokens.HasMoreTokens()) {
-                    values.Add(widthTokens.NextToken());
-                }
-                table = new Table(values.Count);
-                float[] widths = new float[table.Columns];
-                for (int i = 0; i < values.Count; i++) {
-                    value = (String)values[i];
-                    widths[i] = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
-                }
-                table.Widths = widths;
-            }
-            else {
-                value = attributes[ElementTags.COLUMNS];
-                try {
-                    table = new Table(int.Parse(value));
-                }
-                catch {
-                    table = new Table(1);
-                }
-            }
-            
-            table.Border = Table.BOX;
-            table.BorderWidth = 1;
-            table.DefaultCell.Border = Table.BOX;
-            
-            value = attributes[ElementTags.LASTHEADERROW];
-            if (value != null) {
-                table.LastHeaderRow = int.Parse(value);
-            }
-            value = attributes[ElementTags.ALIGN];
-            if (value != null) {
-                table.SetAlignment(value);
-            }
-            value = attributes[ElementTags.CELLSPACING];
-            if (value != null) {
-                table.Spacing = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            }
-            value = attributes[ElementTags.CELLPADDING];
-            if (value != null) {
-                table.Padding = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            }
-            value = attributes[ElementTags.OFFSET];
-            if (value != null) {
-                table.Offset = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            }
-            value = attributes[ElementTags.WIDTH];
-            if (value != null) {
-                if (value.EndsWith("%"))
-                    table.Width = float.Parse(value.Substring(0, value.Length - 1), System.Globalization.NumberFormatInfo.InvariantInfo);
-                else {
-                    table.Width = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
-                    table.Locked = true;
-                }
-            }
-            table.TableFitsPage = Utilities.CheckTrueOrFalse(attributes, ElementTags.TABLEFITSPAGE);
-            table.CellsFitPage = Utilities.CheckTrueOrFalse(attributes, ElementTags.CELLSFITPAGE);
-            table.Convert2pdfptable = Utilities.CheckTrueOrFalse(attributes, ElementTags.CONVERT2PDFP);
-            
-            SetRectangleProperties(table, attributes);
-            return table;
-        }
-
-        /**
-        * Sets some Rectangle properties (for a Cell, Table,...).
-        */
-        private static void SetRectangleProperties(Rectangle rect, Properties attributes) {
-            String value;
-            value = attributes[ElementTags.BORDERWIDTH];
-            if (value != null) {
-                rect.BorderWidth = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            }
-            int border = 0;
-            if (Utilities.CheckTrueOrFalse(attributes, ElementTags.LEFT)) {
-                border |= Rectangle.LEFT_BORDER;
-            }
-            if (Utilities.CheckTrueOrFalse(attributes, ElementTags.RIGHT)) {
-                border |= Rectangle.RIGHT_BORDER;
-            }
-            if (Utilities.CheckTrueOrFalse(attributes, ElementTags.TOP)) {
-                border |= Rectangle.TOP_BORDER;
-            }
-            if (Utilities.CheckTrueOrFalse(attributes, ElementTags.BOTTOM)) {
-                border |= Rectangle.BOTTOM_BORDER;
-            }
-            rect.Border = border;
-            
-            String r = attributes[ElementTags.RED];
-            String g = attributes[ElementTags.GREEN];
-            String b = attributes[ElementTags.BLUE];
-            if (r != null || g != null || b != null) {
-                int red = 0;
-                int green = 0;
-                int blue = 0;
-                if (r != null) red = int.Parse(r);
-                if (g != null) green = int.Parse(g);
-                if (b != null) blue = int.Parse(b);
-                rect.BorderColor = new Color(red, green, blue);
-            }
-            else {
-                rect.BorderColor = Markup.DecodeColor(attributes[ElementTags.BORDERCOLOR]);
-            }
-            r = (String)attributes.Remove(ElementTags.BGRED);
-            g = (String)attributes.Remove(ElementTags.BGGREEN);
-            b = (String)attributes.Remove(ElementTags.BGBLUE);
-            value = attributes[ElementTags.BACKGROUNDCOLOR];
-            if (r != null || g != null || b != null) {
-                int red = 0;
-                int green = 0;
-                int blue = 0;
-                if (r != null) red = int.Parse(r);
-                if (g != null) green = int.Parse(g);
-                if (b != null) blue = int.Parse(b);
-                rect.BackgroundColor = new Color(red, green, blue);
-            }
-            else if (value != null) {
-                rect.BackgroundColor = Markup.DecodeColor(value);
-            }
-            else {
-                value = attributes[ElementTags.GRAYFILL];
-                if (value != null) {
-                    rect.GrayFill = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
-                }
-            }
-        }
-        
         public static ChapterAutoNumber GetChapter(Properties attributes) {
             ChapterAutoNumber chapter = new ChapterAutoNumber("");
             SetSectionParameters(chapter, attributes);
