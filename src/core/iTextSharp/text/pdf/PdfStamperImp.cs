@@ -196,7 +196,7 @@ namespace iTextSharp.text.pdf {
             if (iInfo != null)
                 skipInfo = iInfo.Number;
             if (oldInfo != null && oldInfo.Get(PdfName.PRODUCER) != null)
-                producer = oldInfo.GetAsString(PdfName.PRODUCER).ToString();
+                producer = oldInfo.GetAsString(PdfName.PRODUCER).ToUnicodeString();
             if (producer == null) {
                 producer = Document.Version;
             }
@@ -222,11 +222,15 @@ namespace iTextSharp.text.pdf {
                 PdfStream xmp;
                 try {
                     XmpReader xmpr = new XmpReader(altMetadata);
-                    if (!xmpr.Replace("http://ns.adobe.com/pdf/1.3/", "Producer", producer))
+                    if (!(xmpr.ReplaceNode("http://ns.adobe.com/pdf/1.3/", "Producer", producer)
+                        || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/pdf/1.3/", "Producer", producer)))
                         xmpr.Add("rdf:Description", "http://ns.adobe.com/pdf/1.3/", "pdf:Producer", producer);
-                    if (!xmpr.Replace("http://ns.adobe.com/xap/1.0/", "ModifyDate", date.GetW3CDate()))
+                    if (!(xmpr.ReplaceNode("http://ns.adobe.com/xap/1.0/", "ModifyDate", date.GetW3CDate())
+                        || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/xap/1.0/", "ModifyDate", date.GetW3CDate())))
                         xmpr.Add("rdf:Description", "http://ns.adobe.com/xap/1.0/", "xmp:ModifyDate", date.GetW3CDate());
-                    xmpr.Replace("http://ns.adobe.com/xap/1.0/", "MetadataDate", date.GetW3CDate());
+                    if (!(xmpr.ReplaceNode("http://ns.adobe.com/xap/1.0/", "MetadataDate", date.GetW3CDate())
+                            || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/xap/1.0/", "MetadataDate", date.GetW3CDate()))) {
+                    }
                     xmp = new PdfStream(xmpr.SerializeDoc());
                 }
                 catch {

@@ -2375,6 +2375,16 @@ namespace iTextSharp.text.pdf {
             }
         }
 
+        /**
+        * Removes the XFA stream from the document.
+        */
+        public void RemoveXfa() {
+            PdfDictionary root = reader.Catalog;
+            PdfDictionary acroform = root.GetAsDict(PdfName.ACROFORM);
+            acroform.Remove(PdfName.XFA);
+            xfa = new XfaForm(reader);
+        }
+
         private static readonly PdfName[] buttonRemove = {PdfName.MK, PdfName.F , PdfName.FF , PdfName.Q , PdfName.BS , PdfName.BORDER};
         
         /**

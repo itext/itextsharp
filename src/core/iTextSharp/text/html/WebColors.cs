@@ -202,7 +202,7 @@ namespace iTextSharp.text.html {
             NAMES["white"] = new int[] { 0xff, 0xff, 0xff, 0x00 };
             NAMES["whitesmoke"] = new int[] { 0xf5, 0xf5, 0xf5, 0x00 };
             NAMES["yellow"] = new int[] { 0xff, 0xff, 0x00, 0x00 };
-            NAMES["yellowgreen"] = new int[] { 0x9, 0xacd, 0x32, 0x00 };
+            NAMES["yellowgreen"] = new int[] { 0x9a, 0xcd, 0x32, 0x00 };
         }
         
         /**

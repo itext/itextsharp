@@ -81,7 +81,7 @@ namespace iTextSharp.text.xml.xmp {
 	    * @return	true if the content was successfully replaced
 	    * @since	2.1.6 the return type has changed from void to boolean
 	    */
-	    public bool Replace(String namespaceURI, String localName, String value) {
+	    public bool ReplaceNode(String namespaceURI, String localName, String value) {
 		    XmlNodeList nodes = domDocument.GetElementsByTagName(localName, namespaceURI);
 		    XmlNode node;
 		    if (nodes.Count == 0)
@@ -92,8 +92,33 @@ namespace iTextSharp.text.xml.xmp {
 		    }
 		    return true;
 	    }    
-    	
-	    /**
+        
+        /**
+        * Replaces the content of an attribute in the description tag.
+        * @param    namespaceURI    the URI of the namespace
+        * @param    localName       the tag name
+        * @param    value           the new content for the tag
+        * @return   true if the content was successfully replaced
+        * @since    5.0.0 the return type has changed from void to boolean
+        */
+        public bool ReplaceDescriptionAttribute(String namespaceURI, String localName, String value) {
+            XmlNodeList descNodes = domDocument.GetElementsByTagName("Description", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+            if(descNodes.Count == 0) {
+                return false;
+            }
+            XmlNode node;
+            for(int i = 0; i < descNodes.Count; i++) {
+                node = descNodes.Item(i);
+                XmlNode attr = node.Attributes.GetNamedItem(localName, namespaceURI);
+                if(attr != null) {
+                    attr.Value = value;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        /**
 	    * Adds a tag.
 	    * @param	namespaceURI	the URI of the namespace
 	    * @param	parent			the tag name of the parent

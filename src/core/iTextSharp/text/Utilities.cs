@@ -258,5 +258,17 @@ namespace iTextSharp.text {
             codePoint -= 0x10000;
             return new string(new char[]{(char)((codePoint / 0x400) + 0xd800), (char)((codePoint % 0x400) + 0xdc00)});
         }
+
+        /**
+        * Reads the contents of a file to a String.
+        * @param	path	the path to the file
+        * @return	a String with the contents of the file
+        * @since	iText 5.0.0
+        */
+	    public static String ReadFileToString(String path) {
+            using (StreamReader sr = new StreamReader(path, Encoding.Default)) {
+                return sr.ReadToEnd();
+            }
+	    }
     }
 }

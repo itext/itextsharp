@@ -88,6 +88,7 @@ namespace iTextSharp.text.pdf {
             }
             Put(PdfName.N, new PdfNumber(numberOfComponents));
             bytes = profile.Data;
+            Put(PdfName.LENGTH, new PdfNumber(bytes.Length));
             FlateCompress(compressionLevel);
         }
     }
