@@ -188,11 +188,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "iTextSharp\text\HeaderFooter.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "iTextSharp\text\IDocListener.cs"
                     SubType = "Code"
                     BuildAction = "Compile"

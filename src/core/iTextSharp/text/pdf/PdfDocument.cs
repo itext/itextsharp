@@ -960,55 +960,7 @@ namespace iTextSharp.text.pdf {
             base.ResetPageCount();
         }
 
-        /**
-        * Changes the header of this document.
-        *
-        * @param header the new header
-        */        
-        public override HeaderFooter Header {
-            set {
-                if (writer != null && writer.IsPaused()) {
-                    return;
-                }
-                base.Header = value;
-            }
-        }
-        
-        /**
-        * Resets the header of this document.
-        */        
-        public override void ResetHeader() {
-            if (writer != null && writer.IsPaused()) {
-                return;
-            }
-            base.ResetHeader();
-        }
-        
-        /**
-        * Changes the footer of this document.
-        *
-        * @param    footer      the new footer
-        */        
-        public override HeaderFooter Footer {
-            set {
-                if (writer != null && writer.IsPaused()) {
-                    return;
-                }
-                base.Footer = value;
-            }
-        }
-        
-        /**
-        * Resets the footer of this document.
-        */        
-        public override void ResetFooter() {
-            if (writer != null && writer.IsPaused()) {
-                return;
-            }
-            base.ResetFooter();
-        }
-        
-    // DOCLISTENER METHODS END
+        // DOCLISTENER METHODS END
     
         /** Signals that OnOpenDocument should be called. */
         protected internal bool firstPageEvent = true;
@@ -1054,11 +1006,8 @@ namespace iTextSharp.text.pdf {
 
             float oldleading = leading;
             int oldAlignment = alignment;
-            // if there is a footer, the footer is added
-            DoFooter();
             // we move to the left/top position of the page
             text.MoveText(Left, Top);
-            DoHeader();
             pageEmpty = true;
             // if there is an image waiting to be drawn, draw it
             if (imageWait != null) {
@@ -2400,95 +2349,5 @@ namespace iTextSharp.text.pdf {
             return table.TotalHeight + ((currentHeight > 0) ? table.SpacingBefore : 0f)
                 <= IndentTop - currentHeight - IndentBottom - margin;
         }        
-        
-    //	[M5] header/footer
-        protected internal void DoFooter() {
-    	    if (footer == null) return;
-		    // Begin added by Edgar Leonardo Prieto Perilla
-    	    // Avoid footer identation
-    	    float tmpIndentLeft = indentation.indentLeft;
-    	    float tmpIndentRight = indentation.indentRight;
-    	    // Begin added: Bonf (Marc Schneider) 2003-07-29
-            float tmpListIndentLeft = indentation.listIndentLeft;
-            float tmpImageIndentLeft = indentation.imageIndentLeft;
-            float tmpImageIndentRight = indentation.imageIndentRight;
-            // End added: Bonf (Marc Schneider) 2003-07-29
-
-            indentation.indentLeft = indentation.indentRight = 0;
-            // Begin added: Bonf (Marc Schneider) 2003-07-29
-            indentation.listIndentLeft = 0;
-            indentation.imageIndentLeft = 0;
-            indentation.imageIndentRight = 0;
-            // End added: Bonf (Marc Schneider) 2003-07-29
-            // End Added by Edgar Leonardo Prieto Perilla
-            footer.PageNumber = pageN;
-            leading = footer.Paragraph.TotalLeading;
-            Add(footer.Paragraph);
-            // adding the footer limits the height
-            indentation.indentBottom = currentHeight;
-            text.MoveText(Left, IndentBottom);
-            FlushLines();
-            text.MoveText(-Left, -Bottom);
-            footer.Top = GetBottom(currentHeight);
-            footer.Bottom = Bottom - (0.75f * leading);
-            footer.Left = Left;
-            footer.Right = Right;
-            graphics.Rectangle(footer);
-            indentation.indentBottom = currentHeight + leading * 2;
-            currentHeight = 0;
-            // Begin added by Edgar Leonardo Prieto Perilla
-            indentation.indentLeft = tmpIndentLeft;
-            indentation.indentRight = tmpIndentRight;
-            // Begin added: Bonf (Marc Schneider) 2003-07-29
-            indentation.listIndentLeft = tmpListIndentLeft;
-            indentation.imageIndentLeft = tmpImageIndentLeft;
-            indentation.imageIndentRight = tmpImageIndentRight;
-            // End added: Bonf (Marc Schneider) 2003-07-29
-            // End added by Edgar Leonardo Prieto Perilla
-        }
-        
-        protected internal void DoHeader() {
-            // if there is a header, the header = added
-            if (header == null) return;
-		    // Begin added by Edgar Leonardo Prieto Perilla
-		    // Avoid header identation
-		    float tmpIndentLeft = indentation.indentLeft;
-		    float tmpIndentRight = indentation.indentRight;
-            // Begin added: Bonf (Marc Schneider) 2003-07-29
-            float tmpListIndentLeft = indentation.listIndentLeft;
-            float tmpImageIndentLeft = indentation.imageIndentLeft;
-            float tmpImageIndentRight = indentation.imageIndentRight;
-            // End added: Bonf (Marc Schneider) 2003-07-29
-            indentation.indentLeft = indentation.indentRight = 0;
-            //  Added: Bonf
-            indentation.listIndentLeft = 0;
-            indentation.imageIndentLeft = 0;
-            indentation.imageIndentRight = 0;
-            // End added: Bonf
-            // Begin added by Edgar Leonardo Prieto Perilla
-		    header.PageNumber = pageN;
-            leading = header.Paragraph.TotalLeading;
-            text.MoveText(0, leading);
-            Add(header.Paragraph);
-            NewLine();
-            indentation.indentTop = currentHeight - leading;
-            header.Top = Top + leading;
-            header.Bottom = IndentTop + leading * 2 / 3;
-            header.Left = Left;
-            header.Right = Right;
-            graphics.Rectangle(header);
-            FlushLines();
-            currentHeight = 0;
-            // Begin added by Edgar Leonardo Prieto Perilla
-            // Restore identation
-		    indentation.indentLeft = tmpIndentLeft;
-		    indentation.indentRight = tmpIndentRight;
-            // Begin added: Bonf (Marc Schneider) 2003-07-29
-            indentation.listIndentLeft = tmpListIndentLeft;
-            indentation.imageIndentLeft = tmpImageIndentLeft;
-            indentation.imageIndentRight = tmpImageIndentRight;
-            // End added: Bonf (Marc Schneider) 2003-07-29
-		    // End Added by Edgar Leonardo Prieto Perilla
-        }
     }
 }

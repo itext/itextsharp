@@ -121,32 +121,6 @@ namespace iTextSharp.text {
         /// <summary>
         /// Sets the page number to 0.
         /// </summary>
-        void ResetPageCount();
-    
-        /// <summary>
-        /// Changes the header of this document.
-        /// </summary>
-        /// <value>a Header</value>
-        HeaderFooter Header {
-            set;
-        }
-    
-        /// <summary>
-        /// Resets the header of this document.
-        /// </summary>
-        void ResetHeader();
-    
-        /// <summary>
-        /// Changes the footer of this document.
-        /// </summary>
-        /// <value>a Footer</value>
-        HeaderFooter Footer {
-            set;
-        }
-    
-        /// <summary>
-        /// Resets the footer of this document.
-        /// </summary>
-        void ResetFooter();
+        void ResetPageCount();    
     }
 }
