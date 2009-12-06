@@ -652,16 +652,6 @@ namespace iTextSharp.text.html.simpleparser {
                 tagsSupported[tok.NextToken()] = null;
         }
     
-        public HeaderFooter Footer {
-            set {
-            }
-        }
-    
-        public HeaderFooter Header {
-            set {
-            }
-        }
-    
         public int PageCount {
             set {
             }

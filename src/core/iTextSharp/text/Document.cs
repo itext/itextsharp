@@ -163,12 +163,6 @@ namespace iTextSharp.text {
         ///<summary> Current pagenumber </summary>
         protected int pageN = 0;
 
-        ///<summary> This is the textual part of a Page; it can contain a header </summary>
-        protected HeaderFooter header = null;
-
-        ///<summary> This is the textual part of the footer </summary>
-        protected HeaderFooter footer = null;
-
         /** This is a chapter number in case ChapterAutoNumber is used. */
         protected int chapternumber = 0;
 
@@ -327,52 +321,6 @@ namespace iTextSharp.text {
                 listener.NewPage();
             }
             return true;
-        }
-
-        /// <summary>
-        /// Changes the header of this document.
-        /// </summary>
-        /// <value>a HeaderFooter</value>
-        public virtual HeaderFooter Header {
-            set {
-                this.header = value;
-                foreach (IDocListener listener in listeners) {
-                    listener.Header = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Resets the header of this document.
-        /// </summary>
-        public virtual void ResetHeader() {
-            this.header = null;
-            foreach (IDocListener listener in listeners) {
-                listener.ResetHeader();
-            }
-        }
-
-        /// <summary>
-        /// Changes the footer of this document.
-        /// </summary>
-        /// <value>a HeaderFooter</value>
-        public virtual HeaderFooter Footer {
-            set {
-                this.footer = value;
-                foreach (IDocListener listener in listeners) {
-                    listener.Footer = value;
-                }
-            }
-        }
-
-        /// <summary>
-        /// Resets the footer of this document.
-        /// </summary>
-        public virtual void ResetFooter() {
-            this.footer = null;
-            foreach (IDocListener listener in listeners) {
-                listener.ResetFooter();
-            }
         }
 
         /// <summary>

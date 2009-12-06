@@ -187,54 +187,6 @@ namespace iTextSharp.text {
         }
 
         /// <summary>
-        /// Changes the header of this document.
-        /// </summary>
-        /// <remarks>
-        /// This method should be overriden in the specific DocWriter classes
-        /// derived from this abstract class if they actually support the use of
-        /// headers.
-        /// </remarks>
-        /// <value>the new header</value>
-        public virtual HeaderFooter Header {
-            set {}
-        }
-
-        /// <summary>
-        /// Resets the header of this document.
-        /// </summary>
-        /// <remarks>
-        /// This method should be overriden in the specific DocWriter classes
-        /// derived from this abstract class if they actually support the use of
-        /// headers.
-        /// </remarks>
-        public virtual void ResetHeader() {
-        }
-
-        /// <summary>
-        /// Changes the footer of this document.
-        /// </summary>
-        /// <remarks>
-        /// This method should be overriden in the specific DocWriter classes
-        /// derived from this abstract class if they actually support the use of
-        /// footers.
-        /// </remarks>
-        /// <value>the new footer</value>
-        public virtual HeaderFooter Footer {
-            set {}
-        }
-
-        /// <summary>
-        /// Resets the footer of this document.
-        /// </summary>
-        /// <remarks>
-        /// This method should be overriden in the specific DocWriter classes
-        /// derived from this abstract class if they actually support the use of
-        /// footers.
-        /// </remarks>
-        public virtual void ResetFooter() {
-        }
-
-        /// <summary>
         /// Sets the page number to 0.
         /// </summary>
         /// <remarks>
