@@ -175,7 +175,7 @@ namespace iTextSharp.text.html.simpleparser {
             float size = 12;
             if (value != null)
                 size = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            Color color = Markup.DecodeColor(props["color"]);
+            BaseColor color = Markup.DecodeColor(props["color"]);
             String encoding = props["encoding"];
             if (encoding == null)
                 encoding = BaseFont.WINANSI;
@@ -277,7 +277,7 @@ namespace iTextSharp.text.html.simpleparser {
                         h["u"] = null;
                 }
                 else if (key.Equals(Markup.CSS_KEY_COLOR)) {
-                    Color c = Markup.DecodeColor(prop[key]);
+                    BaseColor c = Markup.DecodeColor(prop[key]);
                     if (c != null) {
                         int hh = c.ToArgb() & 0xffffff;
                         String hs = "#" + hh.ToString("X06", NumberFormatInfo.InvariantInfo);
@@ -342,7 +342,7 @@ namespace iTextSharp.text.html.simpleparser {
                         h["u"] = null;
                 }
                 else if (key.Equals(Markup.CSS_KEY_COLOR)) {
-                    Color c = Markup.DecodeColor(prop[key]);
+                    BaseColor c = Markup.DecodeColor(prop[key]);
                     if (c != null) {
                         int hh = c.ToArgb() & 0xffffff;
                         String hs = "#" + hh.ToString("X06", NumberFormatInfo.InvariantInfo);

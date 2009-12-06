@@ -195,7 +195,7 @@ namespace iTextSharp.text.pdf.intern {
                                         break;
                                 }
                             }
-                            else if (obj1 is Color)
+                            else if (obj1 is BaseColor)
                                 throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("colorspace.rgb.is.not.allowed"));
                             break;
                     }

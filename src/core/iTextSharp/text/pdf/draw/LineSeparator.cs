@@ -62,7 +62,7 @@ namespace iTextSharp.text.pdf.draw {
         /** The width of the line as a percentage of the available page width. */
         protected float percentage = 100;
         /** The color of the line. */
-        protected Color lineColor;
+        protected BaseColor lineColor;
         /** The alignment of the line. */
         protected int alignment = Element.ALIGN_CENTER;
         
@@ -74,7 +74,7 @@ namespace iTextSharp.text.pdf.draw {
         * @param align          the alignment
         * @param offset     the offset of the line relative to the current baseline (negative = under the baseline)
         */
-        public LineSeparator(float lineWidth, float percentage, Color lineColor, int align, float offset) {
+        public LineSeparator(float lineWidth, float percentage, BaseColor lineColor, int align, float offset) {
             this.lineWidth = lineWidth;
             this.percentage = percentage;
             this.lineColor = lineColor;
@@ -162,7 +162,7 @@ namespace iTextSharp.text.pdf.draw {
         * @param color  a color
         */
 
-        public Color LineColor {
+        public BaseColor LineColor {
             get {
                 return lineColor;
             }

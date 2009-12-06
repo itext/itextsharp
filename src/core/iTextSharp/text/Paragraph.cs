@@ -63,7 +63,7 @@ namespace iTextSharp.text {
     /// <example>
     /// <code>
     /// <strong>Paragraph p = new Paragraph("This is a paragraph",
-    ///                FontFactory.GetFont(FontFactory.HELVETICA, 18, Font.BOLDITALIC, new Color(0, 0, 255)));</strong>
+    ///                FontFactory.GetFont(FontFactory.HELVETICA, 18, Font.BOLDITALIC, new BaseColor(0, 0, 255)));</strong>
     ///    </code>
     /// </example>
     /// <seealso cref="T:iTextSharp.text.Element"/>

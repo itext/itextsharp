@@ -93,7 +93,7 @@ namespace iTextSharp.text.pdf {
         private bool open;
     
         /** Holds value of property color. */
-        private Color color;
+        private BaseColor color;
         
         /** Holds value of property style. */
         private int style = 0;
@@ -385,7 +385,7 @@ namespace iTextSharp.text.pdf {
         */
         
         public override void ToPdf(PdfWriter writer, Stream os) {
-            if (color != null && !color.Equals(Color.BLACK)) {
+            if (color != null && !color.Equals(BaseColor.BLACK)) {
                 Put(PdfName.C, new PdfArray(new float[]{color.R/255f,color.G/255f,color.B/255f}));
             }
             int flag = 0;
@@ -459,7 +459,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public Color Color {
+        public BaseColor Color {
             get {
                 return color;
             }

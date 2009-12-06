@@ -94,7 +94,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        private Phrase ComposePhrase(String text, BaseFont ufont, Color color, float fontSize) {
+        private Phrase ComposePhrase(String text, BaseFont ufont, BaseColor color, float fontSize) {
             Phrase phrase = null;
             if (extensionFont == null && (substitutionFonts == null || substitutionFonts.Count == 0))
                 phrase = new Phrase(new Chunk(text, new Font(ufont, fontSize, 0, color)));
@@ -180,7 +180,7 @@ namespace iTextSharp.text.pdf {
             else
                 ptext = text; //fixed by Kazuya Ujihara (ujihara.jp)
             BaseFont ufont = RealFont;
-            Color fcolor = (textColor == null) ? GrayColor.GRAYBLACK : textColor;
+            BaseColor fcolor = (textColor == null) ? GrayColor.GRAYBLACK : textColor;
             int rtl = CheckRTL(ptext) ? PdfWriter.RUN_DIRECTION_LTR : PdfWriter.RUN_DIRECTION_NO_BIDI;
             float usize = fontSize;
             Phrase phrase = ComposePhrase(ptext, ufont, fcolor, usize);
@@ -333,10 +333,10 @@ namespace iTextSharp.text.pdf {
             app.Rectangle(offsetX, offsetX, box.Width - 2 * offsetX, box.Height - 2 * offsetX);
             app.Clip();
             app.NewPath();
-            Color fcolor = (textColor == null) ? GrayColor.GRAYBLACK : textColor;
+            BaseColor fcolor = (textColor == null) ? GrayColor.GRAYBLACK : textColor;
         
             // background boxes for selected value[s]
-            app.SetColorFill(new Color(10, 36, 106));
+            app.SetColorFill(new BaseColor(10, 36, 106));
             for (int curVal = 0; curVal < choiceSelections.Count; ++curVal) {
                 int curChoice = (int)choiceSelections[curVal];
                 // only draw selections within our display range... not strictly necessary with 
@@ -353,7 +353,7 @@ namespace iTextSharp.text.pdf {
                 int rtl = CheckRTL(ptext) ? PdfWriter.RUN_DIRECTION_LTR : PdfWriter.RUN_DIRECTION_NO_BIDI;
                 ptext = RemoveCRLF(ptext);
                 // highlight selected values against their (presumably) darker background
-                Color textCol = choiceSelections.Contains(idx) ? GrayColor.GRAYWHITE : fcolor;
+                BaseColor textCol = choiceSelections.Contains(idx) ? GrayColor.GRAYWHITE : fcolor;
                 Phrase phrase = ComposePhrase(ptext, ufont, textCol, usize);
                 ColumnText.ShowTextAligned(app, Element.ALIGN_LEFT, phrase, xp, yp, 0, rtl, 0);
             }

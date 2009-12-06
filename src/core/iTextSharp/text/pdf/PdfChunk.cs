@@ -55,7 +55,7 @@ namespace iTextSharp.text.pdf {
      * A <CODE>PdfChunk</CODE> is the PDF translation of a <CODE>Chunk</CODE>.
      * <P>
      * A <CODE>PdfChunk</CODE> is a <CODE>PdfString</CODE> in a certain
-     * <CODE>PdfFont</CODE> and <CODE>Color</CODE>.
+     * <CODE>PdfFont</CODE> and <CODE>BaseColor</CODE>.
      *
      * @see     PdfString
      * @see     PdfFont
@@ -125,7 +125,7 @@ namespace iTextSharp.text.pdf {
          * Non metric attributes.
          * <P>
          * This attributes do not require the mesurement of characters widths when rendering
-         * such as Color.
+         * such as BaseColor.
          */
         protected Hashtable noStroke = new Hashtable();
     
@@ -508,12 +508,12 @@ namespace iTextSharp.text.pdf {
         /**
          * Returns the color of this <CODE>Chunk</CODE>.
          *
-         * @return  a <CODE>Color</CODE>
+         * @return  a <CODE>BaseColor</CODE>
          */
     
-        internal Color Color {
+        internal BaseColor Color {
             get {
-                return (Color)noStroke[Chunk.COLOR];
+                return (BaseColor)noStroke[Chunk.COLOR];
             }
         }
     

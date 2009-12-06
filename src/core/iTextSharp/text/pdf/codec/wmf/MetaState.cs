@@ -71,8 +71,8 @@ namespace iTextSharp.text.pdf.codec.wmf {
         public MetaPen currentPen;
         public MetaBrush currentBrush;
         public MetaFont currentFont;
-        public Color currentBackgroundColor = Color.WHITE;
-        public Color currentTextColor = Color.BLACK;
+        public BaseColor currentBackgroundColor = BaseColor.WHITE;
+        public BaseColor currentTextColor = BaseColor.BLACK;
         public int backgroundMode = OPAQUE;
         public int polyFillMode = ALTERNATE;
         public int lineJoin = 1;
@@ -142,11 +142,11 @@ namespace iTextSharp.text.pdf.codec.wmf {
                     currentBrush = (MetaBrush)obj;
                     style = currentBrush.Style;
                     if (style == MetaBrush.BS_SOLID) {
-                        Color color = currentBrush.Color;
+                        BaseColor color = currentBrush.Color;
                         cb.SetColorFill(color);
                     }
                     else if (style == MetaBrush.BS_HATCHED) {
-                        Color color = currentBackgroundColor;
+                        BaseColor color = currentBackgroundColor;
                         cb.SetColorFill(color);
                     }
                     break;
@@ -154,7 +154,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
                     currentPen = (MetaPen)obj;
                     style = currentPen.Style;
                     if (style != MetaPen.PS_NULL) {
-                        Color color = currentPen.Color;
+                        BaseColor color = currentPen.Color;
                         cb.SetColorStroke(color);
                         cb.SetLineWidth(Math.Abs((float)currentPen.PenWidth * scalingX / extentWx));
                         switch (style) {
@@ -296,7 +296,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
         /** Getter for property currentBackgroundColor.
          * @return Value of property currentBackgroundColor.
          */
-        public Color CurrentBackgroundColor {
+        public BaseColor CurrentBackgroundColor {
             get {
                 return currentBackgroundColor;
             }
@@ -309,7 +309,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
         /** Getter for property currentTextColor.
          * @return Value of property currentTextColor.
          */
-        public Color CurrentTextColor {
+        public BaseColor CurrentTextColor {
             get {
                 return currentTextColor;
             }

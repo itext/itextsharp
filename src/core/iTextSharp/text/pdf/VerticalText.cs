@@ -259,7 +259,7 @@ namespace iTextSharp.text.pdf {
 					currentFont = chunk.Font;
 					text.SetFontAndSize(currentFont.Font, currentFont.Size);
 				}
-				Color color = chunk.Color;
+				BaseColor color = chunk.Color;
 				if (color != null)
 					text.SetColorFill(color);
 				text.ShowText(chunk.ToString());

@@ -109,9 +109,9 @@ namespace iTextSharp.text.pdf
 
         protected float borderWidth = BORDER_WIDTH_THIN;
         protected int borderStyle = PdfBorderDictionary.STYLE_SOLID;
-        protected Color borderColor;
-        protected Color backgroundColor;
-        protected Color textColor;
+        protected BaseColor borderColor;
+        protected BaseColor backgroundColor;
+        protected BaseColor textColor;
         protected BaseFont font;
         protected float fontSize = 0;
         protected int alignment = Element.ALIGN_LEFT;
@@ -200,9 +200,9 @@ namespace iTextSharp.text.pdf
                     app.Stroke();
                 }
                 // beveled
-                Color actual = backgroundColor;
+                BaseColor actual = backgroundColor;
                 if (actual == null)
-                    actual = Color.WHITE;
+                    actual = BaseColor.WHITE;
                 app.SetGrayFill(1);
                 DrawTopFrame(app);
                 app.SetColorFill(actual.Darker());
@@ -418,7 +418,7 @@ namespace iTextSharp.text.pdf
         * the border.
         * @param borderColor the border color
         */
-        public Color BorderColor {
+        public BaseColor BorderColor {
             set {
                 this.borderColor = value;
             }
@@ -431,7 +431,7 @@ namespace iTextSharp.text.pdf
         * transparent background.
         * @param backgroundColor the background color
         */
-        public Color BackgroundColor {
+        public BaseColor BackgroundColor {
             set {
                 this.backgroundColor = value;
             }
@@ -444,7 +444,7 @@ namespace iTextSharp.text.pdf
         * will be black.
         * @param textColor the text color
         */
-        public Color TextColor {
+        public BaseColor TextColor {
             set {
                 this.textColor = value;
             }

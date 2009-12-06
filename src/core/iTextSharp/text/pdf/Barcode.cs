@@ -372,7 +372,7 @@ namespace iTextSharp.text.pdf {
          * @param textColor the color of the text. It can be <CODE>null</CODE>
          * @return the dimensions the barcode occupies
          */    
-        public abstract Rectangle PlaceBarcode(PdfContentByte cb, Color barColor, Color textColor);
+        public abstract Rectangle PlaceBarcode(PdfContentByte cb, BaseColor barColor, BaseColor textColor);
     
         /** Creates a template with the barcode.
          * @param cb the <CODE>PdfContentByte</CODE> to create the template. It
@@ -380,9 +380,9 @@ namespace iTextSharp.text.pdf {
          * @param barColor the color of the bars. It can be <CODE>null</CODE>
          * @param textColor the color of the text. It can be <CODE>null</CODE>
          * @return the template
-         * @see #placeBarcode(PdfContentByte cb, Color barColor, Color textColor)
+         * @see #placeBarcode(PdfContentByte cb, BaseColor barColor, BaseColor textColor)
          */    
-        public PdfTemplate CreateTemplateWithBarcode(PdfContentByte cb, Color barColor, Color textColor) {
+        public PdfTemplate CreateTemplateWithBarcode(PdfContentByte cb, BaseColor barColor, BaseColor textColor) {
             PdfTemplate tp = cb.CreateTemplate(0, 0);
             Rectangle rect = PlaceBarcode(tp, barColor, textColor);
             tp.BoundingBox = rect;
@@ -395,9 +395,9 @@ namespace iTextSharp.text.pdf {
          * @param barColor the color of the bars. It can be <CODE>null</CODE>
          * @param textColor the color of the text. It can be <CODE>null</CODE>
          * @return the <CODE>Image</CODE>
-         * @see #placeBarcode(PdfContentByte cb, Color barColor, Color textColor)
+         * @see #placeBarcode(PdfContentByte cb, BaseColor barColor, BaseColor textColor)
          */    
-        public Image CreateImageWithBarcode(PdfContentByte cb, Color barColor, Color textColor) {
+        public Image CreateImageWithBarcode(PdfContentByte cb, BaseColor barColor, BaseColor textColor) {
             return Image.GetInstance(CreateTemplateWithBarcode(cb, barColor, textColor));
         }
 

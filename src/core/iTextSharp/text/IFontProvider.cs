@@ -65,9 +65,9 @@ namespace iTextSharp.text {
         * @param       embedded    true if the font is to be embedded in the PDF
         * @param   size        the size of this font
         * @param   style       the style of this font
-        * @param   color       the <CODE>Color</CODE> of this font.
+        * @param   color       the <CODE>BaseColor</CODE> of this font.
         * @return the Font constructed based on the parameters
         */
-        Font GetFont(String fontname, String encoding, bool embedded, float size, int style, Color color);
+        Font GetFont(String fontname, String encoding, bool embedded, float size, int style, BaseColor color);
     }
 }

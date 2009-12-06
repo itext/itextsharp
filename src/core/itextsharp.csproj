@@ -118,6 +118,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "iTextSharp\text\BaseColor.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "iTextSharp\text\Chapter.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -129,11 +134,6 @@
                 />
                 <File
                     RelPath = "iTextSharp\text\Chunk.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "iTextSharp\text\Color.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

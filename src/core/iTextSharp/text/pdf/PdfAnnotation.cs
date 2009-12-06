@@ -427,7 +427,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public Color Color {
+        public BaseColor Color {
             set {
                 Put(PdfName.C, new PdfColor(value));
             }
@@ -559,7 +559,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public static PdfArray GetMKColor(Color color) {
+        public static PdfArray GetMKColor(BaseColor color) {
             PdfArray array = new PdfArray();
             int type = ExtendedColor.GetType(color);
             switch (type) {
@@ -588,7 +588,7 @@ namespace iTextSharp.text.pdf {
             return array;
         }
         
-        public Color MKBorderColor {
+        public BaseColor MKBorderColor {
             set {
                 if (value == null)
                     MK.Remove(PdfName.BC);
@@ -597,7 +597,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public Color MKBackgroundColor {
+        public BaseColor MKBackgroundColor {
             set {
                 if (value == null)
                     MK.Remove(PdfName.BG);

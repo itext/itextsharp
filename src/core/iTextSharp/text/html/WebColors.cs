@@ -215,20 +215,20 @@ namespace iTextSharp.text.html {
         * @throws IllegalArgumentException
         *             if the String isn't a know representation of a color.
         */
-        public static Color GetRGBColor(String name) {
+        public static BaseColor GetRGBColor(String name) {
             int[] c = { 0, 0, 0, 0 };
             if (name.StartsWith("#")) {
                 if (name.Length == 4) {
                     c[0] = int.Parse(name.Substring(1, 1), NumberStyles.HexNumber) * 16;
                     c[1] = int.Parse(name.Substring(2, 1), NumberStyles.HexNumber) * 16;
                     c[2] = int.Parse(name.Substring(3), NumberStyles.HexNumber) * 16;
-                    return new Color(c[0], c[1], c[2], c[3]);
+                    return new BaseColor(c[0], c[1], c[2], c[3]);
                 }
                 if (name.Length == 7) {
                     c[0] = int.Parse(name.Substring(1, 2), NumberStyles.HexNumber);
                     c[1] = int.Parse(name.Substring(3, 2), NumberStyles.HexNumber);
                     c[2] = int.Parse(name.Substring(5), NumberStyles.HexNumber);
-                    return new Color(c[0], c[1], c[2], c[3]);
+                    return new BaseColor(c[0], c[1], c[2], c[3]);
                 }
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.color.format.must.be.rgb.or.rrggbb"));
             }
@@ -245,14 +245,14 @@ namespace iTextSharp.text.html {
                     else if (c[k] > 255)
                         c[k] = 255;
                 }
-                return new Color(c[0], c[1], c[2], c[3]);
+                return new BaseColor(c[0], c[1], c[2], c[3]);
             }
             name = name.ToLower(CultureInfo.InvariantCulture);
             if (!NAMES.ContainsKey(name))
                 throw new ArgumentException("Color '" + name
                         + "' not found.");
             c = (int[]) NAMES[name];
-            return new Color(c[0], c[1], c[2], c[3]);
+            return new BaseColor(c[0], c[1], c[2], c[3]);
         }
     }
 }

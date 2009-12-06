@@ -104,19 +104,19 @@ namespace iTextSharp.text {
         protected float borderWidth = UNDEFINED;
     
         ///<summary> This is the color of the border of this rectangle. </summary>
-        protected Color borderColor = null;
+        protected BaseColor borderColor = null;
     
         /** The color of the left border of this rectangle. */
-        protected Color borderColorLeft = null;
+        protected BaseColor borderColorLeft = null;
 
         /** The color of the right border of this rectangle. */
-        protected Color borderColorRight = null;
+        protected BaseColor borderColorRight = null;
 
         /** The color of the top border of this rectangle. */
-        protected Color borderColorTop = null;
+        protected BaseColor borderColorTop = null;
 
         /** The color of the bottom border of this rectangle. */
-        protected Color borderColorBottom = null;
+        protected BaseColor borderColorBottom = null;
 
         /** The width of the left border of this rectangle. */
         protected float borderWidthLeft = UNDEFINED;
@@ -134,7 +134,7 @@ namespace iTextSharp.text {
         protected bool useVariableBorders = false;
 
         ///<summary> This is the color of the background of this rectangle. </summary>
-        protected Color backgroundColor = null;
+        protected BaseColor backgroundColor = null;
     
         ///<summary> This is the rotation value of this rectangle. </summary>
         protected int rotation = 0;
@@ -452,7 +452,7 @@ namespace iTextSharp.text {
             }
         }
     
-        public virtual Color BorderColorBottom {
+        public virtual BaseColor BorderColorBottom {
             get {
                 if (borderColorBottom == null) return borderColor;
                 return borderColorBottom;
@@ -462,7 +462,7 @@ namespace iTextSharp.text {
             }
         }
     
-        public virtual Color BorderColorTop {
+        public virtual BaseColor BorderColorTop {
             get {
                 if (borderColorTop == null) return borderColor;
                 return borderColorTop;
@@ -472,7 +472,7 @@ namespace iTextSharp.text {
             }
         }
     
-        public virtual Color BorderColorLeft {
+        public virtual BaseColor BorderColorLeft {
             get {
                 if (borderColorLeft == null) return borderColor;
                 return borderColorLeft;
@@ -482,7 +482,7 @@ namespace iTextSharp.text {
             }
         }
     
-        public virtual Color BorderColorRight {
+        public virtual BaseColor BorderColorRight {
             get {
                 if (borderColorRight == null) return borderColor;
                 return borderColorRight;
@@ -599,8 +599,8 @@ namespace iTextSharp.text {
         /// <summary>
         /// Get/set the color of the border.
         /// </summary>
-        /// <value>a Color</value>
-        public virtual Color BorderColor {
+        /// <value>a BaseColor</value>
+        public virtual BaseColor BorderColor {
             get {
                 return borderColor;
             }
@@ -618,8 +618,8 @@ namespace iTextSharp.text {
         /// <summary>
         /// Get/set the backgroundcolor.
         /// </summary>
-        /// <value>a Color</value>
-        public virtual Color BackgroundColor {
+        /// <value>a BaseColor</value>
+        public virtual BaseColor BackgroundColor {
             get {
                 return backgroundColor;
             }

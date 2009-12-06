@@ -53,8 +53,7 @@ namespace iTextSharp.text.pdf {
      *
      * @author  Paulo Soares
      */
-    //public class ExtendedColor : Color {
-    public abstract class ExtendedColor : Color {
+    public abstract class ExtendedColor : BaseColor {
     
         internal const int TYPE_RGB = 0;
         internal const int TYPE_GRAY = 1;

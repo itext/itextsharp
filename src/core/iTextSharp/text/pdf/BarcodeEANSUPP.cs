@@ -123,7 +123,7 @@ namespace iTextSharp.text.pdf {
          * @param textColor the color of the text. It can be <CODE>null</CODE>
          * @return the dimensions the barcode occupies
          */
-        public override Rectangle PlaceBarcode(PdfContentByte cb, Color barColor, Color textColor) {
+        public override Rectangle PlaceBarcode(PdfContentByte cb, BaseColor barColor, BaseColor textColor) {
             if (supp.Font != null)
                 supp.BarHeight = ean.BarHeight + supp.Baseline - supp.Font.GetFontDescriptor(BaseFont.CAPHEIGHT, supp.Size);
             else
