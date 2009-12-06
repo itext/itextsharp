@@ -789,7 +789,7 @@ namespace iTextSharp.text.pdf {
             content.Append(x).Append(' ').Append(y).Append(' ').Append(w).Append(' ').Append(h).Append(" re").Append_i(separator);
         }
     
-        private bool CompareColors(Color c1, Color c2) {
+        private bool CompareColors(BaseColor c1, BaseColor c2) {
             if (c1 == null && c2 == null)
                 return true;
             if (c1 == null || c2 == null)
@@ -814,18 +814,18 @@ namespace iTextSharp.text.pdf {
             float wb = rect.BorderWidthBottom;
             float wr = rect.BorderWidthRight;
             float wl = rect.BorderWidthLeft;
-            Color ct = rect.BorderColorTop;
-            Color cb = rect.BorderColorBottom;
-            Color cr = rect.BorderColorRight;
-            Color cl = rect.BorderColorLeft;
+            BaseColor ct = rect.BorderColorTop;
+            BaseColor cb = rect.BorderColorBottom;
+            BaseColor cr = rect.BorderColorRight;
+            BaseColor cl = rect.BorderColorLeft;
             SaveState();
             SetLineCap(PdfContentByte.LINE_CAP_BUTT);
             SetLineJoin(PdfContentByte.LINE_JOIN_MITER);
             float clw = 0;
             bool cdef = false;
-            Color ccol = null;
+            BaseColor ccol = null;
             bool cdefi = false;
-            Color cfil = null;
+            BaseColor cfil = null;
             // draw top
             if (wt > 0) {
                 SetLineWidth(clw = wt);
@@ -949,7 +949,7 @@ namespace iTextSharp.text.pdf {
             float y2 = rectangle.Top;
 
             // the backgroundcolor is set
-            Color background = rectangle.BackgroundColor;
+            BaseColor background = rectangle.BackgroundColor;
             if (background != null) {
                 SaveState();
                 SetColorFill(background);
@@ -976,7 +976,7 @@ namespace iTextSharp.text.pdf {
                 }
             
                 // the color is set to the color of the element
-                Color color = rectangle.BorderColor;
+                BaseColor color = rectangle.BorderColor;
                 if (color != null) {
                     SetColorStroke(color);
                 }
@@ -1932,7 +1932,7 @@ namespace iTextSharp.text.pdf {
          * @param color the default color. Can be <CODE>null</CODE>
          * @return the <CODE>PdfPatternPainter</CODE> where the pattern will be created
          */
-        public PdfPatternPainter CreatePattern(float width, float height, float xstep, float ystep, Color color) {
+        public PdfPatternPainter CreatePattern(float width, float height, float xstep, float ystep, BaseColor color) {
             CheckWriter();
             if ( xstep == 0.0f || ystep == 0.0f )
                 throw new Exception(MessageLocalization.GetComposedMessage("xstep.or.ystep.can.not.be.zero"));
@@ -1954,7 +1954,7 @@ namespace iTextSharp.text.pdf {
          * @param color the default color. Can be <CODE>null</CODE>
          * @return the <CODE>PdfPatternPainter</CODE> where the pattern will be created
          */
-        public PdfPatternPainter CreatePattern(float width, float height, Color color) {
+        public PdfPatternPainter CreatePattern(float width, float height, BaseColor color) {
             return CreatePattern(width, height, width, height, color);
         }
     
@@ -2171,7 +2171,7 @@ namespace iTextSharp.text.pdf {
          * <CODE>ExtendedColor</CODE>.
          * @param color the color
          */    
-        public virtual void SetColorStroke(Color value) {
+        public virtual void SetColorStroke(BaseColor value) {
             PdfXConformanceImp.CheckPDFXConformance(writer, PdfXConformanceImp.PDFXKEY_COLOR, value);
             int type = ExtendedColor.GetType(value);
             switch (type) {
@@ -2209,7 +2209,7 @@ namespace iTextSharp.text.pdf {
          * <CODE>ExtendedColor</CODE>.
          * @param color the color
          */    
-        public virtual void SetColorFill(Color value) {
+        public virtual void SetColorFill(BaseColor value) {
             PdfXConformanceImp.CheckPDFXConformance(writer, PdfXConformanceImp.PDFXKEY_COLOR, value);
             int type = ExtendedColor.GetType(value);
             switch (type) {
@@ -2291,7 +2291,7 @@ namespace iTextSharp.text.pdf {
          * @param color The color
          * @param tint the tint if it is a spot color, ignored otherwise
          */    
-        internal void OutputColorNumbers(Color color, float tint) {
+        internal void OutputColorNumbers(BaseColor color, float tint) {
             PdfXConformanceImp.CheckPDFXConformance(writer, PdfXConformanceImp.PDFXKEY_COLOR, color);
             int type = ExtendedColor.GetType(color);
             switch (type) {
@@ -2323,7 +2323,7 @@ namespace iTextSharp.text.pdf {
          * @param p the pattern
          * @param color the color of the pattern
          */    
-        public virtual void SetPatternFill(PdfPatternPainter p, Color color) {
+        public virtual void SetPatternFill(PdfPatternPainter p, BaseColor color) {
             if (ExtendedColor.GetType(color) == ExtendedColor.TYPE_SEPARATION)
                 SetPatternFill(p, color, ((SpotColor)color).Tint);
             else
@@ -2335,7 +2335,7 @@ namespace iTextSharp.text.pdf {
          * @param color the color of the pattern
          * @param tint the tint if the color is a spot color, ignored otherwise
          */    
-        public virtual void SetPatternFill(PdfPatternPainter p, Color color, float tint) {
+        public virtual void SetPatternFill(PdfPatternPainter p, BaseColor color, float tint) {
             CheckWriter();
             if (!p.IsStencil())
                 throw new Exception(MessageLocalization.GetComposedMessage("an.uncolored.pattern.was.expected"));
@@ -2353,7 +2353,7 @@ namespace iTextSharp.text.pdf {
          * @param p the pattern
          * @param color the color of the pattern
          */    
-        public virtual void SetPatternStroke(PdfPatternPainter p, Color color) {
+        public virtual void SetPatternStroke(PdfPatternPainter p, BaseColor color) {
             if (ExtendedColor.GetType(color) == ExtendedColor.TYPE_SEPARATION)
                 SetPatternStroke(p, color, ((SpotColor)color).Tint);
             else
@@ -2365,7 +2365,7 @@ namespace iTextSharp.text.pdf {
          * @param color the color of the pattern
          * @param tint the tint if the color is a spot color, ignored otherwise
          */    
-        public virtual void SetPatternStroke(PdfPatternPainter p, Color color, float tint) {
+        public virtual void SetPatternStroke(PdfPatternPainter p, BaseColor color, float tint) {
             CheckWriter();
             if (!p.IsStencil())
                 throw new Exception(MessageLocalization.GetComposedMessage("an.uncolored.pattern.was.expected"));
@@ -2645,26 +2645,26 @@ namespace iTextSharp.text.pdf {
             // silver circle
             SetLineWidth(1);
             SetLineCap(1);
-            SetColorStroke(new Color(0xC0, 0xC0, 0xC0));
+            SetColorStroke(new BaseColor(0xC0, 0xC0, 0xC0));
             Arc(llx + 1f, lly + 1f, urx - 1f, ury - 1f, 0f, 360f);
             Stroke();
             // gray circle-segment
             SetLineWidth(1);
             SetLineCap(1);
-            SetColorStroke(new Color(0xA0, 0xA0, 0xA0));
+            SetColorStroke(new BaseColor(0xA0, 0xA0, 0xA0));
             Arc(llx + 0.5f, lly + 0.5f, urx - 0.5f, ury - 0.5f, 45, 180);
             Stroke();
             // black circle-segment
             SetLineWidth(1);
             SetLineCap(1);
-            SetColorStroke(new Color(0x00, 0x00, 0x00));
+            SetColorStroke(new BaseColor(0x00, 0x00, 0x00));
             Arc(llx + 1.5f, lly + 1.5f, urx - 1.5f, ury - 1.5f, 45, 180);
             Stroke();
             if (on) {
                 // gray circle
                 SetLineWidth(1);
                 SetLineCap(1);
-                SetColorFill(new Color(0x00, 0x00, 0x00));
+                SetColorFill(new BaseColor(0x00, 0x00, 0x00));
                 Arc(llx + 4f, lly + 4f, urx - 4f, ury - 4f, 0, 360);
                 Fill();
             }
@@ -2678,7 +2678,7 @@ namespace iTextSharp.text.pdf {
             if (llx > urx) { float x = llx; llx = urx; urx = x; }
             if (lly > ury) { float y = lly; lly = ury; ury = y; }
             // silver rectangle not filled
-            SetColorStroke(new Color(0xC0, 0xC0, 0xC0));
+            SetColorStroke(new BaseColor(0xC0, 0xC0, 0xC0));
             SetLineWidth(1);
             SetLineCap(0);
             Rectangle(llx, lly, urx - llx, ury - lly);
@@ -2686,11 +2686,11 @@ namespace iTextSharp.text.pdf {
             // white rectangle filled
             SetLineWidth(1);
             SetLineCap(0);
-            SetColorFill(new Color(0xFF, 0xFF, 0xFF));
+            SetColorFill(new BaseColor(0xFF, 0xFF, 0xFF));
             Rectangle(llx + 0.5f, lly + 0.5f, urx - llx - 1f, ury -lly - 1f);
             Fill();
             // silver lines
-            SetColorStroke(new Color(0xC0, 0xC0, 0xC0));
+            SetColorStroke(new BaseColor(0xC0, 0xC0, 0xC0));
             SetLineWidth(1);
             SetLineCap(0);
             MoveTo(llx + 1f, lly + 1.5f);
@@ -2698,7 +2698,7 @@ namespace iTextSharp.text.pdf {
             LineTo(urx - 1.5f, ury - 1f);
             Stroke();
             // gray lines
-            SetColorStroke(new Color(0xA0, 0xA0, 0xA0));
+            SetColorStroke(new BaseColor(0xA0, 0xA0, 0xA0));
             SetLineWidth(1);
             SetLineCap(0);
             MoveTo(llx + 1f, lly + 1);
@@ -2706,7 +2706,7 @@ namespace iTextSharp.text.pdf {
             LineTo(urx - 1f, ury - 1f);
             Stroke();
             // black lines
-            SetColorStroke(new Color(0x00, 0x00, 0x00));
+            SetColorStroke(new BaseColor(0x00, 0x00, 0x00));
             SetLineWidth(1);
             SetLineCap(0);
             MoveTo(llx + 2f, lly + 2f);
@@ -2723,7 +2723,7 @@ namespace iTextSharp.text.pdf {
             if (llx > urx) { float x = llx; llx = urx; urx = x; }
             if (lly > ury) { float y = lly; lly = ury; ury = y; }
             // black rectangle not filled
-            SetColorStroke(new Color(0x00, 0x00, 0x00));
+            SetColorStroke(new BaseColor(0x00, 0x00, 0x00));
             SetLineWidth(1);
             SetLineCap(0);
             Rectangle(llx, lly, urx - llx, ury - lly);
@@ -2731,11 +2731,11 @@ namespace iTextSharp.text.pdf {
             // silver rectangle filled
             SetLineWidth(1);
             SetLineCap(0);
-            SetColorFill(new Color(0xC0, 0xC0, 0xC0));
+            SetColorFill(new BaseColor(0xC0, 0xC0, 0xC0));
             Rectangle(llx + 0.5f, lly + 0.5f, urx - llx - 1f, ury -lly - 1f);
             Fill();
             // white lines
-            SetColorStroke(new Color(0xFF, 0xFF, 0xFF));
+            SetColorStroke(new BaseColor(0xFF, 0xFF, 0xFF));
             SetLineWidth(1);
             SetLineCap(0);
             MoveTo(llx + 1f, lly + 1f);
@@ -2743,7 +2743,7 @@ namespace iTextSharp.text.pdf {
             LineTo(urx - 1f, ury - 1f);
             Stroke();
             // dark grey lines
-            SetColorStroke(new Color(0xA0, 0xA0, 0xA0));
+            SetColorStroke(new BaseColor(0xA0, 0xA0, 0xA0));
             SetLineWidth(1);
             SetLineCap(0);
             MoveTo(llx + 1f, lly + 1f);

@@ -56,7 +56,7 @@ namespace iTextSharp.text.pdf {
     
         internal float xstep, ystep;
         internal bool stencil = false;
-        internal Color defaultColor;
+        internal BaseColor defaultColor;
     
         /**
          *Creates a <CODE>PdfPattern</CODE>.
@@ -76,10 +76,10 @@ namespace iTextSharp.text.pdf {
             type = TYPE_PATTERN;
         }
     
-        internal PdfPatternPainter(PdfWriter wr, Color defaultColor) : this(wr) {
+        internal PdfPatternPainter(PdfWriter wr, BaseColor defaultColor) : this(wr) {
             stencil = true;
             if (defaultColor == null)
-                this.defaultColor = new Color(System.Drawing.Color.Gray);
+                this.defaultColor = BaseColor.GRAY;
             else
                 this.defaultColor = defaultColor;
         }
@@ -153,7 +153,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public Color DefaultColor {
+        public BaseColor DefaultColor {
             get {
                 return defaultColor;
             }
@@ -299,7 +299,7 @@ namespace iTextSharp.text.pdf {
         /**
         * @see com.lowagie.text.pdf.PdfContentByte#setColorStroke(java.awt.Color)
         */
-        public override void SetColorStroke(Color color) {
+        public override void SetColorStroke(BaseColor color) {
             CheckNoColor();
             base.SetColorStroke(color);
         }
@@ -307,7 +307,7 @@ namespace iTextSharp.text.pdf {
         /**
         * @see com.lowagie.text.pdf.PdfContentByte#setColorFill(java.awt.Color)
         */
-        public override void SetColorFill(Color color) {
+        public override void SetColorFill(BaseColor color) {
             CheckNoColor();
             base.SetColorFill(color);
         }
@@ -339,7 +339,7 @@ namespace iTextSharp.text.pdf {
         /**
         * @see com.lowagie.text.pdf.PdfContentByte#setPatternFill(com.lowagie.text.pdf.PdfPatternPainter, java.awt.Color, float)
         */
-        public override void SetPatternFill(PdfPatternPainter p, Color color, float tint) {
+        public override void SetPatternFill(PdfPatternPainter p, BaseColor color, float tint) {
             CheckNoColor();
             base.SetPatternFill(p, color, tint);
         }
@@ -347,7 +347,7 @@ namespace iTextSharp.text.pdf {
         /**
         * @see com.lowagie.text.pdf.PdfContentByte#setPatternStroke(com.lowagie.text.pdf.PdfPatternPainter, java.awt.Color, float)
         */
-        public override void SetPatternStroke(PdfPatternPainter p, Color color, float tint) {
+        public override void SetPatternStroke(PdfPatternPainter p, BaseColor color, float tint) {
             CheckNoColor();
             base.SetPatternStroke(p, color, tint);
         }

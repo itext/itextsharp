@@ -66,7 +66,7 @@ namespace iTextSharp.text {
     /// </remarks>
     /// <example>
     /// <code>
-    /// <strong>Chunk chunk = new Chunk("Hello world", FontFactory.GetFont(FontFactory.COURIER, 20, Font.ITALIC, new Color(255, 0, 0)));</strong>
+    /// <strong>Chunk chunk = new Chunk("Hello world", FontFactory.GetFont(FontFactory.COURIER, 20, Font.ITALIC, new BaseColor(255, 0, 0)));</strong>
     /// document.Add(chunk);
     /// </code>
     /// </example>
@@ -436,7 +436,7 @@ namespace iTextSharp.text {
         * PdfContentByte.LINE_CAP_PROJECTING_SQUARE
         * @return this <CODE>Chunk</CODE>
         */    
-        public Chunk SetUnderline(Color color, float thickness, float thicknessMul, float yPosition, float yPositionMul, int cap) {
+        public Chunk SetUnderline(BaseColor color, float thickness, float thicknessMul, float yPosition, float yPositionMul, int cap) {
             if (attributes == null)
                 attributes = new Hashtable();
             Object[] obj = {color, new float[]{thickness, thicknessMul, yPosition, yPositionMul, (float)cap}};
@@ -491,7 +491,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="color">the color of the background</param>
         /// <returns>this Chunk</returns>
-        public Chunk SetBackground(Color color) {
+        public Chunk SetBackground(BaseColor color) {
             return SetBackground(color, 0, 0, 0, 0);
         }
 
@@ -503,7 +503,7 @@ namespace iTextSharp.text {
         * @param extraTop increase the size of the rectangle in the top
         * @return this <CODE>Chunk</CODE>
         */
-        public Chunk SetBackground(Color color, float extraLeft, float extraBottom, float extraRight, float extraTop) {
+        public Chunk SetBackground(BaseColor color, float extraLeft, float extraBottom, float extraRight, float extraTop) {
             return SetAttribute(BACKGROUND, new Object[]{color, new float[]{extraLeft, extraBottom, extraRight, extraTop}});
         }
 
@@ -520,7 +520,7 @@ namespace iTextSharp.text {
         * @param strokeColor the stroke color or <CODE>null</CODE> to follow the text color
         * @return this <CODE>Chunk</CODE>
         */    
-        public Chunk SetTextRenderMode(int mode, float strokeWidth, Color strokeColor) {
+        public Chunk SetTextRenderMode(int mode, float strokeWidth, BaseColor strokeColor) {
             return SetAttribute(TEXTRENDERMODE, new Object[]{mode, strokeWidth, strokeColor});
         }
 

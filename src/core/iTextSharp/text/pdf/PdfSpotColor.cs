@@ -57,7 +57,7 @@ namespace iTextSharp.text.pdf {
         public PdfName name;
     
         /* The alternative color space */
-        public Color altcs;
+        public BaseColor altcs;
         // constructors
     
         /**
@@ -68,12 +68,12 @@ namespace iTextSharp.text.pdf {
          * @param       altcs       a altnative colorspace value
          */
     
-        public PdfSpotColor(string name, Color altcs) {
+        public PdfSpotColor(string name, BaseColor altcs) {
             this.name = new PdfName(name);
             this.altcs = altcs;
         }
     
-        public Color AlternativeCS {
+        public BaseColor AlternativeCS {
             get {
                 return altcs;
             }

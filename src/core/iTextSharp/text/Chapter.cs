@@ -62,12 +62,12 @@ namespace iTextSharp.text
     /// </remarks>
     /// <example>
     /// <code>
-    /// Paragraph title2 = new Paragraph("This is Chapter 2", FontFactory.GetFont(FontFactory.HELVETICA, 18, Font.BOLDITALIC, new Color(0, 0, 255)));
+    /// Paragraph title2 = new Paragraph("This is Chapter 2", FontFactory.GetFont(FontFactory.HELVETICA, 18, Font.BOLDITALIC, new BaseColor(0, 0, 255)));
     /// <strong>Chapter chapter2 = new Chapter(title2, 2);
     /// chapter2.SetNumberDepth(0);</strong>
     /// Paragraph someText = new Paragraph("This is some text");
     /// <strong>chapter2.Add(someText);</strong>
-    /// Paragraph title21 = new Paragraph("This is Section 1 in Chapter 2", FontFactory.GetFont(FontFactory.HELVETICA, 16, Font.BOLD, new Color(255, 0, 0)));
+    /// Paragraph title21 = new Paragraph("This is Section 1 in Chapter 2", FontFactory.GetFont(FontFactory.HELVETICA, 16, Font.BOLD, new BaseColor(255, 0, 0)));
     /// Section section1 = <strong>chapter2.AddSection(title21);</strong>
     /// Paragraph someSectionText = new Paragraph("This is some silly paragraph in a chapter and/or section. It contains some text to test the functionality of Chapters and Section.");
     /// section1.Add(someSectionText);

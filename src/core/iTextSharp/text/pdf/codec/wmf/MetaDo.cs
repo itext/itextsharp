@@ -517,7 +517,7 @@ namespace iTextSharp.text.pdf.codec.wmf
                     break;
                 case META_SETPIXEL:
                 {
-                    Color color = meta.ReadColor();
+                    BaseColor color = meta.ReadColor();
                     int y = meta.ReadShort();
                     int x = meta.ReadShort();
                     cb.SaveState();
@@ -594,7 +594,7 @@ namespace iTextSharp.text.pdf.codec.wmf
             ty = -descender;
         else
             ty = -ury;
-        Color textColor;
+        BaseColor textColor;
         if (state.BackgroundMode == MetaState.OPAQUE) {
             textColor = state.CurrentBackgroundColor;
             cb.SetColorFill(textColor);

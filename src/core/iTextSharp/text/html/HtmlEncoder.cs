@@ -151,13 +151,13 @@ namespace iTextSharp.text.html {
         }
     
         /**
-         * Converts a <CODE>Color</CODE> into a HTML representation of this <CODE>Color</CODE>.
+         * Converts a <CODE>BaseColor</CODE> into a HTML representation of this <CODE>BaseColor</CODE>.
          *
-         * @param   color   the <CODE>Color</CODE> that has to be converted.
-         * @return  the HTML representation of this <COLOR>Color</COLOR>
+         * @param   color   the <CODE>BaseColor</CODE> that has to be converted.
+         * @return  the HTML representation of this <COLOR>BaseColor</COLOR>
          */
     
-        public static String Encode(Color color) {
+        public static String Encode(BaseColor color) {
             StringBuilder buffer = new StringBuilder("#");
             if (color.R < 16) {
                 buffer.Append('0');

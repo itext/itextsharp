@@ -219,7 +219,7 @@ namespace iTextSharp.text.pdf {
          * @param textColor the color of the text. It can be <CODE>null</CODE>
          * @return the dimensions the barcode occupies
          */    
-        public override Rectangle PlaceBarcode(PdfContentByte cb, Color barColor, Color textColor) {
+        public override Rectangle PlaceBarcode(PdfContentByte cb, BaseColor barColor, BaseColor textColor) {
             string fullCode = code;
             float fontX = 0;
             if (font != null) {

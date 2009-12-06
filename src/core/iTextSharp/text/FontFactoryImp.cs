@@ -132,9 +132,9 @@ namespace iTextSharp.text {
         /// <param name="embedded">true if the font is to be embedded in the PDF</param>
         /// <param name="size">the size of this font</param>
         /// <param name="style">the style of this font</param>
-        /// <param name="color">the Color of this font</param>
+        /// <param name="color">the BaseColor of this font</param>
         /// <returns>a Font object</returns>
-        public virtual Font GetFont(string fontname, string encoding, bool embedded, float size, int style, Color color) {
+        public virtual Font GetFont(string fontname, string encoding, bool embedded, float size, int style, BaseColor color) {
             return GetFont(fontname, encoding, embedded, size, style, color, true);
         }
 
@@ -146,10 +146,10 @@ namespace iTextSharp.text {
         /// <param name="embedded">true if the font is to be embedded in the PDF</param>
         /// <param name="size">the size of this font</param>
         /// <param name="style">the style of this font</param>
-        /// <param name="color">the Color of this font</param>
+        /// <param name="color">the BaseColor of this font</param>
         /// <param name="cached">true if the font comes from the cache or is added to the cache if new, false if the font is always created new</param>
         /// <returns>a Font object</returns>
-        public virtual Font GetFont(string fontname, string encoding, bool embedded, float size, int style, Color color, bool cached) {
+        public virtual Font GetFont(string fontname, string encoding, bool embedded, float size, int style, BaseColor color, bool cached) {
             if (fontname == null) return new Font(Font.UNDEFINED, size, style, color);
             string lowercasefontname = fontname.ToLower(CultureInfo.InvariantCulture);
             ArrayList tmp = (ArrayList) fontFamilies[lowercasefontname];
@@ -216,7 +216,7 @@ namespace iTextSharp.text {
             bool embedded = defaultEmbedding;
             float size = Font.UNDEFINED;
             int style = Font.NORMAL;
-            Color color = null;
+            BaseColor color = null;
             string value = attributes[Markup.HTML_ATTR_STYLE];
             if (value != null && value.Length > 0) {
                 Properties styleAttributes = Markup.ParseAttributes(value);
@@ -280,7 +280,7 @@ namespace iTextSharp.text {
                 if (r != null) red = int.Parse(r);
                 if (g != null) green = int.Parse(g);
                 if (b != null) blue = int.Parse(b);
-                color = new Color(red, green, blue);
+                color = new BaseColor(red, green, blue);
             }
             else if ((value = attributes[ElementTags.COLOR]) != null) {
                 color = Markup.DecodeColor(value);
@@ -334,9 +334,9 @@ namespace iTextSharp.text {
         /// <param name="encoding">the encoding of the font</param>
         /// <param name="size">the size of this font</param>
         /// <param name="style">the style of this font</param>
-        /// <param name="color">the Color of this font</param>
+        /// <param name="color">the BaseColor of this font</param>
         /// <returns>a Font object</returns>
-        public virtual Font GetFont(string fontname, string encoding, float size, int style, Color color) {
+        public virtual Font GetFont(string fontname, string encoding, float size, int style, BaseColor color) {
             return GetFont(fontname, encoding, defaultEmbedding, size, style, color);
         }
     
@@ -379,9 +379,9 @@ namespace iTextSharp.text {
         /// <param name="fontname">the name of the font</param>
         /// <param name="size">the size of this font</param>
         /// <param name="style">the style of this font</param>
-        /// <param name="color">the Color of this font</param>
+        /// <param name="color">the BaseColor of this font</param>
         /// <returns>a Font object</returns>
-        public virtual Font GetFont(string fontname, float size, int style, Color color) {
+        public virtual Font GetFont(string fontname, float size, int style, BaseColor color) {
             return GetFont(fontname, defaultEncoding, defaultEmbedding, size, style, color);
         }
     
@@ -390,9 +390,9 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="fontname">the name of the font</param>
         /// <param name="size">the size of this font</param>
-        /// <param name="color">the Color of this font</param>
+        /// <param name="color">the BaseColor of this font</param>
         /// <returns>a Font object</returns>
-        public virtual Font GetFont(string fontname, float size, Color color) {
+        public virtual Font GetFont(string fontname, float size, BaseColor color) {
             return GetFont(fontname, defaultEncoding, defaultEmbedding, size, Font.UNDEFINED, color);
         }
         

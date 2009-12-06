@@ -395,11 +395,11 @@ namespace iTextSharp.text.html {
         }
     
         /// <summary>
-        /// Converts a <CODE>Color</CODE> into a HTML representation of this <CODE>Color</CODE>.
+        /// Converts a <CODE>BaseColor</CODE> into a HTML representation of this <CODE>BaseColor</CODE>.
         /// </summary>
-        /// <param name="color">the <CODE>Color</CODE> that has to be converted.</param>
-        /// <returns>the HTML representation of this <CODE>Color</CODE></returns>
-        public static Color DecodeColor(String s) {
+        /// <param name="color">the <CODE>BaseColor</CODE> that has to be converted.</param>
+        /// <returns>the HTML representation of this <CODE>BaseColor</CODE></returns>
+        public static BaseColor DecodeColor(String s) {
             if (s == null)
                 return null;
             s = s.ToLower(CultureInfo.InvariantCulture).Trim();

@@ -126,9 +126,9 @@ namespace iTextSharp.text {
         /// <param name="embedded">true if the font is to be embedded in the PDF</param>
         /// <param name="size">the size of this font</param>
         /// <param name="style">the style of this font</param>
-        /// <param name="color">the Color of this font</param>
+        /// <param name="color">the BaseColor of this font</param>
         /// <returns>a Font object</returns>
-        public static Font GetFont(string fontname, string encoding, bool embedded, float size, int style, Color color) {
+        public static Font GetFont(string fontname, string encoding, bool embedded, float size, int style, BaseColor color) {
             return fontImp.GetFont(fontname, encoding, embedded, size, style, color);
         }
     
@@ -140,10 +140,10 @@ namespace iTextSharp.text {
         /// <param name="embedded">true if the font is to be embedded in the PDF</param>
         /// <param name="size">the size of this font</param>
         /// <param name="style">the style of this font</param>
-        /// <param name="color">the Color of this font</param>
+        /// <param name="color">the BaseColor of this font</param>
         /// <param name="cached">true if the font comes from the cache or is added to the cache if new, false if the font is always created new</param>
         /// <returns>a Font object</returns>
-        public static Font GetFont(string fontname, string encoding, bool embedded, float size, int style, Color color, bool cached) {
+        public static Font GetFont(string fontname, string encoding, bool embedded, float size, int style, BaseColor color, bool cached) {
             return fontImp.GetFont(fontname, encoding, embedded, size, style, color, cached);
         }
     
@@ -201,9 +201,9 @@ namespace iTextSharp.text {
         /// <param name="encoding">the encoding of the font</param>
         /// <param name="size">the size of this font</param>
         /// <param name="style">the style of this font</param>
-        /// <param name="color">the Color of this font</param>
+        /// <param name="color">the BaseColor of this font</param>
         /// <returns>a Font object</returns>
-        public static Font GetFont(string fontname, string encoding, float size, int style, Color color) {
+        public static Font GetFont(string fontname, string encoding, float size, int style, BaseColor color) {
             return GetFont(fontname, encoding, defaultEmbedding, size, style, color);
         }
     
@@ -246,9 +246,9 @@ namespace iTextSharp.text {
         /// <param name="fontname">the name of the font</param>
         /// <param name="size">the size of this font</param>
         /// <param name="style">the style of this font</param>
-        /// <param name="color">the Color of this font</param>
+        /// <param name="color">the BaseColor of this font</param>
         /// <returns>a Font object</returns>
-        public static Font GetFont(string fontname, float size, int style, Color color) {
+        public static Font GetFont(string fontname, float size, int style, BaseColor color) {
             return GetFont(fontname, defaultEncoding, defaultEmbedding, size, style, color);
         }
     
@@ -257,9 +257,9 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="fontname">the name of the font</param>
         /// <param name="size">the size of this font</param>
-        /// <param name="color">the Color of this font</param>
+        /// <param name="color">the BaseColor of this font</param>
         /// <returns>a Font object</returns>
-        public static Font GetFont(string fontname, float size, Color color) {
+        public static Font GetFont(string fontname, float size, BaseColor color) {
             return GetFont(fontname, defaultEncoding, defaultEmbedding, size, Font.UNDEFINED, color);
         }
         

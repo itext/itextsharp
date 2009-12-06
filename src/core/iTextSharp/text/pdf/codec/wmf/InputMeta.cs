@@ -101,12 +101,12 @@ namespace iTextSharp.text.pdf.codec.wmf {
             }
         }
     
-        public Color ReadColor() {
+        public BaseColor ReadColor() {
             int red = ReadByte();
             int green = ReadByte();
             int blue = ReadByte();
             ReadByte();
-            return new Color(red, green, blue);
+            return new BaseColor(red, green, blue);
         }
     }
 }

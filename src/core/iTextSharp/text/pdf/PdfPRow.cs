@@ -195,7 +195,7 @@ namespace iTextSharp.text.pdf {
         * @since    2.1.6   extra parameter currentMaxHeight
         */
         public void WriteBorderAndBackground(float xPos, float yPos, float currentMaxHeight, PdfPCell cell, PdfContentByte[] canvases) {
-            Color background = cell.BackgroundColor;
+            BaseColor background = cell.BackgroundColor;
             if (background != null || cell.HasBorders()) {
                 // Add xPos resp. yPos to the cell's coordinates for absolute coordinates
                 float right = cell.Right + xPos;

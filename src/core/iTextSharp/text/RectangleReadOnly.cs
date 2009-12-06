@@ -211,25 +211,25 @@ namespace iTextSharp.text {
             }
         }
     
-        public override Color BorderColorBottom {
+        public override BaseColor BorderColorBottom {
             set {
                 ThrowReadOnlyError();
             }
         }
     
-        public override Color BorderColorTop {
+        public override BaseColor BorderColorTop {
             set {
                 ThrowReadOnlyError();
             }
         }
     
-        public override Color BorderColorLeft {
+        public override BaseColor BorderColorLeft {
             set {
                 ThrowReadOnlyError();
             }
         }
     
-        public override Color BorderColorRight {
+        public override BaseColor BorderColorRight {
             set {
                 ThrowReadOnlyError();
             }
@@ -253,8 +253,8 @@ namespace iTextSharp.text {
         /// <summary>
         /// Get/set the color of the border.
         /// </summary>
-        /// <value>a Color</value>
-        public override Color BorderColor {
+        /// <value>a BaseColor</value>
+        public override BaseColor BorderColor {
             set {
                 ThrowReadOnlyError();
             }
@@ -268,8 +268,8 @@ namespace iTextSharp.text {
         /// <summary>
         /// Get/set the backgroundcolor.
         /// </summary>
-        /// <value>a Color</value>
-        public override Color BackgroundColor {
+        /// <value>a BaseColor</value>
+        public override BaseColor BackgroundColor {
             set {
                 ThrowReadOnlyError();
             }

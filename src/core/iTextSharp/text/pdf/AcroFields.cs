@@ -485,7 +485,7 @@ namespace iTextSharp.text.pdf {
                             float red = float.Parse((String)stack[stack.Count - 3], System.Globalization.NumberFormatInfo.InvariantInfo);
                             float green = float.Parse((String)stack[stack.Count - 2], System.Globalization.NumberFormatInfo.InvariantInfo);
                             float blue = float.Parse((String)stack[stack.Count - 1], System.Globalization.NumberFormatInfo.InvariantInfo);
-                            ret[DA_COLOR] = new Color(red, green, blue);
+                            ret[DA_COLOR] = new BaseColor(red, green, blue);
                         }
                     }
                     else if (oper.Equals("k")) {
@@ -514,7 +514,7 @@ namespace iTextSharp.text.pdf {
                 if (dab[DA_SIZE] != null)
                     tx.FontSize = (float)dab[DA_SIZE];
                 if (dab[DA_COLOR] != null)
-                    tx.TextColor = (Color)dab[DA_COLOR];
+                    tx.TextColor = (BaseColor)dab[DA_COLOR];
                 if (dab[DA_FONT] != null) {
                     PdfDictionary font = merged.GetAsDict(PdfName.DR);
                     if (font != null) {
@@ -580,7 +580,7 @@ namespace iTextSharp.text.pdf {
             PdfDictionary mk = merged.GetAsDict(PdfName.MK);
             if (mk != null) {
                 PdfArray ar = mk.GetAsArray(PdfName.BC);
-                Color border = GetMKColor(ar);
+                BaseColor border = GetMKColor(ar);
                 tx.BorderColor = border;
                 if (border != null)
                     tx.BorderWidth = 1;
@@ -740,14 +740,14 @@ namespace iTextSharp.text.pdf {
             return GetAppearance( merged, valueArr, fieldName );
         }
 
-        internal Color GetMKColor(PdfArray ar) {
+        internal BaseColor GetMKColor(PdfArray ar) {
             if (ar == null)
                 return null;
             switch (ar.Size) {
                 case 1:
                     return new GrayColor(ar.GetAsNumber(0).FloatValue);
                 case 3:
-                    return new Color(ExtendedColor.Normalize(ar.GetAsNumber(0).FloatValue), ExtendedColor.Normalize(ar.GetAsNumber(1).FloatValue), ExtendedColor.Normalize(ar.GetAsNumber(2).FloatValue));
+                    return new BaseColor(ExtendedColor.Normalize(ar.GetAsNumber(0).FloatValue), ExtendedColor.Normalize(ar.GetAsNumber(1).FloatValue), ExtendedColor.Normalize(ar.GetAsNumber(2).FloatValue));
                 case 4:
                     return new CMYKColor(ar.GetAsNumber(0).FloatValue, ar.GetAsNumber(1).FloatValue, ar.GetAsNumber(2).FloatValue, ar.GetAsNumber(3).FloatValue);
                 default:
@@ -934,7 +934,7 @@ namespace iTextSharp.text.pdf {
                                 ByteBuffer buf = cb.InternalBuffer;
                                 buf.Append(psn.GetBytes()).Append(' ').Append((float)dao[DA_SIZE]).Append(" Tf ");
                                 if (dao[DA_COLOR] != null)
-                                    cb.SetColorFill((Color)dao[DA_COLOR]);
+                                    cb.SetColorFill((BaseColor)dao[DA_COLOR]);
                                 PdfString s = new PdfString(cb.ToString());
                                 item.GetMerged(k).Put(PdfName.DA, s);
                                 item.GetWidget(k).Put(PdfName.DA, s);
@@ -955,7 +955,7 @@ namespace iTextSharp.text.pdf {
                             if (dao[DA_FONT] != null) {
                                 ByteBuffer buf = cb.InternalBuffer;
                                 buf.Append(new PdfName((String)dao[DA_FONT]).GetBytes()).Append(' ').Append((float)dao[DA_SIZE]).Append(" Tf ");
-                                cb.SetColorFill((Color)value);
+                                cb.SetColorFill((BaseColor)value);
                                 PdfString s = new PdfString(cb.ToString());
                                 item.GetMerged(k).Put(PdfName.DA, s);
                                 item.GetWidget(k).Put(PdfName.DA, s);
@@ -977,7 +977,7 @@ namespace iTextSharp.text.pdf {
                                 ByteBuffer buf = cb.InternalBuffer;
                                 buf.Append(new PdfName((String)dao[DA_FONT]).GetBytes()).Append(' ').Append((float)value).Append(" Tf ");
                                 if (dao[DA_COLOR] != null)
-                                    cb.SetColorFill((Color)dao[DA_COLOR]);
+                                    cb.SetColorFill((BaseColor)dao[DA_COLOR]);
                                 PdfString s = new PdfString(cb.ToString());
                                 item.GetMerged(k).Put(PdfName.DA, s);
                                 item.GetWidget(k).Put(PdfName.DA, s);
@@ -1006,7 +1006,7 @@ namespace iTextSharp.text.pdf {
                         if (value == null)
                             mk.Remove(dname);
                         else
-                            mk.Put(dname, PdfFormField.GetMKColor((Color)value));
+                            mk.Put(dname, PdfFormField.GetMKColor((BaseColor)value));
                     }
                 }
             }
@@ -1183,7 +1183,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Regenerates the field appearance.
         * This is usefull when you change a field property, but not its value,
-        * for instance form.SetFieldProperty("f", "bgcolor", Color.BLUE, null);
+        * for instance form.SetFieldProperty("f", "bgcolor", BaseColor.BLUE, null);
         * This won't have any effect, unless you use RegenerateField("f") after changing
         * the property.
         * 

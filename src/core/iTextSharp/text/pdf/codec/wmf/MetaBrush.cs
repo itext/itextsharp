@@ -63,7 +63,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
 
         int style = BS_SOLID;
         int hatch;
-        Color color = Color.WHITE;
+        BaseColor color = BaseColor.WHITE;
 
         public MetaBrush() {
             type = META_BRUSH;
@@ -87,7 +87,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
             }
         }
     
-        public Color Color {
+        public BaseColor Color {
             get {
                 return color;
             }

@@ -68,14 +68,14 @@ namespace iTextSharp.text.pdf {
         /** Holds value of property antiAlias. */
         protected bool antiAlias = false;
 
-        private Color cspace;
+        private BaseColor cspace;
     
         /** Creates new PdfShading */
         protected PdfShading(PdfWriter writer) {
             this.writer = writer;
         }
     
-        protected void SetColorSpace(Color color) {
+        protected void SetColorSpace(BaseColor color) {
             cspace = color;
             int type = ExtendedColor.GetType(color);
             PdfObject colorSpace = null;
@@ -106,7 +106,7 @@ namespace iTextSharp.text.pdf {
             shading.Put(PdfName.COLORSPACE, colorSpace);
         }
     
-        public Color ColorSpace {
+        public BaseColor ColorSpace {
             get {
                 return cspace;
             }
@@ -116,7 +116,7 @@ namespace iTextSharp.text.pdf {
             throw new ArgumentException(MessageLocalization.GetComposedMessage("a.tiling.or.shading.pattern.cannot.be.used.as.a.color.space.in.a.shading.pattern"));
         }
     
-        public static void CheckCompatibleColors(Color c1, Color c2) {
+        public static void CheckCompatibleColors(BaseColor c1, BaseColor c2) {
             int type1 = ExtendedColor.GetType(c1);
             int type2 = ExtendedColor.GetType(c2);
             if (type1 != type2)
@@ -127,7 +127,7 @@ namespace iTextSharp.text.pdf {
                 ThrowColorSpaceError();
         }
     
-        public static float[] GetColorArray(Color color) {
+        public static float[] GetColorArray(BaseColor color) {
             int type = ExtendedColor.GetType(color);
             switch (type) {
                 case ExtendedColor.TYPE_GRAY: {
@@ -148,7 +148,7 @@ namespace iTextSharp.text.pdf {
             return null;
         }
 
-        public static PdfShading Type1(PdfWriter writer, Color colorSpace, float[] domain, float[] tMatrix, PdfFunction function) {
+        public static PdfShading Type1(PdfWriter writer, BaseColor colorSpace, float[] domain, float[] tMatrix, PdfFunction function) {
             PdfShading sp = new PdfShading(writer);
             sp.shading = new PdfDictionary();
             sp.shadingType = 1;
@@ -162,7 +162,7 @@ namespace iTextSharp.text.pdf {
             return sp;
         }
     
-        public static PdfShading Type2(PdfWriter writer, Color colorSpace, float[] coords, float[] domain, PdfFunction function, bool[] extend) {
+        public static PdfShading Type2(PdfWriter writer, BaseColor colorSpace, float[] coords, float[] domain, PdfFunction function, bool[] extend) {
             PdfShading sp = new PdfShading(writer);
             sp.shading = new PdfDictionary();
             sp.shadingType = 2;
@@ -180,32 +180,32 @@ namespace iTextSharp.text.pdf {
             return sp;
         }
 
-        public static PdfShading Type3(PdfWriter writer, Color colorSpace, float[] coords, float[] domain, PdfFunction function, bool[] extend) {
+        public static PdfShading Type3(PdfWriter writer, BaseColor colorSpace, float[] coords, float[] domain, PdfFunction function, bool[] extend) {
             PdfShading sp = Type2(writer, colorSpace, coords, domain, function, extend);
             sp.shadingType = 3;
             sp.shading.Put(PdfName.SHADINGTYPE, new PdfNumber(sp.shadingType));
             return sp;
         }
     
-        public static PdfShading SimpleAxial(PdfWriter writer, float x0, float y0, float x1, float y1, Color startColor, Color endColor, bool extendStart, bool extendEnd) {
+        public static PdfShading SimpleAxial(PdfWriter writer, float x0, float y0, float x1, float y1, BaseColor startColor, BaseColor endColor, bool extendStart, bool extendEnd) {
             CheckCompatibleColors(startColor, endColor);
             PdfFunction function = PdfFunction.Type2(writer, new float[]{0, 1}, null, GetColorArray(startColor),
                 GetColorArray(endColor), 1);
             return Type2(writer, startColor, new float[]{x0, y0, x1, y1}, null, function, new bool[]{extendStart, extendEnd});
         }
     
-        public static PdfShading SimpleAxial(PdfWriter writer, float x0, float y0, float x1, float y1, Color startColor, Color endColor) {
+        public static PdfShading SimpleAxial(PdfWriter writer, float x0, float y0, float x1, float y1, BaseColor startColor, BaseColor endColor) {
             return SimpleAxial(writer, x0, y0, x1, y1, startColor, endColor, true, true);
         }
     
-        public static PdfShading SimpleRadial(PdfWriter writer, float x0, float y0, float r0, float x1, float y1, float r1, Color startColor, Color endColor, bool extendStart, bool extendEnd) {
+        public static PdfShading SimpleRadial(PdfWriter writer, float x0, float y0, float r0, float x1, float y1, float r1, BaseColor startColor, BaseColor endColor, bool extendStart, bool extendEnd) {
             CheckCompatibleColors(startColor, endColor);
             PdfFunction function = PdfFunction.Type2(writer, new float[]{0, 1}, null, GetColorArray(startColor),
                 GetColorArray(endColor), 1);
             return Type3(writer, startColor, new float[]{x0, y0, r0, x1, y1, r1}, null, function, new bool[]{extendStart, extendEnd});
         }
 
-        public static PdfShading SimpleRadial(PdfWriter writer, float x0, float y0, float r0, float x1, float y1, float r1, Color startColor, Color endColor) {
+        public static PdfShading SimpleRadial(PdfWriter writer, float x0, float y0, float r0, float x1, float y1, float r1, BaseColor startColor, BaseColor endColor) {
             return SimpleRadial(writer, x0, y0, r0, x1, y1, r1, startColor, endColor, true, true);
         }
 

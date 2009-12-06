@@ -454,8 +454,8 @@ public class PdfAcroForm : PdfDictionary {
         field.FieldName = name;
         field.Flags = PdfAnnotation.FLAGS_PRINT;
         field.SetPage();
-        field.MKBorderColor = Color.BLACK;
-        field.MKBackgroundColor = Color.WHITE;
+        field.MKBorderColor = BaseColor.BLACK;
+        field.MKBackgroundColor = BaseColor.WHITE;
     }
 
     /**

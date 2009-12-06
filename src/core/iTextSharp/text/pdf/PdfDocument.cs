@@ -1292,7 +1292,7 @@ namespace iTextSharp.text.pdf {
             
             // looping over all the chunks in 1 line
             foreach (PdfChunk chunk in line) {
-                Color color = chunk.Color;
+                BaseColor color = chunk.Color;
                 hScale = 1;
                 
                 if (chunkStrokeIdx <= lastChunkStroke) {
@@ -1344,7 +1344,7 @@ namespace iTextSharp.text.pdf {
                             float ascender = chunk.Font.Font.GetFontDescriptor(BaseFont.ASCENT, fontSize);
                             float descender = chunk.Font.Font.GetFontDescriptor(BaseFont.DESCENT, fontSize);
                             Object[] bgr = (Object[])chunk.GetAttribute(Chunk.BACKGROUND);
-                            graphics.SetColorFill((Color)bgr[0]);
+                            graphics.SetColorFill((BaseColor)bgr[0]);
                             float[] extra = (float[])bgr[1];
                             graphics.Rectangle(xMarker - extra[0],
                                 yMarker + descender - extra[1] + chunk.TextRise,
@@ -1360,10 +1360,10 @@ namespace iTextSharp.text.pdf {
                             if (nextChunk == null)
                                 subtract += hangingCorrection;
                             Object[][] unders = (Object[][])chunk.GetAttribute(Chunk.UNDERLINE);
-                            Color scolor = null;
+                            BaseColor scolor = null;
                             for (int k = 0; k < unders.Length; ++k) {
                                 Object[] obj = unders[k];
-                                scolor = (Color)obj[0];
+                                scolor = (BaseColor)obj[0];
                                 float[] ps = (float[])obj[1];
                                 if (scolor == null)
                                     scolor = color;
@@ -1483,7 +1483,7 @@ namespace iTextSharp.text.pdf {
                 Object[] textRender = (Object[])chunk.GetAttribute(Chunk.TEXTRENDERMODE);
                 int tr = 0;
                 float strokeWidth = 1;
-                Color strokeColor = null;
+                BaseColor strokeColor = null;
                 object fr = chunk.GetAttribute(Chunk.SUBSUPSCRIPT);
                 if (textRender != null) {
                     tr = (int)textRender[0] & 3;
@@ -1493,7 +1493,7 @@ namespace iTextSharp.text.pdf {
                         strokeWidth = (float)textRender[1];
                         if (strokeWidth != 1)
                             text.SetLineWidth(strokeWidth);
-                        strokeColor = (Color)textRender[2];
+                        strokeColor = (BaseColor)textRender[2];
                         if (strokeColor == null)
                             strokeColor = color;
                         if (strokeColor != null)

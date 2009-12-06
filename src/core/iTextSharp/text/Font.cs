@@ -56,7 +56,7 @@ namespace iTextSharp.text {
     /// <example>
     /// <code>
     /// Paragraph p = new Paragraph("This is a paragraph",
-    ///               <strong>new Font(Font.HELVETICA, 18, Font.BOLDITALIC, new Color(0, 0, 255))</strong>);
+    ///               <strong>new Font(Font.HELVETICA, 18, Font.BOLDITALIC, new BaseColor(0, 0, 255))</strong>);
     /// </code>
     /// </example>
     public class Font : IComparable {
@@ -118,7 +118,7 @@ namespace iTextSharp.text {
         private int style = UNDEFINED;
     
         /// <summary> the value of the color. </summary>
-        private Color color;
+        private BaseColor color;
     
         /// <summary> the external font </summary>
         private BaseFont baseFont = null;
@@ -143,8 +143,8 @@ namespace iTextSharp.text {
         /// <param name="family">the family to which this font belongs</param>
         /// <param name="size">the size of this font</param>
         /// <param name="style">the style of this font</param>
-        /// <param name="color">the Color of this font.</param>
-        public Font(int family, float size, int style, Color color) {
+        /// <param name="color">the BaseColor of this font.</param>
+        public Font(int family, float size, int style, BaseColor color) {
             this.family = family;
             this.size = size;
             this.style = style;
@@ -157,8 +157,8 @@ namespace iTextSharp.text {
         /// <param name="bf">the external font</param>
         /// <param name="size">the size of this font</param>
         /// <param name="style">the style of this font</param>
-        /// <param name="color">the Color of this font.</param>
-        public Font(BaseFont bf, float size, int style, Color color) {
+        /// <param name="color">the BaseColor of this font.</param>
+        public Font(BaseFont bf, float size, int style, BaseColor color) {
             this.baseFont = bf;
             this.size = size;
             this.style = style;
@@ -250,7 +250,7 @@ namespace iTextSharp.text {
                 if (font.Color == null) {
                     return 4;
                 }
-                if (((Color)this.color).Equals(font.Color)) {
+                if ((this.color).Equals(font.Color)) {
                     return 0;
                 }
                 return 4;
@@ -513,7 +513,7 @@ namespace iTextSharp.text {
         /// Get/set the color of this font.
         /// </summary>
         /// <value>the color of this font</value>
-        public virtual Color Color {
+        public virtual BaseColor Color {
             get {
                 return color;
             }
@@ -529,7 +529,7 @@ namespace iTextSharp.text {
         /// <param name="green">the green-value of the new color</param>
         /// <param name="blue">the blue-value of the new color</param>
         public virtual void SetColor(int red, int green, int blue) {
-            this.color = new Color(red, green, blue);
+            this.color = new BaseColor(red, green, blue);
         }
     
         // BASEFONT
@@ -667,26 +667,26 @@ namespace iTextSharp.text {
                 dStyle = style1 | style2;
             }
             // color
-            object dColor = (Color)font.Color;
+            BaseColor dColor = font.Color;
             if (dColor == null) {
                 dColor = this.Color;
             }
             // family
             if (font.baseFont != null) {
-                return new Font(font.BaseFont, dSize, dStyle, (Color)dColor);
+                return new Font(font.BaseFont, dSize, dStyle, dColor);
             }
             if (font.Family != UNDEFINED) {
-                return new Font(font.Family, dSize, dStyle, (Color)dColor);
+                return new Font(font.Family, dSize, dStyle, dColor);
             }
             if (this.baseFont != null) {
                 if (dStyle == style1) {
-                    return new Font(this.BaseFont, dSize, dStyle, (Color)dColor);
+                    return new Font(this.BaseFont, dSize, dStyle, dColor);
                 }
                 else {
-                    return FontFactory.GetFont(this.Familyname, dSize, dStyle, (Color)dColor);
+                    return FontFactory.GetFont(this.Familyname, dSize, dStyle, dColor);
                 }
             }
-            return new Font(this.Family, dSize, dStyle, (Color)dColor);
+            return new Font(this.Family, dSize, dStyle, dColor);
         }
     }
 }

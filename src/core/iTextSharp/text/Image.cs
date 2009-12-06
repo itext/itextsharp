@@ -521,7 +521,7 @@ namespace iTextSharp.text {
         /// </param>
         /// <param name="forceBW">if true the image is treated as black and white</param>
         /// <returns>an object of type ImgRaw</returns>
-        public static Image GetInstance(System.Drawing.Image image, Color color, bool forceBW) {
+        public static Image GetInstance(System.Drawing.Image image, BaseColor color, bool forceBW) {
             System.Drawing.Bitmap bm = (System.Drawing.Bitmap)image;
             int w = bm.Width;
             int h = bm.Height;
@@ -677,7 +677,7 @@ namespace iTextSharp.text {
         /// pixels are replaced by this color
         /// </param>
         /// <returns>an object of type ImgRaw</returns>
-        public static Image GetInstance(System.Drawing.Image image, Color color) {
+        public static Image GetInstance(System.Drawing.Image image, BaseColor color) {
             return Image.GetInstance(image, color, false);
         }
     

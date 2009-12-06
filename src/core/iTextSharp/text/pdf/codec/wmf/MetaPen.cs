@@ -59,7 +59,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
 
         int style = PS_SOLID;
         int penWidth = 1;
-        Color color = Color.BLACK;
+        BaseColor color = BaseColor.BLACK;
 
         public MetaPen() {
             type = META_PEN;
@@ -84,7 +84,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
             }
         }
     
-        public Color Color {
+        public BaseColor Color {
             get {
                 return color;
             }

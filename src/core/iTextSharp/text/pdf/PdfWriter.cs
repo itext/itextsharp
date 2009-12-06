@@ -2852,7 +2852,7 @@ namespace iTextSharp.text.pdf {
         protected ColorDetails patternColorspaceGRAY;
         protected ColorDetails patternColorspaceCMYK;
         
-        internal ColorDetails AddSimplePatternColorspace(Color color) {
+        internal ColorDetails AddSimplePatternColorspace(BaseColor color) {
             int type = ExtendedColor.GetType(color);
             if (type == ExtendedColor.TYPE_PATTERN || type == ExtendedColor.TYPE_SHADING)
                 throw new Exception(MessageLocalization.GetComposedMessage("an.uncolored.tile.pattern.can.not.have.another.pattern.or.shading.as.color"));
