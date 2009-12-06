@@ -6435,16 +6435,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "System\Drawing\Dimension.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "System\Drawing\Dimension2D.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "System\util\ListIterator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
