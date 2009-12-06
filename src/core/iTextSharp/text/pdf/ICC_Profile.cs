@@ -63,7 +63,7 @@ namespace iTextSharp.text.pdf
         }
         
         public static ICC_Profile GetInstance(byte[] data) {
-            if (data.Length < 128 | data[36] != 0x61 || data[37] != 0x63 
+            if (data.Length < 128 || data[36] != 0x61 || data[37] != 0x63 
                 || data[38] != 0x73 || data[39] != 0x70)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.icc.profile"));
             ICC_Profile icc = new ICC_Profile();
