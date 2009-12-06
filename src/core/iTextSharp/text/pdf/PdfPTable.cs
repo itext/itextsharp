@@ -408,7 +408,7 @@ namespace iTextSharp.text.pdf {
 
             SkipColsWithRowspanAbove();
             
-            if (currentRowIdx >= currentRow.Length) {
+            while (currentRowIdx >= currentRow.Length) {
                 int numCols = NumberOfColumns;
                 if (runDirection == PdfWriter.RUN_DIRECTION_RTL) {
                     PdfPCell[] rtlRow = new PdfPCell[numCols];
@@ -430,6 +430,7 @@ namespace iTextSharp.text.pdf {
                 rows.Add(row);
                 currentRow = new PdfPCell[numCols];
                 currentRowIdx = 0;
+                SkipColsWithRowspanAbove();
                 rowCompleted = true;
             }
             
@@ -785,7 +786,7 @@ namespace iTextSharp.text.pdf {
                 tmprow = (PdfPRow)rows[idx - rs];
                 cell = tmprow.GetCells()[i];
                 float tmp = 0;
-                if (cell.Rowspan == rs + 1) {
+                if (cell != null && cell.Rowspan == rs + 1) {
                     tmp = cell.GetMaxHeight();
                     while (rs > 0) {
                         tmp -= GetRowHeight(idx - rs);

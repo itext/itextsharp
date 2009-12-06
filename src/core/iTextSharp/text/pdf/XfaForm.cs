@@ -138,11 +138,11 @@ namespace iTextSharp.text.pdf {
             while (n != null) {
                 if (n.NodeType == XmlNodeType.Element) {
                     String s = n.LocalName;
-                    if (s.Equals("template")) {
+                    if ("template".Equals(s)) {
                         templateNode = n;
                         templateSom = new Xml2SomTemplate(n);
                     }
-                    else if (s.Equals("datasets")) {
+                    else if ("datasets".Equals(s)) {
                         datasetsNode = n;
                         datasetsSom = new Xml2SomDatasets(n.FirstChild);
                     }
@@ -488,6 +488,8 @@ namespace iTextSharp.text.pdf {
             * @return the escaped string
             */
             public static String EscapeSom(String s) {
+                if (s == null)
+                    return "";
                 int idx = s.IndexOf('.');
                 if (idx < 0)
                     return s;
@@ -877,11 +879,11 @@ namespace iTextSharp.text.pdf {
                 XmlNode n = (XmlNode)name2Node[s];
                 if (n == null)
                     return null;
-                if (n.LocalName.Equals("exclGroup"))
+                if ("exclGroup".Equals(n.LocalName))
                     return "exclGroup";
                 XmlNode ui = n.FirstChild;
                 while (ui != null) {
-                    if (ui.NodeType == XmlNodeType.Element && ui.LocalName.Equals("ui")) {
+                    if (ui.NodeType == XmlNodeType.Element && "ui".Equals(ui.LocalName)) {
                         break;
                     }
                     ui = ui.NextSibling;
@@ -890,7 +892,7 @@ namespace iTextSharp.text.pdf {
                     return null;
                 XmlNode type = ui.FirstChild;
                 while (type != null) {
-                    if (type.NodeType == XmlNodeType.Element && !(type.LocalName.Equals("extras") && type.LocalName.Equals("picture"))) {
+                    if (type.NodeType == XmlNodeType.Element && !("extras".Equals(type.LocalName) && "picture".Equals(type.LocalName))) {
                         return type.LocalName;
                     }
                     type = type.NextSibling;
@@ -906,7 +908,7 @@ namespace iTextSharp.text.pdf {
                 while (n2 != null) {
                     if (n2.NodeType == XmlNodeType.Element) {
                         String s = n2.LocalName;
-                        if (s.Equals("subform")) {
+                        if ("subform".Equals(s)) {
                             XmlNode name = n2.Attributes.GetNamedItem("name");
                             String nn = "#subform";
                             bool annon = true;
@@ -935,7 +937,7 @@ namespace iTextSharp.text.pdf {
                             --templateLevel;
                             stack.Pop();
                         }
-                        else if (s.Equals("field") || s.Equals("exclGroup")) {
+                        else if ("field".Equals(s) || "exclGroup".Equals(s)) {
                             XmlNode name = n2.Attributes.GetNamedItem("name");
                             if (name != null) {
                                 String nn = EscapeSom(name.Value);
@@ -953,7 +955,7 @@ namespace iTextSharp.text.pdf {
                                 stack.Pop();
                             }
                         }
-                        else if (!dynamicForm && templateLevel > 0 && s.Equals("occur")) {
+                        else if (!dynamicForm && templateLevel > 0 && "occur".Equals(s)) {
                             int initial = 1;
                             int min = 1;
                             int max = 1;

@@ -73,6 +73,18 @@ namespace iTextSharp.text.pdf {
             this.type = type;
         }
     
+        /**
+        * Constructs an extended color of a certain type and a certain color.
+        * @param type
+        * @param red
+        * @param green
+        * @param blue
+        * @param alpha
+        */
+        public ExtendedColor(int type, int red, int green, int blue, int alpha) : base(Normalize((float)red / 0xFF), Normalize((float)green / 0xFF), Normalize((float)blue / 0xFF), Normalize((float)alpha / 0xFF)) {
+		    this.type = type;
+	    }
+
         public int Type {
             get {
                 return type;
