@@ -5,7 +5,7 @@ using System.Reflection;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: PdfName.cs,v 1.31 2008/05/24 18:41:23 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

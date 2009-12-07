@@ -3,7 +3,7 @@ using System.Collections;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: Document.cs,v 1.45 2008/05/25 13:08:44 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

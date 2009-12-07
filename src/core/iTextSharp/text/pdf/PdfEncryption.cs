@@ -9,7 +9,7 @@ using Org.BouncyCastle.Security;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: PdfEncryption.cs,v 1.13 2007/06/14 20:01:48 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

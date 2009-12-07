@@ -3,7 +3,7 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.interfaces;
 
 /*
- * $Id: PdfViewerPreferencesImp.cs,v 1.7 2008/05/04 10:49:46 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections;
 
 /*
- * $Id: PdfDictionary.cs,v 1.10 2008/05/13 11:25:19 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

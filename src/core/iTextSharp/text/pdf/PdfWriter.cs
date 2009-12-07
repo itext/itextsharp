@@ -13,7 +13,7 @@ using iTextSharp.text.xml.xmp;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
 /*
- * $Id: PdfWriter.cs,v 1.48 2008/05/13 11:25:23 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

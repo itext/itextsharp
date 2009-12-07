@@ -1,7 +1,7 @@
 using System;
 using iTextSharp.text.pdf;
 /*
- * $Id: IPdfDocumentActions.cs,v 1.1 2007/02/09 15:34:40 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

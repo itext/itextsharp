@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 
 /*
- * $Id: ByteVector.cs,v 1.2 2005/06/18 08:17:05 psoares33 Exp $
+ * $Id$
  * Copyright (C) 2001 The Apache Software Foundation. All rights reserved.
  * For details on use and redistribution please refer to the
  * LICENSE file included with these sources.

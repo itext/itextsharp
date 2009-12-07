@@ -2,7 +2,7 @@ using System;
 using System.IO;
 
 /*
- * $Id: BadPasswordException.cs,v 1.1 2008/01/10 15:49:39 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 /*
- * $Id: IanaEncodings.cs,v 1.4 2008/05/13 11:26:14 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

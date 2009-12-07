@@ -10,7 +10,7 @@ using iTextSharp.text.pdf;
 using iTextSharp.text;
 
 /*
- * $Id: FontFactory.cs,v 1.16 2008/05/13 11:25:10 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

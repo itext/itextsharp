@@ -10,7 +10,7 @@ using iTextSharp.text.factories;
 using iTextSharp.text.pdf.draw;
 
 /*
- * $Id: Chunk.cs,v 1.20 2008/05/13 11:25:09 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

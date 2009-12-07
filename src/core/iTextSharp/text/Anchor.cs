@@ -6,7 +6,7 @@ using iTextSharp.text.html;
 using iTextSharp.text.factories;
 
 /*
- * $Id: Anchor.cs,v 1.9 2008/05/13 11:25:08 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

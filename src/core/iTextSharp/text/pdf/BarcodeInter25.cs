@@ -4,7 +4,7 @@ using iTextSharp.text;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: BarcodeInter25.cs,v 1.5 2006/09/17 15:58:51 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

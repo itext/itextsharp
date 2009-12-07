@@ -1,7 +1,7 @@
 using System;
 using iTextSharp.text.pdf;
 /*
- * $Id: ImgJBIG2.java 3962 2009-06-10 11:43:19Z psoares33 $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

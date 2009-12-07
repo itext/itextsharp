@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using iTextSharp.text;
 /*
- * $Id: EntitiesToSymbol.cs,v 1.3 2008/05/13 11:26:14 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

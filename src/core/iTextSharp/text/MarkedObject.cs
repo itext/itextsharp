@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.util;
 /*
- * $Id: MarkedObject.cs,v 1.4 2008/05/13 11:25:11 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

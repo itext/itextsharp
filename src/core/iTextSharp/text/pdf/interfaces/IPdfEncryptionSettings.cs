@@ -1,7 +1,7 @@
 using System;
 using Org.BouncyCastle.X509;
 /*
- * $Id: IPdfEncryptionSettings.cs,v 1.2 2007/04/29 13:57:00 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

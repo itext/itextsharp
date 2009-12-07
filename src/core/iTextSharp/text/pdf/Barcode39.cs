@@ -2,7 +2,7 @@ using System;
 using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
- * $Id: Barcode39.cs,v 1.6 2007/05/03 19:36:07 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

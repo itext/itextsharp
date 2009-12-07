@@ -3,7 +3,7 @@ using iTextSharp.text.pdf.codec;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: ImgCCITT.cs,v 1.6 2008/05/13 11:25:11 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

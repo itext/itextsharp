@@ -4,7 +4,7 @@ using System.util;
 using iTextSharp.text.factories;
 
 /*
- * $Id: List.cs,v 1.20 2008/05/13 11:25:11 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

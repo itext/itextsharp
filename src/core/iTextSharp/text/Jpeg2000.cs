@@ -5,7 +5,7 @@ using System.util;
 using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 /*
- * $Id: Jpeg2000.cs,v 1.5 2008/05/13 11:25:11 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

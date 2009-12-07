@@ -1,6 +1,6 @@
 using System;
 /*
- * $Id: ARCFOUREncryption.cs,v 1.1 2007/04/19 16:41:32 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

@@ -2,7 +2,7 @@ using System;
 using iTextSharp.text;
 
 /*
- * $Id: DefaultSplitCharacter.cs,v 1.1 2008/05/22 22:11:09 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 
 /*
- * $Id: IElement.cs,v 1.4 2008/05/13 11:25:10 psoares33 Exp $
+ * $Id$
  * 
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

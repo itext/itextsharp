@@ -3,7 +3,7 @@ using iTextSharp.text;
 using iTextSharp.text.pdf.codec;
 using System.Collections;
 /*
- * $Id: BarcodeDatamatrix.cs,v 1.3 2007/05/21 10:56:38 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

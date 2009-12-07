@@ -4,7 +4,7 @@ using System.util.collections;
 using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 /*
- * $Id: JBIG2SegmentReader.java 3714 2009-02-20 21:04:16Z xlv $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

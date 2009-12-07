@@ -15,7 +15,7 @@ using Org.BouncyCastle.Cms;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
 /*
- * $Id: PdfReader.cs,v 1.50 2008/05/13 11:25:23 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

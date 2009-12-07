@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 /*
- * $Id:  $
+ * $Id$
  * 
  *
  * This file is part of the iText project.
