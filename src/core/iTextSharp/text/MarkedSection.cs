@@ -3,7 +3,7 @@ using System.Collections;
 using System.Text;
 using System.util;
 /*
- * $Id: MarkedSection.cs,v 1.7 2008/05/13 11:25:12 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

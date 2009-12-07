@@ -2,7 +2,7 @@ using System;
 using System.Text;
 
 /*
- * $Id: PdfIndirectReference.cs,v 1.5 2008/05/13 11:25:21 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

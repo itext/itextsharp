@@ -4,7 +4,7 @@ using System.Xml;
 using System.Collections;
 
 /*
- * $Id:  $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

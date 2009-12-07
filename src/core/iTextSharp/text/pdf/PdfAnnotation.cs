@@ -5,7 +5,7 @@ using System.util;
 using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
- * $Id: PdfAnnotation.cs,v 1.12 2008/05/24 18:41:23 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

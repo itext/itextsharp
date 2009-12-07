@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections;
 using iTextSharp.text;
 /*
- * $Id: PdfSmartCopy.cs,v 1.7 2008/05/13 11:25:23 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

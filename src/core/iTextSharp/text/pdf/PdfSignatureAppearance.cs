@@ -7,7 +7,7 @@ using Org.BouncyCastle.Crypto;
 using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
- * $Id: PdfSignatureAppearance.cs,v 1.13 2008/04/17 15:32:39 psoares33 Exp $
+ * $Id$
  * 
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

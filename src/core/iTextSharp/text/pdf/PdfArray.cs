@@ -4,7 +4,7 @@ using System.Collections;
 using System.util;
 
 /*
- * $Id: PdfArray.cs,v 1.7 2008/05/13 11:25:18 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

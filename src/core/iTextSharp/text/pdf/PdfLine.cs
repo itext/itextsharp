@@ -5,7 +5,7 @@ using System.Collections;
 using iTextSharp.text;
 
 /*
- * $Id: PdfLine.cs,v 1.7 2008/05/13 11:25:21 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

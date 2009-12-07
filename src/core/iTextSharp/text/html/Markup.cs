@@ -7,7 +7,7 @@ using System.Globalization;
 using iTextSharp.text;
 
 /*
- * $Id: Markup.cs,v 1.2 2008/05/13 11:25:16 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

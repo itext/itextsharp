@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 
 /*
- * $Id: PageResources.cs,v 1.6 2006/09/24 15:48:24 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

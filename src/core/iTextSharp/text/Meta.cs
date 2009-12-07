@@ -4,7 +4,7 @@ using System.Collections;
 using System.util;
 
 /*
- * $Id: Meta.cs,v 1.6 2008/05/13 11:25:12 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

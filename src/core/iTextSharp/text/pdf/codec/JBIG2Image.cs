@@ -3,7 +3,7 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 /*
- * $Id: JBIG2Image.java 3715 2009-02-23 15:02:23Z blowagie $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

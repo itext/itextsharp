@@ -1,6 +1,6 @@
 using System;
 /*
- * $Id: StringTokenizer.cs,v 1.4 2006/06/16 10:52:26 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

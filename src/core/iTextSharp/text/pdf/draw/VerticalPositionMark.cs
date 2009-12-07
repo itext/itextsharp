@@ -5,7 +5,7 @@ using iTextSharp.text.pdf;
 
 /*
  * 
- * $Id: VerticalPositionMark.cs,v 1.2 2008/05/13 11:25:38 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

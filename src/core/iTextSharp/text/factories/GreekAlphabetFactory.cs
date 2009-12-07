@@ -1,7 +1,7 @@
 using System;
 using iTextSharp.text;
 /*
- * $Id: GreekAlphabetFactory.cs,v 1.2 2008/05/13 11:25:14 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

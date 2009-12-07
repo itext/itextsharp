@@ -7,7 +7,7 @@ using iTextSharp.text.error_messages;
 using iTextSharp.text;
 
 /*
- * $Id: TrueTypeFont.cs,v 1.12 2008/05/13 11:25:23 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

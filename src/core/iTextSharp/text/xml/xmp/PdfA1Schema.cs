@@ -1,7 +1,7 @@
 using System;
 
 /*
- * $Id: PdfA1Schema.cs,v 1.3 2008/05/13 11:26:16 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

@@ -5,7 +5,7 @@ using System.Globalization;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: ByteBuffer.cs,v 1.7 2008/05/13 11:25:17 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

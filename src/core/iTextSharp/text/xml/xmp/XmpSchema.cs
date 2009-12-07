@@ -2,7 +2,7 @@ using System;
 using System.Text;
 using System.util;
 /*
- * $Id: XmpSchema.cs,v 1.5 2008/05/13 11:26:16 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

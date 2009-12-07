@@ -6,7 +6,7 @@ using System.util;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: CJKFont.cs,v 1.9 2008/05/13 11:25:17 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

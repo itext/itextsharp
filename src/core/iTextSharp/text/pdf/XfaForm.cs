@@ -4,7 +4,7 @@ using System.Text;
 using System.IO;
 using System.Xml;
 /*
- * $Id: XfaForm.cs,v 1.8 2008/06/06 14:57:18 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

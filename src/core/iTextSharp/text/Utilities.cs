@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using iTextSharp.text.pdf;
 /*
- * $Id: Utilities.cs,v 1.9 2008/05/13 11:25:13 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

@@ -4,7 +4,7 @@ using System.IO;
 using iTextSharp.text.pdf.interfaces;
 using Org.BouncyCastle.X509;
 /*
- * $Id: PdfCopyForms.java 3665 2009-01-26 22:32:15Z xlv $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

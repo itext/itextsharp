@@ -6,7 +6,7 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: Jpeg.cs,v 1.11 2008/05/13 11:25:11 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

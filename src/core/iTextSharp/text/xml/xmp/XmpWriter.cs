@@ -4,7 +4,7 @@ using System.Collections;
 using iTextSharp.text.pdf;
 using iTextSharp.text.xml.simpleparser;
 /*
- * $Id: XmpWriter.cs,v 1.10 2008/05/13 11:26:16 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

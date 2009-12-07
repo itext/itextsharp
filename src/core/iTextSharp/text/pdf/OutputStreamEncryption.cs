@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using iTextSharp.text.pdf.crypto;
 /*
- * $Id: OutputStreamEncryption.cs,v 1.3 2007/04/29 13:57:07 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

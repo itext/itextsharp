@@ -4,7 +4,7 @@ using System.Net;
 using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
- * $Id: PdfImage.cs,v 1.6 2008/05/13 11:25:21 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

@@ -4,7 +4,7 @@ using System.Text;
 using System.Net;
 using iTextSharp.text.error_messages;
 /*
- * $Id: RandomAccessFileOrArray.cs,v 1.9 2008/05/13 11:25:23 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

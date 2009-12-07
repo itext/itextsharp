@@ -4,7 +4,7 @@ using System.IO;
 using iTextSharp.text;
 
 /*
- * $Id: PdfIndirectObject.cs,v 1.3 2008/05/13 11:25:21 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

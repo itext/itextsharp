@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections;
 using System.util.zlib;
 /*
- * $Id: PdfEFStream.java 3735 2009-02-26 01:44:03Z xlv $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

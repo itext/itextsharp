@@ -2,7 +2,7 @@ using System;
 using System.IO;
 
 /*
- * $Id: PdfString.cs,v 1.6 2008/05/13 11:25:23 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

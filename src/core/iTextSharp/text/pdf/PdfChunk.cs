@@ -5,7 +5,7 @@ using System.util;
 using iTextSharp.text;
 
 /*
- * $Id: PdfChunk.cs,v 1.11 2008/05/22 22:11:10 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

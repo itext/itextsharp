@@ -3,7 +3,7 @@ using System.Text;
 using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
- * $Id: Barcode128.cs,v 1.6 2007/10/24 16:31:54 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

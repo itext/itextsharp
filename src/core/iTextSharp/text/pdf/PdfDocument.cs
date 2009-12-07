@@ -10,7 +10,7 @@ using System.util;
 using iTextSharp.text.error_messages;
 /*
  * 
- * $Id: PdfDocument.cs,v 1.75 2008/05/13 11:25:19 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

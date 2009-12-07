@@ -3,7 +3,7 @@ using System.IO;
 using iTextSharp.text;
 
 /*
- * $Id: InputMeta.cs,v 1.4 2008/05/13 11:25:36 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

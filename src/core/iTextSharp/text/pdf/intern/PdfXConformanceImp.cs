@@ -6,7 +6,7 @@ using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: PdfXConformanceImp.cs,v 1.3 2007/06/05 15:00:44 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

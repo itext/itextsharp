@@ -3,7 +3,7 @@ using System.Collections;
 using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
- * $Id: MultiColumnText.cs,v 1.13 2008/05/13 11:25:18 psoares33 Exp $
+ * $Id$
  * 
  *
  * This file is part of the iText project.

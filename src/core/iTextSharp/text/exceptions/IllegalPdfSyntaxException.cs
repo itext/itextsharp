@@ -1,6 +1,6 @@
 using System;
 /*
- * $Id: IllegalPdfSyntaxException.java 3820 2009-03-25 10:30:01Z blowagie $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

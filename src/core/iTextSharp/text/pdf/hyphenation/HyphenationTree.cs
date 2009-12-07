@@ -18,7 +18,7 @@ using System.Collections;
  * limitations under the License.
  */
 
-/* $Id: HyphenationTree.cs,v 1.2 2005/06/18 08:05:23 psoares33 Exp $ */
+/* $Id$ */
  
 namespace iTextSharp.text.pdf.hyphenation {
     /**

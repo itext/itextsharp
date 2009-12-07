@@ -1,7 +1,7 @@
 using System;
 using iTextSharp.text;
 /*
- * $Id: Barcode.cs,v 1.4 2006/07/31 13:51:38 psoares33 Exp $
+ * $Id$
  * 
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

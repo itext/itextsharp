@@ -13,7 +13,7 @@ using Org.BouncyCastle.Asn1.Cmp;
 using Org.BouncyCastle.Asn1.Tsp;
 using iTextSharp.text.error_messages;
 /*
- * $Id: TSAClientBouncyCastle.java 3973 2009-06-16 10:30:31Z psoares33 $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

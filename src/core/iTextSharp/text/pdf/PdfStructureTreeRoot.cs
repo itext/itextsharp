@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 
 /*
- * $Id: PdfStructureTreeRoot.cs,v 1.2 2005/10/18 15:29:53 psoares33 Exp $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
