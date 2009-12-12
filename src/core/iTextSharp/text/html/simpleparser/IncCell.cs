@@ -62,6 +62,9 @@ namespace iTextSharp.text.html.simpleparser {
             String value = props["colspan"];
             if (value != null)
                 cell.Colspan = int.Parse(value);
+            value = props["rowspan"];
+            if (value != null)
+                cell.Rowspan = int.Parse(value);
             value = props["align"];
             if (tag.Equals("th"))
                 cell.HorizontalAlignment = Element.ALIGN_CENTER;
