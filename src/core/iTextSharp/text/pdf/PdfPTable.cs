@@ -494,7 +494,7 @@ namespace iTextSharp.text.pdf {
                 aboveRow = (PdfPRow)rows[row + 1];
                 distance--;
                 aboveCell = (PdfPCell)aboveRow.GetCells()[col];
-                while ((aboveCell == null) && (col > 0))
+                while (aboveCell == null)
                     aboveCell = (PdfPCell)aboveRow.GetCells()[--col];
             }
             
