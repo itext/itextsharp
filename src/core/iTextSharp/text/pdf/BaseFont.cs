@@ -588,7 +588,7 @@ namespace iTextSharp.text.pdf {
         * @since   2.0.3
         */
         public static BaseFont CreateFont(String name, String encoding, bool embedded, bool cached, byte[] ttfAfm, byte[] pfb, bool noThrow) {
-            return CreateFont(name, encoding, embedded, cached, ttfAfm, pfb, false, false);
+            return CreateFont(name, encoding, embedded, cached, ttfAfm, pfb, noThrow, false);
         }
         
         /** Creates a new font. This font can be one of the 14 built in types,
