@@ -393,22 +393,24 @@ namespace iTextSharp.text.pdf {
             Asn1Sequence signerInfo = (Asn1Sequence)signerInfos[0];
             // the positions that we care are
             //     0 - version
-            //     1 - the signing certificate serial number
+            //     1 - the signing certificate issuer and serial number
             //     2 - the digest algorithm
             //     3 or 4 - digestEncryptionAlgorithm
             //     4 or 5 - encryptedDigest
             signerversion = ((DerInteger)signerInfo[0]).Value.IntValue;
             // Get the signing certificate
             Asn1Sequence issuerAndSerialNumber = (Asn1Sequence)signerInfo[1];
+            Org.BouncyCastle.Asn1.X509.X509Name issuer = Org.BouncyCastle.Asn1.X509.X509Name.GetInstance(issuerAndSerialNumber[0]);
             BigInteger serialNumber = ((DerInteger)issuerAndSerialNumber[1]).Value;
             foreach (X509Certificate cert in certs) {                                                            
-                if (serialNumber.Equals(cert.SerialNumber)) {
+                if (issuer.Equivalent(cert.IssuerDN) && serialNumber.Equals(cert.SerialNumber)) {
                     signCert = cert;                                                                             
                     break;                                                                                            
                 }                                                                                                
             }
             if (signCert == null) {
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("can.t.find.signing.certificate.with.serial.1", serialNumber.ToString(16)));
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("can.t.find.signing.certificate.with.serial.1", 
+                    issuer.ToString() + " / " + serialNumber.ToString(16)));
             }
             CalcSignCertificateChain();
             digestAlgorithm = ((DerObjectIdentifier)((Asn1Sequence)signerInfo[2])[0]).Id;
@@ -618,7 +620,7 @@ namespace iTextSharp.text.pdf {
             cc.Add(signCert);
             ArrayList oc = new ArrayList(certs);
             for (int k = 0; k < oc.Count; ++k) {
-                if (signCert.SerialNumber.Equals(((X509Certificate)oc[k]).SerialNumber)) {
+                if (signCert.Equals((X509Certificate)oc[k])) {
                     oc.RemoveAt(k);
                     --k;
                     continue;
