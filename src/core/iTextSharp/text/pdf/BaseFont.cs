@@ -1450,7 +1450,7 @@ namespace iTextSharp.text.pdf {
                 return;
             PdfDictionary font = (PdfDictionary)obj;
             PdfName subtype = font.GetAsName(PdfName.SUBTYPE);
-            if (!PdfName.TYPE1.Equals(subtype) && !PdfName.TRUETYPE.Equals(subtype))
+            if (!PdfName.TYPE1.Equals(subtype) && !PdfName.TRUETYPE.Equals(subtype) && !PdfName.TYPE0.Equals(subtype))
                 return;
             PdfName name = font.GetAsName(PdfName.BASEFONT);
             fonts.Add(new Object[]{PdfName.DecodeName(name.ToString()), fontRef});
