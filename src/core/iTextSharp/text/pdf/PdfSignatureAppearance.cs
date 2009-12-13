@@ -62,7 +62,8 @@ namespace iTextSharp.text.pdf {
         public enum SignatureRender {
             Description,
             NameAndDescription,
-            GraphicAndDescription
+            GraphicAndDescription,
+            Graphic
         }  
         
         /**
@@ -425,6 +426,16 @@ namespace iTextSharp.text.pdf {
                             rect.Height / 2 - MARGIN);
                     }
                 }
+                else if (render == SignatureRender.Graphic) {
+                    if (signatureGraphic == null) {
+                        throw new InvalidOperationException(MessageLocalization.GetComposedMessage("a.signature.image.should.be.present.when.rendering.mode.is.graphic.only"));
+                    }
+                    signatureRect = new Rectangle(
+                            MARGIN,
+                            MARGIN,
+                            rect.Width - MARGIN, // take all space available
+                            rect.Height - MARGIN);
+                }
                 else {
                     dataRect = new Rectangle(
                         MARGIN, 
@@ -466,15 +477,38 @@ namespace iTextSharp.text.pdf {
                     ct2.Go();
                 }
 
-                if (size <= 0) {
-                    Rectangle sr = new Rectangle(dataRect.Width, dataRect.Height);
-                    size = FitText(font, text, sr, 12, runDirection);
-                }
-                ColumnText ct = new ColumnText(t);
-                ct.RunDirection = runDirection;
-                ct.SetSimpleColumn(new Phrase(text, font), dataRect.Left, dataRect.Bottom, dataRect.Right, dataRect.Top, size, Element.ALIGN_LEFT);
-                ct.Go();
+                else if (render == SignatureRender.Graphic) {
+                    ColumnText ct2 = new ColumnText(t);
+                    ct2.RunDirection = runDirection;
+                    ct2.SetSimpleColumn(signatureRect.Left, signatureRect.Bottom, signatureRect.Right, signatureRect.Top, 0, Element.ALIGN_RIGHT);
 
+                    Image im = Image.GetInstance(signatureGraphic);
+                    im.ScaleToFit(signatureRect.Width, signatureRect.Height);
+
+                    Paragraph p = new Paragraph();
+                    // must calculate the point to draw from to make image appear in middle of column
+                    float x = 0;
+                    // experimentation found this magic number to counteract Adobe's signature graphic, which
+                    // offsets the y co-ordinate by 15 units
+                    float y = -im.ScaledHeight + 15;
+
+                    x = x + (signatureRect.Width - im.ScaledWidth) / 2;
+                    y = y - (signatureRect.Height - im.ScaledHeight) / 2;
+                    p.Add(new Chunk(im, x, y, false));
+                    ct2.AddElement(p);
+                    ct2.Go();
+                }
+                
+                if (render != SignatureRender.Graphic) {
+                    if (size <= 0) {
+                        Rectangle sr = new Rectangle(dataRect.Width, dataRect.Height);
+                        size = FitText(font, text, sr, 12, runDirection);
+                    }
+                    ColumnText ct = new ColumnText(t);
+                    ct.RunDirection = runDirection;
+                    ct.SetSimpleColumn(new Phrase(text, font), dataRect.Left, dataRect.Bottom, dataRect.Right, dataRect.Top, size, Element.ALIGN_LEFT);
+                    ct.Go();
+                }
             }
             if (app[3] == null && !acro6Layers) {
                 PdfTemplate t = app[3] = new PdfTemplate(writer);
