@@ -472,7 +472,7 @@ namespace iTextSharp.text.pdf {
             if (aboveRow == null)
                 return false;
             PdfPCell aboveCell = (PdfPCell)aboveRow.GetCells()[currCol];
-            while ((aboveCell == null) && (row > 0)) {
+            while (aboveCell == null && row > 0) {
                 aboveRow  = (PdfPRow)rows[--row];
                 if (aboveRow == null)
                     return false;
@@ -484,7 +484,7 @@ namespace iTextSharp.text.pdf {
             if (aboveCell == null) {
                 int col = currCol - 1;
                 aboveCell = (PdfPCell)aboveRow.GetCells()[col];
-                while ((aboveCell == null) && (row > 0))
+                while (aboveCell == null && col > 0)
                     aboveCell = (PdfPCell)aboveRow.GetCells()[--col];
                 return aboveCell != null && aboveCell.Rowspan > distance;
             }
@@ -494,7 +494,7 @@ namespace iTextSharp.text.pdf {
                 aboveRow = (PdfPRow)rows[row + 1];
                 distance--;
                 aboveCell = (PdfPCell)aboveRow.GetCells()[col];
-                while (aboveCell == null)
+                while (aboveCell == null && col > 0)
                     aboveCell = (PdfPCell)aboveRow.GetCells()[--col];
             }
             
