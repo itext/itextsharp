@@ -46,7 +46,7 @@ namespace Org.BouncyCastle.Asn1.Cms
 					other = OtherKeyAttribute.GetInstance(seq[2]);
 					break;
 				default:
-					throw new ArgumentException("Invalid KekIdentifier");
+					throw new ArgumentException("Invalid RecipientKeyIdentifier");
             }
         }
 

@@ -66,7 +66,7 @@ namespace Org.BouncyCastle.Tsp
 			TspUtil.ValidateCertificate(cert);
 
 			//
-			// add the essCertid
+			// Add the ESSCertID attribute
 			//
 			Hashtable signedAttrs;
 			if (signedAttr != null)
@@ -78,21 +78,9 @@ namespace Org.BouncyCastle.Tsp
 				signedAttrs = new Hashtable();
 			}
 
-			IDigest digest;
 			try
 			{
-				digest = DigestUtilities.GetDigest("SHA-1");
-			}
-			catch (Exception e)
-			{
-				throw new TspException("Can't find a SHA-1 implementation.", e);
-			}
-
-			try
-			{
-				byte[] certEncoded = cert.GetEncoded();
-				digest.BlockUpdate(certEncoded, 0, certEncoded.Length);
-				byte[] hash = DigestUtilities.DoFinal(digest);
+				byte[] hash = DigestUtilities.CalculateDigest("SHA-1", cert.GetEncoded());
 
 				EssCertID essCertid = new EssCertID(hash);
 
@@ -105,6 +93,10 @@ namespace Org.BouncyCastle.Tsp
 			catch (CertificateEncodingException e)
 			{
 				throw new TspException("Exception processing certificate.", e);
+			}
+			catch (SecurityUtilityException e)
+			{
+				throw new TspException("Can't find a SHA-1 implementation.", e);
 			}
 
 			this.signedAttr = new Asn1.Cms.AttributeTable(signedAttrs);

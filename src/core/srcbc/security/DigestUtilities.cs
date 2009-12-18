@@ -13,7 +13,6 @@ using Org.BouncyCastle.Crypto;
 
 namespace Org.BouncyCastle.Security
 {
-
     /// <remarks>
     ///  Utility class for creating IDigest objects from their names/Oids
     /// </remarks>
@@ -79,14 +78,16 @@ namespace Org.BouncyCastle.Security
         public static DerObjectIdentifier GetObjectIdentifier(
 			string mechanism)
         {
-            mechanism = (string) algorithms[mechanism.ToUpper(CultureInfo.InvariantCulture)];
+			if (mechanism == null)
+				throw new System.ArgumentNullException("mechanism");
 
-            if (mechanism != null)
-            {
-                return (DerObjectIdentifier)oids[mechanism];
-            }
+			mechanism = mechanism.ToUpper(CultureInfo.InvariantCulture);
+			string aliased = (string) algorithms[mechanism];
 
-            return null;
+			if (aliased != null)
+				mechanism = aliased;
+
+			return (DerObjectIdentifier) oids[mechanism];
         }
 
         public static ICollection Algorithms
@@ -139,12 +140,27 @@ namespace Org.BouncyCastle.Security
             return (string) algorithms[oid.Id];
         }
 
+		public static byte[] CalculateDigest(string algorithm, byte[] input)
+		{
+			IDigest digest = GetDigest(algorithm);
+			digest.BlockUpdate(input, 0, input.Length);
+			return DoFinal(digest);
+		}
+
 		public static byte[] DoFinal(
 			IDigest digest)
 		{
 			byte[] b = new byte[digest.GetDigestSize()];
 			digest.DoFinal(b, 0);
 			return b;
+		}
+
+		public static byte[] DoFinal(
+			IDigest	digest,
+		    byte[]	input)
+		{
+			digest.BlockUpdate(input, 0, input.Length);
+			return DoFinal(digest);
 		}
     }
 }

@@ -14,8 +14,25 @@ namespace Org.BouncyCastle.Cms
 	public class Pkcs5Scheme2PbeKey
 		: CmsPbeKey
 	{
+		[Obsolete("Use version taking 'char[]' instead")]
 		public Pkcs5Scheme2PbeKey(
 			string	password,
+			byte[]	salt,
+			int		iterationCount)
+			: this(password.ToCharArray(), salt, iterationCount)
+		{
+		}
+
+		[Obsolete("Use version taking 'char[]' instead")]
+		public Pkcs5Scheme2PbeKey(
+			string				password,
+			AlgorithmIdentifier keyDerivationAlgorithm)
+			: this(password.ToCharArray(), keyDerivationAlgorithm)
+		{
+		}
+		
+		public Pkcs5Scheme2PbeKey(
+			char[]	password,
 			byte[]	salt,
 			int		iterationCount)
 			: base(password, salt, iterationCount)
@@ -23,7 +40,7 @@ namespace Org.BouncyCastle.Cms
 		}
 
 		public Pkcs5Scheme2PbeKey(
-			string				password,
+			char[]				password,
 			AlgorithmIdentifier keyDerivationAlgorithm)
 			: base(password, keyDerivationAlgorithm)
 		{
@@ -35,9 +52,9 @@ namespace Org.BouncyCastle.Cms
 			Pkcs5S2ParametersGenerator gen = new Pkcs5S2ParametersGenerator();
 
 			gen.Init(
-				PbeParametersGenerator.Pkcs5PasswordToBytes(this.Password),
-				this.Salt,
-				this.IterationCount);
+				PbeParametersGenerator.Pkcs5PasswordToBytes(password),
+				salt,
+				iterationCount);
 
 			return (KeyParameter) gen.GenerateDerivedParameters(
 				algorithmOid,

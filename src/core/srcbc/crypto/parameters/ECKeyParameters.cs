@@ -3,6 +3,7 @@ using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.CryptoPro;
+using Org.BouncyCastle.Security;
 
 namespace Org.BouncyCastle.Crypto.Parameters
 {
@@ -84,6 +85,17 @@ namespace Org.BouncyCastle.Crypto.Parameters
 			return parameters.GetHashCode() ^ base.GetHashCode();
 		}
 
+		internal ECKeyGenerationParameters CreateKeyGenerationParameters(
+			SecureRandom random)
+		{
+			if (publicKeyParamSet != null)
+			{
+				return new ECKeyGenerationParameters(publicKeyParamSet, random);
+			}
+
+			return new ECKeyGenerationParameters(parameters, random);
+		}
+
 		private string VerifyAlgorithmName(
 			string algorithm)
 		{
@@ -93,9 +105,10 @@ namespace Org.BouncyCastle.Crypto.Parameters
 			{
 				case "EC":
 				case "ECDSA":
-				case "ECGOST3410":
 				case "ECDH":
 				case "ECDHC":
+				case "ECGOST3410":
+				case "ECMQV":
 					break;
 				default:
 					throw new ArgumentException("unrecognised algorithm: " + algorithm, "algorithm");

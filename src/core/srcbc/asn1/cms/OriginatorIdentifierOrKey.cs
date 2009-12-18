@@ -1,11 +1,12 @@
 using System;
 
 using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.X509;
 
 namespace Org.BouncyCastle.Asn1.Cms
 {
     public class OriginatorIdentifierOrKey
-        : Asn1Encodable
+        : Asn1Encodable, IAsn1Choice
     {
         private Asn1Encodable id;
 
@@ -15,8 +16,15 @@ namespace Org.BouncyCastle.Asn1.Cms
             this.id = id;
         }
 
+		[Obsolete("Use version taking a 'SubjectKeyIdentifier'")]
         public OriginatorIdentifierOrKey(
             Asn1OctetString id)
+			: this(new SubjectKeyIdentifier(id))
+        {
+        }
+
+        public OriginatorIdentifierOrKey(
+            SubjectKeyIdentifier id)
         {
             this.id = new DerTaggedObject(false, 0, id);
         }
@@ -27,6 +35,7 @@ namespace Org.BouncyCastle.Asn1.Cms
             this.id = new DerTaggedObject(false, 1, id);
         }
 
+		[Obsolete("Use more specific version")]
         public OriginatorIdentifierOrKey(
             Asn1Object id)
         {
@@ -69,10 +78,26 @@ namespace Org.BouncyCastle.Asn1.Cms
                 return (OriginatorIdentifierOrKey)o;
             }
 
-			if (o is Asn1Object)
-            {
-                return new OriginatorIdentifierOrKey((Asn1Object)o);
-            }
+			if (o is IssuerAndSerialNumber)
+			{
+				return new OriginatorIdentifierOrKey((IssuerAndSerialNumber)o);
+			}
+
+			if (o is SubjectKeyIdentifier)
+			{
+				return new OriginatorIdentifierOrKey((SubjectKeyIdentifier)o);
+			}
+
+			if (o is OriginatorPublicKey)
+			{
+				return new OriginatorIdentifierOrKey((OriginatorPublicKey)o);
+			}
+
+			if (o is Asn1TaggedObject)
+			{
+				// TODO Add validation
+				return new OriginatorIdentifierOrKey((Asn1TaggedObject)o);
+			}
 
 			throw new ArgumentException("Invalid OriginatorIdentifierOrKey: " + o.GetType().Name);
         }
@@ -82,7 +107,39 @@ namespace Org.BouncyCastle.Asn1.Cms
 			get { return id; }
 		}
 
+		public IssuerAndSerialNumber IssuerAndSerialNumber
+		{
+			get
+			{
+				if (id is IssuerAndSerialNumber)
+				{
+					return (IssuerAndSerialNumber)id;
+				}
+
+				return null;
+			}
+		}
+
+		public SubjectKeyIdentifier SubjectKeyIdentifier
+		{
+			get
+			{
+				if (id is Asn1TaggedObject && ((Asn1TaggedObject)id).TagNo == 0)
+				{
+					return SubjectKeyIdentifier.GetInstance((Asn1TaggedObject)id, false);
+				}
+
+				return null;
+			}
+		}
+
+		[Obsolete("Use 'OriginatorPublicKey' property")]
 		public OriginatorPublicKey OriginatorKey
+		{
+			get { return OriginatorPublicKey; }
+		}
+
+		public OriginatorPublicKey OriginatorPublicKey
 		{
 			get
 			{

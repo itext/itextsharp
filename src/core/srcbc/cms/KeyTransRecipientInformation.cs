@@ -20,18 +20,37 @@ namespace Org.BouncyCastle.Cms
     public class KeyTransRecipientInformation
         : RecipientInformation
     {
-        private KeyTransRecipientInfo _info;
-//        private new AlgorithmIdentifier   _encAlg;
+        private KeyTransRecipientInfo info;
 
+		[Obsolete]
 		public KeyTransRecipientInformation(
             KeyTransRecipientInfo	info,
             AlgorithmIdentifier		encAlg,
             Stream					data)
-            : base(encAlg, AlgorithmIdentifier.GetInstance(info.KeyEncryptionAlgorithm), data)
+			: this(info, encAlg, null, null, data)
+		{
+		}
+
+		[Obsolete]
+		public KeyTransRecipientInformation(
+            KeyTransRecipientInfo	info,
+            AlgorithmIdentifier		encAlg,
+            AlgorithmIdentifier		macAlg,
+            Stream					data)
+			: this(info, encAlg, macAlg, null, data)
+		{
+		}
+
+		public KeyTransRecipientInformation(
+            KeyTransRecipientInfo	info,
+            AlgorithmIdentifier		encAlg,
+            AlgorithmIdentifier		macAlg,
+            AlgorithmIdentifier		authEncAlg,
+            Stream					data)
+            : base(encAlg, macAlg, authEncAlg, info.KeyEncryptionAlgorithm, data)
         {
-            this._info = info;
-//            this._encAlg = encAlg;
-            this._rid = new RecipientID();
+            this.info = info;
+            this.rid = new RecipientID();
 
 			RecipientIdentifier r = info.RecipientIdentifier;
 
@@ -41,14 +60,14 @@ namespace Org.BouncyCastle.Cms
                 {
                     Asn1OctetString octs = Asn1OctetString.GetInstance(r.ID);
 
-					_rid.SubjectKeyIdentifier = octs.GetOctets();
+					rid.SubjectKeyIdentifier = octs.GetOctets();
                 }
                 else
                 {
                     IssuerAndSerialNumber iAnds = IssuerAndSerialNumber.GetInstance(r.ID);
 
-					_rid.Issuer = iAnds.Name;
-                    _rid.SerialNumber = iAnds.SerialNumber.Value;
+					rid.Issuer = iAnds.Name;
+                    rid.SerialNumber = iAnds.SerialNumber.Value;
                 }
             }
             catch (IOException)
@@ -68,25 +87,20 @@ namespace Org.BouncyCastle.Cms
 			return oid.Id;
 		}
 
-		/**
-        * decrypt the content and return it as a byte array.
-        */
-        public override CmsTypedStream GetContentStream(
-            ICipherParameters key)
-        {
-			byte[] encryptedKey = _info.EncryptedKey.GetOctets();
-			string keyExchangeAlgorithm = GetExchangeEncryptionAlgorithmName(_keyEncAlg.ObjectID);
+		internal KeyParameter UnwrapKey(ICipherParameters key)
+		{
+			byte[] encryptedKey = info.EncryptedKey.GetOctets();
+			string keyExchangeAlgorithm = GetExchangeEncryptionAlgorithmName(keyEncAlg.ObjectID);
 
 			try
 			{
 				IWrapper keyWrapper = WrapperUtilities.GetWrapper(keyExchangeAlgorithm);
-
 				keyWrapper.Init(false, key);
 
-				KeyParameter sKey = ParameterUtilities.CreateKeyParameter(
-					_encAlg.ObjectID, keyWrapper.Unwrap(encryptedKey, 0, encryptedKey.Length));
-
-				return GetContentFromSessionKey(sKey);
+				// FIXME Support for MAC algorithm parameters similar to cipher parameters
+				AlgorithmIdentifier alg = GetActiveAlgID();
+				return ParameterUtilities.CreateKeyParameter(
+					alg.ObjectID, keyWrapper.Unwrap(encryptedKey, 0, encryptedKey.Length));
 			}
 			catch (SecurityUtilityException e)
 			{
@@ -106,6 +120,17 @@ namespace Org.BouncyCastle.Cms
 			{
 				throw new CmsException("bad padding in message.", e);
 			}
+		}
+		
+		/**
+        * decrypt the content and return it as a byte array.
+        */
+        public override CmsTypedStream GetContentStream(
+            ICipherParameters key)
+        {
+			KeyParameter sKey = UnwrapKey(key);
+
+			return GetContentFromSessionKey(sKey);
 		}
     }
 }

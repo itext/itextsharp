@@ -5,7 +5,6 @@ using System.IO;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Cms;
 using Org.BouncyCastle.Asn1.Nist;
-using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
@@ -105,15 +104,11 @@ namespace Org.BouncyCastle.Cms
 
 			Asn1EncodableVector recipientInfos = new Asn1EncodableVector();
 
-			foreach (RecipientInf recipient in recipientInfs)
+			foreach (RecipientInfoGenerator rig in recipientInfoGenerators)
 			{
 				try
 				{
-					recipientInfos.Add(recipient.ToRecipientInfo(encKey, rand));
-				}
-				catch (IOException e)
-				{
-					throw new CmsException("encoding error.", e);
+					recipientInfos.Add(rig.Generate(encKey, rand));
 				}
 				catch (InvalidKeyException e)
 				{
@@ -151,9 +146,10 @@ namespace Org.BouncyCastle.Cms
 
 				envGen.AddObject(this.Version);
 
+				Stream envRaw = envGen.GetRawOutputStream();
 				Asn1Generator recipGen = _berEncodeRecipientSet
-					?	(Asn1Generator) new BerSetGenerator(envGen.GetRawOutputStream())
-					:	new DerSetGenerator(envGen.GetRawOutputStream());
+					?	(Asn1Generator) new BerSetGenerator(envRaw)
+					:	new DerSetGenerator(envRaw);
 
 				foreach (Asn1Encodable ae in recipientInfos)
 				{
@@ -162,15 +158,12 @@ namespace Org.BouncyCastle.Cms
 
 				recipGen.Close();
 
-				BerSequenceGenerator eiGen = new BerSequenceGenerator(
-					envGen.GetRawOutputStream());
-
-				eiGen.AddObject(PkcsObjectIdentifiers.Data);
+				BerSequenceGenerator eiGen = new BerSequenceGenerator(envRaw);
+				eiGen.AddObject(CmsObjectIdentifiers.Data);
 				eiGen.AddObject(encAlgID);
 
-				BerOctetStringGenerator octGen = new BerOctetStringGenerator(
-					eiGen.GetRawOutputStream(), 0, false);
-				Stream octetOutputStream = octGen.GetOctetOutputStream(_bufferSize);
+				Stream octetOutputStream = CmsUtilities.CreateBerOctetOutputStream(
+					eiGen.GetRawOutputStream(), 0, false, _bufferSize);
 
 				IBufferedCipher cipher = CipherUtilities.GetCipher(encAlgID.ObjectID);
 				cipher.Init(true, new ParametersWithRandom(cipherParameters, rand));

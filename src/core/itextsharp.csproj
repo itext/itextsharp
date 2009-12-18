@@ -1,7 +1,7 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.10.3077"
+        ProductVersion = "7.10.6030"
         SchemaVersion = "2.0"
         ProjectGuid = "{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}"
     >
@@ -1965,6 +1965,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\asn1\DERExternal.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\asn1\DERExternalParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\asn1\DERGeneralizedTime.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2185,6 +2195,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\asn1\cms\AuthEnvelopedData.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\asn1\cms\AuthEnvelopedDataParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\asn1\cms\CMSAttributes.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -2341,6 +2361,11 @@
                 />
                 <File
                     RelPath = "srcbc\asn1\cms\Time.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\asn1\cms\ecc\MQVuserKeyingMaterial.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -3810,6 +3835,41 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\cms\CMSAuthenticatedData.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\cms\CMSAuthenticatedDataGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\cms\CMSAuthenticatedDataParser.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\cms\CMSAuthenticatedDataStreamGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\cms\CMSAuthenticatedGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\cms\CMSAuthEnvelopedData.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\cms\CMSAuthEnvelopedGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\cms\CMSCompressedData.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -3920,6 +3980,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\cms\CMSStreamException.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\cms\CMSTypedStream.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -3945,7 +4010,17 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\cms\KEKRecipientInfoGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\cms\KEKRecipientInformation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\cms\KeyAgreeRecipientInfoGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -3955,7 +4030,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\cms\KeyTransRecipientInfoGenerator.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\cms\KeyTransRecipientInformation.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\cms\OriginatorId.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\cms\PasswordRecipientInfoGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -3976,6 +4066,11 @@
                 />
                 <File
                     RelPath = "srcbc\cms\RecipientId.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\cms\RecipientInfoGenerator.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -4190,6 +4285,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\crypto\agreement\ECMqvBasicAgreement.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\crypto\agreement\ECMqvWithKdfBasicAgreement.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\crypto\agreement\kdf\DHKdfParameters.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -4251,6 +4356,11 @@
                 />
                 <File
                     RelPath = "srcbc\crypto\digests\MD5Digest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\crypto\digests\NullDigest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -4795,6 +4905,31 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "srcbc\crypto\modes\gcm\BasicGcmMultiplier.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\crypto\modes\gcm\GcmUtilities.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\crypto\modes\gcm\IGcmMultiplier.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\crypto\modes\gcm\Tables64kGcmMultiplier.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\crypto\modes\gcm\Tables8kGcmMultiplier.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "srcbc\crypto\paddings\BlockCipherPadding.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -5021,6 +5156,16 @@
                 />
                 <File
                     RelPath = "srcbc\crypto\parameters\MGFParameters.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\crypto\parameters\MqvPrivateParameters.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\crypto\parameters\MqvPublicParameters.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -6161,6 +6306,11 @@
                 />
                 <File
                     RelPath = "srcbc\util\io\PushbackStream.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "srcbc\util\io\StreamOverflowException.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -11,7 +11,8 @@ namespace Org.BouncyCastle.Crypto.Macs
     *
     * H(K XOR opad, H(K XOR ipad, text))
     */
-    public class HMac : IMac
+    public class HMac
+		: IMac
     {
         private const byte IPAD = (byte)0x36;
         private const byte OPAD = (byte)0x5C;
@@ -20,19 +21,17 @@ namespace Org.BouncyCastle.Crypto.Macs
         private readonly int digestSize;
         private readonly int blockLength;
 
-		private byte[] inputPad;
-        private byte[] outputPad;
+		private readonly byte[] inputPad;
+        private readonly byte[] outputPad;
 
         public HMac(
             IDigest digest)
         {
             this.digest = digest;
-            digestSize = digest.GetDigestSize();
-
-            blockLength = digest.GetByteLength();
-
-            inputPad = new byte[blockLength];
-            outputPad = new byte[blockLength];
+            this.digestSize = digest.GetDigestSize();
+            this.blockLength = digest.GetByteLength();
+            this.inputPad = new byte[blockLength];
+            this.outputPad = new byte[blockLength];
         }
 
         public string AlgorithmName
@@ -51,39 +50,28 @@ namespace Org.BouncyCastle.Crypto.Macs
             digest.Reset();
 
             byte[] key = ((KeyParameter)parameters).GetKey();
+			int keyLength = key.Length;
 
-            if (key.Length > blockLength)
+            if (keyLength > blockLength)
             {
                 digest.BlockUpdate(key, 0, key.Length);
                 digest.DoFinal(inputPad, 0);
-                for (int i = digestSize; i < inputPad.Length; i++)
-                {
-                    inputPad[i] = 0;
-                }
+
+				keyLength = digestSize;
             }
             else
             {
-                Array.Copy(key, 0, inputPad, 0, key.Length);
-                for (int i = key.Length; i < inputPad.Length; i++)
-                {
-                    inputPad[i] = 0;
-                }
+				Array.Copy(key, inputPad, keyLength);
             }
 
-            outputPad = new byte[inputPad.Length];
-            Array.Copy(inputPad, 0, outputPad, 0, inputPad.Length);
+			Array.Clear(inputPad, keyLength, blockLength - keyLength);
+            Array.Copy(inputPad, outputPad, blockLength);
 
-            for (int i = 0; i < inputPad.Length; i++)
-            {
-                inputPad[i] ^= IPAD;
-            }
+			xor(inputPad, IPAD);
+			xor(outputPad, OPAD);
 
-            for (int i = 0; i < outputPad.Length; i++)
-            {
-                outputPad[i] ^= OPAD;
-            }
-
-            digest.BlockUpdate(inputPad, 0, inputPad.Length);
+			// Initialise the digest
+			digest.BlockUpdate(inputPad, 0, inputPad.Length);
         }
 
         public int GetMacSize()
@@ -115,9 +103,10 @@ namespace Org.BouncyCastle.Crypto.Macs
             digest.BlockUpdate(outputPad, 0, outputPad.Length);
             digest.BlockUpdate(tmp, 0, tmp.Length);
 
-            int     len = digest.DoFinal(output, outOff);
+            int len = digest.DoFinal(output, outOff);
 
-            Reset();
+			// Initialise the digest
+            digest.BlockUpdate(inputPad, 0, inputPad.Length);
 
             return len;
         }
@@ -127,15 +116,19 @@ namespace Org.BouncyCastle.Crypto.Macs
         */
         public void Reset()
         {
-            /*
-            * reset the underlying digest.
-            */
+			// Reset underlying digest
             digest.Reset();
 
-            /*
-            * reinitialize the digest.
-            */
+			// Initialise the digest
             digest.BlockUpdate(inputPad, 0, inputPad.Length);
         }
+
+		private static void xor(byte[] a, byte n)
+		{
+			for (int i = 0; i < a.Length; ++i)
+            {
+                a[i] ^= n;
+            }
+		}
     }
 }

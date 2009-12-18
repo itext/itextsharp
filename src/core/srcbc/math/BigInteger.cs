@@ -1067,15 +1067,15 @@ namespace Org.BouncyCastle.Math
 
 					if (shift < 2)
 					{
-						c = ShiftRightOneInPlace(cStart, c);
+						ShiftRightOneInPlace(cStart, c);
 						--cBitLength;
-						iCount = ShiftRightOneInPlace(iCountStart, iCount);
+						ShiftRightOneInPlace(iCountStart, iCount);
 					}
 					else
 					{
-						c = ShiftRightInPlace(cStart, c, shift);
+						ShiftRightInPlace(cStart, c, shift);
 						cBitLength -= shift;
-						iCount = ShiftRightInPlace(iCountStart, iCount, shift);
+						ShiftRightInPlace(iCountStart, iCount, shift);
 					}
 
 					//cStart = c.Length - ((cBitLength + 31) / 32);
@@ -2289,12 +2289,12 @@ namespace Org.BouncyCastle.Math
 
 					if (shift < 2)
 					{
-						c = ShiftRightOneInPlace(cStart, c);
+						ShiftRightOneInPlace(cStart, c);
 						--cBitLength;
 					}
 					else
 					{
-						c = ShiftRightInPlace(cStart, c, shift);
+						ShiftRightInPlace(cStart, c, shift);
 						cBitLength -= shift;
 					}
 
@@ -2461,7 +2461,7 @@ namespace Org.BouncyCastle.Math
 		/**
 		 * do a right shift - this does it in place.
 		 */
-		private static int[] ShiftRightInPlace(
+		private static void ShiftRightInPlace(
 			int		start,
 			int[]	mag,
 			int		n)
@@ -2499,14 +2499,12 @@ namespace Org.BouncyCastle.Math
 
 				mag[nInts] = (int)((uint)mag[nInts] >> nBits);
 			}
-
-			return mag;
 		}
 
 		/**
 		 * do a right shift by one - this does it in place.
 		 */
-		private static int[] ShiftRightOneInPlace(
+		private static void ShiftRightOneInPlace(
 			int		start,
 			int[]	mag)
 		{
@@ -2521,8 +2519,6 @@ namespace Org.BouncyCastle.Math
 			}
 
 			mag[start] = (int)((uint)mag[start] >> 1);
-
-			return mag;
 		}
 
         public BigInteger ShiftRight(
@@ -2539,7 +2535,7 @@ namespace Org.BouncyCastle.Math
 
 //			int[] res = (int[]) this.magnitude.Clone();
 //
-//			res = ShiftRightInPlace(0, res, n);
+//			ShiftRightInPlace(0, res, n);
 //
 //			return new BigInteger(this.sign, res, true);
 

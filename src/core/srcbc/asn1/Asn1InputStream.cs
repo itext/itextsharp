@@ -135,6 +135,8 @@ namespace Org.BouncyCastle.Asn1
 						return new BerSequenceParser(sp).ToAsn1Object();
 					case Asn1Tags.Set:
 						return new BerSetParser(sp).ToAsn1Object();
+					case Asn1Tags.External:
+						return new DerExternalParser(sp).ToAsn1Object();
 					default:
 						throw new IOException("unknown BER object encountered");
 				}
@@ -167,6 +169,8 @@ namespace Org.BouncyCastle.Asn1
 							return CreateDerSequence(defIn);
 						case Asn1Tags.Set:
 							return CreateDerSet(defIn);
+						case Asn1Tags.External:
+							return new DerExternal(BuildDerEncodableVector(defIn));                
 						default:
 							return new DerUnknownTag(true, tagNo, defIn.ToArray());
 					}
@@ -230,7 +234,7 @@ namespace Org.BouncyCastle.Asn1
 				int size = length & 0x7f;
 
 				if (size > 4)
-					throw new IOException("DER length more than 4 bytes");
+					throw new IOException("DER length more than 4 bytes: " + size);
 
 				length = 0;
 				for (int i = 0; i < size; i++)

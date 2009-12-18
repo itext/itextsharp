@@ -116,6 +116,7 @@ namespace Org.BouncyCastle.Pkcs
 			{
 				ECPrivateKeyParameters _key = (ECPrivateKeyParameters)key;
 				AlgorithmIdentifier algID;
+				ECPrivateKeyStructure ec;
 
 				if (_key.AlgorithmName == "ECGOST3410")
 				{
@@ -128,6 +129,9 @@ namespace Org.BouncyCastle.Pkcs
 					algID = new AlgorithmIdentifier(
 						CryptoProObjectIdentifiers.GostR3410x2001,
 						gostParams.ToAsn1Object());
+
+					// TODO Do we need to pass any parameters here?
+					ec = new ECPrivateKeyStructure(_key.D);
 				}
 				else
 				{
@@ -138,14 +142,17 @@ namespace Org.BouncyCastle.Pkcs
 						_key.Parameters.H,
 						_key.Parameters.GetSeed());
 
+					// TODO Add support for "named curve" specs
 					X962Parameters x962 = new X962Parameters(ecP);
+					Asn1Object x962Object = x962.ToAsn1Object();
 
-					algID = new AlgorithmIdentifier(
-						X9ObjectIdentifiers.IdECPublicKey,
-						x962.ToAsn1Object());
+					// TODO Possible to pass the publicKey bitstring here?
+					ec = new ECPrivateKeyStructure(_key.D, x962Object);
+
+					algID = new AlgorithmIdentifier(X9ObjectIdentifiers.IdECPublicKey, x962Object);
 				}
 
-				return new PrivateKeyInfo(algID, new ECPrivateKeyStructure(_key.D).ToAsn1Object());
+				return new PrivateKeyInfo(algID, ec.ToAsn1Object());
 			}
 
 			if (key is Gost3410PrivateKeyParameters)

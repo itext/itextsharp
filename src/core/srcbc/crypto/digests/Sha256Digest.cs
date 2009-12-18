@@ -1,5 +1,7 @@
 using System;
 
+using Org.BouncyCastle.Crypto.Utilities;
+
 namespace Org.BouncyCastle.Crypto.Digests
 {
     /**
@@ -61,29 +63,15 @@ namespace Org.BouncyCastle.Crypto.Digests
             byte[]  input,
             int     inOff)
 		{
-            X[xOff++] = (((uint)input[inOff]) << 24)
-				| (((uint)input[inOff + 1]) << 16)
-                | (((uint)input[inOff + 2]) << 8)
-				| ((uint)input[inOff + 3]);
+			X[xOff] = Pack.BE_To_UInt32(input, inOff);
 
-            if (xOff == 16)
+			if (++xOff == 16)
             {
                 ProcessBlock();
             }
         }
 
-        private void UnpackWord(
-            uint	word,
-            byte[]  outBytes,
-            int     outOff)
-        {
-            outBytes[outOff]     = (byte)(word >> 24);
-            outBytes[outOff + 1] = (byte)(word >> 16);
-            outBytes[outOff + 2] = (byte)(word >> 8);
-            outBytes[outOff + 3] = (byte)word;
-        }
-
-        internal override void ProcessLength(
+		internal override void ProcessLength(
             long bitLength)
         {
             if (xOff > 14)
@@ -101,14 +89,14 @@ namespace Org.BouncyCastle.Crypto.Digests
         {
             Finish();
 
-            UnpackWord(H1, output, outOff);
-            UnpackWord(H2, output, outOff + 4);
-            UnpackWord(H3, output, outOff + 8);
-            UnpackWord(H4, output, outOff + 12);
-            UnpackWord(H5, output, outOff + 16);
-            UnpackWord(H6, output, outOff + 20);
-            UnpackWord(H7, output, outOff + 24);
-            UnpackWord(H8, output, outOff + 28);
+            Pack.UInt32_To_BE((uint)H1, output, outOff);
+            Pack.UInt32_To_BE((uint)H2, output, outOff + 4);
+            Pack.UInt32_To_BE((uint)H3, output, outOff + 8);
+            Pack.UInt32_To_BE((uint)H4, output, outOff + 12);
+            Pack.UInt32_To_BE((uint)H5, output, outOff + 16);
+            Pack.UInt32_To_BE((uint)H6, output, outOff + 20);
+            Pack.UInt32_To_BE((uint)H7, output, outOff + 24);
+            Pack.UInt32_To_BE((uint)H8, output, outOff + 28);
 
             Reset();
 
@@ -170,44 +158,52 @@ namespace Org.BouncyCastle.Crypto.Digests
 			for(int i = 0; i < 8; ++i)
 			{
 				// t = 8 * i
-				h += Sum1Ch(e, f, g) + K[t] + X[t++];
+				h += Sum1Ch(e, f, g) + K[t] + X[t];
 				d += h;
 				h += Sum0Maj(a, b, c);
+				++t;
 
 				// t = 8 * i + 1
-				g += Sum1Ch(d, e, f) + K[t] + X[t++];
+				g += Sum1Ch(d, e, f) + K[t] + X[t];
 				c += g;
 				g += Sum0Maj(h, a, b);
+				++t;
 
 				// t = 8 * i + 2
-				f += Sum1Ch(c, d, e) + K[t] + X[t++];
+				f += Sum1Ch(c, d, e) + K[t] + X[t];
 				b += f;
 				f += Sum0Maj(g, h, a);
+				++t;
 
 				// t = 8 * i + 3
-				e += Sum1Ch(b, c, d) + K[t] + X[t++];
+				e += Sum1Ch(b, c, d) + K[t] + X[t];
 				a += e;
 				e += Sum0Maj(f, g, h);
+				++t;
 
 				// t = 8 * i + 4
-				d += Sum1Ch(a, b, c) + K[t] + X[t++];
+				d += Sum1Ch(a, b, c) + K[t] + X[t];
 				h += d;
 				d += Sum0Maj(e, f, g);
+				++t;
 
 				// t = 8 * i + 5
-				c += Sum1Ch(h, a, b) + K[t] + X[t++];
+				c += Sum1Ch(h, a, b) + K[t] + X[t];
 				g += c;
 				c += Sum0Maj(d, e, f);
+				++t;
 
 				// t = 8 * i + 6
-				b += Sum1Ch(g, h, a) + K[t] + X[t++];
+				b += Sum1Ch(g, h, a) + K[t] + X[t];
 				f += b;
 				b += Sum0Maj(c, d, e);
+				++t;
 
 				// t = 8 * i + 7
-				a += Sum1Ch(f, g, h) + K[t] + X[t++];
+				a += Sum1Ch(f, g, h) + K[t] + X[t];
 				e += a;
 				a += Sum0Maj(b, c, d);
+				++t;
 			}
 
 			H1 += a;
@@ -223,7 +219,6 @@ namespace Org.BouncyCastle.Crypto.Digests
             // reset the offset and clean out the word buffer.
             //
             xOff = 0;
-
 			Array.Clear(X, 0, 16);
         }
 

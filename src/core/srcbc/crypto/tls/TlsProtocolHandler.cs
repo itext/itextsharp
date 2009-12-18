@@ -132,7 +132,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		private TlsCipherSuite chosenCipherSuite = null;
 
 		private BigInteger SRP_A;
-		protected byte[] SRP_identity, SRP_password;//made protected to get rid of warning
+		private byte[] SRP_identity, SRP_password;
 		private BigInteger Yc;
 		private byte[] pms;
 
@@ -1004,6 +1004,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 			try
 			{
 				BigInteger S = srpClient.CalculateSecret(B);
+
+				// TODO Check if this needs to be a fixed size
 				this.pms = BigIntegers.AsUnsignedByteArray(S);
 			}
 			catch (CryptoException)

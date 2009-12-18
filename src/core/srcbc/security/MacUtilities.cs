@@ -36,9 +36,12 @@ namespace Org.BouncyCastle.Security
 			algorithms[PkcsObjectIdentifiers.IdHmacWithSha384.Id] = "HMAC-SHA384";
 			algorithms[PkcsObjectIdentifiers.IdHmacWithSha512.Id] = "HMAC-SHA512";
 
+			// TODO AESMAC?
+
 			algorithms["DES"] = "DESMAC";
 			algorithms["DES/CFB8"] = "DESMAC/CFB8";
 			algorithms["DESEDE"] = "DESEDEMAC";
+			algorithms[PkcsObjectIdentifiers.DesEde3Cbc.Id] = "DESEDEMAC";
 			algorithms["DESEDE/CFB8"] = "DESEDEMAC/CFB8";
 			algorithms["DESISO9797MAC"] = "DESWITHISO9797";
 			algorithms["DESEDE64"] = "DESEDEMAC64";

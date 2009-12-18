@@ -5,7 +5,7 @@ using Org.BouncyCastle.Asn1.X509;
 namespace Org.BouncyCastle.Asn1.Cms
 {
 	/**
-	 * Produce an object suitable for an ASN1OutputStream.
+	 * Produce an object suitable for an Asn1OutputStream.
 	 * <pre>
 	 * AuthenticatedData ::= SEQUENCE {
 	 *       version CMSVersion,
@@ -27,13 +27,13 @@ namespace Org.BouncyCastle.Asn1.Cms
 	 */
 	public class AuthenticatedDataParser
 	{
-	    private Asn1SequenceParser seq;
-	    private DerInteger version;
-	    private IAsn1Convertible nextObject;
-	    private bool originatorInfoCalled;
+	    private Asn1SequenceParser	seq;
+	    private DerInteger			version;
+	    private IAsn1Convertible	nextObject;
+	    private bool				originatorInfoCalled;
 
 	    public AuthenticatedDataParser(
-	        Asn1SequenceParser seq)
+	        Asn1SequenceParser	seq)
 	    {
 	        this.seq = seq;
 	        this.version = (DerInteger)seq.ReadObject();

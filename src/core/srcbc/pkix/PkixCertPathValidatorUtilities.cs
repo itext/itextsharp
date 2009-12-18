@@ -945,7 +945,20 @@ namespace Org.BouncyCastle.Pkix
 			}
 
 			if (crls.IsEmpty)
-				throw new Exception("No CRLs found.");
+			{
+				if (cert is IX509AttributeCertificate)
+				{
+					IX509AttributeCertificate aCert = (IX509AttributeCertificate)cert;
+
+					throw new Exception("No CRLs found for issuer \"" + aCert.Issuer.GetPrincipals()[0] + "\"");
+				}
+				else
+				{
+					X509Certificate xCert = (X509Certificate)cert;
+
+					throw new Exception("No CRLs found for issuer \"" + xCert.IssuerDN + "\"");
+				}
+			}
 
 			return crls;
 		}

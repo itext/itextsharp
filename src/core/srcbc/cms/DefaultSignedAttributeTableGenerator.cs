@@ -57,34 +57,26 @@ namespace Org.BouncyCastle.Cms
 
 			if (!std.ContainsKey(CmsAttributes.ContentType))
 			{
+				DerObjectIdentifier contentType = (DerObjectIdentifier)
+					parameters[CmsAttributeTableParameter.ContentType];
 				Asn1.Cms.Attribute attr = new Asn1.Cms.Attribute(CmsAttributes.ContentType,
-					new DerSet((DerObjectIdentifier)parameters[CmsAttributeTableParameter.ContentType]));
+					new DerSet(contentType));
 				std[attr.AttrType] = attr;
 			}
 
 			if (!std.ContainsKey(CmsAttributes.SigningTime))
 			{
-				Asn1.Cms.Attribute attr = new Asn1.Cms.Attribute(
-					CmsAttributes.SigningTime, new DerSet(new Time(DateTime.UtcNow)));
+				DateTime signingTime = DateTime.UtcNow;
+				Asn1.Cms.Attribute attr = new Asn1.Cms.Attribute(CmsAttributes.SigningTime,
+					new DerSet(new Time(DateTime.UtcNow)));
 				std[attr.AttrType] = attr;
 			}
 
 			if (!std.ContainsKey(CmsAttributes.MessageDigest))
 			{
-				byte[] hash = (byte[])parameters[CmsAttributeTableParameter.Digest];
-				Asn1.Cms.Attribute attr;
-
-				if (hash != null)
-				{
-					attr = new Asn1.Cms.Attribute(
-						CmsAttributes.MessageDigest, new DerSet(new DerOctetString(hash)));
-				}
-				else
-				{
-					attr = new Asn1.Cms.Attribute(
-						CmsAttributes.MessageDigest, new DerSet(DerNull.Instance));
-				}
-
+				byte[] messageDigest = (byte[])parameters[CmsAttributeTableParameter.Digest];
+				Asn1.Cms.Attribute attr = new Asn1.Cms.Attribute(CmsAttributes.MessageDigest,
+					new DerSet(new DerOctetString(messageDigest)));
 				std[attr.AttrType] = attr;
 			}
 

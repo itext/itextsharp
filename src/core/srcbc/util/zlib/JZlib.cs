@@ -1,6 +1,6 @@
 using System;
 /*
- * $Id: JZlib.cs,v 1.1.1.1 2007/01/24 16:41:36 psoares33 Exp $
+ * $Id: JZlib.cs,v 1.2 2009/11/07 13:24:53 bouncy Exp $
  *
 Copyright (c) 2000,2001,2002,2003 ymnk, JCraft,Inc. All rights reserved.
 
@@ -37,14 +37,17 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace Org.BouncyCastle.Utilities.Zlib {
 
     public sealed class JZlib{
-        private const String version_="1.0.2";
-        public static String version(){return version_;}
+        private const String _version="1.0.2";
+        public static String version()
+		{
+			return _version;
+		}
 
         // compression levels
         public const int Z_NO_COMPRESSION=0;
         public const int Z_BEST_SPEED=1;
         public const int Z_BEST_COMPRESSION=9;
-        public const int Z_DEFAULT_COMPRESSION=(-1);
+        public const int Z_DEFAULT_COMPRESSION=-1;
 
         // compression strategy
         public const int Z_FILTERED=1;

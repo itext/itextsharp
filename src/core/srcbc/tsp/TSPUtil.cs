@@ -9,7 +9,10 @@ using Org.BouncyCastle.Asn1.Oiw;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.TeleTrust;
 using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Cms;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
 
 namespace Org.BouncyCastle.Tsp
@@ -43,6 +46,60 @@ namespace Org.BouncyCastle.Tsp
 			digestNames.Add(TeleTrusTObjectIdentifiers.RipeMD160.Id, "RIPEMD160");
 			digestNames.Add(TeleTrusTObjectIdentifiers.RipeMD256.Id, "RIPEMD256");
 			digestNames.Add(CryptoProObjectIdentifiers.GostR3411.Id, "GOST3411");
+		}
+
+
+	    /**
+	     * Fetches the signature time-stamp attributes from a SignerInformation object.
+	     * Checks that the MessageImprint for each time-stamp matches the signature field.
+	     * (see RFC 3161 Appendix A).
+	     * 
+	     * @param signerInfo a SignerInformation to search for time-stamps
+	     * @return a collection of TimeStampToken objects
+	     * @throws TSPValidationException
+	     */
+		public static ICollection GetSignatureTimestamps(
+			SignerInformation signerInfo)
+		{
+			IList timestamps = new ArrayList();
+
+			Asn1.Cms.AttributeTable unsignedAttrs = signerInfo.UnsignedAttributes;
+			if (unsignedAttrs != null)
+			{
+				foreach (Asn1.Cms.Attribute tsAttr in unsignedAttrs.GetAll(
+					PkcsObjectIdentifiers.IdAASignatureTimeStampToken))
+				{
+					foreach (Asn1Encodable asn1 in tsAttr.AttrValues)
+					{
+						try
+						{
+							Asn1.Cms.ContentInfo contentInfo = Asn1.Cms.ContentInfo.GetInstance(
+								asn1.ToAsn1Object());
+							TimeStampToken timeStampToken = new TimeStampToken(contentInfo);
+							TimeStampTokenInfo tstInfo = timeStampToken.TimeStampInfo;
+
+							byte[] expectedDigest = DigestUtilities.CalculateDigest(
+								GetDigestAlgName(tstInfo.MessageImprintAlgOid),
+							    signerInfo.GetSignature());
+
+							if (!Arrays.ConstantTimeAreEqual(expectedDigest, tstInfo.GetMessageImprintDigest()))
+								throw new TspValidationException("Incorrect digest in message imprint");
+
+							timestamps.Add(timeStampToken);
+						}
+						catch (SecurityUtilityException)
+						{
+							throw new TspValidationException("Unknown hash algorithm specified in timestamp");
+						}
+						catch (Exception)
+						{
+							throw new TspValidationException("Timestamp could not be parsed");
+						}
+					}
+				}
+			}
+
+			return timestamps;
 		}
 
 		/**
@@ -95,8 +152,6 @@ namespace Org.BouncyCastle.Tsp
 		internal static int GetDigestLength(
 			string digestAlgOID)
 		{
-			string digestName = GetDigestAlgName(digestAlgOID);
-
 			try
 			{
 				if (digestLengths.Contains(digestAlgOID))
@@ -104,12 +159,20 @@ namespace Org.BouncyCastle.Tsp
 					return (int) digestLengths[digestAlgOID];
 				}
 
-				return DigestUtilities.GetDigest(digestName).GetDigestSize();
+				return CreateDigestInstance(digestAlgOID).GetDigestSize();
 			}
 			catch (SecurityUtilityException e)
 			{
 				throw new TspException("digest algorithm cannot be found.", e);
 			}
+		}
+
+		internal static IDigest CreateDigestInstance(
+			String digestAlgOID)
+		{
+	        string digestName = GetDigestAlgName(digestAlgOID);
+
+			return DigestUtilities.GetDigest(digestName);
 		}
 	}
 }

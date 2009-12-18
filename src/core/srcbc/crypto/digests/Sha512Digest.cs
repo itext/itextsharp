@@ -1,5 +1,7 @@
 using System;
 
+using Org.BouncyCastle.Crypto.Utilities;
+
 namespace Org.BouncyCastle.Crypto.Digests
 {
     /**
@@ -49,14 +51,14 @@ namespace Org.BouncyCastle.Crypto.Digests
         {
             Finish();
 
-            UnpackWord(H1, output, outOff);
-            UnpackWord(H2, output, outOff + 8);
-            UnpackWord(H3, output, outOff + 16);
-            UnpackWord(H4, output, outOff + 24);
-            UnpackWord(H5, output, outOff + 32);
-            UnpackWord(H6, output, outOff + 40);
-            UnpackWord(H7, output, outOff + 48);
-            UnpackWord(H8, output, outOff + 56);
+            Pack.UInt64_To_BE(H1, output, outOff);
+            Pack.UInt64_To_BE(H2, output, outOff + 8);
+            Pack.UInt64_To_BE(H3, output, outOff + 16);
+            Pack.UInt64_To_BE(H4, output, outOff + 24);
+            Pack.UInt64_To_BE(H5, output, outOff + 32);
+            Pack.UInt64_To_BE(H6, output, outOff + 40);
+            Pack.UInt64_To_BE(H7, output, outOff + 48);
+            Pack.UInt64_To_BE(H8, output, outOff + 56);
 
             Reset();
 
@@ -75,14 +77,14 @@ namespace Org.BouncyCastle.Crypto.Digests
              * The first 64 bits of the fractional parts of the square roots
              * of the first eight prime numbers
              */
-            H1 = unchecked((long) 0x6a09e667f3bcc908L);
-            H2 = unchecked((long) 0xbb67ae8584caa73bL);
-            H3 = unchecked((long) 0x3c6ef372fe94f82bL);
-            H4 = unchecked((long) 0xa54ff53a5f1d36f1L);
-            H5 = unchecked((long) 0x510e527fade682d1L);
-            H6 = unchecked((long) 0x9b05688c2b3e6c1fL);
-            H7 = unchecked((long) 0x1f83d9abfb41bd6bL);
-            H8 = unchecked((long) 0x5be0cd19137e2179L);
+            H1 = 0x6a09e667f3bcc908;
+            H2 = 0xbb67ae8584caa73b;
+            H3 = 0x3c6ef372fe94f82b;
+            H4 = 0xa54ff53a5f1d36f1;
+            H5 = 0x510e527fade682d1;
+            H6 = 0x9b05688c2b3e6c1f;
+            H7 = 0x1f83d9abfb41bd6b;
+            H8 = 0x5be0cd19137e2179;
         }
     }
 }

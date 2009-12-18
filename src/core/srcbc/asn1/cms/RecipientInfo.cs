@@ -5,7 +5,7 @@ using Org.BouncyCastle.Asn1;
 namespace Org.BouncyCastle.Asn1.Cms
 {
     public class RecipientInfo
-        : Asn1Encodable
+        : Asn1Encodable, IAsn1Choice
     {
         internal Asn1Encodable info;
 

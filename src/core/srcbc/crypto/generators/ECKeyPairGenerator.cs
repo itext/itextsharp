@@ -2,7 +2,9 @@ using System;
 using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Asn1.Sec;
+using Org.BouncyCastle.Asn1.TeleTrust;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -79,7 +81,7 @@ namespace Org.BouncyCastle.Crypto.Generators
 						throw new InvalidParameterException("unknown key size.");
 				}
 
-				X9ECParameters ecps = X962NamedCurves.GetByOid(oid);
+				X9ECParameters ecps = FindECCurveByOid(oid);
 
 				this.parameters = new ECDomainParameters(
 					ecps.Curve, ecps.G, ecps.N, ecps.H, ecps.GetSeed());
@@ -126,15 +128,54 @@ namespace Org.BouncyCastle.Crypto.Generators
 			{
 				case "EC":
 				case "ECDSA":
-				case "ECGOST3410":
 				case "ECDH":
 				case "ECDHC":
+				case "ECGOST3410":
+				case "ECMQV":
 					break;
 				default:
 					throw new ArgumentException("unrecognised algorithm: " + algorithm, "algorithm");
 			}
 
 			return upper;
+		}
+
+		internal static X9ECParameters FindECCurveByOid(DerObjectIdentifier oid)
+		{
+			// TODO ECGost3410NamedCurves support (returns ECDomainParameters though)
+
+			X9ECParameters ecP = X962NamedCurves.GetByOid(oid);
+
+			if (ecP == null)
+			{
+				ecP = SecNamedCurves.GetByOid(oid);
+
+				if (ecP == null)
+				{
+					ecP = NistNamedCurves.GetByOid(oid);
+
+					if (ecP == null)
+					{
+						ecP = TeleTrusTNamedCurves.GetByOid(oid);
+					}
+				}
+			}
+
+			return ecP;
+		}
+
+		internal static ECPublicKeyParameters GetCorrespondingPublicKey(
+			ECPrivateKeyParameters privKey)
+		{
+			ECDomainParameters parameters = privKey.Parameters;
+			ECPoint q = parameters.G.Multiply(privKey.D);
+
+			if (privKey.PublicKeyParamSet != null)
+			{
+				return new ECPublicKeyParameters(q, privKey.PublicKeyParamSet);
+			}
+
+			return new ECPublicKeyParameters(privKey.AlgorithmName, q, parameters);
 		}
 	}
 }

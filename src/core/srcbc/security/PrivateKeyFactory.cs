@@ -5,14 +5,13 @@ using System.Text;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.CryptoPro;
-using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Asn1.Oiw;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.Sec;
-using Org.BouncyCastle.Asn1.TeleTrust;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Pkcs;
@@ -109,25 +108,7 @@ namespace Org.BouncyCastle.Security
 
 				if (para.IsNamedCurve)
 				{
-					// TODO ECGost3410NamedCurves support (returns ECDomainParameters though)
-
-					DerObjectIdentifier oid = (DerObjectIdentifier) para.Parameters;
-					ecP = X962NamedCurves.GetByOid(oid);
-
-					if (ecP == null)
-					{
-						ecP = SecNamedCurves.GetByOid(oid);
-
-						if (ecP == null)
-						{
-							ecP = NistNamedCurves.GetByOid(oid);
-
-							if (ecP == null)
-							{
-								ecP = TeleTrusTNamedCurves.GetByOid(oid);
-							}
-						}
-					}
+					ecP = ECKeyPairGenerator.FindECCurveByOid((DerObjectIdentifier) para.Parameters);
 				}
 				else
 				{
@@ -212,5 +193,27 @@ namespace Org.BouncyCastle.Security
 		{
 			return DecryptKey(passPhrase, EncryptedPrivateKeyInfo.GetInstance(asn1Object));
 		}
+
+        public static byte[] EncryptKey(
+            DerObjectIdentifier		algorithm,
+            char[]					passPhrase,
+            byte[]					salt,
+            int						iterationCount,
+            AsymmetricKeyParameter	key)
+        {
+			return EncryptedPrivateKeyInfoFactory.CreateEncryptedPrivateKeyInfo(
+				algorithm, passPhrase, salt, iterationCount, key).GetEncoded();
+        }
+
+		public static byte[] EncryptKey(
+			string					algorithm,
+            char[]					passPhrase,
+            byte[]					salt,
+            int						iterationCount,
+            AsymmetricKeyParameter	key)
+        {
+			return EncryptedPrivateKeyInfoFactory.CreateEncryptedPrivateKeyInfo(
+				algorithm, passPhrase, salt, iterationCount, key).GetEncoded();
+        }
 	}
 }

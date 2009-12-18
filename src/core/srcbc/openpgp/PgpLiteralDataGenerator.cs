@@ -41,13 +41,13 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             string				name,
             long				modificationTime)
         {
-			byte[] asciiName = Strings.ToByteArray(name);
+			byte[] encName = Strings.ToUtf8ByteArray(name);
 
 			outStr.Write(
 				(byte) format,
-				(byte) asciiName.Length);
+				(byte) encName.Length);
 
-			outStr.Write(asciiName);
+			outStr.Write(encName);
 
 			long modDate = modificationTime / 1000L;
 

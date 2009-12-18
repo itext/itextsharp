@@ -186,6 +186,7 @@ namespace Org.BouncyCastle.Security
 			oids["PBEwithHmacRipeMD128"] = TeleTrusTObjectIdentifiers.RipeMD128;
 			oids["PBEwithHmacRipeMD160"] = TeleTrusTObjectIdentifiers.RipeMD160;
 			oids["PBEwithHmacRipeMD256"] = TeleTrusTObjectIdentifiers.RipeMD256;
+			oids["Pkcs5scheme2"] = PkcsObjectIdentifiers.IdPbeS2;
 		}
 
 		static PbeParametersGenerator MakePbeGenerator(

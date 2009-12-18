@@ -26,6 +26,13 @@ namespace Org.BouncyCastle.Utilities.IO
 			return buf.ToArray();
 		}
 
+		public static byte[] ReadAllLimited(Stream inStr, int limit)
+		{
+			MemoryStream buf = new MemoryStream();
+			PipeAllLimited(inStr, limit, buf);
+			return buf.ToArray();
+		}
+
 		public static int ReadFully(Stream inStr, byte[] buf)
 		{
 			return ReadFully(inStr, buf, 0, buf.Length);
@@ -52,6 +59,36 @@ namespace Org.BouncyCastle.Utilities.IO
 			{
 				outStr.Write(bs, 0, numRead);
 			}
+		}
+
+		/// <summary>
+		/// Pipe all bytes from <c>inStr</c> to <c>outStr</c>, throwing <c>StreamFlowException</c> if greater
+		/// than <c>limit</c> bytes in <c>inStr</c>.
+		/// </summary>
+		/// <param name="inStr">
+		/// A <see cref="Stream"/>
+		/// </param>
+		/// <param name="limit">
+		/// A <see cref="System.Int64"/>
+		/// </param>
+		/// <param name="outStr">
+		/// A <see cref="Stream"/>
+		/// </param>
+		/// <returns>The number of bytes actually transferred, if not greater than <c>limit</c></returns>
+		/// <exception cref="IOException"></exception>
+		public static long PipeAllLimited(Stream inStr, long limit, Stream outStr)
+		{
+			byte[] bs = new byte[BufferSize];
+			long total = 0;
+			int numRead;
+			while ((numRead = inStr.Read(bs, 0, bs.Length)) > 0)
+			{
+				total += numRead;
+				if (total > limit)
+					throw new StreamOverflowException("Data Overflow");
+				outStr.Write(bs, 0, numRead);
+			}
+			return total;
 		}
 	}
 }

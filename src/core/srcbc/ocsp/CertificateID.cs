@@ -19,6 +19,9 @@ namespace Org.BouncyCastle.Ocsp
 		public CertificateID(
 			CertID id)
 		{
+			if (id == null)
+				throw new ArgumentNullException("id");
+
 			this.id = id;
 		}
 
@@ -30,41 +33,12 @@ namespace Org.BouncyCastle.Ocsp
 		public CertificateID(
 			string			hashAlgorithm,
 			X509Certificate	issuerCert,
-			BigInteger		number)
+			BigInteger		serialNumber)
 		{
-			try
-			{
-				IDigest digest = DigestUtilities.GetDigest(hashAlgorithm);
-				AlgorithmIdentifier hashAlg = new AlgorithmIdentifier(
-					new DerObjectIdentifier(hashAlgorithm), DerNull.Instance);
+			AlgorithmIdentifier hashAlg = new AlgorithmIdentifier(
+				new DerObjectIdentifier(hashAlgorithm), DerNull.Instance);
 
-				X509Name issuerName = PrincipalUtilities.GetSubjectX509Principal(issuerCert);
-
-				byte[] encodedIssuerName = issuerName.GetEncoded();
-				digest.BlockUpdate(encodedIssuerName, 0, encodedIssuerName.Length);
-
-				byte[] hash = DigestUtilities.DoFinal(digest);
-
-				Asn1OctetString issuerNameHash = new DerOctetString(hash);
-				AsymmetricKeyParameter issuerKey = issuerCert.GetPublicKey();
-
-				SubjectPublicKeyInfo info = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(issuerKey);
-
-				byte[] encodedPublicKey = info.PublicKeyData.GetBytes();
-				digest.BlockUpdate(encodedPublicKey, 0, encodedPublicKey.Length);
-
-				hash = DigestUtilities.DoFinal(digest);
-
-				Asn1OctetString issuerKeyHash = new DerOctetString(hash);
-
-				DerInteger serialNumber = new DerInteger(number);
-
-				this.id = new CertID(hashAlg, issuerNameHash, issuerKeyHash, serialNumber);
-			}
-			catch (Exception e)
-			{
-				throw new OcspException("problem creating ID: " + e, e);
-			}
+			this.id = createCertID(hashAlg, issuerCert, new DerInteger(serialNumber));
 		}
 
 		public string HashAlgOid
@@ -91,6 +65,12 @@ namespace Org.BouncyCastle.Ocsp
 			get { return id.SerialNumber.Value; }
 		}
 
+		public bool MatchesIssuer(
+			X509Certificate	issuerCert)
+		{
+			return createCertID(id.HashAlgorithm, issuerCert, id.SerialNumber).Equals(id);
+		}
+
 		public CertID ToAsn1Object()
 		{
 			return id;
@@ -113,6 +93,33 @@ namespace Org.BouncyCastle.Ocsp
 		public override int GetHashCode()
 		{
 			return id.ToAsn1Object().GetHashCode();
+		}
+
+        private static CertID createCertID(
+			AlgorithmIdentifier	hashAlg,
+			X509Certificate		issuerCert,
+			DerInteger			serialNumber)
+		{
+			try
+			{
+				String hashAlgorithm = hashAlg.ObjectID.Id;
+
+				X509Name issuerName = PrincipalUtilities.GetSubjectX509Principal(issuerCert);
+				byte[] issuerNameHash = DigestUtilities.CalculateDigest(
+					hashAlgorithm, issuerName.GetEncoded());
+
+				AsymmetricKeyParameter issuerKey = issuerCert.GetPublicKey();
+				SubjectPublicKeyInfo info = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(issuerKey);
+				byte[] issuerKeyHash = DigestUtilities.CalculateDigest(
+					hashAlgorithm, info.PublicKeyData.GetBytes());
+
+				return new CertID(hashAlg, new DerOctetString(issuerNameHash),
+					new DerOctetString(issuerKeyHash), serialNumber);
+			}
+			catch (Exception e)
+			{
+				throw new OcspException("problem creating ID: " + e, e);
+			}
 		}
 	}
 }

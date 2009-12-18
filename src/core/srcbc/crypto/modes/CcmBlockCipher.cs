@@ -251,7 +251,7 @@ namespace Org.BouncyCastle.Crypto.Modes
 
                 calculateMac(output, 0, output.Length, calculatedMacBlock);
 
-				if (!Arrays.AreEqual(macBlock, calculatedMacBlock))
+				if (!Arrays.ConstantTimeAreEqual(macBlock, calculatedMacBlock))
                     throw new InvalidCipherTextException("mac check in CCM failed");
             }
 

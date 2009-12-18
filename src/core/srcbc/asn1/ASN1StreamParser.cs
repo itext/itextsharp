@@ -83,8 +83,11 @@ namespace Org.BouncyCastle.Asn1
 						return new BerSequenceParser(sp);
 					case Asn1Tags.Set:
 						return new BerSetParser(sp);
+					case Asn1Tags.External:
+						return new DerExternalParser(sp);
 					default:
-						throw new IOException("unknown BER object encountered");
+						throw new IOException("unknown BER object encountered: 0x"
+							+ tagNo.ToString("X"));
 				}
 			}
 			else
@@ -115,6 +118,8 @@ namespace Org.BouncyCastle.Asn1
 							return new DerSequenceParser(new Asn1StreamParser(defIn));
 						case Asn1Tags.Set:
 							return new DerSetParser(new Asn1StreamParser(defIn));
+						case Asn1Tags.External:
+							return new DerExternalParser(new Asn1StreamParser(defIn));
 						default:
 							// TODO Add DerUnknownTagParser class?
 							return new DerUnknownTag(true, tagNo, defIn.ToArray());

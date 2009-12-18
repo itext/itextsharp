@@ -3,7 +3,7 @@ using System;
 namespace Org.BouncyCastle.Asn1.Cms
 {
 	public class KeyAgreeRecipientIdentifier
-		: Asn1Encodable
+		: Asn1Encodable, IAsn1Choice
 	{
 		/**
 		 * return an KeyAgreeRecipientIdentifier object from a tagged object.
@@ -37,14 +37,20 @@ namespace Org.BouncyCastle.Asn1.Cms
 
 			if (obj is Asn1Sequence)
 			{
-				return new KeyAgreeRecipientIdentifier((Asn1Sequence)obj);
+				return new KeyAgreeRecipientIdentifier(IssuerAndSerialNumber.GetInstance(obj));
+			}
+
+			if (obj is Asn1TaggedObject && ((Asn1TaggedObject)obj).TagNo == 0)
+			{
+				return new KeyAgreeRecipientIdentifier(RecipientKeyIdentifier.GetInstance(
+					(Asn1TaggedObject)obj, false));
 			}
 
 			throw new ArgumentException("Invalid KeyAgreeRecipientIdentifier: " + obj.GetType().FullName, "obj");
 		} 
 
 		private readonly IssuerAndSerialNumber issuerSerial;
-		private const RecipientKeyIdentifier rKeyID = null;
+		private readonly RecipientKeyIdentifier rKeyID;
 
 		public KeyAgreeRecipientIdentifier(
 			IssuerAndSerialNumber issuerSerial)
@@ -52,10 +58,10 @@ namespace Org.BouncyCastle.Asn1.Cms
 			this.issuerSerial = issuerSerial;
 		}
 
-		private KeyAgreeRecipientIdentifier(
-			Asn1Sequence seq)
+		public KeyAgreeRecipientIdentifier(
+			RecipientKeyIdentifier rKeyID)
 		{
-			this.issuerSerial = IssuerAndSerialNumber.GetInstance(seq);
+			this.rKeyID = rKeyID;
 		}
 
 		public IssuerAndSerialNumber IssuerAndSerialNumber
