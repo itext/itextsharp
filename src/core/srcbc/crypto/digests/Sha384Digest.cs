@@ -1,5 +1,7 @@
 using System;
 
+using Org.BouncyCastle.Crypto.Utilities;
+
 namespace Org.BouncyCastle.Crypto.Digests
 {
     /**
@@ -49,12 +51,12 @@ namespace Org.BouncyCastle.Crypto.Digests
         {
             Finish();
 
-            UnpackWord(H1, output, outOff);
-            UnpackWord(H2, output, outOff + 8);
-            UnpackWord(H3, output, outOff + 16);
-            UnpackWord(H4, output, outOff + 24);
-            UnpackWord(H5, output, outOff + 32);
-            UnpackWord(H6, output, outOff + 40);
+            Pack.UInt64_To_BE(H1, output, outOff);
+            Pack.UInt64_To_BE(H2, output, outOff + 8);
+            Pack.UInt64_To_BE(H3, output, outOff + 16);
+            Pack.UInt64_To_BE(H4, output, outOff + 24);
+            Pack.UInt64_To_BE(H5, output, outOff + 32);
+            Pack.UInt64_To_BE(H6, output, outOff + 40);
 
             Reset();
 
@@ -72,14 +74,14 @@ namespace Org.BouncyCastle.Crypto.Digests
                 * The first 64 bits of the fractional parts of the square roots
                 * of the 9th through 16th prime numbers
                 */
-            H1 = unchecked((long) 0xcbbb9d5dc1059ed8L);
-            H2 = unchecked((long) 0x629a292a367cd507L);
-            H3 = unchecked((long) 0x9159015a3070dd17L);
-            H4 = unchecked((long) 0x152fecd8f70e5939L);
-            H5 = unchecked((long) 0x67332667ffc00b31L);
-            H6 = unchecked((long) 0x8eb44a8768581511L);
-            H7 = unchecked((long) 0xdb0c2e0d64f98fa7L);
-            H8 = unchecked((long) 0x47b5481dbefa4fa4L);
+            H1 = 0xcbbb9d5dc1059ed8;
+            H2 = 0x629a292a367cd507;
+            H3 = 0x9159015a3070dd17;
+            H4 = 0x152fecd8f70e5939;
+            H5 = 0x67332667ffc00b31;
+            H6 = 0x8eb44a8768581511;
+            H7 = 0xdb0c2e0d64f98fa7;
+            H8 = 0x47b5481dbefa4fa4;
         }
     }
 }

@@ -314,29 +314,5 @@ namespace Org.BouncyCastle.Cms
 
 			return algId;
 		}
-
-		private bool anyCertHasTypeOther()
-		{
-			// not supported
-			return false;
-		}
-
-		private bool anyCertHasV1Attribute()
-		{
-			// obsolete 
-			return false;
-		}
-
-		private bool anyCertHasV2Attribute()
-		{
-			// TODO
-			return false;
-		}
-
-		private bool anyCrlHasTypeOther()
-		{
-			// not supported
-			return false;
-		}
     }
 }

@@ -6,7 +6,6 @@ using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Cms;
 using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Asn1.Oiw;
-using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
@@ -100,15 +99,11 @@ namespace Org.BouncyCastle.Cms
 
 			Asn1EncodableVector recipientInfos = new Asn1EncodableVector();
 
-            foreach (RecipientInf recipient in recipientInfs)
+            foreach (RecipientInfoGenerator rig in recipientInfoGenerators)
             {
                 try
                 {
-                    recipientInfos.Add(recipient.ToRecipientInfo(encKey, rand));
-                }
-                catch (IOException e)
-                {
-                    throw new CmsException("encoding error.", e);
+                    recipientInfos.Add(rig.Generate(encKey, rand));
                 }
                 catch (InvalidKeyException e)
                 {
@@ -121,12 +116,12 @@ namespace Org.BouncyCastle.Cms
             }
 
             EncryptedContentInfo eci = new EncryptedContentInfo(
-                PkcsObjectIdentifiers.Data,
+                CmsObjectIdentifiers.Data,
                 encAlgId,
                 encContent);
 
-            Asn1.Cms.ContentInfo contentInfo = new Asn1.Cms.ContentInfo(
-                PkcsObjectIdentifiers.EnvelopedData,
+            ContentInfo contentInfo = new ContentInfo(
+                CmsObjectIdentifiers.EnvelopedData,
                 new EnvelopedData(null, new DerSet(recipientInfos), eci, null));
 
             return new CmsEnvelopedData(contentInfo);

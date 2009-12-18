@@ -128,44 +128,51 @@ namespace Org.BouncyCastle.Crypto.Engines
 
 			byte[] keyToBeWrapped = new byte[length];
             Array.Copy(input, inOff, keyToBeWrapped, 0, length);
+
             // Compute the CMS Key Checksum, (section 5.6.1), call this CKS.
             byte[] CKS = CalculateCmsKeyChecksum(keyToBeWrapped);
+
             // Let WKCKS = WK || CKS where || is concatenation.
             byte[] WKCKS = new byte[keyToBeWrapped.Length + CKS.Length];
-            Array.Copy(keyToBeWrapped, 0, WKCKS, 0, keyToBeWrapped.Length);
+            Array.Copy(keyToBeWrapped, WKCKS, keyToBeWrapped.Length);
             Array.Copy(CKS, 0, WKCKS, keyToBeWrapped.Length, CKS.Length);
+
             // Encrypt WKCKS in CBC mode using KEK as the key and IV as the
             // initialization vector. Call the results TEMP1.
-            byte [] TEMP1 = new byte[WKCKS.Length];
-            Array.Copy(WKCKS, 0, TEMP1, 0, WKCKS.Length);
-            int noOfBlocks = WKCKS.Length / engine.GetBlockSize();
-            int extraBytes = WKCKS.Length % engine.GetBlockSize();
-            if (extraBytes != 0) {
+
+			int blockSize = engine.GetBlockSize();
+
+			if (WKCKS.Length % blockSize != 0)
                 throw new InvalidOperationException("Not multiple of block length");
+
+			engine.Init(true, paramPlusIV);
+
+            byte [] TEMP1 = new byte[WKCKS.Length];
+
+			for (int currentBytePos = 0; currentBytePos != WKCKS.Length; currentBytePos += blockSize)
+			{
+                engine.ProcessBlock(WKCKS, currentBytePos, TEMP1, currentBytePos);
             }
-            engine.Init(true, paramPlusIV);
-            for (int i = 0; i < noOfBlocks; i++) {
-                int currentBytePos = i * engine.GetBlockSize();
-                engine.ProcessBlock(TEMP1, currentBytePos, TEMP1, currentBytePos);
-            }
-            // Left TEMP2 = IV || TEMP1.
+
+            // Let TEMP2 = IV || TEMP1.
             byte[] TEMP2 = new byte[this.iv.Length + TEMP1.Length];
-            Array.Copy(this.iv, 0, TEMP2, 0, this.iv.Length);
+            Array.Copy(this.iv, TEMP2, this.iv.Length);
             Array.Copy(TEMP1, 0, TEMP2, this.iv.Length, TEMP1.Length);
+
             // Reverse the order of the octets in TEMP2 and call the result TEMP3.
-            byte[] TEMP3 = new byte[TEMP2.Length];
-            for (int i = 0; i < TEMP2.Length; i++) {
-                TEMP3[i] = TEMP2[TEMP2.Length - (i + 1)];
-            }
-            // Encrypt TEMP3 in CBC mode using the KEK and an initialization vector
+            byte[] TEMP3 = reverse(TEMP2);
+
+			// Encrypt TEMP3 in CBC mode using the KEK and an initialization vector
             // of 0x 4a dd a2 2c 79 e8 21 05. The resulting cipher text is the desired
             // result. It is 40 octets long if a 168 bit key is being wrapped.
             ParametersWithIV param2 = new ParametersWithIV(this.param, IV2);
             this.engine.Init(true, param2);
-            for (int i = 0; i < noOfBlocks + 1; i++) {
-                int currentBytePos = i * engine.GetBlockSize();
+
+            for (int currentBytePos = 0; currentBytePos != TEMP3.Length; currentBytePos += blockSize)
+			{
                 engine.ProcessBlock(TEMP3, currentBytePos, TEMP3, currentBytePos);
             }
+
             return TEMP3;
         }
 
@@ -191,10 +198,12 @@ namespace Org.BouncyCastle.Crypto.Engines
             {
                 throw new InvalidCipherTextException("Null pointer as ciphertext");
             }
-            if (length % engine.GetBlockSize() != 0)
+
+			int blockSize = engine.GetBlockSize();
+			
+            if (length % blockSize != 0)
             {
-                throw new InvalidCipherTextException(
-					"Ciphertext not multiple of " + engine.GetBlockSize());
+                throw new InvalidCipherTextException("Ciphertext not multiple of " + blockSize);
             }
 
 			/*
@@ -211,48 +220,54 @@ namespace Org.BouncyCastle.Crypto.Engines
                 throw new XMLSecurityException("empty");
             }
             */
+
             // Decrypt the cipher text with TRIPLedeS in CBC mode using the KEK
             // and an initialization vector (IV) of 0x4adda22c79e82105. Call the output TEMP3.
             ParametersWithIV param2 = new ParametersWithIV(this.param, IV2);
             this.engine.Init(false, param2);
+
             byte [] TEMP3 = new byte[length];
-            Array.Copy(input, inOff, TEMP3, 0, length);
-            for (int i = 0; i < (TEMP3.Length / engine.GetBlockSize()); i++) {
-                int currentBytePos = i * engine.GetBlockSize();
-                engine.ProcessBlock(TEMP3, currentBytePos, TEMP3, currentBytePos);
+
+			for (int currentBytePos = 0; currentBytePos != TEMP3.Length; currentBytePos += blockSize)
+			{
+				engine.ProcessBlock(input, inOff + currentBytePos, TEMP3, currentBytePos);
             }
+
             // Reverse the order of the octets in TEMP3 and call the result TEMP2.
-            byte[] TEMP2 = new byte[TEMP3.Length];
-            for (int i = 0; i < TEMP3.Length; i++) {
-                TEMP2[i] = TEMP3[TEMP3.Length - (i + 1)];
-            }
-            // Decompose TEMP2 into IV, the first 8 octets, and TEMP1, the remaining octets.
+            byte[] TEMP2 = reverse(TEMP3);
+
+			// Decompose TEMP2 into IV, the first 8 octets, and TEMP1, the remaining octets.
             this.iv = new byte[8];
             byte[] TEMP1 = new byte[TEMP2.Length - 8];
-            Array.Copy(TEMP2, 0, this.iv, 0, 8);
+            Array.Copy(TEMP2, this.iv, 8);
             Array.Copy(TEMP2, 8, TEMP1, 0, TEMP2.Length - 8);
+
             // Decrypt TEMP1 using TRIPLedeS in CBC mode using the KEK and the IV
             // found in the previous step. Call the result WKCKS.
             this.paramPlusIV = new ParametersWithIV(this.param, this.iv);
             this.engine.Init(false, this.paramPlusIV);
+
             byte[] WKCKS = new byte[TEMP1.Length];
-            Array.Copy(TEMP1, 0, WKCKS, 0, TEMP1.Length);
-            for (int i = 0; i < (WKCKS.Length / engine.GetBlockSize()); i++) {
-                int currentBytePos = i * engine.GetBlockSize();
-                engine.ProcessBlock(WKCKS, currentBytePos, WKCKS, currentBytePos);
+
+            for (int currentBytePos = 0; currentBytePos != WKCKS.Length; currentBytePos += blockSize)
+			{
+                engine.ProcessBlock(TEMP1, currentBytePos, WKCKS, currentBytePos);
             }
+
             // Decompose WKCKS. CKS is the last 8 octets and WK, the wrapped key, are
             // those octets before the CKS.
             byte[] result = new byte[WKCKS.Length - 8];
             byte[] CKStoBeVerified = new byte[8];
-            Array.Copy(WKCKS, 0, result, 0, WKCKS.Length - 8);
+            Array.Copy(WKCKS, result, WKCKS.Length - 8);
             Array.Copy(WKCKS, WKCKS.Length - 8, CKStoBeVerified, 0, 8);
+
             // Calculate a CMS Key Checksum, (section 5.6.1), over the WK and compare
             // with the CKS extracted in the above step. If they are not equal, return error.
             if (!CheckCmsKeyChecksum(result, CKStoBeVerified)) {
                 throw new InvalidCipherTextException(
                     "Checksum inside ciphertext is corrupted");
             }
+
             // WK is the wrapped key, now extracted for use in data decryption.
             return result;
         }
@@ -273,13 +288,11 @@ namespace Org.BouncyCastle.Crypto.Engines
         private byte[] CalculateCmsKeyChecksum(
             byte[] key)
         {
-            byte[] result = new byte[8];
-
 			sha1.BlockUpdate(key, 0, key.Length);
             sha1.DoFinal(digest, 0);
 
-			Array.Copy(digest, 0, result, 0, 8);
-
+            byte[] result = new byte[8];
+			Array.Copy(digest, result, 8);
 			return result;
         }
 
@@ -293,7 +306,17 @@ namespace Org.BouncyCastle.Crypto.Engines
             byte[]	key,
             byte[]	checksum)
         {
-			return Arrays.AreEqual(CalculateCmsKeyChecksum(key), checksum);
+			return Arrays.ConstantTimeAreEqual(CalculateCmsKeyChecksum(key), checksum);
         }
+
+		private static byte[] reverse(byte[] bs)
+		{
+			byte[] result = new byte[bs.Length];
+			for (int i = 0; i < bs.Length; i++) 
+			{
+				result[i] = bs[bs.Length - (i + 1)];
+			}
+			return result;
+		}
     }
 }

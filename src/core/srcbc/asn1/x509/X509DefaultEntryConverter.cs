@@ -51,7 +51,8 @@ namespace Org.BouncyCastle.Asn1.X509
 
 			if (oid.Equals(X509Name.C)
 				|| oid.Equals(X509Name.SerialNumber)
-				|| oid.Equals(X509Name.DnQualifier))
+				|| oid.Equals(X509Name.DnQualifier)
+				|| oid.Equals(X509Name.TelephoneNumber))
 			{
 				return new DerPrintableString(value);
 			}

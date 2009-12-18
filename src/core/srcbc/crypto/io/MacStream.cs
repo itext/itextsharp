@@ -40,7 +40,7 @@ namespace Org.BouncyCastle.Crypto.IO
 			{
 				if (n > 0)
 				{
-					inMac.BlockUpdate(buffer, offset, count);
+					inMac.BlockUpdate(buffer, offset, n);
 				}
 			}
 			return n;

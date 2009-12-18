@@ -40,18 +40,11 @@ namespace Org.BouncyCastle.Ocsp
 		{
 			try
 			{
-				IDigest digest = DigestUtilities.GetDigest("SHA1");
-
 				SubjectPublicKeyInfo info = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(publicKey);
 
-				byte[] encoded = info.PublicKeyData.GetBytes();
-				digest.BlockUpdate(encoded, 0, encoded.Length);
+				byte[] keyHash = DigestUtilities.CalculateDigest("SHA1", info.PublicKeyData.GetBytes());
 
-				byte[] hash = DigestUtilities.DoFinal(digest);
-
-				Asn1OctetString keyHash = new DerOctetString(hash);
-
-				this.id = new ResponderID(keyHash);
+				this.id = new ResponderID(new DerOctetString(keyHash));
 			}
 			catch (Exception e)
 			{

@@ -130,6 +130,7 @@ namespace Org.BouncyCastle.Crypto
 			return Encoding.ASCII.GetBytes(password);
 		}
 
+		[Obsolete("Use version taking 'char[]' instead")]
 		public static byte[] Pkcs5PasswordToBytes(
 			string password)
 		{
@@ -149,6 +150,7 @@ namespace Org.BouncyCastle.Crypto
 			return Encoding.UTF8.GetBytes(password);
 		}
 
+		[Obsolete("Use version taking 'char[]' instead")]
 		public static byte[] Pkcs5PasswordToUtf8Bytes(
 			string password)
 		{

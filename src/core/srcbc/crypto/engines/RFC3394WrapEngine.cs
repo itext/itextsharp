@@ -1,5 +1,7 @@
 using System;
+
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Engines
 {
@@ -167,13 +169,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 				}
 			}
 
-			for (int i = 0; i != iv.Length; i++)
-			{
-				if (a[i] != iv[i])
-				{
-					throw new InvalidCipherTextException("checksum failed");
-				}
-			}
+			if (!Arrays.ConstantTimeAreEqual(a, iv))
+				throw new InvalidCipherTextException("checksum failed");
 
 			return block;
 		}

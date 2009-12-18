@@ -1,7 +1,10 @@
 using System;
 using System.Collections;
+using System.IO;
 
-using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.Cms;
+using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
 
@@ -30,7 +33,7 @@ namespace Org.BouncyCastle.Cms
 		private string GetAsymmetricEncryptionAlgName(
 			string encryptionAlgOid)
 		{
-			if (PkcsObjectIdentifiers.RsaEncryption.Id.Equals(encryptionAlgOid))
+			if (Asn1.Pkcs.PkcsObjectIdentifiers.RsaEncryption.Id.Equals(encryptionAlgOid))
 			{
 				return "RSA/ECB/PKCS1Padding";
 			}
@@ -87,6 +90,70 @@ namespace Org.BouncyCastle.Cms
 			}
 
 			return (int) KeySizes[oid];
+		}
+
+		internal static IList ReadRecipientInfos(
+			Asn1Set				recipientInfos,
+			byte[]				contentOctets,
+			AlgorithmIdentifier	encAlg,
+			AlgorithmIdentifier	macAlg,
+			AlgorithmIdentifier	authEncAlg)
+		{
+			IList infos = new ArrayList();
+			foreach (Asn1Encodable ae in recipientInfos)
+            {
+                RecipientInfo info = RecipientInfo.GetInstance(ae);
+				MemoryStream contentStream = new MemoryStream(contentOctets, false);
+
+				ReadRecipientInfo(infos, info, contentStream, encAlg, macAlg, authEncAlg);
+			}
+			return infos;
+		}
+		
+		internal static IList ReadRecipientInfos(
+			IEnumerable			recipientInfoIter,
+			Stream				contentStream,
+			AlgorithmIdentifier	encAlg,
+			AlgorithmIdentifier	macAlg,
+			AlgorithmIdentifier	authEncAlg)
+		{
+			IList infos = new ArrayList();
+			foreach (RecipientInfo info in recipientInfoIter)
+			{
+				ReadRecipientInfo(infos, info, contentStream, encAlg, macAlg, authEncAlg);
+			}
+			return infos;
+		}
+
+		private static void ReadRecipientInfo(
+			IList				infos,
+			RecipientInfo		info,
+			Stream				contentStream,
+			AlgorithmIdentifier	encAlg,
+			AlgorithmIdentifier	macAlg,
+			AlgorithmIdentifier	authEncAlg)
+		{
+			Asn1Encodable recipInfo = info.Info;
+			if (recipInfo is KeyTransRecipientInfo)
+			{
+				infos.Add(new KeyTransRecipientInformation(
+					(KeyTransRecipientInfo)recipInfo, encAlg, macAlg, authEncAlg, contentStream));
+			}
+			else if (recipInfo is KekRecipientInfo)
+			{
+				infos.Add(new KekRecipientInformation(
+					(KekRecipientInfo)recipInfo, encAlg, macAlg, authEncAlg, contentStream));
+			}
+			else if (recipInfo is KeyAgreeRecipientInfo)
+			{
+				infos.Add(new KeyAgreeRecipientInformation(
+					(KeyAgreeRecipientInfo)recipInfo, encAlg, macAlg, authEncAlg, contentStream));
+			}
+			else if (recipInfo is PasswordRecipientInfo)
+			{
+				infos.Add(new PasswordRecipientInformation(
+					(PasswordRecipientInfo)recipInfo, encAlg, macAlg, authEncAlg, contentStream));
+			}
 		}
 	}
 }

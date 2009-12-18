@@ -1,7 +1,9 @@
 using System;
 
 using Org.BouncyCastle.Crypto.Macs;
+using Org.BouncyCastle.Crypto.Modes.Gcm;
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Utilities;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Utilities;
 
@@ -16,9 +18,9 @@ namespace Org.BouncyCastle.Crypto.Modes
 	{
 		private const int					BlockSize = 16;
 		private static readonly byte[]		Zeroes = new byte[BlockSize];
-		private static readonly BigInteger	R = new BigInteger("11100001", 2).ShiftLeft(120);
 
-		private readonly IBlockCipher cipher;
+		private readonly IBlockCipher	cipher;
+		private readonly IGcmMultiplier	multiplier;
 
 		// These fields are set by Init and not modified by processing
 		private bool				forEncryption;
@@ -26,29 +28,39 @@ namespace Org.BouncyCastle.Crypto.Modes
 		private byte[]              nonce;
 		private byte[]              A;
 		private KeyParameter        keyParam;
-	//    private int                 tagLength;
-		private BigInteger          H;
-		private BigInteger          initS;
+		private byte[]				H;
+		private byte[]				initS;
 		private byte[]              J0;
 
 		// These fields are modified during processing
 		private byte[]		bufBlock;
 		private byte[]		macBlock;
-		private BigInteger  S;
+		private byte[]		S;
 		private byte[]      counter;
 		private int         bufOff;
-		private long        totalLength;
-
-		// Debug variables
-	//    private int nCount, xCount, yCount;
+		private ulong		totalLength;
 
 		public GcmBlockCipher(
 			IBlockCipher c)
+			: this(c, null)
 		{
+	    }
+
+	    public GcmBlockCipher(
+			IBlockCipher	c,
+			IGcmMultiplier	m)
+	    {
 			if (c.GetBlockSize() != BlockSize)
 				throw new ArgumentException("cipher required with a block size of " + BlockSize + ".");
 
+	        if (m == null)
+	        {
+	            // TODO Consider a static property specifying default multiplier
+	            m = new Tables8kGcmMultiplier();
+	        }
+
 			this.cipher = c;
+			this.multiplier = m;
 		}
 
 		public virtual string AlgorithmName
@@ -66,12 +78,7 @@ namespace Org.BouncyCastle.Crypto.Modes
 			ICipherParameters	parameters)
 		{
 			this.forEncryption = forEncryption;
-			this.macSize = 16; // TODO Make configurable?
 			this.macBlock = null;
-
-			// TODO If macSize limitation is removed, be very careful about bufBlock
-			int bufLength = forEncryption ? BlockSize : (BlockSize + macSize); 
-			this.bufBlock = new byte[bufLength];
 
 			if (parameters is AeadParameters)
 			{
@@ -79,12 +86,14 @@ namespace Org.BouncyCastle.Crypto.Modes
 
 				nonce = param.GetNonce();
 				A = param.GetAssociatedText();
-	//            macSize = param.getMacSize() / 8;
-				if (param.MacSize != 128)
-				{
-					// TODO Make configurable?
-					throw new ArgumentException("only 128-bit MAC supported currently");
-				}
+
+				int macSizeBits = param.MacSize;
+	            if (macSizeBits < 96 || macSizeBits > 128 || macSizeBits % 8 != 0)
+	            {
+	                throw new ArgumentException("Invalid value for MAC size: " + macSizeBits);
+	            }
+
+	            macSize = macSizeBits / 8; 
 				keyParam = param.Key;
 			}
 			else if (parameters is ParametersWithIV)
@@ -93,12 +102,16 @@ namespace Org.BouncyCastle.Crypto.Modes
 
 				nonce = param.GetIV();
 				A = null;
+	            macSize = 16; 
 				keyParam = (KeyParameter)param.Parameters;
 			}
 			else
 			{
 				throw new ArgumentException("invalid parameters passed to GCM");
 			}
+
+			int bufLength = forEncryption ? BlockSize : (BlockSize + macSize);
+			this.bufBlock = new byte[bufLength];
 
 			if (nonce == null || nonce.Length < 1)
 			{
@@ -116,13 +129,13 @@ namespace Org.BouncyCastle.Crypto.Modes
 
 			// TODO This should be configurable by Init parameters
 			// (but must be 16 if nonce length not 12) (BlockSize?)
-	//        this.tagLength = 16;
+//			this.tagLength = 16;
 
-			byte[] h = new byte[BlockSize];
-			cipher.ProcessBlock(Zeroes, 0, h, 0);
-			//trace("H: " + new string(Hex.encode(h)));
-			this.H = new BigInteger(1, h);
-			this.initS = gHASH(A, false);
+			this.H = new byte[BlockSize];
+			cipher.ProcessBlock(H, 0, H, 0);
+			multiplier.Init(H);
+
+			this.initS = gHASH(A);
 
 			if (nonce.Length == 12)
 			{
@@ -132,18 +145,15 @@ namespace Org.BouncyCastle.Crypto.Modes
 			}
 			else
 			{
-				BigInteger N = gHASH(nonce, true);
-				BigInteger X = BigInteger.ValueOf(nonce.Length * 8);
-				//trace("len({})||len(IV): " + dumpBigInt(X));
-
-				N = multiply(N.Xor(X), H);
-				//trace("GHASH(H,{},IV): " + dumpBigInt(N));
-				this.J0 = asBlock(N);
+				this.J0 = gHASH(nonce);
+				byte[] X = new byte[16];
+				packLength((ulong)nonce.Length * 8UL, X, 8);
+				GcmUtilities.Xor(this.J0, X);
+				multiplier.MultiplyH(this.J0);
 			}
 
-			this.S = initS;
+			this.S = Arrays.Clone(initS);
 			this.counter = Arrays.Clone(J0);
-			//trace("Y" + yCount + ": " + new string(Hex.encode(counter)));
 			this.bufOff = 0;
 			this.totalLength = 0;
 		}
@@ -189,7 +199,21 @@ namespace Org.BouncyCastle.Crypto.Modes
 
 			for (int i = 0; i != len; i++)
 			{
-				resultLen += Process(input[inOff + i], output, outOff + resultLen);
+//				resultLen += Process(input[inOff + i], output, outOff + resultLen);
+				bufBlock[bufOff++] = input[inOff + i];
+
+				if (bufOff == bufBlock.Length)
+				{
+					gCTRBlock(bufBlock, BlockSize, output, outOff + resultLen);
+					if (!forEncryption)
+					{
+						Array.Copy(bufBlock, BlockSize, bufBlock, 0, macSize);
+					}
+//		            bufOff = 0;
+					bufOff = bufBlock.Length - BlockSize;
+//		            return bufBlock.Length;
+					resultLen += BlockSize;
+				}
 			}
 
 			return resultLen;
@@ -207,7 +231,7 @@ namespace Org.BouncyCastle.Crypto.Modes
 				gCTRBlock(bufBlock, BlockSize, output, outOff);
 				if (!forEncryption)
 				{
-					Array.Copy(bufBlock, BlockSize, bufBlock, 0, BlockSize);
+					Array.Copy(bufBlock, BlockSize, bufBlock, 0, macSize);
 				}
 	//            bufOff = 0;
 				bufOff = bufBlock.Length - BlockSize;
@@ -232,41 +256,42 @@ namespace Org.BouncyCastle.Crypto.Modes
 			if (extra > 0)
 			{
 				byte[] tmp = new byte[BlockSize];
-				Array.Copy(bufBlock, 0, tmp, 0, extra);
+				Array.Copy(bufBlock, tmp, extra);
 				gCTRBlock(tmp, extra, output, outOff);
 			}
 
 			// Final gHASH
-			BigInteger X = BigInteger.ValueOf(A.Length * 8).ShiftLeft(64).Add(
-				BigInteger.ValueOf(totalLength * 8));
-			//trace("len(A)||len(C): " + dumpBigInt(X));
+			byte[] X = new byte[16];
+			packLength((ulong)A.Length * 8UL, X, 0);
+			packLength(totalLength * 8UL, X, 8);
 
-			S = multiply(S.Xor(X), H);
-			//trace("GHASH(H,A,C): " + dumpBigInt(S));
-
-			// T = MSBt(GCTRk(J0,S))
-			byte[] tBytes = new byte[BlockSize];
-			cipher.ProcessBlock(J0, 0, tBytes, 0);
-			//trace("E(K,Y0): " + new string(Hex.encode(tmp)));
-			BigInteger T = S.Xor(new BigInteger(1, tBytes));
+			GcmUtilities.Xor(S, X);
+			multiplier.MultiplyH(S);
 
 			// TODO Fix this if tagLength becomes configurable
-			byte[] tag = asBlock(T);
-			//trace("T: " + new string(Hex.encode(tag)));
+			// T = MSBt(GCTRk(J0,S))
+			byte[] tag = new byte[BlockSize];
+			cipher.ProcessBlock(J0, 0, tag, 0);
+			GcmUtilities.Xor(tag, S);
 
 			int resultLen = extra;
 
+			// We place into macBlock our calculated value for T
+			this.macBlock = new byte[macSize];
+			Array.Copy(tag, macBlock, macSize);
+
 			if (forEncryption)
 			{
-				this.macBlock = tag;
-				Array.Copy(tag, 0, output, outOff + bufOff, tag.Length);
-				resultLen += tag.Length;
+				// Append T to the message
+				Array.Copy(macBlock, 0, output, outOff + bufOff, macSize);
+				resultLen += macSize;
 			}
 			else
 			{
-				this.macBlock = new byte[macSize];
-				Array.Copy(bufBlock, extra, macBlock, 0, macSize);
-				if (!Arrays.AreEqual(tag, this.macBlock))
+				// Retrieve the T value from the message and compare to calculated one
+				byte[] msgMac = new byte[macSize];
+				Array.Copy(bufBlock, extra, msgMac, 0, macSize);
+				if (!Arrays.ConstantTimeAreEqual(this.macBlock, msgMac))
 					throw new InvalidCipherTextException("mac check in GCM failed");
 			}
 
@@ -283,10 +308,7 @@ namespace Org.BouncyCastle.Crypto.Modes
 		private void Reset(
 			bool clearMac)
 		{
-			// Debug
-	//        nCount = xCount = yCount = 0;
-
-			S = initS;
+			S = Arrays.Clone(initS);
 			counter = Arrays.Clone(J0);
 			bufOff = 0;
 			totalLength = 0;
@@ -306,142 +328,73 @@ namespace Org.BouncyCastle.Crypto.Modes
 
 		private void gCTRBlock(byte[] buf, int bufCount, byte[] output, int outOff)
 		{
-			inc(counter);
-			//trace("Y" + ++yCount + ": " + new string(Hex.encode(counter)));
+//			inc(counter);
+			for (int i = 15; i >= 12; --i)
+			{
+				if (++counter[i] != 0) break;
+			}
 
 			byte[] tmp = new byte[BlockSize];
 			cipher.ProcessBlock(counter, 0, tmp, 0);
-			//trace("E(K,Y" + yCount + "): " + new string(Hex.encode(tmp)));
 
+			byte[] hashBytes;
 			if (forEncryption)
 			{
 				Array.Copy(Zeroes, bufCount, tmp, bufCount, BlockSize - bufCount);
-
-				for (int i = bufCount - 1; i >= 0; --i)
-				{
-					tmp[i] ^= buf[i];
-					output[outOff + i] = tmp[i];
-				}
-
-				gHASHBlock(tmp);
+				hashBytes = tmp;
 			}
 			else
 			{
-				for (int i = bufCount - 1; i >= 0; --i)
-				{
-					tmp[i] ^= buf[i];
-					output[outOff + i] = tmp[i];
-				}
-
-				gHASHBlock(buf);
+				hashBytes = buf;
 			}
 
-			totalLength += bufCount;
+			for (int i = bufCount - 1; i >= 0; --i)
+			{
+				tmp[i] ^= buf[i];
+				output[outOff + i] = tmp[i];
+			}
+
+//			gHASHBlock(hashBytes);
+			GcmUtilities.Xor(S, hashBytes);
+			multiplier.MultiplyH(S);
+
+			totalLength += (ulong)bufCount;
 		}
 
-		private BigInteger gHASH(byte[] b, bool nonce)
+		private byte[] gHASH(byte[] b)
 		{
-			//trace("" + b.Length);
-			BigInteger Y = BigInteger.Zero;
+			byte[] Y = new byte[16];
 
 			for (int pos = 0; pos < b.Length; pos += 16)
 			{
-				byte[] x = new byte[16];
+				byte[] X = new byte[16];
 				int num = System.Math.Min(b.Length - pos, 16);
-				Array.Copy(b, pos, x, 0, num);
-				BigInteger X = new BigInteger(1, x);
-				Y = multiply(Y.Xor(X), H);
-	//            if (nonce)
-	//            {
-	//                trace("N" + ++nCount + ": " + dumpBigInt(Y));
-	//            }
-	//            else
-	//            {
-	//                trace("X" + ++xCount + ": " + dumpBigInt(Y) + " (gHASH)");
-	//            }
+				Array.Copy(b, pos, X, 0, num);
+				GcmUtilities.Xor(Y, X);
+				multiplier.MultiplyH(Y);
 			}
 
 			return Y;
 		}
 
-		private void gHASHBlock(byte[] block)
+//		private void gHASHBlock(byte[] block)
+//		{
+//			GcmUtilities.Xor(S, block);
+//			multiplier.MultiplyH(S);
+//		}
+
+//		private static void inc(byte[] block)
+//		{
+//			for (int i = 15; i >= 12; --i)
+//			{
+//				if (++block[i] != 0) break;
+//			}
+//		}
+
+		private static void packLength(ulong len, byte[] bs, int off)
 		{
-			if (block.Length > BlockSize)
-			{
-				byte[] tmp = new byte[BlockSize];
-				Array.Copy(block, 0, tmp, 0, BlockSize);
-				block = tmp;
-			}
-
-			BigInteger X = new BigInteger(1, block);
-			S = multiply(S.Xor(X), H);
-			//trace("X" + ++xCount + ": " + dumpBigInt(S) + " (gHASHBlock)");
+			Pack.UInt32_To_BE((uint)(len >> 32), bs, off); 
+			Pack.UInt32_To_BE((uint)len, bs, off + 4);
 		}
-
-		private static void inc(byte[] block)
-		{
-	//        assert block.Length == 16;
-
-			for (int i = 15; i >= 12; --i)
-			{
-				byte b = (byte)((block[i] + 1) & 0xff);
-				block[i] = b;
-
-				if (b != 0)
-				{
-					break;
-				}
-			}
-		}
-
-		private BigInteger multiply(
-			BigInteger	X,
-			BigInteger	Y)
-		{
-			BigInteger Z = BigInteger.Zero;
-			BigInteger V = X;
-
-			for (int i = 0; i < 128; ++i)
-			{
-				if (Y.TestBit(127 - i))
-				{
-					Z = Z.Xor(V);
-				}
-
-				bool lsb = V.TestBit(0);
-				V = V.ShiftRight(1);
-				if (lsb)
-				{
-					V = V.Xor(R);
-				}
-			}
-
-			return Z;
-		}
-
-		private byte[] asBlock(
-			BigInteger bi)
-		{
-			byte[] b = BigIntegers.AsUnsignedByteArray(bi);
-			if (b.Length < 16)
-			{
-				byte[] tmp = new byte[16];
-				Array.Copy(b, 0, tmp, tmp.Length - b.Length, b.Length);
-				b = tmp;
-			}
-			return b;
-		}
-
-	//    private string dumpBigInt(BigInteger bi)
-	//    {
-	//        byte[] b = asBlock(bi);
-	//
-	//        return new string(Hex.encode(b));         
-	//    }
-	//
-	//    private void trace(string msg)
-	//    {
-	//        System.err.println(msg);
-	//    }
 	}
 }

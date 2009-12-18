@@ -56,6 +56,7 @@ namespace Org.BouncyCastle.Security
 			algorithms["RSA/ECB/PKCS1"] = "RSA//PKCS1PADDING";
 			algorithms["RSA/ECB/PKCS1PADDING"] = "RSA//PKCS1PADDING";
 			algorithms[PkcsObjectIdentifiers.RsaEncryption.Id] = "RSA//PKCS1PADDING";
+			algorithms[PkcsObjectIdentifiers.IdRsaesOaep.Id] = "RSA//OAEPPADDING";
 
 			algorithms[OiwObjectIdentifiers.DesCbc.Id] = "DES/CBC";
 			algorithms[OiwObjectIdentifiers.DesCfb.Id] = "DES/CFB";
@@ -418,7 +419,7 @@ namespace Org.BouncyCastle.Security
 					case "PKCS5PADDING":
 					case "PKCS7":
 					case "PKCS7PADDING":
-						// NB: Padding defaults to Pkcs7Padding already
+						padding = new Pkcs7Padding();
 						break;
 					case "TBCPADDING":
 						padding = new TbcPadding();
@@ -524,14 +525,14 @@ namespace Org.BouncyCastle.Security
 					return new CtsBlockCipher(blockCipher);
 				}
 
-				if (!padded || blockCipher.IsPartialBlockOkay)
-				{
-					return new BufferedBlockCipher(blockCipher);
-				}
-
 				if (padding != null)
 				{
 					return new PaddedBufferedBlockCipher(blockCipher, padding);
+				}
+
+				if (!padded || blockCipher.IsPartialBlockOkay)
+				{
+					return new BufferedBlockCipher(blockCipher);
 				}
 
 				return new PaddedBufferedBlockCipher(blockCipher);

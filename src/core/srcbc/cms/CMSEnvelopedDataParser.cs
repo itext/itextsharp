@@ -67,7 +67,7 @@ namespace Org.BouncyCastle.Cms
 				(Asn1SequenceParser)this.contentInfo.GetContent(Asn1Tags.Sequence));
 
 			// TODO Validate version?
-			//			DerInteger version = this.envelopedData.Version;
+			//DerInteger version = this.envelopedData.Version;
 
 			//
 			// load the RecipientInfoStore
@@ -91,33 +91,9 @@ namespace Org.BouncyCastle.Cms
 			//
 			// prime the recipients
 			//
-			IList infos = new ArrayList();
-			Stream dataStream = ((Asn1OctetStringParser)encInfo.GetEncryptedContent(Asn1Tags.OctetString)).GetOctetStream();
-
-			foreach (Asn1.Cms.RecipientInfo info in baseInfos)
-			{
-				Asn1Encodable recipInfo = info.Info;
-				if (recipInfo is Asn1.Cms.KeyTransRecipientInfo)
-				{
-					infos.Add(new KeyTransRecipientInformation(
-						(KeyTransRecipientInfo) recipInfo, _encAlg, dataStream));
-				}
-				else if (recipInfo is Asn1.Cms.KekRecipientInfo)
-				{
-					infos.Add(new KekRecipientInformation(
-						(KekRecipientInfo) recipInfo, _encAlg, dataStream));
-				}
-				else if (recipInfo is KeyAgreeRecipientInfo)
-				{
-					infos.Add(new KeyAgreeRecipientInformation(
-						(KeyAgreeRecipientInfo) recipInfo, _encAlg, dataStream));
-				}
-				else if (recipInfo is PasswordRecipientInfo)
-				{
-					infos.Add(new PasswordRecipientInformation(
-						(PasswordRecipientInfo) recipInfo, _encAlg, dataStream));
-				}
-			}
+			Stream contentStream = ((Asn1OctetStringParser)encInfo.GetEncryptedContent(Asn1Tags.OctetString)).GetOctetStream();
+			IList infos = CmsEnvelopedHelper.ReadRecipientInfos(
+				baseInfos, contentStream, _encAlg, null, null);
 
 			this.recipientInfoStore = new RecipientInformationStore(infos);
 		}

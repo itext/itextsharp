@@ -420,8 +420,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 			{
 				BigInteger a = (BigInteger)primes[i];
 				BigInteger b = all.Divide(a);
-				BigInteger b_ = b.ModInverse(a);
-				BigInteger tmp = b.Multiply(b_);
+				BigInteger b2 = b.ModInverse(a);
+				BigInteger tmp = b.Multiply(b2);
 				tmp = tmp.Multiply((BigInteger)congruences[i]);
 				retval = retval.Add(tmp);
 			}

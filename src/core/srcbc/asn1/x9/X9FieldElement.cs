@@ -6,7 +6,7 @@ using Org.BouncyCastle.Math.EC;
 namespace Org.BouncyCastle.Asn1.X9
 {
     /**
-     * class for processing an FieldElement as a Der object.
+     * Class for processing an ECFieldElement as a DER object.
      */
     public class X9FieldElement
         : Asn1Encodable

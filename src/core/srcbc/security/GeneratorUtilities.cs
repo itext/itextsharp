@@ -9,6 +9,7 @@ using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Asn1.Ntt;
 using Org.BouncyCastle.Asn1.Oiw;
 using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 
@@ -74,10 +75,10 @@ namespace Org.BouncyCastle.Security
 				OiwObjectIdentifiers.DesOfb);
 			AddKgAlgorithm("DESEDE",
 				"DESEDEWRAP",
-				OiwObjectIdentifiers.DesEde,
-				PkcsObjectIdentifiers.IdAlgCms3DesWrap);
+				OiwObjectIdentifiers.DesEde);
 			AddKgAlgorithm("DESEDE3",
-				PkcsObjectIdentifiers.DesEde3Cbc);
+				PkcsObjectIdentifiers.DesEde3Cbc,
+				PkcsObjectIdentifiers.IdAlgCms3DesWrap);
 			AddKgAlgorithm("GOST28147",
 				"GOST",
 				"GOST-28147",
@@ -142,10 +143,14 @@ namespace Org.BouncyCastle.Security
 			AddKpgAlgorithm("DH",
 				"DIFFIEHELLMAN");
 			AddKpgAlgorithm("DSA");
-			AddKpgAlgorithm("EC");
+			AddKpgAlgorithm("EC",
+				// TODO Should this be an alias for ECDH?			                
+				X9ObjectIdentifiers.DHSinglePassStdDHSha1KdfScheme);
 			AddKpgAlgorithm("ECDH",
 				"ECIES");
 			AddKpgAlgorithm("ECDHC");
+			AddKpgAlgorithm("ECMQV",
+				X9ObjectIdentifiers.MqvSinglePassSha1KdfScheme);
 			AddKpgAlgorithm("ECDSA");
 			AddKpgAlgorithm("ECGOST3410",
 				"ECGOST-3410",
@@ -268,6 +273,7 @@ namespace Org.BouncyCastle.Security
 				case "ECDHC":
 				case "ECDSA":
 				case "ECGOST3410":
+				case "ECMQV":
 					return new ECKeyPairGenerator(canonicalName);
 				case "ELGAMAL":
 					return new ElGamalKeyPairGenerator();

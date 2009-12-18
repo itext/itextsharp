@@ -32,6 +32,12 @@ namespace Org.BouncyCastle.Cms
             this.contentInfo = contentInfo;
         }
 
+		/**
+		 * Return the uncompressed content.
+		 *
+		 * @return the uncompressed content
+		 * @throws CmsException if there is an exception uncompressing the data.
+		 */
 		public byte[] GetContent()
         {
             CompressedData comData = CompressedData.GetInstance(contentInfo.Content);
@@ -53,6 +59,34 @@ namespace Org.BouncyCastle.Cms
 				zIn.Close();
 			}
         }
+
+	    /**
+	     * Return the uncompressed content, throwing an exception if the data size
+	     * is greater than the passed in limit. If the content is exceeded getCause()
+	     * on the CMSException will contain a StreamOverflowException
+	     *
+	     * @param limit maximum number of bytes to read
+	     * @return the content read
+	     * @throws CMSException if there is an exception uncompressing the data.
+	     */
+		public byte[] GetContent(int limit)
+		{
+			CompressedData  comData = CompressedData.GetInstance(contentInfo.Content);
+			ContentInfo     content = comData.EncapContentInfo;
+
+			Asn1OctetString bytes = (Asn1OctetString)content.Content;
+
+			ZInflaterInputStream zIn = new ZInflaterInputStream(new MemoryStream(bytes.GetOctets(), false));
+
+			try
+			{
+				return CmsUtilities.StreamToByteArray(zIn, limit);
+			}
+			catch (IOException e)
+			{
+				throw new CmsException("exception reading compressed stream.", e);
+			}
+		}
 
 		/**
 		 * return the ContentInfo 

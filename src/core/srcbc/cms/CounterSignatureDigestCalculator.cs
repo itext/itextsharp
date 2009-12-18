@@ -22,8 +22,7 @@ namespace Org.BouncyCastle.Cms
 		public byte[] GetDigest()
 		{
 			IDigest digest = CmsSignedHelper.Instance.GetDigestInstance(alg);
-			digest.BlockUpdate(data, 0, data.Length);
-			return DigestUtilities.DoFinal(digest);
+			return DigestUtilities.DoFinal(digest, data);
 		}
 	}
 }

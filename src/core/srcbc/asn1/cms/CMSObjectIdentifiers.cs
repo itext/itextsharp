@@ -10,6 +10,8 @@ namespace Org.BouncyCastle.Asn1.Cms
         public static readonly DerObjectIdentifier SignedAndEnvelopedData = PkcsObjectIdentifiers.SignedAndEnvelopedData;
         public static readonly DerObjectIdentifier DigestedData = PkcsObjectIdentifiers.DigestedData;
         public static readonly DerObjectIdentifier EncryptedData = PkcsObjectIdentifiers.EncryptedData;
+		public static readonly DerObjectIdentifier AuthenticatedData = PkcsObjectIdentifiers.IdCTAuthData;
         public static readonly DerObjectIdentifier CompressedData = PkcsObjectIdentifiers.IdCTCompressedData;
+		public static readonly DerObjectIdentifier AuthEnvelopedData = PkcsObjectIdentifiers.IdCTAuthEnvelopedData;
     }
 }

@@ -154,6 +154,7 @@ namespace Org.BouncyCastle.Asn1.Pkcs
         public static readonly DerObjectIdentifier IdCTAuthData          = new DerObjectIdentifier(IdCT + ".2");
         public static readonly DerObjectIdentifier IdCTTstInfo           = new DerObjectIdentifier(IdCT + ".4");
         public static readonly DerObjectIdentifier IdCTCompressedData    = new DerObjectIdentifier(IdCT + ".9");
+		public static readonly DerObjectIdentifier IdCTAuthEnvelopedData = new DerObjectIdentifier(IdCT + ".23");
 
         //
         // id-cti OBJECT IDENTIFIER ::= {iso(1) member-body(2) usa(840)

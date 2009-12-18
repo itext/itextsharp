@@ -74,6 +74,13 @@ namespace Org.BouncyCastle.Cms
 			return Streams.ReadAll(inStream);
         }
 
+		public static byte[] StreamToByteArray(
+            Stream	inStream,
+			int		limit)
+        {
+			return Streams.ReadAllLimited(inStream, limit);
+        }
+
 		public static IList GetCertificatesFromStore(
 			IX509Store certStore)
 		{
@@ -156,6 +163,12 @@ namespace Org.BouncyCastle.Cms
 			}
 
 			return new DerSet(v);
+		}
+
+		internal static Stream CreateBerOctetOutputStream(Stream s, int tagNo, bool isExplicit, int bufferSize)
+		{
+			BerOctetStringGenerator octGen = new BerOctetStringGenerator(s, tagNo, isExplicit);
+			return octGen.GetOctetOutputStream(bufferSize);
 		}
     }
 }

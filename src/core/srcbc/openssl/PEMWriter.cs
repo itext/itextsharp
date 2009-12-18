@@ -248,7 +248,9 @@ namespace Org.BouncyCastle.OpenSsl
 			WriteBytes(Base64.Encode(data));
 
 			WriteFooter(type);
-		}
+
+            writer.Flush();
+        }
 
 		private void WriteHeader(
 			string type)

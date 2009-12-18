@@ -16,22 +16,41 @@ namespace Org.BouncyCastle.Cms
     public class KekRecipientInformation
         : RecipientInformation
     {
-        private KekRecipientInfo      _info;
-//        private AlgorithmIdentifier   _encAlg;
+        private KekRecipientInfo info;
 
-        public KekRecipientInformation(
-            KekRecipientInfo        info,
-            AlgorithmIdentifier     encAlg,
-            Stream             data)
-            : base(encAlg, AlgorithmIdentifier.GetInstance(info.KeyEncryptionAlgorithm), data)
+		[Obsolete]
+		public KekRecipientInformation(
+            KekRecipientInfo	info,
+            AlgorithmIdentifier	encAlg,
+            Stream				data)
+			: this(info, encAlg, null, null, data)
+		{
+		}
+
+		[Obsolete]
+		public KekRecipientInformation(
+            KekRecipientInfo	info,
+            AlgorithmIdentifier	encAlg,
+            AlgorithmIdentifier	macAlg,
+            Stream				data)
+			: this(info, encAlg, macAlg, null, data)
+		{
+		}
+
+		public KekRecipientInformation(
+            KekRecipientInfo	info,
+            AlgorithmIdentifier	encAlg,
+            AlgorithmIdentifier	macAlg,
+            AlgorithmIdentifier	authEncAlg,
+            Stream				data)
+            : base(encAlg, macAlg, authEncAlg, info.KeyEncryptionAlgorithm, data)
         {
-            this._info = info;
-            this._encAlg = encAlg;
-            this._rid = new RecipientID();
+            this.info = info;
+            this.rid = new RecipientID();
 
 			KekIdentifier kekId = info.KekID;
 
-			_rid.KeyIdentifier = kekId.KeyIdentifier.GetOctets();
+			rid.KeyIdentifier = kekId.KeyIdentifier.GetOctets();
         }
 
 		/**
@@ -42,13 +61,14 @@ namespace Org.BouncyCastle.Cms
         {
 			try
 			{
-				byte[] encryptedKey = _info.EncryptedKey.GetOctets();
-				IWrapper keyWrapper = WrapperUtilities.GetWrapper(_keyEncAlg.ObjectID.Id);
+				byte[] encryptedKey = info.EncryptedKey.GetOctets();
+				IWrapper keyWrapper = WrapperUtilities.GetWrapper(keyEncAlg.ObjectID.Id);
 
 				keyWrapper.Init(false, key);
 
+				AlgorithmIdentifier aid = GetActiveAlgID();
 				KeyParameter sKey = ParameterUtilities.CreateKeyParameter(
-					_encAlg.ObjectID, keyWrapper.Unwrap(encryptedKey, 0, encryptedKey.Length));
+					aid.ObjectID, keyWrapper.Unwrap(encryptedKey, 0, encryptedKey.Length));
 
 				return GetContentFromSessionKey(sKey);
 			}

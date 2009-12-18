@@ -113,7 +113,7 @@ namespace Org.BouncyCastle.Crypto.Signers
 			{
 				byte[] sig = engine.ProcessBlock(signature, 0, signature.Length);
 
-				return Arrays.AreEqual(sig, hash);
+				return Arrays.ConstantTimeAreEqual(sig, hash);
 			}
 			catch (Exception)
 			{

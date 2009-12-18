@@ -263,7 +263,7 @@ namespace Org.BouncyCastle.Crypto.Encodings
 			int start;
 			for (start = 2 * defHash.Length; start != block.Length; start++)
 			{
-				if (block[start] == 1 || block[start] != 0)
+				if (block[start] != 0)
 				{
 					break;
 				}

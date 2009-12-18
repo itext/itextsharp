@@ -145,6 +145,11 @@ namespace Org.BouncyCastle.Asn1.X509
 		public static readonly DerObjectIdentifier PostalAddress = new DerObjectIdentifier("2.5.4.16");
 
 		/**
+		 * RFC 2256 dmdName
+		 */
+		public static readonly DerObjectIdentifier DmdName = new DerObjectIdentifier("2.5.4.54");
+
+		/**
 		 * id-at-telephoneNumber
 		 */
 		public static readonly DerObjectIdentifier TelephoneNumber = X509ObjectIdentifiers.id_at_telephoneNumber;

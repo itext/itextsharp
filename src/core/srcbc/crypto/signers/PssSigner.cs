@@ -15,7 +15,8 @@ namespace Org.BouncyCastle.Crypto.Signers
 	{
 		public const byte TrailerImplicit = (byte)0xBC;
 
-		private readonly IDigest digest;
+		private readonly IDigest contentDigest;
+		private readonly IDigest mgfDigest;
 		private readonly IAsymmetricBlockCipher cipher;
 
 		private SecureRandom random;
@@ -52,10 +53,21 @@ namespace Org.BouncyCastle.Crypto.Signers
 			IDigest					digest,
 			int						saltLen,
 			byte					trailer)
+			: this(cipher, digest, digest, saltLen, TrailerImplicit)
+		{
+		}
+
+		public PssSigner(
+			IAsymmetricBlockCipher	cipher,
+			IDigest					contentDigest,
+			IDigest					mgfDigest,
+			int						saltLen,
+			byte					trailer)
 		{
 			this.cipher = cipher;
-			this.digest = digest;
-			this.hLen = digest.GetDigestSize();
+			this.contentDigest = contentDigest;
+			this.mgfDigest = mgfDigest;
+			this.hLen = mgfDigest.GetDigestSize();
 			this.sLen = saltLen;
 			this.salt = new byte[saltLen];
 			this.mDash = new byte[8 + saltLen + hLen];
@@ -64,7 +76,7 @@ namespace Org.BouncyCastle.Crypto.Signers
 
 		public string AlgorithmName
 		{
-			get { return digest.AlgorithmName + "withRSAandMGF1"; }
+			get { return mgfDigest.AlgorithmName + "withRSAandMGF1"; }
 		}
 
 		public virtual void Init(
@@ -100,6 +112,9 @@ namespace Org.BouncyCastle.Crypto.Signers
 
 			emBits = kParam.Modulus.BitLength - 1;
 
+			if (emBits < (8 * hLen + 8 * sLen + 9))
+				throw new ArgumentException("key too small for specified hash and salt lengths");
+
 			block = new byte[(emBits + 7) / 8];
 		}
 
@@ -114,7 +129,7 @@ namespace Org.BouncyCastle.Crypto.Signers
 		public virtual void Update(
 			byte input)
 		{
-			digest.Update(input);
+			contentDigest.Update(input);
 		}
 
 		/// <summary> update the internal digest with the byte array in</summary>
@@ -123,13 +138,13 @@ namespace Org.BouncyCastle.Crypto.Signers
 			int		inOff,
 			int		length)
 		{
-			digest.BlockUpdate(input, inOff, length);
+			contentDigest.BlockUpdate(input, inOff, length);
 		}
 
 		/// <summary> reset the internal state</summary>
 		public virtual void Reset()
 		{
-			digest.Reset();
+			contentDigest.Reset();
 		}
 
 		/// <summary> Generate a signature for the message we've been loaded with using
@@ -137,12 +152,7 @@ namespace Org.BouncyCastle.Crypto.Signers
 		/// </summary>
 		public virtual byte[] GenerateSignature()
 		{
-			if (emBits < (8 * hLen + 8 * sLen + 9))
-			{
-				throw new DataLengthException("encoding error");
-			}
-
-			digest.DoFinal(mDash, mDash.Length - hLen - sLen);
+			contentDigest.DoFinal(mDash, mDash.Length - hLen - sLen);
 
 			if (sLen != 0)
 			{
@@ -152,9 +162,9 @@ namespace Org.BouncyCastle.Crypto.Signers
 
 			byte[] h = new byte[hLen];
 
-			digest.BlockUpdate(mDash, 0, mDash.Length);
+			mgfDigest.BlockUpdate(mDash, 0, mDash.Length);
 
-			digest.DoFinal(h, 0);
+			mgfDigest.DoFinal(h, 0);
 
 			block[block.Length - sLen - 1 - hLen - 1] = (byte) (0x01);
 			salt.CopyTo(block, block.Length - sLen - hLen - 1);
@@ -184,12 +194,7 @@ namespace Org.BouncyCastle.Crypto.Signers
 		public virtual bool VerifySignature(
 			byte[] signature)
 		{
-			if (emBits < (8 * hLen + 8 * sLen + 9))
-			{
-				return false;
-			}
-
-			digest.DoFinal(mDash, mDash.Length - hLen - sLen);
+			contentDigest.DoFinal(mDash, mDash.Length - hLen - sLen);
 
 			byte[] b = cipher.ProcessBlock(signature, 0, signature.Length);
 			b.CopyTo(block, block.Length - b.Length);
@@ -226,8 +231,8 @@ namespace Org.BouncyCastle.Crypto.Signers
 
 			Array.Copy(block, block.Length - sLen - hLen - 1, mDash, mDash.Length - sLen, sLen);
 
-			digest.BlockUpdate(mDash, 0, mDash.Length);
-			digest.DoFinal(mDash, mDash.Length - hLen);
+			mgfDigest.BlockUpdate(mDash, 0, mDash.Length);
+			mgfDigest.DoFinal(mDash, mDash.Length - hLen);
 
 			for (int i = block.Length - hLen - 1, j = mDash.Length - hLen; j != mDash.Length; i++, j++)
 			{
@@ -268,15 +273,15 @@ namespace Org.BouncyCastle.Crypto.Signers
 			byte[] C = new byte[4];
 			int counter = 0;
 
-			digest.Reset();
+			mgfDigest.Reset();
 
 			while (counter < (length / hLen))
 			{
 				ItoOSP(counter, C);
 
-				digest.BlockUpdate(Z, zOff, zLen);
-				digest.BlockUpdate(C, 0, C.Length);
-				digest.DoFinal(hashBuf, 0);
+				mgfDigest.BlockUpdate(Z, zOff, zLen);
+				mgfDigest.BlockUpdate(C, 0, C.Length);
+				mgfDigest.DoFinal(hashBuf, 0);
 
 				hashBuf.CopyTo(mask, counter * hLen);
 				++counter;
@@ -286,9 +291,9 @@ namespace Org.BouncyCastle.Crypto.Signers
 			{
 				ItoOSP(counter, C);
 
-				digest.BlockUpdate(Z, zOff, zLen);
-				digest.BlockUpdate(C, 0, C.Length);
-				digest.DoFinal(hashBuf, 0);
+				mgfDigest.BlockUpdate(Z, zOff, zLen);
+				mgfDigest.BlockUpdate(C, 0, C.Length);
+				mgfDigest.DoFinal(hashBuf, 0);
 
 				Array.Copy(hashBuf, 0, mask, counter * hLen, mask.Length - (counter * hLen));
 			}

@@ -12,8 +12,7 @@ namespace Org.BouncyCastle.Crypto.Macs
     public class CbcBlockCipherMac
 		: IMac
     {
-        private byte[] mac;
-        private byte[] Buffer;
+        private byte[] buf;
         private int bufOff;
         private IBlockCipher cipher;
         private IBlockCipherPadding padding;
@@ -91,9 +90,7 @@ namespace Org.BouncyCastle.Crypto.Macs
             this.padding = padding;
             this.macSize = macSizeInBits / 8;
 
-            mac = new byte[cipher.GetBlockSize()];
-
-            Buffer = new byte[cipher.GetBlockSize()];
+			buf = new byte[cipher.GetBlockSize()];
             bufOff = 0;
         }
 
@@ -118,13 +115,13 @@ namespace Org.BouncyCastle.Crypto.Macs
 		public void Update(
             byte input)
         {
-			if (bufOff == Buffer.Length)
+			if (bufOff == buf.Length)
             {
-				cipher.ProcessBlock(Buffer, 0, mac, 0);
+				cipher.ProcessBlock(buf, 0, buf, 0);
                 bufOff = 0;
             }
 
-			Buffer[bufOff++] = input;
+			buf[bufOff++] = input;
         }
 
         public void BlockUpdate(
@@ -136,14 +133,13 @@ namespace Org.BouncyCastle.Crypto.Macs
                 throw new ArgumentException("Can't have a negative input length!");
 
 			int blockSize = cipher.GetBlockSize();
-            int resultLen = 0;
             int gapLen = blockSize - bufOff;
 
             if (len > gapLen)
             {
-                Array.Copy(input, inOff, Buffer, bufOff, gapLen);
+                Array.Copy(input, inOff, buf, bufOff, gapLen);
 
-                resultLen += cipher.ProcessBlock(Buffer, 0, mac, 0);
+                cipher.ProcessBlock(buf, 0, buf, 0);
 
                 bufOff = 0;
                 len -= gapLen;
@@ -151,14 +147,14 @@ namespace Org.BouncyCastle.Crypto.Macs
 
                 while (len > blockSize)
                 {
-                    resultLen += cipher.ProcessBlock(input, inOff, mac, 0);
+                    cipher.ProcessBlock(input, inOff, buf, 0);
 
                     len -= blockSize;
                     inOff += blockSize;
                 }
             }
 
-            Array.Copy(input, inOff, Buffer, bufOff, len);
+            Array.Copy(input, inOff, buf, bufOff, len);
 
             bufOff += len;
         }
@@ -174,23 +170,23 @@ namespace Org.BouncyCastle.Crypto.Macs
                 // pad with zeroes
                 while (bufOff < blockSize)
                 {
-                    Buffer[bufOff++] = 0;
+                    buf[bufOff++] = 0;
                 }
             }
             else
             {
                 if (bufOff == blockSize)
                 {
-                    cipher.ProcessBlock(Buffer, 0, mac, 0);
+                    cipher.ProcessBlock(buf, 0, buf, 0);
                     bufOff = 0;
                 }
 
-				padding.AddPadding(Buffer, bufOff);
+				padding.AddPadding(buf, bufOff);
             }
 
-			cipher.ProcessBlock(Buffer, 0, mac, 0);
+			cipher.ProcessBlock(buf, 0, buf, 0);
 
-			Array.Copy(mac, 0, output, outOff, macSize);
+			Array.Copy(buf, 0, output, outOff, macSize);
 
 			Reset();
 
@@ -203,7 +199,7 @@ namespace Org.BouncyCastle.Crypto.Macs
         public void Reset()
         {
             // Clear the buffer.
-			Array.Clear(Buffer, 0, Buffer.Length);
+			Array.Clear(buf, 0, buf.Length);
 			bufOff = 0;
 
 			// Reset the underlying cipher.

@@ -17,18 +17,37 @@ namespace Org.BouncyCastle.Cms
 	public class PasswordRecipientInformation
 		: RecipientInformation
 	{
-		private readonly PasswordRecipientInfo	_info;
-//		private readonly AlgorithmIdentifier	_encAlg;
+		private readonly PasswordRecipientInfo	info;
 
+		[Obsolete]
 		public PasswordRecipientInformation(
 			PasswordRecipientInfo	info,
 			AlgorithmIdentifier		encAlg,
 			Stream					data)
-			: base(encAlg, AlgorithmIdentifier.GetInstance(info.KeyEncryptionAlgorithm), data)
+			: this(info, encAlg, null, null, data)
 		{
-			this._info = info;
-//			this._encAlg = encAlg;
-			this._rid = new RecipientID();
+		}
+
+		[Obsolete]
+		public PasswordRecipientInformation(
+			PasswordRecipientInfo	info,
+			AlgorithmIdentifier		encAlg,
+			AlgorithmIdentifier		macAlg,
+			Stream					data)
+			: this(info, encAlg, macAlg, null, data)
+		{
+		}
+
+		public PasswordRecipientInformation(
+			PasswordRecipientInfo	info,
+			AlgorithmIdentifier		encAlg,
+			AlgorithmIdentifier		macAlg,
+			AlgorithmIdentifier		authEncAlg,
+			Stream					data)
+			: base(encAlg, macAlg, authEncAlg, info.KeyEncryptionAlgorithm, data)
+		{
+			this.info = info;
+			this.rid = new RecipientID();
 		}
 
 		/**
@@ -39,7 +58,7 @@ namespace Org.BouncyCastle.Cms
 		 */
 		public virtual AlgorithmIdentifier KeyDerivationAlgorithm
 		{
-			get { return _info.KeyDerivationAlgorithm; }
+			get { return info.KeyDerivationAlgorithm; }
 		}
 
 		/**
@@ -50,9 +69,9 @@ namespace Org.BouncyCastle.Cms
 		{
 			try
 			{
-				AlgorithmIdentifier kekAlg = AlgorithmIdentifier.GetInstance(_info.KeyEncryptionAlgorithm);
+				AlgorithmIdentifier kekAlg = AlgorithmIdentifier.GetInstance(info.KeyEncryptionAlgorithm);
 				Asn1Sequence        kekAlgParams = (Asn1Sequence)kekAlg.Parameters;
-				byte[]              encryptedKey = _info.EncryptedKey.GetOctets();
+				byte[]              encryptedKey = info.EncryptedKey.GetOctets();
 				string              kekAlgName = DerObjectIdentifier.GetInstance(kekAlgParams[0]).Id;
 				string				cName = CmsEnvelopedHelper.Instance.GetRfc3211WrapperName(kekAlgName);
 				IWrapper			keyWrapper = WrapperUtilities.GetWrapper(cName);
@@ -64,7 +83,8 @@ namespace Org.BouncyCastle.Cms
 
 				keyWrapper.Init(false, parameters);
 
-				AlgorithmIdentifier aid = _encAlg;
+				AlgorithmIdentifier aid = GetActiveAlgID();
+
 				string alg = aid.ObjectID.Id;
 
 				KeyParameter sKey = ParameterUtilities.CreateKeyParameter(

@@ -3,6 +3,7 @@ using System;
 namespace Org.BouncyCastle.Asn1.Cms
 {
 	/**
+	* Produce an object suitable for an Asn1OutputStream.
 	* <pre>
 	* EnvelopedData ::= SEQUENCE {
 	*     version CMSVersion,

@@ -25,8 +25,8 @@ namespace Org.BouncyCastle.Security
 		static AgreementUtilities()
 		{
 			//algorithms[X9ObjectIdentifiers.DHSinglePassCofactorDHSha1KdfScheme.Id] = ?;
-			algorithms[X9ObjectIdentifiers.DHSinglePassStdDHSha1KdfScheme.Id] = "DHWITHSHA1KDF";
-			//algorithms[X9ObjectIdentifiers.MqvSinglePassSha1KdfScheme.Id] = ?;
+			algorithms[X9ObjectIdentifiers.DHSinglePassStdDHSha1KdfScheme.Id] = "ECDHWITHSHA1KDF";
+			algorithms[X9ObjectIdentifiers.MqvSinglePassSha1KdfScheme.Id] = "ECMQVWITHSHA1KDF";
 		}
 
 		public static IBasicAgreement GetBasicAgreement(
@@ -55,6 +55,8 @@ namespace Org.BouncyCastle.Security
 					return new ECDHBasicAgreement();
 				case "ECDHC":
 					return new ECDHCBasicAgreement();
+				case "ECMQV":
+					return new ECMqvBasicAgreement();
 			}
 
 			throw new SecurityUtilityException("Basic Agreement " + algorithm + " not recognised.");
@@ -81,8 +83,15 @@ namespace Org.BouncyCastle.Security
 
 			switch (mechanism)
 			{
+				// 'DHWITHSHA1KDF' retained for backward compatibility
 				case "DHWITHSHA1KDF":
+				case "ECDHWITHSHA1KDF":
 					return new ECDHWithKdfBasicAgreement(
+						wrapAlgorithm,
+						new ECDHKekGenerator(
+							new Sha1Digest()));
+				case "ECMQVWITHSHA1KDF":
+					return new ECMqvWithKdfBasicAgreement(
 						wrapAlgorithm,
 						new ECDHKekGenerator(
 							new Sha1Digest()));

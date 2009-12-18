@@ -8,6 +8,7 @@ using Org.BouncyCastle.Asn1.CryptoPro;
 using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.TeleTrust;
+using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Crypto.Digests;
@@ -71,6 +72,7 @@ namespace Org.BouncyCastle.Security
 			algorithms["PSSWITHRSA"] = "PSSwithRSA";
 			algorithms["RSASSA-PSS"] = "PSSwithRSA";
 			algorithms[PkcsObjectIdentifiers.IdRsassaPss.Id] = "PSSwithRSA";
+			algorithms["RSAPSS"] = "PSSwithRSA";
 
 			algorithms["SHA1WITHRSAANDMGF1"] = "SHA-1withRSAandMGF1";
 			algorithms["SHA-1WITHRSAANDMGF1"] = "SHA-1withRSAandMGF1";
@@ -109,8 +111,17 @@ namespace Org.BouncyCastle.Security
             algorithms["RIPEMD256WITHRSAENCRYPTION"] = "RIPEMD256withRSA";
             algorithms[TeleTrusTObjectIdentifiers.RsaSignatureWithRipeMD256.Id] = "RIPEMD256withRSA";
 
+			algorithms["NONEWITHRSA"] = "RSA";
+			algorithms["RSAWITHNONE"] = "RSA";
+			algorithms["RAWRSA"] = "RSA";
+
+			algorithms["RAWRSAPSS"] = "RAWRSASSA-PSS";
+			algorithms["NONEWITHRSAPSS"] = "RAWRSASSA-PSS";
+			algorithms["NONEWITHRSASSA-PSS"] = "RAWRSASSA-PSS";
+
 			algorithms["NONEWITHDSA"] = "NONEwithDSA";
 			algorithms["DSAWITHNONE"] = "NONEwithDSA";
+			algorithms["RAWDSA"] = "NONEwithDSA";
 
 			algorithms["DSA"] = "SHA-1withDSA";
 			algorithms["DSAWITHSHA1"] = "SHA-1withDSA";
@@ -154,6 +165,8 @@ namespace Org.BouncyCastle.Security
 			algorithms["SHA-512WITHDSA"] = "SHA-512withDSA";
 			algorithms[NistObjectIdentifiers.DsaWithSha512.Id] = "SHA-512withDSA";
 
+			algorithms["NONEWITHECDSA"] = "NONEwithECDSA";
+			algorithms["ECDSAWITHNONE"] = "NONEwithECDSA";
 
 			algorithms["ECDSA"] = "SHA-1withECDSA";
 			algorithms["SHA1/ECDSA"] = "SHA-1withECDSA";
@@ -276,6 +289,61 @@ namespace Org.BouncyCastle.Security
             get { return oids.Keys; }
         }
 
+		public static Asn1Encodable GetDefaultX509Parameters(
+			DerObjectIdentifier id)
+		{
+			return GetDefaultX509Parameters(id.Id);
+		}
+
+		public static Asn1Encodable GetDefaultX509Parameters(
+			string algorithm)
+		{
+			if (algorithm == null)
+				throw new ArgumentNullException("algorithm");
+
+			algorithm = algorithm.ToUpper(CultureInfo.InvariantCulture);
+
+			string mechanism = (string) algorithms[algorithm];
+
+			if (mechanism == null)
+				mechanism = algorithm;
+
+			switch (mechanism)
+			{
+			case "PSSwithRSA":
+				// TODO The Sha1Digest here is a default. In JCE version, the actual digest
+				// to be used can be overridden by subsequent parameter settings.
+				return GetPssX509Parameters("SHA-1");
+			case "SHA-1withRSAandMGF1":
+				return GetPssX509Parameters("SHA-1");
+			case "SHA-224withRSAandMGF1":
+				return GetPssX509Parameters("SHA-224");
+			case "SHA-256withRSAandMGF1":
+				return GetPssX509Parameters("SHA-256");
+			case "SHA-384withRSAandMGF1":
+				return GetPssX509Parameters("SHA-384");
+			case "SHA-512withRSAandMGF1":
+				return GetPssX509Parameters("SHA-512");
+			default:
+				return DerNull.Instance;
+			}
+		}
+
+		private static Asn1Encodable GetPssX509Parameters(
+			string	digestName)
+		{
+			AlgorithmIdentifier hashAlgorithm = new AlgorithmIdentifier(
+				DigestUtilities.GetObjectIdentifier(digestName), DerNull.Instance);
+
+			// TODO Is it possible for the MGF hash alg to be different from the PSS one?
+			AlgorithmIdentifier maskGenAlgorithm = new AlgorithmIdentifier(
+				PkcsObjectIdentifiers.IdMgf1, hashAlgorithm);
+
+			int saltLen = DigestUtilities.GetDigest(digestName).GetDigestSize();
+			return new RsassaPssParameters(hashAlgorithm, maskGenAlgorithm,
+				new DerInteger(saltLen), new DerInteger(1));
+		}
+
 		public static ISigner GetSigner(
 			DerObjectIdentifier id)
         {
@@ -295,6 +363,10 @@ namespace Org.BouncyCastle.Security
 			if (mechanism == null)
 				mechanism = algorithm;
 
+			if (mechanism.Equals("RSA"))
+			{
+				return (new RsaDigestSigner(new NullDigest()));
+			}
 			if (mechanism.Equals("MD2withRSA"))
             {
                 return (new RsaDigestSigner(new MD2Digest()));
@@ -340,6 +412,14 @@ namespace Org.BouncyCastle.Security
                 return (new RsaDigestSigner(new RipeMD256Digest()));
             }
 
+			if (mechanism.Equals("RAWRSASSA-PSS"))
+			{
+				// TODO Add support for other parameter settings
+				IDigest contentDigest = new NullDigest();
+				IDigest mgfDigest = new Sha1Digest();
+				int saltLen = mgfDigest.GetDigestSize();
+				return (new PssSigner(new RsaBlindedEngine(), contentDigest, mgfDigest, saltLen, PssSigner.TrailerImplicit));
+			}
 			if (mechanism.Equals("PSSwithRSA"))
 			{
 				// TODO The Sha1Digest here is a default. In JCE version, the actual digest
@@ -392,6 +472,10 @@ namespace Org.BouncyCastle.Security
 				return (new DsaDigestSigner(new DsaSigner(), new Sha512Digest()));
 			}
 
+			if (mechanism.Equals("NONEwithECDSA"))
+			{
+				return (new DsaDigestSigner(new ECDsaSigner(), new NullDigest()));
+			}
 			if (mechanism.Equals("SHA-1withECDSA"))
             {
                 return (new DsaDigestSigner(new ECDsaSigner(), new Sha1Digest()));
@@ -469,49 +553,5 @@ namespace Org.BouncyCastle.Security
         {
             return (string) algorithms[oid.Id];
         }
-
-		private class NullDigest : IDigest
-		{
-			private readonly MemoryStream bOut = new MemoryStream();
-
-			public string AlgorithmName
-			{
-				get { return "NULL"; }
-			}
-
-			public int GetByteLength()
-			{
-				// TODO Is this okay?
-				return 0;
-			}
-
-			public int GetDigestSize()
-			{
-				return (int) bOut.Length;
-			}
-
-			public void Update(byte b)
-			{
-				bOut.WriteByte(b);
-			}
-
-			public void BlockUpdate(byte[] inBytes, int inOff, int len)
-			{
-				bOut.Write(inBytes, inOff, len);
-			}
-
-			public int DoFinal(byte[] outBytes, int outOff)
-			{
-				byte[] res = bOut.ToArray();
-				res.CopyTo(outBytes, outOff);
-				return res.Length;
-			}
-
-			public void Reset()
-			{
-				bOut.SetLength(0);
-			}
-		}
-
     }
 }

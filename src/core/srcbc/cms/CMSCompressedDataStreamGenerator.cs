@@ -28,11 +28,24 @@ namespace Org.BouncyCastle.Cms
 	{
 		public const string ZLib = "1.2.840.113549.1.9.16.3.8";
 
+		private int _bufferSize;
+		
 		/**
 		* base constructor
 		*/
 		public CmsCompressedDataStreamGenerator()
 		{
+		}
+
+		/**
+		* Set the underlying string size for encapsulated data
+		*
+		* @param bufferSize length of octet strings to buffer the data.
+		*/
+		public void SetBufferSize(
+			int bufferSize)
+		{
+			_bufferSize = bufferSize;
 		}
 
 		public Stream Open(
@@ -70,11 +83,11 @@ namespace Org.BouncyCastle.Cms
 
 			eiGen.AddObject(new DerObjectIdentifier(contentOID));
 
-			BerOctetStringGenerator octGen = new BerOctetStringGenerator(
-				eiGen.GetRawOutputStream(), 0, true);
+			Stream octetStream = CmsUtilities.CreateBerOctetOutputStream(
+				eiGen.GetRawOutputStream(), 0, true, _bufferSize);
 
 			return new CmsCompressedOutputStream(
-				new ZDeflaterOutputStream(octGen.GetOctetOutputStream()), sGen, cGen, eiGen);
+				new ZDeflaterOutputStream(octetStream), sGen, cGen, eiGen);
 		}
 
 		private class CmsCompressedOutputStream

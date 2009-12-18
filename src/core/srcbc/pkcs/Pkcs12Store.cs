@@ -27,6 +27,7 @@ namespace Org.BouncyCastle.Pkcs
 		private readonly Hashtable				keyCerts = new Hashtable();
 		private readonly DerObjectIdentifier	keyAlgorithm;
 		private readonly DerObjectIdentifier	certAlgorithm;
+		private readonly bool					useDerEncoding;
 
 		private const int MinIterations = 1024;
 		private const int SaltSize = 20;
@@ -81,17 +82,19 @@ namespace Org.BouncyCastle.Pkcs
 
 		internal Pkcs12Store(
 			DerObjectIdentifier	keyAlgorithm,
-			DerObjectIdentifier	certAlgorithm)
+			DerObjectIdentifier	certAlgorithm,
+			bool				useDerEncoding)
 		{
 			this.keyAlgorithm = keyAlgorithm;
 			this.certAlgorithm = certAlgorithm;
+			this.useDerEncoding = useDerEncoding;
 		}
 
 		// TODO Consider making obsolete
 //		[Obsolete("Use 'Pkcs12StoreBuilder' instead")]
 		public Pkcs12Store()
 			: this(PkcsObjectIdentifiers.PbeWithShaAnd3KeyTripleDesCbc,
-				PkcsObjectIdentifiers.PbewithShaAnd40BitRC2Cbc)
+				PkcsObjectIdentifiers.PbewithShaAnd40BitRC2Cbc, false)
 		{
 		}
 
@@ -133,7 +136,7 @@ namespace Org.BouncyCastle.Pkcs
 				byte[] mac = CalculatePbeMac(algId.ObjectID, salt, itCount, password, false, data);
 				byte[] dig = dInfo.GetDigest();
 
-				if (!Arrays.AreEqual(mac, dig))
+				if (!Arrays.ConstantTimeAreEqual(mac, dig))
 				{
 					if (password.Length > 0)
 						throw new IOException("PKCS12 key store MAC invalid - wrong password or corrupted file.");
@@ -141,7 +144,7 @@ namespace Org.BouncyCastle.Pkcs
 					// Try with incorrect zero length password
 					mac = CalculatePbeMac(algId.ObjectID, salt, itCount, password, true, data);
 
-					if (!Arrays.AreEqual(mac, dig))
+					if (!Arrays.ConstantTimeAreEqual(mac, dig))
 						throw new IOException("PKCS12 key store MAC invalid - wrong password or corrupted file.");
 
 					wrongPkcs12Zero = true;
@@ -1077,7 +1080,8 @@ namespace Org.BouncyCastle.Pkcs
 				new ContentInfo(PkcsObjectIdentifiers.EncryptedData, cInfo.ToAsn1Object())
 			};
 
-			byte[] data = new AuthenticatedSafe(info).GetEncoded();
+			byte[] data = new AuthenticatedSafe(info).GetEncoded(
+				useDerEncoding ? Asn1Encodable.Der : Asn1Encodable.Ber);
 
 			ContentInfo mainInfo = new ContentInfo(PkcsObjectIdentifiers.Data, new BerOctetString(data));
 
@@ -1101,8 +1105,17 @@ namespace Org.BouncyCastle.Pkcs
 			//
 			Pfx pfx = new Pfx(mainInfo, mData);
 
-			BerOutputStream berOut = new BerOutputStream(stream);
-			berOut.WriteObject(pfx);
+			DerOutputStream derOut;
+			if (useDerEncoding)
+			{
+				derOut = new DerOutputStream(stream);
+			}
+			else
+			{
+				derOut = new BerOutputStream(stream);
+			}
+
+			derOut.WriteObject(pfx);
 		}
 
 		private static byte[] CalculatePbeMac(

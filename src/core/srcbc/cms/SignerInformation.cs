@@ -26,13 +26,17 @@ namespace Org.BouncyCastle.Cms
 		private SignerInfo			info;
 		private AlgorithmIdentifier	digestAlgorithm;
 		private AlgorithmIdentifier	encryptionAlgorithm;
-		private Asn1Set				signedAttributes;
-		private Asn1Set				unsignedAttributes;
+		private readonly Asn1Set	signedAttributeSet;
+		private readonly Asn1Set	unsignedAttributeSet;
 		private CmsProcessable		content;
 		private byte[]				signature;
 		private DerObjectIdentifier	contentType;
 		private IDigestCalculator	digestCalculator;
 		private byte[]				resultDigest;
+
+		// Derived
+		private Asn1.Cms.AttributeTable	signedAttributeTable;
+		private Asn1.Cms.AttributeTable	unsignedAttributeTable;
 
 		internal SignerInformation(
 			SignerInfo			info,
@@ -69,8 +73,8 @@ namespace Org.BouncyCastle.Cms
 			}
 
 			this.digestAlgorithm = info.DigestAlgorithm;
-			this.signedAttributes = info.AuthenticatedAttributes;
-			this.unsignedAttributes = info.UnauthenticatedAttributes;
+			this.signedAttributeSet = info.AuthenticatedAttributes;
+			this.unsignedAttributeSet = info.UnauthenticatedAttributes;
 			this.encryptionAlgorithm = info.DigestEncryptionAlgorithm;
 			this.signature = info.EncryptedDigest.GetOctets();
 
@@ -165,9 +169,11 @@ namespace Org.BouncyCastle.Cms
 		{
 			get
 			{
-				return signedAttributes == null
-					?	null
-					:	new Asn1.Cms.AttributeTable(signedAttributes);
+				if (signedAttributeSet != null && signedAttributeTable == null)
+				{
+					signedAttributeTable = new Asn1.Cms.AttributeTable(signedAttributeSet);
+				}
+				return signedAttributeTable;
 			}
 		}
 
@@ -179,9 +185,11 @@ namespace Org.BouncyCastle.Cms
 		{
 			get
 			{
-				return unsignedAttributes == null
-					?	null
-					:	new Asn1.Cms.AttributeTable(unsignedAttributes);
+				if (unsignedAttributeSet != null && unsignedAttributeTable == null)
+				{
+					unsignedAttributeTable = new Asn1.Cms.AttributeTable(unsignedAttributeSet);
+				}
+				return unsignedAttributeTable;
 			}
 		}
 
@@ -267,14 +275,13 @@ namespace Org.BouncyCastle.Cms
 		*/
 		public byte[] GetEncodedSignedAttributes()
 		{
-			return signedAttributes == null
+			return signedAttributeSet == null
 				?	null
-				:	signedAttributes.GetEncoded(Asn1Encodable.Der);
+				:	signedAttributeSet.GetEncoded(Asn1Encodable.Der);
 		}
 
 		private bool DoVerify(
-			AsymmetricKeyParameter	key,
-			Asn1.Cms.AttributeTable	signedAttrTable)
+			AsymmetricKeyParameter	key)
 		{
 			string digestName = Helper.GetDigestAlgName(this.DigestAlgOid);
 			IDigest digest = Helper.GetDigestInstance(digestName);
@@ -294,6 +301,7 @@ namespace Org.BouncyCastle.Cms
 				try
 				{
 					// TODO Provide abstract configuration mechanism
+					// (via alternate SignerUtilities.GetSigner method taking ASN.1 params)
 
 					Asn1.Pkcs.RsassaPssParameters pss = Asn1.Pkcs.RsassaPssParameters.GetInstance(
 						sigParams.ToAsn1Object());
@@ -332,88 +340,121 @@ namespace Org.BouncyCastle.Cms
 
 			try
 			{
-				sig.Init(false, key);
-
-				if (signedAttributes == null)
+				if (digestCalculator != null)
+				{
+					resultDigest = digestCalculator.GetDigest();
+				}
+				else
 				{
 					if (content != null)
 					{
-						content.Write(new CmsSignedDataGenerator.SigOutputStream(sig));
-						content.Write(new CmsSignedDataGenerator.DigOutputStream(digest));
-
-						resultDigest = DigestUtilities.DoFinal(digest);
+						content.Write(new CmsSignedGenerator.DigOutputStream(digest));
 					}
-					else
+					else if (signedAttributeSet == null)
 					{
-						resultDigest = digestCalculator.GetDigest();
+						// TODO Get rid of this exception and just treat content==null as empty not missing?
+						throw new CmsException("data not encapsulated in signature - use detached constructor.");
+					}
 
+					resultDigest = DigestUtilities.DoFinal(digest);
+				}
+			}
+			catch (IOException e)
+			{
+				throw new CmsException("can't process mime object to create signature.", e);
+			}
+
+			// TODO Shouldn't be using attribute OID as contentType (should be null)
+			bool isCounterSignature = contentType.Equals(CmsAttributes.CounterSignature);
+
+			// RFC 3852 11.1 Check the content-type attribute is correct
+			{
+				Asn1Object validContentType = GetSingleValuedSignedAttribute(
+					CmsAttributes.ContentType, "content-type");
+				if (validContentType == null)
+				{
+					if (!isCounterSignature && signedAttributeSet != null)
+						throw new CmsException("The content-type attribute type MUST be present whenever signed attributes are present in signed-data");
+				}
+				else
+				{
+					if (isCounterSignature)
+						throw new CmsException("[For counter signatures,] the signedAttributes field MUST NOT contain a content-type attribute");
+
+					if (!(validContentType is DerObjectIdentifier))
+						throw new CmsException("content-type attribute value not of ASN.1 type 'OBJECT IDENTIFIER'");
+
+					DerObjectIdentifier signedContentType = (DerObjectIdentifier)validContentType;
+
+					if (!signedContentType.Equals(contentType))
+						throw new CmsException("content-type attribute value does not match eContentType");
+				}
+			}
+
+			// RFC 3852 11.2 Check the message-digest attribute is correct
+			{
+				Asn1Object validMessageDigest = GetSingleValuedSignedAttribute(
+					CmsAttributes.MessageDigest, "message-digest");
+				if (validMessageDigest == null)
+				{
+				    if (signedAttributeSet != null)
+						throw new CmsException("the message-digest signed attribute type MUST be present when there are any signed attributes present");
+				}
+				else
+				{
+					if (!(validMessageDigest is Asn1OctetString))
+					{
+						throw new CmsException("message-digest attribute value not of ASN.1 type 'OCTET STRING'");
+					}
+
+					Asn1OctetString signedMessageDigest = (Asn1OctetString)validMessageDigest;
+
+					if (!Arrays.AreEqual(resultDigest, signedMessageDigest.GetOctets()))
+						throw new CmsException("message-digest attribute value does not match calculated value");
+				}
+			}
+
+			// RFC 3852 11.4 Validate countersignature attribute(s)
+			{
+            	Asn1.Cms.AttributeTable signedAttrTable = this.SignedAttributes;
+            	if (signedAttrTable != null
+                	&& signedAttrTable.GetAll(CmsAttributes.CounterSignature).Count > 0)
+            	{
+                	throw new CmsException("A countersignature attribute MUST NOT be a signed attribute");
+            	}
+
+            	Asn1.Cms.AttributeTable unsignedAttrTable = this.UnsignedAttributes;
+            	if (unsignedAttrTable != null)
+            	{
+					foreach (Asn1.Cms.Attribute csAttr in unsignedAttrTable.GetAll(CmsAttributes.CounterSignature))
+	                {
+                    	if (csAttr.AttrValues.Count < 1)
+	                        throw new CmsException("A countersignature attribute MUST contain at least one AttributeValue");
+
+						// Note: We don't recursively validate the countersignature value
+    	            }
+	            }
+			}
+
+			try
+			{
+				sig.Init(false, key);
+
+				if (signedAttributeSet == null)
+				{
+					if (digestCalculator != null)
+					{
 						// need to decrypt signature and check message bytes
 						return VerifyDigest(resultDigest, key, this.GetSignature());
+					}
+					else if (content != null)
+					{
+						// TODO Use raw signature of the hash value instead
+						content.Write(new CmsSignedGenerator.SigOutputStream(sig));
 					}
 				}
 				else
 				{
-					byte[] hash;
-					if (content != null)
-					{
-						content.Write(
-							new CmsSignedDataGenerator.DigOutputStream(digest));
-
-						hash = DigestUtilities.DoFinal(digest);
-					}
-					else if (digestCalculator != null)
-					{
-						hash = digestCalculator.GetDigest();
-					}
-					else
-					{
-						hash = null;
-					}
-
-					resultDigest = hash;
-
-					Asn1.Cms.Attribute dig = signedAttrTable[Asn1.Cms.CmsAttributes.MessageDigest];
-					Asn1.Cms.Attribute type = signedAttrTable[Asn1.Cms.CmsAttributes.ContentType];
-
-					if (dig == null)
-					{
-						throw new SignatureException("no hash for content found in signed attributes");
-					}
-
-					if (type == null && !contentType.Equals(CmsAttributes.CounterSignature))
-					{
-						throw new SignatureException("no content type id found in signed attributes");
-					}
-
-					Asn1Object hashObj = dig.AttrValues[0].ToAsn1Object();
-
-					if (hashObj is Asn1OctetString)
-					{
-						byte[] signedHash = ((Asn1OctetString)hashObj).GetOctets();
-
-						if (!Arrays.AreEqual(hash, signedHash))
-						{
-							throw new SignatureException("content hash found in signed attributes different");
-						}
-					}
-					else if (hashObj is DerNull)
-					{
-						if (hash != null)
-						{
-							throw new SignatureException("NULL hash found in signed attributes when one expected");
-						}
-					}
-
-					if (type != null)
-					{
-						DerObjectIdentifier typeOID = (DerObjectIdentifier)type.AttrValues[0];
-
-						if (!typeOID.Equals(contentType))
-						{
-							throw new SignatureException("contentType in signed attributes different");
-						}
-					}
-
 					byte[] tmp = this.GetEncodedSignedAttributes();
 					sig.BlockUpdate(tmp, 0, tmp.Length);
 				}
@@ -422,18 +463,15 @@ namespace Org.BouncyCastle.Cms
 			}
 			catch (InvalidKeyException e)
 			{
-				throw new CmsException(
-					"key not appropriate to signature in message.", e);
+				throw new CmsException("key not appropriate to signature in message.", e);
 			}
 			catch (IOException e)
 			{
-				throw new CmsException(
-					"can't process mime object to create signature.", e);
+				throw new CmsException("can't process mime object to create signature.", e);
 			}
 			catch (SignatureException e)
 			{
-				throw new CmsException(
-					"invalid signature format in message: " + e.Message, e);
+				throw new CmsException("invalid signature format in message: " + e.Message, e);
 			}
 		}
 
@@ -494,7 +532,7 @@ namespace Org.BouncyCastle.Cms
 
 					byte[] sigHash = digInfo.GetDigest();
 
-					return Arrays.AreEqual(digest, sigHash);
+					return Arrays.ConstantTimeAreEqual(digest, sigHash);
 				}
 				else if (algorithm.Equals("DSA"))
 				{
@@ -526,7 +564,7 @@ namespace Org.BouncyCastle.Cms
 		}
 
 		/**
-		* verify that the given public key succesfully handles and confirms the
+		* verify that the given public key successfully handles and confirms the
 		* signature associated with this signer.
 		*/
 		public bool Verify(
@@ -535,7 +573,10 @@ namespace Org.BouncyCastle.Cms
 			if (pubKey.IsPrivate)
 				throw new ArgumentException("Expected public key", "pubKey");
 
-			return DoVerify(pubKey, this.SignedAttributes);
+			// Optional, but still need to validate if present
+			GetSigningTime();
+
+			return DoVerify(pubKey);
 		}
 
 		/**
@@ -547,35 +588,13 @@ namespace Org.BouncyCastle.Cms
 		public bool Verify(
 			X509Certificate cert)
 		{
-			Asn1.Cms.AttributeTable attr = this.SignedAttributes;
-
-			if (attr != null)
+			Asn1.Cms.Time signingTime = GetSigningTime();
+			if (signingTime != null)
 			{
-				Asn1EncodableVector v = attr.GetAll(CmsAttributes.SigningTime);
-				switch (v.Count)
-				{
-					case 0:
-						break;
-					case 1:
-					{
-						Asn1.Cms.Attribute t = (Asn1.Cms.Attribute) v[0];
-						Debug.Assert(t != null);
-
-						Asn1Set attrValues = t.AttrValues;
-						if (attrValues.Count != 1)
-							throw new CmsException("A signing-time attribute MUST have a single attribute value");
-
-						Asn1.Cms.Time time = Asn1.Cms.Time.GetInstance(attrValues[0].ToAsn1Object());
-
-						cert.CheckValidity(time.Date);
-						break;
-					}
-					default:
-						throw new CmsException("The SignedAttributes in a signerInfo MUST NOT include multiple instances of the signing-time attribute");
-				}
+				cert.CheckValidity(signingTime.Date);
 			}
 
-			return DoVerify(cert.GetPublicKey(), attr);
+			return DoVerify(cert.GetPublicKey());
 		}
 
 		/**
@@ -586,6 +605,62 @@ namespace Org.BouncyCastle.Cms
 		public SignerInfo ToSignerInfo()
 		{
 			return info;
+		}
+
+		private Asn1Object GetSingleValuedSignedAttribute(
+			DerObjectIdentifier attrOID, string printableName)
+		{
+			
+			Asn1.Cms.AttributeTable unsignedAttrTable = this.UnsignedAttributes;
+			if (unsignedAttrTable != null
+				&& unsignedAttrTable.GetAll(attrOID).Count > 0)
+			{
+				throw new CmsException("The " + printableName
+					+ " attribute MUST NOT be an unsigned attribute");
+			}
+
+			Asn1.Cms.AttributeTable signedAttrTable = this.SignedAttributes;
+			if (signedAttrTable == null)
+			{
+				return null;
+			}
+
+			Asn1EncodableVector v = signedAttrTable.GetAll(attrOID);
+			switch (v.Count)
+			{
+				case 0:
+					return null;
+				case 1:
+					Asn1.Cms.Attribute t = (Asn1.Cms.Attribute) v[0];
+					Asn1Set attrValues = t.AttrValues;
+
+					if (attrValues.Count != 1)
+						throw new CmsException("A " + printableName
+							+ " attribute MUST have a single attribute value");
+
+					return attrValues[0].ToAsn1Object();
+				default:
+					throw new CmsException("The SignedAttributes in a signerInfo MUST NOT include multiple instances of the "
+						+ printableName + " attribute");
+			}
+		}
+
+		private Asn1.Cms.Time GetSigningTime()
+		{
+			Asn1Object validSigningTime = GetSingleValuedSignedAttribute(
+				CmsAttributes.SigningTime, "signing-time");
+
+			if (validSigningTime == null)
+				return null;
+
+			try
+			{
+				return Asn1.Cms.Time.GetInstance(validSigningTime);
+			}
+			catch (ArgumentException)
+			{
+				throw new CmsException("signing-time attribute value not a valid 'Time' structure");
+			}
 		}
 
 		/**
@@ -634,6 +709,8 @@ namespace Org.BouncyCastle.Cms
 			SignerInformation		signerInformation,
 			SignerInformationStore	counterSigners)
 		{
+			// TODO Perform checks from RFC 3852 11.4
+
 			SignerInfo sInfo = signerInformation.info;
 			Asn1.Cms.AttributeTable unsignedAttr = signerInformation.UnsignedAttributes;
 			Asn1EncodableVector v;

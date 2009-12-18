@@ -3,8 +3,11 @@ using System.IO;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Cms;
+using Org.BouncyCastle.Asn1.Cms.Ecc;
 using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Asn1.Utilities;
 using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
@@ -21,34 +24,62 @@ namespace Org.BouncyCastle.Cms
 	public class KeyAgreeRecipientInformation
 		: RecipientInformation
 	{
-		private KeyAgreeRecipientInfo _info;
-//		private AlgorithmIdentifier   _encAlg;
-		private Asn1OctetString       _encryptedKey;
+		private KeyAgreeRecipientInfo info;
+		private Asn1OctetString       encryptedKey;
 
+		[Obsolete]
 		public KeyAgreeRecipientInformation(
 			KeyAgreeRecipientInfo	info,
 			AlgorithmIdentifier		encAlg,
 			Stream					data)
-			: base(encAlg, AlgorithmIdentifier.GetInstance(info.KeyEncryptionAlgorithm), data)
+			: this(info, encAlg, null, null, data)
 		{
-			_info = info;
-//			_encAlg = encAlg;
+		}
+
+		[Obsolete]
+		public KeyAgreeRecipientInformation(
+			KeyAgreeRecipientInfo	info,
+			AlgorithmIdentifier		encAlg,
+			AlgorithmIdentifier		macAlg,
+			Stream					data)
+			: this(info, encAlg, macAlg, null, data)
+		{
+		}
+
+		public KeyAgreeRecipientInformation(
+			KeyAgreeRecipientInfo	info,
+			AlgorithmIdentifier		encAlg,
+			AlgorithmIdentifier		macAlg,
+			AlgorithmIdentifier		authEncAlg,
+			Stream					data)
+			: base(encAlg, macAlg, authEncAlg, info.KeyEncryptionAlgorithm, data)
+		{
+			this.info = info;
+			this.rid = new RecipientID();
 
 			try
 			{
-				Asn1Sequence s = _info.RecipientEncryptedKeys;
+				Asn1Sequence s = info.RecipientEncryptedKeys;
 				RecipientEncryptedKey id = RecipientEncryptedKey.GetInstance(s[0]);
 
-				Asn1.Cms.IssuerAndSerialNumber iAnds = id.Identifier.IssuerAndSerialNumber;
+				Asn1.Cms.KeyAgreeRecipientIdentifier karid = id.Identifier;
 
-//				byte[] issuerBytes = iAnds.Name.GetEncoded();
+				Asn1.Cms.IssuerAndSerialNumber iAndSN = karid.IssuerAndSerialNumber;
+				if (iAndSN != null)
+				{
+					rid.Issuer = iAndSN.Name;
+                    rid.SerialNumber = iAndSN.SerialNumber.Value;
+				}
+				else
+				{
+					Asn1.Cms.RecipientKeyIdentifier rKeyID = karid.RKeyID;
 
-				_rid = new RecipientID();
-//				_rid.SetIssuer(issuerBytes);
-				_rid.Issuer = iAnds.Name;
-				_rid.SerialNumber = iAnds.SerialNumber.Value;
+					// Note: 'date' and 'other' fields of RecipientKeyIdentifier appear to be only informational 
 
-				_encryptedKey = id.EncryptedKey;
+					rid.SubjectKeyIdentifier = rKeyID.SubjectKeyIdentifier.GetOctets();
+				}
+
+				encryptedKey = id.EncryptedKey;
 			}
 			catch (IOException e)
 			{
@@ -56,54 +87,119 @@ namespace Org.BouncyCastle.Cms
 			}
 		}
 
-		/**
-		* decrypt the content and return an input stream.
-		*/
-		public override CmsTypedStream GetContentStream(
-//			Key key)
-			ICipherParameters key)
+		private AsymmetricKeyParameter GetSenderPublicKey(
+			AsymmetricKeyParameter		receiverPrivateKey,
+			OriginatorIdentifierOrKey	originator)
 		{
-			if (!(key is AsymmetricKeyParameter))
-				throw new ArgumentException("KeyAgreement requires asymmetric key", "key");
+			OriginatorPublicKey opk = originator.OriginatorPublicKey;
+			if (opk != null)
+			{
+				return GetPublicKeyFromOriginatorPublicKey(receiverPrivateKey, opk);
+			}
+			
+			OriginatorID origID = new OriginatorID();
+			
+			Asn1.Cms.IssuerAndSerialNumber iAndSN = originator.IssuerAndSerialNumber;
+			if (iAndSN != null)
+			{
+				origID.Issuer = iAndSN.Name;
+				origID.SerialNumber = iAndSN.SerialNumber.Value;
+			}
+			else
+			{
+				SubjectKeyIdentifier ski = originator.SubjectKeyIdentifier;
 
-			AsymmetricKeyParameter privKey = (AsymmetricKeyParameter) key;
+				origID.SubjectKeyIdentifier = ski.GetKeyIdentifier();
+			}
 
-			if (!privKey.IsPrivate)
-				throw new ArgumentException("Expected private key", "key");
+			return GetPublicKeyFromOriginatorID(origID);
+		}
 
+		private AsymmetricKeyParameter GetPublicKeyFromOriginatorPublicKey(
+			AsymmetricKeyParameter	receiverPrivateKey,
+			OriginatorPublicKey		originatorPublicKey)
+		{
+			PrivateKeyInfo privInfo = PrivateKeyInfoFactory.CreatePrivateKeyInfo(receiverPrivateKey);
+			SubjectPublicKeyInfo pubInfo = new SubjectPublicKeyInfo(
+				privInfo.AlgorithmID,
+				originatorPublicKey.PublicKey.GetBytes());
+			return PublicKeyFactory.CreateKey(pubInfo);
+		}
+
+		private AsymmetricKeyParameter GetPublicKeyFromOriginatorID(
+			OriginatorID origID)
+		{
+			// TODO Support all alternatives for OriginatorIdentifierOrKey
+			// see RFC 3852 6.2.2
+			throw new CmsException("No support for 'originator' as IssuerAndSerialNumber or SubjectKeyIdentifier");
+		}
+
+		private KeyParameter CalculateAgreedWrapKey(
+			string					wrapAlg,
+			AsymmetricKeyParameter	senderPublicKey,
+			AsymmetricKeyParameter	receiverPrivateKey)
+		{
+			DerObjectIdentifier agreeAlgID = keyEncAlg.ObjectID;
+
+			ICipherParameters senderPublicParams = senderPublicKey;
+			ICipherParameters receiverPrivateParams = receiverPrivateKey;
+
+			if (agreeAlgID.Id.Equals(CmsEnvelopedGenerator.ECMqvSha1Kdf))
+			{
+				byte[] ukmEncoding = info.UserKeyingMaterial.GetOctets();
+				MQVuserKeyingMaterial ukm = MQVuserKeyingMaterial.GetInstance(
+					Asn1Object.FromByteArray(ukmEncoding));
+
+				AsymmetricKeyParameter ephemeralKey = GetPublicKeyFromOriginatorPublicKey(
+					receiverPrivateKey, ukm.EphemeralPublicKey);
+
+				senderPublicParams = new MqvPublicParameters(
+					(ECPublicKeyParameters)senderPublicParams,
+					(ECPublicKeyParameters)ephemeralKey);
+				receiverPrivateParams = new MqvPrivateParameters(
+					(ECPrivateKeyParameters)receiverPrivateParams,
+					(ECPrivateKeyParameters)receiverPrivateParams);
+			}
+
+			IBasicAgreement agreement = AgreementUtilities.GetBasicAgreementWithKdf(
+				agreeAlgID, wrapAlg);
+			agreement.Init(receiverPrivateParams);
+			BigInteger agreedValue = agreement.CalculateAgreement(senderPublicParams);
+
+			int wrapKeySize = GeneratorUtilities.GetDefaultKeySize(wrapAlg) / 8;
+			byte[] wrapKeyBytes = X9IntegerConverter.IntegerToBytes(agreedValue, wrapKeySize);
+			return ParameterUtilities.CreateKeyParameter(wrapAlg, wrapKeyBytes);
+		}
+
+		private KeyParameter UnwrapSessionKey(
+			string			wrapAlg,
+			KeyParameter	agreedKey)
+		{
+			AlgorithmIdentifier aid = GetActiveAlgID();
+			string alg = aid.ObjectID.Id;
+			byte[] encKeyOctets = encryptedKey.GetOctets();
+
+			IWrapper keyCipher = WrapperUtilities.GetWrapper(wrapAlg);
+			keyCipher.Init(false, agreedKey);
+			byte[] sKeyBytes = keyCipher.Unwrap(encKeyOctets, 0, encKeyOctets.Length);
+			return ParameterUtilities.CreateKeyParameter(alg, sKeyBytes);
+		}
+
+		internal KeyParameter GetSessionKey(
+			AsymmetricKeyParameter receiverPrivateKey)
+		{
 			try
 			{
-				OriginatorPublicKey origK = _info.Originator.OriginatorKey;
-				PrivateKeyInfo privInfo = PrivateKeyInfoFactory.CreatePrivateKeyInfo(privKey);
-				SubjectPublicKeyInfo pubInfo = new SubjectPublicKeyInfo(privInfo.AlgorithmID, origK.PublicKey.GetBytes());
-				AsymmetricKeyParameter pubKey = PublicKeyFactory.CreateKey(pubInfo);
-
 				string wrapAlg = DerObjectIdentifier.GetInstance(
-					Asn1Sequence.GetInstance(_keyEncAlg.Parameters)[0]).Id;
+					Asn1Sequence.GetInstance(keyEncAlg.Parameters)[0]).Id;
 
-				IBasicAgreement agreement = AgreementUtilities.GetBasicAgreementWithKdf(
-					_keyEncAlg.ObjectID, wrapAlg);
+				AsymmetricKeyParameter senderPublicKey = GetSenderPublicKey(
+					receiverPrivateKey, info.Originator);
 
-				agreement.Init(privKey);
+				KeyParameter agreedWrapKey = CalculateAgreedWrapKey(wrapAlg,
+					senderPublicKey, receiverPrivateKey);
 
-				BigInteger wKeyNum = agreement.CalculateAgreement(pubKey);
-				// TODO Fix the way bytes are derived from the secret
-				byte[] wKeyBytes = wKeyNum.ToByteArrayUnsigned();
-				KeyParameter wKey = ParameterUtilities.CreateKeyParameter(wrapAlg, wKeyBytes);
-
-				IWrapper keyCipher = WrapperUtilities.GetWrapper(wrapAlg);
-
-				keyCipher.Init(false, wKey);
-
-				AlgorithmIdentifier aid = _encAlg;
-				string alg = aid.ObjectID.Id;
-
-				byte[] encryptedKey = _encryptedKey.GetOctets();
-				byte[] sKeyBytes = keyCipher.Unwrap(encryptedKey, 0, encryptedKey.Length);
-
-				KeyParameter sKey = ParameterUtilities.CreateKeyParameter(alg, sKeyBytes);
-
-				return GetContentFromSessionKey(sKey);
+				return UnwrapSessionKey(wrapAlg, agreedWrapKey);
 			}
 			catch (SecurityUtilityException e)
 			{
@@ -115,8 +211,28 @@ namespace Org.BouncyCastle.Cms
 			}
 			catch (Exception e)
 			{
+				Console.Error.WriteLine(e.StackTrace);
 				throw new CmsException("originator key invalid.", e);
 			}
+		}
+
+		/**
+		* decrypt the content and return an input stream.
+		*/
+		public override CmsTypedStream GetContentStream(
+			ICipherParameters key)
+		{
+			if (!(key is AsymmetricKeyParameter))
+				throw new ArgumentException("KeyAgreement requires asymmetric key", "key");
+
+			AsymmetricKeyParameter receiverPrivateKey = (AsymmetricKeyParameter) key;
+
+			if (!receiverPrivateKey.IsPrivate)
+				throw new ArgumentException("Expected private key", "key");
+
+			KeyParameter sKey = GetSessionKey(receiverPrivateKey);
+
+			return GetContentFromSessionKey(sKey);
 		}
 	}
 }

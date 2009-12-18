@@ -80,7 +80,7 @@ namespace Org.BouncyCastle.Asn1
         {
             try
             {
-				this.str = obj.GetDerEncoded();
+				this.str = obj.GetEncoded(Asn1Encodable.Der);
             }
             catch (IOException e)
             {

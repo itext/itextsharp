@@ -1595,7 +1595,12 @@ namespace Org.BouncyCastle.Pkix
 				}
 				catch (Exception e)
 				{
-					throw new PkixCertPathValidatorException(e.Message, e.InnerException, certPath, index);
+					Exception cause = e.InnerException;
+					if (cause == null)
+					{
+						cause = e;						
+					}
+					throw new PkixCertPathValidatorException(e.Message, cause, certPath, index);
 				}
 			}
 

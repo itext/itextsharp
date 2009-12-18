@@ -75,18 +75,18 @@ namespace Org.BouncyCastle.Crypto.Generators
 
 			BigInteger sigma = u.Multiply(v);
 
-			// n = (2 a u p_ + 1 ) ( 2 b v q_ + 1)
+			// n = (2 a u _p + 1 ) ( 2 b v _q + 1)
 			// -> |n| = strength
 			// |2| = 1 in bits
-			// -> |a| * |b| = |n| - |u| - |v| - |p_| - |q_| - |2| -|2|
-			// remainingStrength = strength - sigma.bitLength() - p_.bitLength() -
-			// q_.bitLength() - 1 -1
+			// -> |a| * |b| = |n| - |u| - |v| - |_p| - |_q| - |2| -|2|
+			// remainingStrength = strength - sigma.bitLength() - _p.bitLength() -
+			// _q.bitLength() - 1 -1
 			int remainingStrength = strength - sigma.BitLength - 48;
 			BigInteger a = generatePrime(remainingStrength / 2 + 1, certainty, rand);
 			BigInteger b = generatePrime(remainingStrength / 2 + 1, certainty, rand);
 
-			BigInteger p_;
-			BigInteger q_;
+			BigInteger _p;
+			BigInteger _q;
 			BigInteger p;
 			BigInteger q;
 
@@ -103,29 +103,29 @@ namespace Org.BouncyCastle.Crypto.Generators
 			{
 				tries++;
 
-				p_ = generatePrime(24, certainty, rand);
+				_p = generatePrime(24, certainty, rand);
 
-				p = p_.Multiply(_2au).Add(BigInteger.One);
+				p = _p.Multiply(_2au).Add(BigInteger.One);
 
 				if (!p.IsProbablePrime(certainty))
 					continue;
 
 				for (;;)
 				{
-					q_ = generatePrime(24, certainty, rand);
+					_q = generatePrime(24, certainty, rand);
 
-					if (p_.Equals(q_))
+					if (_p.Equals(_q))
 						continue;
 
-					q = q_.Multiply(_2bv).Add(BigInteger.One);
+					q = _q.Multiply(_2bv).Add(BigInteger.One);
 
 					if (q.IsProbablePrime(certainty))
 						break;
 				}
 
-				if (!sigma.Gcd(p_.Multiply(q_)).Equals(BigInteger.One))
+				if (!sigma.Gcd(_p.Multiply(_q)).Equals(BigInteger.One))
 				{
-					Console.WriteLine("sigma.gcd(p_.mult(q_)) != 1!\n p_: " + p_ +"\n q_: "+ q_ );
+					Console.WriteLine("sigma.gcd(_p.mult(_q)) != 1!\n _p: " + _p +"\n _q: "+ _q );
 					continue;
 				}
 
@@ -216,7 +216,7 @@ namespace Org.BouncyCastle.Crypto.Generators
 					continue;
 				}
 
-				if (g.ModPow(phi_n.Divide(p_), n).Equals(BigInteger.One))
+				if (g.ModPow(phi_n.Divide(_p), n).Equals(BigInteger.One))
 				{
 					if (debug)
 					{
@@ -224,7 +224,7 @@ namespace Org.BouncyCastle.Crypto.Generators
 					}
 					continue;
 				}
-				if (g.ModPow(phi_n.Divide(q_), n).Equals(BigInteger.One))
+				if (g.ModPow(phi_n.Divide(_q), n).Equals(BigInteger.One))
 				{
 					if (debug)
 					{
@@ -259,8 +259,8 @@ namespace Org.BouncyCastle.Crypto.Generators
 				Console.WriteLine("sigma:...... " + sigma + " (" + sigma.BitLength + " bits)");
 				Console.WriteLine("a:.......... " + a);
 				Console.WriteLine("b:.......... " + b);
-				Console.WriteLine("p':......... " + p_);
-				Console.WriteLine("q':......... " + q_);
+				Console.WriteLine("p':......... " + _p);
+				Console.WriteLine("q':......... " + _q);
 				Console.WriteLine("p:.......... " + p);
 				Console.WriteLine("q:.......... " + q);
 				Console.WriteLine("n:.......... " + n);

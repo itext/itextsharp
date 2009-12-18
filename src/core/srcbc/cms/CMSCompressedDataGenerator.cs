@@ -47,10 +47,7 @@ namespace Org.BouncyCastle.Cms
 
 				zOut.Close();
 
-				comAlgId = new AlgorithmIdentifier(
-					new DerObjectIdentifier(compressionOid),
-					null);
-
+				comAlgId = new AlgorithmIdentifier(new DerObjectIdentifier(compressionOid));
 				comOcts = new BerOctetString(bOut.ToArray());
             }
             catch (IOException e)

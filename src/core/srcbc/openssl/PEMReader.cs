@@ -376,13 +376,23 @@ namespace Org.BouncyCastle.OpenSsl
 							X9ObjectIdentifiers.IdECPublicKey, pKey.GetParameters());
 
 						PrivateKeyInfo privInfo = new PrivateKeyInfo(algId, pKey.ToAsn1Object());
-						DerBitString pubKey = pKey.GetPublicKey();
-						//Console.WriteLine(pubKey == null);
-						SubjectPublicKeyInfo pubInfo = new SubjectPublicKeyInfo(algId, pubKey.GetBytes());
 
 						// TODO Are the keys returned here ECDSA, as Java version forces?
 						privSpec = PrivateKeyFactory.CreateKey(privInfo);
-						pubSpec = PublicKeyFactory.CreateKey(pubInfo);
+
+						DerBitString pubKey = pKey.GetPublicKey();
+						if (pubKey != null)
+						{
+							SubjectPublicKeyInfo pubInfo = new SubjectPublicKeyInfo(algId, pubKey.GetBytes());
+
+							// TODO Are the keys returned here ECDSA, as Java version forces?
+							pubSpec = PublicKeyFactory.CreateKey(pubInfo);
+						}
+						else
+						{
+							pubSpec = ECKeyPairGenerator.GetCorrespondingPublicKey(
+								(ECPrivateKeyParameters)privSpec);
+						}
 
 						break;
 					}
@@ -392,6 +402,10 @@ namespace Org.BouncyCastle.OpenSsl
 				}
 
 				return new AsymmetricCipherKeyPair(pubSpec, privSpec);
+			}
+			catch (IOException e)
+			{
+				throw e;
 			}
 			catch (Exception e)
 			{

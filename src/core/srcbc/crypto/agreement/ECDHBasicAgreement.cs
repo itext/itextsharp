@@ -22,24 +22,24 @@ namespace Org.BouncyCastle.Crypto.Agreement
     public class ECDHBasicAgreement
 		: IBasicAgreement
     {
-        private ECPrivateKeyParameters key;
+        protected internal ECPrivateKeyParameters privKey;
 
         public void Init(
 			ICipherParameters parameters)
         {
 			if (parameters is ParametersWithRandom)
 			{
-				parameters = ((ParametersWithRandom) parameters).Parameters;
+				parameters = ((ParametersWithRandom)parameters).Parameters;
 			}
 
-			this.key = (ECPrivateKeyParameters) parameters;
+			this.privKey = (ECPrivateKeyParameters)parameters;
         }
 
         public virtual BigInteger CalculateAgreement(
             ICipherParameters pubKey)
         {
             ECPublicKeyParameters pub = (ECPublicKeyParameters) pubKey;
-            ECPoint P = pub.Q.Multiply(key.D);
+            ECPoint P = pub.Q.Multiply(privKey.D);
 
             // if ( p.IsInfinity ) throw new Exception("d*Q == infinity");
 

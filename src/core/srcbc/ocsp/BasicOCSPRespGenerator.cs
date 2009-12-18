@@ -8,6 +8,7 @@ using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Security.Certificates;
 using Org.BouncyCastle.X509;
 
 namespace Org.BouncyCastle.Ocsp
@@ -251,6 +252,7 @@ namespace Org.BouncyCastle.Ocsp
 
 			AlgorithmIdentifier sigAlgId = OcspUtilities.GetSigAlgID(signingAlgorithm);
 
+			DerSequence chainSeq = null;
 			if (chain != null && chain.Length > 0)
 			{
 				Asn1EncodableVector v = new Asn1EncodableVector();
@@ -267,17 +269,15 @@ namespace Org.BouncyCastle.Ocsp
 				{
 					throw new OcspException("error processing certs", e);
 				}
-				catch (Security.Certificates.CertificateEncodingException e)
+				catch (CertificateEncodingException e)
 				{
 					throw new OcspException("error encoding certs", e);
 				}
 
-				return new BasicOcspResp(new BasicOcspResponse(tbsResp, sigAlgId, bitSig, new DerSequence(v)));
+				chainSeq = new DerSequence(v);
 			}
-			else
-			{
-				return new BasicOcspResp(new BasicOcspResponse(tbsResp, sigAlgId, bitSig, null));
-			}
+
+			return new BasicOcspResp(new BasicOcspResponse(tbsResp, sigAlgId, bitSig, chainSeq));
 		}
 
 		public BasicOcspResp Generate(

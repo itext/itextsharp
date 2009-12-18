@@ -5,7 +5,7 @@ using Org.BouncyCastle.Asn1;
 namespace Org.BouncyCastle.Asn1.Cms
 {
     public class SignerIdentifier
-        : Asn1Encodable
+        : Asn1Encodable, IAsn1Choice
     {
         private Asn1Encodable id;
 

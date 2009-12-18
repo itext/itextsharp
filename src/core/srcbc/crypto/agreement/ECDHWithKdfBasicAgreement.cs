@@ -4,28 +4,17 @@ using System.Collections;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto.Agreement.Kdf;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Security;
 
 namespace Org.BouncyCastle.Crypto.Agreement
 {
 	public class ECDHWithKdfBasicAgreement
 		: ECDHBasicAgreement
 	{
-		private static readonly Hashtable algorithms = new Hashtable();
-
-		static ECDHWithKdfBasicAgreement()
-		{
-			algorithms.Add(NistObjectIdentifiers.IdAes128Cbc.Id, 128);
-			algorithms.Add(NistObjectIdentifiers.IdAes192Cbc.Id, 192);
-			algorithms.Add(NistObjectIdentifiers.IdAes256Cbc.Id, 256);
-			algorithms.Add(NistObjectIdentifiers.IdAes128Wrap.Id, 128);
-			algorithms.Add(NistObjectIdentifiers.IdAes192Wrap.Id, 192);
-			algorithms.Add(NistObjectIdentifiers.IdAes256Wrap.Id, 256);
-			algorithms.Add(PkcsObjectIdentifiers.IdAlgCms3DesWrap.Id, 192);
-		}
-
 		private readonly string algorithm;
 		private readonly IDerivationFunction kdf;
 
@@ -35,8 +24,6 @@ namespace Org.BouncyCastle.Crypto.Agreement
 		{
 			if (algorithm == null)
 				throw new ArgumentNullException("algorithm");
-			if (!algorithms.Contains(algorithm))
-				throw new ArgumentException("Unknown algorithm", "algorithm");
 			if (kdf == null)
 				throw new ArgumentNullException("kdf");
 
@@ -47,15 +34,17 @@ namespace Org.BouncyCastle.Crypto.Agreement
 		public override BigInteger CalculateAgreement(
 			ICipherParameters pubKey)
 		{
+			// Note that the ec.KeyAgreement class in JCE only uses kdf in one
+			// of the engineGenerateSecret methods.
+
 			BigInteger result = base.CalculateAgreement(pubKey);
 
-			int keySize = (int) algorithms[algorithm];
+			int keySize = GeneratorUtilities.GetDefaultKeySize(algorithm);
 
 			DHKdfParameters dhKdfParams = new DHKdfParameters(
 				new DerObjectIdentifier(algorithm),
 				keySize,
-				// TODO Fix the way bytes are derived from the secret
-				result.ToByteArrayUnsigned());
+				bigIntToBytes(result));
 
 			kdf.Init(dhKdfParams);
 
@@ -63,6 +52,13 @@ namespace Org.BouncyCastle.Crypto.Agreement
 			kdf.GenerateBytes(keyBytes, 0, keyBytes.Length);
 
 			return new BigInteger(1, keyBytes);
+		}
+
+		private byte[] bigIntToBytes(
+			BigInteger r)
+		{
+			int byteLength = X9IntegerConverter.GetByteLength(privKey.Parameters.G.X);
+			return X9IntegerConverter.IntegerToBytes(r, byteLength);
 		}
 	}
 }

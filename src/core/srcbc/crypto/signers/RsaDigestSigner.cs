@@ -52,7 +52,16 @@ namespace Org.BouncyCastle.Crypto.Signers
         {
             this.digest = digest;
 
-			algId = new AlgorithmIdentifier( (DerObjectIdentifier)oidMap[digest.AlgorithmName] , DerNull.Instance);
+			string algName = digest.AlgorithmName;
+			if (algName.Equals("NULL"))
+			{
+				this.algId = null;
+			}
+			else
+			{
+				this.algId = new AlgorithmIdentifier(
+					(DerObjectIdentifier)oidMap[digest.AlgorithmName], DerNull.Instance);
+			}
         }
 
 		public string AlgorithmName
@@ -202,12 +211,17 @@ namespace Org.BouncyCastle.Crypto.Signers
             digest.Reset();
         }
 
-		private byte[] DerEncode(
-            byte[] hash)
-        {
-            DigestInfo dInfo = new DigestInfo(algId, hash);
+		private byte[] DerEncode(byte[] hash)
+		{
+			if (algId == null)
+			{
+				// For raw RSA, the DigestInfo must be prepared externally
+				return hash;
+			}
 
-            return dInfo.GetDerEncoded();
-        }
+			DigestInfo dInfo = new DigestInfo(algId, hash);
+
+			return dInfo.GetDerEncoded();
+		}
     }
 }

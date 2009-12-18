@@ -50,40 +50,11 @@ namespace Org.BouncyCastle.Cms
 			//
             // load the RecipientInfoStore
             //
-            Asn1Set	s = envData.RecipientInfos;
-			IList infos = new ArrayList();
 			byte[] contentOctets = encInfo.EncryptedContent.GetOctets();
+			IList infos = CmsEnvelopedHelper.ReadRecipientInfos(
+            	envData.RecipientInfos, contentOctets, encAlg, null, null);
 
-			foreach (Asn1Encodable ae in s)
-            {
-                RecipientInfo info = RecipientInfo.GetInstance(ae);
-				MemoryStream contentStream = new MemoryStream(contentOctets, false);
-
-				object type = info.Info;
-
-				if (type is KeyTransRecipientInfo)
-				{
-					infos.Add(new KeyTransRecipientInformation(
-						(KeyTransRecipientInfo) type, encAlg, contentStream));
-				}
-				else if (type is KekRecipientInfo)
-				{
-					infos.Add(new KekRecipientInformation(
-						(KekRecipientInfo) type, encAlg, contentStream));
-				}
-				else if (type is KeyAgreeRecipientInfo)
-				{
-					infos.Add(new KeyAgreeRecipientInformation(
-						(KeyAgreeRecipientInfo) type, encAlg, contentStream));
-				}
-				else if (type is PasswordRecipientInfo)
-				{
-					infos.Add(new PasswordRecipientInformation(
-						(PasswordRecipientInfo) type, encAlg, contentStream));
-				}
-            }
-
-            this.recipientInfoStore = new RecipientInformationStore(infos);
+			this.recipientInfoStore = new RecipientInformationStore(infos);
             this.unprotectedAttributes = envData.UnprotectedAttrs;
         }
 

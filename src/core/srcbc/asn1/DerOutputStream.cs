@@ -143,5 +143,18 @@ namespace Org.BouncyCastle.Asn1
 				obj.ToAsn1Object().Encode(this);
 			}
 		}
+
+		public virtual void WriteObject(
+			Asn1Object obj)
+		{
+			if (obj == null)
+			{
+				WriteNull();
+			}
+			else
+			{
+				obj.Encode(this);
+			}
+		}
 	}
 }

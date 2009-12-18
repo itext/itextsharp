@@ -161,23 +161,12 @@ namespace Org.BouncyCastle.Tsp
 		public void Validate(
 			X509Certificate cert)
 		{
-			IDigest digest;
 			try
 			{
-				digest = DigestUtilities.GetDigest(certID.GetHashAlgorithm());
-			}
-			catch (SecurityUtilityException e)
-			{
-				throw new TspException("cannot find algorithm: " + e.Message, e);
-			}
+				byte[] hash = DigestUtilities.CalculateDigest(
+					certID.GetHashAlgorithm(), cert.GetEncoded());
 
-			try
-			{
-				byte[] certEncoded = cert.GetEncoded();
-				digest.BlockUpdate(certEncoded, 0, certEncoded.Length);
-				byte[] hash = DigestUtilities.DoFinal(digest);
-
-				if (!Arrays.AreEqual(certID.GetCertHash(), hash))
+				if (!Arrays.ConstantTimeAreEqual(certID.GetCertHash(), hash))
 				{
 					throw new TspValidationException("certificate hash does not match certID hash.");
 				}
@@ -230,6 +219,10 @@ namespace Org.BouncyCastle.Tsp
 			catch (CertificateEncodingException e)
 			{
 				throw new TspException("problem processing certificate: " + e, e);
+			}
+			catch (SecurityUtilityException e)
+			{
+				throw new TspException("cannot find algorithm: " + e.Message, e);
 			}
 		}
 
