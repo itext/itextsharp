@@ -162,6 +162,26 @@ namespace iTextSharp.text.pdf {
             return (PdfDictionary)fields[name];
         }
         
+        /**
+        * Gets a byte[] containing a file that is embedded in the FDF.
+        * @param name the fully qualified field name
+        * @return the bytes of the file
+        * @throws IOException 
+        * @since 5.0.1 
+        */
+        public byte[] GetAttachedFile(String name) {
+            PdfDictionary field = (PdfDictionary)fields[name];
+            if (field != null) {
+                PdfIndirectReference ir = (PRIndirectReference)field.Get(PdfName.V);
+                PdfDictionary filespec = (PdfDictionary)GetPdfObject(ir.Number);
+                PdfDictionary ef = filespec.GetAsDict(PdfName.EF);
+                ir = (PRIndirectReference)ef.Get(PdfName.F);
+                PRStream stream = (PRStream)GetPdfObject(ir.Number);
+                return GetStreamBytes(stream);
+            }
+            return new byte[0];
+        }
+        
         /** Gets the field value or <CODE>null</CODE> if the field does not
         * exist or has no value defined.
         * @param name the fully qualified field name

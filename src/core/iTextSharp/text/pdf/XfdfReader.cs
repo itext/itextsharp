@@ -86,11 +86,20 @@ namespace iTextSharp.text.pdf {
         * @param xfdfIn the byte array with the form
         * @throws IOException on error
         */    
-        public XfdfReader(byte[] xfdfIn) {
-            SimpleXMLParser.Parse( this, new MemoryStream(xfdfIn));
+        public XfdfReader(byte[] xfdfIn) : this(new MemoryStream(xfdfIn)) {
+        }
+        
+        /**
+        * Reads an XFDF form.
+        * @param is an InputStream to read the form
+        * @throws IOException on error
+        * @since 5.0.1
+        */    
+        public XfdfReader(Stream isp) {
+            SimpleXMLParser.Parse(this, isp);
     }
         
-        /** Gets all the fields. The map is keyed by the fully qualified
+    /** Gets all the fields. The map is keyed by the fully qualified
         * field name and the value is a merged <CODE>PdfDictionary</CODE>
         * with the field content.
         * @return all the fields
