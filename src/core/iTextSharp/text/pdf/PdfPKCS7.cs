@@ -279,6 +279,15 @@ namespace iTextSharp.text.pdf {
             }
         }
         
+        private void FindCRL(Asn1Sequence seq) {
+            crls = new ArrayList();
+            for (int k = 0; k < seq.Count; ++k) {
+                X509CrlParser pp = new X509CrlParser();
+                X509Crl crl = pp.ReadCrl(seq[k].GetDerEncoded());
+                crls.Add(crl);
+            }
+        }
+
         private void FindOcsp(Asn1Sequence seq) {
             basicResp = null;
             bool ret = false;
@@ -431,10 +440,14 @@ namespace iTextSharp.text.pdf {
                         Asn1Sequence seqout = (Asn1Sequence)setout[0];
                         for (int j = 0; j < seqout.Count; ++j) {
                             Asn1TaggedObject tg = (Asn1TaggedObject)seqout[j];
-                            if (tg.TagNo != 1)
-                                continue;
-                            Asn1Sequence seqin = (Asn1Sequence)tg.GetObject();
-                            FindOcsp(seqin);
+                            if (tg.TagNo == 1) {
+                                Asn1Sequence seqin = (Asn1Sequence)tg.GetObject();
+                                FindOcsp(seqin);
+                            }
+                            if (tg.TagNo == 0) {
+                                Asn1Sequence seqin = (Asn1Sequence)tg.GetObject();
+                                FindCRL(seqin);
+                            }
                         }
                     }
                 }
@@ -647,7 +660,7 @@ namespace iTextSharp.text.pdf {
         
         /**
         * Get the X.509 certificate revocation lists associated with this PKCS#7 object
-        * @return the X.509 certificate revocation lists associated with this PKCS#7 object
+        * @return the X.509 certificate revocation lists associated with this PKCS#7 object in the form of X509Crl
         */
         public ArrayList CRLs {
             get {
