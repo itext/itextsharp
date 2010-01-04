@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.util.collections;
+using System.Collections.Generic;
 using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 /*
@@ -88,9 +88,9 @@ namespace iTextSharp.text.pdf.codec {
         public const int TABLES = 53; //see 7.4.13.                                                        
         public const int EXTENSION = 62; //see 7.4.14.                                                     
         
-        private OrderedTree segments = new OrderedTree();
-        private OrderedTree pages = new OrderedTree();
-        private OrderedTree globals = new OrderedTree();
+        private SortedDictionary<int,JBIG2Segment> segments = new SortedDictionary<int,JBIG2Segment>();
+        private SortedDictionary<int,JBIG2Page> pages = new SortedDictionary<int,JBIG2Page>();
+        private SortedDictionary<JBIG2Segment,object> globals = new SortedDictionary<JBIG2Segment,object>();
         private RandomAccessFileOrArray ra;
         private bool sequential;
         private bool number_of_pages_known;
@@ -136,7 +136,7 @@ namespace iTextSharp.text.pdf.codec {
         public class JBIG2Page {
             public int page;
             private JBIG2SegmentReader sr;
-            private OrderedTree segs = new OrderedTree();
+            private SortedDictionary<int,JBIG2Segment> segs = new SortedDictionary<int,JBIG2Segment>();
             public int pageBitmapWidth = -1;
             public int pageBitmapHeight = -1;
             public JBIG2Page(int page, JBIG2SegmentReader sr) {
@@ -154,7 +154,7 @@ namespace iTextSharp.text.pdf.codec {
             public byte[] GetData(bool for_embedding) {
                 MemoryStream os = new MemoryStream();
                 foreach (int sn in segs.Keys) {
-                    JBIG2Segment s = (JBIG2Segment)segs[sn];
+                    JBIG2Segment s = segs[sn];
 
                     // pdf reference 1.4, section 3.3.6 JBIG2Decode Filter
                     // D.3 Embedded organisation
@@ -221,7 +221,7 @@ namespace iTextSharp.text.pdf.codec {
                     segments[tmp.segmentNumber] = tmp;
                 } while ( tmp.type != END_OF_FILE );
                 foreach (int ss in segments.Keys) {
-                    ReadSegment((JBIG2Segment)segments[ss]);
+                    ReadSegment(segments[ss]);
                 }
             }
         }
@@ -244,7 +244,7 @@ namespace iTextSharp.text.pdf.codec {
                 int page_bitmap_width = ra.ReadInt();
                 int page_bitmap_height = ra.ReadInt();
                 ra.Seek(last);
-                JBIG2Page p = (JBIG2Page)pages[s.page];
+                JBIG2Page p = pages[s.page];
                 if ( p == null ) {
                     throw new InvalidOperationException(MessageLocalization.GetComposedMessage("referring.to.widht.height.of.page.we.havent.seen.yet.1", s.page));
                 }
@@ -337,7 +337,7 @@ namespace iTextSharp.text.pdf.codec {
                 pages[segment_page_association] =  new JBIG2Page(segment_page_association, this);
             }
             if ( segment_page_association > 0 ) {
-                ((JBIG2Page)pages[segment_page_association]).AddSegment(s);
+                pages[segment_page_association].AddSegment(s);
             } else {
                 globals[s] = null;
             }
@@ -388,15 +388,15 @@ namespace iTextSharp.text.pdf.codec {
         }
 
         public int GetPageHeight(int i) {
-            return ((JBIG2Page)pages[i]).pageBitmapHeight;
+            return pages[i].pageBitmapHeight;
         }
 
         public int GetPageWidth(int i) {
-            return ((JBIG2Page)pages[i]).pageBitmapWidth;
+            return pages[i].pageBitmapWidth;
         }
 
         public JBIG2Page GetPage(int page) {
-            return (JBIG2Page)pages[page];
+            return pages[page];
         }
 
         public byte[] GetGlobal(bool for_embedding) {

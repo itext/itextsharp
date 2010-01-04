@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.util.collections;
 using iTextSharp.text;
@@ -220,17 +221,17 @@ namespace iTextSharp.text.pdf {
             * @param documentJavaScript the javascript used in the document
             * @param writer the writer the catalog applies to
             */
-            internal void AddNames(OrderedTree localDestinations, Hashtable documentLevelJS, Hashtable documentFileAttachment, PdfWriter writer) {
+            internal void AddNames(SortedDictionary<string,Destination> localDestinations, Hashtable documentLevelJS, Hashtable documentFileAttachment, PdfWriter writer) {
                 if (localDestinations.Count == 0 && documentLevelJS.Count == 0 && documentFileAttachment.Count == 0)
                     return;
                 PdfDictionary names = new PdfDictionary();
                 if (localDestinations.Count > 0) {
                     PdfArray ar = new PdfArray();
                     foreach (String name in localDestinations.Keys) {
-                        Object[] obj = (Object[])localDestinations[name];
-                        if (obj[2] == null) //no destination
+                        Destination dest = localDestinations[name];
+                        if (dest.destination == null) //no destination
                             continue;
-                        PdfIndirectReference refi = (PdfIndirectReference)obj[1];
+                        PdfIndirectReference refi = dest.reference;
                         ar.Add(new PdfString(name, null));
                         ar.Add(refi);
                     }
@@ -1875,23 +1876,25 @@ namespace iTextSharp.text.pdf {
         * Stores the destinations keyed by name. Value is
         * <CODE>Object[]{PdfAction,PdfIndirectReference,PdfDestintion}</CODE>.
         */
-        protected internal OrderedTree localDestinations = new OrderedTree();
+        protected internal SortedDictionary<string,Destination> localDestinations = new SortedDictionary<string,Destination>(StringComparer.Ordinal);
 
         internal PdfAction GetLocalGotoAction(String name) {
             PdfAction action;
-            Object[] obj = (Object[])localDestinations[name];
-            if (obj == null)
-                obj = new Object[3];
-            if (obj[0] == null) {
-                if (obj[1] == null) {
-                    obj[1] = writer.PdfIndirectReference;
+            Destination dest;
+            if (localDestinations.ContainsKey(name))
+                dest = localDestinations[name];
+            else
+                dest = new Destination();
+            if (dest.action == null) {
+                if (dest.reference == null) {
+                    dest.reference = writer.PdfIndirectReference;
                 }
-                action = new PdfAction((PdfIndirectReference)obj[1]);
-                obj[0] = action;
-                localDestinations[name] = obj;
+                action = new PdfAction(dest.reference);
+                dest.action = action;
+                localDestinations[name] = dest;
             }
             else {
-                action = (PdfAction)obj[0];
+                action = dest.action;
             }
             return action;
         }
@@ -1906,13 +1909,15 @@ namespace iTextSharp.text.pdf {
         * already existed
         */
         internal bool LocalDestination(String name, PdfDestination destination) {
-            Object[] obj = (Object[])localDestinations[name];
-            if (obj == null)
-                obj = new Object[3];
-            if (obj[2] != null)
+            Destination dest;
+            if (localDestinations.ContainsKey(name))
+                dest = localDestinations[name];
+            else
+                dest = new Destination();
+            if (dest.destination != null)
                 return false;
-            obj[2] = destination;
-            localDestinations[name] = obj;
+            dest.destination = destination;
+            localDestinations[name] = dest;
             if (!destination.HasPage())
                 destination.AddPage(writer.CurrentPage);
             return true;
@@ -2348,6 +2353,12 @@ namespace iTextSharp.text.pdf {
             EnsureNewLine();
             return table.TotalHeight + ((currentHeight > 0) ? table.SpacingBefore : 0f)
                 <= IndentTop - currentHeight - IndentBottom - margin;
-        }        
+        } 
+       
+        public class Destination {
+            public PdfAction action;
+            public PdfIndirectReference reference;
+            public PdfDestination destination;
+        }
     }
 }
