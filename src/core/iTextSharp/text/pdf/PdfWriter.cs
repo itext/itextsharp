@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.util.collections;
 using System.util;
 using iTextSharp.text;
@@ -749,16 +750,16 @@ namespace iTextSharp.text.pdf {
         * @param dest the <CODE>Hashtable</CODE> containing the destinations
         * @throws IOException on error
         */
-        internal void AddLocalDestinations(OrderedTree dest) {
-            foreach (String name in dest.Keys) {
-                Object[] obj = (Object[])dest[name];
-                PdfDestination destination = (PdfDestination)obj[2];
-                if (obj[1] == null)
-                    obj[1] = PdfIndirectReference;
+        internal void AddLocalDestinations(SortedDictionary<string,PdfDocument.Destination> desto) {
+            foreach (String name in desto.Keys) {
+                PdfDocument.Destination dest = desto[name];
+                PdfDestination destination = dest.destination;
+                if (dest.reference == null)
+                    dest.reference = PdfIndirectReference;
                 if (destination == null)
-                    AddToBody(new PdfString("invalid_" + name), (PdfIndirectReference)obj[1]);
+                    AddToBody(new PdfString("invalid_" + name), dest.reference);
                 else
-                    AddToBody(destination, (PdfIndirectReference)obj[1]);
+                    AddToBody(destination, dest.reference);
             }
         }
 
