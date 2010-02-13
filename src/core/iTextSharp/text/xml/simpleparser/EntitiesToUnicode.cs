@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
 /*
@@ -58,7 +58,7 @@ namespace iTextSharp.text.xml.simpleparser {
         /**
         * This is a map that contains the names of entities and their unicode value.
         */
-        public static readonly Hashtable map = new Hashtable();
+        public static readonly Dictionary<string,char> map = new Dictionary<string,char>();
 
         static EntitiesToUnicode() {
             map["nbsp"] = '\u00a0'; // no-break space = non-breaking space, U+00A0 ISOnum
@@ -382,11 +382,10 @@ namespace iTextSharp.text.xml.simpleparser {
     			    return '\0';
     		    }
     	    }
-            object c = map[name];
-            if (c == null)
-                return '\0';
+            if (map.ContainsKey(name))
+                return map[name];
             else
-                return (char)c;
+                return '\0';
         }
 
         /**

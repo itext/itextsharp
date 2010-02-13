@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Text;
 using System.util;
 /*
@@ -83,7 +82,7 @@ namespace iTextSharp.text {
         * @throws  ClassCastException if the object is not a <CODE>Paragraph</CODE>, <CODE>List</CODE> or <CODE>Table</CODE>
         */
          
-        public void Add(int index, Object o) {
+        public void Add(int index, IElement o) {
             ((Section)element).Add(index, o);
         }
             
@@ -96,7 +95,7 @@ namespace iTextSharp.text {
         * @throws  ClassCastException if the object is not a <CODE>Paragraph</CODE>, <CODE>List</CODE>, <CODE>Table</CODE> or <CODE>Section</CODE>
         */
             
-        public bool Add(Object o) {
+        public bool Add(IElement o) {
             return ((Section)element).Add(o);
         }
 
@@ -128,7 +127,7 @@ namespace iTextSharp.text {
         * @throws  ClassCastException if one of the objects isn't a <CODE>Paragraph</CODE>, <CODE>List</CODE>, <CODE>Table</CODE>
         */
             
-        public bool AddAll(ICollection collection) {
+        public bool AddAll<T>(ICollection<T> collection) where T : IElement {
             return ((Section)element).AddAll(collection);
         }
             

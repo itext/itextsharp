@@ -136,6 +136,7 @@ getcell.at.illegal.index.1.max.is.2=getCell at illegal index :{1} max is {2}
 getcell.at.illegal.index.1=getCell at illegal index : {1}
 gif.signature.nor.found=Gif signature nor found.
 greaterthan.not.expected='>' not expected
+handler.1.already.registered=XObject handler {1} already registered
 illegal.capacity.1=Illegal Capacity: {1}
 illegal.character.in.ascii85decode=Illegal character in ASCII85Decode.
 illegal.character.in.asciihexdecode=Illegal character in ASCIIHexDecode.

@@ -59,7 +59,7 @@ namespace iTextSharp.text {
     ///               <strong>new Font(Font.HELVETICA, 18, Font.BOLDITALIC, new BaseColor(0, 0, 255))</strong>);
     /// </code>
     /// </example>
-    public class Font : IComparable {
+    public class Font : IComparable<Font> {
     
         // static membervariables for the different families
     
@@ -222,13 +222,11 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="obj">the other Font</param>
         /// <returns>a value</returns>
-        public virtual int CompareTo(Object obj) {
-            if (obj == null) {
+        public virtual int CompareTo(Font font) {
+            if (font == null) {
                 return -1;
             }
-            Font font;
             try {
-                font = (Font) obj;
                 if (baseFont != null && !baseFont.Equals(font.BaseFont)) {
                     return -2;
                 }
@@ -293,15 +291,15 @@ namespace iTextSharp.text {
                     default:
                         if (baseFont != null) {
                             string[][] names = baseFont.FamilyFontName;
-                            for (int i = 0; i < names.Length; i++) {
-                                if ("0".Equals(names[i][2])) {
-                                    return names[i][3];
+                            foreach (string[] name in names) {
+                                if ("0".Equals(name[2])) {
+                                    return name[3];
                                 }
-                                if ("1033".Equals(names[i][2])) {
-                                    tmp = names[i][3];
+                                if ("1033".Equals(name[2])) {
+                                    tmp = name[3];
                                 }
-                                if ("".Equals(names[i][2])) {
-                                    tmp = names[i][3];
+                                if ("".Equals(name[2])) {
+                                    tmp = name[3];
                                 }
                             }
                         }

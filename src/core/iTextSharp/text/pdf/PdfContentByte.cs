@@ -1138,6 +1138,17 @@ namespace iTextSharp.text.pdf {
         }
         
         /**
+         * adds an image with the given matrix.
+         * @param image image to add
+         * @param transform transform to apply to the template prior to adding it.
+         * @since 5.0.1
+         */
+        public void AddImage(Image image, System.Drawing.Drawing2D.Matrix transform) {
+            float[] matrix = transform.Elements;
+            AddImage(image, matrix[0], matrix[1], matrix[2], 
+                     matrix[3], matrix[4], matrix[5], false );
+        }
+        /**
         * Adds an <CODE>Image</CODE> to the page. The positioning of the <CODE>Image</CODE>
         * is done with the transformation matrix. To position an <CODE>image</CODE> at (x,y)
         * use AddImage(image, image_width, 0, 0, image_height, x, y). The image can be placed inline.
@@ -1515,6 +1526,17 @@ namespace iTextSharp.text.pdf {
         }
     
         /**
+         * Changes the text matrix.
+         * <P>
+         * @param transform overwrite the current text matrix with this one
+         * @since 5.0.1
+         */
+        public void SetTextMatrix(System.Drawing.Drawing2D.Matrix transform) {
+            float[] matrix = transform.Elements;
+            SetTextMatrix(matrix[0], matrix[1], matrix[2], 
+                          matrix[3], matrix[4], matrix[5]);
+        }
+        /**
          * Changes the text matrix. The first four parameters are {1,0,0,1}.
          * <P>
          * Remark: this operation also initializes the current point position.</P>
@@ -1764,6 +1786,15 @@ namespace iTextSharp.text.pdf {
             content.Append(d).Append(' ').Append(e).Append(' ').Append(f).Append(" cm").Append_i(separator);
         }
     
+        /**
+         * Concatenate a matrix to the current transformation matrix.
+         * @param transform added to the Current Transformation Matrix
+         * @since 5.0.1
+         */
+        public void ConcatCTM(System.Drawing.Drawing2D.Matrix transform) {
+            Transform(transform);
+        }
+            
         /**
          * Generates an array of bezier curves to draw an arc.
          * <P>
@@ -2043,6 +2074,18 @@ namespace iTextSharp.text.pdf {
             content.Append(name.GetBytes()).Append(" Do Q").Append_i(separator);
         }
     
+        /**
+         * adds a template with the given matrix.
+         * @param template template to add
+         * @param transform transform to apply to the template prior to adding it.
+         * @since 5.0.1
+         */
+        public void AddTemplate(PdfTemplate template, System.Drawing.Drawing2D.Matrix transform) {
+            float[] matrix = transform.Elements;
+            AddTemplate(template, matrix[0], matrix[1], matrix[2], 
+                      matrix[3], matrix[4],matrix[5]);
+        }
+
         internal void AddTemplateReference(PdfIndirectReference template, PdfName name, float a, float b, float c, float d, float e, float f) {
             CheckWriter();
             PageResources prs = PageResources;

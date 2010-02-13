@@ -1,6 +1,6 @@
 using System;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 
 /*
  * $Id$
@@ -639,7 +639,7 @@ namespace iTextSharp.text.pdf {
                 if (fontName.Equals(fonts[j].name)) break;
             if (j==fonts.Length) return null;
             
-            ArrayList l = new ArrayList();
+            List<Item> l = new List<Item>();
             
             // copy the header
             
@@ -771,9 +771,9 @@ namespace iTextSharp.text.pdf {
                 
                 l.Add(new UInt16Item((char)((stringOffsets.Length-1)+3))); // count
                 l.Add(new UInt8Item((char)stringsIndexOffSize)); // offSize
-                for (int i=0; i<stringOffsets.Length; i++)
+                foreach (int stringOffset in stringOffsets)
                     l.Add(new IndexOffsetItem(stringsIndexOffSize,
-                    stringOffsets[i]-stringsBaseOffset));
+                    stringOffset-stringsBaseOffset));
                 int currentStringsOffset = stringOffsets[stringOffsets.Length-1]
                 - stringsBaseOffset;
                 //l.Add(new IndexOffsetItem(stringsIndexOffSize,currentStringsOffset));

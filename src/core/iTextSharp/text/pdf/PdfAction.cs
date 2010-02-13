@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.util;
 using iTextSharp.text.pdf.collection;
 using iTextSharp.text.error_messages;
@@ -483,7 +483,7 @@ namespace iTextSharp.text.pdf {
         * If <CODE>false</CODE>, radio-button state relationships, if any, are ignored
         * @return the action
         */    
-        public static PdfAction SetOCGstate(ArrayList state, bool preserveRB) {
+        public static PdfAction SetOCGstate(List<Object> state, bool preserveRB) {
             PdfAction action = new PdfAction();
             action.Put(PdfName.S, PdfName.SETOCGSTATE);
             PdfArray a = new PdfArray();

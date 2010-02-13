@@ -1,7 +1,7 @@
 using System;
 using iTextSharp.text;
 using iTextSharp.text.pdf.codec;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using iTextSharp.text.error_messages;
 
@@ -1568,7 +1568,7 @@ namespace iTextSharp.text.pdf {
         }
         
         protected class SegmentList {
-            protected ArrayList list = new ArrayList();
+            protected List<Segment> list = new List<Segment>();
             
             public void Add(char type, int start, int end) {
                 list.Add(new Segment(type, start, end));
@@ -1577,7 +1577,7 @@ namespace iTextSharp.text.pdf {
             public Segment Get(int idx) {
                 if (idx < 0 || idx >= list.Count)
                     return null;
-                return (Segment)list[idx];
+                return list[idx];
             }
 
             public void Remove(int idx) {

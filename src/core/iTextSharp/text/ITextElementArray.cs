@@ -61,6 +61,6 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="o">an object that has to be added</param>
         /// <returns>true if the addition succeeded; false otherwise</returns>
-        bool Add(Object o);
+        bool Add(IElement o);
     }
 }

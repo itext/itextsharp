@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Diagnostics;
 using System.IO;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using System.util;
 using iTextSharp.text.xml.simpleparser;
 using iTextSharp.text.error_messages;
@@ -232,7 +232,7 @@ namespace iTextSharp.text.pdf {
         /** The fake CID code that represents a newline. */    
         public const char CID_NEWLINE = '\u7fff';
 
-        protected ArrayList subsetRanges;
+        protected List<int[]> subsetRanges;
 
         /** The font type.
          */    
@@ -268,10 +268,10 @@ namespace iTextSharp.text.pdf {
         protected bool fontSpecific = true;
     
         /** cache for the fonts already used. */
-        protected static Hashtable fontCache = new Hashtable();
+        protected static Dictionary<String, BaseFont> fontCache = new Dictionary<string,BaseFont>();
     
         /** list of the 14 built in fonts. */
-        protected static Hashtable BuiltinFonts14 = new Hashtable();
+        protected static Dictionary<String, PdfName> BuiltinFonts14 = new Dictionary<string,PdfName>();
     
         /** Forces the output of the width array. Only matters for the 14
          * built-in fonts.
@@ -296,7 +296,7 @@ namespace iTextSharp.text.pdf {
         */
         protected IntHashtable specialMap;
 
-        protected static internal ArrayList resourceSearch = ArrayList.Synchronized(new ArrayList());
+        protected static internal List<object> resourceSearch = new List<object>();
 
         private static Random random = new Random();
 
@@ -659,7 +659,7 @@ namespace iTextSharp.text.pdf {
             string key = name + "\n" + encoding + "\n" + embedded;
             if (cached) {
                 lock (fontCache) {
-                    fontFound = (BaseFont)fontCache[key];
+                     fontCache.TryGetValue(key, fontFound);
                 }
                 if (fontFound != null)
                     return fontFound;
@@ -684,10 +684,10 @@ namespace iTextSharp.text.pdf {
                 throw new DocumentException(MessageLocalization.GetComposedMessage("font.1.with.2.is.not.recognized", name, encoding));
             if (cached) {
                 lock (fontCache) {
-                    fontFound = (BaseFont)fontCache[key];
+                    fontCache.TryGetValue(key, fontFound);
                     if (fontFound != null)
                         return fontFound;
-                    fontCache.Add(key, fontBuilt);
+                    fontCache[key] = fontBuilt;
                 }
             }
             return fontBuilt;
@@ -1330,13 +1330,15 @@ namespace iTextSharp.text.pdf {
         }
 
         public static void AddToResourceSearch (object obj) {
-            if (obj is Assembly) {
-                resourceSearch.Add(obj);
-            }
-            else if (obj is string) {
-                string f = (string)obj;
-                if (Directory.Exists(f) || File.Exists(f))
+            lock (resourceSearch) {
+                if (obj is Assembly) {
                     resourceSearch.Add(obj);
+                }
+                else if (obj is string) {
+                    string f = (string)obj;
+                    if (Directory.Exists(f) || File.Exists(f))
+                        resourceSearch.Add(obj);
+                }
             }
         }
 
@@ -1356,8 +1358,15 @@ namespace iTextSharp.text.pdf {
             }
             if (istr != null)
                 return istr;
-            for (int k = 0; k < resourceSearch.Count; ++k) {
-                object obj = resourceSearch[k];
+            int count;
+            lock (resourceSearch) {
+                count = resourceSearch.Count;
+            }
+            for (int k = 0; k < count; ++k) {
+                object obj;
+                lock (resourceSearch) {
+                    obj = resourceSearch[k];
+                }
                 try {
                     if (obj is Assembly) {
                         istr = ((Assembly)obj).GetManifestResourceStream(key);
@@ -1444,7 +1453,7 @@ namespace iTextSharp.text.pdf {
             return true;
         }
         
-        private static void AddFont(PRIndirectReference fontRef, IntHashtable hits, ArrayList fonts) {
+        private static void AddFont(PRIndirectReference fontRef, IntHashtable hits, List<object[]> fonts) {
             PdfObject obj = PdfReader.GetPdfObject(fontRef);
             if (obj == null || !obj.IsDictionary())
                 return;
@@ -1457,7 +1466,7 @@ namespace iTextSharp.text.pdf {
             hits[fontRef.Number] = 1;
         }
         
-        private static void RecourseFonts(PdfDictionary page, IntHashtable hits, ArrayList fonts, int level) {
+        private static void RecourseFonts(PdfDictionary page, IntHashtable hits, List<object[]> fonts, int level) {
             ++level;
             if (level > 50) // in case we have an endless loop
                 return;
@@ -1491,9 +1500,9 @@ namespace iTextSharp.text.pdf {
         * @param reader the document where the fonts are to be listed from
         * @return the list of fonts and references
         */    
-        public static ArrayList GetDocumentFonts(PdfReader reader) {
+        public static List<object[]> GetDocumentFonts(PdfReader reader) {
             IntHashtable hits = new IntHashtable();
-            ArrayList fonts = new ArrayList();
+            List<object[]> fonts = new List<object[]>();
             int npages = reader.NumberOfPages;
             for (int k = 1; k <= npages; ++k)
                 RecourseFonts(reader.GetPageN(k), hits, fonts, 1);
@@ -1508,9 +1517,9 @@ namespace iTextSharp.text.pdf {
         * @param page the page to list the fonts from
         * @return the list of fonts and references
         */    
-        public static ArrayList GetDocumentFonts(PdfReader reader, int page) {
+        public static List<object[]> GetDocumentFonts(PdfReader reader, int page) {
             IntHashtable hits = new IntHashtable();
-            ArrayList fonts = new ArrayList();
+            List<object[]> fonts = new List<object[]>();
             RecourseFonts(reader.GetPageN(page), hits, fonts, 1);
             return fonts;
         }
@@ -1563,7 +1572,7 @@ namespace iTextSharp.text.pdf {
         */
         public void AddSubsetRange(int[] range) {
             if (subsetRanges == null)
-                subsetRanges = new ArrayList();
+                subsetRanges = new List<int[]>();
             subsetRanges.Add(range);
         }
 

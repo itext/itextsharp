@@ -103,7 +103,7 @@ namespace iTextSharp.text
         * @param    o    the object to add.
         * @return true if adding the object succeeded
         */
-        public override bool Add(Object o) {
+        public override bool Add(IElement o) {
             if (o is ListItem) {
                 ListItem item = (ListItem) o;
                 Chunk chunk = new Chunk(preSymbol, symbol.Font);
@@ -120,8 +120,6 @@ namespace iTextSharp.text
                 first--;
                 list.Add(nested);
                 return true;
-            } else if (o is String) {
-                return this.Add(new ListItem((string) o));
             }
             return false;
         }

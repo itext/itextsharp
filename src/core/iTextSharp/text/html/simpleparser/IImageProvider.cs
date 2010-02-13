@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text;
 /*
  * This file is part of the iText project.
@@ -45,6 +45,6 @@ using iTextSharp.text;
 
 namespace iTextSharp.text.html.simpleparser {
     public interface IImageProvider {
-        Image GetImage(String src, Hashtable h, ChainedProperties cprops, IDocListener doc);
+        Image GetImage(String src, Dictionary<string,string> h, ChainedProperties cprops, IDocListener doc);
     }
 }

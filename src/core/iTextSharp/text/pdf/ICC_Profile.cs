@@ -1,6 +1,6 @@
 using System;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using iTextSharp.text.error_messages;
 
@@ -57,7 +57,7 @@ namespace iTextSharp.text.pdf
     {
         protected byte[] data;
         protected int numComponents;
-        private static Hashtable cstags = new Hashtable();
+        private static Dictionary<string,int> cstags = new Dictionary<string,int>();
         
         protected ICC_Profile() {
         }
@@ -68,8 +68,7 @@ namespace iTextSharp.text.pdf
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.icc.profile"));
             ICC_Profile icc = new ICC_Profile();
             icc.data = data;
-            object cs = cstags[Encoding.ASCII.GetString(data, 16, 4)];
-            icc.numComponents = (cs == null ? 0 : (int)cs);
+            cstags.TryGetValue(Encoding.ASCII.GetString(data, 16, 4), icc.numComponents);
             return icc;
         }
         

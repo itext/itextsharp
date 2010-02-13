@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.util;
 
 using iTextSharp.text.html;
@@ -190,7 +190,7 @@ namespace iTextSharp.text
         /// Gets all the chunks in this element.
         /// </summary>
         /// <value>an ArrayList</value>
-        public override ArrayList Chunks 
+        public override List<Chunk> Chunks 
         {
             get 
             {

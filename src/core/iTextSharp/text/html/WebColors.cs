@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using iTextSharp.text;
 using System.util;
@@ -58,7 +58,7 @@ namespace iTextSharp.text.html {
     * 
     * @author blowagie
     */
-    public class WebColors : Hashtable {
+    public class WebColors : Dictionary<string,int[]> {
 
         public static WebColors NAMES = new WebColors();
         static WebColors() {
@@ -251,7 +251,7 @@ namespace iTextSharp.text.html {
             if (!NAMES.ContainsKey(name))
                 throw new ArgumentException("Color '" + name
                         + "' not found.");
-            c = (int[]) NAMES[name];
+            c = NAMES[name];
             return new BaseColor(c[0], c[1], c[2], c[3]);
         }
     }

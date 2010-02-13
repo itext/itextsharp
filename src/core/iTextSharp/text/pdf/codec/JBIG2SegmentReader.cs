@@ -101,7 +101,7 @@ namespace iTextSharp.text.pdf.codec {
         * Inner class that holds information about a JBIG2 segment.
         * @since   2.1.5
         */
-        public class JBIG2Segment : IComparable {
+        public class JBIG2Segment : IComparable<JBIG2Segment> {
 
             public int segmentNumber;
             public long dataLength = -1;
@@ -118,11 +118,6 @@ namespace iTextSharp.text.pdf.codec {
 
             public JBIG2Segment(int segment_number) {
                 this.segmentNumber = segment_number;
-            }
-
-            // for the globals treeset
-            public int CompareTo(Object o) {
-                return this.CompareTo((JBIG2Segment)o);
             }
 
             public int CompareTo(JBIG2Segment s) {

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 
 /*
@@ -116,7 +116,7 @@ namespace iTextSharp.text {
         public static float WmfFontCorrection = 0.86f;
 
         ///<summary> The IDocListener. </summary>
-        private ArrayList listeners = new ArrayList();
+        private List<IDocListener> listeners = new List<IDocListener>();
 
         ///<summary> Is the document open or not? </summary>
         protected bool open;

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
@@ -91,7 +91,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Array of <CODE>ColumnDef</CODE> objects used to define the columns
         */
-        private ArrayList columnDefs;
+        private List<ColumnDef> columnDefs;
 
         /**
         * true if all columns are simple (rectangular)
@@ -120,7 +120,7 @@ namespace iTextSharp.text.pdf {
         * @param height
         */
         public MultiColumnText(float height) {
-            columnDefs = new ArrayList();
+            columnDefs = new List<ColumnDef>();
             desiredHeight = height;
             top = AUTOMATIC;
             // canvas will be set later
@@ -136,7 +136,7 @@ namespace iTextSharp.text.pdf {
         * @param top
         */
         public MultiColumnText(float top, float height) {
-            columnDefs = new ArrayList();
+            columnDefs = new List<ColumnDef>();
             desiredHeight = height;
             this.top = top;
             nextY = top;
@@ -282,7 +282,7 @@ namespace iTextSharp.text.pdf {
                     nextY = document.GetVerticalPosition(true); // RS - 07/07/2005 - - Get current doc writing position for top of columns on new page.
                 }
 
-                ColumnDef currentDef = (ColumnDef) columnDefs[CurrentColumn];
+                ColumnDef currentDef = columnDefs[CurrentColumn];
                 columnText.YLine = top;
 
                 float[] left = currentDef.ResolvePositions(Rectangle.LEFT_BORDER);
@@ -400,7 +400,7 @@ namespace iTextSharp.text.pdf {
         * @return  null
         */
 
-        public ArrayList Chunks {
+        public List<Chunk> Chunks {
             get {
                 return null;
             }

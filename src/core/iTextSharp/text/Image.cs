@@ -3,7 +3,6 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Runtime.CompilerServices;
-using System.Collections;
 using System.util;
 using System.Reflection;
 using iTextSharp.text.error_messages;

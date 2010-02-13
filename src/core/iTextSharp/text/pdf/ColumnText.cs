@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.util.collections;
 using iTextSharp.text.pdf.draw;
 using iTextSharp.text.error_messages;
@@ -154,10 +154,10 @@ public class ColumnText {
     protected int alignment = Element.ALIGN_LEFT;
     
     /** The left column bound. */
-    protected ArrayList leftWall;
+    protected List<float[]> leftWall;
  
     /** The right column bound. */
-    protected ArrayList rightWall;
+    protected List<float[]> rightWall;
     
     /** The chunks that form the text. */
 //    protected ArrayList chunks = new ArrayList();
@@ -221,7 +221,7 @@ public class ColumnText {
     
     protected ColumnText compositeColumn;
     
-    protected internal ArrayList compositeElements;
+    protected internal List<IElement> compositeElements;
     
     protected int listIdx = 0;
     
@@ -268,10 +268,10 @@ public class ColumnText {
         alignment = org.alignment;
         leftWall = null;
         if (org.leftWall != null)
-            leftWall = new ArrayList(org.leftWall);
+            leftWall = new List<float[]>(org.leftWall);
         rightWall = null;
         if (org.rightWall != null)
-            rightWall = new ArrayList(org.rightWall);
+            rightWall = new List<float[]>(org.rightWall);
         yLine = org.yLine;
         currentLeading = org.currentLeading;
         fixedLeading = org.fixedLeading;
@@ -294,7 +294,7 @@ public class ColumnText {
         composite = org.composite;
         splittedRow = org.splittedRow;
         if (org.composite) {
-            compositeElements = new ArrayList(org.compositeElements);
+            compositeElements = new List<IElement>(org.compositeElements);
             if (splittedRow) {
                 PdfPTable table = (PdfPTable)compositeElements[0];
                 compositeElements[0] = new PdfPTable(table);
@@ -419,7 +419,7 @@ public class ColumnText {
             throw new ArgumentException(MessageLocalization.GetComposedMessage("element.not.allowed"));
         if (!composite) {
             composite = true;
-            compositeElements = new ArrayList();
+            compositeElements = new List<IElement>();
             bidiLine = null;
             waitPhrase = null;
         }
@@ -435,10 +435,10 @@ public class ColumnText {
      * @param cLine the column array
      * @return the converted array
      */
-    protected ArrayList ConvertColumn(float[] cLine) {
+    protected List<float []> ConvertColumn(float[] cLine) {
         if (cLine.Length < 4)
             throw new Exception(MessageLocalization.GetComposedMessage("no.valid.column.line.found"));
-        ArrayList cc = new ArrayList();
+        List<float []> cc = new List<float []>();
         for (int k = 0; k < cLine.Length - 2; k += 2) {
             float x1 = cLine[k];
             float y1 = cLine[k + 1];
@@ -469,14 +469,14 @@ public class ColumnText {
      * @param wall the column to intersect
      * @return the x coordinate of the intersection
      */
-    protected float FindLimitsPoint(ArrayList wall) {
+    protected float FindLimitsPoint(List<float []> wall) {
         lineStatus = LINE_STATUS_OK;
         if (yLine < minY || yLine > maxY) {
             lineStatus = LINE_STATUS_OFFLIMITS;
             return 0;
         }
         for (int k = 0; k < wall.Count; ++k) {
-            float[] r = (float[])wall[k];
+            float[] r = wall[k];
             if (yLine < r[0] || yLine > r[1])
                 continue;
             return r[2] * yLine + r[3];
@@ -1041,7 +1041,7 @@ public class ColumnText {
         while (true) {
             if (compositeElements.Count == 0)
                 return NO_MORE_TEXT;
-            IElement element = (IElement)compositeElements[0];
+            IElement element = compositeElements[0];
             if (element.Type == Element.PARAGRAPH) {
                 Paragraph para = (Paragraph)element;
                 int status = 0;
@@ -1103,11 +1103,11 @@ public class ColumnText {
             }
             else if (element.Type == Element.LIST) {
                 List list = (List)element;
-                ArrayList items = list.Items;
+                List<IElement> items = list.Items;
                 ListItem item = null;
                 float listIndentation = list.IndentationLeft;
                 int count = 0;
-                Stack stack = new Stack();
+                Stack<Object[]> stack = new Stack<Object[]>();
                 for (int k = 0; k < items.Count; ++k) {
                     Object obj = items[k];
                     if (obj is ListItem) {
@@ -1127,7 +1127,7 @@ public class ColumnText {
                     }
                     if (k == items.Count - 1) {
                         if (stack.Count > 0) {
-                            Object[] objs = (Object[])stack.Pop();
+                            Object[] objs = stack.Pop();
                             list = (List)objs[0];
                             items = list.Items;
                             k = (int)objs[1];
@@ -1288,7 +1288,7 @@ public class ColumnText {
                             splittedRow = true;
                             table = new PdfPTable(table);
                             compositeElements[0] = table;
-                            ArrayList rows = table.Rows;
+                            List<PdfPRow> rows = table.Rows;
                             for (int i = headerRows; i < listIdx; ++i)
                                 rows[i] = null;
                         }
@@ -1330,7 +1330,7 @@ public class ColumnText {
                     }
                     // copy the rows that fit on the page in a new table nt
                     PdfPTable nt = PdfPTable.ShallowCopy(table);
-                    ArrayList sub = nt.Rows;
+                    List<PdfPRow> sub = nt.Rows;
                     
                     // first we add the real header rows (if necessary)
                     if (!skipHeader && realHeaderRows > 0) {
@@ -1359,7 +1359,7 @@ public class ColumnText {
                     float rowHeight = 0;
                     int index = sub.Count - 1;
                     if (showFooter) index -= footerRows;
-                    PdfPRow last = (PdfPRow)sub[index];
+                    PdfPRow last = sub[index];
                     if (table.IsExtendLastRow(newPageFollows)) {
                         rowHeight = last.MaxHeights;
                         last.MaxHeights = yTemp - minY + rowHeight;
@@ -1390,7 +1390,7 @@ public class ColumnText {
                 }
                 else {
                     if (splittedRow) {
-                        ArrayList rows = table.Rows;
+                        List<PdfPRow> rows = table.Rows;
                         for (int i = listIdx; i < k; ++i)
                             rows[i] = null;
                     }

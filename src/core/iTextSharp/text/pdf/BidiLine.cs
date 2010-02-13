@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 /*
@@ -63,7 +63,7 @@ namespace iTextSharp.text.pdf {
         protected byte[] orderLevels = new byte[pieceSizeStart];
         protected int[] indexChars = new int[pieceSizeStart];
     
-        protected ArrayList chunks = new ArrayList();
+        protected List<PdfChunk> chunks = new List<PdfChunk>();
         protected int indexChunk = 0;
         protected int indexChunkChar = 0;
         protected int currentChar = 0;
@@ -98,7 +98,7 @@ namespace iTextSharp.text.pdf {
             orderLevels = (byte[])org.orderLevels.Clone();
             indexChars = (int[])org.indexChars.Clone();
 
-            chunks = new ArrayList(org.chunks);
+            chunks = new List<PdfChunk>(org.chunks);
             indexChunk = org.indexChunk;
             indexChunkChar = org.indexChunkChar;
             currentChar = org.currentChar;
@@ -138,7 +138,7 @@ namespace iTextSharp.text.pdf {
             char uniC;
             BaseFont bf;
             for (; indexChunk < chunks.Count; ++indexChunk) {
-                PdfChunk ck = (PdfChunk)chunks[indexChunk];
+                PdfChunk ck = chunks[indexChunk];
                 bf = ck.Font.Font;
                 string s = ck.ToString();
                 int len = s.Length;
@@ -197,7 +197,7 @@ namespace iTextSharp.text.pdf {
             chunks.Add(chunk);
         }
     
-        public void AddChunks(ArrayList chunks) {
+        public void AddChunks(List<PdfChunk> chunks) {
             this.chunks.AddRange(chunks);
         }
     
@@ -327,7 +327,7 @@ namespace iTextSharp.text.pdf {
                 if (!hasText)
                     return null;
                 if (totalTextLength == 0) {
-                    ArrayList ar = new ArrayList();
+                    List<PdfChunk> ar = new List<PdfChunk>();
                     PdfChunk ckx = new PdfChunk("", detailChunks[0]);
                     ar.Add(ckx);
                     return new PdfLine(0, 0, 0, alignment, true, ar, isRTL);
@@ -451,15 +451,15 @@ namespace iTextSharp.text.pdf {
             return width;
         }
     
-        public ArrayList CreateArrayOfPdfChunks(int startIdx, int endIdx) {
+        public List<PdfChunk> CreateArrayOfPdfChunks(int startIdx, int endIdx) {
             return CreateArrayOfPdfChunks(startIdx, endIdx, null);
         }
         
-        public ArrayList CreateArrayOfPdfChunks(int startIdx, int endIdx, PdfChunk extraPdfChunk) {
+        public List<PdfChunk> CreateArrayOfPdfChunks(int startIdx, int endIdx, PdfChunk extraPdfChunk) {
             bool bidi = (runDirection == PdfWriter.RUN_DIRECTION_LTR || runDirection == PdfWriter.RUN_DIRECTION_RTL);
             if (bidi)
                 Reorder(startIdx, endIdx);
-            ArrayList ar = new ArrayList();
+            List<PdfChunk> ar = new List<PdfChunk>();
             PdfChunk refCk = detailChunks[startIdx];
             PdfChunk ck = null;
             StringBuilder buf = new StringBuilder();

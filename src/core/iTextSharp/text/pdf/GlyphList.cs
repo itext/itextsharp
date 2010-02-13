@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
 using System.util;
@@ -52,8 +52,8 @@ using System.util;
 namespace iTextSharp.text.pdf {
 
     public class GlyphList {
-        private static Hashtable unicode2names = new Hashtable();
-        private static Hashtable names2unicode = new Hashtable();
+        private static Dictionary<int,string> unicode2names = new Dictionary<int,string>();
+        private static Dictionary<string,int[]> names2unicode = new Dictionary<string,int[]>();
     
         static GlyphList() {
             Stream istr = null;
@@ -109,11 +109,15 @@ namespace iTextSharp.text.pdf {
         }
     
         public static int[] NameToUnicode(string name) {
-            return (int[])names2unicode[name];
+            int[] a;
+            names2unicode.TryGetValue(name, out a);
+            return a;
         }
     
         public static string UnicodeToName(int num) {
-            return (string)unicode2names[num];
+            string a;
+            unicode2names.TryGetValue(num, out a);
+            return a;
         }
     }
 }

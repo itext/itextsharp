@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
@@ -47,7 +47,15 @@ namespace iTextSharp.text.html.simpleparser {
 public class ChainedProperties {
     
         public static int[] fontSizes = {8, 10, 12, 14, 18, 24, 36};
-        public ArrayList chain = new ArrayList();
+        internal sealed class ChainedProperty {
+            internal String key;
+            internal Dictionary<String, String> property;
+            internal ChainedProperty(String key, Dictionary<String, String> property) {
+                this.key = key;
+                this.property = property;
+            }
+        }
+        public List<ChainedProperty> chain = new List<ChainedProperty>();
         
         /** Creates a new instance of ChainedProperties */
         public ChainedProperties() {
@@ -56,11 +64,10 @@ public class ChainedProperties {
         public String this[String key] {
             get {
                 for (int k = chain.Count - 1; k >= 0; --k) {
-                    Object[] obj = (Object[])chain[k];
-                    Hashtable prop = (Hashtable)obj[1];
-                    String ret = (String)prop[key];
-                    if (ret != null)
-                        return ret;
+                    ChainedProperty p = chain[k];
+                    Dictionary<String, String> prop = p.property;
+                    if (prop.ContainsKey(key))
+                        return prop[key];
                 }
                 return null;
             }
@@ -68,17 +75,17 @@ public class ChainedProperties {
         
         public bool HasProperty(String key) {
             for (int k = chain.Count - 1; k >= 0; --k) {
-                Object[] obj = (Object[])chain[k];
-                Hashtable prop = (Hashtable)obj[1];
+                ChainedProperty p = chain[k];
+                Dictionary<String, String> prop = p.property;
                 if (prop.ContainsKey(key))
                     return true;
             }
             return false;
         }
         
-        public void AddToChain(String key, Hashtable prop) {
+        public void AddToChain(String key, Dictionary<String, String> prop) {
             // adjust the font size
-            String value = (String)prop[ElementTags.SIZE];
+            String value = prop[ElementTags.SIZE];
             if (value != null) {
                 if (value.EndsWith("pt")) {
                     prop[ElementTags.SIZE] = value.Substring(0, value.Length - 2);
@@ -115,12 +122,12 @@ public class ChainedProperties {
                     prop[ElementTags.SIZE] = fontSizes[s].ToString();
                 }
             }
-            chain.Add(new Object[]{key, prop});
+            chain.Add(new ChainedProperty(key, prop));
         }
         
         public void RemoveChain(String key) {
             for (int k = chain.Count - 1; k >= 0; --k) {
-                if (key.Equals(((Object[])chain[k])[0])) {
+                if (key.Equals(chain[k].key)) {
                     chain.RemoveAt(k);
                     return;
                 }

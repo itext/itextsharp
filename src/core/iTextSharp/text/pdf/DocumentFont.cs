@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
@@ -46,7 +46,7 @@ namespace iTextSharp.text.pdf {
     public class DocumentFont : BaseFont {
         
         // code, [glyph, width]
-        private Hashtable metrics = new Hashtable();
+        private Dictionary<int, int[]> metrics = new Dictionary<int,int[]>();
         private String fontName;
         private PRIndirectReference refFont;
         private PdfDictionary font;
@@ -518,7 +518,8 @@ namespace iTextSharp.text.pdf {
             if (cjkMirror != null)
                 return cjkMirror.GetWidth(char1);
             else if (isType0) {
-                int[] ws = (int[])metrics[(int)char1];
+                int[] ws;
+                metrics.TryGetValue((int)char1, out ws);
                 if (ws != null)
                     return ws[1];
                 else
@@ -536,7 +537,8 @@ namespace iTextSharp.text.pdf {
                 int len = chars.Length;
                 int total = 0;
                 for (int k = 0; k < len; ++k) {
-                    int[] ws = (int[])metrics[(int)chars[k]];
+                    int[] ws;
+                    metrics.TryGetValue((int)chars[k], out ws);
                     if (ws != null)
                         total += ws[1];
                 }
@@ -555,11 +557,12 @@ namespace iTextSharp.text.pdf {
                 byte[] b = new byte[len * 2];
                 int bptr = 0;
                 for (int k = 0; k < len; ++k) {
-                    int[] ws = (int[])metrics[(int)chars[k]];
+                    int[] ws;
+                    metrics.TryGetValue((int)chars[k], out ws);
                     if (ws != null) {
                         int g = ws[0];
                         b[bptr++] = (byte)(g / 256);
-                        b[bptr++] = (byte)(g);
+                        b[bptr++] = (byte)g;
                     }
                 }
                 if (bptr == b.Length)
@@ -592,10 +595,11 @@ namespace iTextSharp.text.pdf {
             if (cjkMirror != null)
                 return PdfEncodings.ConvertToBytes((char)char1, CJKFont.CJK_ENCODING);
             else if (isType0) {
-                int[] ws = (int[])metrics[(int)char1];
+                int[] ws;
+                metrics.TryGetValue((int)char1, out ws);
                 if (ws != null) {
                     int g = ws[0];
-                    return new byte[]{(byte)(g / 256), (byte)(g)};
+                    return new byte[]{(byte)(g / 256), (byte)g};
                 }
                 else
                     return new byte[0];

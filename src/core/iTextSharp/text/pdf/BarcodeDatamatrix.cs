@@ -1,7 +1,7 @@
 using System;
 using iTextSharp.text;
 using iTextSharp.text.pdf.codec;
-using System.Collections;
+using System.Collections.Generic;
 /*
  * $Id$
  *
@@ -949,22 +949,26 @@ namespace iTextSharp.text.pdf {
             private int nrow;
             private int ncol;
             private short[] array;
-			private static Hashtable cache = Hashtable.Synchronized(new Hashtable());
+			private static Dictionary<int, short[]> cache = new Dictionary<int,short[]>();
 
 			private Placement() {
             }
             
             internal static short[] DoPlacement(int nrow, int ncol) {
                 int key = nrow * 1000 + ncol;
-                short[] pc = (short[])cache[key];
-                if (pc != null)
-                    return pc;
+                lock (cache) {
+                    short[] pc;
+                    if (cache.TryGetValue(key, out pc))
+                        return pc;
+                }
                 Placement p = new Placement();
                 p.nrow = nrow;
                 p.ncol = ncol;
                 p.array = new short[nrow * ncol];
                 p.Ecc200();
-                cache[key] = p.array;
+                lock (cache) {
+                    cache[key] = p.array;
+                }
                 return p.array;
             }
 

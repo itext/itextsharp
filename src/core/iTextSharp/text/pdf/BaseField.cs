@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using iTextSharp.text.error_messages;
 /*
@@ -134,10 +134,10 @@ namespace iTextSharp.text.pdf
         /** Holds value of property maxCharacterLength. */
         protected int maxCharacterLength;
         
-        private static Hashtable fieldKeys = new Hashtable();
+        private static Dictionary<PdfName,int> fieldKeys = new Dictionary<PdfName,int>();
      
         static BaseField() {
-            foreach (DictionaryEntry entry in PdfCopyFieldsImp.fieldKeys)
+            foreach (KeyValuePair<PdfName,int> entry in PdfCopyFieldsImp.fieldKeys)
                 fieldKeys[entry.Key] = entry.Value;
             fieldKeys[PdfName.T] = 1;
         }
@@ -246,8 +246,8 @@ namespace iTextSharp.text.pdf
             return app;
         }
         
-        protected static ArrayList GetHardBreaks(String text) {
-            ArrayList arr = new ArrayList();
+        protected static List<string> GetHardBreaks(String text) {
+            List<string> arr = new List<string>();
             char[] cs = text.ToCharArray();
             int len = cs.Length;
             StringBuilder buf = new StringBuilder();
@@ -281,13 +281,13 @@ namespace iTextSharp.text.pdf
             }
         }
         
-        protected static ArrayList BreakLines(ArrayList breaks, BaseFont font, float fontSize, float width) {
-            ArrayList lines = new ArrayList();
+        protected static List<string> BreakLines(List<string> breaks, BaseFont font, float fontSize, float width) {
+            List<string> lines = new List<string>();
             StringBuilder buf = new StringBuilder();
             for (int ck = 0; ck < breaks.Count; ++ck) {
                 buf.Length = 0;
                 float w = 0;
-                char[] cs = ((String)breaks[ck]).ToCharArray();
+                char[] cs = breaks[ck].ToCharArray();
                 int len = cs.Length;
                 // 0 inline first, 1 inline, 2 spaces
                 int state = 0;
@@ -619,6 +619,7 @@ namespace iTextSharp.text.pdf
         */    
         public static void MoveFields(PdfDictionary from, PdfDictionary to) {
             PdfName[] keys = new PdfName[from.Size];
+            from.Keys.CopyTo(keys, 0);
             foreach (PdfName key in keys) {
                 if (fieldKeys.ContainsKey(key)) {
                     if (to != null)

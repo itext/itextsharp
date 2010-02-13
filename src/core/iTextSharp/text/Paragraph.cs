@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.util;
 using iTextSharp.text.factories;
 
@@ -199,7 +199,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="o">the object to add</param>
         /// <returns>a bool</returns>
-        public override bool Add(Object o) {
+        public override bool Add(IElement o) {
             if (o is List) {
                 List list = (List) o;
                 list.IndentationLeft = list.IndentationLeft + indentationLeft;
@@ -213,9 +213,9 @@ namespace iTextSharp.text {
             }
             else if (o is Paragraph) {
                 base.Add(o);
-                ArrayList chunks = this.Chunks;
+                List<Chunk> chunks = this.Chunks;
                 if (chunks.Count > 0) {
-                    Chunk tmp = (Chunk)chunks[chunks.Count - 1];
+                    Chunk tmp = chunks[chunks.Count - 1];
                     base.Add(new Chunk("\n", tmp.Font));
                 }
                 else {

@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using System.util;
 using System.Globalization;
 using iTextSharp.text.error_messages;
@@ -361,7 +361,7 @@ namespace iTextSharp.text {
         /// Gets a set of registered fontnames.
         /// </summary>
         /// <value>a set of registered fontnames</value>
-        public static ICollection RegisteredFonts {
+        public static ICollection<string> RegisteredFonts {
             get {
                 return fontImp.RegisteredFonts;
             }
@@ -371,7 +371,7 @@ namespace iTextSharp.text {
         /// Gets a set of registered font families.
         /// </summary>
         /// <value>a set of registered font families</value>
-        public static ICollection RegisteredFamilies {
+        public static ICollection<string> RegisteredFamilies {
             get {
                 return fontImp.RegisteredFamilies;
             }

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 /*
  * $Id$
@@ -89,39 +89,39 @@ namespace iTextSharp.text.pdf {
         * A HashMap containing the glyphs used in the text after being converted
         * to glyph number by the CMap 
         */
-        internal Hashtable GlyphsUsed;
+        internal Dictionary<int,int[]> GlyphsUsed;
         /**
         * The GlyphsUsed keys as an ArrayList
         */
-        internal ArrayList glyphsInList;
+        internal List<int> glyphsInList;
         /**
         * A HashMap for keeping the FDArrays being used by the font
         */
-        internal Hashtable FDArrayUsed = new Hashtable();
+        internal Dictionary<int,object> FDArrayUsed = new Dictionary<int,object>();
         /**
         * A HashMaps array for keeping the subroutines used in each FontDict
         */
-        internal Hashtable[] hSubrsUsed;
+        internal Dictionary<int,int[]>[] hSubrsUsed;
         /**
         * The SubroutinesUsed HashMaps as ArrayLists
         */
-        internal ArrayList[] lSubrsUsed;
+        internal List<int>[] lSubrsUsed;
         /**
         * A HashMap for keeping the Global subroutines used in the font
         */
-        internal Hashtable hGSubrsUsed  = new Hashtable();
+        internal Dictionary<int,int[]> hGSubrsUsed  = new Dictionary<int,int[]>();
         /**
         * The Global SubroutinesUsed HashMaps as ArrayLists
         */
-        internal ArrayList lGSubrsUsed = new ArrayList();
+        internal List<int> lGSubrsUsed = new List<int>();
         /**
         * A HashMap for keeping the subroutines used in a non-cid font
         */
-        internal Hashtable hSubrsUsedNonCID  = new Hashtable();
+        internal Dictionary<int,int[]> hSubrsUsedNonCID  = new Dictionary<int,int[]>();
         /**
         * The SubroutinesUsed HashMap as ArrayList
         */
-        internal ArrayList lSubrsUsedNonCID = new ArrayList();
+        internal List<int> lSubrsUsedNonCID = new List<int>();
         /**
         * An array of the new Indexs for the local Subr. One index for each FontDict
         */
@@ -147,7 +147,7 @@ namespace iTextSharp.text.pdf {
         /**
         * The linked list for generating the new font stream
         */
-        internal ArrayList OutputList;
+        internal List<Item> OutputList;
         
         /**
         * Number of arguments to the stem operators in a subroutine calculated recursivly
@@ -160,11 +160,11 @@ namespace iTextSharp.text.pdf {
         * @param rf - The font file
         * @param GlyphsUsed - a HashMap that contains the glyph used in the subset 
         */
-        public CFFFontSubset(RandomAccessFileOrArray rf,Hashtable GlyphsUsed) : base(rf) {
+        public CFFFontSubset(RandomAccessFileOrArray rf,Dictionary<int,int[]> GlyphsUsed) : base(rf) {
             // Use CFFFont c'tor in order to parse the font file.
             this.GlyphsUsed = GlyphsUsed;
             //Put the glyphs into a list
-            glyphsInList = new ArrayList(GlyphsUsed.Keys);
+            glyphsInList = new List<int>(GlyphsUsed.Keys);
             
             
             for (int i=0;i<fonts.Length;++i)
@@ -319,7 +319,7 @@ namespace iTextSharp.text.pdf {
             for (int i=0;i<glyphsInList.Count;i++)
             {
                 // Pop the glyphs index
-                int glyph = (int)glyphsInList[i];
+                int glyph = glyphsInList[i];
                 // Pop the glyph's FD
                 int FD = FDSelect[glyph];
                 // Put the FD index into the FDArrayUsed HashMap
@@ -441,14 +441,14 @@ namespace iTextSharp.text.pdf {
                 fonts[Font].PrivateSubrsOffsetsArray = new int[fonts[Font].fdprivateOffsets.Length][];
                 
                 // Put the FDarrayUsed into a list
-                ArrayList FDInList = new ArrayList(FDArrayUsed.Keys);
+                List<int> FDInList = new List<int>(FDArrayUsed.Keys);
                 // For each FD array which is used subset the lsubr 
                 for (int j=0;j<FDInList.Count;j++)
                 {
                     // The FDArray index, Hash Map, Arrat List to work on
-                    int FD = (int)FDInList[j];
-                    hSubrsUsed[FD] = new Hashtable();
-                    lSubrsUsed[FD] = new ArrayList();
+                    int FD = FDInList[j];
+                    hSubrsUsed[FD] = new Dictionary<int,int[]>();
+                    lSubrsUsed[FD] = new List<int>();
                     //Reads the private dicts looking for the subr operator and 
                     // store both the offest for the index and its offset array
                     BuildFDSubrsOffsets(Font,FD);
@@ -518,7 +518,7 @@ namespace iTextSharp.text.pdf {
         * @param hSubr HashMap of the subrs used
         * @param lSubr ArrayList of the subrs used
         */
-        protected void BuildSubrUsed(int Font,int FD,int SubrOffset,int[] SubrsOffsets,Hashtable hSubr,ArrayList lSubr)
+        protected void BuildSubrUsed(int Font,int FD,int SubrOffset,int[] SubrsOffsets,Dictionary<int,int[]> hSubr,List<int> lSubr)
         {
 
             // Calc the Bias for the subr index
@@ -527,7 +527,7 @@ namespace iTextSharp.text.pdf {
             // For each glyph used find its GID, start & end pos
             for (int i=0;i<glyphsInList.Count;i++)
             {
-                int glyph = (int)glyphsInList[i];
+                int glyph = glyphsInList[i];
                 int Start = fonts[Font].charstringsOffsets[glyph];
                 int End = fonts[Font].charstringsOffsets[glyph+1];
                 
@@ -552,7 +552,7 @@ namespace iTextSharp.text.pdf {
             for (int i=0;i<lSubr.Count;i++)
             {
                 // Pop the subr value from the hash
-                int Subr = (int)lSubr[i];
+                int Subr = lSubr[i];
                 // Ensure the Lsubr call is valid
                 if (Subr < SubrsOffsets.Length-1 && Subr>=0)
                 {
@@ -583,7 +583,7 @@ namespace iTextSharp.text.pdf {
             for (int i=0;i<lGSubrsUsed.Count;i++)
             {
                 //Pop the value + check valid 
-                int Subr = (int)lGSubrsUsed[i];
+                int Subr = lGSubrsUsed[i];
                 if (Subr < gsubrOffsets.Length-1 && Subr>=0)
                 {
                     // Read the subr and process
@@ -600,7 +600,7 @@ namespace iTextSharp.text.pdf {
                             for (int j=SizeOfNonCIDSubrsUsed;j<lSubrsUsedNonCID.Count;j++)
                             {
                                 //Pop the value + check valid 
-                                int LSubr = (int)lSubrsUsedNonCID[j];
+                                int LSubr = lSubrsUsedNonCID[j];
                                 if (LSubr < fonts[Font].SubrsOffsets.Length-1 && LSubr>=0)
                                 {
                                     // Read the subr and process
@@ -627,7 +627,7 @@ namespace iTextSharp.text.pdf {
         * @param hSubr the HashMap for the lSubrs
         * @param lSubr the ArrayList for the lSubrs
         */
-        protected void ReadASubr(int begin,int end,int GBias,int LBias,Hashtable hSubr,ArrayList lSubr,int[] LSubrsOffsets)
+        protected void ReadASubr(int begin,int end,int GBias,int LBias,Dictionary<int,int[]> hSubr,List<int> lSubr,int[] LSubrsOffsets)
         {
             // Clear the stack for the subrs
             EmptyStack();
@@ -925,7 +925,7 @@ namespace iTextSharp.text.pdf {
         * @return the new index subset version 
         * @throws IOException
         */
-        protected byte[] BuildNewIndex(int[] Offsets,Hashtable Used,byte OperatorForUnusedEntries) 
+        protected byte[] BuildNewIndex(int[] Offsets,Dictionary<int,int[]> Used,byte OperatorForUnusedEntries) 
         {
             int unusedCount = 0;
             int Offset=0;
@@ -1001,10 +1001,10 @@ namespace iTextSharp.text.pdf {
             // Write the offsize field
             NewIndex[Place++] = Offsize;
             // Write the offset array according to the offsize
-            for (int i=0;i<NewOffsets.Length;i++)
+            foreach (int newOffset in NewOffsets)
             {
                 // The value to be written
-                int Num = NewOffsets[i]-NewOffsets[0]+1;
+                int Num = newOffset-NewOffsets[0]+1;
                 // Write in bytes according to the offsize
                 switch (Offsize) {
                     case 4:
@@ -1022,9 +1022,9 @@ namespace iTextSharp.text.pdf {
                 }                    
             }
             // Write the new object array one by one
-            for (int i=0;i<NewObjects.Length;i++)
+            foreach (byte newObject in NewObjects)
             {
-                NewIndex[Place++] = NewObjects[i];
+                NewIndex[Place++] = newObject;
             }
             // Return the new index
             return NewIndex;
@@ -1039,7 +1039,7 @@ namespace iTextSharp.text.pdf {
         protected byte[] BuildNewFile(int Font)
         {
             // Prepare linked list for new font components
-            OutputList = new ArrayList();
+            OutputList = new List<Item>();
 
             // copy the header of the font
             CopyHeader();
@@ -1302,9 +1302,9 @@ namespace iTextSharp.text.pdf {
             
             OutputList.Add(new UInt16Item((char)((stringOffsets.Length-1)+3))); // count
             OutputList.Add(new UInt8Item((char)stringsIndexOffSize)); // offSize
-            for (int i=0; i<stringOffsets.Length; i++)
+            foreach (int stringOffset in stringOffsets)
                 OutputList.Add(new IndexOffsetItem(stringsIndexOffSize,
-                stringOffsets[i]-stringsBaseOffset));
+                stringOffset-stringsBaseOffset));
             int currentStringsOffset = stringOffsets[stringOffsets.Length-1]
             - stringsBaseOffset;
             //l.Add(new IndexOffsetItem(stringsIndexOffSize,currentStringsOffset));
