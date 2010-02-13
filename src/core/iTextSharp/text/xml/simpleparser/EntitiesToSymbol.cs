@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text;
 /*
  * $Id$
@@ -58,10 +58,10 @@ namespace iTextSharp.text.xml.simpleparser {
         * This is a map that contains all possible id values of the entity tag
         * that can be translated to a character in font Symbol.
         */
-        public static readonly Hashtable map;
+        public static readonly Dictionary<string,char> map;
         
         static EntitiesToSymbol() {
-            map = new Hashtable();
+            map = new Dictionary<string,char>();
             map["169"] = (char)227;
             map["172"] = (char)216;
             map["174"] = (char)210;
@@ -368,7 +368,7 @@ namespace iTextSharp.text.xml.simpleparser {
         
         public static char GetCorrespondingSymbol(String name) {
             if (map.ContainsKey(name))
-                return (char)map[name];
+                return map[name];
             else
                 return '\0';
         }

@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
@@ -73,7 +73,7 @@ namespace iTextSharp.text.pdf {
         }
     
         internal void FindNames() {
-            tables = new Hashtable();
+            tables = new Dictionary<String, int[]>()();
         
             try {
                 String mainTag = ReadStandardString(4);

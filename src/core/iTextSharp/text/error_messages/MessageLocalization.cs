@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.IO;
 
@@ -59,8 +59,8 @@ namespace iTextSharp.text.error_messages {
     * @author Paulo Soares (psoares@glintt.com)
     */
     public class MessageLocalization {
-        private static Hashtable defaultLanguage = new Hashtable();
-        private static Hashtable currentLanguage;
+        private static Dictionary<string,string> defaultLanguage = new Dictionary<string,string>();
+        private static Dictionary<string,string> currentLanguage;
         private const String BASE_PATH = "iTextSharp.text.error_messages.";
 
         private MessageLocalization() {
@@ -73,7 +73,7 @@ namespace iTextSharp.text.error_messages {
                 // do nothing
             }
             if (defaultLanguage == null)
-                defaultLanguage = new Hashtable();
+                defaultLanguage = new Dictionary<string,string>();
         }
 
         /**
@@ -82,15 +82,15 @@ namespace iTextSharp.text.error_messages {
         * @return the message
         */
         public static String GetMessage(String key) {
-            Hashtable cl = currentLanguage;
+            Dictionary<string,string> cl = currentLanguage;
             String val;
             if (cl != null) {
-                val = (String)cl[key];
+                val = cl[key];
                 if (val != null)
                     return val;
             }
             cl = defaultLanguage;
-            val = (String)cl[key];
+            val = cl[key];
             if (val != null)
                 return val;
             return "No message found for " + key;
@@ -178,7 +178,7 @@ namespace iTextSharp.text.error_messages {
         * @throws IOException on error
         */
         public static bool SetLanguage(String language, String country) {
-            Hashtable lang = GetLanguageMessages(language, country);
+            Dictionary<string,string> lang = GetLanguageMessages(language, country);
             if (lang == null)
                 return false;
             currentLanguage = lang;
@@ -194,7 +194,7 @@ namespace iTextSharp.text.error_messages {
             currentLanguage = ReadLanguageStream(r);
         }
 
-        private static Hashtable GetLanguageMessages(String language, String country) {
+        private static Dictionary<string,string> GetLanguageMessages(String language, String country) {
             if (language == null)
                 throw new ArgumentException("The language cannot be null.");
             Stream isp = null;
@@ -225,12 +225,12 @@ namespace iTextSharp.text.error_messages {
             }
         }
 
-        private static Hashtable ReadLanguageStream(Stream isp) {
+        private static Dictionary<string,string> ReadLanguageStream(Stream isp) {
             return ReadLanguageStream(new StreamReader(isp, Encoding.UTF8));
         }
 
-        private static Hashtable ReadLanguageStream(TextReader br) {
-            Hashtable lang = new Hashtable();
+        private static Dictionary<string,string> ReadLanguageStream(TextReader br) {
+            Dictionary<string,string> lang = new Dictionary<string,string>();
             String line;
             while ((line = br.ReadLine()) != null) {
                 int idxeq = line.IndexOf('=');

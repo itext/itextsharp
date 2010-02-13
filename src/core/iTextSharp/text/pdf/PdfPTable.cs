@@ -939,7 +939,7 @@ namespace iTextSharp.text.pdf {
         *
         * @return    an <CODE>ArrayList</CODE>
         */
-        public ArrayList Chunks {
+        public List<Chunk> Chunks {
             get {
                 return new ArrayList();
             }

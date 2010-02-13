@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.util;
 using iTextSharp.text.factories;
 
@@ -84,7 +84,7 @@ namespace iTextSharp.text
         */
         
         public Chapter(int number) : base (null, 1) {
-            numbers = new ArrayList();
+            numbers = new List<int>();
             numbers.Add(number);
             triggerNewPage = true;
         }
@@ -99,7 +99,7 @@ namespace iTextSharp.text
         /// </overoads>
         public Chapter(Paragraph title, int number) : base(title, 1) 
         {
-            numbers = new ArrayList();
+            numbers = new List<int>();
             numbers.Add(number);
             triggerNewPage = true;
         }

@@ -1,7 +1,7 @@
 using System;
 using System.util;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 
 /*
  * This file is part of the iText project.
@@ -50,7 +50,7 @@ namespace iTextSharp.text.pdf {
     */
     public class FdfWriter {
         private static readonly byte[] HEADER_FDF = DocWriter.GetISOBytes("%FDF-1.2\n%\u00e2\u00e3\u00cf\u00d3\n");
-        Hashtable fields = new Hashtable();
+        Dictionary<String, Object> fields = new Dictionary<string,object>();
 
         /** The PDF file associated with the FDF. */
         private String file;
@@ -70,7 +70,7 @@ namespace iTextSharp.text.pdf {
         }
         
         internal bool SetField(String field, PdfObject value) {
-            Hashtable map = fields;
+            Dictionary<String, Object> map = fields;
             StringTokenizer tk = new StringTokenizer(field, ".");
             if (!tk.HasMoreTokens())
                 return false;
@@ -79,18 +79,18 @@ namespace iTextSharp.text.pdf {
                 Object obj = map[s];
                 if (tk.HasMoreTokens()) {
                     if (obj == null) {
-                        obj = new Hashtable();
+                        obj = new Dictionary<String, Object>();
                         map[s] = obj;
                         map = (Hashtable)obj;
                         continue;
                     }
-                    else if (obj is Hashtable)
-                        map = (Hashtable)obj;
+                    else if (obj is Dictionary<String, Object>)
+                        map = (Dictionary<String, Object>)obj;
                     else
                         return false;
                 }
                 else {
-                    if (!(obj is Hashtable)) {
+                    if (!(obj is Dictionary<String, Object>)) {
                         map[s] = value;
                         return true;
                     }
@@ -100,12 +100,12 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        internal void IterateFields(Hashtable values, Hashtable map, String name) {
-            foreach (DictionaryEntry entry in map) {
-                String s = (String)entry.Key;
+        internal void IterateFields(Dictionary<String, Object> values, Dictionary<String, Object> map, String name) {
+            foreach (KeyValuePair<String, Object> entry in map) {
+                String s = entry.Key;
                 Object obj = entry.Value;
-                if (obj is Hashtable)
-                    IterateFields(values, (Hashtable)obj, name + "." + s);
+                if (obj is Dictionary<String, Object>)
+                    IterateFields(values, (Dictionary<String, Object>)obj, name + "." + s);
                 else
                     values[(name + "." + s).Substring(1)] = obj;
             }
@@ -117,11 +117,11 @@ namespace iTextSharp.text.pdf {
         * <CODE>false</CODE> otherwise
         */    
         public bool RemoveField(String field) {
-            Hashtable map = fields;
+            Dictionary<String, Object> map = fields;
             StringTokenizer tk = new StringTokenizer(field, ".");
             if (!tk.HasMoreTokens())
                 return false;
-            ArrayList hist = new ArrayList();
+            List<object> hist = new List<object>();
             while (true) {
                 String s = tk.NextToken();
                 Object obj = map[s];
@@ -130,20 +130,20 @@ namespace iTextSharp.text.pdf {
                 hist.Add(map);
                 hist.Add(s);
                 if (tk.HasMoreTokens()) {
-                    if (obj is Hashtable)
-                        map = (Hashtable)obj;
+                    if (obj is Dictionary<String, Object>)
+                        map = (Dictionary<String, Object>)obj;
                     else
                         return false;
                 }
                 else {
-                    if (obj is Hashtable)
+                    if (obj is Dictionary<String, Object>)
                         return false;
                     else
                         break;
                 }
             }
             for (int k = hist.Count - 2; k >= 0; k -= 2) {
-                map = (Hashtable)hist[k];
+                map = (Dictionary<String, Object>)hist[k];
                 String s = (String)hist[k + 1];
                 map.Remove(s);
                 if (map.Count > 0)
@@ -156,8 +156,8 @@ namespace iTextSharp.text.pdf {
         * field name and the values are <CODE>PdfObject</CODE>.
         * @return a map with all the fields
         */    
-        public Hashtable GetFields() {
-            Hashtable values = new Hashtable();
+        public Dictionary<String, Object> GetFields() {
+            Dictionary<String, Object> values = new Dictionary<String, Object>();
             IterateFields(values, fields, "");
             return values;
         }
@@ -167,23 +167,24 @@ namespace iTextSharp.text.pdf {
         * @return the field value or <CODE>null</CODE> if not found
         */    
         public String GetField(String field) {
-            Hashtable map = fields;
+            Dictionary<String, Object> map = fields;
             StringTokenizer tk = new StringTokenizer(field, ".");
             if (!tk.HasMoreTokens())
                 return null;
             while (true) {
                 String s = tk.NextToken();
-                Object obj = map[s];
+                Object obj;
+                map.TryGetValue(s, out obj);
                 if (obj == null)
                     return null;
                 if (tk.HasMoreTokens()) {
-                    if (obj is Hashtable)
-                        map = (Hashtable)obj;
+                    if (obj is Dictionary<String, Object>)
+                        map = (Dictionary<String, Object>)obj;
                     else
                         return null;
                 }
                 else {
-                    if (obj is Hashtable)
+                    if (obj is Dictionary<String, Object>)
                         return null;
                     else {
                         if (((PdfObject)obj).IsString())
@@ -237,10 +238,10 @@ namespace iTextSharp.text.pdf {
         * @param fdf the <CODE>FdfReader</CODE>
         */    
         public void SetFields(FdfReader fdf) {
-            Hashtable map = fdf.Fields;
-            foreach (DictionaryEntry entry in map) {
-                String key = (String)entry.Key;
-                PdfDictionary dic = (PdfDictionary)entry.Value;
+            Dictionary<String, PdfDictionary> map = fdf.Fields;
+            foreach (KeyValuePair<string,PdfDictionary> entry in map) {
+                String key = entry.Key;
+                PdfDictionary dic = entry.Value;
                 PdfObject v = dic.Get(PdfName.V);
                 if (v != null) {
                     SetField(key, v);
@@ -317,15 +318,15 @@ namespace iTextSharp.text.pdf {
             }
             
             
-            internal PdfArray Calculate(Hashtable map) {
+            internal PdfArray Calculate(Dictionary<String, Object> map) {
                 PdfArray ar = new PdfArray();
-                foreach (DictionaryEntry entry in map) {
-                    String key = (String)entry.Key;
+                foreach (KeyValuePair<String, Object> entry in map) {
+                    String key = entry.Key;
                     Object v = entry.Value;
                     PdfDictionary dic = new PdfDictionary();
                     dic.Put(PdfName.T, new PdfString(key, PdfObject.TEXT_UNICODE));
-                    if (v is Hashtable) {
-                        dic.Put(PdfName.KIDS, Calculate((Hashtable)v));
+                    if (v is Dictionary<String, Object>) {
+                        dic.Put(PdfName.KIDS, Calculate((Dictionary<String, Object>)v));
                     }
                     else if (v is PdfAction) {	// (plaflamme)
                         dic.Put(PdfName.A, (PdfAction)v);

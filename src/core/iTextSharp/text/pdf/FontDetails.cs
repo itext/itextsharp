@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.util;
 using iTextSharp.text;
 
@@ -77,7 +77,7 @@ namespace iTextSharp.text.pdf {
         /** The map used with double byte encodings. The key is Int(glyph) and the
          * value is int[]{glyph, width, Unicode code}
          */    
-        Hashtable longTag;
+        Dictionary<int, int[]> longTag;
     
         IntHashtable cjkTag;
         /** The font type
@@ -112,7 +112,7 @@ namespace iTextSharp.text.pdf {
                     cjkFont = (CJKFont)baseFont;
                     break;
                 case BaseFont.FONT_TYPE_TTUNI:
-                    longTag = new Hashtable();
+                    longTag = new Dictionary<int,int[]>();
                     ttu = (TrueTypeFontUnicode)baseFont;
                     symbolic = baseFont.IsFontSpecific();
                     break;

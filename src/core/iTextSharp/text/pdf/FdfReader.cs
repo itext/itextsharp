@@ -1,6 +1,6 @@
 using System;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using System.Net;
 using System.IO;
 
@@ -51,7 +51,7 @@ namespace iTextSharp.text.pdf {
     */
     public class FdfReader : PdfReader {
         
-        internal Hashtable fields;
+        internal Dictionary<String, PdfDictionary> fields;
         internal String fileSpec;
         internal PdfName encoding;
         
@@ -85,7 +85,7 @@ namespace iTextSharp.text.pdf {
         }
         
         protected internal override void ReadPdf() {
-            fields = new Hashtable();
+            fields = new Dictionary<string,PdfDictionary>();
             try {
                 tokens.CheckFdfHeader();
                 RebuildXref();
@@ -148,7 +148,7 @@ namespace iTextSharp.text.pdf {
         * with the field content.
         * @return all the fields
         */    
-        public Hashtable Fields {
+        public Dictionary<String, PdfDictionary> Fields {
             get {
                 return fields;
             }
@@ -159,7 +159,9 @@ namespace iTextSharp.text.pdf {
         * @return the field dictionary
         */    
         public PdfDictionary GetField(String name) {
-            return (PdfDictionary)fields[name];
+            PdfDictionary dic;
+            fields.TryGetValue(name, out dic);
+            return dic;;
         }
         
         /**
@@ -170,7 +172,7 @@ namespace iTextSharp.text.pdf {
         * @since 5.0.1 
         */
         public byte[] GetAttachedFile(String name) {
-            PdfDictionary field = (PdfDictionary)fields[name];
+            PdfDictionary field = GetField(name);
             if (field != null) {
                 PdfIndirectReference ir = (PRIndirectReference)field.Get(PdfName.V);
                 PdfDictionary filespec = (PdfDictionary)GetPdfObject(ir.Number);
@@ -188,7 +190,7 @@ namespace iTextSharp.text.pdf {
         * @return the field value or <CODE>null</CODE>
         */    
         public String GetFieldValue(String name) {
-            PdfDictionary field = (PdfDictionary)fields[name];
+            PdfDictionary field = GetField(name);
             if (field == null)
                 return null;
             PdfObject v = GetPdfObject(field.Get(PdfName.V));

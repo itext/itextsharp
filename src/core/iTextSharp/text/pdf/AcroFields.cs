@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.util;
@@ -55,14 +55,14 @@ namespace iTextSharp.text.pdf {
 
         internal PdfReader reader;
         internal PdfWriter writer;
-        internal Hashtable fields;
+        internal Dictionary<String, Item> fields;
         private int topFirst;
-        private Hashtable sigNames;
+        private Dictionary<String, int[]> sigNames;
         private bool append;
         public const int DA_FONT = 0;
         public const int DA_SIZE = 1;
         public const int DA_COLOR = 2;
-        private Hashtable extensionFonts = new Hashtable();
+        private Dictionary<int, BaseFont> extensionFonts = new Dictionary<int,BaseFont>();
         private XfaForm xfa;
         /**
         * A field type invalid or not found.
@@ -102,11 +102,11 @@ namespace iTextSharp.text.pdf {
         /** Holds value of property generateAppearances. */
         private bool generateAppearances = true;
         
-        private Hashtable localFonts = new Hashtable();
+        private Dictionary<String, BaseFont> localFonts = new Dictionary<String, BaseFont>();
         
         private float extraMarginLeft;
         private float extraMarginTop;
-        private ArrayList substitutionFonts;
+        private List<BaseFont> substitutionFonts;
 
         internal AcroFields(PdfReader reader, PdfWriter writer) {
             this.reader = reader;
@@ -119,7 +119,7 @@ namespace iTextSharp.text.pdf {
         }
 
         internal void Fill() {
-            fields = new Hashtable();
+            fields = new Dictionary<string,Item>();
             PdfDictionary top = (PdfDictionary)PdfReader.GetPdfObjectRelease(reader.Catalog.Get(PdfName.ACROFORM));
             if (top == null)
                 return;
@@ -163,8 +163,8 @@ namespace iTextSharp.text.pdf {
                     }
                     if (name.Length > 0)
                         name = name.Substring(0, name.Length - 1);
-                    Item item = (Item)fields[name];
-                    if (item == null) {
+                    Item item;
+                    if (!fields.TryGetValue(name, out Item)) {
                         item = new Item();
                         fields[name] = item;
                     }
@@ -226,10 +226,10 @@ namespace iTextSharp.text.pdf {
         * @return the list of names or <CODE>null</CODE> if the field does not exist
         */    
         public String[] GetAppearanceStates(String fieldName) {
-            Item fd = (Item)fields[fieldName];
-            if (fd == null)
-                return null;
-            Hashtable names = new Hashtable();
+            if (!fields.ContainsKey(fieldName))
+                return;
+            Item fd = fields[fieldName];
+            Dictionary<string,object> names = new Dictionary<string,object>();
             PdfDictionary vals = fd.GetValue(0);
             PdfString stringOpt = vals.GetAsString( PdfName.OPT );
             if (stringOpt != null) {
@@ -340,7 +340,7 @@ namespace iTextSharp.text.pdf {
             int ftype = GetFieldType(fieldName);
             if (ftype != FIELD_TYPE_COMBO && ftype != FIELD_TYPE_LIST)
                 return false;
-            Item fd = (Item)fields[fieldName];
+            Item fd = fields[fieldName];
             String[] sing = null;
             if (exportValues == null && displayValues != null)
                 sing = displayValues;
@@ -415,9 +415,9 @@ namespace iTextSharp.text.pdf {
         * @param writer the FDF writer
         */    
         public void ExportAsFdf(FdfWriter writer) {
-            foreach (DictionaryEntry entry in fields) {
-                Item item = (Item)entry.Value;
-                string name = (String)entry.Key;
+            foreach (KeyValuePair<string,Item> entry in fields) {
+                Item item = entry.Value;
+                string name = entry.Key;
                 PdfObject v = item.GetMerged(0).Get(PdfName.V);
                 if (v == null)
                     continue;
@@ -446,9 +446,9 @@ namespace iTextSharp.text.pdf {
                 return false;
             if (fields.ContainsKey(newName))
                 return false;
-            Item item = (Item)fields[oldName];
-            if (item == null)
+            if (!fields.ContainsKey(oldName))
                 return false;
+            Item item = fields[oldName];
             newName = newName.Substring(idx2);
             PdfString ss = new PdfString(newName, PdfObject.TEXT_UNICODE);
             item.WriteToAll( PdfName.T, ss, Item.WRITE_VALUE | Item.WRITE_MERGED);
@@ -460,7 +460,7 @@ namespace iTextSharp.text.pdf {
         
         public static Object[] SplitDAelements(String da) {
             PRTokeniser tk = new PRTokeniser(PdfEncodings.ConvertToBytes(da, null));
-            ArrayList stack = new ArrayList();
+            List<String> stack = new List<string>();
             Object[] ret = new Object[3];
             while (tk.NextToken()) {
                 if (tk.TokenType == PRTokeniser.TK_COMMENT)
@@ -470,30 +470,30 @@ namespace iTextSharp.text.pdf {
                     if (oper.Equals("Tf")) {
                         if (stack.Count >= 2) {
                             ret[DA_FONT] = stack[stack.Count - 2];
-                            ret[DA_SIZE] = float.Parse((String)stack[stack.Count - 1], System.Globalization.NumberFormatInfo.InvariantInfo);
+                            ret[DA_SIZE] = float.Parse(stack[stack.Count - 1], System.Globalization.NumberFormatInfo.InvariantInfo);
                         }
                     }
                     else if (oper.Equals("g")) {
                         if (stack.Count >= 1) {
-                            float gray = float.Parse((String)stack[stack.Count - 1], System.Globalization.NumberFormatInfo.InvariantInfo);
+                            float gray = float.Parse(stack[stack.Count - 1], System.Globalization.NumberFormatInfo.InvariantInfo);
                             if (gray != 0)
                                 ret[DA_COLOR] = new GrayColor(gray);
                         }
                     }
                     else if (oper.Equals("rg")) {
                         if (stack.Count >= 3) {
-                            float red = float.Parse((String)stack[stack.Count - 3], System.Globalization.NumberFormatInfo.InvariantInfo);
-                            float green = float.Parse((String)stack[stack.Count - 2], System.Globalization.NumberFormatInfo.InvariantInfo);
-                            float blue = float.Parse((String)stack[stack.Count - 1], System.Globalization.NumberFormatInfo.InvariantInfo);
+                            float red = float.Parse(stack[stack.Count - 3], System.Globalization.NumberFormatInfo.InvariantInfo);
+                            float green = float.Parse(stack[stack.Count - 2], System.Globalization.NumberFormatInfo.InvariantInfo);
+                            float blue = float.Parse(stack[stack.Count - 1], System.Globalization.NumberFormatInfo.InvariantInfo);
                             ret[DA_COLOR] = new BaseColor(red, green, blue);
                         }
                     }
                     else if (oper.Equals("k")) {
                         if (stack.Count >= 4) {
-                            float cyan = float.Parse((String)stack[stack.Count - 4], System.Globalization.NumberFormatInfo.InvariantInfo);
-                            float magenta = float.Parse((String)stack[stack.Count - 3], System.Globalization.NumberFormatInfo.InvariantInfo);
-                            float yellow = float.Parse((String)stack[stack.Count - 2], System.Globalization.NumberFormatInfo.InvariantInfo);
-                            float black = float.Parse((String)stack[stack.Count - 1], System.Globalization.NumberFormatInfo.InvariantInfo);
+                            float cyan = float.Parse(stack[stack.Count - 4], System.Globalization.NumberFormatInfo.InvariantInfo);
+                            float magenta = float.Parse(stack[stack.Count - 3], System.Globalization.NumberFormatInfo.InvariantInfo);
+                            float yellow = float.Parse(stack[stack.Count - 2], System.Globalization.NumberFormatInfo.InvariantInfo);
+                            float black = float.Parse(stack[stack.Count - 1], System.Globalization.NumberFormatInfo.InvariantInfo);
                             ret[DA_COLOR] = new CMYKColor(cyan, magenta, yellow, black);
                         }
                     }
@@ -526,7 +526,8 @@ namespace iTextSharp.text.pdf {
                                 BaseFont bp = new DocumentFont((PRIndirectReference)po);
                                 tx.Font = bp;
                                 int porkey = por.Number;
-                                BaseFont porf = (BaseFont)extensionFonts[porkey];
+                                BaseFont porf;
+                                extensionFonts.TryGetValue(porkey, out porf);
                                 if (porf == null) {
                                     if (!extensionFonts.ContainsKey(porkey)) {
                                         PdfDictionary fo = (PdfDictionary)PdfReader.GetPdfObject(po);
@@ -553,9 +554,9 @@ namespace iTextSharp.text.pdf {
                                     ((TextField)tx).ExtensionFont = porf;
                             }
                             else {
-                                BaseFont bf = (BaseFont)localFonts[dab[DA_FONT]];
-                                if (bf == null) {
-                                    String[] fn = (String[])stdFieldFontNames[dab[DA_FONT]];
+                                BaseFont bf;
+                                if (!localFonts.TryGetValue(dab[DA_FONT], out bf)) {
+                                    String[] fn = stdFieldFontNames[dab[DA_FONT]];
                                     if (fn != null) {
                                         try {
                                             String enc = "winansi";
@@ -671,7 +672,7 @@ namespace iTextSharp.text.pdf {
                     fieldCache[fieldName] = tx;
             }
             else {
-                tx = (TextField)fieldCache[fieldName];
+                tx = fieldCache[fieldName];
                 tx.Writer = writer;
             }
             PdfName fieldType = merged.GetAsName(PdfName.FT);
@@ -767,9 +768,9 @@ namespace iTextSharp.text.pdf {
                 name = XfaForm.Xml2Som.GetShortName(name);
                 return XfaForm.GetNodeText(xfa.FindDatasetsNode(name));
             }
-            Item item = (Item)fields[name];
-            if (item == null)
+            if (!fields.ContainsKey(name))
                 return null;
+            Item item = fields[name];
             lastWasString = false;
             PdfDictionary mergedDict = item.GetMerged( 0 );
 
@@ -835,9 +836,9 @@ namespace iTextSharp.text.pdf {
             else {
                 ret = new String[]{ s };
             }
-            Item item = (Item)fields[name];
-            if (item == null)
-                return ret;
+            if (!fields.ContainsKey(name))
+                return null;
+            Item item = fields[name];
             PdfArray values = item.GetMerged(0).GetAsArray(PdfName.I);
             if (values == null)
                 return ret;
@@ -872,9 +873,9 @@ namespace iTextSharp.text.pdf {
         public bool SetFieldProperty(String field, String name, Object value, int[] inst) {
             if (writer == null)
                 throw new Exception(MessageLocalization.GetComposedMessage("this.acrofields.instance.is.read.only"));
-            Item item = (Item)fields[field];
-            if (item == null)
-                return false;
+            if (!fields.ContainsKey(field))
+                return null;
+            Item item = fields[field];
             InstHit hit = new InstHit(inst);
             PdfDictionary merged;
             PdfString da;
@@ -889,8 +890,8 @@ namespace iTextSharp.text.pdf {
                             PdfAppearance cb = new PdfAppearance();
                             if (dao[DA_FONT] != null) {
                                 BaseFont bf = (BaseFont)value;
-                                PdfName psn = (PdfName)PdfAppearance.stdFieldFontNames[bf.PostscriptFontName];
-                                if (psn == null) {
+                                PdfName psn;
+                                if (!PdfAppearance.stdFieldFontNames.TryGet(bf.PostscriptFontName, out psn)) {
                                     psn = new PdfName(bf.PostscriptFontName);
                                 }
                                 PdfDictionary fonts = dr.GetAsDict(PdfName.FONT);
@@ -1044,9 +1045,9 @@ namespace iTextSharp.text.pdf {
         public bool SetFieldProperty(String field, String name, int value, int[] inst) {
             if (writer == null)
                 throw new Exception(MessageLocalization.GetComposedMessage("this.acrofields.instance.is.read.only"));
-            Item item = (Item)fields[field];
-            if (item == null)
-                return false;
+            if (!fields.ContainsKey(field))
+                return null;
+            Item item = fields[field];
             InstHit hit = new InstHit(inst);
             if (Util.EqualsIgnoreCase(name, "flags")) {
                 PdfNumber num = new PdfNumber(value);
@@ -1152,7 +1153,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         */    
         public void SetFields(FdfReader fdf) {
-            Hashtable fd = fdf.Fields;
+            Dictionary<String, PdfDictionary> fd = fdf.Fields;
             foreach (string f in fd.Keys) {
                 String v = fdf.GetFieldValue(f);
                 if (v != null)
@@ -1167,14 +1168,14 @@ namespace iTextSharp.text.pdf {
         */
         
         public void SetFields(XfdfReader xfdf) {
-            Hashtable fd = xfdf.Fields;
+            Dictionary<String, string> fd = xfdf.Fields;
             foreach (string f in fd.Keys) {
                 String v = xfdf.GetFieldValue(f);
                 if (v != null)
                     SetField(f, v);
-                ArrayList l = xfdf.GetListValues(f);
+                List<String> l = xfdf.GetListValues(f);
                 if (l != null) {
-                    string[] ar = (string[])l.ToArray(typeof(string[]));
+                    string[] ar = l.ToArray();
                     SetListSelection(v, ar);
                 }
             }
@@ -1237,9 +1238,9 @@ namespace iTextSharp.text.pdf {
                 }
                 xfa.SetNodeText(xn, value);
             }
-            Item item = (Item)fields[name];
-            if (item == null)
+            if (!fields.ContainsKey(name))
                 return false;
+            Item item = fields[name];
             PdfDictionary merged = item.GetMerged( 0 );
             PdfName type = merged.GetAsName(PdfName.FT);
             if (PdfName.TX.Equals(type)) {
@@ -1307,7 +1308,7 @@ namespace iTextSharp.text.pdf {
                     return true;
                 }
                 PdfName v = new PdfName(value);
-                ArrayList lopt = new ArrayList();
+                List<String> lopt = new List<string>();
                 PdfArray opts = item.GetValue(0).GetAsArray(PdfName.OPT);
                 if (opts != null) {
                     for (int k = 0; k < opts.Size; ++k) {
@@ -1366,9 +1367,9 @@ namespace iTextSharp.text.pdf {
             }
             String[] options = GetListOptionExport(name);
             PdfArray array = new PdfArray();
-            for (int i = 0; i < value.Length; i++) {
+            foreach (string element in value) {
                 for (int j = 0; j < options.Length; j++) {
-                    if (options[j].Equals(value[i])) {
+                    if (options[j].Equals(element)) {
                         array.Add(new PdfNumber(j));
                     }
                 }
@@ -1405,7 +1406,7 @@ namespace iTextSharp.text.pdf {
         * the value is an instance of <CODE>AcroFields.Item</CODE>.
         * @return all the fields
         */    
-        public Hashtable Fields {
+        public Dictionary<String, Item> Fields {
             get {
                 return fields;
             }
@@ -1423,7 +1424,9 @@ namespace iTextSharp.text.pdf {
                 if (name == null)
                     return null;
             }
-            return (Item)fields[name];
+            if (!fields.ContainsKey(name))
+                return null;
+            return fields[name];
         }
 
         /**
@@ -1709,21 +1712,21 @@ namespace iTextSharp.text.pdf {
             * 
             * @deprecated (will remove 'public' in the future)
             */
-            public ArrayList values = new ArrayList();
+            public List<PdfDictionary> values = new List<PdfDictionary>();
             
             /**
             * An array of <CODE>PdfDictionary</CODE> with the widgets.
             * 
             * @deprecated (will remove 'public' in the future)
             */
-            public ArrayList widgets = new ArrayList();
+            public List<PdfDictionary> widgets = new List<PdfDictionary>();
             
             /**
             * An array of <CODE>PdfDictionary</CODE> with the widget references.
             * 
             * @deprecated (will remove 'public' in the future)
             */
-            public ArrayList widget_refs = new ArrayList();
+            public List<PdfIndirectReference> widget_refs = new List<PdfIndirectReference>();
             
             /**
             * An array of <CODE>PdfDictionary</CODE> with all the field
@@ -1731,7 +1734,7 @@ namespace iTextSharp.text.pdf {
             * 
             * @deprecated (will remove 'public' in the future)
             */
-            public ArrayList merged = new ArrayList();
+            public List<PdfDictionary> merged = new List<PdfDictionary>();
             
             /**
             * An array of <CODE>Integer</CODE> with the page numbers where
@@ -1739,13 +1742,13 @@ namespace iTextSharp.text.pdf {
             * 
             * @deprecated (will remove 'public' in the future)
             */
-            public ArrayList page = new ArrayList();
+            public List<int> page = new List<int>();
             /**
             * An array of <CODE>Integer</CODE> with the tab order of the field in the page.
             * 
             * @deprecated (will remove 'public' in the future)
             */
-            public ArrayList tabOrder = new ArrayList();
+            public List<int> tabOrder = new List<int>();
 
             /**
             * Preferred method of determining the number of instances
@@ -1784,7 +1787,7 @@ namespace iTextSharp.text.pdf {
             * @return dictionary storing this instance's value.  It may be shared across instances.
             */
             public PdfDictionary GetValue(int idx) {
-                return (PdfDictionary) values[idx];
+                return values[idx];
             }
 
             /**
@@ -1805,7 +1808,7 @@ namespace iTextSharp.text.pdf {
             * @return The dictionary found in the appropriate page's Annot array.
             */
             public PdfDictionary GetWidget(int idx) {
-                return (PdfDictionary) widgets[idx];
+                return widgets[idx];
             }
 
             /**
@@ -1826,7 +1829,7 @@ namespace iTextSharp.text.pdf {
             * @return reference to the given field instance
             */
             public PdfIndirectReference GetWidgetRef(int idx) {
-                return (PdfIndirectReference) widget_refs[idx];
+                return widget_refs[idx];
             }
 
             /**
@@ -1850,7 +1853,7 @@ namespace iTextSharp.text.pdf {
             * @return the merged dictionary for the given instance
             */
             public PdfDictionary GetMerged(int idx) {
-                return (PdfDictionary) merged[idx];
+                return merged[idx];
             }
 
             /**
@@ -1871,7 +1874,7 @@ namespace iTextSharp.text.pdf {
             * @return remember, pages are "1-indexed", not "0-indexed" like field instances.
             */
             public int GetPage(int idx) {
-                return (int) page[idx];
+                return page[idx];
             }
 
             /**
@@ -1902,7 +1905,7 @@ namespace iTextSharp.text.pdf {
             * @return tab index of the given field instance
             */
             public int GetTabOrder(int idx) {
-                return (int) tabOrder[idx];
+                return tabOrder[idx];
             }
 
             /**
@@ -1936,10 +1939,10 @@ namespace iTextSharp.text.pdf {
         private void FindSignatureNames() {
             if (sigNames != null)
                 return;
-            sigNames = new Hashtable();
-            ArrayList sorter = new ArrayList();
-            foreach (DictionaryEntry entry in fields) {
-                Item item = (Item)entry.Value;
+            sigNames = new Dictionary<string,int[]>();
+            List<object[]> sorter = new List<object[]>();
+            foreach (KeyValuePair<string,Item> entry in fields) {
+                Item item = entry.Value;
                 PdfDictionary merged = item.GetMerged(0);
                 if (!PdfName.SIG.Equals(merged.Get(PdfName.FT)))
                     continue;
@@ -1960,12 +1963,12 @@ namespace iTextSharp.text.pdf {
             }
             sorter.Sort(new AcroFields.ISorterComparator());
             if (sorter.Count > 0) {
-                if (((int[])((Object[])sorter[sorter.Count - 1])[1])[0] == reader.FileLength)
+                if (((int[])sorter[sorter.Count - 1][1])[0] == reader.FileLength)
                     totalRevisions = sorter.Count;
                 else
                     totalRevisions = sorter.Count + 1;
                 for (int k = 0; k < sorter.Count; ++k) {
-                    Object[] objs = (Object[])sorter[k];
+                    Object[] objs = sorter[k];
                     String name = (String)objs[0];
                     int[] p = (int[])objs[1];
                     p[1] = k + 1;
@@ -1980,7 +1983,7 @@ namespace iTextSharp.text.pdf {
         */    
         public ArrayList GetSignatureNames() {
             FindSignatureNames();
-            return new ArrayList(sigNames.Keys);
+            return new List<string>(sigNames.Keys);
         }
         
         /**
@@ -1989,9 +1992,9 @@ namespace iTextSharp.text.pdf {
         */    
         public ArrayList GetBlankSignatureNames() {
             FindSignatureNames();
-            ArrayList sigs = new ArrayList();
-            foreach (DictionaryEntry entry in fields) {
-                Item item = (Item)entry.Value;
+            List<String> sigs = new List<String>();
+            foreach (KeyValuePair<string,Item> entry in fields) {
+                Item item = entry.Value;
                 PdfDictionary merged = item.GetMerged(0);
                 if (!PdfName.SIG.Equals(merged.GetAsName(PdfName.FT)))
                     continue;
@@ -2013,7 +2016,7 @@ namespace iTextSharp.text.pdf {
             name = GetTranslatedFieldName(name);
             if (!sigNames.ContainsKey(name))
                 return null;
-            Item item = (Item)fields[name];
+            Item item = fields[name];
             PdfDictionary merged = item.GetMerged(0);
             return merged.GetAsDict(PdfName.V);
         }
@@ -2029,7 +2032,7 @@ namespace iTextSharp.text.pdf {
             name = GetTranslatedFieldName(name);
             if (!sigNames.ContainsKey(name))
                 return false;
-            return ((int[])sigNames[name])[0] == reader.FileLength;
+            return sigNames[name][0] == reader.FileLength;
         }
         
         /**
@@ -2137,7 +2140,7 @@ namespace iTextSharp.text.pdf {
             field = GetTranslatedFieldName(field);
             if (!sigNames.ContainsKey(field))
                 return 0;
-            return ((int[])sigNames[field])[1];
+            return sigNames[field][1];
         }
         
         /**
@@ -2152,7 +2155,7 @@ namespace iTextSharp.text.pdf {
             field = GetTranslatedFieldName(field);
             if (!sigNames.ContainsKey(field))
                 return null;
-            int length = ((int[])sigNames[field])[0];
+            int length = sigNames[field][0];
             RandomAccessFileOrArray raf = reader.SafeFile;
             raf.ReOpen();
             raf.Seek(0);
@@ -2183,7 +2186,7 @@ namespace iTextSharp.text.pdf {
         * </pre>
         * @param fieldCache an HasMap that will carry the cached appearances
         */
-        public Hashtable FieldCache {
+        public IDictionary<String, TextField> FieldCache {
             set {
                 fieldCache = value;
             }
@@ -2219,12 +2222,12 @@ namespace iTextSharp.text.pdf {
             substitutionFonts.Add(font);
         }
 
-        private static Hashtable stdFieldFontNames = new Hashtable();
+        private static Dictionary<string,string[]> stdFieldFontNames = new Dictionary<string,string[]>();
         
         /**
         * Holds value of property fieldCache.
         */
-        private Hashtable fieldCache;
+        private IDictionary<String, TextField> fieldCache;
 
         private int totalRevisions;
 
@@ -2343,10 +2346,10 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        private class ISorterComparator : IComparer {        
-            public int Compare(Object o1, Object o2) {
-                int n1 = ((int[])((Object[])o1)[1])[0];
-                int n2 = ((int[])((Object[])o2)[1])[0];
+        private class ISorterComparator : IComparer<Object[]> {        
+            public int Compare(Object[] o1, Object[] o2) {
+                int n1 = ((int[])o1[1])[0];
+                int n2 = ((int[])o2[1])[0];
                 return n1 - n2;
             }        
         }
@@ -2356,7 +2359,7 @@ namespace iTextSharp.text.pdf {
         * font doesn't contain the needed glyphs.
         * @param substitutionFonts the list
         */
-        public ArrayList SubstitutionFonts {
+        public List<BaseFont> SubstitutionFonts {
             set {
                 substitutionFonts = value;
             }

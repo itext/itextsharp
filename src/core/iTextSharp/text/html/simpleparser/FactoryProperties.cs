@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.util;
 using iTextSharp.text;
@@ -198,8 +198,11 @@ namespace iTextSharp.text.html.simpleparser {
         * @return   a HyphenationEvent
         * @since    2.1.2
         */
-        public static IHyphenationEvent GetHyphenation(Hashtable props) {
-            return GetHyphenation((String)props["hyphenation"]);
+        public static IHyphenationEvent GetHyphenation(Dictionary<string,string> props) {
+            if (props.ContainsKey("hyphenation"))
+                return GetHyphenation(props["hyphenation"]);
+            else
+                return null;
         }
         
         /**
@@ -249,9 +252,9 @@ namespace iTextSharp.text.html.simpleparser {
 	    * @param	h	a HashMap that should have at least a key named
 	    * style. After this method is invoked, more keys could be added.
 	    */
-        public static void InsertStyle(Hashtable h) {
-            String style = (String)h["style"];
-            if (style == null)
+        public static void InsertStyle(Dictionary<string,string> h) {
+            String style;
+            if (!h.TryGetValue("style", out style))
                 return;
             Properties prop = Markup.ParseAttributes(style);
             foreach (String key in prop.Keys) {
@@ -311,9 +314,9 @@ namespace iTextSharp.text.html.simpleparser {
 	    * @param cprops
 	    * @since 2.1.3
 	    */
-        public static void InsertStyle(Hashtable h, ChainedProperties cprops) {
-            String style = (String)h["style"];
-            if (style == null)
+        public static void InsertStyle(Dictionary<string,string> h, ChainedProperties cprops) {
+            String style;
+            if (!h.TryGetValue("style", out style))
                 return;
             Properties prop = Markup.ParseAttributes(style);
             foreach (String key in prop.Keys) {
@@ -385,7 +388,7 @@ namespace iTextSharp.text.html.simpleparser {
             }
         }
 
-        public static Hashtable followTags = new Hashtable();
+        public static Dictionary<string,string> followTags = new Dictionary<string,string>();
 
         static FactoryProperties() {
             followTags["i"] = "i";

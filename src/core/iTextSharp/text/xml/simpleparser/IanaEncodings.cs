@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 /*
  * $Id$
@@ -74,7 +74,7 @@ namespace iTextSharp.text.xml.simpleparser {
     public class IanaEncodings {
 
 	    /** The object that maps IANA to Java encodings. */
-        private static readonly Hashtable map = new Hashtable();
+        private static readonly Dictionary<string,int> map = new Dictionary<string,int>();
 
         static IanaEncodings() {        
             // add IANA to .NET encoding mappings.
@@ -521,10 +521,11 @@ namespace iTextSharp.text.xml.simpleparser {
         }
         
         public static int GetEncodingNumber(string name) {
-            object n = map[name.ToUpper(System.Globalization.CultureInfo.InvariantCulture)];
-            if (n == null)
+            name = name.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+            if (map.ContainsKey(name))
+                return map[name];
+            else
                 return 0;
-            return (int)n;
         }
 
         public static Encoding GetEncodingEncoding(string name) {
@@ -538,7 +539,7 @@ namespace iTextSharp.text.xml.simpleparser {
             if (nameU.Equals("UNICODELITTLE"))
                 return new UnicodeEncoding(false, true);
             if (map.ContainsKey(nameU))
-                return Encoding.GetEncoding((int)map[nameU]);
+                return Encoding.GetEncoding(map[nameU]);
             else
                 return Encoding.GetEncoding(name);
         }

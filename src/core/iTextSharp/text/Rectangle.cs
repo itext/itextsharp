@@ -1,5 +1,5 @@
-    using System;
-using System.Collections;
+using System;
+using System.Collections.Generic;
 using System.Text;
 using System.util;
 using iTextSharp.text.pdf;
@@ -265,9 +265,9 @@ namespace iTextSharp.text {
         /// Gets all the chunks in this element.
         /// </summary>
         /// <value>an ArrayList</value>
-        public virtual ArrayList Chunks {
+        public virtual List<Chunk> Chunks {
             get {
-                return new ArrayList();
+                return new List<Chunk>();
             }
         }
     

@@ -529,6 +529,9 @@ namespace iTextSharp.text.pdf {
         	        float cs = (float) GetAttribute(Chunk.CHAR_SPACING);
                     return font.Width(value) + value.Length * cs;
 		        }
+                if (IsAttribute(Chunk.SEPARATOR)) {
+                    return 0;
+                }
                 return font.Width(this.value);
             }
         }

@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using System.util;
 using iTextSharp.text.error_messages;
 
@@ -69,8 +69,8 @@ internal class CJKFont : BaseFont {
         
     internal static Properties cjkFonts = new Properties();
     internal static Properties cjkEncodings = new Properties();
-    internal static Hashtable allCMaps = Hashtable.Synchronized(new Hashtable());
-    internal static Hashtable allFonts = Hashtable.Synchronized(new Hashtable());
+    internal static Dictionary<String, char[]> allCMaps = new Dictionary<string,char[]>();
+    internal static Dictionary<String, Dictionary<String, Object>> allFonts = new Dictionary<string,Dictionary<string,object>>();
     private static bool propertiesLoaded = false;
     
     /** The font name */
@@ -85,7 +85,7 @@ internal class CJKFont : BaseFont {
     private char[] translationMap;
     private IntHashtable vMetrics;
     private IntHashtable hMetrics;
-    private Hashtable fontDesc;
+    private Dictionary<String, Object> fontDesc;
     private bool vertical = false;
     
     private static void LoadProperties() {
@@ -135,28 +135,40 @@ internal class CJKFont : BaseFont {
             cidDirect = true;
             string s = cjkFonts[fontName];
             s = s.Substring(0, s.IndexOf('_'));
-            char[] c = (char[])allCMaps[s];
+            char[] c;
+            lock (allCMaps) {
+                allCMaps.TryGetValue(s, out c);
+            }
             if (c == null) {
                 c = ReadCMap(s);
                 if (c == null)
                     throw new DocumentException(MessageLocalization.GetComposedMessage("the.cmap.1.does.not.exist.as.a.resource", s));
                 c[CID_NEWLINE] = '\n';
-                allCMaps.Add(s, c);
+                lock (allCMaps) {
+                    allCMaps[s] = c;
+                }
             }
             translationMap = c;
         }
         else {
-            char[] c = (char[])allCMaps[enc];
+            char[] c;
+            lock (allCMaps) {
+                allCMaps.TryGetValue(enc, out c);
+            }
             if (c == null) {
                 string s = cjkEncodings[enc];
                 if (s == null)
                     throw new DocumentException(MessageLocalization.GetComposedMessage("the.resource.cjkencodings.properties.does.not.contain.the.encoding.1", enc));
                 StringTokenizer tk = new StringTokenizer(s);
                 string nt = tk.NextToken();
-                c = (char[])allCMaps[nt];
+                lock (allCMaps) {
+                    allCMaps.TryGetValue(nt, out c);
+                }
                 if (c == null) {
                     c = ReadCMap(nt);
-                    allCMaps.Add(nt, c);
+                    lock (allCMaps) {
+                        allCMaps[nt] = c;
+                    }
                 }
                 if (tk.HasMoreTokens()) {
                     string nt2 = tk.NextToken();
@@ -165,16 +177,23 @@ internal class CJKFont : BaseFont {
                         if (m2[k] == 0)
                             m2[k] = c[k];
                     }
-                    allCMaps.Add(enc, m2);
+                    lock (allCMaps) {
+                        allCMaps[enc] = m2;
+                    }
                     c = m2;
                 }
             }
             translationMap = c;
         }
+        lock (allFonts) {
+            allFonts.TryGetValue(fontName, out fontDesc);
+        }
         fontDesc = (Hashtable)allFonts[fontName];
         if (fontDesc == null) {
             fontDesc = ReadFontProperties(fontName);
-            allFonts.Add(fontName, fontDesc);
+            lock (allFonts) {
+                allFonts[fontName] = fontDesc;
+            }
         }
         hMetrics = (IntHashtable)fontDesc["W"];
         vMetrics = (IntHashtable)fontDesc["W2"];
@@ -588,7 +607,7 @@ internal class CJKFont : BaseFont {
         return buf.ToString();
     }
     
-    internal static Hashtable ReadFontProperties(String name) {
+    internal static Dictionary<String, Object> ReadFontProperties(String name) {
         try {
             name += ".properties";
             Stream isp = GetResourceStream(RESOURCE_PATH + name);
@@ -599,7 +618,7 @@ internal class CJKFont : BaseFont {
             p.Remove("W");
             IntHashtable W2 = CreateMetric(p["W2"]);
             p.Remove("W2");
-            Hashtable map = new Hashtable();
+            Dictionary<String, Object> map = new Dictionary<string,object>();
             foreach (string key in p.Keys) {
                 map[key] = p[key];
             }

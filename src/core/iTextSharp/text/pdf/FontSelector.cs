@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using iTextSharp.text;
 using iTextSharp.text.error_messages;
@@ -56,7 +56,7 @@ namespace iTextSharp.text.pdf {
     */
     public class FontSelector {
         
-        protected ArrayList fonts = new ArrayList();
+        protected List<Font> fonts = new List<Font>();
 
         /**
         * Adds a <CODE>Font</CODE> to be searched for valid characters.
@@ -97,11 +97,11 @@ namespace iTextSharp.text.pdf {
                 if (Utilities.IsSurrogatePair(cc, k)) {
                     int u = Utilities.ConvertToUtf32(cc, k);
                     for (int f = 0; f < fsize; ++f) {
-                        font = (Font)fonts[f];
+                        font = fonts[f];
                         if (font.BaseFont.CharExists(u)) {
                             if (lastidx != f) {
                                 if (sb.Length > 0 && lastidx != -1) {
-                                    Chunk ck = new Chunk(sb.ToString(), (Font)fonts[lastidx]);
+                                    Chunk ck = new Chunk(sb.ToString(), fonts[lastidx]);
                                     ret.Add(ck);
                                     sb.Length = 0;
                                 }
@@ -115,11 +115,11 @@ namespace iTextSharp.text.pdf {
                 }
                 else {
                     for (int f = 0; f < fsize; ++f) {
-                        font = (Font)fonts[f];
+                        font = fonts[f];
                         if (font.BaseFont.CharExists(c)) {
                             if (lastidx != f) {
                                 if (sb.Length > 0 && lastidx != -1) {
-                                    Chunk ck = new Chunk(sb.ToString(), (Font)fonts[lastidx]);
+                                    Chunk ck = new Chunk(sb.ToString(), fonts[lastidx]);
                                     ret.Add(ck);
                                     sb.Length = 0;
                                 }
@@ -132,7 +132,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             if (sb.Length > 0) {
-                Chunk ck = new Chunk(sb.ToString(), (Font)fonts[lastidx == -1 ? 0 : lastidx]);
+                Chunk ck = new Chunk(sb.ToString(), fonts[lastidx == -1 ? 0 : lastidx]);
                 ret.Add(ck);
             }
             return ret;

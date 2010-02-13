@@ -129,7 +129,7 @@ namespace iTextSharp.text.pdf.draw {
         /**
         * @see com.lowagie.text.Element#getChunks()
         */
-        public ArrayList Chunks {
+        public List<Chunk> Chunks {
             get {
                 ArrayList list = new ArrayList();
                 list.Add(new Chunk(this, true));

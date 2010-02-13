@@ -1,6 +1,6 @@
 using System;
 using System.util;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using iTextSharp.text.pdf;
@@ -62,8 +62,8 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="table"></param>
         /// <returns></returns>
-        public static ICollection GetKeySet(Properties table) {
-            return (table == null) ? new Properties().Keys : table.Keys;
+        public static ICollection<K> GetKeySet<K,V>(Dictionary<K,V> table) {
+            return (table == null) ? new List<K>() : table.Keys;
         }
 
         /**

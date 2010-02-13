@@ -1,6 +1,6 @@
 using System;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using System.util;
 using iTextSharp.text.factories;
 using iTextSharp.text.error_messages;
@@ -77,7 +77,7 @@ namespace iTextSharp.text {
     /// section11.Add(someSectionText);</strong>strong>
     /// </code>
     /// </example>
-    public class Section : ArrayList, ITextElementArray, ILargeElement {
+    public class Section : List<IElement>, ITextElementArray, ILargeElement {
         
         // constant
         /**
@@ -118,7 +118,7 @@ namespace iTextSharp.text {
         protected int subsections = 0;
     
         ///<summary> This is the complete list of sectionnumbers of this section and the parents of this section. </summary>
-        protected internal ArrayList numbers = null;
+        protected internal List<int> numbers = null;
     
     /**
         * Indicates if the Section will be complete once added to the document.
@@ -177,8 +177,8 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="number">the number of this section</param>
         /// <param name="numbers">an ArrayList, containing the numbers of the Parent</param>
-        private void SetNumbers(int number, ArrayList numbers) {
-            this.numbers = new ArrayList();
+        private void SetNumbers(int number, List<int> numbers) {
+            this.numbers = new List<int>();
             this.numbers.Add(number);
             this.numbers.AddRange(numbers);
         }
@@ -217,9 +217,9 @@ namespace iTextSharp.text {
         /// Gets all the chunks in this element.
         /// </summary>
         /// <value>an ArrayList</value>
-        public ArrayList Chunks {
+        public List<Chunk> Chunks {
             get {
-                ArrayList tmp = new ArrayList();
+                List<Chunk> tmp = new List<Chunk>();
                 foreach (IElement ele in this) {
                     tmp.AddRange(ele.Chunks);
                 }
@@ -251,12 +251,11 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="index">index at which the specified element is to be inserted</param>
         /// <param name="o">an object of type Paragraph, List or Table</param>
-        public void Add(int index, Object o) {
+        public void Add(int index, IElement element) {
             if (AddedCompletely) {
                 throw new InvalidOperationException(MessageLocalization.GetComposedMessage("this.largeelement.has.already.been.added.to.the.document"));
             }
             try {
-                IElement element = (IElement) o;
                 if (element.IsNestable()) {
                     base.Insert(index, element);
                 }
@@ -275,24 +274,23 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="o">an object of type Paragraph, List, Table or another Section</param>
         /// <returns>a bool</returns>
-        public new bool Add(Object o) {
+        public new bool Add(IElement element) {
             try {
-                IElement element = (IElement) o;
                 if (element.Type == Element.SECTION) {
-                    Section section = (Section) o;
+                    Section section = (Section)element;
                     section.SetNumbers(++subsections, numbers);
                     base.Add(section);
                     return true;
                 }
-                else if (o is MarkedSection && ((MarkedObject)o).element.Type == Element.SECTION) {
-                    MarkedSection mo = (MarkedSection)o;
+                else if (element is MarkedSection && ((MarkedObject)element).element.Type == Element.SECTION) {
+                    MarkedSection mo = (MarkedSection)element;
                     Section section = (Section)(mo.element);
                     section.SetNumbers(++subsections, numbers);
                     base.Add(mo);
                     return true;
                 }
                 else if (element.IsNestable()) {
-                    base.Add(o);
+                    base.Add(element);
                     return true;
                 }
                 else {
@@ -310,8 +308,8 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="collection">a collection of Paragraphs, Lists and/or Tables</param>
         /// <returns>true if the action succeeded, false if not.</returns>
-        public bool AddAll(ICollection collection) {
-            foreach (object itm in collection) {
+        public bool AddAll<T>(ICollection<T> collection) where T : IElement {
+            foreach (IElement itm in collection) {
                 this.Add(itm);
             }
             return true;
@@ -487,7 +485,7 @@ namespace iTextSharp.text {
         * @return   a Paragraph object
         * @since    iText 2.0.8
         */
-        public static Paragraph ConstructTitle(Paragraph title, ArrayList numbers, int numberDepth, int numberStyle) {
+        public static Paragraph ConstructTitle(Paragraph title, List<int> numbers, int numberDepth, int numberStyle) {
             if (title == null) {
                 return null;
             }
@@ -498,7 +496,7 @@ namespace iTextSharp.text {
             StringBuilder buf = new StringBuilder(" ");
             for (int i = 0; i < depth; i++) {
                 buf.Insert(0, ".");
-                buf.Insert(0, (int)numbers[i]);
+                buf.Insert(0, numbers[i]);
             }
             if (numberStyle == NUMBERSTYLE_DOTTED_WITHOUT_FINAL_DOT) {
                 buf.Remove(buf.Length - 2, 1);
@@ -670,7 +668,7 @@ namespace iTextSharp.text {
         */
         public void SetChapterNumber(int number) {
             numbers[numbers.Count - 1] = number;
-            foreach (Object s in this) {
+            foreach (IElement s in this) {
                 if (s is Section) {
                     ((Section)s).SetChapterNumber(number);
                 }
@@ -712,7 +710,7 @@ namespace iTextSharp.text {
             NotAddedYet = false;
             title = null;
             for (int k = 0; k < Count; ++k) {
-                IElement element = (IElement)this[k];
+                IElement element = this[k];
                 if (element is Section) {
                     Section s = (Section)element;
                     if (!s.ElementComplete && Count == 1) {

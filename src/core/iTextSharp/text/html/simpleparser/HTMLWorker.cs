@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.util;
 using iTextSharp.text;
@@ -55,19 +55,19 @@ namespace iTextSharp.text.html.simpleparser {
 
     public class HTMLWorker : ISimpleXMLDocHandler, IDocListener {
         
-        protected ArrayList objectList;
+        protected List<IElement> objectList;
         protected IDocListener document;
         private Paragraph currentParagraph;
         private ChainedProperties cprops = new ChainedProperties();
-        private Stack stack = new Stack();
+        private Stack<IElement> stack = new Stack<IElement>();
         private bool pendingTR = false;
         private bool pendingTD = false;
         private bool pendingLI = false;
         private StyleSheet style = new StyleSheet();
         private bool isPRE = false;
-        private Stack tableState = new Stack();
+        private Stack<bool[]> tableState = new Stack<bool[]>();
         private bool skipText = false;
-        private Hashtable interfaceProps;
+        private Dictionary<String, Object> interfaceProps;
         private FactoryProperties factoryProperties = new FactoryProperties();
         
         /** Creates a new instance of HTMLWorker */
@@ -84,11 +84,11 @@ namespace iTextSharp.text.html.simpleparser {
             }
         }
         
-        public Hashtable InterfaceProps {
+        public Dictionary<String, Object> InterfaceProps {
             set {
                 interfaceProps = value;
                 IFontProvider ff = null;
-                if (interfaceProps != null)
+                if (interfaceProps != null && interfaceProps.ContainsKey("font_factory"))
                     ff = (IFontProvider)interfaceProps["font_factory"];
                 if (ff != null)
                     factoryProperties.FontImp = ff;
@@ -102,17 +102,17 @@ namespace iTextSharp.text.html.simpleparser {
             SimpleXMLParser.Parse(this, null, reader, true);
         }
         
-        public static ArrayList ParseToList(TextReader reader, StyleSheet style) {
+        public static List<IElement> ParseToList(TextReader reader, StyleSheet style) {
             return ParseToList(reader, style, null);
         }
 
-        public static ArrayList ParseToList(TextReader reader, StyleSheet style, Hashtable interfaceProps) {
+        public static List<IElement> ParseToList(TextReader reader, StyleSheet style, Dictionary<String, Object> interfaceProps) {
             HTMLWorker worker = new HTMLWorker(null);
             if (style != null)
                 worker.Style = style;
             worker.document = worker;
             worker.InterfaceProps = interfaceProps;
-            worker.objectList = new ArrayList();
+            worker.objectList = new List<IElement>();
             worker.Parse(reader);
             return worker.objectList;
         }
@@ -126,18 +126,20 @@ namespace iTextSharp.text.html.simpleparser {
         }
         
         public virtual void StartDocument() {
-            Hashtable h = new Hashtable();
+            Dictionary<String, String> h = new Dictionary<string,string>();
             style.ApplyStyle("body", h);
             cprops.AddToChain("body", h);
         }
         
-        public virtual void StartElement(String tag, Hashtable h) {
+        public virtual void StartElement(String tag, Dictionary<String, String> h) {
             if (!tagsSupported.ContainsKey(tag))
                 return;
             style.ApplyStyle(tag, h);
-            String follow = (String)FactoryProperties.followTags[tag];
+            String follow = null;
+            if (FactoryProperties.followTags.ContainsKey(tag))
+                follow = FactoryProperties.followTags[tag];
             if (follow != null) {
-                Hashtable prop = new Hashtable();
+                Dictionary<String, String> prop = new Dictionary<string,string>();
                 prop[follow] = null;
                 cprops.AddToChain(follow, prop);
                 return;
@@ -170,28 +172,28 @@ namespace iTextSharp.text.html.simpleparser {
                 if (addLeadingBreak) { // Not a new paragraph
                     int numChunks = currentParagraph.Chunks.Count;
                     if (numChunks == 0 ||
-                        ((Chunk)currentParagraph.Chunks[numChunks - 1]).Content.EndsWith("\n"))
+                        currentParagraph.Chunks[numChunks - 1].Content.EndsWith("\n"))
                         addLeadingBreak = false;
                 }
-                String align = (String)h["align"];
+                String align;
                 int hrAlign = Element.ALIGN_CENTER;
-                if (align != null) {
+                if (h.TryGetValue("align", out align)) {
                     if (Util.EqualsIgnoreCase(align, "left"))
                         hrAlign = Element.ALIGN_LEFT; 
                     if (Util.EqualsIgnoreCase(align, "right"))
                         hrAlign = Element.ALIGN_RIGHT;
                 }
-                String width = (String)h["width"];
+                String width;
                 float hrWidth = 1;
-                if (width != null) {
+                if (h.TryGetValue("width", out width)) {
                     float tmpWidth = Markup.ParseLength(width, Markup.DEFAULT_FONT_SIZE);
                     if (tmpWidth > 0) hrWidth = tmpWidth;
                     if (!width.EndsWith("%"))
                         hrWidth = 100; // Treat a pixel width as 100% for now.
                 }
-                String size = (String)h["size"];
+                String size;;
                 float hrSize = 1;
-                if (size != null) {
+                if (h.TryGetValue("size", out size)) {
                     float tmpSize = Markup.ParseLength(size, Markup.DEFAULT_FONT_SIZE);
                     if (tmpSize > 0)
                         hrSize = tmpSize;
@@ -207,25 +209,28 @@ namespace iTextSharp.text.html.simpleparser {
                 return;
             }
             if (tag.Equals(HtmlTags.IMAGE)) {
-                String src = (String)h[ElementTags.SRC];
-                if (src == null)
+                String src;
+                if (!h.TryGetValue(ElementTags.SRC, out src))
                     return;
                 cprops.AddToChain(tag, h);
                 Image img = null;
                 if (interfaceProps != null) {
-                    IImageProvider ip = (IImageProvider)interfaceProps["img_provider"];
-                    if (ip != null)
+                    IImageProvider ip;
+                    if (interfaceProps.ContainsKey("img_provider")) {
+                        ip = (IImageProvider)interfaceProps["img_provider"];
                         img = ip.GetImage(src, h, cprops, document);
+                    }
                     if (img == null) {
-                        Hashtable images = (Hashtable)interfaceProps["img_static"];
-                        if (images != null) {
-                            Image tim = (Image)images[src];
-                            if (tim != null)
+                        Dictionary<String, Image> images;
+                        if (interfaceProps.ContainsKey("img_static")) {
+                            images = (Hashtable)interfaceProps["img_static"];
+                            Image tim;
+                            if (images.TryGetValue(images, out tim))
                                 img = Image.GetInstance(tim);
                         } else {
                             if (!src.StartsWith("http")) { // relative src references only
-                                String baseurl = (String)interfaceProps["img_baseurl"];
-                                if (baseurl != null) {
+                                String baseurl;
+                                if (interfaceProps.TryGetValue("img_baseurl", out baseurl)) {
                                     src = baseurl + src;
                                     img = Image.GetInstance(src);
                                 }
@@ -242,9 +247,9 @@ namespace iTextSharp.text.html.simpleparser {
                     }
                     img = Image.GetInstance(src);
                 }
-                String align = (String)h["align"];
-                String width = (String)h["width"];
-                String height = (String)h["height"];
+                String align; h.TryGetValue("align", out align);
+                String width; h.TryGetValue("width", out width);
+                String height; h.TryGetValue("height", out height);
                 String before = cprops["before"];
                 String after = cprops["after"];
                 if (before != null)
@@ -278,6 +283,8 @@ namespace iTextSharp.text.html.simpleparser {
                     bool skip = false;
                     if (interfaceProps != null) {
                         i = (IImg)interfaceProps["img_interface"];
+                        if (interfaceProps.ContainsKey("img_interface"))
+                            i = (IImg)interfaceProps["img_interface"];
                         if (i != null)
                             skip = i.Process(img, h, cprops, document);
                     }
@@ -384,8 +391,8 @@ namespace iTextSharp.text.html.simpleparser {
         public virtual void EndElement(String tag) {
             if (!tagsSupported.ContainsKey(tag))
                 return;
-            String follow = (String)FactoryProperties.followTags[tag];
-            if (follow != null) {
+            String follow;
+            if (FactoryProperties.followTags.TryGetValue(tag, out follow)) {
                 cprops.RemoveChain(follow);
                 return;
             }
@@ -399,16 +406,15 @@ namespace iTextSharp.text.html.simpleparser {
                 IALink i = null;
                 bool skip = false;
                 if (interfaceProps != null) {
-                    i = (IALink)interfaceProps["alink_interface"];
+                    if (interfaceProps.ContainsKey("alink_interface"))
+                        i = (IALink)interfaceProps["alink_interface"];
                     if (i != null)
                         skip = i.Process(currentParagraph, cprops);
                 }
                 if (!skip) {
                     String href = cprops["href"];
                     if (href != null) {
-                        ArrayList chunks = currentParagraph.Chunks;
-                        for (int k = 0; k < chunks.Count; ++k) {
-                            Chunk ck = (Chunk)chunks[k];
+                        foreach (Chunk ck in currentParagraph.Chunks) {
                             ck.SetAnchor(href);
                         }
                     }
@@ -428,7 +434,7 @@ namespace iTextSharp.text.html.simpleparser {
                 if (stack.Count == 0)
                     document.Add(currentParagraph);
                 else {
-                    Object obj = stack.Pop();
+                    IElement obj = stack.Pop();
                     if (obj is ITextElementArray) {
                         ITextElementArray current = (ITextElementArray)obj;
                         current.Add(currentParagraph);
@@ -444,13 +450,13 @@ namespace iTextSharp.text.html.simpleparser {
                 cprops.RemoveChain(tag);
                 if (stack.Count == 0)
                     return;
-                Object obj = stack.Pop();
+                IElement obj = stack.Pop();
                 if (!(obj is List)) {
                     stack.Push(obj);
                     return;
                 }
                 if (stack.Count == 0)
-                    document.Add((IElement)obj);
+                    document.Add(obj);
                 else
                     ((ITextElementArray)stack.Peek()).Add(obj);
                 return;
@@ -477,9 +483,9 @@ namespace iTextSharp.text.html.simpleparser {
                 }
                 ListItem item = (ListItem)obj;
                 ((List)list).Add(item);
-                ArrayList cks = item.Chunks;
+                List<Chunk> cks = item.Chunks;
                 if (cks.Count > 0)
-                    item.ListSymbol.Font = ((Chunk)cks[0]).Font;
+                    item.ListSymbol.Font = cks[0].Font;
                 stack.Push(list);
                 return;
             }
@@ -511,7 +517,7 @@ namespace iTextSharp.text.html.simpleparser {
                     document.Add(tb);
                 else
                     ((ITextElementArray)stack.Peek()).Add(tb);
-                bool[] state = (bool[])tableState.Pop();
+                bool[] state = tableState.Pop();
                 pendingTR = state[0];
                 pendingTD = state[1];
                 skipText = false;
@@ -644,7 +650,7 @@ namespace iTextSharp.text.html.simpleparser {
         public const String tagsSupportedString = "ol ul li a pre font span br p div body table td th tr i b u sub sup em strong s strike"
             + " h1 h2 h3 h4 h5 h6 img hr";
         
-        public static Hashtable tagsSupported = new Hashtable();
+        public static Dictionary<string,object> tagsSupported = new Dictionary<string,object>();
         
         static HTMLWorker() {
             StringTokenizer tok = new StringTokenizer(tagsSupportedString);

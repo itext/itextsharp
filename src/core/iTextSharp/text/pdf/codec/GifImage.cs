@@ -1,7 +1,7 @@
 using System;
 using System.Net;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
@@ -97,7 +97,7 @@ namespace iTextSharp.text.pdf.codec {
         protected Uri fromUrl;
 
 
-        protected ArrayList frames = new ArrayList();     // frames read from current file
+        protected List<GifFrame> frames = new List<GifFrame>();     // frames read from current file
 
         /** Reads gif images from an URL.
         * @param url the URL
@@ -162,7 +162,7 @@ namespace iTextSharp.text.pdf.codec {
         * @return the image
         */    
         public Image GetImage(int frame) {
-            GifFrame gf = (GifFrame)frames[frame - 1];
+            GifFrame gf = frames[frame - 1];
             return gf.image;
         }
         
@@ -172,7 +172,7 @@ namespace iTextSharp.text.pdf.codec {
         * @return the [x,y] position of the frame
         */    
         public int[] GetFramePosition(int frame) {
-            GifFrame gf = (GifFrame)frames[frame - 1];
+            GifFrame gf = frames[frame - 1];
             return new int[]{gf.ix, gf.iy};
             
         }

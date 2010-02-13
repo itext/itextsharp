@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 /*
  * $Id$
@@ -107,7 +107,7 @@ namespace iTextSharp.text {
         /// Gets all the chunks in this element.
         /// </summary>
         /// <value>an ArrayList</value>
-        ArrayList Chunks {
+        List<Chunk> Chunks {
             get;
         }
     
