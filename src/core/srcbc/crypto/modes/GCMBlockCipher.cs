@@ -256,7 +256,7 @@ namespace Org.BouncyCastle.Crypto.Modes
 			if (extra > 0)
 			{
 				byte[] tmp = new byte[BlockSize];
-				Array.Copy(bufBlock, tmp, extra);
+				Array.Copy(bufBlock, 0, tmp, 0, extra);
 				gCTRBlock(tmp, extra, output, outOff);
 			}
 
@@ -278,7 +278,7 @@ namespace Org.BouncyCastle.Crypto.Modes
 
 			// We place into macBlock our calculated value for T
 			this.macBlock = new byte[macSize];
-			Array.Copy(tag, macBlock, macSize);
+			Array.Copy(tag, 0, macBlock, 0, macSize);
 
 			if (forEncryption)
 			{

@@ -8,9 +8,19 @@ namespace Org.BouncyCastle.Asn1
 		private readonly Stream _in;
 		private readonly int _limit;
 
+		private static int findLimit(Stream inStream)
+		{
+			if (inStream is DefiniteLengthInputStream)
+			{
+				return ((DefiniteLengthInputStream)inStream).Remaining;
+			}
+
+			return int.MaxValue;
+		}
+
 		public Asn1StreamParser(
 			Stream inStream)
-			: this(inStream, int.MaxValue)
+			: this(inStream, findLimit(inStream))
 		{
 		}
 
@@ -61,7 +71,7 @@ namespace Org.BouncyCastle.Asn1
 
 				if ((tag & Asn1Tags.Application) != 0)
 				{
-					Asn1StreamParser sp2 = new Asn1StreamParser(indIn);
+					Asn1StreamParser sp2 = new Asn1StreamParser(indIn, _limit);
 
 					return new BerApplicationSpecificParser(tagNo, sp2);
 				}
@@ -72,7 +82,7 @@ namespace Org.BouncyCastle.Asn1
 					return new BerTaggedObjectParser(tag, tagNo, indIn);
 				}
 
-				Asn1StreamParser sp = new Asn1StreamParser(indIn);
+				Asn1StreamParser sp = new Asn1StreamParser(indIn, _limit);
 
 				// TODO There are other tags that may be constructed (e.g. BitString)
 				switch (tagNo)

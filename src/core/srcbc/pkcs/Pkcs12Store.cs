@@ -235,8 +235,7 @@ namespace Org.BouncyCastle.Pkcs
 
 								if (localId != null)
 								{
-									byte[] hex = Hex.Encode(localId.GetOctets());
-									string name = Encoding.ASCII.GetString(hex, 0, hex.Length);
+									string name = Hex.ToHexString(localId.GetOctets());
 
 									if (alias == null)
 									{
@@ -337,8 +336,7 @@ namespace Org.BouncyCastle.Pkcs
 								// TODO Should we be checking localIds != null here
 								// as for PkcsObjectIdentifiers.Data version above?
 
-								byte[] hex = Hex.Encode(localId.GetOctets());
-								string name = Encoding.ASCII.GetString(hex, 0, hex.Length);
+								string name = Hex.ToHexString(localId.GetOctets());
 
 								if (alias == null)
 								{
@@ -405,8 +403,7 @@ namespace Org.BouncyCastle.Pkcs
 								// TODO Should we be checking localIds != null here
 								// as for PkcsObjectIdentifiers.Data version above?
 
-								byte[] hex = Hex.Encode(localId.GetOctets());
-								string name = Encoding.ASCII.GetString(hex, 0, hex.Length);
+								string name = Hex.ToHexString(localId.GetOctets());
 
 								if (alias == null)
 								{
@@ -498,8 +495,7 @@ namespace Org.BouncyCastle.Pkcs
 				{
 					if (keyCerts.Count == 0)
 					{
-						byte[] hex = Hex.Encode(certId.Id);
-						string name = Encoding.ASCII.GetString(hex, 0, hex.Length);
+						string name = Hex.ToHexString(certId.Id);
 
 						keyCerts[name] = pkcs12Cert;
 
@@ -512,8 +508,7 @@ namespace Org.BouncyCastle.Pkcs
 				{
 					if (localId != null)
 					{
-						byte[] hex = Hex.Encode(localId.GetOctets());
-						string name = Encoding.ASCII.GetString(hex, 0, hex.Length);
+						string name = Hex.ToHexString(localId.GetOctets());
 
 						keyCerts[name] = pkcs12Cert;
 					}
@@ -1118,7 +1113,7 @@ namespace Org.BouncyCastle.Pkcs
 			derOut.WriteObject(pfx);
 		}
 
-		private static byte[] CalculatePbeMac(
+		internal static byte[] CalculatePbeMac(
 			DerObjectIdentifier	oid,
 			byte[]				salt,
 			int					itCount,

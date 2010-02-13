@@ -161,7 +161,7 @@ namespace Org.BouncyCastle.Security
 
 				ECPoint q = ecP.Curve.CreatePoint(new BigInteger(1, x), new BigInteger(1, y), false);
 
-				return new ECPublicKeyParameters(q, gostParams.PublicKeyParamSet);
+				return new ECPublicKeyParameters("ECGOST3410", q, gostParams.PublicKeyParamSet);
 			}
 			else if (algOid.Equals(CryptoProObjectIdentifiers.GostR3410x94))
 			{

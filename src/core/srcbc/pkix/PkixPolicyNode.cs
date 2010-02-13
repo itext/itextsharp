@@ -28,7 +28,7 @@ namespace Org.BouncyCastle.Pkix
 
 		public virtual IEnumerable Children
 		{
-			get { return ArrayList.ReadOnly(mChildren); }
+			get { return new EnumerableProxy(mChildren); }
 		}
 
 		public virtual bool IsCritical

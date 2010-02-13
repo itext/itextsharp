@@ -45,9 +45,9 @@ namespace Org.BouncyCastle.Security
 		}
 
 		public static AsymmetricCipherKeyPair GetDsaKeyPair(
-			DSACryptoServiceProvider dsaCsp)
+			DSA dsa)
 		{
-			return GetDsaKeyPair(dsaCsp.ExportParameters(true));
+			return GetDsaKeyPair(dsa.ExportParameters(true));
 		}
 
 		public static AsymmetricCipherKeyPair GetDsaKeyPair(
@@ -75,9 +75,9 @@ namespace Org.BouncyCastle.Security
 		}
 
 		public static DsaPublicKeyParameters GetDsaPublicKey(
-			DSACryptoServiceProvider dsaCsp)
+			DSA dsa)
 		{
-			return GetDsaPublicKey(dsaCsp.ExportParameters(false));
+			return GetDsaPublicKey(dsa.ExportParameters(false));
 		}
 
 		public static DsaPublicKeyParameters GetDsaPublicKey(
@@ -99,9 +99,9 @@ namespace Org.BouncyCastle.Security
 		}
 
 		public static AsymmetricCipherKeyPair GetRsaKeyPair(
-			RSACryptoServiceProvider rsaCsp)
+			RSA rsa)
 		{
-			return GetRsaKeyPair(rsaCsp.ExportParameters(true));
+			return GetRsaKeyPair(rsa.ExportParameters(true));
 		}
 
 		public static AsymmetricCipherKeyPair GetRsaKeyPair(
@@ -129,9 +129,9 @@ namespace Org.BouncyCastle.Security
 		}
 
 		public static RsaKeyParameters GetRsaPublicKey(
-			RSACryptoServiceProvider rsaCsp)
+			RSA rsa)
 		{
-			return GetRsaPublicKey(rsaCsp.ExportParameters(false));
+			return GetRsaPublicKey(rsa.ExportParameters(false));
 		}
 
 		public static RsaKeyParameters GetRsaPublicKey(
@@ -145,17 +145,58 @@ namespace Org.BouncyCastle.Security
 
 		public static AsymmetricCipherKeyPair GetKeyPair(AsymmetricAlgorithm privateKey)
 		{
-			if (privateKey is DSACryptoServiceProvider)
+			if (privateKey is DSA)
 			{
-				return GetDsaKeyPair((DSACryptoServiceProvider) privateKey);
+				return GetDsaKeyPair((DSA)privateKey);
 			}
 
-			if (privateKey is RSACryptoServiceProvider)
+			if (privateKey is RSA)
 			{
-				return GetRsaKeyPair((RSACryptoServiceProvider) privateKey);
+				return GetRsaKeyPair((RSA)privateKey);
 			}
 
 			throw new ArgumentException("Unsupported algorithm specified", "privateKey");
+		}
+
+		public static RSA ToRSA(RsaKeyParameters rsaKey)
+		{
+			RSAParameters rp = ToRSAParameters(rsaKey);
+			RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider();
+			rsaCsp.ImportParameters(rp);
+			return rsaCsp;
+		}
+
+		public static RSA ToRSA(RsaPrivateCrtKeyParameters privKey)
+		{
+			RSAParameters rp = ToRSAParameters(privKey);
+			RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider();
+			rsaCsp.ImportParameters(rp);
+			return rsaCsp;
+		}
+
+		public static RSAParameters ToRSAParameters(RsaKeyParameters rsaKey)
+		{
+			RSAParameters rp = new RSAParameters();
+			rp.Modulus = rsaKey.Modulus.ToByteArrayUnsigned();
+			if (rsaKey.IsPrivate)
+				rp.D = rsaKey.Exponent.ToByteArrayUnsigned();
+			else
+				rp.Exponent = rsaKey.Exponent.ToByteArrayUnsigned();
+			return rp;
+		}
+
+		public static RSAParameters ToRSAParameters(RsaPrivateCrtKeyParameters privKey)
+		{
+			RSAParameters rp = new RSAParameters();
+			rp.Modulus = privKey.Modulus.ToByteArrayUnsigned();
+			rp.Exponent = privKey.PublicExponent.ToByteArrayUnsigned();
+			rp.D = privKey.Exponent.ToByteArrayUnsigned();
+			rp.P = privKey.P.ToByteArrayUnsigned();
+			rp.Q = privKey.Q.ToByteArrayUnsigned();
+			rp.DP = privKey.DP.ToByteArrayUnsigned();
+			rp.DQ = privKey.DQ.ToByteArrayUnsigned();
+			rp.InverseQ = privKey.QInv.ToByteArrayUnsigned();
+			return rp;
 		}
 	}
 }

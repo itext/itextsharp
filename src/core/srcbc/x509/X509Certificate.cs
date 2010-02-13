@@ -458,16 +458,12 @@ namespace Org.BouncyCastle.X509
 			buf.Append("  Signature Algorithm: ").Append(this.SigAlgName).Append(nl);
 
 			byte[] sig = this.GetSignature();
-			byte[] hex = Hex.Encode(sig, 0, 20);
-			string ascii = Encoding.ASCII.GetString(hex, 0, hex.Length);
-			buf.Append("            Signature: ").Append(ascii).Append(nl);
+			buf.Append("            Signature: ").Append(Hex.ToHexString(sig, 0, 20)).Append(nl);
 
 			for (int i = 20; i < sig.Length; i += 20)
 			{
 				int len = System.Math.Min(20, sig.Length - i);
-				hex = Hex.Encode(sig, i, len);
-				ascii = Encoding.ASCII.GetString(hex, 0, hex.Length);
-				buf.Append("                       ").Append(ascii).Append(nl);
+				buf.Append("                       ").Append(Hex.ToHexString(sig, i, len)).Append(nl);
 			}
 
 			X509Extensions extensions = c.TbsCertificate.Extensions;
@@ -555,10 +551,8 @@ namespace Org.BouncyCastle.X509
 			AsymmetricKeyParameter	publicKey,
 			ISigner					signature)
 		{
-			if (!c.SignatureAlgorithm.Equals(c.TbsCertificate.Signature))
-			{
+			if (!IsAlgIDEqual(c.SignatureAlgorithm, c.TbsCertificate.Signature))
 				throw new CertificateException("signature algorithm in TBS cert not same as outer cert");
-			}
 
 			Asn1Encodable parameters = c.SignatureAlgorithm.Parameters;
 
@@ -574,6 +568,23 @@ namespace Org.BouncyCastle.X509
 			{
 				throw new InvalidKeyException("Public key presented not for certificate signature");
 			}
+		}
+
+		private static bool IsAlgIDEqual(AlgorithmIdentifier id1, AlgorithmIdentifier id2)
+		{
+			if (!id1.ObjectID.Equals(id2.ObjectID))
+				return false;
+
+			Asn1Encodable p1 = id1.Parameters;
+			Asn1Encodable p2 = id2.Parameters;
+
+			if ((p1 == null) == (p2 == null))
+				return Platform.Equals(p1, p2);
+
+			// Exactly one of p1, p2 is null at this point
+			return p1 == null
+				?	p2.ToAsn1Object() is Asn1Null
+				:	p1.ToAsn1Object() is Asn1Null;
 		}
 	}
 }

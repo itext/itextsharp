@@ -177,11 +177,10 @@ namespace Org.BouncyCastle.OpenSsl
 			random.NextBytes(iv);
 
 			byte[] encData = PemUtilities.Crypt(true, keyData, password, dekAlgName, iv);
-			byte[] hexIV = Hex.Encode(iv);
 
 			WritePemBlock(type, encData,
 				"Proc-Type: 4,ENCRYPTED",
-				"DEK-Info: " + dekAlgName + "," + Encoding.ASCII.GetString(hexIV, 0, hexIV.Length));
+				"DEK-Info: " + dekAlgName + "," + Hex.ToHexString(iv));
 		}
 
 		private byte[] EncodePrivateKey(

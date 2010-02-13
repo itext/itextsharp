@@ -18,6 +18,7 @@ namespace Org.BouncyCastle.Crypto.Parameters
 		{
 		}
 
+		[Obsolete("Use version with explicit 'algorithm' parameter")]
 		public ECPrivateKeyParameters(
 			BigInteger			d,
 			DerObjectIdentifier publicKeyParamSet)
@@ -34,6 +35,18 @@ namespace Org.BouncyCastle.Crypto.Parameters
 			BigInteger			d,
 			ECDomainParameters	parameters)
 			: base(algorithm, true, parameters)
+		{
+			if (d == null)
+				throw new ArgumentNullException("d");
+
+			this.d = d;
+		}
+
+		public ECPrivateKeyParameters(
+			string				algorithm,
+			BigInteger			d,
+			DerObjectIdentifier publicKeyParamSet)
+			: base(algorithm, true, publicKeyParamSet)
 		{
 			if (d == null)
 				throw new ArgumentNullException("d");

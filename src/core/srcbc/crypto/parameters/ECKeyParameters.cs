@@ -3,6 +3,8 @@ using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.CryptoPro;
+using Org.BouncyCastle.Asn1.X9;
+using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Security;
 
 namespace Org.BouncyCastle.Crypto.Parameters
@@ -117,7 +119,7 @@ namespace Org.BouncyCastle.Crypto.Parameters
 			return upper;
 		}
 
-		private static ECDomainParameters LookupParameters(
+		internal static ECDomainParameters LookupParameters(
 			DerObjectIdentifier publicKeyParamSet)
 		{
 			if (publicKeyParamSet == null)
@@ -126,7 +128,16 @@ namespace Org.BouncyCastle.Crypto.Parameters
 			ECDomainParameters p = ECGost3410NamedCurves.GetByOid(publicKeyParamSet);
 
 			if (p == null)
-				throw new ArgumentException("OID is not a valid CryptoPro public key parameter set", "publicKeyParamSet");
+			{
+				X9ECParameters x9 = ECKeyPairGenerator.FindECCurveByOid(publicKeyParamSet);
+
+				if (x9 == null)
+				{
+					throw new ArgumentException("OID is not a valid public key parameter set", "publicKeyParamSet");
+				}
+
+				p = new ECDomainParameters(x9.Curve, x9.G, x9.N, x9.H, x9.GetSeed());
+			}
 
 			return p;
 		}

@@ -4,6 +4,7 @@ using System.IO;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Security;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
@@ -61,26 +62,15 @@ namespace Org.BouncyCastle.Crypto.Tls
 			int		offset,
 			int		len)
 		{
-			try
-			{
-				MemoryStream bosMac = new MemoryStream(13 + len);
-				TlsUtilities.WriteUint64(seqNo++, bosMac);
-				TlsUtilities.WriteUint8(type, bosMac);
-				TlsUtilities.WriteVersion(bosMac);
-				TlsUtilities.WriteUint16(len, bosMac);
-				bosMac.Write(message, offset, len);
-				byte[] macData = bosMac.ToArray();
-				mac.BlockUpdate(macData, 0, macData.Length);
-				byte[] result = new byte[mac.GetMacSize()];
-				mac.DoFinal(result, 0);
-				mac.Reset();
-				return result;
-			}
-			catch (IOException)
-			{
-				// This should never happen
-				throw new InvalidOperationException("Internal error during mac calculation");
-			}
+			byte[] macHeader = new byte[13];
+			TlsUtilities.WriteUint64(seqNo++, macHeader, 0);
+			TlsUtilities.WriteUint8(type, macHeader, 8);
+			TlsUtilities.WriteVersion(macHeader, 9);
+			TlsUtilities.WriteUint16(len, macHeader, 11);
+
+			mac.BlockUpdate(macHeader, 0, macHeader.Length);
+			mac.BlockUpdate(message, offset, len);
+			return MacUtilities.DoFinal(mac);
 		}
 	}
 }

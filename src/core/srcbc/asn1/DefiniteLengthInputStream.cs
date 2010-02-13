@@ -30,6 +30,11 @@ namespace Org.BouncyCastle.Asn1
 			}
         }
 
+		internal int Remaining
+		{
+			get { return _remaining; }
+		}
+
 		public override int ReadByte()
         {
 			if (_remaining == 0)

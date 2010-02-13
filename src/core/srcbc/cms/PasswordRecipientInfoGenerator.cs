@@ -38,9 +38,9 @@ namespace Org.BouncyCastle.Cms
 			set { this.wrapKey = value; }
 		}
 
-		public RecipientInfo Generate(KeyParameter key, SecureRandom random)
+		public RecipientInfo Generate(KeyParameter contentEncryptionKey, SecureRandom random)
 		{
-			byte[] keyBytes = key.GetKey();
+			byte[] keyBytes = contentEncryptionKey.GetKey();
 
 			string rfc3211WrapperName = Helper.GetRfc3211WrapperName(wrapAlgorithm);
 			IWrapper keyWrapper = Helper.CreateWrapper(rfc3211WrapperName);

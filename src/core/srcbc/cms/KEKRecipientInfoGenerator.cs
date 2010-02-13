@@ -48,11 +48,11 @@ namespace Org.BouncyCastle.Cms
 			}
 		}
 
-		public RecipientInfo Generate(KeyParameter key, SecureRandom random)
+		public RecipientInfo Generate(KeyParameter contentEncryptionKey, SecureRandom random)
 		{
-			byte[] keyBytes = key.GetKey();
+			byte[] keyBytes = contentEncryptionKey.GetKey();
 
-			IWrapper keyWrapper = Helper.CreateWrapper(	keyEncAlg.ObjectID.Id);
+			IWrapper keyWrapper = Helper.CreateWrapper(keyEncAlg.ObjectID.Id);
 			keyWrapper.Init(true, new ParametersWithRandom(wrapKey, random));
         	Asn1OctetString encKey = new DerOctetString(
 				keyWrapper.Wrap(keyBytes, 0, keyBytes.Length));

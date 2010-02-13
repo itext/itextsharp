@@ -247,13 +247,13 @@ namespace Org.BouncyCastle.X509
 			byte[] sig = this.GetSignature();
 
 			buf.Append("            Signature: ");
-			buf.Append(AsHexString(sig, 0, 20)).Append(nl);
+			buf.Append(Hex.ToHexString(sig, 0, 20)).Append(nl);
 
 			for (int i = 20; i < sig.Length; i += 20)
 			{
 				int count = System.Math.Min(20, sig.Length - i);
 				buf.Append("                       ");
-				buf.Append(AsHexString(sig, i, count)).Append(nl);
+				buf.Append(Hex.ToHexString(sig, i, count)).Append(nl);
 			}
 
 			X509Extensions extensions = c.TbsCertList.Extensions;
@@ -398,15 +398,6 @@ namespace Org.BouncyCastle.X509
 
 				return isIndirect;
 			}
-		}
-
-		private static string AsHexString(
-			byte[]	bytes,
-			int		index,
-			int		count)
-		{
-			byte[] hex = Hex.Encode(bytes, index, count);
-			return Encoding.ASCII.GetString(hex, 0, hex.Length);
 		}
 	}
 }

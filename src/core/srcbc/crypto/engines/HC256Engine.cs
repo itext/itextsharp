@@ -75,7 +75,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 	        {
 				byte[] k = new byte[32];
 
-				Array.Copy(key, k, key.Length);
+				Array.Copy(key, 0, k, 0, key.Length);
 				Array.Copy(key, 0, k, 16, key.Length);
 
 				key = k;
@@ -85,7 +85,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 			{
 				byte[] newIV = new byte[32];
 
-				Array.Copy(iv, newIV, iv.Length);
+				Array.Copy(iv, 0, newIV, 0, iv.Length);
 				Array.Copy(iv, 0, newIV, iv.Length, newIV.Length - iv.Length);
 
 				iv = newIV;

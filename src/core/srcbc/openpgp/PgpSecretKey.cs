@@ -118,7 +118,6 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             }
             catch (Exception e)
             {
-				Console.WriteLine(e.StackTrace);
                 throw new PgpException("Exception encrypting key", e);
             }
         }

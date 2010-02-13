@@ -176,6 +176,8 @@ namespace Org.BouncyCastle.Asn1.Pkcs
         public const string IdAA = "1.2.840.113549.1.9.16.2";
 
 		public static readonly DerObjectIdentifier IdAAContentHint = new DerObjectIdentifier(IdAA + ".4"); // See RFC 2634
+    	public static readonly DerObjectIdentifier IdAAMsgSigDigest = new DerObjectIdentifier(IdAA + ".5");
+    	public static readonly DerObjectIdentifier IdAAContentReference = new DerObjectIdentifier(IdAA + ".10");
 
 		/*
         * id-aa-encrypKeyPref OBJECT IDENTIFIER ::= {id-aa 11}

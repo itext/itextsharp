@@ -236,20 +236,15 @@ namespace Org.BouncyCastle.Asn1
              byte[] a,
              byte[] b)
         {
-			int cmpLen = System.Math.Min(a.Length, b.Length);
-
-			for (int i = 0; i < cmpLen; ++i)
+			int len = System.Math.Min(a.Length, b.Length);
+			for (int i = 0; i != len; ++i)
 			{
-				byte l = a[i];
-				byte r = b[i];
-
-				if (l != r)
+				if (a[i] != b[i])
 				{
-					return r > l ? true : false;
+					return a[i] < b[i];
 				}
 			}
-
-			return a.Length <= b.Length;
+			return len == a.Length;
         }
 
 		protected internal void Sort()

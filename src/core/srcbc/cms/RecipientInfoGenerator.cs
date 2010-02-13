@@ -11,7 +11,7 @@ namespace Org.BouncyCastle.Cms
 		/// <summary>
 		/// Generate a RecipientInfo object for the given key.
 		/// </summary>
-		/// <param name="key">
+		/// <param name="contentEncryptionKey">
 		/// A <see cref="KeyParameter"/>
 		/// </param>
 		/// <param name="random">
@@ -21,6 +21,6 @@ namespace Org.BouncyCastle.Cms
 		/// A <see cref="RecipientInfo"/>
 		/// </returns>
 		/// <exception cref="GeneralSecurityException"></exception>
-		RecipientInfo Generate(KeyParameter key, SecureRandom random);
+		RecipientInfo Generate(KeyParameter contentEncryptionKey, SecureRandom random);
 	}
 }

@@ -3,7 +3,7 @@ using System;
 namespace Org.BouncyCastle.Crypto.Tls
 {
 	/// <remarks>A generic class for ciphersuites in TLS 1.0.</remarks>
-	public abstract class TlsCipherSuite
+	internal abstract class TlsCipherSuite
 	{
 		internal const short KE_RSA = 1;
 		internal const short KE_RSA_EXPORT = 2;
@@ -18,11 +18,11 @@ namespace Org.BouncyCastle.Crypto.Tls
 		internal const short KE_SRP_RSA = 11;
 		internal const short KE_SRP_DSS = 12;
 
-		internal abstract void Init(byte[] ms, byte[] cr, byte[] sr);
+		internal abstract void Init(TlsProtocolHandler handler, byte[] ms, byte[] cr, byte[] sr);
 
 		internal abstract byte[] EncodePlaintext(short type, byte[] plaintext, int offset, int len);
 
-		internal abstract byte[] DecodeCiphertext(short type, byte[] plaintext, int offset, int len, TlsProtocolHandler handler);
+		internal abstract byte[] DecodeCiphertext(short type, byte[] plaintext, int offset, int len);
 
 		internal abstract short KeyExchangeAlgorithm { get; }
 	}

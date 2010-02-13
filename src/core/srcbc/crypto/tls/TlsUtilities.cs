@@ -13,11 +13,6 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// <remarks>Some helper fuctions for MicroTLS.</remarks>
 	public class TlsUtilities
 	{
-		internal static byte[] ToByteArray(string str)
-		{
-			return Strings.ToByteArray(str);
-		}
-
 		internal static void WriteUint8(short i, Stream os)
 		{
 			os.WriteByte((byte)i);
@@ -87,6 +82,12 @@ namespace Org.BouncyCastle.Crypto.Tls
 		internal static void WriteOpaque16(byte[] buf, Stream os)
 		{
 			WriteUint16(buf.Length, os);
+			os.Write(buf, 0, buf.Length);
+		}
+
+		internal static void WriteOpaque24(byte[] buf, Stream os)
+		{
+			WriteUint24(buf.Length, os);
 			os.Write(buf, 0, buf.Length);
 		}
 
@@ -169,6 +170,12 @@ namespace Org.BouncyCastle.Crypto.Tls
 			os.WriteByte(1);
 		}
 
+		internal static void WriteVersion(byte[] buf, int offset)
+		{
+			buf[offset] = 3;
+			buf[offset + 1] = 1;
+		}
+
 		private static void hmac_hash(IDigest digest, byte[] secret, byte[] seed, byte[] output)
 		{
 			HMac mac = new HMac(digest);
@@ -194,10 +201,12 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 		internal static void PRF(
 			byte[]	secret,
-			byte[]	label,
+			String	asciiLabel,
 			byte[]	seed,
 			byte[]	buf)
 		{
+			byte[] label = Encoding.ASCII.GetBytes(asciiLabel);
+
 			int s_half = (secret.Length + 1) / 2;
 			byte[] s1 = new byte[s_half];
 			byte[] s2 = new byte[s_half];

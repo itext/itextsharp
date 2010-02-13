@@ -39,6 +39,15 @@ namespace Org.BouncyCastle.Asn1.X509
             BigInteger	modulus,
             BigInteger	publicExponent)
         {
+			if (modulus == null)
+				throw new ArgumentNullException("modulus");
+			if (publicExponent == null)
+				throw new ArgumentNullException("publicExponent");
+			if (modulus.SignValue <= 0)
+				throw new ArgumentException("Not a valid RSA modulus", "modulus");
+			if (publicExponent.SignValue <= 0)
+				throw new ArgumentException("Not a valid RSA public exponent", "publicExponent");
+
             this.modulus = modulus;
             this.publicExponent = publicExponent;
         }
@@ -49,6 +58,7 @@ namespace Org.BouncyCastle.Asn1.X509
 			if (seq.Count != 2)
 				throw new ArgumentException("Bad sequence size: " + seq.Count);
 
+			// Note: we are accepting technically incorrect (i.e. negative) values here
 			modulus = DerInteger.GetInstance(seq[0]).PositiveValue;
 			publicExponent = DerInteger.GetInstance(seq[1]).PositiveValue;
 		}

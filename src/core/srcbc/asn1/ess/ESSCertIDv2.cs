@@ -33,7 +33,7 @@ namespace Org.BouncyCastle.Asn1.Ess
 		private EssCertIDv2(
 			Asn1Sequence seq)
 		{
-			if (seq.Count != 2 && seq.Count != 3)
+			if (seq.Count > 3)
 				throw new ArgumentException("Bad sequence size: " + seq.Count, "seq");
 
 			int count = 0;

@@ -365,9 +365,8 @@ namespace Org.BouncyCastle.Pkix
 		}
 
 		/**
-		 * Returns the List of certification path checkers. The returned List is
-		 * immutable, and each PKIXCertPathChecker in the List is cloned to protect
-		 * against subsequent modifications.
+		 * Returns the List of certification path checkers. Each PKIXCertPathChecker
+		 * in the returned IList is cloned to protect against subsequent modifications.
 		 * 
 		 * @return an immutable List of PKIXCertPathCheckers (may be empty, but not
 		 *         <code>null</code>)
@@ -381,7 +380,7 @@ namespace Org.BouncyCastle.Pkix
 			{
 				checkers.Add(obj.Clone());
 			}
-			return ArrayList.ReadOnly(checkers);
+			return checkers;
 		}
 
 		/**
@@ -577,7 +576,7 @@ namespace Org.BouncyCastle.Pkix
 		}
 
 		/**
-		* Returns an immutable <code>IList</code> of additional Bouncy Castle
+		* Returns an <code>IList</code> of additional Bouncy Castle
 		* <code>Store</code>s used for finding CRLs, certificates, attribute
 		* certificates or cross certificates.
 		* 
@@ -588,11 +587,11 @@ namespace Org.BouncyCastle.Pkix
 		*/
 		public virtual IList GetAdditionalStores()
 		{
-			return ArrayList.ReadOnly(new ArrayList(additionalStores));
+			return new ArrayList(additionalStores);
 		}
 
 		/**
-		* Returns an immutable <code>IList</code> of Bouncy Castle
+		* Returns an <code>IList</code> of Bouncy Castle
 		* <code>Store</code>s used for finding CRLs, certificates, attribute
 		* certificates or cross certificates.
 		* 
@@ -603,7 +602,7 @@ namespace Org.BouncyCastle.Pkix
 		*/
 		public virtual IList GetStores()
 		{
-			return ArrayList.ReadOnly(new ArrayList(stores));
+			return new ArrayList(stores);
 		}
 
 		/**

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 
 namespace Org.BouncyCastle.Utilities.Encoders
 {
@@ -12,6 +13,22 @@ namespace Org.BouncyCastle.Utilities.Encoders
 
 		private Hex()
 		{
+		}
+
+		public static string ToHexString(
+			byte[] data)
+		{
+			byte[] hex = Encode(data, 0, data.Length);
+			return Encoding.ASCII.GetString(hex, 0, hex.Length);
+		}
+
+		public static string ToHexString(
+			byte[]	data,
+			int		off,
+			int		length)
+		{
+			byte[] hex = Encode(data, off, length);
+			return Encoding.ASCII.GetString(hex, 0, hex.Length);
 		}
 
 		/**

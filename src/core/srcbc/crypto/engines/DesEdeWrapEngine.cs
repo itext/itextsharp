@@ -134,7 +134,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 
             // Let WKCKS = WK || CKS where || is concatenation.
             byte[] WKCKS = new byte[keyToBeWrapped.Length + CKS.Length];
-            Array.Copy(keyToBeWrapped, WKCKS, keyToBeWrapped.Length);
+            Array.Copy(keyToBeWrapped, 0, WKCKS, 0, keyToBeWrapped.Length);
             Array.Copy(CKS, 0, WKCKS, keyToBeWrapped.Length, CKS.Length);
 
             // Encrypt WKCKS in CBC mode using KEK as the key and IV as the
@@ -156,7 +156,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 
             // Let TEMP2 = IV || TEMP1.
             byte[] TEMP2 = new byte[this.iv.Length + TEMP1.Length];
-            Array.Copy(this.iv, TEMP2, this.iv.Length);
+            Array.Copy(this.iv, 0, TEMP2, 0, this.iv.Length);
             Array.Copy(TEMP1, 0, TEMP2, this.iv.Length, TEMP1.Length);
 
             // Reverse the order of the octets in TEMP2 and call the result TEMP3.
@@ -239,7 +239,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 			// Decompose TEMP2 into IV, the first 8 octets, and TEMP1, the remaining octets.
             this.iv = new byte[8];
             byte[] TEMP1 = new byte[TEMP2.Length - 8];
-            Array.Copy(TEMP2, this.iv, 8);
+            Array.Copy(TEMP2, 0, this.iv, 0, 8);
             Array.Copy(TEMP2, 8, TEMP1, 0, TEMP2.Length - 8);
 
             // Decrypt TEMP1 using TRIPLedeS in CBC mode using the KEK and the IV
@@ -258,7 +258,7 @@ namespace Org.BouncyCastle.Crypto.Engines
             // those octets before the CKS.
             byte[] result = new byte[WKCKS.Length - 8];
             byte[] CKStoBeVerified = new byte[8];
-            Array.Copy(WKCKS, result, WKCKS.Length - 8);
+            Array.Copy(WKCKS, 0, result, 0, WKCKS.Length - 8);
             Array.Copy(WKCKS, WKCKS.Length - 8, CKStoBeVerified, 0, 8);
 
             // Calculate a CMS Key Checksum, (section 5.6.1), over the WK and compare
@@ -292,7 +292,7 @@ namespace Org.BouncyCastle.Crypto.Engines
             sha1.DoFinal(digest, 0);
 
             byte[] result = new byte[8];
-			Array.Copy(digest, result, 8);
+			Array.Copy(digest, 0, result, 0, 8);
 			return result;
         }
 

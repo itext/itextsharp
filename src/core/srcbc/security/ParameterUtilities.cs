@@ -81,8 +81,10 @@ namespace Org.BouncyCastle.Security
 				CryptoProObjectIdentifiers.GostR28147Cbc);
 			AddAlgorithm("HC128");
 			AddAlgorithm("HC256");
+#if INCLUDE_IDEA
 			AddAlgorithm("IDEA",
 				"1.3.6.1.4.1.188.7.1.1.2");
+#endif
 			AddAlgorithm("NOEKEON");
 			AddAlgorithm("RC2",
 				PkcsObjectIdentifiers.RC2Cbc,
@@ -226,9 +228,11 @@ namespace Org.BouncyCastle.Security
 					case "RC2":
 						iv = RC2CbcParameter.GetInstance(asn1Params).GetIV();
 						break;
+#if INCLUDE_IDEA
 					case "IDEA":
 						iv = IdeaCbcPar.GetInstance(asn1Params).GetIV();
 						break;
+#endif
 					case "CAST5":
 						iv = Cast5CbcParameters.GetInstance(asn1Params).GetIV();
 						break;
@@ -292,8 +296,10 @@ namespace Org.BouncyCastle.Security
 				case "DESEDE":
 				case "DESEDE3":
 					return CreateIVOctetString(random, 8);
+#if INCLUDE_IDEA
 				case "IDEA":
 					return new IdeaCbcPar(CreateIV(random, 8));
+#endif
 				case "NOEKEON":
 					return CreateIVOctetString(random, 16);
 				case "RC2":

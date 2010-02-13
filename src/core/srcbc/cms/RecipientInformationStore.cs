@@ -27,6 +27,11 @@ namespace Org.BouncyCastle.Cms
 			this.all = new ArrayList(recipientInfos);
 		}
 
+		public RecipientInformation this[RecipientID selector]
+		{
+			get { return GetFirstRecipient(selector); }
+		}
+
 		/**
 		* Return the first RecipientInformation object that matches the
 		* passed in selector. Null if there are no matches.

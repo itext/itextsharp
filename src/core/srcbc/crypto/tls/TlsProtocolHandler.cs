@@ -59,7 +59,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		private const short CS_CERTIFICATE_REQUEST_RECEIVED = 5;
 		private const short CS_SERVER_HELLO_DONE_RECEIVED = 6;
 		private const short CS_CLIENT_KEY_EXCHANGE_SEND = 7;
-		private const short CS_CLIENT_VERIFICATION_SEND = 8;
+		private const short CS_CERTIFICATE_VERIFY_SEND = 8;
 		private const short CS_CLIENT_CHANGE_CIPHER_SPEC_SEND = 9;
 		private const short CS_CLIENT_FINISHED_SEND = 10;
 		private const short CS_SERVER_CHANGE_CIPHER_SPEC_RECEIVED = 11;
@@ -113,9 +113,14 @@ namespace Org.BouncyCastle.Crypto.Tls
 		private SecureRandom random;
 
 		/*
-		* The public key of the server.
-		*/
+		 * The public key of the server.
+		 */
 		private AsymmetricKeyParameter serverPublicKey = null;
+
+		/*
+		 * The private key of the client (if provided)
+		 */
+		private AsymmetricKeyParameter clientPrivateKey = null;
 
 		private TlsInputStream tlsInputStream = null;
 		private TlsOuputStream tlsOutputStream = null;
@@ -132,11 +137,13 @@ namespace Org.BouncyCastle.Crypto.Tls
 		private TlsCipherSuite chosenCipherSuite = null;
 
 		private BigInteger SRP_A;
-		private byte[] SRP_identity, SRP_password;
+		private byte[] SRP_identity = null, SRP_password = null;
 		private BigInteger Yc;
 		private byte[] pms;
 
 		private ICertificateVerifyer verifyer = null;
+		private Certificate clientCert = null;
+		private TlsSigner clientSigner = null;
 
 		/*
 		* Both streams can be the same object
@@ -165,6 +172,11 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			this.random = sr;
 			this.rs = new RecordStream(this, inStr, outStr);
+		}
+
+		internal SecureRandom Random
+		{
+			get { return random; }
 		}
 
 		private short connection_state;
@@ -248,10 +260,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 						*/
 						if (type != HP_FINISHED)
 						{
-							rs.hash1.BlockUpdate(beginning, 0, 4);
-							rs.hash2.BlockUpdate(beginning, 0, 4);
-							rs.hash1.BlockUpdate(buf, 0, len);
-							rs.hash2.BlockUpdate(buf, 0, len);
+							rs.UpdateHandshakeData(beginning, 0, 4);
+							rs.UpdateHandshakeData(buf, 0, len);
 						}
 
 						/*
@@ -365,7 +375,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 										byte[] checksum = new byte[12];
 										byte[] md5andsha1 = new byte[16 + 20];
 										rs.hash2.DoFinal(md5andsha1, 0);
-										TlsUtilities.PRF(this.ms, TlsUtilities.ToByteArray("server finished"), md5andsha1, checksum);
+										TlsUtilities.PRF(this.ms, "server finished", md5andsha1, checksum);
 
 										/*
 										* Compare both checksums.
@@ -601,12 +611,19 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 										connection_state = CS_CLIENT_KEY_EXCHANGE_SEND;
 
+										if (isCertReq && this.clientPrivateKey != null)
+										{
+										    sendCertificateVerify();
+
+										    connection_state = CS_CERTIFICATE_VERIFY_SEND;
+										}
+
 										/*
 										* Now, we send change cipher state
 										*/
 										byte[] cmessage = new byte[1];
 										cmessage[0] = 1;
-										rs.WriteMessage((short)RL_CHANGE_CIPHER_SPEC, cmessage, 0, cmessage.Length);
+										rs.WriteMessage(RL_CHANGE_CIPHER_SPEC, cmessage, 0, cmessage.Length);
 
 										connection_state = CS_CLIENT_CHANGE_CIPHER_SPEC_SEND;
 
@@ -617,13 +634,13 @@ namespace Org.BouncyCastle.Crypto.Tls
 										byte[] randBytes = new byte[clientRandom.Length + serverRandom.Length];
 										Array.Copy(clientRandom, 0, randBytes, 0, clientRandom.Length);
 										Array.Copy(serverRandom, 0, randBytes, clientRandom.Length, serverRandom.Length);
-										TlsUtilities.PRF(pms, TlsUtilities.ToByteArray("master secret"), randBytes, this.ms);
+										TlsUtilities.PRF(pms, "master secret", randBytes, this.ms);
 
 										/*
 										* Initialize our cipher suite
 										*/
 										rs.writeSuite = this.chosenCipherSuite;
-										rs.writeSuite.Init(this.ms, clientRandom, serverRandom);
+										rs.writeSuite.Init(this, this.ms, clientRandom, serverRandom);
 
 										/*
 										* Send our finished message.
@@ -631,7 +648,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 										byte[] checksum = new byte[12];
 										byte[] md5andsha1 = new byte[16 + 20];
 										rs.hash1.DoFinal(md5andsha1, 0);
-										TlsUtilities.PRF(this.ms, TlsUtilities.ToByteArray("client finished"), md5andsha1, checksum);
+										TlsUtilities.PRF(this.ms, "client finished", md5andsha1, checksum);
 
 										MemoryStream bos2 = new MemoryStream();
 										TlsUtilities.WriteUint8(HP_FINISHED, bos2);
@@ -639,7 +656,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 										bos2.Write(checksum, 0, checksum.Length);
 										byte[] message2 = bos2.ToArray();
 
-										rs.WriteMessage((short)RL_HANDSHAKE, message2, 0, message2.Length);
+										rs.WriteMessage(RL_HANDSHAKE, message2, 0, message2.Length);
 
 										this.connection_state = CS_CLIENT_FINISHED_SEND;
 										read = true;
@@ -734,7 +751,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 										}
 
 										byte[] types = TlsUtilities.ReadOpaque8(inStr);
-										byte[] auths = TlsUtilities.ReadOpaque8(inStr);
+										byte[] auths = TlsUtilities.ReadOpaque16(inStr);
 
 										// TODO Validate/process
 
@@ -872,11 +889,13 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 		private void processDHEKeyExchange(
 			MemoryStream	inStr,
-			ISigner			signer)
+			TlsSigner		tlsSigner)
 		{
 			Stream sigIn = inStr;
-			if (signer != null)
+			ISigner signer = null;
+			if (tlsSigner != null)
 			{
+				signer = tlsSigner.CreateSigner();
 				signer.Init(false, this.serverPublicKey);
 				signer.BlockUpdate(this.clientRandom, 0, this.clientRandom.Length);
 				signer.BlockUpdate(this.serverRandom, 0, this.serverRandom.Length);
@@ -893,7 +912,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 			if (signer != null)
 			{
-				byte[] sigByte = TlsUtilities.ReadOpaque16(sigIn);
+				byte[] sigByte = TlsUtilities.ReadOpaque16(inStr);
 
 				/*
 				* Verify the Signature.
@@ -955,11 +974,13 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 		private void processSRPKeyExchange(
 			MemoryStream	inStr,
-			ISigner			signer)
+			TlsSigner		tlsSigner)
 		{
 			Stream sigIn = inStr;
-			if (signer != null)
+			ISigner signer = null;
+			if (tlsSigner != null)
 			{
+				signer = tlsSigner.CreateSigner();
 				signer.Init(false, this.serverPublicKey);
 				signer.BlockUpdate(this.clientRandom, 0, this.clientRandom.Length);
 				signer.BlockUpdate(this.serverRandom, 0, this.serverRandom.Length);
@@ -977,7 +998,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 			if (signer != null)
 			{
-				byte[] sigByte = TlsUtilities.ReadOpaque16(sigIn);
+				byte[] sigByte = TlsUtilities.ReadOpaque16(inStr);
 
 				/*
 				* Verify the Signature.
@@ -1036,17 +1057,12 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 		private void sendClientCertificate()
 		{
-			/*
-			* just write back the "no client certificate" message
-			* see also gnutls, auth_cert.c:643 (0B 00 00 03 00 00 00)
-			*/
 			MemoryStream bos = new MemoryStream();
 			TlsUtilities.WriteUint8(HP_CERTIFICATE, bos);
-			TlsUtilities.WriteUint24(3, bos);
-			TlsUtilities.WriteUint24(0, bos);
+			clientCert.Encode(bos);
 			byte[] message = bos.ToArray();
 
-			rs.WriteMessage((short)RL_HANDSHAKE, message, 0, message.Length);
+			rs.WriteMessage(RL_HANDSHAKE, message, 0, message.Length);
 		}
 
 		private void sendClientKeyExchange(
@@ -1058,9 +1074,36 @@ namespace Org.BouncyCastle.Crypto.Tls
 			TlsUtilities.WriteOpaque16(keData, bos);
 			byte[] message = bos.ToArray();
 
-			rs.WriteMessage((short)RL_HANDSHAKE, message, 0, message.Length);
+			rs.WriteMessage(RL_HANDSHAKE, message, 0, message.Length);
 		}
 
+		private void sendCertificateVerify()
+		{
+			/*
+			 * Send signature of handshake messages so far to prove we are the owner of
+			 * the cert See RFC 2246 sections 4.7, 7.4.3 and 7.4.8
+			 */
+
+			try
+			{
+				byte[] md5andsha1 = new byte[16 + 20];
+				rs.hash3.DoFinal(md5andsha1, 0);
+            	byte[] data = clientSigner.CalculateRawSignature(clientPrivateKey, md5andsha1);
+
+				MemoryStream bos = new MemoryStream();
+				TlsUtilities.WriteUint8(HP_CERTIFICATE_VERIFY, bos);
+				TlsUtilities.WriteUint24(data.Length + 2, bos);
+				TlsUtilities.WriteOpaque16(data, bos);
+				byte[] message = bos.ToArray();
+
+				rs.WriteMessage(RL_HANDSHAKE, message, 0, message.Length);
+			}
+			catch (CryptoException)
+			{
+				this.FailWithError(AL_fatal, AP_handshake_failure);
+			}
+		}
+		
 		/// <summary>Connects to the remote system.</summary>
 		/// <param name="verifyer">Will be used when a certificate is received to verify
 		/// that this certificate is accepted by the client.</param>
@@ -1068,7 +1111,61 @@ namespace Org.BouncyCastle.Crypto.Tls
 		public virtual void Connect(
 			ICertificateVerifyer verifyer)
 		{
+	        this.Connect(verifyer, null, null);
+	    }
+
+		/// <summary>Connects to the remote system using client authentication</summary>
+		/// <param name="verifyer">Will be used when a certificate is received to verify
+		/// that this certificate is accepted by the client.</param>
+		/// <param name="clientCertificate">The client's certificate to be provided to
+		/// the remote system.</param>
+		/// <param name="clientPrivateKey">The client's private key for the certificate
+		/// to authenticate to the remote system (RSA or DSA).</param>
+		// TODO Make public to enable client certificate support
+		internal virtual void Connect(
+			ICertificateVerifyer	verifyer,
+			Certificate				clientCertificate,
+			AsymmetricKeyParameter	clientPrivateKey)
+		{
+			if (clientCertificate == null)
+			{
+				clientCertificate = new Certificate(new X509CertificateStructure[0]);
+			}
+
+			if (clientPrivateKey == null)
+			{
+				if (clientCertificate.certs.Length != 0)
+				{
+					throw new ArgumentException("key not specified for certificate", "clientPrivateKey");
+				}
+			}
+			else
+			{
+	            if (clientCertificate.certs.Length == 0)
+	            {
+					throw new ArgumentException("key specified without certificate", "clientPrivateKey");
+	            }
+				else if (!clientPrivateKey.IsPrivate)
+				{
+					throw new ArgumentException("must be private", "clientPrivateKey");
+				}
+				else if (clientPrivateKey is RsaKeyParameters)
+				{
+					clientSigner = new TlsRsaSigner();
+				}
+				else if (clientPrivateKey is DsaPrivateKeyParameters)
+				{
+					clientSigner = new TlsDssSigner();
+				}
+				else
+				{
+					throw new ArgumentException("type not supported", "clientPrivateKey");
+				}
+			}
+
 			this.verifyer = verifyer;
+			this.clientCert = clientCertificate;
+			this.clientPrivateKey = clientPrivateKey;
 
 			/*
 			* Send Client hello
@@ -1178,18 +1275,19 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			while (applicationDataQueue.Available == 0)
 			{
-				/*
-				* We need to read some data.
-				*/
-				if (this.failedWithError)
-				{
-					/*
-					* Something went terribly wrong, we should throw an IOException
-					*/
-					throw new IOException(TLS_ERROR_MESSAGE);
-				}
 				if (this.closed)
 				{
+					/*
+					* We need to read some data.
+					*/
+					if (this.failedWithError)
+					{
+						/*
+						* Something went terribly wrong, we should throw an IOException
+						*/
+						throw new IOException(TLS_ERROR_MESSAGE);
+					}
+
 					/*
 					* Connection has been closed, there is no more data to read.
 					*/
@@ -1235,12 +1333,11 @@ namespace Org.BouncyCastle.Crypto.Tls
 		*/
 		internal void WriteData(byte[] buf, int offset, int len)
 		{
-			if (this.failedWithError)
-			{
-				throw new IOException(TLS_ERROR_MESSAGE);
-			}
 			if (this.closed)
 			{
+				if (this.failedWithError)
+					throw new IOException(TLS_ERROR_MESSAGE);
+
 				throw new IOException("Sorry, connection has been closed, you cannot write more data");
 			}
 
