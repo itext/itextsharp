@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.IO;
-using System.Text;
 
 using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Encoders;
@@ -121,8 +120,7 @@ namespace Org.BouncyCastle.Asn1
 
 		public override string ToString()
 		{
-			byte[] hex = Hex.Encode(str);
-			return "#" + Encoding.ASCII.GetString(hex, 0, hex.Length);
+			return "#" + Hex.ToHexString(str);
 		}
 	}
 }

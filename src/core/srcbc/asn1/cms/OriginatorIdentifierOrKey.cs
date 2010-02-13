@@ -42,7 +42,14 @@ namespace Org.BouncyCastle.Asn1.Cms
             this.id = id;
         }
 
-        /**
+		private OriginatorIdentifierOrKey(
+			Asn1TaggedObject id)
+		{
+			// TODO Add validation
+			this.id = id;
+		}
+
+		/**
          * return an OriginatorIdentifierOrKey object from a tagged object.
          *
          * @param o the tagged object holding the object we want.
@@ -95,7 +102,6 @@ namespace Org.BouncyCastle.Asn1.Cms
 
 			if (o is Asn1TaggedObject)
 			{
-				// TODO Add validation
 				return new OriginatorIdentifierOrKey((Asn1TaggedObject)o);
 			}
 

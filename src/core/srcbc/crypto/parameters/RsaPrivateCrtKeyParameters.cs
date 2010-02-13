@@ -21,7 +21,14 @@ namespace Org.BouncyCastle.Crypto.Parameters
             BigInteger	qInv)
 			: base(true, modulus, privateExponent)
         {
-            this.e = publicExponent;
+			ValidateValue(publicExponent, "publicExponent", "exponent");
+			ValidateValue(p, "p", "P value");
+			ValidateValue(q, "q", "Q value");
+			ValidateValue(dP, "dP", "DP value");
+			ValidateValue(dQ, "dQ", "DQ value");
+			ValidateValue(qInv, "qInv", "InverseQ value");
+
+			this.e = publicExponent;
             this.p = p;
             this.q = q;
             this.dP = dP;
@@ -84,6 +91,14 @@ namespace Org.BouncyCastle.Crypto.Parameters
 		{
 			return DP.GetHashCode() ^ DQ.GetHashCode() ^ Exponent.GetHashCode() ^ Modulus.GetHashCode()
 				^ P.GetHashCode() ^ Q.GetHashCode() ^ PublicExponent.GetHashCode() ^ QInv.GetHashCode();
+		}
+
+		private static void ValidateValue(BigInteger x, string name, string desc)
+		{
+			if (x == null)
+				throw new ArgumentNullException(name);
+			if (x.SignValue <= 0)
+				throw new ArgumentException("Not a valid RSA " + desc, name);
 		}
 	}
 }

@@ -1715,7 +1715,13 @@ namespace Org.BouncyCastle.Pkix
             return temp;
         }
 
-        public int HashCode()
+		[Obsolete("Use GetHashCode instead")]
+		public int HashCode()
+		{
+			return GetHashCode();
+		}
+
+		public override int GetHashCode()
         {
             return HashCollection(excludedSubtreesDN)
                 + HashCollection(excludedSubtreesDNS)
@@ -1752,25 +1758,24 @@ namespace Org.BouncyCastle.Pkix
             return hash;
         }
 
-        public new bool Equals(Object o)
-    {
-        if (!(o is PkixNameConstraintValidator))
-        {
-            return false;
-        }
-        PkixNameConstraintValidator constraintValidator = (PkixNameConstraintValidator)o;
-        
-            return CollectionsAreEqual(constraintValidator.excludedSubtreesDN, excludedSubtreesDN)
-            && CollectionsAreEqual(constraintValidator.excludedSubtreesDNS, excludedSubtreesDNS)
-            && CollectionsAreEqual(constraintValidator.excludedSubtreesEmail, excludedSubtreesEmail)
-            && CollectionsAreEqual(constraintValidator.excludedSubtreesIP, excludedSubtreesIP)
-            && CollectionsAreEqual(constraintValidator.excludedSubtreesURI, excludedSubtreesURI)
-            && CollectionsAreEqual(constraintValidator.permittedSubtreesDN, permittedSubtreesDN)
-            && CollectionsAreEqual(constraintValidator.permittedSubtreesDNS, permittedSubtreesDNS)
-            && CollectionsAreEqual(constraintValidator.permittedSubtreesEmail, permittedSubtreesEmail)
-            && CollectionsAreEqual(constraintValidator.permittedSubtreesIP, permittedSubtreesIP)
-            && CollectionsAreEqual(constraintValidator.permittedSubtreesURI, permittedSubtreesURI);
-    }
+		public override bool Equals(Object o)
+		{
+			if (!(o is PkixNameConstraintValidator))
+				return false;
+
+			PkixNameConstraintValidator constraintValidator = (PkixNameConstraintValidator)o;
+
+			return CollectionsAreEqual(constraintValidator.excludedSubtreesDN, excludedSubtreesDN)
+				&& CollectionsAreEqual(constraintValidator.excludedSubtreesDNS, excludedSubtreesDNS)
+				&& CollectionsAreEqual(constraintValidator.excludedSubtreesEmail, excludedSubtreesEmail)
+				&& CollectionsAreEqual(constraintValidator.excludedSubtreesIP, excludedSubtreesIP)
+				&& CollectionsAreEqual(constraintValidator.excludedSubtreesURI, excludedSubtreesURI)
+				&& CollectionsAreEqual(constraintValidator.permittedSubtreesDN, permittedSubtreesDN)
+				&& CollectionsAreEqual(constraintValidator.permittedSubtreesDNS, permittedSubtreesDNS)
+				&& CollectionsAreEqual(constraintValidator.permittedSubtreesEmail, permittedSubtreesEmail)
+				&& CollectionsAreEqual(constraintValidator.permittedSubtreesIP, permittedSubtreesIP)
+				&& CollectionsAreEqual(constraintValidator.permittedSubtreesURI, permittedSubtreesURI);
+		}
 
         private bool CollectionsAreEqual(ICollection coll1, ICollection coll2)
         {
@@ -1796,7 +1801,7 @@ namespace Org.BouncyCastle.Pkix
                 while (it2.MoveNext())
                 {
                     Object b = it2.Current;
-                    if (Equals(a, b))
+                    if (SpecialEquals(a, b))
                     {
                         found = true;
                         break;
@@ -1810,7 +1815,7 @@ namespace Org.BouncyCastle.Pkix
             return true;
         }
 
-        private new bool Equals(Object o1, Object o2)
+        private bool SpecialEquals(Object o1, Object o2)
         {
             if (o1 == o2)
             {

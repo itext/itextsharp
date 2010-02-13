@@ -120,10 +120,19 @@ namespace Org.BouncyCastle.X509
 				}
 				else
 				{
-					ECDomainParameters kp = _key.Parameters;
+					X962Parameters x962;
+					if (_key.PublicKeyParamSet == null)
+					{
+						ECDomainParameters kp = _key.Parameters;
+						X9ECParameters ecP = new X9ECParameters(kp.Curve, kp.G, kp.N, kp.H, kp.GetSeed());
 
-					X9ECParameters ecP = new X9ECParameters(kp.Curve, kp.G, kp.N, kp.H, kp.GetSeed());
-					X962Parameters x962 = new X962Parameters(ecP);
+						x962 = new X962Parameters(ecP);
+					}
+					else
+					{
+						x962 = new X962Parameters(_key.PublicKeyParamSet);
+					}
+
 					Asn1OctetString p = (Asn1OctetString)(new X9ECPoint(_key.Q).ToAsn1Object());
 
 					AlgorithmIdentifier algID = new AlgorithmIdentifier(

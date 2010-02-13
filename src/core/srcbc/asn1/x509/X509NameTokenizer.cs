@@ -61,9 +61,8 @@ namespace Org.BouncyCastle.Asn1.X509
                     else
                     {
                         buffer.Append(c);
+						escaped = false;
                     }
-
-					escaped = false;
                 }
                 else
                 {

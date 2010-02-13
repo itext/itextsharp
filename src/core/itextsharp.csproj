@@ -1096,6 +1096,7 @@
     <Compile Include="srcbc\asn1\ASN1Tags.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\asn1\bc\BCObjectIdentifiers.cs" />
     <Compile Include="srcbc\asn1\BerApplicationSpecific.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -3232,6 +3233,7 @@
     <Compile Include="srcbc\crypto\tls\TlsRsaSigner.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\crypto\tls\TlsSigner.cs" />
     <Compile Include="srcbc\crypto\tls\TlsUtilities.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -3490,6 +3492,7 @@
     <Compile Include="srcbc\pkcs\PKCS10CertificationRequest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\pkcs\Pkcs10CertificationRequestDelaySigned.cs" />
     <Compile Include="srcbc\pkcs\PKCS12Entry.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -3499,6 +3502,7 @@
     <Compile Include="srcbc\pkcs\PKCS12StoreBuilder.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\pkcs\Pkcs12Utilities.cs" />
     <Compile Include="srcbc\pkcs\PrivateKeyInfoFactory.cs">
       <SubType>Code</SubType>
     </Compile>

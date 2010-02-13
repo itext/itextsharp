@@ -85,12 +85,11 @@ namespace Org.BouncyCastle.Pkix
 
         static PkixCertPath()
         {
-            IList encodings = new ArrayList();
-
+            ArrayList encodings = new ArrayList();
             encodings.Add("PkiPath");
             encodings.Add("PEM");
             encodings.Add("PKCS7");
-            certPathEncodings = ArrayList.ReadOnly(encodings);
+            certPathEncodings = encodings;
         }
 
 		private IList certificates = new ArrayList();
@@ -241,7 +240,6 @@ namespace Org.BouncyCastle.Pkix
 				else if (encoding.ToUpper().Equals("PKCS7")
 					|| encoding.ToUpper().Equals("PEM"))
 				{
-					inStream = new BufferedStream(inStream);
 					certificates = new ArrayList();
 
 					X509CertificateParser certParser = new X509CertificateParser();
@@ -436,7 +434,7 @@ namespace Org.BouncyCastle.Pkix
 		/// </summary>
 		public virtual IList Certificates
 		{
-			get { return ArrayList.ReadOnly(certificates); }		
+			get { return new ArrayList(certificates); }		
 		}
 
 		/**

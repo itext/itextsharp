@@ -20,7 +20,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		/**
 		* Parse the ServerCertificate message.
 		*
-		* @param is The stream where to parse from.
+		* @param inStr The stream where to parse from.
 		* @return A Certificate object with the certs, the server has sended.
 		* @throws IOException If something goes wrong during parsing.
 		*/
@@ -37,30 +37,51 @@ namespace Org.BouncyCastle.Crypto.Tls
 				byte[] buf = new byte[size];
 				TlsUtilities.ReadFully(buf, inStr);
 				MemoryStream bis = new MemoryStream(buf, false);
-				Asn1InputStream ais = new Asn1InputStream(bis);
-				Asn1Object o = ais.ReadObject();
+				Asn1Object o = Asn1Object.FromStream(bis);
 				tmp.Add(X509CertificateStructure.GetInstance(o));
-//				if (bis.available() > 0)
 				if (bis.Position < bis.Length)
 				{
 					throw new ArgumentException("Sorry, there is garbage data left after the certificate");
 				}
 			}
-//			certs = new X509CertificateStructure[tmp.size()];
-//			for (int i = 0; i < tmp.size(); i++)
-//			{
-//				certs[i] = (X509CertificateStructure)tmp.elementAt(i);
-//			}
 			certs = (X509CertificateStructure[]) tmp.ToArray(typeof(X509CertificateStructure));
 			return new Certificate(certs);
 		}
 
 		/**
-		* Private constructure from an cert array.
+		 * Encodes version of the ClientCertificate message
+		 * 
+		 * @param outStr stream to write the message to
+		 * @throws IOException If something goes wrong
+		 */
+		internal void Encode(
+			Stream outStr)
+		{
+			ArrayList encCerts = new ArrayList();
+			int totalSize = 0;
+			foreach (X509CertificateStructure cert in certs)
+			{
+				byte[] encCert = cert.GetEncoded(Asn1Encodable.Der);
+				encCerts.Add(encCert);
+				totalSize += encCert.Length + 3;
+			}
+
+			TlsUtilities.WriteUint24(totalSize + 3, outStr);
+			TlsUtilities.WriteUint24(totalSize, outStr);
+
+			foreach (byte[] encCert in encCerts)
+			{
+				TlsUtilities.WriteOpaque24(encCert, outStr);
+			}
+		}
+		
+		/**
+		* Private constructor from a cert array.
 		*
 		* @param certs The certs the chain should contain.
 		*/
-		private Certificate(
+		// TODO Make public to enable client certificate support
+		internal Certificate(
 			X509CertificateStructure[] certs)
 		{
 			this.certs = certs;
@@ -69,9 +90,6 @@ namespace Org.BouncyCastle.Crypto.Tls
 		/// <returns>An array which contains the certs, this chain contains.</returns>
 		public X509CertificateStructure[] GetCerts()
 		{
-//			X509CertificateStructure[] result = new X509CertificateStructure[certs.Length];
-//			Array.Copy(certs, 0, result, 0, certs.Length);
-//			return result;
 			return (X509CertificateStructure[]) certs.Clone();
 		}
 	}

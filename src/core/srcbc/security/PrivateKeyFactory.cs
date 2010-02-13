@@ -140,7 +140,7 @@ namespace Org.BouncyCastle.Security
 				if (ecP == null)
 					return null;
 
-				return new ECPrivateKeyParameters(ec.GetKey(), gostParams.PublicKeyParamSet);
+				return new ECPrivateKeyParameters("ECGOST3410", ec.GetKey(), gostParams.PublicKeyParamSet);
 			}
 			else if (algOid.Equals(CryptoProObjectIdentifiers.GostR3410x94))
 			{

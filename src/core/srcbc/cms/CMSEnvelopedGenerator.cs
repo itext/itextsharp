@@ -1,10 +1,8 @@
 using System;
 using System.Collections;
-using System.IO;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Cms;
-using Org.BouncyCastle.Asn1.Cms.Ecc;
 using Org.BouncyCastle.Asn1.Kisa;
 using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Asn1.Ntt;
@@ -13,7 +11,6 @@ using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
 
@@ -200,75 +197,45 @@ namespace Org.BouncyCastle.Cms
 			X509Certificate			recipientCert,
 			string					cekWrapAlgorithm)
 		{
+			ArrayList recipientCerts = new ArrayList(1);
+			recipientCerts.Add(recipientCert);
+
+			AddKeyAgreementRecipients(agreementAlgorithm, senderPrivateKey, senderPublicKey,
+				recipientCerts, cekWrapAlgorithm);
+		}
+
+		/**
+		 * Add multiple key agreement based recipients (sharing a single KeyAgreeRecipientInfo structure).
+		 *
+		 * @param agreementAlgorithm key agreement algorithm to use.
+		 * @param senderPrivateKey private key to initialise sender side of agreement with.
+		 * @param senderPublicKey sender public key to include with message.
+		 * @param recipientCerts recipients' public key certificates.
+		 * @param cekWrapAlgorithm OID for key wrapping algorithm to use.
+		 * @exception SecurityUtilityException if the algorithm requested cannot be found
+		 * @exception InvalidKeyException if the keys are inappropriate for the algorithm specified
+		 */
+		public void AddKeyAgreementRecipients(
+			string					agreementAlgorithm,
+			AsymmetricKeyParameter	senderPrivateKey,
+			AsymmetricKeyParameter	senderPublicKey,
+			ICollection				recipientCerts,
+			string					cekWrapAlgorithm)
+		{
 			if (!senderPrivateKey.IsPrivate)
 				throw new ArgumentException("Expected private key", "senderPrivateKey");
 			if (senderPublicKey.IsPrivate)
 				throw new ArgumentException("Expected public key", "senderPublicKey");
 
-			OriginatorIdentifierOrKey originator;
-			try
-			{
-				originator = new OriginatorIdentifierOrKey(
-					CreateOriginatorPublicKey(senderPublicKey));
-			}
-			catch (IOException e)
-			{
-				throw new InvalidKeyException("cannot extract originator public key: " + e);
-			}
-
-			Asn1OctetString ukm = null;
-			ICipherParameters senderPrivateParams = senderPrivateKey;
-			ICipherParameters recipientPublicParams = recipientCert.GetPublicKey();
-
-			if (agreementAlgorithm.Equals(CmsEnvelopedGenerator.ECMqvSha1Kdf))
-			{
-				try
-				{
-					IAsymmetricCipherKeyPairGenerator ephemKPG =
-						GeneratorUtilities.GetKeyPairGenerator(agreementAlgorithm);
-					ephemKPG.Init(
-						((ECPublicKeyParameters)senderPublicKey).CreateKeyGenerationParameters(rand));
-
-					AsymmetricCipherKeyPair ephemKP = ephemKPG.GenerateKeyPair();
-
-					ukm = new DerOctetString(
-						new MQVuserKeyingMaterial(
-							CreateOriginatorPublicKey(ephemKP.Public), null));
-
-					recipientPublicParams = new MqvPublicParameters(
-						(ECPublicKeyParameters)recipientPublicParams,
-						(ECPublicKeyParameters)recipientPublicParams);
-					senderPrivateParams = new MqvPrivateParameters(
-						(ECPrivateKeyParameters)senderPrivateParams,
-						(ECPrivateKeyParameters)ephemKP.Private,
-						(ECPublicKeyParameters)ephemKP.Public);
-				}
-				catch (IOException e)
-				{
-					throw new InvalidKeyException("cannot extract MQV ephemeral public key: " + e);
-				}
-				catch (SecurityUtilityException e)
-				{
-					throw new InvalidKeyException("cannot determine MQV ephemeral key pair parameters from public key: " + e);
-				}
-			}
-
-			IBasicAgreement agreement = AgreementUtilities.GetBasicAgreementWithKdf(
-				agreementAlgorithm, cekWrapAlgorithm);
-			agreement.Init(new ParametersWithRandom(senderPrivateParams, rand));
-			BigInteger agreedValue = agreement.CalculateAgreement(recipientPublicParams);
-
-			int wrapKeySize = GeneratorUtilities.GetDefaultKeySize(cekWrapAlgorithm) / 8;
-			byte[] wrapKeyBytes = X9IntegerConverter.IntegerToBytes(agreedValue, wrapKeySize);
-			KeyParameter wrapKey = ParameterUtilities.CreateKeyParameter(
-				cekWrapAlgorithm, wrapKeyBytes);
+			/* TODO
+			 * "a recipient X.509 version 3 certificate that contains a key usage extension MUST
+			 * assert the keyAgreement bit."
+			 */
 
 			KeyAgreeRecipientInfoGenerator karig = new KeyAgreeRecipientInfoGenerator();
 			karig.AlgorithmOid = new DerObjectIdentifier(agreementAlgorithm);
-			karig.Originator = originator;
-			karig.RecipientCert = recipientCert;
-			karig.UKM = ukm;
-			karig.WrapKey = wrapKey;
+			karig.RecipientCerts = recipientCerts;
+			karig.SenderKeyPair = new AsymmetricCipherKeyPair(senderPublicKey, senderPrivateKey);
 			karig.WrapAlgorithmOid = new DerObjectIdentifier(cekWrapAlgorithm);
 
 			recipientInfoGenerators.Add(karig);
@@ -337,15 +304,6 @@ namespace Org.BouncyCastle.Cms
 			}
 
 			return asn1Params;
-		}
-
-		private static OriginatorPublicKey CreateOriginatorPublicKey(
-			AsymmetricKeyParameter publicKey)
-		{
-			SubjectPublicKeyInfo spki = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(publicKey);
-			return new OriginatorPublicKey(
-				new AlgorithmIdentifier(spki.AlgorithmID.ObjectID, DerNull.Instance),
-				spki.PublicKeyData.GetBytes());
 		}
 	}
 }

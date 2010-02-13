@@ -208,9 +208,8 @@ namespace Org.BouncyCastle.Asn1.Utilities
 			}
             else if (obj is DerUnknownTag)
             {
-				byte[] hex = Hex.Encode(((DerUnknownTag)obj).GetData());
-                buf.Append(indent + "Unknown " + ((int)((DerUnknownTag)obj).Tag).ToString("X") + " "
-                    + Encoding.ASCII.GetString(hex, 0, hex.Length) + NewLine);
+				string hex = Hex.ToHexString(((DerUnknownTag)obj).GetData());
+                buf.Append(indent + "Unknown " + ((int)((DerUnknownTag)obj).Tag).ToString("X") + " " + hex + NewLine);
             }
             else if (obj is BerApplicationSpecific)
             {
@@ -279,7 +278,7 @@ namespace Org.BouncyCastle.Asn1.Utilities
             }
 
             return indent + type + " ApplicationSpecific[" + app.ApplicationTag + "] ("
-                + Encoding.ASCII.GetString(Hex.Encode(app.GetContents())) + ")" + NewLine;
+                + Hex.ToHexString(app.GetContents()) + ")" + NewLine;
         }
 
 		[Obsolete("Use version accepting Asn1Encodable")]
@@ -335,7 +334,7 @@ namespace Org.BouncyCastle.Asn1.Utilities
 				if (bytes.Length - i > SampleSize)
 				{
 					buf.Append(indent);
-					buf.Append(Encoding.ASCII.GetString(Hex.Encode(bytes, i, SampleSize)));
+					buf.Append(Hex.ToHexString(bytes, i, SampleSize));
 					buf.Append(Tab);
 					buf.Append(calculateAscString(bytes, i, SampleSize));
 					buf.Append(NewLine);
@@ -343,7 +342,7 @@ namespace Org.BouncyCastle.Asn1.Utilities
 				else
 				{
 					buf.Append(indent);
-					buf.Append(Encoding.ASCII.GetString(Hex.Encode(bytes, i, bytes.Length - i)));
+					buf.Append(Hex.ToHexString(bytes, i, bytes.Length - i));
 					for (int j = bytes.Length - i; j != SampleSize; j++)
 					{
 						buf.Append("  ");

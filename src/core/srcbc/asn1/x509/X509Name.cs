@@ -393,8 +393,7 @@ namespace Org.BouncyCastle.Asn1.X509
 					}
                     else
                     {
-						byte[] hex = Hex.Encode(derValue.GetEncoded());
-						values.Add("#" + Encoding.ASCII.GetString(hex, 0, hex.Length));
+						values.Add("#" + Hex.ToHexString(derValue.GetEncoded()));
                     }
 
 					added.Add(i != 0);

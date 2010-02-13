@@ -66,7 +66,6 @@ namespace Org.BouncyCastle.Cms
 
 			if (!std.ContainsKey(CmsAttributes.SigningTime))
 			{
-				DateTime signingTime = DateTime.UtcNow;
 				Asn1.Cms.Attribute attr = new Asn1.Cms.Attribute(CmsAttributes.SigningTime,
 					new DerSet(new Time(DateTime.UtcNow)));
 				std[attr.AttrType] = attr;

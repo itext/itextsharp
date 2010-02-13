@@ -3,10 +3,11 @@ using System;
 namespace Org.BouncyCastle.Crypto.Tls
 {
 	/// <remarks>A NULL CipherSuite in java, this should only be used during handshake.</remarks>
-	public class TlsNullCipherSuite
+	internal class TlsNullCipherSuite
 		: TlsCipherSuite
 	{
 		internal override void Init(
+			TlsProtocolHandler handler,
 			byte[]	ms,
 			byte[]	cr,
 			byte[]	sr)
@@ -15,10 +16,10 @@ namespace Org.BouncyCastle.Crypto.Tls
 		}
 
 		internal override byte[] EncodePlaintext(
-			short	type,
-			byte[]	plaintext,
-			int		offset,
-			int		len)
+			short				type,
+			byte[]				plaintext,
+			int					offset,
+			int					len)
 		{
 			byte[] result = new byte[len];
 			Array.Copy(plaintext, offset, result, 0, len);
@@ -29,8 +30,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			short				type,
 			byte[]				plaintext,
 			int					offset,
-			int					len,
-			TlsProtocolHandler	handler)
+			int					len)
 		{
 			byte[] result = new byte[len];
 			Array.Copy(plaintext, offset, result, 0, len);

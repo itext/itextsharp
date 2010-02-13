@@ -216,7 +216,7 @@ namespace Org.BouncyCastle.Crypto.Encodings
 
 			start++;           // data should start at the next byte
 
-			if (start >= block.Length || start < HeaderLength)
+			if (start > block.Length || start < HeaderLength)
 			{
 				throw new InvalidCipherTextException("no data in block");
 			}

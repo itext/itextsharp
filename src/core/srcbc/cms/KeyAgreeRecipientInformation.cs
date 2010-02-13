@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.IO;
 
 using Org.BouncyCastle.Asn1;
@@ -27,27 +28,49 @@ namespace Org.BouncyCastle.Cms
 		private KeyAgreeRecipientInfo info;
 		private Asn1OctetString       encryptedKey;
 
-		[Obsolete]
-		public KeyAgreeRecipientInformation(
-			KeyAgreeRecipientInfo	info,
-			AlgorithmIdentifier		encAlg,
-			Stream					data)
-			: this(info, encAlg, null, null, data)
+		internal static void ReadRecipientInfo(IList infos, KeyAgreeRecipientInfo info,
+			AlgorithmIdentifier encAlg, AlgorithmIdentifier macAlg, AlgorithmIdentifier authEncAlg,
+			Stream data)
 		{
+			try
+			{
+				foreach (Asn1Encodable rek in info.RecipientEncryptedKeys)
+				{
+					RecipientEncryptedKey id = RecipientEncryptedKey.GetInstance(rek.ToAsn1Object());
+
+					RecipientID rid = new RecipientID();
+
+					Asn1.Cms.KeyAgreeRecipientIdentifier karid = id.Identifier;
+
+					Asn1.Cms.IssuerAndSerialNumber iAndSN = karid.IssuerAndSerialNumber;
+					if (iAndSN != null)
+					{
+						rid.Issuer = iAndSN.Name;
+						rid.SerialNumber = iAndSN.SerialNumber.Value;
+					}
+					else
+					{
+						Asn1.Cms.RecipientKeyIdentifier rKeyID = karid.RKeyID;
+
+						// Note: 'date' and 'other' fields of RecipientKeyIdentifier appear to be only informational 
+
+						rid.SubjectKeyIdentifier = rKeyID.SubjectKeyIdentifier.GetOctets();
+					}
+
+					infos.Add(new KeyAgreeRecipientInformation(info, rid, id.EncryptedKey,
+						encAlg, macAlg, authEncAlg, data));
+				}
+			}
+			catch (IOException e)
+			{
+				throw new ArgumentException("invalid rid in KeyAgreeRecipientInformation", e);
+			}
 		}
 
-		[Obsolete]
 		public KeyAgreeRecipientInformation(
 			KeyAgreeRecipientInfo	info,
-			AlgorithmIdentifier		encAlg,
-			AlgorithmIdentifier		macAlg,
-			Stream					data)
-			: this(info, encAlg, macAlg, null, data)
-		{
-		}
-
-		public KeyAgreeRecipientInformation(
-			KeyAgreeRecipientInfo	info,
+			RecipientID				rid,
+			Asn1OctetString			encryptedKey,
 			AlgorithmIdentifier		encAlg,
 			AlgorithmIdentifier		macAlg,
 			AlgorithmIdentifier		authEncAlg,
@@ -55,36 +78,8 @@ namespace Org.BouncyCastle.Cms
 			: base(encAlg, macAlg, authEncAlg, info.KeyEncryptionAlgorithm, data)
 		{
 			this.info = info;
-			this.rid = new RecipientID();
-
-			try
-			{
-				Asn1Sequence s = info.RecipientEncryptedKeys;
-				RecipientEncryptedKey id = RecipientEncryptedKey.GetInstance(s[0]);
-
-				Asn1.Cms.KeyAgreeRecipientIdentifier karid = id.Identifier;
-
-				Asn1.Cms.IssuerAndSerialNumber iAndSN = karid.IssuerAndSerialNumber;
-				if (iAndSN != null)
-				{
-					rid.Issuer = iAndSN.Name;
-                    rid.SerialNumber = iAndSN.SerialNumber.Value;
-				}
-				else
-				{
-					Asn1.Cms.RecipientKeyIdentifier rKeyID = karid.RKeyID;
-
-					// Note: 'date' and 'other' fields of RecipientKeyIdentifier appear to be only informational 
-
-					rid.SubjectKeyIdentifier = rKeyID.SubjectKeyIdentifier.GetOctets();
-				}
-
-				encryptedKey = id.EncryptedKey;
-			}
-			catch (IOException e)
-			{
-				throw new ArgumentException("invalid rid in KeyAgreeRecipientInformation", e);
-			}
+			this.rid = rid;
+			this.encryptedKey = encryptedKey;
 		}
 
 		private AsymmetricKeyParameter GetSenderPublicKey(
@@ -211,7 +206,6 @@ namespace Org.BouncyCastle.Cms
 			}
 			catch (Exception e)
 			{
-				Console.Error.WriteLine(e.StackTrace);
 				throw new CmsException("originator key invalid.", e);
 			}
 		}

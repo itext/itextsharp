@@ -113,7 +113,7 @@ namespace Org.BouncyCastle.Asn1
 
 				if ((tag & Asn1Tags.Application) != 0)
 				{
-					Asn1StreamParser sp2 = new Asn1StreamParser(indIn);
+					Asn1StreamParser sp2 = new Asn1StreamParser(indIn, limit);
 
 					return new BerApplicationSpecificParser(tagNo, sp2).ToAsn1Object();
 				}
@@ -124,7 +124,7 @@ namespace Org.BouncyCastle.Asn1
 					return new BerTaggedObjectParser(tag, tagNo, indIn).ToAsn1Object();
 				}
 
-				Asn1StreamParser sp = new Asn1StreamParser(indIn);
+				Asn1StreamParser sp = new Asn1StreamParser(indIn, limit);
 
 				// TODO There are other tags that may be constructed (e.g. BitString)
 				switch (tagNo)
@@ -199,7 +199,7 @@ namespace Org.BouncyCastle.Asn1
 				// "c) bits 7 to 1 of the first subsequent octet shall not all be zero."
 				if ((b & 0x7f) == 0) // Note: -1 will pass
 				{
-					throw new IOException("corrupted stream - invalid high tag number found");
+					throw new IOException("Corrupted stream - invalid high tag number found");
 				}
 
 				while ((b >= 0) && ((b & 0x80) != 0))

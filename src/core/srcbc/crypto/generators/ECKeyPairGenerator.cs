@@ -44,14 +44,7 @@ namespace Org.BouncyCastle.Crypto.Generators
 			{
 				ECKeyGenerationParameters ecP = (ECKeyGenerationParameters) parameters;
 
-				if (ecP.PublicKeyParamSet != null)
-				{
-					if (algorithm != "ECGOST3410")
-						throw new ArgumentException("parameters invalid for algorithm: " + algorithm, "parameters");
-
-					this.publicKeyParamSet = ecP.PublicKeyParamSet;
-				}
-
+				this.publicKeyParamSet = ecP.PublicKeyParamSet;
 				this.parameters = ecP.DomainParameters;
 			}
 			else
@@ -110,8 +103,8 @@ namespace Org.BouncyCastle.Crypto.Generators
 			if (publicKeyParamSet != null)
 			{
 				return new AsymmetricCipherKeyPair(
-					new ECPublicKeyParameters(q, publicKeyParamSet),
-					new ECPrivateKeyParameters(d, publicKeyParamSet));
+					new ECPublicKeyParameters(algorithm, q, publicKeyParamSet),
+					new ECPrivateKeyParameters(algorithm, d, publicKeyParamSet));
 			}
 
 			return new AsymmetricCipherKeyPair(
@@ -172,7 +165,7 @@ namespace Org.BouncyCastle.Crypto.Generators
 
 			if (privKey.PublicKeyParamSet != null)
 			{
-				return new ECPublicKeyParameters(q, privKey.PublicKeyParamSet);
+				return new ECPublicKeyParameters(privKey.AlgorithmName, q, privKey.PublicKeyParamSet);
 			}
 
 			return new ECPublicKeyParameters(privKey.AlgorithmName, q, parameters);

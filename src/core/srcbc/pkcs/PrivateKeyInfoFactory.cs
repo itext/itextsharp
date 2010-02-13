@@ -135,15 +135,19 @@ namespace Org.BouncyCastle.Pkcs
 				}
 				else
 				{
-					X9ECParameters ecP = new X9ECParameters(
-						_key.Parameters.Curve,
-						_key.Parameters.G,
-						_key.Parameters.N,
-						_key.Parameters.H,
-						_key.Parameters.GetSeed());
+					X962Parameters x962;
+					if (_key.PublicKeyParamSet == null)
+					{
+						ECDomainParameters kp = _key.Parameters;
+						X9ECParameters ecP = new X9ECParameters(kp.Curve, kp.G, kp.N, kp.H, kp.GetSeed());
 
-					// TODO Add support for "named curve" specs
-					X962Parameters x962 = new X962Parameters(ecP);
+						x962 = new X962Parameters(ecP);
+					}
+					else
+					{
+						x962 = new X962Parameters(_key.PublicKeyParamSet);
+					}
+
 					Asn1Object x962Object = x962.ToAsn1Object();
 
 					// TODO Possible to pass the publicKey bitstring here?

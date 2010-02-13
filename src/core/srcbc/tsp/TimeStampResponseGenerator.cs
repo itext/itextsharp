@@ -7,6 +7,7 @@ using Org.BouncyCastle.Asn1.Cmp;
 using Org.BouncyCastle.Asn1.Cms;
 using Org.BouncyCastle.Asn1.Tsp;
 using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Utilities.Date;
 
 namespace Org.BouncyCastle.Tsp
 {
@@ -88,10 +89,37 @@ namespace Org.BouncyCastle.Tsp
 			BigInteger			serialNumber,
 			DateTime			genTime)
 		{
+			return Generate(request, serialNumber, new DateTimeObject(genTime));
+		}
+
+	    /**
+	     * Return an appropriate TimeStampResponse.
+	     * <p>
+	     * If genTime is null a timeNotAvailable error response will be returned.
+	     *
+	     * @param request the request this response is for.
+	     * @param serialNumber serial number for the response token.
+	     * @param genTime generation time for the response token.
+	     * @param provider provider to use for signature calculation.
+	     * @return
+	     * @throws NoSuchAlgorithmException
+	     * @throws NoSuchProviderException
+	     * @throws TSPException
+		 * </p>
+	     */
+		public TimeStampResponse Generate(
+			TimeStampRequest	request,
+			BigInteger			serialNumber,
+			DateTimeObject		genTime)
+		{
 			TimeStampResp resp;
 
 			try
 			{
+	            if (genTime == null)
+	                throw new TspValidationException("The time source is not available.",
+						PkiFailureInfo.TimeNotAvailable);
+
 				request.Validate(acceptedAlgorithms, acceptedPolicies, acceptedExtensions);
 
 				status = PkiStatus.Granted;
@@ -102,7 +130,7 @@ namespace Org.BouncyCastle.Tsp
 				ContentInfo tstTokenContentInfo;
 				try
 				{
-					TimeStampToken token = tokenGenerator.Generate(request, serialNumber, genTime);
+					TimeStampToken token = tokenGenerator.Generate(request, serialNumber, genTime.Value);
 					byte[] encoded = token.ToCmsSignedData().GetEncoded();
 
 					tstTokenContentInfo = ContentInfo.GetInstance(Asn1Object.FromByteArray(encoded));

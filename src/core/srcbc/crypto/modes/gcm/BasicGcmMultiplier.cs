@@ -37,7 +37,7 @@ namespace Org.BouncyCastle.Crypto.Modes.Gcm
 				}
 			}
 
-			Array.Copy(z, x, 16);        
+			Array.Copy(z, 0, x, 0, 16);        
 		}
 	}
 }

@@ -17,6 +17,15 @@ namespace Org.BouncyCastle.Crypto.Parameters
             BigInteger	exponent)
 			: base(isPrivate)
         {
+			if (modulus == null)
+				throw new ArgumentNullException("modulus");
+			if (exponent == null)
+				throw new ArgumentNullException("exponent");
+			if (modulus.SignValue <= 0)
+				throw new ArgumentException("Not a valid RSA modulus", "modulus");
+			if (exponent.SignValue <= 0)
+				throw new ArgumentException("Not a valid RSA exponent", "exponent");
+
 			this.modulus = modulus;
 			this.exponent = exponent;
         }

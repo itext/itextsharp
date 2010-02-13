@@ -313,7 +313,6 @@ namespace Org.BouncyCastle.Cms
 		{
 			ConfigureDigest(digestOid);
 
-            string digestName = Helper.GetDigestAlgName(digestOid);
 			_signerInfs.Add(new SignerInf(this, privateKey, GetSignerIdentifier(cert), digestOid, encryptionOid,
 				signedAttrGenerator, unsignedAttrGenerator));
 		}
@@ -389,7 +388,6 @@ namespace Org.BouncyCastle.Cms
 		{
 			ConfigureDigest(digestOid);
 
-            string digestName = Helper.GetDigestAlgName(digestOid);
 			_signerInfs.Add(new SignerInf(this, privateKey, GetSignerIdentifier(subjectKeyID), digestOid, encryptionOid,
 				signedAttrGenerator, unsignedAttrGenerator));
 		}

@@ -4,13 +4,14 @@ using System.IO;
 namespace Org.BouncyCastle.Crypto.Tls
 {
 	/// <remarks>An implementation of the TLS 1.0 record layer.</remarks>
-	public class RecordStream
+	internal class RecordStream
 	{
 		private TlsProtocolHandler handler;
 		private Stream inStr;
 		private Stream outStr;
 		internal CombinedHash hash1;
 		internal CombinedHash hash2;
+		internal CombinedHash hash3;
 		internal TlsCipherSuite readSuite = null;
 		internal TlsCipherSuite writeSuite = null;
 
@@ -22,8 +23,9 @@ namespace Org.BouncyCastle.Crypto.Tls
 			this.handler = handler;
 			this.inStr = inStr;
 			this.outStr = outStr;
-			hash1 = new CombinedHash();
-			hash2 = new CombinedHash();
+			this.hash1 = new CombinedHash();
+			this.hash2 = new CombinedHash();
+			this.hash3 = new CombinedHash();
 			this.readSuite = new TlsNullCipherSuite();
 			this.writeSuite = this.readSuite;
 		}
@@ -45,8 +47,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			byte[] buf = new byte[len];
 			TlsUtilities.ReadFully(buf, inStr);
-			byte[] result = readSuite.DecodeCiphertext(type, buf, 0, buf.Length, handler);
-			return result;
+			return readSuite.DecodeCiphertext(type, buf, 0, buf.Length);
 		}
 
 		internal void WriteMessage(
@@ -57,8 +58,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			if (type == 22)
 			{
-				hash1.BlockUpdate(message, offset, len);
-				hash2.BlockUpdate(message, offset, len);
+				UpdateHandshakeData(message, offset, len);
 			}
 			byte[] ciphertext = writeSuite.EncodePlaintext(type, message, offset, len);
 			byte[] writeMessage = new byte[ciphertext.Length + 5];
@@ -69,6 +69,16 @@ namespace Org.BouncyCastle.Crypto.Tls
 			Array.Copy(ciphertext, 0, writeMessage, 5, ciphertext.Length);
 			outStr.Write(writeMessage, 0, writeMessage.Length);
 			outStr.Flush();
+		}
+
+		internal void UpdateHandshakeData(
+			byte[]	message,
+			int		offset,
+			int		len)
+		{
+			hash1.BlockUpdate(message, offset, len);
+			hash2.BlockUpdate(message, offset, len);
+			hash3.BlockUpdate(message, offset, len);
 		}
 
 		internal void Close()

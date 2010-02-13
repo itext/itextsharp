@@ -19,39 +19,39 @@ using Org.BouncyCastle.X509;
 
 namespace Org.BouncyCastle.Pkcs
 {
-    /// <remarks>
-    /// A class for verifying and creating Pkcs10 Certification requests.
-    /// </remarks>
-    /// <code>
-    /// CertificationRequest ::= Sequence {
-    ///   certificationRequestInfo  CertificationRequestInfo,
-    ///   signatureAlgorithm        AlgorithmIdentifier{{ SignatureAlgorithms }},
-    ///   signature                 BIT STRING
-    /// }
-    ///
-    /// CertificationRequestInfo ::= Sequence {
-    ///   version             Integer { v1(0) } (v1,...),
-    ///   subject             Name,
-    ///   subjectPKInfo   SubjectPublicKeyInfo{{ PKInfoAlgorithms }},
-    ///   attributes          [0] Attributes{{ CRIAttributes }}
-    ///  }
-    ///
-    ///  Attributes { ATTRIBUTE:IOSet } ::= Set OF Attr{{ IOSet }}
-    ///
-    ///  Attr { ATTRIBUTE:IOSet } ::= Sequence {
-    ///    type    ATTRIBUTE.&amp;id({IOSet}),
-    ///    values  Set SIZE(1..MAX) OF ATTRIBUTE.&amp;Type({IOSet}{\@type})
-    ///  }
-    /// </code>
-    /// see <a href="http://www.rsasecurity.com/rsalabs/node.asp?id=2132"/>
+	/// <remarks>
+	/// A class for verifying and creating Pkcs10 Certification requests.
+	/// </remarks>
+	/// <code>
+	/// CertificationRequest ::= Sequence {
+	///   certificationRequestInfo  CertificationRequestInfo,
+	///   signatureAlgorithm        AlgorithmIdentifier{{ SignatureAlgorithms }},
+	///   signature                 BIT STRING
+	/// }
+	///
+	/// CertificationRequestInfo ::= Sequence {
+	///   version             Integer { v1(0) } (v1,...),
+	///   subject             Name,
+	///   subjectPKInfo   SubjectPublicKeyInfo{{ PKInfoAlgorithms }},
+	///   attributes          [0] Attributes{{ CRIAttributes }}
+	///  }
+	///
+	///  Attributes { ATTRIBUTE:IOSet } ::= Set OF Attr{{ IOSet }}
+	///
+	///  Attr { ATTRIBUTE:IOSet } ::= Sequence {
+	///    type    ATTRIBUTE.&amp;id({IOSet}),
+	///    values  Set SIZE(1..MAX) OF ATTRIBUTE.&amp;Type({IOSet}{\@type})
+	///  }
+	/// </code>
+	/// see <a href="http://www.rsasecurity.com/rsalabs/node.asp?id=2132"/>
 	public class Pkcs10CertificationRequest
 		: CertificationRequest
 	{
-		private static readonly Hashtable	algorithms = new Hashtable();
-		private static readonly Hashtable	exParams = new Hashtable();
-		private static readonly Hashtable	keyAlgorithms = new Hashtable();
-		private static readonly Hashtable	oids = new Hashtable();
-		private static readonly ISet		noParams = new HashSet();
+		protected static readonly Hashtable	algorithms = new Hashtable();
+		protected static readonly Hashtable	exParams = new Hashtable();
+		protected static readonly Hashtable	keyAlgorithms = new Hashtable();
+		protected static readonly Hashtable	oids = new Hashtable();
+		protected static readonly ISet noParams = new HashSet();
 
 		static Pkcs10CertificationRequest()
 		{
@@ -173,6 +173,10 @@ namespace Org.BouncyCastle.Pkcs
 				new DerInteger(1));
 		}
 
+		protected Pkcs10CertificationRequest()
+		{
+		}
+
 		public Pkcs10CertificationRequest(
 			byte[] encoded)
 			: base((Asn1Sequence) Asn1Object.FromByteArray(encoded))
@@ -209,9 +213,9 @@ namespace Org.BouncyCastle.Pkcs
 			if (signatureAlgorithm == null)
 				throw new ArgumentNullException("signatureAlgorithm");
 			if (subject == null)
-                throw new ArgumentNullException("subject");
-            if (publicKey == null)
-                throw new ArgumentNullException("publicKey");
+				throw new ArgumentNullException("subject");
+			if (publicKey == null)
+				throw new ArgumentNullException("publicKey");
 			if (publicKey.IsPrivate)
 				throw new ArgumentException("expected public key", "publicKey");
 			if (!signingKey.IsPrivate)
@@ -277,18 +281,18 @@ namespace Org.BouncyCastle.Pkcs
 //        }
 
 		/// <summary>
-        /// Get the public key.
-        /// </summary>
-        /// <returns>The public key.</returns>
-        public AsymmetricKeyParameter GetPublicKey()
-        {
-            return PublicKeyFactory.CreateKey(reqInfo.SubjectPublicKeyInfo);
-        }
+		/// Get the public key.
+		/// </summary>
+		/// <returns>The public key.</returns>
+		public AsymmetricKeyParameter GetPublicKey()
+		{
+			return PublicKeyFactory.CreateKey(reqInfo.SubjectPublicKeyInfo);
+		}
 
 		/// <summary>
-        /// Verify Pkcs10 Cert Request is valid.
-        /// </summary>
-        /// <returns>true = valid.</returns>
+		/// Verify Pkcs10 Cert Request is valid.
+		/// </summary>
+		/// <returns>true = valid.</returns>
 		public bool Verify()
 		{
 			return Verify(this.GetPublicKey());
@@ -296,8 +300,8 @@ namespace Org.BouncyCastle.Pkcs
 
 		public bool Verify(
 			AsymmetricKeyParameter publicKey)
-        {
-            ISigner sig;
+		{
+			ISigner sig;
 
 			try
 			{
@@ -333,7 +337,7 @@ namespace Org.BouncyCastle.Pkcs
 			}
 
 			return sig.VerifySignature(sigBits.GetBytes());
-        }
+		}
 
 //        /// <summary>
 //        /// Get the Der Encoded Pkcs10 Certification Request.

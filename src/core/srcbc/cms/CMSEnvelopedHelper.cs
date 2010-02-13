@@ -146,8 +146,8 @@ namespace Org.BouncyCastle.Cms
 			}
 			else if (recipInfo is KeyAgreeRecipientInfo)
 			{
-				infos.Add(new KeyAgreeRecipientInformation(
-					(KeyAgreeRecipientInfo)recipInfo, encAlg, macAlg, authEncAlg, contentStream));
+				KeyAgreeRecipientInformation.ReadRecipientInfo(infos,
+					(KeyAgreeRecipientInfo)recipInfo, encAlg, macAlg, authEncAlg, contentStream);
 			}
 			else if (recipInfo is PasswordRecipientInfo)
 			{

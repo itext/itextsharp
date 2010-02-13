@@ -68,15 +68,14 @@ namespace Org.BouncyCastle.Cms
 			set { this.subjectKeyIdentifier = value; }
 		}
 
-		public RecipientInfo Generate(KeyParameter key, SecureRandom random)
+		public RecipientInfo Generate(KeyParameter contentEncryptionKey, SecureRandom random)
 		{
-			byte[] keyBytes = key.GetKey();
+			byte[] keyBytes = contentEncryptionKey.GetKey();
 			AlgorithmIdentifier keyEncAlg = info.AlgorithmID;
 
 			IWrapper keyWrapper = Helper.CreateWrapper(keyEncAlg.ObjectID.Id);
 			keyWrapper.Init(true, new ParametersWithRandom(recipientPublicKey, random));
-			Asn1OctetString encKey = new DerOctetString(
-				keyWrapper.Wrap(keyBytes, 0, keyBytes.Length));
+			byte[] encKeyBytes = keyWrapper.Wrap(keyBytes, 0, keyBytes.Length);
 
 			RecipientIdentifier recipId;
 			if (recipientTbsCert != null)
@@ -90,7 +89,8 @@ namespace Org.BouncyCastle.Cms
 				recipId = new RecipientIdentifier(subjectKeyIdentifier);
 			}
 
-			return new RecipientInfo(new KeyTransRecipientInfo(recipId, keyEncAlg, encKey));
+			return new RecipientInfo(new KeyTransRecipientInfo(recipId, keyEncAlg,
+				new DerOctetString(encKeyBytes)));
 		}
 	}
 }
