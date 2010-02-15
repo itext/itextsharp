@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using iTextSharp.text;
 using iTextSharp.text.exceptions;
@@ -164,10 +164,10 @@ namespace iTextSharp.text.pdf {
         protected GraphicState state = new GraphicState();
     
         /** The list were we save/restore the layer depth */
-        protected ArrayList layerDepth;
+        protected List<int> layerDepth;
         
         /** The list were we save/restore the state */
-        protected ArrayList stateList = new ArrayList();
+        protected List<GraphicState> stateList = new ArrayList();
     
         /** The separator between commands.
          */    
@@ -176,7 +176,7 @@ namespace iTextSharp.text.pdf {
         private int mcDepth = 0;
         private bool inText = false;
 
-        private static Hashtable abrev = new Hashtable();
+        private static Dictionary<PdfName, String> abrev = new Dictionary<PdfName,string>();
         
         static PdfContentByte() {
             abrev[PdfName.BITSPERCOMPONENT] = "/BPC ";
@@ -1192,10 +1192,10 @@ namespace iTextSharp.text.pdf {
                         }
                     }
                     foreach (PdfName key in pimage.Keys) {
-                        PdfObject value = pimage.Get(key);
-                        String s = (String)abrev[key];
-                        if (s == null)
+                        if (!abrev.ContainsKey(key))
                             continue;
+                        PdfObject value = pimage.Get(key);
+                        String s = abrev[key];
                         content.Append(s);
                         bool check = true;
                         if (key.Equals(PdfName.COLORSPACE) && value.IsArray()) {
@@ -1335,7 +1335,7 @@ namespace iTextSharp.text.pdf {
             int idx = stateList.Count - 1;
             if (idx < 0)
                 throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.save.restore.state.operators"));
-            state = (GraphicState)stateList[idx];
+            state = stateList[idx];
             stateList.RemoveAt(idx);
         }
     
@@ -1819,7 +1819,7 @@ namespace iTextSharp.text.pdf {
          * @param extent angle extent in degrees
          * @return a list of float[] with the bezier curves
          */
-        public static ArrayList BezierArc(float x1, float y1, float x2, float y2, float startAng, float extent) {
+        public static List<float[]> BezierArc(float x1, float y1, float x2, float y2, float startAng, float extent) {
             float tmp;
             if (x1 > x2) {
                 tmp = x1;
@@ -1848,7 +1848,7 @@ namespace iTextSharp.text.pdf {
             float ry = (y2-y1)/2f;
             float halfAng = (float)(fragAngle * Math.PI / 360.0);
             float kappa = (float)(Math.Abs(4.0 / 3.0 * (1.0 - Math.Cos(halfAng)) / Math.Sin(halfAng)));
-            ArrayList pointList = new ArrayList();
+            List<float[]> pointList = new List<float[]>();
             for (int i = 0; i < Nfrag; ++i) {
                 float theta0 = (float)((startAng + i*fragAngle) * Math.PI / 180.0);
                 float theta1 = (float)((startAng + (i+1)*fragAngle) * Math.PI / 180.0);
@@ -1893,13 +1893,13 @@ namespace iTextSharp.text.pdf {
          * @param extent angle extent in degrees
          */
         public void Arc(float x1, float y1, float x2, float y2, float startAng, float extent) {
-            ArrayList ar = BezierArc(x1, y1, x2, y2, startAng, extent);
+            List<float[]> ar = BezierArc(x1, y1, x2, y2, startAng, extent);
             if (ar.Count == 0)
                 return;
-            float[] pt = (float [])ar[0];
+            float[] pt = ar[0];
             MoveTo(pt[0], pt[1]);
             for (int k = 0; k < ar.Count; ++k) {
-                pt = (float [])ar[k];
+                pt = ar[k];
                 CurveTo(pt[2], pt[3], pt[4], pt[5], pt[6], pt[7]);
             }
         }
@@ -2504,7 +2504,7 @@ namespace iTextSharp.text.pdf {
             if (state.fontDetails == null)
                 throw new ArgumentNullException(MessageLocalization.GetComposedMessage("font.and.size.must.be.set.before.writing.any.text"));
             content.Append('[');
-            ArrayList arrayList = text.ArrayList;
+            List<Object> arrayList = text.ArrayList;
             bool lastWasNumber = false;
             for (int k = 0; k < arrayList.Count; ++k) {
                 Object obj = arrayList[k];
@@ -2829,7 +2829,7 @@ namespace iTextSharp.text.pdf {
             if ((layer is PdfLayer) && ((PdfLayer)layer).Title != null)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("a.title.is.not.a.layer"));
             if (layerDepth == null)
-                layerDepth = new ArrayList();
+                layerDepth = new List<int>();
             if (layer is PdfLayerMembership) {
                 layerDepth.Add(1);
                 BeginLayer2(layer);
@@ -2860,7 +2860,7 @@ namespace iTextSharp.text.pdf {
         public void EndLayer() {
             int n = 1;
             if (layerDepth != null && layerDepth.Count > 0) {
-                n = (int)layerDepth[layerDepth.Count - 1];
+                n = layerDepth[layerDepth.Count - 1];
                 layerDepth.RemoveAt(layerDepth.Count - 1);
             } else {
                 throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.layer.operators"));

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 /*
  * This file is part of the iText project.
@@ -53,7 +53,7 @@ namespace iTextSharp.text.pdf {
     */
     public class PdfLayer : PdfDictionary, IPdfOCG {
         protected PdfIndirectReference refi;
-        protected ArrayList children;
+        protected List<PdfLayer> children;
         protected PdfLayer parent;
         protected String title;
 
@@ -111,7 +111,7 @@ namespace iTextSharp.text.pdf {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("the.layer.1.already.has.a.parent", ((PdfString)child.Get(PdfName.NAME)).ToUnicodeString()));
             child.parent = this;
             if (children == null)
-                children = new ArrayList();
+                children = new List<PdfLayer>();
             children.Add(child);
         }
 
@@ -130,7 +130,7 @@ namespace iTextSharp.text.pdf {
         * Gets the children layers.
         * @return the children layers or <CODE>null</CODE> if the layer has no children
         */    
-        public ArrayList Children {
+        public List<PdfLayer> Children {
             get {
                 return children;
             }

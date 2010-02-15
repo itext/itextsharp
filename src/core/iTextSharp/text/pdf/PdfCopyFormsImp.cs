@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
@@ -93,10 +93,9 @@ namespace iTextSharp.text.pdf {
         */
         internal override void MergeFields() {
             for (int k = 0; k < fields.Count; ++k) {
-                Hashtable fd = ((AcroFields)fields[k]).Fields;
+                Dictionary<string,AcroFields.Item> fd = fields[k].Fields;
                 MergeWithMaster(fd);
             }
         }
-
     }
 }

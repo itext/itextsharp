@@ -195,7 +195,7 @@ public class PdfEncryption {
             byte[] mkey = new byte[keyLength / 8];
             // only use for the input as many bit as the key consists of
             for (int k = 0; k < 50; ++k)
-                Array.Copy(DigestComputeHash("MD5", digest), 0, digest, 0, mkey.Length);
+                Array.Copy(DigestComputeHash("MD5", digest, 0, mkey.Length), 0, digest, 0, mkey.Length);
             Array.Copy(userPad, 0, ownerKey, 0, 32);
             for (int i = 0; i < 20; ++i) {
                 for (int j = 0; j < mkey.Length ; ++j)

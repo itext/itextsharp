@@ -1,6 +1,6 @@
 using System;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using System.util;
 
 /*
@@ -60,7 +60,7 @@ public class PdfAcroForm : PdfDictionary {
 
 
     /** This is a map containing FieldTemplates. */
-    private Hashtable fieldTemplates = new Hashtable();
+    private Dictionary<PdfTemplate,object> fieldTemplates = new Dictionary<PdfTemplate,object>();
 
     /** This is an array containing DocumentFields. */
     private PdfArray documentFields = new PdfArray();
@@ -87,7 +87,7 @@ public class PdfAcroForm : PdfDictionary {
      * Adds fieldTemplates.
      */
 
-    public void AddFieldTemplates(Hashtable ft) {
+    public void AddFieldTemplates(Dictionary<PdfTemplate,object> ft) {
         foreach (object key in ft.Keys) {
             fieldTemplates[key] = ft[key];
         }
@@ -372,8 +372,8 @@ public class PdfAcroForm : PdfDictionary {
         PdfFormField choice = PdfFormField.CreateList(writer, options, 0);
         SetChoiceParams(choice, name, defaultValue, llx, lly, urx, ury);
         StringBuilder text = new StringBuilder();
-        for (int i = 0; i < options.Length; i++) {
-            text.Append(options[i]).Append('\n');
+        foreach (String option in options) {
+            text.Append(option).Append('\n');
         }
         DrawMultiLineOfText(choice, text.ToString(), font, fontSize, llx, lly, urx, ury);
         AddFormField(choice);

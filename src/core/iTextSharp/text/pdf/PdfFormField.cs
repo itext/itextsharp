@@ -1,6 +1,6 @@
 using System;
 using System.Drawing;
-using System.Collections;
+using System.Collections.Generic;
 
 using iTextSharp.text;
 
@@ -95,7 +95,7 @@ namespace iTextSharp.text.pdf {
         /** Holds value of property parent. */
         internal PdfFormField parent;
     
-        internal ArrayList kids;
+        internal List<PdfFormField> kids;
     
         /**
          * Constructs a new <CODE>PdfAnnotation</CODE> of subtype link (Action).
@@ -226,11 +226,11 @@ namespace iTextSharp.text.pdf {
         public void AddKid(PdfFormField field) {
             field.parent = this;
             if (kids == null)
-                kids = new ArrayList();
+                kids = new List<PdfFormField>();
             kids.Add(field);
         }
         
-        public ArrayList Kids {
+        public List<PdfFormField> Kids {
             get {
                 return kids;
             }
@@ -333,7 +333,7 @@ namespace iTextSharp.text.pdf {
             if (kids != null) {
                 PdfArray array = new PdfArray();
                 for (int k = 0; k < kids.Count; ++k)
-                    array.Add(((PdfFormField)kids[k]).IndirectReference);
+                    array.Add(kids[k].IndirectReference);
                 Put(PdfName.KIDS, array);
             }
             if (templates == null)

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.util;
 
 using iTextSharp.text;
@@ -71,10 +71,10 @@ namespace iTextSharp.text.pdf {
         private const float ITALIC_ANGLE = 0.21256f;
 
         /** The allowed attributes in variable <CODE>attributes</CODE>. */
-        private static Hashtable keysAttributes = new Hashtable();
+        private static Dictionary<string,object> keysAttributes = new Dictionary<string,object>();
     
         /** The allowed attributes in variable <CODE>noStroke</CODE>. */
-        private static Hashtable keysNoStroke = new Hashtable();
+        private static Dictionary<string,object> keysNoStroke = new Dictionary<string,object>();
     
         static PdfChunk() {
             keysAttributes.Add(Chunk.ACTION, null);
@@ -119,7 +119,7 @@ namespace iTextSharp.text.pdf {
          * This attributes require the mesurement of characters widths when rendering
          * such as underline.
          */
-        protected Hashtable attributes = new Hashtable();
+        protected Dictionary<string,object> attributes = new Dictionary<string,object>();
     
         /**
          * Non metric attributes.
@@ -127,7 +127,7 @@ namespace iTextSharp.text.pdf {
          * This attributes do not require the mesurement of characters widths when rendering
          * such as BaseColor.
          */
-        protected Hashtable noStroke = new Hashtable();
+        protected Dictionary<string,object> noStroke = new Dictionary<string,object>();
     
         /** <CODE>true</CODE> if the chunk split was cause by a newline. */
         protected bool newlineSplit;
@@ -172,8 +172,9 @@ namespace iTextSharp.text.pdf {
                 changeLeading = (bool)obj[3];
             }
             encoding = font.Font.Encoding;
-            splitCharacter = (ISplitCharacter)noStroke[Chunk.SPLITCHARACTER];
-            if (splitCharacter == null)
+            if (noStroke.ContainsKey(Chunk.SPLITCHARACTER))
+                splitCharacter = (ISplitCharacter)noStroke[Chunk.SPLITCHARACTER];
+            else
                 splitCharacter = DefaultSplitCharacter.DEFAULT;
         }
     
@@ -212,10 +213,10 @@ namespace iTextSharp.text.pdf {
             }
             font = new PdfFont(baseFont, size);
             // other style possibilities
-            Hashtable attr = chunk.Attributes;
+            Dictionary<string,object> attr = chunk.Attributes;
             if (attr != null) {
-                foreach (DictionaryEntry entry in attr) {
-                    string name = (string)entry.Key;
+                foreach (KeyValuePair<string,object> entry in attr) {
+                    string name = entry.Key;
                     if (keysAttributes.ContainsKey(name)) {
                         attributes[name] = entry.Value;
                     }
@@ -229,12 +230,18 @@ namespace iTextSharp.text.pdf {
             }
             if (f.IsUnderlined()) {
                 Object[] obj = {null, new float[]{0, 1f / 15, 0, -1f / 3, 0}};
-                Object[][] unders = Utilities.AddToArray((Object[][])attributes[Chunk.UNDERLINE], obj);
+                Object[][] obja = null;
+                if (attributes.ContainsKey(Chunk.UNDERLINE))
+                    obja = (Object[][])attributes[Chunk.UNDERLINE];
+                Object[][] unders = Utilities.AddToArray(obja, obj);
                 attributes[Chunk.UNDERLINE] = unders;
             }
             if (f.IsStrikethru()) {
                 Object[] obj = {null, new float[]{0, 1f / 15, 0, 1f / 3, 0}};
-                Object[][] unders = Utilities.AddToArray((Object[][])attributes[Chunk.UNDERLINE], obj);
+                Object[][] obja = null;
+                if (attributes.ContainsKey(Chunk.UNDERLINE))
+                    obja = (Object[][])attributes[Chunk.UNDERLINE];
+                Object[][] unders = Utilities.AddToArray(obja, obj);
                 attributes[Chunk.UNDERLINE] = unders;
             }
             if (action != null)
@@ -242,7 +249,9 @@ namespace iTextSharp.text.pdf {
             // the color can't be stored in a PdfFont
             noStroke[Chunk.COLOR] = f.Color;
             noStroke[Chunk.ENCODING] = font.Font.Encoding;
-            Object[] obj2 = (Object[])attributes[Chunk.IMAGE];
+            Object[] obj2 = null;
+            if (attributes.ContainsKey(Chunk.IMAGE))
+                obj2 = (Object[])attributes[Chunk.IMAGE];
             if (obj2 == null)
                 image = null;
             else {
@@ -253,12 +262,14 @@ namespace iTextSharp.text.pdf {
                 changeLeading = (bool)obj2[3];
             }
             font.Image = image;
-            object hs = attributes[Chunk.HSCALE];
+            object hs;
+            attributes.TryGetValue(Chunk.HSCALE, out hs);
             if (hs != null)
                 font.HorizontalScaling = (float)hs;
             encoding = font.Font.Encoding;
-            splitCharacter = (ISplitCharacter)noStroke[Chunk.SPLITCHARACTER];
-            if (splitCharacter == null)
+            if (noStroke.ContainsKey(Chunk.SPLITCHARACTER))
+                splitCharacter = (ISplitCharacter)noStroke[Chunk.SPLITCHARACTER];
+            else
                 splitCharacter = DefaultSplitCharacter.DEFAULT;
         }
     
@@ -299,7 +310,7 @@ namespace iTextSharp.text.pdf {
                 if (image.ScaledWidth > width) {
                     PdfChunk pc = new PdfChunk(Chunk.OBJECT_REPLACEMENT_CHARACTER, this);
                     value = "";
-                    attributes = new Hashtable();
+                    attributes = new Dictionary<string,object>();
                     image = null;
                     font = PdfFont.DefaultFont;
                     return pc;
@@ -513,7 +524,10 @@ namespace iTextSharp.text.pdf {
     
         internal BaseColor Color {
             get {
-                return (BaseColor)noStroke[Chunk.COLOR];
+                if (noStroke.ContainsKey(Chunk.COLOR))
+                    return (BaseColor)noStroke[Chunk.COLOR];
+                else
+                    return null;
             }
         }
     
@@ -628,7 +642,9 @@ namespace iTextSharp.text.pdf {
         internal Object GetAttribute(string name) {
             if (attributes.ContainsKey(name))
                 return attributes[name];
-            return noStroke[name];
+            if (noStroke.ContainsKey(name))
+                return noStroke[name];
+            return null;
         }
     
         /**
@@ -689,8 +705,8 @@ namespace iTextSharp.text.pdf {
         * @since   2.1.2
         */
         internal void AdjustLeft(float newValue) {
-            Object[] o = (Object[])attributes[Chunk.TAB];
-            if (o != null) {
+            if (attributes.ContainsKey(Chunk.TAB)) {
+                Object[] o = (Object[])attributes[Chunk.TAB];
                 attributes[Chunk.TAB] = new Object[]{o[0], o[1], o[2], newValue};
             }
         }

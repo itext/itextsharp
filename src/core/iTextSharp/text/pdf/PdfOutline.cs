@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 
 using iTextSharp.text;
 
@@ -82,7 +82,7 @@ namespace iTextSharp.text.pdf {
          */
         private PdfAction action;
        
-        protected ArrayList kids = new ArrayList();
+        protected List<PdfOutline> kids = new List<PdfOutline>();
     
         protected PdfWriter writer;
     
@@ -413,7 +413,7 @@ namespace iTextSharp.text.pdf {
             kids.Add(outline);
         }
     
-        public ArrayList Kids {
+        public List<PdfOutline> Kids {
             get {
                 return kids;
             }

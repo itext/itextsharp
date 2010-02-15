@@ -1,6 +1,6 @@
 using System;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using System.Reflection;
 using iTextSharp.text.error_messages;
 
@@ -67,7 +67,7 @@ namespace iTextSharp.text.pdf {
      * @see        BadPdfFormatException
      */
 
-    public class PdfName : PdfObject, IComparable {
+    public class PdfName : PdfObject, IComparable<PdfName> {
     
         // CLASS CONSTANTS (a variety of standard names used in PDF))
         /**
@@ -1721,7 +1721,7 @@ namespace iTextSharp.text.pdf {
          * map strings to all known static names
          * @since 2.1.6
          */
-        public static Hashtable staticNames;
+        public static Dictionary<String, PdfName> staticNames;
 
         /**
          * Use reflection to cache all the static public final names so
@@ -1733,7 +1733,7 @@ namespace iTextSharp.text.pdf {
 
         static PdfName() {
             FieldInfo[] fields = typeof(PdfName).GetFields(BindingFlags.Public | BindingFlags.Static | BindingFlags.DeclaredOnly);
-            staticNames = new Hashtable(fields.Length);
+            staticNames = new Dictionary<string,PdfName>(fields.Length);
             try {
                 for (int fldIdx = 0; fldIdx < fields.Length; ++fldIdx) {
                     FieldInfo curFld = fields[fldIdx];
@@ -1791,9 +1791,7 @@ namespace iTextSharp.text.pdf {
          * @throws Exception if the specified object's type prevents it
          *         from being compared to this Object.
          */
-        public int CompareTo(Object obj) {
-            PdfName name = (PdfName) obj;
-        
+        public int CompareTo(PdfName name) {
             byte[] myBytes = bytes;
             byte[] objBytes = name.bytes;
             int len = Math.Min(myBytes.Length, objBytes.Length);
@@ -1822,7 +1820,7 @@ namespace iTextSharp.text.pdf {
             if (this == obj)
                 return true;
             if (obj is PdfName)
-                return CompareTo(obj) == 0;
+                return CompareTo((PdfName)obj) == 0;
             return false;
         }
     

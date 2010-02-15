@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
@@ -73,7 +73,7 @@ namespace iTextSharp.text.pdf {
 
         internal PdfIndirectReference refi;
         internal PdfArray members = new PdfArray();
-        internal Hashtable layers = new Hashtable();
+        internal Dictionary<PdfLayer,object> layers = new Dictionary<PdfLayer,object>();
         
         /**
         * Creates a new, empty, membership layer.
@@ -109,7 +109,7 @@ namespace iTextSharp.text.pdf {
         * Gets the member layers.
         * @return the member layers
         */    
-        public ICollection Layers {
+        public Dictionary<PdfLayer,object>.KeyCollection Layers {
             get {
                 return layers.Keys;
             }

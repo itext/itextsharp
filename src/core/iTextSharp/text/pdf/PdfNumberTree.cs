@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
@@ -59,7 +59,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @return the dictionary with the number tree.
         */    
-        public static PdfDictionary WriteTree(Hashtable items, PdfWriter writer) {
+        public static PdfDictionary WriteTree<T>(Dictionary<int, T> items, PdfWriter writer) where T : PdfObject {
             if (items.Count == 0)
                 return null;
             int[] numbers = new int[items.Count];
@@ -70,7 +70,7 @@ namespace iTextSharp.text.pdf {
                 PdfArray ar = new PdfArray();
                 for (int k = 0; k < numbers.Length; ++k) {
                     ar.Add(new PdfNumber(numbers[k]));
-                    ar.Add((PdfObject)items[numbers[k]]);
+                    ar.Add(items[numbers[k]]);
                 }
                 dic.Put(PdfName.NUMS, ar);
                 return dic;
@@ -88,7 +88,7 @@ namespace iTextSharp.text.pdf {
                 arr = new PdfArray();
                 for (; offset < end; ++offset) {
                     arr.Add(new PdfNumber(numbers[offset]));
-                    arr.Add((PdfObject)items[numbers[offset]]);
+                    arr.Add(items[numbers[offset]]);
                 }
                 dic.Put(PdfName.NUMS, arr);
                 kids[k] = writer.AddToBody(dic).IndirectReference;
@@ -124,7 +124,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        private static void IterateItems(PdfDictionary dic, Hashtable items) {
+        private static void IterateItems(PdfDictionary dic, Dictionary<int, PdfObject> items) {
             PdfArray nn = (PdfArray)PdfReader.GetPdfObjectRelease(dic.Get(PdfName.NUMS));
             if (nn != null) {
                 for (int k = 0; k < nn.Size; ++k) {
@@ -140,8 +140,8 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public static Hashtable ReadTree(PdfDictionary dic) {
-            Hashtable items = new Hashtable();
+        public static Dictionary<int, PdfObject> ReadTree(PdfDictionary dic) {
+            Dictionary<int, PdfObject> items = new Dictionary<int, PdfObject>();
             if (dic != null)
                 IterateItems(dic, items);
             return items;

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -100,7 +100,7 @@ public class PdfEncodings {
     
     internal static IntHashtable pdfEncoding = new IntHashtable();
     
-    internal static Hashtable extraEncodings = new Hashtable();
+    internal static Dictionary<String, ExtraEncoding> extraEncodings = new Dictionary<string,ExtraEncoding>();
 
     static PdfEncodings() {        
         for (int k = 128; k < 161; ++k) {
@@ -138,7 +138,8 @@ public class PdfEncodings {
                 b[k] = (byte)text[k];
             return b;
         }
-        IExtraEncoding extra = (IExtraEncoding)extraEncodings[encoding.ToLower(System.Globalization.CultureInfo.InvariantCulture)];
+        IExtraEncoding extra;
+        extraEncodings.TryGetValue(encoding.ToLower(System.Globalization.CultureInfo.InvariantCulture), out extra);
         if (extra != null) {
             byte[] b = extra.CharToByte(text, encoding);
             if (b != null)
@@ -190,7 +191,8 @@ public class PdfEncodings {
     public static byte[] ConvertToBytes(char char1, String encoding) {
         if (encoding == null || encoding.Length == 0)
             return new byte[]{(byte)char1};
-        IExtraEncoding extra = (IExtraEncoding)extraEncodings[encoding.ToLower(System.Globalization.CultureInfo.InvariantCulture)];
+        IExtraEncoding extra;
+        extraEncodings.TryGetValue(encoding.ToLower(System.Globalization.CultureInfo.InvariantCulture), out extra);
         if (extra != null) {
             byte[] b = extra.CharToByte(char1, encoding);
             if (b != null)
@@ -233,7 +235,8 @@ public class PdfEncodings {
                 c[k] = (char)(bytes[k] & 0xff);
             return new String(c);
         }
-        IExtraEncoding extra = (IExtraEncoding)extraEncodings[encoding.ToLower(System.Globalization.CultureInfo.InvariantCulture)];
+        IExtraEncoding extra;
+        extraEncodings.TryGetValue(encoding.ToLower(System.Globalization.CultureInfo.InvariantCulture), out extra);
         if (extra != null) {
             String text = extra.ByteToChar(bytes, encoding);
             if (text != null)
@@ -296,7 +299,7 @@ public class PdfEncodings {
         return true;
     }
 
-    internal static Hashtable cmaps = new Hashtable();
+    internal static Dictionary<string,char[][]> cmaps = new Dictionary<string,char[][]>();
     /** Assumes that '\\n' and '\\r\\n' are the newline sequences. It may not work for
     * all CJK encodings. To be used with LoadCmap().
     */    
@@ -323,9 +326,9 @@ public class PdfEncodings {
     * @param newline the sequences to be replaced bi a newline in the resulting CID. See <CODE>CRLF_CID_NEWLINE</CODE>
     */    
     public static void LoadCmap(String name, byte[][] newline) {
-        char[][] planes = null;
+        char[][] planes;
         lock (cmaps) {
-            planes = (char[][])cmaps[name];
+            cmaps.TryGetValue(name, planes);
         }
         if (planes == null) {
             planes = ReadCmap(name, newline);
@@ -362,9 +365,9 @@ public class PdfEncodings {
     * @return the CID string
     */    
     public static String ConvertCmap(String name, byte[] seq, int start, int length) {
-        char[][] planes = null;
+        char[][] planes;
         lock (cmaps) {
-            planes = (char[][])cmaps[name];
+            cmaps.TryGetValue(name, out planes);
         }
         if (planes == null) {
             planes = ReadCmap(name, (byte[][])null);
@@ -394,19 +397,17 @@ public class PdfEncodings {
     }
 
     internal static char[][] ReadCmap(String name, byte[][] newline) {
-        ArrayList planes = new ArrayList();
+        List<char[]> planes = new List<char[]>();
         planes.Add(new char[256]);
         ReadCmap(name, planes);
         if (newline != null) {
             for (int k = 0; k < newline.Length; ++k)
                 EncodeSequence(newline[k].Length, newline[k], BaseFont.CID_NEWLINE, planes);
         }
-        char[][] ret = new char[planes.Count][];
-        planes.CopyTo(ret, 0);
-        return ret;
+        return planes.ToArray();
     }
     
-    internal static void ReadCmap(String name, ArrayList planes) {
+    internal static void ReadCmap(String name, List<char[]> planes) {
         String fullName = BaseFont.RESOURCE_PATH + "cmaps." + name;
         Stream inp = BaseFont.GetResourceStream(fullName);
         if (inp == null)
@@ -415,7 +416,7 @@ public class PdfEncodings {
         inp.Close();
     }
     
-    internal static void EncodeStream(Stream inp, ArrayList planes) {
+    internal static void EncodeStream(Stream inp, List<char[]> planes) {
         StreamReader rd = new StreamReader(inp, Encoding.ASCII);
         String line = null;
         int state = CIDNONE;
@@ -481,12 +482,12 @@ public class PdfEncodings {
         }
     }
 
-    internal static void EncodeSequence(int size, byte[] seqs, char cid, ArrayList planes) {
+    internal static void EncodeSequence(int size, byte[] seqs, char cid, List<char[]> planes) {
         --size;
         int nextPlane = 0;
         char[] plane;
         for (int idx = 0; idx < size; ++idx) {
-            plane = (char[])planes[nextPlane];
+            plane = planes[nextPlane];
             int one = (int)seqs[idx] & 0xff;
             char c = plane[one];
             if (c != 0 && (c & 0x8000) == 0)
@@ -512,7 +513,7 @@ public class PdfEncodings {
      */    
     public static void AddExtraEncoding(String name, IExtraEncoding enc) {
         lock (extraEncodings) { // This serializes concurrent updates
-            Hashtable newEncodings = (Hashtable)extraEncodings.Clone();
+            Dictionary<String, ExtraEncoding> newEncodings = new Dictionary<string,ExtraEncoding>(extraEncodings);
             newEncodings[name.ToLower(System.Globalization.CultureInfo.InvariantCulture)] = enc;
             extraEncodings = newEncodings;  // This swap does not require synchronization with reader
         }
