@@ -61,7 +61,7 @@ namespace iTextSharp.text.pdf {
     * @see        BadPdfFormatException
     */
 
-    public class PdfFont : IComparable {
+    public class PdfFont : IComparable<PdfFont> {
         
         
         /** the font metrics. */
@@ -91,15 +91,13 @@ namespace iTextSharp.text.pdf {
         * @return    a value
         */
         
-        public int CompareTo(Object obj) {
+        public int CompareTo(PdfFont pdfFont) {
             if (image != null)
                 return 0;
-            if (obj == null) {
+            if (pdfFont == null) {
                 return -1;
             }
-            PdfFont pdfFont;
             try {
-                pdfFont = (PdfFont) obj;
                 if (font != pdfFont.font) {
                     return 1;
                 }

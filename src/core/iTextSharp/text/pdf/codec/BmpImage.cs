@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.util;
@@ -110,7 +110,7 @@ namespace iTextSharp.text.pdf.codec {
         private bool isBottomUp;
         private int bitsPerPixel;
         private int redMask, greenMask, blueMask, alphaMask;
-        public Hashtable properties = new Hashtable();    
+        public Dictionary<string,object> properties = new Dictionary<string,object>();    
         private long xPelsPerMeter;
         private long yPelsPerMeter;
         // BMP Image types

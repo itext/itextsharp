@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 
 /*
  * $Id$
@@ -93,7 +93,7 @@ namespace iTextSharp.text.pdf {
         private PdfName dictionaryType = null;
     
         /** This is the hashmap that contains all the values and keys of the dictionary */
-        protected internal Hashtable hashMap;
+        protected internal Dictionary<PdfName, PdfObject> hashMap;
     
         // constructors
     
@@ -102,7 +102,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public PdfDictionary() : base(DICTIONARY) {
-            hashMap = new Hashtable();
+            hashMap = new Dictionary<PdfName,PdfObject>();
         }
     
         /**
@@ -130,7 +130,7 @@ namespace iTextSharp.text.pdf {
             // loop over all the object-pairs in the Hashtable
             PdfObject value;
             foreach (PdfName key in hashMap.Keys) {
-                value = (PdfObject) hashMap[key];
+                value = hashMap[key];
                 key.ToPdf(writer, os);
                 int type = value.Type;
                 if (type != PdfObject.ARRAY && type != PdfObject.DICTIONARY && type != PdfObject.NAME && type != PdfObject.STRING)
@@ -190,7 +190,11 @@ namespace iTextSharp.text.pdf {
          */
     
         public PdfObject Get(PdfName key) {
-            return (PdfObject) hashMap[key];
+            PdfObject obj;
+            if (hashMap.ContainsKey(key, out obj))
+                return obj;
+            else
+                return null;
         }
     
         // methods concerning the type of Dictionary
@@ -259,7 +263,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public ICollection Keys {
+        public Dictionary<PdfName,PdfObject>.KeyCollection Keys {
             get {
                 return hashMap.Keys;
             }
@@ -275,7 +279,7 @@ namespace iTextSharp.text.pdf {
             return hashMap.ContainsKey(key);
         }
 
-        public virtual IDictionaryEnumerator GetEnumerator() {
+        public virtual Dictionary<PdfName,PdfObject>.Enumerator GetEnumerator() {
             return hashMap.GetEnumerator();
         }
 

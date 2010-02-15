@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 
 /*
@@ -95,7 +95,7 @@ public sealed class PdfEncryptor {
      * @throws DocumentException on error
      * @throws IOException on error
      */
-    public static void Encrypt(PdfReader reader, Stream os, byte[] userPassword, byte[] ownerPassword, int permissions, bool strength128Bits, Hashtable newInfo) {
+    public static void Encrypt(PdfReader reader, Stream os, byte[] userPassword, byte[] ownerPassword, int permissions, bool strength128Bits, Dictionary<string,string> newInfo) {
         PdfStamper stamper = new PdfStamper(reader, os);
         stamper.SetEncryption(userPassword, ownerPassword, permissions, strength128Bits);
         stamper.MoreInfo = newInfo;
@@ -142,7 +142,7 @@ public sealed class PdfEncryptor {
      * @throws DocumentException on error
      * @throws IOException on error
      */
-    public static void Encrypt(PdfReader reader, Stream os, bool strength, String userPassword, String ownerPassword, int permissions, Hashtable newInfo) {
+    public static void Encrypt(PdfReader reader, Stream os, bool strength, String userPassword, String ownerPassword, int permissions, Dictionary<string,string> newInfo) {
         PdfStamper stamper = new PdfStamper(reader, os);
         stamper.SetEncryption(strength, userPassword, ownerPassword, permissions);
         stamper.MoreInfo = newInfo;
@@ -169,7 +169,7 @@ public sealed class PdfEncryptor {
      * @throws DocumentException on error
      * @throws IOException on error
      */
-    public static void Encrypt(PdfReader reader, Stream os, int type, String userPassword, String ownerPassword, int permissions, Hashtable newInfo) {
+    public static void Encrypt(PdfReader reader, Stream os, int type, String userPassword, String ownerPassword, int permissions, Dictionary<string,string> newInfo) {
         PdfStamper stamper = new PdfStamper(reader, os);
         stamper.SetEncryption(type, userPassword, ownerPassword, permissions);
         stamper.MoreInfo = newInfo;

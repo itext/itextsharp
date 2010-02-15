@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.util;
 /*
@@ -246,9 +246,9 @@ namespace iTextSharp.text.pdf {
         * @param maxNumber the maximum number in the range
         * @return a list with the numbers as <CODE>Integer</CODE>
         */    
-        public static ArrayList Expand(String ranges, int maxNumber) {
+        public static ICollection<int> Expand(String ranges, int maxNumber) {
             SequenceList parse = new SequenceList(ranges);
-            ArrayList list = new ArrayList();
+            List<int> list = new List<int>();
             bool sair = false;
             while (!sair) {
                 sair = parse.GetAttributes();

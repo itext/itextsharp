@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 /*
  * $Id$
@@ -55,10 +55,10 @@ namespace iTextSharp.text.pdf {
         protected PdfDictionary shadingDictionary = new PdfDictionary();
         protected PdfDictionary extGStateDictionary = new PdfDictionary();
         protected PdfDictionary propertyDictionary = new PdfDictionary();
-        protected Hashtable forbiddenNames;
+        protected Dictionary<PdfName,object> forbiddenNames;
         protected PdfDictionary originalResources;
         protected int[] namePtr = {0};
-        protected Hashtable usedNames;
+        protected Dictionary<PdfName,PdfName> usedNames;
 
         internal PageResources() {
         }
@@ -66,8 +66,8 @@ namespace iTextSharp.text.pdf {
         internal void SetOriginalResources(PdfDictionary resources, int[] newNamePtr) {
             if (newNamePtr != null)
                 namePtr = newNamePtr;
-            forbiddenNames = new Hashtable();
-            usedNames = new Hashtable();
+            forbiddenNames = new Dictionary<PdfName,object>();
+            usedNames = new Dictionary<PdfName,PdfName>();
             if (resources == null)
                 return;
             originalResources = new PdfDictionary();
@@ -89,7 +89,7 @@ namespace iTextSharp.text.pdf {
         internal PdfName TranslateName(PdfName name) {
             PdfName translated = name;
             if (forbiddenNames != null) {
-                translated = (PdfName)usedNames[name];
+                usedNames.TryGetValue(name, out translated);
                 if (translated == null) {
                     while (true) {
                         translated = new PdfName("Xi" + (namePtr[0]++));

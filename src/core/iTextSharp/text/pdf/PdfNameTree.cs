@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
@@ -63,7 +63,7 @@ namespace iTextSharp.text.pdf {
         * @return the dictionary with the name tree. This dictionary is the one
         * generally pointed to by the key /Dests, for example
         */    
-        public static PdfDictionary WriteTree(Hashtable items, PdfWriter writer) {
+        public static PdfDictionary WriteTree<T>(Dictionary<String, T> items, PdfWriter writer) where T : PdfObject {
             if (items.Count == 0)
                 return null;
             String[] names = new String[items.Count];
@@ -74,7 +74,7 @@ namespace iTextSharp.text.pdf {
                 PdfArray ar = new PdfArray();
                 for (int k = 0; k < names.Length; ++k) {
                     ar.Add(new PdfString(names[k], null));
-                    ar.Add((PdfObject)items[names[k]]);
+                    ar.Add(items[names[k]]);
                 }
                 dic.Put(PdfName.NAMES, ar);
                 return dic;
@@ -128,7 +128,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        private static void IterateItems(PdfDictionary dic, Hashtable items) {
+        private static void IterateItems(PdfDictionary dic, Dictionary<string, PdfObject> items) {
             PdfArray nn = (PdfArray)PdfReader.GetPdfObjectRelease(dic.Get(PdfName.NAMES));
             if (nn != null) {
                 for (int k = 0; k < nn.Size; ++k) {
@@ -144,8 +144,8 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public static Hashtable ReadTree(PdfDictionary dic) {
-            Hashtable items = new Hashtable();
+        public static Dictionary<string, PdfObject> ReadTree(PdfDictionary dic) {
+            Dictionary<string, PdfObject> items = new Dictionary<string,PdfObject>();
             if (dic != null)
                 IterateItems(dic, items);
             return items;

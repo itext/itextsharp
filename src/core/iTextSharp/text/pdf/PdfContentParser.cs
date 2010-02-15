@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using iTextSharp.text.error_messages;
 
@@ -80,9 +80,9 @@ namespace iTextSharp.text.pdf {
         * @return the same <CODE>ArrayList</CODE> given as argument or a new one
         * @throws IOException on error
         */    
-        public ArrayList Parse(ArrayList ls) {
+        public List<PdfObject> Parse(List<PdfObject> ls) {
             if (ls == null)
-                ls = new ArrayList();
+                ls = new List<PdfObject>();
             else
                 ls.Clear();
             PdfObject ob = null;

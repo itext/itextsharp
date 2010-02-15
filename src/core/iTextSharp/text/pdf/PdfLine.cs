@@ -1,6 +1,6 @@
 using System;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 
 using iTextSharp.text;
 
@@ -61,7 +61,7 @@ namespace iTextSharp.text.pdf {
         // membervariables
     
         /** The arraylist containing the chunks. */
-        protected internal ArrayList line;
+        protected internal List<PdfChunk> line;
     
         /** The left indentation of the line. */
         protected internal float left;
@@ -106,7 +106,7 @@ namespace iTextSharp.text.pdf {
             this.originalWidth = this.width;
             this.alignment = alignment;
             this.height = height;
-            this.line = new ArrayList();
+            this.line = new List<PdfChunk>();
         }
     
         /**
@@ -119,7 +119,7 @@ namespace iTextSharp.text.pdf {
         * @param line              an array of PdfChunk objects
         * @param isRTL             do you have to read the line from Right to Left?
         */
-        internal PdfLine(float left, float originalWidth, float remainingWidth, int alignment, bool newlineSplit, ArrayList line, bool isRTL) {
+        internal PdfLine(float left, float originalWidth, float remainingWidth, int alignment, bool newlineSplit, List<PdfChunk> line, bool isRTL) {
             this.left = left;
             this.originalWidth = originalWidth;
             this.width = remainingWidth;
@@ -221,7 +221,7 @@ namespace iTextSharp.text.pdf {
          * @return    an <CODE>Iterator</CODE>
          */
     
-        public IEnumerator GetEnumerator() {
+        public IEnumerator<PdfChunk> GetEnumerator() {
             return line.GetEnumerator();
         }
     
@@ -407,7 +407,7 @@ namespace iTextSharp.text.pdf {
             get {
                 int lastIdx = line.Count - 1;
                 for (; lastIdx >= 0; --lastIdx) {
-                    PdfChunk chunk = (PdfChunk)line[lastIdx];
+                    PdfChunk chunk = line[lastIdx];
                     if (chunk.IsStroked())
                         break;
                 }
@@ -423,7 +423,7 @@ namespace iTextSharp.text.pdf {
         public PdfChunk GetChunk(int idx) {
             if (idx < 0 || idx >= line.Count)
                 return null;
-            return (PdfChunk)line[idx];
+            return line[idx];
         }
     
         /**
@@ -447,7 +447,7 @@ namespace iTextSharp.text.pdf {
             float image_leading = -10000;
             PdfChunk chunk;
             for (int k = 0; k < line.Count; ++k) {
-                chunk = (PdfChunk)line[k];
+                chunk = line[k];
                 if (!chunk.IsImage()) {
                     normal_leading = Math.Max(chunk.Font.Size, normal_leading);
                 }
@@ -485,7 +485,7 @@ namespace iTextSharp.text.pdf {
         public float GetWidthCorrected(float charSpacing, float wordSpacing) {
             float total = 0;
             for (int k = 0; k < line.Count; ++k) {
-                PdfChunk ck = (PdfChunk)line[k];
+                PdfChunk ck = line[k];
                 total += ck.GetWidthCorrected(charSpacing, wordSpacing);
             }
             return total;

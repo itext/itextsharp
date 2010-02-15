@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.util;
 using iTextSharp.text.error_messages;
@@ -54,22 +54,22 @@ namespace iTextSharp.text.pdf {
 
         private static readonly PdfName iTextTag = new PdfName("_iTextTag_");
         private static object zero = 0;
-        internal ArrayList readers = new ArrayList();
-        internal Hashtable readers2intrefs = new Hashtable();
-        internal Hashtable pages2intrefs = new Hashtable();
-        internal Hashtable visited = new Hashtable();
-        internal ArrayList fields = new ArrayList();
+        internal List<PdfReader> readers = new List<PdfReader>();
+        internal Dictionary<PdfReader, IntHashtable> readers2intrefs = new Dictionary<PdfReader, IntHashtable>();
+        internal Dictionary<PdfReader, IntHashtable> pages2intrefs = new Dictionary<PdfReader, IntHashtable>();
+        internal Dictionary<PdfReader, IntHashtable> visited = new Dictionary<PdfReader, IntHashtable>();
+        internal List<AcroFields> fields = new List<AcroFields>();
         internal RandomAccessFileOrArray file;
-        internal Hashtable fieldTree = new Hashtable();
-        internal ArrayList pageRefs = new ArrayList();
-        internal ArrayList pageDics = new ArrayList();
+        internal Dictionary<String, Object> fieldTree = new Dictionary<string,object>();
+        internal List<PdfIndirectReference> pageRefs = new List<PdfIndirectReference>();
+        internal List<PdfDictionary> pageDics = new List<PdfDictionary>();
         internal PdfDictionary resources = new PdfDictionary();
         internal PdfDictionary form;
         bool closing = false;
         internal Document nd;
-        private Hashtable tabOrder;
-        private ArrayList calculationOrder = new ArrayList();
-        private ArrayList calculationOrderRefs;
+        private Dictionary<PdfArray, List<int>> tabOrder;
+        private List<String> calculationOrder = new List<String>();
+        private List<Object> calculationOrderRefs;
         private bool hasSignature;
         
         internal PdfCopyFieldsImp(Stream os) : this(os, '\0') {
@@ -83,7 +83,7 @@ namespace iTextSharp.text.pdf {
             nd.AddDocListener(pdf);
         }
         
-        internal void AddDocument(PdfReader reader, ArrayList pagesToKeep) {
+        internal void AddDocument(PdfReader reader, ICollection<int> pagesToKeep) {
             if (!readers2intrefs.ContainsKey(reader) && reader.Tampered)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("the.document.was.reused"));
             reader = new PdfReader(reader);        
@@ -214,9 +214,9 @@ namespace iTextSharp.text.pdf {
         
         private void AdjustTabOrder(PdfArray annots, PdfIndirectReference ind, PdfNumber nn) {
             int v = nn.IntValue;
-            ArrayList t = (ArrayList)tabOrder[annots] ;
-            if (t == null) {
-                t = new ArrayList();
+            List<int> t;
+            if (!tabOrder.TryGetValue(annots, out t)) {
+                t = new List<int>();
                 int size = annots.Size - 1;
                 for (int k = 0; k < size; ++k) {
                     t.Add(zero);
@@ -228,7 +228,7 @@ namespace iTextSharp.text.pdf {
             else {
                 int size = t.Count - 1;
                 for (int k = size; k >= 0; --k) {
-                    if ((int)t[k] <= v) {
+                    if (t[k] <= v) {
                         t.Insert(k + 1, v);
                         annots.Add(k + 1, ind);
                         size = -2;
@@ -242,10 +242,10 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected PdfArray BranchForm(Hashtable level, PdfIndirectReference parent, String fname) {
+        protected PdfArray BranchForm(Dictionary<string,object> level, PdfIndirectReference parent, String fname) {
             PdfArray arr = new PdfArray();
-            foreach (DictionaryEntry entry in level) {
-                String name = (String)entry.Key;
+            foreach (KeyValuePair<string,object> entry in level) {
+                String name = entry.Key;
                 Object obj = entry.Value;
                 PdfIndirectReference ind = PdfIndirectReference;
                 PdfDictionary dic = new PdfDictionary();
@@ -256,18 +256,18 @@ namespace iTextSharp.text.pdf {
                 int coidx = calculationOrder.IndexOf(fname2);
                 if (coidx >= 0)
                     calculationOrderRefs[coidx] = ind;
-                if (obj is Hashtable) {
-                    dic.Put(PdfName.KIDS, BranchForm((Hashtable)obj, ind, fname2));
+                if (obj is Dictionary<string,object>) {
+                    dic.Put(PdfName.KIDS, BranchForm((Dictionary<string,object>)obj, ind, fname2));
                     arr.Add(ind);
                     AddToBody(dic, ind);
                 }
                 else {
-                    ArrayList list = (ArrayList)obj;
+                    List<object> list = (List<object>)obj;
                     dic.MergeDifferent((PdfDictionary)list[0]);
                     if (list.Count == 3) {
                         dic.MergeDifferent((PdfDictionary)list[2]);
                         int page = (int)list[1];
-                        PdfDictionary pageDic = (PdfDictionary)pageDics[page - 1];
+                        PdfDictionary pageDic = pageDics[page - 1];
                         PdfArray annots = pageDic.GetAsArray(PdfName.ANNOTS);
                         if (annots == null) {
                             annots = new PdfArray();
@@ -281,7 +281,7 @@ namespace iTextSharp.text.pdf {
                         PdfArray kids = new PdfArray();
                         for (int k = 1; k < list.Count; k += 2) {
                             int page = (int)list[k];
-                            PdfDictionary pageDic = (PdfDictionary)pageDics[page - 1];
+                            PdfDictionary pageDic = pageDics[page - 1];
                             PdfArray annots = pageDic.GetAsArray(PdfName.ANNOTS);
                             if (annots == null) {
                                 annots = new PdfArray();
@@ -314,8 +314,10 @@ namespace iTextSharp.text.pdf {
             form.Put(PdfName.DR, resources);
             Propagate(resources, null, false);
             form.Put(PdfName.DA, new PdfString("/Helv 0 Tf 0 g "));
-            tabOrder = new Hashtable();
-            calculationOrderRefs = new ArrayList(calculationOrder);
+            tabOrder = new Dictionary<PdfArray,List<int>>();
+            calculationOrderRefs = new List<object>();
+            foreach (string sc in calculationOrder)
+                calculationOrderRefs.Add(sc);
             form.Put(PdfName.FIELDS, BranchForm(fieldTree, null, ""));
             if (hasSignature)
                 form.Put(PdfName.SIGFLAGS, new PdfNumber(3));
@@ -340,10 +342,10 @@ namespace iTextSharp.text.pdf {
         
         protected void CloseIt() {
             for (int k = 0; k < readers.Count; ++k) {
-                ((PdfReader)readers[k]).RemoveFields();
+                readers[k].RemoveFields();
             }
             for (int r = 0; r < readers.Count; ++r) {
-                PdfReader reader = (PdfReader)readers[r];
+                PdfReader reader = readers[r];
                 for (int page = 1; page <= reader.NumberOfPages; ++page) {
                     pageRefs.Add(GetNewReference(reader.GetPageOrigRef(page)));
                     pageDics.Add(reader.GetPageN(page));
@@ -352,7 +354,7 @@ namespace iTextSharp.text.pdf {
             MergeFields();
             CreateAcroForms();
             for (int r = 0; r < readers.Count; ++r) {
-                    PdfReader reader = (PdfReader)readers[r];
+                    PdfReader reader = readers[r];
                     for (int page = 1; page <= reader.NumberOfPages; ++page) {
                         PdfDictionary dic = reader.GetPageN(page);
                         PdfIndirectReference pageRef = GetNewReference(reader.GetPageOrigRef(page));
@@ -361,12 +363,12 @@ namespace iTextSharp.text.pdf {
                         Propagate(dic, pageRef, false);
                     }
             }
-            foreach (DictionaryEntry entry in readers2intrefs) {
-                PdfReader reader = (PdfReader)entry.Key;
+            foreach (KeyValuePair<PdfReader, IntHashtable> entry in readers2intrefs) {
+                PdfReader reader = entry.Key;
                 try {
                     file = reader.SafeFile;
                     file.ReOpen();
-                    IntHashtable t = (IntHashtable)entry.Value;
+                    IntHashtable t = entry.Value;
                     int[] keys = t.ToOrderedKeys();
                     for (int k = 0; k < keys.Length; ++k) {
                         PRIndirectReference refi = new PRIndirectReference(reader, keys[k]);
@@ -386,7 +388,7 @@ namespace iTextSharp.text.pdf {
             pdf.Close();
         }
         
-        internal void AddPageOffsetToField(Hashtable fd, int pageOffset) {
+        internal void AddPageOffsetToField(Dictionary<String, AcroFields.Item> fd, int pageOffset) {
             if (pageOffset == 0)
                 return;
             foreach (AcroFields.Item item in fd.Values) {
@@ -398,7 +400,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        internal void CreateWidgets(ArrayList list, AcroFields.Item item) {
+        internal void CreateWidgets(List<Object> list, AcroFields.Item item) {
             for (int k = 0; k < item.Size; ++k) {
                 list.Add(item.GetPage(k));
                 PdfDictionary merged = item.GetMerged(k);
@@ -416,27 +418,28 @@ namespace iTextSharp.text.pdf {
         }
         
         internal void MergeField(String name, AcroFields.Item item) {
-            Hashtable map = fieldTree;
+            Dictionary<string,object> map = fieldTree;
             StringTokenizer tk = new StringTokenizer(name, ".");
             if (!tk.HasMoreTokens())
                 return;
             while (true) {
                 String s = tk.NextToken();
-                Object obj = map[s];
+                Object obj;
+                map.TryGetValue(s, out obj);
                 if (tk.HasMoreTokens()) {
                     if (obj == null) {
-                        obj = new Hashtable();
-                        map[s] =  obj;
-                        map = (Hashtable)obj;
+                        obj = new Dictionary<string,object>();
+                        map[s] = obj;
+                        map = (Dictionary<string,object>)obj;
                         continue;
                     }
-                    else if (obj is Hashtable)
-                        map = (Hashtable)obj;
+                    else if (obj is Dictionary<string,object>)
+                        map = (Dictionary<string,object>)obj;
                     else
                         return;
                 }
                 else {
-                    if (obj is Hashtable)
+                    if (obj is Dictionary<string,object>)
                         return;
                     PdfDictionary merged = item.GetMerged(0);
                     if (obj == null) {
@@ -447,13 +450,13 @@ namespace iTextSharp.text.pdf {
                             if (fieldKeys.ContainsKey(key))
                                 field.Put(key, merged.Get(key));
                         }
-                        ArrayList list = new ArrayList();
+                        List<object> list = new List<object>();
                         list.Add(field);
                         CreateWidgets(list, item);
                         map[s] =  list;
                     }
                     else {
-                        ArrayList list = (ArrayList)obj;
+                        List<object> list = (List<object>)obj;
                         PdfDictionary field = (PdfDictionary)list[0];
                         PdfName type1 = (PdfName)field.Get(PdfName.FT);
                         PdfName type2 = (PdfName)merged.Get(PdfName.FT);
@@ -484,25 +487,25 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        internal void MergeWithMaster(Hashtable fd) {
-            foreach (DictionaryEntry entry in fd) {
-                String name = (String)entry.Key;
-                MergeField(name, (AcroFields.Item)entry.Value);
+        internal void MergeWithMaster(Dictionary<string,AcroFields.Item> fd) {
+            foreach (KeyValuePair<string,AcroFields.Item> entry in fd) {
+                String name = entry.Key;
+                MergeField(name, entry.Value);
             }
         }
         
         internal virtual void MergeFields() {
             int pageOffset = 0;
             for (int k = 0; k < fields.Count; ++k) {
-                Hashtable fd = ((AcroFields)fields[k]).Fields;
+                Dictionary<string,AcroFields.Item> fd = fields[k].Fields;
                 AddPageOffsetToField(fd, pageOffset);
                 MergeWithMaster(fd);
-                pageOffset += ((PdfReader)readers[k]).NumberOfPages;
+                pageOffset += readers[k].NumberOfPages;
             }
         }
 
         public override PdfIndirectReference GetPageReference(int page) {
-            return (PdfIndirectReference)pageRefs[page - 1];
+            return pageRefs[page - 1];
         }
         
         protected override PdfDictionary GetCatalog(PdfIndirectReference rootObj) {
@@ -519,7 +522,7 @@ namespace iTextSharp.text.pdf {
         }
         
         protected internal override int GetNewObjectNumber(PdfReader reader, int number, int generation) {
-            IntHashtable refs = (IntHashtable)readers2intrefs[reader];
+            IntHashtable refs = readers2intrefs[reader];
             int n = refs[number];
             if (n == 0) {
                 n = IndirectReferenceNumber;
@@ -534,8 +537,8 @@ namespace iTextSharp.text.pdf {
         * @return  true if the reference was set to visited
         */
         protected internal bool SetVisited(PRIndirectReference refi) {
-            IntHashtable refs = (IntHashtable)visited[refi.Reader];
-            if (refs != null) {
+            IntHashtable refs;
+            if (visited.TryGetValue(refi.Reader, out refs)) {
                 int old = refs[refi.Number];
                 refs[refi.Number] = 1;
                 return (old != 0);
@@ -550,15 +553,15 @@ namespace iTextSharp.text.pdf {
         * @return  true if the reference was already visited
         */
         protected internal bool IsVisited(PRIndirectReference refi) {
-            IntHashtable refs = (IntHashtable)visited[refi.Reader];
-            if (refs != null)
+            IntHashtable refs;
+            if (visited.TryGetValue(refi.Reader, out refs))
                 return refs.ContainsKey(refi.Number);
             else
                 return false;
         }
         
         protected internal bool IsVisited(PdfReader reader, int number, int generation) {
-            IntHashtable refs = (IntHashtable)readers2intrefs[reader];
+            IntHashtable refs = readers2intrefs[reader];
             return refs.ContainsKey(number);
         }
         
@@ -568,15 +571,15 @@ namespace iTextSharp.text.pdf {
         * @return  true is the reference refers to a page object.
         */
         protected internal bool IsPage(PRIndirectReference refi) {
-            IntHashtable refs = (IntHashtable)pages2intrefs[refi.Reader];
-            if (refs != null)
+            IntHashtable refs;
+            if (pages2intrefs.TryGetValue(refi.Reader, out refs))
                 return refs.ContainsKey(refi.Number);
             else
                 return false;
         }
 
         internal override RandomAccessFileOrArray GetReaderFile(PdfReader reader) {
-                return file;
+            return file;
         }
 
         public void OpenDoc() {
@@ -584,8 +587,8 @@ namespace iTextSharp.text.pdf {
                 nd.Open();
         }    
         
-        protected internal static Hashtable widgetKeys = new Hashtable();
-        protected internal static Hashtable fieldKeys = new Hashtable();
+        protected internal static Dictionary<PdfName,int> widgetKeys = new Dictionary<PdfName,int>();
+        protected internal static Dictionary<PdfName,int> fieldKeys = new Dictionary<PdfName,int>();
         static PdfCopyFieldsImp() {
             object one = 1;
             widgetKeys[PdfName.SUBTYPE] =  one;

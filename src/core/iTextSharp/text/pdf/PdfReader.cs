@@ -3057,7 +3057,7 @@ namespace iTextSharp.text.pdf {
         * no page repetitions are allowed. Note that it may be very slow in partial mode.
         * @param pagesToKeep the pages to keep in the document
         */    
-        public void SelectPages(ArrayList pagesToKeep) {
+        public void SelectPages(ICollection<int> pagesToKeep) {
             pageRefs.SelectPages(pagesToKeep);
             RemoveUnusedObjects();
         }
@@ -3401,7 +3401,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
 
-            internal void SelectPages(ArrayList pagesToKeep) {
+            internal void SelectPages(ICollection<int> pagesToKeep) {
                 IntHashtable pg = new IntHashtable();
                 ArrayList finalPages = new ArrayList();
                 int psize = Size;

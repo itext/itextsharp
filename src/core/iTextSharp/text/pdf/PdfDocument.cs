@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.util.collections;
@@ -221,15 +220,15 @@ namespace iTextSharp.text.pdf {
             * @param documentJavaScript the javascript used in the document
             * @param writer the writer the catalog applies to
             */
-            internal void AddNames(SortedDictionary<string,Destination> localDestinations, Hashtable documentLevelJS, Hashtable documentFileAttachment, PdfWriter writer) {
+            internal void AddNames(SortedDictionary<string,Destination> localDestinations, Dictionary<String, PdfObject> documentLevelJS, Dictionary<String, PdfObject> documentFileAttachment, PdfWriter writer) {
                 if (localDestinations.Count == 0 && documentLevelJS.Count == 0 && documentFileAttachment.Count == 0)
                     return;
                 PdfDictionary names = new PdfDictionary();
                 if (localDestinations.Count > 0) {
                     PdfArray ar = new PdfArray();
                     foreach (String name in localDestinations.Keys) {
-                        Destination dest = localDestinations[name];
-                        if (dest.destination == null) //no destination
+                        Destination dest;
+                        if (!localDestinations.TryGetValue(name, out dest))
                             continue;
                         PdfIndirectReference refi = dest.reference;
                         ar.Add(new PdfString(name, null));
@@ -998,7 +997,7 @@ namespace iTextSharp.text.pdf {
             currentHeight = 0;
             
             // backgroundcolors, etc...
-            thisBoxSize = new Hashtable(boxSize);
+            thisBoxSize = new Dictionary<String, PdfRectangle>(boxSize);
             if (pageSize.BackgroundColor != null
             || pageSize.HasBorders()
             || pageSize.BorderColor != null) {
@@ -1033,7 +1032,7 @@ namespace iTextSharp.text.pdf {
         protected internal PdfLine line = null;
         
         /** The lines that are written until now. */
-        protected internal ArrayList lines = new ArrayList();
+        protected internal List<PdfLine> lines = new List<PdfLine>();
         
         /**
         * Adds the current line to the list of lines and also adds an empty line.
@@ -1059,7 +1058,7 @@ namespace iTextSharp.text.pdf {
         protected internal void CarriageReturn() {
             // the arraylist with lines may not be null
             if (lines == null) {
-                lines = new ArrayList();
+                lines = new List<PdfLine>();
             }
             // If the current line is not null
             if (line != null) {
@@ -1164,7 +1163,7 @@ namespace iTextSharp.text.pdf {
                 displacement += l.Height;
                 text.MoveText(-moveTextX, 0);
             }
-            lines = new ArrayList();
+            lines = new List<PdfLine>();
             return displacement;
         }
 
@@ -1243,6 +1242,9 @@ namespace iTextSharp.text.pdf {
             // looping over all the chunks in 1 line
             foreach (PdfChunk chunk in line) {
                 BaseColor color = chunk.Color;
+                float fontSize = chunk.Font.Size;
+                float ascender = chunk.Font.Font.GetFontDescriptor(BaseFont.ASCENT, fontSize);
+                float descender = chunk.Font.Font.GetFontDescriptor(BaseFont.DESCENT, fontSize);
                 hScale = 1;
                 
                 if (chunkStrokeIdx <= lastChunkStroke) {
@@ -1260,9 +1262,6 @@ namespace iTextSharp.text.pdf {
                             Object[] sep = (Object[])chunk.GetAttribute(Chunk.SEPARATOR);
                             IDrawInterface di = (IDrawInterface)sep[0];
                             bool vertical = (bool)sep[1];
-                            float fontSize = chunk.Font.Size;
-                            float ascender = chunk.Font.Font.GetFontDescriptor(BaseFont.ASCENT, fontSize);
-                            float descender = chunk.Font.Font.GetFontDescriptor(BaseFont.DESCENT, fontSize);
                             if (vertical) {
                                 di.Draw(graphics, baseXMarker, yMarker + descender, baseXMarker + line.OriginalWidth, ascender - descender, yMarker);      
                             }
@@ -1274,9 +1273,6 @@ namespace iTextSharp.text.pdf {
                             Object[] tab = (Object[])chunk.GetAttribute(Chunk.TAB);
                             IDrawInterface di = (IDrawInterface)tab[0];
                             tabPosition = (float)tab[1] + (float)tab[3];
-                            float fontSize = chunk.Font.Size;
-                            float ascender = chunk.Font.Font.GetFontDescriptor(BaseFont.ASCENT, fontSize);
-                            float descender = chunk.Font.Font.GetFontDescriptor(BaseFont.DESCENT, fontSize);
                             if (tabPosition > xMarker) {
                                 di.Draw(graphics, xMarker, yMarker + descender, tabPosition, ascender - descender, yMarker);
                             }
@@ -1290,9 +1286,6 @@ namespace iTextSharp.text.pdf {
                                 subtract = 0;
                             if (nextChunk == null)
                                 subtract += hangingCorrection;
-                            float fontSize = chunk.Font.Size;
-                            float ascender = chunk.Font.Font.GetFontDescriptor(BaseFont.ASCENT, fontSize);
-                            float descender = chunk.Font.Font.GetFontDescriptor(BaseFont.DESCENT, fontSize);
                             Object[] bgr = (Object[])chunk.GetAttribute(Chunk.BACKGROUND);
                             graphics.SetColorFill((BaseColor)bgr[0]);
                             float[] extra = (float[])bgr[1];
@@ -1319,9 +1312,8 @@ namespace iTextSharp.text.pdf {
                                     scolor = color;
                                 if (scolor != null)
                                     graphics.SetColorStroke(scolor);
-                                float fsize = chunk.Font.Size;
-                                graphics.SetLineWidth(ps[0] + fsize * ps[1]);
-                                float shift = ps[2] + fsize * ps[3];
+                                graphics.SetLineWidth(ps[0] + fontSize * ps[1]);
+                                float shift = ps[2] + fontSize * ps[3];
                                 int cap2 = (int)ps[4];
                                 if (cap2 != 0)
                                     graphics.SetLineCap(cap2);
@@ -1341,7 +1333,7 @@ namespace iTextSharp.text.pdf {
                                 subtract = 0;
                             if (nextChunk == null)
                                 subtract += hangingCorrection;
-                            text.AddAnnotation(new PdfAnnotation(writer, xMarker, yMarker, xMarker + width - subtract, yMarker + chunk.Font.Size, (PdfAction)chunk.GetAttribute(Chunk.ACTION)));
+                            text.AddAnnotation(new PdfAnnotation(writer, xMarker, yMarker + descender + chunk.TextRise, xMarker + width - subtract, yMarker + ascender + chunk.TextRise, (PdfAction)chunk.GetAttribute(Chunk.ACTION)));
                         }
                         if (chunk.IsAttribute(Chunk.REMOTEGOTO)) {
                             float subtract = lastBaseFactor;
@@ -1352,9 +1344,9 @@ namespace iTextSharp.text.pdf {
                             Object[] obj = (Object[])chunk.GetAttribute(Chunk.REMOTEGOTO);
                             String filename = (String)obj[0];
                             if (obj[1] is String)
-                                RemoteGoto(filename, (String)obj[1], xMarker, yMarker, xMarker + width - subtract, yMarker + chunk.Font.Size);
+                                RemoteGoto(filename, (String)obj[1], xMarker, yMarker + descender + chunk.TextRise, xMarker + width - subtract, yMarker + ascender + chunk.TextRise);
                             else
-                                RemoteGoto(filename, (int)obj[1], xMarker, yMarker, xMarker + width - subtract, yMarker + chunk.Font.Size);
+                                remoteGoto(filename, (int)obj[1], xMarker, yMarker + descender + chunk.TextRise, xMarker + width - subtract, yMarker + ascender + chunk.getTextRise());
                         }
                         if (chunk.IsAttribute(Chunk.LOCALGOTO)) {
                             float subtract = lastBaseFactor;
@@ -1362,7 +1354,7 @@ namespace iTextSharp.text.pdf {
                                 subtract = 0;
                             if (nextChunk == null)
                                 subtract += hangingCorrection;
-                            LocalGoto((String)chunk.GetAttribute(Chunk.LOCALGOTO), xMarker, yMarker, xMarker + width - subtract, yMarker + chunk.Font.Size);
+                            LocalGoto((String)chunk.GetAttribute(Chunk.LOCALGOTO), xMarker, yMarker, xMarker + width - subtract, yMarker + fontSize);
                         }
                         if (chunk.IsAttribute(Chunk.LOCALDESTINATION)) {
                             float subtract = lastBaseFactor;
@@ -1370,7 +1362,7 @@ namespace iTextSharp.text.pdf {
                                 subtract = 0;
                             if (nextChunk == null)
                                 subtract += hangingCorrection;
-                            LocalDestination((String)chunk.GetAttribute(Chunk.LOCALDESTINATION), new PdfDestination(PdfDestination.XYZ, xMarker, yMarker + chunk.Font.Size, 0));
+                            LocalDestination((String)chunk.GetAttribute(Chunk.LOCALDESTINATION), new PdfDestination(PdfDestination.XYZ, xMarker, yMarker + fontSize, 0));
                         }
                         if (chunk.IsAttribute(Chunk.GENERICTAG)) {
                             float subtract = lastBaseFactor;
@@ -1378,7 +1370,7 @@ namespace iTextSharp.text.pdf {
                                 subtract = 0;
                             if (nextChunk == null)
                                 subtract += hangingCorrection;
-                            Rectangle rect = new Rectangle(xMarker, yMarker, xMarker + width - subtract, yMarker + chunk.Font.Size);
+                            Rectangle rect = new Rectangle(xMarker, yMarker, xMarker + width - subtract, yMarker + fontSize);
                             IPdfPageEvent pev = writer.PageEvent;
                             if (pev != null)
                                 pev.OnGenericTag(writer, this, rect, (String)chunk.GetAttribute(Chunk.GENERICTAG));
@@ -1389,9 +1381,6 @@ namespace iTextSharp.text.pdf {
                                 subtract = 0;
                             if (nextChunk == null)
                                 subtract += hangingCorrection;
-                            float fontSize = chunk.Font.Size;
-                            float ascender = chunk.Font.Font.GetFontDescriptor(BaseFont.ASCENT, fontSize);
-                            float descender = chunk.Font.Font.GetFontDescriptor(BaseFont.DESCENT, fontSize);
                             PdfAnnotation annot = PdfFormField.ShallowDuplicate((PdfAnnotation)chunk.GetAttribute(Chunk.PDFANNOTATION));
                             annot.Put(PdfName.RECT, new PdfRectangle(xMarker, yMarker + descender, xMarker + width - subtract, yMarker + ascender));
                             text.AddAnnotation(annot);
@@ -1739,7 +1728,7 @@ namespace iTextSharp.text.pdf {
         }
 
         internal void TraverseOutlineCount(PdfOutline outline) {
-            ArrayList kids = outline.Kids;
+            List<PdfOutline> kids = outline.Kids;
             PdfOutline parent = outline.Parent;
             if (kids.Count == 0) {
                 if (parent != null) {
@@ -1748,7 +1737,7 @@ namespace iTextSharp.text.pdf {
             }
             else {
                 for (int k = 0; k < kids.Count; ++k) {
-                    TraverseOutlineCount((PdfOutline)kids[k]);
+                    TraverseOutlineCount(kids[k]);
                 }
                 if (parent != null) {
                     if (outline.Open) {
@@ -1773,15 +1762,15 @@ namespace iTextSharp.text.pdf {
             outline.IndirectReference = writer.PdfIndirectReference;
             if (outline.Parent != null)
                 outline.Put(PdfName.PARENT, outline.Parent.IndirectReference);
-            ArrayList kids = outline.Kids;
+            List<PdfOutline> kids = outline.Kids;
             int size = kids.Count;
             for (int k = 0; k < size; ++k)
-                OutlineTree((PdfOutline)kids[k]);
+                OutlineTree(kids[k]);
             for (int k = 0; k < size; ++k) {
                 if (k > 0)
-                    ((PdfOutline)kids[k]).Put(PdfName.PREV, ((PdfOutline)kids[k - 1]).IndirectReference);
+                    kids[k].Put(PdfName.PREV, kids[k - 1].IndirectReference);
                 if (k < size - 1)
-                    ((PdfOutline)kids[k]).Put(PdfName.NEXT, ((PdfOutline)kids[k + 1]).IndirectReference);
+                    kids[k].Put(PdfName.NEXT, kids[k + 1].IndirectReference);
             }
             if (size > 0) {
                 outline.Put(PdfName.FIRST, ((PdfOutline)kids[0]).IndirectReference);
@@ -1927,7 +1916,7 @@ namespace iTextSharp.text.pdf {
         * Stores a list of document level JavaScript actions.
         */
         private int jsCounter;
-        protected internal Hashtable documentLevelJS = new Hashtable();
+        protected internal Dictionary<String, PdfObject> documentLevelJS = new Dictionary<string,PdfObject>();
 
         internal void AddJavaScript(PdfAction js) {
             if (js.Get(PdfName.JS) == null)
@@ -1942,11 +1931,11 @@ namespace iTextSharp.text.pdf {
             documentLevelJS[name] = writer.AddToBody(js).IndirectReference;
         }
 
-        internal Hashtable GetDocumentLevelJS() {
+        internal Dictionary<String, PdfObject> GetDocumentLevelJS() {
             return documentLevelJS;
         }
 
-        protected internal Hashtable documentFileAttachment = new Hashtable();
+        protected internal Dictionary<String, PdfObject> documentFileAttachment = new Dictionary<String, PdfObject>();
 
         internal void AddFileAttachment(String description, PdfFileSpecification fs) {
             if (description == null) {
@@ -1970,7 +1959,7 @@ namespace iTextSharp.text.pdf {
             documentFileAttachment[fn] = fs.Reference;
         }
         
-        internal Hashtable GetDocumentFileAttachment() {
+        internal Dictionary<String, PdfObject> GetDocumentFileAttachment() {
             return documentFileAttachment;
         }
 
@@ -2065,11 +2054,11 @@ namespace iTextSharp.text.pdf {
         protected Rectangle nextPageSize = null;
         
         /** This is the size of the several boxes of the current Page. */
-        protected Hashtable thisBoxSize = new Hashtable();
+        protected Dictionary<string, PdfRectangle> thisBoxSize = new Dictionary<string,PdfRectangle>();
         
         /** This is the size of the several boxes that will be used in
         * the next page. */
-        protected Hashtable boxSize = new Hashtable();
+        protected Dictionary<string, PdfRectangle> boxSize = new Dictionary<string, PdfRectangle>();
         
         internal Rectangle CropBoxSize {
             set {
@@ -2109,9 +2098,10 @@ namespace iTextSharp.text.pdf {
         * @param boxName crop, trim, art or bleed
         */
         internal Rectangle GetBoxSize(String boxName) {
-            PdfRectangle r = (PdfRectangle)thisBoxSize[boxName];
-            if (r != null) return r.Rectangle;
-            return null;
+            if (thisBoxSize.ContainsKey(boxName))
+                return thisBoxSize[boxName];
+            else
+                return null;
         }
         
     //	[U2] empty pages

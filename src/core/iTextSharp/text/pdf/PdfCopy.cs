@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using iTextSharp.text;
 /*
@@ -78,8 +78,8 @@ namespace iTextSharp.text.pdf {
                 }
             }
         };
-        protected Hashtable indirects;
-        protected Hashtable indirectMap;
+        protected Dictionary<RefKey, IndirectReferences> indirects;
+        protected Dictionary<PdfReader,Dictionary<RefKey, IndirectReferences>>  indirectMap;
         protected int currentObjectNum = 1;
         protected PdfReader reader;
         protected PdfIndirectReference acroForm;
@@ -87,7 +87,7 @@ namespace iTextSharp.text.pdf {
         /** Holds value of property rotateContents. */
         private bool rotateContents = true;
         protected internal PdfArray fieldArray;
-        protected internal Hashtable fieldTemplates;
+        protected internal Dictionary<PdfTemplate,object> fieldTemplates;
 
         /**
         * A key to allow us to hash indirect references
@@ -128,7 +128,7 @@ namespace iTextSharp.text.pdf {
         public PdfCopy(Document document, Stream os) : base(new PdfDocument(), os) {
             document.AddDocListener(pdf);
             pdf.AddWriter(this);
-            indirectMap = new Hashtable();
+            indirectMap = new Dictionary<PdfReader,Dictionary<RefKey,IndirectReferences>>();
         }
 
         /** Checks if the content is automatically adjusted to compensate
@@ -187,7 +187,8 @@ namespace iTextSharp.text.pdf {
         protected virtual PdfIndirectReference CopyIndirect(PRIndirectReference inp) {
             PdfIndirectReference theRef;
             RefKey key = new RefKey(inp);
-            IndirectReferences iRef = (IndirectReferences)indirects[key] ;
+            IndirectReferences iRef;
+            indirects.TryGetValue(key, iRef);
             if (iRef != null) {
                 theRef = iRef.Ref;
                 if (iRef.Copied) {
@@ -311,9 +312,9 @@ namespace iTextSharp.text.pdf {
         */
         protected void SetFromReader(PdfReader reader) {
             this.reader = reader;
-            indirects = (Hashtable)indirectMap[reader] ;
+            indirectMap.TryGetValue(reader, out indirects);
             if (indirects == null) {
-                indirects = new Hashtable();
+                indirects = new Dictionary<RefKey,IndirectReferences>();
                 indirectMap[reader] = indirects;
                 PdfDictionary catalog = reader.Catalog;
                 PRIndirectReference refi = null;
@@ -338,7 +339,8 @@ namespace iTextSharp.text.pdf {
             reader.ReleasePage(pageNum);
             RefKey key = new RefKey(origRef);
             PdfIndirectReference pageRef;
-            IndirectReferences iRef = (IndirectReferences)indirects[key] ;
+            IndirectReferences iRef;
+            indirects.TryGetValue(key, out iRef);
             if (iRef != null && !iRef.Copied) {
                 pageReferences.Add(iRef.Ref);
                 iRef.SetCopied();
@@ -363,7 +365,7 @@ namespace iTextSharp.text.pdf {
         public void AddPage(Rectangle rect, int rotation) {
             PdfRectangle mediabox = new PdfRectangle(rect, rotation);
             PageResources resources = new PageResources();
-            PdfPage page = new PdfPage(mediabox, new Hashtable(), resources.Resources, 0);
+            PdfPage page = new PdfPage(mediabox, new Dictionary<String, PdfRectangle>(), resources.Resources, 0);
             page.Put(PdfName.TABS, Tabs);
             root.AddPage(page);
             ++currentPageNumber;
@@ -386,7 +388,8 @@ namespace iTextSharp.text.pdf {
             if (hisRef == null) return; // bugfix by John Engla
             RefKey key = new RefKey(hisRef);
             PdfIndirectReference myRef;
-            IndirectReferences iRef = (IndirectReferences)indirects[key] ;
+            IndirectReferences iRef;
+            indirects.TryGetValue(key, out iRef);
             if (iRef != null) {
                 acroForm = myRef = iRef.Ref;
             }
@@ -649,32 +652,32 @@ namespace iTextSharp.text.pdf {
                 cstp.fieldArray.Add(refi);
             }
 
-            private void ExpandFields(PdfFormField field, ArrayList allAnnots) {
+            private void ExpandFields(PdfFormField field, List<PdfAnnotation> allAnnots) {
                 allAnnots.Add(field);
-                ArrayList kids = field.Kids;
+                List<PdfFormField> kids = field.Kids;
                 if (kids != null) {
                     for (int k = 0; k < kids.Count; ++k)
-                        ExpandFields((PdfFormField)kids[k], allAnnots);
+                        ExpandFields(kids[k], allAnnots);
                 }
             }
 
             public void AddAnnotation(PdfAnnotation annot) {
-                ArrayList allAnnots = new ArrayList();
+                List<PdfAnnotation> allAnnots = new List<PdfAnnotation>();
                 if (annot.IsForm()) {
                     PdfFormField field = (PdfFormField)annot;
                     if (field.Parent != null)
                         return;
                     ExpandFields(field, allAnnots);
                     if (cstp.fieldTemplates == null)
-                        cstp.fieldTemplates = new Hashtable();
+                        cstp.fieldTemplates = new Dictionary<PdfTemplate,object>();
                 }
                 else
                     allAnnots.Add(annot);
                 for (int k = 0; k < allAnnots.Count; ++k) {
-                    annot = (PdfAnnotation)allAnnots[k];
+                    annot = allAnnots[k];
                     if (annot.IsForm()) {
                         if (!annot.IsUsed()) {
-                            Hashtable templates = annot.Templates;
+                            Dictionary<PdfTemplate,object> templates = annot.Templates;
                             if (templates != null) {
                                 foreach (object tpl in templates.Keys) {
                                     cstp.fieldTemplates[tpl] = null;

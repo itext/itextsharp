@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.util;
 using iTextSharp.text;
@@ -91,7 +91,7 @@ namespace iTextSharp.text.pdf {
         public const int MARKUP_SQUIGGLY = 3;
         protected internal PdfWriter writer;
         protected internal PdfIndirectReference reference;
-        protected internal Hashtable templates;
+        protected internal Dictionary<PdfTemplate,object> templates;
         protected internal bool form = false;
         protected internal bool annotation = true;
     
@@ -392,7 +392,7 @@ namespace iTextSharp.text.pdf {
             if (!form)
                 return;
             if (templates == null)
-                templates = new Hashtable();
+                templates = new Dictionary<PdfTemplate,object>();
             templates[template] = null;
         }
 
@@ -413,7 +413,7 @@ namespace iTextSharp.text.pdf {
             if (!form)
                 return;
             if (templates == null)
-                templates = new Hashtable();
+                templates = new Dictionary<PdfTemplate,object>();
             templates[template] = null;
         }
 
@@ -475,7 +475,7 @@ namespace iTextSharp.text.pdf {
             used = true;
         }
     
-        public Hashtable Templates {
+        public Dictionary<PdfTemplate,object> Templates {
             get {
                 return templates;
             }
@@ -734,12 +734,12 @@ namespace iTextSharp.text.pdf {
         */
         public class PdfImportedLink {
             float llx, lly, urx, ury;
-            Hashtable parameters;
+            Dictionary<PdfName, PdfObject> parameters;
             PdfArray destination = null;
             int newPage=0;
             
             internal PdfImportedLink(PdfDictionary annotation) {
-                parameters = (Hashtable)annotation.hashMap.Clone();
+                parameters = new Dictionary<PdfName,PdfObject>(annotation.hashMap);
                 try {
                     destination = (PdfArray)parameters[PdfName.DEST];
                     parameters.Remove(PdfName.DEST);

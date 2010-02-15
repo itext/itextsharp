@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using System.util;
 
 /*
@@ -67,7 +67,7 @@ public class PdfArray : PdfObject {
     // membervariables
     
 /** this is the actual array of PdfObjects */
-    protected ArrayList arrayList;
+    protected List<PdfObject> arrayList;
     
     // constructors
     
@@ -76,7 +76,7 @@ public class PdfArray : PdfObject {
  */
     
     public PdfArray() : base(ARRAY) {
-        arrayList = new ArrayList();
+        arrayList = new List<PdfObject>();
     }
     
 /**
@@ -86,17 +86,17 @@ public class PdfArray : PdfObject {
  */
     
     public PdfArray(PdfObject obj) : base(ARRAY) {
-        arrayList = new ArrayList();
+        arrayList = new List<PdfObject>();
         arrayList.Add(obj);
     }
     
     public PdfArray(float[] values) : base(ARRAY) {
-        arrayList = new ArrayList();
+        arrayList = new List<PdfObject>();
         Add(values);
     }
     
     public PdfArray(int[] values) : base(ARRAY) {
-        arrayList = new ArrayList();
+        arrayList = new List<PdfObject>();
         Add(values);
     }
     
@@ -107,7 +107,7 @@ public class PdfArray : PdfObject {
      * @param   l   an ArrayList with PdfObjects
      * @since 2.1.3
      */
-    public PdfArray(ArrayList l) : this() {
+    public PdfArray(List<PdfObject> l) : this() {
         foreach (PdfObject o in l)
             Add(o);
     }
@@ -119,7 +119,7 @@ public class PdfArray : PdfObject {
  */
     
     public PdfArray(PdfArray array) : base(ARRAY) {
-        arrayList = new ArrayList(array.arrayList);
+        arrayList = new List<PdfObject>(array.arrayList);
     }
     
     // methods overriding some methods in PdfObject
@@ -160,7 +160,7 @@ public class PdfArray : PdfObject {
      */
     public PdfObject this[int idx] {
         get {
-            return (PdfObject)arrayList[idx];
+            return arrayList[idx];
         }
         set {
             arrayList[idx] = value;
@@ -178,7 +178,7 @@ public class PdfArray : PdfObject {
      * @since 2.1.5
      */
     public PdfObject Remove(int idx) {
-        PdfObject tmp = (PdfObject)arrayList[idx];
+        PdfObject tmp = arrayList[idx];
         arrayList.RemoveAt(idx);
         return tmp;
     }
@@ -189,7 +189,7 @@ public class PdfArray : PdfObject {
  * @return        an ArrayList
  */
     
-    public ArrayList ArrayList {
+    public List<PdfObject> ArrayList {
         get {
             return arrayList;
         }
@@ -281,8 +281,8 @@ public class PdfArray : PdfObject {
         return arrayList.Contains(obj);
     }
 
-    public ListIterator GetListIterator() {
-        return new ListIterator(arrayList);
+    public ListIterator<PdfObject> GetListIterator() {
+        return new ListIterator<PdfObject>(arrayList);
     }
 
     public override string ToString() {

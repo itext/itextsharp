@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 /*
  * $Id$
@@ -50,12 +50,12 @@ namespace System.util {
     /// <summary>
     /// Summary description for ListIterator.
     /// </summary>
-    public class ListIterator {
-        ArrayList col;
+    public class ListIterator<T> {
+        List<T> col;
         int cursor = 0;
         int lastRet = -1;
 
-        public ListIterator(ArrayList col) {
+        public ListIterator(List<T> col) {
             this.col = col;
         }
 
@@ -63,15 +63,15 @@ namespace System.util {
             return cursor != col.Count;
         }
 
-        public object Next() {
-            Object next = col[cursor];
+        public T Next() {
+            T next = col[cursor];
             lastRet = cursor++;
             return next;
         }
 
-        public object Previous() {
+        public T Previous() {
             int i = cursor - 1;
-            Object previous = col[i];
+            T previous = col[i];
             lastRet = cursor = i;
             return previous;
         }

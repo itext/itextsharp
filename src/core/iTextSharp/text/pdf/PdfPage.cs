@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 using iTextSharp.text;
 
@@ -92,7 +92,7 @@ namespace iTextSharp.text.pdf {
          * @param       rotate          a value for the <B>Rotate</B> key
          */
     
-        internal PdfPage(PdfRectangle mediaBox, Hashtable boxSize, PdfDictionary resources, int rotate) : base(PAGE) {
+        internal PdfPage(PdfRectangle mediaBox, Dictionary<string, PdfRectangle> boxSize, PdfDictionary resources, int rotate) : base(PAGE) {
             this.mediaBox = mediaBox;
             Put(PdfName.MEDIABOX, mediaBox);
             Put(PdfName.RESOURCES, resources);
@@ -100,9 +100,9 @@ namespace iTextSharp.text.pdf {
                 Put(PdfName.ROTATE, new PdfNumber(rotate));
             }
             for (int k = 0; k < boxStrings.Length; ++k) {
-                PdfObject rect = (PdfObject)boxSize[boxStrings[k]];
-                if (rect != null)
-                    Put(boxNames[k], rect);
+                if (!boxSize.ContainsKey(boxStrings[k]))
+                    continue;
+                Put(boxNames[k], boxSize[boxStrings[k]]);
             }
         }
     
@@ -113,7 +113,7 @@ namespace iTextSharp.text.pdf {
          * @param       resources       an indirect reference to a <CODE>PdfResources</CODE>-object
          */
     
-        internal PdfPage(PdfRectangle mediaBox, Hashtable boxSize, PdfDictionary resources) : this(mediaBox, boxSize, resources, 0) {
+        internal PdfPage(PdfRectangle mediaBox, Dictionary<string, PdfRectangle> boxSize, PdfDictionary resources) : this(mediaBox, boxSize, resources, 0) {
         }
     
         /**

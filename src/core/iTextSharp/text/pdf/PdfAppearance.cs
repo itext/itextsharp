@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 /*
  * This file is part of the iText project.
@@ -51,7 +51,7 @@ namespace iTextSharp.text.pdf {
 
     public class PdfAppearance : PdfTemplate {
 
-        public static Hashtable stdFieldFontNames = new Hashtable();
+        public static Dictionary<String, PdfName> stdFieldFontNames = new Dictionary<string,PdfName>();
 
         static PdfAppearance() {
             stdFieldFontNames["Courier-BoldOblique"] = new PdfName("CoBO");
@@ -135,7 +135,8 @@ namespace iTextSharp.text.pdf {
             }
             else
                 state.fontDetails = writer.AddSimple(bf);
-            PdfName psn = (PdfName)stdFieldFontNames[bf.PostscriptFontName];
+            PdfName psn;
+            stdFieldFontNames.TryGetValue(bf.PostscriptFontName, out psn);
             if (psn == null) {
                 if (bf.Subset && bf.FontType == BaseFont.FONT_TYPE_TTUNI)
                     psn = state.fontDetails.FontName;
