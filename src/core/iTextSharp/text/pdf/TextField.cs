@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 /*
  * This file is part of the iText project.
@@ -60,7 +60,7 @@ namespace iTextSharp.text.pdf {
         private String[] choiceExports;
         
         /** Holds value of property choiceSelection. */
-        private ArrayList choiceSelections = new ArrayList();
+        private List<int> choiceSelections = new List<int>();
         
         private int topFirst;
 
@@ -338,7 +338,7 @@ namespace iTextSharp.text.pdf {
             // background boxes for selected value[s]
             app.SetColorFill(new BaseColor(10, 36, 106));
             for (int curVal = 0; curVal < choiceSelections.Count; ++curVal) {
-                int curChoice = (int)choiceSelections[curVal];
+                int curChoice = choiceSelections[curVal];
                 // only draw selections within our display range... not strictly necessary with 
                 // that clipping rect from above, but it certainly doesn't hurt either 
                 if (curChoice >= first && curChoice <= last) {
@@ -460,7 +460,7 @@ namespace iTextSharp.text.pdf {
     		    return 0;
     	    }
         	
-    	    int firstValue = (int)choiceSelections[0];
+    	    int firstValue = choiceSelections[0];
         	
     	    int topChoice = 0;
     	    if (choices != null) {
@@ -572,11 +572,11 @@ namespace iTextSharp.text.pdf {
             return field;
         }
         
-        private void WriteMultipleValues( PdfFormField field, String[,] mix ) {
+        private void WriteMultipleValues(PdfFormField field, String[,] mix) {
             PdfArray indexes = new PdfArray();
             PdfArray values = new PdfArray();
             for (int i = 0; i < choiceSelections.Count; ++i) {
-                int idx = (int)choiceSelections[i];
+                int idx = choiceSelections[i];
                 indexes.Add( new PdfNumber( idx ) );
                 
                 if (mix != null) 
@@ -641,13 +641,13 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public ArrayList ChoiceSelections {
+        public List<int> ChoiceSelections {
             get {
                 return choiceSelections;
             }
             set {
                 if (value != null) {
-                    choiceSelections = new ArrayList(value);
+                    choiceSelections = new List<int>(value);
                     if (choiceSelections.Count > 1 && (options & BaseField.MULTISELECT) == 0 ) {
                         // can't have multiple selections in a single-select field
                         while (choiceSelections.Count > 1) {
@@ -690,14 +690,14 @@ namespace iTextSharp.text.pdf {
         /**
         * Holds value of property substitutionFonts.
         */
-        private ArrayList substitutionFonts;
+        private List<BaseFont> substitutionFonts;
 
         /**
         * Sets a list of substitution fonts. The list is composed of <CODE>BaseFont</CODE> and can also be <CODE>null</CODE>. The fonts in this list will be used if the original
         * font doesn't contain the needed glyphs.
         * @param substitutionFonts the list
         */
-        public ArrayList SubstitutionFonts {
+        public List<BaseFont> SubstitutionFonts {
             set {
                 substitutionFonts = value;
             }

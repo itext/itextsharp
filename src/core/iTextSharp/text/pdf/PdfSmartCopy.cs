@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text;
 /*
  * $Id$
@@ -60,11 +60,11 @@ namespace iTextSharp.text.pdf {
     public class PdfSmartCopy : PdfCopy {
 
         /** the cache with the streams and references. */
-        private Hashtable streamMap = null;
+        private Dictionary<ByteStore, PdfIndirectReference> streamMap = null;
 
         /** Creates a PdfSmartCopy instance. */
         public PdfSmartCopy(Document document, Stream os) : base(document, os) {
-            this.streamMap = new Hashtable();
+            this.streamMap = new Dictionary<ByteStore,PdfIndirectReference>();
         }
         /**
         * Translate a PRIndirectReference to a PdfIndirectReference
@@ -85,8 +85,8 @@ namespace iTextSharp.text.pdf {
             if (srcObj.IsStream()) {
                 streamKey = new ByteStore((PRStream)srcObj);
                 validStream = true;
-                PdfIndirectReference streamRef = (PdfIndirectReference) streamMap[streamKey];
-                if (streamRef != null) {
+                PdfIndirectReference streamRef;
+                if (streamMap.TryGetValue(streamKey, out streamRef)) {
                     return streamRef;
                 }
             }

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Net;
 using System.Text;
 using System.IO;
@@ -77,10 +77,10 @@ namespace iTextSharp.text.pdf {
         // type 1 -> offset, 0
         // type 2 -> index, obj num
         protected internal int[] xref;
-        protected internal Hashtable objStmMark;
+        protected internal Dictionary<int, IntHashtable> objStmMark;
         protected internal IntHashtable objStmToOffset;
         protected internal bool newXrefType;
-        private ArrayList xrefObj;
+        private List<PdfObject> xrefObj;
         PdfDictionary rootPages;
         protected internal PdfDictionary trailer;
         protected internal PdfDictionary catalog;
@@ -99,7 +99,7 @@ namespace iTextSharp.text.pdf {
         protected ICipherParameters certificateKey = null; //added by Aiken Sam for certificate decryption
         protected X509Certificate certificate = null; //added by Aiken Sam for certificate decryption
         private bool ownerPasswordUsed;
-        protected internal ArrayList strings = new ArrayList();
+        protected internal List<PdfString> strings = new List<PdfString>();
         protected internal bool sharedStreams = true;
         protected internal bool consolidateNamedDestinations = false;
         protected bool remoteToLocalNamedDestinations = false;
@@ -249,9 +249,9 @@ namespace iTextSharp.text.pdf {
                 this.decrypt = new PdfEncryption(reader.decrypt);
             this.pValue = reader.pValue;
             this.rValue = reader.rValue;
-            this.xrefObj = new ArrayList(reader.xrefObj);
+            this.xrefObj = new List<PdfObject>(reader.xrefObj);
             for (int k = 0; k < reader.xrefObj.Count; ++k) {
-                this.xrefObj[k] = DuplicatePdfObject((PdfObject)reader.xrefObj[k], this);
+                this.xrefObj[k] = DuplicatePdfObject(reader.xrefObj[k], this);
             }
             this.pageRefs = new PageRefs(reader.pageRefs, this);
             this.trailer = (PdfDictionary)DuplicatePdfObject(reader.trailer, this);
@@ -425,9 +425,9 @@ namespace iTextSharp.text.pdf {
         * of <CODE>String</CODE>.
         * @return content of the document information dictionary
         */
-        public Hashtable Info {
+        public Dictionary<string,string> Info {
             get {
-                Hashtable map = new Hashtable();
+                Dictionary<string,string> map = new Dictionary<string,string>();
                 PdfDictionary info = trailer.GetAsDict(PdfName.INFO);
                 if (info == null)
                     return map;
@@ -743,7 +743,7 @@ namespace iTextSharp.text.pdf {
                 ownerPasswordUsed = true;
             }
             for (int k = 0; k < strings.Count; ++k) {
-                PdfString str = (PdfString)strings[k];
+                PdfString str = strings[k];
                 str.Decrypt(this);
             }
             if (encDic.IsIndirect()) {
@@ -862,7 +862,7 @@ namespace iTextSharp.text.pdf {
             lastXrefPartial = -1;
             if (idx < 0 || idx >= xrefObj.Count)
                 return null;
-            PdfObject obj = (PdfObject)xrefObj[idx];
+            PdfObject obj = xrefObj[idx];
             if (!partial || obj != null)
                 return obj;
             if (idx * 2 >= xref.Length)
@@ -931,7 +931,10 @@ namespace iTextSharp.text.pdf {
         }
         
         protected internal void ReadDocObjPartial() {
-            xrefObj = ArrayList.Repeat(null, xref.Length / 2);
+            xrefObj = new List<PdfObject>(xref.Length / 2);
+            for (int k = 0; k < xref.Length / 2; ++k) {
+                xrefObj.Add(null);
+            }
             ReadDecryptedDocObj();
             if (objStmToOffset != null) {
                 int[] keys = objStmToOffset.GetKeys();
@@ -969,7 +972,7 @@ namespace iTextSharp.text.pdf {
             try {
                 obj = ReadPRObject();
                 for (int j = 0; j < strings.Count; ++j) {
-                    PdfString str = (PdfString)strings[j];
+                    PdfString str = strings[j];
                     str.Decrypt(this);
                 }
                 if (obj.IsStream()) {
@@ -1035,8 +1038,11 @@ namespace iTextSharp.text.pdf {
         }
         
         protected internal void ReadDocObj() {
-            ArrayList streams = new ArrayList();
-            xrefObj = ArrayList.Repeat(null, xref.Length / 2);
+            List<PRStream> streams = new List<PRStream>();
+            xrefObj = new List<PdfObject>(xref.Length / 2);
+            for (int k = 0; k < xref.Length / 2; ++k) {
+                xrefObj.Add(null);
+            }
             for (int k = 2; k < xref.Length; k += 2) {
                 int pos = xref[k];
                 if (pos <= 0 || xref[k + 1] > 0)
@@ -1057,7 +1063,7 @@ namespace iTextSharp.text.pdf {
                 try {
                     obj = ReadPRObject();
                     if (obj.IsStream()) {
-                        streams.Add(obj);
+                        streams.Add((PRStream)obj);
                     }
                 }
                 catch {
@@ -1070,9 +1076,9 @@ namespace iTextSharp.text.pdf {
             }
             ReadDecryptedDocObj();
             if (objStmMark != null) {
-                foreach (DictionaryEntry entry  in objStmMark) {
-                    int n = (int)entry.Key;
-                    IntHashtable h = (IntHashtable)entry.Value;
+                foreach (KeyValuePair<int,IntHashtable> entry  in objStmMark) {
+                    int n = entry.Key;
+                    IntHashtable h = entry.Value;
                     ReadObjStm((PRStream)xrefObj[n], h);
                     xrefObj[n] = null;
                 }
@@ -1358,7 +1364,7 @@ namespace iTextSharp.text.pdf {
             // type 2 -> index, obj num
             EnsureXrefSize(size * 2);
             if (objStmMark == null && !partial)
-                objStmMark = new Hashtable();
+                objStmMark = new Dictionary<int,IntHashtable>();
             if (objStmToOffset == null && partial)
                 objStmToOffset = new IntHashtable();
             byte[] b = GetStreamBytes(stm, tokens.File);
@@ -1399,8 +1405,8 @@ namespace iTextSharp.text.pdf {
                                     objStmToOffset[field2] = 0;
                                 }
                                 else {
-                                    IntHashtable seq = (IntHashtable)objStmMark[field2];
-                                    if (seq == null) {
+                                    IntHashtable seq;
+                                    if (!objStmMark.TryGetValue(field2, out seq)) {
                                         seq = new IntHashtable();
                                         seq[field3] = 1;
                                         objStmMark[field2] = seq;
@@ -1972,7 +1978,7 @@ namespace iTextSharp.text.pdf {
             switch (obj.Type) {
                 case PdfObject.INDIRECT: {
                     int xr = ((PRIndirectReference)obj).Number;
-                    obj = (PdfObject)xrefObj[xr];
+                    obj = xrefObj[xr];
                     xrefObj[xr] = null;
                     freeXref = xr;
                     KillXref(obj);
@@ -2033,14 +2039,14 @@ namespace iTextSharp.text.pdf {
         public static byte[] GetStreamBytes(PRStream stream, RandomAccessFileOrArray file) {
             PdfObject filter = GetPdfObjectRelease(stream.Get(PdfName.FILTER));
             byte[] b = GetStreamBytesRaw(stream, file);
-            ArrayList filters = new ArrayList();
+            List<PdfObject> filters = new List<PdfObject>();
             if (filter != null) {
                 if (filter.IsName())
                     filters.Add(filter);
                 else if (filter.IsArray())
                     filters = ((PdfArray)filter).ArrayList;
             }
-            ArrayList dp = new ArrayList();
+            List<PdfObject> dp = new List<PdfObject>();
             PdfObject dpo = GetPdfObjectRelease(stream.Get(PdfName.DECODEPARMS));
             if (dpo == null || (!dpo.IsDictionary() && !dpo.IsArray()))
                 dpo = GetPdfObjectRelease(stream.Get(PdfName.DP));
@@ -2052,7 +2058,7 @@ namespace iTextSharp.text.pdf {
             }
             String name;
             for (int j = 0; j < filters.Count; ++j) {
-                name = ((PdfName)GetPdfObjectRelease((PdfObject)filters[j])).ToString();
+                name = ((PdfName)GetPdfObjectRelease(filters[j])).ToString();
                 if (name.Equals("/FlateDecode") || name.Equals("/Fl")) {
                     b = FlateDecode(b);
                     PdfObject dicParam = null;
@@ -2115,7 +2121,7 @@ namespace iTextSharp.text.pdf {
                 PdfEncryption decrypt = reader.Decrypt;
                 if (decrypt != null) {
                     PdfObject filter = GetPdfObjectRelease(stream.Get(PdfName.FILTER));
-                    ArrayList filters = new ArrayList();
+                    List<PdfObject> filters = new List<PdfObject>();
                     if (filter != null) {
                         if (filter.IsName())
                             filters.Add(filter);
@@ -2124,7 +2130,7 @@ namespace iTextSharp.text.pdf {
                     }
                     bool skip = false;
                     for (int k = 0; k < filters.Count; ++k) {
-                        PdfObject obj = GetPdfObjectRelease((PdfObject)filters[k]);
+                        PdfObject obj = GetPdfObjectRelease(filters[k]);
                         if (obj != null && obj.ToString().Equals("/Crypt")) {
                             skip = true;
                             break;
@@ -2162,8 +2168,8 @@ namespace iTextSharp.text.pdf {
             sharedStreams = false;
             if (pageRefs.Size == 1)
                 return;
-            ArrayList newRefs = new ArrayList();
-            ArrayList newStreams = new ArrayList();
+            List<PRIndirectReference> newRefs = new List<PRIndirectReference>();
+            List<PRStream> newStreams = new List<PRStream>();
             IntHashtable visited = new IntHashtable();
             for (int k = 1; k <= pageRefs.Size; ++k) {
                 PdfDictionary page = pageRefs.GetPageN(k);
@@ -2200,7 +2206,7 @@ namespace iTextSharp.text.pdf {
                 return;
             for (int k = 0; k < newStreams.Count; ++k) {
                 xrefObj.Add(newStreams[k]);
-                PRIndirectReference refi = (PRIndirectReference)newRefs[k];
+                PRIndirectReference refi = newRefs[k];
                 refi.SetNumber(xrefObj.Count - 1, 0);
             }
         }
@@ -2487,7 +2493,7 @@ namespace iTextSharp.text.pdf {
         * and the value is the destinations array.
         * @return gets all the named destinations
         */    
-        public Hashtable GetNamedDestination() {
+        public Dictionary<Object, PdfObject> GetNamedDestination() {
             return GetNamedDestination(false);
         }
 
@@ -2498,10 +2504,10 @@ namespace iTextSharp.text.pdf {
         * @return gets all the named destinations
         * @since   2.1.6
         */
-        public Hashtable GetNamedDestination(bool keepNames) {
-            Hashtable names = GetNamedDestinationFromNames(keepNames);
-            Hashtable names2 = GetNamedDestinationFromStrings(); 
-            foreach (DictionaryEntry ie in names2)
+        public Dictionary<Object, PdfObject> GetNamedDestination(bool keepNames) {
+            Dictionary<Object, PdfObject> names = GetNamedDestinationFromNames(keepNames);
+            Dictionary<Object, PdfObject> names2 = GetNamedDestinationFromStrings(); 
+            foreach (KeyValuePair<Object, PdfObject> ie in names2)
                 names[ie.Key] = ie.Value;
             return names;
         }
@@ -2511,8 +2517,11 @@ namespace iTextSharp.text.pdf {
         * and the value is the destinations array.
         * @return gets the named destinations
         */    
-        public Hashtable GetNamedDestinationFromNames() {
-            return GetNamedDestinationFromNames(false);
+        public Dictionary<String, PdfObject> GetNamedDestinationFromNames() {
+            Dictionary<String, PdfObject> ret = new Dictionary<string,PdfObject>();
+            foreach (KeyValuePair<object,PdfObject> s in GetNamedDestinationFromNames(false))
+                ret[(string)s.Key] = s.Value;
+            return ret; 
         }
         
         /**
@@ -2522,8 +2531,8 @@ namespace iTextSharp.text.pdf {
         * @return gets the named destinations
         * @since   2.1.6
         */
-        public Hashtable GetNamedDestinationFromNames(bool keepNames) {
-            Hashtable names = new Hashtable();
+        public Dictionary<Object, PdfObject> GetNamedDestinationFromNames(bool keepNames) {
+            Dictionary<Object, PdfObject> names = new Dictionary<Object, PdfObject>();
             if (catalog.Get(PdfName.DESTS) != null) {
                 PdfDictionary dic = (PdfDictionary)GetPdfObjectRelease(catalog.Get(PdfName.DESTS));
                 if (dic == null)
@@ -2549,13 +2558,13 @@ namespace iTextSharp.text.pdf {
         * and the value is the destinations array.
         * @return gets the named destinations
         */    
-        public Hashtable GetNamedDestinationFromStrings() {
+        public Dictionary<String, PdfObject> GetNamedDestinationFromStrings() {
             if (catalog.Get(PdfName.NAMES) != null) {
                 PdfDictionary dic = (PdfDictionary)GetPdfObjectRelease(catalog.Get(PdfName.NAMES));
                 if (dic != null) {
                     dic = (PdfDictionary)GetPdfObjectRelease(dic.Get(PdfName.DESTS));
                     if (dic != null) {
-                        Hashtable names = PdfNameTree.ReadTree(dic);
+                        Dictionary<String, PdfObject> names = PdfNameTree.ReadTree(dic);
                         object[] keys = new object[names.Count];
                         names.Keys.CopyTo(keys, 0);
                         foreach (object key in keys) {
@@ -2569,7 +2578,7 @@ namespace iTextSharp.text.pdf {
                     }
                 }
             }
-            return new Hashtable();
+            return new Dictionary<String, PdfObject>();
         }
         
         /**
@@ -2617,9 +2626,9 @@ namespace iTextSharp.text.pdf {
             pageRefs.ResetReleasePage();
         }
         
-        public ArrayList GetLinks(int page) {
+        public List<PdfAnnotation.PdfImportedLink> GetLinks(int page) {
             pageRefs.ResetReleasePage();
-            ArrayList result = new ArrayList();
+            List<PdfAnnotation.PdfImportedLink> result = new List<PdfAnnotation.PdfImportedLink>();
             PdfDictionary pageDic = pageRefs.GetPageN(page);
             if (pageDic.Get(PdfName.ANNOTS) != null) {
                 PdfArray annots = pageDic.GetAsArray(PdfName.ANNOTS);
@@ -2636,7 +2645,7 @@ namespace iTextSharp.text.pdf {
             return result;
         }
 
-        private void IterateBookmarks(PdfObject outlineRef, Hashtable names) {
+        private void IterateBookmarks(PdfObject outlineRef, Dictionary<Object, PdfObject> names) {
             while (outlineRef != null) {
                 ReplaceNamedDestination(outlineRef, names);
                 PdfDictionary outline = (PdfDictionary)GetPdfObjectRelease(outlineRef);
@@ -2656,7 +2665,7 @@ namespace iTextSharp.text.pdf {
             if (remoteToLocalNamedDestinations)
                 return;
             remoteToLocalNamedDestinations = true;
-            Hashtable names = GetNamedDestination(true);
+            Dictionary<Object, PdfObject> names = GetNamedDestination(true);
             if (names.Count == 0)
                 return;
             for (int k = 1; k <= pageRefs.Size; ++k) {
@@ -2689,7 +2698,7 @@ namespace iTextSharp.text.pdf {
         * @param   names   a map with names of local named destinations
         * @since   iText 5.0
         */
-        private bool ConvertNamedDestination(PdfObject obj, Hashtable names) {
+        private bool ConvertNamedDestination(PdfObject obj, Dictionary<Object, PdfObject> names) {
             obj = GetPdfObject(obj);
             int objIdx = lastXrefPartial;
             ReleaseLastXrefPartial();
@@ -2729,7 +2738,7 @@ namespace iTextSharp.text.pdf {
             if (consolidateNamedDestinations)
                 return;
             consolidateNamedDestinations = true;
-            Hashtable names = GetNamedDestination(true);
+            Dictionary<Object, PdfObject> names = GetNamedDestination(true);
             if (names.Count == 0)
                 return;
             for (int k = 1; k <= pageRefs.Size; ++k) {
@@ -2759,7 +2768,7 @@ namespace iTextSharp.text.pdf {
             IterateBookmarks(outlines.Get(PdfName.FIRST), names);
         }
         
-        private bool ReplaceNamedDestination(PdfObject obj, Hashtable names) {
+        private bool ReplaceNamedDestination(PdfObject obj, Dictionary<Object, PdfObject> names) {
             obj = GetPdfObject(obj);
             int objIdx = lastXrefPartial;
             ReleaseLastXrefPartial();
@@ -2856,13 +2865,13 @@ namespace iTextSharp.text.pdf {
         }
         
         protected internal void RemoveUnusedNode(PdfObject obj, bool[] hits) {
-            Stack state = new Stack();
+            Stack<object> state = new Stack<object>();
             state.Push(obj);
             while (state.Count != 0) {
                 Object current = state.Pop();
                 if (current == null)
                     continue;
-                ArrayList ar = null;
+                List<PdfObject> ar = null;
                 PdfDictionary dic = null;
                 PdfName[] keys = null;
                 Object[] objs = null;
@@ -2893,8 +2902,8 @@ namespace iTextSharp.text.pdf {
                 }
                 else {
                     objs = (Object[])current;
-                    if (objs[0] is ArrayList) {
-                        ar = (ArrayList)objs[0];
+                    if (objs[0] is List<PdfObject>) {
+                        ar = (List<PdfObject>)objs[0];
                         idx = (int)objs[1];
                     }
                     else {
@@ -2905,7 +2914,7 @@ namespace iTextSharp.text.pdf {
                 }
                 if (ar != null) {
                     for (int k = idx; k < ar.Count; ++k) {
-                        PdfObject v = (PdfObject)ar[k];
+                        PdfObject v = ar[k];
                         if (v.IsIndirect()) {
                             int num = ((PRIndirectReference)v).Number;
                             if (num >= xrefObj.Count || (!partial && xrefObj[num] == null)) {
@@ -2997,13 +3006,13 @@ namespace iTextSharp.text.pdf {
             PdfDictionary js = (PdfDictionary)GetPdfObjectRelease(names.Get(PdfName.JAVASCRIPT));
             if (js == null)
                 return null;
-            Hashtable jscript = PdfNameTree.ReadTree(js);
+            Dictionary<string,PdfObject> jscript = PdfNameTree.ReadTree(js);
             String[] sortedNames = new String[jscript.Count];
             jscript.Keys.CopyTo(sortedNames, 0);
             Array.Sort(sortedNames);
             StringBuilder buf = new StringBuilder();
             for (int k = 0; k < sortedNames.Length; ++k) {
-                PdfDictionary j = (PdfDictionary)GetPdfObjectRelease((PdfIndirectReference)jscript[sortedNames[k]]);
+                PdfDictionary j = (PdfDictionary)GetPdfObjectRelease(jscript[sortedNames[k]]);
                 if (j == null)
                     continue;
                 PdfObject obj = GetPdfObjectRelease(j.Get(PdfName.JS));
@@ -3138,8 +3147,8 @@ namespace iTextSharp.text.pdf {
         public class PageRefs {
             private PdfReader reader;
             private IntHashtable refsp;
-            private ArrayList refsn;
-            private ArrayList pageInh;
+            private List<PRIndirectReference> refsn;
+            private List<PdfDictionary> pageInh;
             private int lastPageRead = -1;
             private int sizep;
             private bool keepPages;
@@ -3160,9 +3169,9 @@ namespace iTextSharp.text.pdf {
                 this.reader = reader;
                 this.sizep = other.sizep;
                 if (other.refsn != null) {
-                    refsn = new ArrayList(other.refsn);
+                    refsn = new List<PRIndirectReference>(other.refsn);
                     for (int k = 0; k < refsn.Count; ++k) {
-                        refsn[k] = DuplicatePdfObject((PdfObject)refsn[k], reader);
+                        refsn[k] = DuplicatePdfObject(refsn[k], reader);
                     }
                 }
                 else
@@ -3182,8 +3191,8 @@ namespace iTextSharp.text.pdf {
                 if (refsn != null)
                     return;
                 refsp = null;
-                refsn = new ArrayList();
-                pageInh = new ArrayList();
+                refsn = new List<PRIndirectReference>();
+                pageInh = new List<PdfDictionary>();
                 IteratePages((PRIndirectReference)reader.catalog.Get(PdfName.PAGES));
                 pageInh = null;
                 reader.rootPages.Put(PdfName.COUNT, new PdfNumber(refsn.Count));
@@ -3232,7 +3241,7 @@ namespace iTextSharp.text.pdf {
                 if (pageNum < 0 || pageNum >= Size)
                     return null;
                 if (refsn != null)
-                    return (PRIndirectReference)refsn[pageNum];
+                    return refsn[pageNum];
                 else {
                     int n = refsp[pageNum];
                     if (n == 0) {
@@ -3320,7 +3329,7 @@ namespace iTextSharp.text.pdf {
             private void PushPageAttributes(PdfDictionary nodePages) {
                 PdfDictionary dic = new PdfDictionary();
                 if (pageInh.Count != 0) {
-                    dic.Merge((PdfDictionary)pageInh[pageInh.Count - 1]);
+                    dic.Merge(pageInh[pageInh.Count - 1]);
                 }
                 for (int k = 0; k < pageInhCandidates.Length; ++k) {
                     PdfObject obj = nodePages.Get(pageInhCandidates[k]);
@@ -3339,7 +3348,7 @@ namespace iTextSharp.text.pdf {
                 PdfArray kidsPR = page.GetAsArray(PdfName.KIDS);
                 if (kidsPR == null) {
                     page.Put(PdfName.TYPE, PdfName.PAGE);
-                    PdfDictionary dic = (PdfDictionary)pageInh[pageInh.Count - 1];
+                    PdfDictionary dic = pageInh[pageInh.Count - 1];
                     foreach (PdfName key in dic.Keys) {
                         if (page.Get(key) == null)
                             page.Put(key, dic.Get(key));
@@ -3377,7 +3386,7 @@ namespace iTextSharp.text.pdf {
                             acc.Put(pageInhCandidates[k], obj);
                     }
                     PdfArray kids = (PdfArray)PdfReader.GetPdfObjectRelease(top.Get(PdfName.KIDS));
-                    for (ListIterator it = new ListIterator(kids.ArrayList); it.HasNext();) {
+                    for (ListIterator<PdfObject> it = new ListIterator<PdfObject>(kids.ArrayList); it.HasNext();) {
                         PRIndirectReference refi = (PRIndirectReference)it.Next();
                         PdfDictionary dic = (PdfDictionary)GetPdfObject(refi);
                         int last = reader.lastXrefPartial;
@@ -3403,7 +3412,7 @@ namespace iTextSharp.text.pdf {
 
             internal void SelectPages(ICollection<int> pagesToKeep) {
                 IntHashtable pg = new IntHashtable();
-                ArrayList finalPages = new ArrayList();
+                List<int> finalPages = new List<int>();
                 int psize = Size;
                 foreach (int p in pagesToKeep) {
                     if (p >= 1 && p <= psize && !pg.ContainsKey(p)) {
@@ -3419,7 +3428,7 @@ namespace iTextSharp.text.pdf {
                 }
                 PRIndirectReference parent = (PRIndirectReference)reader.catalog.Get(PdfName.PAGES);
                 PdfDictionary topPages = (PdfDictionary)PdfReader.GetPdfObject(parent);
-                ArrayList newPageRefs = new ArrayList(finalPages.Count);
+                List<PRIndirectReference> newPageRefs = new List<PRIndirectReference>(finalPages.Count);
                 PdfArray kids = new PdfArray();
                 foreach (int p in finalPages) {
                     PRIndirectReference pref = GetPageOrigRef(p);

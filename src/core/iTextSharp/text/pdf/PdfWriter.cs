@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Collections;
 using System.Collections.Generic;
 using System.util.collections;
 using System.util;
@@ -105,7 +104,7 @@ namespace iTextSharp.text.pdf {
             * <CODE>PdfCrossReference</CODE> is an entry in the PDF Cross-Reference table.
             */
             
-            internal class PdfCrossReference : IComparable {
+            internal class PdfCrossReference : IComparable<PdfCrossReference> {
                 
                 // membervariables
                 private int type;
@@ -194,8 +193,7 @@ namespace iTextSharp.text.pdf {
                 /**
                 * @see java.lang.Comparable#compareTo(java.lang.Object)
                 */
-                public int CompareTo(Object o) {
-                    PdfCrossReference other = (PdfCrossReference)o;
+                public int CompareTo(PdfCrossReference other) {
                     return (refnum < other.refnum ? -1 : (refnum==other.refnum ? 0 : 1));
                 }
                 
@@ -422,7 +420,7 @@ namespace iTextSharp.text.pdf {
                 }
                 int first = ((PdfCrossReference)xrefs.GetMinKey()).Refnum;
                 int len = 0;
-                ArrayList sections = new ArrayList();
+                List<int> sections = new List<int>();
                 foreach (PdfCrossReference entry in xrefs.Keys) {
                     if (first + len == entry.Refnum)
                         ++len;
@@ -464,7 +462,7 @@ namespace iTextSharp.text.pdf {
                     xr.Put(PdfName.TYPE, PdfName.XREF);
                     PdfArray idx = new PdfArray();
                     for (int k = 0; k < sections.Count; ++k)
-                        idx.Add(new PdfNumber((int)sections[k]));
+                        idx.Add(new PdfNumber(sections[k]));
                     xr.Put(PdfName.INDEX, idx);
                     if (prevxref > 0)
                         xr.Put(PdfName.PREV, new PdfNumber(prevxref));
@@ -480,8 +478,8 @@ namespace iTextSharp.text.pdf {
                     IEnumerator i = xrefs.Keys;
                     i.MoveNext();
                     for (int k = 0; k < sections.Count; k += 2) {
-                        first = (int)sections[k];
-                        len = (int)sections[k + 1];
+                        first = sections[k];
+                        len = sections[k + 1];
                         tmp = GetISOBytes(first.ToString());
                         os.Write(tmp, 0, tmp.Length);
                         os.WriteByte((byte)' ');
@@ -920,7 +918,7 @@ namespace iTextSharp.text.pdf {
         /** The root of the page tree. */
         protected PdfPages root;
         /** The PdfIndirectReference to the pages. */
-        protected ArrayList pageReferences = new ArrayList();
+        protected List<PdfIndirectReference> pageReferences = new List<PdfIndirectReference>();
         /** The current page number. */
         protected int currentPageNumber = 1;
         /**
@@ -966,7 +964,7 @@ namespace iTextSharp.text.pdf {
                 throw new ArgumentOutOfRangeException(MessageLocalization.GetComposedMessage("the.page.number.must.be.gt.eq.1"));
             PdfIndirectReference refa;
             if (page < pageReferences.Count) {
-                refa = (PdfIndirectReference)pageReferences[page];
+                refa = pageReferences[page];
                 if (refa == null) {
                     refa = body.PdfIndirectReference;
                     pageReferences[page] = refa;
@@ -1243,16 +1241,16 @@ namespace iTextSharp.text.pdf {
                 shading.AddToBody();
             }
             // add the extgstate
-            foreach (DictionaryEntry entry in documentExtGState) {
-                PdfDictionary gstate = (PdfDictionary)entry.Key;
-                PdfObject[] obj = (PdfObject[])entry.Value;
+            foreach (KeyValuePair<PdfDictionary, PdfObject[]> entry in documentExtGState) {
+                PdfDictionary gstate = entry.Key;
+                PdfObject[] obj = entry.Value;
                 AddToBody(gstate, (PdfIndirectReference)obj[1]);
             }
            
             // add the properties
-            foreach (DictionaryEntry entry in documentProperties) {
+            foreach (KeyValuePair<Object, PdfObject[]> entry in documentProperties) {
                 Object prop = entry.Key;
-                PdfObject[] obj = (PdfObject[])entry.Value;
+                PdfObject[] obj = entry.Value;
                 if (prop is PdfLayerMembership){
                     PdfLayerMembership layer = (PdfLayerMembership)prop;
                     AddToBody(layer.PdfObject, layer.Ref);
@@ -1281,14 +1279,14 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        protected ArrayList newBookmarks;
+        protected List<Dictionary<String, Object>> newBookmarks;
          
         /**
         * Sets the bookmarks. The list structure is defined in
         * {@link SimpleBookmark}.
         * @param outlines the bookmarks or <CODE>null</CODE> to remove any
         */    
-        public ArrayList Outlines {
+        public List<Dictionary<String, Object>> Outlines {
             set {
                 newBookmarks = value;
             }
@@ -1483,15 +1481,15 @@ namespace iTextSharp.text.pdf {
         *          use this method in combination with PdfCopy).
         * @since    iText 5.0
         */
-        public void AddNamedDestinations(Hashtable map, int page_offset) {
+        public void AddNamedDestinations(IDictionary<String, String> map, int page_offset) {
             int page;
             String dest;
             PdfDestination destination;
-            foreach (string key in map.Keys) {
-                dest = (string)map[key];
+            foreach (KeyValuePair<string,string> entry in map) {
+                dest = entry.Value;
                 page = int.Parse(dest.Substring(0, dest.IndexOf(" ")));
                 destination = new PdfDestination(dest.Substring(dest.IndexOf(" ") + 1));
-                AddNamedDestination(key, page + page_offset, destination);
+                AddNamedDestination(entry.Key, page + page_offset, destination);
             }
         }
         
@@ -2154,7 +2152,7 @@ namespace iTextSharp.text.pdf {
     //  [F3] adding fonts
 
         /** The fonts of this document */
-        protected Hashtable documentFonts = new Hashtable();
+        protected Dictionary<BaseFont, FontDetails> documentFonts = new Dictionary<BaseFont,FontDetails>();
 
         /** The font number counter for the fonts in the document. */
         protected int fontNumber = 1;
@@ -2170,8 +2168,8 @@ namespace iTextSharp.text.pdf {
             if (bf.FontType == BaseFont.FONT_TYPE_DOCUMENT) {
                 return new FontDetails(new PdfName("F" + (fontNumber++)), ((DocumentFont)bf).IndirectReference, bf);
             }
-            FontDetails ret = (FontDetails)documentFonts[bf];
-            if (ret == null) {
+            FontDetails ret;
+            if (!documentFonts.TryGetValue(bf, out ret)) {
                 PdfXConformanceImp.CheckPDFXConformance(this, PdfXConformanceImp.PDFXKEY_FONT, bf);
                 ret = new FontDetails(new PdfName("F" + (fontNumber++)), body.PdfIndirectReference, bf);
                 documentFonts[bf] = ret;
@@ -2190,7 +2188,7 @@ namespace iTextSharp.text.pdf {
 
         /** The form XObjects in this document. The key is the xref and the value
             is Object[]{PdfName, template}.*/
-        protected Hashtable formXObjects = new Hashtable();
+        protected Dictionary<PdfIndirectReference, Object[]> formXObjects = new Dictionary<PdfIndirectReference,object[]>();
         
         /** The name counter for the form XObjects name. */
         protected int formXObjectsCounter = 1;
@@ -2203,7 +2201,8 @@ namespace iTextSharp.text.pdf {
         */        
         internal PdfName AddDirectTemplateSimple(PdfTemplate template, PdfName forcedName) {
             PdfIndirectReference refa = template.IndirectReference;
-            Object[] obj = (Object[])formXObjects[refa];
+            Object[] obj;
+            formXObjects.TryGetValue(refa, out obj);
             PdfName name = null;
             if (obj == null) {
                 if (forcedName == null) {
@@ -2237,7 +2236,9 @@ namespace iTextSharp.text.pdf {
         */    
         public void ReleaseTemplate(PdfTemplate tp) {
             PdfIndirectReference refi = tp.IndirectReference;
-            Object[] objs = (Object[])formXObjects[refi];
+            Object[] objs;
+            formXObjects.TryGetValue(refi, out objs);
+            PdfName name = null;
             if (objs == null || objs[1] == null)
                 return;
             PdfTemplate template = (PdfTemplate)objs[1];
@@ -2251,7 +2252,7 @@ namespace iTextSharp.text.pdf {
 
     //  [F5] adding pages imported form other PDF documents
 
-        protected Hashtable importedPages = new Hashtable();
+        protected Dictionary<PdfReader, PdfReaderInstance> importedPages = new Dictionary<PdfReader,PdfReaderInstance>();
 
         /** Gets a page from other PDF document. The page can be used as
         * any other PdfTemplate. Note that calling this method more than
@@ -2261,7 +2262,8 @@ namespace iTextSharp.text.pdf {
         * @return the template representing the imported page
         */
         public virtual PdfImportedPage GetImportedPage(PdfReader reader, int pageNumber) {
-            PdfReaderInstance inst = (PdfReaderInstance)importedPages[reader];
+            PdfReaderInstance inst;
+            importedPages.TryGetValue(reader, out inst);
             if (inst == null) {
                 inst = reader.GetPdfReaderInstance(this);
                 importedPages[reader] = inst;
@@ -2276,7 +2278,8 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         */    
         public virtual void FreeReader(PdfReader reader) {
-            currentPdfReaderInstance = (PdfReaderInstance)importedPages[reader];
+            currentPdfReaderInstance;
+            importedPages.TryGetValue(reader, out currentPdfReaderInstance);
             if (currentPdfReaderInstance == null)
                 return;
             currentPdfReaderInstance.WriteAllPages();
@@ -2310,7 +2313,7 @@ namespace iTextSharp.text.pdf {
     //  [F6] spot colors
 
         /** The colors of this document */
-        protected Hashtable documentColors = new Hashtable();
+        protected Dictionary<PdfSpotColor, ColorDetails> documentColors = new Dictionary<PdfSpotColor,ColorDetails>();
 
         /** The color number counter for the colors in the document. */
         protected int colorNumber = 1;
@@ -2326,7 +2329,8 @@ namespace iTextSharp.text.pdf {
         * and position 1 is an <CODE>PdfIndirectReference</CODE>
         */
         internal ColorDetails AddSimple(PdfSpotColor spc) {
-            ColorDetails ret = (ColorDetails)documentColors[spc];
+            ColorDetails ret;
+            documentColors.TryGetValue(spc, out ret);
             if (ret == null) {
                 ret = new ColorDetails(GetColorspaceName(), body.PdfIndirectReference, spc);
                 documentColors[spc] = ret;
@@ -2337,14 +2341,15 @@ namespace iTextSharp.text.pdf {
     //  [F7] document patterns
 
         /** The patterns of this document */
-        protected Hashtable documentPatterns = new Hashtable();
+        protected Dictionary<PdfPatternPainter, PdfName> documentPatterns = new Dictionary<PdfPatternPainter,PdfName>();
 
         /** The patten number counter for the colors in the document. */
         protected int patternNumber = 1;
         
         internal PdfName AddSimplePattern(PdfPatternPainter painter) {
-            PdfName name = (PdfName)documentPatterns[painter];
-            if ( name == null ) {
+            PdfName name;
+            documentPatterns.TryGetValue(painter, out name);
+            if (name == null) {
                 name = new PdfName("P" + patternNumber);
                 ++patternNumber;
                 documentPatterns[painter] = name;
@@ -2354,7 +2359,7 @@ namespace iTextSharp.text.pdf {
         
     //  [F8] shading patterns
         
-        protected Hashtable documentShadingPatterns = new Hashtable();
+        protected Dictionary<PdfShadingPattern, object> documentShadingPatterns = new Dictionary<PdfShadingPattern,object>();
         
         internal void AddSimpleShadingPattern(PdfShadingPattern shading) {
             if (!documentShadingPatterns.ContainsKey(shading)) {
@@ -2378,19 +2383,19 @@ namespace iTextSharp.text.pdf {
 
     // [F10] extended graphics state (for instance for transparency)
 
-        protected Hashtable documentExtGState = new Hashtable();
+        protected Dictionary<PdfDictionary, PdfObject[]> documentExtGState = new Dictionary<PdfDictionary,PdfObject[]>();
 
         internal PdfObject[] AddSimpleExtGState(PdfDictionary gstate) {
             if (!documentExtGState.ContainsKey(gstate)) {
                 PdfXConformanceImp.CheckPDFXConformance(this, PdfXConformanceImp.PDFXKEY_GSTATE, gstate);
                 documentExtGState[gstate] = new PdfObject[]{new PdfName("GS" + (documentExtGState.Count + 1)), PdfIndirectReference};
             }
-            return (PdfObject[])documentExtGState[gstate];
+            return documentExtGState[gstate];
         }
 
     //  [F11] adding properties (OCG, marked content)
 
-        protected Hashtable documentProperties = new Hashtable();
+        protected Dictionary<Object, PdfObject[]> documentProperties = new Dictionary<object,PdfObject[]>();
 
         internal PdfObject[] AddSimpleProperty(Object prop, PdfIndirectReference refi) {
             if (!documentProperties.ContainsKey(prop)) {
@@ -2398,7 +2403,7 @@ namespace iTextSharp.text.pdf {
                     PdfXConformanceImp.CheckPDFXConformance(this, PdfXConformanceImp.PDFXKEY_LAYER, null);
                 documentProperties[prop] = new PdfObject[]{new PdfName("Pr" + (documentProperties.Count + 1)), refi};
             }
-            return (PdfObject[])documentProperties[prop];
+            return documentProperties[prop];
         }
 
         internal bool PropertyExists(Object prop) {
@@ -2441,8 +2446,8 @@ namespace iTextSharp.text.pdf {
 
     //  [F13] Optional Content Groups    
 
-        protected Hashtable documentOCG = new Hashtable();
-        protected ArrayList documentOCGorder = new ArrayList();
+        protected Dictionary<PdfOCG, object> documentOCG = new Dictionary<PdfOCG,object>();
+        protected List<PdfOCG> documentOCGorder = new List<PdfOCG>();
         protected PdfOCProperties vOCProperties;
         protected PdfArray OCGRadioGroup = new PdfArray();
         protected PdfArray OCGLocked = new PdfArray();
@@ -2467,10 +2472,10 @@ namespace iTextSharp.text.pdf {
         * ON, all others must be turned OFF.
         * @param group the radio group
         */    
-        public void AddOCGRadioGroup(ArrayList group) {
+        public void AddOCGRadioGroup(List<PdfLayer> group) {
             PdfArray ar = new PdfArray();
             for (int k = 0; k < group.Count; ++k) {
-                PdfLayer layer = (PdfLayer)group[k];
+                PdfLayer layer = group[k];
                 if (layer.Title == null)
                     ar.Add(layer.Ref);
             }
@@ -2496,14 +2501,14 @@ namespace iTextSharp.text.pdf {
                 return;
             if (layer.Title == null)
                 order.Add(layer.Ref);
-            ArrayList children = layer.Children;
+            List<PdfLayer> children = layer.Children;
             if (children == null)
                 return;
             PdfArray kids = new PdfArray();
             if (layer.Title != null)
                 kids.Add(new PdfString(layer.Title, PdfObject.TEXT_UNICODE));
             for (int k = 0; k < children.Count; ++k) {
-                GetOCGOrder(kids, (PdfLayer)children[k]);
+                GetOCGOrder(kids, children[k]);
             }
             if (kids.Size > 0)
                 order.Add(kids);
@@ -2547,8 +2552,8 @@ namespace iTextSharp.text.pdf {
             }
             if (vOCProperties.Get(PdfName.D) != null)
                 return;
-            ArrayList docOrder = new ArrayList(documentOCGorder);
-            for (ListIterator it = new ListIterator(docOrder); it.HasNext();) {
+            List<PdfOCG> docOrder = new List<PdfOCG>(documentOCGorder);
+            for (ListIterator<<PdfOCG> it = new ListIterator(docOrder); it.HasNext();) {
                 PdfLayer layer = (PdfLayer)it.Next();
                 if (layer.Parent != null)
                     it.Remove();
@@ -2848,7 +2853,7 @@ namespace iTextSharp.text.pdf {
 
     //  [M2] spot patterns
 
-        protected Hashtable documentSpotPatterns = new Hashtable();
+        protected Dictionary<ColorDetails, ColorDetails> documentSpotPatterns = new Dictionary<ColorDetails,ColorDetails>();
         protected ColorDetails patternColorspaceRGB;
         protected ColorDetails patternColorspaceGRAY;
         protected ColorDetails patternColorspaceCMYK;
@@ -2884,7 +2889,8 @@ namespace iTextSharp.text.pdf {
                     return patternColorspaceGRAY;
                 case ExtendedColor.TYPE_SEPARATION: {
                     ColorDetails details = AddSimple(((SpotColor)color).PdfSpotColor);
-                    ColorDetails patternDetails = (ColorDetails)documentSpotPatterns[details];
+                    ColorDetails patternDetails;
+                    documentSpotPatterns.TryGetValue(details, out patternDetails);
                     if (patternDetails == null) {
                         patternDetails = new ColorDetails(GetColorspaceName(), body.PdfIndirectReference, null);
                         PdfArray array = new PdfArray(PdfName.PATTERN);
@@ -2927,7 +2933,7 @@ namespace iTextSharp.text.pdf {
         protected PdfDictionary imageDictionary = new PdfDictionary();
         
         /** This is the list with all the images in the document. */
-        private Hashtable images = new Hashtable();
+        private Dictionary<long, PdfName> images = new Dictionary<long,PdfName>();
         
         /**
         * Adds an image to the document but not to the page resources. It is used with
@@ -2955,7 +2961,7 @@ namespace iTextSharp.text.pdf {
             PdfName name;
             // if the images is already added, just retrieve the name
             if (images.ContainsKey(image.MySerialId)) {
-                name = (PdfName) images[image.MySerialId];
+                name = images[image.MySerialId];
             }
             // if it's a new image, add it to the document
             else {
@@ -2977,7 +2983,7 @@ namespace iTextSharp.text.pdf {
                     Image maskImage = image.ImageMask;
                     PdfIndirectReference maskRef = null;
                     if (maskImage != null) {
-                        PdfName mname = (PdfName)images[maskImage.MySerialId];
+                        PdfName mname = images[maskImage.MySerialId];
                         maskRef = GetImageReference(mname);
                     }
                     PdfImage i = new PdfImage(image, "img" + images.Count, maskRef);
@@ -3057,7 +3063,7 @@ namespace iTextSharp.text.pdf {
         * A Hashtable with Stream objects containing JBIG2 Globals
         * @since 2.1.5
         */
-        protected Hashtable JBIG2Globals = new Hashtable();
+        protected Dictionary<PdfStream, PdfIndirectReference> JBIG2Globals = new Dictionary<PdfStream,PdfIndirectReference>();
         /**
         * Gets an indirect reference to a JBIG2 Globals stream.
         * Adds the stream if it hasn't already been added to the writer.
@@ -3068,7 +3074,7 @@ namespace iTextSharp.text.pdf {
             if (content == null) return null;
             foreach (PdfStream str in JBIG2Globals.Keys) {
                 if (Org.BouncyCastle.Utilities.Arrays.AreEqual(content, str.GetBytes())) {
-                    return (PdfIndirectReference) JBIG2Globals[str];
+                    return JBIG2Globals[str];
                 }
             }
             PdfStream stream = new PdfStream(content);

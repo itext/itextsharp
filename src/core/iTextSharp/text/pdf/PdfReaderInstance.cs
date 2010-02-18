@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
@@ -59,10 +59,10 @@ namespace iTextSharp.text.pdf {
         internal int[] myXref;
         internal PdfReader reader;
         internal RandomAccessFileOrArray file;
-        internal Hashtable importedPages = new Hashtable();
+        internal Dictionary<int, PdfImportedPage> importedPages = new Dictionary<int,PdfImportedPage>();
         internal PdfWriter writer;
-        internal Hashtable visited = new Hashtable();
-        internal ArrayList nextRound = new ArrayList();
+        internal Dictionary<int,object> visited = new Dictionary<int,object>();
+        internal List<int> nextRound = new List<int>();
         
         internal PdfReaderInstance(PdfReader reader, PdfWriter writer) {
             this.reader = reader;
@@ -82,8 +82,8 @@ namespace iTextSharp.text.pdf {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("pdfreader.not.opened.with.owner.password"));
             if (pageNumber < 1 || pageNumber > reader.NumberOfPages)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.page.number.1", pageNumber));
-            PdfImportedPage pageT = (PdfImportedPage)importedPages[pageNumber];
-            if (pageT == null) {
+            PdfImportedPage pageT;
+            if (!importedPages.TryGetValue(pageNumber, out pageT)) {
                 pageT = new PdfImportedPage(this, writer, pageNumber);
                 importedPages[pageNumber] = pageT;
             }
@@ -132,7 +132,7 @@ namespace iTextSharp.text.pdf {
             dic.Put(PdfName.RESOURCES, PdfReader.GetPdfObjectRelease(page.Get(PdfName.RESOURCES)));
             dic.Put(PdfName.TYPE, PdfName.XOBJECT);
             dic.Put(PdfName.SUBTYPE, PdfName.FORM);
-            PdfImportedPage impPage = (PdfImportedPage)importedPages[pageNumber];
+            PdfImportedPage impPage = importedPages[pageNumber];
             dic.Put(PdfName.BBOX, new PdfRectangle(impPage.BoundingBox));
             PdfArray matrix = impPage.Matrix;
             if (matrix == null)
@@ -153,10 +153,9 @@ namespace iTextSharp.text.pdf {
         
         internal void WriteAllVisited() {
             while (nextRound.Count > 0) {
-                ArrayList vec = nextRound;
-                nextRound = new ArrayList();
-                for (int k = 0; k < vec.Count; ++k) {
-                    int i = (int)vec[k];
+                List<int> vec = nextRound;
+                nextRound = new List<int>();
+                foreach (int i in vec) {
                     if (!visited.ContainsKey(i)) {
                         visited[i] = null;
                         writer.AddToBody(reader.GetPdfObjectRelease(i), myXref[i]);

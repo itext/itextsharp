@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf.events;
 using iTextSharp.text.error_messages;
@@ -718,7 +718,7 @@ namespace iTextSharp.text.pdf {
         * @return   a List object.
         * @since    2.1.1
         */
-        public ArrayList CompositeElements {
+        public List<IElement> CompositeElements {
             get {
                 return column.compositeElements;
             }

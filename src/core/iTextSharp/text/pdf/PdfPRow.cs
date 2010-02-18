@@ -607,7 +607,7 @@ namespace iTextSharp.text.pdf {
                     allEmpty = (allEmpty && thisEmpty);
                 }
                 newCells[k] = newCell;
-                cell.FixedHeight = newHeight;
+                cell.FixedHeight = newHeight - cell.EffectivePaddingBottom;
             }
             if (allEmpty) {
                 for (int k = 0; k < cells.Length; ++k) {

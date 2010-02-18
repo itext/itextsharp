@@ -172,7 +172,7 @@ namespace iTextSharp.text.pdf {
         * <CODE>SimpleBookmark#</CODE>.
         * @param outlines the bookmarks or <CODE>null</CODE> to remove any
         */    
-        public List<Dictionary<string,object>> Outlines {
+        public IList<Dictionary<string,object>> Outlines {
             set {
                 fc.Outlines = value;
             }

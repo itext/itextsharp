@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using iTextSharp.text.error_messages;
 /*
@@ -62,8 +62,8 @@ namespace iTextSharp.text.pdf {
 
     public class PdfPages {
         
-        private ArrayList pages = new ArrayList();
-        private ArrayList parents = new ArrayList();
+        private List<PdfIndirectReference> pages = new List<PdfIndirectReference>();
+        private List<PdfIndirectReference> parents = new List<PdfIndirectReference>();
         private int leafSize = 10;
         private PdfWriter writer;
         private PdfIndirectReference topParent;
@@ -81,7 +81,7 @@ namespace iTextSharp.text.pdf {
         internal void AddPage(PdfDictionary page) {
             if ((pages.Count % leafSize) == 0)
                 parents.Add(writer.PdfIndirectReference);
-            PdfIndirectReference parent = (PdfIndirectReference)parents[parents.Count - 1];
+            PdfIndirectReference parent = parents[parents.Count - 1];
             page.Put(PdfName.PARENT, parent);
             PdfIndirectReference current = writer.CurrentPage;
             writer.AddToBody(page, current);
@@ -92,7 +92,7 @@ namespace iTextSharp.text.pdf {
             if ((pages.Count % leafSize) == 0)
                 parents.Add(writer.PdfIndirectReference);
             pages.Add(pageRef);
-            return (PdfIndirectReference)parents[parents.Count - 1];
+            return parents[parents.Count - 1];
         }
         
         // returns the top parent to include in the catalog
@@ -100,9 +100,9 @@ namespace iTextSharp.text.pdf {
             if (pages.Count == 0)
                 throw new IOException(MessageLocalization.GetComposedMessage("the.document.has.no.pages"));
             int leaf = 1;
-            ArrayList tParents = parents;
-            ArrayList tPages = pages;
-            ArrayList nextParents = new ArrayList();
+            List<PdfIndirectReference> tParents = parents;
+            List<PdfIndirectReference> tPages = pages;
+            List<PdfIndirectReference> nextParents = new List<PdfIndirectReference>();
             while (true) {
                 leaf *= leafSize;
                 int stdCount = leafSize;
@@ -123,26 +123,26 @@ namespace iTextSharp.text.pdf {
                     PdfDictionary top = new PdfDictionary(PdfName.PAGES);
                     top.Put(PdfName.COUNT, new PdfNumber(thisLeaf));
                     PdfArray kids = new PdfArray();
-                    ArrayList intern = kids.ArrayList;
+                    List<PdfObject> intern = kids.ArrayList;
                     intern.AddRange(tPages.GetRange(p * stdCount, count));
                     top.Put(PdfName.KIDS, kids);
                     if (tParents.Count > 1) {
                         if ((p % leafSize) == 0)
                             nextParents.Add(writer.PdfIndirectReference);
-                        top.Put(PdfName.PARENT, (PdfIndirectReference)nextParents[p / leafSize]);
+                        top.Put(PdfName.PARENT, nextParents[p / leafSize]);
                     }
                     else {
                         top.Put(PdfName.ITXT, new PdfString(Document.Release));
                     }
-                    writer.AddToBody(top, (PdfIndirectReference)tParents[p]);
+                    writer.AddToBody(top, tParents[p]);
                 }
                 if (tParents.Count == 1) {
-                    topParent = (PdfIndirectReference)tParents[0];
+                    topParent = tParents[0];
                     return topParent;
                 }
                 tPages = tParents;
                 tParents = nextParents;
-                nextParents = new ArrayList();
+                nextParents = new List<PdfIndirectReference>();
             }
         }
         
@@ -184,7 +184,7 @@ namespace iTextSharp.text.pdf {
                     throw new DocumentException(MessageLocalization.GetComposedMessage("page.reordering.requires.no.page.repetition.page.1.is.repeated", p));
                 temp[p - 1] = true;
             }
-            Object[] copy = pages.ToArray();
+            PdfIndirectReference[] copy = pages.ToArray();
             for (int k = 0; k < max; ++k) {
                 pages[k] = copy[order[k] - 1];
             }

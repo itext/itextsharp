@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 /*
  * $Id$
@@ -52,7 +52,7 @@ namespace iTextSharp.text.pdf {
     */
     public class PdfStructureTreeRoot : PdfDictionary {
         
-        private Hashtable parentTree = new Hashtable();
+        private Dictionary<int, PdfObject> parentTree = new Dictionary<int,PdfObject>();
         private PdfIndirectReference reference;
 
         /**
@@ -102,11 +102,13 @@ namespace iTextSharp.text.pdf {
         }
         
         internal void SetPageMark(int page, PdfIndirectReference struc) {
-            PdfArray ar = (PdfArray)parentTree[page];
-            if (ar == null) {
+            PdfArray ar;
+            if (!parentTree.ContainsKey(page)) {
                 ar = new PdfArray();
                 parentTree[page] = ar;
             }
+            else
+                ar = (PdfArray)parentTree[page];
             ar.Add(struc);
         }
         
@@ -114,7 +116,7 @@ namespace iTextSharp.text.pdf {
             PdfObject obj = struc.Get(PdfName.K);
             if (obj != null && obj.IsArray() && !((PdfObject)((PdfArray)obj).ArrayList[0]).IsNumber()) {
                 PdfArray ar = (PdfArray)obj;
-                ArrayList a = ar.ArrayList;
+                List<PdfObject> a = ar.ArrayList;
                 for (int k = 0; k < a.Count; ++k) {
                     PdfStructureElement e = (PdfStructureElement)a[k];
                     a[k] = e.Reference;
@@ -126,7 +128,7 @@ namespace iTextSharp.text.pdf {
         }
         
         internal void BuildTree() {
-            Hashtable numTree = new Hashtable();
+            Dictionary<int, PdfIndirectReference> numTree = new Dictionary<int,PdfIndirectReference>();
             foreach (int i in parentTree.Keys) {
                 PdfArray ar = (PdfArray)parentTree[i];
                 numTree[i] = writer.AddToBody(ar).IndirectReference;

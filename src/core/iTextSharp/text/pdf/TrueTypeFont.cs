@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
@@ -133,7 +133,7 @@ namespace iTextSharp.text.pdf {
          * is the offset from the start of the file and position 1 is the length
          * of the table.
          */
-        protected Hashtable tables;
+        protected Dictionary<String, int[]> tables;
         /** The file in use.
          */
         protected RandomAccessFileOrArray rf;
@@ -178,7 +178,7 @@ namespace iTextSharp.text.pdf {
          * is the glyph number and position 1 is the glyph width normalized to 1000
          * units.
          */
-        protected Hashtable cmap10;
+        protected Dictionary<int, int[]> cmap10;
         /** The map containing the code information for the table 'cmap', encoding 3.1
          * in Unicode.
          * <P>
@@ -186,13 +186,13 @@ namespace iTextSharp.text.pdf {
          * is the glyph number and position 1 is the glyph width normalized to 1000
          * units.
          */
-        protected Hashtable cmap31;
+        protected Dictionary<int, int[]> cmap31;
 
 
         /// <summary>
         /// By James for unicode Ext.B
         /// </summary>
-        protected Hashtable cmapExt;
+        protected Dictionary<int, int[]> cmapExt;
 
 
         /** The map containing the kerning information. It represents the content of
@@ -403,7 +403,7 @@ namespace iTextSharp.text.pdf {
          */
         internal void FillTables() {
             int[] table_location;
-            table_location = (int[])tables["head"];
+            tables.TryGetValue("head", out table_location);
             if (table_location == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "head", fileName + style));
             rf.Seek(table_location[0] + 16);
@@ -416,7 +416,7 @@ namespace iTextSharp.text.pdf {
             head.yMax = rf.ReadShort();
             head.macStyle = rf.ReadUnsignedShort();
         
-            table_location = (int[])tables["hhea"];
+            tables.TryGetValue("hhea", out table_location);
             if (table_location == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "hhea", fileName + style));
             rf.Seek(table_location[0] + 4);
@@ -432,7 +432,8 @@ namespace iTextSharp.text.pdf {
             rf.SkipBytes(12);
             hhea.numberOfHMetrics = rf.ReadUnsignedShort();
         
-            table_location = (int[])tables["OS/2"];
+            tables.TryGetValue("OS/2", out table_location);
+
             if (table_location == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "OS/2", fileName + style));
             rf.Seek(table_location[0]);
@@ -478,7 +479,7 @@ namespace iTextSharp.text.pdf {
             else
                 os_2.sCapHeight = (int)(0.7 * head.unitsPerEm);
         
-            table_location = (int[])tables["post"];
+            tables.TryGetValue("post", out table_location);
             if (table_location == null) {
                 italicAngle = -Math.Atan2(hhea.caretSlopeRun, hhea.caretSlopeRise) * 180 / Math.PI;
                 return;
@@ -501,7 +502,7 @@ namespace iTextSharp.text.pdf {
         internal string BaseFont {
             get {
                 int[] table_location;
-                table_location = (int[])tables["name"];
+                tables.TryGetValue("name", out table_location);
                 if (table_location == null)
                     throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "name", fileName + style));
                 rf.Seek(table_location[0] + 2);
@@ -534,13 +535,13 @@ namespace iTextSharp.text.pdf {
          */    
         internal string[][] GetNames(int id) {
             int[] table_location;
-            table_location = (int[])tables["name"];
+            tables.TryGetValue("name", out table_location);
             if (table_location == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "name", fileName + style));
             rf.Seek(table_location[0] + 2);
             int numRecords = rf.ReadUnsignedShort();
             int startOfStorage = rf.ReadUnsignedShort();
-            ArrayList names = new ArrayList();
+            List<string[]> names = new List<string[]>();
             for (int k = 0; k < numRecords; ++k) {
                 int platformID = rf.ReadUnsignedShort();
                 int platformEncodingID = rf.ReadUnsignedShort();
@@ -565,7 +566,7 @@ namespace iTextSharp.text.pdf {
             }
             string[][] thisName = new string[names.Count][];
             for (int k = 0; k < names.Count; ++k)
-                thisName[k] = (string[])names[k];
+                thisName[k] = names[k];
             return thisName;
         }
     
@@ -576,13 +577,13 @@ namespace iTextSharp.text.pdf {
         */    
         internal string[][] GetAllNames() {
             int[] table_location;
-            table_location = (int[])tables["name"];
+            tables.TryGetValue("name", out table_location);
             if (table_location == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "name", fileName + style));
             rf.Seek(table_location[0] + 2);
             int numRecords = rf.ReadUnsignedShort();
             int startOfStorage = rf.ReadUnsignedShort();
-            ArrayList names = new ArrayList();
+            List<string[]> names = new List<string[]>();
             for (int k = 0; k < numRecords; ++k) {
                 int platformID = rf.ReadUnsignedShort();
                 int platformEncodingID = rf.ReadUnsignedShort();
@@ -605,13 +606,13 @@ namespace iTextSharp.text.pdf {
             }
             string[][] thisName = new string[names.Count][];
             for (int k = 0; k < names.Count; ++k)
-                thisName[k] = (string[])names[k];
+                thisName[k] = names[k];
             return thisName;
         }
         
         internal void CheckCff() {
             int[] table_location;
-            table_location = (int[])tables["CFF "];
+            tables.TryGetValue("CFF ", out table_location);
             if (table_location != null) {
                 cff = true;
                 cffOffset = table_location[0];
@@ -625,7 +626,7 @@ namespace iTextSharp.text.pdf {
          * @throws IOException the font file could not be read
          */
         internal void Process(byte[] ttfAfm, bool preload) {
-            tables = new Hashtable();
+            tables = new Dictionary<string,int[]>();
         
             try {
                 if (ttfAfm == null)
@@ -718,7 +719,7 @@ namespace iTextSharp.text.pdf {
          */
         protected void ReadGlyphWidths() {
             int[] table_location;
-            table_location = (int[])tables["hmtx"];
+            tables.TryGetValue("hmtx", out table_location);
             if (table_location == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "hmtx", fileName + style));
             rf.Seek(table_location[0]);
@@ -741,12 +742,12 @@ namespace iTextSharp.text.pdf {
     
         private void ReadBbox() {
             int[] tableLocation;
-            tableLocation = (int[])tables["head"];
+            tables.TryGetValue("head", out table_location);
             if (tableLocation == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "head", fileName + style));
             rf.Seek(tableLocation[0] + TrueTypeFontSubSet.HEAD_LOCA_FORMAT_OFFSET);
             bool locaShortTable = (rf.ReadUnsignedShort() == 0);
-            tableLocation = (int[])tables["loca"];
+            tables.TryGetValue("loca", out table_location);
             if (tableLocation == null)
                 return;
             rf.Seek(tableLocation[0]);
@@ -763,7 +764,7 @@ namespace iTextSharp.text.pdf {
                 for (int k = 0; k < entries; ++k)
                     locaTable[k] = rf.ReadInt();
             }
-            tableLocation = (int[])tables["glyf"];
+            tables.TryGetValue("glyf", out table_location);
             if (tableLocation == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "glyf", fileName + style));
             int tableGlyphOffset = tableLocation[0];
@@ -788,7 +789,7 @@ namespace iTextSharp.text.pdf {
          */
         internal void ReadCMaps() {
             int[] table_location;
-            table_location = (int[])tables["cmap"];
+            tables.TryGetValue("cmap", out table_location);
             if (table_location == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "cmap", fileName + style));
             rf.Seek(table_location[0]);
@@ -873,8 +874,8 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        internal Hashtable ReadFormat12() {
-            Hashtable h = new Hashtable();
+        internal Dictionary<int,int[]> ReadFormat12() {
+            Dictionary<int,int[]> h = new Dictionary<int,int[]>();
             rf.SkipBytes(2);
             int table_lenght = rf.ReadInt();
             rf.SkipBytes(4);
@@ -899,8 +900,8 @@ namespace iTextSharp.text.pdf {
          * @return a <CODE>Hashtable</CODE> representing this map
          * @throws IOException the font file could not be read
          */
-        internal Hashtable ReadFormat0() {
-            Hashtable h = new Hashtable();
+        internal Dictionary<int,int[]> ReadFormat0() {
+            Dictionary<int,int[]> h = new Dictionary<int,int[]>();
             rf.SkipBytes(4);
             for (int k = 0; k < 256; ++k) {
                 int[] r = new int[2];
@@ -916,8 +917,8 @@ namespace iTextSharp.text.pdf {
          * @return a <CODE>Hashtable</CODE> representing this map
          * @throws IOException the font file could not be read
          */
-        internal Hashtable ReadFormat4() {
-            Hashtable h = new Hashtable();
+        internal Dictionary<int,int[]> ReadFormat4() {
+            Dictionary<int,int[]> h = new Dictionary<int,int[]>();
             int table_lenght = rf.ReadUnsignedShort();
             rf.SkipBytes(2);
             int segCount = rf.ReadUnsignedShort() / 2;
@@ -970,8 +971,8 @@ namespace iTextSharp.text.pdf {
          * @return a <CODE>Hashtable</CODE> representing this map
          * @throws IOException the font file could not be read
          */
-        internal Hashtable ReadFormat6() {
-            Hashtable h = new Hashtable();
+        internal Dictionary<int,int[]> ReadFormat6() {
+            Dictionary<int,int[]> h = new Dictionary<int,int[]>();
             rf.SkipBytes(4);
             int start_code = rf.ReadUnsignedShort();
             int code_count = rf.ReadUnsignedShort();
@@ -989,7 +990,7 @@ namespace iTextSharp.text.pdf {
          */
         internal void ReadKerning() {
             int[] table_location;
-            table_location = (int[])tables["kern"];
+            tables.TryGetValue("kern", out table_location);
             if (table_location == null)
                 return;
             rf.Seek(table_location[0] + 2);
@@ -1168,18 +1169,18 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected static int[] CompactRanges(ArrayList ranges) {
-            ArrayList simp = new ArrayList();
+        protected static int[] CompactRanges(List<int[]> ranges) {
+            List<int[]> simp = new List<int[]>();
             for (int k = 0; k < ranges.Count; ++k) {
-                int[] r = (int[])ranges[k];
+                int[] r = ranges[k];
                 for (int j = 0; j < r.Length; j += 2) {
                     simp.Add(new int[]{Math.Max(0, Math.Min(r[j], r[j + 1])), Math.Min(0xffff, Math.Max(r[j], r[j + 1]))});
                 }
             }
             for (int k1 = 0; k1 < simp.Count - 1; ++k1) {
                 for (int k2 = k1 + 1; k2 < simp.Count; ++k2) {
-                    int[] r1 = (int[])simp[k1];
-                    int[] r2 = (int[])simp[k2];
+                    int[] r1 = simp[k1];
+                    int[] r2 = simp[k2];
                     if ((r1[0] >= r2[0] && r1[0] <= r2[1]) || (r1[1] >= r2[0] && r1[0] <= r2[1])) {
                         r1[0] = Math.Min(r1[0], r2[0]);
                         r1[1] = Math.Max(r1[1], r2[1]);
@@ -1190,17 +1191,17 @@ namespace iTextSharp.text.pdf {
             }
             int[] s = new int[simp.Count * 2];
             for (int k = 0; k < simp.Count; ++k) {
-                int[] r = (int[])simp[k];
+                int[] r = simp[k];
                 s[k * 2] = r[0];
                 s[k * 2 + 1] = r[1];
             }
             return s;
         }
         
-        protected void AddRangeUni(Hashtable longTag, bool includeMetrics, bool subsetp) {
+        protected void AddRangeUni(Dictionary<int, int[]> longTag, bool includeMetrics, bool subsetp) {
             if (!subsetp && (subsetRanges != null || directoryOffset > 0)) {
                 int[] rg = (subsetRanges == null && directoryOffset > 0) ? new int[]{0, 0xffff} : CompactRanges(subsetRanges);
-                Hashtable usemap;
+                Dictionary<int, int[]> usemap;
                 if (!fontSpecific && cmap31 != null) 
                     usemap = cmap31;
                 else if (fontSpecific && cmap10 != null) 
@@ -1209,12 +1210,12 @@ namespace iTextSharp.text.pdf {
                     usemap = cmap31;
                 else 
                     usemap = cmap10;
-                foreach (DictionaryEntry e in usemap) {
-                    int[] v = (int[])e.Value;
-                    int gi = (int)v[0];
+                foreach (KeyValuePair<int,int[]> e in usemap) {
+                    int[] v = e.Value;
+                    int gi = v[0];
                     if (longTag.ContainsKey(gi))
                         continue;
-                    int c = (int)e.Key;
+                    int c = e.Key;
                     bool skip = true;
                     for (int k = 0; k < rg.Length; k += 2) {
                         if (c >= rg[k] && c <= rg[k + 1]) {
@@ -1259,7 +1260,7 @@ namespace iTextSharp.text.pdf {
                 else {
                     if (subsetp)
                         subsetPrefix = CreateSubsetPrefix();
-                    Hashtable glyphs = new Hashtable();
+                    Dictionary<int, int[]> glyphs = new Dictionary<int, int[]>();
                     for (int k = firstChar; k <= lastChar; ++k) {
                         if (shortTag[k] != 0) {
                             int[] metrics = null;
@@ -1402,17 +1403,18 @@ namespace iTextSharp.text.pdf {
          * @return an <CODE>int</CODE> array with {glyph index, width}
          */    
         public virtual int[] GetMetricsTT(int c) {
+            int[] ret = null;
             if (cmapExt != null)
-                return (int[])cmapExt[c];
-            if (!fontSpecific && cmap31 != null) 
-                return (int[])cmap31[c];
-            if (fontSpecific && cmap10 != null) 
-                return (int[])cmap10[c];
-            if (cmap31 != null) 
-                return (int[])cmap31[c];
-            if (cmap10 != null) 
-                return (int[])cmap10[c];
-            return null;
+                cmapExt.TryGetValue(c, out ret);
+            else if (!fontSpecific && cmap31 != null)
+                cmap31.TryGetValue(c, out ret);
+            else if (fontSpecific && cmap10 != null) 
+                cmap10.TryGetValue(c, out ret);
+            else if (cmap31 != null) 
+                cmap31.TryGetValue(c, out ret);
+            else if (cmap10 != null) 
+                cmap10.TryGetValue(c, out ret);
+            return ret;
         }
 
         /** Gets the postscript font name.
@@ -1522,14 +1524,15 @@ namespace iTextSharp.text.pdf {
         }
 
         protected override int[] GetRawCharBBox(int c, String name) {
-            Hashtable map = null;
+            Dictionary<int,int[]> map = null;
             if (name == null || cmap31 == null)
                 map = cmap10;
             else
                 map = cmap31;
             if (map == null)
                 return null;
-            int[] metric = (int[])map[c];
+            int[] metric;
+            map.TryGetValue(c, out metric);
             if (metric == null || bboxes == null)
                 return null;
             return bboxes[metric[0]];

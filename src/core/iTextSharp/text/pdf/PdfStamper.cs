@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.collection;
 using Org.BouncyCastle.X509;
@@ -62,7 +62,7 @@ namespace iTextSharp.text.pdf {
         * The writer
         */    
         protected PdfStamperImp stamper;
-        private Hashtable moreInfo;
+        private Dictionary<String, String> moreInfo;
         private bool hasSignature;
         private PdfSignatureAppearance sigApp;
         
@@ -118,7 +118,7 @@ namespace iTextSharp.text.pdf {
         * @param moreInfo additional entries to the info dictionary
         *
         */
-        public Hashtable MoreInfo {
+        public Dictionary<String, String> MoreInfo {
             set {
                 moreInfo = value;
             }
@@ -432,7 +432,7 @@ namespace iTextSharp.text.pdf {
         * {@link SimpleBookmark}.
         * @param outlines the bookmarks or <CODE>null</CODE> to remove any
         */    
-        public ArrayList Outlines {
+        public IList<Dictionary<String, Object>> Outlines {
             set {
                 stamper.Outlines = value;
             }

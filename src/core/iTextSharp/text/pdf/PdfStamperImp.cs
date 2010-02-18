@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.util;
 using iTextSharp.text.pdf.interfaces;
@@ -52,13 +52,13 @@ using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf {
     public class PdfStamperImp : PdfWriter {
-        internal Hashtable readers2intrefs = new Hashtable();
-        internal Hashtable readers2file = new Hashtable();
+        internal Dictionary<PdfReader, IntHashtable> readers2intrefs = new Dictionary<PdfReader,IntHashtable>();
+        internal Dictionary<PdfReader, RandomAccessFileOrArray> readers2file = new Dictionary<PdfReader,RandomAccessFileOrArray>();
         internal RandomAccessFileOrArray file;
         internal PdfReader reader;
         internal IntHashtable myXref = new IntHashtable();
         /** Integer(page number) -> PageStamp */
-        internal Hashtable pagesToContent = new Hashtable();
+        internal Dictionary<PdfDictionary, PageStamp> pagesToContent = new Dictionary<PdfDictionary,PageStamp>();
         internal bool closed = false;
         /** Holds value of property rotateContents. */
         private bool rotateContents = true;
@@ -66,10 +66,10 @@ namespace iTextSharp.text.pdf {
         protected bool flat = false;
         protected bool flatFreeText = false;
         protected int[] namePtr = {0};
-        protected Hashtable partialFlattening = new Hashtable();
+        protected Dictionary<string,object> partialFlattening = new Dictionary<string,object>();
         protected bool useVp = false;
         protected PdfViewerPreferencesImp viewerPreferences = new PdfViewerPreferencesImp();
-        protected Hashtable fieldTemplates = new Hashtable();
+        protected Dictionary<PdfTemplate,object> fieldTemplates = new Dictionary<PdfTemplate,object>();
         protected bool fieldsAdded = false;
         protected int sigFlags = 0;
         protected internal bool append;
@@ -129,7 +129,7 @@ namespace iTextSharp.text.pdf {
             initialXrefSize = reader.XrefSize;
         }
         
-        internal void Close(Hashtable moreInfo) {
+        internal void Close(Dictionary<String, String> moreInfo) {
             if (closed)
                 return;
             if (useVp) {
@@ -313,9 +313,9 @@ namespace iTextSharp.text.pdf {
                 }
             }
             if (moreInfo != null) {
-                foreach (DictionaryEntry entry in moreInfo) {
-                    PdfName keyName = new PdfName((String)entry.Key);
-                    String value = (String)entry.Value;
+                foreach (KeyValuePair<string,string> entry in moreInfo) {
+                    PdfName keyName = new PdfName(entry.Key);
+                    String value = entry.Value;
                     if (value == null)
                         newInfo.Remove(keyName);
                     else
@@ -443,8 +443,8 @@ namespace iTextSharp.text.pdf {
         }
         
         protected internal override int GetNewObjectNumber(PdfReader reader, int number, int generation) {
-            IntHashtable ref_p = (IntHashtable)readers2intrefs[reader];
-            if (ref_p != null) {
+            IntHashtable ref_p;
+            if (readers2intrefs.TryGetValue(reader, out ref_p)) {
                 int n = ref_p[number];
                 if (n == 0) {
                     n = IndirectReferenceNumber;
@@ -468,8 +468,8 @@ namespace iTextSharp.text.pdf {
         
         internal override RandomAccessFileOrArray GetReaderFile(PdfReader reader) {
             if (readers2intrefs.ContainsKey(reader)) {
-                RandomAccessFileOrArray raf = (RandomAccessFileOrArray)readers2file[reader];
-                if (raf != null)
+                RandomAccessFileOrArray raf;
+                if (readers2file.TryGetValue(reader, out raf))
                     return raf;
                 return reader.SafeFile;
             }
@@ -502,8 +502,8 @@ namespace iTextSharp.text.pdf {
             if (!readers2intrefs.ContainsKey(reader))
                 return;
             readers2intrefs.Remove(reader);
-            RandomAccessFileOrArray raf = (RandomAccessFileOrArray)readers2file[reader];
-            if (raf == null)
+            RandomAccessFileOrArray raf;
+            if (!readers2file.TryGetValue(reader, out raf))
                 return;
             readers2file.Remove(reader);
             try{raf.Close();}catch{}
@@ -554,8 +554,8 @@ namespace iTextSharp.text.pdf {
                 return;
             RegisterReader(fdf, false);
             IntHashtable hits = new IntHashtable();
-            Hashtable irt = new Hashtable();
-            ArrayList an = new ArrayList();
+            Dictionary<String, PdfObject> irt = new Dictionary<string,PdfObject>();
+            List<PdfObject> an = new List<PdfObject>();
             for (int k = 0; k < annots.Size; ++k) {
                 PdfObject obj = annots[k];
                 PdfDictionary annot = (PdfDictionary)PdfReader.GetPdfObject(obj);
@@ -606,7 +606,7 @@ namespace iTextSharp.text.pdf {
         
         internal PageStamp GetPageStamp(int pageNum) {
             PdfDictionary pageN = reader.GetPageN(pageNum);
-            PageStamp ps = (PageStamp)pagesToContent[pageN];
+            PageStamp ps = pagesToContent[pageN];
             if (ps == null) {
                 ps = new PageStamp(this, reader, pageN);
                 pagesToContent[pageN] = ps;
@@ -637,7 +637,7 @@ namespace iTextSharp.text.pdf {
                 return;
             if (page > reader.NumberOfPages)
                 return;
-            Hashtable fields = acroFields.Fields;
+            Dictionary<string,AcroFields.Item> fields = acroFields.Fields;
             foreach (AcroFields.Item item in fields.Values) {
                 for (int k = 0; k < item.Size; ++k) {
                     int p = item.GetPage(k);
@@ -671,7 +671,7 @@ namespace iTextSharp.text.pdf {
             dic2.Put(PdfName.ROTATE, new PdfNumber(r.GetPageRotation(pageImported)));
             PdfContentByte cb = GetOverContent(pageReplaced);
             cb.AddTemplate(p, 0, 0);
-            PageStamp ps = (PageStamp)pagesToContent[pageN];
+            PageStamp ps = pagesToContent[pageN];
             ps.replacePoint = ps.over.InternalBuffer.Size;
         }
 
@@ -787,7 +787,7 @@ namespace iTextSharp.text.pdf {
             if (append)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("field.flattening.is.not.supported.in.append.mode"));
             AcroFields af = AcroFields;
-            Hashtable fields = acroFields.Fields;
+            Dictionary<string,AcroFields.Item> fields = acroFields.Fields;
             if (fieldsAdded && partialFlattening.Count == 0) {
                 foreach (object obf in fields.Keys) {
                     partialFlattening[obf] = null;
@@ -1119,9 +1119,9 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        internal void ExpandFields(PdfFormField field, ArrayList allAnnots) {
+        internal void ExpandFields(PdfFormField field, List<PdfAnnotation> allAnnots) {
             allAnnots.Add(field);
-            ArrayList kids = field.Kids;
+            List<PdfFormField> kids = field.Kids;
             if (kids != null) {
                 for (int k = 0; k < kids.Count; ++k) {
                     ExpandFields((PdfFormField)kids[k], allAnnots);
@@ -1130,7 +1130,7 @@ namespace iTextSharp.text.pdf {
         }
 
         internal void AddAnnotation(PdfAnnotation annot, PdfDictionary pageN) {
-            ArrayList allAnnots = new ArrayList();
+            List<PdfAnnotation> allAnnots = new List<PdfAnnotation>();
             if (annot.IsForm()) {
                 fieldsAdded = true;
                 AcroFields afdummy = AcroFields;
@@ -1147,7 +1147,7 @@ namespace iTextSharp.text.pdf {
                     pageN = reader.GetPageN(annot.PlaceInPage);
                 if (annot.IsForm()) {
                     if (!annot.IsUsed()) {
-                        Hashtable templates = annot.Templates;
+                        Dictionary<PdfTemplate,object> templates = annot.Templates;
                         if (templates != null) {
                             foreach (object tpl in templates.Keys) {
                                 fieldTemplates[tpl] = null;
@@ -1239,7 +1239,7 @@ namespace iTextSharp.text.pdf {
         }
         
         internal void SetJavaScript() {
-            Hashtable djs = pdf.GetDocumentLevelJS();
+            Dictionary<string,PdfObject> djs = pdf.GetDocumentLevelJS();
             if (djs.Count == 0)
                 return;
             PdfDictionary catalog = reader.Catalog;
@@ -1255,7 +1255,7 @@ namespace iTextSharp.text.pdf {
         }
             
         void AddFileAttachments() {
-            Hashtable fs = pdf.GetDocumentFileAttachment();
+            Dictionary<string,PdfObject> fs = pdf.GetDocumentFileAttachment();
             if (fs.Count == 0)
                 return;
             PdfDictionary catalog = reader.Catalog;
@@ -1266,9 +1266,9 @@ namespace iTextSharp.text.pdf {
                 MarkUsed(catalog);
             }
             MarkUsed(names);
-            Hashtable old = PdfNameTree.ReadTree((PdfDictionary)PdfReader.GetPdfObjectRelease(names.Get(PdfName.EMBEDDEDFILES)));
-            foreach (DictionaryEntry entry in fs) {
-                String name = (String)entry.Key;
+            Dictionary<string,PdfObject> old = PdfNameTree.ReadTree((PdfDictionary)PdfReader.GetPdfObjectRelease(names.Get(PdfName.EMBEDDEDFILES)));
+            foreach (KeyValuePair<string,PdfObject> entry in fs) {
+                String name = entry.Key;
                 int k = 0;
                 String nn = name;
                 while (old.ContainsKey(nn)) {
@@ -1525,8 +1525,8 @@ namespace iTextSharp.text.pdf {
             PdfArray ocgs = dict.GetAsArray(PdfName.OCGS);
             PdfIndirectReference refi;
             PdfLayer layer;
-            Hashtable ocgmap = new Hashtable();
-            for (ListIterator i = ocgs.GetListIterator(); i.HasNext();) {
+            Dictionary<string,PdfLayer> ocgmap = new Dictionary<string,PdfLayer>();
+            for (ListIterator<PdfObject> i = ocgs.GetListIterator(); i.HasNext();) {
                 refi = (PdfIndirectReference)i.Next();
                 layer = new PdfLayer(null);
                 layer.Ref = refi;
@@ -1537,9 +1537,9 @@ namespace iTextSharp.text.pdf {
             PdfDictionary d = dict.GetAsDict(PdfName.D);
             PdfArray off = d.GetAsArray(PdfName.OFF);
             if (off != null) {
-                for (ListIterator i = off.GetListIterator(); i.HasNext(); ) {
+                for (ListIterator<PdfObject> i = off.GetListIterator(); i.HasNext(); ) {
                     refi = (PdfIndirectReference)i.Next();
-                    layer = (PdfLayer)ocgmap[refi.ToString()];
+                    layer = ocgmap[refi.ToString()];
                     layer.On = false;
                 }
             }
@@ -1562,13 +1562,13 @@ namespace iTextSharp.text.pdf {
         * @param    ocgmap  a Hashtable with indirect reference Strings as keys and PdfLayer objects as values.
         * @since    2.1.2
         */
-        private void AddOrder(PdfLayer parent, PdfArray arr, Hashtable ocgmap) {
+        private void AddOrder(PdfLayer parent, PdfArray arr, Dictionary<string,PdfLayer> ocgmap) {
             PdfObject obj;
             PdfLayer layer;
             for (int i = 0; i < arr.Size; i++) {
                 obj = arr[i];
                 if (obj.IsIndirect()) {
-                    layer = (PdfLayer)ocgmap[obj.ToString()];
+                    layer = ocgmap[obj.ToString()];
                     layer.OnPanel = true;
                     RegisterLayer(layer);
                     if (parent != null) {
@@ -1591,8 +1591,8 @@ namespace iTextSharp.text.pdf {
                             parent.AddChild(layer);
                         }
                         PdfArray array = new PdfArray();
-                        for (ListIterator j = sub.GetListIterator(); j.HasNext(); ) {
-                            array.Add((PdfObject)j.Next());
+                        for (ListIterator<PdfObject> j = sub.GetListIterator(); j.HasNext(); ) {
+                            array.Add(j.Next());
                         }
                         AddOrder(layer, array, ocgmap);
                     }
@@ -1609,11 +1609,11 @@ namespace iTextSharp.text.pdf {
         * @return   a Map with all the PdfLayers in the document (and the name/title of the layer as key)
         * @since    2.1.2
         */
-        public Hashtable GetPdfLayers() {
+        public Dictionary<string,PdfLayer> GetPdfLayers() {
             if (documentOCG.Count == 0) {
                 ReadOCProperties();
             }
-            Hashtable map = new Hashtable();
+            Dictionary<string,PdfLayer> map = new Dictionary<string,PdfLayer>();
             String key;
             foreach (PdfLayer layer in documentOCG.Keys) {
                 if (layer.Title == null) {

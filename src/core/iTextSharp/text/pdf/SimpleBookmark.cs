@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.util;
 using iTextSharp.text.xml.simpleparser;
@@ -91,17 +91,17 @@ namespace iTextSharp.text.pdf {
     */
     public sealed class SimpleBookmark : ISimpleXMLDocHandler {
         
-        private ArrayList topList;
-        private Stack attr = new Stack();
+        private List<Dictionary<String, Object>> topList;
+        private Stack<Dictionary<String, Object>> attr = new Stack<Dictionary<String, Object>>();
         
         /** Creates a new instance of SimpleBookmark */
         private SimpleBookmark() {
         }
         
-        private static ArrayList BookmarkDepth(PdfReader reader, PdfDictionary outline, IntHashtable pages) {
-            ArrayList list = new ArrayList();
+        private static IList<Dictionary<String, Object>> BookmarkDepth(PdfReader reader, PdfDictionary outline, IntHashtable pages) {
+            List<Dictionary<String, Object>> list = new List<Dictionary<String, Object>>();
             while (outline != null) {
-                Hashtable map = new Hashtable();
+                Dictionary<String, Object> map = new Dictionary<string,object>();
                 PdfString title = (PdfString)PdfReader.GetPdfObjectRelease(outline.Get(PdfName.TITLE));
                 map["Title"] = title.ToUnicodeString();
                 PdfArray color = (PdfArray)PdfReader.GetPdfObjectRelease(outline.Get(PdfName.C));
@@ -208,7 +208,7 @@ namespace iTextSharp.text.pdf {
             return list;
         }
         
-        private static void MapGotoBookmark(Hashtable map, PdfObject dest, IntHashtable pages) 
+        private static void MapGotoBookmark(Dictionary<String, Object> map, PdfObject dest, IntHashtable pages) 
         {
             if (dest.IsString())
                 map["Named"] = dest.ToString();
@@ -257,7 +257,7 @@ namespace iTextSharp.text.pdf {
         * @return a <CODE>List</CODE> with the bookmarks or <CODE>null</CODE> if the
         * document doesn't have any
         */    
-        public static ArrayList GetBookmark(PdfReader reader) {
+        public static IList<Dictionary<String, Object>> GetBookmark(PdfReader reader) {
             PdfDictionary catalog = reader.Catalog;
             PdfObject obj = PdfReader.GetPdfObjectRelease(catalog.Get(PdfName.OUTLINES));
             if (obj == null || !obj.IsDictionary())
@@ -279,12 +279,11 @@ namespace iTextSharp.text.pdf {
         * @param list the bookmarks
         * @param pageRange the page ranges, always in pairs.
         */    
-        public static void EliminatePages(ArrayList list, int[] pageRange) {
+        public static void EliminatePages(IList<Dictionary<String, Object>> list, int[] pageRange) {
             if (list == null)
                 return;
 
-            for (ListIterator it = new ListIterator(list); it.HasNext();) {
-                Hashtable map = (Hashtable)it.Next();
+            foreach (Dictionary<String, Object> map in list) {
                 bool hit = false;
                 if ("GoTo".Equals(map["Action"])) {
                     String page = (String)map["Page"];
@@ -305,7 +304,7 @@ namespace iTextSharp.text.pdf {
                         }
                     }
                 }
-                ArrayList kids = (ArrayList)map["Kids"];
+                IList<Dictionary<String, Object>> kids = (IList<Dictionary<String, Object>>)map["Kids"];
                 if (kids != null) {
                     EliminatePages(kids, pageRange);
                     if (kids.Count == 0) {
@@ -335,10 +334,10 @@ namespace iTextSharp.text.pdf {
         * @param pageRange the page ranges, always in pairs. It can be <CODE>null</CODE>
         * to include all the pages
         */    
-        public static void ShiftPageNumbers(ArrayList list, int pageShift, int[] pageRange) {
+        public static void ShiftPageNumbers(IList<Dictionary<String, Object>> list, int pageShift, int[] pageRange) {
             if (list == null)
                 return;
-            foreach (Hashtable map in list) {
+            foreach (Dictionary<String, Object> map in list) {
                 if ("GoTo".Equals(map["Action"])) {
                     String page = (String)map["Page"];
                     if (page != null) {
@@ -370,24 +369,30 @@ namespace iTextSharp.text.pdf {
                         map["Page"] = page;
                     }
                 }
-                ArrayList kids = (ArrayList)map["Kids"];
+                IList<Dictionary<String, Object>> kids = (IList<Dictionary<String, Object>>)map["Kids"];
                 if (kids != null)
                     ShiftPageNumbers(kids, pageShift, pageRange);
             }
         }
         
-        internal static void CreateOutlineAction(PdfDictionary outline, Hashtable map, PdfWriter writer, bool namedAsNames) {
+        public static string GetVal(Dictionary<String, Object> map, string key) {
+            object v;
+            map.TryGetValue(key, out v);
+            return (string)v;
+        }
+
+        internal static void CreateOutlineAction(PdfDictionary outline, Dictionary<String, Object> map, PdfWriter writer, bool namedAsNames) {
             try {
-                String action = (String)map["Action"];
+                String action = GetVal(map, "Action");
                 if ("GoTo".Equals(action)) {
                     String p;
-                    if ((p = (String)map["Named"]) != null) {
+                    if ((p = GetVal(map, "Named")) != null) {
                         if (namedAsNames)
                             outline.Put(PdfName.DEST, new PdfName(p));
                         else
                             outline.Put(PdfName.DEST, new PdfString(p, null));
                     }
-                    else if ((p = (String)map["Page"]) != null) {
+                    else if ((p = GetVal(map, "Page")) != null) {
                         PdfArray ar = new PdfArray();
                         StringTokenizer tk = new StringTokenizer(p);
                         int n = int.Parse(tk.NextToken());
@@ -415,11 +420,11 @@ namespace iTextSharp.text.pdf {
                 else if ("GoToR".Equals(action)) {
                     String p;
                     PdfDictionary dic = new PdfDictionary();
-                    if ((p = (String)map["Named"]) != null)
+                    if ((p = GetVal(map, "Named")) != null)
                         dic.Put(PdfName.D, new PdfString(p, null));
-                    else if ((p = (String)map["NamedN"]) != null)
+                    else if ((p = GetVal(map, "NamedN")) != null)
                         dic.Put(PdfName.D, new PdfName(p));
-                    else if ((p = (String)map["Page"]) != null){
+                    else if ((p = GetVal(map, "Page")) != null){
                         PdfArray ar = new PdfArray();
                         StringTokenizer tk = new StringTokenizer(p);
                         ar.Add(new PdfNumber(tk.NextToken()));
@@ -442,11 +447,11 @@ namespace iTextSharp.text.pdf {
                         }
                         dic.Put(PdfName.D, ar);
                     }
-                    String file = (String)map["File"];
+                    String file = GetVal(map, "File");
                     if (dic.Size > 0 && file != null) {
                         dic.Put(PdfName.S,  PdfName.GOTOR);
                         dic.Put(PdfName.F, new PdfString(file));
-                        String nw = (String)map["NewWindow"];
+                        String nw = GetVal(map, "NewWindow");
                         if (nw != null) {
                             if (nw.Equals("true"))
                                 dic.Put(PdfName.NEWWINDOW, PdfBoolean.PDFTRUE);
@@ -457,7 +462,7 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 else if ("URI".Equals(action)) {
-                    String uri = (String)map["URI"];
+                    String uri = GetVal(map, "URI");
                     if (uri != null) {
                         PdfDictionary dic = new PdfDictionary();
                         dic.Put(PdfName.S, PdfName.URI);
@@ -466,7 +471,7 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 else if ("Launch".Equals(action)) {
-                    String file = (String)map["File"];
+                    String file = GetVal(map, "File");
                     if (file != null) {
                         PdfDictionary dic = new PdfDictionary();
                         dic.Put(PdfName.S, PdfName.LAUNCH);
@@ -480,15 +485,17 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public static Object[] IterateOutlines(PdfWriter writer, PdfIndirectReference parent, ArrayList kids, bool namedAsNames) {
+        public static Object[] IterateOutlines(PdfWriter writer, PdfIndirectReference parent, IList<Dictionary<String, Object>> kids, bool namedAsNames) {
             PdfIndirectReference[] refs = new PdfIndirectReference[kids.Count];
             for (int k = 0; k < refs.Length; ++k)
                 refs[k] = writer.PdfIndirectReference;
             int ptr = 0;
             int count = 0;
-            foreach (Hashtable map in kids) {
+            foreach (Dictionary<String, Object> map in kids) {
                 Object[] lower = null;
-                ArrayList subKid = (ArrayList)map["Kids"];
+                IList<Dictionary<String, Object>> subKid = null;
+                if (map.ContainsKey("Kids"))
+                    subKid = (IList<Dictionary<String, Object>>)map["Kids"];
                 if (subKid != null && subKid.Count > 0)
                     lower = IterateOutlines(writer, refs[ptr], subKid, namedAsNames);
                 PdfDictionary outline = new PdfDictionary();
@@ -525,7 +532,7 @@ namespace iTextSharp.text.pdf {
                         outline.Put(PdfName.C, arr);
                     } catch {} //in case it's malformed
                 }
-                String style = (String)map["Style"];
+                String style = GetVal(map, "Style");
                 if (style != null) {
                     style = style.ToLower(System.Globalization.CultureInfo.InvariantCulture);
                     int bits = 0;
@@ -553,23 +560,23 @@ namespace iTextSharp.text.pdf {
         * whatever the encoding
         * @throws IOException on error
         */
-        public static void ExportToXMLNode(ArrayList list, TextWriter outp, int indent, bool onlyASCII) {
+        public static void ExportToXMLNode(IList<Dictionary<String, Object>> list, TextWriter outp, int indent, bool onlyASCII) {
             String dep = "";
             for (int k = 0; k < indent; ++k)
                 dep += "  ";
-            foreach (Hashtable map in list) {
+            foreach (Dictionary<String, Object> map in list) {
                 String title = null;
                 outp.Write(dep);
                 outp.Write("<Title ");
-                ArrayList kids = null;
-                foreach (DictionaryEntry entry in map) {
-                    String key = (String)entry.Key;
+                IList<Dictionary<String, Object>> kids = null;
+                foreach (KeyValuePair<string,object> entry in map) {
+                    String key = entry.Key;
                     if (key.Equals("Title")) {
                         title = (String)entry.Value;
                         continue;
                     }
                     else if (key.Equals("Kids")) {
-                        kids = (ArrayList)entry.Value;
+                        kids = (IList<Dictionary<String, Object>>)entry.Value;
                         continue;
                     }
                     else {
@@ -622,7 +629,7 @@ namespace iTextSharp.text.pdf {
         * whatever the encoding
         * @throws IOException on error
         */    
-        public static void ExportToXML(ArrayList list, Stream outp, String encoding, bool onlyASCII) {
+        public static void ExportToXML(IList<Dictionary<String, Object>> list, Stream outp, String encoding, bool onlyASCII) {
             StreamWriter wrt = new StreamWriter(outp, IanaEncodings.GetEncodingEncoding(encoding));
             ExportToXML(list, wrt, encoding, onlyASCII);
         }
@@ -636,7 +643,7 @@ namespace iTextSharp.text.pdf {
         * whatever the encoding
         * @throws IOException on error
         */
-        public static void ExportToXML(ArrayList list, TextWriter wrt, String encoding, bool onlyASCII) {
+        public static void ExportToXML(IList<Dictionary<String, Object>> list, TextWriter wrt, String encoding, bool onlyASCII) {
             wrt.Write("<?xml version=\"1.0\" encoding=\"");
             wrt.Write(SimpleXMLParser.EscapeXML(encoding, onlyASCII));
             wrt.Write("\"?>\n<Bookmark>\n");
@@ -651,7 +658,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @return the bookmarks
         */    
-        public static ArrayList ImportFromXML(Stream inp) {
+        public static IList<Dictionary<String, Object>> ImportFromXML(Stream inp) {
             SimpleBookmark book = new SimpleBookmark();
             SimpleXMLParser.Parse(book, inp);
             return book.topList;
@@ -663,7 +670,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @return the bookmarks
         */
-        public static ArrayList ImportFromXML(TextReader inp) {
+        public static IList<Dictionary<String, Object>> ImportFromXML(TextReader inp) {
             SimpleBookmark book = new SimpleBookmark();
             SimpleXMLParser.Parse(book, inp);
             return book.topList;
@@ -743,22 +750,24 @@ namespace iTextSharp.text.pdf {
             }
             if (!tag.Equals("Title"))
                 throw new Exception(MessageLocalization.GetComposedMessage("invalid.end.tag.1", tag));
-            Hashtable attributes = (Hashtable)attr.Pop();
+            Dictionary<String, Object> attributes = attr.Pop();
             String title = (String)attributes["Title"];
             attributes["Title"] = title.Trim();
-            String named = (String)attributes["Named"];
+            String named = GetVal(attributes, "Named");
             if (named != null)
                 attributes["Named"] = UnEscapeBinaryString(named);
-            named = (String)attributes["NamedN"];
+            named = GetVal(attributes, "NamedN");
             if (named != null)
                 attributes["NamedN"] = UnEscapeBinaryString(named);
             if (attr.Count == 0)
                 topList.Add(attributes);
             else {
-                Hashtable parent = (Hashtable)attr.Peek();
-                ArrayList kids = (ArrayList)parent["Kids"];
+                Dictionary<String, Object> parent = attr.Peek();
+                IList<Dictionary<String, Object>> kids = null;
+                if (parent.ContainsKey("Kids"))
+                    kids = (IList<Dictionary<String, Object>>)parent["Kids"];
                 if (kids == null) {
-                    kids = new ArrayList();
+                    kids = new List<Dictionary<String, Object>>();
                     parent["Kids"] = kids;
                 }
                 kids.Add(attributes);
@@ -768,10 +777,10 @@ namespace iTextSharp.text.pdf {
         public void StartDocument() {
         }
         
-        public void StartElement(String tag, Hashtable h) {
+        public void StartElement(String tag, Dictionary<string,string> h) {
             if (topList == null) {
                 if (tag.Equals("Bookmark")) {
-                    topList = new ArrayList();
+                    topList = new List<Dictionary<String, Object>>();
                     return;
                 }
                 else
@@ -779,7 +788,7 @@ namespace iTextSharp.text.pdf {
             }
             if (!tag.Equals("Title"))
                 throw new Exception(MessageLocalization.GetComposedMessage("tag.1.not.allowed", tag));
-            Hashtable attributes = new Hashtable(h);
+            Dictionary<String, Object> attributes = new Dictionary<String, Object>(h);
             attributes["Title"] = "";
             attributes.Remove("Kids");
             attr.Push(attributes);
@@ -788,7 +797,7 @@ namespace iTextSharp.text.pdf {
         public void Text(String str) {
             if (attr.Count == 0)
                 return;
-            Hashtable attributes = (Hashtable)attr.Peek();
+            Dictionary<String, Object> attributes = attr.Peek();
             String title = (String)attributes["Title"];
             title += str;
             attributes["Title"] = title;

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using Org.BouncyCastle.X509;
@@ -116,7 +116,7 @@ namespace iTextSharp.text.pdf {
         private byte[] externalDigest;
         private byte[] externalRSAdata;
         private String digestEncryptionAlgorithm;
-        private Hashtable exclusionLocations;
+        private Dictionary<PdfName, PdfLiteral> exclusionLocations;
             
         internal PdfSignatureAppearance(PdfStamperImp writer) {
             this.writer = writer;
@@ -848,7 +848,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @throws DocumentException on error
         */    
-        public void PreClose(Hashtable exclusionSizes) {
+        public void PreClose(Dictionary<PdfName, int> exclusionSizes) {
             if (preClosed)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("document.already.pre.closed"));
             preClosed = true;
@@ -888,7 +888,7 @@ namespace iTextSharp.text.pdf {
                 writer.AddAnnotation(sigField, pagen);
             }
 
-            exclusionLocations = new Hashtable();
+            exclusionLocations = new Dictionary<PdfName,PdfLiteral>();
             if (cryptoDictionary == null) {
                 if (PdfName.ADOBE_PPKLITE.Equals(Filter))
                     sigStandard = new PdfSigGenericPKCS.PPKLite();
@@ -924,9 +924,9 @@ namespace iTextSharp.text.pdf {
                 PdfLiteral lit = new PdfLiteral(80);
                 exclusionLocations[PdfName.BYTERANGE] = lit;
                 cryptoDictionary.Put(PdfName.BYTERANGE, lit);
-                foreach (DictionaryEntry entry in exclusionSizes) {
-                    PdfName key = (PdfName)entry.Key;
-                    int v = (int)entry.Value;
+                foreach (KeyValuePair<PdfName,int> entry in exclusionSizes) {
+                    PdfName key = entry.Key;
+                    int v = entry.Value;
                     lit = new PdfLiteral(v);
                     exclusionLocations[key] = lit;
                     cryptoDictionary.Put(key, lit);
@@ -946,7 +946,7 @@ namespace iTextSharp.text.pdf {
             writer.Close(stamper.MoreInfo);
             
             range = new int[exclusionLocations.Count * 2];
-            int byteRangePosition = ((PdfLiteral)exclusionLocations[PdfName.BYTERANGE]).Position;
+            int byteRangePosition = exclusionLocations[PdfName.BYTERANGE].Position;
             exclusionLocations.Remove(PdfName.BYTERANGE);
             int idx = 1;
             foreach (PdfLiteral lit in exclusionLocations.Values) {
@@ -1008,7 +1008,7 @@ namespace iTextSharp.text.pdf {
                 ByteBuffer bf = new ByteBuffer();
                 foreach (PdfName key in update.Keys) {
                     PdfObject obj = update.Get(key);
-                    PdfLiteral lit = (PdfLiteral)exclusionLocations[key];
+                    PdfLiteral lit = exclusionLocations[key];
                     if (lit == null)
                         throw new ArgumentException(MessageLocalization.GetComposedMessage("the.key.1.didn.t.reserve.space.in.preclose", key.ToString()));
                     bf.Reset();
