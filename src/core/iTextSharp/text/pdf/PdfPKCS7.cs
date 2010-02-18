@@ -1,5 +1,6 @@
 using System;
-using System.Collections;
+//using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.Globalization;
 using System.IO;
@@ -77,8 +78,10 @@ namespace iTextSharp.text.pdf {
         private byte[] sigAttr;
         private byte[] digestAttr;
         private int version, signerversion;
-        private Hashtable digestalgos;
-        private ArrayList certs, crls, signCerts;
+        private Dictionary<string,object> digestalgos;
+        private List<X509Certificate> certs;
+        private List<X509Crl> crls;
+        private List<X509Certificate> signCerts;
         private X509Certificate signCert;
         private byte[] digest;
         private IDigest messageDigest;
@@ -121,9 +124,9 @@ namespace iTextSharp.text.pdf {
         
         private TimeStampToken timeStampToken;
         
-        private static readonly Hashtable digestNames = new Hashtable();
-        private static readonly Hashtable algorithmNames = new Hashtable();
-        private static readonly Hashtable allowedDigests = new Hashtable();
+        private static readonly Dictionary<string,string> digestNames = new Dictionary<string,string>();
+        private static readonly Dictionary<string,string> algorithmNames = new Dictionary<string,string>();
+        private static readonly Dictionary<string,string> allowedDigests = new Dictionary<string,string>();
 
         static PdfPKCS7() {
             digestNames["1.2.840.113549.2.5"] = "MD5";
@@ -199,11 +202,11 @@ namespace iTextSharp.text.pdf {
         * @since    2.1.6
         */
         public static String GetDigest(String oid) {
-            String ret = (String)digestNames[oid];
-            if (ret == null)
-                return oid;
-            else
+            String ret;
+            if (digestNames.TryGetValue(oid, out ret))
                 return ret;
+            else
+                return oid;
         }
         
         /**
@@ -213,11 +216,11 @@ namespace iTextSharp.text.pdf {
         * @since    2.1.6
         */
         public static String GetAlgorithm(String oid) {
-            String ret = (String)algorithmNames[oid];
-            if (ret == null)
-                return oid;
-            else
+            String ret;
+            if (algorithmNames.TryGetValue(oid, out ret))
                 return ret;
+            else
+                return oid;
         }
         
         /**
@@ -253,13 +256,13 @@ namespace iTextSharp.text.pdf {
         public PdfPKCS7(byte[] contentsKey, byte[] certsKey) {
 
             X509CertificateParser cf = new X509CertificateParser();
-            certs = new ArrayList();
+            certs = new List<X509Certificate>();
             foreach (X509Certificate cc in cf.ReadCertificates(certsKey)) {
                 certs.Add(cc);
             }
             signCerts = certs;
-            signCert = (X509Certificate)certs[0];
-            crls = new ArrayList();
+            signCert = certs[0];
+            crls = new List<X509Crl>();
             Asn1InputStream inp = new Asn1InputStream(new MemoryStream(contentsKey));
             digest = ((DerOctetString)inp.ReadObject()).GetOctets();
             sig = SignerUtilities.GetSigner("SHA1withRSA");
@@ -280,7 +283,7 @@ namespace iTextSharp.text.pdf {
         }
         
         private void FindCRL(Asn1Sequence seq) {
-            crls = new ArrayList();
+            crls = new List<X509Crl>();
             for (int k = 0; k < seq.Count; ++k) {
                 X509CrlParser pp = new X509CrlParser();
                 X509Crl crl = pp.ReadCrl(seq[k].GetDerEncoded());
@@ -368,7 +371,7 @@ namespace iTextSharp.text.pdf {
             version = ((DerInteger)content[0]).Value.IntValue;
             
             // the digestAlgorithms
-            digestalgos = new Hashtable();
+            digestalgos = new Dictionary<string,object>();
             IEnumerator e = ((Asn1Set)content[1]).GetEnumerator();
             while (e.MoveNext())
             {
@@ -379,11 +382,11 @@ namespace iTextSharp.text.pdf {
             
             // the certificates and crls
             X509CertificateParser cf = new X509CertificateParser();
-            certs = new ArrayList();
+            certs = new List<X509Certificate>();
             foreach (X509Certificate cc in cf.ReadCertificates(contentsKey)) {
                 certs.Add(cc);
             }
-            crls = new ArrayList();
+            crls = new List<X509Crl>();
             
             // the possible ID_PKCS7_DATA
             Asn1Sequence rsaData = (Asn1Sequence)content[2];
@@ -493,14 +496,13 @@ namespace iTextSharp.text.pdf {
                         String hashAlgorithm, bool hasRSAdata) {
             this.privKey = privKey;
             
-            digestAlgorithm = (String)allowedDigests[hashAlgorithm.ToUpper(CultureInfo.InvariantCulture)];
-            if (digestAlgorithm == null)
+            if (!allowedDigests.TryGetValue(hashAlgorithm.ToUpper(CultureInfo.InvariantCulture), out digestAlgorithm))
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.hash.algorithm.1", hashAlgorithm));
             
             version = signerversion = 1;
-            certs = new ArrayList();
-            crls = new ArrayList();
-            digestalgos = new Hashtable();
+            certs = new List<X509Certificate>();
+            crls = new List<X509Crl>();
+            digestalgos = new Dictionary<string,object>();
             digestalgos[digestAlgorithm] = null;
             
             //
@@ -629,11 +631,11 @@ namespace iTextSharp.text.pdf {
         }
         
         private void CalcSignCertificateChain() {
-            ArrayList cc = new ArrayList();
+            List<X509Certificate> cc = new List<X509Certificate>();
             cc.Add(signCert);
-            ArrayList oc = new ArrayList(certs);
+            List<X509Certificate> oc = new List<X509Certificate>(certs);
             for (int k = 0; k < oc.Count; ++k) {
-                if (signCert.Equals((X509Certificate)oc[k])) {
+                if (signCert.Equals(oc[k])) {
                     oc.RemoveAt(k);
                     --k;
                     continue;
@@ -641,11 +643,11 @@ namespace iTextSharp.text.pdf {
             }
             bool found = true;
             while (found) {
-                X509Certificate v = (X509Certificate)cc[cc.Count - 1];
+                X509Certificate v = cc[cc.Count - 1];
                 found = false;
                 for (int k = 0; k < oc.Count; ++k) {
                     try {
-                        v.Verify(((X509Certificate)oc[k]).GetPublicKey());
+                        v.Verify(oc[k].GetPublicKey());
                         found = true;
                         cc.Add(oc[k]);
                         oc.RemoveAt(k);
@@ -662,7 +664,7 @@ namespace iTextSharp.text.pdf {
         * Get the X.509 certificate revocation lists associated with this PKCS#7 object
         * @return the X.509 certificate revocation lists associated with this PKCS#7 object in the form of X509Crl
         */
-        public ArrayList CRLs {
+        public List<X509Crl> CRLs {
             get {
                 return crls;
             }
@@ -767,7 +769,7 @@ namespace iTextSharp.text.pdf {
         * @return a <CODE>String</CODE> with the error description or <CODE>null</CODE>
         * if no error
         */    
-        public static String VerifyCertificate(X509Certificate cert, object[] crls, DateTime calendar) {
+        public static String VerifyCertificate(X509Certificate cert, X509Crl[] crls, DateTime calendar) {
             try {
                 if (!cert.IsValid(calendar))
                     return "The certificate has expired or is not yet valid";
@@ -788,7 +790,7 @@ namespace iTextSharp.text.pdf {
         * <CODE>Object[]{cert,error}</CODE> where <CODE>cert</CODE> is the
         * failed certificate and <CODE>error</CODE> is the error message
         */    
-        public static Object[] VerifyCertificates(X509Certificate[] certs, ArrayList keystore, object[] crls, DateTime calendar) {
+        public static Object[] VerifyCertificates(X509Certificate[] certs, List<X509Certificate> keystore, X509Crl[] crls, DateTime calendar) {
             for (int k = 0; k < certs.Length; ++k) {
                 X509Certificate cert = certs[k];
                 String err = VerifyCertificate(cert, crls, calendar);
@@ -835,7 +837,7 @@ namespace iTextSharp.text.pdf {
         * @return <CODE>true</CODE> is a certificate was found
         * @since    2.1.6
         */    
-        public static bool VerifyOcspCertificates(BasicOcspResp ocsp, ArrayList keystore) {
+        public static bool VerifyOcspCertificates(BasicOcspResp ocsp, List<X509Certificate> keystore) {
             try {
                 foreach (X509Certificate certStoreX509 in keystore) {
                     try {
@@ -859,7 +861,7 @@ namespace iTextSharp.text.pdf {
         * @return <CODE>true</CODE> is a certificate was found
         * @since    2.1.6
         */    
-        public static bool VerifyTimestampCertificates(TimeStampToken ts, ArrayList keystore) {
+        public static bool VerifyTimestampCertificates(TimeStampToken ts, List<X509Certificate> keystore) {
             try {
                 foreach (X509Certificate certStoreX509 in keystore) {
                     try {
@@ -1393,7 +1395,7 @@ namespace iTextSharp.text.pdf {
             public static DerObjectIdentifier UID = new DerObjectIdentifier("0.9.2342.19200300.100.1.1");
 
             /** A Hashtable with default symbols */
-            public static Hashtable DefaultSymbols = new Hashtable();
+            public static Dictionary<DerObjectIdentifier,string> DefaultSymbols = new Dictionary<DerObjectIdentifier,string>();
             
             static X509Name(){
                 DefaultSymbols[C] = "C";
@@ -1413,7 +1415,7 @@ namespace iTextSharp.text.pdf {
                 DefaultSymbols[GENERATION] = "GENERATION";
             }
             /** A Hashtable with values */
-            public Hashtable values = new Hashtable();
+            public Dictionary<string,List<string>> values = new Dictionary<string,List<string>>();
 
             /**
             * Constructs an X509 name
@@ -1427,12 +1429,12 @@ namespace iTextSharp.text.pdf {
                     
                     for (int i = 0; i < sett.Count; i++) {
                         Asn1Sequence s = (Asn1Sequence)sett[i];
-                        String id = (String)DefaultSymbols[s[0]];
-                        if (id == null)
+                        String id;
+                        if (!DefaultSymbols.TryGetValue(s[0], out id))
                             continue;
-                        ArrayList vs = (ArrayList)values[id];
-                        if (vs == null) {
-                            vs = new ArrayList();
+                        List<string> vs;
+                        if (!values(id, out vs)) {
+                            vs = new List<string>();
                             values[id] = vs;
                         }
                         vs.Add(((DerStringBase)s[1]).GetString());
@@ -1456,19 +1458,21 @@ namespace iTextSharp.text.pdf {
                     
                     String id = token.Substring(0, index).ToUpper(System.Globalization.CultureInfo.InvariantCulture);
                     String value = token.Substring(index + 1);
-                    ArrayList vs = (ArrayList)values[id];
-                    if (vs == null) {
-                        vs = new ArrayList();
+                    List<string> vs;
+                    if (!values(id, out vs)) {
+                        vs = new List<string>();
                         values[id] = vs;
                     }
                     vs.Add(value);
-                }
-                
+                }                
             }
             
             public String GetField(String name) {
-                ArrayList vs = (ArrayList)values[name];
-                return vs == null ? null : (String)vs[0];
+                List<string> vs;
+                if (values(name, out vs))
+                    return vs.Count == 0 ? null : vs[0];
+                else
+                    return null;
             }
 
             /**
@@ -1476,16 +1480,19 @@ namespace iTextSharp.text.pdf {
             * @param name
             * @return an ArrayList
             */
-            public ArrayList GetFieldArray(String name) {
-                ArrayList vs = (ArrayList)values[name];
-                return vs == null ? null : vs;
+            public List<string> GetFieldArray(String name) {
+                List<string> vs;
+                if (values(name, out vs))
+                    return vs;
+                else
+                    return null;
             }
             
             /**
             * getter for values
             * @return a Hashtable with the fields of the X509 name
             */
-            public Hashtable GetFields() {
+            public Dictionary<string,List<string>> GetFields() {
                 return values;
             }
             

@@ -51,11 +51,11 @@ namespace System.util {
     /// Summary description for ListIterator.
     /// </summary>
     public class ListIterator<T> {
-        List<T> col;
+        IList<T> col;
         int cursor = 0;
         int lastRet = -1;
 
-        public ListIterator(List<T> col) {
+        public ListIterator(IList<T> col) {
             this.col = col;
         }
 

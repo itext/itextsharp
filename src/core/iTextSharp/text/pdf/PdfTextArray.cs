@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 /*
  * This file is part of the iText project.
@@ -56,7 +56,7 @@ namespace iTextSharp.text.pdf {
     */
 
     public class PdfTextArray{
-        ArrayList arrayList = new ArrayList();
+        List<Object> arrayList = new List<Object>();
         
         // To emit a more efficient array, we consolidate
         // repeated numbers or strings into single array entries.
@@ -115,7 +115,7 @@ namespace iTextSharp.text.pdf {
             // adding an empty string doesn't modify the TextArray at all
         }
         
-        internal ArrayList ArrayList {
+        internal List<Object> ArrayList {
             get {
                 return arrayList;
             }

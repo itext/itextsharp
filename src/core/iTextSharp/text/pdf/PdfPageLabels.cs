@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.util;
 using iTextSharp.text;
 using iTextSharp.text.factories;
@@ -85,12 +85,12 @@ namespace iTextSharp.text.pdf {
                     new PdfName("r"), PdfName.A, new PdfName("a")};
         /** The sequence of logical pages. Will contain at least a value for page 1
          */    
-        internal Hashtable map;
+        internal Dictionary<int, PdfDictionary> map;
     
         /** Creates a new PdfPageLabel with a default logical page 1
          */
         public PdfPageLabels() {
-            map = new Hashtable();
+            map = new Dictionary<int,PdfDictionary>();
             AddPageLabel(1, DECIMAL_ARABIC_NUMERALS, null, 1);
         }
 
@@ -169,14 +169,14 @@ namespace iTextSharp.text.pdf {
                 return null;
             
             String[] labelstrings = new String[n];
-            Hashtable numberTree = PdfNumberTree.ReadTree(labels);
+            Dictionary<int, PdfObject> numberTree = PdfNumberTree.ReadTree(labels);
             
             int pagecount = 1;
             String prefix = "";
             char type = 'D';
             for (int i = 0; i < n; i++) {
                 if (numberTree.ContainsKey(i)) {
-                    PdfDictionary d = (PdfDictionary)PdfReader.GetPdfObjectRelease((PdfObject)numberTree[i]);
+                    PdfDictionary d = (PdfDictionary)PdfReader.GetPdfObjectRelease(numberTree[i]);
                     if (d.Contains(PdfName.ST)) {
                         pagecount = ((PdfNumber)d.Get(PdfName.ST)).IntValue;
                     }
@@ -223,7 +223,7 @@ namespace iTextSharp.text.pdf {
             PdfDictionary labels = (PdfDictionary)PdfReader.GetPdfObjectRelease(dict.Get(PdfName.PAGELABELS));
             if (labels == null) 
                 return null;
-            Hashtable numberTree = PdfNumberTree.ReadTree(labels);
+            Dictionary<int, PdfObject> numberTree = PdfNumberTree.ReadTree(labels);
             int[] numbers = new int[numberTree.Count];
             numberTree.Keys.CopyTo(numbers, 0);
             Array.Sort(numbers);
@@ -233,7 +233,7 @@ namespace iTextSharp.text.pdf {
             int pagecount;
             for (int k = 0; k < numbers.Length; ++k) {
                 int key = numbers[k];
-                PdfDictionary d = (PdfDictionary)PdfReader.GetPdfObjectRelease((PdfObject)numberTree[key]);
+                PdfDictionary d = (PdfDictionary)PdfReader.GetPdfObjectRelease(numberTree[key]);
                 if (d.Contains(PdfName.ST)) {
                     pagecount = ((PdfNumber)d.Get(PdfName.ST)).IntValue;
                 } else {

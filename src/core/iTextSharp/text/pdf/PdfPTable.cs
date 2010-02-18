@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
@@ -73,7 +73,7 @@ namespace iTextSharp.text.pdf {
         */    
         public const int TEXTCANVAS = 3;
         
-        protected ArrayList rows = new ArrayList();
+        protected List<PdfPRow> rows = new List<PdfPRow>();
         protected float totalHeight = 0;
         protected PdfPCell[] currentRow;
         protected int currentRowIdx = 0;
@@ -201,7 +201,7 @@ namespace iTextSharp.text.pdf {
                 currentRow[k] = new PdfPCell(table.currentRow[k]);
             }
             for (int k = 0; k < table.rows.Count; ++k) {
-                PdfPRow row = (PdfPRow)(table.rows[k]);
+                PdfPRow row = table.rows[k];
                 if (row != null)
                     row = new PdfPRow(row);
                 rows.Add(row);
@@ -468,34 +468,34 @@ namespace iTextSharp.text.pdf {
                 return false;
             
             int row = currRow - 1;
-            PdfPRow aboveRow = (PdfPRow)rows[row];
+            PdfPRow aboveRow = rows[row];
             if (aboveRow == null)
                 return false;
-            PdfPCell aboveCell = (PdfPCell)aboveRow.GetCells()[currCol];
+            PdfPCell aboveCell = aboveRow.GetCells()[currCol];
             while (aboveCell == null && row > 0) {
-                aboveRow  = (PdfPRow)rows[--row];
+                aboveRow  = rows[--row];
                 if (aboveRow == null)
                     return false;
-                aboveCell = (PdfPCell)aboveRow.GetCells()[currCol];
+                aboveCell = aboveRow.GetCells()[currCol];
             }
             
             int distance = currRow - row;
 
             if (aboveCell == null) {
                 int col = currCol - 1;
-                aboveCell = (PdfPCell)aboveRow.GetCells()[col];
+                aboveCell = aboveRow.GetCells()[col];
                 while (aboveCell == null && col > 0)
-                    aboveCell = (PdfPCell)aboveRow.GetCells()[--col];
+                    aboveCell = aboveRow.GetCells()[--col];
                 return aboveCell != null && aboveCell.Rowspan > distance;
             }
             
             if ((aboveCell.Rowspan == 1) && (distance > 1)) {
                 int col = currCol - 1;
-                aboveRow = (PdfPRow)rows[row + 1];
+                aboveRow = rows[row + 1];
                 distance--;
-                aboveCell = (PdfPCell)aboveRow.GetCells()[col];
+                aboveCell = aboveRow.GetCells()[col];
                 while (aboveCell == null && col > 0)
-                    aboveCell = (PdfPCell)aboveRow.GetCells()[--col];
+                    aboveCell = aboveRow.GetCells()[--col];
             }
             
             return aboveCell != null && aboveCell.Rowspan > distance;
@@ -600,7 +600,7 @@ namespace iTextSharp.text.pdf {
                 colEnd = Math.Min(colEnd, totalCols);
             float yPosStart = yPos;
             for (int k = rowStart; k < rowEnd; ++k) {
-                PdfPRow row = (PdfPRow)rows[k];
+                PdfPRow row = rows[k];
                 if (row != null) {
                     row.WriteCells(colStart, colEnd, xPos, yPos, canvases);
                     yPos -= row.MaxHeights;
@@ -610,7 +610,7 @@ namespace iTextSharp.text.pdf {
                 float[] heights = new float[rowEnd - rowStart + 1];
                 heights[0] = yPosStart;
                 for (int k = rowStart; k < rowEnd; ++k) {
-                    PdfPRow row = (PdfPRow)rows[k];
+                    PdfPRow row = rows[k];
                     float hr = 0;
                     if (row != null)
                         hr = row.MaxHeights;
@@ -768,7 +768,7 @@ namespace iTextSharp.text.pdf {
         public float GetRowHeight(int idx, bool firsttime) {
             if (totalWidth <= 0 || idx < 0 || idx >= rows.Count)
                 return 0;
-            PdfPRow row = (PdfPRow)rows[idx];
+            PdfPRow row = rows[idx];
             if (row == null)
                 return 0;
             if (firsttime)
@@ -783,7 +783,7 @@ namespace iTextSharp.text.pdf {
                 while (RowSpanAbove(idx - rs, i)) {
                     rs++;
                 }
-                tmprow = (PdfPRow)rows[idx - rs];
+                tmprow = rows[idx - rs];
                 cell = tmprow.GetCells()[i];
                 float tmp = 0;
                 if (cell != null && cell.Rowspan == rs + 1) {
@@ -812,7 +812,7 @@ namespace iTextSharp.text.pdf {
         public float GetRowspanHeight(int rowIndex, int cellIndex) {
             if (totalWidth <= 0 || rowIndex < 0 || rowIndex >= rows.Count)
                 return 0;
-            PdfPRow row = (PdfPRow)rows[rowIndex];
+            PdfPRow row = rows[rowIndex];
             if (row == null || cellIndex >= row.GetCells().Length)
                 return 0;
             PdfPCell cell = row.GetCells()[cellIndex];
@@ -834,7 +834,7 @@ namespace iTextSharp.text.pdf {
                 float total = 0;
                 int size = Math.Min(rows.Count, headerRows);
                 for (int k = 0; k < size; ++k) {
-                    PdfPRow row = (PdfPRow)rows[k];
+                    PdfPRow row = rows[k];
                     if (row != null)
                         total += row.MaxHeights;
                 }
@@ -853,7 +853,7 @@ namespace iTextSharp.text.pdf {
                 int start = Math.Max(0, headerRows - footerRows);
                 int size = Math.Min(rows.Count, headerRows);
                 for (int k = start; k < size; ++k) {
-                    PdfPRow row = (PdfPRow)rows[k];
+                    PdfPRow row = rows[k];
                     if (row != null)
                         total += row.MaxHeights;
                 }
@@ -870,7 +870,7 @@ namespace iTextSharp.text.pdf {
                 return false;
             }
             if (totalWidth > 0) {
-                PdfPRow row = (PdfPRow)rows[rowNumber];
+                PdfPRow row = rows[rowNumber];
                 if (row != null)
                     totalHeight -= row.MaxHeights;
             }
@@ -894,7 +894,7 @@ namespace iTextSharp.text.pdf {
         * Removes all of the rows except headers
         */
         public void DeleteBodyRows() {
-            ArrayList rows2 = new ArrayList();
+            List<PdfPRow> rows2 = new List<PdfPRow>();
             for (int k = 0; k < headerRows; ++k)
                 rows2.Add(rows[k]);
             rows = rows2;
@@ -1013,14 +1013,14 @@ namespace iTextSharp.text.pdf {
         * @return the row at position idx
         */
         public PdfPRow GetRow(int idx) {
-            return (PdfPRow)rows[idx];
+            return rows[idx];
         }
 
         /**
         * Gets an arraylist with all the rows in the table.
         * @return an arraylist
         */
-        public ArrayList Rows {
+        public List<PdfPRow> Rows {
             get {
                 return rows;
             }
@@ -1033,8 +1033,8 @@ namespace iTextSharp.text.pdf {
         * @return   a selection of rows
         * @since    2.1.6
         */
-        public ArrayList GetRows(int start, int end) {
-            ArrayList list = new ArrayList();
+        public List<PdfPRow> GetRows(int start, int end) {
+            List<PdfPRow> list = new List<PdfPRow>();
             if (start < 0 || end > Size) {
                 return list;
             }
@@ -1135,7 +1135,7 @@ namespace iTextSharp.text.pdf {
                 int n = 0;
                 if (includeHeaders) {
                     for (int k = 0; k < headerRows; ++k) {
-                        PdfPRow row = (PdfPRow)rows[k];
+                        PdfPRow row = rows[k];
                         if (row == null)
                             ++n;
                         else
@@ -1143,7 +1143,7 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 for (; firstRow < lastRow; ++firstRow) {
-                        PdfPRow row = (PdfPRow)rows[firstRow];
+                        PdfPRow row = rows[firstRow];
                         if (row == null)
                             ++n;
                         else

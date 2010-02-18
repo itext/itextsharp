@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
@@ -53,7 +53,7 @@ namespace iTextSharp.text.xml.simpleparser {
         * @param tag the tag name
         * @param h the tag's attributes
         */    
-        void StartElement(String tag, Hashtable h);
+        void StartElement(String tag, Dictionary<string,string> h);
         /**
         * Called when an end tag is found.
         * @param tag the tag name

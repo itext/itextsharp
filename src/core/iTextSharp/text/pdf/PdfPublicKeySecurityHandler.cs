@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.pdf.crypto;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -104,13 +104,13 @@ namespace iTextSharp.text.pdf {
         
         private const int SEED_LENGTH = 20;
         
-        private ArrayList recipients = null;
+        private List<PdfPublicKeyRecipient> recipients = null;
         
         private byte[] seed;
 
         public PdfPublicKeySecurityHandler() {
             seed = IVGenerator.GetIV(SEED_LENGTH);
-            recipients = new ArrayList();
+            recipients = new List<PdfPublicKeyRecipient>();
         }
 
 
@@ -128,7 +128,7 @@ namespace iTextSharp.text.pdf {
         
         public byte[] GetEncodedRecipient(int index) {
             //Certificate certificate = recipient.GetX509();
-            PdfPublicKeyRecipient recipient = (PdfPublicKeyRecipient)recipients[index];
+            PdfPublicKeyRecipient recipient = recipients[index];
             byte[] cms = recipient.Cms;
             
             if (cms != null) return cms;

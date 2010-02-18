@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 
 /*
@@ -57,7 +57,7 @@ namespace iTextSharp.text.pdf {
      * as Thai.
      * @author  Paulo Soares
      */
-    internal class TrueTypeFontUnicode : TrueTypeFont, IComparer {
+    internal class TrueTypeFontUnicode : TrueTypeFont, IComparer<int[]> {
     
         /** <CODE>true</CODE> if the encoding is vertical.
          */    
@@ -302,9 +302,9 @@ namespace iTextSharp.text.pdf {
          * @param o2 the second element
          * @return the comparisation
          */    
-        public int Compare(Object o1, Object o2) {
-            int m1 = ((int[])o1)[0];
-            int m2 = ((int[])o2)[0];
+        public int Compare(int[] o1, int[] o2) {
+            int m1 = o1[0];
+            int m2 = o2[0];
             if (m1 < m2)
                 return -1;
             if (m1 == m2)
@@ -322,13 +322,10 @@ namespace iTextSharp.text.pdf {
          * @throws DocumentException error in generating the object
          */
         internal override void WriteFont(PdfWriter writer, PdfIndirectReference piref, Object[] parms) {
-            Hashtable longTag = (Hashtable)parms[0];
+            Dictionary<int, int[]> longTag = (Dictionary<int, int[]>)parms[0];
             AddRangeUni(longTag, true, subset);
-            ArrayList tmp = new ArrayList();
-            foreach (object o in longTag.Values) {
-                tmp.Add(o);
-            }
-            Object[] metrics = tmp.ToArray();
+            int[][] metrics = new int[longTag.Count][];
+            longTag.Values.CopyTo(metrics, 0);
             Array.Sort(metrics, this);
             PdfIndirectReference ind_font = null;
             PdfObject pobj = null;
@@ -340,10 +337,11 @@ namespace iTextSharp.text.pdf {
                     stream = new PdfStream(new byte[]{(byte)0x80});
                 }
                 else {
-                    int top = ((int[])metrics[metrics.Length - 1])[0];
+                    int top = metrics[metrics.Length - 1][0];
                     byte[] bt = new byte[top / 8 + 1];
-                    for (int k = 0; k < metrics.Length; ++k) {
-                        int v = ((int[])metrics[k])[0];
+                    int length = metrics.GetLength(0);
+                    for (int k = 0; k < length; ++k) {
+                        int v = metrics[k][0];
                         bt[v / 8] |= rotbits[v % 8];
                     }
                     stream = new PdfStream(bt);
@@ -427,9 +425,12 @@ namespace iTextSharp.text.pdf {
          * @return an <CODE>int</CODE> array with {glyph index, width}
          */    
         public override int[] GetMetricsTT(int c) {
-            if (cmapExt != null)
-                return (int[])cmapExt[c];
-            Hashtable map = null;
+            int[] ret;
+            if (cmapExt != null) {
+                cmapExt.TryGetValue(c, out ret);
+                return ret;
+            }
+            Dictionary<int,int[]> map = null;
             if (fontSpecific)
                 map = cmap10;
             else
@@ -437,13 +438,17 @@ namespace iTextSharp.text.pdf {
             if (map == null)
                 return null;
             if (fontSpecific) {
-                if ((c & 0xffffff00) == 0 || (c & 0xffffff00) == 0xf000)
-                    return (int[])map[c & 0xff];
+                if ((c & 0xffffff00) == 0 || (c & 0xffffff00) == 0xf000) {
+                    map.TryGetValue(c & 0xff, out ret);
+                    return ret;
+                }
                 else
                     return null;
             }
-            else
-                return (int[])map[c];
+            else {
+                map.TryGetValue(c, out ret);
+                return ret;
+            }
         }
 
         /**

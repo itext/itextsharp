@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.util;
 using iTextSharp.text.xml.simpleparser;
@@ -54,18 +54,19 @@ namespace iTextSharp.text.pdf {
     */
     public sealed class SimpleNamedDestination : ISimpleXMLDocHandler {
         
-        private Hashtable xmlNames;
-        private Hashtable xmlLast;
+        private Dictionary<string,string> xmlNames;
+        private Dictionary<string,string> xmlLast;
 
         private SimpleNamedDestination() {
         }
         
-        public static Hashtable GetNamedDestination(PdfReader reader, bool fromNames) {
+        public static Dictionary<string,string> GetNamedDestination(PdfReader reader, bool fromNames) {
             IntHashtable pages = new IntHashtable();
             int numPages = reader.NumberOfPages;
             for (int k = 1; k <= numPages; ++k)
                 pages[reader.GetPageOrigRef(k).Number] = k;
-            Hashtable names = fromNames ? reader.GetNamedDestinationFromNames() : reader.GetNamedDestinationFromStrings();
+            Dictionary<string,PdfObject> names = fromNames ? reader.GetNamedDestinationFromNames() : reader.GetNamedDestinationFromStrings();
+            Dictionary<string,string> n2 = new Dictionary<string,string>(names.Count);
             String[] keys = new String[names.Count];
             names.Keys.CopyTo(keys, 0);
             foreach (String name in keys) {
@@ -76,13 +77,12 @@ namespace iTextSharp.text.pdf {
                     s.Append(' ').Append(arr[1].ToString().Substring(1));
                     for (int k = 2; k < arr.Size; ++k)
                         s.Append(' ').Append(arr[k].ToString());
-                    names[name] = s.ToString();
+                    n2[name] = s.ToString();
                 }
                 catch {
-                    names.Remove(name);
                 }
             }
-            return names;
+            return n2;
         }
         
         /**
@@ -103,7 +103,7 @@ namespace iTextSharp.text.pdf {
         * whatever the encoding
         * @throws IOException on error
         */
-        public static void ExportToXML(Hashtable names, Stream outp, String encoding, bool onlyASCII) {
+        public static void ExportToXML(Dictionary<string,string> names, Stream outp, String encoding, bool onlyASCII) {
             StreamWriter wrt = new StreamWriter(outp, IanaEncodings.GetEncodingEncoding(encoding));
             ExportToXML(names, wrt, encoding, onlyASCII);
         }
@@ -117,12 +117,12 @@ namespace iTextSharp.text.pdf {
         * whatever the encoding
         * @throws IOException on error
         */
-        public static void ExportToXML(Hashtable names, TextWriter wrt, String encoding, bool onlyASCII) {
+        public static void ExportToXML(Dictionary<string,string> names, TextWriter wrt, String encoding, bool onlyASCII) {
             wrt.Write("<?xml version=\"1.0\" encoding=\"");
             wrt.Write(SimpleXMLParser.EscapeXML(encoding, onlyASCII));
             wrt.Write("\"?>\n<Destination>\n");
             foreach (String key in names.Keys) {
-                String value = (String)names[key];
+                String value = names[key];
                 wrt.Write("  <Name Page=\"");
                 wrt.Write(SimpleXMLParser.EscapeXML(value, onlyASCII));
                 wrt.Write("\">");
@@ -139,7 +139,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @return the names
         */
-        public static Hashtable ImportFromXML(Stream inp) {
+        public static Dictionary<string,string> ImportFromXML(Stream inp) {
             SimpleNamedDestination names = new SimpleNamedDestination();
             SimpleXMLParser.Parse(names, inp);
             return names.xmlNames;
@@ -151,7 +151,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @return the names
         */
-        public static Hashtable ImportFromXML(TextReader inp) {
+        public static Dictionary<string,string> ImportFromXML(TextReader inp) {
             SimpleNamedDestination names = new SimpleNamedDestination();
             SimpleXMLParser.Parse(names, inp);
             return names.xmlNames;
@@ -182,11 +182,11 @@ namespace iTextSharp.text.pdf {
             return ar;
         }
         
-        public static PdfDictionary OutputNamedDestinationAsNames(Hashtable names, PdfWriter writer) {
+        public static PdfDictionary OutputNamedDestinationAsNames(Dictionary<string,string> names, PdfWriter writer) {
             PdfDictionary dic = new PdfDictionary();
             foreach (String key in names.Keys) {
                 try {
-                    String value = (String)names[key];
+                    String value = names[key];
                     PdfArray ar = CreateDestinationArray(value, writer);
                     PdfName kn = new PdfName(key);
                     dic.Put(kn, ar);
@@ -198,11 +198,11 @@ namespace iTextSharp.text.pdf {
             return dic;
         }
         
-        public static PdfDictionary OutputNamedDestinationAsStrings(Hashtable names, PdfWriter writer) {
-            Hashtable n2 = new Hashtable();
+        public static PdfDictionary OutputNamedDestinationAsStrings(Dictionary<string,string> names, PdfWriter writer) {
+            Dictionary<string,PdfObject> n2 = new Dictionary<string,string>(names.Count);
             foreach (String key in names.Keys) {
                 try {
-                    String value = (String)names[key];
+                    String value = names[key];
                     PdfArray ar = CreateDestinationArray(value, writer);
                     n2[key] = writer.AddToBody(ar).IndirectReference;
                 }
@@ -286,17 +286,17 @@ namespace iTextSharp.text.pdf {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("name.end.tag.out.of.place"));
             if (!xmlLast.ContainsKey("Page"))
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("page.attribute.missing"));
-            xmlNames[UnEscapeBinaryString((String)xmlLast["Name"])] = xmlLast["Page"];
+            xmlNames[UnEscapeBinaryString(xmlLast["Name"])] = xmlLast["Page"];
             xmlLast = null;
         }
         
         public void StartDocument() {
         }
         
-        public void StartElement(String tag, Hashtable h) {
+        public void StartElement(String tag, Dictionary<string,string> h) {
             if (xmlNames == null) {
                 if (tag.Equals("Destination")) {
-                    xmlNames = new Hashtable();
+                    xmlNames = new Dictionary<string,string>();
                     return;
                 }
                 else
@@ -306,14 +306,14 @@ namespace iTextSharp.text.pdf {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("tag.1.not.allowed", tag));
             if (xmlLast != null)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("nested.tags.are.not.allowed"));
-            xmlLast = new Hashtable(h);
+            xmlLast = new Dictionary<string,string>(h);
             xmlLast["Name"] = "";
         }
         
         public void Text(String str) {
             if (xmlLast == null)
                 return;
-            String name = (String)xmlLast["Name"];
+            String name = xmlLast["Name"];
             name += str;
             xmlLast["Name"] = name;
         }    

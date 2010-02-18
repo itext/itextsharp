@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
@@ -82,7 +82,7 @@ namespace iTextSharp.text.pdf {
          * is the checksum, position 1 is the offset from the start of the file
          * and position 2 is the length of the table.
          */
-        protected Hashtable tableDirectory;
+        protected Dictionary<int, int[]> tableDirectory;
         /** The file in use.
          */
         protected RandomAccessFileOrArray rf;
@@ -93,8 +93,8 @@ namespace iTextSharp.text.pdf {
         protected bool includeExtras;
         protected bool locaShortTable;
         protected int[] locaTable;
-        protected Hashtable glyphsUsed;
-        protected ArrayList glyphsInList;
+        protected Dictionary<int,object> glyphsUsed;
+        protected List<int> glyphsInList;
         protected int tableGlyphOffset;
         protected int[] newLocaTable;
         protected byte[] newLocaTableOut;
@@ -111,14 +111,14 @@ namespace iTextSharp.text.pdf {
          * @param glyphsUsed the glyphs used
          * @param includeCmap <CODE>true</CODE> if the table cmap is to be included in the generated font
          */
-        internal TrueTypeFontSubSet(string fileName, RandomAccessFileOrArray rf, Hashtable glyphsUsed, int directoryOffset, bool includeCmap, bool includeExtras) {
+        internal TrueTypeFontSubSet(string fileName, RandomAccessFileOrArray rf, Dictionary<int,int[]> glyphsUsed, int directoryOffset, bool includeCmap, bool includeExtras) {
             this.fileName = fileName;
             this.rf = rf;
             this.glyphsUsed = glyphsUsed;
             this.includeCmap = includeCmap;
             this.includeExtras = includeExtras;
             this.directoryOffset = directoryOffset;
-            glyphsInList = new ArrayList(glyphsUsed.Keys);
+            glyphsInList = new List<int>(glyphsUsed.Keys);
         }
     
         /** Does the actual work of subsetting the font.
@@ -165,7 +165,7 @@ namespace iTextSharp.text.pdf {
                 string name = tableNames[k];
                 if (name.Equals("glyf") || name.Equals("loca"))
                     continue;
-                tableLocation = (int[])tableDirectory[name];
+                tableDirectory.TryGetValue(name, out tableLocation);
                 if (tableLocation == null)
                     continue;
                 ++tablesUsed;
@@ -185,7 +185,7 @@ namespace iTextSharp.text.pdf {
             WriteFontShort((tablesUsed - (1 << selector)) * 16);
             for (int k = 0; k < tableNames.Length; ++k) {
                 string name = tableNames[k];
-                tableLocation = (int[])tableDirectory[name];
+                tableDirectory.TryGetValue(name, out tableLocation);
                 if (tableLocation == null)
                     continue;
                 WriteFontString(name);
@@ -207,7 +207,7 @@ namespace iTextSharp.text.pdf {
             }
             for (int k = 0; k < tableNames.Length; ++k) {
                 string name = tableNames[k];
-                tableLocation = (int[])tableDirectory[name];
+                tableDirectory.TryGetValue(name, out tableLocation);
                 if (tableLocation == null)
                     continue;
                 if (name.Equals("glyf")) {
@@ -229,7 +229,7 @@ namespace iTextSharp.text.pdf {
         }
     
         protected void CreateTableDirectory() {
-            tableDirectory = new Hashtable();
+            tableDirectory = new Dictionary<int,int[]>();
             rf.Seek(directoryOffset);
             int id = rf.ReadInt();
             if (id != 0x00010000)
@@ -248,12 +248,12 @@ namespace iTextSharp.text.pdf {
     
         protected void ReadLoca() {
             int[] tableLocation;
-            tableLocation = (int[])tableDirectory["head"];
+            tableDirectory.TryGetValue("head", out tableLocation);
             if (tableLocation == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "head", fileName));
             rf.Seek(tableLocation[TABLE_OFFSET] + HEAD_LOCA_FORMAT_OFFSET);
             locaShortTable = (rf.ReadUnsignedShort() == 0);
-            tableLocation = (int[])tableDirectory["loca"];
+            tableDirectory.TryGetValue("loca", out tableLocation);
             if (tableLocation == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "loca", fileName));
             rf.Seek(tableLocation[TABLE_OFFSET]);
@@ -275,7 +275,7 @@ namespace iTextSharp.text.pdf {
             newLocaTable = new int[locaTable.Length];
             int[] activeGlyphs = new int[glyphsInList.Count];
             for (int k = 0; k < activeGlyphs.Length; ++k)
-                activeGlyphs[k] = (int)glyphsInList[k];
+                activeGlyphs[k] = glyphsInList[k];
             Array.Sort(activeGlyphs);
             int glyfSize = 0;
             for (int k = 0; k < activeGlyphs.Length; ++k) {
@@ -322,7 +322,7 @@ namespace iTextSharp.text.pdf {
     
         protected void FlatGlyphs() {
             int[] tableLocation;
-            tableLocation = (int[])tableDirectory["glyf"];
+            tableDirectory.TryGetValue("glyf", out tableLocation);
             if (tableLocation == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "glyf", fileName));
             int glyph0 = 0;
@@ -332,7 +332,7 @@ namespace iTextSharp.text.pdf {
             }
             tableGlyphOffset = tableLocation[TABLE_OFFSET];
             for (int k = 0; k < glyphsInList.Count; ++k) {
-                int glyph = (int)glyphsInList[k];
+                int glyph = glyphsInList[k];
                 CheckGlyphComposite(glyph);
             }
         }

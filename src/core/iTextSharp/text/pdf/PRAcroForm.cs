@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 /*
  * $Id$
  * 
@@ -82,9 +82,9 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        internal ArrayList fields;
-        internal ArrayList stack;
-        internal Hashtable fieldByName;
+        internal List<FieldInformation> fields;
+        internal List<PdfDictionary> stack;
+        internal Dictionary<String, FieldInformation> fieldByName;
         internal PdfReader reader;
         
         /**
@@ -93,9 +93,9 @@ namespace iTextSharp.text.pdf {
         */
         public PRAcroForm(PdfReader reader) {
             this.reader = reader;
-            fields = new ArrayList();
-            fieldByName = new Hashtable();
-            stack = new ArrayList();
+            fields = new List<FieldInformation>();
+            fieldByName = new Dictionary<string,FieldInformation>();
+            stack = new List<PdfDictionary>();
         }
         /**
         * Number of fields found
@@ -107,14 +107,16 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public ArrayList Fields {
+        public List<FieldInformation> Fields {
             get {
                 return fields;
             }
         }
         
         public FieldInformation GetField(String name) {
-            return (FieldInformation)fieldByName[name];
+            FieldInformation f;
+            fieldByName.TryGetValue(name, out f);
+            return f;
         }
         
         /**
@@ -123,7 +125,7 @@ namespace iTextSharp.text.pdf {
         * @return a reference to the field, or null
         */
         public PRIndirectReference GetRefByName(String name) {
-            FieldInformation fi = (FieldInformation)fieldByName[name];
+            FieldInformation fi = GetField(name);
             if (fi == null) return null;
             return fi.Ref;
         }
@@ -209,7 +211,7 @@ namespace iTextSharp.text.pdf {
         protected void PushAttrib(PdfDictionary dict) {
             PdfDictionary dic = null;
             if (stack.Count != 0) {
-                dic = (PdfDictionary)stack[stack.Count - 1];
+                dic = stack[stack.Count - 1];
             }
             dic = MergeAttrib(dic, dict);
             stack.Add(dic);
