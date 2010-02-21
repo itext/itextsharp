@@ -56,7 +56,7 @@ namespace iTextSharp.text.html.simpleparser {
         public void ApplyStyle(String tag, Dictionary<String, String> props) {
             Dictionary<String, String> map;
             Dictionary<String, String> temp;
-            if (tagMap.TryGetValue(tag.ToLower(System.Globalization.CultureInfo.InvariantCulture), map)) {
+            if (tagMap.TryGetValue(tag.ToLower(System.Globalization.CultureInfo.InvariantCulture), out map)) {
                 temp = new Dictionary<String, String>(map);
                 foreach (KeyValuePair<string,string> dc in props)
                     temp[dc.Key] = dc.Value;
@@ -64,15 +64,14 @@ namespace iTextSharp.text.html.simpleparser {
                     props[dc.Key] = dc.Value;
             }
             String cm;
-            if (!props.TryGetValue(Markup.HTML_ATTR_CSS_CLASS, cm))
+            if (!props.TryGetValue(Markup.HTML_ATTR_CSS_CLASS, out cm))
                 return;
-            if (!classMap(cm.ToLower(System.Globalization.CultureInfo.InvariantCulture), map))
+            if (!classMap.TryGetValue(cm.ToLower(System.Globalization.CultureInfo.InvariantCulture), out map))
                 return;
             props.Remove(Markup.HTML_ATTR_CSS_CLASS);
-            temp = new Dictionary<string,string>(map);
             foreach (KeyValuePair<string,string> dc in props)
-                temp[dc.Key] = dc.Value;
-            foreach (KeyValuePair<string,string> dc in temp)
+                map[dc.Key] = dc.Value;
+            foreach (KeyValuePair<string,string> dc in map)
                 props[dc.Key] = dc.Value;
         }
         
@@ -83,22 +82,22 @@ namespace iTextSharp.text.html.simpleparser {
         public void LoadStyle(String style, String key, String value) {
             style = style.ToLower(System.Globalization.CultureInfo.InvariantCulture);
             Dictionary<String, String> props;
-            if (!classMap.TryGetValue(style, props)) {
+            if (!classMap.TryGetValue(style, out props)) {
                 props = new Dictionary<string,string>();
                 classMap[style] = props;
             }
             props[key] = value;
         }
         
-        public void LoadTagStyle(String tag, Hashtable props) {
+        public void LoadTagStyle(String tag, Dictionary<string,string> props) {
             tagMap[tag.ToLower(System.Globalization.CultureInfo.InvariantCulture)] = props;
         }
 
         public void LoadTagStyle(String tag, String key, String value) {
             tag = tag.ToLower(System.Globalization.CultureInfo.InvariantCulture);
-            Hashtable props = (Hashtable)tagMap[tag];
-            if (props == null) {
-                props = new Hashtable();
+            Dictionary<String, String> props;
+            if (!classMap.TryGetValue(tag, out props)) {
+                props = new Dictionary<string,string>();
                 tagMap[tag] = props;
             }
             props[key] = value;

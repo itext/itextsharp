@@ -62,7 +62,7 @@ namespace iTextSharp.text.pdf.codec {
     *
     * @see TIFFDirectory
     */
-    public class TIFFField : IComparable {
+    public class TIFFField : IComparable<TIFFField> {
 
         /** Flag for 8 bit unsigned integers. */
         public const int TIFF_BYTE      =  1;
@@ -468,12 +468,12 @@ namespace iTextSharp.text.pdf.codec {
         * @throws ClassCastException if the parameter is not a
         *         <code>TIFFField</code>.
         */
-        public int CompareTo(Object o) {
+        public int CompareTo(TIFFField o) {
             if (o == null) {
                 throw new ArgumentException();
             }
 
-            int oTag = ((TIFFField)o).GetTag();
+            int oTag = o.GetTag();
 
             if (tag < oTag) {
                 return -1;

@@ -751,7 +751,7 @@ namespace iTextSharp.text.pdf {
         * @return   a Map with all the PdfLayers in the document (and the name/title of the layer as key)
         * @since    2.1.2
         */
-        public Hashtable GetPdfLayers() {
+        public Dictionary<string,PdfLayer> GetPdfLayers() {
             return stamper.GetPdfLayers();
         }
     }

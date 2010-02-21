@@ -100,7 +100,7 @@ public class PdfEncodings {
     
     internal static IntHashtable pdfEncoding = new IntHashtable();
     
-    internal static Dictionary<String, ExtraEncoding> extraEncodings = new Dictionary<string,ExtraEncoding>();
+    internal static Dictionary<String, IExtraEncoding> extraEncodings = new Dictionary<string,IExtraEncoding>();
 
     static PdfEncodings() {        
         for (int k = 128; k < 161; ++k) {
@@ -328,7 +328,7 @@ public class PdfEncodings {
     public static void LoadCmap(String name, byte[][] newline) {
         char[][] planes;
         lock (cmaps) {
-            cmaps.TryGetValue(name, planes);
+            cmaps.TryGetValue(name, out planes);
         }
         if (planes == null) {
             planes = ReadCmap(name, newline);
@@ -513,7 +513,7 @@ public class PdfEncodings {
      */    
     public static void AddExtraEncoding(String name, IExtraEncoding enc) {
         lock (extraEncodings) { // This serializes concurrent updates
-            Dictionary<String, ExtraEncoding> newEncodings = new Dictionary<string,ExtraEncoding>(extraEncodings);
+            Dictionary<String, IExtraEncoding> newEncodings = new Dictionary<string,IExtraEncoding>(extraEncodings);
             newEncodings[name.ToLower(System.Globalization.CultureInfo.InvariantCulture)] = enc;
             extraEncodings = newEncodings;  // This swap does not require synchronization with reader
         }

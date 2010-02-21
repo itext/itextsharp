@@ -742,12 +742,12 @@ namespace iTextSharp.text.pdf {
     
         private void ReadBbox() {
             int[] tableLocation;
-            tables.TryGetValue("head", out table_location);
+            tables.TryGetValue("head", out tableLocation);
             if (tableLocation == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "head", fileName + style));
             rf.Seek(tableLocation[0] + TrueTypeFontSubSet.HEAD_LOCA_FORMAT_OFFSET);
             bool locaShortTable = (rf.ReadUnsignedShort() == 0);
-            tables.TryGetValue("loca", out table_location);
+            tables.TryGetValue("loca", out tableLocation);
             if (tableLocation == null)
                 return;
             rf.Seek(tableLocation[0]);
@@ -764,7 +764,7 @@ namespace iTextSharp.text.pdf {
                 for (int k = 0; k < entries; ++k)
                     locaTable[k] = rf.ReadInt();
             }
-            tables.TryGetValue("glyf", out table_location);
+            tables.TryGetValue("glyf", out tableLocation);
             if (tableLocation == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "glyf", fileName + style));
             int tableGlyphOffset = tableLocation[0];

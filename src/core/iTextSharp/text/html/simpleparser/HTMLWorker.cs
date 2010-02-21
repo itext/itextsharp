@@ -223,15 +223,14 @@ namespace iTextSharp.text.html.simpleparser {
                     if (img == null) {
                         Dictionary<String, Image> images;
                         if (interfaceProps.ContainsKey("img_static")) {
-                            images = (Hashtable)interfaceProps["img_static"];
+                            images = (Dictionary<string,Image>)interfaceProps["img_static"];
                             Image tim;
-                            if (images.TryGetValue(images, out tim))
+                            if (images.TryGetValue(src, out tim))
                                 img = Image.GetInstance(tim);
                         } else {
                             if (!src.StartsWith("http")) { // relative src references only
-                                String baseurl;
-                                if (interfaceProps.TryGetValue("img_baseurl", out baseurl)) {
-                                    src = baseurl + src;
+                                if (interfaceProps.ContainsKey("img_baseurl")) {
+                                    src = (string)interfaceProps["img_baseurl"] + src;
                                     img = Image.GetInstance(src);
                                 }
                             }
@@ -467,7 +466,7 @@ namespace iTextSharp.text.html.simpleparser {
                 cprops.RemoveChain(tag);
                 if (stack.Count == 0)
                     return;
-                Object obj = stack.Pop();
+                IElement obj = stack.Pop();
                 if (!(obj is ListItem)) {
                     stack.Push(obj);
                     return;
@@ -476,7 +475,7 @@ namespace iTextSharp.text.html.simpleparser {
                     document.Add((IElement)obj);
                     return;
                 }
-                Object list = stack.Pop();
+                IElement list = stack.Pop();
                 if (!(list is List)) {
                     stack.Push(list);
                     return;
@@ -528,10 +527,10 @@ namespace iTextSharp.text.html.simpleparser {
                     EndElement("td");
                 pendingTR = false;
                 cprops.RemoveChain("tr");
-                ArrayList cells = new ArrayList();
+                List<PdfPCell> cells = new List<PdfPCell>();
                 IncTable table = null;
                 while (true) {
-                    Object obj = stack.Pop();
+                    IElement obj = stack.Pop();
                     if (obj is IncCell) {
                         cells.Add(((IncCell)obj).Cell);
                     }

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 /*
  * This file is part of the iText project.
@@ -52,7 +52,7 @@ namespace iTextSharp.text.pdf {
         
         private bool[] usedSlot;
         private IntHashtable widths3 = new IntHashtable();
-        private Hashtable char2glyph = new Hashtable();
+        private Dictionary<char, Type3Glyph> char2glyph = new Dictionary<char,Type3Glyph>();
         private PdfWriter writer;
         private float llx = float.NaN, lly, urx, ury;
         private PageResources pageResources = new PageResources();
@@ -120,7 +120,8 @@ namespace iTextSharp.text.pdf {
             if (c == 0 || c > 255)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("the.char.1.doesn.t.belong.in.this.type3.font", (int)c));
             usedSlot[c] = true;
-            Type3Glyph glyph = (Type3Glyph)char2glyph[c];
+            Type3Glyph glyph;
+            char2glyph.TryGetValue(c, out glyph);
             if (glyph != null)
                 return glyph;
             widths3[c] = (int)wx;
@@ -232,7 +233,8 @@ namespace iTextSharp.text.pdf {
                     s = "a" + c2;
                 PdfName n = new PdfName(s);
                 diffs.Add(n);
-                Type3Glyph glyph = (Type3Glyph)char2glyph[(char)c2];
+                Type3Glyph glyph;
+                char2glyph.TryGetValue((char)c2, out glyph);
                 PdfStream stream = new PdfStream(glyph.ToPdf(null));
                 stream.FlateCompress(compressionLevel);
                 PdfIndirectReference refp = writer.AddToBody(stream).IndirectReference;

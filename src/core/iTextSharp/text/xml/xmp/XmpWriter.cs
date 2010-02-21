@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.pdf;
 using iTextSharp.text.xml.simpleparser;
 /*
@@ -243,15 +243,15 @@ namespace iTextSharp.text.xml.xmp {
         * @param info
         * @throws IOException
         */
-        public XmpWriter(Stream os, Hashtable info) : this(os) {
+        public XmpWriter(Stream os, IDictionary<string,string> info) : this(os) {
             if (info != null) {
                 DublinCoreSchema dc = new DublinCoreSchema();
                 PdfSchema p = new PdfSchema();
                 XmpBasicSchema basic = new XmpBasicSchema();
                 String value;
-                foreach (DictionaryEntry entry in info) {
-                    String key = (String)entry.Key;
-                    value = (String)entry.Value;
+                foreach (KeyValuePair<string,string> entry in info) {
+                    String key = entry.Key;
+                    value = entry.Value;
                     if (value == null)
                         continue;
                     if ("Title".Equals(key)) {

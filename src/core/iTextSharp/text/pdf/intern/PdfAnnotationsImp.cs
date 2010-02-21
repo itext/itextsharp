@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.pdf;
 using iTextSharp.text;
 /*
@@ -59,13 +59,13 @@ namespace iTextSharp.text.pdf.intern {
         * This is the array containing the references to annotations
         * that were added to the document.
         */
-        protected internal ArrayList annotations;
+        protected internal List<PdfAnnotation> annotations;
         
         /**
         * This is an array containg references to some delayed annotations
         * (that were added for a page that doesn't exist yet).
         */
-        protected internal ArrayList delayedAnnotations = new ArrayList();
+        protected internal List<PdfAnnotation> delayedAnnotations = new List<PdfAnnotation>();
         
         
         public PdfAnnotationsImp(PdfWriter writer) {
@@ -115,10 +115,10 @@ namespace iTextSharp.text.pdf.intern {
         
         void AddFormFieldRaw(PdfFormField field) {
             annotations.Add(field);
-            ArrayList kids = field.Kids;
+            List<PdfFormField> kids = field.Kids;
             if (kids != null) {
                 for (int k = 0; k < kids.Count; ++k)
-                    AddFormFieldRaw((PdfFormField)kids[k]);
+                    AddFormFieldRaw(kids[k]);
             }
         }
         
@@ -128,7 +128,7 @@ namespace iTextSharp.text.pdf.intern {
 
         public void ResetAnnotations() {
             annotations = delayedAnnotations;
-            delayedAnnotations = new ArrayList();
+            delayedAnnotations = new List<PdfAnnotation>();
         }
         
         public PdfArray RotateAnnotations(PdfWriter writer, Rectangle pageSize) {
@@ -136,7 +136,7 @@ namespace iTextSharp.text.pdf.intern {
             int rotation = pageSize.Rotation % 360;
             int currentPage = writer.CurrentPageNumber;
             for (int k = 0; k < annotations.Count; ++k) {
-                PdfAnnotation dic = (PdfAnnotation)annotations[k];
+                PdfAnnotation dic = annotations[k];
                 int page = dic.PlaceInPage;
                 if (page > currentPage) {
                     delayedAnnotations.Add(dic);
@@ -144,7 +144,7 @@ namespace iTextSharp.text.pdf.intern {
                 }
                 if (dic.IsForm()) {
                     if (!dic.IsUsed()) {
-                        Hashtable templates = dic.Templates;
+                        Dictionary<PdfTemplate,object> templates = dic.Templates;
                         if (templates != null)
                             acroForm.AddFieldTemplates(templates);
                     }

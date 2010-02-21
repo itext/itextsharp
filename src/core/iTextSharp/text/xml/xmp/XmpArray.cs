@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 /*
  * $Id$
@@ -51,7 +51,7 @@ namespace iTextSharp.text.xml.xmp {
     /**
     * StringBuilder to construct an XMP array.
     */
-    public class XmpArray : ArrayList {
+    public class XmpArray : List<string> {
 
         /** An array that is unordered. */
         public const String UNORDERED = "rdf:Bag";

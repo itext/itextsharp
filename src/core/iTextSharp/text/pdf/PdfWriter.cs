@@ -104,7 +104,7 @@ namespace iTextSharp.text.pdf {
             * <CODE>PdfCrossReference</CODE> is an entry in the PDF Cross-Reference table.
             */
             
-            internal class PdfCrossReference : IComparable<PdfCrossReference> {
+            internal class PdfCrossReference : IComparable {
                 
                 // membervariables
                 private int type;
@@ -193,7 +193,8 @@ namespace iTextSharp.text.pdf {
                 /**
                 * @see java.lang.Comparable#compareTo(java.lang.Object)
                 */
-                public int CompareTo(PdfCrossReference other) {
+                public int CompareTo(object o) {
+                    PdfCrossReference other = (PdfCrossReference)o;
                     return (refnum < other.refnum ? -1 : (refnum==other.refnum ? 0 : 1));
                 }
                 
@@ -475,7 +476,7 @@ namespace iTextSharp.text.pdf {
                 else {
                     byte[] tmp = GetISOBytes("xref\n");
                     os.Write(tmp, 0, tmp.Length);
-                    IEnumerator i = xrefs.Keys;
+                    System.Collections.IEnumerator i = xrefs.Keys;
                     i.MoveNext();
                     for (int k = 0; k < sections.Count; k += 2) {
                         first = sections[k];
@@ -1279,14 +1280,14 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        protected List<Dictionary<String, Object>> newBookmarks;
+        protected IList<Dictionary<String, Object>> newBookmarks;
          
         /**
         * Sets the bookmarks. The list structure is defined in
         * {@link SimpleBookmark}.
         * @param outlines the bookmarks or <CODE>null</CODE> to remove any
         */    
-        public List<Dictionary<String, Object>> Outlines {
+        public IList<Dictionary<String, Object>> Outlines {
             set {
                 newBookmarks = value;
             }
@@ -1870,7 +1871,7 @@ namespace iTextSharp.text.pdf {
             PdfArray outs = catalog.GetAsArray(PdfName.OUTPUTINTENTS);
             if (outs == null)
                 return false;
-            ArrayList arr = outs.ArrayList;
+            List<PdfObject> arr = outs.ArrayList;
             if (outs.Size == 0)
                 return false;
             PdfDictionary outa = outs.GetAsDict(0);
@@ -2238,7 +2239,6 @@ namespace iTextSharp.text.pdf {
             PdfIndirectReference refi = tp.IndirectReference;
             Object[] objs;
             formXObjects.TryGetValue(refi, out objs);
-            PdfName name = null;
             if (objs == null || objs[1] == null)
                 return;
             PdfTemplate template = (PdfTemplate)objs[1];
@@ -2278,7 +2278,6 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         */    
         public virtual void FreeReader(PdfReader reader) {
-            currentPdfReaderInstance;
             importedPages.TryGetValue(reader, out currentPdfReaderInstance);
             if (currentPdfReaderInstance == null)
                 return;
@@ -2372,7 +2371,7 @@ namespace iTextSharp.text.pdf {
 
     //  [F9] document shadings
 
-        protected Hashtable documentShadings = new Hashtable();
+        protected Dictionary<PdfShading,object> documentShadings = new Dictionary<PdfShading,object>();
 
         internal void AddSimpleShading(PdfShading shading) {
             if (!documentShadings.ContainsKey(shading)) {
@@ -2446,8 +2445,8 @@ namespace iTextSharp.text.pdf {
 
     //  [F13] Optional Content Groups    
 
-        protected Dictionary<PdfOCG, object> documentOCG = new Dictionary<PdfOCG,object>();
-        protected List<PdfOCG> documentOCGorder = new List<PdfOCG>();
+        protected Dictionary<IPdfOCG, object> documentOCG = new Dictionary<IPdfOCG,object>();
+        protected List<IPdfOCG> documentOCGorder = new List<IPdfOCG>();
         protected PdfOCProperties vOCProperties;
         protected PdfArray OCGRadioGroup = new PdfArray();
         protected PdfArray OCGLocked = new PdfArray();
@@ -2552,8 +2551,8 @@ namespace iTextSharp.text.pdf {
             }
             if (vOCProperties.Get(PdfName.D) != null)
                 return;
-            List<PdfOCG> docOrder = new List<PdfOCG>(documentOCGorder);
-            for (ListIterator<<PdfOCG> it = new ListIterator(docOrder); it.HasNext();) {
+            List<IPdfOCG> docOrder = new List<IPdfOCG>(documentOCGorder);
+            for (ListIterator<IPdfOCG> it = new ListIterator<IPdfOCG>(docOrder); it.HasNext();) {
                 PdfLayer layer = (PdfLayer)it.Next();
                 if (layer.Parent != null)
                     it.Remove();

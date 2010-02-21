@@ -278,7 +278,8 @@ namespace iTextSharp.text {
             if (s == null) {
                 return false;
             }
-            return base.Add(new Chunk(s, font));
+            base.Add(new Chunk(s, font));
+            return true;
         }
 
         /// <summary>

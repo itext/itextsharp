@@ -1,6 +1,7 @@
 using System;
 using System.Text;
 using System.util;
+using System.Collections.Generic;
 /*
  * $Id$
  * 

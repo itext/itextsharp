@@ -507,7 +507,7 @@ namespace iTextSharp.text {
                     if (familyName != null) {
                         String lastName = "";
                         names = (string[][])allNames[2]; //full name
-                        foreach (string name in names) {
+                        foreach (string[] name in names) {
                             for (int k = 0; k < TTFamilyOrder.Length; k += 3) {
                                 if (TTFamilyOrder[k].Equals(name[0]) && TTFamilyOrder[k + 1].Equals(name[1]) && TTFamilyOrder[k + 2].Equals(name[2])) {
                                     fullName = name[3];

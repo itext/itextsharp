@@ -269,8 +269,8 @@ namespace iTextSharp.text.pdf {
                         parse.low = parse.high;
                         parse.high = t;
                     }
-                    for (ListIterator it = new ListIterator(list); it.HasNext();) {
-                        int n = (int)it.Next();
+                    for (ListIterator<int> it = new ListIterator<int>(list); it.HasNext();) {
+                        int n = it.Next();
                         if (parse.even && (n & 1) == 1)
                             continue;
                         if (parse.odd && (n & 1) == 0)

@@ -568,11 +568,11 @@ namespace iTextSharp.text.pdf {
             byte[] documentID = null;
             if (documentIDs != null) {
                 o = documentIDs[0];
-                strings.Remove(o);
+                strings.Remove((PdfString)o);
                 s = o.ToString();
                 documentID = DocWriter.GetISOBytes(s);
                 if (documentIDs.Size > 1)
-                    strings.Remove(documentIDs[1]);
+                    strings.Remove((PdfString)documentIDs[1]);
             }
             // just in case we have a broken producer
             if (documentID == null)
@@ -587,10 +587,10 @@ namespace iTextSharp.text.pdf {
 
             if (filter.Equals(PdfName.STANDARD)) {                   
                 s = enc.Get(PdfName.U).ToString();
-                strings.Remove(enc.Get(PdfName.U));
+                strings.Remove((PdfString)enc.Get(PdfName.U));
                 uValue = DocWriter.GetISOBytes(s);
                 s = enc.Get(PdfName.O).ToString();
-                strings.Remove(enc.Get(PdfName.O));
+                strings.Remove((PdfString)enc.Get(PdfName.O));
                 oValue = DocWriter.GetISOBytes(s);
                 
                 o = enc.Get(PdfName.P);
@@ -691,7 +691,8 @@ namespace iTextSharp.text.pdf {
                 for (int i = 0; i<recipients.Size; i++)
                 {
                     PdfObject recipient = recipients[i];
-                    strings.Remove(recipient);
+                    if (recipient is PdfString)
+                        strings.Remove((PdfString)recipient);
                     
                     CmsEnvelopedData data = null;
                     data = new CmsEnvelopedData(recipient.GetBytes());
@@ -2506,8 +2507,8 @@ namespace iTextSharp.text.pdf {
         */
         public Dictionary<Object, PdfObject> GetNamedDestination(bool keepNames) {
             Dictionary<Object, PdfObject> names = GetNamedDestinationFromNames(keepNames);
-            Dictionary<Object, PdfObject> names2 = GetNamedDestinationFromStrings(); 
-            foreach (KeyValuePair<Object, PdfObject> ie in names2)
+            Dictionary<string, PdfObject> names2 = GetNamedDestinationFromStrings(); 
+            foreach (KeyValuePair<string, PdfObject> ie in names2)
                 names[ie.Key] = ie.Value;
             return names;
         }
@@ -2565,10 +2566,10 @@ namespace iTextSharp.text.pdf {
                     dic = (PdfDictionary)GetPdfObjectRelease(dic.Get(PdfName.DESTS));
                     if (dic != null) {
                         Dictionary<String, PdfObject> names = PdfNameTree.ReadTree(dic);
-                        object[] keys = new object[names.Count];
+                        string[] keys = new string[names.Count];
                         names.Keys.CopyTo(keys, 0);
-                        foreach (object key in keys) {
-                            PdfArray arr = GetNameArray((PdfObject)names[key]);
+                        foreach (string key in keys) {
+                            PdfArray arr = GetNameArray(names[key]);
                             if (arr != null)
                                 names[key] = arr;
                             else
@@ -2841,7 +2842,7 @@ namespace iTextSharp.text.pdf {
                 }
                 case PdfObject.ARRAY: {
                     PdfArray arr = new PdfArray();
-                    for (ListIterator it = ((PdfArray)original).GetListIterator(); it.HasNext();) {
+                    for (ListIterator<PdfObject> it = ((PdfArray)original).GetListIterator(); it.HasNext();) {
                         arr.Add(DuplicatePdfObject((PdfObject)it.Next(), newReader));
                     }
                     return arr;
@@ -3171,7 +3172,7 @@ namespace iTextSharp.text.pdf {
                 if (other.refsn != null) {
                     refsn = new List<PRIndirectReference>(other.refsn);
                     for (int k = 0; k < refsn.Count; ++k) {
-                        refsn[k] = DuplicatePdfObject(refsn[k], reader);
+                        refsn[k] = (PRIndirectReference)DuplicatePdfObject(refsn[k], reader);
                     }
                 }
                 else

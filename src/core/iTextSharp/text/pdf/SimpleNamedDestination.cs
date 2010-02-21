@@ -199,7 +199,7 @@ namespace iTextSharp.text.pdf {
         }
         
         public static PdfDictionary OutputNamedDestinationAsStrings(Dictionary<string,string> names, PdfWriter writer) {
-            Dictionary<string,PdfObject> n2 = new Dictionary<string,string>(names.Count);
+            Dictionary<string,PdfObject> n2 = new Dictionary<string,PdfObject>(names.Count);
             foreach (String key in names.Keys) {
                 try {
                     String value = names[key];

@@ -941,7 +941,7 @@ namespace iTextSharp.text.pdf {
         */
         public List<Chunk> Chunks {
             get {
-                return new ArrayList();
+                return new List<Chunk>();
             }
         }
         

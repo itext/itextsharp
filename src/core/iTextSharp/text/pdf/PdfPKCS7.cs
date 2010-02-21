@@ -1,6 +1,7 @@
 using System;
 //using System.Collections;
 using System.Collections.Generic;
+using System.Collections;
 using System.Text;
 using System.Globalization;
 using System.IO;
@@ -1430,10 +1431,10 @@ namespace iTextSharp.text.pdf {
                     for (int i = 0; i < sett.Count; i++) {
                         Asn1Sequence s = (Asn1Sequence)sett[i];
                         String id;
-                        if (!DefaultSymbols.TryGetValue(s[0], out id))
+                        if (!(s[0] is DerObjectIdentifier) || !DefaultSymbols.TryGetValue((DerObjectIdentifier)s[0], out id))
                             continue;
                         List<string> vs;
-                        if (!values(id, out vs)) {
+                        if (!values.TryGetValue(id, out vs)) {
                             vs = new List<string>();
                             values[id] = vs;
                         }
@@ -1459,7 +1460,7 @@ namespace iTextSharp.text.pdf {
                     String id = token.Substring(0, index).ToUpper(System.Globalization.CultureInfo.InvariantCulture);
                     String value = token.Substring(index + 1);
                     List<string> vs;
-                    if (!values(id, out vs)) {
+                    if (!values.TryGetValue(id, out vs)) {
                         vs = new List<string>();
                         values[id] = vs;
                     }
@@ -1469,7 +1470,7 @@ namespace iTextSharp.text.pdf {
             
             public String GetField(String name) {
                 List<string> vs;
-                if (values(name, out vs))
+                if (values.TryGetValue(name, out vs))
                     return vs.Count == 0 ? null : vs[0];
                 else
                     return null;
@@ -1482,7 +1483,7 @@ namespace iTextSharp.text.pdf {
             */
             public List<string> GetFieldArray(String name) {
                 List<string> vs;
-                if (values(name, out vs))
+                if (values.TryGetValue(name, out vs))
                     return vs;
                 else
                     return null;

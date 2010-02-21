@@ -167,7 +167,7 @@ namespace iTextSharp.text.pdf {
         protected List<int> layerDepth;
         
         /** The list were we save/restore the state */
-        protected List<GraphicState> stateList = new ArrayList();
+        protected List<GraphicState> stateList = new List<GraphicState>();
     
         /** The separator between commands.
          */    

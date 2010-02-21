@@ -88,7 +88,7 @@ public class PdfAcroForm : PdfDictionary {
      */
 
     public void AddFieldTemplates(Dictionary<PdfTemplate,object> ft) {
-        foreach (object key in ft.Keys) {
+        foreach (PdfTemplate key in ft.Keys) {
             fieldTemplates[key] = ft[key];
         }
     }

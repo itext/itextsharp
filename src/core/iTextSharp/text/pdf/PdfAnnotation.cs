@@ -812,7 +812,7 @@ namespace iTextSharp.text.pdf {
                     destination[0] = refi;
                 }
                 if (destination != null) annotation.Put(PdfName.DEST, destination);
-                foreach (object key in parameters.Keys)
+                foreach (PdfName key in parameters.Keys)
                     annotation.hashMap[key] = parameters[key];
                 return annotation;
             }

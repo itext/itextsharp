@@ -81,7 +81,7 @@ namespace iTextSharp.text.pdf {
                     if (obj == null) {
                         obj = new Dictionary<String, Object>();
                         map[s] = obj;
-                        map = (Hashtable)obj;
+                        map = (Dictionary<string,object>)obj;
                         continue;
                     }
                     else if (obj is Dictionary<String, Object>)
@@ -264,9 +264,9 @@ namespace iTextSharp.text.pdf {
         * @param acro the <CODE>AcroFields</CODE>
         */    
         public void SetFields(AcroFields af) {
-            foreach (DictionaryEntry entry in af.Fields) {
-                String fn = (String)entry.Key;
-                AcroFields.Item item = (AcroFields.Item)entry.Value;
+            foreach (KeyValuePair<string,AcroFields.Item> entry in af.Fields) {
+                String fn = entry.Key;
+                AcroFields.Item item = entry.Value;
                 PdfDictionary dic = item.GetMerged(0);
                 PdfObject v = PdfReader.GetPdfObjectRelease(dic.Get(PdfName.V));
                 if (v == null)

@@ -53,7 +53,7 @@ namespace iTextSharp.text.pdf {
     internal class PdfCopyFieldsImp : PdfWriter {
 
         private static readonly PdfName iTextTag = new PdfName("_iTextTag_");
-        private static object zero = 0;
+        private static int zero = 0;
         internal List<PdfReader> readers = new List<PdfReader>();
         internal Dictionary<PdfReader, IntHashtable> readers2intrefs = new Dictionary<PdfReader, IntHashtable>();
         internal Dictionary<PdfReader, IntHashtable> pages2intrefs = new Dictionary<PdfReader, IntHashtable>();
@@ -192,8 +192,8 @@ namespace iTextSharp.text.pdf {
                 }
                 case PdfObject.ARRAY: {
                     //PdfArray arr = new PdfArray();
-                    for (ListIterator it = ((PdfArray)obj).GetListIterator(); it.HasNext();) {
-                        PdfObject ob = (PdfObject)it.Next();
+                    for (ListIterator<PdfObject> it = ((PdfArray)obj).GetListIterator(); it.HasNext();) {
+                        PdfObject ob = it.Next();
                         if (ob != null && ob.IsIndirect()) {
                             PRIndirectReference ind = (PRIndirectReference)ob;
                             if (!IsVisited(ind) && !IsPage(ind)) {
@@ -392,7 +392,7 @@ namespace iTextSharp.text.pdf {
             if (pageOffset == 0)
                 return;
             foreach (AcroFields.Item item in fd.Values) {
-                ArrayList page = item.page;
+                List<int> page = item.page;
                 for (int k = 0; k < page.Count; ++k) {
                     int p = item.GetPage(k);
                     item.ForcePage(k, p + pageOffset);
@@ -590,7 +590,7 @@ namespace iTextSharp.text.pdf {
         protected internal static Dictionary<PdfName,int> widgetKeys = new Dictionary<PdfName,int>();
         protected internal static Dictionary<PdfName,int> fieldKeys = new Dictionary<PdfName,int>();
         static PdfCopyFieldsImp() {
-            object one = 1;
+            int one = 1;
             widgetKeys[PdfName.SUBTYPE] =  one;
             widgetKeys[PdfName.CONTENTS] =  one;
             widgetKeys[PdfName.RECT] =  one;

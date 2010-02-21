@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 /*
@@ -59,7 +59,7 @@ namespace iTextSharp.text.pdf.events {
     public class PdfPageEventForwarder : IPdfPageEvent {
 
         /** ArrayList containing all the PageEvents that have to be executed. */
-        protected ArrayList events = new ArrayList();
+        protected List<IPdfPageEvent> events = new List<IPdfPageEvent>();
         
         /** 
         * Add a page eventa to the forwarder.

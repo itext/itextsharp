@@ -82,7 +82,7 @@ namespace iTextSharp.text.pdf {
          * is the checksum, position 1 is the offset from the start of the file
          * and position 2 is the length of the table.
          */
-        protected Dictionary<int, int[]> tableDirectory;
+        protected Dictionary<string, int[]> tableDirectory;
         /** The file in use.
          */
         protected RandomAccessFileOrArray rf;
@@ -93,7 +93,7 @@ namespace iTextSharp.text.pdf {
         protected bool includeExtras;
         protected bool locaShortTable;
         protected int[] locaTable;
-        protected Dictionary<int,object> glyphsUsed;
+        protected Dictionary<int,int[]> glyphsUsed;
         protected List<int> glyphsInList;
         protected int tableGlyphOffset;
         protected int[] newLocaTable;
@@ -229,7 +229,7 @@ namespace iTextSharp.text.pdf {
         }
     
         protected void CreateTableDirectory() {
-            tableDirectory = new Dictionary<int,int[]>();
+            tableDirectory = new Dictionary<string,int[]>();
             rf.Seek(directoryOffset);
             int id = rf.ReadInt();
             if (id != 0x00010000)

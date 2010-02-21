@@ -188,7 +188,7 @@ internal class CJKFont : BaseFont {
         lock (allFonts) {
             allFonts.TryGetValue(fontName, out fontDesc);
         }
-        fontDesc = (Hashtable)allFonts[fontName];
+        allFonts.TryGetValue(fontName, out fontDesc);
         if (fontDesc == null) {
             fontDesc = ReadFontProperties(fontName);
             lock (allFonts) {

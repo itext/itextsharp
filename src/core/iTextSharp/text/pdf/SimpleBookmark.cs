@@ -283,7 +283,8 @@ namespace iTextSharp.text.pdf {
             if (list == null)
                 return;
 
-            foreach (Dictionary<String, Object> map in list) {
+            for (ListIterator<Dictionary<String, Object>> it = new ListIterator<Dictionary<string,object>>(list); it.HasNext();) {
+                Dictionary<String, Object> map = it.Next();
                 bool hit = false;
                 if ("GoTo".Equals(map["Action"])) {
                     String page = (String)map["Page"];
@@ -788,7 +789,9 @@ namespace iTextSharp.text.pdf {
             }
             if (!tag.Equals("Title"))
                 throw new Exception(MessageLocalization.GetComposedMessage("tag.1.not.allowed", tag));
-            Dictionary<String, Object> attributes = new Dictionary<String, Object>(h);
+            Dictionary<String, Object> attributes = new Dictionary<String, Object>();
+            foreach (KeyValuePair<string,string> kv in h)
+                attributes[kv.Key] = kv.Value;
             attributes["Title"] = "";
             attributes.Remove("Kids");
             attr.Push(attributes);

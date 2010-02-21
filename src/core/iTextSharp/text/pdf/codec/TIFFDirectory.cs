@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using iTextSharp.text.pdf;
@@ -84,7 +84,7 @@ namespace iTextSharp.text.pdf.codec {
         TIFFField[] fields;
         
         /** A Hashtable indexing the fields by tag number. */
-        Hashtable fieldIndex = new Hashtable();
+        Dictionary<int,int> fieldIndex = new Dictionary<int,int>();
         
         /** The offset of this IFD. */
         long IFDOffset = 8;
@@ -269,7 +269,7 @@ namespace iTextSharp.text.pdf.codec {
                             
                             // Can be multiple strings
                             int index = 0, prevIndex = 0;
-                            ArrayList v = new ArrayList();
+                            List<string> v = new List<string>();
                             
                             while (index < count) {
                                 
@@ -285,7 +285,7 @@ namespace iTextSharp.text.pdf.codec {
                             count = v.Count;
                             String[] strings = new String[count];
                             for (int c = 0 ; c < count; c++) {
-                                strings[c] = (String)v[c];
+                                strings[c] = v[c];
                             }
                             
                             obj = strings;
@@ -392,12 +392,11 @@ namespace iTextSharp.text.pdf.codec {
         * or null if the tag is not present.
         */
         public TIFFField GetField(int tag) {
-            object i = fieldIndex[tag];
-            if (i == null) {
+            int i;
+            if (fieldIndex.TryGetValue(tag, out i))
+                return fields[i];
+            else
                 return null;
-            } else {
-                return fields[(int)i];
-            }
         }
         
         /**
@@ -432,8 +431,8 @@ namespace iTextSharp.text.pdf.codec {
         * TIFF_UNDEFINED.
         */
         public byte GetFieldAsByte(int tag, int index) {
-            int i = (int)fieldIndex[tag];
-            byte [] b = (fields[(int)i]).GetAsBytes();
+            int i = fieldIndex[tag];
+            byte[] b = fields[i].GetAsBytes();
             return b[index];
         }
         
@@ -454,8 +453,8 @@ namespace iTextSharp.text.pdf.codec {
         * TIFF_SHORT, TIFF_SSHORT, TIFF_SLONG or TIFF_LONG.
         */
         public long GetFieldAsLong(int tag, int index) {
-            int i = (int)fieldIndex[tag];
-            return (fields[i]).GetAsLong(index);
+            int i = fieldIndex[tag];
+            return fields[i].GetAsLong(index);
         }
         
         /**
@@ -475,7 +474,7 @@ namespace iTextSharp.text.pdf.codec {
         * TIFF_ASCII).
         */
         public float GetFieldAsFloat(int tag, int index) {
-            int i = (int)fieldIndex[tag];
+            int i = fieldIndex[tag];
             return fields[i].GetAsFloat(index);
         }
         
@@ -495,7 +494,7 @@ namespace iTextSharp.text.pdf.codec {
         * TIFF_ASCII).
         */
         public double GetFieldAsDouble(int tag, int index) {
-            int i = (int)fieldIndex[tag];
+            int i = fieldIndex[tag];
             return fields[i].GetAsDouble(index);
         }
         
