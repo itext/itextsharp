@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Xml;
@@ -256,7 +256,7 @@ namespace iTextSharp.text.pdf {
         * @return the complete name or <CODE>null</CODE> if not found
         */
         public String FindFieldName(String name, AcroFields af) {
-            Hashtable items = af.Fields;
+            Dictionary<String, AcroFields.Item> items = af.Fields;
             if (items.ContainsKey(name))
                 return name;
             if (acroFieldsSom == null) {
@@ -266,7 +266,7 @@ namespace iTextSharp.text.pdf {
                     acroFieldsSom = new AcroFieldsSearch(items.Keys);
             }
             if (acroFieldsSom.AcroShort2LongName.ContainsKey(name))
-                return (String)acroFieldsSom.AcroShort2LongName[name];
+                return acroFieldsSom.AcroShort2LongName[name];
             return acroFieldsSom.InverseSearchGlobal(Xml2Som.SplitParts(name));
         }
         
@@ -294,7 +294,7 @@ namespace iTextSharp.text.pdf {
             name = FindDatasetsName(name);
             if (name == null)
                 return null;
-            return (XmlNode)datasetsSom.Name2Node[name];
+            return datasetsSom.Name2Node[name];
         }
 
         /**
@@ -372,8 +372,8 @@ namespace iTextSharp.text.pdf {
         * beginning from the lower hierarchie.
         */
         public class InverseStore {
-            protected internal ArrayList part = new ArrayList();
-            protected internal ArrayList follow = new ArrayList();
+            protected internal List<String> part = new List<string>();
+            protected internal List<object> follow = new List<object>();
             
             /**
             * Gets the full name by traversing the hiearchie using only the
@@ -415,12 +415,12 @@ namespace iTextSharp.text.pdf {
         * Another stack implementation. The main use is to facilitate
         * the porting to other languages.
         */
-        public class Stack2 : ArrayList {
+        public class Stack2<T> : List<T> {
             /**
             * Looks at the object at the top of this stack without removing it from the stack.
             * @return the object at the top of this stack
             */
-            public Object Peek() {
+            public T Peek() {
                 if (Count == 0)
                     throw new InvalidOperationException();
                 return this[Count - 1];
@@ -430,10 +430,10 @@ namespace iTextSharp.text.pdf {
             * Removes the object at the top of this stack and returns that object as the value of this function.
             * @return the object at the top of this stack 
             */
-            public Object Pop() {
+            public T Pop() {
                 if (Count == 0)
                     throw new InvalidOperationException();
-                Object ret = this[Count - 1];
+                T ret = this[Count - 1];
                 RemoveAt(Count - 1);
                 return ret;
             }
@@ -443,7 +443,7 @@ namespace iTextSharp.text.pdf {
             * @param item the item to be pushed onto this stack
             * @return the <CODE>item</CODE> argument
             */
-            public Object Push(Object item) {
+            public T Push(T item) {
                 Add(item);
                 return item;
             }
@@ -464,19 +464,19 @@ namespace iTextSharp.text.pdf {
             /**
             * The order the names appear in the XML, depth first.
             */
-            protected ArrayList order;
+            protected List<String> order;
             /**
             * The mapping of full names to nodes.
             */
-            protected Hashtable name2Node;
+            protected Dictionary<string,XmlNode> name2Node;
             /**
             * The data to do a search from the bottom hierarchie.
             */
-            protected Hashtable inverseSearch;
+            protected Dictionary<String, InverseStore> inverseSearch;
             /**
             * A stack to be used when parsing.
             */
-            protected Stack2 stack;
+            protected Stack2<string> stack;
             /**
             * A temporary store for the repetition count.
             */
@@ -576,15 +576,16 @@ namespace iTextSharp.text.pdf {
             * @param stack the stack with the separeted SOM parts
             * @param unstack the full name
             */
-            public static void InverseSearchAdd(Hashtable inverseSearch, Stack2 stack, String unstack) {
-                String last = (String)stack.Peek();
-                InverseStore store = (InverseStore)inverseSearch[last];
+            public static void InverseSearchAdd(Dictionary<String, InverseStore> inverseSearch, Stack2<string> stack, String unstack) {
+                String last = stack.Peek();
+                InverseStore store;
+                inverseSearch.TryGetValue(last, out store);
                 if (store == null) {
                     store = new InverseStore();
                     inverseSearch[last] = store;
                 }
                 for (int k = stack.Count - 2; k >= 0; --k) {
-                    last = (String)stack[k];
+                    last = stack[k];
                     InverseStore store2;
                     int idx = store.part.IndexOf(last);
                     if (idx < 0) {
@@ -605,14 +606,15 @@ namespace iTextSharp.text.pdf {
             * @param parts the SOM parts
             * @return the full name or <CODE>null</CODE> if not found
             */
-            public String InverseSearchGlobal(ArrayList parts) {
+            public String InverseSearchGlobal(List<String> parts) {
                 if (parts.Count == 0)
                     return null;
-                InverseStore store = (InverseStore)inverseSearch[parts[parts.Count - 1]];
+                InverseStore store;
+                inverseSearch.TryGetValue(parts[parts.Count - 1], out store);
                 if (store == null)
                     return null;
                 for (int k = parts.Count - 2; k >= 0; --k) {
-                    String part = (String)parts[k];
+                    String part = parts[k];
                     int idx = store.part.IndexOf(part);
                     if (idx < 0) {
                         if (store.IsSimilar(part))
@@ -629,10 +631,10 @@ namespace iTextSharp.text.pdf {
             * @param name the full SOM name
             * @return the split name
             */
-            public static Stack2 SplitParts(String name) {
+            public static Stack2<String> SplitParts(String name) {
                 while (name.StartsWith("."))
                     name = name.Substring(1);
-                Stack2 parts = new Stack2();
+                Stack2<String> parts = new Stack2<String>();
                 int last = 0;
                 int pos = 0;
                 String part;
@@ -666,7 +668,7 @@ namespace iTextSharp.text.pdf {
             * Gets the order the names appear in the XML, depth first.
             * @return the order the names appear in the XML, depth first
             */
-            public ArrayList Order {
+            public List<String> Order {
                 get {
                     return order;
                 }
@@ -679,7 +681,7 @@ namespace iTextSharp.text.pdf {
             * Gets the mapping of full names to nodes.
             * @return the mapping of full names to nodes
             */
-            public Hashtable Name2Node {
+            public Dictionary<String, XmlNode> Name2Node {
                 get {
                     return name2Node;
                 }
@@ -692,7 +694,7 @@ namespace iTextSharp.text.pdf {
             * Gets the data to do a search from the bottom hierarchie.
             * @return the data to do a search from the bottom hierarchie
             */
-            public Hashtable InverseSearch {
+            public Dictionary<string,InverseStore> InverseSearch {
                 get {
                     return inverseSearch;
                 }
@@ -712,11 +714,11 @@ namespace iTextSharp.text.pdf {
             * @param n the datasets node
             */
             public Xml2SomDatasets(XmlNode n) {
-                order = new ArrayList();
-                name2Node = new Hashtable();
-                stack = new Stack2();
+                order = new List<string>();
+                name2Node = new Dictionary<string,XmlNode>();
+                stack = new Stack2<string>();
                 anform = 0;
-                inverseSearch = new Hashtable();
+                inverseSearch = new Dictionary<string,InverseStore>();
                 ProcessDatasetsInternal(n);
             }
 
@@ -727,12 +729,12 @@ namespace iTextSharp.text.pdf {
             * @return the new <CODE>Node</CODE> of the inserted name
             */
             public XmlNode InsertNode(XmlNode n, String shortName) {
-                Stack2 stack = SplitParts(shortName);
+                Stack2<string> stack = SplitParts(shortName);
                 XmlDocument doc = n.OwnerDocument;
                 XmlNode n2 = null;
                 n = n.FirstChild;
                 for (int k = 0; k < stack.Count; ++k) {
-                    String part = (String)stack[k];
+                    String part = stack[k];
                     int idx = part.LastIndexOf('[');
                     String name = part.Substring(0, idx);
                     idx = int.Parse(part.Substring(idx + 1, part.Length - idx - 2));
@@ -784,16 +786,16 @@ namespace iTextSharp.text.pdf {
             }
 
             private void ProcessDatasetsInternal(XmlNode n) {
-                Hashtable ss = new Hashtable();
+                Dictionary<String, int> ss = new Dictionary<string,int>();
                 XmlNode n2 = n.FirstChild;
                 while (n2 != null) {
                     if (n2.NodeType == XmlNodeType.Element) {
                         String s = EscapeSom(n2.LocalName);
                         int i;
-                        if (ss[s] == null)
+                        if (!ss.ContainsKey(s))
                             i = 0;
                         else
-                            i = (int)ss[s] + 1;
+                            i = ss[s] + 1;
                         ss[s] = i;
                         if (HasChildren(n2)) {
                             stack.Push(s + "[" + i.ToString() + "]");
@@ -818,15 +820,15 @@ namespace iTextSharp.text.pdf {
         * A class to process "classic" fields.
         */
         public class AcroFieldsSearch : Xml2Som {
-            private Hashtable acroShort2LongName;
+            private Dictionary<String, String> acroShort2LongName;
             
             /**
             * Creates a new instance from a Collection with the full names.
             * @param items the Collection
             */
-            public AcroFieldsSearch(ICollection items) {
-                inverseSearch = new Hashtable();
-                acroShort2LongName = new Hashtable();
+            public AcroFieldsSearch(ICollection<string> items) {
+                inverseSearch = new Dictionary<string,InverseStore>();
+                acroShort2LongName = new Dictionary<string,string>();
                 foreach (String itemName in items) {
                     String itemShort = GetShortName(itemName);
                     acroShort2LongName[itemShort] = itemName;
@@ -839,7 +841,7 @@ namespace iTextSharp.text.pdf {
             * name may contain the #subform name part.
             * @return the mapping from short names to long names
             */
-            public Hashtable AcroShort2LongName {
+            public Dictionary<String, String> AcroShort2LongName {
                 get {
                     return acroShort2LongName;
                 }
@@ -861,12 +863,12 @@ namespace iTextSharp.text.pdf {
             * @param n the template node
             */
             public Xml2SomTemplate(XmlNode n) {
-                order = new ArrayList();
-                name2Node = new Hashtable();
-                stack = new Stack2();
+                order = new List<string>();
+                name2Node = new Dictionary<string,XmlNode>();
+                stack = new Stack2<string>();
                 anform = 0;
                 templateLevel = 0;
-                inverseSearch = new Hashtable();
+                inverseSearch = new Dictionary<string,InverseStore>();
                 ProcessTemplate(n, null);
             }
 
@@ -876,7 +878,8 @@ namespace iTextSharp.text.pdf {
             * @return the field type or <CODE>null</CODE> if not found
             */
             public String GetFieldType(String s) {
-                XmlNode n = (XmlNode)name2Node[s];
+                XmlNode n;
+                name2Node.TryGetValue(s, out n);
                 if (n == null)
                     return null;
                 if ("exclGroup".Equals(n.LocalName))
@@ -900,10 +903,10 @@ namespace iTextSharp.text.pdf {
                 return null;
             }
 
-            private void ProcessTemplate(XmlNode n, Hashtable ff) {
+            private void ProcessTemplate(XmlNode n, Dictionary<string,int> ff) {
                 if (ff == null)
-                    ff = new Hashtable();
-                Hashtable ss = new Hashtable();
+                    ff = new Dictionary<string,int>();
+                Dictionary<string,int> ss = new Dictionary<string,int>();
                 XmlNode n2 = n.FirstChild;
                 while (n2 != null) {
                     if (n2.NodeType == XmlNodeType.Element) {
@@ -922,10 +925,10 @@ namespace iTextSharp.text.pdf {
                                 ++anform;
                             }
                             else {
-                                if (ss[nn] == null)
+                                if (!ss.ContainsKey(nn))
                                     i = 0;
                                 else
-                                    i = (int)ss[nn] + 1;
+                                    i = ss[nn] + 1;
                                 ss[nn] = i;
                             }
                             stack.Push(nn + "[" + i.ToString() + "]");
@@ -942,10 +945,10 @@ namespace iTextSharp.text.pdf {
                             if (name != null) {
                                 String nn = EscapeSom(name.Value);
                                 int i;
-                                if (ff[nn] == null)
+                                if (!ff.ContainsKey(nn))
                                     i = 0;
                                 else
-                                    i = (int)ff[nn] + 1;
+                                    i = ff[nn] + 1;
                                 ff[nn] = i;
                                 stack.Push(nn + "[" + i.ToString() + "]");
                                 String unstack = PrintStack();

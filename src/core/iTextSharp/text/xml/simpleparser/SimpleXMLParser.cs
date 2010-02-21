@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using iTextSharp.text.error_messages;
 /*
@@ -114,7 +114,7 @@ namespace iTextSharp.text.xml.simpleparser {
         private const int ATTRIBUTE_VALUE = 14;
         
         /** the state stack */
-        internal Stack stack;
+        internal Stack<int> stack;
         /** The current character. */
         internal int character = 0;
         /** The previous character. */
@@ -143,7 +143,7 @@ namespace iTextSharp.text.xml.simpleparser {
         /** current tagname */
         internal String tag = null;
         /** current attributes */
-        internal Hashtable attributes = null;
+        internal Dictionary<string,string> attributes = null;
         /** The handler to which we are going to forward document content */
         internal ISimpleXMLDocHandler doc;
         /** The handler to which we are going to forward comments. */
@@ -165,7 +165,7 @@ namespace iTextSharp.text.xml.simpleparser {
             this.doc = doc;
             this.comment = comment;
             this.html = html;
-            stack = new Stack();
+            stack = new Stack<int>();
             state = html ? TEXT : UNKNOWN;
         }
         
@@ -479,7 +479,7 @@ namespace iTextSharp.text.xml.simpleparser {
         */
         private int RestoreState() {
             if (stack.Count != 0)
-                return (int)stack.Pop();
+                return stack.Pop();
             else
                 return UNKNOWN;
         }
@@ -529,7 +529,7 @@ namespace iTextSharp.text.xml.simpleparser {
         */
         private void InitTag() {
             tag = null;
-            attributes = new Hashtable();
+            attributes = new Dictionary<string,string>();
         }
         /** Sets the name of the tag. */
         private void DoTag() {

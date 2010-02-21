@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Net;
 using iTextSharp.text;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 
 /*
@@ -356,14 +356,14 @@ namespace iTextSharp.text.pdf.codec.wmf
                     arc2 -= arc1;
                     if (arc2 <= 0)
                         arc2 += 360;
-                    ArrayList ar = PdfContentByte.BezierArc(l, b, r, t, arc1, arc2);
+                    List<float[]> ar = PdfContentByte.BezierArc(l, b, r, t, arc1, arc2);
                     if (ar.Count == 0)
                         break;
-                    float[] pt = (float [])ar[0];
+                    float[] pt = ar[0];
                     cb.MoveTo(cx, cy);
                     cb.LineTo(pt[0], pt[1]);
                     for (int k = 0; k < ar.Count; ++k) {
-                        pt = (float [])ar[k];
+                        pt = ar[k];
                         cb.CurveTo(pt[2], pt[3], pt[4], pt[5], pt[6], pt[7]);
                     }
                     cb.LineTo(cx, cy);
@@ -389,15 +389,15 @@ namespace iTextSharp.text.pdf.codec.wmf
                     arc2 -= arc1;
                     if (arc2 <= 0)
                         arc2 += 360;
-                    ArrayList ar = PdfContentByte.BezierArc(l, b, r, t, arc1, arc2);
+                    List<float[]> ar = PdfContentByte.BezierArc(l, b, r, t, arc1, arc2);
                     if (ar.Count == 0)
                         break;
-                    float[] pt = (float [])ar[0];
+                    float[] pt = ar[0];
                     cx = pt[0];
                     cy = pt[1];
                     cb.MoveTo(cx, cy);
                     for (int k = 0; k < ar.Count; ++k) {
-                        pt = (float [])ar[k];
+                        pt = ar[k];
                         cb.CurveTo(pt[2], pt[3], pt[4], pt[5], pt[6], pt[7]);
                     }
                     cb.LineTo(cx, cy);

@@ -73,7 +73,7 @@ namespace iTextSharp.text.pdf {
         }
     
         internal void FindNames() {
-            tables = new Dictionary<String, int[]>()();
+            tables = new Dictionary<String, int[]>();
         
             try {
                 String mainTag = ReadStandardString(4);

@@ -789,7 +789,7 @@ namespace iTextSharp.text.pdf {
             AcroFields af = AcroFields;
             Dictionary<string,AcroFields.Item> fields = acroFields.Fields;
             if (fieldsAdded && partialFlattening.Count == 0) {
-                foreach (object obf in fields.Keys) {
+                foreach (string obf in fields.Keys) {
                     partialFlattening[obf] = null;
                 }
             }
@@ -798,11 +798,11 @@ namespace iTextSharp.text.pdf {
             if (acroForm != null) {
                 acroFds = (PdfArray)PdfReader.GetPdfObject(acroForm.Get(PdfName.FIELDS), acroForm);
             }
-            foreach (DictionaryEntry entry in fields) {
-                String name = (String)entry.Key;
+            foreach (KeyValuePair<string,AcroFields.Item> entry in fields) {
+                String name = entry.Key;
                 if (partialFlattening.Count != 0 && !partialFlattening.ContainsKey(name))
                     continue;
-                AcroFields.Item item = (AcroFields.Item)entry.Value;
+                AcroFields.Item item = entry.Value;
                 for (int k = 0; k < item.Size; ++k) {
                     PdfDictionary merged = item.GetMerged(k);
                     PdfNumber ff = merged.GetAsNumber(PdfName.F);
@@ -1149,7 +1149,7 @@ namespace iTextSharp.text.pdf {
                     if (!annot.IsUsed()) {
                         Dictionary<PdfTemplate,object> templates = annot.Templates;
                         if (templates != null) {
-                            foreach (object tpl in templates.Keys) {
+                            foreach (PdfTemplate tpl in templates.Keys) {
                                 fieldTemplates[tpl] = null;
                             }
                         }
@@ -1547,7 +1547,7 @@ namespace iTextSharp.text.pdf {
             if (order != null) {
                 AddOrder(null, order, ocgmap);
             }
-            foreach (object o in ocgmap.Values)
+            foreach (PdfLayer o in ocgmap.Values)
                 documentOCG[o] = null;
             OCGRadioGroup = d.GetAsArray(PdfName.RBGROUPS);
             OCGLocked = d.GetAsArray(PdfName.LOCKED);

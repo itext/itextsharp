@@ -636,7 +636,7 @@ namespace iTextSharp.text.pdf {
                 return GetTopChoice();
             }
             set {
-                choiceSelections = new ArrayList();
+                choiceSelections = new List<int>();
                 choiceSelections.Add(value);
             }
         }

@@ -55,7 +55,7 @@ namespace iTextSharp.text.pdf {
      *
      * @author  Paulo Soares
      */
-    internal class FontDetails {
+    public class FontDetails {
     
         /** The indirect reference to this font
          */    

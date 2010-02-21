@@ -151,10 +151,10 @@ namespace iTextSharp.text.pdf {
             return items;
         }
 
-        internal class CompareSrt : IComparer  {
-            int IComparer.Compare(Object x, Object y){
-                char[] a = ((string)x).ToCharArray();
-                char[] b = ((string)y).ToCharArray();
+        internal class CompareSrt : IComparer<string>  {
+            public int Compare(string x, string y) {
+                char[] a = x.ToCharArray();
+                char[] b = y.ToCharArray();
                 int m = Math.Min(a.Length, b.Length);
                 for (int k = 0; k < m; ++k) {
                     if (a[k] < b[k])
@@ -168,7 +168,6 @@ namespace iTextSharp.text.pdf {
                     return 1;
                 return 0;
             }
-
         }
     }
 }

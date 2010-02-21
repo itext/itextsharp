@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text;
 
 /*
@@ -65,8 +65,8 @@ namespace iTextSharp.text.pdf.codec.wmf {
         public static int ALTERNATE = 1;
         public static int WINDING = 2;
 
-        public Stack savedStates;
-        public ArrayList MetaObjects;
+        public Stack<MetaState> savedStates;
+        public List<MetaObject> MetaObjects;
         public System.Drawing.Point currentPoint;
         public MetaPen currentPen;
         public MetaBrush currentBrush;
@@ -87,8 +87,8 @@ namespace iTextSharp.text.pdf.codec.wmf {
 
         /** Creates new MetaState */
         public MetaState() {
-            savedStates = new Stack();
-            MetaObjects = new ArrayList();
+            savedStates = new Stack<MetaState>();
+            MetaObjects = new List<MetaObject>();
             currentPoint = new System.Drawing.Point(0, 0);
             currentPen = new MetaPen();
             currentBrush = new MetaBrush();
@@ -133,7 +133,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
         }
     
         public void SelectMetaObject(int index, PdfContentByte cb) {
-            MetaObject obj = (MetaObject)MetaObjects[index];
+            MetaObject obj = MetaObjects[index];
             if (obj == null)
                 return;
             int style;
@@ -205,7 +205,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
             MetaState state = null;
             while (pops-- != 0) {
                 cb.RestoreState();
-                state = (MetaState)savedStates.Pop();
+                state = savedStates.Pop();
             }
             metaState = state;
         }

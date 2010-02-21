@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
@@ -131,7 +131,7 @@ namespace iTextSharp.text.pdf.draw {
         */
         public List<Chunk> Chunks {
             get {
-                ArrayList list = new ArrayList();
+                List<Chunk> list = new List<Chunk>();
                 list.Add(new Chunk(this, true));
                 return list;
             }

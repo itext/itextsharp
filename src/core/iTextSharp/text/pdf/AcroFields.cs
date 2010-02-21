@@ -164,7 +164,7 @@ namespace iTextSharp.text.pdf {
                     if (name.Length > 0)
                         name = name.Substring(0, name.Length - 1);
                     Item item;
-                    if (!fields.TryGetValue(name, out Item)) {
+                    if (!fields.TryGetValue(name, out item)) {
                         item = new Item();
                         fields[name] = item;
                     }
@@ -227,7 +227,7 @@ namespace iTextSharp.text.pdf {
         */    
         public String[] GetAppearanceStates(String fieldName) {
             if (!fields.ContainsKey(fieldName))
-                return;
+                return null;
             Item fd = fields[fieldName];
             Dictionary<string,object> names = new Dictionary<string,object>();
             PdfDictionary vals = fd.GetValue(0);
@@ -555,8 +555,9 @@ namespace iTextSharp.text.pdf {
                             }
                             else {
                                 BaseFont bf;
-                                if (!localFonts.TryGetValue(dab[DA_FONT], out bf)) {
-                                    String[] fn = stdFieldFontNames[dab[DA_FONT]];
+                                if (!localFonts.TryGetValue((string)dab[DA_FONT], out bf)) {
+                                    String[] fn;
+                                    stdFieldFontNames.TryGetValue((string)dab[DA_FONT], out fn);
                                     if (fn != null) {
                                         try {
                                             String enc = "winansi";
@@ -717,7 +718,7 @@ namespace iTextSharp.text.pdf {
                     tx.Text = text;
                     return tx.GetAppearance();
                 }
-                ArrayList indexes = new ArrayList();
+                List<int> indexes = new List<int>();
                 for (int k = 0; k < choicesExp.Length; ++k) {
                     for (int j = 0; j < values.Length; ++j) {
                         String val = values[j];
@@ -874,7 +875,7 @@ namespace iTextSharp.text.pdf {
             if (writer == null)
                 throw new Exception(MessageLocalization.GetComposedMessage("this.acrofields.instance.is.read.only"));
             if (!fields.ContainsKey(field))
-                return null;
+                return false;
             Item item = fields[field];
             InstHit hit = new InstHit(inst);
             PdfDictionary merged;
@@ -891,7 +892,7 @@ namespace iTextSharp.text.pdf {
                             if (dao[DA_FONT] != null) {
                                 BaseFont bf = (BaseFont)value;
                                 PdfName psn;
-                                if (!PdfAppearance.stdFieldFontNames.TryGet(bf.PostscriptFontName, out psn)) {
+                                if (!PdfAppearance.stdFieldFontNames.TryGetValue(bf.PostscriptFontName, out psn)) {
                                     psn = new PdfName(bf.PostscriptFontName);
                                 }
                                 PdfDictionary fonts = dr.GetAsDict(PdfName.FONT);
@@ -1046,7 +1047,7 @@ namespace iTextSharp.text.pdf {
             if (writer == null)
                 throw new Exception(MessageLocalization.GetComposedMessage("this.acrofields.instance.is.read.only"));
             if (!fields.ContainsKey(field))
-                return null;
+                return false;
             Item item = fields[field];
             InstHit hit = new InstHit(inst);
             if (Util.EqualsIgnoreCase(name, "flags")) {
@@ -1981,7 +1982,7 @@ namespace iTextSharp.text.pdf {
         * Gets the field names that have signatures and are signed.
         * @return the field names that have signatures and are signed
         */    
-        public ArrayList GetSignatureNames() {
+        public List<string> GetSignatureNames() {
             FindSignatureNames();
             return new List<string>(sigNames.Keys);
         }
@@ -1990,7 +1991,7 @@ namespace iTextSharp.text.pdf {
         * Gets the field names that have blank signatures.
         * @return the field names that have blank signatures
         */    
-        public ArrayList GetBlankSignatureNames() {
+        public List<string> GetBlankSignatureNames() {
             FindSignatureNames();
             List<String> sigs = new List<String>();
             foreach (KeyValuePair<string,Item> entry in fields) {
@@ -2218,7 +2219,7 @@ namespace iTextSharp.text.pdf {
         */
         public void AddSubstitutionFont(BaseFont font) {
             if (substitutionFonts == null)
-                substitutionFonts = new ArrayList();
+                substitutionFonts = new List<BaseFont>();
             substitutionFonts.Add(font);
         }
 

@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
@@ -62,7 +62,7 @@ namespace iTextSharp.text.pdf {
 		public static int NO_MORE_COLUMN = 2;
 
 		/** The chunks that form the text. */    
-		protected ArrayList chunks = new ArrayList();
+		protected List<PdfChunk> chunks = new List<PdfChunk>();
 
 		/** The <CODE>PdfContent</CODE> where the text will be written to. */    
 		protected PdfContentByte text;
@@ -166,7 +166,7 @@ namespace iTextSharp.text.pdf {
 			PdfLine line = new PdfLine(0, width, alignment, 0);
 			string total;
 			for (currentChunkMarker = 0; currentChunkMarker < chunks.Count; ++currentChunkMarker) {
-				PdfChunk original = (PdfChunk)(chunks[currentChunkMarker]);
+				PdfChunk original = chunks[currentChunkMarker];
 				total = original.ToString();
 				currentStandbyChunk = line.Add(original);
 				if (currentStandbyChunk != null) {
@@ -188,7 +188,7 @@ namespace iTextSharp.text.pdf {
 				chunks.Clear();
 				return;
 			}
-			PdfChunk split = (PdfChunk)(chunks[currentChunkMarker]);
+			PdfChunk split = chunks[currentChunkMarker];
 			split.Value = splittedChunkText;
 			chunks[currentChunkMarker] = currentStandbyChunk;
 			for (int j = currentChunkMarker - 1; j >= 0; --j)

@@ -97,7 +97,7 @@ namespace iTextSharp.text.pdf.codec {
         protected Uri fromUrl;
 
 
-        protected List<GifFrame> frames = new List<GifFrame>();     // frames read from current file
+        internal List<GifFrame> frames = new List<GifFrame>();     // frames read from current file
 
         /** Reads gif images from an URL.
         * @param url the URL

@@ -47,7 +47,7 @@ namespace iTextSharp.text.html.simpleparser {
 public class ChainedProperties {
     
         public static int[] fontSizes = {8, 10, 12, 14, 18, 24, 36};
-        internal sealed class ChainedProperty {
+        public sealed class ChainedProperty {
             internal String key;
             internal Dictionary<String, String> property;
             internal ChainedProperty(String key, Dictionary<String, String> property) {

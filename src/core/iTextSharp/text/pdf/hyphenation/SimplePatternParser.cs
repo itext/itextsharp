@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using System.Collections.Generic;
 using System.Collections;
 using System.util;
 using iTextSharp.text.xml.simpleparser;
@@ -191,9 +192,10 @@ namespace iTextSharp.text.pdf.hyphenation {
         public void StartDocument() {
         }
         
-        public void StartElement(String tag, Hashtable h) {
+        public void StartElement(String tag, Dictionary<string,string> h) {
             if (tag.Equals("hyphen-char")) {
-                String hh = (String)h["value"];
+                String hh;
+                h.TryGetValue("value", out hh);
                 if (hh != null && hh.Length == 1) {
                     hyphenChar = hh[0];
                 }
@@ -208,9 +210,7 @@ namespace iTextSharp.text.pdf.hyphenation {
                 if (token.Length > 0) {
                     exception.Add(token.ToString());
                 }
-                exception.Add(new Hyphen((String)h[HtmlTags.PRE],
-                                                (String)h["no"],
-                                                (String)h["post"]));
+                exception.Add(new Hyphen(h[HtmlTags.PRE], h["no"], h["post"]));
                 currElement = ELEM_HYPHEN;
             }
             token.Length = 0;

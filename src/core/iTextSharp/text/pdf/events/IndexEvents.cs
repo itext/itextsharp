@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text;
 using System.util;
 using iTextSharp.text;
@@ -57,7 +57,7 @@ namespace iTextSharp.text.pdf.events {
         /**
         * keeps the indextag with the pagenumber
         */
-        private Hashtable indextag = new Hashtable();
+        private Dictionary<string,int> indextag = new Dictionary<string,int>();
 
         /**
         * All the text that is passed to this event, gets registered in the indexentry.
@@ -80,7 +80,7 @@ namespace iTextSharp.text.pdf.events {
         /**
         * the list for the index entry
         */
-        private ArrayList indexentry = new ArrayList();
+        private List<Entry> indexentry = new List<Entry>();
 
         /**
         * Create an index entry.
@@ -165,11 +165,9 @@ namespace iTextSharp.text.pdf.events {
             Create(text, in1, in2, "");
         }
 
-        private class ISortIndex : IComparer {
+        private class ISortIndex : IComparer<Entry> {
         
-            public int Compare(object arg0, object arg1) {
-                Entry en1 = (Entry) arg0;
-                Entry en2 = (Entry) arg1;
+            public int Compare(Entry en1, Entry en2) {
 
                 int rt = 0;
                 if (en1.GetIn1() != null && en2.GetIn1() != null) {
@@ -192,13 +190,13 @@ namespace iTextSharp.text.pdf.events {
         /**
         * Comparator for sorting the index
         */
-        private IComparer comparator = new ISortIndex();
+        private IComparer<Entry> comparator = new ISortIndex();
 
         /**
         * Set the comparator.
         * @param aComparator The comparator to set.
         */
-        public void SetComparator(IComparer aComparator) {
+        public void SetComparator(IComparer<Entry> aComparator) {
             comparator = aComparator;
         }
 
@@ -206,15 +204,16 @@ namespace iTextSharp.text.pdf.events {
         * Returns the sorted list with the entries and the collected page numbers.
         * @return Returns the sorted list with the entries and teh collected page numbers.
         */
-        public ArrayList GetSortedEntries() {
+        public List<Entry> GetSortedEntries() {
 
-            Hashtable grouped = new Hashtable();
+            Dictionary<string,Entry> grouped = new Dictionary<string,Entry>();
 
             for (int i = 0; i < indexentry.Count; i++) {
-                Entry e = (Entry) indexentry[i];
+                Entry e = indexentry[i];
                 String key = e.GetKey();
 
-                Entry master = (Entry) grouped[key];
+                Entry master;
+                grouped.TryGetValue(key, out master);
                 if (master != null) {
                     master.AddPageNumberAndTag(e.GetPageNumber(), e.GetTag());
                 } else {
@@ -224,7 +223,7 @@ namespace iTextSharp.text.pdf.events {
             }
 
             // copy to a list and sort it
-            ArrayList sorted = new ArrayList(grouped.Values);
+            List<Entry> sorted = new List<Entry>(grouped.Values);
             sorted.Sort(0, sorted.Count, comparator);
             return sorted;
         }
@@ -262,12 +261,12 @@ namespace iTextSharp.text.pdf.events {
             /**
             * the lsit of all page numbers.
             */
-            private ArrayList pagenumbers = new ArrayList();
+            private List<int> pagenumbers = new List<int>();
 
             /**
             * the lsit of all tags.
             */
-            private ArrayList tags = new ArrayList();
+            private List<string> tags = new List<string>();
             private IndexEvents parent;
 
             /**
@@ -323,12 +322,10 @@ namespace iTextSharp.text.pdf.events {
             * @return Returns the pagenumer for this entry.
             */
             public int GetPageNumber() {
-                int rt = -1;
-                object i = parent.indextag[tag];
-                if (i != null) {
-                    rt = (int)i;
-                }
-                return rt;
+                if (parent.indextag.ContainsKey(tag))
+                    return parent.indextag[tag];
+                else
+                    return -1;
             }
 
             /**
@@ -353,7 +350,7 @@ namespace iTextSharp.text.pdf.events {
             * Returns the pagenumbers.
             * @return Returns the pagenumbers.
             */
-            public ArrayList GetPagenumbers() {
+            public List<int> GetPagenumbers() {
                 return pagenumbers;
             }
 
@@ -361,7 +358,7 @@ namespace iTextSharp.text.pdf.events {
             * Returns the tags.
             * @return Returns the tags.
             */
-            public ArrayList GetTags() {
+            public List<string> GetTags() {
                 return tags;
             }
 

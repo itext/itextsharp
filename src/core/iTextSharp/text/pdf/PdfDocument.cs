@@ -1346,7 +1346,7 @@ namespace iTextSharp.text.pdf {
                             if (obj[1] is String)
                                 RemoteGoto(filename, (String)obj[1], xMarker, yMarker + descender + chunk.TextRise, xMarker + width - subtract, yMarker + ascender + chunk.TextRise);
                             else
-                                remoteGoto(filename, (int)obj[1], xMarker, yMarker + descender + chunk.TextRise, xMarker + width - subtract, yMarker + ascender + chunk.getTextRise());
+                                RemoteGoto(filename, (int)obj[1], xMarker, yMarker + descender + chunk.TextRise, xMarker + width - subtract, yMarker + ascender + chunk.TextRise);
                         }
                         if (chunk.IsAttribute(Chunk.LOCALGOTO)) {
                             float subtract = lastBaseFactor;
@@ -2099,7 +2099,7 @@ namespace iTextSharp.text.pdf {
         */
         internal Rectangle GetBoxSize(String boxName) {
             if (thisBoxSize.ContainsKey(boxName))
-                return thisBoxSize[boxName];
+                return thisBoxSize[boxName].Rectangle;
             else
                 return null;
         }

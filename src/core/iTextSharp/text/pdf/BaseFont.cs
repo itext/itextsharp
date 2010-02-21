@@ -659,7 +659,7 @@ namespace iTextSharp.text.pdf {
             string key = name + "\n" + encoding + "\n" + embedded;
             if (cached) {
                 lock (fontCache) {
-                     fontCache.TryGetValue(key, fontFound);
+                     fontCache.TryGetValue(key, out fontFound);
                 }
                 if (fontFound != null)
                     return fontFound;
@@ -684,7 +684,7 @@ namespace iTextSharp.text.pdf {
                 throw new DocumentException(MessageLocalization.GetComposedMessage("font.1.with.2.is.not.recognized", name, encoding));
             if (cached) {
                 lock (fontCache) {
-                    fontCache.TryGetValue(key, fontFound);
+                    fontCache.TryGetValue(key, out fontFound);
                     if (fontFound != null)
                         return fontFound;
                     fontCache[key] = fontBuilt;

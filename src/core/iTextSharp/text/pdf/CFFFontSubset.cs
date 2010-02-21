@@ -431,8 +431,8 @@ namespace iTextSharp.text.pdf {
             {
                 // Init the hasmap-array and the arraylist-array to hold the subrs used
                 // in each private dict.
-                hSubrsUsed = new Hashtable[fonts[Font].fdprivateOffsets.Length];
-                lSubrsUsed = new ArrayList[fonts[Font].fdprivateOffsets.Length];
+                hSubrsUsed = new Dictionary<int,int[]>[fonts[Font].fdprivateOffsets.Length];
+                lSubrsUsed = new List<int>[fonts[Font].fdprivateOffsets.Length];
                 // A [][] which will store the byte array for each new FD Array lsubs index
                 NewLSubrsIndex = new byte[fonts[Font].fdprivateOffsets.Length][];
                 // An array to hold the offset for each Lsubr index 

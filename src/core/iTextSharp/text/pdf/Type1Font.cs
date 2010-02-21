@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using System.util;
 using iTextSharp.text.error_messages;
 
@@ -129,14 +129,14 @@ namespace iTextSharp.text.pdf {
         *  Integer, Integer, String and int[]. This is the code, width, name and char bbox.
         *  The key is the name of the char and also an Integer with the char number.
         */
-        private Hashtable CharMetrics = new Hashtable();
+        private Dictionary<object,object[]> CharMetrics = new Dictionary<object,object[]>();
         /** Represents the section KernPairs in the AFM file. The key is
          *  the name of the first character and the value is a <CODE>Object[]</CODE>
          *  with 2 elements for each kern pair. Position 0 is the name of
          *  the second character and position 1 is the kerning distance. This is
          *  repeated for all the pairs.
          */
-        private Hashtable KernPairs = new Hashtable();
+        private Dictionary<string,object[]> KernPairs = new Dictionary<string,object[]>();
         /** The file in use.
          */
         private string fileName;
@@ -276,12 +276,12 @@ namespace iTextSharp.text.pdf {
         internal override int GetRawWidth(int c, string name) {
             Object[] metrics;
             if (name == null) { // font specific
-                metrics = (Object[])CharMetrics[c];
+                CharMetrics.TryGetValue(c, out metrics);
             }
             else {
                 if (name.Equals(".notdef"))
                     return 0;
-                metrics = (Object[])CharMetrics[name];
+                CharMetrics.TryGetValue(name, out metrics);
             }
             if (metrics != null)
                 return (int)metrics[1];
@@ -296,13 +296,14 @@ namespace iTextSharp.text.pdf {
          * @return the kerning to be applied
          */
         public override int GetKerning(int char1, int char2) {
-            string first = GlyphList.UnicodeToName((int)char1);
+            string first = GlyphList.UnicodeToName(char1);
             if (first == null)
                 return 0;
-            string second = GlyphList.UnicodeToName((int)char2);
+            string second = GlyphList.UnicodeToName(char2);
             if (second == null)
                 return 0;
-            Object[] obj = (Object[])KernPairs[first];
+            Object[] obj;
+            KernPairs.TryGetValue(first, out obj);
             if (obj == null)
                 return 0;
             for (int k = 0; k < obj.Length; k += 2) {
@@ -413,7 +414,8 @@ namespace iTextSharp.text.pdf {
             if (isMetrics)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("missing.endcharmetrics.in.1", fileName));
             if (!CharMetrics.ContainsKey("nonbreakingspace")) {
-                Object[] space = (Object[])CharMetrics["space"];
+                Object[] space;
+                CharMetrics.TryGetValue("space", out space);
                 if (space != null)
                     CharMetrics["nonbreakingspace"] = space;
             }
@@ -440,7 +442,8 @@ namespace iTextSharp.text.pdf {
                     string first = tok.NextToken();
                     string second = tok.NextToken();
                     int width = (int)float.Parse(tok.NextToken(), System.Globalization.NumberFormatInfo.InvariantInfo);
-                    Object[] relates = (Object[])KernPairs[first];
+                    Object[] relates;
+                    KernPairs.TryGetValue(first, out relates);
                     if (relates == null)
                         KernPairs[first] = new Object[]{second, width};
                     else {
@@ -754,7 +757,8 @@ namespace iTextSharp.text.pdf {
             String second = GlyphList.UnicodeToName((int)char2);
             if (second == null)
                 return false;
-            Object[] obj = (Object[])KernPairs[first];
+            Object[] obj;
+            KernPairs.TryGetValue(first, out obj);
             if (obj == null) {
                 obj = new Object[]{second, kern};
                 KernPairs[first] = obj;
@@ -778,12 +782,12 @@ namespace iTextSharp.text.pdf {
         protected override int[] GetRawCharBBox(int c, String name) {
             Object[] metrics;
             if (name == null) { // font specific
-                metrics = (Object[])CharMetrics[c];
+                CharMetrics.TryGetValue(c, out metrics);
             }
             else {
                 if (name.Equals(".notdef"))
                     return null;
-                metrics = (Object[])CharMetrics[name];
+                CharMetrics.TryGetValue(name, out metrics);
             }
             if (metrics != null)
                 return ((int[])(metrics[3]));

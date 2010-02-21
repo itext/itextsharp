@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
@@ -58,7 +58,7 @@ namespace iTextSharp.text.pdf.events {
         /**
         * Keeps a map with fields that are to be positioned in inGenericTag.
         */
-        protected Hashtable genericChunkFields = new Hashtable();
+        protected Dictionary<String, PdfFormField> genericChunkFields = new Dictionary<string,PdfFormField>();
 
         /**
         * Keeps the form field that is to be positioned in a cellLayout event.
@@ -149,7 +149,8 @@ namespace iTextSharp.text.pdf.events {
         public override void OnGenericTag(PdfWriter writer, Document document,
                 Rectangle rect, String text) {
             rect.Bottom = rect.Bottom - 3;
-            PdfFormField field = (PdfFormField) genericChunkFields[text];
+            PdfFormField field;
+            genericChunkFields.TryGetValue(text, out field);
             if (field == null) {
                 TextField tf = new TextField(writer, new Rectangle(rect.GetLeft(padding), rect.GetBottom(padding), rect.GetRight(padding), rect.GetTop(padding)), text);
                 tf.FontSize = 14;

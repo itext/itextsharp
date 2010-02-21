@@ -68,7 +68,7 @@ namespace iTextSharp.text.pdf
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.icc.profile"));
             ICC_Profile icc = new ICC_Profile();
             icc.data = data;
-            cstags.TryGetValue(Encoding.ASCII.GetString(data, 16, 4), icc.numComponents);
+            cstags.TryGetValue(Encoding.ASCII.GetString(data, 16, 4), out icc.numComponents);
             return icc;
         }
         

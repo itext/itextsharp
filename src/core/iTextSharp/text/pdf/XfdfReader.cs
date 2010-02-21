@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 using iTextSharp.text.xml.simpleparser;
 using iTextSharp.text.error_messages;
 /*
@@ -58,12 +58,12 @@ namespace iTextSharp.text.pdf {
         private Stackr fieldValues = new Stackr();
 
         // storage for the field list and their values
-        internal Hashtable fields;
+        internal Dictionary<string,string>  fields;
         /**
         * Storage for field values if there's more than one value for a field.
         * @since    2.1.4
         */
-        protected Hashtable listFields;        
+        protected Dictionary<string,List<string>> listFields;        
         // storage for the path to referenced PDF, if any
         internal String fileSpec;
         
@@ -104,7 +104,7 @@ namespace iTextSharp.text.pdf {
         * with the field content.
         * @return all the fields
         */    
-        public Hashtable Fields {
+        public Dictionary<string,string> Fields {
             get {
                 return fields;
             }
@@ -115,7 +115,10 @@ namespace iTextSharp.text.pdf {
         * @return the field's value
         */    
         public String GetField(String name) {
-            return (String)fields[name];
+            if (fields.ContainsKey(name))
+                return fields[name];
+            else
+                return null;
         }
         
         /** Gets the field value or <CODE>null</CODE> if the field does not
@@ -124,11 +127,7 @@ namespace iTextSharp.text.pdf {
         * @return the field value or <CODE>null</CODE>
         */    
         public String GetFieldValue(String name) {
-            String field = (String)fields[name];
-            if (field == null)
-                return null;
-            else
-                return field;
+            return GetField(name);
         }
         
         /**
@@ -138,8 +137,11 @@ namespace iTextSharp.text.pdf {
         * @return the field values or <CODE>null</CODE>
         * @since   2.1.4
         */    
-        public ArrayList GetListValues(String name) {
-            return (ArrayList)listFields[name];
+        public List<string> GetListValues(String name) {
+            if (listFields.ContainsKey(name))
+                return listFields[name];
+            else
+                return null;
         }
         
         /** Gets the PDF file specification contained in the FDF.
@@ -156,7 +158,7 @@ namespace iTextSharp.text.pdf {
         * @param tag the tag name
         * @param h the tag's attributes
         */    
-        public void StartElement(String tag, Hashtable h) {
+        public void StartElement(String tag, Dictionary<string,string> h) {
             if ( !foundRoot ) {
                 if (!tag.Equals("xfdf"))
                     throw new Exception(MessageLocalization.GetComposedMessage("root.element.is.not.xfdf.1", tag));
@@ -167,12 +169,13 @@ namespace iTextSharp.text.pdf {
             if ( tag.Equals("xfdf") ){
                 
             } else if ( tag.Equals("f") ) {
-                fileSpec = (String)h[ "href" ];
+                h.TryGetValue("href", out fileSpec);
             } else if ( tag.Equals("fields") ) {
-                fields = new Hashtable();     // init it!
-                listFields = new Hashtable();
+                fields = new Dictionary<string,string>();     // init it!
+                listFields = new Dictionary<string,List<string>>();
             } else if ( tag.Equals("field") ) {
-                String  fName = (String) h[ "name" ];
+                String  fName;
+                h.TryGetValue("name", out fName);
                 fieldNames.Push( fName );
             } else if ( tag.Equals("value") ) {
                 fieldValues.Push("");
@@ -186,17 +189,19 @@ namespace iTextSharp.text.pdf {
             if ( tag.Equals("value") ) {
                 String  fName = "";
                 for (int k = 0; k < fieldNames.Count; ++k) {
-                    fName += "." + (String)fieldNames[k];
+                    fName += "." + fieldNames[k];
                 }
                 if (fName.StartsWith("."))
                     fName = fName.Substring(1);
-                String  fVal = (String) fieldValues.Pop();
-                String old = (String)fields[fName];
+                String  fVal = fieldValues.Pop();
+                String old;
+                fields.TryGetValue(fName, out old);
                 fields[fName] = fVal;
                 if (old != null) {
-                    ArrayList l = (ArrayList) listFields[fName];
+                    List<string> l;
+                    listFields.TryGetValue(fName, out l);
                     if (l == null) {
-                        l = new ArrayList();
+                        l = new List<string>();
                         l.Add(old);
                     }
                     l.Add(fVal);
@@ -232,20 +237,20 @@ namespace iTextSharp.text.pdf {
             if (fieldNames.Count == 0 || fieldValues.Count == 0)
                 return;
             
-            String val = (String)fieldValues.Pop();
+            String val = fieldValues.Pop();
             val += str;
             fieldValues.Push(val);
         }
 
-        internal class Stackr : ArrayList {
-            internal void Push(object obj) {
+        internal class Stackr : List<string> {
+            internal void Push(string obj) {
                 Add(obj);
             }
 
-            internal object Pop() {
+            internal string Pop() {
                 if (Count == 0)
                     throw new InvalidOperationException(MessageLocalization.GetComposedMessage("the.stack.is.empty"));
-                object obj = this[Count - 1];
+                string obj = this[Count - 1];
                 RemoveAt(Count - 1);
                 return obj;
             }

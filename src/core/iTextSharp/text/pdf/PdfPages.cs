@@ -124,7 +124,8 @@ namespace iTextSharp.text.pdf {
                     top.Put(PdfName.COUNT, new PdfNumber(thisLeaf));
                     PdfArray kids = new PdfArray();
                     List<PdfObject> intern = kids.ArrayList;
-                    intern.AddRange(tPages.GetRange(p * stdCount, count));
+                    foreach (PdfObject obb in tPages.GetRange(p * stdCount, count))
+                        intern.Add(obb);
                     top.Put(PdfName.KIDS, kids);
                     if (tParents.Count > 1) {
                         if ((p % leafSize) == 0)

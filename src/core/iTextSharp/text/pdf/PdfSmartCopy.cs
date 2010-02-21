@@ -160,12 +160,12 @@ namespace iTextSharp.text.pdf {
                 bb.Append("$D");
                 if (level <= 0)
                     return;
-                Object[] keys = new Object[dic.Size];
+                PdfName[] keys = new PdfName[dic.Size];
                 dic.Keys.CopyTo(keys, 0);
-                Array.Sort(keys);
+                Array.Sort<PdfName>(keys);
                 for (int k = 0; k < keys.Length; ++k) {
-                    SerObject((PdfObject)keys[k], level, bb);
-                    SerObject(dic.Get((PdfName)keys[k]), level, bb);
+                    SerObject(keys[k], level, bb);
+                    SerObject(dic.Get(keys[k]), level, bb);
                 }
             }
             

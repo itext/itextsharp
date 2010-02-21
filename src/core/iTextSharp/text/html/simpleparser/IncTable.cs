@@ -96,7 +96,7 @@ namespace iTextSharp.text.html.simpleparser {
             }
             PdfPTable table = new PdfPTable(ncol);
             String width;
-            if (!props.TryGetValue("width", width))
+            if (!props.TryGetValue("width", out width))
                 table.WidthPercentage = 100;
             else {
                 if (width.EndsWith("%"))
@@ -108,7 +108,7 @@ namespace iTextSharp.text.html.simpleparser {
             }
             foreach (List<PdfPCell> col in rows) {
                 foreach (PdfPCell pc in col) {
-                    table.addCell(pc);
+                    table.AddCell(pc);
                 }
             }
             return table;

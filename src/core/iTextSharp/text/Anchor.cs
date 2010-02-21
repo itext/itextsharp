@@ -194,7 +194,7 @@ namespace iTextSharp.text
         {
             get 
             {
-                ArrayList tmp = new ArrayList();
+                List<Chunk> tmp = new List<Chunk>();
                 bool localDestination = (reference != null && reference.StartsWith("#"));
                 bool notGotoOK = true;
                 foreach (Chunk chunk in this) 

@@ -63,7 +63,7 @@ namespace iTextSharp.text {
         /// <param name="table"></param>
         /// <returns></returns>
         public static ICollection<K> GetKeySet<K,V>(Dictionary<K,V> table) {
-            return (table == null) ? new List<K>() : table.Keys;
+            return (table == null) ? (ICollection<K>)new List<K>() : (ICollection<K>)table.Keys;
         }
 
         /**

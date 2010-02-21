@@ -191,7 +191,7 @@ namespace iTextSharp.text.pdf {
     
         public PdfObject Get(PdfName key) {
             PdfObject obj;
-            if (hashMap.ContainsKey(key, out obj))
+            if (hashMap.TryGetValue(key, out obj))
                 return obj;
             else
                 return null;
@@ -250,13 +250,13 @@ namespace iTextSharp.text.pdf {
         }
     
         public void Merge(PdfDictionary other) {
-            foreach (object key in other.hashMap.Keys) {
+            foreach (PdfName key in other.hashMap.Keys) {
                 hashMap[key] = other.hashMap[key];
             }
         }
     
         public void MergeDifferent(PdfDictionary other) {
-            foreach (Object key in other.hashMap.Keys) {
+            foreach (PdfName key in other.hashMap.Keys) {
                 if (!hashMap.ContainsKey(key)) {
                     hashMap[key] = other.hashMap[key];
                 }
