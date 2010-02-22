@@ -529,7 +529,7 @@ namespace iTextSharp.text {
     	    Phrase p = new Phrase(true);
     	    p.Leading = leading;
     	    p.font = font;
-    	    if (font.Family != Font.SYMBOL && font.Family != Font.ZAPFDINGBATS && font.BaseFont == null) {
+    	    if (font.Family != Font.FontFamily.SYMBOL && font.Family != Font.FontFamily.ZAPFDINGBATS && font.BaseFont == null) {
                 int index;
                 while ((index = SpecialSymbol.Index(str)) > -1) {
                     if (index > 0) {
@@ -537,7 +537,7 @@ namespace iTextSharp.text {
                         p.Add(new Chunk(firstPart, font));
                         str = str.Substring(index);
                     }
-                    Font symbol = new Font(Font.SYMBOL, font.Size, font.Style, font.Color);
+                    Font symbol = new Font(Font.FontFamily.SYMBOL, font.Size, font.Style, font.Color);
                     StringBuilder buf = new StringBuilder();
                     buf.Append(SpecialSymbol.GetCorrespondingSymbol(str[0]));
                     str = str.Substring(1);

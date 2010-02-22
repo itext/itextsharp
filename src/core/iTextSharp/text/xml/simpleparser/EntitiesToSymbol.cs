@@ -355,7 +355,7 @@ namespace iTextSharp.text.xml.simpleparser {
                     return new Chunk(e, font);
                 }
             }
-            Font symbol = new Font(Font.SYMBOL, font.Size, font.Style, font.Color);
+            Font symbol = new Font(Font.FontFamily.SYMBOL, font.Size, font.Style, font.Color);
             return new Chunk(s.ToString(), symbol);
         }
         
