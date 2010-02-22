@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.Collections.Generic;
 /*
  * Copyright 1999-2004 The Apache Software Foundation.
  * 
@@ -41,7 +41,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         * A hyphenatedword is a vector of alternating String's and
         * {@link Hyphen Hyphen} instances
         */
-        void AddException(String word, ArrayList hyphenatedword);
+        void AddException(String word, List<object> hyphenatedword);
 
         /**
         * Add hyphenation patterns.

@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
-using System.Collections;
 using System.util;
 using iTextSharp.text.xml.simpleparser;
 using iTextSharp.text.html;
@@ -57,7 +56,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         internal int currElement;
         internal IPatternConsumer consumer;
         internal StringBuilder token;
-        internal ArrayList exception;
+        internal List<object> exception;
         internal char hyphenChar;
         
         internal const int ELEM_CLASSES = 1;
@@ -92,8 +91,8 @@ namespace iTextSharp.text.pdf.hyphenation {
             return pat.ToString();
         }
 
-        protected ArrayList NormalizeException(ArrayList ex) {
-            ArrayList res = new ArrayList();
+        protected List<object> NormalizeException(List<object> ex) {
+            List<object> res = new List<object>();
             for (int i = 0; i < ex.Count; i++) {
                 Object item = ex[i];
                 if (item is String) {
@@ -123,7 +122,7 @@ namespace iTextSharp.text.pdf.hyphenation {
             return res;
         }
 
-        protected String GetExceptionWord(ArrayList ex) {
+        protected String GetExceptionWord(List<object> ex) {
             StringBuilder res = new StringBuilder();
             for (int i = 0; i < ex.Count; i++) {
                 Object item = ex[i];
@@ -167,8 +166,7 @@ namespace iTextSharp.text.pdf.hyphenation {
                 case ELEM_EXCEPTIONS:
                     exception.Add(word);
                     exception = NormalizeException(exception);
-                    consumer.AddException(GetExceptionWord(exception),
-                                        (ArrayList)exception.Clone());
+                    consumer.AddException(GetExceptionWord(exception), new List<object>(exception));
                     break;
                 case ELEM_PATTERNS:
                     consumer.AddPattern(GetPattern(word),
@@ -205,7 +203,7 @@ namespace iTextSharp.text.pdf.hyphenation {
                 currElement = ELEM_PATTERNS;
             } else if (tag.Equals("exceptions")) {
                 currElement = ELEM_EXCEPTIONS;
-                exception = new ArrayList();
+                exception = new List<object>();
             } else if (tag.Equals("hyphen")) {
                 if (token.Length > 0) {
                     exception.Add(token.ToString());
@@ -228,8 +226,7 @@ namespace iTextSharp.text.pdf.hyphenation {
                 case ELEM_EXCEPTIONS:
                     exception.Add(word);
                     exception = NormalizeException(exception);
-                    consumer.AddException(GetExceptionWord(exception),
-                                        (ArrayList)exception.Clone());
+                    consumer.AddException(GetExceptionWord(exception), new List<object>(exception));
                     exception.Clear();
                     break;
                 case ELEM_PATTERNS:
