@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 /*
  * Copyright 1999-2004 The Apache Software Foundation.
  * 
@@ -38,7 +38,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         /**
         * This map stores hyphenation exceptions
         */
-        protected Hashtable stoplist;
+        protected Dictionary<string,List<object>> stoplist;
 
         /**
         * This map stores the character classes
@@ -51,7 +51,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         private TernaryTree ivalues;
 
         public HyphenationTree() {
-            stoplist = new Hashtable(23);    // usually a small table
+            stoplist = new Dictionary<string,List<object>>(23);    // usually a small table
             classmap = new TernaryTree();
             vspace = new ByteVector();
             vspace.Alloc(1);    // this reserves index 0, which we don't use
@@ -342,7 +342,7 @@ namespace iTextSharp.text.pdf.hyphenation {
             String sw = new String(word, 1, len);
             if (stoplist.ContainsKey(sw)) {
                 // assume only simple hyphens (Hyphen.pre="-", Hyphen.post = Hyphen.no = null)
-                ArrayList hw = (ArrayList)stoplist[sw];
+                List<object> hw = stoplist[sw];
                 int j = 0;
                 for (i = 0; i < hw.Count; i++) {
                     Object o = hw[i];
@@ -420,7 +420,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         * @param hyphenatedword a vector of alternating strings and
         * {@link Hyphen hyphen} objects.
         */
-        public void AddException(String word, ArrayList hyphenatedword) {
+        public void AddException(String word, List<object> hyphenatedword) {
             stoplist[word] = hyphenatedword;
         }
 
