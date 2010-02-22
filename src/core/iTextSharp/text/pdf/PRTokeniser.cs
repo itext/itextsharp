@@ -54,23 +54,25 @@ namespace iTextSharp.text.pdf {
      */
     public class PRTokeniser {
     
-        public const int TK_NUMBER = 1;
-        public const int TK_STRING = 2;
-        public const int TK_NAME = 3;
-        public const int TK_COMMENT = 4;
-        public const int TK_START_ARRAY = 5;
-        public const int TK_END_ARRAY = 6;
-        public const int TK_START_DIC = 7;
-        public const int TK_END_DIC = 8;
-        public const int TK_REF = 9;
-        public const int TK_OTHER = 10;
-        public const int TK_ENDOFFILE = 11;
+        public enum TokType {
+            NUMBER = 1,
+            STRING,
+            NAME,
+            COMMENT,
+            START_ARRAY,
+            END_ARRAY,
+            START_DIC,
+            END_DIC,
+            REF,
+            OTHER,
+            ENDOFFILE
+        }
     
         internal const string EMPTY = "";
 
     
         protected RandomAccessFileOrArray file;
-        protected int type;
+        protected TokType type;
         protected string stringValue;
         protected int reference;
         protected int generation;
@@ -144,7 +146,7 @@ namespace iTextSharp.text.pdf {
             return (ch == '(' || ch == ')' || ch == '<' || ch == '>' || ch == '[' || ch == ']' || ch == '/' || ch == '%');
         }
 
-        public int TokenType {
+        public TokType TokenType {
             get {
                 return type;
             }
@@ -225,11 +227,11 @@ namespace iTextSharp.text.pdf {
             string n2 = null;
             int ptr = 0;
             while (NextToken()) {
-                if (type == TK_COMMENT)
+                if (type == TokType.COMMENT)
                     continue;
                 switch (level) {
                     case 0: {
-                        if (type != TK_NUMBER)
+                        if (type != TokType.NUMBER)
                             return;
                         ptr = file.FilePointer;
                         n1 = stringValue;
@@ -237,9 +239,9 @@ namespace iTextSharp.text.pdf {
                         break;
                     }
                     case 1: {
-                        if (type != TK_NUMBER) {
+                        if (type != TokType.NUMBER) {
                             file.Seek(ptr);
-                            type = TK_NUMBER;
+                            type = TokType.NUMBER;
                             stringValue = n1;
                             return;
                         }
@@ -248,13 +250,13 @@ namespace iTextSharp.text.pdf {
                         break;
                     }
                     default: {
-                        if (type != TK_OTHER || !stringValue.Equals("R")) {
+                        if (type != TokType.OTHER || !stringValue.Equals("R")) {
                             file.Seek(ptr);
-                            type = TK_NUMBER;
+                            type = TokType.NUMBER;
                             stringValue = n1;
                             return;
                         }
-                        type = TK_REF;
+                        type = TokType.REF;
                         reference = int.Parse(n1);
                         generation = int.Parse(n2);
                         return;
@@ -272,7 +274,7 @@ namespace iTextSharp.text.pdf {
                 ch = file.Read();
             } while (ch != -1 && IsWhitespace(ch));
             if (ch == -1){
-                type = TK_ENDOFFILE;
+                type = TokType.ENDOFFILE;
                 return false;
             }
             // Note:  We have to initialize stringValue here, after we've looked for the end of the stream,
@@ -282,14 +284,14 @@ namespace iTextSharp.text.pdf {
             stringValue = EMPTY;
             switch (ch) {
                 case '[':
-                    type = TK_START_ARRAY;
+                    type = TokType.START_ARRAY;
                     break;
                 case ']':
-                    type = TK_END_ARRAY;
+                    type = TokType.END_ARRAY;
                     break;
                 case '/': {
                     outBuf = new StringBuilder();
-                    type = TK_NAME;
+                    type = TokType.NAME;
                     while (true) {
                         ch = file.Read();
                         if (ch == -1 || IsDelimiter(ch) || IsWhitespace(ch))
@@ -306,16 +308,16 @@ namespace iTextSharp.text.pdf {
                     ch = file.Read();
                     if (ch != '>')
                         ThrowError(MessageLocalization.GetComposedMessage("greaterthan.not.expected"));
-                    type = TK_END_DIC;
+                    type = TokType.END_DIC;
                     break;
                 case '<': {
                     int v1 = file.Read();
                     if (v1 == '<') {
-                        type = TK_START_DIC;
+                        type = TokType.START_DIC;
                         break;
                     }
                     outBuf = new StringBuilder();
-                    type = TK_STRING;
+                    type = TokType.STRING;
                     hexString = true;
                     int v2 = 0;
                     while (true) {
@@ -346,14 +348,14 @@ namespace iTextSharp.text.pdf {
                     break;
                 }
                 case '%':
-                    type = TK_COMMENT;
+                    type = TokType.COMMENT;
                     do {
                         ch = file.Read();
                     } while (ch != -1 && ch != '\r' && ch != '\n');
                     break;
                 case '(': {
                     outBuf = new StringBuilder();
-                    type = TK_STRING;
+                    type = TokType.STRING;
                     hexString = false;
                     int nesting = 0;
                     while (true) {
@@ -446,14 +448,14 @@ namespace iTextSharp.text.pdf {
                 default: {
                     outBuf = new StringBuilder();
                     if (ch == '-' || ch == '+' || ch == '.' || (ch >= '0' && ch <= '9')) {
-                        type = TK_NUMBER;
+                        type = TokType.NUMBER;
                         do {
                             outBuf.Append((char)ch);
                             ch = file.Read();
                         } while (ch != -1 && ((ch >= '0' && ch <= '9') || ch == '.'));
                     }
                     else {
-                        type = TK_OTHER;
+                        type = TokType.OTHER;
                         do {
                             outBuf.Append((char)ch);
                             ch = file.Read();
@@ -545,10 +547,10 @@ namespace iTextSharp.text.pdf {
                 PRTokeniser tk = new PRTokeniser(line);
                 int num = 0;
                 int gen = 0;
-                if (!tk.NextToken() || tk.TokenType != TK_NUMBER)
+                if (!tk.NextToken() || tk.TokenType != TokType.NUMBER)
                     return null;
                 num = tk.IntValue;
-                if (!tk.NextToken() || tk.TokenType != TK_NUMBER)
+                if (!tk.NextToken() || tk.TokenType != TokType.NUMBER)
                     return null;
                 gen = tk.IntValue;
                 if (!tk.NextToken())

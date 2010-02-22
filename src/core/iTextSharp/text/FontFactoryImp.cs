@@ -150,7 +150,7 @@ namespace iTextSharp.text {
         /// <param name="cached">true if the font comes from the cache or is added to the cache if new, false if the font is always created new</param>
         /// <returns>a Font object</returns>
         public virtual Font GetFont(string fontname, string encoding, bool embedded, float size, int style, BaseColor color, bool cached) {
-            if (fontname == null) return new Font(Font.UNDEFINED, size, style, color);
+            if (fontname == null) return new Font(Font.FontFamily.UNDEFINED, size, style, color);
             string lowercasefontname = fontname.ToLower(CultureInfo.InvariantCulture);
             List<string> tmp = fontFamilies[lowercasefontname];
             if (tmp != null) {
@@ -185,7 +185,7 @@ namespace iTextSharp.text {
                     // the font is a true type font or an unknown font
                     fontname = trueTypeFonts[fontname.ToLower(CultureInfo.InvariantCulture)];
                     // the font is not registered as truetype font
-                    if (fontname == null) return new Font(Font.UNDEFINED, size, style, color);
+                    if (fontname == null) return new Font(Font.FontFamily.UNDEFINED, size, style, color);
                     // the font is registered as truetype font
                     basefont = BaseFont.CreateFont(fontname, encoding, embedded, cached, null, null);
                 }
@@ -196,11 +196,11 @@ namespace iTextSharp.text {
             }
             catch (System.IO.IOException) {
                 // the font is registered as a true type font, but the path was wrong
-                return new Font(Font.UNDEFINED, size, style, color);
+                return new Font(Font.FontFamily.UNDEFINED, size, style, color);
             }
             catch {
                 // null was entered as fontname and/or encoding
-                return new Font(Font.UNDEFINED, size, style, color);
+                return new Font(Font.FontFamily.UNDEFINED, size, style, color);
             }
             return new Font(basefont, size, style, color);
         }

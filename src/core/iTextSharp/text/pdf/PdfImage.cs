@@ -72,7 +72,10 @@ namespace iTextSharp.text.pdf {
         */
         
         public PdfImage(Image image, String name, PdfIndirectReference maskRef) {
-            this.name = new PdfName(name);
+            if (name == null) 
+        	    GenerateImgResName(image);
+            else
+                this.name = new PdfName(name);
             Put(PdfName.TYPE, PdfName.XOBJECT);
             Put(PdfName.SUBTYPE, PdfName.IMAGE);
             Put(PdfName.WIDTH, new PdfNumber(image.Width));
@@ -285,6 +288,15 @@ namespace iTextSharp.text.pdf {
             streamBytes = dup.streamBytes;
             bytes = dup.bytes;
             hashMap = dup.hashMap;
+        }
+
+        /**
+         * Called when no resource name is provided in our constructor.  This generates a 
+         * name that is required to be unique within a given resource dictionary.
+         * @since 5.0.1
+         */
+        private void GenerateImgResName( Image img ) {
+    	    name = new PdfName("img" + img.MySerialId.ToString("X"));
         }
     }
 }

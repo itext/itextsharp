@@ -959,11 +959,11 @@ namespace iTextSharp.text.pdf {
                 return null;
             tokens.Seek(pos);
             tokens.NextValidToken();
-            if (tokens.TokenType != PRTokeniser.TK_NUMBER)
+            if (tokens.TokenType != PRTokeniser.TokType.NUMBER)
                 tokens.ThrowError(MessageLocalization.GetComposedMessage("invalid.object.number"));
             objNum = tokens.IntValue;
             tokens.NextValidToken();
-            if (tokens.TokenType != PRTokeniser.TK_NUMBER)
+            if (tokens.TokenType != PRTokeniser.TokType.NUMBER)
                 tokens.ThrowError(MessageLocalization.GetComposedMessage("invalid.generation.number"));
             objGen = tokens.IntValue;
             tokens.NextValidToken();
@@ -1003,14 +1003,14 @@ namespace iTextSharp.text.pdf {
                     ok = tokens.NextToken();
                     if (!ok)
                         break;
-                    if (tokens.TokenType != PRTokeniser.TK_NUMBER) {
+                    if (tokens.TokenType != PRTokeniser.TokType.NUMBER) {
                         ok = false;
                         break;
                     }
                     ok = tokens.NextToken();
                     if (!ok)
                         break;
-                    if (tokens.TokenType != PRTokeniser.TK_NUMBER) {
+                    if (tokens.TokenType != PRTokeniser.TokType.NUMBER) {
                         ok = false;
                         break;
                     }
@@ -1050,11 +1050,11 @@ namespace iTextSharp.text.pdf {
                     continue;
                 tokens.Seek(pos);
                 tokens.NextValidToken();
-                if (tokens.TokenType != PRTokeniser.TK_NUMBER)
+                if (tokens.TokenType != PRTokeniser.TokType.NUMBER)
                     tokens.ThrowError(MessageLocalization.GetComposedMessage("invalid.object.number"));
                 objNum = tokens.IntValue;
                 tokens.NextValidToken();
-                if (tokens.TokenType != PRTokeniser.TK_NUMBER)
+                if (tokens.TokenType != PRTokeniser.TokType.NUMBER)
                     tokens.ThrowError(MessageLocalization.GetComposedMessage("invalid.generation.number"));
                 objGen = tokens.IntValue;
                 tokens.NextValidToken();
@@ -1149,7 +1149,7 @@ namespace iTextSharp.text.pdf {
                     ok = tokens.NextToken();
                     if (!ok)
                         break;
-                    if (tokens.TokenType != PRTokeniser.TK_NUMBER) {
+                    if (tokens.TokenType != PRTokeniser.TokType.NUMBER) {
                         ok = false;
                         break;
                     }
@@ -1157,7 +1157,7 @@ namespace iTextSharp.text.pdf {
                     ok = tokens.NextToken();
                     if (!ok)
                         break;
-                    if (tokens.TokenType != PRTokeniser.TK_NUMBER) {
+                    if (tokens.TokenType != PRTokeniser.TokType.NUMBER) {
                         ok = false;
                         break;
                     }
@@ -1221,7 +1221,7 @@ namespace iTextSharp.text.pdf {
             if (!tokens.StringValue.Equals("startxref"))
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("startxref.not.found"));
             tokens.NextToken();
-            if (tokens.TokenType != PRTokeniser.TK_NUMBER)
+            if (tokens.TokenType != PRTokeniser.TokType.NUMBER)
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("startxref.is.not.followed.by.a.number"));
             int startxref = tokens.IntValue;
             lastXref = startxref;
@@ -1258,11 +1258,11 @@ namespace iTextSharp.text.pdf {
                 tokens.NextValidToken();
                 if (tokens.StringValue.Equals("trailer"))
                     break;
-                if (tokens.TokenType != PRTokeniser.TK_NUMBER)
+                if (tokens.TokenType != PRTokeniser.TokType.NUMBER)
                     tokens.ThrowError(MessageLocalization.GetComposedMessage("object.number.of.the.first.object.in.this.xref.subsection.not.found"));
                 start = tokens.IntValue;
                 tokens.NextValidToken();
-                if (tokens.TokenType != PRTokeniser.TK_NUMBER)
+                if (tokens.TokenType != PRTokeniser.TokType.NUMBER)
                     tokens.ThrowError(MessageLocalization.GetComposedMessage("number.of.entries.in.this.xref.subsection.not.found"));
                 end = tokens.IntValue + start;
                 if (start == 1) { // fix incorrect start number
@@ -1324,10 +1324,10 @@ namespace iTextSharp.text.pdf {
             int thisStream = 0;
             if (!tokens.NextToken())
                 return false;
-            if (tokens.TokenType != PRTokeniser.TK_NUMBER)
+            if (tokens.TokenType != PRTokeniser.TokType.NUMBER)
                 return false;
             thisStream = tokens.IntValue;
-            if (!tokens.NextToken() || tokens.TokenType != PRTokeniser.TK_NUMBER)
+            if (!tokens.NextToken() || tokens.TokenType != PRTokeniser.TokType.NUMBER)
                 return false;
             if (!tokens.NextToken() || !tokens.StringValue.Equals("obj"))
                 return false;
@@ -1493,16 +1493,16 @@ namespace iTextSharp.text.pdf {
             PdfDictionary dic = new PdfDictionary();
             while (true) {
                 tokens.NextValidToken();
-                if (tokens.TokenType == PRTokeniser.TK_END_DIC)
+                if (tokens.TokenType == PRTokeniser.TokType.END_DIC)
                     break;
-                if (tokens.TokenType != PRTokeniser.TK_NAME)
+                if (tokens.TokenType != PRTokeniser.TokType.NAME)
                     tokens.ThrowError(MessageLocalization.GetComposedMessage("dictionary.key.is.not.a.name"));
                 PdfName name = new PdfName(tokens.StringValue, false);
                 PdfObject obj = ReadPRObject();
                 int type = obj.Type;
-                if (-type == PRTokeniser.TK_END_DIC)
+                if (-type == (int)PRTokeniser.TokType.END_DIC)
                     tokens.ThrowError(MessageLocalization.GetComposedMessage("unexpected.gt.gt"));
-                if (-type == PRTokeniser.TK_END_ARRAY)
+                if (-type == (int)PRTokeniser.TokType.END_ARRAY)
                     tokens.ThrowError(MessageLocalization.GetComposedMessage("unexpected.close.bracket"));
                 dic.Put(name, obj);
             }
@@ -1514,9 +1514,9 @@ namespace iTextSharp.text.pdf {
             while (true) {
                 PdfObject obj = ReadPRObject();
                 int type = obj.Type;
-                if (-type == PRTokeniser.TK_END_ARRAY)
+                if (-type == (int)PRTokeniser.TokType.END_ARRAY)
                     break;
-                if (-type == PRTokeniser.TK_END_DIC)
+                if (-type == (int)PRTokeniser.TokType.END_DIC)
                     tokens.ThrowError(MessageLocalization.GetComposedMessage("unexpected.gt.gt"));
                 array.Add(obj);
             }
@@ -1530,9 +1530,9 @@ namespace iTextSharp.text.pdf {
 
         protected internal PdfObject ReadPRObject() {
             tokens.NextValidToken();
-            int type = tokens.TokenType;
+            PRTokeniser.TokType type = tokens.TokenType;
             switch (type) {
-                case PRTokeniser.TK_START_DIC: {
+                case PRTokeniser.TokType.START_DIC: {
                     ++readDepth;
                     PdfDictionary dic = ReadDictionary();
                     --readDepth;
@@ -1541,7 +1541,7 @@ namespace iTextSharp.text.pdf {
                     bool hasNext;
                     do {
                         hasNext = tokens.NextToken();
-                    } while (hasNext && tokens.TokenType == PRTokeniser.TK_COMMENT);
+                    } while (hasNext && tokens.TokenType == PRTokeniser.TokType.COMMENT);
 
                     if (hasNext && tokens.StringValue.Equals("stream")) {
                         //skip whitespaces
@@ -1564,21 +1564,21 @@ namespace iTextSharp.text.pdf {
                         return dic;
                     }
                 }
-                case PRTokeniser.TK_START_ARRAY: {
+                case PRTokeniser.TokType.START_ARRAY: {
                     ++readDepth;
                     PdfArray arr = ReadArray();
                     --readDepth;
                     return arr;
                 }
-                case PRTokeniser.TK_NUMBER:
+                case PRTokeniser.TokType.NUMBER:
                     return new PdfNumber(tokens.StringValue);
-                case PRTokeniser.TK_STRING:
+                case PRTokeniser.TokType.STRING:
                     PdfString str = new PdfString(tokens.StringValue, null).SetHexWriting(tokens.IsHexString());
                     str.SetObjNum(objNum, objGen);
                     if (strings != null)
                         strings.Add(str);
                     return str;
-                case PRTokeniser.TK_NAME: {
+                case PRTokeniser.TokType.NAME: {
                     PdfName cachedName = (PdfName)PdfName.staticNames[tokens.StringValue];
                     if (readDepth > 0 && cachedName != null) {
                         return cachedName;
@@ -1587,11 +1587,11 @@ namespace iTextSharp.text.pdf {
                         return new PdfName(tokens.StringValue, false);
                     }
                 }
-                case PRTokeniser.TK_REF:
+                case PRTokeniser.TokType.REF:
                     int num = tokens.Reference;
                     PRIndirectReference refi = new PRIndirectReference(this, num, tokens.Generation);
                     return refi;
-                case PRTokeniser.TK_ENDOFFILE:
+                case PRTokeniser.TokType.ENDOFFILE:
                     throw new IOException(MessageLocalization.GetComposedMessage("unexpected.end.of.file"));
                 default:
                     String sv = tokens.StringValue;
@@ -1613,7 +1613,7 @@ namespace iTextSharp.text.pdf {
                         } //else
                         return PdfBoolean.PDFFALSE;
                     }
-                    return new PdfLiteral(-type, tokens.StringValue);
+                    return new PdfLiteral(-(int)type, tokens.StringValue);
             }
         }
         

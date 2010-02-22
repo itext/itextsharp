@@ -78,7 +78,7 @@ namespace iTextSharp.text
             if (greek == ' ') {
                 return new Chunk(c.ToString(), font);
             }
-            Font symbol = new Font(Font.SYMBOL, font.Size, font.Style, font.Color);
+            Font symbol = new Font(Font.FontFamily.SYMBOL, font.Size, font.Style, font.Color);
             return new Chunk(greek.ToString(), symbol);
         }
         

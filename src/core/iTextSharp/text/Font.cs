@@ -63,20 +63,14 @@ namespace iTextSharp.text {
     
         // static membervariables for the different families
     
-        /// <summary> a possible value of a font family. </summary>
-        public const int COURIER = 0;
-    
-        /// <summary> a possible value of a font family. </summary>
-        public const int HELVETICA = 1;
-    
-        /// <summary> a possible value of a font family. </summary>
-        public const int TIMES_ROMAN = 2;
-    
-        /// <summary> a possible value of a font family. </summary>
-        public const int SYMBOL = 3;
-    
-        /// <summary> a possible value of a font family. </summary>
-        public const int ZAPFDINGBATS = 4;
+        public enum FontFamily {
+            COURIER,
+            HELVETICA,
+            TIMES_ROMAN,
+            SYMBOL,
+            ZAPFDINGBATS,
+            UNDEFINED=-1
+        }
     
         // static membervariables for the different styles
     
@@ -109,7 +103,7 @@ namespace iTextSharp.text {
         // membervariables
     
         /// <summary> the value of the fontfamily. </summary>
-        private int family = UNDEFINED;
+        private FontFamily family = FontFamily.UNDEFINED;
     
         /// <summary> the value of the fontsize. </summary>
         private float size = UNDEFINED;
@@ -144,7 +138,7 @@ namespace iTextSharp.text {
         /// <param name="size">the size of this font</param>
         /// <param name="style">the style of this font</param>
         /// <param name="color">the BaseColor of this font.</param>
-        public Font(int family, float size, int style, BaseColor color) {
+        public Font(FontFamily family, float size, int style, BaseColor color) {
             this.family = family;
             this.size = size;
             this.style = style;
@@ -192,20 +186,20 @@ namespace iTextSharp.text {
         /// <param name="family">the family to which this font belongs</param>
         /// <param name="size">the size of this font</param>
         /// <param name="style">the style of this font</param>
-        public Font(int family, float size, int style) : this(family, size, style, null) {}
+        public Font(FontFamily family, float size, int style) : this(family, size, style, null) {}
     
         /// <summary>
         /// Constructs a Font.
         /// </summary>
         /// <param name="family">the family to which this font belongs</param>
         /// <param name="size">the size of this font</param>
-        public Font(int family, float size) : this(family, size, UNDEFINED, null) {}
+        public Font(FontFamily family, float size) : this(family, size, UNDEFINED, null) {}
     
         /// <summary>
         /// Constructs a Font.
         /// </summary>
         /// <param name="family">the family to which this font belongs</param>
-        public Font(int family) : this(family, UNDEFINED, UNDEFINED, null) {}
+        public Font(FontFamily family) : this(family, UNDEFINED, UNDEFINED, null) {}
     
         /// <summary>
         /// Constructs a Font.
@@ -213,7 +207,7 @@ namespace iTextSharp.text {
         /// <overloads>
         /// Has nine overloads.
         /// </overloads>
-        public Font() : this(UNDEFINED, UNDEFINED, UNDEFINED, null) {}
+        public Font() : this(FontFamily.UNDEFINED, UNDEFINED, UNDEFINED, null) {}
     
         // implementation of the Comparable interface
     
@@ -264,7 +258,7 @@ namespace iTextSharp.text {
         /// Gets the family of this font.
         /// </summary>
         /// <value>the value of the family</value>
-        public int Family {
+        public FontFamily Family {
             get {
                 return family;
             }
@@ -278,15 +272,15 @@ namespace iTextSharp.text {
             get {
                 string tmp = "unknown";
                 switch (this.Family) {
-                    case Font.COURIER:
+                    case FontFamily.COURIER:
                         return FontFactory.COURIER;
-                    case Font.HELVETICA:
+                    case FontFamily.HELVETICA:
                         return FontFactory.HELVETICA;
-                    case Font.TIMES_ROMAN:
+                    case FontFamily.TIMES_ROMAN:
                         return FontFactory.TIMES_ROMAN;
-                    case Font.SYMBOL:
+                    case FontFamily.SYMBOL:
                         return FontFactory.SYMBOL;
-                    case Font.ZAPFDINGBATS:
+                    case FontFamily.ZAPFDINGBATS:
                         return FontFactory.ZAPFDINGBATS;
                     default:
                         if (baseFont != null) {
@@ -324,23 +318,23 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="family">A string representing a certain font-family</param>
         /// <returns>the corresponding index</returns>
-        public static int GetFamilyIndex(string family) {
+        public static FontFamily GetFamilyIndex(string family) {
             if (Util.EqualsIgnoreCase(family, FontFactory.COURIER)) {
-                return COURIER;
+                return FontFamily.COURIER;
             }
             if (Util.EqualsIgnoreCase(family, FontFactory.HELVETICA)) {
-                return HELVETICA;
+                return FontFamily.HELVETICA;
             }
             if (Util.EqualsIgnoreCase(family, FontFactory.TIMES_ROMAN)) {
-                return TIMES_ROMAN;
+                return FontFamily.TIMES_ROMAN;
             }
             if (Util.EqualsIgnoreCase(family, FontFactory.SYMBOL)) {
-                return SYMBOL;
+                return FontFamily.SYMBOL;
             }
             if (Util.EqualsIgnoreCase(family, FontFactory.ZAPFDINGBATS)) {
-                return ZAPFDINGBATS;
+                return FontFamily.ZAPFDINGBATS;
             }
-            return UNDEFINED;
+            return FontFamily.UNDEFINED;
         }
     
     	// SIZE
@@ -405,7 +399,7 @@ namespace iTextSharp.text {
                 }
                 if (baseFont != null)
                     return style;
-                if (family == SYMBOL || family == ZAPFDINGBATS)
+                if (family == FontFamily.SYMBOL || family == FontFamily.ZAPFDINGBATS)
                     return style;
                 else
                     return style & (~BOLDITALIC);
@@ -420,7 +414,7 @@ namespace iTextSharp.text {
             if (style == UNDEFINED) {
                 return false;
             }
-            return (style &    BOLD) == BOLD;
+            return (style & BOLD) == BOLD;
         }
     
         /// <summary>
@@ -431,7 +425,7 @@ namespace iTextSharp.text {
             if (style == UNDEFINED) {
                 return false;
             }
-            return (style &    ITALIC) == ITALIC;
+            return (style & ITALIC) == ITALIC;
         }
     
         /// <summary>
@@ -442,7 +436,7 @@ namespace iTextSharp.text {
             if (style == UNDEFINED) {
                 return false;
             }
-            return (style &    UNDERLINE) == UNDERLINE;
+            return (style & UNDERLINE) == UNDERLINE;
         }
     
         /// <summary>
@@ -453,7 +447,7 @@ namespace iTextSharp.text {
             if (style == UNDEFINED) {
                 return false;
             }
-            return (style &    STRIKETHRU) == STRIKETHRU;
+            return (style & STRIKETHRU) == STRIKETHRU;
         }
     
         /// <summary>
@@ -559,7 +553,7 @@ namespace iTextSharp.text {
             String encoding = BaseFont.WINANSI;
             BaseFont cfont = null;
             switch (family) {
-                case COURIER:
+                case FontFamily.COURIER:
                     switch (style & BOLDITALIC) {
                         case BOLD:
                             fontName = BaseFont.COURIER_BOLD;
@@ -576,7 +570,7 @@ namespace iTextSharp.text {
                             break;
                     }
                     break;
-                case TIMES_ROMAN:
+                case FontFamily.TIMES_ROMAN:
                     switch (style & BOLDITALIC) {
                         case BOLD:
                             fontName = BaseFont.TIMES_BOLD;
@@ -593,12 +587,12 @@ namespace iTextSharp.text {
                             break;
                     }
                     break;
-                case SYMBOL:
+                case FontFamily.SYMBOL:
                     fontName = BaseFont.SYMBOL;
                     if (specialEncoding)
                         encoding = BaseFont.SYMBOL;
                     break;
-                case ZAPFDINGBATS:
+                case FontFamily.ZAPFDINGBATS:
                     fontName = BaseFont.ZAPFDINGBATS;
                     if (specialEncoding)
                         encoding = BaseFont.ZAPFDINGBATS;
@@ -635,7 +629,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <returns>a boolean</returns>
         public virtual bool IsStandardFont() {
-            return (family == UNDEFINED
+            return (family == FontFamily.UNDEFINED
                 && size == UNDEFINED
                 && style == UNDEFINED
                 && color == null
@@ -673,7 +667,7 @@ namespace iTextSharp.text {
             if (font.baseFont != null) {
                 return new Font(font.BaseFont, dSize, dStyle, dColor);
             }
-            if (font.Family != UNDEFINED) {
+            if (font.Family != FontFamily.UNDEFINED) {
                 return new Font(font.Family, dSize, dStyle, dColor);
             }
             if (this.baseFont != null) {

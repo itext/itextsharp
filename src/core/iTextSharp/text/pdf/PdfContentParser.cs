@@ -125,16 +125,16 @@ namespace iTextSharp.text.pdf {
             while (true) {
                 if (!NextValidToken())
                     throw new IOException(MessageLocalization.GetComposedMessage("unexpected.end.of.file"));
-                    if (tokeniser.TokenType == PRTokeniser.TK_END_DIC)
+                    if (tokeniser.TokenType == PRTokeniser.TokType.END_DIC)
                         break;
-                    if (tokeniser.TokenType != PRTokeniser.TK_NAME)
+                    if (tokeniser.TokenType != PRTokeniser.TokType.NAME)
                         throw new IOException(MessageLocalization.GetComposedMessage("dictionary.key.is.not.a.name"));
                     PdfName name = new PdfName(tokeniser.StringValue, false);
                     PdfObject obj = ReadPRObject();
                     int type = obj.Type;
-                    if (-type == PRTokeniser.TK_END_DIC)
+                    if (-type == (int)PRTokeniser.TokType.END_DIC)
                         throw new IOException(MessageLocalization.GetComposedMessage("unexpected.gt.gt"));
-                    if (-type == PRTokeniser.TK_END_ARRAY)
+                    if (-type == (int)PRTokeniser.TokType.END_ARRAY)
                         throw new IOException(MessageLocalization.GetComposedMessage("unexpected.close.bracket"));
                     dic.Put(name, obj);
             }
@@ -151,9 +151,9 @@ namespace iTextSharp.text.pdf {
             while (true) {
                 PdfObject obj = ReadPRObject();
                 int type = obj.Type;
-                if (-type == PRTokeniser.TK_END_ARRAY)
+                if (-type == (int)PRTokeniser.TokType.END_ARRAY)
                     break;
-                if (-type == PRTokeniser.TK_END_DIC)
+                if (-type == (int)PRTokeniser.TokType.END_DIC)
                     throw new IOException(MessageLocalization.GetComposedMessage("unexpected.gt.gt"));
                 array.Add(obj);
             }
@@ -168,25 +168,25 @@ namespace iTextSharp.text.pdf {
         public PdfObject ReadPRObject() {
             if (!NextValidToken())
                 return null;
-            int type = tokeniser.TokenType;
+            PRTokeniser.TokType type = tokeniser.TokenType;
             switch (type) {
-                case PRTokeniser.TK_START_DIC: {
+                case PRTokeniser.TokType.START_DIC: {
                     PdfDictionary dic = ReadDictionary();
                     return dic;
                 }
-                case PRTokeniser.TK_START_ARRAY:
+                case PRTokeniser.TokType.START_ARRAY:
                     return ReadArray();
-                case PRTokeniser.TK_STRING:
+                case PRTokeniser.TokType.STRING:
                     PdfString str = new PdfString(tokeniser.StringValue, null).SetHexWriting(tokeniser.IsHexString());
                     return str;
-                case PRTokeniser.TK_NAME:
+                case PRTokeniser.TokType.NAME:
                     return new PdfName(tokeniser.StringValue, false);
-                case PRTokeniser.TK_NUMBER:
+                case PRTokeniser.TokType.NUMBER:
                     return new PdfNumber(tokeniser.StringValue);
-                 case PRTokeniser.TK_OTHER:
+                 case PRTokeniser.TokType.OTHER:
                     return new PdfLiteral(COMMAND_TYPE, tokeniser.StringValue);
                 default:
-                    return new PdfLiteral(-type, tokeniser.StringValue);
+                    return new PdfLiteral(-(int)type, tokeniser.StringValue);
             }
         }
         
@@ -197,7 +197,7 @@ namespace iTextSharp.text.pdf {
         */    
         public bool NextValidToken() {
             while (tokeniser.NextToken()) {
-                if (tokeniser.TokenType == PRTokeniser.TK_COMMENT)
+                if (tokeniser.TokenType == PRTokeniser.TokType.COMMENT)
                     continue;
                 return true;
             }

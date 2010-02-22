@@ -463,9 +463,9 @@ namespace iTextSharp.text.pdf {
             List<String> stack = new List<string>();
             Object[] ret = new Object[3];
             while (tk.NextToken()) {
-                if (tk.TokenType == PRTokeniser.TK_COMMENT)
+                if (tk.TokenType == PRTokeniser.TokType.COMMENT)
                     continue;
-                if (tk.TokenType == PRTokeniser.TK_OTHER) {
+                if (tk.TokenType == PRTokeniser.TokType.OTHER) {
                     String oper = tk.StringValue;
                     if (oper.Equals("Tf")) {
                         if (stack.Count >= 2) {
