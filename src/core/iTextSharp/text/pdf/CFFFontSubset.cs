@@ -1633,7 +1633,9 @@ namespace iTextSharp.text.pdf {
             // Mark the beginning of the Subrs index
             OutputList.Add(new SubrMarkerItem(Subrs,PrivateBase));
             // Put the subsetted new subrs index
-            OutputList.Add(new RangeItem(new RandomAccessFileOrArray(NewSubrsIndexNonCID),0,NewSubrsIndexNonCID.Length));
+            if (NewSubrsIndexNonCID != null) {
+                OutputList.Add(new RangeItem(new RandomAccessFileOrArray(NewSubrsIndexNonCID),0,NewSubrsIndexNonCID.Length));
+            }
         }    
     }
 }
