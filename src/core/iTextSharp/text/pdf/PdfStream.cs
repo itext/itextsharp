@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Collections;
 using iTextSharp.text.error_messages;
 
 using System.util.zlib;

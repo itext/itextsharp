@@ -1579,7 +1579,8 @@ namespace iTextSharp.text.pdf {
                         strings.Add(str);
                     return str;
                 case PRTokeniser.TokType.NAME: {
-                    PdfName cachedName = (PdfName)PdfName.staticNames[tokens.StringValue];
+                    PdfName cachedName;
+                    PdfName.staticNames.TryGetValue(tokens.StringValue, out cachedName);
                     if (readDepth > 0 && cachedName != null) {
                         return cachedName;
                     } else {
