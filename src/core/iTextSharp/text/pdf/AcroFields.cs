@@ -1711,45 +1711,39 @@ namespace iTextSharp.text.pdf {
             * An array of <CODE>PdfDictionary</CODE> where the value tag /V
             * is present.
             * 
-            * @deprecated (will remove 'public' in the future)
             */
-            public List<PdfDictionary> values = new List<PdfDictionary>();
+            protected internal List<PdfDictionary> values = new List<PdfDictionary>();
             
             /**
             * An array of <CODE>PdfDictionary</CODE> with the widgets.
             * 
-            * @deprecated (will remove 'public' in the future)
             */
-            public List<PdfDictionary> widgets = new List<PdfDictionary>();
+            protected internal List<PdfDictionary> widgets = new List<PdfDictionary>();
             
             /**
             * An array of <CODE>PdfDictionary</CODE> with the widget references.
             * 
-            * @deprecated (will remove 'public' in the future)
             */
-            public List<PdfIndirectReference> widget_refs = new List<PdfIndirectReference>();
+            protected internal List<PdfIndirectReference> widget_refs = new List<PdfIndirectReference>();
             
             /**
             * An array of <CODE>PdfDictionary</CODE> with all the field
             * and widget tags merged.
             * 
-            * @deprecated (will remove 'public' in the future)
             */
-            public List<PdfDictionary> merged = new List<PdfDictionary>();
+            protected internal List<PdfDictionary> merged = new List<PdfDictionary>();
             
             /**
             * An array of <CODE>Integer</CODE> with the page numbers where
             * the widgets are displayed.
             * 
-            * @deprecated (will remove 'public' in the future)
             */
-            public List<int> page = new List<int>();
+            protected internal List<int> page = new List<int>();
             /**
             * An array of <CODE>Integer</CODE> with the tab order of the field in the page.
             * 
-            * @deprecated (will remove 'public' in the future)
             */
-            public List<int> tabOrder = new List<int>();
+            protected internal List<int> tabOrder = new List<int>();
 
             /**
             * Preferred method of determining the number of instances
