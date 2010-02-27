@@ -602,24 +602,12 @@ namespace iTextSharp.text {
             return count;
         }
 
-        /** Register fonts in some probable directories. It usually works in Windows,
-        * Linux and Solaris.
+        /** Register fonts in windows
         * @return the number of fonts registered
         */    
         public virtual int RegisterDirectories() {
-            int count = 0;
-            count += RegisterDirectory("c:/windows/fonts");
-            count += RegisterDirectory("c:/winnt/fonts");
-            count += RegisterDirectory("d:/windows/fonts");
-            count += RegisterDirectory("d:/winnt/fonts");
-            count += RegisterDirectory("/usr/share/X11/fonts", true);
-            count += RegisterDirectory("/usr/X/lib/X11/fonts", true);
-            count += RegisterDirectory("/usr/openwin/lib/X11/fonts", true);
-            count += RegisterDirectory("/usr/share/fonts", true);
-            count += RegisterDirectory("/usr/X11R6/lib/X11/fonts", true);
-            count += RegisterDirectory("/Library/Fonts");
-            count += RegisterDirectory("/System/Library/Fonts");
-            return count;
+            string dir = Path.Combine(Path.GetDirectoryName(Environment.GetFolderPath(Environment.SpecialFolder.System)), "Fonts");
+            return RegisterDirectory(dir);
         }
 
         /// <summary>
