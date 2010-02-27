@@ -162,7 +162,9 @@ namespace iTextSharp.text.pdf {
             this.attributes = other.attributes;
             this.noStroke = other.noStroke;
             this.baseFont = other.baseFont;
-            Object[] obj = (Object[])attributes[Chunk.IMAGE];
+            Object[] obj = null;
+            if (attributes.ContainsKey(Chunk.IMAGE))
+                obj = (Object[])attributes[Chunk.IMAGE];
             if (obj == null)
                 image = null;
             else {
@@ -318,7 +320,9 @@ namespace iTextSharp.text.pdf {
                 else
                     return null;
             }
-            IHyphenationEvent hyphenationEvent = (IHyphenationEvent)noStroke[Chunk.HYPHENATION];
+            IHyphenationEvent hyphenationEvent = null;
+            if (noStroke.ContainsKey(Chunk.HYPHENATION))
+                hyphenationEvent = (IHyphenationEvent)noStroke[Chunk.HYPHENATION];
             int currentPosition = 0;
             int splitPosition = -1;
             float currentWidth = 0;
