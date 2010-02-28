@@ -152,7 +152,8 @@ namespace iTextSharp.text {
         public virtual Font GetFont(string fontname, string encoding, bool embedded, float size, int style, BaseColor color, bool cached) {
             if (fontname == null) return new Font(Font.FontFamily.UNDEFINED, size, style, color);
             string lowercasefontname = fontname.ToLower(CultureInfo.InvariantCulture);
-            List<string> tmp = fontFamilies[lowercasefontname];
+            List<string> tmp;
+            fontFamilies.TryGetValue(lowercasefontname, out tmp);
             if (tmp != null) {
                 // some bugs were fixed here by Daniel Marczisovszky
                 int fs = Font.NORMAL;
@@ -183,7 +184,7 @@ namespace iTextSharp.text {
                 }
                 if (basefont == null) {
                     // the font is a true type font or an unknown font
-                    fontname = trueTypeFonts[fontname.ToLower(CultureInfo.InvariantCulture)];
+                    trueTypeFonts.TryGetValue(fontname.ToLower(CultureInfo.InvariantCulture), out fontname);
                     // the font is not registered as truetype font
                     if (fontname == null) return new Font(Font.FontFamily.UNDEFINED, size, style, color);
                     // the font is registered as truetype font
@@ -445,7 +446,8 @@ namespace iTextSharp.text {
         public void RegisterFamily(String familyName, String fullName, String path) {
             if (path != null)
                 trueTypeFonts[fullName] = path;
-            List<string> tmp = fontFamilies[familyName];
+            List<string> tmp;
+            fontFamilies.TryGetValue(familyName, out tmp);
             if (tmp == null) {
                 tmp = new List<string>();
                 tmp.Add(fullName);

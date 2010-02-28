@@ -85,12 +85,12 @@ namespace iTextSharp.text.error_messages {
             Dictionary<string,string> cl = currentLanguage;
             String val;
             if (cl != null) {
-                val = cl[key];
+                cl.TryGetValue(key, out val);
                 if (val != null)
                     return val;
             }
             cl = defaultLanguage;
-            val = cl[key];
+            cl.TryGetValue(key, out val);
             if (val != null)
                 return val;
             return "No message found for " + key;
