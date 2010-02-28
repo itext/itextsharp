@@ -92,7 +92,7 @@ namespace iTextSharp.text.pdf {
                 arr = new PdfArray();
                 for (; offset < end; ++offset) {
                     arr.Add(new PdfString(names[offset], null));
-                    arr.Add((PdfObject)items[names[offset]]);
+                    arr.Add(items[names[offset]]);
                 }
                 dic.Put(PdfName.NAMES, arr);
                 kids[k] = writer.AddToBody(dic).IndirectReference;

@@ -577,7 +577,8 @@ namespace iTextSharp.text.pdf {
                 if (obj.Type == PdfObject.DICTIONARY) {
                     PdfObject str = PdfReader.GetPdfObject(((PdfDictionary)obj).Get(PdfName.IRT));
                     if (str != null && str.Type == PdfObject.STRING) {
-                        PdfObject i = (PdfObject)irt[str.ToString()];
+                        PdfObject i;
+                        irt.TryGetValue(str.ToString(), out i);
                         if (i != null) {
                             PdfDictionary dic2 = new PdfDictionary();
                             dic2.Merge((PdfDictionary)obj);
@@ -589,7 +590,7 @@ namespace iTextSharp.text.pdf {
                 AddToBody(obj, GetNewObjectNumber(fdf, n, 0));
             }
             for (int k = 0; k < an.Count; ++k) {
-                PdfObject obj = (PdfObject)an[k];
+                PdfObject obj = an[k];
                 PdfDictionary annot = (PdfDictionary)PdfReader.GetPdfObject(obj);
                 PdfNumber page = annot.GetAsNumber(PdfName.PAGE);
                 PdfDictionary dic = reader.GetPageN(page.IntValue + 1);
@@ -606,7 +607,8 @@ namespace iTextSharp.text.pdf {
         
         internal PageStamp GetPageStamp(int pageNum) {
             PdfDictionary pageN = reader.GetPageN(pageNum);
-            PageStamp ps = pagesToContent[pageN];
+            PageStamp ps;
+            pagesToContent.TryGetValue(pageN, out ps);
             if (ps == null) {
                 ps = new PageStamp(this, reader, pageN);
                 pagesToContent[pageN] = ps;

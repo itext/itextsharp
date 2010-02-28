@@ -281,7 +281,6 @@ namespace iTextSharp.text.html.simpleparser {
                     IImg i = null;
                     bool skip = false;
                     if (interfaceProps != null) {
-                        i = (IImg)interfaceProps["img_interface"];
                         if (interfaceProps.ContainsKey("img_interface"))
                             i = (IImg)interfaceProps["img_interface"];
                         if (i != null)

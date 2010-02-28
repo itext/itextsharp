@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 
 /*
  * $Id$
@@ -55,23 +55,24 @@ namespace System.util
     /// </summary>
     public class Properties
     {
-        private Hashtable _col;
+        private Dictionary<string,string> _col;
         private const string whiteSpaceChars = " \t\r\n\f";
         private const string keyValueSeparators = "=: \t\r\n\f";
         private const string strictKeyValueSeparators = "=:";
 
         public Properties()
         {
-            _col = new Hashtable();
+            _col = new Dictionary<string,string>();
         }
 
         public string Remove(string key) {
-            string retval = (string)_col[key];
+            string retval;
+            _col.TryGetValue(key, out retval);
             _col.Remove(key);
             return retval;
         }
 
-        public IEnumerator GetEnumerator() {
+        public Dictionary<string,string>.Enumerator GetEnumerator() {
             return _col.GetEnumerator();
         }
 
@@ -97,7 +98,9 @@ namespace System.util
 
         public virtual string this[string key] {
             get {
-                return (string)_col[key];
+                string retval;
+                _col.TryGetValue(key, out retval);
+                return retval;
             }
 
             set {
@@ -105,7 +108,7 @@ namespace System.util
             }
         }
 
-        public ICollection Keys {
+        public Dictionary<string,string>.KeyCollection Keys {
             get {
                 return _col.Keys;
             }

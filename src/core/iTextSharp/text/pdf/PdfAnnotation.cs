@@ -741,7 +741,8 @@ namespace iTextSharp.text.pdf {
             internal PdfImportedLink(PdfDictionary annotation) {
                 parameters = new Dictionary<PdfName,PdfObject>(annotation.hashMap);
                 try {
-                    destination = (PdfArray)parameters[PdfName.DEST];
+                    if (parameters.ContainsKey(PdfName.DEST))
+                        destination = (PdfArray)parameters[PdfName.DEST];
                     parameters.Remove(PdfName.DEST);
                 } catch (Exception) {
                     throw new ArgumentException(MessageLocalization.GetComposedMessage("you.have.to.consolidate.the.named.destinations.of.your.reader"));

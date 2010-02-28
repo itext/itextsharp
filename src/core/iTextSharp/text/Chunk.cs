@@ -400,10 +400,10 @@ namespace iTextSharp.text {
         */
         public float HorizontalScaling {
             get {
-                if (attributes == null) return 1f;
-                Object f = attributes[HSCALE];
-                if (f == null) return 1f;
-                return (float)f;
+                if (attributes != null && attributes.ContainsKey(HSCALE))
+                    return (float)attributes[HSCALE];
+                else
+                    return 1f;
             }
         }
         
@@ -443,7 +443,10 @@ namespace iTextSharp.text {
             if (attributes == null)
                 attributes = new Dictionary<string,object>();
             Object[] obj = {color, new float[]{thickness, thicknessMul, yPosition, yPositionMul, (float)cap}};
-            Object[][] unders = Utilities.AddToArray((Object[][])attributes[UNDERLINE], obj);
+            Object[][] old = null;
+            if (attributes.ContainsKey(UNDERLINE))
+                old = (Object[][])attributes[UNDERLINE];
+            Object[][] unders = Utilities.AddToArray(old, obj);
             return SetAttribute(UNDERLINE, unders);
         }
         
@@ -624,13 +627,10 @@ namespace iTextSharp.text {
         /// </summary>
         /// <value>an Image</value>
         public Image GetImage() {
-            if (attributes == null) return null;
-            Object[] obj = (Object[])attributes[Chunk.IMAGE];
-            if (obj == null)
+            if (attributes != null && attributes.ContainsKey(IMAGE)) 
+                return (Image)((Object[])attributes[Chunk.IMAGE])[0];
+            else
                 return null;
-            else {
-                return (Image)obj[0];
-            }
         }
 
         /// <summary>
@@ -717,8 +717,10 @@ namespace iTextSharp.text {
         * @since    2.1.2
         */
         public IHyphenationEvent GetHyphenation() {
-            if (attributes == null) return null;
-            return (IHyphenationEvent) attributes[Chunk.HYPHENATION];
+            if (attributes != null && attributes.ContainsKey(HYPHENATION))
+                return (IHyphenationEvent)attributes[HYPHENATION];
+            else
+                return null;
         }
 
         // keys used in PdfChunk
@@ -750,11 +752,10 @@ namespace iTextSharp.text {
 	    * @return a value in float
 	    */
 	    public float GetCharacterSpacing() {
-		    if (attributes != null && attributes.ContainsKey(CHAR_SPACING)) {
-			    float f = (float) attributes[CHAR_SPACING];
-			    return f;
-		    }
-		    return 0.0f;
+		    if (attributes != null && attributes.ContainsKey(CHAR_SPACING))
+			    return (float)attributes[CHAR_SPACING];
+            else
+		        return 0f;
 	    }
     }
 }

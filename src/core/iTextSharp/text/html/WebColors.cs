@@ -249,8 +249,7 @@ namespace iTextSharp.text.html {
             }
             name = name.ToLower(CultureInfo.InvariantCulture);
             if (!NAMES.ContainsKey(name))
-                throw new ArgumentException("Color '" + name
-                        + "' not found.");
+                throw new ArgumentException("Color '" + name + "' not found.");
             c = NAMES[name];
             return new BaseColor(c[0], c[1], c[2], c[3]);
         }
