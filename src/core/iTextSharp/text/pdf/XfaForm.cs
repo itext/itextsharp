@@ -733,6 +733,8 @@ namespace iTextSharp.text.pdf {
                 XmlDocument doc = n.OwnerDocument;
                 XmlNode n2 = null;
                 n = n.FirstChild;
+                while (n.NodeType != XmlNodeType.Element)
+                    n = n.NextSibling;
                 for (int k = 0; k < stack.Count; ++k) {
                     String part = stack[k];
                     int idx = part.LastIndexOf('[');
