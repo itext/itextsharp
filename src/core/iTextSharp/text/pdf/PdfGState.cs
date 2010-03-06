@@ -161,5 +161,15 @@ namespace iTextSharp.text.pdf {
             }
         }
         
+        /**
+         * Set the rendering intent, possible values are: PdfName.ABSOLUTECOLORIMETRIC,
+         * PdfName.RELATIVECOLORIMETRIC, PdfName.SATURATION, PdfName.PERCEPTUAL.
+         * @param ri
+         */
+        public PdfName RenderingIntent {
+            set {
+                Put(PdfName.RI, value);
+            }
+        }
     }
 }
