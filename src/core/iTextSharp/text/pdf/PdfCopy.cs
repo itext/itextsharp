@@ -656,8 +656,8 @@ namespace iTextSharp.text.pdf {
                 allAnnots.Add(field);
                 List<PdfFormField> kids = field.Kids;
                 if (kids != null) {
-                    for (int k = 0; k < kids.Count; ++k)
-                        ExpandFields(kids[k], allAnnots);
+                    foreach (PdfFormField f in kids)
+                        ExpandFields(f, allAnnots);
                 }
             }
 
