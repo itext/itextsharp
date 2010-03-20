@@ -2506,8 +2506,7 @@ namespace iTextSharp.text.pdf {
             content.Append('[');
             List<Object> arrayList = text.ArrayList;
             bool lastWasNumber = false;
-            for (int k = 0; k < arrayList.Count; ++k) {
-                Object obj = arrayList[k];
+            foreach (Object obj in arrayList) {
                 if (obj is string) {
                     ShowText2((string)obj);
                     lastWasNumber = false;
