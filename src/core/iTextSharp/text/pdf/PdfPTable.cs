@@ -366,6 +366,22 @@ namespace iTextSharp.text.pdf {
             CalculateHeights(false);
         }
         
+        /**
+         * Changes the number of columns. Any existing rows will be deleted.
+         * @param the new number of columns
+         */
+        public void ResetColumnCount(int newColCount) {
+            if (newColCount <= 0)
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.number.of.columns.in.pdfptable.constructor.must.be.greater.than.zero"));
+            relativeWidths = new float[newColCount];
+            for (int k = 0; k < newColCount; ++k)
+                relativeWidths[k] = 1;
+            absoluteWidths = new float[relativeWidths.Length];
+            CalculateWidths();
+            currentRow = new PdfPCell[absoluteWidths.Length];
+            totalHeight = 0;
+        }
+
         /** Gets the default <CODE>PdfPCell</CODE> that will be used as
         * reference for all the <CODE>addCell</CODE> methods except
         * <CODE>addCell(PdfPCell)</CODE>.
