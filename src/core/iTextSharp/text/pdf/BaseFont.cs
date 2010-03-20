@@ -1470,6 +1470,8 @@ namespace iTextSharp.text.pdf {
             ++level;
             if (level > 50) // in case we have an endless loop
                 return;
+            if (page == null)
+                return;
             PdfDictionary resources = page.GetAsDict(PdfName.RESOURCES);
             if (resources == null)
                 return;
