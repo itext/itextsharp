@@ -1490,7 +1490,9 @@ namespace iTextSharp.text.pdf {
             PdfDictionary xobj = resources.GetAsDict(PdfName.XOBJECT);
             if (xobj != null) {
                 foreach (PdfName key in xobj.Keys) {
-                    RecourseFonts(xobj.GetAsDict(key), hits, fonts, level);
+                    PdfObject po = xobj.GetDirectObject(key);
+                    if (po is PdfDictionary)
+                        RecourseFonts((PdfDictionary)po, hits, fonts, level);
                 }
             }
         }
