@@ -296,6 +296,38 @@ namespace iTextSharp.text.pdf {
         }
         
         /**
+         * Indicates that the group contains a pagination artifact.
+         * @param pe one of the following names: "HF" (Header Footer),
+         * "FG" (Foreground), "BG" (Background), or "L" (Logo).
+         * @since 5.0.2
+         */
+        public string PageElement {
+            set {
+                PdfDictionary usage = Usage;
+                PdfDictionary dic = new PdfDictionary();
+                dic.Put(PdfName.SUBTYPE, new PdfName(value));
+                usage.Put(PdfName.PAGEELEMENT, dic);
+            }
+        }
+        
+        /**
+         * One of more users for whom this optional content group is primarily intended.
+         * @param type should be "Ind" (Individual), "Ttl" (Title), or "Org" (Organization).
+         * @param names one or more names
+         * @since 5.0.2
+         */
+        public void SetUser(String type, String[] names) {
+            PdfDictionary usage = Usage;
+            PdfDictionary dic = new PdfDictionary();
+            dic.Put(PdfName.TYPE, new PdfName(type));
+            PdfArray arr = new PdfArray();
+            foreach (String s in names)
+                arr.Add(new PdfString(s, PdfObject.TEXT_UNICODE));
+            usage.Put(PdfName.NAME, arr);
+            usage.Put(PdfName.USER, dic);
+        }
+
+        /**
         * Gets the layer visibility in Acrobat's layer panel
         * @return the layer visibility in Acrobat's layer panel
         */

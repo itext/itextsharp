@@ -128,6 +128,20 @@ namespace iTextSharp.text.pdf {
         }
         
         /**
+         * Sets the visibility expression for content belonging to this
+         * membership dictionary.
+         * @param ve A (nested) array of which the first value is /And, /Or, or /Not
+         * followed by a series of indirect references to OCGs or other visibility
+         * expressions.
+         * @since 5.0.2
+         */
+        public PdfVisibilityExpression VisibilityExpression {
+            set {
+                Put(PdfName.VE, value);
+            }
+        }
+
+        /**
         * Gets the dictionary representing the membership layer. It just returns <CODE>this</CODE>.
         * @return the dictionary representing the layer
         */    
