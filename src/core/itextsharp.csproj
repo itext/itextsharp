@@ -877,6 +877,7 @@
     <Compile Include="iTextSharp\text\pdf\PdfTransparencyGroup.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\PdfVisibilityExpression.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfWriter.cs">
       <SubType>Code</SubType>
     </Compile>

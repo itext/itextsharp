@@ -129,6 +129,7 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName ALT = new PdfName("Alt");
         /** A name */
         public static readonly PdfName ALTERNATE = new PdfName("Alternate");
+        public static readonly PdfName AND = new PdfName("And");
         /**
          * A name.
          * @since 2.1.6
@@ -567,6 +568,7 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName FF = new PdfName("Ff");
         /** A name */
         public static readonly PdfName FFILTER = new PdfName("FFilter");
+        public static readonly PdfName FG = new PdfName("FG");
         /** A name */
         public static readonly PdfName FIELDS = new PdfName("Fields");
         /**
@@ -734,6 +736,7 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName HELVETICA_OBLIQUE = new PdfName("Helvetica-Oblique");
         /** A name of a base 14 type 1 font */
         public static readonly PdfName HELVETICA_BOLDOBLIQUE = new PdfName("Helvetica-BoldOblique");
+        public static readonly PdfName HF = new PdfName("HF");
         /** A name */
         public static readonly PdfName HID = new PdfName("Hid");
         /** A name */
@@ -771,6 +774,7 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName IMAGEI = new PdfName("ImageI");
         /** A name */
         public static readonly PdfName IMAGEMASK = new PdfName("ImageMask");
+        public static readonly PdfName IND = new PdfName("Ind");
         /** A name */
         public static readonly PdfName INDEX = new PdfName("Index");
         /** A name */
@@ -993,6 +997,7 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.6
          */
         public static readonly PdfName NONSTRUCT = new PdfName("NonStruct");
+        public static readonly PdfName NOT = new PdfName("Not");
         /**
          * A name
          * @since 2.1.6
@@ -1046,10 +1051,12 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName OPM = new PdfName("OPM");
         /** A name */
         public static readonly PdfName OPT = new PdfName("Opt");
+        public static readonly PdfName OR = new PdfName("Or");
         /** A name */
         public static readonly PdfName ORDER = new PdfName("Order");
         /** A name */
         public static readonly PdfName ORDERING = new PdfName("Ordering");
+        public static readonly PdfName ORG = new PdfName("Org");
         /**
          * A name.
          * @since 2.1.6
@@ -1070,6 +1077,7 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName P = new PdfName("P");
         /** A name */
         public static readonly PdfName PAGE = new PdfName("Page");
+        public static readonly PdfName PAGEELEMENT = new PdfName("PageElement");
         /** A name */
         public static readonly PdfName PAGELABELS = new PdfName("PageLabels");
         /** A name */
@@ -1549,6 +1557,7 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName TRIMBOX = new PdfName("TrimBox");
         /** A name */
         public static readonly PdfName TRUETYPE = new PdfName("TrueType");
+        public static readonly PdfName TTL = new PdfName("Ttl");
         /** A name */
         public static readonly PdfName TU = new PdfName("TU");
         /** A name */
@@ -1612,6 +1621,7 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.6
          */
         public static readonly PdfName VALIGN = new PdfName("VAlign");
+        public static readonly PdfName VE = new PdfName("VE");
         /** A name */
         public static readonly PdfName VERISIGN_PPKVS = new PdfName("VeriSign.PPKVS");
         /** A name */
