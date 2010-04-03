@@ -319,6 +319,7 @@
     <Compile Include="iTextSharp\text\pdf\BarcodePostnet.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\BarcodeQRCode.cs" />
     <Compile Include="iTextSharp\text\pdf\BaseField.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -902,6 +903,30 @@
     <Compile Include="iTextSharp\text\pdf\PushbuttonField.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\qrcode\BitArray.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\BitMatrix.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\BitVector.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\BlockPair.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\ByteArray.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\ByteMatrix.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\CharacterSetECI.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\EncodeHintType.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\Encoder.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\ErrorCorrectionLevel.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\FormatInformation.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\GF256.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\GF256Poly.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\MaskUtil.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\MatrixUtil.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\Mode.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\QRCode.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\QRCodeWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\qrcode\ReedSolomonEncoder.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\ReedSolomonException.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\Version.cs" />
+    <Compile Include="iTextSharp\text\pdf\qrcode\WriterException.cs" />
     <Compile Include="iTextSharp\text\pdf\RadioCheckField.cs">
       <SubType>Code</SubType>
     </Compile>
