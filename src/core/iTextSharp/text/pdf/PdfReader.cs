@@ -65,6 +65,13 @@ namespace iTextSharp.text.pdf {
     */
     public class PdfReader : IPdfViewerPreferences {
         
+        /**
+         * The iText developers are not responsible if you decide to change the
+         * value of this static parameter.
+         * @since 5.0.2
+         */
+        public static bool unethicalreading = false;
+
         static PdfName[] pageInhCandidates = {
             PdfName.MEDIABOX, PdfName.ROTATE, PdfName.RESOURCES, PdfName.CROPBOX
         };
@@ -2719,7 +2726,9 @@ namespace iTextSharp.text.pdf {
                                 name = ob3;
                             else if (ob3.IsString())
                                 name = ob3.ToString();
-                            PdfArray dest = (PdfArray)names[name];
+                            PdfArray dest = null;
+                            if (name != null && names.ContainsKey(name))
+                                dest = (PdfArray)names[name];
                             if (dest != null) {
                                 dic.Remove(PdfName.F);
                                 dic.Remove(PdfName.NEWWINDOW);
@@ -3523,7 +3532,7 @@ namespace iTextSharp.text.pdf {
         */
         public bool IsOpenedWithFullPermissions {
             get {
-                return !encrypted || ownerPasswordUsed;
+                return !encrypted || ownerPasswordUsed || unethicalreading;
             }
         } 
 
