@@ -183,6 +183,15 @@ namespace iTextSharp.text.pdf {
         }
     
         /**
+         * Removes all the <CODE>PdfObject</CODE>s and its <VAR>key</VAR>s from the
+         * <CODE>PdfDictionary</CODE>.
+         * @since 5.0.2
+         */
+        public void Clear() {
+            hashMap.Clear();
+        }
+
+        /**
          * Gets a <CODE>PdfObject</CODE> with a certain key from the <CODE>PdfDictionary</CODE>.
          *
          * @param        key        key of the entry (a <CODE>PdfName</CODE>)
