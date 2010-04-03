@@ -468,7 +468,22 @@ namespace iTextSharp.text.pdf {
             while (RowSpanAbove(rows.Count, currentRowIdx))
                 currentRowIdx += direction;
         }
-        
+
+        /**
+        * Added by timmo3.  This will return the correct cell taking it's cellspan into account
+        */
+        internal PdfPCell CellAt(int row, int col) {
+            PdfPCell[] cells = rows[row].GetCells();
+            for (int i = 0; i < cells.Length; i++) {
+                if (cells[i] != null) {
+                    if (col >= i && col < (i + cells[i].Colspan)) {
+                        return cells[i];
+                    }
+                }
+            }
+            return null;
+        }
+
         /**
         * Checks if there are rows above belonging to a rowspan.
         * @param    currRow the current row to check
@@ -487,24 +502,16 @@ namespace iTextSharp.text.pdf {
             PdfPRow aboveRow = rows[row];
             if (aboveRow == null)
                 return false;
-            PdfPCell aboveCell = aboveRow.GetCells()[currCol];
+            PdfPCell aboveCell = CellAt(row, currCol);
             while (aboveCell == null && row > 0) {
                 aboveRow  = rows[--row];
                 if (aboveRow == null)
                     return false;
-                aboveCell = aboveRow.GetCells()[currCol];
+                aboveCell = CellAt(row, currCol);
             }
             
             int distance = currRow - row;
 
-            if (aboveCell == null) {
-                int col = currCol - 1;
-                aboveCell = aboveRow.GetCells()[col];
-                while (aboveCell == null && col > 0)
-                    aboveCell = aboveRow.GetCells()[--col];
-                return aboveCell != null && aboveCell.Rowspan > distance;
-            }
-            
             if ((aboveCell.Rowspan == 1) && (distance > 1)) {
                 int col = currCol - 1;
                 aboveRow = rows[row + 1];
