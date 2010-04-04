@@ -85,7 +85,8 @@ public class ChainedProperties {
         
         public void AddToChain(String key, Dictionary<String, String> prop) {
             // adjust the font size
-            String value = prop[ElementTags.SIZE];
+            String value;
+            prop.TryGetValue(ElementTags.SIZE, out value);
             if (value != null) {
                 if (value.EndsWith("pt")) {
                     prop[ElementTags.SIZE] = value.Substring(0, value.Length - 2);
