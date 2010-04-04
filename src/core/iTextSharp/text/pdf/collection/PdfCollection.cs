@@ -55,6 +55,8 @@ namespace iTextSharp.text.pdf.collection {
         public const int TILE = 1;
         /** A type of PDF Collection */
         public const int HIDDEN = 2;
+        /** A type of PDF Collection */
+        public const int CUSTOM = 3;
         
         /**
         * Constructs a PDF Collection.
@@ -67,6 +69,9 @@ namespace iTextSharp.text.pdf.collection {
                 break;
             case HIDDEN:
                 Put(PdfName.VIEW, PdfName.H);
+                break;
+            case CUSTOM:
+                Put(PdfName.VIEW, PdfName.C);
                 break;
             default:
                 Put(PdfName.VIEW, PdfName.D);
