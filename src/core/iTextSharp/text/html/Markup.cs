@@ -2,7 +2,7 @@ using System;
 using System.util;
 using System.IO;
 using System.Text;
-using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using iTextSharp.text;
 
@@ -268,64 +268,25 @@ namespace iTextSharp.text.html {
          */
         public const float DEFAULT_FONT_SIZE = 12f;
 
+        private static Dictionary<string,float> sizes = new Dictionary<string,float>();
+
+        static Markup() {
+            sizes["xx-small"] = 4;
+            sizes["x-small"] = 6;
+            sizes["small"] = 8;
+            sizes["medium"] = 10;
+            sizes["large"] = 13;
+            sizes["x-large"] = 18;
+            sizes["xx-large"] = 26;
+        }
+
         /// <summary>
         /// Parses a length.
         /// </summary>
         /// <param name="str">a length in the form of an optional + or -, followed by a number and a unit.</param>
         /// <returns>a float</returns>
         public static float ParseLength(string str) {
-            // TODO: Evaluate the effect of this.
-            // It may change the default behavour of the methd if this is changed.
-            // return ParseLength(string, Markup.DEFAULT_FONT_SIZE);
-            int pos = 0;
-            int length = str.Length;
-            bool ok = true;
-            while (ok && pos < length) {
-                switch (str[pos]) {
-                case '+':
-                case '-':
-                case '0':
-                case '1':
-                case '2':
-                case '3':
-                case '4':
-                case '5':
-                case '6':
-                case '7':
-                case '8':
-                case '9':
-                case '.':
-                    pos++;
-                    break;
-                default:
-                    ok = false;
-                    break;
-                }
-            }
-            if (pos == 0)
-                return 0f;
-            if (pos == length)
-                return float.Parse(str, System.Globalization.NumberFormatInfo.InvariantInfo);
-            float f = float.Parse(str.Substring(0, pos), System.Globalization.NumberFormatInfo.InvariantInfo);
-            str = str.Substring(pos);
-            // inches
-            if (str.StartsWith("in")) {
-                return f * 72f;
-            }
-            // centimeters
-            if (str.StartsWith("cm")) {
-                return (f / 2.54f) * 72f;
-            }
-            // millimeters
-            if (str.StartsWith("mm")) {
-                return (f / 25.4f) * 72f;
-            }
-            // picas
-            if (str.StartsWith("pc")) {
-                return f * 12f;
-            }
-            // default: we assume the length was measured in points
-            return f;
+            return ParseLength(str, Markup.DEFAULT_FONT_SIZE);
         }
 
         /**
@@ -336,6 +297,9 @@ namespace iTextSharp.text.html {
         public static float ParseLength(String str, float actualFontSize) {
             if (str == null)
                 return 0f;
+            float absSize;
+            if (sizes.TryGetValue(str.ToLowerInvariant(), out absSize))
+                return absSize;
             int pos = 0;
             int length = str.Length;
             bool ok = true;
