@@ -226,7 +226,7 @@ namespace iTextSharp.text.pdf {
                         noStroke[name] = entry.Value;
                     }
                 }
-                if ("".Equals(attr[Chunk.GENERICTAG])) {
+                if (attr.ContainsKey(Chunk.GENERICTAG) && "".Equals(attr[Chunk.GENERICTAG])) {
                     attributes[Chunk.GENERICTAG] = chunk.Content;
                 }
             }
