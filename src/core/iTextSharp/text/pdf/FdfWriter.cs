@@ -76,7 +76,8 @@ namespace iTextSharp.text.pdf {
                 return false;
             while (true) {
                 String s = tk.NextToken();
-                Object obj = map[s];
+                Object obj;
+                map.TryGetValue(s, out obj);
                 if (tk.HasMoreTokens()) {
                     if (obj == null) {
                         obj = new Dictionary<String, Object>();
@@ -124,7 +125,8 @@ namespace iTextSharp.text.pdf {
             List<object> hist = new List<object>();
             while (true) {
                 String s = tk.NextToken();
-                Object obj = map[s];
+                Object obj;
+                map.TryGetValue(s, out obj);
                 if (obj == null)
                     return false;
                 hist.Add(map);
