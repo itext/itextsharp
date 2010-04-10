@@ -93,7 +93,8 @@ namespace iTextSharp.text.pdf {
 
             PdfIndirectReference theRef;
             RefKey key = new RefKey(inp);
-            IndirectReferences iRef = (IndirectReferences) indirects[key];
+            IndirectReferences iRef;
+            indirects.TryGetValue(key, out iRef);
             if (iRef != null) {
                 theRef = iRef.Ref;
                 if (iRef.Copied) {
