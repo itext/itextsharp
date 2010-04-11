@@ -1451,12 +1451,11 @@ namespace iTextSharp.text.pdf {
         * @param name the field name
         * @return the positions or <CODE>null</CODE> if field does not exist
         */    
-        public float[] GetFieldPositions(String name) {
+        public IList<FieldPosition> GetFieldPositions(String name) {
             Item item = GetFieldItem(name);
             if (item == null)
                 return null;
-            float[] ret = new float[item.Size * 5];
-            int ptr = 0;
+            List<FieldPosition> ret = new List<FieldPosition>();
             for (int k = 0; k < item.Size; ++k) {
                 try {
                     PdfDictionary wd = item.GetWidget(k);
@@ -1466,7 +1465,8 @@ namespace iTextSharp.text.pdf {
                     Rectangle r = PdfReader.GetNormalizedRectangle(rect);
                     int page = item.GetPage(k);
                     int rotation = reader.GetPageRotation(page);
-                    ret[ptr++] = page;
+                    FieldPosition fp = new FieldPosition();
+                    fp.page = page;
                     if (rotation != 0) {
                         Rectangle pageSize = reader.GetPageSize(page);
                         switch (rotation) {
@@ -1494,19 +1494,12 @@ namespace iTextSharp.text.pdf {
                         }
                         r.Normalize();
                     }
-                    ret[ptr++] = r.Left;
-                    ret[ptr++] = r.Bottom;
-                    ret[ptr++] = r.Right;
-                    ret[ptr++] = r.Top;
+                    fp.position = r;
+                    ret.Add(fp);
                 }
                 catch {
                     // empty on purpose
                 }
-            }
-            if (ptr < ret.Length) {
-                float[] ret2 = new float[ptr];
-                System.Array.Copy(ret, 0, ret2, 0, ptr);
-                return ret2;
             }
             return ret;
         }
@@ -2411,9 +2404,8 @@ namespace iTextSharp.text.pdf {
             Item item = GetFieldItem(field);
             if (order >= item.Size)
                 return null;
-            int posi = order * 5;
-            float[] pos = GetFieldPositions(field);
-            Rectangle box = new Rectangle(pos[posi + 1], pos[posi + 2], pos[posi + 3], pos[posi + 4]);
+            IList<FieldPosition> pos = GetFieldPositions(field);
+            Rectangle box = pos[order].position;
             PushbuttonField newButton = new PushbuttonField(writer, box, null);
             PdfDictionary dic = item.GetMerged(order);
             DecodeGenericDictionary(dic, newButton);
@@ -2508,6 +2500,15 @@ namespace iTextSharp.text.pdf {
                 merged.Put(key, button.Get(key));
             }
             return true;
+        }
+
+        /**
+         * A class representing a field position
+         * @since 5.0.2
+         */
+        public class FieldPosition {
+            public int page;
+            public Rectangle position;
         }
     }
 }
