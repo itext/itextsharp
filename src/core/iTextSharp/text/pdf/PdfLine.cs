@@ -255,7 +255,7 @@ namespace iTextSharp.text.pdf {
                             return left;
                     }
                 }
-                else if (this.GetSeparatorCount() == 0) {
+                else if (this.GetSeparatorCount() <= 0) {
                     switch (alignment) {
                         case Element.ALIGN_RIGHT:
                             return left + width;
@@ -466,6 +466,7 @@ namespace iTextSharp.text.pdf {
     
         /**
         * Gets the number of separators in the line.
+        * Returns -1 if there's a tab in the line.
         * @return  the number of separators in the line
         * @since   2.1.2
         */
@@ -473,7 +474,7 @@ namespace iTextSharp.text.pdf {
             int s = 0;
             foreach (PdfChunk ck in line) {
                 if (ck.IsTab()) {
-                    return 0;
+                    return -1;
                 }
                 if (ck.IsHorizontalSeparator()) {
                     s++;

@@ -49,7 +49,7 @@ namespace iTextSharp.text.pdf {
     * @author Paulo Soares
     */
     public class FdfWriter {
-        private static readonly byte[] HEADER_FDF = DocWriter.GetISOBytes("%FDF-1.2\n%\u00e2\u00e3\u00cf\u00d3\n");
+        private static readonly byte[] HEADER_FDF = DocWriter.GetISOBytes("%FDF-1.4\n%\u00e2\u00e3\u00cf\u00d3\n");
         Dictionary<String, Object> fields = new Dictionary<string,object>();
 
         /** The PDF file associated with the FDF. */

@@ -337,6 +337,27 @@ namespace iTextSharp.text.pdf {
             return annot;
         }
 
+        /**
+         * Creates a polygon or -line annotation
+         * @param writer the PdfWriter
+         * @param rect the annotation position
+         * @param contents the textual content of the annotation
+         * @param polygon if true, the we're creating a polygon annotation, if false, a polyline
+         * @param vertices an array with the vertices of the polygon or -line
+         * @since 5.0.2
+         */
+        public static PdfAnnotation CreatePolygonPolyline(
+            PdfWriter writer, Rectangle rect, String contents, bool polygon, PdfArray vertices) {
+            PdfAnnotation annot = new PdfAnnotation(writer, rect);
+            if (polygon)
+                annot.Put(PdfName.SUBTYPE, PdfName.POLYGON);
+            else
+                annot.Put(PdfName.SUBTYPE, PdfName.POLYLINE);
+            annot.Put(PdfName.CONTENTS, new PdfString(contents, PdfObject.TEXT_UNICODE));
+            annot.Put(PdfName.VERTICES, new PdfArray(vertices));
+            return annot;
+        }
+        
         public PdfContentByte DefaultAppearanceString {
             set {
                 byte[] b = value.InternalBuffer.ToByteArray();
