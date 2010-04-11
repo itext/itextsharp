@@ -1147,6 +1147,16 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.6
          */
         public static readonly PdfName PO = new PdfName("PO");
+        /**
+         * A name.
+         * @since 5.0.2
+         */
+        public static readonly PdfName POLYGON = new PdfName("Polygon");
+        /**
+         * A name.
+         * @since 5.0.2
+         */
+        public static readonly PdfName POLYLINE = new PdfName("Polyline");
         /** A name */
         public static readonly PdfName POPUP = new PdfName("Popup");
         /**
@@ -1626,6 +1636,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName VERISIGN_PPKVS = new PdfName("VeriSign.PPKVS");
         /** A name */
         public static readonly PdfName VERSION = new PdfName("Version");
+        /**
+         * A name.
+         * @since 5.0.2
+         */
+        public static readonly PdfName VERTICES = new PdfName("Vertices");
         /**
          * A name.
          * @since 2.1.6
