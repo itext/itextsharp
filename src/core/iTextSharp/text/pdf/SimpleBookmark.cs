@@ -287,7 +287,9 @@ namespace iTextSharp.text.pdf {
                 Dictionary<String, Object> map = it.Next();
                 bool hit = false;
                 if ("GoTo".Equals(map["Action"])) {
-                    String page = (String)map["Page"];
+                    String page = null;
+                    if (map.ContainsKey("Page"))
+                        page = (String)map["Page"];
                     if (page != null) {
                         page = page.Trim();
                         int idx = page.IndexOf(' ');
@@ -305,7 +307,9 @@ namespace iTextSharp.text.pdf {
                         }
                     }
                 }
-                IList<Dictionary<String, Object>> kids = (IList<Dictionary<String, Object>>)map["Kids"];
+                IList<Dictionary<String, Object>> kids = null;
+                if (map.ContainsKey("Kids"))
+                    kids = (IList<Dictionary<String, Object>>)map["Kids"];
                 if (kids != null) {
                     EliminatePages(kids, pageRange);
                     if (kids.Count == 0) {
@@ -340,7 +344,9 @@ namespace iTextSharp.text.pdf {
                 return;
             foreach (Dictionary<String, Object> map in list) {
                 if ("GoTo".Equals(map["Action"])) {
-                    String page = (String)map["Page"];
+                    String page = null;
+                    if (map.ContainsKey("Page"))
+                        page = (String)map["Page"];
                     if (page != null) {
                         page = page.Trim();
                         int idx = page.IndexOf(' ');
@@ -370,7 +376,9 @@ namespace iTextSharp.text.pdf {
                         map["Page"] = page;
                     }
                 }
-                IList<Dictionary<String, Object>> kids = (IList<Dictionary<String, Object>>)map["Kids"];
+                IList<Dictionary<String, Object>> kids = null;
+                if (map.ContainsKey("Kids"))
+                    kids = (IList<Dictionary<String, Object>>)map["Kids"];
                 if (kids != null)
                     ShiftPageNumbers(kids, pageShift, pageRange);
             }
@@ -519,7 +527,9 @@ namespace iTextSharp.text.pdf {
                 if (ptr < refs.Length - 1)
                     outline.Put(PdfName.NEXT, refs[ptr + 1]);
                 outline.Put(PdfName.TITLE, new PdfString((String)map["Title"], PdfObject.TEXT_UNICODE));
-                String color = (String)map["Color"];
+                String color = null;
+                if (map.ContainsKey("Color"))
+                    color = (String)map["Color"];
                 if (color != null) {
                     try {
                         PdfArray arr = new PdfArray();
