@@ -1,13 +1,11 @@
 using System;
-using System.Globalization;
-using System.Drawing;
+using iTextSharp.text.pdf;
 /*
- * $Id$
- * 
+ * $Id: ContentOperator.java 4242 2010-01-02 23:22:20Z xlv $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
- * Authors: Bruno Lowagie, Paulo Soares, et al.
+ * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -45,28 +43,13 @@ using System.Drawing;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+namespace iTextSharp.text.pdf.parser {
 
-namespace System.util
-{
-    /// <summary>
-    /// Summary description for Util.
-    /// </summary>
-    public static class Util
-    {
-        public static int USR(int op1, int op2) {        
-            if (op2 < 1) {
-                return op1;
-            } else {
-                return unchecked((int)((uint)op1 >> op2));
-            }
-        }
-
-        public static bool EqualsIgnoreCase(string s1, string s2) {
-            return CultureInfo.InvariantCulture.CompareInfo.Compare(s1, s2, CompareOptions.IgnoreCase) == 0;
-        }
-
-        public static int CompareToIgnoreCase(string s1, string s2) {
-            return CultureInfo.InvariantCulture.CompareInfo.Compare(s1, s2, CompareOptions.IgnoreCase);
-        }
+    /**
+     * @author Kevin Day
+     * @since iText 5.0.1
+     */
+    public interface IXObjectDoHandler {
+        void HandleXObject(PdfContentStreamProcessor processor, PdfStream stream, PdfIndirectReference refi);
     }
 }

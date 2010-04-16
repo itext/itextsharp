@@ -344,6 +344,9 @@
     <Compile Include="iTextSharp\text\pdf\CJKFont.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\CMapAwareDocumentFont.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="iTextSharp\text\pdf\CMYKColor.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -488,6 +491,9 @@
     <Compile Include="iTextSharp\text\pdf\FontSelector.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMap.cs" />
+    <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapParser.cs" />
+    <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CodespaceRange.cs" />
     <Compile Include="iTextSharp\text\pdf\GlyphList.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -611,6 +617,53 @@
     <Compile Include="iTextSharp\text\pdf\PageResources.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\ContentByteUtils.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\FilteredRenderListener.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\FilteredTextRenderListener.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\GraphicsState.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\IContentOperator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\ImageRenderInfo.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\IRenderListener.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\ITextExtractionStrategy.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\LineSegment.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\LocationTextExtractionStrategy.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\MarkedContentInfo.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\MarkedContentRenderFilter.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\Matrix.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\PdfContentReaderTool.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\PdfContentStreamProcessor.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\PdfReaderContentParser.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\PdfTextExtractor.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\RegionTextRenderFilter.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\RenderFilter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\SimpleTextExtractionStrategy.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\TaggedPdfReaderTool.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\TextMarginFinder.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\TextRenderInfo.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\Vector.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\IXObjectDoHandler.cs" />
     <Compile Include="iTextSharp\text\pdf\PatternColor.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -3970,12 +4023,15 @@
     <Compile Include="System\util\collections\OrderedTree.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="System\util\FilterStream.cs" />
     <Compile Include="System\util\ListIterator.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="System\util\Properties.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="System\util\PushbackStream.cs" />
+    <Compile Include="System\util\RectangleJ.cs" />
     <Compile Include="System\util\StringTokenizer.cs">
       <SubType>Code</SubType>
     </Compile>

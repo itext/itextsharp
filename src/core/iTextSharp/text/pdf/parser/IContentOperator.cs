@@ -1,13 +1,12 @@
 using System;
-using System.Globalization;
-using System.Drawing;
+using System.Collections.Generic;
+using iTextSharp.text.pdf;
 /*
- * $Id$
- * 
+ * $Id: ContentOperator.java 4298 2010-02-01 03:55:59Z xlv $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
- * Authors: Bruno Lowagie, Paulo Soares, et al.
+ * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -46,27 +45,21 @@ using System.Drawing;
  * address: sales@itextpdf.com
  */
 
-namespace System.util
-{
-    /// <summary>
-    /// Summary description for Util.
-    /// </summary>
-    public static class Util
-    {
-        public static int USR(int op1, int op2) {        
-            if (op2 < 1) {
-                return op1;
-            } else {
-                return unchecked((int)((uint)op1 >> op2));
-            }
-        }
+namespace iTextSharp.text.pdf.parser {
 
-        public static bool EqualsIgnoreCase(string s1, string s2) {
-            return CultureInfo.InvariantCulture.CompareInfo.Compare(s1, s2, CompareOptions.IgnoreCase) == 0;
-        }
+    /**
+     * Interface implemented by a series of content operators
+     * @since 2.1.4
+     */
+    public interface IContentOperator {
+        /**
+         * Invokes a content operator.
+         * @param processor the processor that is dealing with the PDF content
+         * @param operator  the literal PDF syntax of the operator
+         * @param operands  the operands that come with the operator
+         * @throws Exception any exception can be thrown - it will be re-packaged into a runtime exception and re-thrown by the {@link PdfContentStreamProcessor}
+         */
+        void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands);
 
-        public static int CompareToIgnoreCase(string s1, string s2) {
-            return CultureInfo.InvariantCulture.CompareInfo.Compare(s1, s2, CompareOptions.IgnoreCase);
-        }
     }
 }

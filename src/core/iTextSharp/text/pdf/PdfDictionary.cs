@@ -303,7 +303,7 @@ namespace iTextSharp.text.pdf {
         * @param key 
         * @return null, or a non-indirect object
         */
-        public PdfObject GetDirectObject(PdfName key) {
+        public virtual PdfObject GetDirectObject(PdfName key) {
             return PdfReader.GetPdfObject(Get(key));
         }
         
