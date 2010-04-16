@@ -1,13 +1,11 @@
 using System;
-using System.Globalization;
-using System.Drawing;
+using iTextSharp.text.pdf;
 /*
- * $Id$
- * 
+ * $Id: Chapter.java 3373 2008-05-12 16:21:24Z xlv $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
- * Authors: Bruno Lowagie, Paulo Soares, et al.
+ * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -45,28 +43,50 @@ using System.Drawing;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+namespace iTextSharp.text.pdf.parser {
 
-namespace System.util
-{
-    /// <summary>
-    /// Summary description for Util.
-    /// </summary>
-    public static class Util
-    {
-        public static int USR(int op1, int op2) {        
-            if (op2 < 1) {
-                return op1;
-            } else {
-                return unchecked((int)((uint)op1 >> op2));
-            }
+    /**
+     * Represents a Marked Content block in a PDF
+     * @since 5.0.2
+     */
+    public class MarkedContentInfo {
+        private PdfName tag;
+        private PdfDictionary dictionary;
+        
+        public MarkedContentInfo(PdfName tag, PdfDictionary dictionary) {
+            this.tag = tag;
+            this.dictionary = dictionary != null ? dictionary : new PdfDictionary(); // I'd really prefer to make a defensive copy here to make this immutable
         }
 
-        public static bool EqualsIgnoreCase(string s1, string s2) {
-            return CultureInfo.InvariantCulture.CompareInfo.Compare(s1, s2, CompareOptions.IgnoreCase) == 0;
+        /**
+         * Get the tag of this marked content
+         * @return the tag of this marked content
+         */
+        public PdfName GetTag(){
+            return tag;
         }
-
-        public static int CompareToIgnoreCase(string s1, string s2) {
-            return CultureInfo.InvariantCulture.CompareInfo.Compare(s1, s2, CompareOptions.IgnoreCase);
+        
+        /**
+         * Determine if an MCID is available
+         * @return true if the MCID is available, false otherwise
+         */
+        public bool HasMcid(){
+            return dictionary.Contains(PdfName.MCID);
         }
+        
+        /**
+         * Gets the MCID value  If the Marked Content contains
+         * an MCID entry, returns that value.  Otherwise, a {@link NullPointerException} is thrown.
+         * @return the MCID value
+         * @throws NullPointerException if there is no MCID (see {@link MarkedContentInfo#hasMcid()})
+         */
+        public int GetMcid(){
+            PdfNumber id = dictionary.GetAsNumber(PdfName.MCID);
+            if (id == null)
+                throw new InvalidOperationException("MarkedContentInfo does not contain MCID");
+            
+            return id.IntValue;
+        }
+        
     }
 }

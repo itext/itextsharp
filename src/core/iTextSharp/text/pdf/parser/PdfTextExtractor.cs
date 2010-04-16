@@ -1,13 +1,11 @@
 using System;
-using System.Globalization;
-using System.Drawing;
+using iTextSharp.text.pdf;
 /*
- * $Id$
- * 
+ * $Id: PdfTextExtractor.java 4427 2010-03-31 14:39:52Z blowagie $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
- * Authors: Bruno Lowagie, Paulo Soares, et al.
+ * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -45,28 +43,41 @@ using System.Drawing;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+namespace iTextSharp.text.pdf.parser {
 
-namespace System.util
-{
-    /// <summary>
-    /// Summary description for Util.
-    /// </summary>
-    public static class Util
-    {
-        public static int USR(int op1, int op2) {        
-            if (op2 < 1) {
-                return op1;
-            } else {
-                return unchecked((int)((uint)op1 >> op2));
-            }
+    /**
+     * Extracts text from a PDF file.
+     * @since   2.1.4
+     */
+    public static class PdfTextExtractor {
+
+        /**
+         * Extract text from a specified page using an extraction strategy.
+         * @param reader the reader to extract text from
+         * @param pageNumber the page to extract text from
+         * @param strategy the strategy to use for extracting text
+         * @return the extracted text
+         * @throws IOException if any operation fails while reading from the provided PdfReader
+         * @since 5.0.2
+         */
+        public static String GetTextFromPage(PdfReader reader, int pageNumber, ITextExtractionStrategy strategy) {
+            PdfReaderContentParser parser = new PdfReaderContentParser(reader);
+            return parser.ProcessContent(pageNumber, strategy).GetResultantText();
+            
         }
-
-        public static bool EqualsIgnoreCase(string s1, string s2) {
-            return CultureInfo.InvariantCulture.CompareInfo.Compare(s1, s2, CompareOptions.IgnoreCase) == 0;
-        }
-
-        public static int CompareToIgnoreCase(string s1, string s2) {
-            return CultureInfo.InvariantCulture.CompareInfo.Compare(s1, s2, CompareOptions.IgnoreCase);
+        
+        /**
+         * Extract text from a specified page using the default strategy.
+         * <p><strong>Note:</strong> the default strategy is subject to change.  If using a specific strategy
+         * is important, use {@link PdfTextExtractor#getTextFromPage(PdfReader, int, TextExtractionStrategy)}
+         * @param reader the reader to extract text from
+         * @param pageNumber the page to extract text from
+         * @return the extracted text
+         * @throws IOException if any operation fails while reading from the provided PdfReader
+         * @since 5.0.2
+         */
+        public static String GetTextFromPage(PdfReader reader, int pageNumber) {
+            return GetTextFromPage(reader, pageNumber, new LocationTextExtractionStrategy());
         }
     }
 }

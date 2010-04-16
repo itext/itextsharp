@@ -1,13 +1,12 @@
 using System;
-using System.Globalization;
 using System.Drawing;
+using System.util;
 /*
- * $Id$
- * 
+ * $Id: GraphicsState.java 4113 2009-12-01 11:08:59Z blowagie $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
- * Authors: Bruno Lowagie, Paulo Soares, et al.
+ * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -45,28 +44,40 @@ using System.Drawing;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+namespace iTextSharp.text.pdf.parser {
 
-namespace System.util
-{
-    /// <summary>
-    /// Summary description for Util.
-    /// </summary>
-    public static class Util
-    {
-        public static int USR(int op1, int op2) {        
-            if (op2 < 1) {
-                return op1;
-            } else {
-                return unchecked((int)((uint)op1 >> op2));
-            }
+
+    /**
+     * A {@link RenderFilter} that only allows text within a specified rectangular region
+     * @since 5.0.1
+     */
+    public class RegionTextRenderFilter : RenderFilter {
+
+        /** the region to allow text from */
+        private RectangleJ filterRect;
+        
+        /**
+         * Constructs a filter
+         * @param filterRect the rectangle to filter text against.  Note that this is a java.awt.Rectangle !
+         */
+        public RegionTextRenderFilter(RectangleJ filterRect) {
+            this.filterRect = filterRect;
         }
 
-        public static bool EqualsIgnoreCase(string s1, string s2) {
-            return CultureInfo.InvariantCulture.CompareInfo.Compare(s1, s2, CompareOptions.IgnoreCase) == 0;
-        }
-
-        public static int CompareToIgnoreCase(string s1, string s2) {
-            return CultureInfo.InvariantCulture.CompareInfo.Compare(s1, s2, CompareOptions.IgnoreCase);
+        /** 
+         * @see com.itextpdf.text.pdf.parser.RenderFilter#allowText(com.itextpdf.text.pdf.parser.TextRenderInfo)
+         */
+        public override bool AllowText(TextRenderInfo renderInfo){
+            LineSegment segment = renderInfo.GetBaseline();
+            Vector startPoint = segment.GetStartPoint();
+            Vector endPoint = segment.GetEndPoint();
+            
+            float x1 = startPoint[Vector.I1];
+            float y1 = startPoint[Vector.I2];
+            float x2 = endPoint[Vector.I1];
+            float y2 = endPoint[Vector.I2];
+            
+            return filterRect.IntersectsLine(x1, y1, x2, y2);
         }
     }
 }
