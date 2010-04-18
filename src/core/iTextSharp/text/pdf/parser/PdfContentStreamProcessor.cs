@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 /*
- * $Id: PdfContentStreamProcessor.java 4410 2010-03-29 19:32:12Z trumpetinc $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

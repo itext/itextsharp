@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using iTextSharp.text.pdf;
 /*
- * $Id: ContentOperator.java 4298 2010-02-01 03:55:59Z xlv $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

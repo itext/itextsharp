@@ -1,6 +1,6 @@
 using System;
 /*
- * $Id: GraphicsState.java 4113 2009-12-01 11:08:59Z blowagie $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

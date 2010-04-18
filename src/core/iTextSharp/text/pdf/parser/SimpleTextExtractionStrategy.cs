@@ -1,7 +1,7 @@
 using System;
 using System.Text;
 /*
- * $Id: SimpleTextExtractionStrategy.java 4419 2010-03-30 17:29:40Z trumpetinc $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
