@@ -368,6 +368,7 @@
     <Compile Include="iTextSharp\text\pdf\codec\PngImage.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\codec\PngWriter.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\TIFFConstants.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -650,6 +651,7 @@
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\PdfContentReaderTool.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\PdfContentStreamProcessor.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\PdfImageObject.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\PdfReaderContentParser.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\PdfTextExtractor.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\RegionTextRenderFilter.cs" />
