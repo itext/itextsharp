@@ -1,5 +1,10 @@
+using System;
+using System.IO;
+using System.Drawing;
+using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.codec;
 /*
- * $Id: ContentOperator.java 4242 2010-01-02 23:22:20Z xlv $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
@@ -41,134 +46,171 @@
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-package com.itextpdf.text.pdf.parser;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.IndexColorModel;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
+namespace iTextSharp.text.pdf.parser {
 
-import javax.imageio.ImageIO;
+    /**
+     * An object that contains an image dictionary and image bytes.
+     * @since 5.0.2
+     */
+    public class PdfImageObject {
 
-import com.itextpdf.text.pdf.PRStream;
-import com.itextpdf.text.pdf.PdfArray;
-import com.itextpdf.text.pdf.PdfDictionary;
-import com.itextpdf.text.pdf.PdfName;
-import com.itextpdf.text.pdf.PdfObject;
-import com.itextpdf.text.pdf.PdfReader;
+        /** The image dictionary. */
+        protected PdfDictionary dictionary;
+        /** The image bytes. */
+        protected byte[] streamBytes;
 
-/**
- * An object that contains an image dictionary and image bytes.
- * @since 5.0.2
- */
-public class PdfImageObject {
+        public const string TYPE_PNG = "png";
+        public const string TYPE_JPG = "jpg";
+        public const string TYPE_JP2 = "jp2";
+        
+        protected string fileType;
 
-	/** The image dictionary. */
-	protected PdfDictionary dictionary;
-	/** The image bytes. */
-	protected byte[] streamBytes;
-	
-	/**
-	 * Creates a PdfImage object.
-	 * @param stream a PRStream
-	 * @throws IOException
-	 */
-	public PdfImageObject(PRStream stream) {
-		this.dictionary = stream;
-		try {
-			if (PdfName.FLATEDECODE.equals(dictionary.getAsName(PdfName.FILTER)))
-				streamBytes = PdfReader.getStreamBytes(stream);
-			// else if other filter (not supported yet)
-			else
-				streamBytes = PdfReader.getStreamBytesRaw(stream);
-		}
-		catch(IOException ioe) {
-			streamBytes = null;
-		}
-	}
-	
-	/**
-	 * Returns an entry from the image dictionary.
-	 * @param key a key
-	 * @return the value
-	 */
-	public PdfObject get(PdfName key) {
-		return dictionary.get(key);
-	}
-	
-	/**
-	 * Returns the image dictionary.
-	 * @return the dictionary
-	 */
-	public PdfDictionary getDictionary() {
-		return dictionary;
-	}
+        public string GetFileType() {
+            return fileType;
+        }
 
-	/**
-	 * Returns the image bytes.
-	 * @return the streamBytes
-	 */
-	public byte[] getStreamBytes() {
-		return streamBytes;
-	}
-	
-	public BufferedImage getAwtImage() throws IOException {
-		PdfName filter = dictionary.getAsName(PdfName.FILTER);
-		if (PdfName.DCTDECODE.equals(filter)) {
-			return ImageIO.read(new ByteArrayInputStream(streamBytes));
-		}
-		if (!PdfName.FLATEDECODE.equals(filter)) {
-			return null;
-		}
-		BufferedImage bi = null;
-		DataBuffer db = new DataBufferByte(streamBytes, streamBytes.length);
-		int width = dictionary.getAsNumber(PdfName.WIDTH).intValue();
-		int height = dictionary.getAsNumber(PdfName.HEIGHT).intValue();
-		WritableRaster raster;
-		int bpc = dictionary.getAsNumber(PdfName.BITSPERCOMPONENT).intValue();
-		switch(bpc) {
-		case 1:
-			raster = Raster.createPackedRaster( db, width, height, 1, null );
-			bi = new BufferedImage( width, height, BufferedImage.TYPE_BYTE_BINARY );
-			bi.setData( raster );
-			break;
-		default:
-			PdfObject colorspace = dictionary.getDirectObject(PdfName.COLORSPACE);
-			if (PdfName.DEVICERGB.equals(colorspace)) {
-				if (width * height == streamBytes.length) {
-					bi = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_INDEXED );
-					raster = Raster.createPackedRaster(db, width, height, bpc, null);
-					bi.setData(raster);
-				}
-				else {
-					bi = new BufferedImage( width, height, BufferedImage.TYPE_INT_RGB );
-					raster = Raster.createInterleavedRaster(db, width, height,
-							width * 3, 3, new int[]{0, 1, 2}, null );
-					bi.setData(raster);
-				}
-			}
-			else if (colorspace instanceof PdfArray) {
-				PdfArray colorspacearray = (PdfArray) colorspace;
-				if (PdfName.INDEXED.equals(colorspacearray.getAsName(0))) {
-					int hival = colorspacearray.getAsNumber(2).intValue();
-					byte[] index = colorspacearray.getDirectObject(3).getBytes();
-					raster = Raster.createPackedRaster( db, width, height, bpc, null );
-					ColorModel cm = new IndexColorModel(bpc, hival + 1, index, 0, false);
-					bi = new BufferedImage(cm, raster, false, null);
-				}
-				else {
-					bi = new BufferedImage( width, height, BufferedImage.TYPE_INT_RGB );
-					raster = Raster.createInterleavedRaster(db, width, height,
-							width * 3, 3, new int[]{0, 1, 2}, null );
-					bi.setData(raster);
-				}
-			} 
-		}
-		return bi;
-	}
+        /**
+         * Creates a PdfImage object.
+         * @param stream a PRStream
+         * @throws IOException
+         */
+        public PdfImageObject(PRStream stream) {
+            this.dictionary = stream;
+            try {
+                if (PdfName.FLATEDECODE.Equals(dictionary.GetAsName(PdfName.FILTER)))
+                    streamBytes = PdfReader.GetStreamBytes(stream);
+                // else if other filter (not supported yet)
+                else
+                    streamBytes = PdfReader.GetStreamBytesRaw(stream);
+            }
+            catch {
+                streamBytes = null;
+            }
+        }
+        
+        /**
+         * Returns an entry from the image dictionary.
+         * @param key a key
+         * @return the value
+         */
+        public PdfObject Get(PdfName key) {
+            return dictionary.Get(key);
+        }
+        
+        /**
+         * Returns the image dictionary.
+         * @return the dictionary
+         */
+        public PdfDictionary GetDictionary() {
+            return dictionary;
+        }
+
+        /**
+         * Returns the image bytes.
+         * @return the streamBytes
+         */
+        public byte[] GetStreamBytes() {
+            return streamBytes;
+        }
+        
+        public byte[] GetFile() {
+            if (streamBytes == null)
+                return null;
+            PdfName filter = dictionary.GetAsName(PdfName.FILTER);
+            if (PdfName.DCTDECODE.Equals(filter)) {
+                fileType = TYPE_JPG;
+                return streamBytes;
+            }
+            else if (PdfName.JPXDECODE.Equals(filter)) {
+                fileType = TYPE_JP2;
+                return streamBytes;
+            }
+
+            if (!PdfName.FLATEDECODE.Equals(filter)) {
+                return null;
+            }
+            int pngColorType = -1;
+            int pngBitDepth;
+            int width = dictionary.GetAsNumber(PdfName.WIDTH).IntValue;
+            int height = dictionary.GetAsNumber(PdfName.HEIGHT).IntValue;
+            int bpc = dictionary.GetAsNumber(PdfName.BITSPERCOMPONENT).IntValue;
+            pngBitDepth = bpc;
+            PdfObject colorspace = dictionary.GetDirectObject(PdfName.COLORSPACE);
+            byte[] palette = null;
+            byte[] icc = null;
+            int stride = 0;
+            if (PdfName.DEVICEGRAY.Equals(colorspace)) {
+                stride = (width * bpc + 7) / 8;
+                pngColorType = 0;
+            }
+            else if (PdfName.DEVICERGB.Equals(colorspace)) {
+                if (bpc == 8 || bpc == 16) {
+                    stride = (width * bpc * 3 + 7) / 8;
+                    pngColorType = 1;
+                }
+            }
+            else if (colorspace is PdfArray) {
+                PdfArray ca = (PdfArray)colorspace;
+                PdfObject tyca = ca.GetDirectObject(0);
+                if (PdfName.CALGRAY.Equals(tyca)) {
+                    stride = (width * bpc + 7) / 8;
+                    pngColorType = 0;
+                }
+                else if (PdfName.CALRGB.Equals(tyca)) {
+                    if (bpc == 8 || bpc == 16) {
+                        stride = (width * bpc * 3 + 7) / 8;
+                        pngColorType = 1;
+                    }
+                }
+                else if (PdfName.ICCBASED.Equals(tyca)) {
+                    PRStream pr = (PRStream)ca.GetDirectObject(1);
+                    int n = pr.GetAsNumber(PdfName.N).IntValue;
+                    if (n == 1) {
+                        stride = (width * bpc + 7) / 8;
+                        pngColorType = 0;
+                        icc = PdfReader.GetStreamBytes(pr);
+                    }
+                    else if (n == 3) {
+                        stride = (width * bpc * 3 + 7) / 8;
+                        pngColorType = 1;
+                        icc = PdfReader.GetStreamBytes(pr);
+                    }
+                }
+                else if (PdfName.INDEXED.Equals(tyca)) {
+                    if (PdfName.DEVICERGB.Equals(ca.GetDirectObject(1))) {
+                        PdfObject id2 = ca.GetDirectObject(3);
+                        if (id2 is PdfString) {
+                            palette = ((PdfString)id2).GetBytes();
+                        }
+                        else if (id2 is PRStream) {
+                            palette = PdfReader.GetStreamBytes(((PRStream)id2));
+                        }
+                        stride = (width * bpc + 7) / 8;
+                        pngColorType = 3;
+                    }
+                }
+            }
+            if (pngColorType < 0)
+                return null;
+            MemoryStream ms = new MemoryStream();
+            PngWriter png = new PngWriter(ms);
+            png.WriteHeader(width, height, pngBitDepth, pngColorType);
+            if (icc != null)
+                png.WriteIccProfile(icc);
+            if (palette != null)
+                png.WritePalette(palette);
+            png.WriteData(streamBytes, stride);
+            png.WriteEnd();
+            fileType = TYPE_PNG;
+            return ms.ToArray();
+        }
+
+        public System.Drawing.Image GetDrawingImage() {
+            byte[] r = GetFile();
+            if (r == null)
+                return null;
+            return Bitmap.FromStream(new MemoryStream(r));
+        }
+    }
 }

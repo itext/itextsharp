@@ -1,7 +1,7 @@
 using System;
 using iTextSharp.text.pdf;
 /*
- * $Id: ContentOperator.java 4242 2010-01-02 23:22:20Z xlv $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
@@ -63,10 +63,10 @@ namespace iTextSharp.text.pdf.parser {
          * @return an object containing the image dictionary and byte[]
          * @since 5.0.2
          */
-        //public PdfImageObject GetImage() {
-        //    PRStream stream = (PRStream)PdfReader.GetPdfObject(refi);
-        //    return new PdfImageObject(stream);
-        //}
+        public PdfImageObject GetImage() {
+            PRStream stream = (PRStream)PdfReader.GetPdfObject(refi);
+            return new PdfImageObject(stream);
+        }
         
         /**
          * @return a vector in User space representing the start point of the xobject
