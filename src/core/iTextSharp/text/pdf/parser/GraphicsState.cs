@@ -1,7 +1,7 @@
 using System;
 using iTextSharp.text.pdf;
 /*
- * $Id: GraphicsState.java 4290 2010-01-31 12:53:22Z blowagie $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

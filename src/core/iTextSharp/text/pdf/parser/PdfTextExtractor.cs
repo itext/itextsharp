@@ -1,7 +1,7 @@
 using System;
 using iTextSharp.text.pdf;
 /*
- * $Id: PdfTextExtractor.java 4427 2010-03-31 14:39:52Z blowagie $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

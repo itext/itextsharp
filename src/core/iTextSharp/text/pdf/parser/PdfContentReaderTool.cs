@@ -5,7 +5,7 @@ using System.Text;
 using System.util;
 using iTextSharp.text.pdf;
 /*
- * $Id: PdfContentReaderTool.java 4411 2010-03-29 19:34:33Z trumpetinc $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA

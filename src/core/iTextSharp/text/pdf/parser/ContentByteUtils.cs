@@ -3,7 +3,7 @@ using System.IO;
 using iTextSharp.text.pdf;
 using System.util;
 /*
- * $Id: ContentOperator.java 4242 2010-01-02 23:22:20Z xlv $
+ * $Id$
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
