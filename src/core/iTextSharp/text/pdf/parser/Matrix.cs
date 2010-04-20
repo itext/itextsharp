@@ -177,6 +177,22 @@ namespace iTextSharp.text.pdf.parser {
         }
         
         /**
+         * Computes the determinant of the matrix.
+         * @return the determinant of the matrix
+         */
+        public float GetDeterminant(){
+            // ref http://en.wikipedia.org/wiki/Determinant   
+            // note that in PDF, I13 and I23 are always 0 and I33 is always 1
+            // so this could be simplified/faster
+            return    vals[I11] * vals[I22] * vals[I33] 
+                    + vals[I12] * vals[I23] * vals[I31]
+                    + vals[I13] * vals[I21] * vals[I32]
+                    - vals[I11] * vals[I23] * vals[I32]
+                    - vals[I12] * vals[I21] * vals[I33]
+                    - vals[I13] * vals[I22] * vals[I31];
+        }
+
+        /**
          * Checks equality of matrices.
          * @param obj   the other Matrix that needs to be compared with this matrix.
          * @return  true if both matrices are equal

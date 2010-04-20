@@ -76,6 +76,14 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
+         * @return the size of the image, in User space units
+         */
+        public float GetArea(){
+            // the image space area is 1, so we multiply that by the determinant of the CTM to get the transformed area
+            return ctm.GetDeterminant();
+        }
+        
+        /**
          * @return an indirect reference to the image
          * @since 5.0.2
          */
