@@ -1050,7 +1050,6 @@ public class ColumnText {
                     bool createHere = false;
                     if (compositeColumn == null) {
                         compositeColumn = new ColumnText(canvas);
-                        compositeColumn.UseAscender = (firstPass ? useAscender : false);
                         compositeColumn.Alignment = para.Alignment;
                         compositeColumn.Indent = para.IndentationLeft + para.FirstLineIndent;
                         compositeColumn.ExtraParagraphSpace = para.ExtraParagraphSpace;
@@ -1066,6 +1065,7 @@ public class ColumnText {
                         }
                         createHere = true;
                     }
+                    compositeColumn.UseAscender = (firstPass ? useAscender : false);
                     compositeColumn.leftX = leftX;
                     compositeColumn.rightX = rightX;
                     compositeColumn.yLine = yLine;
