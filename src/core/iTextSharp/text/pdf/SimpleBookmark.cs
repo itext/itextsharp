@@ -343,7 +343,7 @@ namespace iTextSharp.text.pdf {
             if (list == null)
                 return;
             foreach (Dictionary<String, Object> map in list) {
-                if ("GoTo".Equals(map["Action"])) {
+                if (map.ContainsKey("Action") && "GoTo".Equals(map["Action"])) {
                     String page = null;
                     if (map.ContainsKey("Page"))
                         page = (String)map["Page"];
@@ -513,7 +513,7 @@ namespace iTextSharp.text.pdf {
                     outline.Put(PdfName.FIRST, (PdfIndirectReference)lower[0]);
                     outline.Put(PdfName.LAST, (PdfIndirectReference)lower[1]);
                     int n = (int)lower[2];
-                    if ("false".Equals(map["Open"])) {
+                    if (map.ContainsKey("Open") && "false".Equals(map["Open"])) {
                         outline.Put(PdfName.COUNT, new PdfNumber(-n));
                     }
                     else {
