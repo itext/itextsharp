@@ -208,8 +208,8 @@ namespace iTextSharp.text.pdf.parser {
             MemoryStream ms = new MemoryStream();
             PngWriter png = new PngWriter(ms);
             png.WriteHeader(width, height, pngBitDepth, pngColorType);
-            //if (icc != null)
-            //    png.WriteIccProfile(icc);
+            if (icc != null)
+                png.WriteIccProfile(icc);
             if (palette != null)
                 png.WritePalette(palette);
             png.WriteData(streamBytes, stride);
