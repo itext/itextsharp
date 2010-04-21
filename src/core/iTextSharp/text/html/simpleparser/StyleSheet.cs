@@ -96,7 +96,7 @@ namespace iTextSharp.text.html.simpleparser {
         public void LoadTagStyle(String tag, String key, String value) {
             tag = tag.ToLower(System.Globalization.CultureInfo.InvariantCulture);
             Dictionary<String, String> props;
-            if (!classMap.TryGetValue(tag, out props)) {
+            if (!tagMap.TryGetValue(tag, out props)) {
                 props = new Dictionary<string,string>();
                 tagMap[tag] = props;
             }
