@@ -1175,7 +1175,15 @@ namespace iTextSharp.text.pdf {
                 for (int k = 0; k < n; ++k) {
                     if (map.ContainsKey(k)) {
                         tokens.Seek(address[k]);
-                        PdfObject obj = ReadPRObject();
+                        tokens.NextToken();
+                        PdfObject obj;
+                        if (tokens.TokenType == PRTokeniser.TokType.NUMBER) {
+                    	    obj = new PdfNumber(tokens.StringValue);
+                        }
+                        else {
+                    	    tokens.Seek(address[k]);
+                    	    obj = ReadPRObject();
+                        }
                         xrefObj[objNumber[k]] = obj;
                     }
                 }            
