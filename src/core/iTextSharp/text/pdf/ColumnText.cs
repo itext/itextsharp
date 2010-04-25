@@ -166,6 +166,12 @@ public class ColumnText {
     /** The current y line location. Text will be written at this line minus the leading. */
     protected float yLine;
     
+    /**
+     * The X position after the last line that has been written.
+     * @since 5.0.3
+     */
+    protected float lastX;
+
     /** The leading for the current line. */
     protected float currentLeading = 16;
     
@@ -733,6 +739,7 @@ public class ColumnText {
             return NO_MORE_TEXT;
         descender = 0;
         linesWritten = 0;
+        lastX = 0;
         bool dirty = false;
         float ratio = spaceCharRatio;
         Object[] currentValues = new Object[2];
@@ -834,7 +841,7 @@ public class ColumnText {
             if (!simulate) {
                 currentValues[0] = currentFont;
                 text.SetTextMatrix(x1 + (line.RTL ? rightIndent : firstIndent) + line.IndentLeft, yLine);
-                pdf.WriteLineToContent(line, text, graphics, currentValues, ratio);
+                lastX = pdf.WriteLineToContent(line, text, graphics, currentValues, ratio);
                 currentFont = (PdfFont)currentValues[0];
             }
             lastWasNewline = line.NewlineSplit;
@@ -910,6 +917,17 @@ public class ColumnText {
         }
     }
     
+    /**
+     * Gets the X position of the end of the last line that has been written
+     * (will not work in simulation mode!).
+     * @since 5.0.3
+     */
+    public float LastX {
+        get {
+            return lastX;
+        }
+    }
+
     /** Sets the arabic shaping options. The option can be AR_NOVOWEL,
      * AR_COMPOSEDTASHKEEL and AR_LIG.
      * @param arabicOptions the arabic shaping options
