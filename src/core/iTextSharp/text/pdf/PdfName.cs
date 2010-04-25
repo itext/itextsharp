@@ -78,6 +78,8 @@ namespace iTextSharp.text.pdf {
         /** A name */
         public static readonly PdfName A = new PdfName("A");
         /** A name */
+        public static readonly PdfName A85 = new PdfName("A85");
+        /** A name */
         public static readonly PdfName AA = new PdfName("AA");
         /**
          * A name
@@ -121,6 +123,8 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName ADOBE_PPKMS = new PdfName("Adobe.PPKMS");
         /** A name */
         public static readonly PdfName AESV2 = new PdfName("AESV2");
+        /** A name */
+        public static readonly PdfName AHX = new PdfName("AHx");
         /** A name */
         public static readonly PdfName AIS = new PdfName("AIS");
         /** A name */
@@ -604,6 +608,8 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName FITBV = new PdfName("FitBV");
         /** A name */
         public static readonly PdfName FITWINDOW = new PdfName("FitWindow");
+        /** A name */
+        public static readonly PdfName FL = new PdfName("Fl");
         /** A name */
         public static readonly PdfName FLAGS = new PdfName("Flags");
         /**

@@ -14,6 +14,7 @@ using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Cms;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.pdf.codec;
 /*
  * $Id$
  *
@@ -2073,10 +2074,10 @@ namespace iTextSharp.text.pdf {
                 else if (dpo.IsArray())
                     dp = ((PdfArray)dpo).ArrayList;
             }
-            String name;
+            PdfName name;
             for (int j = 0; j < filters.Count; ++j) {
-                name = ((PdfName)GetPdfObjectRelease(filters[j])).ToString();
-                if (name.Equals("/FlateDecode") || name.Equals("/Fl")) {
+                name = ((PdfName)GetPdfObjectRelease(filters[j]));
+                if (PdfName.FLATEDECODE.Equals(name) || PdfName.FL.Equals(name)) {
                     b = FlateDecode(b);
                     PdfObject dicParam = null;
                     if (j < dp.Count) {
@@ -2084,11 +2085,11 @@ namespace iTextSharp.text.pdf {
                         b = DecodePredictor(b, dicParam);
                     }
                 }
-                else if (name.Equals("/ASCIIHexDecode") || name.Equals("/AHx"))
+                else if (PdfName.ASCIIHEXDECODE.Equals(name) || PdfName.AHX.Equals(name))
                     b = ASCIIHexDecode(b);
-                else if (name.Equals("/ASCII85Decode") || name.Equals("/A85"))
+                else if (PdfName.ASCII85DECODE.Equals(name) || PdfName.A85.Equals(name))
                     b = ASCII85Decode(b);
-                else if (name.Equals("/LZWDecode")) {
+                else if (PdfName.LZWDECODE.Equals(name)) {
                     b = LZWDecode(b);
                     PdfObject dicParam = null;
                     if (j < dp.Count) {
@@ -2096,7 +2097,64 @@ namespace iTextSharp.text.pdf {
                         b = DecodePredictor(b, dicParam);
                     }
                 }
-                else if (name.Equals("/Crypt")) {
+                else if (PdfName.CCITTFAXDECODE.Equals(name)) {
+                    PdfNumber wn = (PdfNumber)GetPdfObjectRelease(stream.Get(PdfName.WIDTH));
+                    PdfNumber hn = (PdfNumber)GetPdfObjectRelease(stream.Get(PdfName.HEIGHT));
+                    if (wn == null || hn == null)
+                        throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("filter.ccittfaxdecode.is.only.supported.for.images"));
+                    int width = wn.IntValue;
+                    int height = hn.IntValue;
+                    PdfDictionary param = null;
+                    if (j < dp.Count) {
+                        PdfObject objParam = GetPdfObjectRelease((PdfObject)dp[j]);
+                        if (objParam != null && (objParam is PdfDictionary))
+                            param = (PdfDictionary)objParam;
+                    }
+                    int k = 0;
+                    bool blackIs1 = false;
+                    bool byteAlign = false;
+                    if (param != null) {
+                        PdfNumber kn = param.GetAsNumber(PdfName.K);
+                        if (kn != null)
+                            k = kn.IntValue;
+                        PdfBoolean bo = param.GetAsBoolean(PdfName.BLACKIS1);
+                        if (bo != null)
+                            blackIs1 = bo.BooleanValue;
+                        bo = param.GetAsBoolean(PdfName.ENCODEDBYTEALIGN);
+                        if (bo != null)
+                            byteAlign = bo.BooleanValue;
+                    }
+                    byte[] outBuf = new byte[(width + 7) / 8 * height];
+                    TIFFFaxDecoder decoder = new TIFFFaxDecoder(1, width, height);
+                    if (k == 0 || k > 0) {
+                        int tiffT4Options = k > 0 ? TIFFConstants.GROUP3OPT_2DENCODING : 0;
+                        tiffT4Options |= byteAlign ? TIFFConstants.GROUP3OPT_FILLBITS : 0;
+                        try {
+                            decoder.Decode2D(outBuf, b, 0, height, tiffT4Options);
+                        }
+                        catch (Exception e) {
+                            // let's flip the fill bits and try again...
+                            tiffT4Options ^= TIFFConstants.GROUP3OPT_FILLBITS;
+                            try {
+                                decoder.Decode2D(outBuf, b, 0, height, tiffT4Options);
+                            }
+                            catch {
+                                throw e;
+                            }
+                        }
+                    }
+                    else {
+                        decoder.DecodeT6(outBuf, b, 0, height, 0);
+                    }
+                    if (!blackIs1) {
+                        int len = outBuf.Length;
+                        for (int t = 0; t < len; ++t) {
+                            outBuf[t] ^= 0xff;
+                        }
+                    }
+                    b = outBuf;
+                }
+                else if (PdfName.CRYPT.Equals(name)) {
                 }
                 else
                     throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("the.filter.1.is.not.supported", name));
