@@ -67,7 +67,8 @@ namespace iTextSharp.text.pdf.parser {
         private int bpc;
         private byte[] palette;
         private byte[] icc;
-        int stride;
+        private int stride;
+        private bool decoded;
         public const string TYPE_PNG = "png";
         public const string TYPE_JPG = "jpg";
         public const string TYPE_JP2 = "jp2";
@@ -86,14 +87,14 @@ namespace iTextSharp.text.pdf.parser {
         public PdfImageObject(PRStream stream) {
             this.dictionary = stream;
             try {
-                if (PdfName.FLATEDECODE.Equals(dictionary.GetAsName(PdfName.FILTER)))
-                    streamBytes = PdfReader.GetStreamBytes(stream);
-                // else if other filter (not supported yet)
-                else
-                    streamBytes = PdfReader.GetStreamBytesRaw(stream);
+                streamBytes = PdfReader.GetStreamBytes(stream);
+                decoded = true;
             }
             catch {
-                streamBytes = null;
+                try {
+                    streamBytes = PdfReader.GetStreamBytesRaw(stream);
+                }
+                catch {}
             }
         }
         
@@ -177,20 +178,19 @@ namespace iTextSharp.text.pdf.parser {
             }
         }
 
-        public byte[] GetFile() {
+        public byte[] GetImageAsBytes() {
             if (streamBytes == null)
                 return null;
-            PdfName filter = dictionary.GetAsName(PdfName.FILTER);
-            if (PdfName.DCTDECODE.Equals(filter)) {
-                fileType = TYPE_JPG;
-                return streamBytes;
-            }
-            else if (PdfName.JPXDECODE.Equals(filter)) {
-                fileType = TYPE_JP2;
-                return streamBytes;
-            }
-
-            if (filter != null && !PdfName.FLATEDECODE.Equals(filter)) {
+            if (!decoded) {
+                PdfName filter = dictionary.GetAsName(PdfName.FILTER);
+                if (PdfName.DCTDECODE.Equals(filter)) {
+                    fileType = TYPE_JPG;
+                    return streamBytes;
+                }
+                else if (PdfName.JPXDECODE.Equals(filter)) {
+                    fileType = TYPE_JP2;
+                    return streamBytes;
+                }
                 return null;
             }
             pngColorType = -1;
@@ -219,7 +219,7 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         public System.Drawing.Image GetDrawingImage() {
-            byte[] r = GetFile();
+            byte[] r = GetImageAsBytes();
             if (r == null)
                 return null;
             return Bitmap.FromStream(new MemoryStream(r));
