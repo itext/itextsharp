@@ -1182,7 +1182,7 @@ namespace iTextSharp.text.pdf {
         * @param ratio
         * @throws DocumentException on error
         */
-        internal void WriteLineToContent(PdfLine line, PdfContentByte text, PdfContentByte graphics, Object[] currentValues, float ratio)  {
+        internal float WriteLineToContent(PdfLine line, PdfContentByte text, PdfContentByte graphics, Object[] currentValues, float ratio)  {
             PdfFont currentFont = (PdfFont)(currentValues[0]);
             float lastBaseFactor = (float)currentValues[1];
             //PdfChunk chunkz;
@@ -1195,6 +1195,7 @@ namespace iTextSharp.text.pdf {
             float baseWordSpacing = 0;
             float baseCharacterSpacing = 0;
             float glueWidth = 0;
+            float lastX = text.XTLM + line.OriginalWidth;
             
             numberOfSpaces = line.NumberOfSpaces;
             lineLen = line.GetLineLengthUtf32();
@@ -1229,6 +1230,9 @@ namespace iTextSharp.text.pdf {
                     baseCharacterSpacing = baseFactor;
                     lastBaseFactor = baseFactor;
                 }
+            }
+            else if (line.alignment == Element.ALIGN_LEFT) {
+                lastX -= line.WidthLeft;
             }
             
             int lastChunkStroke = line.LastStrokeChunk;
@@ -1521,6 +1525,7 @@ namespace iTextSharp.text.pdf {
                 text.MoveText(baseXMarker - text.XTLM, 0);
             currentValues[0] = currentFont;
             currentValues[1] = lastBaseFactor;
+            return lastX;
         }
         
         protected internal Indentation indentation = new Indentation();
