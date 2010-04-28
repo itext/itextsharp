@@ -1231,7 +1231,7 @@ namespace iTextSharp.text.pdf {
                     lastBaseFactor = baseFactor;
                 }
             }
-            else if (line.alignment == Element.ALIGN_LEFT) {
+            else if (line.alignment == Element.ALIGN_LEFT || line.alignment == Element.ALIGN_UNDEFINED) {
                 lastX -= line.WidthLeft;
             }
             
