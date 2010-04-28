@@ -1133,6 +1133,9 @@ namespace iTextSharp.text.pdf {
                     " was requested but the document has only " + (currentPageNumber - 1) + " pages.");
                 pdf.Close();
                 AddSharedObjectsToBody();
+                foreach (IPdfOCG layer in documentOCG.Keys) {
+                    AddToBody(layer.PdfObject, layer.Ref);
+                }
                 // add the root to the body
                 PdfIndirectReference rootRef = root.WritePageTree();
                 // make the catalog-object and add it to the body
@@ -1259,9 +1262,6 @@ namespace iTextSharp.text.pdf {
                 else if ((prop is PdfDictionary) && !(prop is PdfLayer)){
                     AddToBody((PdfDictionary)prop, (PdfIndirectReference)obj[1]);
                 }
-            }
-            foreach (IPdfOCG layer in documentOCG.Keys) {
-                AddToBody(layer.PdfObject, layer.Ref);
             }
         }
 

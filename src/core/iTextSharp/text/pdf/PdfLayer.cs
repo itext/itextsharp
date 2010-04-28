@@ -92,7 +92,10 @@ namespace iTextSharp.text.pdf {
         */    
         public PdfLayer(String name, PdfWriter writer) : base(PdfName.OCG) {
             Name = name;
-            refi = writer.PdfIndirectReference;
+            if (writer is PdfStamperImp)
+                refi = writer.AddToBody(this).IndirectReference;
+            else
+                refi = writer.PdfIndirectReference;
             writer.RegisterLayer(this);
         }
         

@@ -1093,6 +1093,7 @@ public class ColumnText {
                     compositeColumn.maxY = maxY;
                     bool keepCandidate = (para.KeepTogether && createHere && !firstPass);
                     status = compositeColumn.Go(simulate || (keepCandidate && keep == 0));
+                    lastX = compositeColumn.LastX;
                     UpdateFilledWidth(compositeColumn.filledWidth);
                     if ((status & NO_MORE_TEXT) == 0 && keepCandidate) {
                         compositeColumn = null;
@@ -1190,6 +1191,7 @@ public class ColumnText {
                     compositeColumn.maxY = maxY;
                     bool keepCandidate = (item.KeepTogether && createHere && !firstPass);
                     status = compositeColumn.Go(simulate || (keepCandidate && keep == 0));
+                    lastX = compositeColumn.LastX;
                     UpdateFilledWidth(compositeColumn.filledWidth);
                     if ((status & NO_MORE_TEXT) == 0 && keepCandidate) {
                         compositeColumn = null;
