@@ -165,11 +165,11 @@ namespace iTextSharp.text.pdf {
                     catch (IOException) {
                         // empty on purpose
                     }
-                    currentPdfReaderInstance = reader.GetPdfReaderInstance(this);
+                    currentPdfReaderInstance = base.GetPdfReaderInstance(reader);
                 }
             }
             else {
-                currentPdfReaderInstance = reader.GetPdfReaderInstance(this);
+                currentPdfReaderInstance = base.GetPdfReaderInstance(reader);
             }
             return currentPdfReaderInstance.GetImportedPage(pageNumber);            
         }
@@ -499,6 +499,7 @@ namespace iTextSharp.text.pdf {
                     currentPdfReaderInstance = null;
                 }
             }
+            base.FreeReader(reader);
         }
 
         /**
