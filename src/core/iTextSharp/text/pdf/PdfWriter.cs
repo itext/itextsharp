@@ -1223,7 +1223,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             // add all the dependencies in the imported pages
-            foreach (PdfReaderInstance rd in importedPages.Values) {
+            foreach (PdfReaderInstance rd in readerInstances.Values) {
                 currentPdfReaderInstance = rd;
                 currentPdfReaderInstance.WriteAllPages();
             }
@@ -2216,8 +2216,8 @@ namespace iTextSharp.text.pdf {
                     // If we got here from PdfCopy we'll have to fill importedPages
                     PdfImportedPage ip = (PdfImportedPage)template;
                     PdfReader r = ip.PdfReaderInstance.Reader;
-                    if (!importedPages.ContainsKey(r)) {
-                        importedPages[r] = ip.PdfReaderInstance;
+                    if (!readerInstances.ContainsKey(r)) {
+                        readerInstances[r] = ip.PdfReaderInstance;
                     }
                     template = null;
                 }
@@ -2252,7 +2252,7 @@ namespace iTextSharp.text.pdf {
 
     //  [F5] adding pages imported form other PDF documents
 
-        protected Dictionary<PdfReader, PdfReaderInstance> importedPages = new Dictionary<PdfReader,PdfReaderInstance>();
+        protected Dictionary<PdfReader, PdfReaderInstance> readerInstances = new Dictionary<PdfReader,PdfReaderInstance>();
 
         /** Gets a page from other PDF document. The page can be used as
         * any other PdfTemplate. Note that calling this method more than
@@ -2262,13 +2262,25 @@ namespace iTextSharp.text.pdf {
         * @return the template representing the imported page
         */
         public virtual PdfImportedPage GetImportedPage(PdfReader reader, int pageNumber) {
+            return GetPdfReaderInstance(reader).GetImportedPage(pageNumber);
+        }
+
+        /**
+         * Returns the PdfReaderInstance associated with the specified reader.
+         * Multiple calls with the same reader object will return the same
+         * PdfReaderInstance.
+         * @param reader the PDF reader that you want an instance for
+         * @return the instance for the provided reader
+         * @since 5.0.3
+         */
+        protected virtual PdfReaderInstance GetPdfReaderInstance(PdfReader reader){
             PdfReaderInstance inst;
-            importedPages.TryGetValue(reader, out inst);
+            readerInstances.TryGetValue(reader, out inst);
             if (inst == null) {
                 inst = reader.GetPdfReaderInstance(this);
-                importedPages[reader] = inst;
+                readerInstances[reader] = inst;
             }
-            return inst.GetImportedPage(pageNumber);
+            return inst;
         }
 
         /** Writes the reader to the document and frees the memory used by it.
@@ -2278,12 +2290,12 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         */    
         public virtual void FreeReader(PdfReader reader) {
-            importedPages.TryGetValue(reader, out currentPdfReaderInstance);
+            readerInstances.TryGetValue(reader, out currentPdfReaderInstance);
             if (currentPdfReaderInstance == null)
                 return;
             currentPdfReaderInstance.WriteAllPages();
             currentPdfReaderInstance = null;
-            importedPages.Remove(reader);
+            readerInstances.Remove(reader);
         }
 
         /** Gets the current document size. This size only includes
