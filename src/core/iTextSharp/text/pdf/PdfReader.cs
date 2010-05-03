@@ -1027,7 +1027,16 @@ namespace iTextSharp.text.pdf {
                 if (!ok)
                     throw new InvalidPdfException(MessageLocalization.GetComposedMessage("error.reading.objstm"));
                 tokens.Seek(address);
-                return ReadPRObject();
+                tokens.NextToken();
+                PdfObject obj;
+                if (tokens.TokenType == PRTokeniser.TokType.NUMBER) {
+                    obj = new PdfNumber(tokens.StringValue);
+                }
+                else {
+                    tokens.Seek(address);
+                    obj = ReadPRObject();
+                }
+                return obj;
             }
             finally {
                 tokens = saveTokens;
