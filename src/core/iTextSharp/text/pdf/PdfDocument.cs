@@ -982,10 +982,6 @@ namespace iTextSharp.text.pdf {
 
             writer.ResetContent();
             graphics = new PdfContentByte(writer);
-            text = new PdfContentByte(writer);
-            text.Reset();
-            text.BeginText();
-            textEmptySize = text.Size;
 
             markPoint = 0;
             SetNewPageSizeAndMargins();
@@ -1006,8 +1002,6 @@ namespace iTextSharp.text.pdf {
 
             float oldleading = leading;
             int oldAlignment = alignment;
-            // we move to the left/top position of the page
-            text.MoveText(Left, Top);
             pageEmpty = true;
             // if there is an image waiting to be drawn, draw it
             if (imageWait != null) {
@@ -2096,6 +2090,12 @@ namespace iTextSharp.text.pdf {
                 marginTop = nextMarginTop;
                 marginBottom = nextMarginBottom;
             }
+            text = new PdfContentByte(writer);
+            text.Reset();
+            text.BeginText();
+            textEmptySize = text.Size;
+            // we move to the left/top position of the page
+            text.MoveText(Left, Top);
         }
 
         /**
