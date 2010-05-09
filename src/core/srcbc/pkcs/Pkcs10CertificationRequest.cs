@@ -238,7 +238,7 @@ namespace Org.BouncyCastle.Pkcs
 			}
 			else
 			{
-				this.sigAlgId = new AlgorithmIdentifier(sigOid, null);
+				this.sigAlgId = new AlgorithmIdentifier(sigOid, DerNull.Instance);
 			}
 
 			SubjectPublicKeyInfo pubInfo = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(publicKey);

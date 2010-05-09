@@ -7,6 +7,18 @@ namespace Org.BouncyCastle.Asn1
     public class BerOctetString
         : DerOctetString, IEnumerable
     {
+		public static BerOctetString FromSequence(Asn1Sequence seq)
+		{
+			ArrayList v = new ArrayList();
+
+			foreach (Asn1Encodable obj in seq)
+			{
+				v.Add(obj);
+			}
+
+			return new BerOctetString(v);
+		}
+
 		private const int MaxLength = 1000;
 
 		/**

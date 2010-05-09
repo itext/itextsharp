@@ -249,82 +249,12 @@ namespace Org.BouncyCastle.Cms
 
 		internal static SignerIdentifier GetSignerIdentifier(X509Certificate cert)
 		{
-			TbsCertificateStructure tbs;
-			try
-			{
-				tbs = TbsCertificateStructure.GetInstance(
-					Asn1Object.FromByteArray(cert.GetTbsCertificate()));
-			}
-			catch (Exception)
-			{
-				throw new ArgumentException("can't extract TBS structure from this cert");
-			}
-
- 			Asn1.Cms.IssuerAndSerialNumber encSid = new Asn1.Cms.IssuerAndSerialNumber(
-				tbs.Issuer, tbs.SerialNumber.Value);			
-
-			return new SignerIdentifier(encSid);
+			return new SignerIdentifier(CmsUtilities.GetIssuerAndSerialNumber(cert));
 		}
 
 		internal static SignerIdentifier GetSignerIdentifier(byte[] subjectKeyIdentifier)
 		{
 			return new SignerIdentifier(new DerOctetString(subjectKeyIdentifier));    
-		}
-
-		internal class DigOutputStream
-			: BaseOutputStream
-		{
-			private readonly IDigest dig;
-
-			public DigOutputStream(IDigest dig)
-			{
-				this.dig = dig;
-			}
-
-			public override void WriteByte(byte b)
-			{
-				dig.Update(b);
-			}
-
-			public override void Write(byte[] b, int off, int len)
-			{
-				dig.BlockUpdate(b, off, len);
-			}
-		}
-
-		internal class SigOutputStream
-			: BaseOutputStream
-		{
-			private readonly ISigner sig;
-
-			public SigOutputStream(ISigner sig)
-			{
-				this.sig = sig;
-			}
-
-			public override void WriteByte(byte b)
-			{
-				try
-				{
-					sig.Update(b);
-				}
-				catch (SignatureException e)
-				{
-					throw new CmsStreamException("signature problem: " + e);
-				}
-			}
-
-			public override void Write(byte[] b, int off, int len)
-			{
-				try
-				{
-					sig.BlockUpdate(b, off, len);
-				}
-				catch (SignatureException e)
-				{
-					throw new CmsStreamException("signature problem: " + e);
-				}
-			}
 		}
 	}
 }

@@ -8,24 +8,42 @@ namespace Org.BouncyCastle.Asn1.Pkcs
     public class EncryptionScheme
         : AlgorithmIdentifier
     {
-        private readonly Asn1Object	objectID, obj;
+		public EncryptionScheme(
+            DerObjectIdentifier	objectID,
+            Asn1Encodable		parameters)
+			: base(objectID, parameters)
+		{
+		}
 
 		internal EncryptionScheme(
 			Asn1Sequence seq)
-			: base(seq)
+			: this((DerObjectIdentifier)seq[0], seq[1])
         {
-            objectID = (Asn1Object) seq[0];
-            obj = (Asn1Object) seq[1];
         }
+
+		public new static EncryptionScheme GetInstance(object obj)
+		{
+			if (obj is EncryptionScheme)
+			{
+				return (EncryptionScheme)obj;
+			}
+
+			if (obj is Asn1Sequence)
+			{
+				return new EncryptionScheme((Asn1Sequence)obj);
+			}
+
+			throw new ArgumentException("Unknown object in factory: " + obj.GetType().FullName, "obj");
+		}
 
 		public Asn1Object Asn1Object
 		{
-			get { return obj; }
+			get { return Parameters.ToAsn1Object(); }
 		}
 
 		public override Asn1Object ToAsn1Object()
         {
-			return new DerSequence(objectID, obj);
+			return new DerSequence(ObjectID, Parameters);
         }
     }
 }

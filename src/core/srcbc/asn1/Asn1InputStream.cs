@@ -264,12 +264,7 @@ namespace Org.BouncyCastle.Asn1
 			switch (tagNo)
 			{
 				case Asn1Tags.BitString:
-				{
-					int padBits = bytes[0];
-					byte[] data = new byte[bytes.Length - 1];
-					Array.Copy(bytes, 1, data, 0, bytes.Length - 1);
-					return new DerBitString(data, padBits);
-				}
+					return DerBitString.FromAsn1Octets(bytes);
 				case Asn1Tags.BmpString:
 					return new DerBmpString(bytes);
 				case Asn1Tags.Boolean:

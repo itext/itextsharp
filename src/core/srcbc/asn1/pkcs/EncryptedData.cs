@@ -89,7 +89,7 @@ namespace Org.BouncyCastle.Asn1.Pkcs
 				{
 					DerTaggedObject o = (DerTaggedObject) data[2];
 
-					return Asn1OctetString.GetInstance(o.GetObject());
+					return Asn1OctetString.GetInstance(o, false);
 				}
 
 				return null;

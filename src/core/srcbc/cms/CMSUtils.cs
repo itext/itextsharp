@@ -170,5 +170,16 @@ namespace Org.BouncyCastle.Cms
 			BerOctetStringGenerator octGen = new BerOctetStringGenerator(s, tagNo, isExplicit);
 			return octGen.GetOctetOutputStream(bufferSize);
 		}
-    }
+
+		internal static TbsCertificateStructure GetTbsCertificateStructure(X509Certificate cert)
+		{
+			return TbsCertificateStructure.GetInstance(Asn1Object.FromByteArray(cert.GetTbsCertificate()));
+		}
+
+		internal static IssuerAndSerialNumber GetIssuerAndSerialNumber(X509Certificate cert)
+		{
+			TbsCertificateStructure tbsCert = GetTbsCertificateStructure(cert);
+			return new IssuerAndSerialNumber(tbsCert.Issuer, tbsCert.SerialNumber.Value);
+		}
+	}
 }

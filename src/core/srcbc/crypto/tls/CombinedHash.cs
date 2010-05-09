@@ -5,11 +5,23 @@ using Org.BouncyCastle.Crypto.Digests;
 namespace Org.BouncyCastle.Crypto.Tls
 {
 	/// <remarks>A combined hash, which implements md5(m) || sha1(m).</remarks>
-	public class CombinedHash
+	internal class CombinedHash
 		: IDigest
 	{
-		private IDigest md5 = new MD5Digest();
-		private IDigest sha1 = new Sha1Digest();
+		private readonly MD5Digest md5;
+		private readonly Sha1Digest sha1;
+
+		internal CombinedHash()
+		{
+			this.md5 = new MD5Digest();
+			this.sha1 = new Sha1Digest();
+		}
+
+		internal CombinedHash(CombinedHash t)
+		{
+			this.md5 = new MD5Digest(t.md5);
+			this.sha1 = new Sha1Digest(t.sha1);
+		}
 
 		/// <seealso cref="IDigest.AlgorithmName"/>
 		public string AlgorithmName

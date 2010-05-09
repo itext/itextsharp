@@ -1141,9 +1141,6 @@
     <Compile Include="srcbc\asn1\ASN1Object.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\ASN1ObjectParser.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="srcbc\asn1\ASN1OctetString.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -2138,6 +2135,9 @@
     <Compile Include="srcbc\asn1\x509\X509ObjectIdentifiers.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\asn1\x9\DHDomainParameters.cs" />
+    <Compile Include="srcbc\asn1\x9\DHPublicKey.cs" />
+    <Compile Include="srcbc\asn1\x9\DHValidationParms.cs" />
     <Compile Include="srcbc\asn1\x9\KeySpecificInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -2438,6 +2438,9 @@
     <Compile Include="srcbc\cms\CMSProcessableFile.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\cms\CMSProcessableInputStream.cs" />
+    <Compile Include="srcbc\cms\CMSReadable.cs" />
+    <Compile Include="srcbc\cms\CMSSecureReadable.cs" />
     <Compile Include="srcbc\cms\CMSSignedData.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -2471,6 +2474,7 @@
     <Compile Include="srcbc\cms\DefaultSignedAttributeTableGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\cms\DigOutputStream.cs" />
     <Compile Include="srcbc\cms\IDigestCalculator.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -2492,6 +2496,8 @@
     <Compile Include="srcbc\cms\KeyTransRecipientInformation.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\cms\MacOutputStream.cs" />
+    <Compile Include="srcbc\cms\NullOutputStream.cs" />
     <Compile Include="srcbc\cms\OriginatorId.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -2522,15 +2528,19 @@
     <Compile Include="srcbc\cms\SignerId.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\cms\SignerInfoGenerator.cs" />
     <Compile Include="srcbc\cms\SignerInformation.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\cms\SignerInformationStore.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\cms\SigOutputStream.cs" />
     <Compile Include="srcbc\cms\SimpleAttributeTableGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\cms\TeeInputStream.cs" />
+    <Compile Include="srcbc\cms\TeeOutputStream.cs" />
     <Compile Include="srcbc\crypto\agreement\DHAgreement.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -3275,21 +3285,18 @@
     <Compile Include="srcbc\crypto\tls\CombinedHash.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\crypto\tls\DefaultTlsClient.cs" />
     <Compile Include="srcbc\crypto\tls\ICertificateVerifyer.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\RecordStream.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\tls\TlsBlockCipherCipherSuite.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="srcbc\crypto\tls\TlsCipherSuite.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="srcbc\crypto\tls\TlsCipherSuiteManager.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="srcbc\crypto\tls\SecurityParameters.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsBlockCipher.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsCipher.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsClient.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsDHKeyExchange.cs" />
     <Compile Include="srcbc\crypto\tls\TlsDssSigner.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -3299,22 +3306,23 @@
     <Compile Include="srcbc\crypto\tls\TlsInputStream.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\crypto\tls\TlsKeyExchange.cs" />
     <Compile Include="srcbc\crypto\tls\TlsMac.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\tls\TlsNullCipherSuite.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="srcbc\crypto\tls\TlsNullCipher.cs" />
     <Compile Include="srcbc\crypto\tls\TlsOutputStream.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsProtocolHandler.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\crypto\tls\TlsRsaKeyExchange.cs" />
     <Compile Include="srcbc\crypto\tls\TlsRsaSigner.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsSigner.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsSrpKeyExchange.cs" />
     <Compile Include="srcbc\crypto\tls\TlsUtilities.cs">
       <SubType>Code</SubType>
     </Compile>

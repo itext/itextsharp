@@ -27,7 +27,7 @@ namespace Org.BouncyCastle.Asn1.Pkcs
 			if (seq.Count != 2)
 				throw new ArgumentException("Wrong number of elements in sequence", "seq");
 
-			Asn1Sequence funcSeq = (Asn1Sequence)seq[0];
+			Asn1Sequence funcSeq = (Asn1Sequence)seq[0].ToAsn1Object();
 
 			// TODO Not sure if this special case is really necessary/appropriate
 			if (funcSeq[0].Equals(PkcsObjectIdentifiers.IdPbkdf2))
@@ -40,7 +40,7 @@ namespace Org.BouncyCastle.Asn1.Pkcs
                 func = new KeyDerivationFunc(funcSeq);
             }
 
-			scheme = new EncryptionScheme((Asn1Sequence) seq[1]);
+			scheme = EncryptionScheme.GetInstance(seq[1].ToAsn1Object());
         }
 
 		public KeyDerivationFunc KeyDerivationFunc

@@ -7,6 +7,7 @@ namespace Org.BouncyCastle.Asn1.X509
     {
         private readonly DerObjectIdentifier	objectID;
         private readonly Asn1Encodable			parameters;
+		private readonly bool					parametersDefined;
 
 		public static AlgorithmIdentifier GetInstance(
             Asn1TaggedObject	obj,
@@ -19,24 +20,16 @@ namespace Org.BouncyCastle.Asn1.X509
             object obj)
         {
             if (obj == null || obj is AlgorithmIdentifier)
-            {
                 return (AlgorithmIdentifier) obj;
-            }
 
 			if (obj is DerObjectIdentifier)
-            {
                 return new AlgorithmIdentifier((DerObjectIdentifier) obj);
-            }
 
 			if (obj is string)
-            {
                 return new AlgorithmIdentifier((string) obj);
-            }
 
 			if (obj is Asn1Sequence)
-            {
                 return new AlgorithmIdentifier((Asn1Sequence) obj);
-            }
 
 			throw new ArgumentException("unknown object in factory: " + obj.GetType().Name, "obj");
 		}
@@ -59,21 +52,21 @@ namespace Org.BouncyCastle.Asn1.X509
         {
             this.objectID = objectID;
             this.parameters = parameters;
+			this.parametersDefined = true;
         }
 
 		internal AlgorithmIdentifier(
             Asn1Sequence seq)
         {
 			if (seq.Count < 1 || seq.Count > 2)
-			{
 				throw new ArgumentException("Bad sequence size: " + seq.Count);
-			}
 
-			objectID = DerObjectIdentifier.GetInstance(seq[0]);
+			this.objectID = DerObjectIdentifier.GetInstance(seq[0]);
+			this.parametersDefined = (seq.Count == 2);
 
-			if (seq.Count == 2)
+			if (parametersDefined)
             {
-                parameters = seq[1];
+                this.parameters = seq[1];
             }
         }
 
@@ -97,12 +90,19 @@ namespace Org.BouncyCastle.Asn1.X509
          */
         public override Asn1Object ToAsn1Object()
         {
-            Asn1EncodableVector v = new Asn1EncodableVector(objectID);
+			Asn1EncodableVector v = new Asn1EncodableVector(objectID);
 
-			if (parameters != null)
-            {
-                v.Add(parameters);
-            }
+			if (parametersDefined)
+			{
+				if (parameters != null)
+				{
+					v.Add(parameters);
+				}
+				else
+				{
+					v.Add(DerNull.Instance);
+				}
+			}
 
 			return new DerSequence(v);
         }

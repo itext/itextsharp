@@ -1,11 +1,26 @@
 using System;
 
 using Org.BouncyCastle.Crypto.Utilities;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Modes.Gcm
 {
 	internal abstract class GcmUtilities
 	{
+		internal static byte[] OneAsBytes()
+		{
+			byte[] tmp = new byte[16];
+			tmp[0] = 0x80;
+			return tmp;
+		}
+
+		internal static uint[] OneAsUints()
+		{
+			uint[] tmp = new uint[4];
+			tmp[0] = 0x80000000;
+			return tmp;
+		}
+
 		internal static uint[] AsUints(byte[] bs)
 		{
 			uint[] us = new uint[4];
@@ -14,6 +29,35 @@ namespace Org.BouncyCastle.Crypto.Modes.Gcm
 			us[2] = Pack.BE_To_UInt32(bs, 8);
 			us[3] = Pack.BE_To_UInt32(bs, 12);
 			return us;
+		}
+
+		internal static void Multiply(byte[] block, byte[] val)
+		{
+			byte[] tmp = Arrays.Clone(block);
+			byte[] c = new byte[16];
+
+			for (int i = 0; i < 16; ++i)
+			{
+				byte bits = val[i];
+				for (int j = 7; j >= 0; --j)
+				{
+					if ((bits & (1 << j)) != 0)
+					{
+						Xor(c, tmp);
+					}
+
+					bool lsb = (tmp[15] & 1) != 0;
+					ShiftRight(tmp);
+					if (lsb)
+					{
+						// R = new byte[]{ 0xe1, ... };
+						//GCMUtilities.Xor(tmp, R);
+						tmp[0] ^= (byte)0xe1;
+					}
+				}
+			}
+
+			Array.Copy(c, 0, block, 0, 16);
 		}
 
 		// P is the value with only bit i=1 set

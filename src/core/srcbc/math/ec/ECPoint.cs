@@ -321,23 +321,22 @@ namespace Org.BouncyCastle.Math.EC
 			return new FpPoint(this.curve, this.x, this.y.Negate(), this.withCompression);
 		}
 
-		// TODO Uncomment this to enable WNAF Fp point multiplication
-//		/**
-//		* Sets the default <code>ECMultiplier</code>, unless already set. 
-//		*/
-//		internal override void AssertECMultiplier()
-//		{
-//			if (this.multiplier == null)
-//			{
-//				lock (this)
-//				{
-//					if (this.multiplier == null)
-//					{
-//						this.multiplier = new WNafMultiplier();
-//					}
-//				}
-//			}
-//		}
+		/**
+		 * Sets the default <code>ECMultiplier</code>, unless already set. 
+		 */
+		internal override void AssertECMultiplier()
+		{
+			if (this.multiplier == null)
+			{
+				lock (this)
+				{
+					if (this.multiplier == null)
+					{
+						this.multiplier = new WNafMultiplier();
+					}
+				}
+			}
+		}
 	}
 
 	/**
@@ -538,29 +537,28 @@ namespace Org.BouncyCastle.Math.EC
 			return new F2mPoint(curve, this.x, this.x.Add(this.y), withCompression);
 		}
 
-		// TODO Uncomment this to enable WNAF/WTNAF F2m point multiplication
-//		/**
-//		* Sets the appropriate <code>ECMultiplier</code>, unless already set. 
-//		*/
-//		internal override void AssertECMultiplier()
-//		{
-//			if (this.multiplier == null)
-//			{
-//				lock (this)
-//				{
-//					if (this.multiplier == null)
-//					{
-//						if (((F2mCurve) this.curve).IsKoblitz)
-//						{
-//							this.multiplier = new WTauNafMultiplier();
-//						}
-//						else
-//						{
-//							this.multiplier = new WNafMultiplier();
-//						}
-//					}
-//				}
-//			}
-//		}
+		/**
+		 * Sets the appropriate <code>ECMultiplier</code>, unless already set. 
+		 */
+		internal override void AssertECMultiplier()
+		{
+			if (this.multiplier == null)
+			{
+				lock (this)
+				{
+					if (this.multiplier == null)
+					{
+						if (((F2mCurve) this.curve).IsKoblitz)
+						{
+							this.multiplier = new WTauNafMultiplier();
+						}
+						else
+						{
+							this.multiplier = new WNafMultiplier();
+						}
+					}
+				}
+			}
+		}
 	}
 }

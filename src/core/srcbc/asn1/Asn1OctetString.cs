@@ -21,12 +21,19 @@ namespace Org.BouncyCastle.Asn1
          * @exception ArgumentException if the tagged object cannot
          *              be converted.
          */
-        public static Asn1OctetString GetInstance(
-            Asn1TaggedObject	obj,
-            bool				explicitly)
-        {
-            return GetInstance(obj.GetObject());
-        }
+		public static Asn1OctetString GetInstance(
+			Asn1TaggedObject	obj,
+			bool				isExplicit)
+		{
+			Asn1Object o = obj.GetObject();
+
+			if (isExplicit || o is Asn1OctetString)
+			{
+				return GetInstance(o);
+			}
+
+			return BerOctetString.FromSequence(Asn1Sequence.GetInstance(o));
+		}
 
         /**
          * return an Octet string from the given object.
@@ -34,33 +41,15 @@ namespace Org.BouncyCastle.Asn1
          * @param obj the object we want converted.
          * @exception ArgumentException if the object cannot be converted.
          */
-        public static Asn1OctetString GetInstance(
-            object obj)
-        {
-            if (obj == null || obj is Asn1OctetString)
-            {
-                return (Asn1OctetString)obj;
-            }
+		public static Asn1OctetString GetInstance(object obj)
+		{
+			if (obj == null || obj is Asn1OctetString)
+			{
+				return (Asn1OctetString)obj;
+			}
 
-            if (obj is Asn1TaggedObject)
-            {
-                return GetInstance(((Asn1TaggedObject)obj).GetObject());
-            }
-
-            if (obj is Asn1Sequence)
-            {
-                ArrayList v = new ArrayList();
-
-				foreach (object o in ((Asn1Sequence) obj))
-				{
-                    v.Add(o);
-                }
-
-				return new BerOctetString(v);
-            }
-
-            throw new ArgumentException("illegal object in GetInstance: " + obj.GetType().Name);
-        }
+			throw new ArgumentException("illegal object in GetInstance: " + obj.GetType().Name);
+		}
 
         /**
          * @param string the octets making up the octet string.

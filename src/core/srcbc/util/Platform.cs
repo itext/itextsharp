@@ -10,26 +10,7 @@ namespace Org.BouncyCastle.Utilities
 		{
 		}
 
-#if NETCF_1_0
-		internal static Exception CreateNotImplementedException(
-			string message)
-		{
-			return new Exception("Not implemented: " + message);
-		}
-
-		internal static bool Equals(
-			object	a,
-			object	b)
-		{
-			return a == b || (a != null && b != null && a.Equals(b));
-		}
-
-		internal static string GetEnvironmentVariable(
-			string variable)
-		{
-			return null;
-		}
-
+#if NETCF_1_0 || NETCF_2_0
 		private static string GetNewLine()
 		{
 			MemoryStream buf = new MemoryStream();
@@ -39,11 +20,16 @@ namespace Org.BouncyCastle.Utilities
 			byte[] bs = buf.ToArray();
 			return Encoding.ASCII.GetString(bs, 0, bs.Length);
 		}
-#else
-		internal static Exception CreateNotImplementedException(
-			string message)
+
+		internal static string GetEnvironmentVariable(
+			string variable)
 		{
-			return new NotImplementedException(message);
+			return null;
+		}
+#else
+		private static string GetNewLine()
+		{
+			return Environment.NewLine;
 		}
 
 		internal static string GetEnvironmentVariable(
@@ -60,10 +46,26 @@ namespace Org.BouncyCastle.Utilities
 				return null;
 			}
 		}
+#endif
 
-		private static string GetNewLine()
+#if NETCF_1_0
+		internal static Exception CreateNotImplementedException(
+			string message)
 		{
-			return Environment.NewLine;
+			return new Exception("Not implemented: " + message);
+		}
+
+		internal static bool Equals(
+			object	a,
+			object	b)
+		{
+			return a == b || (a != null && b != null && a.Equals(b));
+		}
+#else
+		internal static Exception CreateNotImplementedException(
+			string message)
+		{
+			return new NotImplementedException(message);
 		}
 #endif
 

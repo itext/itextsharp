@@ -82,7 +82,7 @@ namespace Org.BouncyCastle.Crypto.Signers
 					{
 						k = new BigInteger(n.BitLength, random);
 					}
-					while (k.SignValue == 0);
+					while (k.SignValue == 0 || k.CompareTo(n) >= 0);
 
 					ECPoint p = key.Parameters.G.Multiply(k);
 

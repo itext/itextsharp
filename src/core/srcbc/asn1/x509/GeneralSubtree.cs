@@ -55,8 +55,20 @@ namespace Org.BouncyCastle.Asn1.X509
 				}
 				case 3:
 				{
-					minimum = DerInteger.GetInstance(Asn1TaggedObject.GetInstance(seq[1]));
-					maximum = DerInteger.GetInstance(Asn1TaggedObject.GetInstance(seq[2]));
+					{
+						Asn1TaggedObject oMin = Asn1TaggedObject.GetInstance(seq[1]);
+						if (oMin.TagNo != 0)
+							throw new ArgumentException("Bad tag number for 'minimum': " + oMin.TagNo);
+						minimum = DerInteger.GetInstance(oMin, false);
+					}
+
+					{
+						Asn1TaggedObject oMax = Asn1TaggedObject.GetInstance(seq[2]);
+						if (oMax.TagNo != 1)
+							throw new ArgumentException("Bad tag number for 'maximum': " + oMax.TagNo);
+						maximum = DerInteger.GetInstance(oMax, false);
+					}
+
 					break;
 				}
 				default:

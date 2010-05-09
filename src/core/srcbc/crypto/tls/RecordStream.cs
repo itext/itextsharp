@@ -9,11 +9,9 @@ namespace Org.BouncyCastle.Crypto.Tls
 		private TlsProtocolHandler handler;
 		private Stream inStr;
 		private Stream outStr;
-		internal CombinedHash hash1;
-		internal CombinedHash hash2;
-		internal CombinedHash hash3;
-		internal TlsCipherSuite readSuite = null;
-		internal TlsCipherSuite writeSuite = null;
+		private CombinedHash hash;
+		private TlsCipher readCipher = null;
+		private TlsCipher writeCipher = null;
 
 		internal RecordStream(
 			TlsProtocolHandler	handler,
@@ -23,11 +21,19 @@ namespace Org.BouncyCastle.Crypto.Tls
 			this.handler = handler;
 			this.inStr = inStr;
 			this.outStr = outStr;
-			this.hash1 = new CombinedHash();
-			this.hash2 = new CombinedHash();
-			this.hash3 = new CombinedHash();
-			this.readSuite = new TlsNullCipherSuite();
-			this.writeSuite = this.readSuite;
+			this.hash = new CombinedHash();
+			this.readCipher = new TlsNullCipher();
+			this.writeCipher = this.readCipher;
+		}
+
+		internal void ClientCipherSpecDecided(TlsCipher tlsCipher)
+		{
+			this.writeCipher = tlsCipher;
+		}
+
+		internal void ServerClientSpecReceived()
+		{
+			this.readCipher = this.writeCipher;
 		}
 
 		public void ReadData()
@@ -47,7 +53,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			byte[] buf = new byte[len];
 			TlsUtilities.ReadFully(buf, inStr);
-			return readSuite.DecodeCiphertext(type, buf, 0, buf.Length);
+			return readCipher.DecodeCiphertext(type, buf, 0, buf.Length);
 		}
 
 		internal void WriteMessage(
@@ -60,7 +66,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			{
 				UpdateHandshakeData(message, offset, len);
 			}
-			byte[] ciphertext = writeSuite.EncodePlaintext(type, message, offset, len);
+			byte[] ciphertext = writeCipher.EncodePlaintext(type, message, offset, len);
 			byte[] writeMessage = new byte[ciphertext.Length + 5];
 			TlsUtilities.WriteUint8(type, writeMessage, 0);
 			TlsUtilities.WriteUint8((short)3, writeMessage, 1);
@@ -76,9 +82,12 @@ namespace Org.BouncyCastle.Crypto.Tls
 			int		offset,
 			int		len)
 		{
-			hash1.BlockUpdate(message, offset, len);
-			hash2.BlockUpdate(message, offset, len);
-			hash3.BlockUpdate(message, offset, len);
+			hash.BlockUpdate(message, offset, len);
+		}
+
+		internal byte[] GetCurrentHash()
+		{
+			return DoFinal(new CombinedHash(hash));
 		}
 
 		internal void Close()
@@ -112,6 +121,13 @@ namespace Org.BouncyCastle.Crypto.Tls
 		internal void Flush()
 		{
 			outStr.Flush();
+		}
+
+		private static byte[] DoFinal(CombinedHash ch)
+		{
+			byte[] bs = new byte[ch.GetDigestSize()];
+			ch.DoFinal(bs, 0);
+			return bs;
 		}
 	}
 }
