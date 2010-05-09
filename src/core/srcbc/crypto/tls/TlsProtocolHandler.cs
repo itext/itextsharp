@@ -65,6 +65,17 @@ namespace Org.BouncyCastle.Crypto.Tls
 		private const short CS_SERVER_CHANGE_CIPHER_SPEC_RECEIVED = 11;
 		private const short CS_DONE = 12;
 
+		/*
+		 * AlertLevel enum (255)
+		 */
+		// RFC 2246
+		internal const short AL_warning = 1;
+		internal const short AL_fatal = 2;
+		
+		/*
+		 * AlertDescription enum (255)
+		 */
+		// RFC 2246
 		internal const short AP_close_notify = 0;
 		internal const short AP_unexpected_message = 10;
 		internal const short AP_bad_record_mac = 20;
@@ -89,8 +100,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 		internal const short AP_user_canceled = 90;
 		internal const short AP_no_renegotiation = 100;
 
-		internal const short AL_warning = 1;
-		internal const short AL_fatal = 2;
+		// RFC 4279
+	    internal const  short AP_unknown_psk_identity = 115;
 
 		private static readonly byte[] emptybuf = new byte[0];
 
@@ -109,41 +120,34 @@ namespace Org.BouncyCastle.Crypto.Tls
 		* The Record Stream we use
 		*/
 		private RecordStream rs;
-
 		private SecureRandom random;
 
-		/*
-		 * The public key of the server.
-		 */
-		private AsymmetricKeyParameter serverPublicKey = null;
-
-		/*
-		 * The private key of the client (if provided)
-		 */
-		private AsymmetricKeyParameter clientPrivateKey = null;
-
 		private TlsInputStream tlsInputStream = null;
-		private TlsOuputStream tlsOutputStream = null;
+		private TlsOutputStream tlsOutputStream = null;
 
 		private bool closed = false;
 		private bool failedWithError = false;
 		private bool appDataReady = false;
 		private bool extendedClientHello;
 
-		private byte[] clientRandom;
-		private byte[] serverRandom;
-		private byte[] ms;
+		private SecurityParameters securityParameters = null;
 
-		private TlsCipherSuite chosenCipherSuite = null;
+		private TlsClient tlsClient = null;
+		private int[] offeredCipherSuites = null;
+		private TlsKeyExchange keyExchange = null;
 
-		private BigInteger SRP_A;
-		private byte[] SRP_identity = null, SRP_password = null;
-		private BigInteger Yc;
-		private byte[] pms;
+		private static SecureRandom CreateSecureRandom()
+		{
+			/*
+			 * We use our threaded seed generator to generate a good random seed. If the user
+			 * has a better random seed, he should use the constructor with a SecureRandom.
+			 * 
+			 * Hopefully, 20 bytes in fast mode are good enough.
+			 */
+			byte[] seed = new ThreadedSeedGenerator().GenerateSeed(20, true);
 
-		private ICertificateVerifyer verifyer = null;
-		private Certificate clientCert = null;
-		private TlsSigner clientSigner = null;
+			return new SecureRandom(seed);
+		}
 
 		/*
 		* Both streams can be the same object
@@ -151,18 +155,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 		public TlsProtocolHandler(
 			Stream	inStr,
 			Stream	outStr)
+			: this(inStr, outStr, CreateSecureRandom())
 		{
-			/*
-			 * We use a threaded seed generator to generate a good random
-			 * seed. If the user has a better random seed, he should use
-			 * the constructor with a SecureRandom.
-			 * 
-			 * Hopefully, 20 bytes in fast mode are good enough.
-			 */
-			byte[] seed = new ThreadedSeedGenerator().GenerateSeed(20, true);
-
-			this.random = new SecureRandom(seed);
-			this.rs = new RecordStream(this, inStr, outStr);
 		}
 
 		public TlsProtocolHandler(
@@ -170,8 +164,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 			Stream			outStr,
 			SecureRandom	sr)
 		{
-			this.random = sr;
 			this.rs = new RecordStream(this, inStr, outStr);
+			this.random = sr;
 		}
 
 		internal SecureRandom Random
@@ -255,530 +249,364 @@ namespace Org.BouncyCastle.Crypto.Tls
 						handshakeQueue.RemoveData(len + 4);
 
 						/*
-						* If it is not a finished message, update our hashes
-						* we prepare for the finish message.
-						*/
-						if (type != HP_FINISHED)
+						 * RFC 2246 7.4.9. "The value handshake_messages includes all
+						 * handshake messages starting at client hello up to, but not
+						 * including, this finished message. [..] Note: [Also,] Hello Request
+						 * messages are omitted from handshake hashes."
+						 */
+						switch (type)
 						{
-							rs.UpdateHandshakeData(beginning, 0, 4);
-							rs.UpdateHandshakeData(buf, 0, len);
+							case HP_HELLO_REQUEST:
+							case HP_FINISHED:
+								break;
+							default:
+								rs.UpdateHandshakeData(beginning, 0, 4);
+								rs.UpdateHandshakeData(buf, 0, len);
+								break;
 						}
-
+						
 						/*
 						* Now, parse the message.
 						*/
-						MemoryStream inStr = new MemoryStream(buf, false);
-
-						/*
-						* Check the type.
-						*/
-						switch (type)
-						{
-							case HP_CERTIFICATE:
-							{
-								switch (connection_state)
-								{
-									case CS_SERVER_HELLO_RECEIVED:
-									{
-										/*
-										* Parse the certificates.
-										*/
-										Certificate cert = Certificate.Parse(inStr);
-										AssertEmpty(inStr);
-
-										X509CertificateStructure x509Cert = cert.certs[0];
-										SubjectPublicKeyInfo keyInfo = x509Cert.SubjectPublicKeyInfo;
-
-										try
-										{
-											this.serverPublicKey = PublicKeyFactory.CreateKey(keyInfo);
-										}
-										catch (Exception)
-										{
-											this.FailWithError(AL_fatal, AP_unsupported_certificate);
-										}
-
-										// Sanity check the PublicKeyFactory
-										if (this.serverPublicKey.IsPrivate)
-										{
-											this.FailWithError(AL_fatal, AP_internal_error);
-										}
-
-										/*
-										* Perform various checks per RFC2246 7.4.2
-										* TODO "Unless otherwise specified, the signing algorithm for the certificate
-										* must be the same as the algorithm for the certificate key."
-										*/
-										switch (this.chosenCipherSuite.KeyExchangeAlgorithm)
-										{
-											case TlsCipherSuite.KE_RSA:
-												if (!(this.serverPublicKey is RsaKeyParameters))
-												{
-													this.FailWithError(AL_fatal, AP_certificate_unknown);
-												}
-												validateKeyUsage(x509Cert, KeyUsage.KeyEncipherment);
-												break;
-											case TlsCipherSuite.KE_DHE_RSA:
-											case TlsCipherSuite.KE_SRP_RSA:
-												if (!(this.serverPublicKey is RsaKeyParameters))
-												{
-													this.FailWithError(AL_fatal, AP_certificate_unknown);
-												}
-												validateKeyUsage(x509Cert, KeyUsage.DigitalSignature);
-												break;
-											case TlsCipherSuite.KE_DHE_DSS:
-											case TlsCipherSuite.KE_SRP_DSS:
-												if (!(this.serverPublicKey is DsaPublicKeyParameters))
-												{
-													this.FailWithError(AL_fatal, AP_certificate_unknown);
-												}
-												break;
-											default:
-												this.FailWithError(AL_fatal, AP_unsupported_certificate);
-												break;
-										}
-
-										/*
-										* Verify them.
-										*/
-										if (!this.verifyer.IsValid(cert.GetCerts()))
-										{
-											this.FailWithError(AL_fatal, AP_user_canceled);
-										}
-
-										break;
-									}
-									default:
-										this.FailWithError(AL_fatal, AP_unexpected_message);
-										break;
-								}
-
-								connection_state = CS_SERVER_CERTIFICATE_RECEIVED;
-								read = true;
-								break;
-							}
-							case HP_FINISHED:
-								switch (connection_state)
-								{
-									case CS_SERVER_CHANGE_CIPHER_SPEC_RECEIVED:
-										/*
-										* Read the checksum from the finished message,
-										* it has always 12 bytes.
-										*/
-										byte[] receivedChecksum = new byte[12];
-										TlsUtilities.ReadFully(receivedChecksum, inStr);
-										AssertEmpty(inStr);
-
-										/*
-										* Calculate our own checksum.
-										*/
-										byte[] checksum = new byte[12];
-										byte[] md5andsha1 = new byte[16 + 20];
-										rs.hash2.DoFinal(md5andsha1, 0);
-										TlsUtilities.PRF(this.ms, "server finished", md5andsha1, checksum);
-
-										/*
-										* Compare both checksums.
-										*/
-										for (int i = 0; i < receivedChecksum.Length; i++)
-										{
-											if (receivedChecksum[i] != checksum[i])
-											{
-												/*
-												* Wrong checksum in the finished message.
-												*/
-												this.FailWithError(AL_fatal, AP_handshake_failure);
-											}
-										}
-
-										connection_state = CS_DONE;
-
-										/*
-										* We are now ready to receive application data.
-										*/
-										this.appDataReady = true;
-										read = true;
-										break;
-									default:
-										this.FailWithError(AL_fatal, AP_unexpected_message);
-										break;
-								}
-								break;
-							case HP_SERVER_HELLO:
-								switch (connection_state)
-								{
-									case CS_CLIENT_HELLO_SEND:
-										/*
-										* Read the server hello message
-										*/
-										TlsUtilities.CheckVersion(inStr, this);
-
-										/*
-										* Read the server random
-										*/
-										this.serverRandom = new byte[32];
-										TlsUtilities.ReadFully(this.serverRandom, inStr);
-
-										/*
-										* Currently, we don't support session ids
-										*/
-										byte[] sessionId = TlsUtilities.ReadOpaque8(inStr);
-
-										/*
-										* Find out which ciphersuite the server has
-										* chosen. If we don't support this ciphersuite,
-										* the TlsCipherSuiteManager will throw an
-										* exception.
-										*/
-										this.chosenCipherSuite = TlsCipherSuiteManager.GetCipherSuite(
-											TlsUtilities.ReadUint16(inStr), this);
-
-										/*
-										* We support only the null compression which
-										* means no compression.
-										*/
-										short compressionMethod = TlsUtilities.ReadUint8(inStr);
-										if (compressionMethod != 0)
-										{
-											this.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_illegal_parameter);
-										}
-
-	                                    /*
-	                                     * RFC4366 2.2
-	                                     * The extended server hello message format MAY be sent
-	                                     * in place of the server hello message when the client
-	                                     * has requested extended functionality via the extended
-	                                     * client hello message specified in Section 2.1.
-	                                     */
-	                                    if (extendedClientHello && inStr.Position < inStr.Length)
-	                                    {
-	                                        // Process extensions from extended server hello
-	                                        byte[] extBytes = TlsUtilities.ReadOpaque16(inStr);
-	
-	                                        // Int32 -> byte[]
-	                                        Hashtable serverExtensions = new Hashtable();
-
-	                                        MemoryStream ext = new MemoryStream(extBytes, false);
-	                                        while (ext.Position < ext.Length)
-	                                        {
-	                                            int extType = TlsUtilities.ReadUint16(ext);
-	                                            byte[] extValue = TlsUtilities.ReadOpaque16(ext);
-
-	                                            serverExtensions[extType] = extValue;
-	                                        }
-
-	                                        // TODO Validate/process serverExtensions (via client?)
-	                                        // TODO[SRP]
-	                                    }
-
-										/*
-										* Process any extensions
-										*/
-										// TODO[SRP]
-//										if (inStr.Position < inStr.Length)
-//										{
-//											int extensionsLength = TlsUtilities.ReadUint16(inStr);
-//											byte[] extensions = new byte[extensionsLength];
-//											TlsUtilities.ReadFully(extensions, inStr);
-//
-//											// TODO Validate/process
-//										}
-
-										AssertEmpty(inStr);
-
-										connection_state = CS_SERVER_HELLO_RECEIVED;
-										read = true;
-										break;
-									default:
-										this.FailWithError(AL_fatal, AP_unexpected_message);
-										break;
-								}
-								break;
-							case HP_SERVER_HELLO_DONE:
-								switch (connection_state)
-								{
-									case CS_SERVER_CERTIFICATE_RECEIVED:
-									case CS_SERVER_KEY_EXCHANGE_RECEIVED:
-									case CS_CERTIFICATE_REQUEST_RECEIVED:
-
-										// NB: Original code used case label fall-through
-										if (connection_state == CS_SERVER_CERTIFICATE_RECEIVED)
-										{
-											/*
-											* There was no server key exchange message, check
-											* that we are doing RSA key exchange.
-											*/
-											if (this.chosenCipherSuite.KeyExchangeAlgorithm != TlsCipherSuite.KE_RSA)
-											{
-												this.FailWithError(AL_fatal, AP_unexpected_message);
-											}
-										}
-
-										AssertEmpty(inStr);
-										bool isCertReq = (connection_state == CS_CERTIFICATE_REQUEST_RECEIVED);
-										connection_state = CS_SERVER_HELLO_DONE_RECEIVED;
-
-										if (isCertReq)
-										{
-											sendClientCertificate();
-										}
-
-										/*
-										* Send the client key exchange message, depending
-										* on the key exchange we are using in our
-										* ciphersuite.
-										*/
-										switch (this.chosenCipherSuite.KeyExchangeAlgorithm)
-										{
-											case TlsCipherSuite.KE_RSA:
-											{
-												/*
-												* We are doing RSA key exchange. We will
-												* choose a pre master secret and send it
-												* rsa encrypted to the server.
-												*
-												* Prepare pre master secret.
-												*/
-												pms = new byte[48];
-												pms[0] = 3;
-												pms[1] = 1;
-												random.NextBytes(pms, 2, 46);
-
-												/*
-												* Encode the pms and send it to the server.
-												*
-												* Prepare an Pkcs1Encoding with good random
-												* padding.
-												*/
-												RsaBlindedEngine rsa = new RsaBlindedEngine();
-												Pkcs1Encoding encoding = new Pkcs1Encoding(rsa);
-												encoding.Init(true, new ParametersWithRandom(this.serverPublicKey, this.random));
-												byte[] encrypted = null;
-												try
-												{
-													encrypted = encoding.ProcessBlock(pms, 0, pms.Length);
-												}
-												catch (InvalidCipherTextException)
-												{
-													/*
-													* This should never happen, only during decryption.
-													*/
-													this.FailWithError(AL_fatal, AP_internal_error);
-												}
-
-												/*
-												* Send the encrypted pms.
-												*/
-												sendClientKeyExchange(encrypted);
-												break;
-											}
-											case TlsCipherSuite.KE_DHE_DSS:
-											case TlsCipherSuite.KE_DHE_RSA:
-											{
-												/*
-												* Send the Client Key Exchange message for
-												* DHE key exchange.
-												*/
-												byte[] YcByte = BigIntegers.AsUnsignedByteArray(this.Yc);
-
-												sendClientKeyExchange(YcByte);
-
-												break;
-											}
-											case TlsCipherSuite.KE_SRP:
-											case TlsCipherSuite.KE_SRP_RSA:
-											case TlsCipherSuite.KE_SRP_DSS:
-											{
-												/*
-												* Send the Client Key Exchange message for
-												* SRP key exchange.
-												*/
-												byte[] bytes = BigIntegers.AsUnsignedByteArray(this.SRP_A);
-
-												sendClientKeyExchange(bytes);
-
-												break;
-											}
-											default:
-												/*
-												* Problem during handshake, we don't know
-												* how to handle this key exchange method.
-												*/
-												this.FailWithError(AL_fatal, AP_unexpected_message);
-												break;
-
-										}
-
-										connection_state = CS_CLIENT_KEY_EXCHANGE_SEND;
-
-										if (isCertReq && this.clientPrivateKey != null)
-										{
-										    sendCertificateVerify();
-
-										    connection_state = CS_CERTIFICATE_VERIFY_SEND;
-										}
-
-										/*
-										* Now, we send change cipher state
-										*/
-										byte[] cmessage = new byte[1];
-										cmessage[0] = 1;
-										rs.WriteMessage(RL_CHANGE_CIPHER_SPEC, cmessage, 0, cmessage.Length);
-
-										connection_state = CS_CLIENT_CHANGE_CIPHER_SPEC_SEND;
-
-										/*
-										* Calculate the ms
-										*/
-										this.ms = new byte[48];
-										byte[] randBytes = new byte[clientRandom.Length + serverRandom.Length];
-										Array.Copy(clientRandom, 0, randBytes, 0, clientRandom.Length);
-										Array.Copy(serverRandom, 0, randBytes, clientRandom.Length, serverRandom.Length);
-										TlsUtilities.PRF(pms, "master secret", randBytes, this.ms);
-
-										/*
-										* Initialize our cipher suite
-										*/
-										rs.writeSuite = this.chosenCipherSuite;
-										rs.writeSuite.Init(this, this.ms, clientRandom, serverRandom);
-
-										/*
-										* Send our finished message.
-										*/
-										byte[] checksum = new byte[12];
-										byte[] md5andsha1 = new byte[16 + 20];
-										rs.hash1.DoFinal(md5andsha1, 0);
-										TlsUtilities.PRF(this.ms, "client finished", md5andsha1, checksum);
-
-										MemoryStream bos2 = new MemoryStream();
-										TlsUtilities.WriteUint8(HP_FINISHED, bos2);
-										TlsUtilities.WriteUint24(12, bos2);
-										bos2.Write(checksum, 0, checksum.Length);
-										byte[] message2 = bos2.ToArray();
-
-										rs.WriteMessage(RL_HANDSHAKE, message2, 0, message2.Length);
-
-										this.connection_state = CS_CLIENT_FINISHED_SEND;
-										read = true;
-										break;
-									default:
-										this.FailWithError(AL_fatal, AP_handshake_failure);
-										break;
-								}
-								break;
-							case HP_SERVER_KEY_EXCHANGE:
-							{
-								switch (connection_state)
-								{
-									case CS_SERVER_HELLO_RECEIVED:
-									case CS_SERVER_CERTIFICATE_RECEIVED:
-									{
-										// NB: Original code used case label fall-through
-										if (connection_state == CS_SERVER_HELLO_RECEIVED)
-										{
-											/*
-											* There was no server certificate message, check
-											* that we are doing SRP key exchange.
-											*/
-											if (this.chosenCipherSuite.KeyExchangeAlgorithm != TlsCipherSuite.KE_SRP)
-											{
-												this.FailWithError(AL_fatal, AP_unexpected_message);
-											}
-										}
-
-										/*
-										* Check that we are doing DHE key exchange
-										*/
-										switch (this.chosenCipherSuite.KeyExchangeAlgorithm)
-										{
-											case TlsCipherSuite.KE_DHE_RSA:
-											{
-												processDHEKeyExchange(inStr, new TlsRsaSigner());
-												break;
-											}
-											case TlsCipherSuite.KE_DHE_DSS:
-											{
-												processDHEKeyExchange(inStr, new TlsDssSigner());
-												break;
-											}
-											case TlsCipherSuite.KE_SRP:
-											{
-												processSRPKeyExchange(inStr, null);
-												break;
-											}
-											case TlsCipherSuite.KE_SRP_RSA:
-											{
-												processSRPKeyExchange(inStr, new TlsRsaSigner());
-												break;
-											}
-											case TlsCipherSuite.KE_SRP_DSS:
-											{
-												processSRPKeyExchange(inStr, new TlsDssSigner());
-												break;
-											}
-											default:
-												this.FailWithError(AL_fatal, AP_unexpected_message);
-												break;
-										}
-										break;
-									}
-									default:
-										this.FailWithError(AL_fatal, AP_unexpected_message);
-										break;
-								}
-
-								this.connection_state = CS_SERVER_KEY_EXCHANGE_RECEIVED;
-								read = true;
-								break;
-							}
-							case HP_CERTIFICATE_REQUEST:
-								switch (connection_state)
-								{
-									case CS_SERVER_CERTIFICATE_RECEIVED:
-									case CS_SERVER_KEY_EXCHANGE_RECEIVED:
-									{
-										// NB: Original code used case label fall-through
-										if (connection_state == CS_SERVER_CERTIFICATE_RECEIVED)
-										{
-											/*
-											* There was no server key exchange message, check
-											* that we are doing RSA key exchange.
-											*/
-											if (this.chosenCipherSuite.KeyExchangeAlgorithm != TlsCipherSuite.KE_RSA)
-											{
-												this.FailWithError(AL_fatal, AP_unexpected_message);
-											}
-										}
-
-										byte[] types = TlsUtilities.ReadOpaque8(inStr);
-										byte[] auths = TlsUtilities.ReadOpaque16(inStr);
-
-										// TODO Validate/process
-
-										AssertEmpty(inStr);
-										break;
-									}
-									default:
-										this.FailWithError(AL_fatal, AP_unexpected_message);
-										break;
-								}
-
-								this.connection_state = CS_CERTIFICATE_REQUEST_RECEIVED;
-								read = true;
-								break;
-							case HP_HELLO_REQUEST:
-							case HP_CLIENT_KEY_EXCHANGE:
-							case HP_CERTIFICATE_VERIFY:
-							case HP_CLIENT_HELLO:
-							default:
-								// We do not support this!
-								this.FailWithError(AL_fatal, AP_unexpected_message);
-								break;
-						}
+						processHandshakeMessage(type, buf);
+						read = true;
 					}
 				}
 			}
 			while (read);
+		}
+
+		private void processHandshakeMessage(short type, byte[] buf)
+		{
+			MemoryStream inStr = new MemoryStream(buf, false);
+
+			/*
+			* Check the type.
+			*/
+			switch (type)
+			{
+				case HP_CERTIFICATE:
+				{
+					switch (connection_state)
+					{
+						case CS_SERVER_HELLO_RECEIVED:
+						{
+							// Parse the Certificate message and send to cipher suite
+
+							Certificate serverCertificate = Certificate.Parse(inStr);
+
+							AssertEmpty(inStr);
+
+							this.keyExchange.ProcessServerCertificate(serverCertificate);
+
+							break;
+						}
+						default:
+							this.FailWithError(AL_fatal, AP_unexpected_message);
+							break;
+					}
+
+					connection_state = CS_SERVER_CERTIFICATE_RECEIVED;
+					break;
+				}
+				case HP_FINISHED:
+					switch (connection_state)
+					{
+						case CS_SERVER_CHANGE_CIPHER_SPEC_RECEIVED:
+							/*
+							 * Read the checksum from the finished message, it has always 12 bytes.
+							 */
+							byte[] serverVerifyData = new byte[12];
+							TlsUtilities.ReadFully(serverVerifyData, inStr);
+
+							AssertEmpty(inStr);
+
+							/*
+							 * Calculate our own checksum.
+							 */
+							byte[] expectedServerVerifyData = TlsUtilities.PRF(
+								securityParameters.masterSecret, "server finished",
+								rs.GetCurrentHash(), 12);
+
+							/*
+							 * Compare both checksums.
+							 */
+							if (!Arrays.ConstantTimeAreEqual(expectedServerVerifyData, serverVerifyData))
+							{
+								/*
+								 * Wrong checksum in the finished message.
+								 */
+								this.FailWithError(AL_fatal, AP_handshake_failure);
+							}
+
+							connection_state = CS_DONE;
+
+							/*
+							* We are now ready to receive application data.
+							*/
+							this.appDataReady = true;
+							break;
+						default:
+							this.FailWithError(AL_fatal, AP_unexpected_message);
+							break;
+					}
+					break;
+				case HP_SERVER_HELLO:
+					switch (connection_state)
+					{
+						case CS_CLIENT_HELLO_SEND:
+							/*
+							 * Read the server hello message
+							 */
+							TlsUtilities.CheckVersion(inStr, this);
+
+							/*
+							 * Read the server random
+							 */
+							securityParameters.serverRandom = new byte[32];
+							TlsUtilities.ReadFully(securityParameters.serverRandom, inStr);
+
+							/*
+							 * Currently, we don't support session ids
+							 */
+							byte[] sessionID = TlsUtilities.ReadOpaque8(inStr);
+							if (sessionID.Length > 32)
+							{
+								this.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_illegal_parameter);
+							}
+
+							this.tlsClient.NotifySessionID(sessionID);
+
+							/*
+							 * Find out which ciphersuite the server has chosen and check that
+							 * it was one of the offered ones.
+							 */
+							int selectedCipherSuite = TlsUtilities.ReadUint16(inStr);
+							if (!WasCipherSuiteOffered(selectedCipherSuite))
+							{
+								this.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_illegal_parameter);
+							}
+
+							this.tlsClient.NotifySelectedCipherSuite(selectedCipherSuite);
+
+							/*
+							 * We support only the null compression which means no
+							 * compression.
+							 */
+							short compressionMethod = TlsUtilities.ReadUint8(inStr);
+							if (compressionMethod != 0)
+							{
+								this.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_illegal_parameter);
+							}
+
+	                        /*
+	                         * RFC4366 2.2 The extended server hello message format MAY be
+	                         * sent in place of the server hello message when the client has
+	                         * requested extended functionality via the extended client hello
+	                         * message specified in Section 2.1.
+	                         */
+	                        if (extendedClientHello)
+	                        {
+	                            // Integer -> byte[]
+	                            Hashtable serverExtensions = new Hashtable();
+
+	                            if (inStr.Position < inStr.Length)
+	                            {
+	                                // Process extensions from extended server hello
+	                                byte[] extBytes = TlsUtilities.ReadOpaque16(inStr);
+
+	                                MemoryStream ext = new MemoryStream(extBytes, false);
+	                                while (ext.Position < ext.Length)
+	                                {
+	                                    int extType = TlsUtilities.ReadUint16(ext);
+	                                    byte[] extValue = TlsUtilities.ReadOpaque16(ext);
+
+	                                    serverExtensions.Add(extType, extValue);
+	                                }
+	                            }
+
+	                            tlsClient.ProcessServerExtensions(serverExtensions);
+	                        }
+
+							AssertEmpty(inStr);
+
+	                        this.keyExchange = tlsClient.CreateKeyExchange();
+
+	                        connection_state = CS_SERVER_HELLO_RECEIVED;
+	                        break;
+						default:
+							this.FailWithError(AL_fatal, AP_unexpected_message);
+							break;
+					}
+					break;
+				case HP_SERVER_HELLO_DONE:
+					switch (connection_state)
+					{
+						case CS_SERVER_CERTIFICATE_RECEIVED:
+						case CS_SERVER_KEY_EXCHANGE_RECEIVED:
+						case CS_CERTIFICATE_REQUEST_RECEIVED:
+
+							// NB: Original code used case label fall-through
+							if (connection_state == CS_SERVER_CERTIFICATE_RECEIVED)
+							{
+								// There was no server key exchange message; check it's OK
+								this.keyExchange.SkipServerKeyExchange();
+							}
+
+							AssertEmpty(inStr);
+
+							bool isClientCertificateRequested = (connection_state == CS_CERTIFICATE_REQUEST_RECEIVED);
+
+							connection_state = CS_SERVER_HELLO_DONE_RECEIVED;
+
+							if (isClientCertificateRequested)
+							{
+								sendClientCertificate(tlsClient.GetCertificate());
+							}
+
+							/*
+							 * Send the client key exchange message, depending on the key
+							 * exchange we are using in our ciphersuite.
+							 */
+							sendClientKeyExchange(this.keyExchange.GenerateClientKeyExchange());
+
+							connection_state = CS_CLIENT_KEY_EXCHANGE_SEND;
+
+							if (isClientCertificateRequested)
+							{
+								byte[] clientCertificateSignature = tlsClient.GenerateCertificateSignature(rs.GetCurrentHash());
+								if (clientCertificateSignature != null)
+								{
+									sendCertificateVerify(clientCertificateSignature);
+
+									connection_state = CS_CERTIFICATE_VERIFY_SEND;
+								}
+							}
+
+							/*
+							* Now, we send change cipher state
+							*/
+							byte[] cmessage = new byte[1];
+							cmessage[0] = 1;
+							rs.WriteMessage(RL_CHANGE_CIPHER_SPEC, cmessage, 0, cmessage.Length);
+
+							connection_state = CS_CLIENT_CHANGE_CIPHER_SPEC_SEND;
+
+							/*
+							 * Calculate the master_secret
+							 */
+							byte[] pms = this.keyExchange.GeneratePremasterSecret();
+
+							securityParameters.masterSecret = TlsUtilities.PRF(pms, "master secret",
+								TlsUtilities.Concat(securityParameters.clientRandom, securityParameters.serverRandom),
+								48);
+
+							// TODO Is there a way to ensure the data is really overwritten?
+							/*
+							 * RFC 2246 8.1. "The pre_master_secret should be deleted from
+							 * memory once the master_secret has been computed."
+							 */
+							Array.Clear(pms, 0, pms.Length);
+
+							/*
+							 * Initialize our cipher suite
+							 */
+	                        rs.ClientCipherSpecDecided(tlsClient.CreateCipher(securityParameters));
+
+							/*
+							 * Send our finished message.
+							 */
+							byte[] clientVerifyData = TlsUtilities.PRF(securityParameters.masterSecret,
+								"client finished", rs.GetCurrentHash(), 12);
+
+							MemoryStream bos = new MemoryStream();
+							TlsUtilities.WriteUint8(HP_FINISHED, bos);
+							TlsUtilities.WriteOpaque24(clientVerifyData, bos);
+							byte[] message = bos.ToArray();
+
+							rs.WriteMessage(RL_HANDSHAKE, message, 0, message.Length);
+
+							this.connection_state = CS_CLIENT_FINISHED_SEND;
+							break;
+						default:
+							this.FailWithError(AL_fatal, AP_handshake_failure);
+							break;
+					}
+					break;
+				case HP_SERVER_KEY_EXCHANGE:
+				{
+					switch (connection_state)
+					{
+						case CS_SERVER_HELLO_RECEIVED:
+						case CS_SERVER_CERTIFICATE_RECEIVED:
+						{
+							// NB: Original code used case label fall-through
+							if (connection_state == CS_SERVER_HELLO_RECEIVED)
+							{
+								// There was no server certificate message; check it's OK
+								this.keyExchange.SkipServerCertificate();
+							}
+
+    	                    this.keyExchange.ProcessServerKeyExchange(inStr, securityParameters);
+
+	                        AssertEmpty(inStr);
+							break;
+						}
+						default:
+							this.FailWithError(AL_fatal, AP_unexpected_message);
+							break;
+					}
+
+					this.connection_state = CS_SERVER_KEY_EXCHANGE_RECEIVED;
+					break;
+				}
+				case HP_CERTIFICATE_REQUEST:
+					switch (connection_state)
+					{
+						case CS_SERVER_CERTIFICATE_RECEIVED:
+						case CS_SERVER_KEY_EXCHANGE_RECEIVED:
+						{
+							// NB: Original code used case label fall-through
+							if (connection_state == CS_SERVER_CERTIFICATE_RECEIVED)
+							{
+								// There was no server key exchange message; check it's OK
+								this.keyExchange.SkipServerKeyExchange();
+							}
+
+							byte[] types = TlsUtilities.ReadOpaque8(inStr);
+							byte[] authorities = TlsUtilities.ReadOpaque16(inStr);
+
+							AssertEmpty(inStr);
+
+							ArrayList authorityDNs = new ArrayList();
+
+							MemoryStream bis = new MemoryStream(authorities, false);
+							while (bis.Position < bis.Length)
+							{
+								byte[] dnBytes = TlsUtilities.ReadOpaque16(bis);
+								authorityDNs.Add(X509Name.GetInstance(Asn1Object.FromByteArray(dnBytes)));
+							}
+
+							this.tlsClient.ProcessServerCertificateRequest(types, authorityDNs);
+
+							break;
+						}
+						default:
+							this.FailWithError(AL_fatal, AP_unexpected_message);
+							break;
+					}
+
+					this.connection_state = CS_CERTIFICATE_REQUEST_RECEIVED;
+					break;
+				case HP_HELLO_REQUEST:
+				case HP_CLIENT_KEY_EXCHANGE:
+				case HP_CERTIFICATE_VERIFY:
+				case HP_CLIENT_HELLO:
+				default:
+					// We do not support this!
+					this.FailWithError(AL_fatal, AP_unexpected_message);
+					break;
+			}
 		}
 
 		private void processApplicationData()
@@ -852,8 +680,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 			while (changeCipherSpecQueue.Available > 0)
 			{
 				/*
-				* A change cipher spec message is only one byte with the value 1.
-				*/
+				 * A change cipher spec message is only one byte with the value 1.
+				 */
 				byte[] b = new byte[1];
 				changeCipherSpecQueue.Read(b, 0, 1, 0);
 				changeCipherSpecQueue.RemoveData(1);
@@ -863,199 +691,23 @@ namespace Org.BouncyCastle.Crypto.Tls
 					* This should never happen.
 					*/
 					this.FailWithError(AL_fatal, AP_unexpected_message);
-
 				}
-				else
-				{
-					/*
-					* Check if we are in the correct connection state.
-					*/
-					if (this.connection_state == CS_CLIENT_FINISHED_SEND)
-					{
-						rs.readSuite = rs.writeSuite;
-						this.connection_state = CS_SERVER_CHANGE_CIPHER_SPEC_RECEIVED;
-					}
-					else
-					{
-						/*
-						* We are not in the correct connection state.
-						*/
-						this.FailWithError(AL_fatal, AP_handshake_failure);
-					}
-
-				}
-			}
-		}
-
-		private void processDHEKeyExchange(
-			MemoryStream	inStr,
-			TlsSigner		tlsSigner)
-		{
-			Stream sigIn = inStr;
-			ISigner signer = null;
-			if (tlsSigner != null)
-			{
-				signer = tlsSigner.CreateSigner();
-				signer.Init(false, this.serverPublicKey);
-				signer.BlockUpdate(this.clientRandom, 0, this.clientRandom.Length);
-				signer.BlockUpdate(this.serverRandom, 0, this.serverRandom.Length);
-
-				sigIn = new SignerStream(inStr, signer, null);
-			}
-
-			/*
-			* Parse the Structure
-			*/
-			byte[] pByte = TlsUtilities.ReadOpaque16(sigIn);
-			byte[] gByte = TlsUtilities.ReadOpaque16(sigIn);
-			byte[] YsByte = TlsUtilities.ReadOpaque16(sigIn);
-
-			if (signer != null)
-			{
-				byte[] sigByte = TlsUtilities.ReadOpaque16(inStr);
 
 				/*
-				* Verify the Signature.
-				*/
-				if (!signer.VerifySignature(sigByte))
+				 * Check if we are in the correct connection state.
+				 */
+				if (this.connection_state != CS_CLIENT_FINISHED_SEND)
 				{
-					this.FailWithError(AL_fatal, AP_bad_certificate);
+                	this.FailWithError(AL_fatal, AP_handshake_failure);
 				}
-			}
 
-			this.AssertEmpty(inStr);
+				rs.ServerClientSpecReceived();
 
-			/*
-			* Do the DH calculation.
-			*/
-			BigInteger p = new BigInteger(1, pByte);
-			BigInteger g = new BigInteger(1, gByte);
-			BigInteger Ys = new BigInteger(1, YsByte);
-
-			/*
-			* Check the DH parameter values
-			*/
-			if (!p.IsProbablePrime(10))
-			{
-				this.FailWithError(AL_fatal, AP_illegal_parameter);
-			}
-			if (g.CompareTo(BigInteger.Two) < 0 || g.CompareTo(p.Subtract(BigInteger.Two)) > 0)
-			{
-				this.FailWithError(AL_fatal, AP_illegal_parameter);
-			}
-			// TODO For static DH public values, see additional checks in RFC 2631 2.1.5 
-			if (Ys.CompareTo(BigInteger.Two) < 0 || Ys.CompareTo(p.Subtract(BigInteger.One)) > 0)
-			{
-				this.FailWithError(AL_fatal, AP_illegal_parameter);
-			}
-
-			/*
-			* Diffie-Hellman basic key agreement
-			*/
-			DHParameters dhParams = new DHParameters(p, g);
-
-			// Generate a keypair
-			DHBasicKeyPairGenerator dhGen = new DHBasicKeyPairGenerator();
-			dhGen.Init(new DHKeyGenerationParameters(random, dhParams));
-
-			AsymmetricCipherKeyPair dhPair = dhGen.GenerateKeyPair();
-
-			// Store the public value to send to server
-			this.Yc = ((DHPublicKeyParameters)dhPair.Public).Y;
-
-			// Calculate the shared secret
-			DHBasicAgreement dhAgree = new DHBasicAgreement();
-			dhAgree.Init(dhPair.Private);
-
-			BigInteger agreement = dhAgree.CalculateAgreement(new DHPublicKeyParameters(Ys, dhParams));
-
-			this.pms = BigIntegers.AsUnsignedByteArray(agreement);
-		}
-
-		private void processSRPKeyExchange(
-			MemoryStream	inStr,
-			TlsSigner		tlsSigner)
-		{
-			Stream sigIn = inStr;
-			ISigner signer = null;
-			if (tlsSigner != null)
-			{
-				signer = tlsSigner.CreateSigner();
-				signer.Init(false, this.serverPublicKey);
-				signer.BlockUpdate(this.clientRandom, 0, this.clientRandom.Length);
-				signer.BlockUpdate(this.serverRandom, 0, this.serverRandom.Length);
-
-				sigIn = new SignerStream(inStr, signer, null);
-			}
-
-			/*
-			* Parse the Structure
-			*/
-			byte[] NByte = TlsUtilities.ReadOpaque16(sigIn);
-			byte[] gByte = TlsUtilities.ReadOpaque16(sigIn);
-			byte[] sByte = TlsUtilities.ReadOpaque8(sigIn);
-			byte[] BByte = TlsUtilities.ReadOpaque16(sigIn);
-
-			if (signer != null)
-			{
-				byte[] sigByte = TlsUtilities.ReadOpaque16(inStr);
-
-				/*
-				* Verify the Signature.
-				*/
-				if (!signer.VerifySignature(sigByte))
-				{
-					this.FailWithError(AL_fatal, AP_bad_certificate);
-				}
-			}
-
-			this.AssertEmpty(inStr);
-
-			BigInteger N = new BigInteger(1, NByte);
-			BigInteger g = new BigInteger(1, gByte);
-			byte[] s = sByte;
-			BigInteger B = new BigInteger(1, BByte);
-
-			Srp6Client srpClient = new Srp6Client();
-			srpClient.Init(N, g, new Sha1Digest(), random);
-
-			this.SRP_A = srpClient.GenerateClientCredentials(s, this.SRP_identity,
-				this.SRP_password);
-
-			try
-			{
-				BigInteger S = srpClient.CalculateSecret(B);
-
-				// TODO Check if this needs to be a fixed size
-				this.pms = BigIntegers.AsUnsignedByteArray(S);
-			}
-			catch (CryptoException)
-			{
-				this.FailWithError(AL_fatal, AP_illegal_parameter);
+            	this.connection_state = CS_SERVER_CHANGE_CIPHER_SPEC_RECEIVED;
 			}
 		}
 
-		private void validateKeyUsage(
-			X509CertificateStructure	c,
-			int							keyUsageBits)
-		{
-			X509Extensions exts = c.TbsCertificate.Extensions;
-			if (exts != null)
-			{
-				X509Extension ext = exts.GetExtension(X509Extensions.KeyUsage);
-				if (ext != null)
-				{
-					DerBitString ku = KeyUsage.GetInstance(ext);
-					int bits = ku.GetBytes()[0];
-					if ((bits & keyUsageBits) != keyUsageBits)
-					{
-						this.FailWithError(AL_fatal, AP_certificate_unknown);
-					}
-				}
-			}
-		}
-
-		private void sendClientCertificate()
+		private void sendClientCertificate(Certificate clientCert)
 		{
 			MemoryStream bos = new MemoryStream();
 			TlsUtilities.WriteUint8(HP_CERTIFICATE, bos);
@@ -1070,125 +722,74 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			MemoryStream bos = new MemoryStream();
 			TlsUtilities.WriteUint8(HP_CLIENT_KEY_EXCHANGE, bos);
-			TlsUtilities.WriteUint24(keData.Length + 2, bos);
-			TlsUtilities.WriteOpaque16(keData, bos);
+			if (keData == null)
+			{
+				TlsUtilities.WriteUint24(0, bos);
+			}
+			else
+			{
+				TlsUtilities.WriteUint24(keData.Length + 2, bos);
+				TlsUtilities.WriteOpaque16(keData, bos);
+			}
 			byte[] message = bos.ToArray();
 
 			rs.WriteMessage(RL_HANDSHAKE, message, 0, message.Length);
 		}
 
-		private void sendCertificateVerify()
+		private void sendCertificateVerify(byte[] data)
 		{
 			/*
 			 * Send signature of handshake messages so far to prove we are the owner of
 			 * the cert See RFC 2246 sections 4.7, 7.4.3 and 7.4.8
 			 */
+			MemoryStream bos = new MemoryStream();
+			TlsUtilities.WriteUint8(HP_CERTIFICATE_VERIFY, bos);
+			TlsUtilities.WriteUint24(data.Length + 2, bos);
+			TlsUtilities.WriteOpaque16(data, bos);
+			byte[] message = bos.ToArray();
 
-			try
-			{
-				byte[] md5andsha1 = new byte[16 + 20];
-				rs.hash3.DoFinal(md5andsha1, 0);
-            	byte[] data = clientSigner.CalculateRawSignature(clientPrivateKey, md5andsha1);
-
-				MemoryStream bos = new MemoryStream();
-				TlsUtilities.WriteUint8(HP_CERTIFICATE_VERIFY, bos);
-				TlsUtilities.WriteUint24(data.Length + 2, bos);
-				TlsUtilities.WriteOpaque16(data, bos);
-				byte[] message = bos.ToArray();
-
-				rs.WriteMessage(RL_HANDSHAKE, message, 0, message.Length);
-			}
-			catch (CryptoException)
-			{
-				this.FailWithError(AL_fatal, AP_handshake_failure);
-			}
+			rs.WriteMessage(RL_HANDSHAKE, message, 0, message.Length);
 		}
-		
+
 		/// <summary>Connects to the remote system.</summary>
 		/// <param name="verifyer">Will be used when a certificate is received to verify
 		/// that this certificate is accepted by the client.</param>
 		/// <exception cref="IOException">If handshake was not successful</exception>
+		// TODO Deprecate
 		public virtual void Connect(
 			ICertificateVerifyer verifyer)
 		{
-	        this.Connect(verifyer, null, null);
+	        this.Connect(new DefaultTlsClient(verifyer));
 	    }
 
-		/// <summary>Connects to the remote system using client authentication</summary>
-		/// <param name="verifyer">Will be used when a certificate is received to verify
-		/// that this certificate is accepted by the client.</param>
-		/// <param name="clientCertificate">The client's certificate to be provided to
-		/// the remote system.</param>
-		/// <param name="clientPrivateKey">The client's private key for the certificate
-		/// to authenticate to the remote system (RSA or DSA).</param>
-		// TODO Make public to enable client certificate support
-		internal virtual void Connect(
-			ICertificateVerifyer	verifyer,
-			Certificate				clientCertificate,
-			AsymmetricKeyParameter	clientPrivateKey)
+//    public void Connect(ICertificateVerifyer verifyer, Certificate clientCertificate,
+//        AsymmetricKeyParameter clientPrivateKey)
+//    {
+//        DefaultTlsClient client = new DefaultTlsClient(verifyer);
+//        client.EnableClientAuthentication(clientCertificate, clientPrivateKey);
+//
+//        this.Connect(client);
+//    }
+
+		// TODO Make public
+		internal virtual void Connect(TlsClient tlsClient)
 		{
-			if (clientCertificate == null)
-			{
-				clientCertificate = new Certificate(new X509CertificateStructure[0]);
-			}
-
-			if (clientPrivateKey == null)
-			{
-				if (clientCertificate.certs.Length != 0)
-				{
-					throw new ArgumentException("key not specified for certificate", "clientPrivateKey");
-				}
-			}
-			else
-			{
-	            if (clientCertificate.certs.Length == 0)
-	            {
-					throw new ArgumentException("key specified without certificate", "clientPrivateKey");
-	            }
-				else if (!clientPrivateKey.IsPrivate)
-				{
-					throw new ArgumentException("must be private", "clientPrivateKey");
-				}
-				else if (clientPrivateKey is RsaKeyParameters)
-				{
-					clientSigner = new TlsRsaSigner();
-				}
-				else if (clientPrivateKey is DsaPrivateKeyParameters)
-				{
-					clientSigner = new TlsDssSigner();
-				}
-				else
-				{
-					throw new ArgumentException("type not supported", "clientPrivateKey");
-				}
-			}
-
-			this.verifyer = verifyer;
-			this.clientCert = clientCertificate;
-			this.clientPrivateKey = clientPrivateKey;
+	        this.tlsClient = tlsClient;
+    	    this.tlsClient.Init(this);
 
 			/*
-			* Send Client hello
-			*
-			* First, generate some random data.
-			*/
-			this.clientRandom = new byte[32];
-
-			/*
-			* TLS 1.0 requires a unix-timestamp in the first 4 bytes
-			*/
-			int t = (int)(DateTimeUtilities.CurrentUnixMs() / 1000L);
-			this.clientRandom[0] = (byte)(t >> 24);
-			this.clientRandom[1] = (byte)(t >> 16);
-			this.clientRandom[2] = (byte)(t >> 8);
-			this.clientRandom[3] = (byte)t;
-
-			random.NextBytes(this.clientRandom, 4, 28);
-
+			 * Send Client hello
+			 *
+			 * First, generate some random data.
+			 */
+			securityParameters = new SecurityParameters();
+			securityParameters.clientRandom = new byte[32];
+			random.NextBytes(securityParameters.clientRandom, 4, 28);
+			TlsUtilities.WriteGmtUnixTime(securityParameters.clientRandom, 0);
 
 			MemoryStream outStr = new MemoryStream();
 			TlsUtilities.WriteVersion(outStr);
-			outStr.Write(this.clientRandom, 0, this.clientRandom.Length);
+			outStr.Write(securityParameters.clientRandom, 0, 32);
 
 			/*
 			* Length of Session id
@@ -1198,7 +799,13 @@ namespace Org.BouncyCastle.Crypto.Tls
 			/*
 			* Cipher suites
 			*/
-			TlsCipherSuiteManager.WriteCipherSuites(outStr);
+			this.offeredCipherSuites = this.tlsClient.GetCipherSuites();
+			
+			TlsUtilities.WriteUint16(2 * offeredCipherSuites.Length, outStr);
+			for (int i = 0; i < offeredCipherSuites.Length; ++i)
+			{
+				TlsUtilities.WriteUint16(offeredCipherSuites[i], outStr);
+			}
 
 			/*
 			* Compression methods, just the null method.
@@ -1209,25 +816,14 @@ namespace Org.BouncyCastle.Crypto.Tls
 			/*
 			* Extensions
 			*/
-			// TODO Collect extensions from client
 			// Int32 -> byte[]
-			Hashtable clientExtensions = new Hashtable();
+			Hashtable clientExtensions = this.tlsClient.GenerateClientExtensions();
 
-			// TODO[SRP]
-//			{
-//				MemoryStream srpData = new MemoryStream();
-//				TlsUtilities.WriteOpaque8(SRP_identity, srpData);
-//
-//				// TODO[SRP] RFC5054 2.8.1: ExtensionType.srp = 12
-//				clientExtensions[12] = srpData.ToArray();
-//			}
-
-			this.extendedClientHello = (clientExtensions.Count > 0);
+			this.extendedClientHello = clientExtensions != null && clientExtensions.Count > 0;
 
 			if (extendedClientHello)
 			{
 				MemoryStream ext = new MemoryStream();
-
 				foreach (int extType in clientExtensions.Keys)
 				{
 					byte[] extValue = (byte[])clientExtensions[extType];
@@ -1253,11 +849,13 @@ namespace Org.BouncyCastle.Crypto.Tls
 			*/
 			while (connection_state != CS_DONE)
 			{
+				// TODO Should we send fatal alerts in the event of an exception
+				// (see readApplicationData) 
 				rs.ReadData();
 			}
 
 			this.tlsInputStream = new TlsInputStream(this);
-			this.tlsOutputStream = new TlsOuputStream(this);
+			this.tlsOutputStream = new TlsOutputStream(this);
 		}
 
 		/**
@@ -1383,22 +981,10 @@ namespace Org.BouncyCastle.Crypto.Tls
 			while (len > 0);
 		}
 
-		[Obsolete("Use 'OutputStream' property instead")]
-		public TlsOuputStream TlsOuputStream
-		{
-			get { return this.tlsOutputStream; }
-		}
-
 		/// <summary>A Stream which can be used to send data.</summary>
 		public virtual Stream OutputStream
 		{
 			get { return this.tlsOutputStream; }
-		}
-
-		[Obsolete("Use 'InputStream' property instead")]
-		public TlsInputStream TlsInputStream
-		{
-			get { return this.tlsInputStream; }
 		}
 
 		/// <summary>A Stream which can be used to read data.</summary>
@@ -1481,6 +1067,16 @@ namespace Org.BouncyCastle.Crypto.Tls
 		internal void Flush()
 		{
 			rs.Flush();
+		}
+
+		private bool WasCipherSuiteOffered(int cipherSuite)
+		{
+			for (int i = 0; i < offeredCipherSuites.Length; ++i)
+			{
+				if (offeredCipherSuites[i] == cipherSuite)
+					return true;
+			}
+			return false;
 		}
 	}
 }

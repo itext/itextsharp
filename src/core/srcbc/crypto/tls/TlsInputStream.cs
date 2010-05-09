@@ -5,8 +5,7 @@ using Org.BouncyCastle.Utilities.IO;
 namespace Org.BouncyCastle.Crypto.Tls
 {
 	/// <remarks>An input Stream for a TLS 1.0 connection.</remarks>
-	// TODO Fix name and make internal once TlsProtocolHandler.TlsInputStream is removed
-	public class TlsInputStream
+	internal class TlsInputStream
 		: BaseInputStream
 	{
 		private readonly TlsProtocolHandler handler;

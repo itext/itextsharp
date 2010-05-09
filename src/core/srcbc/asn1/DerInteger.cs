@@ -18,52 +18,41 @@ namespace Org.BouncyCastle.Asn1
         public static DerInteger GetInstance(
             object obj)
         {
-            if (obj == null)
+            if (obj == null || obj is DerInteger)
             {
-                return null;
+                return (DerInteger)obj;
             }
 
-            DerInteger i = obj as DerInteger;
-            if (i != null)
-            {
-                return i;
-            }
-
-			Asn1OctetString octs = obj as Asn1OctetString;
-            if (octs != null)
-            {
-                return new DerInteger(octs.GetOctets());
-            }
-
-            Asn1TaggedObject tagged = obj as Asn1TaggedObject;
-            if (tagged != null)
-            {
-                return GetInstance(tagged.GetObject());
-            }
-
-            throw new ArgumentException("illegal object in GetInstance: " + obj.GetType().Name);
+			throw new ArgumentException("illegal object in GetInstance: " + obj.GetType().Name);
         }
 
         /**
          * return an Integer from a tagged object.
          *
          * @param obj the tagged object holding the object we want
-         * @param explicitly true if the object is meant to be explicitly
+         * @param isExplicit true if the object is meant to be explicitly
          *              tagged false otherwise.
          * @exception ArgumentException if the tagged object cannot
          *               be converted.
          */
         public static DerInteger GetInstance(
             Asn1TaggedObject	obj,
-            bool				explicitly)
+            bool				isExplicit)
         {
             if (obj == null)
                 throw new ArgumentNullException("obj");
 
-			return GetInstance(obj.GetObject());
+			Asn1Object o = obj.GetObject();
+
+			if (isExplicit || o is DerInteger)
+			{
+				return GetInstance(o);
+			}
+
+			return new DerInteger(Asn1OctetString.GetInstance(o).GetOctets());
         }
 
-        public DerInteger(
+		public DerInteger(
             int value)
         {
             bytes = BigInteger.ValueOf(value).ToByteArray();

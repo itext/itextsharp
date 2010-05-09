@@ -56,9 +56,9 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 					this.fingerprint = DigestUtilities.DoFinal(digest);
                 }
 				//catch (NoSuchAlgorithmException)
-				catch (Exception)
+				catch (Exception e)
                 {
-                    throw new IOException("can't find MD5");
+                    throw new IOException("can't find MD5", e);
                 }
 
 				this.keyStrength = rK.Modulus.BitLength;
@@ -77,10 +77,9 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
                     digest.BlockUpdate(kBytes, 0, kBytes.Length);
                     this.fingerprint = DigestUtilities.DoFinal(digest);
                 }
-				//catch (NoSuchAlgorithmException)
-                catch (Exception)
+                catch (Exception e)
                 {
-                    throw new IOException("can't find SHA1");
+                    throw new IOException("can't find SHA1", e);
                 }
 
 				this.keyId = (long)(((ulong)fingerprint[fingerprint.Length - 8] << 56)

@@ -1,58 +1,42 @@
 using System;
-using System.Text;
+using System.IO;
 
-using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
-	/// <remarks>A generic TLS 1.0 block cipher suite. This can be used for AES or 3DES for example.</remarks>
-	internal class TlsBlockCipherCipherSuite
-		: TlsCipherSuite
+	/// <summary>
+	/// A generic TLS 1.0 block cipher. This can be used for AES or 3DES for example.
+	/// </summary>
+	internal class TlsBlockCipher
+	: TlsCipher
 	{
 		private TlsProtocolHandler handler;
 
 		private IBlockCipher encryptCipher;
 		private IBlockCipher decryptCipher;
 
-		private IDigest writeDigest;
-		private IDigest readDigest;
-
 		private TlsMac writeMac;
 		private TlsMac readMac;
 
-		private int cipherKeySize;
-		private short keyExchange;
-
-		internal TlsBlockCipherCipherSuite(
-			IBlockCipher	encrypt,
-			IBlockCipher	decrypt,
-			IDigest			writeDigest,
-			IDigest			readDigest,
-			int				cipherKeySize,
-			short			keyExchange)
-		{
-			this.encryptCipher = encrypt;
-			this.decryptCipher = decrypt;
-			this.writeDigest = writeDigest;
-			this.readDigest = readDigest;
-			this.cipherKeySize = cipherKeySize;
-			this.keyExchange = keyExchange;
-		}
-
-		internal override void Init(TlsProtocolHandler handler, byte[] ms, byte[] cr, byte[] sr)
+		internal TlsBlockCipher(TlsProtocolHandler handler, IBlockCipher encryptCipher,
+			IBlockCipher decryptCipher, IDigest writeDigest, IDigest readDigest, int cipherKeySize,
+			SecurityParameters securityParameters)
 		{
 			this.handler = handler;
+			this.encryptCipher = encryptCipher;
+			this.decryptCipher = decryptCipher;
+			
+			int prfSize = (2 * cipherKeySize) + writeDigest.GetDigestSize()
+				+ readDigest.GetDigestSize() + encryptCipher.GetBlockSize()
+				+ decryptCipher.GetBlockSize();
 
-			int prfSize = (2 * cipherKeySize) + writeDigest.GetDigestSize() + readDigest.GetDigestSize()
-				+ encryptCipher.GetBlockSize() + decryptCipher.GetBlockSize();
-			byte[] keyBlock = new byte[prfSize];
-			byte[] random = new byte[cr.Length + sr.Length];
-			Array.Copy(cr, 0, random, sr.Length, cr.Length);
-			Array.Copy(sr, 0, random, 0, sr.Length);
-			TlsUtilities.PRF(ms, "key expansion", random, keyBlock);
+			byte[] keyBlock = TlsUtilities.PRF(securityParameters.masterSecret, "key expansion",
+				TlsUtilities.Concat(securityParameters.serverRandom, securityParameters.clientRandom),
+				prfSize);
 
 			int offset = 0;
 
@@ -101,18 +85,14 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return ivParams;
 		}
 
-		internal override byte[] EncodePlaintext(
-			short				type,
-			byte[]				plaintext,
-			int					offset,
-			int					len)
+		public byte[] EncodePlaintext(short type, byte[] plaintext, int offset, int len)
 		{
 			int blocksize = encryptCipher.GetBlockSize();
 
 			// Add a random number of extra blocks worth of padding
 			int minPaddingSize = blocksize - ((len + writeMac.Size + 1) % blocksize);
 			int maxExtraPadBlocks = (255 - minPaddingSize) / blocksize;
-			int actualExtraPadBlocks = chooseExtraPadBlocks(handler.Random, maxExtraPadBlocks);
+			int actualExtraPadBlocks = ChooseExtraPadBlocks(handler.Random, maxExtraPadBlocks);
 			int paddingsize = minPaddingSize + (actualExtraPadBlocks * blocksize);
 
 			int totalsize = len + writeMac.Size + paddingsize + 1;
@@ -132,34 +112,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return outbuf;
 		}
 
-		private int chooseExtraPadBlocks(SecureRandom r, int max)
-		{
-//			return r.NextInt(max + 1);
-
-			int x = r.NextInt();
-			int n = lowestBitSet(x);
-			return System.Math.Min(n, max);
-		}
-
-		private int lowestBitSet(int x)
-		{
-			if (x == 0)
-				return 32;
-
-			int n = 0;
-			while ((x & 1) == 0)
-			{
-				++n;
-				x >>= 1;
-			}
-			return n;
-		}
-
-		internal override byte[] DecodeCiphertext(
-			short				type,
-			byte[]				ciphertext,
-			int					offset,
-			int					len)
+		public byte[] DecodeCiphertext(short type, byte[] ciphertext, int offset, int len)
 		{
 			// TODO TLS 1.1 (RFC 4346) introduces an explicit IV
 
@@ -188,8 +141,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			*/
 			for (int i = 0; i < len; i += blocksize)
 			{
-				decryptCipher.ProcessBlock(ciphertext, i + offset, ciphertext, i
-					+ offset);
+				decryptCipher.ProcessBlock(ciphertext, i + offset, ciphertext, i + offset);
 			}
 
 			/*
@@ -199,7 +151,6 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 			byte paddingsizebyte = ciphertext[lastByteOffset];
 
-			// Note: interpret as unsigned byte
 			int paddingsize = paddingsizebyte;
 
 			int maxPaddingSize = len - minLength;
@@ -213,10 +164,10 @@ namespace Org.BouncyCastle.Crypto.Tls
 				/*
 				* Now, check all the padding-bytes (constant-time comparison).
 				*/
-				int diff = 0;
+				byte diff = 0;
 				for (int i = lastByteOffset - paddingsize; i < lastByteOffset; ++i)
 				{
-					diff |= (ciphertext[i] ^ paddingsizebyte);
+					diff |= (byte)(ciphertext[i] ^ paddingsizebyte);
 				}
 				if (diff != 0)
 				{
@@ -227,21 +178,19 @@ namespace Org.BouncyCastle.Crypto.Tls
 			}
 
 			/*
-			* We now don't care if padding verification has failed or not,
-			* we will calculate the mac to give an attacker no kind of timing
-			* profile he can use to find out if mac verification failed or
-			* padding verification failed.
+			* We now don't care if padding verification has failed or not, we will calculate
+			* the mac to give an attacker no kind of timing profile he can use to find out if
+			* mac verification failed or padding verification failed.
 			*/
 			int plaintextlength = len - minLength - paddingsize;
-			byte[] calculatedMac = readMac.CalculateMac(type, ciphertext, offset,
-				plaintextlength);
-
+			byte[] calculatedMac = readMac.CalculateMac(type, ciphertext, offset, plaintextlength);
+			
 			/*
 			* Check all bytes in the mac (constant-time comparison).
 			*/
 			byte[] decryptedMac = new byte[calculatedMac.Length];
 			Array.Copy(ciphertext, offset + plaintextlength, decryptedMac, 0, calculatedMac.Length);
-
+			
 			if (!Arrays.ConstantTimeAreEqual(calculatedMac, decryptedMac))
 			{
 				decrypterror = true;
@@ -252,18 +201,37 @@ namespace Org.BouncyCastle.Crypto.Tls
 			*/
 			if (decrypterror)
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal,
-					TlsProtocolHandler.AP_bad_record_mac);
+				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_bad_record_mac);
 			}
+
 			byte[] plaintext = new byte[plaintextlength];
 			Array.Copy(ciphertext, offset, plaintext, 0, plaintextlength);
 			return plaintext;
-
 		}
 
-		internal override short KeyExchangeAlgorithm
+		private int ChooseExtraPadBlocks(SecureRandom r, int max)
 		{
-			get { return this.keyExchange; }
+//			return r.NextInt(max + 1);
+
+			uint x = (uint)r.NextInt();
+			int n = LowestBitSet(x);
+			return System.Math.Min(n, max);
+		}
+
+		private int LowestBitSet(uint x)
+		{
+			if (x == 0)
+			{
+				return 32;
+			}
+
+			int n = 0;
+			while ((x & 1) == 0)
+			{
+				++n;
+				x >>= 1;
+			}
+			return n;
 		}
 	}
 }

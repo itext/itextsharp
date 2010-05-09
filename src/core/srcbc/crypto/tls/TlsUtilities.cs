@@ -6,6 +6,7 @@ using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Utilities;
+using Org.BouncyCastle.Utilities.Date;
 using Org.BouncyCastle.Utilities.IO;
 
 namespace Org.BouncyCastle.Crypto.Tls
@@ -164,6 +165,15 @@ namespace Org.BouncyCastle.Crypto.Tls
 			}
 		}
 
+		internal static void WriteGmtUnixTime(byte[] buf, int offset)
+	    {
+			int t = (int)(DateTimeUtilities.CurrentUnixMs() / 1000L);
+			buf[offset] = (byte)(t >> 24);
+			buf[offset + 1] = (byte)(t >> 16);
+			buf[offset + 2] = (byte)(t >> 8);
+			buf[offset + 3] = (byte)t;
+	    }
+
 		internal static void WriteVersion(Stream os)
 		{
 			os.WriteByte(3);
@@ -199,11 +209,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			}
 		}
 
-		internal static void PRF(
-			byte[]	secret,
-			String	asciiLabel,
-			byte[]	seed,
-			byte[]	buf)
+		internal static byte[] PRF(byte[] secret, string asciiLabel, byte[] seed, int size)
 		{
 			byte[] label = Encoding.ASCII.GetBytes(asciiLabel);
 
@@ -213,17 +219,25 @@ namespace Org.BouncyCastle.Crypto.Tls
 			Array.Copy(secret, 0, s1, 0, s_half);
 			Array.Copy(secret, secret.Length - s_half, s2, 0, s_half);
 
-			byte[] ls = new byte[label.Length + seed.Length];
-			Array.Copy(label, 0, ls, 0, label.Length);
-			Array.Copy(seed, 0, ls, label.Length, seed.Length);
+			byte[] ls = Concat(label, seed);
 
-			byte[] prf = new byte[buf.Length];
+			byte[] buf = new byte[size];
+			byte[] prf = new byte[size];
 			hmac_hash(new MD5Digest(), s1, ls, prf);
 			hmac_hash(new Sha1Digest(), s2, ls, buf);
-			for (int i = 0; i < buf.Length; i++)
+			for (int i = 0; i < size; i++)
 			{
 				buf[i] ^= prf[i];
 			}
+			return buf;
+		}
+
+		internal static byte[] Concat(byte[] a, byte[] b)
+		{
+			byte[] c = new byte[a.Length + b.Length];
+			Array.Copy(a, 0, c, 0, a.Length);
+			Array.Copy(b, 0, c, a.Length, b.Length);
+			return c;
 		}
 	}
 }

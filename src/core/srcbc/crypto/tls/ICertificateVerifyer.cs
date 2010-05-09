@@ -6,7 +6,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 {
 	/// <remarks>
 	/// This should be implemented by any class which can find out, if a given
-	/// certificate chain is beeing accepted by an client.
+	/// certificate chain is being accepted by an client.
 	/// </remarks>
 	public interface ICertificateVerifyer
 	{

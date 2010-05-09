@@ -44,14 +44,19 @@ namespace Org.BouncyCastle.Cms
 		internal IBufferedCipher CreateAsymmetricCipher(
 			string encryptionOid)
 		{
-			try
+			string asymName = GetAsymmetricEncryptionAlgName(encryptionOid);
+			if (!asymName.Equals(encryptionOid))
 			{
-				return CipherUtilities.GetCipher(encryptionOid);
+				try
+				{
+					return CipherUtilities.GetCipher(asymName);
+				}
+				catch (NoSuchAlgorithmException e)
+				{
+					// Ignore
+				}
 			}
-			catch (SecurityUtilityException)
-			{
-				return CipherUtilities.GetCipher(GetAsymmetricEncryptionAlgName(encryptionOid));
-			}
+			return CipherUtilities.GetCipher(encryptionOid);
 		}
 
 		internal IWrapper CreateWrapper(

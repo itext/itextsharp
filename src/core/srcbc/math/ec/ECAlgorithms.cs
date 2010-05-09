@@ -13,16 +13,15 @@ namespace Org.BouncyCastle.Math.EC
 			if (!c.Equals(Q.Curve))
 				throw new ArgumentException("P and Q must be on same curve");
 
-			// TODO Put back in once WTNAF F2m point multiplication is enabled
-//			// Point multiplication for Koblitz curves (using WTNAF) beats Shamir's trick
-//			if (c is F2mCurve)
-//			{
-//				F2mCurve f2mCurve = (F2mCurve) c;
-//				if (f2mCurve.IsKoblitz)
-//				{
-//					return P.Multiply(a).Add(Q.Multiply(b));
-//				}
-//			}
+			// Point multiplication for Koblitz curves (using WTNAF) beats Shamir's trick
+			if (c is F2mCurve)
+			{
+				F2mCurve f2mCurve = (F2mCurve) c;
+				if (f2mCurve.IsKoblitz)
+				{
+					return P.Multiply(a).Add(Q.Multiply(b));
+				}
+			}
 
 			return ImplShamirsTrick(P, a, Q, b);
 		}

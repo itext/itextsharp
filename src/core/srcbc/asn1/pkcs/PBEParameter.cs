@@ -6,50 +6,46 @@ using Org.BouncyCastle.Math;
 
 namespace Org.BouncyCastle.Asn1.Pkcs
 {
-    public class PbeParameter
+	public class PbeParameter
 		: Asn1Encodable
-    {
-        private readonly Asn1OctetString octStr;
-        private readonly DerInteger iterationCount;
+	{
+		private readonly Asn1OctetString	salt;
+		private readonly DerInteger			iterationCount;
 
-		public static PbeParameter GetInstance(
-            object obj)
-        {
-            if (obj is PbeParameter || obj == null)
-            {
-                return (PbeParameter) obj;
-            }
+		public static PbeParameter GetInstance(object obj)
+		{
+			if (obj is PbeParameter || obj == null)
+			{
+				return (PbeParameter) obj;
+			}
 
 			if (obj is Asn1Sequence)
-            {
-                return new PbeParameter((Asn1Sequence) obj);
-            }
+			{
+				return new PbeParameter((Asn1Sequence) obj);
+			}
 
 			throw new ArgumentException("Unknown object in factory: " + obj.GetType().FullName, "obj");
 		}
 
-		private PbeParameter(
-			Asn1Sequence seq)
-        {
+		private PbeParameter(Asn1Sequence seq)
+		{
 			if (seq.Count != 2)
 				throw new ArgumentException("Wrong number of elements in sequence", "seq");
 
-			octStr = Asn1OctetString.GetInstance(seq[0]);
-            iterationCount = DerInteger.GetInstance(seq[1]);
-        }
+			salt = Asn1OctetString.GetInstance(seq[0]);
+			iterationCount = DerInteger.GetInstance(seq[1]);
+		}
 
-		public PbeParameter(
-            byte[]	salt,
-            int		iterationCount)
-        {
-            this.octStr = new DerOctetString(salt);
-            this.iterationCount = new DerInteger(iterationCount);
-        }
+		public PbeParameter(byte[] salt, int iterationCount)
+		{
+			this.salt = new DerOctetString(salt);
+			this.iterationCount = new DerInteger(iterationCount);
+		}
 
 		public byte[] GetSalt()
-        {
-            return octStr.GetOctets();
-        }
+		{
+			return salt.GetOctets();
+		}
 
 		public BigInteger IterationCount
 		{
@@ -57,8 +53,8 @@ namespace Org.BouncyCastle.Asn1.Pkcs
 		}
 
 		public override Asn1Object ToAsn1Object()
-        {
-			return new DerSequence(octStr, iterationCount);
-        }
-    }
+		{
+			return new DerSequence(salt, iterationCount);
+		}
+	}
 }

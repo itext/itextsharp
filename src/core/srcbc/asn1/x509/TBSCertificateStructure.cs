@@ -50,14 +50,10 @@ namespace Org.BouncyCastle.Asn1.X509
 			object obj)
 		{
 			if (obj is TbsCertificateStructure)
-			{
 				return (TbsCertificateStructure) obj;
-			}
 
 			if (obj is Asn1Sequence)
-			{
 				return new TbsCertificateStructure((Asn1Sequence) obj);
-			}
 
 			throw new ArgumentException("unknown object in factory: " + obj.GetType().Name, "obj");
 		}
@@ -74,7 +70,7 @@ namespace Org.BouncyCastle.Asn1.X509
 			//
 			if (seq[0] is DerTaggedObject)
 			{
-				version = DerInteger.GetInstance(seq[0]);
+				version = DerInteger.GetInstance((Asn1TaggedObject)seq[0], true);
 			}
 			else
 			{

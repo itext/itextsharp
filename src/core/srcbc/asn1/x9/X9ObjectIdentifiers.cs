@@ -88,14 +88,6 @@ namespace Org.BouncyCastle.Asn1.X9
         public static readonly DerObjectIdentifier Prime256v1 = new DerObjectIdentifier(PrimeCurve + ".7");
 
 		//
-        // Diffie-Hellman
-        //
-        // dhpublicnumber OBJECT IDENTIFIER ::= { iso(1) member-body(2)
-        //            us(840) ansi-x942(10046) number-type(2) 1 }
-        //
-        public static readonly DerObjectIdentifier DHPublicNumber = new DerObjectIdentifier("1.2.840.10046.2.1");
-
-		//
         // DSA
         //
         // dsapublicnumber OBJECT IDENTIFIER ::= { iso(1) member-body(2)
@@ -119,7 +111,18 @@ namespace Org.BouncyCastle.Asn1.X9
 		/**
 		 * X9.42
 		 */
-		public static readonly DerObjectIdentifier X9x42Schemes = new DerObjectIdentifier("1.2.840.10046.3");
+
+		internal const string AnsiX942 = "1.2.840.10046";
+
+		//
+        // Diffie-Hellman
+        //
+        // dhpublicnumber OBJECT IDENTIFIER ::= { iso(1) member-body(2)
+        //            us(840) ansi-x942(10046) number-type(2) 1 }
+        //
+        public static readonly DerObjectIdentifier DHPublicNumber = new DerObjectIdentifier(AnsiX942 + ".2.1");
+
+		public static readonly DerObjectIdentifier X9x42Schemes = new DerObjectIdentifier(AnsiX942 + ".3");
 		public static readonly DerObjectIdentifier DHStatic = new DerObjectIdentifier(X9x42Schemes + ".1");
 		public static readonly DerObjectIdentifier DHEphem = new DerObjectIdentifier(X9x42Schemes + ".2");
 		public static readonly DerObjectIdentifier DHOneFlow = new DerObjectIdentifier(X9x42Schemes + ".3");

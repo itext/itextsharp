@@ -82,6 +82,11 @@ namespace Org.BouncyCastle.Cms
 			this.digestCalculator = digestCalculator;
 		}
 
+		public DerObjectIdentifier ContentType
+		{
+			get { return contentType; }
+		}
+
 		public SignerID SignerID
 		{
 			get { return sid; }
@@ -348,7 +353,7 @@ namespace Org.BouncyCastle.Cms
 				{
 					if (content != null)
 					{
-						content.Write(new CmsSignedGenerator.DigOutputStream(digest));
+						content.Write(new DigOutputStream(digest));
 					}
 					else if (signedAttributeSet == null)
 					{
@@ -450,7 +455,7 @@ namespace Org.BouncyCastle.Cms
 					else if (content != null)
 					{
 						// TODO Use raw signature of the hash value instead
-						content.Write(new CmsSignedGenerator.SigOutputStream(sig));
+						content.Write(new SigOutputStream(sig));
 					}
 				}
 				else
@@ -512,7 +517,7 @@ namespace Org.BouncyCastle.Cms
 			{
 				if (algorithm.Equals("RSA"))
 				{
-					IBufferedCipher c = CipherUtilities.GetCipher("RSA//PKCS1Padding");
+					IBufferedCipher c = CmsEnvelopedHelper.Instance.CreateAsymmetricCipher("RSA/ECB/PKCS1Padding");
 
 					c.Init(false, key);
 

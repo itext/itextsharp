@@ -7,7 +7,7 @@ namespace Org.BouncyCastle.Cms
 	* a holding class for a byte array of data to be processed.
 	*/
 	public class CmsProcessableByteArray
-		:    CmsProcessable
+		: CmsProcessable, CmsReadable
 	{
 		private readonly byte[] bytes;
 

@@ -8,7 +8,7 @@ using Org.BouncyCastle.Asn1.X509;
 namespace Org.BouncyCastle.Crypto.Tls
 {
 	/**
-	* A representation for a certificate chain as used by an tls server.
+	* A representation for a certificate chain.
 	*/
 	public class Certificate
 	{
@@ -80,9 +80,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		*
 		* @param certs The certs the chain should contain.
 		*/
-		// TODO Make public to enable client certificate support
-		internal Certificate(
-			X509CertificateStructure[] certs)
+		public Certificate(X509CertificateStructure[] certs)
 		{
 			this.certs = certs;
 		}

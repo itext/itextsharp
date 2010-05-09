@@ -1,5 +1,6 @@
 using System;
 
+using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Encodings;
 using Org.BouncyCastle.Crypto.Engines;
@@ -18,9 +19,11 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return sig.GenerateSignature();
 		}
 
-		public ISigner CreateSigner()
+		public ISigner CreateVerifyer(AsymmetricKeyParameter publicKey)
 		{
-			return new GenericSigner(new Pkcs1Encoding(new RsaBlindedEngine()), new CombinedHash());
+			ISigner s = new GenericSigner(new Pkcs1Encoding(new RsaBlindedEngine()), new CombinedHash());
+			s.Init(false, publicKey);
+			return s;
 		}
 	}
 }

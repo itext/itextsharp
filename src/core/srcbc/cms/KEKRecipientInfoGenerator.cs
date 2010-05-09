@@ -17,10 +17,10 @@ namespace Org.BouncyCastle.Cms
 	{
 		private static readonly CmsEnvelopedHelper Helper = CmsEnvelopedHelper.Instance;
 		
+		private KeyParameter	wrapKey;
 		private KekIdentifier	secKeyId;
 		// TODO Can get this from wrapKey?		
 		private string			wrapAlgorithm;
-		private KeyParameter	wrapKey;
 
 		// Derived
 		private AlgorithmIdentifier keyEncAlg;

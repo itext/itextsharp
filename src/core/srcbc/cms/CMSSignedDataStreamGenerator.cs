@@ -691,57 +691,6 @@ namespace Org.BouncyCastle.Cms
 			return new TeeOutputStream(s1, s2);
 		}
 
-		private class NullOutputStream
-            : BaseOutputStream
-        {
-            public override void WriteByte(
-				byte b)
-            {
-                // do nothing
-            }
-
-			public override void Write(
-				byte[]	buffer,
-				int		offset,
-				int		count)
-			{
-				// do nothing
-			}
-		}
-
-		private class TeeOutputStream
-			: BaseOutputStream
-		{
-			private readonly Stream s1, s2;
-
-			public TeeOutputStream(Stream dataOutputStream, Stream digStream)
-			{
-				Debug.Assert(dataOutputStream.CanWrite);
-				Debug.Assert(digStream.CanWrite);
-
-				this.s1 = dataOutputStream;
-				this.s2 = digStream;
-			}
-
-			public override void Write(byte[] buffer, int offset, int count)
-			{
-				s1.Write(buffer, offset, count);
-				s2.Write(buffer, offset, count);
-			}
-
-			public override void WriteByte(byte b)
-			{
-				s1.WriteByte(b);
-				s2.WriteByte(b);
-			}
-
-			public override void Close()
-			{
-				s1.Close();
-				s2.Close();
-			}
-		}
-
 		private class CmsSignedDataOutputStream
             : BaseOutputStream
         {

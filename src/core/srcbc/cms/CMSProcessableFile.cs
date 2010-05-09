@@ -9,7 +9,7 @@ namespace Org.BouncyCastle.Cms
 	* a holding class for a file of data to be processed.
 	*/
 	public class CmsProcessableFile
-		: CmsProcessable
+		: CmsProcessable, CmsReadable
 	{
 		private const int DefaultBufSize = 32 * 1024;
 

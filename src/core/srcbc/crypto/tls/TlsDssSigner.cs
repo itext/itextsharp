@@ -17,9 +17,11 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return sig.GenerateSignature();
 		}
 
-		public ISigner CreateSigner()
+		public ISigner CreateVerifyer(AsymmetricKeyParameter publicKey)
 		{
-			return new DsaDigestSigner(new DsaSigner(), new Sha1Digest());
+			ISigner s = new DsaDigestSigner(new DsaSigner(), new Sha1Digest());
+			s.Init(false, publicKey);
+			return s;
 		}
 	}
 }
