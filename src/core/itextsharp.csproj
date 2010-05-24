@@ -350,6 +350,7 @@
     <Compile Include="iTextSharp\text\pdf\CMYKColor.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\codec\BitFile.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\BmpImage.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -378,6 +379,7 @@
     <Compile Include="iTextSharp\text\pdf\codec\TIFFFaxDecoder.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\codec\TIFFFaxDecompressor.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\TIFFField.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -4103,6 +4105,10 @@
     <EmbeddedResource Include="iTextSharp\text\pdf\fonts\Times-Italic.afm" />
     <EmbeddedResource Include="iTextSharp\text\pdf\fonts\Times-Roman.afm" />
     <EmbeddedResource Include="iTextSharp\text\pdf\fonts\ZapfDingbats.afm" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="iTextSharp\text\pdf\codec\LZWCompressor.cs" />
+    <Content Include="iTextSharp\text\pdf\codec\LZWStringTable.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
