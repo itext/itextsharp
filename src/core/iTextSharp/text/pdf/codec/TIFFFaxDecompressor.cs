@@ -1,5 +1,6 @@
 using System;
 /*
+ * $Id$
  * Copyright 2003-2009 by Paulo Soares.
  *
  * This code was originally released in 2001 by SUN (see class
@@ -43,8 +44,6 @@ using System;
  * You acknowledge that this software is not designed or intended for 
  * use in the design, construction, operation or maintenance of any 
  * nuclear facility. 
- *
- * $Id$
  */
 namespace iTextSharp.text.pdf.codec {
 
