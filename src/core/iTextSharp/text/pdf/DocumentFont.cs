@@ -102,7 +102,8 @@ namespace iTextSharp.text.pdf {
             this.refFont = refFont;
             fontType = FONT_TYPE_DOCUMENT;
             font = (PdfDictionary)PdfReader.GetPdfObject(refFont);
-            fontName = PdfName.DecodeName(font.GetAsName(PdfName.BASEFONT).ToString());
+            PdfName baseFont = font.GetAsName(PdfName.BASEFONT);
+            fontName = baseFont != null ? PdfName.DecodeName(baseFont.ToString()) : "Unspecified Font Name";
             PdfName subType = font.GetAsName(PdfName.SUBTYPE);
             if (PdfName.TYPE1.Equals(subType) || PdfName.TRUETYPE.Equals(subType))
                 DoType1TT();
@@ -114,18 +115,21 @@ namespace iTextSharp.text.pdf {
                         return;
                     }
                 }
-                String enc = PdfName.DecodeName(font.GetAsName(PdfName.ENCODING).ToString());
-                for (int k = 0; k < cjkEncs2.Length; ++k) {
-                    if (enc.StartsWith(cjkEncs2[k])) {
-                        if (k > 3)
-                            k -= 4;
-                        cjkMirror = BaseFont.CreateFont(cjkNames2[k], cjkEncs2[k], false);
-                        return;
+                PdfName encodingName = font.GetAsName(PdfName.ENCODING);
+                if (encodingName != null){
+                    String enc = PdfName.DecodeName(encodingName.ToString());
+                    for (int k = 0; k < cjkEncs2.Length; ++k) {
+                        if (enc.StartsWith(cjkEncs2[k])) {
+                            if (k > 3)
+                                k -= 4;
+                            cjkMirror = BaseFont.CreateFont(cjkNames2[k], cjkEncs2[k], false);
+                            return;
+                        }
                     }
-                }
-                if (PdfName.TYPE0.Equals(subType) && enc.Equals("Identity-H")) {
-                    ProcessType0(font);
-                    isType0 = true;
+                    if (PdfName.TYPE0.Equals(subType) && enc.Equals("Identity-H")) {
+                        ProcessType0(font);
+                        isType0 = true;
+                    }
                 }
             }
         }

@@ -51,7 +51,7 @@ namespace Org.BouncyCastle.Cms
 				{
 					return CipherUtilities.GetCipher(asymName);
 				}
-				catch (NoSuchAlgorithmException e)
+				catch (NoSuchAlgorithmException)
 				{
 					// Ignore
 				}

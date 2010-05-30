@@ -192,7 +192,7 @@ namespace iTextSharp.text.pdf {
         public void CheckFdfHeader() {
             file.StartOffset = 0;
             String str = ReadString(1024);
-            int idx = str.IndexOf("%FDF-1.2");
+            int idx = str.IndexOf("%FDF-");
             if (idx < 0)
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("fdf.header.not.found"));
             file.StartOffset = idx;

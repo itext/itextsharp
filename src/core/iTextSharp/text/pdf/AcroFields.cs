@@ -2059,6 +2059,8 @@ namespace iTextSharp.text.pdf {
             PdfPKCS7 pk = null;
             if (sub.Equals(PdfName.ADBE_X509_RSA_SHA1)) {
                 PdfString cert = v.GetAsString(PdfName.CERT);
+                if (cert == null)
+                    cert = v.GetAsArray(PdfName.CERT).GetAsString(0);
                 pk = new PdfPKCS7(contents.GetOriginalBytes(), cert.GetBytes());
             }
             else

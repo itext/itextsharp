@@ -2134,26 +2134,25 @@ namespace iTextSharp.text.pdf {
                             byteAlign = bo.BooleanValue;
                     }
                     byte[] outBuf = new byte[(width + 7) / 8 * height];
-                    TIFFFaxDecoder decoder = new TIFFFaxDecoder(1, width, height);
+                    TIFFFaxDecompressor decoder = new TIFFFaxDecompressor();
                     if (k == 0 || k > 0) {
                         int tiffT4Options = k > 0 ? TIFFConstants.GROUP3OPT_2DENCODING : 0;
                         tiffT4Options |= byteAlign ? TIFFConstants.GROUP3OPT_FILLBITS : 0;
-                        try {
-                            decoder.Decode2D(outBuf, b, 0, height, tiffT4Options);
-                        }
-                        catch (Exception e) {
-                            // let's flip the fill bits and try again...
-                            tiffT4Options ^= TIFFConstants.GROUP3OPT_FILLBITS;
-                            try {
-                                decoder.Decode2D(outBuf, b, 0, height, tiffT4Options);
-                            }
-                            catch {
-                                throw e;
+                        decoder.SetOptions(1, TIFFConstants.COMPRESSION_CCITTFAX3, tiffT4Options, 0);
+                        decoder.DecodeRaw(outBuf, b, width, height);
+                        if (decoder.fails > 0) {
+                            byte[] outBuf2 = new byte[(width + 7) / 8 * height];
+                            int oldFails = decoder.fails;
+                            decoder.SetOptions(1, TIFFConstants.COMPRESSION_CCITTRLE, tiffT4Options, 0);
+                            decoder.DecodeRaw(outBuf2, b, width, height);
+                            if (decoder.fails < oldFails) {
+                                outBuf = outBuf2;
                             }
                         }
                     }
                     else {
-                        decoder.DecodeT6(outBuf, b, 0, height, 0);
+                        decoder.SetOptions(1, TIFFConstants.COMPRESSION_CCITTFAX4, 0, 0);
+                        decoder.DecodeRaw(outBuf, b, width, height);
                     }
                     if (!blackIs1) {
                         int len = outBuf.Length;
