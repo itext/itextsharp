@@ -60,8 +60,8 @@ namespace iTextSharp.text.pdf.codec {
         /** codesize + Reserved Codes */
         private const int RES_CODES = 2;
 
-        private const short HASH_FREE = (short)0xFFFF;
-        private const short NEXT_FIRST = (short)0xFFFF;
+        private const short HASH_FREE = -1;
+        private const short NEXT_FIRST = -1;
 
         private const int MAXBITS = 12;
         private const int MAXSTR = (1 << MAXBITS);
@@ -141,7 +141,7 @@ namespace iTextSharp.text.pdf.codec {
                 hshidx = (hshidx + HASHSTEP) % HASHSIZE;
             }
 
-            return (short)0xFFFF;
+            return -1;
         }
 
         /**
@@ -156,7 +156,7 @@ namespace iTextSharp.text.pdf.codec {
 
             int w = (1 << codesize) + RES_CODES;
             for (int q = 0; q < w; q++)
-                AddCharString((short)0xFFFF, (byte)q);	// init with no prefix
+                AddCharString(-1, (byte)q);	// init with no prefix
         }
 
         public static int Hash(short index, byte lastbyte) {
@@ -187,13 +187,13 @@ namespace iTextSharp.text.pdf.codec {
             if (offset == -2) {
                 if (skipHead == 1) skipHead = 0;
             }
-            if (code == (short)0xFFFF ||				// just in case
+            if (code == -1 ||				// just in case
                 skipHead == strLen_[code])				// DONE no more unpacked
                 return 0;
 
             int expandLen;							// how much data we are actually expanding
             int codeLen = strLen_[code] - skipHead;	// length of expanded code left
-            int bufSpace = buf.length - offset;		// how much space left
+            int bufSpace = buf.Length - offset;		// how much space left
             if (bufSpace > codeLen)
                 expandLen = codeLen;				// only got this many to unpack
             else
@@ -205,7 +205,7 @@ namespace iTextSharp.text.pdf.codec {
 
             // NOTE: data unpacks in reverse direction and we are placing the
             // unpacked data directly into the array in the correct location.
-            while ((idx > offset) && (code != (short)0xFFFF)) {
+            while ((idx > offset) && (code != -1)) {
                 if (--skipTail < 0) {				// skip required of expanded data
                     buf[--idx] = strChr_[code];
                 }

@@ -46,18 +46,44 @@ using iTextSharp.text.pdf;
 namespace iTextSharp.text.pdf.parser {
 
     /**
-     * @author kevin
+     * Represents image data from a PDF
      * @since 5.0.1
      */
     public class ImageRenderInfo {
+        /** The coordinate transformation matrix that was in effect when the image was rendered */
         private Matrix ctm;
+        /** A reference to the image XObject */
         private PdfIndirectReference refi;
         
-        public ImageRenderInfo(Matrix ctm, PdfIndirectReference refi) {
+        private ImageRenderInfo(Matrix ctm, PdfIndirectReference refi) {
             this.ctm = ctm;
             this.refi = refi;
         }
         
+        /**
+         * Create an ImageRenderInfo object based on an XObject (this is the most common way of including an image in PDF)
+         * @param ctm the coordinate transformation matrix at the time the image is rendered
+         * @param ref a reference to the image XObject
+         * @return the ImageRenderInfo representing the rendered XObject
+         * @since 5.0.1
+         */
+        public static ImageRenderInfo CreateForXObject(Matrix ctm, PdfIndirectReference refi){
+            return new ImageRenderInfo(ctm, refi);
+        }
+        
+        /**
+         * Create an ImageRenderInfo object based on embedded image data.  This is nowhere near completely thought through
+         * and really just acts as a placeholder.
+         * @param ctm the coordinate transformation matrix at the time the image is rendered
+         * @param imageDictionary a dictionary containing parameters of the embedded image (note that the key/value pairs of this dictionary can have abbreviations in them)
+         * @param streamBytes the bytes of the image data
+         * @return the ImageRenderInfo representing the rendered embedded image
+         * @since 5.0.1
+         */
+        protected internal static ImageRenderInfo CreatedForEmbeddedImage(Matrix ctm, PdfDictionary imageDictionary, byte[] streamBytes){
+            return new ImageRenderInfo(ctm, null);
+        }
+
         /**
          * Gets an object containing the image dictionary and bytes.
          * @return an object containing the image dictionary and byte[]

@@ -154,6 +154,8 @@ namespace iTextSharp.text.pdf.codec {
         public const int TIFFTAG_ARTIST = 315;	/* creator of image */
         public const int TIFFTAG_HOSTCOMPUTER = 316;	/* machine where created */
         public const int TIFFTAG_PREDICTOR = 317;	/* prediction scheme w/ LZW */
+        public const int     PREDICTOR_NONE = 1;
+        public const int     PREDICTOR_HORIZONTAL_DIFFERENCING = 2;
         public const int TIFFTAG_WHITEPOINT = 318;	/* image white point */
         public const int TIFFTAG_PRIMARYCHROMATICITIES = 319;	/* !primary chromaticities */
         public const int TIFFTAG_COLORMAP = 320;	/* RGB map for pallette image */

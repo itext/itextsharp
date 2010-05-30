@@ -99,7 +99,7 @@ namespace iTextSharp.text.pdf.codec {
             if (tiffFudge_)
                 --limit_;
 
-            prefix_ = (short)0xFFFF;
+            prefix_ = -1;
             lzss_ = new LZWStringTable();
             lzss_.ClearTable(codeSize_);
             bf_.WriteBits(clearCode_, numBits_);

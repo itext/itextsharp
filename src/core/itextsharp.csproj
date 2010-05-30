@@ -389,6 +389,7 @@
     <Compile Include="iTextSharp\text\pdf\codec\TIFFLZWDecoder.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\codec\TiffWriter.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\wmf\InputMeta.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -4107,8 +4108,8 @@
     <EmbeddedResource Include="iTextSharp\text\pdf\fonts\ZapfDingbats.afm" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="iTextSharp\text\pdf\codec\LZWCompressor.cs" />
-    <Content Include="iTextSharp\text\pdf\codec\LZWStringTable.cs" />
+    <Compile Include="iTextSharp\text\pdf\codec\LZWCompressor.cs" />
+    <Compile Include="iTextSharp\text\pdf\codec\LZWStringTable.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

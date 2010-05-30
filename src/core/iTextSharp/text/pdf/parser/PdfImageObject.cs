@@ -72,6 +72,7 @@ namespace iTextSharp.text.pdf.parser {
         public const string TYPE_PNG = "png";
         public const string TYPE_JPG = "jpg";
         public const string TYPE_JP2 = "jp2";
+        public const string TYPE_TIF = "tif";
         
         protected string fileType;
 
@@ -203,9 +204,51 @@ namespace iTextSharp.text.pdf.parser {
             icc = null;
             stride = 0;
             FindColorspace(colorspace, true);
-            if (pngColorType < 0)
-                return null;
             MemoryStream ms = new MemoryStream();
+            if (pngColorType < 0) {
+                if (bpc != 8)
+                    return null;
+                if (PdfName.DEVICECMYK.Equals(colorspace)) {
+                }
+                else if (colorspace is PdfArray) {
+                    PdfArray ca = (PdfArray)colorspace;
+                    PdfObject tyca = ca.GetDirectObject(0);
+                    if (!PdfName.ICCBASED.Equals(tyca))
+                        return null;
+                    PRStream pr = (PRStream)ca.GetDirectObject(1);
+                    int n = pr.GetAsNumber(PdfName.N).IntValue;
+                    if (n != 4) {
+                        return null;
+                    }
+                    icc = PdfReader.GetStreamBytes(pr);
+                }
+                else
+                    return null;
+                stride = 4 * width;
+                TiffWriter wr = new TiffWriter();
+                wr.AddField(new TiffWriter.FieldShort(TIFFConstants.TIFFTAG_SAMPLESPERPIXEL, 4));
+                wr.AddField(new TiffWriter.FieldShort(TIFFConstants.TIFFTAG_BITSPERSAMPLE, new int[]{8,8,8,8}));
+                wr.AddField(new TiffWriter.FieldShort(TIFFConstants.TIFFTAG_PHOTOMETRIC, TIFFConstants.PHOTOMETRIC_SEPARATED));
+                wr.AddField(new TiffWriter.FieldLong(TIFFConstants.TIFFTAG_IMAGEWIDTH, width));
+                wr.AddField(new TiffWriter.FieldLong(TIFFConstants.TIFFTAG_IMAGELENGTH, height));
+                wr.AddField(new TiffWriter.FieldShort(TIFFConstants.TIFFTAG_COMPRESSION, TIFFConstants.COMPRESSION_LZW));
+                wr.AddField(new TiffWriter.FieldShort(TIFFConstants.TIFFTAG_PREDICTOR, TIFFConstants.PREDICTOR_HORIZONTAL_DIFFERENCING));
+                wr.AddField(new TiffWriter.FieldLong(TIFFConstants.TIFFTAG_ROWSPERSTRIP, height));
+                wr.AddField(new TiffWriter.FieldRational(TIFFConstants.TIFFTAG_XRESOLUTION, new int[]{300,1}));
+                wr.AddField(new TiffWriter.FieldRational(TIFFConstants.TIFFTAG_YRESOLUTION, new int[]{300,1}));
+                wr.AddField(new TiffWriter.FieldShort(TIFFConstants.TIFFTAG_RESOLUTIONUNIT, TIFFConstants.RESUNIT_INCH));
+                wr.AddField(new TiffWriter.FieldAscii(TIFFConstants.TIFFTAG_SOFTWARE, Document.Version));
+                MemoryStream comp = new MemoryStream();
+                TiffWriter.CompressLZW(comp, 2, streamBytes, height, 4, stride);
+                byte[] buf = comp.ToArray();
+                wr.AddField(new TiffWriter.FieldImage(buf));
+                wr.AddField(new TiffWriter.FieldLong(TIFFConstants.TIFFTAG_STRIPBYTECOUNTS, buf.Length));
+                if (icc != null)
+                    wr.AddField(new TiffWriter.FieldUndefined(TIFFConstants.TIFFTAG_ICCPROFILE, icc));
+                wr.WriteFile(ms);
+                fileType = TYPE_TIF;
+                return ms.ToArray();
+            }
             PngWriter png = new PngWriter(ms);
             png.WriteHeader(width, height, pngBitDepth, pngColorType);
             if (icc != null)

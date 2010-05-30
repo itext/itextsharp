@@ -641,7 +641,7 @@ namespace iTextSharp.text.pdf.codec {
                 } else {
                     throw new Exception("Unknown compression type " + compression);
                 }
-            } catch (IndexOutOfRangeException e) {
+            } catch (IndexOutOfRangeException) {
                 //ignore
             }
         }
@@ -835,7 +835,7 @@ namespace iTextSharp.text.pdf.codec {
 
             int a0, a1, b1, b2;
             int[] b = new int[2];
-            int entry, code, bits, color;
+            int entry, code, bits;
             bool isWhite;
             int currIndex = 0;
             int[] temp;
@@ -858,7 +858,7 @@ namespace iTextSharp.text.pdf.codec {
                 try {
                     modeFlag = FindNextLine();
                     lines++; // Normally 'lines' will be 0 on exiting loop.
-                } catch (Exception eofe) {
+                } catch {
                     throw new Exception("No reference line present.");
                 }
             }
@@ -877,7 +877,7 @@ namespace iTextSharp.text.pdf.codec {
                 // indicates whether the following scanline is 1D or 2D encoded.
                 try {
                     modeFlag = FindNextLine();
-                } catch (Exception eofe) {
+                } catch {
                     ++fails;
                     break;
                 }
@@ -973,7 +973,7 @@ namespace iTextSharp.text.pdf.codec {
                                 try {
                                     modeFlag = FindNextLine();
                                     numLinesTested++;
-                                } catch (Exception eofe) {
+                                } catch {
                                     return;
                                 }
                             }
@@ -1283,7 +1283,7 @@ namespace iTextSharp.text.pdf.codec {
 
         // Returns run length
         private int DecodeBlackCodeWord() {
-            int current, entry, bits, isT, twoBits, code = -1;
+            int current, entry, bits, isT, code = -1;
             int runLength = 0;
             bool isWhite = false;
 
