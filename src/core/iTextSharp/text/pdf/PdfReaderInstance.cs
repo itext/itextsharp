@@ -63,6 +63,7 @@ namespace iTextSharp.text.pdf {
         internal PdfWriter writer;
         internal Dictionary<int,object> visited = new Dictionary<int,object>();
         internal List<int> nextRound = new List<int>();
+        private bool outputToPdf = true;
         
         internal PdfReaderInstance(PdfReader reader, PdfWriter writer) {
             this.reader = reader;
@@ -180,6 +181,21 @@ namespace iTextSharp.text.pdf {
                 catch  {
                     //Empty on purpose
                 }
+            }
+        }
+
+        /** Determinates if this instance will be written to the pdf
+         * as a XObject. It is generally set to false by PdfCopy to avoid
+         * duplication of objects.
+         * @param outputToPdf true to write, false not to write
+         * @since   iText 5.0.3
+         */
+        internal bool OutputToPdf {
+            get {
+                return outputToPdf;
+            }
+            set {
+                outputToPdf = value;
             }
         }
     }

@@ -171,6 +171,7 @@ namespace iTextSharp.text.pdf {
             else {
                 currentPdfReaderInstance = base.GetPdfReaderInstance(reader);
             }
+            currentPdfReaderInstance.OutputToPdf = false;
             return currentPdfReaderInstance.GetImportedPage(pageNumber);            
         }
         
