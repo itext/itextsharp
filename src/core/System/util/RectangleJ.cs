@@ -55,8 +55,8 @@ namespace System.util {
         }
 
         public void Add(RectangleJ rect) {
-            float x1 = Math.Min(Math.Min(x, x + width), Math.Min(rect.x, x + rect.width));
-            float x2 = Math.Max(Math.Max(x, x + width), Math.Max(rect.x, x + rect.width));
+            float x1 = Math.Min(Math.Min(x, x + width), Math.Min(rect.x, rect.x + rect.width));
+            float x2 = Math.Max(Math.Max(x, x + width), Math.Max(rect.x, rect.x + rect.width));
             float y1 = Math.Min(Math.Min(y, y + height), Math.Min(rect.y, rect.y + rect.height));
             float y2 = Math.Max(Math.Max(y, y + height), Math.Max(rect.y, rect.y + rect.height));
             x = x1;
