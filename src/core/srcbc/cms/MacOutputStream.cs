@@ -21,9 +21,9 @@ namespace Org.BouncyCastle.Cms
 			mac.BlockUpdate(b, off, len);
 		}
 
-		public void WriteByte(int b)
+		public override void WriteByte(byte b)
 		{
-			mac.Update((byte)b);
+			mac.Update(b);
 		}
 	}
 }

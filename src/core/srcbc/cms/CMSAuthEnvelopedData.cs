@@ -5,6 +5,7 @@ using System.IO;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Cms;
 using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Crypto.Parameters;
 
 namespace Org.BouncyCastle.Cms
 {
@@ -44,26 +45,68 @@ namespace Org.BouncyCastle.Cms
 			this.originator = authEnvData.OriginatorInfo;
 
 			//
-			// read the encrypted content info
+	        // read the recipients
+	        //
+	        Asn1Set recipientInfos = authEnvData.RecipientInfos;
+
+			//
+			// read the auth-encrypted content info
 			//
 			EncryptedContentInfo authEncInfo = authEnvData.AuthEncryptedContentInfo;
-
 			this.authEncAlg = authEncInfo.ContentEncryptionAlgorithm;
+			CmsSecureReadable secureReadable = new AuthEnvelopedSecureReadable(this);
 
 			//
-			// load the RecipientInfoStore
+			// build the RecipientInformationStore
 			//
-			byte[] contentOctets = authEncInfo.EncryptedContent.GetOctets();
-			IList infos = CmsEnvelopedHelper.ReadRecipientInfos(
-				authEnvData.RecipientInfos, contentOctets, null, null, authEncAlg);
-			this.recipientInfoStore = new RecipientInformationStore(infos);
+			this.recipientInfoStore = CmsEnvelopedHelper.BuildRecipientInformationStore(
+				recipientInfos, secureReadable);
 
 			// FIXME These need to be passed to the AEAD cipher as AAD (Additional Authenticated Data)
 			this.authAttrs = authEnvData.AuthAttrs;
-
 			this.mac = authEnvData.Mac.GetOctets();
-
 			this.unauthAttrs = authEnvData.UnauthAttrs;
+		}
+
+		private class AuthEnvelopedSecureReadable : CmsSecureReadable
+		{
+			private readonly CmsAuthEnvelopedData parent;
+
+			internal AuthEnvelopedSecureReadable(CmsAuthEnvelopedData parent)
+			{
+				this.parent = parent;
+			}
+
+			public AlgorithmIdentifier Algorithm
+			{
+				get { return parent.authEncAlg; }
+			}
+
+			public object CryptoObject
+			{
+				get { return null; }
+			}
+
+			public CmsReadable GetReadable(KeyParameter key)
+			{
+				// TODO Create AEAD cipher instance to decrypt and calculate tag ( MAC)
+				throw new CmsException("AuthEnveloped data decryption not yet implemented");
+
+//				RFC 5084 ASN.1 Module
+//				-- Parameters for AlgorithmIdentifier
+//				
+//				CCMParameters ::= SEQUENCE {
+//				  aes-nonce         OCTET STRING (SIZE(7..13)),
+//				  aes-ICVlen        AES-CCM-ICVlen DEFAULT 12 }
+//				
+//				AES-CCM-ICVlen ::= INTEGER (4 | 6 | 8 | 10 | 12 | 14 | 16)
+//				
+//				GCMParameters ::= SEQUENCE {
+//				  aes-nonce        OCTET STRING, -- recommended size is 12 octets
+//				  aes-ICVlen       AES-GCM-ICVlen DEFAULT 12 }
+//				
+//				AES-GCM-ICVlen ::= INTEGER (12 | 13 | 14 | 15 | 16)
+			}            
 		}
 	}
 }

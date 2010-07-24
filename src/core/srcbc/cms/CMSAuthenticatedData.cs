@@ -42,22 +42,29 @@ namespace Org.BouncyCastle.Cms
 			AuthenticatedData authData = AuthenticatedData.GetInstance(contentInfo.Content);
 
 			//
-			// read the encapsulated content info
+			// read the recipients
 			//
-			ContentInfo encInfo = authData.EncapsulatedContentInfo;
+			Asn1Set recipientInfos = authData.RecipientInfos;
 
 			this.macAlg = authData.MacAlgorithm;
-			this.mac = authData.Mac.GetOctets();
 
 			//
-			// load the RecipientInfoStore
+			// read the authenticated content info
 			//
-			byte[] contentOctets = Asn1OctetString.GetInstance(encInfo.Content).GetOctets();
-			IList infos = CmsEnvelopedHelper.ReadRecipientInfos(
-				authData.RecipientInfos, contentOctets, null, macAlg, null);
+			ContentInfo encInfo = authData.EncapsulatedContentInfo;
+			CmsReadable readable = new CmsProcessableByteArray(
+				Asn1OctetString.GetInstance(encInfo.Content).GetOctets());
+			CmsSecureReadable secureReadable = new CmsEnvelopedHelper.CmsAuthenticatedSecureReadable(
+				this.macAlg, readable);
+
+			//
+			// build the RecipientInformationStore
+			//
+			this.recipientInfoStore = CmsEnvelopedHelper.BuildRecipientInformationStore(
+				recipientInfos, secureReadable);
 
 			this.authAttrs = authData.AuthAttrs;
-			this.recipientInfoStore = new RecipientInformationStore(infos);
+			this.mac = authData.Mac.GetOctets();
 			this.unauthAttrs = authData.UnauthAttrs;
 		}
 

@@ -24,6 +24,10 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// <remarks>An implementation of all high level protocols in TLS 1.0.</remarks>
 	public class TlsProtocolHandler
 	{
+//		private const int EXT_RenegotiationInfo = 0xFF01;
+
+		private const int TLS_EMPTY_RENEGOTIATION_INFO_SCSV = 0x00FF;
+
 		private const short RL_CHANGE_CIPHER_SPEC = 20;
 		private const short RL_ALERT = 21;
 		private const short RL_HANDSHAKE = 22;
@@ -122,8 +126,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		private RecordStream rs;
 		private SecureRandom random;
 
-		private TlsInputStream tlsInputStream = null;
-		private TlsOutputStream tlsOutputStream = null;
+		private TlsStream tlsStream = null;
 
 		private bool closed = false;
 		private bool failedWithError = false;
@@ -135,6 +138,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 		private TlsClient tlsClient = null;
 		private int[] offeredCipherSuites = null;
 		private TlsKeyExchange keyExchange = null;
+
+		private short connection_state = 0;
 
 		private static SecureRandom CreateSecureRandom()
 		{
@@ -149,9 +154,20 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return new SecureRandom(seed);
 		}
 
-		/*
-		* Both streams can be the same object
-		*/
+		public TlsProtocolHandler(
+			Stream s)
+			: this(s, s)
+		{
+		}
+
+		public TlsProtocolHandler(
+			Stream			s,
+			SecureRandom	sr)
+			: this(s, s, sr)
+		{
+		}
+
+		/// <remarks>Both streams can be the same object</remarks>
 		public TlsProtocolHandler(
 			Stream	inStr,
 			Stream	outStr)
@@ -159,6 +175,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 		}
 
+		/// <remarks>Both streams can be the same object</remarks>
 		public TlsProtocolHandler(
 			Stream			inStr,
 			Stream			outStr,
@@ -173,8 +190,6 @@ namespace Org.BouncyCastle.Crypto.Tls
 			get { return random; }
 		}
 
-		private short connection_state;
-
 		internal void ProcessData(
 			short	protocol,
 			byte[]	buf,
@@ -188,15 +203,15 @@ namespace Org.BouncyCastle.Crypto.Tls
 			{
 				case RL_CHANGE_CIPHER_SPEC:
 					changeCipherSpecQueue.AddData(buf, offset, len);
-					processChangeCipherSpec();
+					ProcessChangeCipherSpec();
 					break;
 				case RL_ALERT:
 					alertQueue.AddData(buf, offset, len);
-					processAlert();
+					ProcessAlert();
 					break;
 				case RL_HANDSHAKE:
 					handshakeQueue.AddData(buf, offset, len);
-					processHandshake();
+					ProcessHandshake();
 					break;
 				case RL_APPLICATION_DATA:
 					if (!appDataReady)
@@ -204,7 +219,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 						this.FailWithError(AL_fatal, AP_unexpected_message);
 					}
 					applicationDataQueue.AddData(buf, offset, len);
-					processApplicationData();
+					ProcessApplicationData();
 					break;
 				default:
 					/*
@@ -216,7 +231,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			}
 		}
 
-		private void processHandshake()
+		private void ProcessHandshake()
 		{
 			bool read;
 			do
@@ -268,7 +283,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 						/*
 						* Now, parse the message.
 						*/
-						processHandshakeMessage(type, buf);
+						ProcessHandshakeMessage(type, buf);
 						read = true;
 					}
 				}
@@ -276,7 +291,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			while (read);
 		}
 
-		private void processHandshakeMessage(short type, byte[] buf)
+		private void ProcessHandshakeMessage(short type, byte[] buf)
 		{
 			MemoryStream inStr = new MemoryStream(buf, false);
 
@@ -425,6 +440,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 	                                }
 	                            }
 
+								// TODO[RFC 5746] If renegotiation_info was sent in client hello, check here
+
 	                            tlsClient.ProcessServerExtensions(serverExtensions);
 	                        }
 
@@ -461,14 +478,14 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 							if (isClientCertificateRequested)
 							{
-								sendClientCertificate(tlsClient.GetCertificate());
+								SendClientCertificate(tlsClient.GetCertificate());
 							}
 
 							/*
 							 * Send the client key exchange message, depending on the key
 							 * exchange we are using in our ciphersuite.
 							 */
-							sendClientKeyExchange(this.keyExchange.GenerateClientKeyExchange());
+							SendClientKeyExchange(this.keyExchange.GenerateClientKeyExchange());
 
 							connection_state = CS_CLIENT_KEY_EXCHANGE_SEND;
 
@@ -477,7 +494,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 								byte[] clientCertificateSignature = tlsClient.GenerateCertificateSignature(rs.GetCurrentHash());
 								if (clientCertificateSignature != null)
 								{
-									sendCertificateVerify(clientCertificateSignature);
+									SendCertificateVerify(clientCertificateSignature);
 
 									connection_state = CS_CERTIFICATE_VERIFY_SEND;
 								}
@@ -599,6 +616,19 @@ namespace Org.BouncyCastle.Crypto.Tls
 					this.connection_state = CS_CERTIFICATE_REQUEST_RECEIVED;
 					break;
 				case HP_HELLO_REQUEST:
+					/*
+					 * RFC 2246 7.4.1.1 Hello request
+					 * "This message will be ignored by the client if the client is currently
+					 * negotiating a session. This message may be ignored by the client if it
+					 * does not wish to renegotiate a session, or the client may, if it wishes,
+					 * respond with a no_renegotiation alert."
+					 */
+					if (connection_state == CS_DONE)
+					{
+						// Renegotiation not supported yet
+						SendAlert(AL_warning, AP_no_renegotiation);
+					}
+					break;
 				case HP_CLIENT_KEY_EXCHANGE:
 				case HP_CERTIFICATE_VERIFY:
 				case HP_CLIENT_HELLO:
@@ -609,7 +639,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			}
 		}
 
-		private void processApplicationData()
+		private void ProcessApplicationData()
 		{
 			/*
 			* There is nothing we need to do here.
@@ -619,7 +649,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			*/
 		}
 
-		private void processAlert()
+		private void ProcessAlert()
 		{
 			while (alertQueue.Available >= 2)
 			{
@@ -675,7 +705,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		* @throws IOException If the message has an invalid content or the
 		*                     handshake is not in the correct state.
 		*/
-		private void processChangeCipherSpec()
+		private void ProcessChangeCipherSpec()
 		{
 			while (changeCipherSpecQueue.Available > 0)
 			{
@@ -707,7 +737,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			}
 		}
 
-		private void sendClientCertificate(Certificate clientCert)
+		private void SendClientCertificate(Certificate clientCert)
 		{
 			MemoryStream bos = new MemoryStream();
 			TlsUtilities.WriteUint8(HP_CERTIFICATE, bos);
@@ -717,7 +747,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			rs.WriteMessage(RL_HANDSHAKE, message, 0, message.Length);
 		}
 
-		private void sendClientKeyExchange(
+		private void SendClientKeyExchange(
 			byte[] keData)
 		{
 			MemoryStream bos = new MemoryStream();
@@ -736,7 +766,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			rs.WriteMessage(RL_HANDSHAKE, message, 0, message.Length);
 		}
 
-		private void sendCertificateVerify(byte[] data)
+		private void SendCertificateVerify(byte[] data)
 		{
 			/*
 			 * Send signature of handshake messages so far to prove we are the owner of
@@ -774,8 +804,13 @@ namespace Org.BouncyCastle.Crypto.Tls
 		// TODO Make public
 		internal virtual void Connect(TlsClient tlsClient)
 		{
-	        this.tlsClient = tlsClient;
-    	    this.tlsClient.Init(this);
+			if (tlsClient == null)
+				throw new ArgumentNullException("tlsClient");
+			if (this.tlsClient != null)
+				throw new InvalidOperationException("Connect can only be called once");
+
+			this.tlsClient = tlsClient;
+			this.tlsClient.Init(this);
 
 			/*
 			 * Send Client hello
@@ -800,12 +835,17 @@ namespace Org.BouncyCastle.Crypto.Tls
 			* Cipher suites
 			*/
 			this.offeredCipherSuites = this.tlsClient.GetCipherSuites();
-			
-			TlsUtilities.WriteUint16(2 * offeredCipherSuites.Length, outStr);
+
+			// Note: 1 extra slot for TLS_EMPTY_RENEGOTIATION_INFO_SCSV
+			TlsUtilities.WriteUint16(2 * (offeredCipherSuites.Length + 1), outStr);
 			for (int i = 0; i < offeredCipherSuites.Length; ++i)
 			{
 				TlsUtilities.WriteUint16(offeredCipherSuites[i], outStr);
 			}
+
+			// RFC 5746 3.3
+			// Note: If renegotiation added, remove this (and extra slot above)
+			TlsUtilities.WriteUint16(TLS_EMPTY_RENEGOTIATION_INFO_SCSV, outStr);
 
 			/*
 			* Compression methods, just the null method.
@@ -818,6 +858,15 @@ namespace Org.BouncyCastle.Crypto.Tls
 			*/
 			// Int32 -> byte[]
 			Hashtable clientExtensions = this.tlsClient.GenerateClientExtensions();
+
+			// RFC 5746 3.4
+			// Note: If renegotiation is implemented, need to use this instead of TLS_EMPTY_RENEGOTIATION_INFO_SCSV
+//			{
+//				if (clientExtensions == null)
+//					clientExtensions = new Hashtable();
+//
+//				clientExtensions[EXT_RenegotiationInfo] = CreateRenegotiationInfo(emptybuf);
+//			}
 
 			this.extendedClientHello = clientExtensions != null && clientExtensions.Count > 0;
 
@@ -854,8 +903,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 				rs.ReadData();
 			}
 
-			this.tlsInputStream = new TlsInputStream(this);
-			this.tlsOutputStream = new TlsOutputStream(this);
+			this.tlsStream = new TlsStream(this);
 		}
 
 		/**
@@ -982,15 +1030,23 @@ namespace Org.BouncyCastle.Crypto.Tls
 		}
 
 		/// <summary>A Stream which can be used to send data.</summary>
+		[Obsolete("Use 'Stream' property instead")]
 		public virtual Stream OutputStream
 		{
-			get { return this.tlsOutputStream; }
+			get { return this.tlsStream; }
 		}
 
 		/// <summary>A Stream which can be used to read data.</summary>
+		[Obsolete("Use 'Stream' property instead")]
 		public virtual Stream InputStream
 		{
-			get { return this.tlsInputStream; }
+			get { return this.tlsStream; }
+		}
+
+		/// <summary>The secure bidirectional stream for this connection</summary>
+		public virtual Stream Stream
+		{
+			get { return this.tlsStream; }
 		}
 
 		/**
@@ -1014,9 +1070,6 @@ namespace Org.BouncyCastle.Crypto.Tls
 				/*
 				* Prepare the message
 				*/
-				byte[] error = new byte[2];
-				error[0] = (byte)alertLevel;
-				error[1] = (byte)alertDescription;
 				this.closed = true;
 
 				if (alertLevel == AL_fatal)
@@ -1026,7 +1079,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 					*/
 					this.failedWithError = true;
 				}
-				rs.WriteMessage(RL_ALERT, error, 0, 2);
+				SendAlert(alertLevel, alertDescription);
 				rs.Close();
 				if (alertLevel == AL_fatal)
 				{
@@ -1037,6 +1090,17 @@ namespace Org.BouncyCastle.Crypto.Tls
 			{
 				throw new IOException(TLS_ERROR_MESSAGE);
 			}
+		}
+
+		internal void SendAlert(
+			short	alertLevel,
+			short	alertDescription)
+		{
+			byte[] error = new byte[2];
+			error[0] = (byte)alertLevel;
+			error[1] = (byte)alertDescription;
+
+			rs.WriteMessage(RL_ALERT, error, 0, 2);
 		}
 
 		/// <summary>Closes this connection</summary>
@@ -1069,6 +1133,11 @@ namespace Org.BouncyCastle.Crypto.Tls
 			rs.Flush();
 		}
 
+		internal bool IsClosed
+		{
+			get { return closed; }
+		}
+
 		private bool WasCipherSuiteOffered(int cipherSuite)
 		{
 			for (int i = 0; i < offeredCipherSuites.Length; ++i)
@@ -1078,5 +1147,12 @@ namespace Org.BouncyCastle.Crypto.Tls
 			}
 			return false;
 		}
+
+//		private byte[] CreateRenegotiationInfo(byte[] renegotiated_connection)
+//		{
+//			MemoryStream buf = new MemoryStream();
+//			TlsUtilities.WriteOpaque8(renegotiated_connection, buf);
+//			return buf.ToArray();
+//		}
 	}
 }

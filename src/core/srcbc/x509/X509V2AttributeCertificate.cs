@@ -19,21 +19,31 @@ namespace Org.BouncyCastle.X509
 		private readonly DateTime notBefore;
 		private readonly DateTime notAfter;
 
+		private static AttributeCertificate GetObject(Stream input)
+		{
+			try
+			{
+				return AttributeCertificate.GetInstance(Asn1Object.FromStream(input));
+			}
+			catch (IOException e)
+			{
+				throw e;
+			}
+			catch (Exception e)
+			{
+				throw new IOException("exception decoding certificate structure", e);
+			}
+		}
+
 		public X509V2AttributeCertificate(
 			Stream encIn)
-			: this(new Asn1InputStream(encIn))
+			: this(GetObject(encIn))
 		{
 		}
 
 		public X509V2AttributeCertificate(
 			byte[] encoded)
-			: this(new Asn1InputStream(encoded))
-		{
-		}
-
-		internal X509V2AttributeCertificate(
-			Asn1InputStream ais)
-			: this(AttributeCertificate.GetInstance(ais.ReadObject()))
+			: this(new MemoryStream(encoded, false))
 		{
 		}
 

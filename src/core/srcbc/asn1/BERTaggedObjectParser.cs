@@ -8,29 +8,32 @@ namespace Org.BouncyCastle.Asn1
 	public class BerTaggedObjectParser
 		: Asn1TaggedObjectParser
 	{
-		private int _baseTag;
-		private int _tagNumber;
-		private Stream _contentStream;
+		private bool				_constructed;
+		private int					_tagNumber;
+		private Asn1StreamParser	_parser;
 
-		private bool _indefiniteLength;
-
+		[Obsolete]
 		internal BerTaggedObjectParser(
 			int		baseTag,
 			int		tagNumber,
 			Stream	contentStream)
+			: this((baseTag & Asn1Tags.Constructed) != 0, tagNumber, new Asn1StreamParser(contentStream))
 		{
-			if (!contentStream.CanRead)
-				throw new ArgumentException("Expected stream to be readable", "contentStream");
+		}
 
-			_baseTag = baseTag;
+		internal BerTaggedObjectParser(
+			bool				constructed,
+			int					tagNumber,
+			Asn1StreamParser	parser)
+		{
+			_constructed = constructed;
 			_tagNumber = tagNumber;
-			_contentStream = contentStream;
-			_indefiniteLength = contentStream is IndefiniteLengthInputStream;
+			_parser = parser;
 		}
 
 		public bool IsConstructed
 		{
-			get { return (_baseTag & Asn1Tags.Constructed) != 0; }
+			get { return _constructed; }
 		}
 
 		public int TagNo
@@ -44,84 +47,24 @@ namespace Org.BouncyCastle.Asn1
 		{
 			if (isExplicit)
 			{
-				return new Asn1StreamParser(_contentStream).ReadObject();
+				if (!_constructed)
+					throw new IOException("Explicit tags must be constructed (see X.690 8.14.2)");
+
+				return _parser.ReadObject();
 			}
 
-			switch (tag)
-			{
-				case Asn1Tags.Set:
-					if (_indefiniteLength)
-					{
-						return new BerSetParser(new Asn1StreamParser(_contentStream));
-					}
-					else
-					{
-						return new DerSetParser(new Asn1StreamParser(_contentStream));
-					}
-				case Asn1Tags.Sequence:
-					if (_indefiniteLength)
-					{
-						return new BerSequenceParser(new Asn1StreamParser(_contentStream));
-					}
-					else
-					{
-						return new DerSequenceParser(new Asn1StreamParser(_contentStream));
-					}
-				case Asn1Tags.OctetString:
-					// TODO Is the handling of definite length constructed encodings correct?
-					if (_indefiniteLength || IsConstructed)
-					{
-						return new BerOctetStringParser(new Asn1StreamParser(_contentStream));
-					}
-					else
-					{
-						return new DerOctetStringParser((DefiniteLengthInputStream)_contentStream);
-					}
-			}
-
-			throw Platform.CreateNotImplementedException("implicit tagging");
-		}
-
-		private Asn1EncodableVector rLoadVector(Stream inStream)
-		{
-			try
-			{
-				return new Asn1StreamParser(inStream).ReadVector();
-			}
-			catch (IOException e)
-			{
-				throw new InvalidOperationException(e.Message, e);
-			}
+			return _parser.ReadImplicit(_constructed, tag);
 		}
 
 		public Asn1Object ToAsn1Object()
 		{
-			if (_indefiniteLength)
-			{
-				Asn1EncodableVector v = rLoadVector(_contentStream);
-
-				return v.Count == 1
-					?	new BerTaggedObject(true, _tagNumber, v[0])
-					:	new BerTaggedObject(false, _tagNumber, BerSequence.FromVector(v));
-			}
-
-			if (IsConstructed)
-			{
-				Asn1EncodableVector v = rLoadVector(_contentStream);
-
-				return v.Count == 1
-					?	new DerTaggedObject(true, _tagNumber, v[0])
-					:	new DerTaggedObject(false, _tagNumber, DerSequence.FromVector(v));
-			}
-
 			try
 			{
-				DefiniteLengthInputStream defIn = (DefiniteLengthInputStream) _contentStream;
-				return new DerTaggedObject(false, _tagNumber, new DerOctetString(defIn.ToArray()));
+				return _parser.ReadTaggedObject(_constructed, _tagNumber);
 			}
 			catch (IOException e)
 			{
-				throw new InvalidOperationException(e.Message, e);
+				throw new Asn1ParsingException(e.Message);
 			}
 		}
 	}

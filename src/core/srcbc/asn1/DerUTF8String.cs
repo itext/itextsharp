@@ -24,16 +24,6 @@ namespace Org.BouncyCastle.Asn1
                 return (DerUtf8String)obj;
             }
 
-			if (obj is Asn1OctetString)
-            {
-                return new DerUtf8String(((Asn1OctetString)obj).GetOctets());
-            }
-
-			if (obj is Asn1TaggedObject)
-            {
-                return GetInstance(((Asn1TaggedObject)obj).GetObject());
-            }
-
 			throw new ArgumentException("illegal object in GetInstance: " + obj.GetType().Name);
         }
 
@@ -48,15 +38,22 @@ namespace Org.BouncyCastle.Asn1
          */
         public static DerUtf8String GetInstance(
             Asn1TaggedObject	obj,
-            bool				explicitly)
+            bool				isExplicit)
         {
-            return GetInstance(obj.GetObject());
+			Asn1Object o = obj.GetObject();
+
+			if (isExplicit || o is DerUtf8String)
+			{
+				return GetInstance(o);
+			}
+
+			return new DerUtf8String(Asn1OctetString.GetInstance(o).GetOctets());
         }
 
         /**
          * basic constructor - byte encoded string.
          */
-        internal DerUtf8String(
+        public DerUtf8String(
             byte[] str)
 			: this(Encoding.UTF8.GetString(str, 0, str.Length))
         {

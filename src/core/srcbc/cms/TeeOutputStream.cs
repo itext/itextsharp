@@ -9,33 +9,33 @@ namespace Org.BouncyCastle.Cms
 	internal class TeeOutputStream
 		: BaseOutputStream
 	{
-		private readonly Stream s1, s2;
+		private readonly Stream output, tee;
 
-		internal TeeOutputStream(Stream dataOutputStream, Stream digStream)
+		internal TeeOutputStream(Stream output, Stream tee)
 		{
-			Debug.Assert(dataOutputStream.CanWrite);
-			Debug.Assert(digStream.CanWrite);
+			Debug.Assert(output.CanWrite);
+			Debug.Assert(tee.CanWrite);
 
-			this.s1 = dataOutputStream;
-			this.s2 = digStream;
-		}
-
-		public override void Write(byte[] buffer, int offset, int count)
-		{
-			s1.Write(buffer, offset, count);
-			s2.Write(buffer, offset, count);
-		}
-
-		public override void WriteByte(byte b)
-		{
-			s1.WriteByte(b);
-			s2.WriteByte(b);
+			this.output = output;
+			this.tee = tee;
 		}
 
 		public override void Close()
 		{
-			s1.Close();
-			s2.Close();
+			output.Close();
+			tee.Close();
+		}
+
+		public override void Write(byte[] buffer, int offset, int count)
+		{
+			output.Write(buffer, offset, count);
+			tee.Write(buffer, offset, count);
+		}
+
+		public override void WriteByte(byte b)
+		{
+			output.WriteByte(b);
+			tee.WriteByte(b);
 		}
 	}
 }

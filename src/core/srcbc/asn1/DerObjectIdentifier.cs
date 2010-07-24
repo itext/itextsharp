@@ -83,39 +83,15 @@ namespace Org.BouncyCastle.Asn1
             Stream	outputStream,
             long	fieldValue)
         {
-            if (fieldValue >= (1L << 7))
-            {
-                if (fieldValue >= (1L << 14))
-                {
-                    if (fieldValue >= (1L << 21))
-                    {
-                        if (fieldValue >= (1L << 28))
-                        {
-                            if (fieldValue >= (1L << 35))
-                            {
-                                if (fieldValue >= (1L << 42))
-                                {
-                                    if (fieldValue >= (1L << 49))
-                                    {
-                                        if (fieldValue >= (1L << 56))
-                                        {
-                                            outputStream.WriteByte((byte)((fieldValue >> 56) | 0x80));
-                                        }
-                                        outputStream.WriteByte((byte)((fieldValue >> 49) | 0x80));
-                                    }
-                                    outputStream.WriteByte((byte)((fieldValue >> 42) | 0x80));
-                                }
-                                outputStream.WriteByte((byte)((fieldValue >> 35) | 0x80));
-                            }
-                            outputStream.WriteByte((byte)((fieldValue >> 28) | 0x80));
-                        }
-                        outputStream.WriteByte((byte)((fieldValue >> 21) | 0x80));
-                    }
-                    outputStream.WriteByte((byte)((fieldValue >> 14) | 0x80));
-                }
-                outputStream.WriteByte((byte)((fieldValue >> 7) | 0x80));
-            }
-            outputStream.WriteByte((byte)(fieldValue & 0x7f));
+			byte[] result = new byte[9];
+			int pos = 8;
+			result[pos] = (byte)(fieldValue & 0x7f);
+			while (fieldValue >= (1L << 7))
+			{
+				fieldValue >>= 7;
+				result[--pos] = (byte)((fieldValue & 0x7f) | 0x80);
+			}
+			outputStream.Write(result, pos, 9 - pos);
         }
 
 		private void WriteField(

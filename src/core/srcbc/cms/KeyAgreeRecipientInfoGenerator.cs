@@ -19,18 +19,23 @@ namespace Org.BouncyCastle.Cms
 	{
 		private static readonly CmsEnvelopedHelper Helper = CmsEnvelopedHelper.Instance;
 
-		private DerObjectIdentifier			algorithmOID;
-		private AsymmetricCipherKeyPair		senderKeyPair;
+		private DerObjectIdentifier			keyAgreementOID;
+		private DerObjectIdentifier			keyEncryptionOID;
 		private ArrayList					recipientCerts;
-		private DerObjectIdentifier			wrapAlgorithmOID;
+		private AsymmetricCipherKeyPair		senderKeyPair;
 
 		internal KeyAgreeRecipientInfoGenerator()
 		{
 		}
 
-		internal DerObjectIdentifier AlgorithmOid
+		internal DerObjectIdentifier KeyAgreementOID
 		{
-			set { this.algorithmOID = value; }
+			set { this.keyAgreementOID = value; }
+		}
+
+		internal DerObjectIdentifier KeyEncryptionOID
+		{
+			set { this.keyEncryptionOID = value; }
 		}
 
 		internal ICollection RecipientCerts
@@ -43,17 +48,9 @@ namespace Org.BouncyCastle.Cms
 			set { this.senderKeyPair = value; }
 		}
 
-		internal DerObjectIdentifier WrapAlgorithmOid
-		{
-			set { this.wrapAlgorithmOID = value; }
-		}
-
 		public RecipientInfo Generate(KeyParameter contentEncryptionKey, SecureRandom random)
 		{
 			byte[] keyBytes = contentEncryptionKey.GetKey();
-
-			string agreementAlgorithm = algorithmOID.Id;
-			string cekWrapAlgorithm = wrapAlgorithmOID.Id;
 
 			AsymmetricKeyParameter senderPublicKey = senderKeyPair.Public;
 			ICipherParameters senderPrivateParams = senderKeyPair.Private;
@@ -72,12 +69,12 @@ namespace Org.BouncyCastle.Cms
 
 
 			Asn1OctetString ukm = null;
-			if (agreementAlgorithm.Equals(CmsEnvelopedGenerator.ECMqvSha1Kdf))
+			if (keyAgreementOID.Id.Equals(CmsEnvelopedGenerator.ECMqvSha1Kdf))
 			{
 				try
 				{
 					IAsymmetricCipherKeyPairGenerator ephemKPG =
-						GeneratorUtilities.GetKeyPairGenerator(agreementAlgorithm);
+						GeneratorUtilities.GetKeyPairGenerator(keyAgreementOID);
 					ephemKPG.Init(
 						((ECPublicKeyParameters)senderPublicKey).CreateKeyGenerationParameters(random));
 
@@ -104,9 +101,9 @@ namespace Org.BouncyCastle.Cms
 
 
 			DerSequence paramSeq = new DerSequence(
-				wrapAlgorithmOID,
+				keyEncryptionOID,
 				DerNull.Instance);
-			AlgorithmIdentifier keyEncAlg = new AlgorithmIdentifier(algorithmOID, paramSeq);
+			AlgorithmIdentifier keyEncAlg = new AlgorithmIdentifier(keyAgreementOID, paramSeq);
 
 
 			Asn1EncodableVector recipientEncryptedKeys = new Asn1EncodableVector();
@@ -129,7 +126,7 @@ namespace Org.BouncyCastle.Cms
 				KeyAgreeRecipientIdentifier karid = new KeyAgreeRecipientIdentifier(issuerSerial);
 
 				ICipherParameters recipientPublicParams = recipientCert.GetPublicKey();
-				if (agreementAlgorithm.Equals(CmsEnvelopedGenerator.ECMqvSha1Kdf))
+				if (keyAgreementOID.Id.Equals(CmsEnvelopedGenerator.ECMqvSha1Kdf))
 				{
 					recipientPublicParams = new MqvPublicParameters(
 						(ECPublicKeyParameters)recipientPublicParams,
@@ -137,24 +134,24 @@ namespace Org.BouncyCastle.Cms
 				}
 
 				// Use key agreement to choose a wrap key for this recipient
-				IBasicAgreement agreement = AgreementUtilities.GetBasicAgreementWithKdf(
-					agreementAlgorithm, cekWrapAlgorithm);
-				agreement.Init(new ParametersWithRandom(senderPrivateParams, random));
-				BigInteger agreedValue = agreement.CalculateAgreement(recipientPublicParams);
+				IBasicAgreement keyAgreement = AgreementUtilities.GetBasicAgreementWithKdf(
+					keyAgreementOID, keyEncryptionOID.Id);
+				keyAgreement.Init(new ParametersWithRandom(senderPrivateParams, random));
+				BigInteger agreedValue = keyAgreement.CalculateAgreement(recipientPublicParams);
 
-				int wrapKeySize = GeneratorUtilities.GetDefaultKeySize(cekWrapAlgorithm) / 8;
-				byte[] wrapKeyBytes = X9IntegerConverter.IntegerToBytes(agreedValue, wrapKeySize);
-				KeyParameter wrapKey = ParameterUtilities.CreateKeyParameter(
-					cekWrapAlgorithm, wrapKeyBytes);
+				int keyEncryptionKeySize = GeneratorUtilities.GetDefaultKeySize(keyEncryptionOID) / 8;
+				byte[] keyEncryptionKeyBytes = X9IntegerConverter.IntegerToBytes(agreedValue, keyEncryptionKeySize);
+				KeyParameter keyEncryptionKey = ParameterUtilities.CreateKeyParameter(
+					keyEncryptionOID, keyEncryptionKeyBytes);
 
 				// Wrap the content encryption key with the agreement key
-				IWrapper keyWrapper = Helper.CreateWrapper(cekWrapAlgorithm);
-				keyWrapper.Init(true, new ParametersWithRandom(wrapKey, random));
-				byte[] encKeyBytes = keyWrapper.Wrap(keyBytes, 0, keyBytes.Length);
+				IWrapper keyWrapper = Helper.CreateWrapper(keyEncryptionOID.Id);
+				keyWrapper.Init(true, new ParametersWithRandom(keyEncryptionKey, random));
+				byte[] encryptedKeyBytes = keyWrapper.Wrap(keyBytes, 0, keyBytes.Length);
 
-	        	Asn1OctetString encKey = new DerOctetString(encKeyBytes);
+	        	Asn1OctetString encryptedKey = new DerOctetString(encryptedKeyBytes);
 
-				recipientEncryptedKeys.Add(new RecipientEncryptedKey(karid, encKey));
+				recipientEncryptedKeys.Add(new RecipientEncryptedKey(karid, encryptedKey));
 			}
 
 			return new RecipientInfo(new KeyAgreeRecipientInfo(originator, ukm, keyEncAlg,

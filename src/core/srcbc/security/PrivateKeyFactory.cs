@@ -65,6 +65,8 @@ namespace Org.BouncyCastle.Security
 					keyStructure.Exponent2,
 					keyStructure.Coefficient);
 			}
+			// TODO?
+//			else if (algOid.Equals(X9ObjectIdentifiers.DHPublicNumber))
 			else if (algOid.Equals(PkcsObjectIdentifiers.DhKeyAgreement))
 			{
 				DHParameter para = new DHParameter(
@@ -75,7 +77,7 @@ namespace Org.BouncyCastle.Security
 				int l = lVal == null ? 0 : lVal.IntValue;
 				DHParameters dhParams = new DHParameters(para.P, para.G, null, l);
 
-				return new DHPrivateKeyParameters(derX.Value, dhParams);
+				return new DHPrivateKeyParameters(derX.Value, dhParams, algOid);
 			}
 			else if (algOid.Equals(OiwObjectIdentifiers.ElGamalAlgorithm))
 			{

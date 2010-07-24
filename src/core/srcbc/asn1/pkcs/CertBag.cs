@@ -5,7 +5,7 @@ namespace Org.BouncyCastle.Asn1.Pkcs
     public class CertBag
         : Asn1Encodable
     {
-		private readonly Asn1Sequence seq;
+//		private readonly Asn1Sequence seq;
         private readonly DerObjectIdentifier certID;
         private readonly Asn1Object certValue;
 
@@ -15,7 +15,7 @@ namespace Org.BouncyCastle.Asn1.Pkcs
 			if (seq.Count != 2)
 				throw new ArgumentException("Wrong number of elements in sequence", "seq");
 
-			this.seq = seq;
+//			this.seq = seq;
             this.certID = DerObjectIdentifier.GetInstance(seq[0]);
             this.certValue = DerTaggedObject.GetInstance(seq[1]).GetObject();
         }

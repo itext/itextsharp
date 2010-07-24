@@ -4,17 +4,20 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
+using Org.BouncyCastle.Utilities.Encoders;
 
 namespace Org.BouncyCastle.Crypto.Generators
 {
+	// TODO Update docs to mention FIPS 186-3 when done
     /**
      * Generate suitable parameters for DSA, in line with FIPS 186-2.
      */
     public class DsaParametersGenerator
     {
-        private int             size;
-        private int             certainty;
-        private SecureRandom    random;
+		private int				L, N;
+        private int				certainty;
+        private SecureRandom	random;
 
         /**
          * initialise the key generator.
@@ -31,154 +34,322 @@ namespace Org.BouncyCastle.Crypto.Generators
 			if (!IsValidDsaStrength(size))
 				throw new ArgumentException("size must be from 512 - 1024 and a multiple of 64", "size");
 
-			this.size = size;
-            this.certainty = certainty;
-            this.random = random;
-        }
+			Init(size, GetDefaultN(size), certainty, random);
+		}
 
-        /**
-         * add value to b, returning the result in a. The a value is treated
-         * as a BigInteger of length (a.Length * 8) bits. The result is
-         * modulo 2^a.Length in case of overflow.
-         */
-        private static void Add(
-            byte[]  a,
-            byte[]  b,
-            int     value)
-        {
-            int     x = (b[b.Length - 1] & 0xff) + value;
+		// TODO Make public to enable support for DSA keys > 1024 bits
+		private void Init(
+			int				L,
+			int				N,
+			int				certainty,
+			SecureRandom	random)
+		{
+			// TODO Check that the (L, N) pair is in the list of acceptable (L, N pairs) (see Section 4.2)
+			// TODO Should we enforce the minimum 'certainty' values as per C.3 Table C.1?
 
-            a[b.Length - 1] = (byte)x;
-            x = (int) ((uint) x >>8);
+			this.L = L;
+			this.N = N;
+			this.certainty = certainty;
+			this.random = random;
+		}
 
-            for (int i = b.Length - 2; i >= 0; i--)
-            {
-                x += (b[i] & 0xff);
-                a[i] = (byte)x;
-                x = (int) ((uint) x >>8);
-            }
-        }
+//        /**
+//         * add value to b, returning the result in a. The a value is treated
+//         * as a BigInteger of length (a.Length * 8) bits. The result is
+//         * modulo 2^a.Length in case of overflow.
+//         */
+//        private static void Add(
+//            byte[]  a,
+//            byte[]  b,
+//            int     value)
+//        {
+//            int     x = (b[b.Length - 1] & 0xff) + value;
+//
+//            a[b.Length - 1] = (byte)x;
+//            x = (int) ((uint) x >>8);
+//
+//            for (int i = b.Length - 2; i >= 0; i--)
+//            {
+//                x += (b[i] & 0xff);
+//                a[i] = (byte)x;
+//                x = (int) ((uint) x >>8);
+//            }
+//        }
 
-        /**
-         * which Generates the p and g values from the given parameters,
-         * returning the DsaParameters object.
-         * <p>
-         * Note: can take a while...</p>
-         */
-        public DsaParameters GenerateParameters()
-        {
-            byte[]          seed = new byte[20];
-            byte[]          part1 = new byte[20];
-            byte[]          part2 = new byte[20];
-            byte[]          u = new byte[20];
-            Sha1Digest      sha1 = new Sha1Digest();
-            int             n = (size - 1) / 160;
-            byte[]          w = new byte[size / 8];
+		/**
+		 * which Generates the p and g values from the given parameters,
+		 * returning the DsaParameters object.
+		 * <p>
+		 * Note: can take a while...</p>
+		 */
+		public DsaParameters GenerateParameters()
+		{
+			return L > 1024
+				?	GenerateParameters_FIPS186_3()
+				:	GenerateParameters_FIPS186_2();
+		}
 
-            BigInteger      q = null, p = null, g = null;
-            int             counter = 0;
-            bool         primesFound = false;
+		private DsaParameters GenerateParameters_FIPS186_2()
+		{
+            byte[] seed = new byte[20];
+            byte[] part1 = new byte[20];
+            byte[] part2 = new byte[20];
+            byte[] u = new byte[20];
+            Sha1Digest sha1 = new Sha1Digest();
+			int n = (L - 1) / 160;
+			byte[] w = new byte[L / 8];
 
-            while (!primesFound)
-            {
-                do
-                {
-                    random.NextBytes(seed);
+			for (;;)
+			{
+				random.NextBytes(seed);
 
-                    sha1.BlockUpdate(seed, 0, seed.Length);
+				Hash(sha1, seed, part1);
+				Array.Copy(seed, 0, part2, 0, seed.Length);
+				Inc(part2);
+				Hash(sha1, part2, part2);
 
-                    sha1.DoFinal(part1, 0);
+				for (int i = 0; i != u.Length; i++)
+				{
+					u[i] = (byte)(part1[i] ^ part2[i]);
+				}
 
-                    Array.Copy(seed, 0, part2, 0, seed.Length);
+				u[0] |= (byte)0x80;
+				u[19] |= (byte)0x01;
 
-                    Add(part2, seed, 1);
+				BigInteger q = new BigInteger(1, u);
 
-                    sha1.BlockUpdate(part2, 0, part2.Length);
+				if (!q.IsProbablePrime(certainty))
+					continue;
 
-                    sha1.DoFinal(part2, 0);
+				byte[] offset = Arrays.Clone(seed);
+				Inc(offset);
 
-                    for (int i = 0; i != u.Length; i++)
-                    {
-                        u[i] = (byte)(part1[i] ^ part2[i]);
-                    }
+				for (int counter = 0; counter < 4096; ++counter)
+				{
+					for (int k = 0; k < n; k++)
+					{
+						Inc(offset);
+						Hash(sha1, offset, part1);
+						Array.Copy(part1, 0, w, w.Length - (k + 1) * part1.Length, part1.Length);
+					}
 
-                    u[0] |= (byte)0x80;
-                    u[19] |= (byte)0x01;
+					Inc(offset);
+					Hash(sha1, offset, part1);
+					Array.Copy(part1, part1.Length - ((w.Length - (n) * part1.Length)), w, 0, w.Length - n * part1.Length);
 
-                    q = new BigInteger(1, u);
-                }
-                while (!q.IsProbablePrime(certainty));
+					w[0] |= (byte)0x80;
 
-                counter = 0;
+					BigInteger x = new BigInteger(1, w);
 
-                int offset = 2;
+					BigInteger c = x.Mod(q.ShiftLeft(1));
 
-                while (counter < 4096)
-                {
-                    for (int k = 0; k < n; k++)
-                    {
-                        Add(part1, seed, offset + k);
-                        sha1.BlockUpdate(part1, 0, part1.Length);
-                        sha1.DoFinal(part1, 0);
-                        Array.Copy(part1, 0, w, w.Length - (k + 1) * part1.Length, part1.Length);
-                    }
+					BigInteger p = x.Subtract(c.Subtract(BigInteger.One));
 
-                    Add(part1, seed, offset + n);
-                    sha1.BlockUpdate(part1, 0, part1.Length);
-                    sha1.DoFinal(part1, 0);
-                    Array.Copy(part1, part1.Length - ((w.Length - (n) * part1.Length)), w, 0, w.Length - n * part1.Length);
+					if (p.BitLength != L)
+						continue;
 
-                    w[0] |= (byte)0x80;
+					if (p.IsProbablePrime(certainty))
+					{
+						BigInteger g = CalculateGenerator_FIPS186_2(p, q, random);
 
-                    BigInteger  x = new BigInteger(1, w);
+						return new DsaParameters(p, q, g, new DsaValidationParameters(seed, counter));
+					}
+				}
+			}
+		}
 
-                    BigInteger  c = x.Mod(q.ShiftLeft(1));
+		private static BigInteger CalculateGenerator_FIPS186_2(BigInteger p, BigInteger q, SecureRandom r)
+		{
+			BigInteger e = p.Subtract(BigInteger.One).Divide(q);
+			BigInteger pSub2 = p.Subtract(BigInteger.Two);
 
-                    p = x.Subtract(c.Subtract(BigInteger.One));
+			for (;;)
+			{
+				BigInteger h = BigIntegers.CreateRandomInRange(BigInteger.Two, pSub2, r);
+				BigInteger g = h.ModPow(e, p);
 
-                    if (p.TestBit(size - 1))
-                    {
-                        if (p.IsProbablePrime(certainty))
-                        {
-                            primesFound = true;
-                            break;
-                        }
-                    }
+				if (g.BitLength > 1)
+					return g;
+			}
+		}
 
-                    counter += 1;
-                    offset += n + 1;
-                }
-            }
+		/**
+		 * generate suitable parameters for DSA, in line with
+		 * <i>FIPS 186-3 A.1 Generation of the FFC Primes p and q</i>.
+		 */
+		private DsaParameters GenerateParameters_FIPS186_3()
+		{
+// A.1.1.2 Generation of the Probable Primes p and q Using an Approved Hash Function
+			// FIXME This should be configurable (digest size in bits must be >= N)
+			IDigest d = new Sha256Digest();
+			int outlen = d.GetDigestSize() * 8;
 
-            //
-            // calculate the generator g
-            //
-            BigInteger  pMinusOneOverQ = p.Subtract(BigInteger.One).Divide(q);
+// 1. Check that the (L, N) pair is in the list of acceptable (L, N pairs) (see Section 4.2). If
+//    the pair is not in the list, then return INVALID.
+			// Note: checked at initialisation
+			
+// 2. If (seedlen < N), then return INVALID.
+			// FIXME This should be configurable (must be >= N)
+			int seedlen = N;
+			byte[] seed = new byte[seedlen / 8];
 
-            for (;;)
-            {
-                BigInteger h = new BigInteger(size, random);
-                if (h.CompareTo(BigInteger.One) <= 0 || h.CompareTo(p.Subtract(BigInteger.One)) >= 0)
-                {
-                    continue;
-                }
+// 3. n = ceiling(L ⁄ outlen) – 1.
+			int n = (L - 1) / outlen;
 
-                g = h.ModPow(pMinusOneOverQ, p);
-                if (g.CompareTo(BigInteger.One) <= 0)
-                {
-                    continue;
-                }
+// 4. b = L – 1 – (n ∗ outlen).
+			int b = (L - 1) % outlen;
 
-                break;
-            }
+			byte[] output = new byte[d.GetDigestSize()];
+			for (;;)
+			{
+// 5. Get an arbitrary sequence of seedlen bits as the domain_parameter_seed.
+				random.NextBytes(seed);
 
-            return new DsaParameters(p, q, g, new DsaValidationParameters(seed, counter));
-        }
+// 6. U = Hash (domain_parameter_seed) mod 2^(N–1).
+				Hash(d, seed, output);
+				BigInteger U = new BigInteger(1, output).Mod(BigInteger.One.ShiftLeft(N - 1));
 
+// 7. q = 2^(N–1) + U + 1 – ( U mod 2).
+				BigInteger q = BigInteger.One.ShiftLeft(N - 1).Add(U).Add(BigInteger.One).Subtract(
+					U.Mod(BigInteger.Two));
+
+// 8. Test whether or not q is prime as specified in Appendix C.3.
+				// TODO Review C.3 for primality checking
+				if (!q.IsProbablePrime(certainty))
+				{
+// 9. If q is not a prime, then go to step 5.
+					continue;
+				}
+
+// 10. offset = 1.
+				// Note: 'offset' value managed incrementally
+				byte[] offset = Arrays.Clone(seed);
+
+// 11. For counter = 0 to (4L – 1) do
+				int counterLimit = 4 * L;
+				for (int counter = 0; counter < counterLimit; ++counter)
+				{
+// 11.1 For j = 0 to n do
+//      Vj = Hash ((domain_parameter_seed + offset + j) mod 2^seedlen).
+// 11.2 W = V0 + (V1 ∗ 2^outlen) + ... + (V^(n–1) ∗ 2^((n–1) ∗ outlen)) + ((Vn mod 2^b) ∗ 2^(n ∗ outlen)).
+					// TODO Assemble w as a byte array
+					BigInteger W = BigInteger.Zero;
+					for (int j = 0, exp = 0; j <= n; ++j, exp += outlen)
+					{
+						Inc(offset);
+						Hash(d, offset, output);
+
+						BigInteger Vj = new BigInteger(1, output);
+						if (j == n)
+						{
+							Vj = Vj.Mod(BigInteger.One.ShiftLeft(b));
+						}
+
+						W = W.Add(Vj.ShiftLeft(exp));
+					}
+
+// 11.3 X = W + 2^(L–1). Comment: 0 ≤ W < 2L–1; hence, 2L–1 ≤ X < 2L.
+					BigInteger X = W.Add(BigInteger.One.ShiftLeft(L - 1));
+
+// 11.4 c = X mod 2q.
+					BigInteger c = X.Mod(q.ShiftLeft(1));
+
+// 11.5 p = X - (c - 1). Comment: p ≡ 1 (mod 2q).
+					BigInteger p = X.Subtract(c.Subtract(BigInteger.One));
+
+					// 11.6 If (p < 2^(L - 1)), then go to step 11.9
+					if (p.BitLength != L)
+						continue;
+
+// 11.7 Test whether or not p is prime as specified in Appendix C.3.
+					// TODO Review C.3 for primality checking
+					if (p.IsProbablePrime(certainty))
+					{
+// 11.8 If p is determined to be prime, then return VALID and the values of p, q and
+//      (optionally) the values of domain_parameter_seed and counter.
+						// TODO Make configurable (8-bit unsigned)?
+//	                    int index = 1;
+//	                    BigInteger g = CalculateGenerator_FIPS186_3_Verifiable(d, p, q, seed, index);
+//	                    if (g != null)
+//	                    {
+//	                        // TODO Should 'index' be a part of the validation parameters?
+//	                        return new DsaParameters(p, q, g, new DsaValidationParameters(seed, counter));
+//	                    }
+
+						BigInteger g = CalculateGenerator_FIPS186_3_Unverifiable(p, q, random);
+						return new DsaParameters(p, q, g, new DsaValidationParameters(seed, counter));
+					}
+
+// 11.9 offset = offset + n + 1.      Comment: Increment offset; then, as part of
+//                                    the loop in step 11, increment counter; if
+//                                    counter < 4L, repeat steps 11.1 through 11.8.
+					// Note: 'offset' value already incremented in inner loop
+				}
+// 12. Go to step 5.
+			}
+		}
+
+		private static BigInteger CalculateGenerator_FIPS186_3_Unverifiable(BigInteger p, BigInteger q,
+			SecureRandom r)
+		{
+			return CalculateGenerator_FIPS186_2(p, q, r);
+		}
+
+		private static BigInteger CalculateGenerator_FIPS186_3_Verifiable(IDigest d, BigInteger p, BigInteger q,
+			byte[] seed, int index)
+		{
+			// A.2.3 Verifiable Canonical Generation of the Generator g
+			BigInteger e = p.Subtract(BigInteger.One).Divide(q);
+			byte[] ggen = Hex.Decode("6767656E");
+
+			// 7. U = domain_parameter_seed || "ggen" || index || count.
+			byte[] U = new byte[seed.Length + ggen.Length + 1 + 2];
+			Array.Copy(seed, 0, U, 0, seed.Length);
+			Array.Copy(ggen, 0, U, seed.Length, ggen.Length);
+			U[U.Length - 3] = (byte)index; 
+
+			byte[] w = new byte[d.GetDigestSize()];
+			for (int count = 1; count < (1 << 16); ++count)
+			{
+				Inc(U);
+				Hash(d, U, w);
+				BigInteger W = new BigInteger(1, w);
+				BigInteger g = W.ModPow(e, p);
+
+				if (g.CompareTo(BigInteger.Two) >= 0)
+					return g;
+			}
+
+			return null;
+		}
+		
 		private static bool IsValidDsaStrength(
 			int strength)
 		{
 			return strength >= 512 && strength <= 1024 && strength % 64 == 0;
+		}
+
+		private static void Hash(IDigest d, byte[] input, byte[] output)
+		{
+			d.BlockUpdate(input, 0, input.Length);
+			d.DoFinal(output, 0);
+		}
+
+		private static int GetDefaultN(int L)
+		{
+			return L > 1024 ? 256 : 160;
+		}
+
+		private static void Inc(byte[] buf)
+		{
+			for (int i = buf.Length - 1; i >= 0; --i)
+			{
+				byte b = (byte)(buf[i] + 1);
+				buf[i] = b;
+
+				if (b != 0)
+					break;
+			}
 		}
 	}
 }

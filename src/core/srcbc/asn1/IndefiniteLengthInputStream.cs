@@ -12,8 +12,9 @@ namespace Org.BouncyCastle.Asn1
 		private bool	_eofOn00 = true;
 
 		internal IndefiniteLengthInputStream(
-			Stream inStream)
-			: base(inStream)
+			Stream	inStream,
+			int		limit)
+			: base(inStream, limit)
 		{
 			_b1 = inStream.ReadByte();
 			_b2 = inStream.ReadByte();

@@ -22,33 +22,11 @@ namespace Org.BouncyCastle.Cms
     {
         private KeyTransRecipientInfo info;
 
-		[Obsolete]
-		public KeyTransRecipientInformation(
-            KeyTransRecipientInfo	info,
-            AlgorithmIdentifier		encAlg,
-            Stream					data)
-			: this(info, encAlg, null, null, data)
+		internal KeyTransRecipientInformation(
+			KeyTransRecipientInfo	info,
+			CmsSecureReadable		secureReadable)
+			: base(info.KeyEncryptionAlgorithm, secureReadable)
 		{
-		}
-
-		[Obsolete]
-		public KeyTransRecipientInformation(
-            KeyTransRecipientInfo	info,
-            AlgorithmIdentifier		encAlg,
-            AlgorithmIdentifier		macAlg,
-            Stream					data)
-			: this(info, encAlg, macAlg, null, data)
-		{
-		}
-
-		public KeyTransRecipientInformation(
-            KeyTransRecipientInfo	info,
-            AlgorithmIdentifier		encAlg,
-            AlgorithmIdentifier		macAlg,
-            AlgorithmIdentifier		authEncAlg,
-            Stream					data)
-            : base(encAlg, macAlg, authEncAlg, info.KeyEncryptionAlgorithm, data)
-        {
             this.info = info;
             this.rid = new RecipientID();
 
@@ -98,9 +76,8 @@ namespace Org.BouncyCastle.Cms
 				keyWrapper.Init(false, key);
 
 				// FIXME Support for MAC algorithm parameters similar to cipher parameters
-				AlgorithmIdentifier alg = GetActiveAlgID();
 				return ParameterUtilities.CreateKeyParameter(
-					alg.ObjectID, keyWrapper.Unwrap(encryptedKey, 0, encryptedKey.Length));
+					GetContentAlgorithmName(), keyWrapper.Unwrap(encryptedKey, 0, encryptedKey.Length));
 			}
 			catch (SecurityUtilityException e)
 			{

@@ -148,6 +148,19 @@ namespace Org.BouncyCastle.Cms
 		}
 
 		/**
+		 * add a KEK recipient.
+		 * @param key the secret key to use for wrapping
+		 * @param keyIdentifier the byte string that identifies the key
+		 */
+		public void AddKekRecipient(
+			string			keyAlgorithm, // TODO Remove need for this parameter
+			KeyParameter	key,
+			byte[]			keyIdentifier)
+		{
+			AddKekRecipient(keyAlgorithm, key, new KekIdentifier(keyIdentifier, null, null));
+		}
+
+		/**
 		* add a KEK recipient.
 		* @param key the secret key to use for wrapping
 		* @param keyIdentifier the byte string that identifies the key
@@ -155,12 +168,12 @@ namespace Org.BouncyCastle.Cms
 		public void AddKekRecipient(
 			string			keyAlgorithm, // TODO Remove need for this parameter
 			KeyParameter	key,
-			byte[]			keyIdentifier)
+			KekIdentifier	kekIdentifier)
 		{
 			KekRecipientInfoGenerator kekrig = new KekRecipientInfoGenerator();
-			kekrig.KekIdentifier = new KekIdentifier(keyIdentifier, null, null);
-			kekrig.WrapAlgorithm = keyAlgorithm;
-			kekrig.WrapKey = key;
+			kekrig.KekIdentifier = kekIdentifier;
+			kekrig.KeyEncryptionKeyOID = keyAlgorithm;
+			kekrig.KeyEncryptionKey = key;
 
 			recipientInfoGenerators.Add(kekrig);
 		}
@@ -172,9 +185,9 @@ namespace Org.BouncyCastle.Cms
 			Pbkdf2Params p = new Pbkdf2Params(pbeKey.Salt, pbeKey.IterationCount);
 
 			PasswordRecipientInfoGenerator prig = new PasswordRecipientInfoGenerator();
-			prig.DerivationAlg = new AlgorithmIdentifier(PkcsObjectIdentifiers.IdPbkdf2, p);
-			prig.WrapAlgorithm = kekAlgorithmOid;
-			prig.WrapKey = pbeKey.GetEncoded(kekAlgorithmOid);
+			prig.KeyDerivationAlgorithm = new AlgorithmIdentifier(PkcsObjectIdentifiers.IdPbkdf2, p);
+			prig.KeyEncryptionKeyOID = kekAlgorithmOid;
+			prig.KeyEncryptionKey = pbeKey.GetEncoded(kekAlgorithmOid);
 
 			recipientInfoGenerators.Add(prig);
 		}
@@ -233,10 +246,10 @@ namespace Org.BouncyCastle.Cms
 			 */
 
 			KeyAgreeRecipientInfoGenerator karig = new KeyAgreeRecipientInfoGenerator();
-			karig.AlgorithmOid = new DerObjectIdentifier(agreementAlgorithm);
+			karig.KeyAgreementOID = new DerObjectIdentifier(agreementAlgorithm);
+			karig.KeyEncryptionOID = new DerObjectIdentifier(cekWrapAlgorithm);
 			karig.RecipientCerts = recipientCerts;
 			karig.SenderKeyPair = new AsymmetricCipherKeyPair(senderPublicKey, senderPrivateKey);
-			karig.WrapAlgorithmOid = new DerObjectIdentifier(cekWrapAlgorithm);
 
 			recipientInfoGenerators.Add(karig);
 		}

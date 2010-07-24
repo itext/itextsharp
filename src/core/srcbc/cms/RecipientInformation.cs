@@ -17,39 +17,24 @@ namespace Org.BouncyCastle.Cms
     public abstract class RecipientInformation
     {
 		internal RecipientID			rid = new RecipientID();
-        internal AlgorithmIdentifier	encAlg;
-        internal AlgorithmIdentifier	macAlg;
-		internal AlgorithmIdentifier	authEncAlg;
-        internal AlgorithmIdentifier	keyEncAlg;
-        internal Stream					data;
-
-		private MacStream	macStream;
-		private byte[]		resultMac;
+		internal AlgorithmIdentifier	keyEncAlg;
+		internal CmsSecureReadable		secureReadable;
+		
+		private byte[] resultMac;
 
 		internal RecipientInformation(
-            AlgorithmIdentifier	encAlg,
-            AlgorithmIdentifier	macAlg,
-			AlgorithmIdentifier	authEncAlg,
-            AlgorithmIdentifier	keyEncAlg,
-            Stream				data)
-        {
-			if (!data.CanRead)
-				throw new ArgumentException("Expected input stream", "data");
-
-			this.encAlg = encAlg;
-			this.macAlg = macAlg;
-			this.authEncAlg = authEncAlg;
-            this.keyEncAlg = keyEncAlg;
-            this.data = data;
-        }
-
-		internal AlgorithmIdentifier GetActiveAlgID()
+			AlgorithmIdentifier	keyEncAlg,
+			CmsSecureReadable	secureReadable)
 		{
-			if (encAlg != null)
-				return encAlg;
-			if (macAlg != null)
-				return macAlg;
-			return authEncAlg;
+			this.keyEncAlg = keyEncAlg;
+			this.secureReadable = secureReadable;
+		}
+
+		internal string GetContentAlgorithmName()
+		{
+			AlgorithmIdentifier algorithm = secureReadable.Algorithm;
+//			return CmsEnvelopedHelper.Instance.GetSymmetricCipherName(algorithm.ObjectID.Id);
+			return algorithm.ObjectID.Id;
 		}
 
 		public RecipientID RecipientID
@@ -91,144 +76,23 @@ namespace Org.BouncyCastle.Cms
 		internal CmsTypedStream GetContentFromSessionKey(
 			KeyParameter sKey)
 		{
+			CmsReadable readable = secureReadable.GetReadable(sKey); 
+
 			try
 			{
-				Stream content = data;
-
-				if (encAlg != null)
-				{
-					IBufferedCipher cipher =  CipherUtilities.GetCipher(encAlg.ObjectID);
-
-					Asn1Encodable asn1Enc = encAlg.Parameters;
-					Asn1Object asn1Params = asn1Enc == null ? null : asn1Enc.ToAsn1Object();
-
-					ICipherParameters cipherParameters = sKey;
-
-					if (asn1Params != null && !(asn1Params is Asn1Null))
-					{
-						cipherParameters = ParameterUtilities.GetCipherParameters(
-							encAlg.ObjectID, cipherParameters, asn1Params);
-					}
-					else
-					{
-						string alg = encAlg.ObjectID.Id;
-						if (alg.Equals(CmsEnvelopedDataGenerator.DesEde3Cbc)
-							|| alg.Equals(CmsEnvelopedDataGenerator.IdeaCbc)
-							|| alg.Equals(CmsEnvelopedDataGenerator.Cast5Cbc))
-						{
-							cipherParameters = new ParametersWithIV(cipherParameters, new byte[8]);
-						}
-					}
-
-					cipher.Init(false, cipherParameters);
-
-					content = new CipherStream(content, cipher, null);
-				}
-
-				// If authenticated, need to wrap in MacStream to calculate MAC
-				if (macAlg != null)
-				{
-					content = this.macStream = CreateMacStream(macAlg, sKey, content);
-				}
-
-				if (authEncAlg != null)
-				{
-					// TODO Create AEAD cipher instance to decrypt and calculate tag ( MAC)
-					throw new CmsException("AuthEnveloped data decryption not yet implemented");
-
-//              RFC 5084 ASN.1 Module
-//                -- Parameters for AigorithmIdentifier
-//
-//                CCMParameters ::= SEQUENCE {
-//                  aes-nonce         OCTET STRING (SIZE(7..13)),
-//                  aes-ICVlen        AES-CCM-ICVlen DEFAULT 12 }
-//
-//                AES-CCM-ICVlen ::= INTEGER (4 | 6 | 8 | 10 | 12 | 14 | 16)
-//
-//                GCMParameters ::= SEQUENCE {
-//                  aes-nonce        OCTET STRING, -- recommended size is 12 octets
-//                  aes-ICVlen       AES-GCM-ICVlen DEFAULT 12 }
-//
-//                AES-GCM-ICVlen ::= INTEGER (12 | 13 | 14 | 15 | 16)
-				}
-
-				return new CmsTypedStream(content);
-			}
-			catch (SecurityUtilityException e)
-			{
-				throw new CmsException("couldn't create cipher.", e);
-			}
-			catch (InvalidKeyException e)
-			{
-				throw new CmsException("key invalid in message.", e);
+				return new CmsTypedStream(readable.Read());
 			}
 			catch (IOException e)
 			{
-				throw new CmsException("error decoding algorithm parameters.", e);
+				throw new CmsException("error getting .", e);
 			}
 		}
 
-		private static MacStream CreateMacStream(
-			AlgorithmIdentifier	macAlg,
-			KeyParameter		sKey,
-			Stream				inStream)
-//		throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IOException, InvalidParameterSpecException
-		{
-			IMac mac = MacUtilities.GetMac(macAlg.ObjectID);
-
-			// FIXME Support for MAC algorithm parameters similar to cipher parameters
-//			ASN1Object sParams = (ASN1Object)macAlg.getParameters();
-//			
-//			if (sParams != null && !(sParams instanceof ASN1Null))
-//			{
-//				AlgorithmParameters params = CMSEnvelopedHelper.INSTANCE.createAlgorithmParameters(macAlg.getObjectId().getId(), provider);
-//				
-//				params.init(sParams.getEncoded(), "ASN.1");
-//				
-//				mac.init(sKey, params.getParameterSpec(IvParameterSpec.class));
-//			}
-//			else
-			{
-				mac.Init(sKey);
-			}
-
-//			Asn1Encodable asn1Enc = macAlg.Parameters;
-//			Asn1Object asn1Params = asn1Enc == null ? null : asn1Enc.ToAsn1Object();
-//
-//			ICipherParameters cipherParameters = sKey;
-//
-//			if (asn1Params != null && !(asn1Params is Asn1Null))
-//			{
-//				cipherParameters = ParameterUtilities.GetCipherParameters(
-//					macAlg.ObjectID, cipherParameters, asn1Params);
-//			}
-//			else
-//			{
-//				string alg = macAlg.ObjectID.Id;
-//				if (alg.Equals(CmsEnvelopedDataGenerator.DesEde3Cbc)
-//					|| alg.Equals(CmsEnvelopedDataGenerator.IdeaCbc)
-//					|| alg.Equals(CmsEnvelopedDataGenerator.Cast5Cbc))
-//				{
-//					cipherParameters = new ParametersWithIV(cipherParameters, new byte[8]);
-//				}
-//			}
-//
-//			mac.Init(cipherParameters);
-
-			return new MacStream(inStream, mac, null);
-		}
-		
 		public byte[] GetContent(
             ICipherParameters key)
         {
             try
             {
-                if (data is MemoryStream)
-                {
-//					data.Reset();
-					data.Seek(0L, SeekOrigin.Begin);
-                }
-
 				return CmsUtilities.StreamToByteArray(GetContentStream(key).ContentStream);
             }
             catch (IOException e)
@@ -245,9 +109,13 @@ namespace Org.BouncyCastle.Cms
 		*/
 		public byte[] GetMac()
 		{
-			if (macStream != null && resultMac == null)
+			if (resultMac == null)
 			{
-				resultMac = MacUtilities.DoFinal(macStream.ReadMac());
+				object cryptoObject = secureReadable.CryptoObject;
+				if (cryptoObject is IMac)
+				{
+					resultMac = MacUtilities.DoFinal((IMac)cryptoObject);
+				}
 			}
 
 			return Arrays.Clone(resultMac);

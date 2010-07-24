@@ -13,6 +13,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 	{
         public const char Binary = PgpLiteralData.Binary;
         public const char Text = PgpLiteralData.Text;
+		public const char Utf8 = PgpLiteralData.Utf8;
 
 		/// <summary>The special name indicating a "for your eyes only" packet.</summary>
         public const string Console = PgpLiteralData.Console;

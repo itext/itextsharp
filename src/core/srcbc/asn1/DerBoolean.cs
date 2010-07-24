@@ -23,16 +23,6 @@ namespace Org.BouncyCastle.Asn1
                 return (DerBoolean) obj;
             }
 
-			if (obj is Asn1OctetString)
-            {
-                return new DerBoolean(((Asn1OctetString) obj).GetOctets());
-            }
-
-			if (obj is Asn1TaggedObject)
-            {
-                return GetInstance(((Asn1TaggedObject) obj).GetObject());
-            }
-
 			throw new ArgumentException("illegal object in GetInstance: " + obj.GetType().Name);
         }
 
@@ -56,16 +46,26 @@ namespace Org.BouncyCastle.Asn1
          */
         public static DerBoolean GetInstance(
             Asn1TaggedObject	obj,
-            bool				explicitly)
+            bool				isExplicit)
         {
-            return GetInstance(obj.GetObject());
+			Asn1Object o = obj.GetObject();
+
+			if (isExplicit || o is DerBoolean)
+			{
+				return GetInstance(o);
+			}
+
+			return new DerBoolean(((Asn1OctetString)o).GetOctets());
         }
 
 		public DerBoolean(
-            byte[] value)
+            byte[] val)
         {
+			if (val.Length != 1)
+				throw new ArgumentException("byte value should have 1 byte in it", "val");
+
 			// TODO Are there any constraints on the possible byte values?
-            this.value = value[0];
+            this.value = val[0];
         }
 
 		private DerBoolean(

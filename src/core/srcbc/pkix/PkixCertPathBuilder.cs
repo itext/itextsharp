@@ -110,7 +110,7 @@ namespace Org.BouncyCastle.Pkix
 
 			tbvPath.Add(tbvCert);
 
-			X509CertificateParser certParser = new X509CertificateParser();
+//			X509CertificateParser certParser = new X509CertificateParser();
 			PkixCertPathBuilderResult builderResult = null;
 			PkixCertPathValidator validator = new PkixCertPathValidator();
 

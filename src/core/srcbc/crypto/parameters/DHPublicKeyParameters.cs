@@ -1,5 +1,6 @@
 using System;
 
+using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Math;
 
 namespace Org.BouncyCastle.Crypto.Parameters
@@ -13,6 +14,18 @@ namespace Org.BouncyCastle.Crypto.Parameters
             BigInteger		y,
             DHParameters	parameters)
 			: base(false, parameters)
+        {
+			if (y == null)
+				throw new ArgumentNullException("y");
+
+			this.y = y;
+        }
+
+		public DHPublicKeyParameters(
+            BigInteger			y,
+            DHParameters		parameters,
+		    DerObjectIdentifier	algorithmOid)
+			: base(false, parameters, algorithmOid)
         {
 			if (y == null)
 				throw new ArgumentNullException("y");

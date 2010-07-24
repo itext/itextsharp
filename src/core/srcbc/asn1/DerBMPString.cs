@@ -24,17 +24,7 @@ namespace Org.BouncyCastle.Asn1
                 return (DerBmpString)obj;
             }
 
-			if (obj is Asn1OctetString)
-            {
-                return new DerBmpString(((Asn1OctetString)obj).GetOctets());
-            }
-
-            if (obj is Asn1TaggedObject)
-            {
-                return GetInstance(((Asn1TaggedObject)obj).GetObject());
-            }
-
-            throw new ArgumentException("illegal object in GetInstance: " + obj.GetType().Name);
+			throw new ArgumentException("illegal object in GetInstance: " + obj.GetType().Name);
         }
 
         /**
@@ -48,9 +38,16 @@ namespace Org.BouncyCastle.Asn1
          */
         public static DerBmpString GetInstance(
             Asn1TaggedObject	obj,
-            bool				explicitly)
+            bool				isExplicit)
         {
-            return GetInstance(obj.GetObject());
+			Asn1Object o = obj.GetObject();
+
+			if (isExplicit || o is DerBmpString)
+			{
+				return GetInstance(o);
+			}
+
+			return new DerBmpString(Asn1OctetString.GetInstance(o).GetOctets());
         }
 
 		/**

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 
 namespace Org.BouncyCastle.Asn1
@@ -12,7 +13,14 @@ namespace Org.BouncyCastle.Asn1
 		public static Asn1Object FromByteArray(
 			byte[] data)
 		{
-			return new Asn1InputStream(data).ReadObject();
+			try
+			{
+				return new Asn1InputStream(data).ReadObject();
+			}
+			catch (InvalidCastException)
+			{
+				throw new IOException("cannot recognise object in stream");    
+			}
 		}
 
 		/// <summary>Read a base ASN.1 object from a stream.</summary>
@@ -22,7 +30,14 @@ namespace Org.BouncyCastle.Asn1
 		public static Asn1Object FromStream(
 			Stream inStr)
 		{
-			return new Asn1InputStream(inStr).ReadObject();
+			try
+			{
+				return new Asn1InputStream(inStr).ReadObject();
+			}
+			catch (InvalidCastException)
+			{
+				throw new IOException("cannot recognise object in stream");    
+			}
 		}
 
 		public sealed override Asn1Object ToAsn1Object()

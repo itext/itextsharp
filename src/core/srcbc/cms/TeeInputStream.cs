@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 using Org.BouncyCastle.Utilities.IO;
@@ -8,14 +9,21 @@ namespace Org.BouncyCastle.Cms
 	internal class TeeInputStream
 		: BaseInputStream
 	{
-		private readonly Stream input;
-		// FIXME Need internal access in RecipientInformation atm
-		internal readonly Stream output;
+		private readonly Stream input, tee;
 
-		internal TeeInputStream(Stream input, Stream output)
+		internal TeeInputStream(Stream input, Stream tee)
 		{
+			Debug.Assert(input.CanRead);
+			Debug.Assert(tee.CanWrite);
+
 			this.input = input;
-			this.output = output;
+			this.tee = tee;
+		}
+
+		public override void Close()
+		{
+			input.Close();
+			tee.Close();
 		}
 
 		public override int Read(byte[] buf, int off, int len)
@@ -24,7 +32,7 @@ namespace Org.BouncyCastle.Cms
 
 			if (i > 0)
 			{
-				output.Write(buf, off, i);
+				tee.Write(buf, off, i);
 			}
 
 			return i;
@@ -36,16 +44,10 @@ namespace Org.BouncyCastle.Cms
 
 			if (i >= 0)
 			{
-				output.WriteByte((byte)i);
+				tee.WriteByte((byte)i);
 			}
 
 			return i;
-		}
-
-		public override void Close()
-		{
-			this.input.Close();
-			this.output.Close();
 		}
 	}
 }

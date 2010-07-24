@@ -16,7 +16,7 @@ namespace Org.BouncyCastle.Asn1
         internal DefiniteLengthInputStream(
             Stream	inStream,
             int		length)
-            : base(inStream)
+            : base(inStream, length)
         {
 			if (length < 0)
 				throw new ArgumentException("negative lengths not allowed", "length");

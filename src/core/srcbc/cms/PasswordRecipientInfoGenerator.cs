@@ -14,35 +14,35 @@ namespace Org.BouncyCastle.Cms
 	{
 		private static readonly CmsEnvelopedHelper Helper = CmsEnvelopedHelper.Instance;
 
-		private AlgorithmIdentifier	derivationAlg;
-		// TODO Can get this from wrapKey?		
-		private string			wrapAlgorithm;
-		private KeyParameter	wrapKey;
+		private AlgorithmIdentifier	keyDerivationAlgorithm;
+		private KeyParameter		keyEncryptionKey;
+		// TODO Can get this from keyEncryptionKey?		
+		private string				keyEncryptionKeyOID;
 
 		internal PasswordRecipientInfoGenerator()
 		{
 		}
 
-		internal AlgorithmIdentifier DerivationAlg
+		internal AlgorithmIdentifier KeyDerivationAlgorithm
 		{
-			set { this.derivationAlg = value; }
+			set { this.keyDerivationAlgorithm = value; }
 		}
 
-		internal string WrapAlgorithm
+		internal KeyParameter KeyEncryptionKey
 		{
-			set { this.wrapAlgorithm = value; }
+			set { this.keyEncryptionKey = value; }
 		}
 
-		internal KeyParameter WrapKey
+		internal string KeyEncryptionKeyOID
 		{
-			set { this.wrapKey = value; }
+			set { this.keyEncryptionKeyOID = value; }
 		}
 
 		public RecipientInfo Generate(KeyParameter contentEncryptionKey, SecureRandom random)
 		{
 			byte[] keyBytes = contentEncryptionKey.GetKey();
 
-			string rfc3211WrapperName = Helper.GetRfc3211WrapperName(wrapAlgorithm);
+			string rfc3211WrapperName = Helper.GetRfc3211WrapperName(keyEncryptionKeyOID);
 			IWrapper keyWrapper = Helper.CreateWrapper(rfc3211WrapperName);
 
 			// Note: In Java build, the IV is automatically generated in JCE layer
@@ -50,20 +50,20 @@ namespace Org.BouncyCastle.Cms
 			byte[] iv = new byte[ivLength];
 			random.NextBytes(iv);
 
-			ICipherParameters parameters = new ParametersWithIV(wrapKey, iv);
+			ICipherParameters parameters = new ParametersWithIV(keyEncryptionKey, iv);
 			keyWrapper.Init(true, new ParametersWithRandom(parameters, random));
-        	Asn1OctetString encKey = new DerOctetString(
+        	Asn1OctetString encryptedKey = new DerOctetString(
 				keyWrapper.Wrap(keyBytes, 0, keyBytes.Length));
 
 			DerSequence seq = new DerSequence(
-				new DerObjectIdentifier(wrapAlgorithm),
+				new DerObjectIdentifier(keyEncryptionKeyOID),
 				new DerOctetString(iv));
 
-			AlgorithmIdentifier keyEncAlg = new AlgorithmIdentifier(
+			AlgorithmIdentifier keyEncryptionAlgorithm = new AlgorithmIdentifier(
 				PkcsObjectIdentifiers.IdAlgPwriKek, seq);
 
 			return new RecipientInfo(new PasswordRecipientInfo(
-				derivationAlg, keyEncAlg, encKey));
+				keyDerivationAlgorithm, keyEncryptionAlgorithm, encryptedKey));
 		}
 	}
 }

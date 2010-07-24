@@ -25,16 +25,6 @@ namespace Org.BouncyCastle.Asn1
                 return (DerT61String)obj;
             }
 
-            if (obj is Asn1OctetString)
-            {
-                return new DerT61String(((Asn1OctetString)obj).GetOctets());
-            }
-
-            if (obj is Asn1TaggedObject)
-            {
-                return GetInstance(((Asn1TaggedObject)obj).GetObject());
-            }
-
             throw new ArgumentException("illegal object in GetInstance: " + obj.GetType().Name);
         }
 
@@ -49,9 +39,16 @@ namespace Org.BouncyCastle.Asn1
          */
         public static DerT61String GetInstance(
             Asn1TaggedObject	obj,
-            bool				explicitly)
+            bool				isExplicit)
         {
-            return GetInstance(obj.GetObject());
+			Asn1Object o = obj.GetObject();
+
+			if (isExplicit || o is DerT61String)
+			{
+				return GetInstance(o);
+			}
+
+			return new DerT61String(Asn1OctetString.GetInstance(o).GetOctets());
         }
 
         /**

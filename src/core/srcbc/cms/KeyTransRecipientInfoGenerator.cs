@@ -21,25 +21,16 @@ namespace Org.BouncyCastle.Cms
 
 		// Derived fields
 		private SubjectPublicKeyInfo info;
-		
+
 		internal KeyTransRecipientInfoGenerator()
 		{
 		}
-		
+
 		internal X509Certificate RecipientCert
 		{
 			set
 			{
-				try
-				{
-					this.recipientTbsCert = TbsCertificateStructure.GetInstance(
-						Asn1Object.FromByteArray(value.GetTbsCertificate()));
-				}
-				catch (Exception)
-				{
-					throw new ArgumentException("can't extract TBS structure from this cert");
-				}
-				
+				this.recipientTbsCert = CmsUtilities.GetTbsCertificateStructure(value);
 				this.recipientPublicKey = value.GetPublicKey();
 				this.info = recipientTbsCert.SubjectPublicKeyInfo;
 			}
@@ -71,11 +62,11 @@ namespace Org.BouncyCastle.Cms
 		public RecipientInfo Generate(KeyParameter contentEncryptionKey, SecureRandom random)
 		{
 			byte[] keyBytes = contentEncryptionKey.GetKey();
-			AlgorithmIdentifier keyEncAlg = info.AlgorithmID;
+			AlgorithmIdentifier keyEncryptionAlgorithm = info.AlgorithmID;
 
-			IWrapper keyWrapper = Helper.CreateWrapper(keyEncAlg.ObjectID.Id);
+			IWrapper keyWrapper = Helper.CreateWrapper(keyEncryptionAlgorithm.ObjectID.Id);
 			keyWrapper.Init(true, new ParametersWithRandom(recipientPublicKey, random));
-			byte[] encKeyBytes = keyWrapper.Wrap(keyBytes, 0, keyBytes.Length);
+			byte[] encryptedKeyBytes = keyWrapper.Wrap(keyBytes, 0, keyBytes.Length);
 
 			RecipientIdentifier recipId;
 			if (recipientTbsCert != null)
@@ -89,8 +80,8 @@ namespace Org.BouncyCastle.Cms
 				recipId = new RecipientIdentifier(subjectKeyIdentifier);
 			}
 
-			return new RecipientInfo(new KeyTransRecipientInfo(recipId, keyEncAlg,
-				new DerOctetString(encKeyBytes)));
+			return new RecipientInfo(new KeyTransRecipientInfo(recipId, keyEncryptionAlgorithm,
+				new DerOctetString(encryptedKeyBytes)));
 		}
 	}
 }

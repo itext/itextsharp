@@ -11,6 +11,7 @@ using Org.BouncyCastle.Crypto.IO;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.Utilities.IO;
 using Org.BouncyCastle.X509;
@@ -42,25 +43,43 @@ namespace Org.BouncyCastle.Cms
     {
 		private static readonly CmsSignedHelper Helper = CmsSignedHelper.Instance;
 
-		private readonly ArrayList _signerInfs = new ArrayList();
-		private readonly ISet       _messageDigestOids = new HashSet();
-		private readonly Hashtable _messageDigests = new Hashtable();
-		private readonly Hashtable _messageHashes = new Hashtable();
-		private bool _messageDigestsLocked;
-        private int _bufferSize;
+		private readonly ArrayList	_signerInfs = new ArrayList();
+		private readonly ISet		_messageDigestOids = new HashSet();
+		private readonly Hashtable	_messageDigests = new Hashtable();
+		private readonly Hashtable	_messageHashes = new Hashtable();
+		private bool				_messageDigestsLocked;
+        private int					_bufferSize;
 
-		private class SignerInf
+		private class DigestAndSignerInfoGeneratorHolder
+		{
+			internal readonly SignerInfoGenerator	signerInf;
+			internal readonly string				digestOID;
+
+			internal DigestAndSignerInfoGeneratorHolder(SignerInfoGenerator signerInf, String digestOID)
+			{
+				this.signerInf = signerInf;
+				this.digestOID = digestOID;
+			}
+
+			internal AlgorithmIdentifier DigestAlgorithm
+			{
+				get { return new AlgorithmIdentifier(new DerObjectIdentifier(this.digestOID), DerNull.Instance); }
+			}
+		}
+
+		private class SignerInfoGeneratorImpl : SignerInfoGenerator
         {
 			private readonly CmsSignedDataStreamGenerator outer;
 
-			private readonly AsymmetricKeyParameter		_key;
 			private readonly SignerIdentifier			_signerIdentifier;
 			private readonly string						_digestOID;
 			private readonly string						_encOID;
 			private readonly CmsAttributeTableGenerator	_sAttr;
 			private readonly CmsAttributeTableGenerator	_unsAttr;
+			private readonly string						_encName;
+			private readonly ISigner					_sig;
 
-			internal SignerInf(
+			internal SignerInfoGeneratorImpl(
 				CmsSignedDataStreamGenerator	outer,
 				AsymmetricKeyParameter			key,
 				SignerIdentifier				signerIdentifier,
@@ -71,116 +90,137 @@ namespace Org.BouncyCastle.Cms
 			{
 				this.outer = outer;
 
-				_key = key;
 				_signerIdentifier = signerIdentifier;
 				_digestOID = digestOID;
 				_encOID = encOID;
 				_sAttr = sAttr;
 				_unsAttr = unsAttr;
-			}
+				_encName = Helper.GetEncryptionAlgName(_encOID);
 
-			internal AlgorithmIdentifier DigestAlgorithmID
-			{
-				get { return new AlgorithmIdentifier(new DerObjectIdentifier(this._digestOID), DerNull.Instance); }
-			}
-
-			internal SignerInfo ToSignerInfo(
-                DerObjectIdentifier contentType)
-            {
 				string digestName = Helper.GetDigestAlgName(_digestOID);
-				string encName = Helper.GetEncryptionAlgName(_encOID);
-				string signatureName = digestName + "with" + encName;
+				string signatureName = digestName + "with" + _encName;
 
-				AlgorithmIdentifier digAlgId = DigestAlgorithmID;
-
-				byte[] hash = (byte[])outer._messageHashes[Helper.GetDigestAlgName(this._digestOID)];
-				outer._digests[_digestOID] = hash.Clone();
-
-				byte[] bytesToSign = hash;
-				ISigner sig;
-
-				/* RFC 3852 5.4
-				 * The result of the message digest calculation process depends on
-				 * whether the signedAttrs field is present.  When the field is absent,
-				 * the result is just the message digest of the content as described
-				 * 
-				 * above.  When the field is present, however, the result is the message
-				 * digest of the complete DER encoding of the SignedAttrs value
-				 * contained in the signedAttrs field.
-				 */
-				Asn1Set signedAttr = null;
 				if (_sAttr != null)
 				{
-					IDictionary parameters = outer.GetBaseParameters(contentType, digAlgId, hash);
-//					Asn1.Cms.AttributeTable signed = _sAttr.GetAttributes(Collections.unmodifiableMap(parameters));
-					Asn1.Cms.AttributeTable signed = _sAttr.GetAttributes(parameters);
-
-					// TODO Handle countersignatures (see CMSSignedDataGenerator)
-
-					signedAttr = outer.GetAttributeSet(signed);
-
-                	// sig must be composed from the DER encoding.
-					bytesToSign = signedAttr.GetEncoded(Asn1Encodable.Der);
-            		sig = Helper.GetSignatureInstance(signatureName);
+            		_sig = Helper.GetSignatureInstance(signatureName);
 				}
 				else
 				{
 					// Note: Need to use raw signatures here since we have already calculated the digest
-					if (encName.Equals("RSA"))
+					if (_encName.Equals("RSA"))
 					{
-						DigestInfo dInfo = new DigestInfo(digAlgId, hash);
-						bytesToSign = dInfo.GetEncoded(Asn1Encodable.Der);
-						sig = Helper.GetSignatureInstance("RSA");
+						_sig = Helper.GetSignatureInstance("RSA");
 					}
-					else if (encName.Equals("DSA"))
+					else if (_encName.Equals("DSA"))
 					{
-						sig = Helper.GetSignatureInstance("NONEwithDSA");
+						_sig = Helper.GetSignatureInstance("NONEwithDSA");
 					}
 					// TODO Add support for raw PSS
-//					else if (encName.equals("RSAandMGF1"))
+//					else if (_encName.equals("RSAandMGF1"))
 //					{
-//						sig = CMSSignedHelper.INSTANCE.getSignatureInstance("NONEWITHRSAPSS", _sigProvider);
+//						_sig = CMSSignedHelper.INSTANCE.getSignatureInstance("NONEWITHRSAPSS", _sigProvider);
 //						try
 //						{
 //							// Init the params this way to avoid having a 'raw' version of each PSS algorithm
 //							Signature sig2 = CMSSignedHelper.INSTANCE.getSignatureInstance(signatureName, _sigProvider);
 //							PSSParameterSpec spec = (PSSParameterSpec)sig2.getParameters().getParameterSpec(PSSParameterSpec.class);
-//							sig.setParameter(spec);
+//							_sig.setParameter(spec);
 //						}
 //						catch (Exception e)
 //						{
-//							throw new SignatureException("algorithm: " + encName + " could not be configured.");
+//							throw new SignatureException("algorithm: " + _encName + " could not be configured.");
 //						}
 //					}
 					else
 					{
-						throw new SignatureException("algorithm: " + encName + " not supported in base signatures.");
+						throw new SignatureException("algorithm: " + _encName + " not supported in base signatures.");
 					}
 				}
 
-				sig.Init(true, new ParametersWithRandom(_key, outer.rand));
-				sig.BlockUpdate(bytesToSign, 0, bytesToSign.Length);
-				byte[] sigBytes = sig.GenerateSignature();
+				_sig.Init(true, new ParametersWithRandom(key, outer.rand));
+			}
 
-				Asn1Set unsignedAttr = null;
-				if (_unsAttr != null)
+			public SignerInfo Generate(DerObjectIdentifier contentType, AlgorithmIdentifier digestAlgorithm,
+        		byte[] calculatedDigest)
+			{
+				try
 				{
-					IDictionary parameters = outer.GetBaseParameters(contentType, digAlgId, hash);
-					parameters[CmsAttributeTableParameter.Signature] = sigBytes.Clone();
+					string digestName = Helper.GetDigestAlgName(_digestOID);
+					string signatureName = digestName + "with" + _encName;
 
-//					Asn1.Cms.AttributeTable unsigned = _unsAttr.getAttributes(Collections.unmodifiableMap(parameters));
-					Asn1.Cms.AttributeTable unsigned = _unsAttr.GetAttributes(parameters);
+//					AlgorithmIdentifier digAlgId = DigestAlgorithmID;
+//
+//					byte[] hash = (byte[])outer._messageHashes[Helper.GetDigestAlgName(this._digestOID)];
+//					outer._digests[_digestOID] = hash.Clone();
 
-					unsignedAttr = outer.GetAttributeSet(unsigned);
+					byte[] bytesToSign = calculatedDigest;
+
+					/* RFC 3852 5.4
+					 * The result of the message digest calculation process depends on
+					 * whether the signedAttrs field is present.  When the field is absent,
+					 * the result is just the message digest of the content as described
+					 * 
+					 * above.  When the field is present, however, the result is the message
+					 * digest of the complete DER encoding of the SignedAttrs value
+					 * contained in the signedAttrs field.
+					 */
+					Asn1Set signedAttr = null;
+					if (_sAttr != null)
+					{
+						IDictionary parameters = outer.GetBaseParameters(
+							contentType, digestAlgorithm, calculatedDigest);
+//						Asn1.Cms.AttributeTable signed = _sAttr.GetAttributes(Collections.unmodifiableMap(parameters));
+						Asn1.Cms.AttributeTable signed = _sAttr.GetAttributes(parameters);
+
+						// TODO Handle countersignatures (see CMSSignedDataGenerator)
+
+						signedAttr = outer.GetAttributeSet(signed);
+
+                		// sig must be composed from the DER encoding.
+						bytesToSign = signedAttr.GetEncoded(Asn1Encodable.Der);
+					}
+					else
+					{
+						// Note: Need to use raw signatures here since we have already calculated the digest
+						if (_encName.Equals("RSA"))
+						{
+							DigestInfo dInfo = new DigestInfo(digestAlgorithm, calculatedDigest);
+							bytesToSign = dInfo.GetEncoded(Asn1Encodable.Der);
+						}
+					}
+
+					_sig.BlockUpdate(bytesToSign, 0, bytesToSign.Length);
+					byte[] sigBytes = _sig.GenerateSignature();
+
+					Asn1Set unsignedAttr = null;
+					if (_unsAttr != null)
+					{
+						IDictionary parameters = outer.GetBaseParameters(
+							contentType, digestAlgorithm, calculatedDigest);
+						parameters[CmsAttributeTableParameter.Signature] = sigBytes.Clone();
+
+//						Asn1.Cms.AttributeTable unsigned = _unsAttr.getAttributes(Collections.unmodifiableMap(parameters));
+						Asn1.Cms.AttributeTable unsigned = _unsAttr.GetAttributes(parameters);
+
+						unsignedAttr = outer.GetAttributeSet(unsigned);
+					}
+
+					// TODO[RSAPSS] Need the ability to specify non-default parameters
+					Asn1Encodable sigX509Parameters = SignerUtilities.GetDefaultX509Parameters(signatureName);
+					AlgorithmIdentifier digestEncryptionAlgorithm = CmsSignedGenerator.GetEncAlgorithmIdentifier(
+						new DerObjectIdentifier(_encOID), sigX509Parameters);
+
+					return new SignerInfo(_signerIdentifier, digestAlgorithm,
+						signedAttr, digestEncryptionAlgorithm, new DerOctetString(sigBytes), unsignedAttr);
 				}
-
-				// TODO[RSAPSS] Need the ability to specify non-default parameters
-				Asn1Encodable sigX509Parameters = SignerUtilities.GetDefaultX509Parameters(signatureName);
-				AlgorithmIdentifier encAlgId = CmsSignedGenerator.GetEncAlgorithmIdentifier(
-					new DerObjectIdentifier(_encOID), sigX509Parameters);
-
-				return new SignerInfo(_signerIdentifier, digAlgId,
-					signedAttr, encAlgId, new DerOctetString(sigBytes), unsignedAttr);
+	            catch (IOException e)
+	            {
+	                throw new CmsStreamException("encoding error.", e);
+	            }
+	            catch (SignatureException e)
+	            {
+	                throw new CmsStreamException("error creating signature.", e);
+	            }
             }
         }
 
@@ -311,10 +351,8 @@ namespace Org.BouncyCastle.Cms
 			CmsAttributeTableGenerator  signedAttrGenerator,
 			CmsAttributeTableGenerator  unsignedAttrGenerator)
 		{
-			ConfigureDigest(digestOid);
-
-			_signerInfs.Add(new SignerInf(this, privateKey, GetSignerIdentifier(cert), digestOid, encryptionOid,
-				signedAttrGenerator, unsignedAttrGenerator));
+			DoAddSigner(privateKey, GetSignerIdentifier(cert), encryptionOid, digestOid,
+				signedAttrGenerator, unsignedAttrGenerator);
 		}
 
 		/**
@@ -386,10 +424,24 @@ namespace Org.BouncyCastle.Cms
 			CmsAttributeTableGenerator	signedAttrGenerator,
 			CmsAttributeTableGenerator	unsignedAttrGenerator)
 		{
+			DoAddSigner(privateKey, GetSignerIdentifier(subjectKeyID), encryptionOid, digestOid,
+				signedAttrGenerator, unsignedAttrGenerator);
+		}
+
+		private void DoAddSigner(
+			AsymmetricKeyParameter		privateKey,
+			SignerIdentifier			signerIdentifier,
+			string						encryptionOid,
+			string						digestOid,
+			CmsAttributeTableGenerator	signedAttrGenerator,
+			CmsAttributeTableGenerator	unsignedAttrGenerator)
+		{
 			ConfigureDigest(digestOid);
 
-			_signerInfs.Add(new SignerInf(this, privateKey, GetSignerIdentifier(subjectKeyID), digestOid, encryptionOid,
-				signedAttrGenerator, unsignedAttrGenerator));
+			SignerInfoGeneratorImpl signerInf = new SignerInfoGeneratorImpl(this, privateKey,
+				signerIdentifier, digestOid, encryptionOid, signedAttrGenerator, unsignedAttrGenerator);
+
+			_signerInfs.Add(new DigestAndSignerInfoGeneratorHolder(signerInf, digestOid));
 		}
 
 		internal override void AddSignerCallback(
@@ -555,6 +607,22 @@ namespace Org.BouncyCastle.Cms
             	dig = Helper.GetDigestInstance(digestName);
             	_messageDigests[digestName] = dig;
             }
+		}
+
+		// TODO Make public?
+		internal void Generate(
+			Stream			outStream,
+			string			eContentType,
+			bool			encapsulate,
+			Stream			dataOutputStream,
+			CmsProcessable	content)
+		{
+			Stream signedOut = Open(outStream, eContentType, encapsulate, dataOutputStream);
+			if (content != null)
+			{
+				content.Write(signedOut);
+			}
+			signedOut.Close();
 		}
 
 		// RFC3852, section 5.1:
@@ -763,48 +831,57 @@ namespace Org.BouncyCastle.Cms
 				}
 
 				// TODO If the digest OIDs for precalculated signers weren't mixed in with
-				// the others, we could fill in outer._digests here, instead of SignerInf.ToSignerInfo
+				// the others, we could fill in outer._digests here, instead of SignerInfoGenerator.Generate
+
+				//
+				// collect all the SignerInfo objects
+				//
+                Asn1EncodableVector signerInfos = new Asn1EncodableVector();
+
+				//
+                // add the generated SignerInfo objects
+                //
+				{
+					foreach (DigestAndSignerInfoGeneratorHolder holder in outer._signerInfs)
+					{
+						AlgorithmIdentifier digestAlgorithm = holder.DigestAlgorithm;
+
+						byte[] calculatedDigest = (byte[])outer._messageHashes[
+							Helper.GetDigestAlgName(holder.digestOID)];
+						outer._digests[holder.digestOID] = calculatedDigest.Clone();
+
+						signerInfos.Add(holder.signerInf.Generate(_contentOID, digestAlgorithm, calculatedDigest));
+	                }
+				}
 
 				//
                 // add the precalculated SignerInfo objects.
                 //
-                Asn1EncodableVector signerInfos = new Asn1EncodableVector();
+				{
+					foreach (SignerInformation signer in outer._signers)
+					{
+						// TODO Verify the content type and calculated digest match the precalculated SignerInfo
+//						if (!signer.ContentType.Equals(_contentOID))
+//						{
+//							// TODO The precalculated content type did not match - error?
+//						}
+//
+//						byte[] calculatedDigest = (byte[])outer._digests[signer.DigestAlgOid];
+//						if (calculatedDigest == null)
+//						{
+//							// TODO We can't confirm this digest because we didn't calculate it - error?
+//						}
+//						else
+//						{
+//							if (!Arrays.AreEqual(signer.GetContentDigest(), calculatedDigest))
+//							{
+//								// TODO The precalculated digest did not match - error?
+//							}
+//						}
 
-				foreach (SignerInformation signer in outer._signers)
-				{
-                    signerInfos.Add(signer.ToSignerInfo());
-                }
-				
-				//
-                // add the SignerInfo objects
-                //
-				foreach (SignerInf signer in outer._signerInfs)
-				{
-                    try
-                    {
-                        signerInfos.Add(signer.ToSignerInfo(_contentOID));
-                    }
-                    catch (IOException e)
-                    {
-                        throw new CmsStreamException("encoding error." + e);
-                    }
-					catch (InvalidKeyException e)
-					{
-						throw new CmsStreamException("key inappropriate for signature.", e);
-					}
-                    catch (SignatureException e)
-                    {
-                        throw new CmsStreamException("error creating signature." + e);
-                    }
-                    catch (CertificateEncodingException e)
-                    {
-                        throw new CmsStreamException("error creating sid." + e);
-                    }
-					catch (SecurityUtilityException e)
-					{
-						throw new CmsStreamException("unknown signature algorithm." + e);
-					}
-                }
+						signerInfos.Add(signer.ToSignerInfo());
+	                }
+				}
 
 				WriteToGenerator(_sigGen, new DerSet(signerInfos));
 

@@ -19,6 +19,8 @@ namespace Org.BouncyCastle.Pkix
 {
 	public class Rfc3280CertPathUtilities
 	{
+		private static readonly PkixCrlUtilities CrlUtilities = new PkixCrlUtilities();
+
 		internal static readonly string ANY_POLICY = "2.5.29.32.0";
 
 		// key usage bits
@@ -1412,19 +1414,9 @@ namespace Org.BouncyCastle.Pkix
 			X509Certificate	cert,
 			X509Crl			crl)
 		{
-			ISet completeSet = new HashSet();
 			ISet deltaSet = new HashSet();
 			X509CrlStoreSelector crlselect = new X509CrlStoreSelector();
 			crlselect.CertificateChecking = cert;
-
-			if (paramsPKIX.Date != null)
-			{
-				crlselect.DateAndTime = paramsPKIX.Date;
-			}
-			else
-			{
-				crlselect.DateAndTime = new DateTimeObject(currentDate);
-			}
 
 			try
 			{                
@@ -1438,17 +1430,8 @@ namespace Org.BouncyCastle.Pkix
 			}
 
 			crlselect.CompleteCrlEnabled = true;
+			ISet completeSet = CrlUtilities.FindCrls(crlselect, paramsPKIX, currentDate);
 
-			// get complete CRL(s)
-			try
-			{
-				completeSet.AddAll(PkixCertPathValidatorUtilities.FindCrls(crlselect, paramsPKIX.GetAdditionalStores()));
-				completeSet.AddAll(PkixCertPathValidatorUtilities.FindCrls(crlselect, paramsPKIX.GetStores()));
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Exception obtaining complete CRLs.", e);
-			}
 			if (paramsPKIX.IsUseDeltasEnabled)
 			{
 				// get delta CRL(s)
@@ -1461,10 +1444,8 @@ namespace Org.BouncyCastle.Pkix
 					throw new Exception("Exception obtaining delta CRLs.", e);
 				}
 			}
-			return new ISet[]
-			{
-				completeSet,
-				deltaSet};
+
+			return new ISet[]{ completeSet, deltaSet };
 		}
 
 		internal static ISet ProcessCrlA1i(
@@ -1620,7 +1601,6 @@ namespace Org.BouncyCastle.Pkix
 			PkixCertPath	certPath,
 			int				index,
 			int				explicitPolicy)
-			//throws CertPathValidatorException
 		{
 			IList certs = certPath.Certificates;
 			X509Certificate cert = (X509Certificate)certs[index];
@@ -1649,11 +1629,10 @@ namespace Org.BouncyCastle.Pkix
 				{
 					try
 					{
-
 						Asn1TaggedObject constraint = Asn1TaggedObject.GetInstance(policyConstraints.Current);
 						if (constraint.TagNo == 0)
 						{
-							tmpInt = DerInteger.GetInstance(constraint).Value.IntValue;
+							tmpInt = DerInteger.GetInstance(constraint, false).Value.IntValue;
 							if (tmpInt < explicitPolicy)
 							{
 								return tmpInt;
@@ -1708,7 +1687,7 @@ namespace Org.BouncyCastle.Pkix
 						Asn1TaggedObject constraint = Asn1TaggedObject.GetInstance(policyConstraints.Current);
 						if (constraint.TagNo == 1)
 						{
-							tmpInt = DerInteger.GetInstance(constraint).Value.IntValue;
+							tmpInt = DerInteger.GetInstance(constraint, false).Value.IntValue;
 							if (tmpInt < policyMapping)
 							{
 								return tmpInt;
@@ -2080,7 +2059,7 @@ namespace Org.BouncyCastle.Pkix
 			}
 			catch (Exception e)
 			{
-				throw new PkixCertPathValidatorException("Policy constraints could no be decoded.", e, certPath, index);
+				throw new PkixCertPathValidatorException("Policy constraints could not be decoded.", e, certPath, index);
 			}
 
 			if (pc != null)
@@ -2095,12 +2074,12 @@ namespace Org.BouncyCastle.Pkix
 						case 0:
 							try
 							{
-								tmpInt = DerInteger.GetInstance(constraint).Value.IntValue;
+								tmpInt = DerInteger.GetInstance(constraint, false).Value.IntValue;
 							}
 							catch (Exception e)
 							{
 								throw new PkixCertPathValidatorException(
-									"Policy constraints requireExplicitPolicy field could no be decoded.", e, certPath,
+									"Policy constraints requireExplicitPolicy field could not be decoded.", e, certPath,
 									index);
 							}
 							if (tmpInt == 0)

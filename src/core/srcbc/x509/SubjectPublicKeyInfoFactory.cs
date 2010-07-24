@@ -74,7 +74,7 @@ namespace Org.BouncyCastle.X509
 
 				SubjectPublicKeyInfo info = new SubjectPublicKeyInfo(
                     new AlgorithmIdentifier(
-						X9ObjectIdentifiers.DHPublicNumber,
+						_key.AlgorithmOid,
 						new DHParameter(kp.P, kp.G, kp.L).ToAsn1Object()),
 						new DerInteger(_key.Y));
 

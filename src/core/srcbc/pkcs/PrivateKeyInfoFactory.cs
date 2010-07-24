@@ -56,21 +56,13 @@ namespace Org.BouncyCastle.Pkcs
 
 			if (key is DHPrivateKeyParameters)
 			{
-				/*
-					Process DH private key.
-					The value for L was set to zero implicitly.
-					This is the same action as found in JCEDHPrivateKey GetEncoded method.
-				*/
-
 				DHPrivateKeyParameters _key = (DHPrivateKeyParameters)key;
 
-				DHParameter withNewL = new DHParameter(
-					_key.Parameters.P, _key.Parameters.G, 0);
+				DHParameter p = new DHParameter(
+					_key.Parameters.P, _key.Parameters.G, _key.Parameters.L);
 
 				return new PrivateKeyInfo(
-					new AlgorithmIdentifier(
-					PkcsObjectIdentifiers.DhKeyAgreement,
-					withNewL.ToAsn1Object()),
+					new AlgorithmIdentifier(_key.AlgorithmOid, p.ToAsn1Object()),
 					new DerInteger(_key.X));
 			}
 

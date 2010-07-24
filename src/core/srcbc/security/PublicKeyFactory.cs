@@ -57,18 +57,50 @@ namespace Org.BouncyCastle.Security
 
 				return new RsaKeyParameters(false, pubKey.Modulus, pubKey.PublicExponent);
 			}
-			else if (algOid.Equals(PkcsObjectIdentifiers.DhKeyAgreement)
-				|| algOid.Equals(X9ObjectIdentifiers.DHPublicNumber))
+			else if (algOid.Equals(X9ObjectIdentifiers.DHPublicNumber))
 			{
-				DHParameter para = new DHParameter(
-					Asn1Sequence.GetInstance(algID.Parameters.ToAsn1Object()));
+				Asn1Sequence seq = Asn1Sequence.GetInstance(algID.Parameters.ToAsn1Object());
+
+				DHPublicKey dhPublicKey = DHPublicKey.GetInstance(keyInfo.GetPublicKey());
+
+				BigInteger y = dhPublicKey.Y.Value;
+
+				if (IsPkcsDHParam(seq))
+					return ReadPkcsDHParam(algOid, y, seq);
+
+				DHDomainParameters dhParams = DHDomainParameters.GetInstance(seq);
+
+				BigInteger p = dhParams.P.Value;
+				BigInteger g = dhParams.G.Value;
+				BigInteger q = dhParams.Q.Value;
+
+				BigInteger j = null;
+				if (dhParams.J != null)
+				{
+					j = dhParams.J.Value;
+				}
+
+				DHValidationParameters validation = null;
+				DHValidationParms dhValidationParms = dhParams.ValidationParms;
+				if (dhValidationParms != null)
+				{
+					byte[] seed = dhValidationParms.Seed.GetBytes();
+					BigInteger pgenCounter = dhValidationParms.PgenCounter.Value;
+
+					// TODO Check pgenCounter size?
+
+					validation = new DHValidationParameters(seed, pgenCounter.IntValue);
+				}
+
+				return new DHPublicKeyParameters(y, new DHParameters(p, g, q, j, validation));
+			}
+			else if (algOid.Equals(PkcsObjectIdentifiers.DhKeyAgreement))
+			{
+				Asn1Sequence seq = Asn1Sequence.GetInstance(algID.Parameters.ToAsn1Object());
+
 				DerInteger derY = (DerInteger) keyInfo.GetPublicKey();
 
-				BigInteger lVal = para.L;
-				int l = lVal == null ? 0 : lVal.IntValue;
-				DHParameters dhParams = new DHParameters(para.P, para.G, null, l);
-
-				return new DHPublicKeyParameters(derY.Value, dhParams);
+				return ReadPkcsDHParam(algOid, derY.Value, seq);
 			}
 			else if (algOid.Equals(OiwObjectIdentifiers.ElGamalAlgorithm))
 			{
@@ -195,5 +227,31 @@ namespace Org.BouncyCastle.Security
                 throw new SecurityUtilityException("algorithm identifier in key not recognised: " + algOid);
             }
         }
-    }
+
+		private static bool IsPkcsDHParam(Asn1Sequence seq)
+		{
+			if (seq.Count == 2)
+				return true;
+
+			if (seq.Count > 3)
+				return false;
+
+			DerInteger l = DerInteger.GetInstance(seq[2]);
+			DerInteger p = DerInteger.GetInstance(seq[0]);
+
+			return l.Value.CompareTo(BigInteger.ValueOf(p.Value.BitLength)) <= 0;
+		}
+
+		private static DHPublicKeyParameters ReadPkcsDHParam(DerObjectIdentifier algOid,
+			BigInteger y, Asn1Sequence seq)
+		{
+			DHParameter para = new DHParameter(seq);
+
+			BigInteger lVal = para.L;
+			int l = lVal == null ? 0 : lVal.IntValue;
+			DHParameters dhParams = new DHParameters(para.P, para.G, null, l);
+
+			return new DHPublicKeyParameters(y, dhParams, algOid);
+		}
+	}
 }
