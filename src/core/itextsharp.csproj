@@ -35,7 +35,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;NET_1_1</DefineConstants>
     <DocumentationFile>iTextSharp.xml</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
@@ -56,7 +56,7 @@
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;NET_1_1</DefineConstants>
     <DocumentationFile>iTextSharp.xml</DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
@@ -3306,17 +3306,11 @@
     <Compile Include="srcbc\crypto\tls\TlsException.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\tls\TlsInputStream.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="srcbc\crypto\tls\TlsKeyExchange.cs" />
     <Compile Include="srcbc\crypto\tls\TlsMac.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsNullCipher.cs" />
-    <Compile Include="srcbc\crypto\tls\TlsOutputStream.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="srcbc\crypto\tls\TlsProtocolHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -4110,6 +4104,24 @@
   <ItemGroup>
     <Compile Include="iTextSharp\text\pdf\codec\LZWCompressor.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWStringTable.cs" />
+    <Compile Include="srcbc\asn1\Asn1Exception.cs" />
+    <Compile Include="srcbc\asn1\Asn1ParsingException.cs" />
+    <Compile Include="srcbc\crypto\modes\gcm\BasicGcmExponentiator.cs" />
+    <Compile Include="srcbc\crypto\modes\gcm\IGcmExponentiator.cs" />
+    <Compile Include="srcbc\crypto\modes\gcm\Tables1kGcmExponentiator.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsStream.cs" />
+    <Compile Include="srcbc\openssl\MiscPemGenerator.cs" />
+    <Compile Include="srcbc\openssl\Pkcs8Generator.cs" />
+    <Compile Include="srcbc\pkix\PkixCrlUtilities.cs" />
+    <Compile Include="srcbc\util\collections\LinkedDictionary.cs" />
+    <Compile Include="srcbc\util\collections\UnmodifiableDictionary.cs" />
+    <Compile Include="srcbc\util\collections\UnmodifiableDictionaryProxy.cs" />
+    <Compile Include="srcbc\util\io\pem\PemGenerationException.cs" />
+    <Compile Include="srcbc\util\io\pem\PemObject.cs" />
+    <Compile Include="srcbc\util\io\pem\PemObjectGenerator.cs" />
+    <Compile Include="srcbc\util\io\pem\PemObjectParser.cs" />
+    <Compile Include="srcbc\util\io\pem\PemReader.cs" />
+    <Compile Include="srcbc\util\io\pem\PemWriter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

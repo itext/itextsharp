@@ -19,32 +19,10 @@ namespace Org.BouncyCastle.Cms
 	{
 		private readonly PasswordRecipientInfo	info;
 
-		[Obsolete]
-		public PasswordRecipientInformation(
+		internal PasswordRecipientInformation(
 			PasswordRecipientInfo	info,
-			AlgorithmIdentifier		encAlg,
-			Stream					data)
-			: this(info, encAlg, null, null, data)
-		{
-		}
-
-		[Obsolete]
-		public PasswordRecipientInformation(
-			PasswordRecipientInfo	info,
-			AlgorithmIdentifier		encAlg,
-			AlgorithmIdentifier		macAlg,
-			Stream					data)
-			: this(info, encAlg, macAlg, null, data)
-		{
-		}
-
-		public PasswordRecipientInformation(
-			PasswordRecipientInfo	info,
-			AlgorithmIdentifier		encAlg,
-			AlgorithmIdentifier		macAlg,
-			AlgorithmIdentifier		authEncAlg,
-			Stream					data)
-			: base(encAlg, macAlg, authEncAlg, info.KeyEncryptionAlgorithm, data)
+			CmsSecureReadable		secureReadable)
+			: base(info.KeyEncryptionAlgorithm, secureReadable)
 		{
 			this.info = info;
 			this.rid = new RecipientID();
@@ -83,12 +61,8 @@ namespace Org.BouncyCastle.Cms
 
 				keyWrapper.Init(false, parameters);
 
-				AlgorithmIdentifier aid = GetActiveAlgID();
-
-				string alg = aid.ObjectID.Id;
-
 				KeyParameter sKey = ParameterUtilities.CreateKeyParameter(
-					alg, keyWrapper.Unwrap(encryptedKey, 0, encryptedKey.Length));
+					GetContentAlgorithmName(), keyWrapper.Unwrap(encryptedKey, 0, encryptedKey.Length));
 
 				return GetContentFromSessionKey(sKey);
 			}

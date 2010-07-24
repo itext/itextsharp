@@ -70,32 +70,25 @@ namespace Org.BouncyCastle.Cms
 			//DerInteger version = this.envelopedData.Version;
 
 			//
-			// load the RecipientInfoStore
+			// read the recipients
 			//
-			Asn1SetParser s = this.envelopedData.GetRecipientInfos();
-			IList baseInfos = new ArrayList();
-
-			IAsn1Convertible entry;
-			while ((entry = s.ReadObject()) != null)
-			{
-				baseInfos.Add(RecipientInfo.GetInstance(entry.ToAsn1Object()));
-			}
+			Asn1Set recipientInfos = Asn1Set.GetInstance(this.envelopedData.GetRecipientInfos().ToAsn1Object());
 
 			//
 			// read the encrypted content info
 			//
 			EncryptedContentInfoParser encInfo = this.envelopedData.GetEncryptedContentInfo();
-
 			this._encAlg = encInfo.ContentEncryptionAlgorithm;
+			CmsReadable readable = new CmsProcessableInputStream(
+				((Asn1OctetStringParser)encInfo.GetEncryptedContent(Asn1Tags.OctetString)).GetOctetStream());
+			CmsSecureReadable secureReadable = new CmsEnvelopedHelper.CmsEnvelopedSecureReadable(
+				this._encAlg, readable);
 
 			//
-			// prime the recipients
+			// build the RecipientInformationStore
 			//
-			Stream contentStream = ((Asn1OctetStringParser)encInfo.GetEncryptedContent(Asn1Tags.OctetString)).GetOctetStream();
-			IList infos = CmsEnvelopedHelper.ReadRecipientInfos(
-				baseInfos, contentStream, _encAlg, null, null);
-
-			this.recipientInfoStore = new RecipientInformationStore(infos);
+			this.recipientInfoStore = CmsEnvelopedHelper.BuildRecipientInformationStore(
+				recipientInfos, secureReadable);
 		}
 
 		public AlgorithmIdentifier EncryptionAlgorithmID

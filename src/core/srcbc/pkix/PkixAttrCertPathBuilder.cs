@@ -136,7 +136,7 @@ namespace Org.BouncyCastle.Pkix
 
 			PkixCertPathBuilderResult builderResult = null;
 
-			X509CertificateParser certParser = new X509CertificateParser();
+//			X509CertificateParser certParser = new X509CertificateParser();
 			PkixAttrCertPathValidator validator = new PkixAttrCertPathValidator();
 
 			try

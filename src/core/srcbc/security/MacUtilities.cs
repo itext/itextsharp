@@ -130,6 +130,10 @@ namespace Org.BouncyCastle.Security
 				return new HMac(DigestUtilities.GetDigest(digestName));
 			}
 
+			if (mechanism == "AESCMAC")
+			{
+				return new CMac(new AesFastEngine());
+			}
 			if (mechanism == "DESMAC")
 			{
 				return new CbcBlockCipherMac(new DesEngine());
@@ -137,6 +141,10 @@ namespace Org.BouncyCastle.Security
 			if (mechanism == "DESMAC/CFB8")
 			{
 				return new CfbBlockCipherMac(new DesEngine());
+			}
+			if (mechanism == "DESEDECMAC")
+			{
+				return new CMac(new DesEdeEngine());
 			}
 			if (mechanism == "DESEDEMAC")
 			{

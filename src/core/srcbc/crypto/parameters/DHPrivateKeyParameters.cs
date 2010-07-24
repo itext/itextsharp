@@ -1,5 +1,6 @@
 using System;
 
+using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Math;
 
 namespace Org.BouncyCastle.Crypto.Parameters
@@ -13,6 +14,15 @@ namespace Org.BouncyCastle.Crypto.Parameters
             BigInteger		x,
             DHParameters	parameters)
 			: base(true, parameters)
+        {
+            this.x = x;
+        }
+
+		public DHPrivateKeyParameters(
+            BigInteger			x,
+            DHParameters		parameters,
+		    DerObjectIdentifier	algorithmOid)
+			: base(true, parameters, algorithmOid)
         {
             this.x = x;
         }

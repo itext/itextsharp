@@ -1,8 +1,9 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.BC;
 using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Asn1.Oiw;
 using Org.BouncyCastle.Asn1.Pkcs;
@@ -44,6 +45,13 @@ namespace Org.BouncyCastle.Security
 			algorithms["PKCS5SCHEME2"] = "Pkcs5scheme2";
 			algorithms[PkcsObjectIdentifiers.IdPbeS2.Id] = "Pkcs5scheme2";
 //			algorithms[PkcsObjectIdentifiers.IdPbkdf2.Id] = "Pkcs5scheme2";
+
+			// FIXME Add support for these? (see Pkcs8Generator)
+//			algorithms[PkcsObjectIdentifiers.DesEde3Cbc.Id] = "Pkcs5scheme2";
+//			algorithms[NistObjectIdentifiers.IdAes128Cbc.Id] = "Pkcs5scheme2";
+//			algorithms[NistObjectIdentifiers.IdAes192Cbc.Id] = "Pkcs5scheme2";
+//			algorithms[NistObjectIdentifiers.IdAes256Cbc.Id] = "Pkcs5scheme2";
+
 			algorithms["PBEWITHMD2ANDDES-CBC"] = "PBEwithMD2andDES-CBC";
 			algorithms[PkcsObjectIdentifiers.PbeWithMD2AndDesCbc.Id] = "PBEwithMD2andDES-CBC";
 			algorithms["PBEWITHMD2ANDRC2-CBC"] = "PBEwithMD2andRC2-CBC";
@@ -63,6 +71,12 @@ namespace Org.BouncyCastle.Security
 			algorithms["PBEWITHSHA-1ANDRC2-CBC"] = "PBEwithSHA-1andRC2-CBC";
 			algorithms[PkcsObjectIdentifiers.PbeWithSha1AndRC2Cbc.Id] = "PBEwithSHA-1andRC2-CBC";
 			algorithms["PKCS12"] = "Pkcs12";
+			algorithms[BCObjectIdentifiers.bc_pbe_sha1_pkcs12_aes128_cbc.Id] = "PBEWITHSHAAND128BITAES-CBC-BC";
+			algorithms[BCObjectIdentifiers.bc_pbe_sha1_pkcs12_aes192_cbc.Id] = "PBEWITHSHAAND192BITAES-CBC-BC";
+			algorithms[BCObjectIdentifiers.bc_pbe_sha1_pkcs12_aes256_cbc.Id] = "PBEWITHSHAAND256BITAES-CBC-BC";
+			algorithms[BCObjectIdentifiers.bc_pbe_sha256_pkcs12_aes128_cbc.Id] = "PBEWITHSHA256AND128BITAES-CBC-BC";
+			algorithms[BCObjectIdentifiers.bc_pbe_sha256_pkcs12_aes192_cbc.Id] = "PBEWITHSHA256AND192BITAES-CBC-BC";
+			algorithms[BCObjectIdentifiers.bc_pbe_sha256_pkcs12_aes256_cbc.Id] = "PBEWITHSHA256AND256BITAES-CBC-BC";
 			algorithms["PBEWITHSHAAND128BITRC4"] = "PBEwithSHA-1and128bitRC4";
 			algorithms["PBEWITHSHA1AND128BITRC4"] = "PBEwithSHA-1and128bitRC4";
 			algorithms["PBEWITHSHA-1AND128BITRC4"] = "PBEwithSHA-1and128bitRC4";
@@ -154,8 +168,8 @@ namespace Org.BouncyCastle.Security
 			algorithmType["PBEwithSHA-256and128bitAES-CBC-BC"] = Pkcs12;
 			algorithmType["PBEwithSHA-256and192bitAES-CBC-BC"] = Pkcs12;
 			algorithmType["PBEwithSHA-256and256bitAES-CBC-BC"] = Pkcs12;
-			algorithmType["PBEwithSHA-1andIDEA-CBC"] = "Pkcs12";
-			algorithmType["PBEwithSHA-1andTWOFISH-CBC"] = "Pkcs12";
+			algorithmType["PBEwithSHA-1andIDEA-CBC"] = Pkcs12;
+			algorithmType["PBEwithSHA-1andTWOFISH-CBC"] = Pkcs12;
 			algorithmType["PBEwithHmacSHA-1"] = Pkcs12;
 			algorithmType["PBEwithHmacSHA-224"] = Pkcs12;
 			algorithmType["PBEwithHmacSHA-256"] = Pkcs12;
@@ -552,7 +566,7 @@ namespace Org.BouncyCastle.Security
 
 			Array.Clear(keyBytes, 0, keyBytes.Length);
 
-			return parameters;
+			return FixDesParity(mechanism, parameters);
 		}
 
 		public static object CreateEngine(
@@ -576,15 +590,6 @@ namespace Org.BouncyCastle.Security
 			return CreateEngine(algorithm);
 		}
 
-		private static bool EndsWith(
-			string	s,
-			string	ending)
-		{
-			int pos = s.Length - ending.Length;
-
-			return pos >= 0 && s.Substring(pos) == ending;
-		}
-
 		public static object CreateEngine(
 			string algorithm)
 		{
@@ -601,22 +606,22 @@ namespace Org.BouncyCastle.Security
 				||	mechanism.StartsWith("PBEwithMD5")
 				||	mechanism.StartsWith("PBEwithSHA-1"))
 			{
-				if (EndsWith(mechanism, "RC2-CBC"))
+				if (mechanism.EndsWith("RC2-CBC"))
 				{
 					return CipherUtilities.GetCipher("RC2/CBC");
 				}
 
-				if (EndsWith(mechanism, "RC4"))
+				if (mechanism.EndsWith("RC4"))
 				{
 					return CipherUtilities.GetCipher("RC4");
 				}
 
-				if (EndsWith(mechanism, "DES-CBC"))
+				if (mechanism.EndsWith("DES-CBC"))
 				{
 					return CipherUtilities.GetCipher("DES/CBC");
 				}
 
-				if (EndsWith(mechanism, "DESEDE-CBC"))
+				if (mechanism.EndsWith("DESEDE-CBC"))
 				{
 					return CipherUtilities.GetCipher("DESEDE/CBC");
 				}
@@ -629,6 +634,25 @@ namespace Org.BouncyCastle.Security
 			DerObjectIdentifier oid)
 		{
 			return (string) algorithms[oid.Id];
+		}
+
+		private static ICipherParameters FixDesParity(string mechanism, ICipherParameters parameters)
+		{
+			if (!mechanism.EndsWith("DES-CBC") & !mechanism.EndsWith("DESEDE-CBC"))
+			{
+				return parameters;
+			}
+
+			if (parameters is ParametersWithIV)
+			{
+				ParametersWithIV ivParams = (ParametersWithIV)parameters;
+				return new ParametersWithIV(FixDesParity(mechanism, ivParams.Parameters), ivParams.GetIV());
+			}
+
+			KeyParameter kParam = (KeyParameter)parameters;
+			byte[] keyBytes = kParam.GetKey();
+			DesParameters.SetOddParity(keyBytes);
+			return new KeyParameter(keyBytes);
 		}
 	}
 }

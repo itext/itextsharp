@@ -41,21 +41,26 @@ namespace Org.BouncyCastle.Cms
 			EnvelopedData envData = EnvelopedData.GetInstance(contentInfo.Content);
 
 			//
-            // read the encrypted content info
-            //
-            EncryptedContentInfo encInfo = envData.EncryptedContentInfo;
-
-			this.encAlg = encInfo.ContentEncryptionAlgorithm;
+			// read the recipients
+			//
+			Asn1Set recipientInfos = envData.RecipientInfos;
 
 			//
-            // load the RecipientInfoStore
-            //
-			byte[] contentOctets = encInfo.EncryptedContent.GetOctets();
-			IList infos = CmsEnvelopedHelper.ReadRecipientInfos(
-            	envData.RecipientInfos, contentOctets, encAlg, null, null);
+			// read the encrypted content info
+			//
+			EncryptedContentInfo encInfo = envData.EncryptedContentInfo;
+			this.encAlg = encInfo.ContentEncryptionAlgorithm;
+			CmsReadable readable = new CmsProcessableByteArray(encInfo.EncryptedContent.GetOctets());
+			CmsSecureReadable secureReadable = new CmsEnvelopedHelper.CmsEnvelopedSecureReadable(
+				this.encAlg, readable);
 
-			this.recipientInfoStore = new RecipientInformationStore(infos);
-            this.unprotectedAttributes = envData.UnprotectedAttrs;
+			//
+			// build the RecipientInformationStore
+			//
+			this.recipientInfoStore = CmsEnvelopedHelper.BuildRecipientInformationStore(
+				recipientInfos, secureReadable);
+
+			this.unprotectedAttributes = envData.UnprotectedAttrs;
         }
 
 		public AlgorithmIdentifier EncryptionAlgorithmID

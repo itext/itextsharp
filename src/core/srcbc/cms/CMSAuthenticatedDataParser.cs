@@ -79,32 +79,26 @@ namespace Org.BouncyCastle.Cms
 			//DerInteger version = this.authData.getVersion();
 
 			//
-			// load the RecipientInfoStore
+			// read the recipients
 			//
-			Asn1SetParser s = authData.GetRecipientInfos();
-			IList baseInfos = new ArrayList();
-
-			IAsn1Convertible entry;
-			while ((entry = s.ReadObject()) != null)
-			{
-				baseInfos.Add(RecipientInfo.GetInstance(entry.ToAsn1Object()));
-			}
+			Asn1Set recipientInfos = Asn1Set.GetInstance(authData.GetRecipientInfos().ToAsn1Object());
 
 			this.macAlg = authData.GetMacAlgorithm();
 
 			//
-			// read the encrypted content info
+			// read the authenticated content info
 			//
 			ContentInfoParser data = authData.GetEnapsulatedContentInfo();
+			CmsReadable readable = new CmsProcessableInputStream(
+				((Asn1OctetStringParser)data.GetContent(Asn1Tags.OctetString)).GetOctetStream());
+			CmsSecureReadable secureReadable = new CmsEnvelopedHelper.CmsAuthenticatedSecureReadable(
+				this.macAlg, readable);
 
 			//
-			// prime the recipients
+			// build the RecipientInformationStore
 			//
-			Stream contentStream = ((Asn1OctetStringParser)data.GetContent(Asn1Tags.OctetString)).GetOctetStream();
-			IList infos = CmsEnvelopedHelper.ReadRecipientInfos(
-				baseInfos, contentStream, null, macAlg, null);
-
-			_recipientInfoStore = new RecipientInformationStore(infos);
+			this._recipientInfoStore = CmsEnvelopedHelper.BuildRecipientInformationStore(
+				recipientInfos, secureReadable);
 		}
 
 		public AlgorithmIdentifier MacAlgorithmID

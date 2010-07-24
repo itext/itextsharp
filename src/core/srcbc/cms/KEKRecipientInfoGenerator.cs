@@ -16,14 +16,14 @@ namespace Org.BouncyCastle.Cms
 	internal class KekRecipientInfoGenerator : RecipientInfoGenerator
 	{
 		private static readonly CmsEnvelopedHelper Helper = CmsEnvelopedHelper.Instance;
-		
-		private KeyParameter	wrapKey;
-		private KekIdentifier	secKeyId;
-		// TODO Can get this from wrapKey?		
-		private string			wrapAlgorithm;
+
+		private KeyParameter	keyEncryptionKey;
+		// TODO Can get this from keyEncryptionKey?		
+		private string			keyEncryptionKeyOID;
+		private KekIdentifier	kekIdentifier;
 
 		// Derived
-		private AlgorithmIdentifier keyEncAlg;
+		private AlgorithmIdentifier keyEncryptionAlgorithm;
 
 		internal KekRecipientInfoGenerator()
 		{
@@ -31,33 +31,33 @@ namespace Org.BouncyCastle.Cms
 
 		internal KekIdentifier KekIdentifier
 		{
-			set { this.secKeyId = value; }
+			set { this.kekIdentifier = value; }
 		}
 
-		internal string WrapAlgorithm
-		{
-			set { this.wrapAlgorithm = value; }
-		}
-
-		internal KeyParameter WrapKey
+		internal KeyParameter KeyEncryptionKey
 		{
 			set
 			{
-				this.wrapKey = value;
-				this.keyEncAlg = DetermineKeyEncAlg(wrapAlgorithm, wrapKey);
+				this.keyEncryptionKey = value;
+				this.keyEncryptionAlgorithm = DetermineKeyEncAlg(keyEncryptionKeyOID, keyEncryptionKey);
 			}
+		}
+
+		internal string KeyEncryptionKeyOID
+		{
+			set { this.keyEncryptionKeyOID = value; }
 		}
 
 		public RecipientInfo Generate(KeyParameter contentEncryptionKey, SecureRandom random)
 		{
 			byte[] keyBytes = contentEncryptionKey.GetKey();
 
-			IWrapper keyWrapper = Helper.CreateWrapper(keyEncAlg.ObjectID.Id);
-			keyWrapper.Init(true, new ParametersWithRandom(wrapKey, random));
-        	Asn1OctetString encKey = new DerOctetString(
+			IWrapper keyWrapper = Helper.CreateWrapper(keyEncryptionAlgorithm.ObjectID.Id);
+			keyWrapper.Init(true, new ParametersWithRandom(keyEncryptionKey, random));
+        	Asn1OctetString encryptedKey = new DerOctetString(
 				keyWrapper.Wrap(keyBytes, 0, keyBytes.Length));
 
-			return new RecipientInfo(new KekRecipientInfo(secKeyId, keyEncAlg, encKey));
+			return new RecipientInfo(new KekRecipientInfo(kekIdentifier, keyEncryptionAlgorithm, encryptedKey));
 		}
 
 		private static AlgorithmIdentifier DetermineKeyEncAlg(

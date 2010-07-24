@@ -120,11 +120,12 @@ namespace Org.BouncyCastle.Crypto.Generators
 			}
 		}
 
-		// Finds a pair of prime BigInteger's {p, q: p = 2q + 1}
-		internal static BigInteger[] GenerateSafePrimes(
-			int             size,
-			int             certainty,
-			SecureRandom    random)
+		/*
+		 * Finds a pair of prime BigInteger's {p, q: p = 2q + 1}
+		 * 
+		 * (see: Handbook of Applied Cryptography 4.86)
+		 */
+		internal static BigInteger[] GenerateSafePrimes(int size, int certainty, SecureRandom random)
 		{
 			BigInteger p, q;
 			int qLength = size - 1;
@@ -196,17 +197,19 @@ namespace Org.BouncyCastle.Crypto.Generators
 			return new BigInteger[] { p, q };
 		}
 
-		// Select a high order element of the multiplicative group Zp*
-		// p and q must be s.t. p = 2*q + 1, where p and q are prime
-		internal static BigInteger SelectGenerator(
-			BigInteger      p,
-			BigInteger      q,
-			SecureRandom    random)
+		/*
+		 * Select a high order element of the multiplicative group Zp*
+		 * 
+		 * p and q must be s.t. p = 2*q + 1, where p and q are prime (see generateSafePrimes)
+		 */
+		internal static BigInteger SelectGenerator(BigInteger p, BigInteger q, SecureRandom random)
 		{
 			BigInteger pMinusTwo = p.Subtract(BigInteger.Two);
 			BigInteger g;
 
-			// Handbook of Applied Cryptography 4.86
+			/*
+			 * (see: Handbook of Applied Cryptography 4.80)
+			 */
 			do
 			{
 				g = BigIntegers.CreateRandomInRange(BigInteger.Two, pMinusTwo, random);
@@ -214,16 +217,16 @@ namespace Org.BouncyCastle.Crypto.Generators
 			while (g.ModPow(BigInteger.Two, p).Equals(BigInteger.One)
 				|| g.ModPow(q, p).Equals(BigInteger.One));
 
-/*
-			// RFC 2631 2.1.1 (and see Handbook of Applied Cryptography 4.81)
-			do
-			{
-				BigInteger h = CreateInRange(BigInteger.Two, pMinusTwo, random);
-
-				g = h.ModPow(BigInteger.Two, p);
-			}
-			while (g.Equals(BigInteger.One));
-*/
+			/*
+	         * RFC 2631 2.2.1.2 (and see: Handbook of Applied Cryptography 4.81)
+	         */
+//			do
+//			{
+//				BigInteger h = CreateRandomInRange(BigInteger.Two, pMinusTwo, random);
+//
+//				g = h.ModPow(BigInteger.Two, p);
+//			}
+//			while (g.Equals(BigInteger.One));
 
 			return g;
 		}

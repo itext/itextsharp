@@ -21,24 +21,24 @@ namespace Org.BouncyCastle.Asn1
 			Asn1EncodableVector vector)
 		{
 			int offset = 0;
-			Asn1Object enc = vector[offset].ToAsn1Object();
+			Asn1Object enc = GetObjFromVector(vector, offset);
 			if (enc is DerObjectIdentifier)
 			{
 				directReference = (DerObjectIdentifier)enc;
 				offset++;
-				enc = vector[offset].ToAsn1Object();
+				enc = GetObjFromVector(vector, offset);
 			}
 			if (enc is DerInteger)
 			{
 				indirectReference = (DerInteger) enc;
 				offset++;
-				enc = vector[offset].ToAsn1Object();
+				enc = GetObjFromVector(vector, offset);
 			}
 			if (!(enc is DerTaggedObject))
 			{
 				dataValueDescriptor = (Asn1Object) enc;
 				offset++;
-				enc = vector[offset].ToAsn1Object();
+				enc = GetObjFromVector(vector, offset);
 			}
 			if (!(enc is DerTaggedObject))
 			{
@@ -46,16 +46,21 @@ namespace Org.BouncyCastle.Asn1
 					"No tagged object found in vector. Structure doesn't seem to be of type External");
 			}
 
+			if (vector.Count != offset + 1)
+				throw new ArgumentException("input vector too large", "vector");
+
+			if (!(enc is DerTaggedObject))
+				throw new ArgumentException("No tagged object found in vector. Structure doesn't seem to be of type External", "vector");
+
 			DerTaggedObject obj = (DerTaggedObject)enc;
 
 			// Use property accessor to include check on value
 			Encoding = obj.TagNo;
 
 			if (encoding < 0 || encoding > 2)
-			{
 				throw new InvalidOperationException("invalid encoding value");
-			}
-			externalContent = obj.ToAsn1Object();
+
+			externalContent = obj.GetObject();
 		}
 
 		/**
@@ -180,6 +185,14 @@ namespace Org.BouncyCastle.Asn1
 		{
 			get { return indirectReference; }
 			set { this.indirectReference = value; }
+		}
+
+		private static Asn1Object GetObjFromVector(Asn1EncodableVector v, int index)
+		{
+			if (v.Count <= index)
+				throw new ArgumentException("too few objects in input vector", "v");
+
+			return v[index].ToAsn1Object();
 		}
 
 		private static void WriteEncodable(MemoryStream ms, Asn1Encodable e)

@@ -18,28 +18,29 @@ namespace Org.BouncyCastle.Asn1
 
 		private void Parse()
 		{
-			Debug.Assert(parsed == false);
-
-			Asn1InputStream e = new LazyAsn1InputStream(encoded);
-
-			Asn1Object o;
-			while ((o = e.ReadObject()) != null)
+			lock (this)
 			{
-				AddObject(o);
-			}
+				if (!parsed)
+				{
+					Asn1InputStream e = new LazyAsn1InputStream(encoded);
 
-			encoded = null;
-			parsed = true;
+					Asn1Object o;
+					while ((o = e.ReadObject()) != null)
+					{
+						AddObject(o);
+					}
+
+					encoded = null;
+					parsed = true;
+				}
+			}
 		}
 
 		public override Asn1Encodable this[int index]
 		{
 			get
 			{
-				if (!parsed)
-				{
-					Parse();
-				}
+				Parse();
 
 				return base[index];
 			}
@@ -47,10 +48,7 @@ namespace Org.BouncyCastle.Asn1
 
 		public override IEnumerator GetEnumerator()
 		{
-			if (!parsed)
-			{
-				Parse();
-			}
+			Parse();
 
 			return base.GetEnumerator();
 		}
@@ -59,10 +57,7 @@ namespace Org.BouncyCastle.Asn1
 		{
 			get
 			{
-				if (!parsed)
-				{
-					Parse();
-				}
+				Parse();
 
 				return base.Count;
 			}
@@ -71,13 +66,16 @@ namespace Org.BouncyCastle.Asn1
 		internal override void Encode(
 			DerOutputStream derOut)
 		{
-			if (parsed)
+			lock (this)
 			{
-				base.Encode(derOut);
-			}
-			else
-			{
-				derOut.WriteEncoded(Asn1Tags.Sequence | Asn1Tags.Constructed, encoded);
+				if (parsed)
+				{
+					base.Encode(derOut);
+				}
+				else
+				{
+					derOut.WriteEncoded(Asn1Tags.Sequence | Asn1Tags.Constructed, encoded);
+				}
 			}
 		}
 	}

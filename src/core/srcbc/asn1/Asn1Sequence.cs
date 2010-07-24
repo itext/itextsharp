@@ -178,7 +178,11 @@ namespace Org.BouncyCastle.Asn1
 			foreach (object o in this)
 			{
 				hc *= 17;
-				if (o != null)
+				if (o == null)
+				{
+					hc ^= DerNull.Instance.GetHashCode();
+				}
+				else
                 {
 					hc ^= o.GetHashCode();
                 }
@@ -196,27 +200,34 @@ namespace Org.BouncyCastle.Asn1
                 return false;
 
 			if (Count != other.Count)
-            {
                 return false;
-            }
 
-            IEnumerator s1 = GetEnumerator();
+			IEnumerator s1 = GetEnumerator();
             IEnumerator s2 = other.GetEnumerator();
 
 			while (s1.MoveNext() && s2.MoveNext())
 			{
-//				if (!Platform.Equals(s1.Current, s2.Current))
-				Asn1Object o1 = ((Asn1Encodable) s1.Current).ToAsn1Object();
+				Asn1Object o1 = GetCurrent(s1).ToAsn1Object();
+				Asn1Object o2 = GetCurrent(s2).ToAsn1Object();
 
-				if (!o1.Equals(s2.Current))
-				{
+				if (!o1.Equals(o2))
 					return false;
-				}
 			}
 
 			return true;
         }
 
+		private Asn1Encodable GetCurrent(IEnumerator e)
+		{
+			Asn1Encodable encObj = (Asn1Encodable)e.Current;
+
+			// unfortunately null was allowed as a substitute for DER null
+			if (encObj == null)
+				return DerNull.Instance;
+
+			return encObj;
+		}
+		
 		protected internal void AddObject(
             Asn1Encodable obj)
         {

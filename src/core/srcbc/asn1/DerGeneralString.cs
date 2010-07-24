@@ -15,23 +15,23 @@ namespace Org.BouncyCastle.Asn1
             {
                 return (DerGeneralString) obj;
             }
-            if (obj is Asn1OctetString)
-            {
-                return new DerGeneralString(((Asn1OctetString) obj).GetOctets());
-            }
-            if (obj is Asn1TaggedObject)
-            {
-                return GetInstance(((Asn1TaggedObject) obj).GetObject());
-            }
-            throw new ArgumentException("illegal object in GetInstance: "
+
+			throw new ArgumentException("illegal object in GetInstance: "
                     + obj.GetType().Name);
         }
 
         public static DerGeneralString GetInstance(
             Asn1TaggedObject	obj,
-            bool				explicitly)
+            bool				isExplicit)
         {
-            return GetInstance(obj.GetObject());
+			Asn1Object o = obj.GetObject();
+
+			if (isExplicit || o is DerGeneralString)
+			{
+				return GetInstance(o);
+			}
+
+			return new DerGeneralString(((Asn1OctetString)o).GetOctets());
         }
 
         public DerGeneralString(

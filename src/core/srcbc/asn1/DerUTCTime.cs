@@ -25,11 +25,6 @@ namespace Org.BouncyCastle.Asn1
                 return (DerUtcTime)obj;
             }
 
-            if (obj is Asn1OctetString)
-            {
-                return new DerUtcTime(((Asn1OctetString)obj).GetOctets());
-            }
-
             throw new ArgumentException("illegal object in GetInstance: " + obj.GetType().Name);
         }
 
@@ -44,9 +39,16 @@ namespace Org.BouncyCastle.Asn1
          */
         public static DerUtcTime GetInstance(
             Asn1TaggedObject	obj,
-            bool				explicitly)
+            bool				isExplicit)
         {
-            return GetInstance(obj.GetObject());
+			Asn1Object o = obj.GetObject();
+
+			if (isExplicit || o is DerUtcTime)
+			{
+				return GetInstance(o);
+			}
+
+			return new DerUtcTime(((Asn1OctetString)o).GetOctets());
         }
 
         /**

@@ -24,6 +24,8 @@ namespace Org.BouncyCastle.Pkix
 	/// </summary>
 	public class PkixCertPathValidatorUtilities
 	{
+		private static readonly PkixCrlUtilities CrlUtilities = new PkixCrlUtilities();
+
 		internal static readonly string ANY_POLICY = "2.5.29.32.0";
 
 		internal static readonly string CRL_NUMBER = X509Extensions.CrlNumber.Id;
@@ -214,54 +216,6 @@ namespace Org.BouncyCastle.Pkix
 			}
 		}
 
-		/// <summary>
-		/// crl checking
-		/// Return a Collection of all CRLs found in the X509Store's that are
-		/// matching the crlSelect criteriums.
-		/// </summary>
-		/// <param name="crlSelect">a {@link X509CRLStoreSelector} object that will be used
-		/// to select the CRLs</param>
-		/// <param name="crlStores">a List containing only {@link org.bouncycastle.x509.X509Store
-		/// X509Store} objects. These are used to search for CRLs</param>
-		/// <returns>a Collection of all found {@link X509CRL X509CRL} objects. May be
-		/// empty but never <code>null</code>.
-		/// </returns>
-		internal static ICollection FindCrls(
-			X509CrlStoreSelector	crlSelect,
-			IList					crlStores)
-		{
-			ISet crls = new HashSet();
-
-			Exception lastException = null;
-			bool foundValidStore = false;
-
-			foreach (IX509Store store in crlStores)
-			{
-				try
-				{
-//					crls.AddAll(store.GetMatches(crlSelect));
-					foreach (X509Crl crl in store.GetMatches(crlSelect))
-					{
-						crls.Add(crl);
-					}
-
-					foundValidStore = true;
-				}
-				catch (Exception e)
-				{
-					lastException = new Exception(
-						"Exception searching in X.509 CRL store.", e);
-				}
-			}
-
-			if (!foundValidStore && lastException != null)
-			{
-				throw lastException;
-			}
-
-			return crls;
-		}
-
 		internal static bool IsAnyPolicy(
 			ISet policySet)
 		{
@@ -283,17 +237,17 @@ namespace Org.BouncyCastle.Pkix
 						// skip "ldap://"
 						location = location.Substring(7);
 						// after first / baseDN starts
-						string url, baseDN;
+						string url;//, baseDN;
 						int slashPos = location.IndexOf('/');
 						if (slashPos != -1)
 						{
 							url = "ldap://" + location.Substring(0, slashPos);
-							baseDN = location.Substring(slashPos);
+//							baseDN = location.Substring(slashPos);
 						}
 						else
 						{
 							url = "ldap://" + location;
-							baseDN = null;
+//							baseDN = nsull;
 						}
 
 						throw Platform.CreateNotImplementedException("LDAP cert/CRL stores");
@@ -922,27 +876,8 @@ namespace Org.BouncyCastle.Pkix
 				crlselect.AttrCertChecking = (IX509AttributeCertificate)cert;
 			}
 
-			if (paramsPKIX.Date != null)
-			{
-				crlselect.DateAndTime = paramsPKIX.Date;
-			}
-			else
-			{
-				crlselect.DateAndTime = new DateTimeObject(currentDate);
-			}
-
 			crlselect.CompleteCrlEnabled = true;
-
-			ISet crls = new HashSet();
-			try
-			{
-				crls.AddAll(PkixCertPathValidatorUtilities.FindCrls(crlselect, paramsPKIX.GetStores()));
-				crls.AddAll(PkixCertPathValidatorUtilities.FindCrls(crlselect, paramsPKIX.GetAdditionalStores()));
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Could not search for CRLs.", e);
-			}
+			ISet crls = CrlUtilities.FindCrls(crlselect, paramsPKIX, currentDate);
 
 			if (crls.IsEmpty)
 			{
@@ -979,15 +914,6 @@ namespace Org.BouncyCastle.Pkix
 			X509Crl			completeCRL)
 		{
 			X509CrlStoreSelector deltaSelect = new X509CrlStoreSelector();
-
-			if (paramsPKIX.Date != null)
-			{
-				deltaSelect.DateAndTime = paramsPKIX.Date;
-			}
-			else
-			{
-				deltaSelect.DateAndTime = new DateTimeObject(currentDate);
-			}
 
 			// 5.2.4 (a)
 			try
@@ -1046,17 +972,8 @@ namespace Org.BouncyCastle.Pkix
 			// 5.2.4 (c)
 			deltaSelect.MaxBaseCrlNumber = completeCRLNumber;
 
-			ISet temp = new HashSet();
 			// find delta CRLs
-			try
-			{
-				temp.AddAll(PkixCertPathValidatorUtilities.FindCrls(deltaSelect, paramsPKIX.GetAdditionalStores()));
-				temp.AddAll(PkixCertPathValidatorUtilities.FindCrls(deltaSelect, paramsPKIX.GetStores()));
-			}
-			catch (Exception e)
-			{
-				throw new Exception("Could not search for delta CRLs.", e);
-			}
+			ISet temp = CrlUtilities.FindCrls(deltaSelect, paramsPKIX, currentDate);
 
 			ISet result = new HashSet();
 

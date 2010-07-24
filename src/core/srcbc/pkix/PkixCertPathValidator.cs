@@ -203,8 +203,8 @@ namespace Org.BouncyCastle.Pkix
                         "Algorithm identifier of public key of trust anchor could not be read.", e, certPath, -1);
             }
 
-			DerObjectIdentifier workingPublicKeyAlgorithm = workingAlgId.ObjectID;
-            Asn1Encodable workingPublicKeyParameters = workingAlgId.Parameters;
+//			DerObjectIdentifier workingPublicKeyAlgorithm = workingAlgId.ObjectID;
+//			Asn1Encodable workingPublicKeyParameters = workingAlgId.Parameters;
 
             //
             // (k)
@@ -357,9 +357,9 @@ namespace Org.BouncyCastle.Pkix
 
                     workingAlgId = PkixCertPathValidatorUtilities.GetAlgorithmIdentifier(workingPublicKey);
                     // (f)
-                    workingPublicKeyAlgorithm = workingAlgId.ObjectID;
+//                    workingPublicKeyAlgorithm = workingAlgId.ObjectID;
                     // (e)
-                    workingPublicKeyParameters = workingAlgId.Parameters;
+//                    workingPublicKeyParameters = workingAlgId.Parameters;
                 }
             }
 

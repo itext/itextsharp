@@ -87,14 +87,6 @@ namespace Org.BouncyCastle.Asn1
 			return result;
 		}
 
-		static internal DerBitString FromAsn1Octets(byte[] octets)
-		{
-			int padBits = octets[0];
-			byte[] data = new byte[octets.Length - 1];
-			Array.Copy(octets, 1, data, 0, octets.Length - 1);
-			return new DerBitString(data, padBits);
-		}
-
 		/**
 		 * return a Bit string from the passed in object
 		 *
@@ -106,16 +98,6 @@ namespace Org.BouncyCastle.Asn1
 			if (obj == null || obj is DerBitString)
 			{
 				return (DerBitString) obj;
-			}
-
-			if (obj is Asn1OctetString)
-			{
-				return FromAsn1Octets(((Asn1OctetString) obj).GetOctets());
-			}
-
-			if (obj is Asn1TaggedObject)
-			{
-				return GetInstance(((Asn1TaggedObject) obj).GetObject());
 			}
 
 			throw new ArgumentException("illegal object in GetInstance: " + obj.GetType().Name);
@@ -132,9 +114,16 @@ namespace Org.BouncyCastle.Asn1
 		 */
 		public static DerBitString GetInstance(
 			Asn1TaggedObject	obj,
-			bool				explicitly)
+			bool				isExplicit)
 		{
-			return GetInstance(obj.GetObject());
+			Asn1Object o = obj.GetObject();
+
+			if (isExplicit || o is DerBitString)
+			{
+				return GetInstance(o);
+			}
+
+			return FromAsn1Octets(((Asn1OctetString)o).GetOctets());
 		}
 
 		internal DerBitString(
@@ -242,6 +231,17 @@ namespace Org.BouncyCastle.Asn1
 			}
 
 			return buffer.ToString();
+		}
+
+		internal static DerBitString FromAsn1Octets(byte[] octets)
+		{
+	        if (octets.Length < 2)
+	            throw new ArgumentException("truncated BIT STRING detected");
+
+			int padBits = octets[0];
+			byte[] data = new byte[octets.Length - 1];
+			Array.Copy(octets, 1, data, 0, octets.Length - 1);
+			return new DerBitString(data, padBits);
 		}
 	}
 }

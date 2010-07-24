@@ -29,8 +29,7 @@ namespace Org.BouncyCastle.Cms
 		private Asn1OctetString       encryptedKey;
 
 		internal static void ReadRecipientInfo(IList infos, KeyAgreeRecipientInfo info,
-			AlgorithmIdentifier encAlg, AlgorithmIdentifier macAlg, AlgorithmIdentifier authEncAlg,
-			Stream data)
+			CmsSecureReadable secureReadable)
 		{
 			try
 			{
@@ -58,7 +57,7 @@ namespace Org.BouncyCastle.Cms
 					}
 
 					infos.Add(new KeyAgreeRecipientInformation(info, rid, id.EncryptedKey,
-						encAlg, macAlg, authEncAlg, data));
+						secureReadable));
 				}
 			}
 			catch (IOException e)
@@ -67,15 +66,12 @@ namespace Org.BouncyCastle.Cms
 			}
 		}
 
-		public KeyAgreeRecipientInformation(
+		internal KeyAgreeRecipientInformation(
 			KeyAgreeRecipientInfo	info,
 			RecipientID				rid,
 			Asn1OctetString			encryptedKey,
-			AlgorithmIdentifier		encAlg,
-			AlgorithmIdentifier		macAlg,
-			AlgorithmIdentifier		authEncAlg,
-			Stream					data)
-			: base(encAlg, macAlg, authEncAlg, info.KeyEncryptionAlgorithm, data)
+			CmsSecureReadable		secureReadable)
+			: base(info.KeyEncryptionAlgorithm, secureReadable)
 		{
 			this.info = info;
 			this.rid = rid;
@@ -170,14 +166,12 @@ namespace Org.BouncyCastle.Cms
 			string			wrapAlg,
 			KeyParameter	agreedKey)
 		{
-			AlgorithmIdentifier aid = GetActiveAlgID();
-			string alg = aid.ObjectID.Id;
 			byte[] encKeyOctets = encryptedKey.GetOctets();
 
 			IWrapper keyCipher = WrapperUtilities.GetWrapper(wrapAlg);
 			keyCipher.Init(false, agreedKey);
 			byte[] sKeyBytes = keyCipher.Unwrap(encKeyOctets, 0, encKeyOctets.Length);
-			return ParameterUtilities.CreateKeyParameter(alg, sKeyBytes);
+			return ParameterUtilities.CreateKeyParameter(GetContentAlgorithmName(), sKeyBytes);
 		}
 
 		internal KeyParameter GetSessionKey(
