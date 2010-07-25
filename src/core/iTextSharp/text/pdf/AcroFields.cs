@@ -55,7 +55,7 @@ namespace iTextSharp.text.pdf {
 
         internal PdfReader reader;
         internal PdfWriter writer;
-        internal Dictionary<String, Item> fields;
+        internal IDictionary<String, Item> fields;
         private int topFirst;
         private Dictionary<String, int[]> sigNames;
         private bool append;
@@ -1407,7 +1407,7 @@ namespace iTextSharp.text.pdf {
         * the value is an instance of <CODE>AcroFields.Item</CODE>.
         * @return all the fields
         */    
-        public Dictionary<String, Item> Fields {
+        public IDictionary<String, Item> Fields {
             get {
                 return fields;
             }
