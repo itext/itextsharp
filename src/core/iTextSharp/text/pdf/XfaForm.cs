@@ -256,7 +256,7 @@ namespace iTextSharp.text.pdf {
         * @return the complete name or <CODE>null</CODE> if not found
         */
         public String FindFieldName(String name, AcroFields af) {
-            Dictionary<String, AcroFields.Item> items = af.Fields;
+            IDictionary<String, AcroFields.Item> items = af.Fields;
             if (items.ContainsKey(name))
                 return name;
             if (acroFieldsSom == null) {

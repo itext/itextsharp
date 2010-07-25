@@ -639,7 +639,7 @@ namespace iTextSharp.text.pdf {
                 return;
             if (page > reader.NumberOfPages)
                 return;
-            Dictionary<string,AcroFields.Item> fields = acroFields.Fields;
+            IDictionary<string,AcroFields.Item> fields = acroFields.Fields;
             foreach (AcroFields.Item item in fields.Values) {
                 for (int k = 0; k < item.Size; ++k) {
                     int p = item.GetPage(k);
@@ -789,7 +789,7 @@ namespace iTextSharp.text.pdf {
             if (append)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("field.flattening.is.not.supported.in.append.mode"));
             AcroFields af = AcroFields;
-            Dictionary<string,AcroFields.Item> fields = acroFields.Fields;
+            IDictionary<string,AcroFields.Item> fields = acroFields.Fields;
             if (fieldsAdded && partialFlattening.Count == 0) {
                 foreach (string obf in fields.Keys) {
                     partialFlattening[obf] = null;

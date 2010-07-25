@@ -299,7 +299,7 @@ namespace iTextSharp.text {
         * @param fullName the font name
         * @param path the font path
         */
-        public void RegisterFamily(String familyName, String fullName, String path) {
+        public static void RegisterFamily(String familyName, String fullName, String path) {
             fontImp.RegisterFamily(familyName, fullName, path);
         }
         

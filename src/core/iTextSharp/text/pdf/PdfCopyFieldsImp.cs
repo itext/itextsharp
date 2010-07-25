@@ -388,7 +388,7 @@ namespace iTextSharp.text.pdf {
             pdf.Close();
         }
         
-        internal void AddPageOffsetToField(Dictionary<String, AcroFields.Item> fd, int pageOffset) {
+        internal void AddPageOffsetToField(IDictionary<String, AcroFields.Item> fd, int pageOffset) {
             if (pageOffset == 0)
                 return;
             foreach (AcroFields.Item item in fd.Values) {
@@ -487,7 +487,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        internal void MergeWithMaster(Dictionary<string,AcroFields.Item> fd) {
+        internal void MergeWithMaster(IDictionary<string,AcroFields.Item> fd) {
             foreach (KeyValuePair<string,AcroFields.Item> entry in fd) {
                 String name = entry.Key;
                 MergeField(name, entry.Value);
@@ -497,7 +497,7 @@ namespace iTextSharp.text.pdf {
         internal virtual void MergeFields() {
             int pageOffset = 0;
             for (int k = 0; k < fields.Count; ++k) {
-                Dictionary<string,AcroFields.Item> fd = fields[k].Fields;
+                IDictionary<string,AcroFields.Item> fd = fields[k].Fields;
                 AddPageOffsetToField(fd, pageOffset);
                 MergeWithMaster(fd);
                 pageOffset += readers[k].NumberOfPages;

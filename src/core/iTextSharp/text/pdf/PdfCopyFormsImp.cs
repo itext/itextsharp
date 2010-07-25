@@ -93,7 +93,7 @@ namespace iTextSharp.text.pdf {
         */
         internal override void MergeFields() {
             for (int k = 0; k < fields.Count; ++k) {
-                Dictionary<string,AcroFields.Item> fd = fields[k].Fields;
+                IDictionary<string,AcroFields.Item> fd = fields[k].Fields;
                 MergeWithMaster(fd);
             }
         }

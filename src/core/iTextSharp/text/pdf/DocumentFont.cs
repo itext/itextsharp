@@ -185,9 +185,18 @@ namespace iTextSharp.text.pdf {
             PdfContentParser ps = new PdfContentParser(new PRTokeniser(touni));
             PdfObject ob = null;
             PdfObject last = null;
-            while ((ob = ps.ReadPRObject()) != null) {
+            bool notFound = true;
+            int nestLevel = 0;
+            while ((notFound || nestLevel > 0) && (ob = ps.ReadPRObject()) != null) {
                 if (ob.Type == PdfContentParser.COMMAND_TYPE) {
-                    if (ob.ToString().Equals("beginbfchar")) {
+                    if (ob.ToString().Equals("begin")) {
+                        notFound = false;
+                        nestLevel++;
+                    }
+                    else if (ob.ToString().Equals("end")) {
+                        nestLevel--;
+                    }
+                    else if (ob.ToString().Equals("beginbfchar")) {
                         int n = ((PdfNumber)last).IntValue;
                         for (int k = 0; k < n; ++k) {
                             String cid = DecodeString((PdfString)ps.ReadPRObject());
