@@ -2057,15 +2057,16 @@ namespace iTextSharp.text.pdf {
             xrefObj[freeXref] = new PRStream(this, content, compressionLevel);
         }
         
-        /** Get the content from a stream applying the required filters.
-        * @param stream the stream
-        * @param file the location where the stream is
-        * @throws IOException on error
-        * @return the stream content
-        */    
-        public static byte[] GetStreamBytes(PRStream stream, RandomAccessFileOrArray file) {
-            PdfObject filter = GetPdfObjectRelease(stream.Get(PdfName.FILTER));
-            byte[] b = GetStreamBytesRaw(stream, file);
+        /**
+         * Decode a byte[] applying the filters specified in the provided dictionary.
+         * @param b the bytes to decode
+         * @param streamDictionary the dictionary that contains filter information
+         * @return the decoded bytes
+         * @throws IOException if there are any problems decoding the bytes
+         * @since 5.0.4
+         */
+        public static byte[] DecodeBytes(byte[] b, PdfDictionary streamDictionary) {
+            PdfObject filter = GetPdfObjectRelease(streamDictionary.Get(PdfName.FILTER));
             List<PdfObject> filters = new List<PdfObject>();
             if (filter != null) {
                 if (filter.IsName())
@@ -2074,9 +2075,9 @@ namespace iTextSharp.text.pdf {
                     filters = ((PdfArray)filter).ArrayList;
             }
             List<PdfObject> dp = new List<PdfObject>();
-            PdfObject dpo = GetPdfObjectRelease(stream.Get(PdfName.DECODEPARMS));
+            PdfObject dpo = GetPdfObjectRelease(streamDictionary.Get(PdfName.DECODEPARMS));
             if (dpo == null || (!dpo.IsDictionary() && !dpo.IsArray()))
-                dpo = GetPdfObjectRelease(stream.Get(PdfName.DP));
+                dpo = GetPdfObjectRelease(streamDictionary.Get(PdfName.DP));
             if (dpo != null) {
                 if (dpo.IsDictionary())
                     dp.Add(dpo);
@@ -2107,8 +2108,8 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 else if (PdfName.CCITTFAXDECODE.Equals(name)) {
-                    PdfNumber wn = (PdfNumber)GetPdfObjectRelease(stream.Get(PdfName.WIDTH));
-                    PdfNumber hn = (PdfNumber)GetPdfObjectRelease(stream.Get(PdfName.HEIGHT));
+                    PdfNumber wn = (PdfNumber)GetPdfObjectRelease(streamDictionary.Get(PdfName.WIDTH));
+                    PdfNumber hn = (PdfNumber)GetPdfObjectRelease(streamDictionary.Get(PdfName.HEIGHT));
                     if (wn == null || hn == null)
                         throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("filter.ccittfaxdecode.is.only.supported.for.images"));
                     int width = wn.IntValue;
@@ -2170,6 +2171,17 @@ namespace iTextSharp.text.pdf {
             return b;
         }
         
+        /** Get the content from a stream applying the required filters.
+         * @param stream the stream
+         * @param file the location where the stream is
+         * @throws IOException on error
+         * @return the stream content
+         */
+        public static byte[] GetStreamBytes(PRStream stream, RandomAccessFileOrArray file) {
+            byte[] b = GetStreamBytesRaw(stream, file);
+            return DecodeBytes(b, stream);
+        }
+            
         /** Get the content from a stream applying the required filters.
         * @param stream the stream
         * @throws IOException on error
