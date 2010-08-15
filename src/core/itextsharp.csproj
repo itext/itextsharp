@@ -4122,6 +4122,7 @@
     <Compile Include="srcbc\util\io\pem\PemObjectParser.cs" />
     <Compile Include="srcbc\util\io\pem\PemReader.cs" />
     <Compile Include="srcbc\util\io\pem\PemWriter.cs" />
+    <Compile Include="System\util\collections\LinkedDictionary.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
