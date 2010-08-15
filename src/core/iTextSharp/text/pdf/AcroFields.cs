@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Xml;
 using System.util;
+using System.util.collections;
 using iTextSharp.text.error_messages;
 /*
  * This file is part of the iText project.
@@ -119,7 +120,7 @@ namespace iTextSharp.text.pdf {
         }
 
         internal void Fill() {
-            fields = new Dictionary<string,Item>();
+            fields = new LinkedDictionary<string,Item>();
             PdfDictionary top = (PdfDictionary)PdfReader.GetPdfObjectRelease(reader.Catalog.Get(PdfName.ACROFORM));
             if (top == null)
                 return;
