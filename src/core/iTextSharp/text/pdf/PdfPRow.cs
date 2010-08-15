@@ -588,7 +588,7 @@ namespace iTextSharp.text.pdf {
                             y = SetColumn(ct, bottom, left, top, right);
                             break;
                         default:
-                            y = SetColumn(ct, left, bottom, cell.NoWrap ? RIGHT_LIMIT : right, top);
+                            y = SetColumn(ct, left, bottom + 0.00001f, cell.NoWrap ? RIGHT_LIMIT : right, top);
                             break;
                     }
                     int status;
@@ -607,7 +607,7 @@ namespace iTextSharp.text.pdf {
                     allEmpty = (allEmpty && thisEmpty);
                 }
                 newCells[k] = newCell;
-                cell.FixedHeight = newHeight - cell.EffectivePaddingBottom;
+                cell.FixedHeight = newHeight;
             }
             if (allEmpty) {
                 for (int k = 0; k < cells.Length; ++k) {
