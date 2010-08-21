@@ -86,6 +86,7 @@ namespace iTextSharp.text.pdf.parser {
                         PdfObject element = iter.Next();
                         byte[] b;
                         allBytes.Write(b = GetContentBytesFromContentObject(element), 0, b.Length);
+                        allBytes.WriteByte((byte)' ');
                     }
                     result = allBytes.ToArray();
                     break;

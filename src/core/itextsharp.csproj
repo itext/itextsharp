@@ -4104,6 +4104,7 @@
   <ItemGroup>
     <Compile Include="iTextSharp\text\pdf\codec\LZWCompressor.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWStringTable.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\InlineImageUtils.cs" />
     <Compile Include="srcbc\asn1\Asn1Exception.cs" />
     <Compile Include="srcbc\asn1\Asn1ParsingException.cs" />
     <Compile Include="srcbc\crypto\modes\gcm\BasicGcmExponentiator.cs" />
