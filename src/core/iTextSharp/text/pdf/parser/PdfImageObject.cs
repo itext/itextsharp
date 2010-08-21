@@ -3,6 +3,7 @@ using System.IO;
 using System.Drawing;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.codec;
+using iTextSharp.text.exceptions;
 /*
  * $Id$
  *
@@ -56,9 +57,9 @@ namespace iTextSharp.text.pdf.parser {
     public class PdfImageObject {
 
         /** The image dictionary. */
-        protected PdfDictionary dictionary;
-        /** The image bytes. */
-        protected byte[] streamBytes;
+        private PdfDictionary dictionary;
+        /** The decoded image bytes (after applying filters), or the raw image bytes if unable to decode */
+        private byte[] streamBytes;
 
         private int pngColorType = -1;
         private int pngBitDepth;
@@ -85,17 +86,24 @@ namespace iTextSharp.text.pdf.parser {
          * @param stream a PRStream
          * @throws IOException
          */
-        public PdfImageObject(PRStream stream) {
-            this.dictionary = stream;
-            try {
-                streamBytes = PdfReader.GetStreamBytes(stream);
+        public PdfImageObject(PRStream stream) : this(stream, PdfReader.GetStreamBytesRaw(stream)) {
+        }
+        
+        /**
+         * Creats a PdfImage object using an explicitly provided dictionary and image bytes
+         * @param dictionary the dictionary for the image
+         * @param samples the samples
+         * @since 5.0.3
+         */
+        protected internal PdfImageObject(PdfDictionary dictionary, byte[] samples)  {
+            this.dictionary = dictionary;
+            try{
+                streamBytes = PdfReader.DecodeBytes(samples, dictionary);
                 decoded = true;
-            }
-            catch {
-                try {
-                    streamBytes = PdfReader.GetStreamBytesRaw(stream);
-                }
-                catch {}
+            } catch (UnsupportedPdfException){
+                // it's possible that the filter type was jpx or jpg, in which case we can still use the streams as-is, so we'll just hold onto the samples
+                streamBytes = samples;
+                decoded = false;
             }
         }
         
@@ -183,7 +191,17 @@ namespace iTextSharp.text.pdf.parser {
             if (streamBytes == null)
                 return null;
             if (!decoded) {
+                // if the stream hasn't been decoded, check to see if it is a single stage JPG or JPX encoded stream.  If it is,
+                // then we can just use stream as-is
                 PdfName filter = dictionary.GetAsName(PdfName.FILTER);
+                if (filter == null){
+                    PdfArray filterArray = dictionary.GetAsArray(PdfName.FILTER);
+                    if (filterArray.Size == 1){
+                        filter = filterArray.GetAsName(0);
+                    } else {
+                        throw new UnsupportedPdfException("Multi-stage filters not supported here (" + filterArray + ")");
+                    }
+                }
                 if (PdfName.DCTDECODE.Equals(filter)) {
                     fileType = TYPE_JPG;
                     return streamBytes;
@@ -192,7 +210,7 @@ namespace iTextSharp.text.pdf.parser {
                     fileType = TYPE_JP2;
                     return streamBytes;
                 }
-                return null;
+                throw new UnsupportedPdfException("Unsupported stream filter " + filter);
             }
             pngColorType = -1;
             width = dictionary.GetAsNumber(PdfName.WIDTH).IntValue;

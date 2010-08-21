@@ -58,6 +58,11 @@ namespace iTextSharp.text.pdf {
 
         internal PdfReaderInstance readerInstance;
         internal int pageNumber;
+        /**
+         * True if the imported page has been copied to a writer.
+         * @since iText 5.0.4
+         */
+        protected internal bool toCopy = true;
     
         internal PdfImportedPage(PdfReaderInstance readerInstance, PdfWriter writer, int pageNumber) {
             this.readerInstance = readerInstance;
@@ -165,6 +170,23 @@ namespace iTextSharp.text.pdf {
             get {
                 return readerInstance;
             }
+        }
+
+        /**
+         * Checks if the page has to be copied.
+         * @return true if the page has to be copied.
+         * @since iText 5.0.4
+         */
+        public bool IsToCopy() {
+            return toCopy;
+        }
+
+        /**
+         * Indicate that the resources of the imported page have been copied.
+         * @since iText 5.0.4
+         */
+        public void SetCopied() {
+            toCopy = false;
         }
     }
 }

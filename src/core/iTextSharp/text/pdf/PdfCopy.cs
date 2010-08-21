@@ -171,7 +171,6 @@ namespace iTextSharp.text.pdf {
             else {
                 currentPdfReaderInstance = base.GetPdfReaderInstance(reader);
             }
-            currentPdfReaderInstance.OutputToPdf = false;
             return currentPdfReaderInstance.GetImportedPage(pageNumber);            
         }
         
@@ -354,6 +353,7 @@ namespace iTextSharp.text.pdf {
             iRef.SetCopied();
             PdfDictionary newPage = CopyDictionary(thePage);
             root.AddPage(newPage);
+            iPage.SetCopied();
             ++currentPageNumber;
         }
         

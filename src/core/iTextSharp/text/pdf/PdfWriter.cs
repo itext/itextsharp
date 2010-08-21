@@ -1225,8 +1225,7 @@ namespace iTextSharp.text.pdf {
             // add all the dependencies in the imported pages
             foreach (PdfReaderInstance rd in readerInstances.Values) {
                 currentPdfReaderInstance = rd;
-                if (currentPdfReaderInstance.OutputToPdf)
-                    currentPdfReaderInstance.WriteAllPages();
+                currentPdfReaderInstance.WriteAllPages();
             }
             currentPdfReaderInstance = null;
             // add the color
@@ -2319,6 +2318,9 @@ namespace iTextSharp.text.pdf {
         }
 
         internal virtual RandomAccessFileOrArray GetReaderFile(PdfReader reader) {
+            if (currentPdfReaderInstance == null) {
+        	    currentPdfReaderInstance = GetPdfReaderInstance(reader);
+            }
             return currentPdfReaderInstance.ReaderFile;
         }
 

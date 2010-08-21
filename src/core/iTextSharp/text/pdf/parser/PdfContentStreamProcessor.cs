@@ -304,80 +304,6 @@ namespace iTextSharp.text.pdf.parser {
 
             textMatrix = new Matrix(adjustBy, 0).Multiply(textMatrix);
         }
-
-        /**
-         * Simple class to track embedded image information
-         * @since 5.0.1
-         */
-        private class EmbeddedImageInfo{
-            internal byte[] imageData;
-            internal PdfDictionary embeddedImageDictionary = new PdfDictionary();
-        }
-        
-        /**
-         * Parses the next embedded (inline) image from the parser
-         * @param ps the parser to extract the embedded image information from
-         * @return information about the parsed embedded (inline) image
-         * @throws IOException
-         * @since 5.0.1
-         */
-        private EmbeddedImageInfo ParseEmbeddedImage(PdfContentParser ps) {
-            // by the time we get to here, we have already parsed the BI operator
-            EmbeddedImageInfo info = new EmbeddedImageInfo();
-            
-            
-            for (PdfObject key = ps.ReadPRObject(); key != null && !"ID".Equals(key.ToString()); key = ps.ReadPRObject()){
-                PdfObject value = ps.ReadPRObject();
-                info.embeddedImageDictionary.Put((PdfName)key, value);
-            }
-            
-            // special handling for embedded images.  If we hit an ID operator, we need
-            // to skip all content until we reach an EI operator surrounded by whitespace.
-            // The following algorithm has one potential issue: what if the image stream 
-            // contains <ws>EI<ws> ?
-            // it sounds like we would have to actually decode the content stream, which
-            // I'd rather avoid right now.
-            MemoryStream baos = new MemoryStream();
-            MemoryStream accumulated = new MemoryStream();
-            int ch;
-            int found = 0;
-            PRTokeniser tokeniser = ps.GetTokeniser();
-            
-            while ((ch = tokeniser.Read()) != -1){
-                if (found == 0 && PRTokeniser.IsWhitespace(ch)){
-                    found++;
-                    accumulated.WriteByte((byte)ch);
-                } else if (found == 1 && ch == 'E'){
-                    found++;
-                    accumulated.WriteByte((byte)ch);
-                } else if (found == 1 && PRTokeniser.IsWhitespace(ch)){
-                    // this clause is needed if we have a white space character that is part of the image data
-                    // followed by a whitespace character that precedes the EI operator.  In this case, we need
-                    // to flush the first whitespace, then treat the current whitespace as the first potential
-                    // character for the end of stream check.  Note that we don't increment 'found' here.
-                    byte[] b = accumulated.ToArray();
-                    baos.Write(b, 0, b.Length);
-                    accumulated.Seek(0, SeekOrigin.Begin);
-                    accumulated.SetLength(0);
-                    accumulated.WriteByte((byte)ch);
-                } else if (found == 2 && ch == 'I'){ 
-                    found++;
-                    accumulated.WriteByte((byte)ch);
-                } else if (found == 3 && PRTokeniser.IsWhitespace(ch)){
-                    info.imageData = baos.ToArray();
-                    return info;
-                } else {
-                    byte[] b = accumulated.ToArray();
-                    baos.Write(b, 0, b.Length);
-                    accumulated.Seek(0, SeekOrigin.Begin);
-                    accumulated.SetLength(0);
-                    
-                    baos.WriteByte((byte)ch);
-                    found = 0;
-                }
-            }
-            throw new IOException("Could not find image data or EI");
-        }
         
         /**
          * Processes PDF syntax
@@ -393,10 +319,9 @@ namespace iTextSharp.text.pdf.parser {
             while (ps.Parse(operands).Count > 0){
                 PdfLiteral oper = (PdfLiteral)operands[operands.Count-1];
                 if ("BI".Equals(oper.ToString())){
-                    EmbeddedImageInfo embeddedImageInfo = ParseEmbeddedImage(ps);
-                    ImageRenderInfo renderInfo = ImageRenderInfo.CreatedForEmbeddedImage(Gs().ctm, embeddedImageInfo.embeddedImageDictionary, embeddedImageInfo.imageData);
-                    renderListener.RenderImage(renderInfo);
                     // we don't call invokeOperator for embedded images - this is one area of the PDF spec that is particularly nasty and inconsistent
+                    ImageRenderInfo renderInfo = ImageRenderInfo.CreatedForEmbeddedImage(Gs().ctm, InlineImageUtils.ParseInlineImage(ps));
+                    renderListener.RenderImage(renderInfo);
                 } else {
                     InvokeOperator(oper, operands);
                 }
