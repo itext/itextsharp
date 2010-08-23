@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using System.Xml;
+using iTextSharp.text.xml;
 /*
  * $Id$
  *
@@ -207,16 +208,18 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
-        * Serializes a XML document to a byte array.
-        * @param n the XML document
-        * @throws java.io.IOException on error
-        * @return the serialized XML document
-        */
+         * Serializes a XML document to a byte array.
+         * @param n the XML document
+         * @throws java.io.IOException on error
+         * @return the serialized XML document
+         */
         public static byte[] SerializeDoc(XmlNode n) {
+            XmlDomWriter xw = new XmlDomWriter();
             MemoryStream fout = new MemoryStream();
-            XmlTextWriter xw = new XmlTextWriter(fout, new UTF8Encoding(false));
-            xw.WriteNode(new XmlNodeReader(n), true);
-            xw.Close();
+            xw.SetOutput(fout, null);
+            xw.SetCanonical(false);
+            xw.Write(n);
+            fout.Close();
             return fout.ToArray();
         }
         
