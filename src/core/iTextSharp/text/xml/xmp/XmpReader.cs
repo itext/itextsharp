@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Text;
+using iTextSharp.text.xml;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
@@ -168,17 +169,18 @@ namespace iTextSharp.text.xml.xmp {
         }
     	
         /**
-        * Writes the document to a byte array.
-        */
-	    public byte[] SerializeDoc() {
+         * Writes the document to a byte array.
+         */
+        public byte[] SerializeDoc() {
+            XmlDomWriter xw = new XmlDomWriter();
             MemoryStream fout = new MemoryStream();
+            xw.SetOutput(fout, null);
             byte[] b = new UTF8Encoding(false).GetBytes(XmpWriter.XPACKET_PI_BEGIN);
             fout.Write(b, 0, b.Length);
             fout.Flush();
             XmlNodeList xmpmeta = domDocument.GetElementsByTagName("x:xmpmeta");
-            XmlTextWriter xw = new XmlTextWriter(fout, new UTF8Encoding(false));
-            xw.WriteNode(new XmlNodeReader(xmpmeta[0]), true);
-            xw.Flush();
+            xw.Write(xmpmeta[0]);
+            fout.Flush();
             b = new UTF8Encoding(false).GetBytes(XmpWriter.EXTRASPACE);
             for (int i = 0; i < 20; i++) {
                 fout.Write(b, 0, b.Length);
@@ -187,6 +189,6 @@ namespace iTextSharp.text.xml.xmp {
             fout.Write(b, 0, b.Length);
             fout.Close();
             return fout.ToArray();
-	    }
+        }
     }
 }
