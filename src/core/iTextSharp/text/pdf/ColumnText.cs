@@ -766,6 +766,13 @@ public class ColumnText {
             else if (ratio < 0.001f)
                 ratio = 0.001f;
         }
+        if (!rectangularMode) {
+            float max = 0;
+            foreach (PdfChunk c in bidiLine.chunks) {
+                max = Math.Max(max, c.Font.Size);
+            }
+            currentLeading = fixedLeading + max * multipliedLeading;
+        }
         float firstIndent = 0;
         PdfLine line;
         float x1;
@@ -809,7 +816,7 @@ public class ColumnText {
                 x1 = leftX;
             }
             else {
-                float yTemp = yLine;
+                float yTemp = yLine - currentLeading;
                 float[] xx = FindLimitsTwoLines();
                 if (xx == null) {
                     status = NO_MORE_COLUMN;
