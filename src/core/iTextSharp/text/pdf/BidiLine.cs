@@ -63,7 +63,7 @@ namespace iTextSharp.text.pdf {
         protected byte[] orderLevels = new byte[pieceSizeStart];
         protected int[] indexChars = new int[pieceSizeStart];
     
-        protected List<PdfChunk> chunks = new List<PdfChunk>();
+        protected internal List<PdfChunk> chunks = new List<PdfChunk>();
         protected int indexChunk = 0;
         protected int indexChunkChar = 0;
         protected int currentChar = 0;
