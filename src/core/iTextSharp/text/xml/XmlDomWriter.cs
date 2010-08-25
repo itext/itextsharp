@@ -179,6 +179,7 @@ namespace iTextSharp.text.xml {
                     break;
                 }
                 
+                case XmlNodeType.SignificantWhitespace:
                 case XmlNodeType.Whitespace:
                 case XmlNodeType.Text: {
                     NormalizeAndPrint(node.Value, false);
