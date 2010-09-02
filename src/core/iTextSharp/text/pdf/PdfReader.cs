@@ -2152,8 +2152,8 @@ namespace iTextSharp.text.pdf {
                         }
                     }
                     else {
-                        decoder.SetOptions(1, TIFFConstants.COMPRESSION_CCITTFAX4, 0, 0);
-                        decoder.DecodeRaw(outBuf, b, width, height);
+                        TIFFFaxDecoder deca = new TIFFFaxDecoder(1, width, height);
+                        deca.DecodeT6(outBuf, b, 0, height, 0);
                     }
                     if (!blackIs1) {
                         int len = outBuf.Length;
