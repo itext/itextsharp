@@ -300,8 +300,9 @@ namespace iTextSharp.text.pdf.codec {
             if (dir.IsTagPresent(TIFFConstants.TIFFTAG_PLANARCONFIG)
                 && dir.GetFieldAsLong(TIFFConstants.TIFFTAG_PLANARCONFIG) == TIFFConstants.PLANARCONFIG_SEPARATE)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("planar.images.are.not.supported"));
+            int extraSamples = 0;
             if (dir.IsTagPresent(TIFFConstants.TIFFTAG_EXTRASAMPLES))
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("extra.samples.are.not.supported"));
+                extraSamples = 1;
             int samplePerPixel = 1;
             if (dir.IsTagPresent(TIFFConstants.TIFFTAG_SAMPLESPERPIXEL)) // 1,3,4
                 samplePerPixel = (int)dir.GetFieldAsLong(TIFFConstants.TIFFTAG_SAMPLESPERPIXEL);
@@ -360,7 +361,14 @@ namespace iTextSharp.text.pdf.codec {
             }
             int rowsLeft = h;
             MemoryStream stream = null;
+            MemoryStream mstream = null;
             ZDeflaterOutputStream zip = null;
+            ZDeflaterOutputStream mzip = null;
+            if (extraSamples > 0) {
+                mstream = new MemoryStream();
+                mzip = new ZDeflaterOutputStream(mstream);
+            }
+
             CCITTG4Encoder g4 = null;
             if (bitsPerSample == 1 && samplePerPixel == 1) {
                 g4 = new CCITTG4Encoder(w);
@@ -432,7 +440,10 @@ namespace iTextSharp.text.pdf.codec {
                         g4.Fax4Encode(outBuf, height);
                     }
                     else {
-                        zip.Write(outBuf, 0, outBuf.Length);
+                        if (extraSamples > 0)
+                            ProcessExtraSamples(zip, mzip, outBuf, samplePerPixel, bitsPerSample, w, height);
+                        else
+                            zip.Write(outBuf, 0, outBuf.Length);
                     }
                     rowsLeft -= rowsStrip;
                 }
@@ -442,7 +453,7 @@ namespace iTextSharp.text.pdf.codec {
                 }
                 else {
                     zip.Close();
-                    img = Image.GetInstance(w, h, samplePerPixel, bitsPerSample, stream.ToArray());
+                    img = Image.GetInstance(w, h, samplePerPixel - extraSamples, bitsPerSample, stream.ToArray());
                     img.Deflated = true;
                 }
             }
@@ -452,7 +463,7 @@ namespace iTextSharp.text.pdf.codec {
                     try {
                         TIFFField fd = dir.GetField(TIFFConstants.TIFFTAG_ICCPROFILE);
                         ICC_Profile icc_prof = ICC_Profile.GetInstance(fd.GetAsBytes());
-                        if (samplePerPixel == icc_prof.NumComponents)
+                        if (samplePerPixel - extraSamples == icc_prof.NumComponents)
                             img.TagICC = icc_prof;
                     }
                     catch {
@@ -485,9 +496,36 @@ namespace iTextSharp.text.pdf.codec {
                 img.Inverted = true;
             if (rotation != 0)
                 img.InitialRotation = rotation;
+            if (extraSamples > 0) {
+                mzip.Close();
+                Image mimg = Image.GetInstance(w, h, 1, bitsPerSample, mstream.ToArray());
+                mimg.MakeMask();
+                mimg.Deflated = true;
+                img.ImageMask = mimg;
+            }
             return img;
         }
         
+        static Image ProcessExtraSamples(ZDeflaterOutputStream zip, ZDeflaterOutputStream mzip, byte[] outBuf, int samplePerPixel, int bitsPerSample, int width, int height) {
+            if (bitsPerSample == 8) {
+                byte[] mask = new byte[width * height];
+                int mptr = 0;
+                int optr = 0;
+                int total = width * height * samplePerPixel;
+                for (int k = 0; k < total; k += samplePerPixel) {
+                    for (int s = 0; s < samplePerPixel - 1; ++s) {
+                        outBuf[optr++] = outBuf[k + s];
+                    }
+                    mask[mptr++] = outBuf[k + samplePerPixel - 1];
+                }
+                zip.Write(outBuf, 0, optr);
+                mzip.Write(mask, 0, mptr);
+            }
+            else
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("extra.samples.are.not.supported"));
+            return null;
+        }
+
         static long[] GetArrayLongShort(TIFFDirectory dir, int tag) {
             TIFFField field = dir.GetField(tag);
             if (field == null)
