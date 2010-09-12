@@ -1072,7 +1072,18 @@ namespace iTextSharp.text.pdf {
         * @since	iText 5.0.0
         */
         public void FillXfaForm(XmlNode node) {
-		    XmlNode data = datasetsNode.FirstChild;
+            XmlNodeList allChilds = datasetsNode.ChildNodes;
+            XmlNode data = null;
+            foreach (XmlNode n in allChilds) {
+                if (n.NodeType == XmlNodeType.Element && n.LocalName.Equals("data") && XFA_DATA_SCHEMA.Equals(n.NamespaceURI)) {
+                    data = n;
+                    break;
+                }
+            }
+            if (data == null) {
+                data = datasetsNode.OwnerDocument.CreateElement("xfa:data", XFA_DATA_SCHEMA);
+                datasetsNode.AppendChild(data);
+            }
 		    XmlNodeList list = data.ChildNodes;
 		    if (list.Count == 0) {
 			    data.AppendChild(domDocument.ImportNode(node, true));
