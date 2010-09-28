@@ -609,6 +609,7 @@ namespace iTextSharp.text.pdf {
             widgetKeys[PdfName.MK] =  one;
             widgetKeys[PdfName.DA] =  one;
             widgetKeys[PdfName.Q] =  one;
+            widgetKeys[PdfName.P] =  one;
             fieldKeys[PdfName.AA] =  one;
             fieldKeys[PdfName.FT] =  one;
             fieldKeys[PdfName.TU] =  one;
