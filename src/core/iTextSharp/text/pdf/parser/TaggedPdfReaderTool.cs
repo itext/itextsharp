@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.xml.simpleparser;
 /*
@@ -66,10 +67,13 @@ namespace iTextSharp.text.pdf.parser {
          *            the PdfReader that has access to the PDF file
          * @param os
          *            the Stream to which the resulting xml will be written
+         * @param charset
+         *            the charset to encode the data
+         * @since 5.0.5
          */
-        public void ConvertToXml(PdfReader reader, Stream os) {
+        public void ConvertToXml(PdfReader reader, Stream os, Encoding encoding) {
             this.reader = reader;
-            outp = new StreamWriter(os);
+            outp = new StreamWriter(os, encoding);
             // get the StructTreeRoot from the root obj
             PdfDictionary catalog = reader.Catalog;
             PdfDictionary struc = catalog.GetAsDict(PdfName.STRUCTTREEROOT);
@@ -77,6 +81,18 @@ namespace iTextSharp.text.pdf.parser {
             InspectChild(struc.GetDirectObject(PdfName.K));
             outp.Flush();
             outp.Close();
+        }
+
+        /**
+         * Parses a string with structured content.
+         * 
+         * @param reader
+         *            the PdfReader that has access to the PDF file
+         * @param os
+         *            the Stream to which the resulting xml will be written
+         */
+        public void ConvertToXml(PdfReader reader, Stream os) {
+            ConvertToXml(reader, os, Encoding.Default);
         }
 
         /**
@@ -123,19 +139,61 @@ namespace iTextSharp.text.pdf.parser {
                 return;
             PdfName s = k.GetAsName(PdfName.S);
             if (s != null) {
-                String tag = s.ToString().Substring(1);
+                String tagN = PdfName.DecodeName(s.ToString());
+			    String tag = FixTagName(tagN);
                 outp.Write("<");
                 outp.Write(tag);
                 outp.Write(">");
                 PdfDictionary dict = k.GetAsDict(PdfName.PG);
                 if (dict != null)
-                    ParseTag(tag, k.GetDirectObject(PdfName.K), dict);
+                    ParseTag(tagN, k.GetDirectObject(PdfName.K), dict);
                 InspectChild(k.Get(PdfName.K));
                 outp.Write("</");
                 outp.Write(tag);
                 outp.WriteLine(">");
             } else
                 InspectChild(k.Get(PdfName.K));
+        }
+
+        private static String FixTagName(String tag) {
+            StringBuilder sb = new StringBuilder();
+            for (int k = 0; k < tag.Length; ++k) {
+                char c = tag[k];
+                bool nameStart =
+                    c == ':'
+                    || (c >= 'A' && c <= 'Z')
+                    || c == '_'
+                    || (c >= 'a' && c <= 'z')
+                    || (c >= '\u00c0' && c <= '\u00d6')
+                    || (c >= '\u00d8' && c <= '\u00f6')
+                    || (c >= '\u00f8' && c <= '\u02ff')
+                    || (c >= '\u0370' && c <= '\u037d')
+                    || (c >= '\u037f' && c <= '\u1fff')
+                    || (c >= '\u200c' && c <= '\u200d')
+                    || (c >= '\u2070' && c <= '\u218f')
+                    || (c >= '\u2c00' && c <= '\u2fef')
+                    || (c >= '\u3001' && c <= '\ud7ff')
+                    || (c >= '\uf900' && c <= '\ufdcf')
+                    || (c >= '\ufdf0' && c <= '\ufffd');
+                bool nameMiddle =
+                    c == '-'
+                    || c == '.'
+                    || (c >= '0' && c <= '9')
+                    || c == '\u00b7'
+                    || (c >= '\u0300' && c <= '\u036f')
+                    || (c >= '\u203f' && c <= '\u2040')
+                    || nameStart;
+                if (k == 0) {
+                    if (!nameStart)
+                        c = '_';
+                }
+                else {
+                    if (!nameMiddle)
+                        c = '_';
+                }
+                sb.Append(c);
+            }
+            return sb.ToString();
         }
 
         /**
