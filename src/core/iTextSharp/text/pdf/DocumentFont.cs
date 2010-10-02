@@ -663,5 +663,16 @@ namespace iTextSharp.text.pdf {
                 return uni2byte;
             }
         }
+
+        /**
+         * Gets the difference map
+         * @return the difference map
+         * @since 5.0.5
+         */
+        internal IntHashtable Diffmap {
+            get {
+                return diffmap;
+            }
+        }
     }
 }
