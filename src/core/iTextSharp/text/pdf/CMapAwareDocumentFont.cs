@@ -127,6 +127,15 @@ namespace iTextSharp.text.pdf {
                 if (cidbyte2uni[n] == 0)
                     cidbyte2uni[n] = (char)e[k];
             }
+            IntHashtable diffmap = Diffmap;
+            if (diffmap != null) {
+                // the difference array overrides the existing encoding
+                e = diffmap.ToOrderedKeys();
+                for (int k = 0; k < e.Length; ++k) {
+                    int n = diffmap[e[k]];
+                    cidbyte2uni[n] = (char)e[k];
+                }
+            }
         }
         
 
