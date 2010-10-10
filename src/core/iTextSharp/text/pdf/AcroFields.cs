@@ -1925,6 +1925,38 @@ namespace iTextSharp.text.pdf {
             }
         }
 
+        /**
+         * Clears a signed field.
+         * @param name the field name
+         * @return true if the field was signed, false if the field was not signed or not found
+         * @since 5.0.5
+         */
+        public bool ClearSignatureField(String name) {
+            sigNames = null;
+            FindSignatureNames();
+            if (!sigNames.ContainsKey(name))
+                return false;
+            Item sig = fields[name];
+            sig.MarkUsed(this, Item.WRITE_VALUE | Item.WRITE_WIDGET);
+            int n = sig.Size;
+            for (int k = 0; k < n; ++k) {
+                ClearSigDic(sig.GetMerged(k));
+                ClearSigDic(sig.GetWidget(k));
+                ClearSigDic(sig.GetValue(k));
+            }
+            return true;
+        }
+
+        private static void ClearSigDic(PdfDictionary dic) {
+            dic.Remove(PdfName.AP);
+            dic.Remove(PdfName.AS);
+            dic.Remove(PdfName.V);
+            dic.Remove(PdfName.DV);
+            dic.Remove(PdfName.SV);
+            dic.Remove(PdfName.FF);
+            dic.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+        }
+
         private void FindSignatureNames() {
             if (sigNames != null)
                 return;
