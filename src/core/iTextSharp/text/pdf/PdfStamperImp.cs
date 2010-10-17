@@ -190,8 +190,15 @@ namespace iTextSharp.text.pdf {
             }
             // metadata
             int skipInfo = -1;
-            PRIndirectReference iInfo = (PRIndirectReference)reader.Trailer.Get(PdfName.INFO);
-            PdfDictionary oldInfo = (PdfDictionary)PdfReader.GetPdfObject(iInfo);
+            PdfObject oInfo = reader.Trailer.Get(PdfName.INFO);
+            PRIndirectReference iInfo = null;
+            PdfDictionary oldInfo = null;
+            if (oInfo is PRIndirectReference)
+                iInfo = (PRIndirectReference)oInfo;
+            if (iInfo != null)
+                oldInfo = (PdfDictionary)PdfReader.GetPdfObject(iInfo);
+            else if (oInfo is PdfDictionary)
+                oldInfo = (PdfDictionary)oInfo;
             String producer = null;
             if (iInfo != null)
                 skipInfo = iInfo.Number;
