@@ -189,7 +189,7 @@ namespace iTextSharp.text.pdf.parser {
                 }
                 else {
                     if (!nameMiddle)
-                        c = '_';
+                        c = '-';
                 }
                 sb.Append(c);
             }
