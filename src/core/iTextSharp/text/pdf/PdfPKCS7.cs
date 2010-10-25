@@ -566,14 +566,14 @@ namespace iTextSharp.text.pdf {
             if (verified)
                 return verifyResult;
             if (sigAttr != null) {
-                byte[] msd = new byte[messageDigest.GetDigestSize()];
+                byte[] msgDigestBytes = new byte[messageDigest.GetDigestSize()];
+                messageDigest.DoFinal(msgDigestBytes, 0);
+                bool verifyRSAdata = true;
                 sig.BlockUpdate(sigAttr, 0, sigAttr.Length);
                 if (RSAdata != null) {
-                    messageDigest.DoFinal(msd, 0);
-                    messageDigest.BlockUpdate(msd, 0, msd.Length);
+                    verifyRSAdata = Arrays.AreEqual(msgDigestBytes, RSAdata);
                 }
-                messageDigest.DoFinal(msd, 0);
-                verifyResult = (Arrays.AreEqual(msd, digestAttr) && sig.VerifySignature(digest));
+                verifyResult = Arrays.AreEqual(msgDigestBytes, digestAttr) && sig.VerifySignature(digest) && verifyRSAdata;
             }
             else {
                 if (RSAdata != null){
