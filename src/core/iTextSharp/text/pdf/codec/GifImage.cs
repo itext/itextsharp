@@ -245,13 +245,7 @@ namespace iTextSharp.text.pdf.codec {
             blockSize = inp.ReadByte();
             if (blockSize <= 0)
                 return blockSize = 0;
-            for (int k = 0; k < blockSize; ++k) {
-                int v = inp.ReadByte();
-                if (v < 0) {
-                    return blockSize = k;
-                }
-                block[k] = (byte)v;
-            }
+            blockSize = inp.Read(block, 0, blockSize);
             return blockSize;
         }
 
