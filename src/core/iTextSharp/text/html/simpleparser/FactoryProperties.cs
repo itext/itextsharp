@@ -149,6 +149,14 @@ namespace iTextSharp.text.html.simpleparser {
 
         public Font GetFont(ChainedProperties props) {
             String face = props[ElementTags.FACE];
+            // try again, under the CSS key.  
+            //ISSUE: If both are present, we always go with face, even if font-family was  
+            //  defined more recently in our ChainedProperties.  One solution would go like this: 
+            //    Map all our supported style attributes to the 'normal' tag name, so we could   
+            //    look everything up under that one tag, retrieving the most current value.
+            if (face == null || face.Trim().Length == 0) {
+                face = props[Markup.CSS_KEY_FONTFAMILY];
+            }
             if (face != null) {
                 StringTokenizer tok = new StringTokenizer(face, ",");
                 while (tok.HasMoreTokens()) {
@@ -162,6 +170,15 @@ namespace iTextSharp.text.html.simpleparser {
                 }
             }
             int style = 0;
+            String textDec = props[Markup.CSS_KEY_TEXTDECORATION];
+            if (textDec != null && textDec.Trim().Length != 0) {
+                if (Markup.CSS_VALUE_UNDERLINE.Equals(textDec)) {
+                    style |= Font.UNDERLINE;
+                }
+                else if (Markup.CSS_VALUE_LINETHROUGH.Equals(textDec)) {
+                    style |= Font.STRIKETHRU;
+                }
+            }
             if (props.HasProperty(HtmlTags.I))
                 style |= Font.ITALIC;
             if (props.HasProperty(HtmlTags.B))
