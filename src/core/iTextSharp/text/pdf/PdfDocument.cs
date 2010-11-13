@@ -1054,21 +1054,21 @@ namespace iTextSharp.text.pdf {
             if (lines == null) {
                 lines = new List<PdfLine>();
             }
-            // If the current line is not null
-            if (line != null) {
+            // If the current line is not null or empty
+            if (line != null && line.Size > 0) {
                 // we check if the end of the page is reached (bugfix by Francois Gravel)
-                if (currentHeight + line.Height + leading < IndentTop - IndentBottom) {
-                    // if so nonempty lines are added and the heigt is augmented
-                    if (line.Size > 0) {
-                        currentHeight += line.Height;
-                        lines.Add(line);
-                        pageEmpty = false;
-                    }
-                }
-                // if the end of the line is reached, we start a new page
-                else {
+                if (currentHeight + line.Height + leading > IndentTop - IndentBottom) {
+                    // if the end of the line is reached, we start a newPage which will flush existing lines
+                    // then move to next page but before then we need to exclude the current one that does not fit
+                    // After the new page we add the current line back in
+                    PdfLine overflowLine = line;
+                    line = null;
                     NewPage();
+                    line = overflowLine;
                 }
+                currentHeight += line.Height;
+                lines.Add(line);
+                pageEmpty = false;
             }
             if (imageEnd > -1 && currentHeight > imageEnd) {
                 imageEnd = -1;

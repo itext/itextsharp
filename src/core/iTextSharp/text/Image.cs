@@ -317,6 +317,7 @@ namespace iTextSharp.text {
             this.originalType = image.originalType;
             this.spacingAfter = image.spacingAfter;
             this.spacingBefore = image.spacingBefore;
+            this.scaleToFitLineWhenOverflow = image.scaleToFitLineWhenOverflow;
             this.widthPercentage = image.widthPercentage;
             this.layer = image.layer;
             this.initialRotation = image.initialRotation;
@@ -1451,6 +1452,20 @@ namespace iTextSharp.text {
             set {
                 widthPercentage = value;
             }
+        }
+
+        // scaling the image to the available width (or not)
+
+        /**
+         * Indicates if the image should be scaled to fit the line
+         * when the image exceeds the available width.
+         * @since iText 5.0.6
+         */
+        protected internal bool scaleToFitLineWhenOverflow;
+
+        public bool ScaleToFitLineWhenOverflow {
+            get { return scaleToFitLineWhenOverflow; }
+            set { scaleToFitLineWhenOverflow = value; }
         }
 
         public IPdfOCG Layer {

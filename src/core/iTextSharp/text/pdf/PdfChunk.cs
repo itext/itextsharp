@@ -447,6 +447,12 @@ namespace iTextSharp.text.pdf {
         internal PdfChunk Truncate(float width) {
             if (image != null) {
                 if (image.ScaledWidth > width) {
+                    // Image does not fit the line, resize if requested
+                    if (image.ScaleToFitLineWhenOverflow) {
+                        float scalePercent = width / image.Width * 100;
+                        image.ScalePercent(scalePercent);
+                        return null;
+                    }
                     PdfChunk pc = new PdfChunk("", this);
                     value = "";
                     attributes.Remove(Chunk.IMAGE);

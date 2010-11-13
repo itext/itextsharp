@@ -360,6 +360,18 @@ namespace iTextSharp.text.pdf {
                 splitChar = ck.IsExtSplitCharacter(oldCurrentChar, currentChar, totalTextLength, text, detailChunks);
                 if (splitChar && Char.IsWhiteSpace((char)uniC))
                     lastSplit = currentChar;
+                if (width - charWidth < 0) {
+                    // If the chunk is an image and it is the first one in line, check if resize requested
+                    // If so, resize to fit the current line width
+                    if (lastValidChunk == null && ck.IsImage()) {
+                        Image img = ck.Image;
+                        if (img.ScaleToFitLineWhenOverflow) {
+                            float scalePercent = width / img.Width * 100;
+                            img.ScalePercent(scalePercent);
+                            charWidth = width;
+                        }
+                    }
+                }
                 if (width - charWidth < 0)
                     break;
                 if (splitChar)

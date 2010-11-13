@@ -195,7 +195,9 @@ namespace iTextSharp.text.pdf {
     
         private void AddToLine(PdfChunk chunk) {
             if (chunk.ChangeLeading && chunk.IsImage()) {
-                float f = chunk.Image.ScaledHeight + chunk.ImageOffsetY + chunk.Image.BorderWidthTop;
+                Image img = chunk.Image;
+                float f = img.ScaledHeight + chunk.ImageOffsetY
+                    + img.BorderWidthTop + img.SpacingBefore;
                 if (f > height) height = f;
             }
             line.Add(chunk);
@@ -452,7 +454,9 @@ namespace iTextSharp.text.pdf {
                     normal_leading = Math.Max(chunk.Font.Size, normal_leading);
                 }
                 else {
-                    image_leading = Math.Max(chunk.Image.ScaledHeight + chunk.ImageOffsetY, image_leading);
+                    Image img = chunk.Image;
+                    float height = img.ScaledHeight + chunk.ImageOffsetY + img.SpacingBefore;
+                    image_leading = Math.Max(height, image_leading);
                 }
             }
             return new float[]{normal_leading, image_leading};

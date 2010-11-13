@@ -4,6 +4,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.Globalization;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.html;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
@@ -549,6 +550,12 @@ namespace iTextSharp.text.xml.simpleparser {
                 doc.StartElement(tag,attributes);
             }
             else {
+                if (html) {
+                    // White spaces following new lines need to be ignored in HTML
+                    if (HtmlTags.IsNewLineTag(tag)) {
+                        nowhite = false;
+                    }
+                }
                 nested--;
                 doc.EndElement(tag);
             }
