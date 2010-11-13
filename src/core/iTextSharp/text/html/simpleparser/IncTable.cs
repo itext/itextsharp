@@ -106,6 +106,16 @@ namespace iTextSharp.text.html.simpleparser {
                     table.LockedWidth = true;
                 }
             }
+        
+            // Support for horizontal alignment of tables via HTML conversion
+            string alignment;
+            props.TryGetValue("align", out alignment);
+            int align = Element.ALIGN_LEFT;
+            if (alignment != null) {
+                align = ElementTags.AlignmentValue(alignment);
+            }
+            table.HorizontalAlignment = align;
+            
             foreach (List<PdfPCell> col in rows) {
                 foreach (PdfPCell pc in col) {
                     table.AddCell(pc);

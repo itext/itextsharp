@@ -1434,6 +1434,8 @@ namespace iTextSharp.text.pdf {
         /** A name */
         public static readonly PdfName STRIKEOUT = new PdfName("StrikeOut");
         /** A name */
+        public static readonly PdfName STRUCTELEM = new PdfName("StructElem");
+        /** A name */
         public static readonly PdfName STRUCTPARENT = new PdfName("StructParent");
         /** A name */
         public static readonly PdfName STRUCTPARENTS = new PdfName("StructParents");

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 /*
  * $Id$
@@ -320,5 +321,27 @@ namespace iTextSharp.text.html {
         * @since 2.1.3
         */
 	    public const String PRE = "pre";
+	
+        /**
+         * Set containing tags that trigger a new line.
+         * @since iText 5.0.6
+         */
+        private static readonly Dictionary<string,object> newLineTags = new Dictionary<string,object>();
+
+        static HtmlTags() {
+            // Following list are the basic html tags that force new lines
+            // List may be extended as we discover them
+            newLineTags[PARAGRAPH] = null;
+            newLineTags["blockquote"] = null;
+            newLineTags["br"] = null;
+        }   
+        
+        /**
+         * Returns true if the tag causes a new line like p, br etc.
+         * @since iText 5.0.6
+         */
+        public static bool IsNewLineTag(string tag) {
+            return newLineTags.ContainsKey(tag);
+        }
     }
 }

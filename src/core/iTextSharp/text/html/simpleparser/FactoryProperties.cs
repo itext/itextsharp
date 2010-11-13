@@ -130,6 +130,12 @@ namespace iTextSharp.text.html.simpleparser {
             if (value != null) {
                 try {
                     p.ExtraParagraphSpace = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
+                } catch {}
+            }
+            value = props["indent"];
+            if (value != null) {
+                try {
+                    p.IndentationLeft = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
                 }
                 catch {}
             }

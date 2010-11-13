@@ -55,18 +55,18 @@ namespace iTextSharp.text.html.simpleparser {
 
     public class HTMLWorker : ISimpleXMLDocHandler, IDocListener {
         
-        protected List<IElement> objectList;
-        protected IDocListener document;
-        private Paragraph currentParagraph;
+        protected internal List<IElement> objectList;
+        protected internal IDocListener document;
+        protected internal Paragraph currentParagraph;
         private ChainedProperties cprops = new ChainedProperties();
-        private Stack<IElement> stack = new Stack<IElement>();
+        protected internal Stack<IElement> stack = new Stack<IElement>();
         private bool pendingTR = false;
         private bool pendingTD = false;
         private bool pendingLI = false;
         private StyleSheet style = new StyleSheet();
         private bool isPRE = false;
         private Stack<bool[]> tableState = new Stack<bool[]>();
-        private bool skipText = false;
+        protected internal bool skipText = false;
         private Dictionary<String, Object> interfaceProps;
         private FactoryProperties factoryProperties = new FactoryProperties();
         
@@ -294,7 +294,7 @@ namespace iTextSharp.text.html.simpleparser {
                     cprops.RemoveChain(tag);
                     if (currentParagraph == null)
                         currentParagraph = FactoryProperties.CreateParagraph(cprops);
-                    currentParagraph.Add(new Chunk(img, 0, 0));
+                    currentParagraph.Add(new Chunk(img, 0, 0, true));
                 }
                 return;
             }
@@ -319,7 +319,7 @@ namespace iTextSharp.text.html.simpleparser {
                 }catch {
                     list.Autoindent = true;
                 }
-                list.SetListSymbol("\u2022");
+                list.SetListSymbol("\u2022 ");
                 stack.Push(list);
                 return;
             }
@@ -376,12 +376,14 @@ namespace iTextSharp.text.html.simpleparser {
                 return;
             }
             if (tag.Equals("table")) {
-                cprops.AddToChain("table", h);
                 IncTable table = new IncTable(h);
                 stack.Push(table);
                 tableState.Push(new bool[]{pendingTR, pendingTD});
                 pendingTR = pendingTD = false;
                 skipText = true;
+                // Table alignment should not affect children elements, thus remove
+                h.Remove("align");
+                cprops.AddToChain("table", h);
                 return;
             }
         }

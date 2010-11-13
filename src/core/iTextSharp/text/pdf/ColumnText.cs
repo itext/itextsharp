@@ -1410,7 +1410,13 @@ public class ColumnText {
                     yLine += footerHeight;
                 }
                 if (k >= table.Size) {
-                    yLine -= table.SpacingAfter;
+                    // Use up space no more than left
+                    if (yLine - table.SpacingAfter < minY) {
+                        yLine = minY;
+                    }
+                    else {
+                        yLine -= table.SpacingAfter;
+                    }
                     compositeElements.RemoveAt(0);
                     splittedRow = false;
                     listIdx = 0;

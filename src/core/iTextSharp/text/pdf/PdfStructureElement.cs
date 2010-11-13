@@ -74,6 +74,7 @@ namespace iTextSharp.text.pdf {
             Init(parent, structureType);
             this.parent = parent;
             Put(PdfName.P, parent.reference);
+            Put(PdfName.TYPE, PdfName.STRUCTELEM);
         }
         
         /**
@@ -85,6 +86,7 @@ namespace iTextSharp.text.pdf {
             top = parent;
             Init(parent, structureType);
             Put(PdfName.P, parent.Reference);
+            Put(PdfName.TYPE, PdfName.STRUCTELEM);
         }
         
         private void Init(PdfDictionary parent, PdfName structureType) {
