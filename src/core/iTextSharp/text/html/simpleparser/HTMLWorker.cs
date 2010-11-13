@@ -529,11 +529,15 @@ namespace iTextSharp.text.html.simpleparser {
                 pendingTR = false;
                 cprops.RemoveChain("tr");
                 List<PdfPCell> cells = new List<PdfPCell>();
+                List<float> cellWidths = new List<float>();
                 IncTable table = null;
                 while (true) {
                     IElement obj = stack.Pop();
                     if (obj is IncCell) {
-                        cells.Add(((IncCell)obj).Cell);
+                        IncCell cell = (IncCell)obj;
+                        if (!float.IsNaN(cell.Width))
+                            cellWidths.Add(cell.Width);
+                        cells.Add(cell.Cell);
                     }
                     if (obj is IncTable) {
                         table = (IncTable)obj;
@@ -541,6 +545,11 @@ namespace iTextSharp.text.html.simpleparser {
                     }
                 }
                 table.AddCols(cells);
+                if (cellWidths.Count > 0) {
+                    // cells come off the stack in reverse, naturally
+                    cellWidths.Reverse();
+                    table.ColWidths = cellWidths.ToArray();
+                }
                 table.EndRow();
                 stack.Push(table);
                 skipText = true;

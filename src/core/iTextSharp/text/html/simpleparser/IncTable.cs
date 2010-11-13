@@ -54,6 +54,8 @@ namespace iTextSharp.text.html.simpleparser {
         private Dictionary<string,string> props = new Dictionary<string,string>();
         private List<List<PdfPCell>> rows = new List<List<PdfPCell>>();
         private List<PdfPCell> cols;
+        private float[] colWidths;
+
         /** Creates a new instance of IncTable */
         public IncTable(Dictionary<string,string> props) {
             foreach (KeyValuePair<string,string> dc in props)
@@ -87,6 +89,11 @@ namespace iTextSharp.text.html.simpleparser {
             }
         }
         
+        public float[] ColWidths {
+            get { return colWidths; }
+            set { colWidths = value; }
+        }
+
         public PdfPTable BuildTable() {
             if (rows.Count == 0)
                 return new PdfPTable(1);
@@ -121,6 +128,12 @@ namespace iTextSharp.text.html.simpleparser {
                     table.AddCell(pc);
                 }
             }
+		    try {
+			    if (colWidths != null)
+				    table.SetWidths(colWidths);
+		    } catch {
+			    // fail silently
+		    }
             return table;
         }
 

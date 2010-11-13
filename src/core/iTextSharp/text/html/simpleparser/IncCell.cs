@@ -55,6 +55,7 @@ namespace iTextSharp.text.html.simpleparser {
         
         private List<Chunk> chunks = new List<Chunk>();
         private PdfPCell cell;
+        private float width = float.NaN;
         
         /** Creates a new instance of IncCell */
         public IncCell(String tag, ChainedProperties props) {
@@ -97,6 +98,10 @@ namespace iTextSharp.text.html.simpleparser {
             cell.UseDescender = true;
             value = props["bgcolor"];
             cell.BackgroundColor = Markup.DecodeColor(value);
+            value = props["width"];
+            if (value != null) {
+                width = float.Parse(value.Replace("%", ""), System.Globalization.NumberFormatInfo.InvariantInfo);
+            }
         }
         
         public bool Add(IElement o) {
@@ -142,6 +147,12 @@ namespace iTextSharp.text.html.simpleparser {
             return true;
         }
   
+
+        public float Width {
+            get { return width; }
+            set { width = value; }
+        }
+
         public override string ToString() {
             return base.ToString();
         }
