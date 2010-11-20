@@ -55,7 +55,7 @@ namespace iTextSharp.text.pdf.events {
     * the PdfWriter.
     */
 
-    public class PdfPTableEventForwarder : IPdfPTableEvent {
+    public class PdfPTableEventForwarder : IPdfPTableEventSplit {
 
         /** ArrayList containing all the PageEvents that have to be executed. */
         protected List<IPdfPTableEvent> events = new List<IPdfPTableEvent>();
@@ -75,6 +75,12 @@ namespace iTextSharp.text.pdf.events {
             foreach (IPdfPTableEvent eventa in events) {
                 eventa.TableLayout(table, widths, heights, headerRows, rowStart, canvases);
             }
+        }
+        public void SplitTable(PdfPTable table) {
+		    foreach (IPdfPTableEvent eventa in events) {
+			    if (eventa is IPdfPTableEventSplit)
+                    ((IPdfPTableEventSplit)eventa).SplitTable(table);
+		    }
         }
     }
 }
