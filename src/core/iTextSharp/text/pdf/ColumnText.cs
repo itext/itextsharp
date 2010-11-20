@@ -1392,6 +1392,13 @@ public class ColumnText {
                         last.MaxHeights = yTemp - minY + rowHeight;
                         yTemp = minY;
                     }
+                    if (newPageFollows) {
+                        // newPageFollows indicate that this table is being split
+                        IPdfPTableEvent tableEvent = table.TableEvent;
+                        if (tableEvent is IPdfPTableEventSplit) {
+                            ((IPdfPTableEventSplit)tableEvent).SplitTable(table);
+                        }
+                    }
                     
                     // now we render the rows of the new table
                     if (canvases != null)

@@ -4105,6 +4105,7 @@
     <Compile Include="iTextSharp\text\pdf\codec\LZWCompressor.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWStringTable.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\InlineImageUtils.cs" />
+    <Compile Include="iTextSharp\text\pdf\IPdfPTableEventSplit.cs" />
     <Compile Include="iTextSharp\text\pdf\richmedia\CuePoint.cs" />
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaActivation.cs" />
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaAnimation.cs" />
