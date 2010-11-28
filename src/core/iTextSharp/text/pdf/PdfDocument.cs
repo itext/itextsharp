@@ -2331,8 +2331,7 @@ namespace iTextSharp.text.pdf {
                 else
                     loop = 0;
                 if (loop == 3) {
-                    Add(new Paragraph("ERROR: Infinite table loop"));
-                    break;
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("infinite.table.loop"));
                 }
                 NewPage();
             }
