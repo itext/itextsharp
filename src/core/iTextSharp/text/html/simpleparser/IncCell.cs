@@ -55,7 +55,16 @@ namespace iTextSharp.text.html.simpleparser {
         
         private List<Chunk> chunks = new List<Chunk>();
         private PdfPCell cell;
-        private float width = float.NaN;
+        /**
+         * The width of the cell.
+         * @since iText 5.0.6
+         */
+        private float width;
+        /**
+         * Indicates if the width is a percentage.
+         * @since iText 5.0.6
+         */
+        private bool percentage;
         
         /** Creates a new instance of IncCell */
         public IncCell(String tag, ChainedProperties props) {
@@ -100,7 +109,12 @@ namespace iTextSharp.text.html.simpleparser {
             cell.BackgroundColor = Markup.DecodeColor(value);
             value = props["width"];
             if (value != null) {
-                width = float.Parse(value.Replace("%", ""), System.Globalization.NumberFormatInfo.InvariantInfo);
+                value = value.Trim();
+                if (value.EndsWith("%")) {
+                    percentage = true;
+                    value = value.Substring(0, value.Length - 1);
+                }
+                width = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
             }
         }
         
@@ -150,7 +164,12 @@ namespace iTextSharp.text.html.simpleparser {
 
         public float Width {
             get { return width; }
-            set { width = value; }
+        }
+
+        public bool IsPercentage {
+            get {
+                return percentage;
+            }
         }
 
         public override string ToString() {

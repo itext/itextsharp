@@ -530,13 +530,24 @@ namespace iTextSharp.text.html.simpleparser {
                 cprops.RemoveChain("tr");
                 List<PdfPCell> cells = new List<PdfPCell>();
                 List<float> cellWidths = new List<float>();
+                bool percentage = false;
+                float width;
+                float totalWidth = 0;
+                int zeroWidth = 0;
                 IncTable table = null;
                 while (true) {
                     IElement obj = stack.Pop();
                     if (obj is IncCell) {
                         IncCell cell = (IncCell)obj;
-                        if (!float.IsNaN(cell.Width))
-                            cellWidths.Add(cell.Width);
+                        width = cell.Width;
+                        cellWidths.Add(width);
+                        percentage |= cell.IsPercentage;
+                        if (width == 0) {
+                            zeroWidth++;
+                        }
+                        else {
+                            totalWidth += width;
+                        }
                         cells.Add(cell.Cell);
                     }
                     if (obj is IncTable) {
@@ -547,7 +558,13 @@ namespace iTextSharp.text.html.simpleparser {
                 table.AddCols(cells);
                 if (cellWidths.Count > 0) {
                     // cells come off the stack in reverse, naturally
+                    totalWidth = 100 - totalWidth;
                     cellWidths.Reverse();
+                    for (int i = 0; i < cellWidths.Count; ++i) {
+                        if (cellWidths[i] == 0 && percentage && zeroWidth > 0) {
+                        	cellWidths[i] = totalWidth / zeroWidth;
+                        }
+                    }
                     table.ColWidths = cellWidths.ToArray();
                 }
                 table.EndRow();
