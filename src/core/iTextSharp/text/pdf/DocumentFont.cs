@@ -184,7 +184,6 @@ namespace iTextSharp.text.pdf {
         private void FillMetrics(byte[] touni, IntHashtable widths, int dw) {
             PdfContentParser ps = new PdfContentParser(new PRTokeniser(touni));
             PdfObject ob = null;
-            PdfObject last = null;
             bool notFound = true;
             int nestLevel = 0;
             while ((notFound || nestLevel > 0) && (ob = ps.ReadPRObject()) != null) {
@@ -197,9 +196,11 @@ namespace iTextSharp.text.pdf {
                         nestLevel--;
                     }
                     else if (ob.ToString().Equals("beginbfchar")) {
-                        int n = ((PdfNumber)last).IntValue;
-                        for (int k = 0; k < n; ++k) {
-                            String cid = DecodeString((PdfString)ps.ReadPRObject());
+                        while (true) {
+                            PdfObject nx = ps.ReadPRObject();
+                            if (nx.ToString().Equals("endbfchar"))
+                                break;
+                            String cid = DecodeString((PdfString)nx);
                             String uni = DecodeString((PdfString)ps.ReadPRObject());
                             if (uni.Length == 1) {
                                 int cidc = (int)cid[0];
@@ -212,9 +213,11 @@ namespace iTextSharp.text.pdf {
                         }
                     }
                     else if (ob.ToString().Equals("beginbfrange")) {
-                        int n = ((PdfNumber)last).IntValue;
-                        for (int k = 0; k < n; ++k) {
-                            String cid1 = DecodeString((PdfString)ps.ReadPRObject());
+                        while (true) {
+                            PdfObject nx = ps.ReadPRObject();
+                            if (nx.ToString().Equals("endbfrange"))
+                                break;
+                            String cid1 = DecodeString((PdfString)nx);
                             String cid2 = DecodeString((PdfString)ps.ReadPRObject());
                             int cid1c = (int)cid1[0];
                             int cid2c = (int)cid2[0];
@@ -247,8 +250,6 @@ namespace iTextSharp.text.pdf {
                         }                        
                     }
                 }
-                else
-                    last = ob;
             }
         }
 
