@@ -74,7 +74,6 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
         {
             PushbackStream cmapStream = new PushbackStream( input );
             CMap result = new CMap();
-            Object previousToken = null;
             Object token = null;
             while ( (token = ParseNextToken( cmapStream )) != null )
             {
@@ -83,10 +82,12 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
                     Operator op = (Operator)token;
                     if ( op.op.Equals( BEGIN_CODESPACE_RANGE ) )
                     {
-                        IConvertible cosCount = (IConvertible)previousToken;
-                        for ( int j=0; j<cosCount.ToInt32(CultureInfo.InvariantCulture); j++ )
+                        while (true)
                         {
-                            byte[] startRange = (byte[])ParseNextToken( cmapStream );
+                            Object nx = ParseNextToken( cmapStream );
+                            if (nx is Operator && ((Operator)nx).op.Equals("endcodespacerange"))
+                                break;
+                            byte[] startRange = (byte[])nx;
                             byte[] endRange = (byte[])ParseNextToken( cmapStream );
                             CodespaceRange range = new CodespaceRange();
                             range.SetStart( startRange );
@@ -96,10 +97,12 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
                     }
                     else if ( op.op.Equals( BEGIN_BASE_FONT_CHAR ) )
                     {
-                        IConvertible cosCount = (IConvertible)previousToken;
-                        for ( int j=0; j<cosCount.ToInt32(CultureInfo.InvariantCulture); j++ )
+                        while (true)
                         {
-                            byte[] inputCode = (byte[])ParseNextToken( cmapStream );
+                            Object nx = ParseNextToken( cmapStream );
+                            if (nx is Operator && ((Operator)nx).op.Equals("endbfchar"))
+                                break;
+                            byte[] inputCode = (byte[])nx;
                             Object nextToken = ParseNextToken( cmapStream );
                             if ( nextToken is byte[] )
                             {
@@ -118,12 +121,13 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
                         }
                     }
                    else if ( op.op.Equals( BEGIN_BASE_FONT_RANGE ) )
-                    {
-                        IConvertible cosCount = (IConvertible)previousToken;
-
-                        for ( int j=0; j<cosCount.ToInt32(CultureInfo.InvariantCulture); j++ )
+                   {
+                        while (true)
                         {
-                            byte[] startCode = (byte[])ParseNextToken( cmapStream );
+                            Object nx = ParseNextToken( cmapStream );
+                            if (nx is Operator && ((Operator)nx).op.Equals("endbfrange"))
+                                break;
+                            byte[] startCode = (byte[])nx;
                             byte[] endCode = (byte[])ParseNextToken( cmapStream );
                             Object nextToken = ParseNextToken( cmapStream );
                             IList<byte[]> array = null;
@@ -168,7 +172,6 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
                         }
                     }
                 }
-                previousToken = token;
             }
             return result;
         }
