@@ -256,6 +256,13 @@ public class PdfEncodings {
             return new String(c);
         }
         String nameU = encoding.ToUpper(System.Globalization.CultureInfo.InvariantCulture);
+        Encoding enc = null;
+        if (nameU.Equals("UNICODEBIGUNMARKED"))
+            enc = new UnicodeEncoding(true, false);
+        else if (nameU.Equals("UNICODELITTLEUNMARKED"))
+            enc = new UnicodeEncoding(false, false);
+        if (enc != null)
+            return enc.GetString(bytes);
         bool marker = false;
         bool big = false;
         int offset = 0;
@@ -271,10 +278,9 @@ public class PdfEncodings {
                 offset = 2;
             }
         }
-        Encoding enc = null;
-        if (nameU.Equals("UNICODEBIGUNMARKED") || nameU.Equals("UNICODEBIG"))
+        if (nameU.Equals("UNICODEBIG"))
             enc = new UnicodeEncoding(marker ? big : true, false);
-        if (nameU.Equals("UNICODELITTLEUNMARKED") || nameU.Equals("UNICODELITTLE"))
+        else if (nameU.Equals("UNICODELITTLE"))
             enc = new UnicodeEncoding(marker ? big : false, false);
         if (enc != null)
             return enc.GetString(bytes, offset, bytes.Length - offset);
