@@ -147,12 +147,12 @@ namespace iTextSharp.text.pdf.parser {
                 PdfDictionary dict = k.GetAsDict(PdfName.PG);
                 if (dict != null)
                     ParseTag(tagN, k.GetDirectObject(PdfName.K), dict);
-                InspectChild(k.Get(PdfName.K));
+                InspectChild(k.GetDirectObject(PdfName.K));
                 outp.Write("</");
                 outp.Write(tag);
                 outp.WriteLine(">");
             } else
-                InspectChild(k.Get(PdfName.K));
+                InspectChild(k.GetDirectObject(PdfName.K));
         }
 
         private static String FixTagName(String tag) {
@@ -208,7 +208,6 @@ namespace iTextSharp.text.pdf.parser {
          * @throws IOException
          */
         public void ParseTag(String tag, PdfObject obj, PdfDictionary page) {
-            PRStream stream = (PRStream) page.GetAsStream(PdfName.CONTENTS);
             // if the identifier is a number, we can extract the content right away
             if (obj is PdfNumber) {
                 PdfNumber mcid = (PdfNumber) obj;
@@ -217,7 +216,7 @@ namespace iTextSharp.text.pdf.parser {
                 FilteredTextRenderListener listener = new FilteredTextRenderListener(strategy, new RenderFilter[]{filter});
                 PdfContentStreamProcessor processor = new PdfContentStreamProcessor(
                         listener);
-                processor.ProcessContent(PdfReader.GetStreamBytes(stream), page
+                processor.ProcessContent(PdfReader.GetPageContent(page), page
                         .GetAsDict(PdfName.RESOURCES));
                 outp.Write(SimpleXMLParser.EscapeXML(listener.GetResultantText(), true));
             }
