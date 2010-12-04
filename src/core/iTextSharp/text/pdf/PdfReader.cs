@@ -1980,7 +1980,57 @@ namespace iTextSharp.text.pdf {
             else
                 return new byte[0];
         }
-        
+            
+        /** Gets the content from the page dictionary.
+         * @param page the page dictionary
+         * @throws IOException on error
+         * @return the content
+         * @since 5.0.6
+         */
+        public static byte[] GetPageContent(PdfDictionary page) {
+            if (page == null)
+                return null;
+            RandomAccessFileOrArray rf = null;
+            try {
+                PdfObject contents = GetPdfObjectRelease(page.Get(PdfName.CONTENTS));
+                if (contents == null)
+                    return new byte[0];
+                if (contents.IsStream()) {
+                    if (rf == null) {
+                        rf = ((PRStream)contents).Reader.SafeFile;
+                        rf.ReOpen();
+                    }
+                    return GetStreamBytes((PRStream)contents, rf);
+                }
+                else if (contents.IsArray()) {
+                    PdfArray array = (PdfArray)contents;
+                    MemoryStream bout = new MemoryStream();
+                    for (int k = 0; k < array.Size; ++k) {
+                        PdfObject item = GetPdfObjectRelease(array[k]);
+                        if (item == null || !item.IsStream())
+                            continue;
+                        if (rf == null) {
+                            rf = ((PRStream)item).Reader.SafeFile;
+                            rf.ReOpen();
+                        }
+                        byte[] b = GetStreamBytes((PRStream)item, rf);
+                        bout.Write(b, 0, b.Length);
+                        if (k != array.Size - 1)
+                            bout.WriteByte((byte)'\n');
+                    }
+                    return bout.ToArray();
+                }
+                else
+                    return new byte[0];
+            }
+            finally {
+                try {
+                    if (rf != null)
+                        rf.Close();
+                }catch {}
+            }
+        }
+
         /** Gets the contents of the page.
         * @param pageNum the page number. 1 is the first
         * @throws IOException on error
