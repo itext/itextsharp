@@ -74,6 +74,12 @@ namespace iTextSharp.text.pdf.parser {
         /** A map with all supported XObject handlers */
         private IDictionary<PdfName, IXObjectDoHandler> xobjectDoHandlers;
         /**
+         * The font cache.
+         * @since 5.0.6
+         */
+        /**  */
+        private IDictionary<int,CMapAwareDocumentFont> cachedFonts = new Dictionary<int, CMapAwareDocumentFont>();
+        /**
          * A stack containing marked content info.
          * @since 5.0.2
          */
@@ -117,6 +123,22 @@ namespace iTextSharp.text.pdf.parser {
             return old;
         }
         
+        /**
+         * Gets the font pointed to by the indirect reference. The font may have been cached.
+         * @param ind the indirect reference ponting to the font
+         * @return the font
+         * @since 5.0.6
+         */
+        public CMapAwareDocumentFont GetFont(PRIndirectReference ind) {
+            CMapAwareDocumentFont font;
+            cachedFonts.TryGetValue(ind.Number, out font);
+            if (font == null) {
+                font = new CMapAwareDocumentFont(ind);
+                cachedFonts[ind.Number] = font;
+            }
+            return font;
+        }
+
         /**
          * Loads all the supported graphics and text state operators in a map.
          */
@@ -526,7 +548,7 @@ namespace iTextSharp.text.pdf.parser {
                 float size = ((PdfNumber)operands[1]).FloatValue;
 
                 PdfDictionary fontsDictionary = processor.resources.GetAsDict(PdfName.FONT);
-                CMapAwareDocumentFont font = new CMapAwareDocumentFont((PRIndirectReference)fontsDictionary.Get(fontResourceName));
+                CMapAwareDocumentFont font = processor.GetFont((PRIndirectReference)fontsDictionary.Get(fontResourceName));
 
                 processor.Gs().font = font;
                 processor.Gs().fontSize = size;
@@ -611,7 +633,7 @@ namespace iTextSharp.text.pdf.parser {
                 // at this point, all we care about is the FONT entry in the GS dictionary
                 PdfArray fontParameter = gsDic.GetAsArray(PdfName.FONT);
                 if (fontParameter != null){
-                    CMapAwareDocumentFont font = new CMapAwareDocumentFont((PRIndirectReference)fontParameter[0]);
+                    CMapAwareDocumentFont font = processor.GetFont((PRIndirectReference)fontParameter[0]);
                     float size = fontParameter.GetAsNumber(1).FloatValue;
 
                     processor.Gs().font = font;
