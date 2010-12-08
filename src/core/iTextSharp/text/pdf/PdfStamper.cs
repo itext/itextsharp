@@ -57,7 +57,7 @@ namespace iTextSharp.text.pdf {
     * flatten them. New fields can be added but not flattened.
     * @author Paulo Soares
     */
-    public class PdfStamper : IPdfViewerPreferences, IPdfEncryptionSettings {
+    public class PdfStamper : IPdfViewerPreferences, IPdfEncryptionSettings, IDisposable {
         /**
         * The writer
         */    
@@ -170,6 +170,8 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         */
         public void Close() {
+            if (stamper.closed)
+                return;
             if (!hasSignature) {
                 stamper.Close(moreInfo);
                 return;
@@ -753,6 +755,10 @@ namespace iTextSharp.text.pdf {
         */
         public Dictionary<string,PdfLayer> GetPdfLayers() {
             return stamper.GetPdfLayers();
+        }
+
+        public virtual void Dispose() {
+            Close();
         }
     }
 }
