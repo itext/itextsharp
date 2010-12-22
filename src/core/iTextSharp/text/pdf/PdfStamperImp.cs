@@ -330,7 +330,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             newInfo.Put(PdfName.MODDATE, date);
-            newInfo.Put(PdfName.PRODUCER, new PdfString(producer));
+            newInfo.Put(PdfName.PRODUCER, new PdfString(producer, PdfObject.TEXT_UNICODE));
             if (append) {
                 if (iInfo == null)
                     info = AddToBody(newInfo, false).IndirectReference;
