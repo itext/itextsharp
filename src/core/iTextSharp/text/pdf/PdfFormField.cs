@@ -70,6 +70,11 @@ namespace iTextSharp.text.pdf {
         public const int FF_DONOTSCROLL = 8388608;
         public const int FF_COMB = 16777216;
         public const int FF_RADIOSINUNISON = 1 << 25;
+        /**
+         * Allows text fields to support rich text.
+         * @since 5.0.6
+         */
+        public const int FF_RICHTEXT = 1 << 26;
         public const int Q_LEFT = 0;
         public const int Q_CENTER = 1;
         public const int Q_RIGHT = 2;
@@ -263,6 +268,21 @@ namespace iTextSharp.text.pdf {
         public PdfSignature ValueAsSig {
             set {
                 Put(PdfName.V, value);
+            }
+        }
+
+        /**
+         * Sets the rich value for this field.  
+         * It is suggested that the regular value of this field be set to an 
+         * equivalent value.  Rich text values are only supported since PDF 1.5,
+         * and require that the FF_RV flag be set.  See PDF Reference chapter 
+         * 12.7.3.4 for details.
+         * @param rv HTML markup for the rich value of this field
+         * @since 5.0.6
+         */
+        public String RichValue {
+            set {
+                Put(PdfName.RV, new PdfString(value));
             }
         }
 

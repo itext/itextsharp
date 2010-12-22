@@ -758,6 +758,34 @@ namespace iTextSharp.text.pdf {
             }
         }
         
+        /**
+         * Retrieve the rich value for the given field
+         * @param name
+         * @return The rich value if present, or null.
+         * @since 5.0.6
+         */
+        public String GetFieldRichValue(String name) {
+            if (xfa.XfaPresent) {
+                return null;
+            }
+
+            Item item;
+            fields.TryGetValue(name, out item);
+            if (item == null) { 
+                return null;
+            }
+
+            PdfDictionary merged = item.GetMerged(0);
+            PdfString rich = merged.GetAsString(PdfName.RV);
+            
+            String markup = null;
+            if (rich != null) {
+                markup = rich.ToString();
+            }
+
+            return markup;
+        }
+
         /** Gets the field value.
         * @param name the fully qualified field name
         * @return the field value
@@ -1213,6 +1241,49 @@ namespace iTextSharp.text.pdf {
             return SetField(name, value, null);
         }
         
+        /**
+         * Sets the rich value for the given field.  See <a href="http://www.adobe.com/content/dam/Adobe/en/devnet/pdf/pdfs/PDF32000_2008.pdf">PDF Reference</a> chapter 
+         * 12.7.3.4 (Rich Text) and 12.7.4.3 (Text Fields) for further details.
+         * @param name  Field name
+         * @param richValue html markup 
+         * @return success/failure (will fail if the field isn't found, isn't a text field, or doesn't support rich text)
+         * @throws DocumentException
+         * @since 5.0.6
+         */
+        public bool SetFieldRichValue(String name, String richValue) {
+            if (writer == null) {
+                // can't set field values: fail
+                throw new DocumentException(MessageLocalization.GetComposedMessage("this.acrofields.instance.is.read.only"));
+            }
+
+            AcroFields.Item item = GetFieldItem(name);
+            if (item == null) {
+                // can't find the field: fail.
+                return false;
+            }
+            
+            if (GetFieldType(name) != FIELD_TYPE_TEXT) {
+                // field isn't a text field: fail
+                return false;
+            }
+            
+            PdfDictionary merged = item.GetMerged(0);
+            PdfNumber ffNum = merged.GetAsNumber(PdfName.FF);
+            int flagVal = 0;
+            if (ffNum != null) {
+                flagVal = ffNum.IntValue;
+            }
+            if ((flagVal | PdfFormField.FF_RICHTEXT) == 0) {
+                // text field doesn't support rich text: fail
+                return false;
+            }
+            
+            PdfString richString = new PdfString(richValue);
+            item.WriteToAll(PdfName.RV, richString, Item.WRITE_MERGED | Item.WRITE_VALUE);
+            
+            return true;
+        }
+
         /** Sets the field value and the display string. The display string
         * is used to build the appearance in the cases where the value
         * is modified by Acrobat with JavaScript and the algorithm is
