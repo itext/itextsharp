@@ -17,6 +17,11 @@ namespace Org.BouncyCastle.Crypto.Tls
 		KE_SRP = 10,
 		KE_SRP_DSS = 11,
 		KE_SRP_RSA = 12,
+		KE_ECDH_ECDSA = 13,
+		KE_ECDHE_ECDSA = 14,
+		KE_ECDH_RSA = 15,
+		KE_ECDHE_RSA = 16,
+		//KE_ECDH_anon = 17,
 	}
 
 	/// <summary>
@@ -32,7 +37,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 		void ProcessServerKeyExchange(Stream input, SecurityParameters securityParameters);// throws IOException;
 
-		byte[] GenerateClientKeyExchange();// throws IOException;
+		void GenerateClientKeyExchange(Stream output);// throws IOException;
 
 		byte[] GeneratePremasterSecret();// throws IOException;
 	}

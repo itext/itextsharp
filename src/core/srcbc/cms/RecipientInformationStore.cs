@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Cms
 {
 	public class RecipientInformationStore
 	{
-		private readonly ArrayList all; //ArrayList[RecipientInformation]
-		private readonly Hashtable table = new Hashtable(); // Hashtable[RecipientID, ArrayList[RecipientInformation]]
+		private readonly IList all; //ArrayList[RecipientInformation]
+		private readonly IDictionary table = Platform.CreateHashtable(); // Hashtable[RecipientID, ArrayList[RecipientInformation]]
 
 		public RecipientInformationStore(
 			ICollection recipientInfos)
@@ -14,17 +16,17 @@ namespace Org.BouncyCastle.Cms
 			foreach (RecipientInformation recipientInformation in recipientInfos)
 			{
 				RecipientID rid = recipientInformation.RecipientID;
-				ArrayList list = (ArrayList) table[rid];
+                IList list = (IList)table[rid];
 
 				if (list == null)
 				{
-					table[rid] = list = new ArrayList(1);
+					table[rid] = list = Platform.CreateArrayList(1);
 				}
 
 				list.Add(recipientInformation);
 			}
 
-			this.all = new ArrayList(recipientInfos);
+            this.all = Platform.CreateArrayList(recipientInfos);
 		}
 
 		public RecipientInformation this[RecipientID selector]
@@ -42,7 +44,7 @@ namespace Org.BouncyCastle.Cms
 		public RecipientInformation GetFirstRecipient(
 			RecipientID selector)
 		{
-			ArrayList list = (ArrayList) table[selector];
+			IList list = (IList) table[selector];
 
 			return list == null ? null : (RecipientInformation) list[0];
 		}
@@ -64,7 +66,7 @@ namespace Org.BouncyCastle.Cms
 		*/
 		public ICollection GetRecipients()
 		{
-			return new ArrayList(all);
+			return Platform.CreateArrayList(all);
 		}
 
 		/**
@@ -76,9 +78,9 @@ namespace Org.BouncyCastle.Cms
 		public ICollection GetRecipients(
 			RecipientID selector)
 		{
-			ArrayList list = (ArrayList) table[selector];
+            IList list = (IList)table[selector];
 
-			return list == null ? new ArrayList() : new ArrayList(list);
+            return list == null ? Platform.CreateArrayList() : Platform.CreateArrayList(list);
 		}
 	}
 }

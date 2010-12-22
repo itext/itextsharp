@@ -8,10 +8,10 @@ namespace Org.BouncyCastle.Pkcs
 {
     public abstract class Pkcs12Entry
     {
-        private readonly Hashtable attributes;
+        private readonly IDictionary attributes;
 
 		protected internal Pkcs12Entry(
-            Hashtable attributes)
+            IDictionary attributes)
         {
             this.attributes = attributes;
 

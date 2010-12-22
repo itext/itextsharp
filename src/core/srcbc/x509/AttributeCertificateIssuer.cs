@@ -4,6 +4,7 @@ using System.Collections;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509.Store;
 
 namespace Org.BouncyCastle.X509
@@ -19,7 +20,7 @@ namespace Org.BouncyCastle.X509
 
 		/**
 		 * Set the issuer directly with the ASN.1 structure.
-		 * 
+		 *
 		 * @param issuer The issuer
 		 */
 		public AttributeCertificateIssuer(
@@ -47,37 +48,58 @@ namespace Org.BouncyCastle.X509
 				name = (GeneralNames)form;
 			}
 
-			GeneralName[] names = name.GetNames();
+            GeneralName[] names = name.GetNames();
 
-			ArrayList l = new ArrayList(names.Length);
+            int count = 0;
+            for (int i = 0; i != names.Length; i++)
+            {
+                if (names[i].TagNo == GeneralName.DirectoryName)
+                {
+                    ++count;
+                }
+            }
 
-			for (int i = 0; i != names.Length; i++)
+            object[] result = new object[count];
+
+            int pos = 0;
+            for (int i = 0; i != names.Length; i++)
 			{
 				if (names[i].TagNo == GeneralName.DirectoryName)
 				{
-					l.Add(X509Name.GetInstance(names[i].Name));
+                    result[pos++] = X509Name.GetInstance(names[i].Name);
 				}
 			}
 
-			return l.ToArray();
-		}
+            return result;
+        }
 
 		/// <summary>Return any principal objects inside the attribute certificate issuer object.</summary>
 		/// <returns>An array of IPrincipal objects (usually X509Principal).</returns>
 		public X509Name[] GetPrincipals()
 		{
 			object[] p = this.GetNames();
-			ArrayList l = new ArrayList(p.Length);
 
+            int count = 0;
+            for (int i = 0; i != p.Length; i++)
+            {
+                if (p[i] is X509Name)
+                {
+                    ++count;
+                }
+            }
+
+            X509Name[] result = new X509Name[count];
+
+            int pos = 0;
 			for (int i = 0; i != p.Length; i++)
 			{
 				if (p[i] is X509Name)
 				{
-					l.Add(p[i]);
+					result[pos++] = (X509Name)p[i];
 				}
 			}
 
-			return (X509Name[]) l.ToArray(typeof(X509Name));
+            return result;
 		}
 
 		private bool MatchesDN(

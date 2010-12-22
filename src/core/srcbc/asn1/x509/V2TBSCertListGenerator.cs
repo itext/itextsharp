@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.IO;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Asn1.X509
 {
     /**
@@ -34,7 +36,7 @@ namespace Org.BouncyCastle.Asn1.X509
         private X509Name			issuer;
         private Time				thisUpdate, nextUpdate;
         private X509Extensions		extensions;
-        private ArrayList			crlEntries;
+        private IList			    crlEntries;
 
 		public V2TbsCertListGenerator()
         {
@@ -83,7 +85,7 @@ namespace Org.BouncyCastle.Asn1.X509
 		{
 			if (crlEntries == null)
 			{
-				crlEntries = new ArrayList();
+				crlEntries = Platform.CreateArrayList();
 			}
 
 			crlEntries.Add(crlEntry);
@@ -102,8 +104,8 @@ namespace Org.BouncyCastle.Asn1.X509
 		public void AddCrlEntry(DerInteger userCertificate, Time revocationDate, int reason,
 			DerGeneralizedTime invalidityDate)
 		{
-			ArrayList extOids = new ArrayList();
-			ArrayList extValues = new ArrayList();
+            IList extOids = Platform.CreateArrayList();
+            IList extValues = Platform.CreateArrayList();
 
 			if (reason != 0)
 			{
@@ -180,8 +182,11 @@ namespace Org.BouncyCastle.Asn1.X509
 			// Add CRLEntries if they exist
             if (crlEntries != null)
             {
-				Asn1Sequence[] certs = (Asn1Sequence[]) crlEntries.ToArray(typeof(Asn1Sequence));
-
+                Asn1Sequence[] certs = new Asn1Sequence[crlEntries.Count];
+                for (int i = 0; i < crlEntries.Count; ++i)
+                {
+                    certs[i] = (Asn1Sequence)crlEntries[i];
+                }
 				v.Add(new DerSequence(certs));
             }
 

@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.IO;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
 	/// <remarks>
@@ -40,7 +42,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             {
                 case PacketTag.Signature:
                 {
-                    ArrayList l = new ArrayList();
+                    IList l = Platform.CreateArrayList();
 
                     while (bcpgIn.NextPacketTag() == PacketTag.Signature)
                     {
@@ -54,8 +56,12 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
                         }
                     }
 
-					return new PgpSignatureList(
-						(PgpSignature[]) l.ToArray(typeof(PgpSignature)));
+                    PgpSignature[] sigs = new PgpSignature[l.Count];
+                    for (int i = 0; i < l.Count; ++i)
+                    {
+                        sigs[i] = (PgpSignature)l[i];
+                    }
+					return new PgpSignatureList(sigs);
                 }
                 case PacketTag.SecretKey:
                     try
@@ -68,6 +74,9 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
                     }
                 case PacketTag.PublicKey:
                     return new PgpPublicKeyRing(bcpgIn);
+				// TODO Make PgpPublicKey a PgpObject or return a PgpPublicKeyRing
+//				case PacketTag.PublicSubkey:
+//					return PgpPublicKeyRing.ReadSubkey(bcpgIn);
                 case PacketTag.CompressedData:
                     return new PgpCompressedData(bcpgIn);
                 case PacketTag.LiteralData:
@@ -77,7 +86,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
                     return new PgpEncryptedDataList(bcpgIn);
                 case PacketTag.OnePassSignature:
                 {
-                    ArrayList l = new ArrayList();
+                    IList l = Platform.CreateArrayList();
 
                     while (bcpgIn.NextPacketTag() == PacketTag.OnePassSignature)
                     {
@@ -91,8 +100,12 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 						}
                     }
 
-					return new PgpOnePassSignatureList(
-						(PgpOnePassSignature[]) l.ToArray(typeof(PgpOnePassSignature)));
+                    PgpOnePassSignature[] sigs = new PgpOnePassSignature[l.Count];
+                    for (int i = 0; i < l.Count; ++i)
+                    {
+                        sigs[i] = (PgpOnePassSignature)l[i];
+                    }
+					return new PgpOnePassSignatureList(sigs);
                 }
                 case PacketTag.Marker:
                     return new PgpMarker(bcpgIn);
@@ -118,7 +131,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 		/// <returns>An <c>IList</c> containing all objects from this factory, in order.</returns>
 		public IList AllPgpObjects()
 		{
-			ArrayList result = new ArrayList();
+            IList result = Platform.CreateArrayList();
 			PgpObject pgpObject;
 			while ((pgpObject = NextPgpObject()) != null)
 			{

@@ -11,7 +11,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 	internal class TlsRsaSigner
     	: TlsSigner
 	{
-		public byte[] CalculateRawSignature(AsymmetricKeyParameter privateKey, byte[] md5andsha1)
+		public virtual byte[] CalculateRawSignature(AsymmetricKeyParameter privateKey, byte[] md5andsha1)
 		{
 			ISigner sig = new GenericSigner(new Pkcs1Encoding(new RsaBlindedEngine()), new NullDigest());
 			sig.Init(true, privateKey);
@@ -19,7 +19,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return sig.GenerateSignature();
 		}
 
-		public ISigner CreateVerifyer(AsymmetricKeyParameter publicKey)
+        public virtual ISigner CreateVerifyer(AsymmetricKeyParameter publicKey)
 		{
 			ISigner s = new GenericSigner(new Pkcs1Encoding(new RsaBlindedEngine()), new CombinedHash());
 			s.Init(false, publicKey);

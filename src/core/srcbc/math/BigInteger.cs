@@ -4,9 +4,11 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Text;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Math
 {
-#if !NETCF_1_0
+#if !(NETCF_1_0 || NETCF_2_0 || SILVERLIGHT)
 	[Serializable]
 #endif
 	public class BigInteger
@@ -2794,7 +2796,7 @@ namespace Org.BouncyCastle.Math
 			else
 			{
 				// This is algorithm 1a from chapter 4.4 in Seminumerical Algorithms, slow but it works
-				Stack S = new Stack();
+				IList S = Platform.CreateArrayList();
 				BigInteger bs = ValueOf(radix);
 
 				// The sign is handled separatly.
@@ -2811,21 +2813,21 @@ namespace Org.BouncyCastle.Math
 					b = u.Mod(bs);
 					if (b.sign == 0)
 					{
-						S.Push("0");
+						S.Add("0");
 					}
 					else
 					{
 						// see how to interact with different bases
-						S.Push(b.magnitude[0].ToString("d"));
+						S.Add(b.magnitude[0].ToString("d"));
 					}
 					u = u.Divide(bs);
 				}
 
 				// Then pop the stack
-				while (S.Count != 0)
-				{
-					sb.Append((string) S.Pop());
-				}
+                for (int i = S.Count - 1; i >= 0; --i)
+                {
+                    sb.Append((string)S[i]);
+                }
 			}
 
 			string s = sb.ToString();

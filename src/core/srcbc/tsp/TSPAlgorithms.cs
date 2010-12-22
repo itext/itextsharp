@@ -5,6 +5,7 @@ using Org.BouncyCastle.Asn1.Nist;
 using Org.BouncyCastle.Asn1.Oiw;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.TeleTrust;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Tsp
 {
@@ -28,7 +29,7 @@ namespace Org.BouncyCastle.Tsp
 
 		public static readonly string Gost3411 = CryptoProObjectIdentifiers.GostR3411.Id;
 
-		public static readonly ArrayList Allowed;
+		public static readonly IList Allowed;
 
 		static TspAlgorithms()
 		{
@@ -37,7 +38,7 @@ namespace Org.BouncyCastle.Tsp
 				Gost3411, MD5, Sha1, Sha224, Sha256, Sha384, Sha512, RipeMD128, RipeMD160, RipeMD256
 			};
 
-			Allowed = new ArrayList();
+			Allowed = Platform.CreateArrayList();
 			foreach (string alg in algs)
 			{
 				Allowed.Add(alg);

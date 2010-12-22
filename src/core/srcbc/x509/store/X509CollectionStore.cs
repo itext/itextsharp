@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.X509.Store
 {
 	/**
@@ -19,7 +21,7 @@ namespace Org.BouncyCastle.X509.Store
 		internal X509CollectionStore(
 			ICollection collection)
 		{
-			_local = new ArrayList(collection);
+			_local = Platform.CreateArrayList(collection);
 		}
 
 		/**
@@ -33,10 +35,10 @@ namespace Org.BouncyCastle.X509.Store
 		{
 			if (selector == null)
 			{
-				return new ArrayList(_local);
+                return Platform.CreateArrayList(_local);
 			}
 
-			IList result = new ArrayList();
+            IList result = Platform.CreateArrayList();
 			foreach (object obj in _local)
 			{
 				if (selector.Match(obj))

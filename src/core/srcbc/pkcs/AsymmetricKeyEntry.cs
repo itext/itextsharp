@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 
 using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Pkcs
 {
@@ -11,14 +13,25 @@ namespace Org.BouncyCastle.Pkcs
 
 		public AsymmetricKeyEntry(
             AsymmetricKeyParameter key)
-			: base(new Hashtable())
+			: base(Platform.CreateHashtable())
         {
             this.key = key;
         }
 
-		public AsymmetricKeyEntry(
-            AsymmetricKeyParameter	key,
-            Hashtable				attributes)
+#if !SILVERLIGHT
+        [Obsolete]
+        public AsymmetricKeyEntry(
+            AsymmetricKeyParameter key,
+            Hashtable attributes)
+			: base(attributes)
+        {
+            this.key = key;
+        }
+#endif
+
+        public AsymmetricKeyEntry(
+            AsymmetricKeyParameter  key,
+            IDictionary             attributes)
 			: base(attributes)
         {
             this.key = key;

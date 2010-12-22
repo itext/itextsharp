@@ -12,6 +12,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.X509.Store;
 
@@ -68,14 +69,14 @@ namespace Org.BouncyCastle.Tsp
 			//
 			// Add the ESSCertID attribute
 			//
-			Hashtable signedAttrs;
+			IDictionary signedAttrs;
 			if (signedAttr != null)
 			{
-				signedAttrs = signedAttr.ToHashtable();
+				signedAttrs = signedAttr.ToDictionary();
 			}
 			else
 			{
-				signedAttrs = new Hashtable();
+				signedAttrs = Platform.CreateHashtable();
 			}
 
 			try

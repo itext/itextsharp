@@ -31,12 +31,12 @@ namespace Org.BouncyCastle.Pkix
 		internal static readonly string CRL_NUMBER = X509Extensions.CrlNumber.Id;
 
 		/// <summary>
-		/// key usage bits 
+		/// key usage bits
 		/// </summary>
 		internal static readonly int KEY_CERT_SIGN = 5;
 		internal static readonly int CRL_SIGN = 6;
 
-		internal static readonly string[] crlReasons = new string[] 
+		internal static readonly string[] crlReasons = new string[]
 		{
 			"unspecified",
 			"keyCompromise",
@@ -288,7 +288,7 @@ namespace Org.BouncyCastle.Pkix
 
 		//
 		// policy checking
-		// 
+		//
 
 		internal static ISet GetQualifierSet(Asn1Sequence qualifiers)
 		{
@@ -331,7 +331,7 @@ namespace Org.BouncyCastle.Pkix
 			{
 				for (int j = 0; j < policyNodes.Length; j++)
 				{
-					policyNodes[j] = new ArrayList();
+                    policyNodes[j] = Platform.CreateArrayList();
 				}
 
 				return null;
@@ -436,7 +436,7 @@ namespace Org.BouncyCastle.Pkix
 						if (ANY_POLICY.Equals(p_node.ValidPolicy))
 						{
 							PkixPolicyNode c_node = new PkixPolicyNode(
-								new ArrayList(), i,
+                                Platform.CreateArrayList(), i,
 								(ISet)m_idp[id_p],
 								p_node, pq, id_p, ci);
 							p_node.AddChild(c_node);
@@ -457,7 +457,7 @@ namespace Org.BouncyCastle.Pkix
 			int pos = 0;
 
 			// Copy to avoid RemoveAt calls interfering with enumeration
-			foreach (PkixPolicyNode node in new ArrayList(policyNodes[i]))
+            foreach (PkixPolicyNode node in Platform.CreateArrayList(policyNodes[i]))
 			{
 				if (node.ValidPolicy.Equals(id_p))
 				{
@@ -569,7 +569,7 @@ namespace Org.BouncyCastle.Pkix
 		* returns the public key. If the DSA key already contains DSA parameters
 		* the key is also only returned.
 		* </p>
-		* 
+		*
 		* @param certs The certification path.
 		* @param index The index of the certificate which contains the public key
 		*            which should be extended with DSA parameters.
@@ -738,7 +738,7 @@ namespace Org.BouncyCastle.Pkix
 			X509CrlStoreSelector	selector,
 			PkixParameters			pkixParams)
 		{
-			IList issuers = new ArrayList();
+            IList issuers = Platform.CreateArrayList();
 			// indirect CRL
 			if (dp.CrlIssuer != null)
 			{
@@ -822,7 +822,7 @@ namespace Org.BouncyCastle.Pkix
 			//                issuers.clear();
 			//                issuers.addAll(issuersTemp);
 			//            }
-			//        }        
+			//        }
 
 			selector.Issuers = issuers;
 		}
@@ -918,7 +918,7 @@ namespace Org.BouncyCastle.Pkix
 			// 5.2.4 (a)
 			try
 			{
-				IList deltaSelectIssuer = new ArrayList();
+                IList deltaSelectIssuer = Platform.CreateArrayList();
 				deltaSelectIssuer.Add(completeCRL.IssuerDN);
 				deltaSelect.Issuers = deltaSelectIssuer;
 			}
@@ -1083,7 +1083,7 @@ namespace Org.BouncyCastle.Pkix
 					ISet childExpectedPolicies = new HashSet();
 					childExpectedPolicies.Add(pOid.Id);
 
-					PkixPolicyNode child = new PkixPolicyNode(new ArrayList(),
+                    PkixPolicyNode child = new PkixPolicyNode(Platform.CreateArrayList(),
 						index,
 						childExpectedPolicies,
 						node,
@@ -1117,7 +1117,7 @@ namespace Org.BouncyCastle.Pkix
 					ISet _childExpectedPolicies = new HashSet();
 					_childExpectedPolicies.Add(_poid.Id);
 
-					PkixPolicyNode _child = new PkixPolicyNode(new ArrayList(),
+                    PkixPolicyNode _child = new PkixPolicyNode(Platform.CreateArrayList(),
 						index,
 						_childExpectedPolicies,
 						_node,
@@ -1133,13 +1133,13 @@ namespace Org.BouncyCastle.Pkix
 
 		/**
 		* Find the issuer certificates of a given certificate.
-		* 
+		*
 		* @param cert
 		*            The certificate for which an issuer should be found.
 		* @param pkixParams
 		* @return A <code>Collection</code> object containing the issuer
 		*         <code>X509Certificate</code>s. Never <code>null</code>.
-		* 
+		*
 		* @exception Exception
 		*                if an error occurs.
 		*/
@@ -1161,15 +1161,8 @@ namespace Org.BouncyCastle.Pkix
 
 			try
 			{
-				ArrayList matches = new ArrayList();
-
-				matches.AddRange(PkixCertPathValidatorUtilities.FindCertificates(certSelect, pkixParams.GetStores()));
-				matches.AddRange(PkixCertPathValidatorUtilities.FindCertificates(certSelect, pkixParams.GetAdditionalStores()));
-
-				foreach (X509Certificate issuer in matches)
-				{
-					certs.Add(issuer);
-				}
+                certs.AddAll(PkixCertPathValidatorUtilities.FindCertificates(certSelect, pkixParams.GetStores()));
+                certs.AddAll(PkixCertPathValidatorUtilities.FindCertificates(certSelect, pkixParams.GetAdditionalStores()));
 			}
 			catch (Exception e)
 			{

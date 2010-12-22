@@ -21,17 +21,21 @@ namespace Org.BouncyCastle.Utilities
 			if (a == null || b == null)
 				return false;
 
-			int i = a.Length;
-			if (i != b.Length)
-				return false;
-			while (i != 0)
-			{
-				--i;
-				if (a[i] != b[i])
-					return false;
-			}
-			return true;
+            return HaveSameContents(a, b);
 		}
+
+        public static bool AreEqual(
+            char[] a,
+            char[] b)
+        {
+            if (a == b)
+                return true;
+
+            if (a == null || b == null)
+                return false;
+
+            return HaveSameContents(a, b);
+        }
 
         /// <summary>
         /// Are two arrays equal.
@@ -96,7 +100,39 @@ namespace Org.BouncyCastle.Utilities
 			return HaveSameContents(a, b);
 		}
 
-		private static bool HaveSameContents(
+        private static bool HaveSameContents(
+            bool[] a,
+            bool[] b)
+        {
+            int i = a.Length;
+            if (i != b.Length)
+                return false;
+            while (i != 0)
+            {
+                --i;
+                if (a[i] != b[i])
+                    return false;
+            }
+            return true;
+        }
+
+        private static bool HaveSameContents(
+            char[] a,
+            char[] b)
+        {
+            int i = a.Length;
+            if (i != b.Length)
+                return false;
+            while (i != 0)
+            {
+                --i;
+                if (a[i] != b[i])
+                    return false;
+            }
+            return true;
+        }
+
+        private static bool HaveSameContents(
 			byte[]	a,
 			byte[]	b)
 		{
@@ -128,7 +164,7 @@ namespace Org.BouncyCastle.Utilities
 			return true;
 		}
 
-		public static string ToString(
+        public static string ToString(
 			object[] a)
 		{
 			StringBuilder sb = new StringBuilder('[');

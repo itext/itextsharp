@@ -3,6 +3,7 @@ using System.Collections;
 using System.Globalization;
 using System.IO;
 
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Bcpg.OpenPgp
@@ -14,11 +15,11 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
     public class PgpPublicKeyRingBundle
     {
         private readonly IDictionary pubRings;
-        private readonly ArrayList order;
+        private readonly IList order;
 
 		private PgpPublicKeyRingBundle(
             IDictionary	pubRings,
-            ArrayList	order)
+            IList       order)
         {
             this.pubRings = pubRings;
             this.order = order;
@@ -43,8 +44,8 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 		public PgpPublicKeyRingBundle(
             IEnumerable e)
         {
-			this.pubRings = new Hashtable();
-			this.order = new ArrayList();
+			this.pubRings = Platform.CreateHashtable();
+			this.order = Platform.CreateArrayList();
 
 			foreach (object obj in e)
             {
@@ -109,7 +110,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			bool	matchPartial,
 			bool	ignoreCase)
 		{
-			IList rings = new ArrayList();
+			IList rings = Platform.CreateArrayList();
 
 			if (ignoreCase)
 			{
@@ -238,8 +239,8 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
                 throw new ArgumentException("Bundle already contains a key with a keyId for the passed in ring.");
             }
 
-			IDictionary newPubRings = new Hashtable(bundle.pubRings);
-            ArrayList newOrder = new ArrayList(bundle.order);
+			IDictionary newPubRings = Platform.CreateHashtable(bundle.pubRings);
+            IList newOrder = Platform.CreateArrayList(bundle.order);
 
 			newPubRings[key] = publicKeyRing;
 
@@ -267,8 +268,8 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
                 throw new ArgumentException("Bundle does not contain a key with a keyId for the passed in ring.");
             }
 
-			IDictionary newPubRings = new Hashtable(bundle.pubRings);
-            ArrayList newOrder = new ArrayList(bundle.order);
+			IDictionary newPubRings = Platform.CreateHashtable(bundle.pubRings);
+            IList newOrder = Platform.CreateArrayList(bundle.order);
 
 			newPubRings.Remove(key);
 			newOrder.Remove(key);

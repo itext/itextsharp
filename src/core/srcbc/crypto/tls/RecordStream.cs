@@ -38,18 +38,17 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 		public void ReadData()
 		{
-			short type = TlsUtilities.ReadUint8(inStr);
+			ContentType type = (ContentType)TlsUtilities.ReadUint8(inStr);
 			TlsUtilities.CheckVersion(inStr, handler);
 			int size = TlsUtilities.ReadUint16(inStr);
 			byte[] buf = DecodeAndVerify(type, inStr, size);
 			handler.ProcessData(type, buf, 0, buf.Length);
-
 		}
 
 		internal byte[] DecodeAndVerify(
-			short	type,
-			Stream	inStr,
-			int		len)
+			ContentType	type,
+			Stream		inStr,
+			int			len)
 		{
 			byte[] buf = new byte[len];
 			TlsUtilities.ReadFully(buf, inStr);
@@ -57,20 +56,20 @@ namespace Org.BouncyCastle.Crypto.Tls
 		}
 
 		internal void WriteMessage(
-			short	type,
-			byte[]	message,
-			int		offset,
-			int		len)
+			ContentType	type,
+			byte[]		message,
+			int			offset,
+			int			len)
 		{
-			if (type == 22)
+			if (type == ContentType.handshake)
 			{
 				UpdateHandshakeData(message, offset, len);
 			}
 			byte[] ciphertext = writeCipher.EncodePlaintext(type, message, offset, len);
 			byte[] writeMessage = new byte[ciphertext.Length + 5];
-			TlsUtilities.WriteUint8(type, writeMessage, 0);
-			TlsUtilities.WriteUint8((short)3, writeMessage, 1);
-			TlsUtilities.WriteUint8((short)1, writeMessage, 2);
+            TlsUtilities.WriteUint8((byte)type, writeMessage, 0);
+            TlsUtilities.WriteUint8(3, writeMessage, 1);
+            TlsUtilities.WriteUint8(1, writeMessage, 2);
 			TlsUtilities.WriteUint16(ciphertext.Length, writeMessage, 3);
 			Array.Copy(ciphertext, 0, writeMessage, 5, ciphertext.Length);
 			outStr.Write(writeMessage, 0, writeMessage.Length);

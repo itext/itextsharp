@@ -9,14 +9,15 @@ using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.TeleTrust;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Asn1.X9;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Ocsp
 {
 	class OcspUtilities
 	{
-		private static readonly Hashtable algorithms = new Hashtable();
-		private static readonly Hashtable oids = new Hashtable();
+		private static readonly IDictionary algorithms = Platform.CreateHashtable();
+        private static readonly IDictionary oids = Platform.CreateHashtable();
 		private static readonly ISet noParams = new HashSet();
 
 		static OcspUtilities()
@@ -93,7 +94,7 @@ namespace Org.BouncyCastle.Ocsp
 		{
 			algorithmName = algorithmName.ToUpper(CultureInfo.InvariantCulture);
 
-			if (algorithms.ContainsKey(algorithmName))
+			if (algorithms.Contains(algorithmName))
 			{
 				return (DerObjectIdentifier)algorithms[algorithmName];
 			}
@@ -105,7 +106,7 @@ namespace Org.BouncyCastle.Ocsp
 		internal static string GetAlgorithmName(
 			DerObjectIdentifier oid)
 		{
-			if (oids.ContainsKey(oid))
+			if (oids.Contains(oid))
 			{
 				return (string)oids[oid];
 			}

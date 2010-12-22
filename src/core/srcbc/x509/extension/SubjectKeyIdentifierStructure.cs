@@ -13,11 +13,9 @@ namespace Org.BouncyCastle.X509.Extension
 	public class SubjectKeyIdentifierStructure
 		: SubjectKeyIdentifier
 	{
-//		private AuthorityKeyIdentifier authKeyID;
-
 		/**
 		 * Constructor which will take the byte[] returned from getExtensionValue()
-		 * 
+		 *
 		 * @param encodedValue a DER octet encoded string with the extension structure in it.
 		 * @throws IOException on parsing errors.
 		 */

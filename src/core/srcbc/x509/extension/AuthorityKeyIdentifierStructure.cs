@@ -63,9 +63,6 @@ namespace Org.BouncyCastle.X509.Extension
 		{
 			try
 			{
-//				SubjectPublicKeyInfo info = new SubjectPublicKeyInfo(
-//					(Asn1Sequence) Asn1Object.FromByteArray(
-//						pubKey.GetEncoded()));
 				SubjectPublicKeyInfo info = SubjectPublicKeyInfoFactory.CreateSubjectPublicKeyInfo(pubKey);
 
 				return (Asn1Sequence) new AuthorityKeyIdentifier(info).ToAsn1Object();

@@ -6,6 +6,7 @@ using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.IO;
 
 namespace Org.BouncyCastle.X509
@@ -159,7 +160,7 @@ namespace Org.BouncyCastle.X509
 			Stream inStream)
 		{
 			IX509AttributeCertificate attrCert;
-			IList attrCerts = new ArrayList();
+            IList attrCerts = Platform.CreateArrayList();
 
 			while ((attrCert = ReadAttrCert(inStream)) != null)
 			{

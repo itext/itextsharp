@@ -6,12 +6,13 @@ using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Cms;
 using Org.BouncyCastle.Asn1.Cms.Ecc;
 using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
-using Org.BouncyCastle.Asn1.X9;
 
 namespace Org.BouncyCastle.Cms
 {
@@ -21,7 +22,7 @@ namespace Org.BouncyCastle.Cms
 
 		private DerObjectIdentifier			keyAgreementOID;
 		private DerObjectIdentifier			keyEncryptionOID;
-		private ArrayList					recipientCerts;
+		private IList					    recipientCerts;
 		private AsymmetricCipherKeyPair		senderKeyPair;
 
 		internal KeyAgreeRecipientInfoGenerator()
@@ -40,7 +41,7 @@ namespace Org.BouncyCastle.Cms
 
 		internal ICollection RecipientCerts
 		{
-			set { this.recipientCerts = new ArrayList(value); }
+			set { this.recipientCerts = Platform.CreateArrayList(value); }
 		}
 
 		internal AsymmetricCipherKeyPair SenderKeyPair
@@ -122,7 +123,7 @@ namespace Org.BouncyCastle.Cms
 
 				// TODO Should there be a SubjectKeyIdentifier-based alternative?
 				IssuerAndSerialNumber issuerSerial = new IssuerAndSerialNumber(
-					tbsCert.Issuer, tbsCert.SerialNumber.Value);			
+					tbsCert.Issuer, tbsCert.SerialNumber.Value);
 				KeyAgreeRecipientIdentifier karid = new KeyAgreeRecipientIdentifier(issuerSerial);
 
 				ICipherParameters recipientPublicParams = recipientCert.GetPublicKey();

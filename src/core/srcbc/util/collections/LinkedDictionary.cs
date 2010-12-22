@@ -6,8 +6,8 @@ namespace Org.BouncyCastle.Utilities.Collections
 	public class LinkedDictionary
 		: IDictionary
 	{
-		internal readonly IDictionary hash = new Hashtable();
-		internal readonly IList keys = new ArrayList();
+		internal readonly IDictionary hash = Platform.CreateHashtable();
+		internal readonly IList keys = Platform.CreateArrayList();
 
 		public LinkedDictionary()
 		{
@@ -43,12 +43,10 @@ namespace Org.BouncyCastle.Utilities.Collections
 			get { return hash.Count; }
 		}
 
-#if NET_1_1
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
 		}
-#endif
 
 		public virtual IDictionaryEnumerator GetEnumerator()
 		{
@@ -83,7 +81,7 @@ namespace Org.BouncyCastle.Utilities.Collections
 
 		public virtual ICollection Keys
 		{
-			get { return new ArrayList(keys); }
+            get { return Platform.CreateArrayList(keys); }
 		}
 
 		public virtual ICollection Values
@@ -91,7 +89,7 @@ namespace Org.BouncyCastle.Utilities.Collections
 			// NB: Order has to be the same as for Keys property
 			get
 			{
-				ArrayList values = new ArrayList(keys.Count);
+                IList values = Platform.CreateArrayList(keys.Count);
 				foreach (object k in keys)
 				{
 					values.Add(hash[k]);

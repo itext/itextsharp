@@ -6,6 +6,7 @@ using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Math.EC;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.Utilities.Encoders;
 
@@ -1083,9 +1084,9 @@ namespace Org.BouncyCastle.Asn1.Sec
 		}
 
 
-		private static readonly Hashtable objIds = new Hashtable();
-		private static readonly Hashtable curves = new Hashtable();
-		private static readonly Hashtable names = new Hashtable();
+		private static readonly IDictionary objIds = Platform.CreateHashtable();
+        private static readonly IDictionary curves = Platform.CreateHashtable();
+        private static readonly IDictionary names = Platform.CreateHashtable();
 
 		private static void DefineCurve(
 			string					name,
@@ -1108,31 +1109,31 @@ namespace Org.BouncyCastle.Asn1.Sec
 			DefineCurve("secp160r2", SecObjectIdentifiers.SecP160r2, Secp160r2Holder.Instance);
 			DefineCurve("secp192k1", SecObjectIdentifiers.SecP192k1, Secp192k1Holder.Instance);
 			DefineCurve("secp192r1", SecObjectIdentifiers.SecP192r1, Secp192r1Holder.Instance);
-			DefineCurve("secp224k1", SecObjectIdentifiers.SecP224k1, Secp224k1Holder.Instance); 
-			DefineCurve("secp224r1", SecObjectIdentifiers.SecP224r1, Secp224r1Holder.Instance); 
-			DefineCurve("secp256k1", SecObjectIdentifiers.SecP256k1, Secp256k1Holder.Instance); 
-			DefineCurve("secp256r1", SecObjectIdentifiers.SecP256r1, Secp256r1Holder.Instance); 
-			DefineCurve("secp384r1", SecObjectIdentifiers.SecP384r1, Secp384r1Holder.Instance); 
-			DefineCurve("secp521r1", SecObjectIdentifiers.SecP521r1, Secp521r1Holder.Instance); 
+			DefineCurve("secp224k1", SecObjectIdentifiers.SecP224k1, Secp224k1Holder.Instance);
+			DefineCurve("secp224r1", SecObjectIdentifiers.SecP224r1, Secp224r1Holder.Instance);
+			DefineCurve("secp256k1", SecObjectIdentifiers.SecP256k1, Secp256k1Holder.Instance);
+			DefineCurve("secp256r1", SecObjectIdentifiers.SecP256r1, Secp256r1Holder.Instance);
+			DefineCurve("secp384r1", SecObjectIdentifiers.SecP384r1, Secp384r1Holder.Instance);
+			DefineCurve("secp521r1", SecObjectIdentifiers.SecP521r1, Secp521r1Holder.Instance);
 
-			DefineCurve("sect113r1", SecObjectIdentifiers.SecT113r1, Sect113r1Holder.Instance); 
-			DefineCurve("sect113r2", SecObjectIdentifiers.SecT113r2, Sect113r2Holder.Instance); 
-			DefineCurve("sect131r1", SecObjectIdentifiers.SecT131r1, Sect131r1Holder.Instance); 
-			DefineCurve("sect131r2", SecObjectIdentifiers.SecT131r2, Sect131r2Holder.Instance); 
-			DefineCurve("sect163k1", SecObjectIdentifiers.SecT163k1, Sect163k1Holder.Instance); 
-			DefineCurve("sect163r1", SecObjectIdentifiers.SecT163r1, Sect163r1Holder.Instance); 
-			DefineCurve("sect163r2", SecObjectIdentifiers.SecT163r2, Sect163r2Holder.Instance); 
-			DefineCurve("sect193r1", SecObjectIdentifiers.SecT193r1, Sect193r1Holder.Instance); 
-			DefineCurve("sect193r2", SecObjectIdentifiers.SecT193r2, Sect193r2Holder.Instance); 
-			DefineCurve("sect233k1", SecObjectIdentifiers.SecT233k1, Sect233k1Holder.Instance); 
-			DefineCurve("sect233r1", SecObjectIdentifiers.SecT233r1, Sect233r1Holder.Instance); 
-			DefineCurve("sect239k1", SecObjectIdentifiers.SecT239k1, Sect239k1Holder.Instance); 
-			DefineCurve("sect283k1", SecObjectIdentifiers.SecT283k1, Sect283k1Holder.Instance); 
-			DefineCurve("sect283r1", SecObjectIdentifiers.SecT283r1, Sect283r1Holder.Instance); 
-			DefineCurve("sect409k1", SecObjectIdentifiers.SecT409k1, Sect409k1Holder.Instance); 
-			DefineCurve("sect409r1", SecObjectIdentifiers.SecT409r1, Sect409r1Holder.Instance); 
-			DefineCurve("sect571k1", SecObjectIdentifiers.SecT571k1, Sect571k1Holder.Instance); 
-			DefineCurve("sect571r1", SecObjectIdentifiers.SecT571r1, Sect571r1Holder.Instance); 
+			DefineCurve("sect113r1", SecObjectIdentifiers.SecT113r1, Sect113r1Holder.Instance);
+			DefineCurve("sect113r2", SecObjectIdentifiers.SecT113r2, Sect113r2Holder.Instance);
+			DefineCurve("sect131r1", SecObjectIdentifiers.SecT131r1, Sect131r1Holder.Instance);
+			DefineCurve("sect131r2", SecObjectIdentifiers.SecT131r2, Sect131r2Holder.Instance);
+			DefineCurve("sect163k1", SecObjectIdentifiers.SecT163k1, Sect163k1Holder.Instance);
+			DefineCurve("sect163r1", SecObjectIdentifiers.SecT163r1, Sect163r1Holder.Instance);
+			DefineCurve("sect163r2", SecObjectIdentifiers.SecT163r2, Sect163r2Holder.Instance);
+			DefineCurve("sect193r1", SecObjectIdentifiers.SecT193r1, Sect193r1Holder.Instance);
+			DefineCurve("sect193r2", SecObjectIdentifiers.SecT193r2, Sect193r2Holder.Instance);
+			DefineCurve("sect233k1", SecObjectIdentifiers.SecT233k1, Sect233k1Holder.Instance);
+			DefineCurve("sect233r1", SecObjectIdentifiers.SecT233r1, Sect233r1Holder.Instance);
+			DefineCurve("sect239k1", SecObjectIdentifiers.SecT239k1, Sect239k1Holder.Instance);
+			DefineCurve("sect283k1", SecObjectIdentifiers.SecT283k1, Sect283k1Holder.Instance);
+			DefineCurve("sect283r1", SecObjectIdentifiers.SecT283r1, Sect283r1Holder.Instance);
+			DefineCurve("sect409k1", SecObjectIdentifiers.SecT409k1, Sect409k1Holder.Instance);
+			DefineCurve("sect409r1", SecObjectIdentifiers.SecT409r1, Sect409r1Holder.Instance);
+			DefineCurve("sect571k1", SecObjectIdentifiers.SecT571k1, Sect571k1Holder.Instance);
+			DefineCurve("sect571r1", SecObjectIdentifiers.SecT571r1, Sect571r1Holder.Instance);
 		}
 
 		public static X9ECParameters GetByName(

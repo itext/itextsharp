@@ -235,12 +235,12 @@ namespace Org.BouncyCastle.Asn1
 
 		internal static DerBitString FromAsn1Octets(byte[] octets)
 		{
-	        if (octets.Length < 2)
+	        if (octets.Length < 1)
 	            throw new ArgumentException("truncated BIT STRING detected");
 
 			int padBits = octets[0];
 			byte[] data = new byte[octets.Length - 1];
-			Array.Copy(octets, 1, data, 0, octets.Length - 1);
+			Array.Copy(octets, 1, data, 0, data.Length);
 			return new DerBitString(data, padBits);
 		}
 	}

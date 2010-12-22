@@ -1,19 +1,21 @@
 using System;
 using System.Collections;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Asn1.X509
 {
 	/// <remarks>Generator for X.509 extensions</remarks>
 	public class X509ExtensionsGenerator
 	{
-		private Hashtable extensions = new Hashtable();
-		private ArrayList extOrdering = new ArrayList();
+		private IDictionary extensions = Platform.CreateHashtable();
+        private IList extOrdering = Platform.CreateArrayList();
 
 		/// <summary>Reset the generator</summary>
 		public void Reset()
 		{
-			extensions = new Hashtable();
-			extOrdering = new ArrayList();
+            extensions = Platform.CreateHashtable();
+            extOrdering = Platform.CreateArrayList();
 		}
 
 		/// <summary>
@@ -53,7 +55,7 @@ namespace Org.BouncyCastle.Asn1.X509
 			bool				critical,
 			byte[]				extValue)
 		{
-			if (extensions.ContainsKey(oid))
+			if (extensions.Contains(oid))
 			{
 				throw new ArgumentException("extension " + oid + " already added");
 			}

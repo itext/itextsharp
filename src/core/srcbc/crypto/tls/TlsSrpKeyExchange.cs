@@ -16,25 +16,25 @@ using Org.BouncyCastle.Utilities;
 namespace Org.BouncyCastle.Crypto.Tls
 {
 	/// <summary>
-	/// TLS 1.1 SRP key exchange. 
+	/// TLS 1.1 SRP key exchange.
 	/// </summary>
 	internal class TlsSrpKeyExchange
 		: TlsKeyExchange
 	{
-		private TlsProtocolHandler handler;
-		private ICertificateVerifyer verifyer;
-		private TlsKeyExchangeAlgorithm keyExchange;
-		private TlsSigner tlsSigner;
+		protected TlsProtocolHandler handler;
+        protected ICertificateVerifyer verifyer;
+        protected TlsKeyExchangeAlgorithm keyExchange;
+        protected TlsSigner tlsSigner;
 
-		private AsymmetricKeyParameter serverPublicKey = null;
+        protected AsymmetricKeyParameter serverPublicKey = null;
 
 		// TODO Need a way of providing these
-		private byte[] SRP_identity = null;
-		private byte[] SRP_password = null;
+        protected byte[] SRP_identity = null;
+        protected byte[] SRP_password = null;
 
-		private byte[] s = null;
-		private BigInteger B = null;
-		private Srp6Client srpClient = new Srp6Client();
+        protected byte[] s = null;
+        protected BigInteger B = null;
+        protected Srp6Client srpClient = new Srp6Client();
 
 		internal TlsSrpKeyExchange(TlsProtocolHandler handler, ICertificateVerifyer verifyer,
 			TlsKeyExchangeAlgorithm keyExchange)
@@ -59,19 +59,19 @@ namespace Org.BouncyCastle.Crypto.Tls
 			this.keyExchange = keyExchange;
 		}
 
-		public void SkipServerCertificate()
+		public virtual void SkipServerCertificate()
 		{
 			if (tlsSigner != null)
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_unexpected_message);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.unexpected_message);
 			}
 		}
 
-		public void ProcessServerCertificate(Certificate serverCertificate)
+		public virtual void ProcessServerCertificate(Certificate serverCertificate)
 		{
 			if (tlsSigner == null)
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_unexpected_message);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.unexpected_message);
 			}
 
 			X509CertificateStructure x509Cert = serverCertificate.certs[0];
@@ -84,16 +84,16 @@ namespace Org.BouncyCastle.Crypto.Tls
 //			catch (RuntimeException)
 			catch (Exception)
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_unsupported_certificate);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.unsupported_certificate);
 			}
 
 			// Sanity check the PublicKeyFactory
 			if (this.serverPublicKey.IsPrivate)
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_internal_error);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
 			}
 
-			// TODO 
+			// TODO
 			/*
 			* Perform various checks per RFC2246 7.4.2: "Unless otherwise specified, the
 			* signing algorithm for the certificate must be the same as the algorithm for the
@@ -104,18 +104,18 @@ namespace Org.BouncyCastle.Crypto.Tls
 				case TlsKeyExchangeAlgorithm.KE_SRP_RSA:
 				if (!(this.serverPublicKey is RsaKeyParameters))
 				{
-					handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_certificate_unknown);
+					handler.FailWithError(AlertLevel.fatal, AlertDescription.certificate_unknown);
 				}
 				ValidateKeyUsage(x509Cert, KeyUsage.DigitalSignature);
 				break;
 			case TlsKeyExchangeAlgorithm.KE_SRP_DSS:
 				if (!(this.serverPublicKey is DsaPublicKeyParameters))
 				{
-					handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_certificate_unknown);
+					handler.FailWithError(AlertLevel.fatal, AlertDescription.certificate_unknown);
 				}
 				break;
 			default:
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_unsupported_certificate);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.unsupported_certificate);
 				break;
 			}
 
@@ -124,16 +124,16 @@ namespace Org.BouncyCastle.Crypto.Tls
 			*/
 			if (!this.verifyer.IsValid(serverCertificate.GetCerts()))
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_user_canceled);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.user_canceled);
 			}
 		}
 
-		public void SkipServerKeyExchange()
+		public virtual void SkipServerKeyExchange()
 		{
-			handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_unexpected_message);
+			handler.FailWithError(AlertLevel.fatal, AlertDescription.unexpected_message);
 		}
 
-		public void ProcessServerKeyExchange(Stream input, SecurityParameters securityParameters)
+		public virtual void ProcessServerKeyExchange(Stream input, SecurityParameters securityParameters)
 		{
 			Stream sigIn = input;
 			ISigner signer = null;
@@ -155,7 +155,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 				if (!signer.VerifySignature(sigByte))
 				{
-					handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_bad_certificate);
+					handler.FailWithError(AlertLevel.fatal, AlertDescription.bad_certificate);
 				}
 			}
 
@@ -163,7 +163,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			BigInteger g = new BigInteger(1, gBytes);
 
 			// TODO Validate group parameters (see RFC 5054)
-			//handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_insufficient_security);
+			//handler.FailWithError(AlertLevel.fatal, AlertDescription.insufficient_security);
 
 			this.s = sBytes;
 
@@ -177,19 +177,21 @@ namespace Org.BouncyCastle.Crypto.Tls
 			}
 			catch (CryptoException)
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_illegal_parameter);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.illegal_parameter);
 			}
 
 			this.srpClient.Init(N, g, new Sha1Digest(), handler.Random);
 		}
 
-		public byte[] GenerateClientKeyExchange()
+        public virtual void GenerateClientKeyExchange(Stream output)
 		{
-			return BigIntegers.AsUnsignedByteArray(srpClient.GenerateClientCredentials(s,
+			byte[] keData = BigIntegers.AsUnsignedByteArray(srpClient.GenerateClientCredentials(s,
 				this.SRP_identity, this.SRP_password));
+            TlsUtilities.WriteUint24(keData.Length + 2, output);
+            TlsUtilities.WriteOpaque16(keData, output);
 		}
 
-		public byte[] GeneratePremasterSecret()
+		public virtual byte[] GeneratePremasterSecret()
 		{
 			try
 			{
@@ -198,12 +200,12 @@ namespace Org.BouncyCastle.Crypto.Tls
 			}
 			catch (CryptoException)
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_illegal_parameter);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.illegal_parameter);
 				return null; // Unreachable!
 			}
 		}
-		
-		private void ValidateKeyUsage(X509CertificateStructure c, int keyUsageBits)
+
+		protected virtual void ValidateKeyUsage(X509CertificateStructure c, int keyUsageBits)
 		{
 			X509Extensions exts = c.TbsCertificate.Extensions;
 			if (exts != null)
@@ -215,13 +217,13 @@ namespace Org.BouncyCastle.Crypto.Tls
 					int bits = ku.GetBytes()[0];
 					if ((bits & keyUsageBits) != keyUsageBits)
 					{
-						handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_certificate_unknown);
+						handler.FailWithError(AlertLevel.fatal, AlertDescription.certificate_unknown);
 					}
 				}
 			}
 		}
 
-		private ISigner InitSigner(TlsSigner tlsSigner, SecurityParameters securityParameters)
+        protected virtual ISigner InitSigner(TlsSigner tlsSigner, SecurityParameters securityParameters)
 		{
 			ISigner signer = tlsSigner.CreateVerifyer(this.serverPublicKey);
 			signer.BlockUpdate(securityParameters.clientRandom, 0, securityParameters.clientRandom.Length);

@@ -3,6 +3,7 @@ using System.Collections;
 
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.X509.Store;
@@ -13,7 +14,7 @@ namespace Org.BouncyCastle.Pkix
 	{
 		/**
 		* Build and validate a CertPath using the given parameter.
-		* 
+		*
 		* @param params PKIXBuilderParameters object containing all information to
 		*            build the CertPath
 		*/
@@ -76,7 +77,7 @@ namespace Org.BouncyCastle.Pkix
 				if (issuers.IsEmpty)
 					throw new PkixCertPathBuilderException("Public key certificate for attribute certificate cannot be found.");
 
-				IList certPathList = new ArrayList();
+                IList certPathList = Platform.CreateArrayList();
 
 				foreach (X509Certificate issuer in issuers)
 				{

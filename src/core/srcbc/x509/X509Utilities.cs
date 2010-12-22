@@ -14,15 +14,16 @@ using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.X509
 {
 	internal class X509Utilities
 	{
-		private static readonly Hashtable	algorithms = new Hashtable();
-		private static readonly Hashtable	exParams = new Hashtable();
-		private static readonly ISet		noParams = new HashSet();
+        private static readonly IDictionary algorithms = Platform.CreateHashtable();
+        private static readonly IDictionary exParams = Platform.CreateHashtable();
+		private static readonly ISet        noParams = new HashSet();
 
 		static X509Utilities()
 		{
@@ -121,7 +122,7 @@ namespace Org.BouncyCastle.X509
 		{
 			algorithmName = algorithmName.ToUpper(CultureInfo.InvariantCulture);
 
-			if (algorithms.ContainsKey(algorithmName))
+			if (algorithms.Contains(algorithmName))
 			{
 				return (DerObjectIdentifier) algorithms[algorithmName];
 			}
@@ -140,7 +141,7 @@ namespace Org.BouncyCastle.X509
 
 			algorithmName = algorithmName.ToUpper(CultureInfo.InvariantCulture);
 
-			if (exParams.ContainsKey(algorithmName))
+			if (exParams.Contains(algorithmName))
 			{
 				return new AlgorithmIdentifier(sigOid, (Asn1Encodable) exParams[algorithmName]);
 			}

@@ -7,6 +7,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Agreement;
 using Org.BouncyCastle.Crypto.Agreement.Kdf;
 using Org.BouncyCastle.Crypto.Digests;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Security
 {
@@ -19,8 +20,8 @@ namespace Org.BouncyCastle.Security
 		{
 		}
 
-		private static readonly Hashtable algorithms = new Hashtable();
-		//		private static readonly Hashtable oids = new Hashtable();
+		private static readonly IDictionary algorithms = Platform.CreateHashtable();
+        //private static readonly IDictionary oids = Platform.CreateHashtable();
 
 		static AgreementUtilities()
 		{

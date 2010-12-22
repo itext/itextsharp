@@ -11,168 +11,200 @@ using Org.BouncyCastle.Utilities.Date;
 
 namespace Org.BouncyCastle.Tsp
 {
-	/**
-	 * Generator for RFC 3161 Time Stamp Responses.
-	 */
-	public class TimeStampResponseGenerator
-	{
-		private PkiStatus				status;
+    /**
+     * Generator for RFC 3161 Time Stamp Responses.
+     */
+    public class TimeStampResponseGenerator
+    {
+        private PkiStatus status;
 
-		private Asn1EncodableVector		statusStrings;
+        private Asn1EncodableVector statusStrings;
 
-		private int						failInfo;
-		private TimeStampTokenGenerator	tokenGenerator;
-		private IList					acceptedAlgorithms;
-		private IList					acceptedPolicies;
-		private IList					acceptedExtensions;
+        private int failInfo;
+        private TimeStampTokenGenerator tokenGenerator;
+        private IList acceptedAlgorithms;
+        private IList acceptedPolicies;
+        private IList acceptedExtensions;
 
-		public TimeStampResponseGenerator(
-			TimeStampTokenGenerator	tokenGenerator,
-			IList					acceptedAlgorithms)
-			: this(tokenGenerator, acceptedAlgorithms, null, null)
-		{
-		}
+        public TimeStampResponseGenerator(
+            TimeStampTokenGenerator tokenGenerator,
+            IList acceptedAlgorithms)
+            : this(tokenGenerator, acceptedAlgorithms, null, null)
+        {
+        }
 
-		public TimeStampResponseGenerator(
-			TimeStampTokenGenerator	tokenGenerator,
-			IList					acceptedAlgorithms,
-			IList					acceptedPolicy)
-			: this(tokenGenerator, acceptedAlgorithms, acceptedPolicy, null)
-		{
-		}
+        public TimeStampResponseGenerator(
+            TimeStampTokenGenerator tokenGenerator,
+            IList acceptedAlgorithms,
+            IList acceptedPolicy)
+            : this(tokenGenerator, acceptedAlgorithms, acceptedPolicy, null)
+        {
+        }
 
-		public TimeStampResponseGenerator(
-			TimeStampTokenGenerator	tokenGenerator,
-			IList					acceptedAlgorithms,
-			IList					acceptedPolicies,
-			IList					acceptedExtensions)
-		{
-			this.tokenGenerator = tokenGenerator;
-			this.acceptedAlgorithms = acceptedAlgorithms;
-			this.acceptedPolicies = acceptedPolicies;
-			this.acceptedExtensions = acceptedExtensions;
+        public TimeStampResponseGenerator(
+            TimeStampTokenGenerator tokenGenerator,
+            IList acceptedAlgorithms,
+            IList acceptedPolicies,
+            IList acceptedExtensions)
+        {
+            this.tokenGenerator = tokenGenerator;
+            this.acceptedAlgorithms = acceptedAlgorithms;
+            this.acceptedPolicies = acceptedPolicies;
+            this.acceptedExtensions = acceptedExtensions;
 
-			statusStrings = new Asn1EncodableVector();
-		}
+            statusStrings = new Asn1EncodableVector();
+        }
 
-		private void addStatusString(
-			string statusString)
-		{
-			statusStrings.Add(new DerUtf8String(statusString));
-		}
+        private void AddStatusString(string statusString)
+        {
+            statusStrings.Add(new DerUtf8String(statusString));
+        }
 
-		private void setFailInfoField(int field)
-		{
-			failInfo = failInfo | field;
-		}
+        private void SetFailInfoField(int field)
+        {
+            failInfo |= field;
+        }
 
-		private PkiStatusInfo getPkiStatusInfo()
-		{
-			Asn1EncodableVector	v = new Asn1EncodableVector(
-				new DerInteger((int) status));
+        private PkiStatusInfo GetPkiStatusInfo()
+        {
+            Asn1EncodableVector v = new Asn1EncodableVector(
+                new DerInteger((int)status));
 
-			if (statusStrings.Count > 0)
-			{
-				v.Add(new PkiFreeText(new DerSequence(statusStrings)));
-			}
+            if (statusStrings.Count > 0)
+            {
+                v.Add(new PkiFreeText(new DerSequence(statusStrings)));
+            }
 
-			if (failInfo != 0)
-			{
-				v.Add(new FailInfo(failInfo));
-			}
+            if (failInfo != 0)
+            {
+                v.Add(new FailInfo(failInfo));
+            }
 
-			return new PkiStatusInfo(new DerSequence(v));
-		}
+            return new PkiStatusInfo(new DerSequence(v));
+        }
 
-		public TimeStampResponse Generate(
-			TimeStampRequest	request,
-			BigInteger			serialNumber,
-			DateTime			genTime)
-		{
-			return Generate(request, serialNumber, new DateTimeObject(genTime));
-		}
+        public TimeStampResponse Generate(
+            TimeStampRequest request,
+            BigInteger serialNumber,
+            DateTime genTime)
+        {
+            return Generate(request, serialNumber, new DateTimeObject(genTime));
+        }
 
-	    /**
-	     * Return an appropriate TimeStampResponse.
-	     * <p>
-	     * If genTime is null a timeNotAvailable error response will be returned.
-	     *
-	     * @param request the request this response is for.
-	     * @param serialNumber serial number for the response token.
-	     * @param genTime generation time for the response token.
-	     * @param provider provider to use for signature calculation.
-	     * @return
-	     * @throws NoSuchAlgorithmException
-	     * @throws NoSuchProviderException
-	     * @throws TSPException
-		 * </p>
-	     */
-		public TimeStampResponse Generate(
-			TimeStampRequest	request,
-			BigInteger			serialNumber,
-			DateTimeObject		genTime)
-		{
-			TimeStampResp resp;
+        /**
+         * Return an appropriate TimeStampResponse.
+         * <p>
+         * If genTime is null a timeNotAvailable error response will be returned.
+         *
+         * @param request the request this response is for.
+         * @param serialNumber serial number for the response token.
+         * @param genTime generation time for the response token.
+         * @param provider provider to use for signature calculation.
+         * @return
+         * @throws NoSuchAlgorithmException
+         * @throws NoSuchProviderException
+         * @throws TSPException
+         * </p>
+         */
+        public TimeStampResponse Generate(
+            TimeStampRequest request,
+            BigInteger serialNumber,
+            DateTimeObject genTime)
+        {
+            TimeStampResp resp;
 
-			try
-			{
-	            if (genTime == null)
-	                throw new TspValidationException("The time source is not available.",
-						PkiFailureInfo.TimeNotAvailable);
+            try
+            {
+                if (genTime == null)
+                    throw new TspValidationException("The time source is not available.",
+                        PkiFailureInfo.TimeNotAvailable);
 
-				request.Validate(acceptedAlgorithms, acceptedPolicies, acceptedExtensions);
+                request.Validate(acceptedAlgorithms, acceptedPolicies, acceptedExtensions);
 
-				status = PkiStatus.Granted;
-				this.addStatusString("Operation Okay");
+                this.status = PkiStatus.Granted;
+                this.AddStatusString("Operation Okay");
 
-				PkiStatusInfo pkiStatusInfo = getPkiStatusInfo();
+                PkiStatusInfo pkiStatusInfo = GetPkiStatusInfo();
 
-				ContentInfo tstTokenContentInfo;
-				try
-				{
-					TimeStampToken token = tokenGenerator.Generate(request, serialNumber, genTime.Value);
-					byte[] encoded = token.ToCmsSignedData().GetEncoded();
+                ContentInfo tstTokenContentInfo;
+                try
+                {
+                    TimeStampToken token = tokenGenerator.Generate(request, serialNumber, genTime.Value);
+                    byte[] encoded = token.ToCmsSignedData().GetEncoded();
 
-					tstTokenContentInfo = ContentInfo.GetInstance(Asn1Object.FromByteArray(encoded));
-				}
-				catch (IOException ioEx)
-				{
-					throw new TspException(
-						"Timestamp token received cannot be converted to ContentInfo", ioEx);
-				}
+                    tstTokenContentInfo = ContentInfo.GetInstance(Asn1Object.FromByteArray(encoded));
+                }
+                catch (IOException e)
+                {
+                    throw new TspException("Timestamp token received cannot be converted to ContentInfo", e);
+                }
 
-				resp = new TimeStampResp(pkiStatusInfo, tstTokenContentInfo);
-			}
-			catch (TspValidationException e)
-			{
-				status = PkiStatus.Rejection;
+                resp = new TimeStampResp(pkiStatusInfo, tstTokenContentInfo);
+            }
+            catch (TspValidationException e)
+            {
+                status = PkiStatus.Rejection;
 
-				this.setFailInfoField(e.FailureCode);
-				this.addStatusString(e.Message);
+                this.SetFailInfoField(e.FailureCode);
+                this.AddStatusString(e.Message);
 
-				PkiStatusInfo pkiStatusInfo = getPkiStatusInfo();
+                PkiStatusInfo pkiStatusInfo = GetPkiStatusInfo();
 
-				resp = new TimeStampResp(pkiStatusInfo, null);
-			}
+                resp = new TimeStampResp(pkiStatusInfo, null);
+            }
 
-			try
-			{
-				return new TimeStampResponse(resp);
-			}
-			catch (IOException)
-			{
-				throw new TspException("created badly formatted response!");
-			}
-		}
+            try
+            {
+                return new TimeStampResponse(resp);
+            }
+            catch (IOException e)
+            {
+                throw new TspException("created badly formatted response!", e);
+            }
+        }
 
-		class FailInfo
-			: DerBitString
-		{
-			internal FailInfo(
-				int failInfoValue)
-				: base(GetBytes(failInfoValue), GetPadBits(failInfoValue))
-			{
-			}
-		}
-	}
+        class FailInfo
+            : DerBitString
+        {
+            internal FailInfo(
+                int failInfoValue)
+                : base(GetBytes(failInfoValue), GetPadBits(failInfoValue))
+            {
+            }
+        }
+
+        /**
+         * Generate a TimeStampResponse with chosen status and FailInfoField.
+         *
+         * @param status the PKIStatus to set.
+         * @param failInfoField the FailInfoField to set.
+         * @param statusString an optional string describing the failure.
+         * @return a TimeStampResponse with a failInfoField and optional statusString
+         * @throws TSPException in case the response could not be created
+         */
+        public TimeStampResponse GenerateFailResponse(PkiStatus status, int failInfoField, string statusString)
+        {
+            this.status = status;
+
+            this.SetFailInfoField(failInfoField);
+
+            if (statusString != null)
+            {
+                this.AddStatusString(statusString);
+            }
+
+            PkiStatusInfo pkiStatusInfo = GetPkiStatusInfo();
+
+            TimeStampResp resp = new TimeStampResp(pkiStatusInfo, null);
+
+            try
+            {
+                return new TimeStampResponse(resp);
+            }
+            catch (IOException e)
+            {
+                throw new TspException("created badly formatted response!", e);
+            }
+        }
+    }
 }

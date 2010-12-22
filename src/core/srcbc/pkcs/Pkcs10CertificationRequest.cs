@@ -47,10 +47,10 @@ namespace Org.BouncyCastle.Pkcs
 	public class Pkcs10CertificationRequest
 		: CertificationRequest
 	{
-		protected static readonly Hashtable	algorithms = new Hashtable();
-		protected static readonly Hashtable	exParams = new Hashtable();
-		protected static readonly Hashtable	keyAlgorithms = new Hashtable();
-		protected static readonly Hashtable	oids = new Hashtable();
+		protected static readonly IDictionary algorithms = Platform.CreateHashtable();
+        protected static readonly IDictionary exParams = Platform.CreateHashtable();
+        protected static readonly IDictionary keyAlgorithms = Platform.CreateHashtable();
+        protected static readonly IDictionary oids = Platform.CreateHashtable();
 		protected static readonly ISet noParams = new HashSet();
 
 		static Pkcs10CertificationRequest()
@@ -125,7 +125,7 @@ namespace Org.BouncyCastle.Pkcs
 			keyAlgorithms.Add(X9ObjectIdentifiers.IdDsa, "DSA");
 
 			//
-			// According to RFC 3279, the ASN.1 encoding SHALL (id-dsa-with-sha1) or MUST (ecdsa-with-SHA*) omit the parameters field. 
+			// According to RFC 3279, the ASN.1 encoding SHALL (id-dsa-with-sha1) or MUST (ecdsa-with-SHA*) omit the parameters field.
 			// The parameters field SHALL be NULL for RSA based signature algorithms.
 			//
 			noParams.Add(X9ObjectIdentifiers.ECDsaWithSha1);
@@ -226,13 +226,22 @@ namespace Org.BouncyCastle.Pkcs
 			DerObjectIdentifier sigOid = (DerObjectIdentifier) algorithms[algorithmName];
 
 			if (sigOid == null)
-				throw new ArgumentException("Unknown signature type requested");
+			{
+				try
+				{
+					sigOid = new DerObjectIdentifier(algorithmName);
+				}
+				catch (Exception e)
+				{
+					throw new ArgumentException("Unknown signature type requested", e);
+				}
+			}
 
 			if (noParams.Contains(sigOid))
 			{
 				this.sigAlgId = new AlgorithmIdentifier(sigOid);
 			}
-			else if (exParams.ContainsKey(algorithmName))
+			else if (exParams.Contains(algorithmName))
 			{
 				this.sigAlgId = new AlgorithmIdentifier(sigOid, (Asn1Encodable) exParams[algorithmName]);
 			}
@@ -444,7 +453,7 @@ namespace Org.BouncyCastle.Pkcs
 			}
 			else
 			{
-				return digestAlgOID.Id;            
+				return digestAlgOID.Id;
 			}
 		}
 	}

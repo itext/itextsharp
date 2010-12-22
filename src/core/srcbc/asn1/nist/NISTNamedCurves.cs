@@ -5,6 +5,7 @@ using System.Globalization;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Sec;
 using Org.BouncyCastle.Asn1.X9;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Asn1.Nist
@@ -18,8 +19,8 @@ namespace Org.BouncyCastle.Asn1.Nist
 		{
 		}
 
-		private static readonly Hashtable objIds = new Hashtable();
-		private static readonly Hashtable names = new Hashtable();
+		private static readonly IDictionary objIds = Platform.CreateHashtable();
+        private static readonly IDictionary names = Platform.CreateHashtable();
 
 		private static void DefineCurve(
 			string				name,

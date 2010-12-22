@@ -525,7 +525,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
                         bcpgOut.WritePacket((ContainedPacket)pub.idTrusts[i]);
                     }
 
-					foreach (PgpSignature sig in (ArrayList) pub.idSigs[i])
+					foreach (PgpSignature sig in (IList) pub.idSigs[i])
 					{
 						sig.Encode(bcpgOut);
                     }
@@ -631,7 +631,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 		}
 
 		private static byte[] EncryptKeyData(
-			byte[]						rawKeyData, 
+			byte[]						rawKeyData,
 			SymmetricKeyAlgorithmTag	encAlgorithm,
 			char[]						passPhrase,
 			SecureRandom				random,

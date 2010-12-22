@@ -32,16 +32,12 @@ namespace Org.BouncyCastle.Asn1.X509
             object obj)
         {
             if (obj is X509CertificateStructure)
-            {
-                return (X509CertificateStructure) obj;
-            }
+                return (X509CertificateStructure)obj;
 
-			if (obj is Asn1Sequence)
-            {
-                return new X509CertificateStructure((Asn1Sequence) obj);
-            }
+			if (obj != null)
+				return new X509CertificateStructure(Asn1Sequence.GetInstance(obj));
 
-			throw new ArgumentException("unknown object in factory: " + obj.GetType().Name, "obj");
+			throw new ArgumentException("null object in factory", "obj");
         }
 
 		public X509CertificateStructure(

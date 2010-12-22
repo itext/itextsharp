@@ -41,7 +41,16 @@ namespace Org.BouncyCastle.Asn1.X509
 			}
 		}
 
-		/**
+#if !SILVERLIGHT
+        public NameConstraints(
+            ArrayList permitted,
+            ArrayList excluded)
+            : this((IList)permitted, (IList)excluded)
+        {
+        }
+#endif
+
+        /**
 		 * Constructor from a given details.
 		 *
 		 * <p>permitted and excluded are Vectors of GeneralSubtree objects.</p>
@@ -50,26 +59,29 @@ namespace Org.BouncyCastle.Asn1.X509
 		 * @param excluded Excluded subtrees
 		 */
 		public NameConstraints(
-			ArrayList	permitted,
-			ArrayList	excluded)
+			IList   permitted,
+			IList   excluded)
 		{
 			if (permitted != null)
 			{
-				this.permitted = createSequence(permitted);
+				this.permitted = CreateSequence(permitted);
 			}
 
 			if (excluded != null)
 			{
-				this.excluded = createSequence(excluded);
+				this.excluded = CreateSequence(excluded);
 			}
 		}
 
-		private DerSequence createSequence(
-			ArrayList subtree)
+		private DerSequence CreateSequence(
+			IList subtrees)
 		{
-			GeneralSubtree[] gsts = (GeneralSubtree[]) subtree.ToArray(typeof(GeneralSubtree));
-
-			return new DerSequence(gsts);
+            GeneralSubtree[] gsts = new GeneralSubtree[subtrees.Count];
+            for (int i = 0; i < subtrees.Count; ++i)
+            {
+                gsts[i] = (GeneralSubtree)subtrees[i];
+            }
+            return new DerSequence(gsts);
 		}
 
 		public Asn1Sequence PermittedSubtrees

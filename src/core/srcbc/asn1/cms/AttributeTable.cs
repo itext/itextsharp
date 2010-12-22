@@ -2,23 +2,33 @@ using System;
 using System.Collections;
 
 using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Asn1.Cms
 {
     public class AttributeTable
     {
-        private readonly Hashtable attributes;
+        private readonly IDictionary attributes;
 
+#if !SILVERLIGHT
+        [Obsolete]
         public AttributeTable(
             Hashtable attrs)
         {
-            this.attributes = new Hashtable(attrs);
+            this.attributes = Platform.CreateHashtable(attrs);
+        }
+#endif
+
+        public AttributeTable(
+            IDictionary attrs)
+        {
+            this.attributes = Platform.CreateHashtable(attrs);
         }
 
         public AttributeTable(
             Asn1EncodableVector v)
         {
-			this.attributes = new Hashtable(v.Count);
+            this.attributes = Platform.CreateHashtable(v.Count);
 
 			foreach (Asn1Encodable o in v)
             {
@@ -31,7 +41,7 @@ namespace Org.BouncyCastle.Asn1.Cms
         public AttributeTable(
             Asn1Set s)
         {
-			this.attributes = new Hashtable(s.Count);
+            this.attributes = Platform.CreateHashtable(s.Count);
 
 			for (int i = 0; i != s.Count; i++)
             {
@@ -53,18 +63,18 @@ namespace Org.BouncyCastle.Asn1.Cms
             }
             else
             {
-                ArrayList v;
+                IList v;
 
                 if (obj is Attribute)
                 {
-                    v = new ArrayList();
+                    v = Platform.CreateArrayList();
 
                     v.Add(obj);
                     v.Add(a);
                 }
                 else
                 {
-                    v = (ArrayList) obj;
+                    v = (IList) obj;
 
                     v.Add(a);
                 }
@@ -80,9 +90,9 @@ namespace Org.BouncyCastle.Asn1.Cms
 			{
 				object obj = attributes[oid];
 
-				if (obj is ArrayList)
+				if (obj is IList)
 				{
-					return (Attribute)((ArrayList)obj)[0];
+					return (Attribute)((IList)obj)[0];
 				}
 
 				return (Attribute) obj;
@@ -110,9 +120,9 @@ namespace Org.BouncyCastle.Asn1.Cms
 
             object obj = attributes[oid];
 
-			if (obj is ArrayList)
+			if (obj is IList)
             {
-                foreach (Attribute a in (ArrayList)obj)
+                foreach (Attribute a in (IList)obj)
                 {
                     v.Add(a);
                 }
@@ -125,10 +135,18 @@ namespace Org.BouncyCastle.Asn1.Cms
 			return v;
         }
 
+        public IDictionary ToDictionary()
+        {
+            return Platform.CreateHashtable(attributes);
+        }
+
+#if !SILVERLIGHT
+        [Obsolete("Use 'ToDictionary' instead")]
 		public Hashtable ToHashtable()
         {
             return new Hashtable(attributes);
         }
+#endif
 
 		public Asn1EncodableVector ToAsn1EncodableVector()
         {
@@ -136,9 +154,9 @@ namespace Org.BouncyCastle.Asn1.Cms
 
 			foreach (object obj in attributes.Values)
             {
-                if (obj is ArrayList)
+                if (obj is IList)
                 {
-                    foreach (object el in (ArrayList)obj)
+                    foreach (object el in (IList)obj)
                     {
                         v.Add(Attribute.GetInstance(el));
                     }

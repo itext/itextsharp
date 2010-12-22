@@ -15,6 +15,7 @@ using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Signers;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Security
 {
@@ -27,8 +28,8 @@ namespace Org.BouncyCastle.Security
 		{
 		}
 
-		internal static readonly Hashtable algorithms = new Hashtable();
-        internal static readonly Hashtable oids = new Hashtable();
+		internal static readonly IDictionary algorithms = Platform.CreateHashtable();
+        internal static readonly IDictionary oids = Platform.CreateHashtable();
 
 		static SignerUtilities()
         {

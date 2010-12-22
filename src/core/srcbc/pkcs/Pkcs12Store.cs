@@ -21,10 +21,10 @@ namespace Org.BouncyCastle.Pkcs
 	public class Pkcs12Store
 	{
 		private readonly IgnoresCaseHashtable	keys = new IgnoresCaseHashtable();
-		private readonly Hashtable				localIds = new Hashtable();
+		private readonly IDictionary            localIds = Platform.CreateHashtable();
 		private readonly IgnoresCaseHashtable	certs = new IgnoresCaseHashtable();
-		private readonly Hashtable				chainCerts = new Hashtable();
-		private readonly Hashtable				keyCerts = new Hashtable();
+        private readonly IDictionary            chainCerts = Platform.CreateHashtable();
+        private readonly IDictionary            keyCerts = Platform.CreateHashtable();
 		private readonly DerObjectIdentifier	keyAlgorithm;
 		private readonly DerObjectIdentifier	certAlgorithm;
 		private readonly bool					useDerEncoding;
@@ -154,7 +154,7 @@ namespace Org.BouncyCastle.Pkcs
 			keys.Clear();
 			localIds.Clear();
 
-			ArrayList chain = new ArrayList();
+            IList chain = Platform.CreateArrayList();
 
 			if (info.ContentType.Equals(PkcsObjectIdentifiers.Data))
 			{
@@ -186,7 +186,7 @@ namespace Org.BouncyCastle.Pkcs
 								//
 								// set the attributes on the key
 								//
-								Hashtable attributes = new Hashtable();
+								IDictionary attributes = Platform.CreateHashtable();
 								AsymmetricKeyEntry pkcs12Key = new AsymmetricKeyEntry(privKey, attributes);
 								string alias = null;
 								Asn1OctetString localId = null;
@@ -206,7 +206,7 @@ namespace Org.BouncyCastle.Pkcs
 
 											// TODO We might want to "merge" attribute sets with
 											// the same OID - currently, differing values give an error
-											if (attributes.ContainsKey(aOid.Id))
+											if (attributes.Contains(aOid.Id))
 											{
 												// OK, but the value has to be the same
 												if (!attributes[aOid.Id].Equals(attr))
@@ -289,7 +289,7 @@ namespace Org.BouncyCastle.Pkcs
 								//
 								// set the attributes on the key
 								//
-								Hashtable attributes = new Hashtable();
+								IDictionary attributes = Platform.CreateHashtable();
 								AsymmetricKeyEntry pkcs12Key = new AsymmetricKeyEntry(privKey, attributes);
 								string alias = null;
 								Asn1OctetString localId = null;
@@ -307,7 +307,7 @@ namespace Org.BouncyCastle.Pkcs
 
 										// TODO We might want to "merge" attribute sets with
 										// the same OID - currently, differing values give an error
-										if (attributes.ContainsKey(aOid.Id))
+										if (attributes.Contains(aOid.Id))
 										{
 											// OK, but the value has to be the same
 											if (!attributes[aOid.Id].Equals(attr))
@@ -358,7 +358,7 @@ namespace Org.BouncyCastle.Pkcs
 								//
 								string alias = null;
 								Asn1OctetString localId = null;
-								Hashtable attributes = new Hashtable();
+								IDictionary attributes = Platform.CreateHashtable();
 								AsymmetricKeyEntry pkcs12Key = new AsymmetricKeyEntry(privKey, attributes);
 
 								foreach (Asn1Sequence sq in b.BagAttributes)
@@ -374,7 +374,7 @@ namespace Org.BouncyCastle.Pkcs
 
 										// TODO We might want to "merge" attribute sets with
 										// the same OID - currently, differing values give an error
-										if (attributes.ContainsKey(aOid.Id))
+										if (attributes.Contains(aOid.Id))
 										{
 											// OK, but the value has to be the same
 											if (!attributes[aOid.Id].Equals(attr))
@@ -443,7 +443,7 @@ namespace Org.BouncyCastle.Pkcs
 				//
 				// set the attributes
 				//
-				Hashtable attributes = new Hashtable();
+                IDictionary attributes = Platform.CreateHashtable();
 				Asn1OctetString localId = null;
 				string alias = null;
 
@@ -461,7 +461,7 @@ namespace Org.BouncyCastle.Pkcs
 
 							// TODO We might want to "merge" attribute sets with
 							// the same OID - currently, differing values give an error
-							if (attributes.ContainsKey(aOid.Id))
+							if (attributes.Contains(aOid.Id))
 							{
 								// OK, but the value has to be the same
 								if (!attributes[aOid.Id].Equals(attr))
@@ -549,9 +549,9 @@ namespace Org.BouncyCastle.Pkcs
 			return (keys[alias] != null);
 		}
 
-		private Hashtable GetAliasesTable()
+		private IDictionary GetAliasesTable()
 		{
-			Hashtable tab = new Hashtable();
+            IDictionary tab = Platform.CreateHashtable();
 
 			foreach (string key in certs.Keys)
 			{
@@ -652,7 +652,7 @@ namespace Org.BouncyCastle.Pkcs
 
 			if (c != null)
 			{
-				ArrayList cs = new ArrayList();
+				IList cs = Platform.CreateArrayList();
 
 				while (c != null)
 				{
@@ -717,7 +717,12 @@ namespace Org.BouncyCastle.Pkcs
 					}
 				}
 
-				return (X509CertificateEntry[]) cs.ToArray(typeof(X509CertificateEntry));
+                X509CertificateEntry[] result = new X509CertificateEntry[cs.Count];
+                for (int i = 0; i < cs.Count; ++i)
+                {
+                    result[i] = (X509CertificateEntry)cs[i];
+                }
+                return result;
 			}
 
 			return null;
@@ -1156,8 +1161,8 @@ namespace Org.BouncyCastle.Pkcs
 		private class IgnoresCaseHashtable
 			: IEnumerable
 		{
-			private readonly Hashtable orig = new Hashtable();
-			private readonly Hashtable keys = new Hashtable();
+			private readonly IDictionary orig = Platform.CreateHashtable();
+            private readonly IDictionary keys = Platform.CreateHashtable();
 
 			public void Clear()
 			{

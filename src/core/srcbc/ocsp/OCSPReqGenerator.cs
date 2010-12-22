@@ -9,13 +9,14 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
 
 namespace Org.BouncyCastle.Ocsp
 {
 	public class OcspReqGenerator
 	{
-		private IList			list = new ArrayList();
+		private IList			list = Platform.CreateArrayList();
 		private GeneralName		requestorName = null;
 		private X509Extensions	requestExtensions = null;
 

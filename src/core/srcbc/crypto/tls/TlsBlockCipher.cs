@@ -12,15 +12,15 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// A generic TLS 1.0 block cipher. This can be used for AES or 3DES for example.
 	/// </summary>
 	internal class TlsBlockCipher
-	: TlsCipher
+        : TlsCipher
 	{
-		private TlsProtocolHandler handler;
+		protected TlsProtocolHandler handler;
 
-		private IBlockCipher encryptCipher;
-		private IBlockCipher decryptCipher;
+        protected IBlockCipher encryptCipher;
+        protected IBlockCipher decryptCipher;
 
-		private TlsMac writeMac;
-		private TlsMac readMac;
+        protected TlsMac writeMac;
+        protected TlsMac readMac;
 
 		internal TlsBlockCipher(TlsProtocolHandler handler, IBlockCipher encryptCipher,
 			IBlockCipher decryptCipher, IDigest writeDigest, IDigest readDigest, int cipherKeySize,
@@ -29,7 +29,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			this.handler = handler;
 			this.encryptCipher = encryptCipher;
 			this.decryptCipher = decryptCipher;
-			
+
 			int prfSize = (2 * cipherKeySize) + writeDigest.GetDigestSize()
 				+ readDigest.GetDigestSize() + encryptCipher.GetBlockSize()
 				+ decryptCipher.GetBlockSize();
@@ -55,14 +55,14 @@ namespace Org.BouncyCastle.Crypto.Tls
 				keyBlock, ref offset, decryptCipher.GetBlockSize());
 
 			if (offset != prfSize)
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_internal_error);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
 
 			// Init Ciphers
 			encryptCipher.Init(true, encryptParams);
 			decryptCipher.Init(false, decryptParams);
 		}
 
-		private static TlsMac CreateTlsMac(IDigest digest, byte[] buf, ref int off)
+        protected virtual TlsMac CreateTlsMac(IDigest digest, byte[] buf, ref int off)
 		{
 			int len = digest.GetDigestSize();
 			TlsMac mac = new TlsMac(digest, buf, off, len);
@@ -70,14 +70,14 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return mac;
 		}
 
-		private static KeyParameter CreateKeyParameter(byte[] buf, ref int off, int len)
+        protected virtual KeyParameter CreateKeyParameter(byte[] buf, ref int off, int len)
 		{
 			KeyParameter key = new KeyParameter(buf, off, len);
 			off += len;
 			return key;
 		}
 
-		private static ParametersWithIV CreateParametersWithIV(KeyParameter key,
+        protected virtual ParametersWithIV CreateParametersWithIV(KeyParameter key,
 			byte[] buf, ref int off, int len)
 		{
 			ParametersWithIV ivParams = new ParametersWithIV(key, buf, off, len);
@@ -85,7 +85,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return ivParams;
 		}
 
-		public byte[] EncodePlaintext(short type, byte[] plaintext, int offset, int len)
+		public virtual byte[] EncodePlaintext(ContentType type, byte[] plaintext, int offset, int len)
 		{
 			int blocksize = encryptCipher.GetBlockSize();
 
@@ -112,7 +112,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return outbuf;
 		}
 
-		public byte[] DecodeCiphertext(short type, byte[] ciphertext, int offset, int len)
+        public virtual byte[] DecodeCiphertext(ContentType type, byte[] ciphertext, int offset, int len)
 		{
 			// TODO TLS 1.1 (RFC 4346) introduces an explicit IV
 
@@ -125,7 +125,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			*/
 			if (len < minLength)
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_decode_error);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.decode_error);
 			}
 
 			/*
@@ -133,7 +133,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			*/
 			if (len % blocksize != 0)
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_decryption_failed);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.decryption_failed);
 			}
 
 			/*
@@ -184,13 +184,13 @@ namespace Org.BouncyCastle.Crypto.Tls
 			*/
 			int plaintextlength = len - minLength - paddingsize;
 			byte[] calculatedMac = readMac.CalculateMac(type, ciphertext, offset, plaintextlength);
-			
+
 			/*
 			* Check all bytes in the mac (constant-time comparison).
 			*/
 			byte[] decryptedMac = new byte[calculatedMac.Length];
 			Array.Copy(ciphertext, offset + plaintextlength, decryptedMac, 0, calculatedMac.Length);
-			
+
 			if (!Arrays.ConstantTimeAreEqual(calculatedMac, decryptedMac))
 			{
 				decrypterror = true;
@@ -201,7 +201,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			*/
 			if (decrypterror)
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_bad_record_mac);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.bad_record_mac);
 			}
 
 			byte[] plaintext = new byte[plaintextlength];
@@ -209,7 +209,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return plaintext;
 		}
 
-		private int ChooseExtraPadBlocks(SecureRandom r, int max)
+		protected virtual int ChooseExtraPadBlocks(SecureRandom r, int max)
 		{
 //			return r.NextInt(max + 1);
 
@@ -218,7 +218,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return System.Math.Min(n, max);
 		}
 
-		private int LowestBitSet(uint x)
+        protected virtual int LowestBitSet(uint x)
 		{
 			if (x == 0)
 			{

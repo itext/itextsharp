@@ -12,6 +12,7 @@ using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Security
 {
@@ -21,8 +22,8 @@ namespace Org.BouncyCastle.Security
 		{
 		}
 
-		private static readonly Hashtable kgAlgorithms = new Hashtable();
-		private static readonly Hashtable kpgAlgorithms = new Hashtable();
+		private static readonly IDictionary kgAlgorithms = Platform.CreateHashtable();
+        private static readonly IDictionary kpgAlgorithms = Platform.CreateHashtable();
 
 		static GeneratorUtilities()
 		{
@@ -53,7 +54,7 @@ namespace Org.BouncyCastle.Security
 				NistObjectIdentifiers.IdAes256Ofb,
 				NistObjectIdentifiers.IdAes256Wrap);
 			AddKgAlgorithm("BLOWFISH",
-				"1.3.6.1.4.1.3029.1.2");	
+				"1.3.6.1.4.1.3029.1.2");
 			AddKgAlgorithm("CAMELLIA",
 				"CAMELLIAWRAP");
 			AddKgAlgorithm("CAMELLIA128",
@@ -144,7 +145,7 @@ namespace Org.BouncyCastle.Security
 				"DIFFIEHELLMAN");
 			AddKpgAlgorithm("DSA");
 			AddKpgAlgorithm("EC",
-				// TODO Should this be an alias for ECDH?			                
+				// TODO Should this be an alias for ECDH?
 				X9ObjectIdentifiers.DHSinglePassStdDHSha1KdfScheme);
 			AddKpgAlgorithm("ECDH",
 				"ECIES");

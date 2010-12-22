@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Asn1.X509
 {
     /**
@@ -12,7 +14,7 @@ namespace Org.BouncyCastle.Asn1.X509
     public class ExtendedKeyUsage
         : Asn1Encodable
     {
-        internal readonly Hashtable usageTable = new Hashtable();
+        internal readonly IDictionary usageTable = Platform.CreateHashtable();
         internal readonly Asn1Sequence seq;
 
 		public static ExtendedKeyUsage GetInstance(
@@ -68,8 +70,17 @@ namespace Org.BouncyCastle.Asn1.X509
 			}
 		}
 
-		public ExtendedKeyUsage(
+#if !SILVERLIGHT
+        [Obsolete]
+        public ExtendedKeyUsage(
             ArrayList usages)
+            : this((IEnumerable)usages)
+        {
+        }
+#endif
+
+        public ExtendedKeyUsage(
+            IEnumerable usages)
         {
             Asn1EncodableVector v = new Asn1EncodableVector();
 
@@ -89,23 +100,25 @@ namespace Org.BouncyCastle.Asn1.X509
             return usageTable[keyPurposeId] != null;
         }
 
-		/**
+#if !SILVERLIGHT
+        [Obsolete("Use 'GetAllUsages'")]
+        public ArrayList GetUsages()
+        {
+            return new ArrayList(usageTable.Values);
+        }
+#endif
+
+        /**
 		 * Returns all extended key usages.
 		 * The returned ArrayList contains DerObjectIdentifier instances.
 		 * @return An ArrayList with all key purposes.
 		 */
-		public ArrayList GetUsages()
+		public IList GetAllUsages()
 		{
-			return new ArrayList(usageTable.Values);
+			return Platform.CreateArrayList(usageTable.Values);
 		}
 
-		[Obsolete("Use 'Count' property instead")]
-		public int Size
-		{
-			get { return usageTable.Count; }
-		}
-
-		public int Count
+        public int Count
 		{
 			get { return usageTable.Count; }
 		}

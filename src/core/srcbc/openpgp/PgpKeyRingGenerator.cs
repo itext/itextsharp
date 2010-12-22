@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
@@ -11,7 +12,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 	/// </remarks>
     public class PgpKeyRingGenerator
     {
-        private ArrayList					keys = new ArrayList();
+        private IList					    keys = Platform.CreateArrayList();
         private string                      id;
         private SymmetricKeyAlgorithmTag	encAlgorithm;
         private int                         certificationLevel;
@@ -24,7 +25,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 
 		/// <summary>
 		/// Create a new key ring generator using old style checksumming. It is recommended to use
-		/// SHA1 checksumming where possible. 
+		/// SHA1 checksumming where possible.
 		/// </summary>
 		/// <param name="certificationLevel">The certification level for keys on this ring.</param>
 		/// <param name="masterKey">The master key pair.</param>
@@ -55,7 +56,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 		/// <param name="id">The id to be associated with the ring.</param>
 		/// <param name="encAlgorithm">The algorithm to be used to protect secret keys.</param>
 		/// <param name="passPhrase">The passPhrase to be used to protect secret keys.</param>
-		/// <param name="useSha1">Checksum the secret keys with SHA1 rather than the older 16 bit checksum.</param> 
+		/// <param name="useSha1">Checksum the secret keys with SHA1 rather than the older 16 bit checksum.</param>
 		/// <param name="hashedPackets">Packets to be included in the certification hash.</param>
 		/// <param name="unhashedPackets">Packets to be attached unhashed to the certification.</param>
 		/// <param name="rand">input secured random.</param>
@@ -116,7 +117,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 				sGen.SetHashedSubpackets(hashedPackets);
                 sGen.SetUnhashedSubpackets(unhashedPackets);
 
-				ArrayList subSigs = new ArrayList();
+				IList subSigs = Platform.CreateArrayList();
 
 				subSigs.Add(sGen.GenerateCertification(masterKey.PublicKey, keyPair.PublicKey));
 
@@ -141,7 +142,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 		/// <summary>Return the public key ring that corresponds to the secret key ring.</summary>
         public PgpPublicKeyRing GeneratePublicKeyRing()
         {
-            ArrayList pubKeys = new ArrayList();
+            IList pubKeys = Platform.CreateArrayList();
 
             IEnumerator enumerator = keys.GetEnumerator();
             enumerator.MoveNext();

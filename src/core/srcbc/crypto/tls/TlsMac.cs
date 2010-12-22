@@ -57,14 +57,14 @@ namespace Org.BouncyCastle.Crypto.Tls
 		* @return A new byte-buffer containing the mac value.
 		*/
 		internal byte[] CalculateMac(
-			short	type,
-			byte[]	message,
-			int		offset,
-			int		len)
+			ContentType	type,
+			byte[]		message,
+			int			offset,
+			int			len)
 		{
 			byte[] macHeader = new byte[13];
 			TlsUtilities.WriteUint64(seqNo++, macHeader, 0);
-			TlsUtilities.WriteUint8(type, macHeader, 8);
+			TlsUtilities.WriteUint8((byte)type, macHeader, 8);
 			TlsUtilities.WriteVersion(macHeader, 9);
 			TlsUtilities.WriteUint16(len, macHeader, 11);
 

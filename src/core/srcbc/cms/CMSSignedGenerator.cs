@@ -14,6 +14,7 @@ using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.Utilities.IO;
 using Org.BouncyCastle.X509;
@@ -53,7 +54,7 @@ namespace Org.BouncyCastle.Cms
 		private static readonly string EncryptionECDsaWithSha512 = X9ObjectIdentifiers.ECDsaWithSha512.Id;
 
 		private static readonly ISet noParams = new HashSet();
-		private static readonly Hashtable ecAlgorithms = new Hashtable();
+		private static readonly IDictionary ecAlgorithms = Platform.CreateHashtable();
 
 		static CmsSignedGenerator()
 		{
@@ -72,10 +73,10 @@ namespace Org.BouncyCastle.Cms
 			ecAlgorithms.Add(DigestSha512, EncryptionECDsaWithSha512);
 		}
 
-		internal ArrayList _certs = new ArrayList();
-		internal ArrayList _crls = new ArrayList();
-		internal ArrayList _signers = new ArrayList();
-		internal IDictionary _digests = new Hashtable();
+		internal IList _certs = Platform.CreateArrayList();
+        internal IList _crls = Platform.CreateArrayList();
+		internal IList _signers = Platform.CreateArrayList();
+		internal IDictionary _digests = Platform.CreateHashtable();
 
 		protected readonly SecureRandom rand;
 
@@ -159,7 +160,7 @@ namespace Org.BouncyCastle.Cms
 			AlgorithmIdentifier	digAlgId,
 			byte[]				hash)
 		{
-			IDictionary param = new Hashtable();
+			IDictionary param = Platform.CreateHashtable();
 
 			param[CmsAttributeTableParameter.ContentType] = contentType;
 			param[CmsAttributeTableParameter.DigestAlgorithmIdentifier] = digAlgId;
@@ -183,13 +184,13 @@ namespace Org.BouncyCastle.Cms
 		public void AddCertificates(
 			IX509Store certStore)
 		{
-			_certs.AddRange(CmsUtilities.GetCertificatesFromStore(certStore));
-		}
+            CollectionUtilities.AddRange(_certs, CmsUtilities.GetCertificatesFromStore(certStore));
+        }
 
 		public void AddCrls(
 			IX509Store crlStore)
 		{
-			_crls.AddRange(CmsUtilities.GetCrlsFromStore(crlStore));
+            CollectionUtilities.AddRange(_crls, CmsUtilities.GetCrlsFromStore(crlStore));
 		}
 
 		/**
@@ -239,7 +240,7 @@ namespace Org.BouncyCastle.Cms
 		 */
 		public IDictionary GetGeneratedDigests()
 		{
-			return new Hashtable(_digests);
+			return Platform.CreateHashtable(_digests);
 		}
 
 		internal virtual void AddSignerCallback(
@@ -254,7 +255,7 @@ namespace Org.BouncyCastle.Cms
 
 		internal static SignerIdentifier GetSignerIdentifier(byte[] subjectKeyIdentifier)
 		{
-			return new SignerIdentifier(new DerOctetString(subjectKeyIdentifier));    
+			return new SignerIdentifier(new DerOctetString(subjectKeyIdentifier));
 		}
 	}
 }

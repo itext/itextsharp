@@ -2,12 +2,14 @@ using System;
 using System.Collections;
 using System.IO;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Cms
 {
     public class SignerInformationStore
     {
-		private readonly ArrayList all; //ArrayList[SignerInformation]
-		private readonly Hashtable table = new Hashtable(); // Hashtable[SignerID, ArrayList[SignerInformation]]
+		private readonly IList all; //ArrayList[SignerInformation]
+		private readonly IDictionary table = Platform.CreateHashtable(); // Hashtable[SignerID, ArrayList[SignerInformation]]
 
 		public SignerInformationStore(
             ICollection signerInfos)
@@ -15,17 +17,17 @@ namespace Org.BouncyCastle.Cms
             foreach (SignerInformation signer in signerInfos)
             {
                 SignerID sid = signer.SignerID;
-				ArrayList list = (ArrayList) table[sid];
+                IList list = (IList)table[sid];
 
 				if (list == null)
 				{
-					table[sid] = list = new ArrayList(1);
+					table[sid] = list = Platform.CreateArrayList(1);
 				}
 
 				list.Add(signer);
             }
 
-			this.all = new ArrayList(signerInfos);
+            this.all = Platform.CreateArrayList(signerInfos);
         }
 
         /**
@@ -38,7 +40,7 @@ namespace Org.BouncyCastle.Cms
         public SignerInformation GetFirstSigner(
             SignerID selector)
         {
-			ArrayList list = (ArrayList) table[selector];
+			IList list = (IList) table[selector];
 
 			return list == null ? null : (SignerInformation) list[0];
         }
@@ -52,7 +54,7 @@ namespace Org.BouncyCastle.Cms
 		/// <returns>An ICollection of all signers in the collection</returns>
         public ICollection GetSigners()
         {
-			return new ArrayList(all);
+            return Platform.CreateArrayList(all);
         }
 
 		/**
@@ -64,9 +66,9 @@ namespace Org.BouncyCastle.Cms
         public ICollection GetSigners(
             SignerID selector)
         {
-			ArrayList list = (ArrayList) table[selector];
+			IList list = (IList) table[selector];
 
-			return list == null ? new ArrayList() : new ArrayList(list);
+            return list == null ? Platform.CreateArrayList() : Platform.CreateArrayList(list);
         }
     }
 }

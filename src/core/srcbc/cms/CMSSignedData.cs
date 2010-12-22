@@ -158,7 +158,7 @@ namespace Org.BouncyCastle.Cms
 		{
 			if (signerInfoStore == null)
 			{
-				IList signerInfos = new ArrayList();
+                IList signerInfos = Platform.CreateArrayList();
 				Asn1Set s = signedData.SignerInfos;
 
 				foreach (object obj in s)
@@ -265,7 +265,7 @@ namespace Org.BouncyCastle.Cms
 		}
 
 		/**
-		 * return the ContentInfo 
+		 * return the ContentInfo
 		 */
 		public ContentInfo ContentInfo
 		{

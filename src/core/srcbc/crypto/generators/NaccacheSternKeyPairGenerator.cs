@@ -6,6 +6,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities;
+using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Crypto.Generators
 {
@@ -57,7 +58,7 @@ namespace Org.BouncyCastle.Crypto.Generators
 				Console.WriteLine("Fetching first " + param.CountSmallPrimes + " primes.");
 			}
 
-			ArrayList smallPrimes = findFirstPrimes(param.CountSmallPrimes);
+			IList smallPrimes = findFirstPrimes(param.CountSmallPrimes);
 
 			smallPrimes = permuteList(smallPrimes, rand);
 
@@ -157,7 +158,7 @@ namespace Org.BouncyCastle.Crypto.Generators
 			for (;;)
 			{
 				// TODO After the first loop, just regenerate one randomly-selected gPart each time?
-				ArrayList gParts = new ArrayList();
+				IList gParts = Platform.CreateArrayList();
 				for (int ind = 0; ind != smallPrimes.Count; ind++)
 				{
 					BigInteger i = (BigInteger)smallPrimes[ind];
@@ -255,7 +256,7 @@ namespace Org.BouncyCastle.Crypto.Generators
 				Console.WriteLine("needed " + tries + " tries to generate g");
 				Console.WriteLine();
 				Console.WriteLine("found new NaccacheStern cipher variables:");
-				Console.WriteLine("smallPrimes: " + Arrays.ToString(smallPrimes.ToArray()));
+				Console.WriteLine("smallPrimes: " + CollectionUtilities.ToString(smallPrimes));
 				Console.WriteLine("sigma:...... " + sigma + " (" + sigma.BitLength + " bits)");
 				Console.WriteLine("a:.......... " + a);
 				Console.WriteLine("b:.......... " + b);
@@ -291,11 +292,13 @@ namespace Org.BouncyCastle.Crypto.Generators
 		 *            the source of Randomness for permutation
 		 * @return a new ArrayList with the permuted elements.
 		 */
-		private static ArrayList permuteList(
-			ArrayList arr,
-			SecureRandom rand)
+		private static IList permuteList(
+			IList           arr,
+			SecureRandom    rand)
 		{
-			ArrayList retval = new ArrayList(arr.Count);
+            // TODO Create a utility method for generating permutation of first 'n' integers
+
+            IList retval = Platform.CreateArrayList(arr.Count);
 
 			foreach (object element in arr)
 			{
@@ -313,10 +316,10 @@ namespace Org.BouncyCastle.Crypto.Generators
 		 *            the number of primes to find
 		 * @return a vector containing the found primes as Integer
 		 */
-		private static ArrayList findFirstPrimes(
+		private static IList findFirstPrimes(
 			int count)
 		{
-			ArrayList primes = new ArrayList(count);
+			IList primes = Platform.CreateArrayList(count);
 
 			for (int i = 0; i != count; i++)
 			{

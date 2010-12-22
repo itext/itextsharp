@@ -42,14 +42,10 @@ namespace Org.BouncyCastle.Asn1.Icao
             object obj)
         {
             if (obj == null || obj is DataGroupHash)
-            {
-                return (DataGroupHash) obj;
-            }
+                return (DataGroupHash)obj;
 
-            if (obj is Asn1Sequence)
-            {
+			if (obj is Asn1Sequence)
                 return new DataGroupHash(Asn1Sequence.GetInstance(obj));
-            }
 
 			throw new ArgumentException("unknown object in GetInstance: " + obj.GetType().FullName);
 		}

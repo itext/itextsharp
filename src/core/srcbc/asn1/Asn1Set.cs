@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Asn1
@@ -8,7 +9,7 @@ namespace Org.BouncyCastle.Asn1
     abstract public class Asn1Set
         : Asn1Object, IEnumerable
     {
-        private readonly ArrayList _set;
+        private readonly IList _set;
 
 		/**
          * return an ASN1Set from the given object.
@@ -96,7 +97,7 @@ namespace Org.BouncyCastle.Asn1
 		protected internal Asn1Set(
 			int capacity)
         {
-			_set = new ArrayList(capacity);
+			_set = Platform.CreateArrayList(capacity);
         }
 
 		public virtual IEnumerator GetEnumerator()
@@ -241,7 +242,7 @@ namespace Org.BouncyCastle.Asn1
 
 			return encObj;
 		}
-		
+
 		/**
          * return true if a &lt;= b (arrays are assumed padded with zeros).
          */

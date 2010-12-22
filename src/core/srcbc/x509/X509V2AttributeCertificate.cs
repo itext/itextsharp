@@ -8,6 +8,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.X509
 {
@@ -205,7 +206,7 @@ namespace Org.BouncyCastle.X509
 			string oid)
 		{
 			Asn1Sequence seq = cert.ACInfo.Attributes;
-			ArrayList list = new ArrayList();
+			IList list = Platform.CreateArrayList();
 
 			for (int i = 0; i != seq.Count; i++)
 			{
@@ -221,7 +222,12 @@ namespace Org.BouncyCastle.X509
 				return null;
 			}
 
-			return (X509Attribute[]) list.ToArray(typeof(X509Attribute));
+            X509Attribute[] result = new X509Attribute[list.Count];
+            for (int i = 0; i < list.Count; ++i)
+            {
+                result[i] = (X509Attribute)list[i];
+            }
+            return result;
 		}
 
 		public override bool Equals(

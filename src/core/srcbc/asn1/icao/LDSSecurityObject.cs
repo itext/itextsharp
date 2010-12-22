@@ -33,14 +33,10 @@ namespace Org.BouncyCastle.Asn1.Icao
             object obj)
         {
             if (obj == null || obj is LdsSecurityObject)
-            {
-                return (LdsSecurityObject) obj;
-            }
+                return (LdsSecurityObject)obj;
 
-            if (obj is Asn1Sequence)
-            {
+			if (obj is Asn1Sequence)
                 return new LdsSecurityObject(Asn1Sequence.GetInstance(obj));
-            }
 
 			throw new ArgumentException("unknown object in GetInstance: " + obj.GetType().FullName);
 		}

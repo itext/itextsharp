@@ -3,6 +3,7 @@ using System.Collections;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.X509.Store;
@@ -10,12 +11,12 @@ using Org.BouncyCastle.X509.Store;
 namespace Org.BouncyCastle.Pkix
 {
 	/**
-	 * The <i>Service Provider Interface</i> (<b>SPI</b>) 
-	 * for the {@link CertPathValidator CertPathValidator} class. All 
+	 * The <i>Service Provider Interface</i> (<b>SPI</b>)
+	 * for the {@link CertPathValidator CertPathValidator} class. All
 	 * <code>CertPathValidator</code> implementations must include a class (the
-	 * SPI class) that extends this class (<code>CertPathValidatorSpi</code>) 
-	 * and implements all of its methods. In general, instances of this class 
-	 * should only be accessed through the <code>CertPathValidator</code> class. 
+	 * SPI class) that extends this class (<code>CertPathValidatorSpi</code>)
+	 * and implements all of its methods. In general, instances of this class
+	 * should only be accessed through the <code>CertPathValidator</code> class.
 	 * For details, see the Java Cryptography Architecture.<br />
 	 * <br />
 	 * <b>Concurrent Access</b><br />
@@ -73,7 +74,7 @@ namespace Org.BouncyCastle.Pkix
 
             //
             // (d)
-            // 
+            //
             TrustAnchor trust;
             try
             {
@@ -104,17 +105,17 @@ namespace Org.BouncyCastle.Pkix
             //
             // (a)
             //
-            IList[] policyNodes = new ArrayList[n + 1];
+            IList[] policyNodes = new IList[n + 1];
             for (int j = 0; j < policyNodes.Length; j++)
             {
-                policyNodes[j] = new ArrayList();
+                policyNodes[j] = Platform.CreateArrayList();
             }
 
             ISet policySet = new HashSet();
 
             policySet.Add(Rfc3280CertPathUtilities.ANY_POLICY);
 
-            PkixPolicyNode validPolicyTree = new PkixPolicyNode(new ArrayList(), 0, policySet, null, new HashSet(),
+            PkixPolicyNode validPolicyTree = new PkixPolicyNode(Platform.CreateArrayList(), 0, policySet, null, new HashSet(),
                     Rfc3280CertPathUtilities.ANY_POLICY, false);
 
             policyNodes[0].Add(validPolicyTree);
@@ -222,12 +223,12 @@ namespace Org.BouncyCastle.Pkix
 					"Target certificate in certification path does not match targetConstraints.", null, certPath, 0);
             }
 
-            // 
+            //
             // initialize CertPathChecker's
             //
             IList pathCheckers = paramsPkix.GetCertPathCheckers();
             certIter = pathCheckers.GetEnumerator();
-            
+
             while (certIter.MoveNext())
             {
                 ((PkixCertPathChecker)certIter.Current).Init(false);

@@ -50,12 +50,9 @@ namespace Org.BouncyCastle.Utilities.IO.Pem
 
 			if (obj.Headers.Count > 0)
 			{
-				foreach (DictionaryEntry entry in obj.Headers)
+				foreach (PemHeader header in obj.Headers)
 				{
-					string hdr = (string)entry.Key;
-					string val = (string)entry.Value;
-
-					size += hdr.Length + ": ".Length + val.Length + nlLength;
+					size += header.Name.Length + ": ".Length + header.Value.Length + nlLength;
 				}
 
 				size += nlLength;
@@ -77,14 +74,11 @@ namespace Org.BouncyCastle.Utilities.IO.Pem
 
 			if (obj.Headers.Count > 0)
 			{
-				foreach (DictionaryEntry entry in obj.Headers)
+				foreach (PemHeader header in obj.Headers)
 				{
-					string hdr = (string)entry.Key;
-					string val = (string)entry.Value;
-
-					writer.Write(hdr);
+					writer.Write(header.Name);
 					writer.Write(": ");
-					writer.WriteLine(val);
+					writer.WriteLine(header.Value);
 				}
 
 				writer.WriteLine();

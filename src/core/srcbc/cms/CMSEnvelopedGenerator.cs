@@ -12,6 +12,7 @@ using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
 
 namespace Org.BouncyCastle.Cms
@@ -98,7 +99,7 @@ namespace Org.BouncyCastle.Cms
 		public static readonly string ECDHSha1Kdf		= X9ObjectIdentifiers.DHSinglePassStdDHSha1KdfScheme.Id;
 		public static readonly string ECMqvSha1Kdf		= X9ObjectIdentifiers.MqvSinglePassSha1KdfScheme.Id;
 
-		internal readonly IList recipientInfoGenerators = new ArrayList();
+		internal readonly IList recipientInfoGenerators = Platform.CreateArrayList();
 		internal readonly SecureRandom rand;
 
 		public CmsEnvelopedGenerator()
@@ -210,7 +211,7 @@ namespace Org.BouncyCastle.Cms
 			X509Certificate			recipientCert,
 			string					cekWrapAlgorithm)
 		{
-			ArrayList recipientCerts = new ArrayList(1);
+            IList recipientCerts = Platform.CreateArrayList(1);
 			recipientCerts.Add(recipientCert);
 
 			AddKeyAgreementRecipients(agreementAlgorithm, senderPrivateKey, senderPublicKey,

@@ -2,13 +2,14 @@ using System;
 using System.Collections;
 
 using Org.BouncyCastle.Bcpg.Sig;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
 	/// <remarks>Generator for signature subpackets.</remarks>
     public class PgpSignatureSubpacketGenerator
     {
-        private ArrayList list = new ArrayList();
+        private IList list = Platform.CreateArrayList();
 
 		public void SetRevocable(
             bool	isCritical,
@@ -156,8 +157,12 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 
 		public PgpSignatureSubpacketVector Generate()
         {
-			return new PgpSignatureSubpacketVector(
-				(SignatureSubpacket[]) list.ToArray(typeof(SignatureSubpacket)));
+            SignatureSubpacket[] a = new SignatureSubpacket[list.Count];
+            for (int i = 0; i < list.Count; ++i)
+            {
+                a[i] = (SignatureSubpacket)list[i];
+            }
+            return new PgpSignatureSubpacketVector(a);
         }
     }
 }

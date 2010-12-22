@@ -72,8 +72,8 @@ namespace Org.BouncyCastle.X509.Store
 		/// </summary>
 		public ICollection Issuers
 		{
-			get { return new ArrayList(issuers); }
-			set { issuers = new ArrayList(value); }
+			get { return Platform.CreateArrayList(issuers); }
+            set { issuers = Platform.CreateArrayList(value); }
 		}
 
 		public BigInteger MaxCrlNumber

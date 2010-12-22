@@ -21,7 +21,17 @@ namespace Org.BouncyCastle.Utilities
 			return new string(cs);
 		}
 
-		public static byte[] ToByteArray(
+        public static byte[] ToByteArray(char[] cs)
+        {
+            byte[] bs = new byte[cs.Length];
+            for (int i = 0; i < bs.Length; ++i)
+            {
+                bs[i] = Convert.ToByte(cs[i]);
+            }
+            return bs;
+        }
+
+        public static byte[] ToByteArray(
 			string s)
 		{
 			byte[] bs = new byte[s.Length];

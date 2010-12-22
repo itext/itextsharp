@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
+using System.IO;
 
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Asn1
@@ -8,7 +10,7 @@ namespace Org.BouncyCastle.Asn1
     public abstract class Asn1Sequence
 		: Asn1Object, IEnumerable
     {
-        private readonly ArrayList seq;
+        private readonly IList seq;
 
 		/**
          * return an Asn1Sequence from the given object.
@@ -23,6 +25,17 @@ namespace Org.BouncyCastle.Asn1
             {
                 return (Asn1Sequence)obj;
             }
+			else if (obj is byte[])
+			{
+				try
+				{
+					return Asn1Sequence.GetInstance(Asn1Object.FromByteArray((byte[])obj));
+				}
+				catch (IOException e)
+				{
+					throw new ArgumentException("Failed to construct sequence from byte[]", e);
+				}
+			}
 
 			throw new ArgumentException("Unknown object in GetInstance: " + obj.GetType().FullName, "obj");
 		}
@@ -83,7 +96,7 @@ namespace Org.BouncyCastle.Asn1
 		protected internal Asn1Sequence(
 			int capacity)
 		{
-			seq = new ArrayList(capacity);
+            seq = Platform.CreateArrayList(capacity);
 		}
 
 		public virtual IEnumerator GetEnumerator()
@@ -227,7 +240,7 @@ namespace Org.BouncyCastle.Asn1
 
 			return encObj;
 		}
-		
+
 		protected internal void AddObject(
             Asn1Encodable obj)
         {

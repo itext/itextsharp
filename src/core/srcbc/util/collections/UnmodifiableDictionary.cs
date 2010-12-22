@@ -26,12 +26,10 @@ namespace Org.BouncyCastle.Utilities.Collections
 
 		public abstract int Count { get; }
 
-#if NET_1_1
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return GetEnumerator();
 		}
-#endif
 
 		public abstract IDictionaryEnumerator GetEnumerator();
 

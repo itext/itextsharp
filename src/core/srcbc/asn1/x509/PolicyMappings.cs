@@ -29,7 +29,15 @@ namespace Org.BouncyCastle.Asn1.X509
 			this.seq = seq;
 		}
 
-		/**
+#if !SILVERLIGHT
+        public PolicyMappings(
+            Hashtable mappings)
+            : this((IDictionary)mappings)
+        {
+        }
+#endif
+
+        /**
 		 * Creates a new <code>PolicyMappings</code> instance.
 		 *
 		 * @param mappings a <code>HashMap</code> value that maps
@@ -37,7 +45,7 @@ namespace Org.BouncyCastle.Asn1.X509
 		 * to other <code>string</code> oids.
 		 */
 		public PolicyMappings(
-			Hashtable mappings)
+			IDictionary mappings)
 		{
 			Asn1EncodableVector v = new Asn1EncodableVector();
 
