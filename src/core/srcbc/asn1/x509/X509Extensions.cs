@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Asn1.X509
@@ -152,7 +153,7 @@ namespace Org.BouncyCastle.Asn1.X509
 		 * Audit identity extension in attribute certificates.
 		 */
 		public static readonly DerObjectIdentifier AuditIdentity = new DerObjectIdentifier("1.3.6.1.5.5.7.1.4");
-    
+
 		/**
 		 * NoRevAvail extension in attribute certificates.
 		 */
@@ -163,8 +164,8 @@ namespace Org.BouncyCastle.Asn1.X509
 		 */
 		public static readonly DerObjectIdentifier TargetInformation = new DerObjectIdentifier("2.5.29.55");
 
-		private readonly Hashtable extensions = new Hashtable();
-        private readonly ArrayList ordering = new ArrayList();
+        private readonly IDictionary extensions = Platform.CreateHashtable();
+        private readonly IList ordering;
 
 		public static X509Extensions GetInstance(
             Asn1TaggedObject	obj,
@@ -202,6 +203,8 @@ namespace Org.BouncyCastle.Asn1.X509
         private X509Extensions(
             Asn1Sequence seq)
         {
+            this.ordering = Platform.CreateArrayList();
+
 			foreach (Asn1Encodable ae in seq)
 			{
 				Asn1Sequence s = Asn1Sequence.GetInstance(ae.ToAsn1Object());
@@ -221,11 +224,67 @@ namespace Org.BouncyCastle.Asn1.X509
 			}
         }
 
+        /**
+         * constructor from a table of extensions.
+         * <p>
+         * it's is assumed the table contains Oid/string pairs.</p>
+         */
+        public X509Extensions(
+            IDictionary extensions)
+            : this(null, extensions)
+        {
+        }
+
+        /**
+         * Constructor from a table of extensions with ordering.
+         * <p>
+         * It's is assumed the table contains Oid/string pairs.</p>
+         */
+        public X509Extensions(
+            IList       ordering,
+            IDictionary extensions)
+        {
+            if (ordering == null)
+            {
+                this.ordering = Platform.CreateArrayList(extensions.Keys);
+            }
+            else
+            {
+                this.ordering = Platform.CreateArrayList(ordering);
+            }
+
+            foreach (DerObjectIdentifier oid in this.ordering)
+            {
+                this.extensions.Add(oid, (X509Extension)extensions[oid]);
+            }
+        }
+
+        /**
+         * Constructor from two vectors
+         *
+         * @param objectIDs an ArrayList of the object identifiers.
+         * @param values an ArrayList of the extension values.
+         */
+        public X509Extensions(
+            IList oids,
+            IList values)
+        {
+            this.ordering = Platform.CreateArrayList(oids);
+
+            int count = 0;
+            foreach (DerObjectIdentifier oid in this.ordering)
+            {
+                this.extensions.Add(oid, (X509Extension)values[count++]);
+            }
+        }
+
+#if !SILVERLIGHT
 		/**
          * constructor from a table of extensions.
          * <p>
          * it's is assumed the table contains Oid/string pairs.</p>
          */
+        [Obsolete]
         public X509Extensions(
             Hashtable extensions)
              : this(null, extensions)
@@ -237,17 +296,21 @@ namespace Org.BouncyCastle.Asn1.X509
          * <p>
          * It's is assumed the table contains Oid/string pairs.</p>
          */
+        [Obsolete]
         public X509Extensions(
             ArrayList	ordering,
             Hashtable	extensions)
         {
-			ICollection c = ordering == null
-				?	extensions.Keys
-				:	ordering;
+            if (ordering == null)
+            {
+                this.ordering = Platform.CreateArrayList(extensions.Keys);
+            }
+            else
+            {
+                this.ordering = Platform.CreateArrayList(ordering);
+            }
 
-			this.ordering.AddRange(c);
-
-			foreach (DerObjectIdentifier oid in this.ordering)
+            foreach (DerObjectIdentifier oid in this.ordering)
 			{
 				this.extensions.Add(oid, (X509Extension) extensions[oid]);
 			}
@@ -259,20 +322,22 @@ namespace Org.BouncyCastle.Asn1.X509
 		 * @param objectIDs an ArrayList of the object identifiers.
 		 * @param values an ArrayList of the extension values.
 		 */
+        [Obsolete]
 		public X509Extensions(
 			ArrayList	oids,
 			ArrayList	values)
 		{
-			this.ordering.AddRange(oids);
+            this.ordering = Platform.CreateArrayList(oids);
 
-			int count = 0;
+            int count = 0;
 			foreach (DerObjectIdentifier oid in this.ordering)
 			{
 				this.extensions.Add(oid, (X509Extension) values[count++]);
 			}
 		}
+#endif
 
-		[Obsolete("Use ExtensionOids IEnumerable property")]
+        [Obsolete("Use ExtensionOids IEnumerable property")]
 		public IEnumerator Oids()
 		{
 			return ExtensionOids.GetEnumerator();

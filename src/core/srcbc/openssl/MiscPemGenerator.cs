@@ -59,7 +59,7 @@ namespace Org.BouncyCastle.OpenSsl
 			{
 				return CreatePemObject(((AsymmetricCipherKeyPair)obj).Private);
 			}
-			
+
 			string type;
 			byte[] encoding;
 
@@ -165,7 +165,6 @@ namespace Org.BouncyCastle.OpenSsl
 
 			if (obj is AsymmetricCipherKeyPair)
 			{
-//				return new MiscPemGenerator(((AsymmetricCipherKeyPair)obj).Private).Generate();
 				return CreatePemObject(((AsymmetricCipherKeyPair)obj).Private, algorithm, password, random);
 			}
 
@@ -206,10 +205,10 @@ namespace Org.BouncyCastle.OpenSsl
 
 			byte[] encData = PemUtilities.Crypt(true, keyData, password, dekAlgName, iv);
 
-			// FIXME Preserve order of headers
-			IDictionary headers = new Hashtable();
-			headers.Add("Proc-Type", "4,ENCRYPTED");
-			headers.Add("DEK-Info", dekAlgName + "," + Hex.ToHexString(iv));
+			IList headers = Platform.CreateArrayList(2);
+
+			headers.Add(new PemHeader("Proc-Type", "4,ENCRYPTED"));
+			headers.Add(new PemHeader("DEK-Info", dekAlgName + "," + Hex.ToHexString(iv)));
 
 			return new PemObject(type, headers, encData);
 		}

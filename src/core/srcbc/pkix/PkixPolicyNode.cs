@@ -74,14 +74,16 @@ namespace Org.BouncyCastle.Pkix
 			string			validPolicy,
 			bool			critical)
 		{
-			ArrayList newChildren = new ArrayList();
-			if (children != null)
-			{
-				newChildren.AddRange(children);
-			}
+            if (children == null)
+            {
+                this.mChildren = Platform.CreateArrayList();
+            }
+            else
+            {
+                this.mChildren = Platform.CreateArrayList(children);
+            }
 
-			this.mChildren = newChildren;
-			this.mDepth = depth;
+            this.mDepth = depth;
 			this.mExpectedPolicies = expectedPolicies;
 			this.mParent = parent;
 			this.mPolicyQualifiers = policyQualifiers;
@@ -135,7 +137,7 @@ namespace Org.BouncyCastle.Pkix
 		public virtual PkixPolicyNode Copy()
 		{
 			PkixPolicyNode node = new PkixPolicyNode(
-				new ArrayList(),
+                Platform.CreateArrayList(),
 				mDepth,
 				new HashSet(mExpectedPolicies),
 				null,

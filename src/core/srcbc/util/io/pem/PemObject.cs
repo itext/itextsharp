@@ -9,18 +9,18 @@ namespace Org.BouncyCastle.Utilities.IO.Pem
 		: PemObjectGenerator
 	{
 		private string		type;
-		private IDictionary	headers;
+		private IList		headers;
 		private byte[]		content;
 
 		public PemObject(string type, byte[] content)
-			: this(type, new Hashtable(), content)
+			: this(type, Platform.CreateArrayList(), content)
 		{
 		}
 
-		public PemObject(String type, IDictionary headers, byte[] content)
+		public PemObject(String type, IList headers, byte[] content)
 		{
 			this.type = type;
-			this.headers = new UnmodifiableDictionaryProxy(headers);
+            this.headers = Platform.CreateArrayList(headers);
 			this.content = content;
 		}
 
@@ -29,7 +29,7 @@ namespace Org.BouncyCastle.Utilities.IO.Pem
 			get { return type; }
 		}
 
-		public IDictionary Headers
+		public IList Headers
 		{
 			get { return headers; }
 		}

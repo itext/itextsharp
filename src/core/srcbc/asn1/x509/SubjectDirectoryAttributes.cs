@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Asn1.X509
@@ -27,7 +28,7 @@ namespace Org.BouncyCastle.Asn1.X509
 	public class SubjectDirectoryAttributes
 		: Asn1Encodable
 	{
-		private readonly ArrayList attributes = new ArrayList();
+		private readonly IList attributes;
 
 		public static SubjectDirectoryAttributes GetInstance(
 			object obj)
@@ -76,7 +77,16 @@ namespace Org.BouncyCastle.Asn1.X509
 			}
 		}
 
-		/**
+#if !SILVERLIGHT
+        [Obsolete]
+        public SubjectDirectoryAttributes(
+            ArrayList attributes)
+            : this((IList)attributes)
+        {
+        }
+#endif
+
+        /**
 		 * Constructor from an ArrayList of attributes.
 		 *
 		 * The ArrayList consists of attributes of type {@link Attribute Attribute}
@@ -85,10 +95,10 @@ namespace Org.BouncyCastle.Asn1.X509
 		 *
 		 */
 		public SubjectDirectoryAttributes(
-			ArrayList attributes)
+			IList attributes)
 		{
-			this.attributes.AddRange(attributes);
-		}
+            this.attributes = Platform.CreateArrayList(attributes);
+        }
 
 		/**
 		 * Produce an object suitable for an Asn1OutputStream.
@@ -112,12 +122,15 @@ namespace Org.BouncyCastle.Asn1.X509
 		 */
 		public override Asn1Object ToAsn1Object()
 		{
-			AttributeX509[] v = (AttributeX509[]) attributes.ToArray(typeof(AttributeX509));
-
-			return new DerSequence(v);
+            AttributeX509[] v = new AttributeX509[attributes.Count];
+            for (int i = 0; i < attributes.Count; ++i)
+            {
+                v[i] = (AttributeX509)attributes[i];
+            }
+            return new DerSequence(v);
 		}
 
-		/**
+        /**
 		 * @return Returns the attributes.
 		 */
 		public IEnumerable Attributes

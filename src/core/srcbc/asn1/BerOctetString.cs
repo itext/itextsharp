@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.IO;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Asn1
 {
     public class BerOctetString
@@ -9,7 +11,7 @@ namespace Org.BouncyCastle.Asn1
     {
 		public static BerOctetString FromSequence(Asn1Sequence seq)
 		{
-			ArrayList v = new ArrayList();
+			IList v = Platform.CreateArrayList();
 
 			foreach (Asn1Encodable obj in seq)
 			{
@@ -88,9 +90,9 @@ namespace Org.BouncyCastle.Asn1
 			return GetEnumerator();
 		}
 
-		private ArrayList GenerateOcts()
+		private IList GenerateOcts()
         {
-            ArrayList vec = new ArrayList();
+            IList vec = Platform.CreateArrayList();
 			for (int i = 0; i < str.Length; i += MaxLength)
 			{
 				int end = System.Math.Min(str.Length, i + MaxLength);

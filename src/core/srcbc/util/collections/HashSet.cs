@@ -6,7 +6,7 @@ namespace Org.BouncyCastle.Utilities.Collections
 	public class HashSet
 		: ISet
 	{
-		private readonly Hashtable impl = new Hashtable();
+		private readonly IDictionary impl = Platform.CreateHashtable();
 
 		public HashSet()
 		{
@@ -40,7 +40,7 @@ namespace Org.BouncyCastle.Utilities.Collections
 
 		public bool Contains(object o)
 		{
-			return impl.ContainsKey(o);
+			return impl.Contains(o);
 		}
 
 		public void CopyTo(Array array, int index)

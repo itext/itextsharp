@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 
 using Org.BouncyCastle.Bcpg.Sig;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
@@ -50,20 +51,30 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 		public SignatureSubpacket[] GetSubpackets(
 			SignatureSubpacketTag type)
 		{
-			ArrayList list = new ArrayList();
+            int count = 0;
+            for (int i = 0; i < packets.Length; ++i)
+            {
+                if (packets[i].SubpacketType == type)
+                {
+                    ++count;
+                }
+            }
 
-			for (int i = 0; i != packets.Length; i++)
-			{
-				if (packets[i].SubpacketType == type)
-				{
-					list.Add(packets[i]);
-				}
-			}
+            SignatureSubpacket[] result = new SignatureSubpacket[count];
 
-			return (SignatureSubpacket[]) list.ToArray(typeof(SignatureSubpacket));
-		}
+            int pos = 0;
+            for (int i = 0; i < packets.Length; ++i)
+            {
+                if (packets[i].SubpacketType == type)
+                {
+                    result[pos++] = packets[i];
+                }
+            }
 
-		public NotationData[] GetNotationDataOccurences()
+            return result;
+        }
+
+        public NotationData[] GetNotationDataOccurences()
 		{
 			SignatureSubpacket[] notations = GetSubpackets(SignatureSubpacketTag.NotationData);
 			NotationData[] vals = new NotationData[notations.Length];
@@ -102,7 +113,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 
 		/// <summary>
 		/// Return the number of seconds a signature is valid for after its creation date.
-		/// A value of zero means the signature never expires. 
+		/// A value of zero means the signature never expires.
 		/// </summary>
 		/// <returns>Seconds a signature is valid for.</returns>
         public long GetSignatureExpirationTime()
@@ -114,7 +125,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 
 		/// <summary>
 		/// Return the number of seconds a key is valid for after its creation date.
-		/// A value of zero means the key never expires. 
+		/// A value of zero means the key never expires.
 		/// </summary>
 		/// <returns>Seconds a signature is valid for.</returns>
         public long GetKeyExpirationTime()

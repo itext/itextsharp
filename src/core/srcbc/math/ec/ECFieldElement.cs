@@ -1036,7 +1036,7 @@ namespace Org.BouncyCastle.Math.EC
 			// No check performed here for performance reasons. Instead the
 			// elements involved are checked in ECPoint.F2m
 			// checkFieldElements(this, b);
-			IntArray iarrClone = (IntArray) this.x.Clone();
+			IntArray iarrClone = (IntArray) this.x.Copy();
 			F2mFieldElement bF2m = (F2mFieldElement) b;
 			iarrClone.AddShifted(bF2m.x, 0);
 			return new F2mFieldElement(m, k1, k2, k3, iarrClone);
@@ -1093,7 +1093,7 @@ namespace Org.BouncyCastle.Math.EC
 			// Output: a(z)^(-1) mod f(z)
 
 			// u(z) := a(z)
-			IntArray uz = (IntArray)this.x.Clone();
+            IntArray uz = (IntArray)this.x.Copy();
 
 			// v(z) := f(z)
 			IntArray vz = new IntArray(t);

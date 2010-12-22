@@ -27,16 +27,12 @@ namespace Org.BouncyCastle.Asn1.X509
             object obj)
         {
             if (obj is SubjectPublicKeyInfo)
-            {
                 return (SubjectPublicKeyInfo) obj;
-            }
 
-			if (obj is Asn1Sequence)
-            {
-                return new SubjectPublicKeyInfo((Asn1Sequence) obj);
-            }
+			if (obj != null)
+				return new SubjectPublicKeyInfo(Asn1Sequence.GetInstance(obj));
 
-			throw new ArgumentException("unknown object in factory: " + obj.GetType().Name, "obj");
+			throw new ArgumentException("null object in factory", "obj");
         }
 
 		public SubjectPublicKeyInfo(

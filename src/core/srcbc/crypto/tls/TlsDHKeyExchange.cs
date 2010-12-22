@@ -6,7 +6,6 @@ using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Agreement;
 using Org.BouncyCastle.Crypto.Generators;
-using Org.BouncyCastle.Crypto.IO;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
@@ -20,15 +19,15 @@ namespace Org.BouncyCastle.Crypto.Tls
 	internal class TlsDHKeyExchange
 		: TlsKeyExchange
 	{
-		private TlsProtocolHandler handler;
-		private ICertificateVerifyer verifyer;
-		private TlsKeyExchangeAlgorithm keyExchange;
-		private TlsSigner tlsSigner;
+		protected TlsProtocolHandler handler;
+		protected ICertificateVerifyer verifyer;
+		protected TlsKeyExchangeAlgorithm keyExchange;
+		protected TlsSigner tlsSigner;
 
-		private AsymmetricKeyParameter serverPublicKey = null;
+		protected AsymmetricKeyParameter serverPublicKey = null;
 
-		private DHPublicKeyParameters dhAgreeServerPublicKey = null;
-		private AsymmetricCipherKeyPair dhAgreeClientKeyPair = null;
+		protected DHPublicKeyParameters dhAgreeServerPublicKey = null;
+		protected AsymmetricCipherKeyPair dhAgreeClientKeyPair = null;
 
 		internal TlsDHKeyExchange(TlsProtocolHandler handler, ICertificateVerifyer verifyer,
 			TlsKeyExchangeAlgorithm keyExchange)
@@ -54,12 +53,12 @@ namespace Org.BouncyCastle.Crypto.Tls
 			this.keyExchange = keyExchange;
 		}
 
-		public void SkipServerCertificate()
+		public virtual void SkipServerCertificate()
 		{
-			handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_unexpected_message);
+			handler.FailWithError(AlertLevel.fatal, AlertDescription.unexpected_message);
 		}
 
-		public void ProcessServerCertificate(Certificate serverCertificate)
+		public virtual void ProcessServerCertificate(Certificate serverCertificate)
 		{
 			X509CertificateStructure x509Cert = serverCertificate.certs[0];
 			SubjectPublicKeyInfo keyInfo = x509Cert.SubjectPublicKeyInfo;
@@ -71,16 +70,16 @@ namespace Org.BouncyCastle.Crypto.Tls
 //			catch (RuntimeException)
 			catch (Exception)
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_unsupported_certificate);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.unsupported_certificate);
 			}
 
 			// Sanity check the PublicKeyFactory
 			if (this.serverPublicKey.IsPrivate)
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_internal_error);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
 			}
 
-			// TODO 
+			// TODO
 			/*
 			* Perform various checks per RFC2246 7.4.2: "Unless otherwise specified, the
 			* signing algorithm for the certificate must be the same as the algorithm for the
@@ -94,8 +93,9 @@ namespace Org.BouncyCastle.Crypto.Tls
 				case TlsKeyExchangeAlgorithm.KE_DH_DSS:
 					if (!(this.serverPublicKey is DHPublicKeyParameters))
 					{
-						handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_certificate_unknown);
+						handler.FailWithError(AlertLevel.fatal, AlertDescription.certificate_unknown);
 					}
+					ValidateKeyUsage(x509Cert, KeyUsage.KeyAgreement);
 					// TODO The algorithm used to sign the certificate should be DSS.
 //					x509Cert.getSignatureAlgorithm();
 					this.dhAgreeServerPublicKey = ValidateDHPublicKey((DHPublicKeyParameters)this.serverPublicKey);
@@ -103,8 +103,9 @@ namespace Org.BouncyCastle.Crypto.Tls
 				case TlsKeyExchangeAlgorithm.KE_DH_RSA:
 					if (!(this.serverPublicKey is DHPublicKeyParameters))
 					{
-						handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_certificate_unknown);
+						handler.FailWithError(AlertLevel.fatal, AlertDescription.certificate_unknown);
 					}
+					ValidateKeyUsage(x509Cert, KeyUsage.KeyAgreement);
 					// TODO The algorithm used to sign the certificate should be RSA.
 //					x509Cert.getSignatureAlgorithm();
 					this.dhAgreeServerPublicKey = ValidateDHPublicKey((DHPublicKeyParameters)this.serverPublicKey);
@@ -112,77 +113,42 @@ namespace Org.BouncyCastle.Crypto.Tls
 				case TlsKeyExchangeAlgorithm.KE_DHE_RSA:
 					if (!(this.serverPublicKey is RsaKeyParameters))
 					{
-						handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_certificate_unknown);
+						handler.FailWithError(AlertLevel.fatal, AlertDescription.certificate_unknown);
 					}
 					ValidateKeyUsage(x509Cert, KeyUsage.DigitalSignature);
 					break;
 				case TlsKeyExchangeAlgorithm.KE_DHE_DSS:
 					if (!(this.serverPublicKey is DsaPublicKeyParameters))
 					{
-						handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_certificate_unknown);
+						handler.FailWithError(AlertLevel.fatal, AlertDescription.certificate_unknown);
 					}
+					ValidateKeyUsage(x509Cert, KeyUsage.DigitalSignature);
 					break;
 				default:
-					handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_unsupported_certificate);
+					handler.FailWithError(AlertLevel.fatal, AlertDescription.unsupported_certificate);
 					break;
 			}
 
 			/*
-			* Verify them.
-			*/
+			 * Verify them.
+			 */
 			if (!this.verifyer.IsValid(serverCertificate.GetCerts()))
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_user_canceled);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.user_canceled);
 			}
 		}
 
-		public void SkipServerKeyExchange()
+		public virtual void SkipServerKeyExchange()
 		{
-			if (tlsSigner != null)
-			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_unexpected_message);
-			}
+			// OK
 		}
 
-		public void ProcessServerKeyExchange(Stream input, SecurityParameters securityParameters)
+		public virtual void ProcessServerKeyExchange(Stream input, SecurityParameters securityParameters)
 		{
-			if (tlsSigner == null)
-			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_unexpected_message);
-			}
-
-			Stream sigIn = input;
-			ISigner signer = null;
-
-			if (tlsSigner != null)
-			{
-				signer = InitSigner(tlsSigner, securityParameters);
-				sigIn = new SignerStream(input, signer, null);
-			}
-
-			byte[] pBytes = TlsUtilities.ReadOpaque16(sigIn);
-			byte[] gBytes = TlsUtilities.ReadOpaque16(sigIn);
-			byte[] YsBytes = TlsUtilities.ReadOpaque16(sigIn);
-
-			if (signer != null)
-			{
-				byte[] sigByte = TlsUtilities.ReadOpaque16(input);
-
-				if (!signer.VerifySignature(sigByte))
-				{
-					handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_bad_certificate);
-				}
-			}
-
-			BigInteger p = new BigInteger(1, pBytes);
-			BigInteger g = new BigInteger(1, gBytes);
-			BigInteger Ys = new BigInteger(1, YsBytes);
-
-			this.dhAgreeServerPublicKey = ValidateDHPublicKey(
-				new DHPublicKeyParameters(Ys, new DHParameters(p, g)));
+			handler.FailWithError(AlertLevel.fatal, AlertDescription.unexpected_message);
 		}
 
-		public byte[] GenerateClientKeyExchange()
+		public virtual void GenerateClientKeyExchange(Stream output)
 		{
 			// TODO RFC 2246 7.4.72
 			/*
@@ -190,7 +156,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			* Yc is implicit and does not need to be sent again. In this case, the Client Key
 			* Exchange message will be sent, but will be empty.
 			*/
-			//return new byte[0];
+			//TlsUtilities.WriteUint24(0, os);
 
 			/*
 			* Generate a keypair (using parameters from server key) and send the public value
@@ -200,10 +166,12 @@ namespace Org.BouncyCastle.Crypto.Tls
 			dhGen.Init(new DHKeyGenerationParameters(handler.Random, dhAgreeServerPublicKey.Parameters));
 			this.dhAgreeClientKeyPair = dhGen.GenerateKeyPair();
 			BigInteger Yc = ((DHPublicKeyParameters)dhAgreeClientKeyPair.Public).Y;
-			return BigIntegers.AsUnsignedByteArray(Yc);
+			byte[] keData = BigIntegers.AsUnsignedByteArray(Yc);
+            TlsUtilities.WriteUint24(keData.Length + 2, output);
+            TlsUtilities.WriteOpaque16(keData, output);
 		}
 
-		public byte[] GeneratePremasterSecret()
+        public virtual byte[] GeneratePremasterSecret()
 		{
 			/*
 			* Diffie-Hellman basic key agreement
@@ -214,7 +182,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return BigIntegers.AsUnsignedByteArray(agreement);
 		}
 
-		private void ValidateKeyUsage(X509CertificateStructure c, int keyUsageBits)
+		protected virtual void ValidateKeyUsage(X509CertificateStructure c, int keyUsageBits)
 		{
 			X509Extensions exts = c.TbsCertificate.Extensions;
 			if (exts != null)
@@ -226,21 +194,13 @@ namespace Org.BouncyCastle.Crypto.Tls
 					int bits = ku.GetBytes()[0];
 					if ((bits & keyUsageBits) != keyUsageBits)
 					{
-						handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_certificate_unknown);
+						handler.FailWithError(AlertLevel.fatal, AlertDescription.certificate_unknown);
 					}
 				}
 			}
 		}
-		
-		private ISigner InitSigner(TlsSigner tlsSigner, SecurityParameters securityParameters)
-		{
-			ISigner signer = tlsSigner.CreateVerifyer(this.serverPublicKey);
-			signer.BlockUpdate(securityParameters.clientRandom, 0, securityParameters.clientRandom.Length);
-			signer.BlockUpdate(securityParameters.serverRandom, 0, securityParameters.serverRandom.Length);
-			return signer;
-		}
 
-		private DHPublicKeyParameters ValidateDHPublicKey(DHPublicKeyParameters key)
+		protected virtual DHPublicKeyParameters ValidateDHPublicKey(DHPublicKeyParameters key)
 		{
 			BigInteger Y = key.Y;
 			DHParameters parameters = key.Parameters;
@@ -249,15 +209,15 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 			if (!p.IsProbablePrime(2))
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_illegal_parameter);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.illegal_parameter);
 			}
 			if (g.CompareTo(BigInteger.Two) < 0 || g.CompareTo(p.Subtract(BigInteger.Two)) > 0)
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_illegal_parameter);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.illegal_parameter);
 			}
 			if (Y.CompareTo(BigInteger.Two) < 0 || Y.CompareTo(p.Subtract(BigInteger.One)) > 0)
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_illegal_parameter);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.illegal_parameter);
 			}
 
 			// TODO See RFC 2631 for more discussion of Diffie-Hellman validation

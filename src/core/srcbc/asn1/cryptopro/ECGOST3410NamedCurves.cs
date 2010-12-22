@@ -5,6 +5,7 @@ using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Math.EC;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Asn1.CryptoPro
@@ -18,9 +19,9 @@ namespace Org.BouncyCastle.Asn1.CryptoPro
 		{
 		}
 
-        internal static readonly Hashtable objIds = new Hashtable();
-        internal static readonly Hashtable parameters = new Hashtable();
-        internal static readonly Hashtable names = new Hashtable();
+        internal static readonly IDictionary objIds = Platform.CreateHashtable();
+        internal static readonly IDictionary parameters = Platform.CreateHashtable();
+        internal static readonly IDictionary names = Platform.CreateHashtable();
 
         static ECGost3410NamedCurves()
         {

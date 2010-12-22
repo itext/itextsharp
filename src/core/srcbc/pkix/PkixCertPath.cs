@@ -71,7 +71,7 @@ namespace Org.BouncyCastle.Pkix
 	 * passed around to various pieces of code without worrying about coordinating
 	 * access. Providing this thread-safety is generally not difficult, since the
 	 * CertPath and List objects in question are immutable.
-	 * 
+	 *
 	 * @see CertificateFactory
 	 * @see CertPathBuilder
 	 */
@@ -85,14 +85,14 @@ namespace Org.BouncyCastle.Pkix
 
         static PkixCertPath()
         {
-            ArrayList encodings = new ArrayList();
+            IList encodings = Platform.CreateArrayList();
             encodings.Add("PkiPath");
             encodings.Add("PEM");
             encodings.Add("PKCS7");
-            certPathEncodings = encodings;
+            certPathEncodings = CollectionUtilities.ReadOnly(encodings);
         }
 
-		private IList certificates = new ArrayList();
+        private readonly IList certificates;
 
 		/**
 		 * @param certs
@@ -106,7 +106,7 @@ namespace Org.BouncyCastle.Pkix
 			X509Name issuer = ((X509Certificate)certs[0]).IssuerDN;
 			bool okay = true;
 
-			for (int i = 1; i != certs.Count; i++) 
+			for (int i = 1; i != certs.Count; i++)
 			{
 				X509Certificate cert = (X509Certificate)certs[i];
 
@@ -125,8 +125,8 @@ namespace Org.BouncyCastle.Pkix
 				return certs;
 
 			// find end-entity cert
-			IList retList = new ArrayList(certs.Count);
-			IList orig = new ArrayList(certs);
+            IList retList = Platform.CreateArrayList(certs.Count);
+            IList orig = Platform.CreateArrayList(certs);
 
 			for (int i = 0; i < certs.Count; i++)
 			{
@@ -187,7 +187,7 @@ namespace Org.BouncyCastle.Pkix
 			ICollection certificates)
 //			: base("X.509")
 		{
-			this.certificates = SortCerts(new ArrayList(certificates));
+			this.certificates = SortCerts(Platform.CreateArrayList(certificates));
 		}
 
 		public PkixCertPath(
@@ -205,12 +205,15 @@ namespace Org.BouncyCastle.Pkix
 		 **/
 		public PkixCertPath(
 			Stream	inStream,
-			String	encoding)
+			string	encoding)
 //			: base("X.509")
 		{
+            string upper = encoding.ToUpper();
+
+            IList certs;
 			try
 			{
-				if (encoding.ToUpper().Equals("PkiPath".ToUpper()))
+				if (upper.Equals("PkiPath".ToUpper()))
 				{
 					Asn1InputStream derInStream = new Asn1InputStream(inStream);
 					Asn1Object derObject = derInStream.ReadObject();
@@ -219,36 +222,21 @@ namespace Org.BouncyCastle.Pkix
 						throw new CertificateException(
 							"input stream does not contain a ASN1 SEQUENCE while reading PkiPath encoded data to load CertPath");
 					}
-					IEnumerator e = ((Asn1Sequence)derObject).GetEnumerator();
-					Stream certInStream;
-					MemoryStream outStream;
-					DerOutputStream derOutStream;
-					certificates = new ArrayList();
 
-					while (e.MoveNext())
-					{
-						outStream = new MemoryStream();
-						derOutStream = new DerOutputStream(outStream);
+                    certs = Platform.CreateArrayList();
 
-						derOutStream.WriteObject((Asn1Encodable)e.Current);
-						derOutStream.Close();
+                    foreach (Asn1Encodable ae in (Asn1Sequence)derObject)
+                    {
+                        byte[] derBytes = ae.GetEncoded(Asn1Encodable.Der);
+                        Stream certInStream = new MemoryStream(derBytes, false);
 
-						certInStream = new MemoryStream(outStream.ToArray(), false);
-						certificates.Insert(0, new X509CertificateParser().ReadCertificate(certInStream));
+                        // TODO Is inserting at the front important (list will be sorted later anyway)?
+                        certs.Insert(0, new X509CertificateParser().ReadCertificate(certInStream));
 					}
 				}
-				else if (encoding.ToUpper().Equals("PKCS7")
-					|| encoding.ToUpper().Equals("PEM"))
+                else if (upper.Equals("PKCS7") || upper.Equals("PEM"))
 				{
-					certificates = new ArrayList();
-
-					X509CertificateParser certParser = new X509CertificateParser();
-					X509Certificate cert = null;
-
-					while ((cert = certParser.ReadCertificate(inStream)) != null)
-					{
-						certificates.Add(cert);
-					}
+                    certs = Platform.CreateArrayList(new X509CertificateParser().ReadCertificates(inStream));
 				}
 				else
 				{
@@ -262,9 +250,9 @@ namespace Org.BouncyCastle.Pkix
 					+ ex.ToString());
 			}
 
-			this.certificates = SortCerts(certificates);
+			this.certificates = SortCerts(certs);
 		}
-    
+
 		/**
 		 * Returns an iteration of the encodings supported by this
 		 * certification path, with the default encoding
@@ -286,13 +274,13 @@ namespace Org.BouncyCastle.Pkix
 		* <br />
 		* This algorithm is implemented by this method. If it is overridden, the
 		* behavior specified here must be maintained.
-		* 
+		*
 		* @param other
 		*            the object to test for equality with this certification path
-		* 
+		*
 		* @return true if the specified object is equal to this certification path,
 		*         false otherwise
-		* 
+		*
 		* @see Object#hashCode() Object.hashCode()
 		*/
 		public override bool Equals(
@@ -369,18 +357,18 @@ namespace Org.BouncyCastle.Pkix
 		public virtual byte[] GetEncoded(
 			string encoding)
 		{
-            if (String.Compare(encoding, "PkiPath", true) == 0)
+			if (Platform.CompareIgnoreCase(encoding, "PkiPath") == 0)
 			{
 				Asn1EncodableVector v = new Asn1EncodableVector();
 
-				for (int i = certificates.Count - 1; i >= 0; i--) 
+				for (int i = certificates.Count - 1; i >= 0; i--)
 				{
 					v.Add(ToAsn1Object((X509Certificate) certificates[i]));
 				}
 
 				return ToDerEncoded(new DerSequence(v));
 			}
-			else if (String.Compare(encoding, "PKCS7", true) == 0)
+            else if (Platform.CompareIgnoreCase(encoding, "PKCS7") == 0)
 			{
 				Asn1.Pkcs.ContentInfo encInfo = new Asn1.Pkcs.ContentInfo(
 					PkcsObjectIdentifiers.Data, null);
@@ -401,7 +389,7 @@ namespace Org.BouncyCastle.Pkix
 
 				return ToDerEncoded(new Asn1.Pkcs.ContentInfo(PkcsObjectIdentifiers.SignedData, sd));
 			}
-			else if (String.Compare(encoding, "PEM", true) == 0)
+            else if (Platform.CompareIgnoreCase(encoding, "PEM") == 0)
 			{
 				MemoryStream bOut = new MemoryStream();
 				PemWriter pWrt = new PemWriter(new StreamWriter(bOut));
@@ -434,7 +422,7 @@ namespace Org.BouncyCastle.Pkix
 		/// </summary>
 		public virtual IList Certificates
 		{
-			get { return new ArrayList(certificates); }		
+            get { return CollectionUtilities.ReadOnly(certificates); }
 		}
 
 		/**
@@ -457,7 +445,7 @@ namespace Org.BouncyCastle.Pkix
 			}
 		}
 
-		private byte[] ToDerEncoded(Asn1Encodable obj) 
+		private byte[] ToDerEncoded(Asn1Encodable obj)
 		{
 			try
 			{

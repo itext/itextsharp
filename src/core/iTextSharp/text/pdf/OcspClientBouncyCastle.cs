@@ -98,13 +98,11 @@ namespace iTextSharp.text.pdf {
             gen.AddRequest(id);
             
             // create details for nonce extension
-            ArrayList oids = new ArrayList();
-            ArrayList values = new ArrayList();
+            IDictionary extensions = new Hashtable();
             
-            oids.Add(OcspObjectIdentifiers.PkixOcspNonce);
-            values.Add(new X509Extension(false, new DerOctetString(new DerOctetString(PdfEncryption.CreateDocumentId()).GetEncoded())));
+            extensions[OcspObjectIdentifiers.PkixOcspNonce] = new X509Extension(false, new DerOctetString(new DerOctetString(PdfEncryption.CreateDocumentId()).GetEncoded()));
             
-            gen.SetRequestExtensions(new X509Extensions(oids, values));
+            gen.SetRequestExtensions(new X509Extensions(extensions));
             
             return gen.Generate();
         }

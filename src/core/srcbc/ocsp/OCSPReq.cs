@@ -8,6 +8,7 @@ using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.X509.Store;
 
@@ -155,11 +156,11 @@ namespace Org.BouncyCastle.Ocsp
 			return req.OptionalSignature.SignatureValue.GetBytes();
 		}
 
-		private ArrayList GetCertList()
+		private IList GetCertList()
 		{
 			// load the certificates if we have any
 
-			ArrayList certs = new ArrayList();
+			IList certs = Platform.CreateArrayList();
 			Asn1Sequence s = req.OptionalSignature.Certs;
 
 			if (s != null)
@@ -185,9 +186,13 @@ namespace Org.BouncyCastle.Ocsp
 			if (!this.IsSigned)
 				return null;
 
-			ArrayList certs = this.GetCertList();
-
-			return (X509Certificate[]) certs.ToArray(typeof(X509Certificate));
+			IList certs = this.GetCertList();
+            X509Certificate[] result = new X509Certificate[certs.Count];
+            for (int i = 0; i < certs.Count; ++i)
+            {
+                result[i] = (X509Certificate)certs[i];
+            }
+            return result;
 		}
 
 		/**

@@ -10,7 +10,15 @@ namespace Org.BouncyCastle.Utilities.Collections
 		{
 		}
 
-		public static bool CheckElementsAreOfType(
+        public static void AddRange(IList to, ICollection range)
+        {
+            foreach (object o in range)
+            {
+                to.Add(o);
+            }
+        }
+
+        public static bool CheckElementsAreOfType(
 			IEnumerable e,
 			Type		t)
 		{
@@ -22,7 +30,17 @@ namespace Org.BouncyCastle.Utilities.Collections
 			return true;
 		}
 
-		public static string ToString(
+        public static IDictionary ReadOnly(IDictionary d)
+        {
+            return new UnmodifiableDictionaryProxy(d);
+        }
+
+        public static IList ReadOnly(IList l)
+        {
+            return new UnmodifiableListProxy(l);
+        }
+
+        public static string ToString(
 			IEnumerable c)
 		{
 			StringBuilder sb = new StringBuilder("[");

@@ -24,15 +24,25 @@ namespace Org.BouncyCastle.Asn1.X509
 		internal readonly DisplayText organization;
 		internal readonly Asn1Sequence noticeNumbers;
 
-		/**
+#if !SILVERLIGHT
+        [Obsolete]
+        public NoticeReference(
+            string orgName,
+            ArrayList numbers)
+            : this(orgName, (IList)numbers)
+        {
+        }
+#endif
+
+        /**
 		* Creates a new <code>NoticeReference</code> instance.
 		*
 		* @param orgName a <code>string</code> value
 		* @param numbers a <code>ArrayList</code> value
 		*/
 		public NoticeReference(
-			string		orgName,
-			ArrayList	numbers)
+			string  orgName,
+			IList   numbers)
 		{
 			organization = new DisplayText(orgName);
 

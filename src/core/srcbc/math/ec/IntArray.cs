@@ -4,9 +4,8 @@ using System.Text;
 namespace Org.BouncyCastle.Math.EC
 {
 	internal class IntArray
-		: ICloneable
-	{
-		// TODO make m fixed for the IntArray, and hence compute T once and for all
+    {
+        // TODO make m fixed for the IntArray, and hence compute T once and for all
 
 		// TODO Use uint's internally?
 		private int[] m_ints;
@@ -455,7 +454,7 @@ namespace Org.BouncyCastle.Math.EC
 			return hc;
 		}
 
-		public object Clone()
+		internal IntArray Copy()
 		{
 			return new IntArray((int[]) m_ints.Clone());
 		}

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Globalization;
 using System.IO;
 
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Bcpg.OpenPgp
@@ -14,11 +15,11 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
     public class PgpSecretKeyRingBundle
     {
         private readonly IDictionary secretRings;
-        private readonly ArrayList order;
+        private readonly IList order;
 
 		private PgpSecretKeyRingBundle(
             IDictionary	secretRings,
-            ArrayList	order)
+            IList       order)
         {
             this.secretRings = secretRings;
             this.order = order;
@@ -43,8 +44,8 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 		public PgpSecretKeyRingBundle(
             IEnumerable e)
         {
-			this.secretRings = new Hashtable();
-			this.order = new ArrayList();
+			this.secretRings = Platform.CreateHashtable();
+            this.order = Platform.CreateArrayList();
 
 			foreach (object obj in e)
 			{
@@ -109,7 +110,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			bool	matchPartial,
 			bool	ignoreCase)
 		{
-			IList rings = new ArrayList();
+            IList rings = Platform.CreateArrayList();
 
 			if (ignoreCase)
 			{
@@ -240,8 +241,8 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
                 throw new ArgumentException("Collection already contains a key with a keyId for the passed in ring.");
             }
 
-            IDictionary newSecretRings = new Hashtable(bundle.secretRings);
-            ArrayList newOrder = new ArrayList(bundle.order);
+            IDictionary newSecretRings = Platform.CreateHashtable(bundle.secretRings);
+            IList newOrder = Platform.CreateArrayList(bundle.order);
 
             newSecretRings[key] = secretKeyRing;
             newOrder.Add(key);
@@ -268,8 +269,8 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
                 throw new ArgumentException("Collection does not contain a key with a keyId for the passed in ring.");
             }
 
-            IDictionary newSecretRings = new Hashtable(bundle.secretRings);
-            ArrayList newOrder = new ArrayList(bundle.order);
+            IDictionary newSecretRings = Platform.CreateHashtable(bundle.secretRings);
+            IList newOrder = Platform.CreateArrayList(bundle.order);
 
 			newSecretRings.Remove(key);
 			newOrder.Remove(key);

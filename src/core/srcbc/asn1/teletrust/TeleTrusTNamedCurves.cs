@@ -4,6 +4,7 @@ using System.Globalization;
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Math.EC;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.Utilities.Encoders;
 
@@ -331,9 +332,9 @@ namespace Org.BouncyCastle.Asn1.TeleTrust
 		}
 
 
-		private static readonly Hashtable objIds = new Hashtable();
-		private static readonly Hashtable curves = new Hashtable();
-		private static readonly Hashtable names = new Hashtable();
+		private static readonly IDictionary objIds = Platform.CreateHashtable();
+        private static readonly IDictionary curves = Platform.CreateHashtable();
+        private static readonly IDictionary names = Platform.CreateHashtable();
 
 		private static void DefineCurve(
 			string					name,

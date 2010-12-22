@@ -2,12 +2,13 @@ using System;
 using System.Collections;
 
 using Org.BouncyCastle.Bcpg.Attr;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
 	public class PgpUserAttributeSubpacketVectorGenerator
 	{
-		private ArrayList list = new ArrayList();
+		private IList list = Platform.CreateArrayList();
 
 		public virtual void SetImageAttribute(
 			ImageAttrib.Format	imageType,
@@ -19,10 +20,14 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			list.Add(new ImageAttrib(imageType, imageData));
 		}
 
-		public virtual PgpUserAttributeSubpacketVector Generate()
+        public virtual PgpUserAttributeSubpacketVector Generate()
 		{
-			return new PgpUserAttributeSubpacketVector(
-				(UserAttributeSubpacket[]) list.ToArray(typeof(UserAttributeSubpacket)));
+            UserAttributeSubpacket[] a = new UserAttributeSubpacket[list.Count];
+            for (int i = 0; i < list.Count; ++i)
+            {
+                a[i] = (UserAttributeSubpacket)list[i];
+            }
+            return new PgpUserAttributeSubpacketVector(a);
 		}
 	}
 }

@@ -5,6 +5,7 @@ using System.IO;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.X509.Extension
 {
@@ -26,7 +27,7 @@ namespace Org.BouncyCastle.X509.Extension
 
 		public static ICollection GetSubjectAlternativeNames(
 			X509Certificate cert)
-		{        
+		{
 			Asn1OctetString extVal = cert.GetExtensionValue(X509Extensions.SubjectAlternativeName);
 
 			return GetAlternativeName(extVal);
@@ -35,7 +36,7 @@ namespace Org.BouncyCastle.X509.Extension
 		private static ICollection GetAlternativeName(
 			Asn1OctetString extVal)
 		{
-			ArrayList temp = new ArrayList();
+			IList temp = Platform.CreateArrayList();
 
 			if (extVal != null)
 			{
@@ -45,7 +46,7 @@ namespace Org.BouncyCastle.X509.Extension
 
 					foreach (GeneralName genName in seq)
 					{
-						ArrayList list = new ArrayList();
+                        IList list = Platform.CreateArrayList();
 						list.Add(genName.TagNo);
 
 						switch (genName.TagNo)

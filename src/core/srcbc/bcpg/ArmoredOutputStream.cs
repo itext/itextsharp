@@ -105,14 +105,14 @@ namespace Org.BouncyCastle.Bcpg
 		public ArmoredOutputStream(Stream outStream)
         {
             this.outStream = outStream;
-            this.headers = new Hashtable();
+            this.headers = Platform.CreateHashtable();
             this.headers["Version"] = version;
         }
 
         public ArmoredOutputStream(Stream outStream, IDictionary headers)
         {
             this.outStream = outStream;
-            this.headers = new Hashtable(headers);
+            this.headers = Platform.CreateHashtable(headers);
             this.headers["Version"] = version;
         }
 

@@ -35,9 +35,9 @@ namespace Org.BouncyCastle.Security
 		const string Pkcs12 = "Pkcs12";
 		const string OpenSsl = "OpenSsl";
 
-		private static readonly Hashtable algorithms = new Hashtable();
-		private static readonly Hashtable algorithmType = new Hashtable();
-		private static readonly Hashtable oids = new Hashtable();
+		private static readonly IDictionary algorithms = Platform.CreateHashtable();
+        private static readonly IDictionary algorithmType = Platform.CreateHashtable();
+        private static readonly IDictionary oids = Platform.CreateHashtable();
 
 		static PbeUtilities()
 		{

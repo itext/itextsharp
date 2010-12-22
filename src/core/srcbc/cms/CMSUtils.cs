@@ -6,6 +6,7 @@ using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Cms;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.IO;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.X509.Store;
@@ -86,7 +87,7 @@ namespace Org.BouncyCastle.Cms
 		{
 			try
 			{
-				IList certs = new ArrayList();
+				IList certs = Platform.CreateArrayList();
 
 				if (certStore != null)
 				{
@@ -115,7 +116,7 @@ namespace Org.BouncyCastle.Cms
 		{
 			try
 			{
-				IList crls = new ArrayList();
+                IList crls = Platform.CreateArrayList();
 
 				if (crlStore != null)
 				{

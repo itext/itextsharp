@@ -2,13 +2,15 @@ using System;
 using System.Collections;
 using System.Text;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.X509.Store
 {
 	/// <remarks>This class contains a collection for collection based <code>X509Store</code>s.</remarks>
 	public class X509CollectionStoreParameters
 		: IX509StoreParameters
 	{
-		private readonly ArrayList collection;
+		private readonly IList collection;
 
 		/// <summary>
 		/// Constructor.
@@ -24,14 +26,14 @@ namespace Org.BouncyCastle.X509.Store
 			if (collection == null)
 				throw new ArgumentNullException("collection");
 
-			this.collection = new ArrayList(collection);
+			this.collection = Platform.CreateArrayList(collection);
 		}
 
 		// TODO Do we need to be able to Clone() these, and should it really be shallow?
 //		/**
 //		* Returns a shallow clone. The returned contents are not copied, so adding
 //		* or removing objects will effect this.
-//		* 
+//		*
 //		* @return a shallow clone.
 //		*/
 //		public object Clone()
@@ -42,7 +44,7 @@ namespace Org.BouncyCastle.X509.Store
 		/// <summary>Returns a copy of the <code>ICollection</code>.</summary>
 		public ICollection GetCollection()
 		{
-			return new ArrayList(collection);
+			return Platform.CreateArrayList(collection);
 		}
 
 		/// <summary>Returns a formatted string describing the parameters.</summary>

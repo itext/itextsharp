@@ -2,6 +2,8 @@ using System;
 
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Crypto.Utilities;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Digests
 {
@@ -15,40 +17,58 @@ namespace Org.BouncyCastle.Crypto.Digests
 
 		private byte[]	H = new byte[32], L = new byte[32],
 						M = new byte[32], Sum = new byte[32];
-		private byte[][] C = new byte[4][];
+		private byte[][] C = MakeC();
 
 		private byte[]	xBuf = new byte[32];
 		private int		xBufOff;
-		private long	byteCount;
+		private ulong	byteCount;
 
 		private readonly IBlockCipher cipher = new Gost28147Engine();
+		private readonly byte[] sBox;
 
-		/**
-		* Standard constructor
-		*/
-		public Gost3411Digest()
+		private static byte[][] MakeC()
 		{
-			// TODO Is it possible to declare multi-dimensional arrays as in Java?
+			byte[][] c = new byte[4][];
 			for (int i = 0; i < 4; ++i)
 			{
-				C[i] = new byte[32];
+				c[i] = new byte[32];
 			}
+			return c;
+		}
 
-			cipher.Init(true, new ParametersWithSBox(null, Gost28147Engine.GetSBox("D-A")));
+		/**
+		 * Standard constructor
+		 */
+		public Gost3411Digest()
+		{
+			sBox = Gost28147Engine.GetSBox("D-A");
+			cipher.Init(true, new ParametersWithSBox(null, sBox));
 
 			Reset();
 		}
 
 		/**
-		* Copy constructor.  This will copy the state of the provided
-		* message digest.
-		*/
-		public Gost3411Digest(Gost3411Digest t)
-			: this()
+		 * Constructor to allow use of a particular sbox with GOST28147
+		 * @see GOST28147Engine#getSBox(String)
+		 */
+		public Gost3411Digest(byte[] sBoxParam)
 		{
-//			cipher.Init(true, new ParametersWithSBox(null, Gost28147Engine.GetSBox("D-A")));
-//
-//			Reset();
+			sBox = Arrays.Clone(sBoxParam);
+			cipher.Init(true, new ParametersWithSBox(null, sBox));
+
+			Reset();
+		}
+
+		/**
+		 * Copy constructor.  This will copy the state of the provided
+		 * message digest.
+		 */
+		public Gost3411Digest(Gost3411Digest t)
+		{
+			this.sBox = t.sBox;
+			cipher.Init(true, new ParametersWithSBox(null, sBox));
+
+			Reset();
 
 			Array.Copy(t.H, 0, this.H, 0, t.H.Length);
 			Array.Copy(t.L, 0, this.L, 0, t.L.Length);
@@ -106,7 +126,7 @@ namespace Org.BouncyCastle.Crypto.Digests
 				processBlock(xBuf, 0);
 				inOff += xBuf.Length;
 				length -= xBuf.Length;
-				byteCount += xBuf.Length;
+				byteCount += (uint)xBuf.Length;
 			}
 
 			// load in the remainder.
@@ -231,7 +251,8 @@ namespace Org.BouncyCastle.Crypto.Digests
 
 		private void finish()
 		{
-			LongToBytes(byteCount * 8, L, 0); // get length into L (byteCount * 8 = bitCount)
+			ulong bitCount = byteCount * 8;
+			Pack.UInt64_To_LE(bitCount, L);
 
 			while (xBufOff != 0)
 			{
@@ -295,22 +316,6 @@ namespace Org.BouncyCastle.Crypto.Digests
 
 				carry = sum >> 8;
 			}
-		}
-
-		// TODO Refactor as utility function
-		private static void LongToBytes(
-			long	r,
-			byte[]	output,
-			int		outOff)
-		{
-			output[outOff + 7] = (byte)(r >> 56);
-			output[outOff + 6] = (byte)(r >> 48);
-			output[outOff + 5] = (byte)(r >> 40);
-			output[outOff + 4] = (byte)(r >> 32);
-			output[outOff + 3] = (byte)(r >> 24);
-			output[outOff + 2] = (byte)(r >> 16);
-			output[outOff + 1] = (byte)(r >> 8);
-			output[outOff] = (byte)r;
 		}
 
 		private static void cpyBytesToShort(byte[] S, short[] wS)

@@ -14,14 +14,14 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// <remarks>Some helper fuctions for MicroTLS.</remarks>
 	public class TlsUtilities
 	{
-		internal static void WriteUint8(short i, Stream os)
+		internal static void WriteUint8(byte i, Stream os)
 		{
-			os.WriteByte((byte)i);
+			os.WriteByte(i);
 		}
 
-		internal static void WriteUint8(short i, byte[] buf, int offset)
+		internal static void WriteUint8(byte i, byte[] buf, int offset)
 		{
-			buf[offset] = (byte)i;
+			buf[offset] = i;
 		}
 
 		internal static void WriteUint16(int i, Stream os)
@@ -76,7 +76,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 		internal static void WriteOpaque8(byte[] buf, Stream os)
 		{
-			WriteUint8((short)buf.Length, os);
+			WriteUint8((byte)buf.Length, os);
 			os.Write(buf, 0, buf.Length);
 		}
 
@@ -92,14 +92,27 @@ namespace Org.BouncyCastle.Crypto.Tls
 			os.Write(buf, 0, buf.Length);
 		}
 
-		internal static short ReadUint8(Stream inStr)
+		internal static void WriteUint8Array(byte[] uints, Stream os)
+		{
+            os.Write(uints, 0, uints.Length);
+		}
+
+		internal static void WriteUint16Array(int[] uints, Stream os)
+		{
+			for (int i = 0; i < uints.Length; ++i)
+			{
+				WriteUint16(uints[i], os);
+			}
+		}
+
+		internal static byte ReadUint8(Stream inStr)
 		{
 			int i = inStr.ReadByte();
 			if (i < 0)
 			{
 				throw new EndOfStreamException();
 			}
-			return (short)i;
+			return (byte)i;
 		}
 
 		internal static int ReadUint16(Stream inStr)
@@ -133,7 +146,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 		internal static byte[] ReadOpaque8(Stream inStr)
 		{
-			short length = ReadUint8(inStr);
+			byte length = ReadUint8(inStr);
 			byte[] bytes = new byte[length];
 			ReadFully(bytes, inStr);
 			return bytes;
@@ -151,7 +164,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			if ((readVersion[0] != 3) || (readVersion[1] != 1))
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_protocol_version);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.protocol_version);
 			}
 		}
 
@@ -161,7 +174,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			int i2 = inStr.ReadByte();
 			if ((i1 != 3) || (i2 != 1))
 			{
-				handler.FailWithError(TlsProtocolHandler.AL_fatal, TlsProtocolHandler.AP_protocol_version);
+				handler.FailWithError(AlertLevel.fatal, AlertDescription.protocol_version);
 			}
 		}
 

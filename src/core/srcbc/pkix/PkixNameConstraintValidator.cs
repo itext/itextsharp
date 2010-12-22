@@ -3,6 +3,7 @@ using System.Collections;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Pkix
@@ -387,7 +388,7 @@ namespace Org.BouncyCastle.Pkix
         // OR keeps all significant bits
         byte[] ip = Or(minMax[0], minMax[2]);
         byte[] subnetmask = Or(subnetmask1, subnetmask2);
-        
+
             //return new HashSet( ICollectionsingleton(IpWithSubnetMask(ip, subnetmask));
         ISet hs = new HashSet();
         hs.Add(IpWithSubnetMask(ip, subnetmask));
@@ -684,7 +685,7 @@ namespace Org.BouncyCastle.Pkix
                         return false;
                     }
                 }
-                else if (!(String.Compare(testDomainParts[i + d], domainParts[i], true)==0))
+                else if (!(Platform.CompareIgnoreCase(testDomainParts[i + d], domainParts[i]) == 0))
                 {
                     return false;
                 }
@@ -735,7 +736,7 @@ namespace Org.BouncyCastle.Pkix
                 String str = ((String)it.Current);
 
                 // is sub domain or the same
-                if (WithinDomain(dns, str) || (String.Compare(dns,str,true) == 0))
+				if (WithinDomain(dns, str) || (Platform.CompareIgnoreCase(dns, str) == 0))
                 {
                     throw new PkixNameConstraintValidatorException(
                         "DNS is from an excluded subtree.");
@@ -761,7 +762,7 @@ namespace Org.BouncyCastle.Pkix
                 // both are a particular mailbox
                 if (email2.IndexOf('@') != -1)
                 {
-                    if (String.Compare(email1, email2, true) == 0)
+                    if (Platform.CompareIgnoreCase(email1, email2) == 0)
                     {
                         union.Add(email1);
                     }
@@ -787,7 +788,7 @@ namespace Org.BouncyCastle.Pkix
                 // email2 specifies a particular host
                 else
                 {
-                    if (String.Compare(_sub, email2, true)==0)
+                    if (Platform.CompareIgnoreCase(_sub, email2) == 0)
                     {
                         union.Add(email2);
                     }
@@ -817,8 +818,7 @@ namespace Org.BouncyCastle.Pkix
                 // email2 specifies a domain
                 else if (email2.StartsWith("."))
                 {
-                    if (WithinDomain(email1, email2)
-                        || String.Compare(email1, email2, true) == 0)
+                    if (WithinDomain(email1, email2) || Platform.CompareIgnoreCase(email1, email2) == 0)
                     {
                         union.Add(email2);
                     }
@@ -851,7 +851,7 @@ namespace Org.BouncyCastle.Pkix
                 if (email2.IndexOf('@') != -1)
                 {
                     String _sub = email2.Substring(email1.IndexOf('@') + 1);
-                    if (String.Compare(_sub, email1, true) == 0)
+                    if (Platform.CompareIgnoreCase(_sub, email1) == 0)
                     {
                         union.Add(email1);
                     }
@@ -877,7 +877,7 @@ namespace Org.BouncyCastle.Pkix
                 // email2 specifies a particular host
                 else
                 {
-                    if (String.Compare(email1, email2, true) == 0)
+                    if (Platform.CompareIgnoreCase(email1, email2) == 0)
                     {
                         union.Add(email1);
                     }
@@ -899,7 +899,7 @@ namespace Org.BouncyCastle.Pkix
                 // both are a particular mailbox
                 if (email2.IndexOf('@') != -1)
                 {
-                    if (String.Compare(email1, email2, true) ==0)
+                    if (Platform.CompareIgnoreCase(email1, email2) == 0)
                     {
                         union.Add(email1);
                     }
@@ -925,7 +925,7 @@ namespace Org.BouncyCastle.Pkix
                 // email2 specifies a particular host
                 else
                 {
-                    if (String.Compare(_sub, email2, true)==0)
+                    if (Platform.CompareIgnoreCase(_sub, email2) == 0)
                     {
                         union.Add(email2);
                     }
@@ -933,7 +933,7 @@ namespace Org.BouncyCastle.Pkix
                     {
                         union.Add(email1);
                         union.Add(email2);
-                        
+
                     }
                 }
             }
@@ -956,8 +956,7 @@ namespace Org.BouncyCastle.Pkix
                 // email2 specifies a domain
                 else if (email2.StartsWith("."))
                 {
-                    if (WithinDomain(email1, email2)
-                        || String.Compare(email1, email2, true) == 0)
+                    if (WithinDomain(email1, email2) || Platform.CompareIgnoreCase(email1, email2) == 0)
                     {
                         union.Add(email2);
                     }
@@ -990,7 +989,7 @@ namespace Org.BouncyCastle.Pkix
                 if (email2.IndexOf('@') != -1)
                 {
                     String _sub = email2.Substring(email1.IndexOf('@') + 1);
-                    if (String.Compare(_sub, email1, true)==0)
+                    if (Platform.CompareIgnoreCase(_sub, email1) == 0)
                     {
                         union.Add(email1);
                     }
@@ -1016,7 +1015,7 @@ namespace Org.BouncyCastle.Pkix
                 // email2 specifies a particular host
                 else
                 {
-                    if (String.Compare(email1, email2, true)==0)
+                    if (Platform.CompareIgnoreCase(email1, email2) == 0)
                     {
                         union.Add(email1);
                     }
@@ -1122,7 +1121,7 @@ namespace Org.BouncyCastle.Pkix
                 // both are a particular mailbox
                 if (email2.IndexOf('@') != -1)
                 {
-                    if (String.Compare(email1, email2, true) == 0)
+                    if (Platform.CompareIgnoreCase(email1, email2) == 0)
                     {
                         intersect.Add(email1);
                     }
@@ -1138,7 +1137,7 @@ namespace Org.BouncyCastle.Pkix
                 // email2 specifies a particular host
                 else
                 {
-                    if (String.Compare(_sub, email2, true) == 0)
+                    if (Platform.CompareIgnoreCase(_sub, email2) == 0)
                     {
                         intersect.Add(email1);
                     }
@@ -1158,8 +1157,7 @@ namespace Org.BouncyCastle.Pkix
                 // email2 specifies a domain
                 else if (email2.StartsWith("."))
                 {
-                    if (WithinDomain(email1, email2)
-                        || (String.Compare(email1, email2, true) == 0))
+                    if (WithinDomain(email1, email2) || (Platform.CompareIgnoreCase(email1, email2) == 0))
                     {
                         intersect.Add(email1);
                     }
@@ -1182,7 +1180,7 @@ namespace Org.BouncyCastle.Pkix
                 if (email2.IndexOf('@') != -1)
                 {
                     String _sub = email2.Substring(email2.IndexOf('@') + 1);
-                    if (String.Compare(_sub, email1, true) == 0)
+                    if (Platform.CompareIgnoreCase(_sub, email1) == 0)
                     {
                         intersect.Add(email2);
                     }
@@ -1198,7 +1196,7 @@ namespace Org.BouncyCastle.Pkix
                 // email2 specifies a particular host
                 else
                 {
-                    if (String.Compare(email1, email2, true) == 0)
+                    if (Platform.CompareIgnoreCase(email1, email2) == 0)
                     {
                         intersect.Add(email1);
                     }
@@ -1292,7 +1290,7 @@ namespace Org.BouncyCastle.Pkix
                 // both are a particular mailbox
                 if (email2.IndexOf('@') != -1)
                 {
-                    if (String.Compare(email1, email2, true) == 0)
+                    if (Platform.CompareIgnoreCase(email1, email2) == 0)
                     {
                         intersect.Add(email1);
                     }
@@ -1308,7 +1306,7 @@ namespace Org.BouncyCastle.Pkix
                 // email2 specifies a particular host
                 else
                 {
-                    if (String.Compare(_sub, email2, true) == 0)
+                    if (Platform.CompareIgnoreCase(_sub, email2) == 0)
                     {
                         intersect.Add(email1);
                     }
@@ -1328,8 +1326,7 @@ namespace Org.BouncyCastle.Pkix
                 // email2 specifies a domain
                 else if (email2.StartsWith("."))
                 {
-                    if (WithinDomain(email1, email2)
-                        || (String.Compare(email1, email2, true) == 0))
+                    if (WithinDomain(email1, email2) || (Platform.CompareIgnoreCase(email1, email2) == 0))
                     {
                         intersect.Add(email1);
                     }
@@ -1352,7 +1349,7 @@ namespace Org.BouncyCastle.Pkix
                 if (email2.IndexOf('@') != -1)
                 {
                     String _sub = email2.Substring(email2.IndexOf('@') + 1);
-                    if (String.Compare(_sub, email1, true) == 0)
+                    if (Platform.CompareIgnoreCase(_sub, email1) == 0)
                     {
                         intersect.Add(email2);
                     }
@@ -1368,7 +1365,7 @@ namespace Org.BouncyCastle.Pkix
                 // email2 specifies a particular host
                 else
                 {
-                    if (String.Compare(email1, email2, true) == 0)
+                    if (Platform.CompareIgnoreCase(email1, email2) == 0)
                     {
                         intersect.Add(email1);
                     }
@@ -1409,7 +1406,7 @@ namespace Org.BouncyCastle.Pkix
             // a host
             if (!constraint.StartsWith("."))
             {
-                if (String.Compare(host, constraint, true) == 0)
+                if (Platform.CompareIgnoreCase(host, constraint) == 0)
                 {
                     return true;
                 }
@@ -1529,19 +1526,19 @@ namespace Org.BouncyCastle.Pkix
 
         public void IntersectPermittedSubtree(Asn1Sequence permitted)
         {
-            IDictionary subtreesMap = new Hashtable();
+            IDictionary subtreesMap = Platform.CreateHashtable();
 
             // group in ISets in a map ordered by tag no.
             for (IEnumerator e = permitted.GetEnumerator(); e.MoveNext(); )
             {
                 GeneralSubtree subtree = GeneralSubtree.GetInstance(e.Current);
-                
+
                 int tagNo = subtree.Base.TagNo;
                 if (subtreesMap[tagNo] == null)
                 {
                     subtreesMap[tagNo] = new HashSet();
                 }
-                
+
                 ((ISet)subtreesMap[tagNo]).Add(subtree);
             }
 

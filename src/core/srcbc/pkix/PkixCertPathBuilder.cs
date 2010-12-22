@@ -10,6 +10,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.X509.Store;
@@ -18,7 +19,7 @@ namespace Org.BouncyCastle.Pkix
 {
 	/**
 	* Implements the PKIX CertPathBuilding algorithm for BouncyCastle.
-	* 
+	*
 	* @see CertPathBuilderSpi
 	*/
 	public class PkixCertPathBuilder
@@ -26,7 +27,7 @@ namespace Org.BouncyCastle.Pkix
 	{
 		/**
 		 * Build and validate a CertPath using the given parameter.
-		 * 
+		 *
 		 * @param params PKIXBuilderParameters object containing all information to
 		 *            build the CertPath
 		 */
@@ -60,7 +61,7 @@ namespace Org.BouncyCastle.Pkix
 				throw new PkixCertPathBuilderException("No certificate found matching targetContraints.");
 
 			PkixCertPathBuilderResult result = null;
-			IList certPathList = new ArrayList();
+			IList certPathList = Platform.CreateArrayList();
 
 			// check all potential target certificates
 			foreach (X509Certificate cert in targets)

@@ -15,6 +15,7 @@ using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.X509.Store;
 
@@ -24,9 +25,9 @@ namespace Org.BouncyCastle.Cms
     {
         internal static readonly CmsSignedHelper Instance = new CmsSignedHelper();
 
-		private static readonly Hashtable encryptionAlgs = new Hashtable();
-		private static readonly Hashtable digestAlgs = new Hashtable();
-		private static readonly Hashtable digestAliases = new Hashtable();
+		private static readonly IDictionary encryptionAlgs = Platform.CreateHashtable();
+        private static readonly IDictionary digestAlgs = Platform.CreateHashtable();
+        private static readonly IDictionary digestAliases = Platform.CreateHashtable();
 
 		private static void AddEntries(DerObjectIdentifier oid, string digest, string encryption)
 		{
@@ -174,7 +175,7 @@ namespace Org.BouncyCastle.Cms
 			string	type,
 			Asn1Set	certSet)
 		{
-			IList certs = new ArrayList();
+			IList certs = Platform.CreateArrayList();
 
 			if (certSet != null)
 			{
@@ -219,7 +220,7 @@ namespace Org.BouncyCastle.Cms
 			string	type,
 			Asn1Set	certSet)
 		{
-			IList certs = new ArrayList();
+			IList certs = Platform.CreateArrayList();
 
 			if (certSet != null)
 			{
@@ -242,7 +243,7 @@ namespace Org.BouncyCastle.Cms
 			string	type,
 			Asn1Set	crlSet)
 		{
-			IList crls = new ArrayList();
+			IList crls = Platform.CreateArrayList();
 
 			if (crlSet != null)
 			{

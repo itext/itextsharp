@@ -16,6 +16,7 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Pkcs;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Encoders;
 using Org.BouncyCastle.Utilities.IO.Pem;
 using Org.BouncyCastle.X509;
@@ -233,8 +234,13 @@ namespace Org.BouncyCastle.OpenSsl
 			Debug.Assert(pemObject.Type.EndsWith("PRIVATE KEY"));
 
 			string type = pemObject.Type.Substring(0, pemObject.Type.Length - "PRIVATE KEY".Length).Trim();
-			IDictionary fields = pemObject.Headers;
 			byte[] keyBytes = pemObject.Content;
+
+			IDictionary fields = Platform.CreateHashtable();
+			foreach (PemHeader header in pemObject.Headers)
+			{
+				fields[header.Name] = header.Value;
+			}
 
 			string procType = (string) fields["Proc-Type"];
 

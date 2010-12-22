@@ -3,6 +3,7 @@ using System.Collections;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Cms;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Cms
 {
@@ -12,14 +13,14 @@ namespace Org.BouncyCastle.Cms
 	public class DefaultSignedAttributeTableGenerator
 		: CmsAttributeTableGenerator
 	{
-		private readonly Hashtable table;
+		private readonly IDictionary table;
 
 		/**
 		 * Initialise to use all defaults
 		 */
 		public DefaultSignedAttributeTableGenerator()
 		{
-			table = new Hashtable();
+			table = Platform.CreateHashtable();
 		}
 
 		/**
@@ -32,15 +33,34 @@ namespace Org.BouncyCastle.Cms
 		{
 			if (attributeTable != null)
 			{
-				table = attributeTable.ToHashtable();
+				table = attributeTable.ToDictionary();
 			}
 			else
 			{
-				table = new Hashtable();
+				table = Platform.CreateHashtable();
 			}
 		}
 
+#if SILVERLIGHT
 		/**
+		 * Create a standard attribute table from the passed in parameters - this will
+		 * normally include contentType, signingTime, and messageDigest. If the constructor
+		 * using an AttributeTable was used, entries in it for contentType, signingTime, and
+		 * messageDigest will override the generated ones.
+		 *
+		 * @param parameters source parameters for table generation.
+		 *
+		 * @return a filled in Hashtable of attributes.
+		 */
+		protected virtual IDictionary createStandardAttributeTable(
+			IDictionary parameters)
+		{
+            IDictionary std = Platform.CreateHashtable(table);
+            DoCreateStandardAttributeTable(parameters, std);
+            return std;
+		}
+#else
+        /**
 		 * Create a standard attribute table from the passed in parameters - this will
 		 * normally include contentType, signingTime, and messageDigest. If the constructor
 		 * using an AttributeTable was used, entries in it for contentType, signingTime, and
@@ -53,34 +73,38 @@ namespace Org.BouncyCastle.Cms
 		protected virtual Hashtable createStandardAttributeTable(
 			IDictionary parameters)
 		{
-			Hashtable std = (Hashtable)table.Clone();
-
-			if (!std.ContainsKey(CmsAttributes.ContentType))
-			{
-				DerObjectIdentifier contentType = (DerObjectIdentifier)
-					parameters[CmsAttributeTableParameter.ContentType];
-				Asn1.Cms.Attribute attr = new Asn1.Cms.Attribute(CmsAttributes.ContentType,
-					new DerSet(contentType));
-				std[attr.AttrType] = attr;
-			}
-
-			if (!std.ContainsKey(CmsAttributes.SigningTime))
-			{
-				Asn1.Cms.Attribute attr = new Asn1.Cms.Attribute(CmsAttributes.SigningTime,
-					new DerSet(new Time(DateTime.UtcNow)));
-				std[attr.AttrType] = attr;
-			}
-
-			if (!std.ContainsKey(CmsAttributes.MessageDigest))
-			{
-				byte[] messageDigest = (byte[])parameters[CmsAttributeTableParameter.Digest];
-				Asn1.Cms.Attribute attr = new Asn1.Cms.Attribute(CmsAttributes.MessageDigest,
-					new DerSet(new DerOctetString(messageDigest)));
-				std[attr.AttrType] = attr;
-			}
-
+            Hashtable std = new Hashtable(table);
+            DoCreateStandardAttributeTable(parameters, std);
 			return std;
 		}
+#endif
+
+        private void DoCreateStandardAttributeTable(IDictionary parameters, IDictionary std)
+        {
+            if (!std.Contains(CmsAttributes.ContentType))
+            {
+                DerObjectIdentifier contentType = (DerObjectIdentifier)
+                    parameters[CmsAttributeTableParameter.ContentType];
+                Asn1.Cms.Attribute attr = new Asn1.Cms.Attribute(CmsAttributes.ContentType,
+                    new DerSet(contentType));
+                std[attr.AttrType] = attr;
+            }
+
+            if (!std.Contains(CmsAttributes.SigningTime))
+            {
+                Asn1.Cms.Attribute attr = new Asn1.Cms.Attribute(CmsAttributes.SigningTime,
+                    new DerSet(new Time(DateTime.UtcNow)));
+                std[attr.AttrType] = attr;
+            }
+
+            if (!std.Contains(CmsAttributes.MessageDigest))
+            {
+                byte[] messageDigest = (byte[])parameters[CmsAttributeTableParameter.Digest];
+                Asn1.Cms.Attribute attr = new Asn1.Cms.Attribute(CmsAttributes.MessageDigest,
+                    new DerSet(new DerOctetString(messageDigest)));
+                std[attr.AttrType] = attr;
+            }
+        }
 
 		/**
 		 * @param parameters source parameters
@@ -89,7 +113,8 @@ namespace Org.BouncyCastle.Cms
 		public virtual AttributeTable GetAttributes(
 			IDictionary parameters)
 		{
-			return new AttributeTable(createStandardAttributeTable(parameters));
+            IDictionary table = createStandardAttributeTable(parameters);
+			return new AttributeTable(table);
 		}
 	}
 }

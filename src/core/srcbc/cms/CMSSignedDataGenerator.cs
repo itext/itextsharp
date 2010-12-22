@@ -9,6 +9,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
 
 namespace Org.BouncyCastle.Cms
@@ -36,7 +37,7 @@ namespace Org.BouncyCastle.Cms
     {
 		private static readonly CmsSignedHelper Helper = CmsSignedHelper.Instance;
 
-		private readonly ArrayList signerInfs = new ArrayList();
+		private readonly IList signerInfs = Platform.CreateArrayList();
 
 		private class SignerInf
         {
@@ -108,7 +109,11 @@ namespace Org.BouncyCastle.Cms
 				outer._digests.Add(digestOID, hash.Clone());
 
 				sig.Init(true, new ParametersWithRandom(key, random));
+#if NETCF_1_0 || NETCF_2_0
+				Stream sigStr = new SigOutputStream(sig);
+#else
 				Stream sigStr = new BufferedStream(new SigOutputStream(sig));
+#endif
 
 				Asn1Set signedAttr = null;
 				if (sAttr != null)
@@ -120,7 +125,7 @@ namespace Org.BouncyCastle.Cms
 
 					if (isCounterSignature)
 					{
-						Hashtable tmpSigned = signed.ToHashtable();
+						IDictionary tmpSigned = signed.ToDictionary();
 						tmpSigned.Remove(CmsAttributes.ContentType);
 						signed = new Asn1.Cms.AttributeTable(tmpSigned);
 					}
@@ -159,7 +164,7 @@ namespace Org.BouncyCastle.Cms
 				Asn1Encodable sigX509Parameters = SignerUtilities.GetDefaultX509Parameters(signatureName);
 				AlgorithmIdentifier encAlgId = CmsSignedGenerator.GetEncAlgorithmIdentifier(
 					new DerObjectIdentifier(encOID), sigX509Parameters);
-				
+
                 return new SignerInfo(signerIdentifier, digAlgId,
                     signedAttr, encAlgId, new DerOctetString(sigBytes), unsignedAttr);
             }
@@ -299,7 +304,7 @@ namespace Org.BouncyCastle.Cms
 			Asn1.Cms.AttributeTable	unsignedAttr)
 		{
 			AddSigner(privateKey, subjectKeyID, GetEncOid(privateKey, digestOID), digestOID,
-				signedAttr, unsignedAttr); 
+				signedAttr, unsignedAttr);
 		}
 
 		/**

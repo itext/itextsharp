@@ -4,6 +4,7 @@ using System.IO;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
@@ -27,9 +28,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 		internal static Certificate Parse(
 			Stream inStr)
 		{
-			X509CertificateStructure[] certs;
 			int left = TlsUtilities.ReadUint24(inStr);
-			ArrayList tmp = new ArrayList();
+			IList tmp = Platform.CreateArrayList();
 			while (left > 0)
 			{
 				int size = TlsUtilities.ReadUint24(inStr);
@@ -44,20 +44,24 @@ namespace Org.BouncyCastle.Crypto.Tls
 					throw new ArgumentException("Sorry, there is garbage data left after the certificate");
 				}
 			}
-			certs = (X509CertificateStructure[]) tmp.ToArray(typeof(X509CertificateStructure));
+            X509CertificateStructure[] certs = new X509CertificateStructure[tmp.Count];
+            for (int i = 0; i < tmp.Count; ++i)
+            {
+                certs[i] = (X509CertificateStructure)tmp[i];
+            }
 			return new Certificate(certs);
 		}
 
 		/**
 		 * Encodes version of the ClientCertificate message
-		 * 
+		 *
 		 * @param outStr stream to write the message to
 		 * @throws IOException If something goes wrong
 		 */
 		internal void Encode(
 			Stream outStr)
 		{
-			ArrayList encCerts = new ArrayList();
+			IList encCerts = Platform.CreateArrayList();
 			int totalSize = 0;
 			foreach (X509CertificateStructure cert in certs)
 			{
@@ -74,7 +78,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 				TlsUtilities.WriteOpaque24(encCert, outStr);
 			}
 		}
-		
+
 		/**
 		* Private constructor from a cert array.
 		*

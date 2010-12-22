@@ -45,6 +45,7 @@ namespace Org.BouncyCastle.Crypto.Agreement.Kdf
 			int		outOff,
 			int		len)
 		{
+			// TODO Create an ASN.1 class for this (RFC3278)
 			// ECC-CMS-SharedInfo
 			DerSequence s = new DerSequence(
 				new AlgorithmIdentifier(algorithm, DerNull.Instance),

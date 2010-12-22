@@ -5,6 +5,8 @@ using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X509;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Asn1.Smime
 {
     /**
@@ -63,16 +65,32 @@ namespace Org.BouncyCastle.Asn1.Smime
             capabilities = seq;
         }
 
-		/**
-         * returns an ArrayList with 0 or more objects of all the capabilities
-         * matching the passed in capability Oid. If the Oid passed is null the
-         * entire set is returned.
-         */
+#if !SILVERLIGHT
+        [Obsolete("Use 'GetCapabilitiesForOid' instead")]
         public ArrayList GetCapabilities(
             DerObjectIdentifier capability)
         {
             ArrayList list = new ArrayList();
+            DoGetCapabilitiesForOid(capability, list);
+			return list;
+        }
+#endif
 
+        /**
+         * returns an ArrayList with 0 or more objects of all the capabilities
+         * matching the passed in capability Oid. If the Oid passed is null the
+         * entire set is returned.
+         */
+        public IList GetCapabilitiesForOid(
+            DerObjectIdentifier capability)
+        {
+            IList list = Platform.CreateArrayList();
+            DoGetCapabilitiesForOid(capability, list);
+			return list;
+        }
+
+        private void DoGetCapabilitiesForOid(DerObjectIdentifier capability, IList list)
+        {
 			if (capability == null)
             {
 				foreach (object o in capabilities)
@@ -94,11 +112,9 @@ namespace Org.BouncyCastle.Asn1.Smime
                     }
                 }
             }
-
-			return list;
         }
 
-		/**
+        /**
          * Produce an object suitable for an Asn1OutputStream.
          * <pre>
          * SMIMECapabilities ::= Sequence OF SMIMECapability

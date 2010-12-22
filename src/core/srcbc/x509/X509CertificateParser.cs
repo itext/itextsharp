@@ -7,6 +7,7 @@ using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Encoders;
 using Org.BouncyCastle.Utilities.IO;
 
@@ -169,7 +170,7 @@ namespace Org.BouncyCastle.X509
 			Stream inStream)
 		{
 			X509Certificate cert;
-			IList certs = new ArrayList();
+            IList certs = Platform.CreateArrayList();
 
 			while ((cert = ReadCertificate(inStream)) != null)
 			{

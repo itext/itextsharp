@@ -86,7 +86,7 @@ namespace Org.BouncyCastle.X509
 		 * </ul>
 		 * </p>
 		 * <p>This cannot be used if a v1 attribute certificate is used.</p>
-		 * 
+		 *
 		 * @param digestedObjectType The digest object type.
 		 * @param digestAlgorithm The algorithm identifier for the hash.
 		 * @param otherObjectTypeID The object type ID if
@@ -118,7 +118,7 @@ namespace Org.BouncyCastle.X509
 		 * passed. <code>otherObjectTypeID</code> must not be empty.</li>
 		 * </ul>
 		 * </p>
-		 * 
+		 *
 		 * @return The digest object type or -1 if no object digest info is set.
 		 */
 		public int DigestedObjectType
@@ -135,7 +135,7 @@ namespace Org.BouncyCastle.X509
 
 		/**
 		 * Returns the other object type ID if an object digest info is used.
-		 * 
+		 *
 		 * @return The other object type ID or <code>null</code> if no object
 		 *         digest info is set.
 		 */
@@ -153,7 +153,7 @@ namespace Org.BouncyCastle.X509
 
 		/**
 		 * Returns the hash if an object digest info is used.
-		 * 
+		 *
 		 * @return The hash or <code>null</code> if no object digest info is set.
 		 */
 		public byte[] GetObjectDigest()
@@ -167,7 +167,7 @@ namespace Org.BouncyCastle.X509
 
 		/**
 		 * Returns the digest algorithm ID if an object digest info is used.
-		 * 
+		 *
 		 * @return The digest algorithm ID or <code>null</code> if no object
 		 *         digest info is set.
 		 */
@@ -221,35 +221,57 @@ namespace Org.BouncyCastle.X509
 		private object[] GetNames(
 			GeneralName[] names)
 		{
-			ArrayList l = new ArrayList(names.Length);
+            int count = 0;
+            for (int i = 0; i != names.Length; i++)
+            {
+                if (names[i].TagNo == GeneralName.DirectoryName)
+                {
+                    ++count;
+                }
+            }
 
-			for (int i = 0; i != names.Length; i++)
-			{
-				if (names[i].TagNo == GeneralName.DirectoryName)
-				{
-					l.Add(X509Name.GetInstance(names[i].Name));
-				}
-			}
+            object[] result = new object[count];
 
-			return l.ToArray();
-		}
+            int pos = 0;
+            for (int i = 0; i != names.Length; i++)
+            {
+                if (names[i].TagNo == GeneralName.DirectoryName)
+                {
+                    result[pos++] = X509Name.GetInstance(names[i].Name);
+                }
+            }
+
+            return result;
+        }
 
 		private X509Name[] GetPrincipals(
 			GeneralNames names)
 		{
 			object[] p = this.GetNames(names.GetNames());
-			ArrayList l = new ArrayList(p.Length);
 
-			for (int i = 0; i != p.Length; i++)
+            int count = 0;
+
+            for (int i = 0; i != p.Length; i++)
 			{
 				if (p[i] is X509Name)
 				{
-					l.Add(p[i]);
+                    ++count;
 				}
 			}
 
-			return (X509Name[]) l.ToArray(typeof(X509Name));
-		}
+            X509Name[] result = new X509Name[count];
+
+            int pos = 0;
+            for (int i = 0; i != p.Length; i++)
+            {
+                if (p[i] is X509Name)
+                {
+                    result[pos++] = (X509Name)p[i];
+                }
+            }
+
+            return result;
+        }
 
 		/**
 		 * Return any principal objects inside the attribute certificate holder entity names field.

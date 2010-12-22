@@ -19,8 +19,8 @@ namespace Org.BouncyCastle.Tsp
 {
 	public class TspUtil
 	{
-		private static readonly IDictionary digestLengths = new Hashtable();
-		private static readonly IDictionary digestNames = new Hashtable();
+		private static readonly IDictionary digestLengths = Platform.CreateHashtable();
+        private static readonly IDictionary digestNames = Platform.CreateHashtable();
 
 		static TspUtil()
 		{
@@ -53,7 +53,7 @@ namespace Org.BouncyCastle.Tsp
 	     * Fetches the signature time-stamp attributes from a SignerInformation object.
 	     * Checks that the MessageImprint for each time-stamp matches the signature field.
 	     * (see RFC 3161 Appendix A).
-	     * 
+	     *
 	     * @param signerInfo a SignerInformation to search for time-stamps
 	     * @return a collection of TimeStampToken objects
 	     * @throws TSPValidationException
@@ -61,7 +61,7 @@ namespace Org.BouncyCastle.Tsp
 		public static ICollection GetSignatureTimestamps(
 			SignerInformation signerInfo)
 		{
-			IList timestamps = new ArrayList();
+			IList timestamps = Platform.CreateArrayList();
 
 			Asn1.Cms.AttributeTable unsignedAttrs = signerInfo.UnsignedAttributes;
 			if (unsignedAttrs != null)

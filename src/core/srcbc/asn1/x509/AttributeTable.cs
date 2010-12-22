@@ -1,23 +1,34 @@
+using System;
 using System.Collections;
 
 using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Asn1.X509
 {
     public class AttributeTable
     {
-        private readonly Hashtable attributes;
+        private readonly IDictionary attributes;
 
-		public AttributeTable(
+        public AttributeTable(
+            IDictionary attrs)
+        {
+            this.attributes = Platform.CreateHashtable(attrs);
+        }
+
+#if !SILVERLIGHT
+        [Obsolete]
+        public AttributeTable(
             Hashtable attrs)
         {
-            this.attributes = new Hashtable(attrs);
+            this.attributes = Platform.CreateHashtable(attrs);
         }
+#endif
 
 		public AttributeTable(
             Asn1EncodableVector v)
         {
-			this.attributes = new Hashtable(v.Count);
+            this.attributes = Platform.CreateHashtable(v.Count);
 
 			for (int i = 0; i != v.Count; i++)
             {
@@ -30,7 +41,7 @@ namespace Org.BouncyCastle.Asn1.X509
 		public AttributeTable(
             Asn1Set s)
         {
-			this.attributes = new Hashtable(s.Count);
+            this.attributes = Platform.CreateHashtable(s.Count);
 
 			for (int i = 0; i != s.Count; i++)
             {
@@ -46,9 +57,17 @@ namespace Org.BouncyCastle.Asn1.X509
             return (AttributeX509) attributes[oid];
         }
 
+#if !SILVERLIGHT
+        [Obsolete("Use 'ToDictionary' instead")]
 		public Hashtable ToHashtable()
         {
             return new Hashtable(attributes);
+        }
+#endif
+
+        public IDictionary ToDictionary()
+        {
+            return Platform.CreateHashtable(attributes);
         }
     }
 }

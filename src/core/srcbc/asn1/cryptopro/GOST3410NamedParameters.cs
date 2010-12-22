@@ -3,6 +3,7 @@ using System.Collections;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Asn1.CryptoPro
@@ -16,8 +17,8 @@ namespace Org.BouncyCastle.Asn1.CryptoPro
 		{
 		}
 
-        private static readonly Hashtable objIds = new Hashtable();
-        private static readonly Hashtable parameters = new Hashtable();
+        private static readonly IDictionary objIds = Platform.CreateHashtable();
+        private static readonly IDictionary parameters = Platform.CreateHashtable();
 
         private static readonly Gost3410ParamSetParameters cryptoProA = new Gost3410ParamSetParameters(
             1024,

@@ -8,6 +8,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Paddings;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Security
 {
@@ -20,8 +21,8 @@ namespace Org.BouncyCastle.Security
 		{
 		}
 
-		private static readonly Hashtable algorithms = new Hashtable();
-//		private static readonly Hashtable oids = new Hashtable();
+		private static readonly IDictionary algorithms = Platform.CreateHashtable();
+        //private static readonly IDictionary oids = Platform.CreateHashtable();
 
 		static MacUtilities()
 		{

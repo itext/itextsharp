@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Globalization;
 using System.IO;
+
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.CryptoPro;
 using Org.BouncyCastle.Asn1.Nist;
@@ -15,6 +16,7 @@ using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.X509;
+
 namespace Org.BouncyCastle.Pkcs
 {
 	/// <remarks>
@@ -84,8 +86,8 @@ namespace Org.BouncyCastle.Pkcs
 		/// <param name="publicKey">Public Key to be included in cert reqest.</param>
 		/// <param name="attributes">ASN1Set of Attributes.</param>
 		/// <remarks>
-		/// After the object is constructed use the <see cref="GetDataToSign"/> and finally the <see cref="SignRequest"/> methods to finalize the
-		/// request.
+        /// After the object is constructed use the <see cref="GetDataToSign"/> and finally the
+        /// SignRequest methods to finalize the request.
 		/// </remarks>
 		public Pkcs10CertificationRequestDelaySigned(
 			string					signatureAlgorithm,
@@ -105,12 +107,21 @@ namespace Org.BouncyCastle.Pkcs
 			string algorithmName = signatureAlgorithm.ToUpper(CultureInfo.InvariantCulture);
 			DerObjectIdentifier sigOid = (DerObjectIdentifier) algorithms[algorithmName];
 			if (sigOid == null)
-				throw new ArgumentException("Unknown signature type requested");
+			{
+				try
+				{
+					sigOid = new DerObjectIdentifier(algorithmName);
+				}
+				catch (Exception e)
+				{
+					throw new ArgumentException("Unknown signature type requested", e);
+				}
+			}
 			if (noParams.Contains(sigOid))
 			{
 				this.sigAlgId = new AlgorithmIdentifier(sigOid);
 			}
-			else if (exParams.ContainsKey(algorithmName))
+			else if (exParams.Contains(algorithmName))
 			{
 				this.sigAlgId = new AlgorithmIdentifier(sigOid, (Asn1Encodable) exParams[algorithmName]);
 			}

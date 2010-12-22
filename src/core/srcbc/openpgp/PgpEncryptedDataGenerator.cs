@@ -8,6 +8,7 @@ using Org.BouncyCastle.Crypto.IO;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Bcpg.OpenPgp
 {
@@ -145,7 +146,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             }
         }
 
-		private readonly ArrayList methods = new ArrayList();
+		private readonly IList methods = Platform.CreateArrayList();
         private readonly SymmetricKeyAlgorithmTag defAlgorithm;
         private readonly SecureRandom rand;
 

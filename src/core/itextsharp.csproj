@@ -2543,7 +2543,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\cms\TeeInputStream.cs" />
-    <Compile Include="srcbc\cms\TeeOutputStream.cs" />
     <Compile Include="srcbc\crypto\agreement\DHAgreement.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -4122,9 +4121,27 @@
     <Compile Include="iTextSharp\text\xml\XmlDomWriter.cs" />
     <Compile Include="srcbc\asn1\Asn1Exception.cs" />
     <Compile Include="srcbc\asn1\Asn1ParsingException.cs" />
+    <Compile Include="srcbc\asn1\cmp\CmpObjectIdentifiers.cs" />
     <Compile Include="srcbc\crypto\modes\gcm\BasicGcmExponentiator.cs" />
     <Compile Include="srcbc\crypto\modes\gcm\IGcmExponentiator.cs" />
     <Compile Include="srcbc\crypto\modes\gcm\Tables1kGcmExponentiator.cs" />
+    <Compile Include="srcbc\crypto\tls\AlertDescription.cs" />
+    <Compile Include="srcbc\crypto\tls\AlertLevel.cs" />
+    <Compile Include="srcbc\crypto\tls\CipherSuite.cs" />
+    <Compile Include="srcbc\crypto\tls\ClientCertificateType.cs" />
+    <Compile Include="srcbc\crypto\tls\CompressionMethod.cs" />
+    <Compile Include="srcbc\crypto\tls\ContentType.cs" />
+    <Compile Include="srcbc\crypto\tls\ECCurveType.cs" />
+    <Compile Include="srcbc\crypto\tls\ECPointFormat.cs" />
+    <Compile Include="srcbc\crypto\tls\ExtensionType.cs" />
+    <Compile Include="srcbc\crypto\tls\HandshakeType.cs" />
+    <Compile Include="srcbc\crypto\tls\NamedCurve.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsDheKeyExchange.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsDsaSigner.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsECDheKeyExchange.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsECDHKeyExchange.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsECDsaSigner.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsECKeyExchange.cs" />
     <Compile Include="srcbc\crypto\tls\TlsStream.cs" />
     <Compile Include="srcbc\openssl\MiscPemGenerator.cs" />
     <Compile Include="srcbc\openssl\Pkcs8Generator.cs" />
@@ -4132,12 +4149,16 @@
     <Compile Include="srcbc\util\collections\LinkedDictionary.cs" />
     <Compile Include="srcbc\util\collections\UnmodifiableDictionary.cs" />
     <Compile Include="srcbc\util\collections\UnmodifiableDictionaryProxy.cs" />
+    <Compile Include="srcbc\util\collections\UnmodifiableList.cs" />
+    <Compile Include="srcbc\util\collections\UnmodifiableListProxy.cs" />
     <Compile Include="srcbc\util\io\pem\PemGenerationException.cs" />
+    <Compile Include="srcbc\util\io\pem\PemHeader.cs" />
     <Compile Include="srcbc\util\io\pem\PemObject.cs" />
     <Compile Include="srcbc\util\io\pem\PemObjectGenerator.cs" />
     <Compile Include="srcbc\util\io\pem\PemObjectParser.cs" />
     <Compile Include="srcbc\util\io\pem\PemReader.cs" />
     <Compile Include="srcbc\util\io\pem\PemWriter.cs" />
+    <Compile Include="srcbc\util\io\TeeOutputStream.cs" />
     <Compile Include="System\util\collections\LinkedDictionary.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -52,10 +52,10 @@ namespace Org.BouncyCastle.Asn1.X509
 			if (obj is TbsCertificateStructure)
 				return (TbsCertificateStructure) obj;
 
-			if (obj is Asn1Sequence)
-				return new TbsCertificateStructure((Asn1Sequence) obj);
+			if (obj != null)
+				return new TbsCertificateStructure(Asn1Sequence.GetInstance(obj));
 
-			throw new ArgumentException("unknown object in factory: " + obj.GetType().Name, "obj");
+			throw new ArgumentException("null object in factory", "obj");
 		}
 
 		internal TbsCertificateStructure(

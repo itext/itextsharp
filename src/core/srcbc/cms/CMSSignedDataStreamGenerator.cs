@@ -43,10 +43,10 @@ namespace Org.BouncyCastle.Cms
     {
 		private static readonly CmsSignedHelper Helper = CmsSignedHelper.Instance;
 
-		private readonly ArrayList	_signerInfs = new ArrayList();
+		private readonly IList      _signerInfs = Platform.CreateArrayList();
 		private readonly ISet		_messageDigestOids = new HashSet();
-		private readonly Hashtable	_messageDigests = new Hashtable();
-		private readonly Hashtable	_messageHashes = new Hashtable();
+        private readonly IDictionary _messageDigests = Platform.CreateHashtable();
+        private readonly IDictionary _messageHashes = Platform.CreateHashtable();
 		private bool				_messageDigestsLocked;
         private int					_bufferSize;
 
@@ -159,7 +159,7 @@ namespace Org.BouncyCastle.Cms
 					 * The result of the message digest calculation process depends on
 					 * whether the signedAttrs field is present.  When the field is absent,
 					 * the result is just the message digest of the content as described
-					 * 
+					 *
 					 * above.  When the field is present, however, the result is the message
 					 * digest of the complete DER encoding of the SignedAttrs value
 					 * contained in the signedAttrs field.
@@ -532,7 +532,7 @@ namespace Org.BouncyCastle.Cms
 				throw new ArgumentException("Expected writeable stream", "dataOutputStream");
 
 			_messageDigestsLocked = true;
-			
+
 			//
             // ContentInfo
             //

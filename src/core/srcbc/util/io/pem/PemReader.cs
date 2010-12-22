@@ -11,9 +11,9 @@ namespace Org.BouncyCastle.Utilities.IO.Pem
 	{
 		private const string BeginString = "-----BEGIN ";
 		private const string EndString = "-----END ";
-	
+
 		private readonly TextReader reader;
-	
+
 		public PemReader(TextReader reader)
 		{
 			if (reader == null)
@@ -51,7 +51,7 @@ namespace Org.BouncyCastle.Utilities.IO.Pem
 		private PemObject LoadObject(string type)
 		{
 			string endMarker = EndString + type;
-			IDictionary fields = new Hashtable();
+			IList headers = Platform.CreateArrayList();
 			StringBuilder buf = new StringBuilder();
 
 			string line;
@@ -64,7 +64,7 @@ namespace Org.BouncyCastle.Utilities.IO.Pem
 				{
 					buf.Append(line.Trim());
 				}
-				else if (fields != null)
+				else
 				{
 					// Process field
 					string fieldName = line.Substring(0, colonPos).Trim();
@@ -74,8 +74,7 @@ namespace Org.BouncyCastle.Utilities.IO.Pem
 
 					string fieldValue = line.Substring(colonPos + 1).Trim();
 
-					// TODO Complain if field already specified?
-					fields[fieldName] = fieldValue;
+					headers.Add(new PemHeader(fieldName, fieldValue));
 				}
 			}
 
@@ -89,7 +88,7 @@ namespace Org.BouncyCastle.Utilities.IO.Pem
 				throw new IOException("base64 data appears to be truncated");
 			}
 
-			return new PemObject(type, fields, Base64.Decode(buf.ToString()));
+			return new PemObject(type, headers, Base64.Decode(buf.ToString()));
 		}
 	}
 }

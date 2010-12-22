@@ -123,6 +123,8 @@ namespace Org.BouncyCastle.Asn1.Cms
          *     keyEncryptionAlgorithm KeyEncryptionAlgorithmIdentifier,
          *     recipientEncryptedKeys RecipientEncryptedKeys
          * }
+		 *
+		 * UserKeyingMaterial ::= OCTET STRING
          * </pre>
          */
         public override Asn1Object ToAsn1Object()

@@ -3,6 +3,7 @@ using System.Collections;
 using System.Globalization;
 
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Engines
 {
@@ -16,9 +17,11 @@ namespace Org.BouncyCastle.Crypto.Engines
 		private int[] workingKey = null;
 		private bool forEncryption;
 
+		private byte[] S = Sbox_Default;
+
 		// these are the S-boxes given in Applied Cryptography 2nd Ed., p. 333
 		// This is default S-box!
-		private readonly byte[] S = {
+		private static readonly byte[] Sbox_Default = {
 			0x4,0xA,0x9,0x2,0xD,0x8,0x0,0xE,0x6,0xB,0x1,0xC,0x7,0xF,0x5,0x3,
 			0xE,0xB,0x4,0xC,0x6,0xD,0xF,0xA,0x2,0x3,0x8,0x1,0x0,0x7,0x5,0x9,
 			0x5,0x8,0x1,0xD,0xA,0x3,0x4,0x2,0xE,0xF,0xC,0x7,0x6,0x0,0x9,0xB,
@@ -30,10 +33,10 @@ namespace Org.BouncyCastle.Crypto.Engines
 		};
 
 		/*
-		* class content S-box parameters for encrypting
-		* getting from, see: http://www.ietf.org/internet-drafts/draft-popov-cryptopro-cpalgs-01.txt
-		*                    http://www.ietf.org/internet-drafts/draft-popov-cryptopro-cpalgs-02.txt
-		*/
+		 * class content S-box parameters for encrypting
+		 * getting from, see: http://tools.ietf.org/id/draft-popov-cryptopro-cpalgs-01.txt
+		 *                    http://tools.ietf.org/id/draft-popov-cryptopro-cpalgs-02.txt
+		 */
 		private static readonly byte[] ESbox_Test = {
 			0x4,0x2,0xF,0x5,0x9,0x1,0x0,0x8,0xE,0x3,0xB,0xC,0xD,0x7,0xA,0x6,
 			0xC,0x9,0xF,0xE,0x8,0x1,0x3,0xA,0x2,0x7,0x4,0xD,0x6,0x0,0xB,0x5,
@@ -115,17 +118,23 @@ namespace Org.BouncyCastle.Crypto.Engines
 		//
 		// pre-defined sbox table
 		//
-		private static readonly Hashtable sBoxes = new Hashtable();
+		private static readonly IDictionary sBoxes = Platform.CreateHashtable();
 
 		static Gost28147Engine()
 		{
-			sBoxes.Add("E-TEST", ESbox_Test);
-			sBoxes.Add("E-A", ESbox_A);
-			sBoxes.Add("E-B", ESbox_B);
-			sBoxes.Add("E-C", ESbox_C);
-			sBoxes.Add("E-D", ESbox_D);
-			sBoxes.Add("D-TEST", DSbox_Test);
-			sBoxes.Add("D-A", DSbox_A);
+			AddSBox("Default", Sbox_Default);
+			AddSBox("E-TEST", ESbox_Test);
+			AddSBox("E-A", ESbox_A);
+			AddSBox("E-B", ESbox_B);
+			AddSBox("E-C", ESbox_C);
+			AddSBox("E-D", ESbox_D);
+			AddSBox("D-TEST", DSbox_Test);
+			AddSBox("D-A", DSbox_A);
+		}
+
+		private static void AddSBox(string sBoxName, byte[] sBox)
+		{
+			sBoxes.Add(sBoxName.ToUpper(CultureInfo.InvariantCulture), sBox);        
 		}
 
 		/**
@@ -153,7 +162,11 @@ namespace Org.BouncyCastle.Crypto.Engines
 				//
 				// Set the S-Box
 				//
-				Array.Copy(param.GetSBox(), 0, this.S, 0, param.GetSBox().Length);
+				byte[] sBox = param.GetSBox();
+				if (sBox.Length != Sbox_Default.Length)
+					throw new ArgumentException("invalid S-box passed to GOST28147 init");
+
+				this.S = Arrays.Clone(sBox);
 
 				//
 				// set key if there is one
@@ -169,7 +182,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 				workingKey = generateWorkingKey(forEncryption,
 									((KeyParameter)parameters).GetKey());
 			}
-			else
+			else if (parameters != null)
 			{
 				throw new ArgumentException("invalid parameter passed to Gost28147 init - " + parameters.GetType().Name);
 			}
@@ -350,15 +363,15 @@ namespace Org.BouncyCastle.Crypto.Engines
 		public static byte[] GetSBox(
 			string sBoxName)
 		{
-			byte[] namedSBox = (byte[])sBoxes[sBoxName.ToUpper(CultureInfo.InvariantCulture)];
+			byte[] sBox = (byte[])sBoxes[sBoxName.ToUpper(CultureInfo.InvariantCulture)];
 
-			if (namedSBox == null)
+			if (sBox == null)
 			{
 				throw new ArgumentException("Unknown S-Box - possible types: "
-					+ "\"E-Test\", \"E-A\", \"E-B\", \"E-C\", \"E-D\", \"D-Test\", \"D-A\".");
+					+ "\"Default\", \"E-Test\", \"E-A\", \"E-B\", \"E-C\", \"E-D\", \"D-Test\", \"D-A\".");
 			}
 
-			return (byte[]) namedSBox.Clone();
+			return Arrays.Clone(sBox);
 		}
 	}
 }

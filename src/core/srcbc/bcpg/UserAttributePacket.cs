@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.IO;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Bcpg
 {
     /**
@@ -18,7 +20,7 @@ namespace Org.BouncyCastle.Bcpg
             UserAttributeSubpacketsParser sIn = new UserAttributeSubpacketsParser(bcpgIn);
             UserAttributeSubpacket sub;
 
-            ArrayList v = new ArrayList();
+            IList v = Platform.CreateArrayList();
             while ((sub = sIn.ReadPacket()) != null)
             {
                 v.Add(sub);

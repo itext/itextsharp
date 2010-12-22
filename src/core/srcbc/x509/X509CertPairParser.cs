@@ -5,6 +5,7 @@ using System.IO;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.IO;
 
 namespace Org.BouncyCastle.X509
@@ -81,7 +82,7 @@ namespace Org.BouncyCastle.X509
 			Stream inStream)
 		{
 			X509CertificatePair certPair;
-			IList certPairs = new ArrayList();
+			IList certPairs = Platform.CreateArrayList();
 
 			while ((certPair = ReadCertPair(inStream)) != null)
 			{

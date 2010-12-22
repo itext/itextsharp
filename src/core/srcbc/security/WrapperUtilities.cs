@@ -9,6 +9,7 @@ using Org.BouncyCastle.Asn1.Ntt;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Security
 {
@@ -21,8 +22,8 @@ namespace Org.BouncyCastle.Security
 		{
 		}
 
-		private static readonly Hashtable algorithms = new Hashtable();
-//		private static readonly Hashtable oids = new Hashtable();
+		private static readonly IDictionary algorithms = Platform.CreateHashtable();
+        //private static readonly IDictionary oids = Platform.CreateHashtable();
 
 		static WrapperUtilities()
 		{

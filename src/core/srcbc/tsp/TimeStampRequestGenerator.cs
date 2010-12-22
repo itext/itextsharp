@@ -6,6 +6,8 @@ using Org.BouncyCastle.Asn1.Tsp;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Math;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Tsp
 {
 	/**
@@ -17,8 +19,8 @@ namespace Org.BouncyCastle.Tsp
 
 		private DerBoolean certReq;
 
-		private Hashtable	extensions = new Hashtable();
-		private ArrayList	extOrdering = new ArrayList();
+		private IDictionary extensions = Platform.CreateHashtable();
+        private IList       extOrdering = Platform.CreateArrayList();
 
 		public void SetReqPolicy(
 			string reqPolicy)

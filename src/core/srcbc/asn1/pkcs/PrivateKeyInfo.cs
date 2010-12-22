@@ -22,12 +22,12 @@ namespace Org.BouncyCastle.Asn1.Pkcs
                 return (PrivateKeyInfo) obj;
             }
 
-			if (obj is Asn1Sequence)
-            {
-                return new PrivateKeyInfo((Asn1Sequence) obj);
-            }
+			if (obj != null)
+			{
+				return new PrivateKeyInfo(Asn1Sequence.GetInstance(obj));
+			}
 
-			throw new ArgumentException("Unknown object in factory: " + obj.GetType().FullName, "obj");
+        	throw new ArgumentException("null object in factory");
 		}
 
 		public PrivateKeyInfo(

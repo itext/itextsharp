@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Asn1
 {
     public class Asn1EncodableVector
 		: IEnumerable
     {
-        private ArrayList v = new ArrayList();
+        private IList v = Platform.CreateArrayList();
 
 		public static Asn1EncodableVector FromEnumerable(
 			IEnumerable e)

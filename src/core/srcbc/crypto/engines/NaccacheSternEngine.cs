@@ -18,7 +18,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 
 		private NaccacheSternKeyParameters key;
 
-		private ArrayList[] lookup = null;
+		private IList[] lookup = null;
 
 		private bool debug = false;
 
@@ -54,14 +54,14 @@ namespace Org.BouncyCastle.Crypto.Engines
 					Console.WriteLine("Constructing lookup Array");
 				}
 				NaccacheSternPrivateKeyParameters priv = (NaccacheSternPrivateKeyParameters)key;
-				ArrayList primes = priv.SmallPrimes;
-				lookup = new ArrayList[primes.Count];
+				IList primes = priv.SmallPrimesList;
+				lookup = new IList[primes.Count];
 				for (int i = 0; i < primes.Count; i++)
 				{
 					BigInteger actualPrime = (BigInteger) primes[i];
 					int actualPrimeValue = actualPrime.IntValue;
 
-					lookup[i] = new ArrayList(actualPrimeValue);
+					lookup[i] = Platform.CreateArrayList(actualPrimeValue);
 					lookup[i].Add(BigInteger.One);
 
 					if (debug)
@@ -168,14 +168,14 @@ namespace Org.BouncyCastle.Crypto.Engines
 			}
 			else
 			{
-				ArrayList plain = new ArrayList();
+				IList plain = Platform.CreateArrayList();
 				NaccacheSternPrivateKeyParameters priv = (NaccacheSternPrivateKeyParameters)key;
-				ArrayList primes = priv.SmallPrimes;
+				IList primes = priv.SmallPrimesList;
 				// Get Chinese Remainders of CipherText
 				for (int i = 0; i < primes.Count; i++)
 				{
 					BigInteger exp = input.ModPow(priv.PhiN.Divide((BigInteger)primes[i]), priv.Modulus);
-					ArrayList al = lookup[i];
+					IList al = lookup[i];
 					if (lookup[i].Count != ((BigInteger)primes[i]).IntValue)
 					{
 						if (debug)
@@ -408,7 +408,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 		*            the primes p_i
 		* @return an integer x for that x % p_i == c_i
 		*/
-		private static BigInteger chineseRemainder(ArrayList congruences, ArrayList primes)
+		private static BigInteger chineseRemainder(IList congruences, IList primes)
 		{
 			BigInteger retval = BigInteger.Zero;
 			BigInteger all = BigInteger.One;

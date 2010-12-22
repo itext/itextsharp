@@ -18,6 +18,7 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Modes;
 using Org.BouncyCastle.Crypto.Paddings;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Security
 {
@@ -26,8 +27,8 @@ namespace Org.BouncyCastle.Security
 	/// </remarks>
 	public sealed class CipherUtilities
 	{
-		private static readonly Hashtable algorithms = new Hashtable();
-		private static readonly Hashtable oids = new Hashtable();
+		private static readonly IDictionary algorithms = Platform.CreateHashtable();
+        private static readonly IDictionary oids = Platform.CreateHashtable();
 
 		static CipherUtilities()
 		{
