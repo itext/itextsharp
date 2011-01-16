@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net;
+using System.Text;
 using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
@@ -102,11 +103,11 @@ namespace iTextSharp.text.pdf {
                     int colorspace = image.Colorspace;
                     int[] transparency = image.Transparency;
                     if (transparency != null && !image.IsMask() && maskRef == null) {
-                        String s = "[";
+                        StringBuilder s = new StringBuilder("[");
                         for (int k = 0; k < transparency.Length; ++k)
-                            s += transparency[k] + " ";
-                        s += "]";
-                        Put(PdfName.MASK, new PdfLiteral(s));
+                            s.Append(transparency[k]).Append(' ');
+                        s.Append(']');
+                        Put(PdfName.MASK, new PdfLiteral(s.ToString()));
                     }
                     bytes = image.RawData;
                     Put(PdfName.LENGTH, new PdfNumber(bytes.Length));

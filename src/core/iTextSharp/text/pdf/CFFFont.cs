@@ -205,7 +205,7 @@ namespace iTextSharp.text.pdf {
             
             if (count==0) {
                 offsets[0] = -1;
-                nextIndexOffset += 2;
+                nextIndexOffset += 2;  // TODO death store to local var .. should this be this.nextIndexOffset ?
                 return offsets;
             }
             
@@ -277,7 +277,7 @@ namespace iTextSharp.text.pdf {
                     continue;
                 }
                 if (b0 == 30) {
-                    String item = "";
+                    StringBuilder item = new StringBuilder();
                     bool done = false;
                     char buffer = (char)0;
                     byte avail = 0;
@@ -288,22 +288,22 @@ namespace iTextSharp.text.pdf {
                         if (avail==1) { nibble = (buffer / 16); avail--; }
                         if (avail==2) { nibble = (buffer % 16); avail--; }
                         switch (nibble) {
-                            case 0xa: item += "." ; break;
-                            case 0xb: item += "E" ; break;
-                            case 0xc: item += "E-"; break;
-                            case 0xe: item += "-" ; break;
+                            case 0xa: item.Append(".") ; break;
+                            case 0xb: item.Append("E") ; break;
+                            case 0xc: item.Append("E-"); break;
+                            case 0xe: item.Append("-") ; break;
                             case 0xf: done=true   ; break;
                             default:
                                 if (nibble >= 0 && nibble <= 9)
-                                    item += nibble.ToString();
+                                    item.Append(nibble.ToString());
                                 else {
-                                    item += "<NIBBLE ERROR: "+nibble.ToString()+">";
+                                    item.Append("<NIBBLE ERROR: "+nibble.ToString()+">");
                                     done = true;
                                 }
                                 break;
                         }
                     }
-                    args[arg_count] = item;
+                    args[arg_count] = item.ToString();
                     arg_count++;
                     //System.err.Println(" real=["+item+"]");
                     continue;

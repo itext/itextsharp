@@ -333,20 +333,20 @@ namespace iTextSharp.text.pdf {
         * @return the packed digits, two digits per character
         */    
         internal static String GetPackedRawDigits(String text, int textIndex, int numDigits) {
-            String outs = "";
+            StringBuilder outs = new StringBuilder();
             int start = textIndex;
             while (numDigits > 0) {
                 if (text[textIndex] == FNC1) {
-                    outs += FNC1_INDEX;
+                    outs.Append(FNC1_INDEX);
                     ++textIndex;
                     continue;
                 }
                 numDigits -= 2;
                 int c1 = text[textIndex++] - '0';
                 int c2 = text[textIndex++] - '0';
-                outs += (char)(c1 * 10 + c2);
+                outs.Append((char)(c1 * 10 + c2));
             }
-            return (char)(textIndex - start) + outs;
+            return (char)(textIndex - start) + outs.ToString();
         }
         
         /** Converts the human readable text to the characters needed to
@@ -711,7 +711,7 @@ namespace iTextSharp.text.pdf {
                 string code = value;
                 if (CodeType == Barcode128.CODE128_UCC && code.StartsWith("(")) {
                     int idx = 0;
-                    String ret = "";
+                    StringBuilder ret = new StringBuilder();
                     while (idx >= 0) {
                         int end = code.IndexOf(')', idx);
                         if (end < 0)
@@ -728,15 +728,15 @@ namespace iTextSharp.text.pdf {
                             sai = "0" + sai;
                         idx = code.IndexOf('(', end);
                         int next = (idx < 0 ? code.Length : idx);
-                        ret += sai + code.Substring(end + 1, next - (end + 1));
+                        ret.Append(sai).Append(code.Substring(end + 1, next - (end + 1)));
                         if (len < 0) {
                             if (idx >= 0)
-                                ret += FNC1;
+                                ret.Append(FNC1);
                         }
                         else if (next - end - 1 + sai.Length != len)
                             throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.ai.length.1", sai));
                     }
-                    base.Code = ret;
+                    base.Code = ret.ToString();
                 }
                 else
                     base.Code = code;
