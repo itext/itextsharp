@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.IO;
+using System.Text;
 using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
@@ -198,10 +199,10 @@ namespace iTextSharp.text.pdf.codec {
         * Reads GIF file header information.
         */
         protected void ReadHeader() {
-            String id = "";
+            StringBuilder id = new StringBuilder();
             for (int i = 0; i < 6; i++)
-                id += (char)inp.ReadByte();
-            if (!id.StartsWith("GIF8")) {
+                id.Append((char)inp.ReadByte());
+            if (!id.ToString().StartsWith("GIF8")) {
                 throw new IOException(MessageLocalization.GetComposedMessage("gif.signature.nor.found"));
             }
             

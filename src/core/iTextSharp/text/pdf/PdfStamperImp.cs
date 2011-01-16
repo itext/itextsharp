@@ -1279,12 +1279,12 @@ namespace iTextSharp.text.pdf {
             foreach (KeyValuePair<string,PdfObject> entry in fs) {
                 String name = entry.Key;
                 int k = 0;
-                String nn = name;
-                while (old.ContainsKey(nn)) {
+                StringBuilder nn = new StringBuilder(name);
+                while (old.ContainsKey(nn.ToString())) {
                     ++k;
-                    nn += " " + k;
+                    nn.Append(' ').Append(k);
                 }
-                old[nn] = entry.Value;
+                old[nn.ToString()] = entry.Value;
             }
             PdfDictionary tree = PdfNameTree.WriteTree(old, this);
             // Remove old EmbeddedFiles object if preset

@@ -1,4 +1,5 @@
 using System;
+using System.Text;
 using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
@@ -168,7 +169,7 @@ namespace iTextSharp.text.pdf {
         * @return the escaped text
         */    
         public static string GetCode39Ex(string text) {
-            string ret = "";
+            StringBuilder ret = new StringBuilder();
             for (int k = 0; k < text.Length; ++k) {
                 char c = text[k];
                 if (c > 127)
@@ -176,10 +177,10 @@ namespace iTextSharp.text.pdf {
                 char c1 = EXTENDED[c * 2];
                 char c2 = EXTENDED[c * 2 + 1];
                 if (c1 != ' ')
-                    ret += c1;
-                ret += c2;
+                    ret.Append(c1);
+                ret.Append(c2);
             }
-            return ret;
+            return ret.ToString();
         }
         
         /** Calculates the checksum.
