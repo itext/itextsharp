@@ -155,6 +155,20 @@ namespace iTextSharp.text {
             this.ury = ury;
         }
     
+        /**
+         * Constructs a <CODE>Rectangle</CODE>-object.
+         *
+         * @param llx   lower left x
+         * @param lly   lower left y
+         * @param urx   upper right x
+         * @param ury   upper right y
+         * @param rotation the rotation (0, 90, 180, or 270)
+         * @since iText 5.0.6
+         */
+        public Rectangle(float llx, float lly, float urx, float ury, int rotation) : this(0, 0, urx, ury) {
+            Rotation = rotation;
+        }
+
         /// <summary>
         /// Constructs a Rectangle-object starting from the origin (0, 0).
         /// </summary>
@@ -162,6 +176,18 @@ namespace iTextSharp.text {
         /// <param name="ury">upper right y</param>
         public Rectangle(float urx, float ury) : this(0, 0, urx, ury) {}
     
+        /**
+         * Constructs a <CODE>Rectangle</CODE>-object starting from the origin
+         * (0, 0) and with a specific rotation (valid values are 0, 90, 180, 270).
+         *
+         * @param urx   upper right x
+         * @param ury   upper right y
+         * @param rotation the rotation of the rectangle
+         * @since iText 5.0.6
+         */
+        public Rectangle(float urx, float ury, int rotation) : this(0, 0, urx, ury, rotation) {
+        }
+            
         /// <summary>
         /// Constructs a Rectangle-object.
         /// </summary>
@@ -330,8 +356,7 @@ namespace iTextSharp.text {
         /// <returns>a Rectangle</returns>
         public Rectangle Rotate() {
             Rectangle rect = new Rectangle(lly, llx, ury, urx);
-            rect.rotation = rotation + 90;
-            rect.rotation %= 360;
+            rect.Rotation = rotation + 90;
             return rect;
         }
     
@@ -630,12 +655,24 @@ namespace iTextSharp.text {
         }
 
         /// <summary>
-        /// Returns the rotation
+        /// Set/gets the rotation
         /// </summary>
         /// <value>a int</value>    
-        public int Rotation {
+        public virtual int Rotation {
             get {
                 return rotation;
+            }
+            set {
+                rotation = value % 360;
+                switch (rotation) {
+                    case 90:
+                    case 180:
+                    case 270:
+                        break;
+                    default:
+                        rotation = 0;
+                        break;
+                }
             }
         }
     
