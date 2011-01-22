@@ -73,12 +73,36 @@ namespace iTextSharp.text {
         public RectangleReadOnly(float llx, float lly, float urx, float ury) : base(llx, lly, urx, ury) {
         }
     
+	    /**
+	     * Constructs a <CODE>RectangleReadOnly</CODE> -object.
+	     * 
+	     * @param llx	lower left x
+	     * @param lly	lower left y
+	     * @param urx	upper right x
+	     * @param ury	upper right y
+	     * @param rotation	the rotation of the Rectangle (0, 90, 180, 270)
+	     * @since iText 5.0.6
+	     */
+	    public RectangleReadOnly(float llx, float lly, float urx, float ury, int rotation) : base(llx, lly, urx, ury, rotation) {
+	    }
+
         /// <summary>
         /// Constructs a RectangleReadOnly-object starting from the origin (0, 0).
         /// </summary>
         /// <param name="urx">upper right x</param>
         /// <param name="ury">upper right y</param>
         public RectangleReadOnly(float urx, float ury) : base(0, 0, urx, ury) {}
+
+        /**
+         * Constructs a <CODE>RectangleReadOnly</CODE>-object starting from the origin
+         * (0, 0) and with a specific rotation (valid values are 0, 90, 180, 270).
+         * 
+         * @param urx   upper right x
+         * @param ury   upper right y
+         * @since iText 5.0.6
+         */
+        public RectangleReadOnly(float urx, float ury, int rotation) : base(0, 0, urx, ury, rotation) {
+        }
     
         /// <summary>
         /// Constructs a RectangleReadOnly-object.
@@ -270,6 +294,16 @@ namespace iTextSharp.text {
         /// </summary>
         /// <value>a BaseColor</value>
         public override BaseColor BackgroundColor {
+            set {
+                ThrowReadOnlyError();
+            }
+        }
+
+        /// <summary>
+        /// Set/gets the rotation
+        /// </summary>
+        /// <value>a int</value>    
+        public override int Rotation {
             set {
                 ThrowReadOnlyError();
             }

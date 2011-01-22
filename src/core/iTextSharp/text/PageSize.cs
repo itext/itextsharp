@@ -211,6 +211,26 @@ namespace iTextSharp.text {
     /** This is the Penguin large paparback format. */
         public static readonly Rectangle PENGUIN_LARGE_PAPERBACK = new RectangleReadOnly(365,561);
 
+    // Some extra shortcut values for pages in Landscape
+
+	/**
+	 * This is the letter format
+	 * @since iText 5.0.6
+	 */
+        public static readonly Rectangle LETTER_LANDSCAPE = new RectangleReadOnly(612, 792, 90);
+    
+    /**
+     * This is the legal format
+     * @since iText 5.0.6
+     */
+        public static readonly Rectangle LEGAL_LANDSCAPE = new RectangleReadOnly(612, 1008, 90);
+    
+    /**
+     * This is the a4 format
+     * @since iText 5.0.6
+     */
+        public static readonly Rectangle A4_LANDSCAPE = new RectangleReadOnly(595, 842, 90);
+    
         /**
         * This method returns a Rectangle based on a String.
         * Possible values are the the names of a constant in this class
