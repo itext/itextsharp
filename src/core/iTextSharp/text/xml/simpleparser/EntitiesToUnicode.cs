@@ -58,7 +58,7 @@ namespace iTextSharp.text.xml.simpleparser {
         /**
         * This is a map that contains the names of entities and their unicode value.
         */
-        public static readonly Dictionary<string,char> map = new Dictionary<string,char>();
+        private static readonly Dictionary<string,char> map = new Dictionary<string,char>();
 
         static EntitiesToUnicode() {
             map["nbsp"] = '\u00a0'; // no-break space = non-breaking space, U+00A0 ISOnum

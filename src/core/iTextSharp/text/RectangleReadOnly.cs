@@ -83,7 +83,8 @@ namespace iTextSharp.text {
 	     * @param rotation	the rotation of the Rectangle (0, 90, 180, 270)
 	     * @since iText 5.0.6
 	     */
-	    public RectangleReadOnly(float llx, float lly, float urx, float ury, int rotation) : base(llx, lly, urx, ury, rotation) {
+	    public RectangleReadOnly(float llx, float lly, float urx, float ury, int rotation) : base(llx, lly, urx, ury) {
+            base.Rotation = rotation;
 	    }
 
         /// <summary>
@@ -101,7 +102,8 @@ namespace iTextSharp.text {
          * @param ury   upper right y
          * @since iText 5.0.6
          */
-        public RectangleReadOnly(float urx, float ury, int rotation) : base(0, 0, urx, ury, rotation) {
+        public RectangleReadOnly(float urx, float ury, int rotation) : base(0, 0, urx, ury) {
+            base.Rotation = rotation;
         }
     
         /// <summary>
