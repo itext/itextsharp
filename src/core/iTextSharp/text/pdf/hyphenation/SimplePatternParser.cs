@@ -4,7 +4,6 @@ using System.Text;
 using System.Collections.Generic;
 using System.util;
 using iTextSharp.text.xml.simpleparser;
-using iTextSharp.text.html;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
@@ -208,7 +207,7 @@ namespace iTextSharp.text.pdf.hyphenation {
                 if (token.Length > 0) {
                     exception.Add(token.ToString());
                 }
-                exception.Add(new Hyphen(h[HtmlTags.PRE], h["no"], h["post"]));
+                exception.Add(new Hyphen(h["pre"], h["no"], h["post"]));
                 currElement = ELEM_HYPHEN;
             }
             token.Length = 0;

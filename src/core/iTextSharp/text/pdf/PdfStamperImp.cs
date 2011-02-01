@@ -1559,6 +1559,8 @@ namespace iTextSharp.text.pdf {
             foreach (PdfLayer o in ocgmap.Values)
                 documentOCG[o] = null;
             OCGRadioGroup = d.GetAsArray(PdfName.RBGROUPS);
+            if (OCGRadioGroup == null)
+                OCGRadioGroup = new PdfArray();
             OCGLocked = d.GetAsArray(PdfName.LOCKED);
             if (OCGLocked == null)
                 OCGLocked = new PdfArray();

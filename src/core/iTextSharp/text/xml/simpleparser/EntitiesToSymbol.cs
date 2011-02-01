@@ -58,7 +58,7 @@ namespace iTextSharp.text.xml.simpleparser {
         * This is a map that contains all possible id values of the entity tag
         * that can be translated to a character in font Symbol.
         */
-        public static readonly Dictionary<string,char> map;
+        private static readonly Dictionary<string,char> map;
         
         static EntitiesToSymbol() {
             map = new Dictionary<string,char>();
