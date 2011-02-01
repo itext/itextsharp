@@ -370,7 +370,7 @@ namespace iTextSharp.text.pdf.codec {
             }
 
             CCITTG4Encoder g4 = null;
-            if (bitsPerSample == 1 && samplePerPixel == 1) {
+            if (bitsPerSample == 1 && samplePerPixel == 1 && photometric != TIFFConstants.PHOTOMETRIC_PALETTE) {
                 g4 = new CCITTG4Encoder(w);
             }
             else {
@@ -436,7 +436,7 @@ namespace iTextSharp.text.pdf.codec {
                             lzwDecoder.Decode(im, outBuf, height);
                             break;
                     }
-                    if (bitsPerSample == 1 && samplePerPixel == 1) {
+                    if (bitsPerSample == 1 && samplePerPixel == 1 && photometric != TIFFConstants.PHOTOMETRIC_PALETTE) {
                         g4.Fax4Encode(outBuf, height);
                     }
                     else {
@@ -447,13 +447,13 @@ namespace iTextSharp.text.pdf.codec {
                     }
                     rowsLeft -= rowsStrip;
                 }
-                if (bitsPerSample == 1 && samplePerPixel == 1) {
+                if (bitsPerSample == 1 && samplePerPixel == 1 && photometric != TIFFConstants.PHOTOMETRIC_PALETTE) {
                     img = Image.GetInstance(w, h, false, Image.CCITTG4, 
                         photometric == TIFFConstants.PHOTOMETRIC_MINISBLACK ? Image.CCITT_BLACKIS1 : 0, g4.Close());
                 }
                 else {
                     zip.Close();
-                    img = Image.GetInstance(w, h, samplePerPixel - extraSamples, bitsPerSample, stream.ToArray());
+                    img = new ImgRaw(w, h, samplePerPixel - extraSamples, bitsPerSample, stream.ToArray());
                     img.Deflated = true;
                 }
             }
