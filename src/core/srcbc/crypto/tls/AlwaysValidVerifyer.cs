@@ -10,6 +10,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// DO NOT USE THIS FILE UNLESS YOU KNOW EXACTLY WHAT YOU ARE DOING.
 	/// </pre>
 	/// </remarks>
+	[Obsolete("Perform certificate verification in TlsAuthentication implementation")]
 	public class AlwaysValidVerifyer
 		: ICertificateVerifyer
 	{

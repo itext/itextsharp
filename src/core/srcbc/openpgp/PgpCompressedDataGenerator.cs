@@ -134,13 +134,13 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 					dOut = pkOut;
 					break;
 				case CompressionAlgorithmTag.Zip:
-					dOut = new ZDeflaterOutputStream(pkOut, compression, true);
+					dOut = new SafeZOutputStream(pkOut, compression, true);
 					break;
 				case CompressionAlgorithmTag.ZLib:
-					dOut = new ZDeflaterOutputStream(pkOut, compression, false);
+					dOut = new SafeZOutputStream(pkOut, compression, false);
 					break;
 				case CompressionAlgorithmTag.BZip2:
-					dOut = new CBZip2OutputStream(pkOut);
+					dOut = new SafeCBZip2OutputStream(pkOut);
 					break;
 				default:
 					// Constructor should guard against this possibility
@@ -153,24 +153,44 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 		{
 			if (dOut != null)
 			{
-				switch (algorithm)
+				if (dOut != pkOut)
 				{
-					case CompressionAlgorithmTag.BZip2:
-						((CBZip2OutputStream) dOut).Finish();
-						break;
-					case CompressionAlgorithmTag.Zip:
-					case CompressionAlgorithmTag.ZLib:
-						((ZDeflaterOutputStream) dOut).Finish();
-						break;
+					dOut.Close();
+					dOut.Flush();
 				}
 
-				dOut.Flush();
+				dOut = null;
 
 				pkOut.Finish();
 				pkOut.Flush();
-
-				dOut = null;
 				pkOut = null;
+			}
+		}
+
+		private class SafeCBZip2OutputStream : CBZip2OutputStream
+		{
+			public SafeCBZip2OutputStream(Stream output)
+				: base(output)
+			{
+			}
+
+			public override void Close()
+			{
+				Finish();
+			}
+		}
+
+		private class SafeZOutputStream : ZOutputStream
+		{
+			public SafeZOutputStream(Stream output, int level, bool nowrap)
+				: base(output, level, nowrap)
+			{
+			}
+
+			public override void Close()
+			{
+				Finish();
+				End();
 			}
 		}
 	}

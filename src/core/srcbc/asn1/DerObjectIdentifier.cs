@@ -27,16 +27,6 @@ namespace Org.BouncyCastle.Asn1
                 return (DerObjectIdentifier) obj;
             }
 
-			if (obj is Asn1OctetString)
-            {
-                return new DerObjectIdentifier(((Asn1OctetString)obj).GetOctets());
-            }
-
-			if (obj is Asn1TaggedObject)
-            {
-                return GetInstance(((Asn1TaggedObject)obj).GetObject());
-            }
-
 			throw new ArgumentException("illegal object in GetInstance: " + obj.GetType().Name, "obj");
         }
 
@@ -72,6 +62,11 @@ namespace Org.BouncyCastle.Asn1
         {
             get { return identifier; }
         }
+
+		public virtual DerObjectIdentifier Branch(string branchID)
+		{
+			return new DerObjectIdentifier(identifier + "." + branchID);
+		}
 
 		internal DerObjectIdentifier(
 			byte[] bytes)

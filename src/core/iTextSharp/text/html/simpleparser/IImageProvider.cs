@@ -45,6 +45,6 @@ using iTextSharp.text;
 
 namespace iTextSharp.text.html.simpleparser {
     public interface IImageProvider {
-        Image GetImage(String src, Dictionary<string,string> h, ChainedProperties cprops, IDocListener doc);
+        Image GetImage(String src, IDictionary<string,string> attrs, ChainedProperties chain, IDocListener doc);
     }
 }

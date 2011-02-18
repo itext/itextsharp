@@ -1,4 +1,3 @@
-
 using System;
 using System.Text;
 
@@ -24,5 +23,15 @@ namespace Org.BouncyCastle.Crypto
          * @return full/partial message, null if nothing.
          */
         byte[] GetRecoveredMessage();
-    }
+
+		/**
+		 * Perform an update with the recovered message before adding any other data. This must
+		 * be the first update method called, and calling it will result in the signer assuming
+		 * that further calls to update will include message content past what is recoverable.
+		 *
+		 * @param signature the signature that we are in the process of verifying.
+		 * @throws IllegalStateException
+		 */
+		void UpdateWithRecoveredMessage(byte[] signature);
+	}
 }

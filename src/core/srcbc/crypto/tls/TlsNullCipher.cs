@@ -5,7 +5,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// <summary>
 	/// A NULL cipher suite, for use during handshake.
 	/// </summary>
-	internal class TlsNullCipher
+	public class TlsNullCipher
 		: TlsCipher
 	{
 		public virtual byte[] EncodePlaintext(ContentType type, byte[] plaintext, int offset, int len)

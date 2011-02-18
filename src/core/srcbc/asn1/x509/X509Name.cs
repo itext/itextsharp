@@ -4,6 +4,10 @@ using System.Globalization;
 using System.IO;
 using System.Text;
 
+#if SILVERLIGHT
+using System.Collections.Generic;
+#endif
+
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Encoders;

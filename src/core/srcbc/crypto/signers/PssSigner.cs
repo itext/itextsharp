@@ -1,5 +1,6 @@
 using System;
 
+using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 
@@ -15,19 +16,37 @@ namespace Org.BouncyCastle.Crypto.Signers
 	{
 		public const byte TrailerImplicit = (byte)0xBC;
 
-		private readonly IDigest contentDigest;
+		private readonly IDigest contentDigest1, contentDigest2;
 		private readonly IDigest mgfDigest;
 		private readonly IAsymmetricBlockCipher cipher;
 
 		private SecureRandom random;
 
 		private int hLen;
+		private int mgfhLen;
 		private int sLen;
 		private int emBits;
 		private byte[] salt;
 		private byte[] mDash;
 		private byte[] block;
 		private byte trailer;
+
+		public static PssSigner CreateRawSigner(
+			IAsymmetricBlockCipher	cipher,
+			IDigest					digest)
+		{
+			return new PssSigner(cipher, new NullDigest(), digest, digest, digest.GetDigestSize(), TrailerImplicit);
+		}
+
+		public static PssSigner CreateRawSigner(
+			IAsymmetricBlockCipher	cipher,
+			IDigest					contentDigest,
+			IDigest					mgfDigest,
+			int						saltLen,
+			byte					trailer)
+		{
+			return new PssSigner(cipher, new NullDigest(), contentDigest, mgfDigest, saltLen, trailer);
+		}
 
 		public PssSigner(
 			IAsymmetricBlockCipher	cipher,
@@ -50,6 +69,15 @@ namespace Org.BouncyCastle.Crypto.Signers
 
 		public PssSigner(
 			IAsymmetricBlockCipher	cipher,
+			IDigest					contentDigest,
+			IDigest					mgfDigest,
+			int						saltLen)
+			: this(cipher, contentDigest, mgfDigest, saltLen, TrailerImplicit)
+		{
+		}
+
+		public PssSigner(
+			IAsymmetricBlockCipher	cipher,
 			IDigest					digest,
 			int						saltLen,
 			byte					trailer)
@@ -63,11 +91,24 @@ namespace Org.BouncyCastle.Crypto.Signers
 			IDigest					mgfDigest,
 			int						saltLen,
 			byte					trailer)
+			: this(cipher, contentDigest, contentDigest, mgfDigest, saltLen, trailer)
+		{
+		}
+
+		private PssSigner(
+			IAsymmetricBlockCipher	cipher,
+			IDigest					contentDigest1,
+			IDigest					contentDigest2,
+			IDigest					mgfDigest,
+			int						saltLen,
+			byte					trailer)
 		{
 			this.cipher = cipher;
-			this.contentDigest = contentDigest;
+			this.contentDigest1 = contentDigest1;
+			this.contentDigest2 = contentDigest2;
 			this.mgfDigest = mgfDigest;
-			this.hLen = mgfDigest.GetDigestSize();
+			this.hLen = contentDigest2.GetDigestSize();
+			this.mgfhLen = mgfDigest.GetDigestSize();
 			this.sLen = saltLen;
 			this.salt = new byte[saltLen];
 			this.mDash = new byte[8 + saltLen + hLen];
@@ -129,7 +170,7 @@ namespace Org.BouncyCastle.Crypto.Signers
 		public virtual void Update(
 			byte input)
 		{
-			contentDigest.Update(input);
+			contentDigest1.Update(input);
 		}
 
 		/// <summary> update the internal digest with the byte array in</summary>
@@ -138,13 +179,13 @@ namespace Org.BouncyCastle.Crypto.Signers
 			int		inOff,
 			int		length)
 		{
-			contentDigest.BlockUpdate(input, inOff, length);
+			contentDigest1.BlockUpdate(input, inOff, length);
 		}
 
 		/// <summary> reset the internal state</summary>
 		public virtual void Reset()
 		{
-			contentDigest.Reset();
+			contentDigest1.Reset();
 		}
 
 		/// <summary> Generate a signature for the message we've been loaded with using
@@ -152,7 +193,7 @@ namespace Org.BouncyCastle.Crypto.Signers
 		/// </summary>
 		public virtual byte[] GenerateSignature()
 		{
-			contentDigest.DoFinal(mDash, mDash.Length - hLen - sLen);
+			contentDigest1.DoFinal(mDash, mDash.Length - hLen - sLen);
 
 			if (sLen != 0)
 			{
@@ -162,9 +203,9 @@ namespace Org.BouncyCastle.Crypto.Signers
 
 			byte[] h = new byte[hLen];
 
-			mgfDigest.BlockUpdate(mDash, 0, mDash.Length);
+			contentDigest2.BlockUpdate(mDash, 0, mDash.Length);
 
-			mgfDigest.DoFinal(h, 0);
+			contentDigest2.DoFinal(h, 0);
 
 			block[block.Length - sLen - 1 - hLen - 1] = (byte) (0x01);
 			salt.CopyTo(block, block.Length - sLen - hLen - 1);
@@ -194,7 +235,7 @@ namespace Org.BouncyCastle.Crypto.Signers
 		public virtual bool VerifySignature(
 			byte[] signature)
 		{
-			contentDigest.DoFinal(mDash, mDash.Length - hLen - sLen);
+			contentDigest1.DoFinal(mDash, mDash.Length - hLen - sLen);
 
 			byte[] b = cipher.ProcessBlock(signature, 0, signature.Length);
 			b.CopyTo(block, block.Length - b.Length);
@@ -231,8 +272,8 @@ namespace Org.BouncyCastle.Crypto.Signers
 
 			Array.Copy(block, block.Length - sLen - hLen - 1, mDash, mDash.Length - sLen, sLen);
 
-			mgfDigest.BlockUpdate(mDash, 0, mDash.Length);
-			mgfDigest.DoFinal(mDash, mDash.Length - hLen);
+			contentDigest2.BlockUpdate(mDash, 0, mDash.Length);
+			contentDigest2.DoFinal(mDash, mDash.Length - hLen);
 
 			for (int i = block.Length - hLen - 1, j = mDash.Length - hLen; j != mDash.Length; i++, j++)
 			{
@@ -269,13 +310,13 @@ namespace Org.BouncyCastle.Crypto.Signers
 			int		length)
 		{
 			byte[] mask = new byte[length];
-			byte[] hashBuf = new byte[hLen];
+			byte[] hashBuf = new byte[mgfhLen];
 			byte[] C = new byte[4];
 			int counter = 0;
 
 			mgfDigest.Reset();
 
-			while (counter < (length / hLen))
+			while (counter < (length / mgfhLen))
 			{
 				ItoOSP(counter, C);
 
@@ -283,11 +324,11 @@ namespace Org.BouncyCastle.Crypto.Signers
 				mgfDigest.BlockUpdate(C, 0, C.Length);
 				mgfDigest.DoFinal(hashBuf, 0);
 
-				hashBuf.CopyTo(mask, counter * hLen);
+				hashBuf.CopyTo(mask, counter * mgfhLen);
 				++counter;
 			}
 
-			if ((counter * hLen) < length)
+			if ((counter * mgfhLen) < length)
 			{
 				ItoOSP(counter, C);
 
@@ -295,7 +336,7 @@ namespace Org.BouncyCastle.Crypto.Signers
 				mgfDigest.BlockUpdate(C, 0, C.Length);
 				mgfDigest.DoFinal(hashBuf, 0);
 
-				Array.Copy(hashBuf, 0, mask, counter * hLen, mask.Length - (counter * hLen));
+				Array.Copy(hashBuf, 0, mask, counter * mgfhLen, mask.Length - (counter * mgfhLen));
 			}
 
 			return mask;

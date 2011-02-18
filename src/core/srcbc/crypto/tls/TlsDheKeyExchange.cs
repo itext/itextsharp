@@ -10,19 +10,20 @@ namespace Org.BouncyCastle.Crypto.Tls
 	internal class TlsDheKeyExchange
 		: TlsDHKeyExchange
 	{
-		internal TlsDheKeyExchange(TlsProtocolHandler handler, ICertificateVerifyer verifyer,
-			TlsKeyExchangeAlgorithm keyExchange)
-			: base(handler, verifyer, keyExchange)
+		internal TlsDheKeyExchange(TlsClientContext context, KeyExchangeAlgorithm keyExchange)
+			: base(context, keyExchange)
 		{
 		}
 
 		public override void SkipServerKeyExchange()
 		{
-			handler.FailWithError(AlertLevel.fatal, AlertDescription.unexpected_message);
+			throw new TlsFatalAlert(AlertDescription.unexpected_message);
 		}
 
-		public override void ProcessServerKeyExchange(Stream input, SecurityParameters securityParameters)
+		public override void ProcessServerKeyExchange(Stream input)
 		{
+			SecurityParameters securityParameters = context.SecurityParameters;
+
 			ISigner signer = InitSigner(tlsSigner, securityParameters);
 			Stream sigIn = new SignerStream(input, signer, null);
 
@@ -33,7 +34,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			byte[] sigByte = TlsUtilities.ReadOpaque16(input);
 			if (!signer.VerifySignature(sigByte))
 			{
-				handler.FailWithError(AlertLevel.fatal, AlertDescription.bad_certificate);
+				throw new TlsFatalAlert(AlertDescription.bad_certificate);
 			}
 
 			BigInteger p = new BigInteger(1, pBytes);

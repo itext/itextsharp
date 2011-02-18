@@ -2,6 +2,8 @@ using System;
 using System.Globalization;
 using System.Text;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Asn1
 {
     /**
@@ -90,7 +92,7 @@ namespace Org.BouncyCastle.Asn1
             //
             // explicitly convert to characters
             //
-			this.time = Encoding.ASCII.GetString(bytes, 0, bytes.Length);
+            this.time = Strings.FromAsciiByteArray(bytes);
         }
 
 		/**
@@ -155,9 +157,14 @@ namespace Org.BouncyCastle.Asn1
 		private string CalculateGmtOffset()
 		{
 			char sign = '+';
+            DateTime time = ToDateTime();
 
-			// Note: GetUtcOffset incorporates Daylight Savings offset
-			int minutes = TimeZone.CurrentTimeZone.GetUtcOffset(ToDateTime()).Minutes;
+            // Note: GetUtcOffset incorporates Daylight Savings offset
+#if SILVERLIGHT
+            int minutes = TimeZoneInfo.Local.GetUtcOffset(time).Minutes;
+#else
+            int minutes = TimeZone.CurrentTimeZone.GetUtcOffset(time).Minutes;
+#endif
 			if (minutes < 0)
 			{
 				sign = '-';
@@ -263,7 +270,7 @@ namespace Org.BouncyCastle.Asn1
 
 		private byte[] GetOctets()
         {
-			return Encoding.ASCII.GetBytes(time);
+            return Strings.ToAsciiByteArray(time);
         }
 
 		internal override void Encode(

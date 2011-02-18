@@ -17,24 +17,22 @@ namespace Org.BouncyCastle.Crypto.Tls
 	internal class TlsRsaKeyExchange
 		: TlsKeyExchange
 	{
-		protected TlsProtocolHandler handler;
-        protected ICertificateVerifyer verifyer;
+		protected TlsClientContext context;
 
-        protected AsymmetricKeyParameter serverPublicKey = null;
+		protected AsymmetricKeyParameter serverPublicKey = null;
 
         protected RsaKeyParameters rsaServerPublicKey = null;
 
         protected byte[] premasterSecret;
 
-		internal TlsRsaKeyExchange(TlsProtocolHandler handler, ICertificateVerifyer verifyer)
+		internal TlsRsaKeyExchange(TlsClientContext context)
 		{
-			this.handler = handler;
-			this.verifyer = verifyer;
+			this.context = context;
 		}
 
 		public virtual void SkipServerCertificate()
 		{
-			handler.FailWithError(AlertLevel.fatal, AlertDescription.unexpected_message);
+			throw new TlsFatalAlert(AlertDescription.unexpected_message);
 		}
 
 		public virtual void ProcessServerCertificate(Certificate serverCertificate)
@@ -49,14 +47,18 @@ namespace Org.BouncyCastle.Crypto.Tls
 //			catch (RuntimeException)
 			catch (Exception)
 			{
-				handler.FailWithError(AlertLevel.fatal, AlertDescription.unsupported_certificate);
+				throw new TlsFatalAlert(AlertDescription.unsupported_certificate);
 			}
 
 			// Sanity check the PublicKeyFactory
 			if (this.serverPublicKey.IsPrivate)
 			{
-				handler.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
+				throw new TlsFatalAlert(AlertDescription.internal_error);
 			}
+
+			this.rsaServerPublicKey = ValidateRsaPublicKey((RsaKeyParameters)this.serverPublicKey);
+
+			TlsUtilities.ValidateKeyUsage(x509Cert, KeyUsage.KeyEncipherment);
 
 			// TODO
 			/*
@@ -64,23 +66,6 @@ namespace Org.BouncyCastle.Crypto.Tls
 			* signing algorithm for the certificate must be the same as the algorithm for the
 			* certificate key."
 			*/
-
-			// TODO Should the 'is' tests be replaces with stricter checks on keyInfo.getAlgorithmId()?
-
-			if (!(this.serverPublicKey is RsaKeyParameters))
-			{
-				handler.FailWithError(AlertLevel.fatal, AlertDescription.certificate_unknown);
-			}
-			ValidateKeyUsage(x509Cert, KeyUsage.KeyEncipherment);
-			this.rsaServerPublicKey = ValidateRsaPublicKey((RsaKeyParameters)this.serverPublicKey);
-
-			/*
-			* Verify them.
-			*/
-			if (!this.verifyer.IsValid(serverCertificate.GetCerts()))
-			{
-				handler.FailWithError(AlertLevel.fatal, AlertDescription.user_canceled);
-			}
 		}
 
 		public virtual void SkipServerKeyExchange()
@@ -88,22 +73,52 @@ namespace Org.BouncyCastle.Crypto.Tls
 			// OK
 		}
 
-		public virtual void ProcessServerKeyExchange(Stream input, SecurityParameters securityParameters)
+		public virtual void ProcessServerKeyExchange(Stream input)
 		{
-			handler.FailWithError(AlertLevel.fatal, AlertDescription.unexpected_message);
+			throw new TlsFatalAlert(AlertDescription.unexpected_message);
 		}
 
+		public virtual void ValidateCertificateRequest(CertificateRequest certificateRequest)
+		{
+			ClientCertificateType[] types = certificateRequest.CertificateTypes;
+			foreach (ClientCertificateType type in types)
+			{
+				switch (type)
+				{
+					case ClientCertificateType.rsa_sign:
+					case ClientCertificateType.dss_sign:
+					case ClientCertificateType.ecdsa_sign:
+						break;
+					default:
+						throw new TlsFatalAlert(AlertDescription.illegal_parameter);
+				}
+			}
+		}
+
+		public virtual void SkipClientCredentials()
+		{
+			// OK
+		}
+
+		public virtual void ProcessClientCredentials(TlsCredentials clientCredentials)
+		{
+			if (!(clientCredentials is TlsSignerCredentials))
+			{
+				throw new TlsFatalAlert(AlertDescription.internal_error);
+			}
+		}
+		
         public virtual void GenerateClientKeyExchange(Stream output)
 		{
 			/*
 			* Choose a PremasterSecret and send it encrypted to the server
 			*/
 			premasterSecret = new byte[48];
-			handler.Random.NextBytes(premasterSecret);
+			context.SecureRandom.NextBytes(premasterSecret);
 			TlsUtilities.WriteVersion(premasterSecret, 0);
 
 			Pkcs1Encoding encoding = new Pkcs1Encoding(new RsaBlindedEngine());
-			encoding.Init(true, new ParametersWithRandom(this.rsaServerPublicKey, handler.Random));
+			encoding.Init(true, new ParametersWithRandom(this.rsaServerPublicKey, context.SecureRandom));
 
 			try
 			{
@@ -116,7 +131,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 				/*
 				* This should never happen, only during decryption.
 				*/
-				handler.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
+				throw new TlsFatalAlert(AlertDescription.internal_error);
 			}
 		}
 
@@ -127,24 +142,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return tmp;
 		}
 
-		protected virtual void ValidateKeyUsage(X509CertificateStructure c, int keyUsageBits)
-		{
-			X509Extensions exts = c.TbsCertificate.Extensions;
-			if (exts != null)
-			{
-				X509Extension ext = exts.GetExtension(X509Extensions.KeyUsage);
-				if (ext != null)
-				{
-					DerBitString ku = KeyUsage.GetInstance(ext);
-					int bits = ku.GetBytes()[0];
-					if ((bits & keyUsageBits) != keyUsageBits)
-					{
-						handler.FailWithError(AlertLevel.fatal, AlertDescription.certificate_unknown);
-					}
-				}
-			}
-		}
-
+    	// Would be needed to process RSA_EXPORT server key exchange
 //	    protected virtual void ProcessRsaServerKeyExchange(Stream input, ISigner signer)
 //	    {
 //	        Stream sigIn = input;
@@ -179,7 +177,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 			if (!key.Exponent.IsProbablePrime(2))
 			{
-				handler.FailWithError(AlertLevel.fatal, AlertDescription.illegal_parameter);
+				throw new TlsFatalAlert(AlertDescription.illegal_parameter);
 			}
 
 			return key;

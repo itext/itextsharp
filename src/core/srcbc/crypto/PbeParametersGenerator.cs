@@ -127,15 +127,15 @@ namespace Org.BouncyCastle.Crypto
 		public static byte[] Pkcs5PasswordToBytes(
 			char[] password)
 		{
-			return Encoding.ASCII.GetBytes(password);
+            return Strings.ToAsciiByteArray(password);
 		}
 
 		[Obsolete("Use version taking 'char[]' instead")]
 		public static byte[] Pkcs5PasswordToBytes(
 			string password)
 		{
-			return Encoding.ASCII.GetBytes(password);
-		}
+            return Strings.ToAsciiByteArray(password);
+        }
 
 		/**
 		 * converts a password to a byte array according to the scheme in

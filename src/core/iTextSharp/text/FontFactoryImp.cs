@@ -1,10 +1,8 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.util;
 using System.Globalization;
 
-using iTextSharp.text.html;
 using iTextSharp.text.pdf;
 using iTextSharp.text;
 
@@ -209,92 +207,6 @@ namespace iTextSharp.text {
         /// <summary>
         /// Constructs a Font-object.
         /// </summary>
-        /// <param name="attributes">the attributes of a Font object</param>
-        /// <returns>a Font object</returns>
-        public virtual Font GetFont(Properties attributes) {
-            string fontname = null;
-            string encoding = defaultEncoding;
-            bool embedded = defaultEmbedding;
-            float size = Font.UNDEFINED;
-            int style = Font.NORMAL;
-            BaseColor color = null;
-            string value = attributes[Markup.HTML_ATTR_STYLE];
-            if (value != null && value.Length > 0) {
-                Properties styleAttributes = Markup.ParseAttributes(value);
-                if (styleAttributes.Count == 0) {
-                    attributes.Add(Markup.HTML_ATTR_STYLE, value);
-                }
-                else {
-                    fontname = styleAttributes[Markup.CSS_KEY_FONTFAMILY];
-                    if (fontname != null) {
-                        string tmp;
-                        while (fontname.IndexOf(',') != -1) {
-                            tmp = fontname.Substring(0, fontname.IndexOf(','));
-                            if (IsRegistered(tmp)) {
-                                fontname = tmp;
-                            }
-                            else {
-                                fontname = fontname.Substring(fontname.IndexOf(',') + 1);
-                            }
-                        }
-                    }
-                    if ((value = styleAttributes[Markup.CSS_KEY_FONTSIZE]) != null) {
-                        size = Markup.ParseLength(value);
-                    }
-                    if ((value = styleAttributes[Markup.CSS_KEY_FONTWEIGHT]) != null) {
-                        style |= Font.GetStyleValue(value);
-                    }
-                    if ((value = styleAttributes[Markup.CSS_KEY_FONTSTYLE]) != null) {
-                        style |= Font.GetStyleValue(value);
-                    }
-                    if ((value = styleAttributes[Markup.CSS_KEY_COLOR]) != null) {
-                        color = Markup.DecodeColor(value);
-                    }
-                    attributes.AddAll(styleAttributes);
-                }
-            }
-            if ((value = attributes[ElementTags.ENCODING]) != null) {
-                encoding = value;
-            }
-            if ("true".Equals(attributes[ElementTags.EMBEDDED])) {
-                embedded = true;
-            }
-            if ((value = attributes[ElementTags.FONT]) != null) {
-                fontname = value;
-            }
-            if ((value = attributes[ElementTags.SIZE]) != null) {
-                size = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            }
-            if ((value = attributes[Markup.HTML_ATTR_STYLE]) != null) {
-                style |= Font.GetStyleValue(value);
-            }
-            if ((value = attributes[ElementTags.STYLE]) != null) {
-                style |= Font.GetStyleValue(value);
-            }
-            string r = attributes[ElementTags.RED];
-            string g = attributes[ElementTags.GREEN];
-            string b = attributes[ElementTags.BLUE];
-            if (r != null || g != null || b != null) {
-                int red = 0;
-                int green = 0;
-                int blue = 0;
-                if (r != null) red = int.Parse(r);
-                if (g != null) green = int.Parse(g);
-                if (b != null) blue = int.Parse(b);
-                color = new BaseColor(red, green, blue);
-            }
-            else if ((value = attributes[ElementTags.COLOR]) != null) {
-                color = Markup.DecodeColor(value);
-            }
-            if (fontname == null) {
-                return GetFont(null, encoding, embedded, size, style, color);
-            }
-            return GetFont(fontname, encoding, embedded, size, style, color);
-        }
-    
-        /// <summary>
-        /// Constructs a Font-object.
-        /// </summary>
         /// <param name="fontname">the name of the font</param>
         /// <param name="encoding">the encoding of the font</param>
         /// <param name="embedded">true if the font is to be embedded in the PDF</param>
@@ -427,16 +339,6 @@ namespace iTextSharp.text {
             return GetFont(fontname, defaultEncoding, defaultEmbedding, Font.UNDEFINED, Font.UNDEFINED, null);
         }
 
-        public virtual void Register(Properties attributes) {
-            string path;
-            string alias = null;
-
-            path = attributes.Remove("path");
-            alias = attributes.Remove("alias");
-
-            Register(path, alias);
-        }
-    
         /**
         * Register a font by giving explicitly the font family and name.
         * @param familyName the font family

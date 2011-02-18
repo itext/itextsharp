@@ -87,19 +87,19 @@ namespace Org.BouncyCastle.Cms
 				eiGen.GetRawOutputStream(), 0, true, _bufferSize);
 
 			return new CmsCompressedOutputStream(
-				new ZDeflaterOutputStream(octetStream), sGen, cGen, eiGen);
+				new ZOutputStream(octetStream, JZlib.Z_DEFAULT_COMPRESSION), sGen, cGen, eiGen);
 		}
 
 		private class CmsCompressedOutputStream
 			: BaseOutputStream
 		{
-			private ZDeflaterOutputStream _out;
+			private ZOutputStream _out;
 			private BerSequenceGenerator _sGen;
 			private BerSequenceGenerator _cGen;
 			private BerSequenceGenerator _eiGen;
 
 			internal CmsCompressedOutputStream(
-				ZDeflaterOutputStream	outStream,
+				ZOutputStream			outStream,
 				BerSequenceGenerator	sGen,
 				BerSequenceGenerator	cGen,
 				BerSequenceGenerator	eiGen)

@@ -600,6 +600,33 @@ namespace iTextSharp.text.pdf {
         * @see #beginWritingRows(com.lowagie.text.pdf.PdfContentByte)
         */    
         public float WriteSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos, PdfContentByte[] canvases) {
+            return WriteSelectedRows(colStart, colEnd, rowStart, rowEnd, xPos, yPos, canvases, true);
+        }
+        
+        /**
+         * Writes the selected rows and columns to the document.
+         * This method does not clip the columns; this is only important
+         * if there are columns with colspan at boundaries.
+         * <CODE>canvases</CODE> is obtained from <CODE>beginWritingRows()</CODE>.
+         * The table event is only fired for complete rows.
+         *
+         * @param colStart the first column to be written, zero index
+         * @param colEnd the last column to be written + 1. If it is -1 all the
+         * columns to the end are written
+         * @param rowStart the first row to be written, zero index
+         * @param rowEnd the last row to be written + 1. If it is -1 all the
+         * rows to the end are written
+         * @param xPos the x write coordinate
+         * @param yPos the y write coordinate
+         * @param canvases an array of 4 <CODE>PdfContentByte</CODE> obtained from
+         * <CODE>beginWritingRows()</CODE>
+         * @param   reusable if set to false, the content in the cells is "consumed";
+         * if true, you can reuse the cells, the row, the parent table as many times you want.
+         * @return the y coordinate position of the bottom of the last row
+         * @see #beginWritingRows(com.itextpdf.text.pdf.PdfContentByte)
+         * @since 5.1.0 added the reusable parameter
+         */
+        public float WriteSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos, PdfContentByte[] canvases, bool reusable) {
             if (totalWidth <= 0)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("the.table.width.must.be.greater.than.zero"));
             int totalRows = rows.Count;
@@ -625,7 +652,7 @@ namespace iTextSharp.text.pdf {
             for (int k = rowStart; k < rowEnd; ++k) {
                 PdfPRow row = rows[k];
                 if (row != null) {
-                    row.WriteCells(colStart, colEnd, xPos, yPos, canvases);
+                    row.WriteCells(colStart, colEnd, xPos, yPos, canvases, reusable);
                     yPos -= row.MaxHeights;
                 }
             }
@@ -679,6 +706,32 @@ namespace iTextSharp.text.pdf {
         * @return the y coordinate position of the bottom of the last row
         */    
         public float WriteSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos, PdfContentByte canvas) {
+            return WriteSelectedRows(colStart, colEnd, rowStart, rowEnd, xPos, yPos, canvas, true);
+        }
+
+
+        /**
+         * Writes the selected rows and columns to the document.
+         * This method clips the columns; this is only important
+         * if there are columns with colspan at boundaries.
+         * The table event is only fired for complete rows.
+         *
+         * @param colStart the first column to be written, zero index
+         * @param colEnd the last column to be written + 1. If it is -1 all the
+         * columns to the end are written
+         * @param rowStart the first row to be written, zero index
+         * @param rowEnd the last row to be written + 1. If it is -1 all the
+         * rows to the end are written
+         * @param xPos the x write coordinate
+         * @param yPos the y write coordinate
+         * @param canvas the <CODE>PdfContentByte</CODE> where the rows will
+         * be written to     
+         * @param   reusable if set to false, the content in the cells is "consumed";
+         * if true, you can reuse the cells, the row, the parent table as many times you want.
+         * @return the y coordinate position of the bottom of the last row
+         * @since 5.1.0 added the reusable parameter
+         */
+        public float WriteSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos, PdfContentByte canvas, bool reusable) {
             int totalCols = NumberOfColumns;
             if (colStart < 0)
                 colStart = 0;
@@ -705,7 +758,7 @@ namespace iTextSharp.text.pdf {
             }
             
             PdfContentByte[] canvases = BeginWritingRows(canvas);
-            float y = WriteSelectedRows(colStart, colEnd, rowStart, rowEnd, xPos, yPos, canvases);
+            float y = WriteSelectedRows(colStart, colEnd, rowStart, rowEnd, xPos, yPos, canvases, reusable);
             EndWritingRows(canvases);
             
             if (clip)

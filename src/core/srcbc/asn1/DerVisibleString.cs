@@ -1,6 +1,8 @@
 using System;
 using System.Text;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Asn1
 {
     /**
@@ -58,7 +60,7 @@ namespace Org.BouncyCastle.Asn1
          */
         public DerVisibleString(
             byte[] str)
-			: this(Encoding.ASCII.GetString(str, 0, str.Length))
+			: this(Strings.FromAsciiByteArray(str))
         {
         }
 
@@ -81,7 +83,7 @@ namespace Org.BouncyCastle.Asn1
 
 		public byte[] GetOctets()
         {
-			return Encoding.ASCII.GetBytes(str);
+            return Strings.ToAsciiByteArray(str);
         }
 
 		internal override void Encode(

@@ -1,6 +1,8 @@
 using System;
 using iTextSharp.text;
 /*
+ * $Id: ALink.java 4113 2009-12-01 11:08:59Z blowagie $
+ *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
@@ -43,7 +45,19 @@ using iTextSharp.text;
  */
 
 namespace iTextSharp.text.html.simpleparser {
-    public interface IALink {
-        bool Process(Paragraph current, ChainedProperties cprops);
+
+    /**
+     * Allows you to do additional processing on a Paragraph that contains a link.
+     * @author  psoares
+     * @since 5.0.6 (renamed)
+     */
+    public interface ILinkProcessor {
+        /**
+         * Does additional processing on a link paragraph
+         * @param current   the Paragraph that has the link
+         * @param attrs     the attributes
+         * @return  false if the Paragraph no longer needs processing
+         */
+        bool Process(Paragraph current, ChainedProperties attrs);
     }
 }

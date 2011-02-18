@@ -9,8 +9,8 @@ namespace Org.BouncyCastle.Asn1.Cms
     public class IssuerAndSerialNumber
         : Asn1Encodable
     {
-        X509Name	name;
-        DerInteger	serialNumber;
+        private X509Name	name;
+        private DerInteger	serialNumber;
 
         public static IssuerAndSerialNumber GetInstance(
             object obj)

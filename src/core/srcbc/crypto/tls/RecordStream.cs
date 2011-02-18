@@ -10,8 +10,11 @@ namespace Org.BouncyCastle.Crypto.Tls
 		private Stream inStr;
 		private Stream outStr;
 		private CombinedHash hash;
+		private TlsCompression readCompression = null;
+		private TlsCompression writeCompression = null;
 		private TlsCipher readCipher = null;
 		private TlsCipher writeCipher = null;
+		private MemoryStream buffer = new MemoryStream();
 
 		internal RecordStream(
 			TlsProtocolHandler	handler,
@@ -22,17 +25,21 @@ namespace Org.BouncyCastle.Crypto.Tls
 			this.inStr = inStr;
 			this.outStr = outStr;
 			this.hash = new CombinedHash();
+			this.readCompression = new TlsNullCompression();
+			this.writeCompression = this.readCompression;
 			this.readCipher = new TlsNullCipher();
 			this.writeCipher = this.readCipher;
 		}
 
-		internal void ClientCipherSpecDecided(TlsCipher tlsCipher)
+		internal void ClientCipherSpecDecided(TlsCompression tlsCompression, TlsCipher tlsCipher)
 		{
+			this.writeCompression = tlsCompression;
 			this.writeCipher = tlsCipher;
 		}
 
 		internal void ServerClientSpecReceived()
 		{
+			this.readCompression = this.writeCompression;
 			this.readCipher = this.writeCipher;
 		}
 
@@ -52,7 +59,20 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			byte[] buf = new byte[len];
 			TlsUtilities.ReadFully(buf, inStr);
-			return readCipher.DecodeCiphertext(type, buf, 0, buf.Length);
+			byte[] decoded = readCipher.DecodeCiphertext(type, buf, 0, buf.Length);
+
+			Stream cOut = readCompression.Decompress(buffer);
+
+			if (cOut == buffer)
+			{
+				return decoded;
+			}
+
+			cOut.Write(decoded, 0, decoded.Length);
+			cOut.Flush();
+			byte[] contents = buffer.ToArray();
+			buffer.SetLength(0);
+			return contents;
 		}
 
 		internal void WriteMessage(
@@ -65,11 +85,25 @@ namespace Org.BouncyCastle.Crypto.Tls
 			{
 				UpdateHandshakeData(message, offset, len);
 			}
-			byte[] ciphertext = writeCipher.EncodePlaintext(type, message, offset, len);
+
+			Stream cOut = writeCompression.Compress(buffer);
+
+			byte[] ciphertext;
+			if (cOut == buffer)
+			{
+				ciphertext = writeCipher.EncodePlaintext(type, message, offset, len);
+			}
+			else
+			{
+				cOut.Write(message, offset, len);
+				cOut.Flush();
+				ciphertext = writeCipher.EncodePlaintext(type, buffer.GetBuffer(), 0, (int)buffer.Position);
+				buffer.SetLength(0);
+			}
+
 			byte[] writeMessage = new byte[ciphertext.Length + 5];
             TlsUtilities.WriteUint8((byte)type, writeMessage, 0);
-            TlsUtilities.WriteUint8(3, writeMessage, 1);
-            TlsUtilities.WriteUint8(1, writeMessage, 2);
+			TlsUtilities.WriteVersion(writeMessage, 1);
 			TlsUtilities.WriteUint16(ciphertext.Length, writeMessage, 3);
 			Array.Copy(ciphertext, 0, writeMessage, 5, ciphertext.Length);
 			outStr.Write(writeMessage, 0, writeMessage.Length);

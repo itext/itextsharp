@@ -633,15 +633,6 @@ namespace iTextSharp.text {
                 return null;
         }
 
-        /// <summary>
-        /// Checks if a given tag corresponds with this object.
-        /// </summary>
-        /// <param name="tag">the given tag</param>
-        /// <returns>true if the tag corresponds</returns>
-        public static bool IsTag(string tag) {
-            return ElementTags.CHUNK.Equals(tag);
-        }
-
         ///<summary> Key for Action. </summary>
         public const string ACTION = "ACTION";
 

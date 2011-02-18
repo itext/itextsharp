@@ -124,9 +124,6 @@
     <Compile Include="iTextSharp\text\Element.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\ElementTags.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="iTextSharp\text\error_messages\MessageLocalization.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -140,9 +137,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\exceptions\UnsupportedPdfException.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="iTextSharp\text\factories\ElementFactory.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\factories\GreekAlphabetFactory.cs">
@@ -175,31 +169,13 @@
     <Compile Include="iTextSharp\text\html\HtmlTags.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\html\Markup.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="iTextSharp\text\html\simpleparser\ChainedProperties.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="iTextSharp\text\html\simpleparser\FactoryProperties.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\html\simpleparser\HTMLWorker.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\html\simpleparser\IALink.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="iTextSharp\text\html\simpleparser\IImageProvider.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="iTextSharp\text\html\simpleparser\IImg.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="iTextSharp\text\html\simpleparser\IncCell.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="iTextSharp\text\html\simpleparser\IncTable.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\html\simpleparser\StyleSheet.cs">
@@ -2542,7 +2518,6 @@
     <Compile Include="srcbc\cms\SimpleAttributeTableGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\cms\TeeInputStream.cs" />
     <Compile Include="srcbc\crypto\agreement\DHAgreement.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -4101,6 +4076,15 @@
     <EmbeddedResource Include="iTextSharp\text\pdf\fonts\ZapfDingbats.afm" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="iTextSharp\text\html\HtmlUtilities.cs" />
+    <Compile Include="iTextSharp\text\html\simpleparser\CellWrapper.cs" />
+    <Compile Include="iTextSharp\text\html\simpleparser\ElementFactory.cs" />
+    <Compile Include="iTextSharp\text\html\simpleparser\HTMLTagProcessors.cs" />
+    <Compile Include="iTextSharp\text\html\simpleparser\IHTMLTagProcessor.cs" />
+    <Compile Include="iTextSharp\text\html\simpleparser\IImageProcessor.cs" />
+    <Compile Include="iTextSharp\text\html\simpleparser\ILinkProcessor.cs" />
+    <Compile Include="iTextSharp\text\html\simpleparser\ImageStore.cs" />
+    <Compile Include="iTextSharp\text\html\simpleparser\TableWrapper.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWCompressor.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWStringTable.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\InlineImageUtils.cs" />
@@ -4118,30 +4102,56 @@
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaPosition.cs" />
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaPresentation.cs" />
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaWindow.cs" />
+    <Compile Include="iTextSharp\text\xml\simpleparser\handler\HTMLNewLineHandler.cs" />
+    <Compile Include="iTextSharp\text\xml\simpleparser\handler\NeverNewLineHandler.cs" />
+    <Compile Include="iTextSharp\text\xml\simpleparser\INewLineHandler.cs" />
     <Compile Include="iTextSharp\text\xml\XmlDomWriter.cs" />
+    <Compile Include="iTextSharp\text\xml\XMLUtil.cs" />
     <Compile Include="srcbc\asn1\Asn1Exception.cs" />
     <Compile Include="srcbc\asn1\Asn1ParsingException.cs" />
     <Compile Include="srcbc\asn1\cmp\CmpObjectIdentifiers.cs" />
+    <Compile Include="srcbc\asn1\icao\CscaMasterList.cs" />
+    <Compile Include="srcbc\asn1\icao\LDSVersionInfo.cs" />
     <Compile Include="srcbc\crypto\modes\gcm\BasicGcmExponentiator.cs" />
     <Compile Include="srcbc\crypto\modes\gcm\IGcmExponentiator.cs" />
     <Compile Include="srcbc\crypto\modes\gcm\Tables1kGcmExponentiator.cs" />
     <Compile Include="srcbc\crypto\tls\AlertDescription.cs" />
     <Compile Include="srcbc\crypto\tls\AlertLevel.cs" />
+    <Compile Include="srcbc\crypto\tls\CertificateRequest.cs" />
     <Compile Include="srcbc\crypto\tls\CipherSuite.cs" />
     <Compile Include="srcbc\crypto\tls\ClientCertificateType.cs" />
     <Compile Include="srcbc\crypto\tls\CompressionMethod.cs" />
     <Compile Include="srcbc\crypto\tls\ContentType.cs" />
+    <Compile Include="srcbc\crypto\tls\DefaultTlsAgreementCredentials.cs" />
+    <Compile Include="srcbc\crypto\tls\DefaultTlsCipherFactory.cs" />
+    <Compile Include="srcbc\crypto\tls\DefaultTlsSignerCredentials.cs" />
+    <Compile Include="srcbc\crypto\tls\DigestAlgorithm.cs" />
     <Compile Include="srcbc\crypto\tls\ECCurveType.cs" />
     <Compile Include="srcbc\crypto\tls\ECPointFormat.cs" />
+    <Compile Include="srcbc\crypto\tls\EncryptionAlgorithm.cs" />
     <Compile Include="srcbc\crypto\tls\ExtensionType.cs" />
     <Compile Include="srcbc\crypto\tls\HandshakeType.cs" />
+    <Compile Include="srcbc\crypto\tls\KeyExchangeAlgorithm.cs" />
+    <Compile Include="srcbc\crypto\tls\LegacyTlsAuthentication.cs" />
+    <Compile Include="srcbc\crypto\tls\LegacyTlsClient.cs" />
     <Compile Include="srcbc\crypto\tls\NamedCurve.cs" />
+    <Compile Include="srcbc\crypto\tls\SrpTlsClient.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsAgreementCredentials.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsAuthentication.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsCipherFactory.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsClientContext.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsClientContextImpl.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsCompression.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsCredentials.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsDeflateCompression.cs" />
     <Compile Include="srcbc\crypto\tls\TlsDheKeyExchange.cs" />
     <Compile Include="srcbc\crypto\tls\TlsDsaSigner.cs" />
     <Compile Include="srcbc\crypto\tls\TlsECDheKeyExchange.cs" />
     <Compile Include="srcbc\crypto\tls\TlsECDHKeyExchange.cs" />
     <Compile Include="srcbc\crypto\tls\TlsECDsaSigner.cs" />
-    <Compile Include="srcbc\crypto\tls\TlsECKeyExchange.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsFatalAlert.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsNullCompression.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsSignerCredentials.cs" />
     <Compile Include="srcbc\crypto\tls\TlsStream.cs" />
     <Compile Include="srcbc\openssl\MiscPemGenerator.cs" />
     <Compile Include="srcbc\openssl\Pkcs8Generator.cs" />
@@ -4158,8 +4168,13 @@
     <Compile Include="srcbc\util\io\pem\PemObjectParser.cs" />
     <Compile Include="srcbc\util\io\pem\PemReader.cs" />
     <Compile Include="srcbc\util\io\pem\PemWriter.cs" />
+    <Compile Include="srcbc\util\io\TeeInputStream.cs" />
     <Compile Include="srcbc\util\io\TeeOutputStream.cs" />
+    <Compile Include="srcbc\util\zlib\ZInputStream.cs" />
+    <Compile Include="srcbc\util\zlib\ZOutputStream.cs" />
     <Compile Include="System\util\collections\LinkedDictionary.cs" />
+    <Compile Include="System\util\zlib\ZInputStream.cs" />
+    <Compile Include="System\util\zlib\ZOutputStream.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

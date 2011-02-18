@@ -2,6 +2,8 @@ using System;
 using System.IO;
 using System.Text;
 
+using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -164,7 +166,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			if ((readVersion[0] != 3) || (readVersion[1] != 1))
 			{
-				handler.FailWithError(AlertLevel.fatal, AlertDescription.protocol_version);
+				throw new TlsFatalAlert(AlertDescription.protocol_version);
 			}
 		}
 
@@ -174,7 +176,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			int i2 = inStr.ReadByte();
 			if ((i1 != 3) || (i2 != 1))
 			{
-				handler.FailWithError(AlertLevel.fatal, AlertDescription.protocol_version);
+				throw new TlsFatalAlert(AlertDescription.protocol_version);
 			}
 		}
 
@@ -224,7 +226,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 		internal static byte[] PRF(byte[] secret, string asciiLabel, byte[] seed, int size)
 		{
-			byte[] label = Encoding.ASCII.GetBytes(asciiLabel);
+            byte[] label = Strings.ToAsciiByteArray(asciiLabel);
 
 			int s_half = (secret.Length + 1) / 2;
 			byte[] s1 = new byte[s_half];
@@ -251,6 +253,24 @@ namespace Org.BouncyCastle.Crypto.Tls
 			Array.Copy(a, 0, c, 0, a.Length);
 			Array.Copy(b, 0, c, a.Length, b.Length);
 			return c;
+		}
+
+		internal static void ValidateKeyUsage(X509CertificateStructure c, int keyUsageBits)
+		{
+			X509Extensions exts = c.TbsCertificate.Extensions;
+			if (exts != null)
+			{
+				X509Extension ext = exts.GetExtension(X509Extensions.KeyUsage);
+				if (ext != null)
+				{
+					DerBitString ku = KeyUsage.GetInstance(ext);
+					int bits = ku.GetBytes()[0];
+					if ((bits & keyUsageBits) != keyUsageBits)
+					{
+						throw new TlsFatalAlert(AlertDescription.certificate_unknown);
+					}
+				}
+			}
 		}
 	}
 }

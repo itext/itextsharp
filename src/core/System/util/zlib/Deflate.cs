@@ -64,7 +64,8 @@ namespace System.util.zlib {
         private const int STORED=0;
         private const int FAST=1;
         private const int SLOW=2;
-        private static Config[] config_table;    
+        private static readonly Config[] config_table;
+
         static Deflate(){
             config_table=new Config[10];
             //                         good  lazy  nice  chain
@@ -81,7 +82,7 @@ namespace System.util.zlib {
             config_table[9]=new Config(32, 258,  258, 4096, SLOW);
         }
 
-        private static String[] z_errmsg = {
+        private static readonly String[] z_errmsg = {
                                                "need dictionary",     // Z_NEED_DICT       2
                                                "stream end",          // Z_STREAM_END      1
                                                "",                    // Z_OK              0

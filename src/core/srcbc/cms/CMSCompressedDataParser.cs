@@ -46,7 +46,7 @@ namespace Org.BouncyCastle.Cms
 
                 Asn1OctetStringParser bytes = (Asn1OctetStringParser)content.GetContent(Asn1Tags.OctetString);
 
-                return new CmsTypedStream(content.ContentType.ToString(), new ZInflaterInputStream(bytes.GetOctetStream()));
+                return new CmsTypedStream(content.ContentType.ToString(), new ZInputStream(bytes.GetOctetStream()));
             }
             catch (IOException e)
             {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Globalization;
 using System.IO;
@@ -416,10 +416,7 @@ namespace Org.BouncyCastle.Security
 			if (mechanism.Equals("RAWRSASSA-PSS"))
 			{
 				// TODO Add support for other parameter settings
-				IDigest contentDigest = new NullDigest();
-				IDigest mgfDigest = new Sha1Digest();
-				int saltLen = mgfDigest.GetDigestSize();
-				return (new PssSigner(new RsaBlindedEngine(), contentDigest, mgfDigest, saltLen, PssSigner.TrailerImplicit));
+				return PssSigner.CreateRawSigner(new RsaBlindedEngine(), new Sha1Digest());
 			}
 			if (mechanism.Equals("PSSwithRSA"))
 			{

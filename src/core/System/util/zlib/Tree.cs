@@ -61,21 +61,21 @@ namespace System.util.zlib {
         internal const int REPZ_11_138=18; 
 
         // extra bits for each length code
-        internal static int[] extra_lbits={
+        internal static readonly int[] extra_lbits={
                                              0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5,0
                                          };
 
         // extra bits for each distance code
-        internal static int[] extra_dbits={
+        internal static readonly int[] extra_dbits={
                                              0,0,0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11,12,12,13,13
                                          };
 
         // extra bits for each bit length code
-        internal static int[] extra_blbits={
+        internal static readonly int[] extra_blbits={
                                               0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,3,7
                                           };
 
-        internal static byte[] bl_order={
+        internal static readonly byte[] bl_order={
                                             16,17,18,0,8,7,9,6,10,5,11,4,12,3,13,2,14,1,15};
 
 
@@ -88,7 +88,7 @@ namespace System.util.zlib {
         // see definition of array dist_code below
         internal const int DIST_CODE_LEN=512;
 
-        internal static byte[] _dist_code = {
+        internal static readonly byte[] _dist_code = {
                                                 0,  1,  2,  3,  4,  4,  5,  5,  6,  6,  6,  6,  7,  7,  7,  7,  8,  8,  8,  8,
                                                 8,  8,  8,  8,  9,  9,  9,  9,  9,  9,  9,  9, 10, 10, 10, 10, 10, 10, 10, 10,
                                                 10, 10, 10, 10, 10, 10, 10, 10, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11,
@@ -117,7 +117,7 @@ namespace System.util.zlib {
                                                 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29
                                             };
 
-        internal static byte[] _length_code={
+        internal static readonly byte[] _length_code={
                                                 0,  1,  2,  3,  4,  5,  6,  7,  8,  8,  9,  9, 10, 10, 11, 11, 12, 12, 12, 12,
                                                 13, 13, 13, 13, 14, 14, 14, 14, 15, 15, 15, 15, 16, 16, 16, 16, 16, 16, 16, 16,
                                                 17, 17, 17, 17, 17, 17, 17, 17, 18, 18, 18, 18, 18, 18, 18, 18, 19, 19, 19, 19,
@@ -133,12 +133,12 @@ namespace System.util.zlib {
                                                 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 27, 28
                                             };
 
-        internal static int[] base_length = {
+        internal static readonly int[] base_length = {
                                                0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 20, 24, 28, 32, 40, 48, 56,
                                                64, 80, 96, 112, 128, 160, 192, 224, 0
                                            };
 
-        internal static int[] base_dist = {
+        internal static readonly int[] base_dist = {
                                              0,   1,      2,     3,     4,    6,     8,    12,    16,     24,
                                              32,  48,     64,    96,   128,  192,   256,   384,   512,    768,
                                              1024, 1536,  2048,  3072,  4096,  6144,  8192, 12288, 16384, 24576

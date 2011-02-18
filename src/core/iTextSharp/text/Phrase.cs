@@ -461,15 +461,6 @@ namespace iTextSharp.text {
             }
         }
 
-        /// <summary>
-        /// Checks if a given tag corresponds with this object.
-        /// </summary>
-        /// <param name="tag">the given tag</param>
-        /// <returns>true if the tag corresponds</returns>
-        public static bool IsTag(string tag) {
-            return ElementTags.PHRASE.Equals(tag);
-        }
-    
         public override string ToString() {
             return base.ToString();
         }

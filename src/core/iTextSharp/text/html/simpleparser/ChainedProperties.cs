@@ -44,95 +44,109 @@ using System.Collections.Generic;
 
 namespace iTextSharp.text.html.simpleparser {
 
-public class ChainedProperties {
+    public class ChainedProperties {
     
-        public static int[] fontSizes = {8, 10, 12, 14, 18, 24, 36};
-        public sealed class ChainedProperty {
-            internal String key;
-            internal Dictionary<String, String> property;
-            internal ChainedProperty(String key, Dictionary<String, String> property) {
-                this.key = key;
-                this.property = property;
+        /**
+         * Class that stores the info about one tag in the chain.
+         */
+        public sealed class TagAttributes {
+            /** A possible tag */
+            internal String tag;
+            /** The styles corresponding with the tag */
+            internal IDictionary<String, String> attrs;
+            /**
+             * Constructs a chained property.
+             * @param   tag     an XML/HTML tag
+             * @param   attrs   the tag's attributes
+             */
+            internal TagAttributes(String tag, IDictionary<String, String> attrs) {
+                this.tag = tag;
+                this.attrs = attrs;
             }
         }
-        public List<ChainedProperty> chain = new List<ChainedProperty>();
+
+    	/** A list of chained properties representing the tag hierarchy. */
+        public IList<TagAttributes> chain = new List<TagAttributes>();
         
         /** Creates a new instance of ChainedProperties */
         public ChainedProperties() {
         }
         
+	    /**
+	     * Walks through the hierarchy (bottom-up) looking for
+	     * a property key. Returns a value as soon as a match
+	     * is found or null if the key can't be found.
+	     * @param	key	the key of the property
+	     * @return	the value of the property
+	     */
         public String this[String key] {
             get {
                 for (int k = chain.Count - 1; k >= 0; --k) {
-                    ChainedProperty p = chain[k];
-                    Dictionary<String, String> prop = p.property;
-                    if (prop.ContainsKey(key))
-                        return prop[key];
+                    TagAttributes p = chain[k];
+                    IDictionary<String, String> attrs = p.attrs;
+                    if (attrs.ContainsKey(key))
+                        return attrs[key];
                 }
                 return null;
             }
         }
         
+	    /**
+	     * Walks through the hierarchy (bottom-up) looking for
+	     * a property key. Returns true as soon as a match is
+	     * found or false if the key can't be found.
+	     * @param	key	the key of the property
+	     * @return	true if the key is found
+	     */
         public bool HasProperty(String key) {
             for (int k = chain.Count - 1; k >= 0; --k) {
-                ChainedProperty p = chain[k];
-                Dictionary<String, String> prop = p.property;
-                if (prop.ContainsKey(key))
+                TagAttributes p = chain[k];
+                IDictionary<String, String> attrs = p.attrs;
+                if (attrs.ContainsKey(key))
                     return true;
             }
             return false;
         }
         
-        public void AddToChain(String key, Dictionary<String, String> prop) {
-            // adjust the font size
-            String value;
-            prop.TryGetValue(ElementTags.SIZE, out value);
-            if (value != null) {
-                if (value.EndsWith("pt")) {
-                    prop[ElementTags.SIZE] = value.Substring(0, value.Length - 2);
-                }
-                else {
-                    int s = 0;
-                    if (value.StartsWith("+") || value.StartsWith("-")) {
-                        String old = this["basefontsize"];
-                        if (old == null)
-                            old = "12";
-                        float f = float.Parse(old, System.Globalization.NumberFormatInfo.InvariantInfo);
-                        int c = (int)f;
-                        for (int k = fontSizes.Length - 1; k >= 0; --k) {
-                            if (c >= fontSizes[k]) {
-                                s = k;
-                                break;
-                            }
-                        }
-                        int inc = int.Parse(value.StartsWith("+") ? value.Substring(1) : value);
-                        s += inc;
-                    }
-                    else {
-                        try {
-                            s = int.Parse(value) - 1;
-                        }
-                        catch {
-                            s = 0;
-                        }
-                    }
-                    if (s < 0)
-                        s = 0;
-                    else if (s >= fontSizes.Length)
-                        s = fontSizes.Length - 1;
-                    prop[ElementTags.SIZE] = fontSizes[s].ToString();
-                }
-            }
-            chain.Add(new ChainedProperty(key, prop));
+	    /**
+	     * Adds a tag and its corresponding properties to the chain.
+	     * @param tag	the tags that needs to be added to the chain
+	     * @param props	the tag's attributes
+	     */
+	    public void AddToChain(String tag, IDictionary<String, String> props) {
+		    AdjustFontSize(props);
+		    chain.Add(new TagAttributes(tag, props));
         }
         
-        public void RemoveChain(String key) {
+        public void RemoveChain(String tag) {
             for (int k = chain.Count - 1; k >= 0; --k) {
-                if (key.Equals(chain[k].key)) {
+                if (tag.Equals(chain[k].tag)) {
                     chain.RemoveAt(k);
                     return;
                 }
             }
+        }
+
+        /**
+         * If the properties contain a font size, the size may need to
+         * be adjusted based on font sizes higher in the hierarchy.
+         * @param   attrs the attributes that may have to be updated
+         * @since 5.0.6 (renamed)
+         */
+        protected internal void AdjustFontSize(IDictionary<String, String> attrs) {
+            // fetch the font size
+            String value;
+            attrs.TryGetValue(HtmlTags.SIZE, out value);
+            // do nothing if the font size isn't defined
+            if (value == null)
+                return;
+            // the font is defined as a real size: remove "pt"
+            if (value.EndsWith("pt")) {
+                attrs[HtmlTags.SIZE] = value.Substring(0, value.Length - 2);
+                return;
+            }
+            String old = this[HtmlTags.SIZE];
+            attrs[HtmlTags.SIZE] = HtmlUtilities.GetIndexedFontSize(value, old).ToString();
         }
     }
 }

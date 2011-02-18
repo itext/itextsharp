@@ -16,7 +16,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
     public class PgpEncryptedDataGenerator
 		: IStreamGenerator
     {
-        private BcpgOutputStream	pOut;
+		private BcpgOutputStream	pOut;
         private CipherStream		cOut;
         private IBufferedCipher		c;
         private bool				withIntegrityPacket;
@@ -202,14 +202,24 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
             this.oldFormat = oldFormat;
         }
 
+		/// <summary>
+		/// Add a PBE encryption method to the encrypted object using the default algorithm (S2K_SHA1).
+		/// </summary>
+		public void AddMethod(
+			char[] passPhrase) 
+		{
+			AddMethod(passPhrase, HashAlgorithmTag.Sha1);
+		}
+
 		/// <summary>Add a PBE encryption method to the encrypted object.</summary>
         public void AddMethod(
-            char[] passPhrase)
+ 			char[]				passPhrase,
+			HashAlgorithmTag	s2kDigest)
         {
             byte[] iv = new byte[8];
 			rand.NextBytes(iv);
 
-			S2k s2k = new S2k(HashAlgorithmTag.Sha1, iv, 0x60);
+			S2k s2k = new S2k(s2kDigest, iv, 0x60);
 
 			methods.Add(new PbeMethod(defAlgorithm, s2k, PgpUtilities.MakeKeyFromPassPhrase(defAlgorithm, s2k, passPhrase)));
         }

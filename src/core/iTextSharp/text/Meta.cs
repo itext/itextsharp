@@ -71,6 +71,48 @@ namespace iTextSharp.text {
         ///<summary> This is the content of the Meta-information. </summary>
         private StringBuilder content;
 
+        /**
+         * The possible value of an alignment attribute.
+         * @since 5.0.6 (moved from ElementTags)
+         */
+        public const String UNKNOWN = "unknown";
+
+        /**
+         * The possible value of an alignment attribute.
+         * @since 5.0.6 (moved from ElementTags)
+         */
+        public const String PRODUCER = "producer";
+
+        /**
+         * The possible value of an alignment attribute.
+         * @since 5.0.6 (moved from ElementTags)
+         */
+        public const String CREATIONDATE = "creationdate";
+
+        /**
+         * The possible value of an alignment attribute.
+         * @since 5.0.6 (moved from ElementTags)
+         */
+        public const String AUTHOR = "author";
+
+        /**
+         * The possible value of an alignment attribute.
+         * @since 5.0.6 (moved from ElementTags)
+         */
+        public const String KEYWORDS = "keywords";
+
+        /**
+         * The possible value of an alignment attribute.
+         * @since 5.0.6 (moved from ElementTags)
+         */
+        public const String SUBJECT = "subject";
+
+        /**
+         * The possible value of an alignment attribute.
+         * @since 5.0.6 (moved from ElementTags)
+         */
+        public const String TITLE = "title";
+
         // constructors
     
         /// <summary>
@@ -177,19 +219,19 @@ namespace iTextSharp.text {
             get {
                 switch (type) {
                     case Element.SUBJECT:
-                        return ElementTags.SUBJECT;
+                        return Meta.SUBJECT;
                     case Element.KEYWORDS:
-                        return ElementTags.KEYWORDS;
+                        return Meta.KEYWORDS;
                     case Element.AUTHOR:
-                        return ElementTags.AUTHOR;
+                        return Meta.AUTHOR;
                     case Element.TITLE:
-                        return ElementTags.TITLE;
+                        return Meta.TITLE;
                     case Element.PRODUCER:
-                        return ElementTags.PRODUCER;
+                        return Meta.PRODUCER;
                     case Element.CREATIONDATE:
-                        return ElementTags.CREATIONDATE;
+                        return Meta.CREATIONDATE;
                     default:
-                        return ElementTags.UNKNOWN;
+                        return Meta.UNKNOWN;
                 }
             }
         }
@@ -200,22 +242,22 @@ namespace iTextSharp.text {
         /// <param name="tag">name to match</param>
         /// <returns>a string</returns>
         public static int GetType(string tag) {
-            if (ElementTags.SUBJECT.Equals(tag)) {
+            if (Meta.SUBJECT.Equals(tag)) {
                 return Element.SUBJECT;
             }
-            if (ElementTags.KEYWORDS.Equals(tag)) {
+            if (Meta.KEYWORDS.Equals(tag)) {
                 return Element.KEYWORDS;
             }
-            if (ElementTags.AUTHOR.Equals(tag)) {
+            if (Meta.AUTHOR.Equals(tag)) {
                 return Element.AUTHOR;
             }
-            if (ElementTags.TITLE.Equals(tag)) {
+            if (Meta.TITLE.Equals(tag)) {
                 return Element.TITLE;
             }
-            if (ElementTags.PRODUCER.Equals(tag)) {
+            if (Meta.PRODUCER.Equals(tag)) {
                 return Element.PRODUCER;
             }
-            if (ElementTags.CREATIONDATE.Equals(tag)) {
+            if (Meta.CREATIONDATE.Equals(tag)) {
                 return Element.CREATIONDATE;
             }
             return Element.HEADER;

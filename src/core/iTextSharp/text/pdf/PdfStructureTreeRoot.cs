@@ -114,12 +114,11 @@ namespace iTextSharp.text.pdf {
         
         private void NodeProcess(PdfDictionary struc, PdfIndirectReference reference) {
             PdfObject obj = struc.Get(PdfName.K);
-            if (obj != null && obj.IsArray() && !((PdfObject)((PdfArray)obj).ArrayList[0]).IsNumber()) {
+            if (obj != null && obj.IsArray() && !((PdfArray)obj)[0].IsNumber()) {
                 PdfArray ar = (PdfArray)obj;
-                List<PdfObject> a = ar.ArrayList;
-                for (int k = 0; k < a.Count; ++k) {
-                    PdfStructureElement e = (PdfStructureElement)a[k];
-                    a[k] = e.Reference;
+                for (int k = 0; k < ar.Size; ++k) {
+                    PdfStructureElement e = (PdfStructureElement)ar[k];
+                    ar[k] = e.Reference;
                     NodeProcess(e, e.Reference);
                 }
             }

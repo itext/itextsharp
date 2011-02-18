@@ -13,6 +13,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 	*/
 	public class Certificate
 	{
+		public static readonly Certificate EmptyChain = new Certificate(new X509CertificateStructure[0]);
+
 		/**
 		* The certificates.
 		*/
@@ -29,6 +31,10 @@ namespace Org.BouncyCastle.Crypto.Tls
 			Stream inStr)
 		{
 			int left = TlsUtilities.ReadUint24(inStr);
+			if (left == 0)
+			{
+				return EmptyChain;
+			}
 			IList tmp = Platform.CreateArrayList();
 			while (left > 0)
 			{
@@ -86,6 +92,9 @@ namespace Org.BouncyCastle.Crypto.Tls
 		*/
 		public Certificate(X509CertificateStructure[] certs)
 		{
+			if (certs == null)
+				throw new ArgumentNullException("certs");
+
 			this.certs = certs;
 		}
 
@@ -93,6 +102,11 @@ namespace Org.BouncyCastle.Crypto.Tls
 		public X509CertificateStructure[] GetCerts()
 		{
 			return (X509CertificateStructure[]) certs.Clone();
+		}
+
+		public bool IsEmpty
+		{
+			get { return certs.Length == 0; }
 		}
 	}
 }

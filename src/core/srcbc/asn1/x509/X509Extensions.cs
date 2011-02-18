@@ -409,5 +409,43 @@ namespace Org.BouncyCastle.Asn1.X509
 
 			return true;
 		}
-    }
+
+		public DerObjectIdentifier[] GetExtensionOids()
+		{
+			return ToOidArray(ordering);
+		}
+
+		public DerObjectIdentifier[] GetNonCriticalExtensionOids()
+		{
+			return GetExtensionOids(false);
+		}
+
+		public DerObjectIdentifier[] GetCriticalExtensionOids()
+		{
+			return GetExtensionOids(true);
+		}
+
+		private DerObjectIdentifier[] GetExtensionOids(bool isCritical)
+		{
+			IList oids = Platform.CreateArrayList();
+
+			foreach (DerObjectIdentifier oid in this.ordering)
+            {
+				X509Extension ext = (X509Extension)extensions[oid];
+				if (ext.IsCritical == isCritical)
+				{
+					oids.Add(oid);
+				}
+            }
+
+			return ToOidArray(oids);
+		}
+
+		private static DerObjectIdentifier[] ToOidArray(IList oids)
+		{
+			DerObjectIdentifier[] oidArray = new DerObjectIdentifier[oids.Count];
+			oids.CopyTo(oidArray, 0);
+			return oidArray;
+		}
+	}
 }

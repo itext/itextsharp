@@ -367,5 +367,9 @@ namespace iTextSharp.text {
         public virtual bool SetMarginMirroringTopBottom(bool MarginMirroring) {
             return false;
         }
+
+        public virtual void Dispose() {
+            Close();
+        }
     }
 }

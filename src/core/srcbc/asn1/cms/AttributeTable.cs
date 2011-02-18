@@ -169,5 +169,30 @@ namespace Org.BouncyCastle.Asn1.Cms
 
 			return v;
         }
+
+		/**
+		 * Return a new table with the passed in attribute added.
+		 *
+		 * @param attrType
+		 * @param attrValue
+		 * @return
+		 */
+		public AttributeTable Add(DerObjectIdentifier attrType, Asn1Encodable attrValue)
+		{
+			AttributeTable newTable = new AttributeTable(attributes);
+
+			newTable.AddAttribute(new Attribute(attrType, new DerSet(attrValue)));
+
+			return newTable;
+		}
+
+		public AttributeTable Remove(DerObjectIdentifier attrType)
+		{
+			AttributeTable newTable = new AttributeTable(attributes);
+
+			newTable.attributes.Remove(attrType);
+
+			return newTable;
+		}
     }
 }

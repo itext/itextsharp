@@ -1,108 +1,235 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.IO;
 
+using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Crypto.Agreement;
+using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
     /**
     * ECDH key exchange (see RFC 4492)
     */
-    internal class TlsECDHKeyExchange : TlsECKeyExchange
+    internal class TlsECDHKeyExchange
+		: TlsKeyExchange
     {
-        protected bool usingFixedAuthentication;
+		protected TlsClientContext context;
+		protected KeyExchangeAlgorithm keyExchange;
+		protected TlsSigner tlsSigner;
 
-        internal TlsECDHKeyExchange(TlsProtocolHandler handler, ICertificateVerifyer verifyer,
-            TlsKeyExchangeAlgorithm keyExchange,
-            // TODO Replace with an interface e.g. TlsClientAuth
-            Certificate clientCert, AsymmetricKeyParameter clientPrivateKey)
-            : base(handler, verifyer, keyExchange, clientCert, clientPrivateKey)
+		protected AsymmetricKeyParameter serverPublicKey;
+		protected ECPublicKeyParameters ecAgreeServerPublicKey;
+		protected TlsAgreementCredentials agreementCredentials;
+		protected ECPrivateKeyParameters ecAgreeClientPrivateKey = null;
+
+		internal TlsECDHKeyExchange(TlsClientContext context, KeyExchangeAlgorithm keyExchange)
         {
+			switch (keyExchange)
+			{
+				case KeyExchangeAlgorithm.ECDHE_RSA:
+					this.tlsSigner = new TlsRsaSigner();
+					break;
+				case KeyExchangeAlgorithm.ECDHE_ECDSA:
+					this.tlsSigner = new TlsECDsaSigner();
+					break;
+				case KeyExchangeAlgorithm.ECDH_RSA:
+				case KeyExchangeAlgorithm.ECDH_ECDSA:
+					this.tlsSigner = null;
+					break;
+				default:
+                    throw new ArgumentException("unsupported key exchange algorithm", "keyExchange");
+			}
+
+			this.context = context;
+			this.keyExchange = keyExchange;
         }
 
-        public void skipServerCertificate()
+        public virtual void SkipServerCertificate()
         {
-            handler.FailWithError(AlertLevel.fatal, AlertDescription.unexpected_message);
+            throw new TlsFatalAlert(AlertDescription.unexpected_message);
         }
 
-        public override void SkipServerKeyExchange()
+        public virtual void ProcessServerCertificate(Certificate serverCertificate)
+        {
+            X509CertificateStructure x509Cert = serverCertificate.certs[0];
+            SubjectPublicKeyInfo keyInfo = x509Cert.SubjectPublicKeyInfo;
+
+            try
+            {
+                this.serverPublicKey = PublicKeyFactory.CreateKey(keyInfo);
+            }
+            catch (Exception)
+            {
+                throw new TlsFatalAlert(AlertDescription.unsupported_certificate);
+            }
+
+			if (tlsSigner == null)
+			{
+				try
+				{
+					this.ecAgreeServerPublicKey = ValidateECPublicKey((ECPublicKeyParameters)this.serverPublicKey);
+				}
+				catch (InvalidCastException)
+				{
+					throw new TlsFatalAlert(AlertDescription.certificate_unknown);
+				}
+
+				TlsUtilities.ValidateKeyUsage(x509Cert, KeyUsage.KeyAgreement);
+			}
+			else
+			{
+				if (!tlsSigner.IsValidPublicKey(this.serverPublicKey))
+				{
+					throw new TlsFatalAlert(AlertDescription.certificate_unknown);
+				}
+
+				TlsUtilities.ValidateKeyUsage(x509Cert, KeyUsage.DigitalSignature);
+			}
+			
+			// TODO
+            /*
+            * Perform various checks per RFC2246 7.4.2: "Unless otherwise specified, the
+            * signing algorithm for the certificate must be the same as the algorithm for the
+            * certificate key."
+            */
+        }
+		
+        public virtual void SkipServerKeyExchange()
         {
             // do nothing
         }
 
-        public override void ProcessServerKeyExchange(Stream input, SecurityParameters securityParameters)
+        public virtual void ProcessServerKeyExchange(Stream input)
         {
-            handler.FailWithError(AlertLevel.fatal, AlertDescription.unexpected_message);
+            throw new TlsFatalAlert(AlertDescription.unexpected_message);
         }
 
-        public override void GenerateClientKeyExchange(Stream output)
+		public virtual void ValidateCertificateRequest(CertificateRequest certificateRequest)
+		{
+			/*
+			 * RFC 4492 3. [...] The ECDSA_fixed_ECDH and RSA_fixed_ECDH mechanisms are usable
+			 * with ECDH_ECDSA and ECDH_RSA. Their use with ECDHE_ECDSA and ECDHE_RSA is
+			 * prohibited because the use of a long-term ECDH client key would jeopardize the
+			 * forward secrecy property of these algorithms.
+			 */
+			ClientCertificateType[] types = certificateRequest.CertificateTypes;
+			foreach (ClientCertificateType type in types)
+			{
+				switch (type)
+				{
+					case ClientCertificateType.rsa_sign:
+					case ClientCertificateType.dss_sign:
+					case ClientCertificateType.ecdsa_sign:
+					case ClientCertificateType.rsa_fixed_ecdh:
+					case ClientCertificateType.ecdsa_fixed_ecdh:
+						break;
+					default:
+						throw new TlsFatalAlert(AlertDescription.illegal_parameter);
+				}
+			}
+		}
+
+		public virtual void SkipClientCredentials()
+		{
+			this.agreementCredentials = null;
+		}
+
+		public virtual void ProcessClientCredentials(TlsCredentials clientCredentials)
+		{
+			if (clientCredentials is TlsAgreementCredentials)
+			{
+				// TODO Validate client cert has matching parameters (see 'AreOnSameCurve')?
+
+				this.agreementCredentials = (TlsAgreementCredentials)clientCredentials;
+			}
+			else if (clientCredentials is TlsSignerCredentials)
+			{
+				// OK
+			}
+			else
+			{
+				throw new TlsFatalAlert(AlertDescription.internal_error);
+			}
+		}
+
+		public virtual void GenerateClientKeyExchange(Stream output)
         {
-            if (usingFixedAuthentication)
-            {
-                TlsUtilities.WriteUint24(0, output);
-            }
-            else
-            {
-                clientEphemeralKeyPair = GenerateECKeyPair(((ECKeyParameters)serverPublicKey).Parameters);
-                byte[] keData = ExternalizeKey((ECPublicKeyParameters)clientEphemeralKeyPair.Public);
-                TlsUtilities.WriteUint24(keData.Length + 1, output);
-                TlsUtilities.WriteOpaque8(keData, output);
-            }
+			if (agreementCredentials != null)
+			{
+				TlsUtilities.WriteUint24(0, output);
+			}
+			else
+			{
+				GenerateEphemeralClientKeyExchange(ecAgreeServerPublicKey.Parameters, output);
+			}
         }
 
-        public override byte[] GeneratePremasterSecret()
+        public virtual byte[] GeneratePremasterSecret()
         {
-            ICipherParameters privateKey = null;
-            if (usingFixedAuthentication)
-            {
-                privateKey = this.clientPrivateKey;
-            }
-            else
-            {
-                privateKey = clientEphemeralKeyPair.Private;
-            }
-            return CalculateECDhePreMasterSecret((ECPublicKeyParameters)serverPublicKey, privateKey);
+			if (agreementCredentials != null)
+			{
+				return agreementCredentials.GenerateAgreement(ecAgreeServerPublicKey);
+			}
+
+			return CalculateECDHBasicAgreement(ecAgreeServerPublicKey, ecAgreeClientPrivateKey);
         }
 
-        // TODO
-        //public override void ProcessServerCertificateRequest(ClientCertificateType[] certificateTypes,
-        //    IList certificateAuthorities)
-        //{
-        //    usingFixedAuthentication = false;
-        //    bool fixedAuthenticationOfferedByServer = IsECDsaFixedOfferedByServer(certificateTypes);
-        //    if (fixedAuthenticationOfferedByServer && clientPrivateKey != null
-        //        && serverPublicKey != null && serverPublicKey is ECPublicKeyParameters
-        //        && clientPrivateKey is ECKeyParameters)
-        //    {
-        //        ECPublicKeyParameters ecPublicKeyParameters = (ECPublicKeyParameters)serverPublicKey;
-        //        ECKeyParameters ecClientPrivateKey = (ECKeyParameters)clientPrivateKey;
+		protected virtual bool AreOnSameCurve(ECDomainParameters a, ECDomainParameters b)
+		{
+			// TODO Move to ECDomainParameters.Equals() or other utility method?
+			return a.Curve.Equals(b.Curve) && a.G.Equals(b.G) && a.N.Equals(b.N) && a.H.Equals(b.H);
+		}
 
-        //        if (ecPublicKeyParameters.Parameters.Curve.Equals(ecClientPrivateKey.Parameters.Curve))
-        //        {
-        //            usingFixedAuthentication = true;
-        //        }
-        //        // todo RSA_fixed_ECDE
-        //    }
-        //}
+		protected virtual byte[] ExternalizeKey(ECPublicKeyParameters keyParameters)
+		{
+			// TODO Add support for compressed encoding and SPF extension
 
-        //public override bool SendCertificateVerify()
-        //{
-        //    return !usingFixedAuthentication;
-        //}
+			/*
+			 * RFC 4492 5.7. ...an elliptic curve point in uncompressed or compressed format.
+			 * Here, the format MUST conform to what the server has requested through a
+			 * Supported Point Formats Extension if this extension was used, and MUST be
+			 * uncompressed if this extension was not used.
+			 */
+			return keyParameters.Q.GetEncoded();
+		}
 
-        //protected virtual bool IsECDsaFixedOfferedByServer(ClientCertificateType[] certificateTypes)
-        //{
-        //    bool fixedAuthenticationOfferedByServer = false;
-        //    for (int i = 0; i < certificateTypes.Length; i++)
-        //    {
-        //        if (certificateTypes[i] == ClientCertificateType.ecdsa_fixed_ecdh)
-        //        {
-        //            fixedAuthenticationOfferedByServer = true;
-        //            break;
-        //        }
-        //    }
-        //    return fixedAuthenticationOfferedByServer;
-        //}
+		protected virtual AsymmetricCipherKeyPair GenerateECKeyPair(ECDomainParameters ecParams)
+		{
+			ECKeyPairGenerator keyPairGenerator = new ECKeyPairGenerator();
+			ECKeyGenerationParameters keyGenerationParameters = new ECKeyGenerationParameters(ecParams,
+				context.SecureRandom);
+			keyPairGenerator.Init(keyGenerationParameters);
+			return keyPairGenerator.GenerateKeyPair();
+		}
+
+		protected virtual void GenerateEphemeralClientKeyExchange(ECDomainParameters ecParams, Stream output)
+		{
+			AsymmetricCipherKeyPair ecAgreeClientKeyPair = GenerateECKeyPair(ecParams);
+			this.ecAgreeClientPrivateKey = (ECPrivateKeyParameters)ecAgreeClientKeyPair.Private;
+
+			byte[] keData = ExternalizeKey((ECPublicKeyParameters)ecAgreeClientKeyPair.Public);
+			TlsUtilities.WriteUint24(keData.Length + 1, output);
+			TlsUtilities.WriteOpaque8(keData, output);
+		}
+
+		protected virtual byte[] CalculateECDHBasicAgreement(ECPublicKeyParameters publicKey,
+			ECPrivateKeyParameters privateKey)
+		{
+			ECDHBasicAgreement basicAgreement = new ECDHBasicAgreement();
+			basicAgreement.Init(privateKey);
+			BigInteger agreement = basicAgreement.CalculateAgreement(publicKey);
+			return BigIntegers.AsUnsignedByteArray(agreement);
+		}
+
+		protected virtual ECPublicKeyParameters ValidateECPublicKey(ECPublicKeyParameters key)
+		{
+			// TODO Check RFC 4492 for validation
+			return key;
+		}
     }
 }

@@ -150,17 +150,6 @@ namespace iTextSharp.text {
         /// <summary>
         /// Constructs a Font-object.
         /// </summary>
-        /// <param name="attributes">the attributes of a Font object</param>
-        /// <returns>a Font object</returns>
-        public static Font GetFont(Properties attributes) {
-            fontImp.DefaultEmbedding = defaultEmbedding;
-            fontImp.DefaultEncoding = defaultEncoding;
-            return fontImp.GetFont(attributes);
-        }
-    
-        /// <summary>
-        /// Constructs a Font-object.
-        /// </summary>
         /// <param name="fontname">the name of the font</param>
         /// <param name="encoding">the encoding of the font</param>
         /// <param name="embedded">true if the font is to be embedded in the PDF</param>

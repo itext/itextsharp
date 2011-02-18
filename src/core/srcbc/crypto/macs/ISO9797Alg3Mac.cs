@@ -116,14 +116,23 @@ namespace Org.BouncyCastle.Crypto.Macs
 		{
 			Reset();
 
-			if (!(parameters is KeyParameter))
-				throw new ArgumentException("parameters must be an instance of KeyParameter");
+			if (!(parameters is KeyParameter || parameters is ParametersWithIV))
+				throw new ArgumentException("parameters must be an instance of KeyParameter or ParametersWithIV");
 
 			// KeyParameter must contain a double or triple length DES key,
 			// however the underlying cipher is a single DES. The middle and
 			// right key are used only in the final step.
 
-			KeyParameter kp = (KeyParameter)parameters;
+			KeyParameter kp;
+			if (parameters is KeyParameter)
+			{
+				kp = (KeyParameter)parameters;
+			}
+			else
+			{
+				kp = (KeyParameter)((ParametersWithIV)parameters).Parameters;
+			}
+
 			KeyParameter key1;
 			byte[] keyvalue = kp.GetKey();
 
@@ -144,7 +153,14 @@ namespace Org.BouncyCastle.Crypto.Macs
 				throw new ArgumentException("Key must be either 112 or 168 bit long");
 			}
 
-			cipher.Init(true, key1);
+			if (parameters is ParametersWithIV)
+			{
+				cipher.Init(true, new ParametersWithIV(key1, ((ParametersWithIV)parameters).GetIV()));
+			}
+			else
+			{
+				cipher.Init(true, key1);
+			}
 		}
 
 		public int GetMacSize()

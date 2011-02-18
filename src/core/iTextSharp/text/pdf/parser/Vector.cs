@@ -212,8 +212,17 @@ namespace iTextSharp.text.pdf.parser {
          * @see java.lang.Object#equals(java.lang.Object)
          */
         public override bool Equals(Object obj) {
-            Vector rhs = (Vector)obj;
-            return rhs.vals[I1] == vals[I1] && rhs.vals[I2] == vals[I2] && rhs.vals[I3] == vals[I3];
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null) {
+                return false;
+            }
+            if (!(obj is Vector)) {
+                return false;
+            }
+            Vector other = (Vector) obj;
+            return other.vals[I1] == vals[I1] && other.vals[I2] == vals[I2] && other.vals[I3] == vals[I3];
         }
 
         public override int GetHashCode() {

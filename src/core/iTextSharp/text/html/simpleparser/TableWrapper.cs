@@ -1,8 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using iTextSharp.text.html;
 /*
+ * $Id: IncTable.java 4632 2010-11-24 14:44:42Z blowagie $
+ *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
@@ -47,96 +51,112 @@ using iTextSharp.text.pdf;
 namespace iTextSharp.text.html.simpleparser {
 
     /**
-    *
-    * @author  psoares
-    */
-    public class IncTable : IElement {
-        private Dictionary<string,string> props = new Dictionary<string,string>();
-        private List<List<PdfPCell>> rows = new List<List<PdfPCell>>();
-        private List<PdfPCell> cols;
+     * We use a TableWrapper because PdfPTable is rather complex
+     * to put on the HTMLWorker stack.
+     * @author  psoares
+     * @since 5.0.6 (renamed)
+     */
+    public class TableWrapper : IElement {
+        /**
+         * The styles that need to be applied to the table
+         * @since 5.0.6 renamed from props
+         */
+        private IDictionary<String, String> styles = new Dictionary<String, String>();
+        /**
+         * Nested list containing the PdfPCell elements that are part of this table.
+         */
+        private IList<IList<PdfPCell>> rows = new List<IList<PdfPCell>>();
+        
+        /**
+         * Array containing the widths of the columns.
+         * @since iText 5.0.6
+         */
         private float[] colWidths;
 
-        /** Creates a new instance of IncTable */
-        public IncTable(Dictionary<string,string> props) {
-            foreach (KeyValuePair<string,string> dc in props)
-                this.props[dc.Key] = dc.Value;
-        }
-        
-        public void AddCol(PdfPCell cell) {
-            if (cols == null)
-                cols = new List<PdfPCell>();
-            cols.Add(cell);
-        }
-        
-        public void AddCols(List<PdfPCell> ncols) {
-            if (cols == null)
-                cols = new List<PdfPCell>(ncols);
-            else
-                cols.AddRange(ncols);
-        }
-        
-        public void EndRow() {
-            if (cols != null) {
-                cols.Reverse();
-                rows.Add(cols);
-                cols = null;
+        /**
+         * Creates a new instance of IncTable.
+         * @param   attrs   a Map containing attributes
+         */
+        public TableWrapper(IDictionary<String, String> attrs) {
+            foreach (KeyValuePair<string,string> kv in attrs) {
+                styles[kv.Key] = kv.Value;
             }
         }
-        
-        public List<List<PdfPCell>> Rows {
-            get {
-                return rows;
+
+        /**
+         * Adds a new row to the table.
+         * @param row a list of PdfPCell elements
+         */
+        public void AddRow(IList<PdfPCell> row) {
+            if (row != null) {
+                List<PdfPCell> t = new List<PdfPCell>(row);
+                t.Reverse();
+                rows.Add(t);
             }
         }
-        
+
+        /**
+         * Setter for the column widths
+         * @since iText 5.0.6
+         */
         public float[] ColWidths {
-            get { return colWidths; }
             set { colWidths = value; }
         }
 
-        public PdfPTable BuildTable() {
+        /**
+         * Creates a new PdfPTable based on the info assembled
+         * in the table stub.
+         * @return  a PdfPTable
+         */
+        public PdfPTable CreateTable() {
+            // no rows = simplest table possible
             if (rows.Count == 0)
                 return new PdfPTable(1);
+            // how many columns?
             int ncol = 0;
             foreach (PdfPCell pc in rows[0]) {
                 ncol += pc.Colspan;
             }
             PdfPTable table = new PdfPTable(ncol);
+            // table width
             String width;
-            if (!props.TryGetValue("width", out width))
+            styles.TryGetValue(HtmlTags.WIDTH, out width);
+            if (width == null)
                 table.WidthPercentage = 100;
             else {
                 if (width.EndsWith("%"))
-                    table.WidthPercentage = float.Parse(width.Substring(0, width.Length - 1), System.Globalization.NumberFormatInfo.InvariantInfo);
+                    table.WidthPercentage = float.Parse(width.Substring(0, width.Length - 1), CultureInfo.InvariantCulture);
                 else {
-                    table.TotalWidth = float.Parse(width, System.Globalization.NumberFormatInfo.InvariantInfo);
+                    table.TotalWidth = float.Parse(width, CultureInfo.InvariantCulture);
                     table.LockedWidth = true;
                 }
             }
-        
-            // Support for horizontal alignment of tables via HTML conversion
-            string alignment;
-            props.TryGetValue("align", out alignment);
+            // horizontal alignment
+            String alignment;
+            styles.TryGetValue(HtmlTags.ALIGN, out alignment);
             int align = Element.ALIGN_LEFT;
             if (alignment != null) {
-                align = ElementTags.AlignmentValue(alignment);
+                align = HtmlUtilities.AlignmentValue(alignment);
             }
             table.HorizontalAlignment = align;
-            
-            foreach (List<PdfPCell> col in rows) {
+            // column widths
+            try {
+                if (colWidths != null)
+                    table.SetWidths(colWidths);
+            } catch {
+                // fail silently
+            }
+            // add the cells
+            foreach (IList<PdfPCell> col in rows) {
                 foreach (PdfPCell pc in col) {
                     table.AddCell(pc);
                 }
             }
-		    try {
-			    if (colWidths != null)
-				    table.SetWidths(colWidths);
-		    } catch {
-			    // fail silently
-		    }
             return table;
         }
 
+        // these Element methods are irrelevant for a table stub.
+        
         public bool Process(IElementListener listener) {
             return false;
         }

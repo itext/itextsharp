@@ -25,16 +25,16 @@ namespace Org.BouncyCastle.Asn1.Icao
 		public static CscaMasterList GetInstance(
 			object obj)
 		{
-			if (obj == null || obj is CscaMasterList)
+			if (obj is CscaMasterList)
 				return (CscaMasterList)obj;
 
-			if (obj is Asn1Sequence)
+			if (obj != null)
 				return new CscaMasterList(Asn1Sequence.GetInstance(obj));            
 
-			throw new ArgumentException("unknown object in GetInstance: " + obj.GetType().FullName);
+			throw new ArgumentException("null object in GetInstance()");
 		}
 
-		public CscaMasterList(
+		private CscaMasterList(
 			Asn1Sequence seq)
 		{
 			if (seq == null || seq.Count == 0)
