@@ -230,12 +230,12 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
                 }
                 case '[':
                 {
-                    IList<Object> list = new List<Object>();
+                    IList<byte[]> list = new List<byte[]>();
 
                     Object nextToken = ParseNextToken( pis );
                     while (!MARK_END_OF_ARRAY.Equals(nextToken) )
                     {
-                        list.Add( nextToken );
+                        list.Add( (byte[])nextToken );
                         nextToken = ParseNextToken( pis );
                     }
                     retval = list;
