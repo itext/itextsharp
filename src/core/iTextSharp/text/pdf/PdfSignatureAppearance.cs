@@ -1363,7 +1363,7 @@ namespace iTextSharp.text.pdf {
                     return 0;
                 }
                 if (rangePosition >= range[range.Length - 2] + range[range.Length - 1]) {
-                    return -1;
+                    return 0;
                 }
                 for (int k = 0; k < range.Length; k += 2) {
                     int start = range[k];
@@ -1382,7 +1382,7 @@ namespace iTextSharp.text.pdf {
                         return lenf;
                     }
                 }
-                return -1;
+                return 0;
             }
         
             private void ReadFully(byte[] b, int offset, int count) {
