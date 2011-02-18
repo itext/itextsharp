@@ -5,6 +5,7 @@ namespace Org.BouncyCastle.Utilities.Zlib {
     /// <summary>
     /// Summary description for DeflaterOutputStream.
     /// </summary>
+    [Obsolete("Use 'ZInputStream' instead")]
     public class ZInflaterInputStream : Stream {
         protected ZStream z=new ZStream();
         protected int flushLevel=JZlib.Z_NO_FLUSH;
@@ -88,14 +89,14 @@ namespace Org.BouncyCastle.Utilities.Zlib {
                 if((z.avail_in==0)&&(!nomoreinput)) { // if buffer is empty and more input is avaiable, refill it
                     z.next_in_index=0;
                     z.avail_in=inp.Read(buf, 0, BUFSIZE);//(BUFSIZE<z.avail_out ? BUFSIZE : z.avail_out));
-                    if(z.avail_in==0) {
+                    if(z.avail_in<=0) {
                         z.avail_in=0;
                         nomoreinput=true;
                     }
                 }
                 err=z.inflate(flushLevel);
                 if(nomoreinput&&(err==JZlib.Z_BUF_ERROR))
-                    return(-1);
+                    return(0);
                 if(err!=JZlib.Z_OK && err!=JZlib.Z_STREAM_END)
                     throw new IOException("inflating: "+z.msg);
                 if((nomoreinput||err==JZlib.Z_STREAM_END)&&(z.avail_out==len))

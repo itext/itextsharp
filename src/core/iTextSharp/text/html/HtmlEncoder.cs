@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using System.Collections.Generic;
 using System.Drawing;
 
 using iTextSharp.text;
@@ -74,53 +75,53 @@ namespace iTextSharp.text.html {
      *    String htmlPresentation = HtmlEncoder.Encode("Marie-Th&#233;r&#232;se S&#248;rensen");
      * </PRE></BLOCKQUOTE><P>
      * for more info: see O'Reilly; "HTML: The Definitive Guide" (page 164)
-     *
-     * @author  mario.maccarini@rug.ac.be
      */
 
-    public sealed class HtmlEncoder {
+    public static class HtmlEncoder {
     
         // membervariables
     
         /** List with the HTML translation of all the characters. */
-        private static String[] htmlCode = new String[256];
+        private static String[] HTML_CODE = new String[256];
     
-        static HtmlEncoder() {
+	    /**
+	     * Set containing tags that trigger a new line.
+	     * @since iText 5.0.6
+	     */
+	    private static Dictionary<string,object> NEWLINETAGS = new Dictionary<string,object>();
+
+	    static HtmlEncoder(){
+            // Following list are the basic html tags that force new lines
+            // List may be extended as we discover them
+            NEWLINETAGS[HtmlTags.P] = null;
+            NEWLINETAGS[HtmlTags.BLOCKQUOTE] = null;
+            NEWLINETAGS[HtmlTags.BR] = null;
+
             for (int i = 0; i < 10; i++) {
-                htmlCode[i] = "&#00" + i + ";";
+                HTML_CODE[i] = "&#00" + i + ";";
             }
         
             for (int i = 10; i < 32; i++) {
-                htmlCode[i] = "&#0" + i + ";";
+                HTML_CODE[i] = "&#0" + i + ";";
             }
         
             for (int i = 32; i < 128; i++) {
-                htmlCode[i] = ((char)i).ToString();
+                HTML_CODE[i] = ((char)i).ToString();
             }
         
             // Special characters
-            htmlCode['\t'] = "\t";
-            htmlCode['\n'] = "<" + HtmlTags.NEWLINE + " />\n";
-            htmlCode['\"'] = "&quot;"; // double quote
-            htmlCode['&'] = "&amp;"; // ampersand
-            htmlCode['<'] = "&lt;"; // lower than
-            htmlCode['>'] = "&gt;"; // greater than
+            HTML_CODE['\t'] = "\t";
+            HTML_CODE['\n'] = "<br />\n";
+            HTML_CODE['\"'] = "&quot;"; // double quote
+            HTML_CODE['&'] = "&amp;"; // ampersand
+            HTML_CODE['<'] = "&lt;"; // lower than
+            HTML_CODE['>'] = "&gt;"; // greater than
         
             for (int i = 128; i < 256; i++) {
-                htmlCode[i] = "&#" + i + ";";
+                HTML_CODE[i] = "&#" + i + ";";
             }
         }
     
-    
-        // constructors
-    
-        /**
-         * This class will never be constructed.
-         * <P>
-         * HtmlEncoder only contains static methods.
-         */
-    
-        private HtmlEncoder () { }
     
         // methods
     
@@ -140,7 +141,7 @@ namespace iTextSharp.text.html {
                 character = str[i];
                 // the Htmlcode of these characters are added to a StringBuilder one by one
                 if (character < 256) {
-                    buffer.Append(htmlCode[character]);
+                    buffer.Append(HTML_CODE[character]);
                 }
                 else {
                     // Improvement posted by Joachim Eyrich
@@ -191,7 +192,7 @@ namespace iTextSharp.text.html {
                     return HtmlTags.ALIGN_RIGHT;
                 case Element.ALIGN_JUSTIFIED:
                 case Element.ALIGN_JUSTIFIED_ALL:
-                    return HtmlTags.ALIGN_JUSTIFIED;
+                    return HtmlTags.ALIGN_JUSTIFY;
                 case Element.ALIGN_TOP:
                     return HtmlTags.ALIGN_TOP;
                 case Element.ALIGN_MIDDLE:
@@ -204,5 +205,13 @@ namespace iTextSharp.text.html {
                     return "";
             }
         }
+
+	    /**
+	     * Returns true if the tag causes a new line like p, br etc.
+	     * @since iText 5.0.6
+	     */
+	    public static bool IsNewLineTag(String tag) {
+		    return NEWLINETAGS.ContainsKey(tag);
+	    }
     }
 }

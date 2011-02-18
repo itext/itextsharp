@@ -54,639 +54,830 @@ using iTextSharp.text.xml.simpleparser;
 namespace iTextSharp.text.html.simpleparser {
 
     public class HTMLWorker : ISimpleXMLDocHandler, IDocListener {
-        
-        protected internal List<IElement> objectList;
-        protected internal IDocListener document;
-        protected internal Paragraph currentParagraph;
-        private ChainedProperties cprops = new ChainedProperties();
-        protected internal Stack<IElement> stack = new Stack<IElement>();
-        private bool pendingTR = false;
-        private bool pendingTD = false;
-        private bool pendingLI = false;
+
+        /**
+         * DocListener that will listen to the Elements
+         * produced by parsing the HTML.
+         * This can be a com.lowagie.text.Document adding
+         * the elements to a Document directly, or an
+         * HTMLWorker instance strong the objects in a List
+         */
+        protected IDocListener document;
+
+        /**
+         * The map with all the supported tags.
+         * @since 5.0.6
+         */
+        protected internal IDictionary<String, IHTMLTagProcessor> tags;
+
+        /** The object defining all the styles. */
         private StyleSheet style = new StyleSheet();
-        private bool isPRE = false;
-        private Stack<bool[]> tableState = new Stack<bool[]>();
-        protected internal bool skipText = false;
-        private Dictionary<String, Object> interfaceProps;
-        private FactoryProperties factoryProperties = new FactoryProperties();
-        
-        /** Creates a new instance of HTMLWorker */
-        public HTMLWorker(IDocListener document) {
-            this.document = document;
-        }
-        
-        public StyleSheet Style {
-            set {
-                style = value;
-            }
-            get {
-                return style;
-            }
-        }
-        
-        public Dictionary<String, Object> InterfaceProps {
-            set {
-                interfaceProps = value;
-                IFontProvider ff = null;
-                if (interfaceProps != null && interfaceProps.ContainsKey("font_factory"))
-                    ff = (IFontProvider)interfaceProps["font_factory"];
-                if (ff != null)
-                    factoryProperties.FontImp = ff;
-            }
-            get {
-                return interfaceProps;
-            }
+
+        /**
+         * Creates a new instance of HTMLWorker
+         * @param document A class that implements <CODE>DocListener</CODE>
+         */
+        public HTMLWorker(IDocListener document) : this(document, null, null) {
         }
 
+        /**
+         * Creates a new instance of HTMLWorker
+         * @param document  A class that implements <CODE>DocListener</CODE>
+         * @param tags      A map containing the supported tags
+         * @param style     A StyleSheet
+         * @since 5.0.6
+         */
+        public HTMLWorker(IDocListener document, IDictionary<String, IHTMLTagProcessor> tags, StyleSheet style) {
+            this.document = document;
+            SetSupportedTags(tags);
+            SetStyleSheet(style);
+        }
+
+        /**
+         * Sets the map with supported tags.
+         * @param tags
+         * @since 5.0.6
+         */
+        public void SetSupportedTags(IDictionary<String, IHTMLTagProcessor> tags) {
+            if (tags == null)
+                tags = new HTMLTagProcessors();
+            this.tags = tags;
+        }
+
+        /**
+         * Setter for the StyleSheet
+         * @param style the StyleSheet
+         */
+        public void SetStyleSheet(StyleSheet style) {
+            if (style == null)
+                style = new StyleSheet();
+            this.style = style;
+        }
+
+        /**
+         * Parses content read from a java.io.Reader object.
+         * @param reader    the content
+         * @throws IOException
+         */
         public void Parse(TextReader reader) {
             SimpleXMLParser.Parse(this, null, reader, true);
         }
-        
-        public static List<IElement> ParseToList(TextReader reader, StyleSheet style) {
-            return ParseToList(reader, style, null);
+
+        // state machine
+
+        /**
+         * Stack with the Elements that already have been processed.
+         * @since iText 5.0.6 (private => protected)
+         */
+        protected Stack<IElement> stack = new Stack<IElement>();
+
+        /**
+         * Keeps the content of the current paragraph
+         * @since iText 5.0.6 (private => protected)
+         */
+        protected Paragraph currentParagraph;
+
+        /**
+         * The current hierarchy chain of tags.
+         * @since 5.0.6
+         */
+        private ChainedProperties chain = new ChainedProperties();
+
+        /**
+         * @see com.itextpdf.text.xml.simpleparser.SimpleXMLDocHandler#startDocument()
+         */
+        public virtual void StartDocument() {
+            Dictionary<String, String> attrs = new Dictionary<String, String>();
+            style.ApplyStyle(HtmlTags.BODY, attrs);
+            chain.AddToChain(HtmlTags.BODY, attrs);
         }
 
-        public static List<IElement> ParseToList(TextReader reader, StyleSheet style, Dictionary<String, Object> interfaceProps) {
-            HTMLWorker worker = new HTMLWorker(null);
-            if (style != null)
-                worker.Style = style;
-            worker.document = worker;
-            worker.InterfaceProps = interfaceProps;
-            worker.objectList = new List<IElement>();
-            worker.Parse(reader);
-            return worker.objectList;
+        /**
+         * @see com.itextpdf.text.xml.simpleparser.SimpleXMLDocHandler#startElement(java.lang.String, java.util.Dictionary)
+         */
+        public virtual void StartElement(String tag, Dictionary<String, String> attrs) {
+            IHTMLTagProcessor htmlTag;
+            tags.TryGetValue(tag, out htmlTag);
+            if (htmlTag == null) {
+                return;
+            }
+            // apply the styles to attrs
+            style.ApplyStyle(tag, attrs);
+            // deal with the style attribute
+            StyleSheet.ResolveStyleAttribute(attrs, chain);
+            // process the tag
+            htmlTag.StartElement(this, tag, attrs);
         }
-        
+
+        /**
+         * @see com.itextpdf.text.xml.simpleparser.SimpleXMLDocHandler#text(java.lang.String)
+         */
+        public virtual void Text(String content) {
+            if (skipText)
+                return;
+            if (currentParagraph == null) {
+                currentParagraph = CreateParagraph();
+            }
+            if (!insidePRE) {
+                // newlines and carriage returns are ignored
+                if (content.Trim().Length == 0 && content.IndexOf(' ') < 0) {
+                    return;
+                }
+                content = HtmlUtilities.EliminateWhiteSpace(content);
+            }
+            Chunk chunk = CreateChunk(content);
+            currentParagraph.Add(chunk);
+        }
+
+        /**
+         * @see com.itextpdf.text.xml.simpleparser.SimpleXMLDocHandler#endElement(java.lang.String)
+         */
+        public virtual void EndElement(String tag) {
+            IHTMLTagProcessor htmlTag;
+            tags.TryGetValue(tag, out htmlTag);
+            if (htmlTag == null) {
+                return;
+            }
+            // process the tag
+            htmlTag.EndElement(this, tag);
+        }
+
+        /**
+         * @see com.itextpdf.text.xml.simpleparser.SimpleXMLDocHandler#endDocument()
+         */
         public virtual void EndDocument() {
+            // flush the stack
             foreach (IElement e in stack)
                 document.Add(e);
+            // add current paragraph
             if (currentParagraph != null)
                 document.Add(currentParagraph);
             currentParagraph = null;
         }
-        
-        public virtual void StartDocument() {
-            Dictionary<String, String> h = new Dictionary<string,string>();
-            style.ApplyStyle("body", h);
-            cprops.AddToChain("body", h);
-        }
-        
-        public virtual void StartElement(String tag, Dictionary<String, String> h) {
-            if (!tagsSupported.ContainsKey(tag))
-                return;
-            style.ApplyStyle(tag, h);
-            String follow = null;
-            if (FactoryProperties.followTags.ContainsKey(tag))
-                follow = FactoryProperties.followTags[tag];
-            if (follow != null) {
-                Dictionary<String, String> prop = new Dictionary<string,string>();
-                prop[follow] = null;
-                cprops.AddToChain(follow, prop);
-                return;
-            }
-            FactoryProperties.InsertStyle(h, cprops);
-            if (tag.Equals(HtmlTags.ANCHOR)) {
-                cprops.AddToChain(tag, h);
-                if (currentParagraph == null)
-                    currentParagraph = new Paragraph();
-                stack.Push(currentParagraph);
-                currentParagraph = new Paragraph();
-                return;
-            }
-            if (tag.Equals(HtmlTags.NEWLINE)) {
-                if (currentParagraph == null)
-                    currentParagraph = new Paragraph();
-                currentParagraph.Add(factoryProperties.CreateChunk("\n", cprops));
-                return;
-            }
-            if (tag.Equals(HtmlTags.HORIZONTALRULE)) {
-                // Attempting to duplicate the behavior seen on Firefox with
-                // http://www.w3schools.com/tags/tryit.asp?filename=tryhtml_hr_test
-                // where an initial break is only inserted when the preceding element doesn't
-                // end with a break, but a trailing break is always inserted.
-                bool addLeadingBreak = true;
-                if (currentParagraph == null) {
-                    currentParagraph = new Paragraph();
-                    addLeadingBreak = false;
-                }
-                if (addLeadingBreak) { // Not a new paragraph
-                    int numChunks = currentParagraph.Chunks.Count;
-                    if (numChunks == 0 ||
-                        currentParagraph.Chunks[numChunks - 1].Content.EndsWith("\n"))
-                        addLeadingBreak = false;
-                }
-                String align;
-                int hrAlign = Element.ALIGN_CENTER;
-                if (h.TryGetValue("align", out align)) {
-                    if (Util.EqualsIgnoreCase(align, "left"))
-                        hrAlign = Element.ALIGN_LEFT; 
-                    if (Util.EqualsIgnoreCase(align, "right"))
-                        hrAlign = Element.ALIGN_RIGHT;
-                }
-                String width;
-                float hrWidth = 1;
-                if (h.TryGetValue("width", out width)) {
-                    float tmpWidth = Markup.ParseLength(width, Markup.DEFAULT_FONT_SIZE);
-                    if (tmpWidth > 0) hrWidth = tmpWidth;
-                    if (!width.EndsWith("%"))
-                        hrWidth = 100; // Treat a pixel width as 100% for now.
-                }
-                String size;;
-                float hrSize = 1;
-                if (h.TryGetValue("size", out size)) {
-                    float tmpSize = Markup.ParseLength(size, Markup.DEFAULT_FONT_SIZE);
-                    if (tmpSize > 0)
-                        hrSize = tmpSize;
-                }
-                if (addLeadingBreak)
-                    currentParagraph.Add(Chunk.NEWLINE);
-                currentParagraph.Add(new LineSeparator(hrSize, hrWidth, null, hrAlign, currentParagraph.Leading/2));
-                currentParagraph.Add(Chunk.NEWLINE);
-                return;
-            }
-            if (tag.Equals(HtmlTags.CHUNK) || tag.Equals(HtmlTags.SPAN)) {
-                cprops.AddToChain(tag, h);
-                return;
-            }
-            if (tag.Equals(HtmlTags.IMAGE)) {
-                String src;
-                if (!h.TryGetValue(ElementTags.SRC, out src))
-                    return;
-                cprops.AddToChain(tag, h);
-                Image img = null;
-                if (interfaceProps != null) {
-                    IImageProvider ip;
-                    if (interfaceProps.ContainsKey("img_provider")) {
-                        ip = (IImageProvider)interfaceProps["img_provider"];
-                        img = ip.GetImage(src, h, cprops, document);
-                    }
-                    if (img == null) {
-                        Dictionary<String, Image> images;
-                        if (interfaceProps.ContainsKey("img_static")) {
-                            images = (Dictionary<string,Image>)interfaceProps["img_static"];
-                            Image tim;
-                            if (images.TryGetValue(src, out tim))
-                                img = Image.GetInstance(tim);
-                        } else {
-                            if (!src.StartsWith("http")) { // relative src references only
-                                if (interfaceProps.ContainsKey("img_baseurl")) {
-                                    src = (string)interfaceProps["img_baseurl"] + src;
-                                    img = Image.GetInstance(src);
-                                }
-                            }
-                        }
-                    }
-                }
-                if (img == null) {
-                    if (!src.StartsWith("http")) {
-                        String path = cprops["image_path"];
-                        if (path == null)
-                            path = "";
-                        src = Path.Combine(path, src);
-                    }
-                    img = Image.GetInstance(src);
-                }
-                String align; h.TryGetValue("align", out align);
-                String width; h.TryGetValue("width", out width);
-                String height; h.TryGetValue("height", out height);
-                String before = cprops["before"];
-                String after = cprops["after"];
-                if (before != null)
-                    img.SpacingBefore = float.Parse(before, System.Globalization.NumberFormatInfo.InvariantInfo);
-                if (after != null)
-                    img.SpacingAfter = float.Parse(after, System.Globalization.NumberFormatInfo.InvariantInfo);
-                float actualFontSize = Markup.ParseLength(cprops[ElementTags.SIZE], Markup.DEFAULT_FONT_SIZE);
-                if (actualFontSize <= 0f)
-                    actualFontSize = Markup.DEFAULT_FONT_SIZE;
-                float widthInPoints = Markup.ParseLength(width, actualFontSize);
-                float heightInPoints = Markup.ParseLength(height, actualFontSize);
-                if (widthInPoints > 0 && heightInPoints > 0) {
-                    img.ScaleAbsolute(widthInPoints, heightInPoints);
-                } else if (widthInPoints > 0) {
-                    heightInPoints = img.Height * widthInPoints / img.Width;
-                    img.ScaleAbsolute(widthInPoints, heightInPoints);
-                } else if (heightInPoints > 0) {
-                    widthInPoints = img.Width * heightInPoints / img.Height;
-                    img.ScaleAbsolute(widthInPoints, heightInPoints);
-                }
-                img.WidthPercentage = 0;
-                if (align != null) {
-                    EndElement("p");
-                    int ralign = Image.MIDDLE_ALIGN;
-                    if (Util.EqualsIgnoreCase(align, "left"))
-                        ralign = Image.LEFT_ALIGN;
-                    else if (Util.EqualsIgnoreCase(align, "right"))
-                        ralign = Image.RIGHT_ALIGN;
-                    img.Alignment = ralign;
-                    IImg i = null;
-                    bool skip = false;
-                    if (interfaceProps != null) {
-                        if (interfaceProps.ContainsKey("img_interface"))
-                            i = (IImg)interfaceProps["img_interface"];
-                        if (i != null)
-                            skip = i.Process(img, h, cprops, document);
-                    }
-                    if (!skip)
-                        document.Add(img);
-                    cprops.RemoveChain(tag);
-                }
-                else {
-                    cprops.RemoveChain(tag);
-                    if (currentParagraph == null)
-                        currentParagraph = FactoryProperties.CreateParagraph(cprops);
-                    currentParagraph.Add(new Chunk(img, 0, 0, true));
-                }
-                return;
-            }
 
-            EndElement("p");
-            if (tag.Equals("h1") || tag.Equals("h2") || tag.Equals("h3") || tag.Equals("h4") || tag.Equals("h5") || tag.Equals("h6")) {
-                if (!h.ContainsKey(ElementTags.SIZE)) {
-                    int v = 7 - int.Parse(tag.Substring(1));
-                    h[ElementTags.SIZE] = v.ToString();
-                }
-                cprops.AddToChain(tag, h);
-                return;
+        // stack and current paragraph operations
+
+        /**
+         * Adds a new line to the currentParagraph.
+         * @since 5.0.6
+         */
+        public void NewLine() {
+            if (currentParagraph == null) {
+                currentParagraph = new Paragraph();
             }
-            if (tag.Equals(HtmlTags.UNORDEREDLIST)) {
-                if (pendingLI)
-                    EndElement(HtmlTags.LISTITEM);
-                skipText = true;
-                cprops.AddToChain(tag, h);
-                List list = new List(false);
-                try{
-                    list.IndentationLeft = float.Parse(cprops["indent"], System.Globalization.NumberFormatInfo.InvariantInfo);
-                }catch {
-                    list.Autoindent = true;
-                }
-                list.SetListSymbol("\u2022 ");
-                stack.Push(list);
-                return;
-            }
-            if (tag.Equals(HtmlTags.ORDEREDLIST)) {
-                if (pendingLI)
-                    EndElement(HtmlTags.LISTITEM);
-                skipText = true;
-                cprops.AddToChain(tag, h);
-                List list = new List(true);
-                try{
-                    list.IndentationLeft = float.Parse(cprops["indent"], System.Globalization.NumberFormatInfo.InvariantInfo);
-                }catch {
-                    list.Autoindent = true;
-                }
-                stack.Push(list);
-                return;
-            }
-            if (tag.Equals(HtmlTags.LISTITEM)) {
-                if (pendingLI)
-                    EndElement(HtmlTags.LISTITEM);
-                skipText = false;
-                pendingLI = true;
-                cprops.AddToChain(tag, h);
-                stack.Push(FactoryProperties.CreateListItem(cprops));
-                return;
-            }
-            if (tag.Equals(HtmlTags.DIV) || tag.Equals(HtmlTags.BODY) || tag.Equals("p")) {
-                cprops.AddToChain(tag, h);
-                return;
-            }
-            if (tag.Equals(HtmlTags.PRE)) {
-                if (!h.ContainsKey(ElementTags.FACE)) {
-                    h[ElementTags.FACE] = "Courier";
-                }
-                cprops.AddToChain(tag, h);
-                isPRE = true;
-                return;
-            }
-            if (tag.Equals("tr")) {
-                if (pendingTR)
-                    EndElement("tr");
-                skipText = true;
-                pendingTR = true;
-                cprops.AddToChain("tr", h);
-                return;
-            }
-            if (tag.Equals("td") || tag.Equals("th")) {
-                if (pendingTD)
-                    EndElement(tag);
-                skipText = false;
-                pendingTD = true;
-                cprops.AddToChain("td", h);
-                stack.Push(new IncCell(tag, cprops));
-                return;
-            }
-            if (tag.Equals("table")) {
-                IncTable table = new IncTable(h);
-                stack.Push(table);
-                tableState.Push(new bool[]{pendingTR, pendingTD});
-                pendingTR = pendingTD = false;
-                skipText = true;
-                // Table alignment should not affect children elements, thus remove
-                h.Remove("align");
-                cprops.AddToChain("table", h);
-                return;
-            }
+            currentParagraph.Add(CreateChunk("\n"));
         }
-        
-        public virtual void EndElement(String tag) {
-            if (!tagsSupported.ContainsKey(tag))
+
+        /**
+         * Flushes the current paragraph, indicating that we're starting
+         * a new block.
+         * If the stack is empty, the paragraph is added to the document.
+         * Otherwise the Paragraph is added to the stack.
+         * @since 5.0.6
+         */
+        public void CarriageReturn() {
+            if (currentParagraph == null)
                 return;
-            String follow;
-            if (FactoryProperties.followTags.TryGetValue(tag, out follow)) {
-                cprops.RemoveChain(follow);
-                return;
-            }
-            if (tag.Equals("font") || tag.Equals("span")) {
-                cprops.RemoveChain(tag);
-                return;
-            }
-            if (tag.Equals("a")) {
-                if (currentParagraph == null)
-                    currentParagraph = new Paragraph();
-                IALink i = null;
-                bool skip = false;
-                if (interfaceProps != null) {
-                    if (interfaceProps.ContainsKey("alink_interface"))
-                        i = (IALink)interfaceProps["alink_interface"];
-                    if (i != null)
-                        skip = i.Process(currentParagraph, cprops);
+            if (stack.Count == 0)
+                document.Add(currentParagraph);
+            else {
+                IElement obj = stack.Pop();
+                if (obj is ITextElementArray) {
+                    ITextElementArray current = (ITextElementArray) obj;
+                    current.Add(currentParagraph);
                 }
-                if (!skip) {
-                    String href = cprops["href"];
-                    if (href != null) {
-                        foreach (Chunk ck in currentParagraph.Chunks) {
-                            ck.SetAnchor(href);
-                        }
-                    }
-                }
-                Paragraph tmp = (Paragraph)stack.Pop();
-                Phrase tmp2 = new Phrase();
-                tmp2.Add(currentParagraph);
-                tmp.Add(tmp2);
-                currentParagraph = tmp;
-                cprops.RemoveChain("a");
-                return;
-            }
-            if (tag.Equals("br")) {
-                return;
-            }
-            if (currentParagraph != null) {
-                if (stack.Count == 0)
-                    document.Add(currentParagraph);
-                else {
-                    IElement obj = stack.Pop();
-                    if (obj is ITextElementArray) {
-                        ITextElementArray current = (ITextElementArray)obj;
-                        current.Add(currentParagraph);
-                    }
-                    stack.Push(obj);
-                }
+                stack.Push(obj);
             }
             currentParagraph = null;
-            if (tag.Equals(HtmlTags.UNORDEREDLIST) || tag.Equals(HtmlTags.ORDEREDLIST)) {
-                if (pendingLI)
-                    EndElement(HtmlTags.LISTITEM);
-                skipText = false;
-                cprops.RemoveChain(tag);
-                if (stack.Count == 0)
-                    return;
-                IElement obj = stack.Pop();
-                if (!(obj is List)) {
-                    stack.Push(obj);
-                    return;
+        }
+
+        /**
+         * Stacks the current paragraph, indicating that we're starting
+         * a new span.
+         * @since 5.0.6
+         */
+        public void FlushContent() {
+            PushToStack(currentParagraph);
+            currentParagraph = new Paragraph();
+        }
+
+        /**
+         * Pushes an element to the Stack.
+         * @param element
+         * @since 5.0.6
+         */
+        public void PushToStack(IElement element) {
+            if (element != null)
+                stack.Push(element);
+        }
+
+        /**
+         * Updates the chain with a new tag and new attributes.
+         * @param tag   the new tag
+         * @param attrs the corresponding attributes
+         * @since 5.0.6
+         */
+        public void UpdateChain(String tag, IDictionary<String, String> attrs) {
+            chain.AddToChain(tag, attrs);
+        }
+
+        /**
+         * Updates the chain by removing a tag.
+         * @param tag   the new tag
+         * @since 5.0.6
+         */
+        public void UpdateChain(String tag) {
+            chain.RemoveChain(tag);
+        }
+
+        // providers that help find resources such as images and fonts
+
+        /**
+         * Key used to store the image provider in the providers map.
+         * @since 5.0.6
+         */
+        public const String IMG_PROVIDER = "img_provider";
+
+        /**
+         * Key used to store the image processor in the providers map.
+         * @since 5.0.6
+         */
+        public const String IMG_PROCESSOR = "img_interface";
+
+        /**
+         * Key used to store the image store in the providers map.
+         * @since 5.0.6
+         */
+        public const String IMG_STORE = "img_static";
+
+        /**
+         * Key used to store the image baseurl provider in the providers map.
+         * @since 5.0.6
+         */
+        public const String IMG_BASEURL = "img_baseurl";
+
+        /**
+         * Key used to store the font provider in the providers map.
+         * @since 5.0.6
+         */
+        public const String FONT_PROVIDER = "font_factory";
+
+        /**
+         * Key used to store the link provider in the providers map.
+         * @since 5.0.6
+         */
+        public const String LINK_PROVIDER = "alink_interface";
+
+        /**
+         * IDictionary containing providers such as a FontProvider or ImageProvider.
+         * @since 5.0.6 (renamed from interfaceProps)
+         */
+        private IDictionary<String, Object> providers = new Dictionary<String, Object>();
+
+        /**
+         * Setter for the providers.
+         * If a FontProvider is added, the ElementFactory is updated.
+         * @param providers a IDictionary with different providers
+         * @since 5.0.6
+         */
+        public void SetProviders(IDictionary<String, Object> providers) {
+            if (providers == null)
+                return;
+            this.providers = providers;
+            IFontProvider ff = null;
+            if (providers.ContainsKey(FONT_PROVIDER))
+                ff = (IFontProvider)providers[FONT_PROVIDER];
+            if (ff != null)
+                factory.FontProvider = ff;
+        }
+
+        // factory that helps create objects
+
+        /**
+         * Factory that is able to create iText Element objects.
+         * @since 5.0.6
+         */
+        private ElementFactory factory = new ElementFactory();
+
+        /**
+         * Creates a Chunk using the factory.
+         * @param content   the content of the chunk
+         * @return  a Chunk with content
+         * @since 5.0.6
+         */
+        public Chunk CreateChunk(String content) {
+            return factory.CreateChunk(content, chain);
+        }
+        /**
+         * Creates a Paragraph using the factory.
+         * @return  a Paragraph without any content
+         * @since 5.0.6
+         */
+        public Paragraph CreateParagraph() {
+            return factory.CreateParagraph(chain);
+        }
+        /**
+         * Creates a List object.
+         * @param tag should be "ol" or "ul"
+         * @return  a List object
+         * @since 5.0.6
+         */
+        public List CreateList(String tag) {
+            return factory.CreateList(tag, chain);
+        }
+        /**
+         * Creates a ListItem object.
+         * @return a ListItem object
+         * @since 5.0.6
+         */
+        public ListItem CreateListItem() {
+            return factory.CreateListItem(chain);
+        }
+        /**
+         * Creates a LineSeparator object.
+         * @param attrs properties of the LineSeparator
+         * @return a LineSeparator object
+         * @since 5.0.6
+         */
+        public LineSeparator CreateLineSeparator(IDictionary<String, String> attrs) {
+            return factory.CreateLineSeparator(attrs, currentParagraph.Leading / 2);
+        }
+
+        /**
+         * Creates an Image object.
+         * @param attrs properties of the Image
+         * @return an Image object (or null if the Image couldn't be found)
+         * @throws DocumentException
+         * @throws IOException
+         * @since 5.0.6
+         */
+        public Image CreateImage(IDictionary<String, String> attrs) {
+            String src;
+            attrs.TryGetValue(HtmlTags.SRC, out src);
+            if (src == null)
+                return null;
+            Image img = factory.CreateImage(
+                    src, attrs, chain, document,
+                    providers.ContainsKey(IMG_PROVIDER) ? (IImageProvider)providers[IMG_PROVIDER] : null, 
+                    providers.ContainsKey(IMG_STORE) ? (ImageStore)providers[IMG_STORE] : null, 
+                    providers.ContainsKey(IMG_BASEURL) ? (string)providers[IMG_BASEURL] : null);
+            return img;
+        }
+
+        /**
+         * Creates a Cell.
+         * @param tag   the tag
+         * @return  a CellWrapper object
+         * @since 5.0.6
+         */
+        public CellWrapper CreateCell(String tag) {
+            return new CellWrapper(tag, chain);
+        }
+
+        // processing objects
+
+        /**
+         * Adds a link to the current paragraph.
+         * @since 5.0.6
+         */
+        public void ProcessLink() {
+            if (currentParagraph == null) {
+                currentParagraph = new Paragraph();
+            }
+            // The link provider allows you to do additional processing
+            ILinkProcessor i = null;
+            if (providers.ContainsKey(LINK_PROVIDER))
+                i = (ILinkProcessor) providers[LINK_PROVIDER];
+            if (i == null || !i.Process(currentParagraph, chain)) {
+                // sets an Anchor for all the Chunks in the current paragraph
+                String href = chain[HtmlTags.HREF];
+                if (href != null) {
+                    foreach (Chunk ck in currentParagraph.Chunks) {
+                        ck.SetAnchor(href);
+                    }
                 }
-                if (stack.Count == 0)
-                    document.Add(obj);
-                else
-                    ((ITextElementArray)stack.Peek()).Add(obj);
+            }
+            // a link should be added to the current paragraph as a phrase
+            if (stack.Count == 0) {
+                // no paragraph to add too, 'a' tag is first element
+                Paragraph tmp = new Paragraph(new Phrase(currentParagraph));
+                currentParagraph = tmp;
+            } else {
+                Paragraph tmp = (Paragraph) stack.Pop();
+                tmp.Add(new Phrase(currentParagraph));
+                currentParagraph = tmp;
+            }
+        }
+
+        /**
+         * Fetches the List from the Stack and adds it to
+         * the TextElementArray on top of the Stack,
+         * or to the Document if the Stack is empty.
+         * @throws DocumentException
+         * @since 5.0.6
+         */
+        public void ProcessList() {
+            if (stack.Count == 0)
+                return;
+            IElement obj = stack.Pop();
+            if (!(obj is List)) {
+                stack.Push(obj);
                 return;
             }
-            if (tag.Equals(HtmlTags.LISTITEM)) {
-                pendingLI = false;
-                skipText = true;
-                cprops.RemoveChain(tag);
-                if (stack.Count == 0)
-                    return;
-                IElement obj = stack.Pop();
-                if (!(obj is ListItem)) {
-                    stack.Push(obj);
-                    return;
-                }
-                if (stack.Count == 0) {
-                    document.Add((IElement)obj);
-                    return;
-                }
-                IElement list = stack.Pop();
-                if (!(list is List)) {
-                    stack.Push(list);
-                    return;
-                }
-                ListItem item = (ListItem)obj;
-                ((List)list).Add(item);
-                List<Chunk> cks = item.Chunks;
-                if (cks.Count > 0)
-                    item.ListSymbol.Font = cks[0].Font;
+            if (stack.Count == 0)
+                document.Add(obj);
+            else
+                ((ITextElementArray) stack.Peek()).Add(obj);
+        }
+
+        /**
+         * Looks for the List object on the Stack,
+         * and adds the ListItem to the List.
+         * @throws DocumentException
+         * @since 5.0.6
+         */
+        public void ProcessListItem() {
+            if (stack.Count == 0)
+                return;
+            IElement obj = stack.Pop();
+            if (!(obj is ListItem)) {
+                stack.Push(obj);
+                return;
+            }
+            if (stack.Count == 0) {
+                document.Add(obj);
+                return;
+            }
+            ListItem item = (ListItem) obj;
+            IElement list = stack.Pop();
+            if (!(list is List)) {
                 stack.Push(list);
                 return;
             }
-            if (tag.Equals("div") || tag.Equals("body")) {
-                cprops.RemoveChain(tag);
-                return;
-            }
-            if (tag.Equals(HtmlTags.PRE)) {
-                cprops.RemoveChain(tag);
-                isPRE = false;
-                return;
-            }
-            if (tag.Equals("p")) {
-                cprops.RemoveChain(tag);
-                return;
-            }
-            if (tag.Equals("h1") || tag.Equals("h2") || tag.Equals("h3") || tag.Equals("h4") || tag.Equals("h5") || tag.Equals("h6")) {
-                cprops.RemoveChain(tag);
-                return;
-            }
-            if (tag.Equals("table")) {
-                if (pendingTR)
-                    EndElement("tr");
-                cprops.RemoveChain("table");
-                IncTable table = (IncTable) stack.Pop();
-                PdfPTable tb = table.BuildTable();
-                tb.SplitRows = true;
-                if (stack.Count == 0)
-                    document.Add(tb);
-                else
-                    ((ITextElementArray)stack.Peek()).Add(tb);
-                bool[] state = tableState.Pop();
-                pendingTR = state[0];
-                pendingTD = state[1];
-                skipText = false;
-                return;
-            }
-            if (tag.Equals("tr")) {
-                if (pendingTD)
-                    EndElement("td");
-                pendingTR = false;
-                cprops.RemoveChain("tr");
-                List<PdfPCell> cells = new List<PdfPCell>();
-                List<float> cellWidths = new List<float>();
-                bool percentage = false;
-                float width;
-                float totalWidth = 0;
-                int zeroWidth = 0;
-                IncTable table = null;
-                while (true) {
-                    IElement obj = stack.Pop();
-                    if (obj is IncCell) {
-                        IncCell cell = (IncCell)obj;
-                        width = cell.Width;
-                        cellWidths.Add(width);
-                        percentage |= cell.IsPercentage;
-                        if (width == 0) {
-                            zeroWidth++;
-                        }
-                        else {
-                            totalWidth += width;
-                        }
-                        cells.Add(cell.Cell);
-                    }
-                    if (obj is IncTable) {
-                        table = (IncTable)obj;
-                        break;
-                    }
+            ((List) list).Add(item);
+            item.AdjustListSymbolFont();
+            stack.Push(list);
+        }
+
+        /**
+         * Processes an Image.
+         * @param img
+         * @param attrs
+         * @throws DocumentException
+         * @since   5.0.6
+         */
+        public void ProcessImage(Image img, IDictionary<String, String> attrs) {
+            IImageProcessor processor = null;
+            if (providers.ContainsKey(IMG_PROCESSOR))
+                processor = (IImageProcessor)providers[IMG_PROCESSOR];
+            if (processor == null || !processor.Process(img, attrs, chain, document)) {
+                String align;
+                attrs.TryGetValue(HtmlTags.ALIGN, out align);
+                if (align != null) {
+                    CarriageReturn();
                 }
-                table.AddCols(cells);
-                if (cellWidths.Count > 0) {
-                    // cells come off the stack in reverse, naturally
-                    totalWidth = 100 - totalWidth;
-                    cellWidths.Reverse();
-                    for (int i = 0; i < cellWidths.Count; ++i) {
-                        if (cellWidths[i] == 0 && percentage && zeroWidth > 0) {
-                        	cellWidths[i] = totalWidth / zeroWidth;
-                        }
-                    }
-                    table.ColWidths = cellWidths.ToArray();
+                if (currentParagraph == null) {
+                    currentParagraph = CreateParagraph();
                 }
-                table.EndRow();
-                stack.Push(table);
-                skipText = true;
-                return;
-            }
-            if (tag.Equals("td") || tag.Equals("th")) {
-                pendingTD = false;
-                cprops.RemoveChain("td");
-                skipText = true;
-                return;
+                currentParagraph.Add(new Chunk(img, 0, 0, true));
+                currentParagraph.Alignment = HtmlUtilities.AlignmentValue(align);
+                if (align != null) {
+                    CarriageReturn();
+                }
             }
         }
-        
-        public virtual void Text(String str) {
-            if (skipText)
-                return;
-            String content = str;
-            if (isPRE) {
-                if (currentParagraph == null)
-                    currentParagraph = FactoryProperties.CreateParagraph(cprops);
-                currentParagraph.Add(factoryProperties.CreateChunk(content, cprops));
-                return;
-            }
-            if (content.Trim().Length == 0 && content.IndexOf(' ') < 0) {
-                return;
-            }
-            
-            StringBuilder buf = new StringBuilder();
-            int len = content.Length;
-            char character;
-            bool newline = false;
-            for (int i = 0; i < len; i++) {
-                switch (character = content[i]) {
-                    case ' ':
-                        if (!newline) {
-                            buf.Append(character);
-                        }
-                        break;
-                    case '\n':
-                        if (i > 0) {
-                            newline = true;
-                            buf.Append(' ');
-                        }
-                        break;
-                    case '\r':
-                        break;
-                    case '\t':
-                        break;
-                    default:
-                        newline = false;
-                        buf.Append(character);
-                        break;
+
+        /**
+         * Processes the Table.
+         * @throws DocumentException
+         * @since 5.0.6
+         */
+        public void ProcessTable() {
+            TableWrapper table = (TableWrapper) stack.Pop();
+            PdfPTable tb = table.CreateTable();
+            tb.SplitRows = true;
+            if (stack.Count == 0)
+                document.Add(tb);
+            else
+                ((ITextElementArray) stack.Peek()).Add(tb);
+        }
+
+        /**
+         * Gets the TableWrapper from the Stack and adds a new row.
+         * @since 5.0.6
+         */
+        public void ProcessRow() {
+            List<PdfPCell> row = new List<PdfPCell>();
+            List<float> cellWidths = new List<float>();
+            bool percentage = false;
+            float width;
+            float totalWidth = 0;
+            int zeroWidth = 0;
+            TableWrapper table = null;
+            while (true) {
+                IElement obj = stack.Pop();
+                if (obj is CellWrapper) {
+                    CellWrapper cell = (CellWrapper)obj;
+                    width = cell.Width;
+                    cellWidths.Add(width);
+                    percentage |= cell.IsPercentage;
+                    if (width == 0) {
+                        zeroWidth++;
+                    }
+                    else {
+                        totalWidth += width;
+                    }
+                    row.Add(cell.Cell);
+                }
+                if (obj is TableWrapper) {
+                    table = (TableWrapper) obj;
+                    break;
                 }
             }
-            if (currentParagraph == null)
-                currentParagraph = FactoryProperties.CreateParagraph(cprops);
-            currentParagraph.Add(factoryProperties.CreateChunk(buf.ToString(), cprops));
+            table.AddRow(row);
+            if (cellWidths.Count > 0) {
+                // cells come off the stack in reverse, naturally
+                totalWidth = 100 - totalWidth;
+                cellWidths.Reverse();
+                float[] widths = new float[cellWidths.Count];
+                for (int i = 0; i < widths.Length; i++) {
+                    widths[i] = cellWidths[i];
+                    if (widths[i] == 0 && percentage && zeroWidth > 0) {
+                        widths[i] = totalWidth / zeroWidth;
+                    }
+                }
+                table.ColWidths = widths;
+            }
+            stack.Push(table);
         }
-        
+
+        // state variables and methods
+
+        /** Stack to keep track of table tags. */
+        private Stack<bool[]> tableState = new Stack<bool[]>();
+
+        /** Boolean to keep track of TR tags. */
+        private bool pendingTR = false;
+
+        /** Boolean to keep track of TD and TH tags */
+        private bool pendingTD = false;
+
+        /** Boolean to keep track of LI tags */
+        private bool pendingLI = false;
+
+        /**
+         * Boolean to keep track of PRE tags
+         * @since 5.0.6 renamed from isPRE
+         */
+        private bool insidePRE = false;
+
+        /**
+         * Indicates if text needs to be skipped.
+         * @since iText 5.0.6 (private => protected)
+         */
+        protected internal bool skipText = false;
+
+        /**
+         * Pushes the values of pendingTR and pendingTD
+         * to a state stack.
+         * @since 5.0.6
+         */
+        public void PushTableState() {
+            tableState.Push(new bool[] { pendingTR, pendingTD });
+        }
+
+        /**
+         * Pops the values of pendingTR and pendingTD
+         * from a state stack.
+         * @since 5.0.6
+         */
+        public void PopTableState() {
+            bool[] state = tableState.Pop();
+            pendingTR = state[0];
+            pendingTD = state[1];
+        }
+
+        /**
+         * @return the pendingTR
+         * @since 5.0.6
+         */
+        public bool IsPendingTR() {
+            return pendingTR;
+        }
+
+        /**
+         * @param pendingTR the pendingTR to set
+         * @since 5.0.6
+         */
+        public void SetPendingTR(bool pendingTR) {
+            this.pendingTR = pendingTR;
+        }
+
+        /**
+         * @return the pendingTD
+         * @since 5.0.6
+         */
+        public bool IsPendingTD() {
+            return pendingTD;
+        }
+
+        /**
+         * @param pendingTD the pendingTD to set
+         * @since 5.0.6
+         */
+        public void SetPendingTD(bool pendingTD) {
+            this.pendingTD = pendingTD;
+        }
+
+        /**
+         * @return the pendingLI
+         * @since 5.0.6
+         */
+        public bool IsPendingLI() {
+            return pendingLI;
+        }
+
+        /**
+         * @param pendingLI the pendingLI to set
+         * @since 5.0.6
+         */
+        public void SetPendingLI(bool pendingLI) {
+            this.pendingLI = pendingLI;
+        }
+
+        /**
+         * @return the insidePRE
+         * @since 5.0.6
+         */
+        public bool IsInsidePRE() {
+            return insidePRE;
+        }
+
+        /**
+         * @param insidePRE the insidePRE to set
+         * @since 5.0.6
+         */
+        public void SetInsidePRE(bool insidePRE) {
+            this.insidePRE = insidePRE;
+        }
+
+        /**
+         * @return the skipText
+         * @since 5.0.6
+         */
+        public bool IsSkipText() {
+            return skipText;
+        }
+
+        /**
+         * @param skipText the skipText to set
+         * @since 5.0.6
+         */
+        public void SetSkipText(bool skipText) {
+            this.skipText = skipText;
+        }
+
+        // static methods to parse HTML to a List of Element objects.
+
+        /** The resulting list of elements. */
+        protected List<IElement> objectList;
+
+        /**
+         * Parses an HTML source to a List of Element objects
+         * @param reader    the HTML source
+         * @param style     a StyleSheet object
+         * @return a List of Element objects
+         * @throws IOException
+         */
+        public static List<IElement> ParseToList(TextReader reader, StyleSheet style) {
+            return ParseToList(reader, style, null);
+        }
+
+        /**
+         * Parses an HTML source to a List of Element objects
+         * @param reader    the HTML source
+         * @param style     a StyleSheet object
+         * @param providers map containing classes with extra info
+         * @return a List of Element objects
+         * @throws IOException
+         */
+        public static List<IElement> ParseToList(TextReader reader, StyleSheet style,
+                Dictionary<String, Object> providers) {
+            return ParseToList(reader, style, null, providers);
+        }
+
+        /**
+         * Parses an HTML source to a List of Element objects
+         * @param reader    the HTML source
+         * @param style     a StyleSheet object
+         * @param tags      a map containing supported tags and their processors
+         * @param providers map containing classes with extra info
+         * @return a List of Element objects
+         * @throws IOException
+         * @since 5.0.6
+         */
+        public static List<IElement> ParseToList(TextReader reader, StyleSheet style,
+                IDictionary<String, IHTMLTagProcessor> tags, Dictionary<String, Object> providers) {
+            HTMLWorker worker = new HTMLWorker(null, tags, style);
+            worker.document = worker;
+            worker.SetProviders(providers);
+            worker.objectList = new List<IElement>();
+            worker.Parse(reader);
+            return worker.objectList;
+        }
+
+        // DocListener interface
+
+        /**
+         * @see com.itextpdf.text.ElementListener#add(com.itextpdf.text.Element)
+         */
         public bool Add(IElement element) {
             objectList.Add(element);
             return true;
         }
-        
-        public void ClearTextWrap() {
-        }
-        
+
+        /**
+         * @see com.itextpdf.text.DocListener#close()
+         */
         public void Close() {
         }
-        
+
+        /**
+         * @see com.itextpdf.text.DocListener#newPage()
+         */
         public bool NewPage() {
             return true;
         }
-        
+
+        /**
+         * @see com.itextpdf.text.DocListener#open()
+         */
         public void Open() {
         }
-        
-        public void ResetFooter() {
-        }
-        
-        public void ResetHeader() {
-        }
-        
+
+        /**
+         * @see com.itextpdf.text.DocListener#resetPageCount()
+         */
         public void ResetPageCount() {
         }
-        
+
+        /**
+         * @see com.itextpdf.text.DocListener#setMarginMirroring(bool)
+         */
         public bool SetMarginMirroring(bool marginMirroring) {
             return false;
         }
-        
+
         /**
-         * @see com.lowagie.text.DocListener#setMarginMirroring(boolean)
-         * @since	2.1.6
+         * @see com.itextpdf.text.DocListener#setMarginMirroring(bool)
+         * @since   2.1.6
          */
         public bool SetMarginMirroringTopBottom(bool marginMirroring) {
             return false;
         }
 
-        public bool SetMargins(float marginLeft, float marginRight, float marginTop, float marginBottom) {
+        /**
+         * @see com.itextpdf.text.DocListener#setMargins(float, float, float, float)
+         */
+        public bool SetMargins(float marginLeft, float marginRight,
+                float marginTop, float marginBottom) {
             return true;
         }
-        
-        public bool SetPageSize(Rectangle pageSize) {
-            return true;
-        }
-        
-        public const String tagsSupportedString = "ol ul li a pre font span br p div body table td th tr i b u sub sup em strong s strike"
-            + " h1 h2 h3 h4 h5 h6 img hr";
-        
-        public static Dictionary<string,object> tagsSupported = new Dictionary<string,object>();
-        
-        static HTMLWorker() {
-            StringTokenizer tok = new StringTokenizer(tagsSupportedString);
-            while (tok.HasMoreTokens())
-                tagsSupported[tok.NextToken()] = null;
-        }
-    
+
+        /**
+         * @see com.itextpdf.text.DocListener#setPageCount(int)
+         */
         public int PageCount {
             set {
             }
+        }
+
+        /**
+         * @see com.itextpdf.text.DocListener#setPageSize(com.itextpdf.text.Rectangle)
+         */
+        public bool SetPageSize(Rectangle pageSize) {
+            return true;
+        }
+
+        // deprecated methods
+
+        /**
+         * Sets the providers.
+         * @deprecated use SetProviders() instead
+         */
+        public void SetInterfaceProps(Dictionary<String, Object> providers) {
+            SetProviders(providers);
+        }
+        /**
+         * Gets the providers
+         * @deprecated use GetProviders() instead
+         */
+        public IDictionary<String, Object> GetInterfaceProps() {
+            return providers;
+        }
+
+        public virtual void Dispose() {
+            Close();
         }
     }
 }

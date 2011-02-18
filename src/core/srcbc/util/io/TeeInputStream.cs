@@ -2,16 +2,14 @@ using System;
 using System.Diagnostics;
 using System.IO;
 
-using Org.BouncyCastle.Utilities.IO;
-
-namespace Org.BouncyCastle.Cms
+namespace Org.BouncyCastle.Utilities.IO
 {
-	internal class TeeInputStream
+	public class TeeInputStream
 		: BaseInputStream
 	{
 		private readonly Stream input, tee;
 
-		internal TeeInputStream(Stream input, Stream tee)
+		public TeeInputStream(Stream input, Stream tee)
 		{
 			Debug.Assert(input.CanRead);
 			Debug.Assert(tee.CanWrite);

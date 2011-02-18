@@ -1,8 +1,23 @@
 using System;
 
-internal class SecurityParameters
+public class SecurityParameters
 {
-    internal byte[] masterSecret = null;
     internal byte[] clientRandom = null;
     internal byte[] serverRandom = null;
+    internal byte[] masterSecret = null;
+
+	public byte[] ClientRandom
+	{
+		get { return clientRandom; }
+	}
+
+	public byte[] ServerRandom
+	{
+		get { return serverRandom; }
+	}
+
+	public byte[] MasterSecret
+	{
+		get { return masterSecret; }
+	}
 }

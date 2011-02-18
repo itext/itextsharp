@@ -49,299 +49,338 @@ using System.Collections.Generic;
 namespace iTextSharp.text.html {
 
     /**
-     * A class that contains all the possible tagnames and their attributes.
+     * Static final values of supported HTML tags and attributes.
+     * @since 5.0.6
      */
 
-    public class HtmlTags {
-    
-        /** the root tag. */
-        public const string HTML = "html";
-    
-        /** the head tag */
-        public const string HEAD = "head";
-    
-        /** This is a possible HTML attribute for the HEAD tag. */
-        public const string CONTENT = "content";
-    
-        /** the meta tag */
-        public const string META = "meta";
-    
-        /** attribute of the root tag */
-        public const string SUBJECT = "subject";
-    
-        /** attribute of the root tag */
-        public const string KEYWORDS = "keywords";
-    
-        /** attribute of the root tag */
-        public const string AUTHOR = "author";
-    
-        /** the title tag. */
-        public const string TITLE = "title";
-    
-        /** the script tag. */
-        public const string SCRIPT = "script";
-
-        /** This is a possible HTML attribute for the SCRIPT tag. */
-        public const string LANGUAGE = "language";
-
-        /** This is a possible value for the LANGUAGE attribute. */
-        public const string JAVASCRIPT = "JavaScript";
-
-        /** the body tag. */
-        public const string BODY = "body";
-    
-        /** This is a possible HTML attribute for the BODY tag */
-        public const string JAVASCRIPT_ONLOAD = "onLoad";
-
-        /** This is a possible HTML attribute for the BODY tag */
-        public const string JAVASCRIPT_ONUNLOAD = "onUnLoad";
-
-        /** This is a possible HTML attribute for the BODY tag. */
-        public const string TOPMARGIN = "topmargin";
-    
-        /** This is a possible HTML attribute for the BODY tag. */
-        public const string BOTTOMMARGIN = "bottommargin";
-    
-        /** This is a possible HTML attribute for the BODY tag. */
-        public const string LEFTMARGIN = "leftmargin";
-    
-        /** This is a possible HTML attribute for the BODY tag. */
-        public const string RIGHTMARGIN = "rightmargin";
-    
-        // Phrases, Anchors, Lists and Paragraphs
-    
-        /** the chunk tag */
-        public const string CHUNK = "font";
-    
-        /** the phrase tag */
-        public const string CODE = "code";
-    
-        /** the phrase tag */
-        public const string VAR = "var";
-    
-        /** the anchor tag */
-        public const string ANCHOR = "a";
-    
-        /** the list tag */
-        public const string ORDEREDLIST = "ol";
-    
-        /** the list tag */
-        public const string UNORDEREDLIST = "ul";
-    
-        /** the listitem tag */
-        public const string LISTITEM = "li";
-    
-        /** the paragraph tag */
-        public const string PARAGRAPH = "p";
-    
-        /** attribute of anchor tag */
-        public const string NAME = "name";
-    
-        /** attribute of anchor tag */
-        public const string REFERENCE = "href";
-    
-        /** attribute of anchor tag */
-        public static string[] H = {"h1", "h2", "h3", "h4", "h5", "h6"};
-    
-        // Chunks
-    
-        /** attribute of the chunk tag */
-        public const string FONT = "face";
-    
-        /** attribute of the chunk tag */
-        public const string SIZE = "point-size";
-    
-        /** attribute of the chunk/table/cell tag */
-        public const string COLOR = "color";
-    
-        /** some phrase tag */
-        public const string EM = "em";
-    
-        /** some phrase tag */
-        public const string I = "i";
-    
-        /** some phrase tag */
-        public const string STRONG = "strong";
-    
-        /** some phrase tag */
-        public const string B = "b";
-    
-        /** some phrase tag */
-        public const string S = "s";
-    
-        /** some phrase tag */
-        public const string U = "u";
-    
-        /** some phrase tag */
-        public const string SUB = "sub";
-    
-        /** some phrase tag */
-        public const string SUP = "sup";
-    
-        /** the possible value of a tag */
-        public const string HORIZONTALRULE = "hr";
-    
-        // tables/cells
-    
-        /** the table tag */
-        public const string TABLE = "table";
-    
-        /** the cell tag */
-        public const string ROW = "tr";
-    
-        /** the cell tag */
-        public const string CELL = "td";
-    
-        /** attribute of the cell tag */
-        public const string HEADERCELL = "th";
-    
-        /** attribute of the table tag */
-        public const string COLUMNS = "cols";
-    
-        /** attribute of the table tag */
-        public const string CELLPADDING = "cellpadding";
-    
-        /** attribute of the table tag */
-        public const string CELLSPACING = "cellspacing";
-    
-        /** attribute of the cell tag */
-        public const string COLSPAN = "colspan";
-    
-        /** attribute of the cell tag */
-        public const string ROWSPAN = "rowspan";
-    
-        /** attribute of the cell tag */
-        public const string NOWRAP = "nowrap";
-    
-        /** attribute of the table/cell tag */
-        public const string BORDERWIDTH = "border";
-    
-        /** attribute of the table/cell tag */
-        public const string WIDTH = "width";
-    
-        /** attribute of the table/cell tag */
-        public const string BACKGROUNDCOLOR = "bgcolor";
-    
-        /** attribute of the table/cell tag */
-        public const string BORDERCOLOR = "bordercolor";
-    
-        /** attribute of paragraph/image/table tag */
-        public const string ALIGN = "align";
-    
-        /** attribute of chapter/section/paragraph/table/cell tag */
-        public const string LEFT = "left";
-    
-        /** attribute of chapter/section/paragraph/table/cell tag */
-        public const string RIGHT = "right";
-    
-        /** attribute of the cell tag */
-        public const string HORIZONTALALIGN = "align";
-    
-        /** attribute of the cell tag */
-        public const string VERTICALALIGN = "valign";
-    
-        /** attribute of the table/cell tag */
-        public const string TOP = "top";
-    
-        /** attribute of the table/cell tag */
-        public const string BOTTOM = "bottom";
-    
-        // Misc
-    
-        /** the image tag */
-        public const string IMAGE = "img";
-    
-        /** attribute of the image tag */
-        public const string URL = "src";
-    
-        /** attribute of the image tag */
-        public const string ALT = "alt";
-    
-        /** attribute of the image tag */
-        public const string PLAINWIDTH = "width";
-    
-        /** attribute of the image tag */
-        public const string PLAINHEIGHT = "height";
-    
-        /** the newpage tag */
-        public const string NEWLINE = "br";
-    
-        // alignment attribute values
-    
-        /** the possible value of an alignment attribute */
-        public const string ALIGN_LEFT = "Left";
-    
-        /** the possible value of an alignment attribute */
-        public const string ALIGN_CENTER = "Center";
-    
-        /** the possible value of an alignment attribute */
-        public const string ALIGN_RIGHT = "Right";
-    
-        /** the possible value of an alignment attribute */
-        public const string ALIGN_JUSTIFIED = "Justify";
-    
-        /** the possible value of an alignment attribute */
-        public const string ALIGN_TOP = "Top";
-    
-        /** the possible value of an alignment attribute */
-        public const string ALIGN_MIDDLE = "Middle";
-    
-        /** the possible value of an alignment attribute */
-        public const string ALIGN_BOTTOM = "Bottom";
-    
-        /** the possible value of an alignment attribute */
-        public const string ALIGN_BASELINE = "Baseline";
-    
-        /** the possible value of an alignment attribute */
-        public const string DEFAULT = "Default";
-
-        /** The DIV tag. */
-        public const string DIV = "div";
-
-        /** The SPAN tag. */
-        public const string SPAN = "span";
-        /** The LINK tag. */
-        public const string LINK = "link";
-        
-        /** This is a possible HTML attribute for the LINK tag. */
-        public const string TEXT_CSS = "text/css";
-
-        /** This is a possible HTML attribute for the LINK tag. */
-        public const string REL = "rel";
-
-        /** This is used for inline css style information */
-        public const string STYLE = "style";
-
-        /** This is a possible HTML attribute for the LINK tag. */
-        public const string TYPE = "type";
-
-        /** This is a possible HTML attribute. */
-        public const string STYLESHEET = "stylesheet";
-	    /** This is a possible HTML attribute for auto-formated 
-        * @since 2.1.3
-        */
+    public static class HtmlTags {
+    
+	    // tag names
+    	
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String A = "a";
+	    /** name of a tag */
+	    public const String B = "b";
+	    /** name of a tag */
+	    public const String BODY = "body";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String BLOCKQUOTE = "blockquote";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String BR = "br";
+	    /** name of a tag */
+	    public const String DIV = "div";
+	    /** name of a tag */
+	    public const String EM = "em";
+	    /** name of a tag */
+	    public const String FONT = "font";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String H1 = "h1";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String H2 = "h2";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String H3 = "h3";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String H4 = "h4";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String H5 = "h5";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String H6 = "h6";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String HR = "hr";
+	    /** name of a tag */
+	    public const String I = "i";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String IMG = "img";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String LI = "li";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String OL = "ol";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String P = "p";
+	    /** name of a tag */
 	    public const String PRE = "pre";
-	
-        /**
-         * Set containing tags that trigger a new line.
-         * @since iText 5.0.6
-         */
-        private static readonly Dictionary<string,object> newLineTags = new Dictionary<string,object>();
+	    /** name of a tag */
+	    public const String S = "s";
+	    /** name of a tag */
+	    public const String SPAN = "span";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String STRIKE = "strike";
+	    /** name of a tag */
+	    public const String STRONG = "strong";
+	    /** name of a tag */
+	    public const String SUB = "sub";
+	    /** name of a tag */
+	    public const String SUP = "sup";
+	    /** name of a tag */
+	    public const String TABLE = "table";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String TD = "td";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String TH = "th";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String TR = "tr";
+	    /** name of a tag */
+	    public const String U = "u";
+	    /**
+	     * name of a tag.
+	     * @since 5.0.6 (reorganized all constants)
+	     */
+	    public const String UL = "ul";
 
-        static HtmlTags() {
-            // Following list are the basic html tags that force new lines
-            // List may be extended as we discover them
-            newLineTags[PARAGRAPH] = null;
-            newLineTags["blockquote"] = null;
-            newLineTags["br"] = null;
-        }   
-        
-        /**
-         * Returns true if the tag causes a new line like p, br etc.
-         * @since iText 5.0.6
-         */
-        public static bool IsNewLineTag(string tag) {
-            return newLineTags.ContainsKey(tag);
-        }
+	    // attributes (some are not real HTML attributes!)
+
+	    /** name of an attribute */
+	    public const String ALIGN = "align";
+	    /**
+	     * name of an attribute
+	     * @since 5.0.6
+	     */
+	    public const String BGCOLOR = "bgcolor";
+	    /**
+	     * name of an attribute
+	     * @since 5.0.6
+	     */
+	    public const String BORDER = "border";
+	    /** name of an attribute */
+	    public const String CELLPADDING = "cellpadding";
+	    /** name of an attribute */
+	    public const String COLSPAN = "colspan";
+	    /**
+	     * name of an attribute
+	     * @since 5.0.6
+	     */
+	    public const String EXTRAPARASPACE = "extraparaspace";
+	    /**
+	     * name of an attribute
+	     * @since 5.0.6
+	     */
+	    public const String ENCODING = "encoding";
+	    /**
+	     * name of an attribute
+	     * @since 5.0.6
+	     */
+	    public const String FACE = "face";
+	    /**
+	     * Name of an attribute.
+	     * @since 5.0.6
+	     */
+	    public const String HEIGHT = "height";
+	    /**
+	     * Name of an attribute.
+	     * @since 5.0.6
+	     */
+	    public const String HREF = "href";
+	    /**
+	     * Name of an attribute.
+	     * @since 5.0.6
+	     */
+	    public const String HYPHENATION = "hyphenation";
+	    /**
+	     * Name of an attribute.
+	     * @since 5.0.6
+	     */
+	    public const String IMAGEPATH = "image_path";
+	    /**
+	     * Name of an attribute.
+	     * @since 5.0.6
+	     */
+	    public const String INDENT = "indent";
+	    /**
+	     * Name of an attribute.
+	     * @since 5.0.6
+	     */
+	    public const String LEADING = "leading";
+	    /** name of an attribute */
+	    public const String ROWSPAN = "rowspan";
+	    /** name of an attribute */
+	    public const String SIZE = "size";
+	    /**
+	     * Name of an attribute.
+	     * @since 5.0.6
+	     */
+	    public const String SRC = "src";
+	    /**
+	     * Name of an attribute.
+	     * @since 5.0.6
+	     */
+	    public const String VALIGN = "valign";
+	    /** name of an attribute */
+	    public const String WIDTH = "width";
+    	
+	    // attribute values
+
+	    /** the possible value of an alignment attribute */
+	    public const String ALIGN_LEFT = "left";
+	    /** the possible value of an alignment attribute */
+	    public const String ALIGN_CENTER = "center";
+	    /** the possible value of an alignment attribute */
+	    public const String ALIGN_RIGHT = "right";
+	    /** 
+	     * The possible value of an alignment attribute.
+	     * @since 5.0.6
+	     */
+	    public const String ALIGN_JUSTIFY = "justify";
+	    /** 
+	     * The possible value of an alignment attribute.
+	     * @since 5.0.6
+	     */
+        public const String ALIGN_JUSTIFIED_ALL = "JustifyAll";
+	    /** the possible value of an alignment attribute */
+	    public const String ALIGN_TOP = "top";
+	    /** the possible value of an alignment attribute */
+	    public const String ALIGN_MIDDLE = "middle";
+	    /** the possible value of an alignment attribute */
+	    public const String ALIGN_BOTTOM = "bottom";
+	    /** the possible value of an alignment attribute */
+	    public const String ALIGN_BASELINE = "baseline";
+    	
+	    // CSS
+    	
+	    /** This is used for inline css style information */
+	    public const String STYLE = "style";
+	    /**
+	     * Attribute for specifying externally defined CSS class.
+	     * @since 5.0.6
+	     */
+	    public const String CLASS = "class";
+	    /** the CSS tag for text color */
+	    public const String COLOR = "color";
+	    /**
+	     * The CSS tag for the font size.
+	     * @since 5.0.6
+	     */
+	    public const String FONTFAMILY = "font-family";
+	    /**
+	     * The CSS tag for the font size.
+	     * @since 5.0.6
+	     */
+	    public const String FONTSIZE = "font-size";
+	    /**
+	     * The CSS tag for the font size.
+	     * @since 5.0.6
+	     */
+	    public const String FONTSTYLE = "font-style";
+	    /**
+	     * The CSS tag for the font size.
+	     * @since 5.0.6
+	     */
+	    public const String FONTWEIGHT = "font-weight";
+	    /**
+	     * The CSS tag for the font size.
+	     * @since 5.0.6
+	     */
+	    public const String LINEHEIGHT = "line-height";
+	    /**
+	     * The CSS tag for the font size.
+	     * @since 5.0.6
+	     */
+	    public const String PADDINGLEFT = "padding-left";
+	    /**
+	     * The CSS tag for the font size.
+	     * @since 5.0.6
+	     */
+	    public const String TEXTALIGN = "text-align";
+	    /**
+	     * The CSS tag for the font size.
+	     * @since 5.0.6
+	     */
+	    public const String TEXTDECORATION = "text-decoration";
+	    /** the CSS tag for text decorations */
+	    public const String VERTICALALIGN = "vertical-align";
+	    /**
+	     * a CSS value for text decoration
+	     * @since 5.0.6
+	     */
+	    public const String BOLD = "bold";
+	    /**
+	     * a CSS value for text decoration
+	     * @since 5.0.6
+	     */
+	    public const String ITALIC = "italic";
+	    /**
+	     * a CSS value for text decoration
+	     * @since 5.0.6
+	     */
+	    public const String LINETHROUGH = "line-through";
+	    /**
+	     * a CSS value for text decoration
+	     * @since 5.0.6
+	     */
+	    public const String NORMAL = "normal";
+	    /**
+	     * a CSS value for text decoration
+	     * @since 5.0.6
+	     */
+	    public const String OBLIQUE = "oblique";
+	    /**
+	     * a CSS value for text decoration
+	     * @since 5.0.6
+	     */
+	    public const String UNDERLINE = "underline";
+
+	    /**
+	     * A possible attribute.
+	     * @since 5.0.6
+	     */
+	    public const String AFTER = "after";
+	    /**
+	     * A possible attribute.
+	     * @since 5.0.6
+	     */
+	    public const String BEFORE = "before";
     }
 }

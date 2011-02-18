@@ -68,10 +68,13 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 		private SecurityParameters securityParameters = null;
 
+		private TlsClientContextImpl tlsClientContext = null;
 		private TlsClient tlsClient = null;
 		private CipherSuite[] offeredCipherSuites = null;
 		private CompressionMethod[] offeredCompressionMethods = null;
         private TlsKeyExchange keyExchange = null;
+		private TlsAuthentication authentication = null;
+		private CertificateRequest certificateRequest = null;
 
 		private short connection_state = 0;
 
@@ -117,11 +120,6 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			this.rs = new RecordStream(this, inStr, outStr);
 			this.random = sr;
-		}
-
-		internal SecureRandom Random
-		{
-			get { return random; }
 		}
 
 		internal void ProcessData(
@@ -247,6 +245,9 @@ namespace Org.BouncyCastle.Crypto.Tls
 							AssertEmpty(inStr);
 
 							this.keyExchange.ProcessServerCertificate(serverCertificate);
+
+							this.authentication = tlsClient.GetAuthentication();
+							this.authentication.NotifyServerCertificate(serverCertificate);
 
 							break;
 						}
@@ -448,7 +449,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 								tlsClient.ProcessServerExtensions(serverExtensions);
 							}
 
-							this.keyExchange = tlsClient.CreateKeyExchange();
+							this.keyExchange = tlsClient.GetKeyExchange();
 
 	                        connection_state = CS_SERVER_HELLO_RECEIVED;
 	                        break;
@@ -473,13 +474,30 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 							AssertEmpty(inStr);
 
-							bool isClientCertificateRequested = (connection_state == CS_CERTIFICATE_REQUEST_RECEIVED);
-
 							connection_state = CS_SERVER_HELLO_DONE_RECEIVED;
 
-							if (isClientCertificateRequested)
+							TlsCredentials clientCreds = null;
+							if (certificateRequest == null)
 							{
-								SendClientCertificate(tlsClient.GetCertificate());
+								this.keyExchange.SkipClientCredentials();
+							}
+							else
+							{
+								clientCreds = this.authentication.GetClientCredentials(certificateRequest);
+
+								Certificate clientCert;
+								if (clientCreds == null)
+								{
+									this.keyExchange.SkipClientCredentials();
+									clientCert = Certificate.EmptyChain;
+								}
+								else
+								{
+									this.keyExchange.ProcessClientCredentials(clientCreds);
+									clientCert = clientCreds.Certificate;
+								}
+
+								SendClientCertificate(clientCert);
 							}
 
 							/*
@@ -490,17 +508,17 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 							connection_state = CS_CLIENT_KEY_EXCHANGE_SEND;
 
-							if (isClientCertificateRequested)
+							if (clientCreds != null && clientCreds is TlsSignerCredentials)
 							{
-								byte[] clientCertificateSignature = tlsClient.GenerateCertificateSignature(rs.GetCurrentHash());
-								if (clientCertificateSignature != null)
-								{
-									SendCertificateVerify(clientCertificateSignature);
+								TlsSignerCredentials signerCreds = (TlsSignerCredentials)clientCreds;
+								byte[] md5andsha1 = rs.GetCurrentHash();
+								byte[] clientCertificateSignature = signerCreds.GenerateCertificateSignature(
+									md5andsha1);
+								SendCertificateVerify(clientCertificateSignature);
 
-									connection_state = CS_CERTIFICATE_VERIFY_SEND;
-								}
+								connection_state = CS_CERTIFICATE_VERIFY_SEND;
 							}
-
+					
 							/*
 							* Now, we send change cipher state
 							*/
@@ -529,7 +547,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 							/*
 							 * Initialize our cipher suite
 							 */
-	                        rs.ClientCipherSpecDecided(tlsClient.CreateCipher(securityParameters));
+	                        rs.ClientCipherSpecDecided(tlsClient.GetCompression(), tlsClient.GetCipher());
 
 							/*
 							 * Send our finished message.
@@ -563,9 +581,10 @@ namespace Org.BouncyCastle.Crypto.Tls
 							{
 								// There was no server certificate message; check it's OK
 								this.keyExchange.SkipServerCertificate();
+								this.authentication = null;
 							}
 
-    	                    this.keyExchange.ProcessServerKeyExchange(inStr, securityParameters);
+    	                    this.keyExchange.ProcessServerKeyExchange(inStr);
 
 	                        AssertEmpty(inStr);
 							break;
@@ -591,6 +610,15 @@ namespace Org.BouncyCastle.Crypto.Tls
 								this.keyExchange.SkipServerKeyExchange();
 							}
 
+							if (this.authentication == null)
+							{
+								/*
+								 * RFC 2246 7.4.4. It is a fatal handshake_failure alert
+								 * for an anonymous server to request client identification.
+								 */
+								this.FailWithError(AlertLevel.fatal, AlertDescription.handshake_failure);
+							}
+
                             int numTypes = TlsUtilities.ReadUint8(inStr);
                             ClientCertificateType[] certificateTypes = new ClientCertificateType[numTypes];
                             for (int i = 0; i < numTypes; ++i)
@@ -608,10 +636,13 @@ namespace Org.BouncyCastle.Crypto.Tls
 							while (bis.Position < bis.Length)
 							{
 								byte[] dnBytes = TlsUtilities.ReadOpaque16(bis);
+								// TODO Switch to X500Name when available
 								authorityDNs.Add(X509Name.GetInstance(Asn1Object.FromByteArray(dnBytes)));
 							}
 
-							this.tlsClient.ProcessServerCertificateRequest(certificateTypes, authorityDNs);
+							this.certificateRequest = new CertificateRequest(certificateTypes,
+								authorityDNs);
+							this.keyExchange.ValidateCertificateRequest(this.certificateRequest);
 
 							break;
 						}
@@ -783,42 +814,33 @@ namespace Org.BouncyCastle.Crypto.Tls
 		/// <param name="verifyer">Will be used when a certificate is received to verify
 		/// that this certificate is accepted by the client.</param>
 		/// <exception cref="IOException">If handshake was not successful</exception>
-		// TODO Deprecate
+		[Obsolete("Use version taking TlsClient")]
 		public virtual void Connect(
 			ICertificateVerifyer verifyer)
 		{
-	        this.Connect(new DefaultTlsClient(verifyer));
+	        this.Connect(new LegacyTlsClient(verifyer));
 	    }
 
-//    public void Connect(ICertificateVerifyer verifyer, Certificate clientCertificate,
-//        AsymmetricKeyParameter clientPrivateKey)
-//    {
-//        DefaultTlsClient client = new DefaultTlsClient(verifyer);
-//        client.EnableClientAuthentication(clientCertificate, clientPrivateKey);
-//
-//        this.Connect(client);
-//    }
-
-		// TODO Make public
-		internal virtual void Connect(TlsClient tlsClient)
+		public virtual void Connect(TlsClient tlsClient)
         {
             if (tlsClient == null)
                 throw new ArgumentNullException("tlsClient");
             if (this.tlsClient != null)
                 throw new InvalidOperationException("Connect can only be called once");
 
-            this.tlsClient = tlsClient;
-            this.tlsClient.Init(this);
-
-            /*
+			/*
              * Send Client hello
              *
              * First, generate some random data.
              */
-            securityParameters = new SecurityParameters();
-            securityParameters.clientRandom = new byte[32];
+            this.securityParameters = new SecurityParameters();
+            this.securityParameters.clientRandom = new byte[32];
             random.NextBytes(securityParameters.clientRandom, 4, 28);
             TlsUtilities.WriteGmtUnixTime(securityParameters.clientRandom, 0);
+
+			this.tlsClientContext = new TlsClientContextImpl(random, securityParameters);
+			this.tlsClient = tlsClient;
+			this.tlsClient.Init(tlsClientContext);
 
             MemoryStream outStr = new MemoryStream();
             TlsUtilities.WriteVersion(outStr);
@@ -832,7 +854,7 @@ namespace Org.BouncyCastle.Crypto.Tls
             this.offeredCipherSuites = this.tlsClient.GetCipherSuites();
 
             // ExtensionType -> byte[]
-            this.clientExtensions = this.tlsClient.GenerateClientExtensions();
+            this.clientExtensions = this.tlsClient.GetClientExtensions();
 
             // Cipher Suites (and SCSV)
             {
@@ -898,7 +920,7 @@ namespace Org.BouncyCastle.Crypto.Tls
             byte[] outBytes = outStr.ToArray();
             bos.Write(outBytes, 0, outBytes.Length);
             byte[] message = bos.ToArray();
-            rs.WriteMessage(ContentType.handshake, message, 0, message.Length);
+            SafeWriteMessage(ContentType.handshake, message, 0, message.Length);
             connection_state = CS_CLIENT_HELLO_SEND;
 
             /*
@@ -906,9 +928,7 @@ namespace Org.BouncyCastle.Crypto.Tls
             */
             while (connection_state != CS_DONE)
             {
-                // TODO Should we send fatal alerts in the event of an exception
-                // (see readApplicationData)
-                rs.ReadData();
+				SafeReadData();
             }
 
             this.tlsStream = new TlsStream(this);
@@ -948,31 +968,76 @@ namespace Org.BouncyCastle.Crypto.Tls
 					return 0;
 				}
 
-				try
-				{
-					rs.ReadData();
-				}
-				catch (IOException e)
-				{
-					if (!this.closed)
-					{
-						this.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
-					}
-					throw e;
-				}
-				catch (Exception e)
-				{
-					if (!this.closed)
-					{
-						this.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
-					}
-					throw e;
-				}
+				SafeReadData();
 			}
 			len = System.Math.Min(len, applicationDataQueue.Available);
 			applicationDataQueue.Read(buf, offset, len, 0);
 			applicationDataQueue.RemoveData(len);
 			return len;
+		}
+
+		private void SafeReadData()
+		{
+			try
+			{
+				rs.ReadData();
+			}
+			catch (TlsFatalAlert e)
+			{
+				if (!this.closed)
+				{
+					this.FailWithError(AlertLevel.fatal, e.AlertDescription);
+				}
+				throw e;
+			}
+			catch (IOException e)
+			{
+				if (!this.closed)
+				{
+					this.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
+				}
+				throw e;
+			}
+			catch (Exception e)
+			{
+				if (!this.closed)
+				{
+					this.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
+				}
+				throw e;
+			}
+		}
+
+		private void SafeWriteMessage(ContentType type, byte[] buf, int offset, int len)
+		{
+			try
+			{
+				rs.WriteMessage(type, buf, offset, len);
+			}
+			catch (TlsFatalAlert e)
+			{
+				if (!this.closed)
+				{
+					this.FailWithError(AlertLevel.fatal, e.AlertDescription);
+				}
+				throw e;
+			}
+			catch (IOException e)
+			{
+				if (!closed)
+				{
+					this.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
+				}
+				throw e;
+			}
+			catch (Exception e)
+			{
+				if (!closed)
+				{
+					this.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
+				}
+				throw e;
+			}
 		}
 
 		/**
@@ -1001,7 +1066,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			* DO NOT REMOVE THIS LINE, EXCEPT YOU KNOW EXACTLY WHAT
 			* YOU ARE DOING HERE.
 			*/
-			rs.WriteMessage(ContentType.application_data, emptybuf, 0, 0);
+			SafeWriteMessage(ContentType.application_data, emptybuf, 0, 0);
 
 			do
 			{
@@ -1010,26 +1075,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 				*/
 				int toWrite = System.Math.Min(len, 1 << 14);
 
-				try
-				{
-					rs.WriteMessage(ContentType.application_data, buf, offset, toWrite);
-				}
-				catch (IOException e)
-				{
-					if (!closed)
-					{
-						this.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
-					}
-					throw e;
-				}
-				catch (Exception e)
-				{
-					if (!closed)
-					{
-						this.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
-					}
-					throw e;
-				}
+				SafeWriteMessage(ContentType.application_data, buf, offset, toWrite);
 
 				offset += toWrite;
 				len -= toWrite;
@@ -1066,7 +1112,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		* @param alertDescription The exact alert message.
 		* @throws IOException If alert was fatal.
 		*/
-		internal void FailWithError(AlertLevel alertLevel, AlertDescription	alertDescription)
+		private void FailWithError(AlertLevel alertLevel, AlertDescription	alertDescription)
 		{
 			/*
 			* Check if the connection is still open.
@@ -1128,7 +1174,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			if (inStr.Position < inStr.Length)
 			{
-				this.FailWithError(AlertLevel.fatal, AlertDescription.decode_error);
+				throw new TlsFatalAlert(AlertDescription.decode_error);
 			}
 		}
 

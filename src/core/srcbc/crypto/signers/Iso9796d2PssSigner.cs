@@ -3,6 +3,7 @@ using System;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Signers
 {
@@ -178,7 +179,7 @@ namespace Org.BouncyCastle.Crypto.Signers
 			Reset();
 		}
 
-		/// <summary> compare two byte arrays.</summary>
+		/// <summary> compare two byte arrays - constant time.</summary>
 		private bool IsSameAs(byte[] a, byte[] b)
 		{
 			if (messageLength != b.Length)
@@ -186,15 +187,17 @@ namespace Org.BouncyCastle.Crypto.Signers
 				return false;
 			}
 
+			bool isOkay = true;
+
 			for (int i = 0; i != b.Length; i++)
 			{
 				if (a[i] != b[i])
 				{
-					return false;
+					isOkay = false;
 				}
 			}
 
-			return true;
+			return isOkay;
 		}
 
 		/// <summary> clear possible sensitive data</summary>
@@ -202,6 +205,13 @@ namespace Org.BouncyCastle.Crypto.Signers
 			byte[] block)
 		{
 			Array.Clear(block, 0, block.Length);
+		}
+
+		public virtual void UpdateWithRecoveredMessage(
+			byte[] signature)
+		{
+			// TODO
+			throw Platform.CreateNotImplementedException("UpdateWithRecoveredMessage");
 		}
 
 		/// <summary> update the internal digest with the byte b</summary>
@@ -448,21 +458,26 @@ namespace Org.BouncyCastle.Crypto.Signers
 
 			int off = block.Length - tLength - hash.Length;
 
+			// TODO ConstantTimeAreEqual with offset for one array
+
+			bool isOkay = true;
 			for (int i = 0; i != hash.Length; i++)
 			{
 				if (hash[i] != block[off + i])
 				{
-					ClearBlock(block);
-					ClearBlock(hash);
-					ClearBlock(recoveredMessage);
-					fullMessage = false;
-
-					return false;
+					isOkay = false;
 				}
 			}
 
 			ClearBlock(block);
 			ClearBlock(hash);
+
+			if (!isOkay)
+			{
+				fullMessage = false;
+				ClearBlock(recoveredMessage);
+				return false;
+			}
 
 			//
 			// if they've input a message check what we've recovered against

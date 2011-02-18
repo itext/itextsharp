@@ -210,23 +210,23 @@ namespace Org.BouncyCastle.Crypto.Generators
 			/*
 			 * (see: Handbook of Applied Cryptography 4.80)
 			 */
-			do
-			{
-				g = BigIntegers.CreateRandomInRange(BigInteger.Two, pMinusTwo, random);
-			}
-			while (g.ModPow(BigInteger.Two, p).Equals(BigInteger.One)
-				|| g.ModPow(q, p).Equals(BigInteger.One));
+//			do
+//			{
+//				g = BigIntegers.CreateRandomInRange(BigInteger.Two, pMinusTwo, random);
+//			}
+//			while (g.ModPow(BigInteger.Two, p).Equals(BigInteger.One)
+//				|| g.ModPow(q, p).Equals(BigInteger.One));
 
 			/*
 	         * RFC 2631 2.2.1.2 (and see: Handbook of Applied Cryptography 4.81)
 	         */
-//			do
-//			{
-//				BigInteger h = CreateRandomInRange(BigInteger.Two, pMinusTwo, random);
-//
-//				g = h.ModPow(BigInteger.Two, p);
-//			}
-//			while (g.Equals(BigInteger.One));
+			do
+			{
+				BigInteger h = BigIntegers.CreateRandomInRange(BigInteger.Two, pMinusTwo, random);
+
+				g = h.ModPow(BigInteger.Two, p);
+			}
+			while (g.Equals(BigInteger.One));
 
 			return g;
 		}

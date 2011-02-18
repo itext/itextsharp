@@ -41,7 +41,7 @@ namespace Org.BouncyCastle.Cms
             try
             {
                 MemoryStream bOut = new MemoryStream();
-                ZDeflaterOutputStream zOut = new ZDeflaterOutputStream(bOut);
+                ZOutputStream zOut = new ZOutputStream(bOut, JZlib.Z_DEFAULT_COMPRESSION);
 
 				content.Write(zOut);
 

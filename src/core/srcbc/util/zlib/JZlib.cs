@@ -1,6 +1,6 @@
 using System;
 /*
- * $Id: JZlib.cs,v 1.2 2009/11/07 13:24:53 bouncy Exp $
+ * $Id: JZlib.cs,v 1.3 2011/02/15 05:46:04 bouncy Exp $
  *
 Copyright (c) 2000,2001,2002,2003 ymnk, JCraft,Inc. All rights reserved.
 
@@ -37,7 +37,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace Org.BouncyCastle.Utilities.Zlib {
 
     public sealed class JZlib{
-        private const String _version="1.0.2";
+        private const String _version="1.0.7";
         public static String version()
 		{
 			return _version;

@@ -140,6 +140,16 @@ namespace Org.BouncyCastle.Asn1
 			get { return _set.Count; }
 		}
 
+		public virtual Asn1Encodable[] ToArray()
+		{
+			Asn1Encodable[] values = new Asn1Encodable[this.Count];
+			for (int i = 0; i < this.Count; ++i)
+			{
+				values[i] = this[i];
+			}
+			return values;
+		}
+
 		private class Asn1SetParserImpl
 			: Asn1SetParser
 		{

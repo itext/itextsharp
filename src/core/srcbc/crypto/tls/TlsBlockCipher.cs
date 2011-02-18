@@ -11,10 +11,10 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// <summary>
 	/// A generic TLS 1.0 block cipher. This can be used for AES or 3DES for example.
 	/// </summary>
-	internal class TlsBlockCipher
+	public class TlsBlockCipher
         : TlsCipher
 	{
-		protected TlsProtocolHandler handler;
+		protected TlsClientContext context;
 
         protected IBlockCipher encryptCipher;
         protected IBlockCipher decryptCipher;
@@ -22,17 +22,18 @@ namespace Org.BouncyCastle.Crypto.Tls
         protected TlsMac writeMac;
         protected TlsMac readMac;
 
-		internal TlsBlockCipher(TlsProtocolHandler handler, IBlockCipher encryptCipher,
-			IBlockCipher decryptCipher, IDigest writeDigest, IDigest readDigest, int cipherKeySize,
-			SecurityParameters securityParameters)
+		public TlsBlockCipher(TlsClientContext context, IBlockCipher encryptCipher,
+			IBlockCipher decryptCipher, IDigest writeDigest, IDigest readDigest, int cipherKeySize)
 		{
-			this.handler = handler;
+			this.context = context;
 			this.encryptCipher = encryptCipher;
 			this.decryptCipher = decryptCipher;
 
 			int prfSize = (2 * cipherKeySize) + writeDigest.GetDigestSize()
 				+ readDigest.GetDigestSize() + encryptCipher.GetBlockSize()
 				+ decryptCipher.GetBlockSize();
+
+			SecurityParameters securityParameters = context.SecurityParameters;
 
 			byte[] keyBlock = TlsUtilities.PRF(securityParameters.masterSecret, "key expansion",
 				TlsUtilities.Concat(securityParameters.serverRandom, securityParameters.clientRandom),
@@ -55,7 +56,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 				keyBlock, ref offset, decryptCipher.GetBlockSize());
 
 			if (offset != prfSize)
-				handler.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
+				throw new TlsFatalAlert(AlertDescription.internal_error);
 
 			// Init Ciphers
 			encryptCipher.Init(true, encryptParams);
@@ -92,7 +93,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			// Add a random number of extra blocks worth of padding
 			int minPaddingSize = blocksize - ((len + writeMac.Size + 1) % blocksize);
 			int maxExtraPadBlocks = (255 - minPaddingSize) / blocksize;
-			int actualExtraPadBlocks = ChooseExtraPadBlocks(handler.Random, maxExtraPadBlocks);
+			int actualExtraPadBlocks = ChooseExtraPadBlocks(context.SecureRandom, maxExtraPadBlocks);
 			int paddingsize = minPaddingSize + (actualExtraPadBlocks * blocksize);
 
 			int totalsize = len + writeMac.Size + paddingsize + 1;
@@ -125,7 +126,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			*/
 			if (len < minLength)
 			{
-				handler.FailWithError(AlertLevel.fatal, AlertDescription.decode_error);
+				throw new TlsFatalAlert(AlertDescription.decode_error);
 			}
 
 			/*
@@ -133,7 +134,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			*/
 			if (len % blocksize != 0)
 			{
-				handler.FailWithError(AlertLevel.fatal, AlertDescription.decryption_failed);
+				throw new TlsFatalAlert(AlertDescription.decryption_failed);
 			}
 
 			/*
@@ -201,7 +202,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			*/
 			if (decrypterror)
 			{
-				handler.FailWithError(AlertLevel.fatal, AlertDescription.bad_record_mac);
+				throw new TlsFatalAlert(AlertDescription.bad_record_mac);
 			}
 
 			byte[] plaintext = new byte[plaintextlength];
@@ -218,7 +219,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return System.Math.Min(n, max);
 		}
 
-        protected virtual int LowestBitSet(uint x)
+        private int LowestBitSet(uint x)
 		{
 			if (x == 0)
 			{

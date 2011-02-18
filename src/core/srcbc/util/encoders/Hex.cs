@@ -19,7 +19,7 @@ namespace Org.BouncyCastle.Utilities.Encoders
 			byte[] data)
 		{
 			byte[] hex = Encode(data, 0, data.Length);
-			return Encoding.ASCII.GetString(hex, 0, hex.Length);
+            return Strings.FromAsciiByteArray(hex);
 		}
 
 		public static string ToHexString(
@@ -28,8 +28,8 @@ namespace Org.BouncyCastle.Utilities.Encoders
 			int		length)
 		{
 			byte[] hex = Encode(data, off, length);
-			return Encoding.ASCII.GetString(hex, 0, hex.Length);
-		}
+            return Strings.FromAsciiByteArray(hex);
+        }
 
 		/**
 		 * encode the input data producing a Hex encoded byte array.

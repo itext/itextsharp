@@ -208,15 +208,6 @@ namespace iTextSharp.text {
             }
         }
     
-        /// <summary>
-        /// Checks if a given tag corresponds with this object.
-        /// </summary>
-        /// <param name="tag">the given tag</param>
-        /// <returns>true if the tag corresponds</returns>
-        public new static bool IsTag(string tag) {
-            return ElementTags.LISTITEM.Equals(tag);
-        }
-
         /**
         * Sets the indentation of this paragraph on the left side.
         *
@@ -229,6 +220,17 @@ namespace iTextSharp.text {
             else {
             	IndentationLeft = indentation;
             }
+        }
+
+        /**
+         * Changes the font of the list symbol to the font of the first chunk
+         * in the list item.
+         * @since 5.0.6
+         */
+        public void AdjustListSymbolFont() {
+            System.Collections.Generic.List<Chunk> cks = Chunks;
+            if (cks.Count != 0 && symbol != null)
+                symbol.Font = cks[0].Font;
         }
     }
 }

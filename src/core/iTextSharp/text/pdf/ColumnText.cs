@@ -1378,15 +1378,16 @@ public class ColumnText {
                         newPageFollows = true;
                     }
                     // we add the footer rows if necessary (not for incomplete tables)
-                    for (int j = 0; j < footerRows && nt.ElementComplete && showFooter; ++j) {
-                        sub.Add(table.GetRow(j + realHeaderRows));
+                    if (footerRows > 0 && nt.ElementComplete && showFooter) {
+                    	sub.AddRange(table.GetRows(realHeaderRows, realHeaderRows + footerRows));
+                    }
+                    else {
+                    	footerRows = 0;
                     }
 
                     // we need a correction if the last row needs to be extended
                     float rowHeight = 0;
-                    int index = sub.Count - 1;
-                    if (showFooter) index -= footerRows;
-                    PdfPRow last = sub[index];
+                    PdfPRow last = sub[sub.Count - 1 - footerRows];
                     if (table.IsExtendLastRow(newPageFollows)) {
                         rowHeight = last.MaxHeights;
                         last.MaxHeights = yTemp - minY + rowHeight;
@@ -1402,9 +1403,13 @@ public class ColumnText {
                     
                     // now we render the rows of the new table
                     if (canvases != null)
-                        nt.WriteSelectedRows(0, -1, x1, yLineWrite, canvases);
+                        nt.WriteSelectedRows(0, -1, 0, -1, x1, yLineWrite, canvases, false);
                     else
-                        nt.WriteSelectedRows(0, -1, x1, yLineWrite, canvas);
+                        nt.WriteSelectedRows(0, -1, 0, -1, x1, yLineWrite, canvas, false);
+                    if (splittedRow && table.Size > k) {
+                        PdfPRow splitted = table.Rows[k - footerRows];
+                        splitted.CopyContent(nt.GetRow(nt.Size - 1));
+                    }
                     if (table.IsExtendLastRow(newPageFollows)) {
                         last.MaxHeights = rowHeight;
                     }

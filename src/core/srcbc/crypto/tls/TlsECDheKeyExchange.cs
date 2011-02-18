@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.IO;
 
@@ -11,28 +11,22 @@ namespace Org.BouncyCastle.Crypto.Tls
     /**
     * ECDHE key exchange (see RFC 4492)
     */
-    internal class TlsECDheKeyExchange : TlsECKeyExchange
+    internal class TlsECDheKeyExchange : TlsECDHKeyExchange
     {
-        internal TlsECDheKeyExchange(TlsProtocolHandler handler, ICertificateVerifyer verifyer,
-            TlsKeyExchangeAlgorithm keyExchange,
-            // TODO Replace with an interface e.g. TlsClientAuth
-            Certificate clientCert, AsymmetricKeyParameter clientPrivateKey)
-            : base(handler, verifyer, keyExchange, clientCert, clientPrivateKey)
+        internal TlsECDheKeyExchange(TlsClientContext context, KeyExchangeAlgorithm keyExchange)
+            : base(context, keyExchange)
         {
         }
 
-        public override void SkipServerCertificate()
+		public override void SkipServerKeyExchange()
         {
-            handler.FailWithError(AlertLevel.fatal, AlertDescription.unexpected_message);
+            throw new TlsFatalAlert(AlertDescription.unexpected_message);
         }
 
-        public override void SkipServerKeyExchange()
+        public override void ProcessServerKeyExchange(Stream input)
         {
-            handler.FailWithError(AlertLevel.fatal, AlertDescription.unexpected_message);
-        }
+			SecurityParameters securityParameters = context.SecurityParameters;
 
-        public override void ProcessServerKeyExchange(Stream input, SecurityParameters securityParameters)
-        {
             ISigner signer = InitSigner(tlsSigner, securityParameters);
             Stream sigIn = new SignerStream(input, signer, null);
 
@@ -52,8 +46,7 @@ namespace Org.BouncyCastle.Crypto.Tls
             {
                 // TODO Add support for explicit curve parameters (read from sigIn)
 
-                handler.FailWithError(AlertLevel.fatal, AlertDescription.handshake_failure);
-                return;
+                throw new TlsFatalAlert(AlertDescription.handshake_failure);
             }
 
             byte[] publicBytes = TlsUtilities.ReadOpaque8(sigIn);
@@ -61,46 +54,57 @@ namespace Org.BouncyCastle.Crypto.Tls
             byte[] sigByte = TlsUtilities.ReadOpaque16(input);
             if (!signer.VerifySignature(sigByte))
             {
-                handler.FailWithError(AlertLevel.fatal, AlertDescription.bad_certificate);
+                throw new TlsFatalAlert(AlertDescription.bad_certificate);
             }
 
             // TODO Check curve_params not null
 
             ECPoint Q = curve_params.Curve.DecodePoint(publicBytes);
 
-            serverEphemeralPublicKey = new ECPublicKeyParameters(Q, curve_params);
+			this.ecAgreeServerPublicKey = ValidateECPublicKey(new ECPublicKeyParameters(Q, curve_params));
         }
+		
+		public override void ValidateCertificateRequest(CertificateRequest certificateRequest)
+		{
+			/*
+			 * RFC 4492 3. [...] The ECDSA_fixed_ECDH and RSA_fixed_ECDH mechanisms are usable
+			 * with ECDH_ECDSA and ECDH_RSA. Their use with ECDHE_ECDSA and ECDHE_RSA is
+			 * prohibited because the use of a long-term ECDH client key would jeopardize the
+			 * forward secrecy property of these algorithms.
+			 */
+			ClientCertificateType[] types = certificateRequest.CertificateTypes;
+			foreach (ClientCertificateType type in types)
+			{
+				switch (type)
+				{
+					case ClientCertificateType.rsa_sign:
+					case ClientCertificateType.dss_sign:
+					case ClientCertificateType.ecdsa_sign:
+						break;
+					default:
+						throw new TlsFatalAlert(AlertDescription.illegal_parameter);
+				}
+			}
+		}
+		
+		public override void ProcessClientCredentials(TlsCredentials clientCredentials)
+		{
+			if (clientCredentials is TlsSignerCredentials)
+			{
+				// OK
+			}
+			else
+			{
+				throw new TlsFatalAlert(AlertDescription.internal_error);
+			}
+		}
 
-        public override void GenerateClientKeyExchange(Stream output)
-        {
-            clientEphemeralKeyPair = GenerateECKeyPair(serverEphemeralPublicKey.Parameters);
-            byte[] keData = ExternalizeKey((ECPublicKeyParameters)clientEphemeralKeyPair.Public);
-            TlsUtilities.WriteUint24(keData.Length + 1, output);
-            TlsUtilities.WriteOpaque8(keData, output);
-        }
-
-        public override byte[] GeneratePremasterSecret()
-        {
-            return CalculateECDhePreMasterSecret((ECPublicKeyParameters)serverEphemeralPublicKey,
-            clientEphemeralKeyPair.Private);
-        }
-
-        protected virtual ISigner InitSigner(TlsSigner tlsSigner, SecurityParameters securityParameters)
+		protected virtual ISigner InitSigner(TlsSigner tlsSigner, SecurityParameters securityParameters)
         {
             ISigner signer = tlsSigner.CreateVerifyer(this.serverPublicKey);
             signer.BlockUpdate(securityParameters.clientRandom, 0, securityParameters.clientRandom.Length);
             signer.BlockUpdate(securityParameters.serverRandom, 0, securityParameters.serverRandom.Length);
             return signer;
         }
-
-        //public override void ProcessServerCertificateRequest(ClientCertificateType[] certificateTypes,
-        //    IList certificateAuthorities)
-        //{
-        //}
-
-        //public bool SendCertificateVerify()
-        //{
-        //    return true;
-        //}
     }
 }

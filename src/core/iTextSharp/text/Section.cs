@@ -428,26 +428,6 @@ namespace iTextSharp.text {
         // public methods
     
         /// <summary>
-        /// Alters the attributes of this Section.
-        /// </summary>
-        /// <param name="attributes">the attributes</param>
-        public void Set(Properties attributes) {
-            string value;
-            if ((value = attributes.Remove(ElementTags.NUMBERDEPTH)) != null) {
-                NumberDepth = int.Parse(value);
-            }
-            if ((value = attributes.Remove(ElementTags.INDENT)) != null) {
-                Indentation = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            }
-            if ((value = attributes.Remove(ElementTags.INDENTATIONLEFT)) != null) {
-                IndentationLeft = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            }
-            if ((value = attributes.Remove(ElementTags.INDENTATIONRIGHT)) != null) {
-                IndentationRight = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            }
-        }
-    
-        /// <summary>
         /// Get/set the title of this section
         /// </summary>
         /// <value>a Paragraph</value>
@@ -594,24 +574,6 @@ namespace iTextSharp.text {
             get {
                 return numbers.Count;
             }
-        }
-    
-        /// <summary>
-        /// Checks if a given tag corresponds with a title tag for this object.
-        /// </summary>
-        /// <param name="tag">the given tag</param>
-        /// <returns>true if the tag corresponds</returns>
-        public static bool IsTitle(string tag) {
-            return ElementTags.TITLE.Equals(tag);
-        }
-    
-        /// <summary>
-        /// Checks if a given tag corresponds with this object.
-        /// </summary>
-        /// <param name="tag">the given tag</param>
-        /// <returns>true if the tag corresponds</returns>
-        public static bool IsTag(string tag) {
-            return ElementTags.SECTION.Equals(tag);
         }
     
         /// <summary>

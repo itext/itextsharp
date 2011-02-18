@@ -273,8 +273,11 @@ namespace iTextSharp.text.pdf {
         * If -1, all the columns to the end are written.
         * @param    xPos The x-coordinate where the table starts on the canvas
         * @param    yPos The y-coordinate where the table starts on the canvas
-        */
-        public void WriteCells(int colStart, int colEnd, float xPos, float yPos, PdfContentByte[] canvases) {
+         * @param   reusable if set to false, the content in the cells is "consumed";
+         * if true, you can reuse the cells, the row, the parent table as many times you want.
+         * @since 5.1.0 added the reusable parameter
+         */
+        public void WriteCells(int colStart, int colEnd, float xPos, float yPos, PdfContentByte[] canvases, bool reusable) {
             if (!calculated)
                 CalculateHeights();
             if (colEnd < 0)
@@ -448,7 +451,11 @@ namespace iTextSharp.text.pdf {
                                     break;
                             }
                         }
-                        ColumnText ct = ColumnText.Duplicate(cell.Column);
+                        ColumnText ct;
+                        if (reusable)
+                            ct = ColumnText.Duplicate(cell.Column);
+                        else
+                            ct = cell.Column;
                         ct.Canvases = canvases;
                         float bry = tly
                                 - (currentMaxHeight
@@ -529,6 +536,19 @@ namespace iTextSharp.text.pdf {
                 }
             }
             return width;
+        }
+
+        /**
+         * Copies the content of one row to this row.
+         * Don't do this if the rows have a different number of cells.
+         * @param copy  the row that needs to be copied
+         * @since 5.1.0
+         */
+        public void CopyContent(PdfPRow copy) {
+            for (int i = 0; i < cells.Length; ++i) {
+                if (cells[i] != null)
+                    cells[i].Column = copy.GetCells()[i].Column;
+            }
         }
 
         /**

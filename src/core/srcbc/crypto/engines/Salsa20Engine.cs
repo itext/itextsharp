@@ -2,6 +2,7 @@ using System;
 using System.Text;
 
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Engines
 {
@@ -15,8 +16,8 @@ namespace Org.BouncyCastle.Crypto.Engines
 		private const int stateSize = 16; // 16, 32 bit ints = 64 bytes
 
 		private readonly static byte[]
-			sigma = Encoding.ASCII.GetBytes("expand 32-byte k"),
-			tau   = Encoding.ASCII.GetBytes("expand 16-byte k");
+			sigma = Strings.ToAsciiByteArray("expand 32-byte k"),
+            tau = Strings.ToAsciiByteArray("expand 16-byte k");
 
 		/*
 		* variables to hold the state of the engine

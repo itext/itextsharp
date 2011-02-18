@@ -2,7 +2,6 @@ using System;
 using System.util;
 
 using iTextSharp.text.pdf;
-using iTextSharp.text.html;
 
 /*
  * $Id$
@@ -477,22 +476,22 @@ namespace iTextSharp.text {
         /// <returns>the corresponding value</returns>
         public static int GetStyleValue(string style) {
             int s = 0;
-            if (style.IndexOf(Markup.CSS_VALUE_NORMAL) != -1) {
+            if (style.IndexOf("normal") != -1) {
                 s |= NORMAL;
             }
-            if (style.IndexOf(Markup.CSS_VALUE_BOLD) != -1) {
+            if (style.IndexOf("bold") != -1) {
                 s |= BOLD;
             }
-            if (style.IndexOf(Markup.CSS_VALUE_ITALIC) != -1) {
+            if (style.IndexOf("italic") != -1) {
                 s |= ITALIC;
             }
-            if (style.IndexOf(Markup.CSS_VALUE_OBLIQUE) != -1) {
+            if (style.IndexOf("oblique") != -1) {
                 s |= ITALIC;
             }
-            if (style.IndexOf(Markup.CSS_VALUE_UNDERLINE) != -1) {
+            if (style.IndexOf("underline") != -1) {
                 s |= UNDERLINE;
             }
-            if (style.IndexOf(Markup.CSS_VALUE_LINETHROUGH) != -1) {
+            if (style.IndexOf("line-through") != -1) {
                 s |= STRIKETHRU;
             }
             return s;

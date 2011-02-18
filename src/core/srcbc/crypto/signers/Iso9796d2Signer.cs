@@ -1,12 +1,13 @@
 using System;
+using System.Collections;
 
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Signers
 {
-
 	/// <summary> ISO9796-2 - mechanism using a hash function with recovery (scheme 1)</summary>
 	public class Iso9796d2Signer : ISignerWithRecovery
 	{
@@ -24,6 +25,25 @@ namespace Org.BouncyCastle.Crypto.Signers
 		public const int TrailerRipeMD160 = 0x31CC;
 		public const int TrailerRipeMD128 = 0x32CC;
 		public const int TrailerSha1 = 0x33CC;
+		public const int TrailerSha256 = 0x34CC;
+		public const int TrailerSha512 = 0x35CC;
+		public const int TrailerSha384 = 0x36CC;
+		public const int TrailerWhirlpool = 0x37CC;
+
+		private static IDictionary trailerMap = Platform.CreateHashtable();
+
+		static Iso9796d2Signer()
+		{
+			trailerMap.Add("RIPEMD128", TrailerRipeMD128);
+			trailerMap.Add("RIPEMD160", TrailerRipeMD160);
+
+			trailerMap.Add("SHA-1", TrailerSha1);
+			trailerMap.Add("SHA-256", TrailerSha256);
+			trailerMap.Add("SHA-384", TrailerSha384);
+			trailerMap.Add("SHA-512", TrailerSha512);
+
+			trailerMap.Add("Whirlpool", TrailerWhirlpool);
+		}
 
 		private IDigest digest;
 		private IAsymmetricBlockCipher cipher;
@@ -35,6 +55,9 @@ namespace Org.BouncyCastle.Crypto.Signers
 		private int messageLength;
 		private bool fullMessage;
 		private byte[] recoveredMessage;
+
+		private byte[] preSig;
+		private byte[] preBlock;
 
 		/// <summary>
 		/// Generate a signer for the with either implicit or explicit trailers
@@ -57,17 +80,11 @@ namespace Org.BouncyCastle.Crypto.Signers
 			}
 			else
 			{
-				if (digest is Sha1Digest)
+				string digestName = digest.AlgorithmName;
+
+				if (trailerMap.Contains(digestName))
 				{
-					trailer = TrailerSha1;
-				}
-				else if (digest is RipeMD160Digest)
-				{
-					trailer = TrailerRipeMD160;
-				}
-				else if (digest is RipeMD128Digest)
-				{
-					trailer = TrailerRipeMD128;
+					trailer = (int)trailerMap[digest.AlgorithmName];
 				}
 				else
 				{
@@ -83,7 +100,8 @@ namespace Org.BouncyCastle.Crypto.Signers
 		/// </param>
 		/// <param name="digest">digest to sign with.
 		/// </param>
-		public Iso9796d2Signer(IAsymmetricBlockCipher cipher, IDigest digest):this(cipher, digest, false)
+		public Iso9796d2Signer(IAsymmetricBlockCipher cipher, IDigest digest)
+			: this(cipher, digest, false)
 		{
 		}
 
@@ -113,9 +131,10 @@ namespace Org.BouncyCastle.Crypto.Signers
 			Reset();
 		}
 
-		/// <summary> compare two byte arrays.</summary>
+		/// <summary> compare two byte arrays - constant time.</summary>
 		private bool IsSameAs(byte[] a, byte[] b)
 		{
+			int checkLen;
 			if (messageLength > mBuf.Length)
 			{
 				if (mBuf.Length > b.Length)
@@ -123,13 +142,7 @@ namespace Org.BouncyCastle.Crypto.Signers
 					return false;
 				}
 
-				for (int i = 0; i != mBuf.Length; i++)
-				{
-					if (a[i] != b[i])
-					{
-						return false;
-					}
-				}
+				checkLen = mBuf.Length;
 			}
 			else
 			{
@@ -138,16 +151,20 @@ namespace Org.BouncyCastle.Crypto.Signers
 					return false;
 				}
 
-				for (int i = 0; i != b.Length; i++)
+				checkLen = b.Length;
+			}
+
+			bool isOkay = true;
+
+			for (int i = 0; i != checkLen; i++)
+			{
+				if (a[i] != b[i])
 				{
-					if (a[i] != b[i])
-					{
-						return false;
-					}
+					isOkay = false;
 				}
 			}
 
-			return true;
+			return isOkay;
 		}
 
 		/// <summary> clear possible sensitive data</summary>
@@ -157,13 +174,89 @@ namespace Org.BouncyCastle.Crypto.Signers
 			Array.Clear(block, 0, block.Length);
 		}
 
+		public virtual void UpdateWithRecoveredMessage(
+			byte[] signature)
+		{
+			byte[] block = cipher.ProcessBlock(signature, 0, signature.Length);
+
+			if (((block[0] & 0xC0) ^ 0x40) != 0)
+				throw new InvalidCipherTextException("malformed signature");
+
+			if (((block[block.Length - 1] & 0xF) ^ 0xC) != 0)
+				throw new InvalidCipherTextException("malformed signature");
+
+			int delta = 0;
+
+			if (((block[block.Length - 1] & 0xFF) ^ 0xBC) == 0)
+			{
+				delta = 1;
+			}
+			else
+			{
+				int sigTrail = ((block[block.Length - 2] & 0xFF) << 8) | (block[block.Length - 1] & 0xFF);
+
+				string digestName = digest.AlgorithmName;
+				if (!trailerMap.Contains(digestName))
+					throw new ArgumentException("unrecognised hash in signature");
+				if (sigTrail != (int)trailerMap[digestName])
+					throw new InvalidOperationException("signer initialised with wrong digest for trailer " + sigTrail);
+
+				delta = 2;
+			}
+
+			//
+			// find out how much padding we've got
+			//
+			int mStart = 0;
+
+			for (mStart = 0; mStart != block.Length; mStart++)
+			{
+				if (((block[mStart] & 0x0f) ^ 0x0a) == 0)
+					break;
+			}
+
+			mStart++;
+
+			int off = block.Length - delta - digest.GetDigestSize();
+
+			//
+			// there must be at least one byte of message string
+			//
+			if ((off - mStart) <= 0)
+				throw new InvalidCipherTextException("malformed block");
+
+			//
+			// if we contain the whole message as well, check the hash of that.
+			//
+			if ((block[0] & 0x20) == 0)
+			{
+				fullMessage = true;
+
+				recoveredMessage = new byte[off - mStart];
+				Array.Copy(block, mStart, recoveredMessage, 0, recoveredMessage.Length);
+			}
+			else
+			{
+				fullMessage = false;
+
+				recoveredMessage = new byte[off - mStart];
+				Array.Copy(block, mStart, recoveredMessage, 0, recoveredMessage.Length);
+			}
+
+			preSig = signature;
+			preBlock = block;
+
+			digest.BlockUpdate(recoveredMessage, 0, recoveredMessage.Length);
+			messageLength = recoveredMessage.Length;
+		}
+
 		/// <summary> update the internal digest with the byte b</summary>
 		public void Update(
 			byte input)
 		{
 			digest.Update(input);
 
-			if (messageLength < mBuf.Length)
+			if (preSig == null && messageLength < mBuf.Length)
 			{
 				mBuf[messageLength] = input;
 			}
@@ -179,7 +272,7 @@ namespace Org.BouncyCastle.Crypto.Signers
 		{
 			digest.BlockUpdate(input, inOff, length);
 
-			if (messageLength < mBuf.Length)
+			if (preSig == null && messageLength < mBuf.Length)
 			{
 				for (int i = 0; i < length && (i + messageLength) < mBuf.Length; i++)
 				{
@@ -281,23 +374,38 @@ namespace Org.BouncyCastle.Crypto.Signers
 		/// </summary>
 		public virtual bool VerifySignature(byte[] signature)
 		{
-			byte[] block = cipher.ProcessBlock(signature, 0, signature.Length);
+			byte[] block;
+			bool updateWithRecoveredCalled;
+
+			if (preSig == null)
+			{
+				updateWithRecoveredCalled = false;
+				try
+				{
+					block = cipher.ProcessBlock(signature, 0, signature.Length);
+				}
+				catch (Exception)
+				{
+					return false;
+				}
+			}
+			else
+			{
+				if (!Arrays.AreEqual(preSig, signature))
+					throw new InvalidOperationException("updateWithRecoveredMessage called on different signature");
+
+				updateWithRecoveredCalled = true;
+				block = preBlock;
+
+				preSig = null;
+				preBlock = null;
+			}
 
 			if (((block[0] & 0xC0) ^ 0x40) != 0)
-			{
-				ClearBlock(mBuf);
-				ClearBlock(block);
-
-				return false;
-			}
+				return ReturnFalse(block);
 
 			if (((block[block.Length - 1] & 0xF) ^ 0xC) != 0)
-			{
-				ClearBlock(mBuf);
-				ClearBlock(block);
-
-				return false;
-			}
+				return ReturnFalse(block);
 
 			int delta = 0;
 
@@ -309,29 +417,11 @@ namespace Org.BouncyCastle.Crypto.Signers
 			{
 				int sigTrail = ((block[block.Length - 2] & 0xFF) << 8) | (block[block.Length - 1] & 0xFF);
 
-				switch (sigTrail)
-				{
-					case TrailerRipeMD160:
-						if (!(digest is RipeMD160Digest))
-						{
-							throw new ArgumentException("signer should be initialised with RipeMD160");
-						}
-						break;
-					case TrailerSha1:
-						if (!(digest is Sha1Digest))
-						{
-							throw new ArgumentException("signer should be initialised with SHA1");
-						}
-						break;
-					case TrailerRipeMD128:
-						if (!(digest is RipeMD128Digest))
-						{
-							throw new ArgumentException("signer should be initialised with RipeMD128");
-						}
-						break;
-					default:
-						throw new ArgumentException("unrecognised hash in signature");
-				}
+				string digestName = digest.AlgorithmName;
+				if (!trailerMap.Contains(digestName))
+					throw new ArgumentException("unrecognised hash in signature");
+				if (sigTrail != (int)trailerMap[digestName])
+					throw new InvalidOperationException("signer initialised with wrong digest for trailer " + sigTrail);
 
 				delta = 2;
 			}
@@ -362,10 +452,7 @@ namespace Org.BouncyCastle.Crypto.Signers
 			//
 			if ((off - mStart) <= 0)
 			{
-				ClearBlock(mBuf);
-				ClearBlock(block);
-
-				return false;
+				return ReturnFalse(block);
 			}
 
 			//
@@ -375,20 +462,30 @@ namespace Org.BouncyCastle.Crypto.Signers
 			{
 				fullMessage = true;
 
+				// check right number of bytes passed in.
+				if (messageLength > off - mStart)
+				{
+					return ReturnFalse(block);
+				}
+
 				digest.Reset();
 				digest.BlockUpdate(block, mStart, off - mStart);
 				digest.DoFinal(hash, 0);
 
+				bool isOkay = true;
+				
 				for (int i = 0; i != hash.Length; i++)
 				{
 					block[off + i] ^= hash[i];
 					if (block[off + i] != 0)
 					{
-						ClearBlock(mBuf);
-						ClearBlock(block);
-
-						return false;
+						isOkay = false;
 					}
+				}
+
+				if (!isOkay)
+				{
+					return ReturnFalse(block);
 				}
 
 				recoveredMessage = new byte[off - mStart];
@@ -400,16 +497,20 @@ namespace Org.BouncyCastle.Crypto.Signers
 
 				digest.DoFinal(hash, 0);
 
+				bool isOkay = true;
+
 				for (int i = 0; i != hash.Length; i++)
 				{
 					block[off + i] ^= hash[i];
 					if (block[off + i] != 0)
 					{
-						ClearBlock(mBuf);
-						ClearBlock(block);
-
-						return false;
+						isOkay = false;
 					}
+				}
+
+				if (!isOkay)
+				{
+					return ReturnFalse(block);
 				}
 
 				recoveredMessage = new byte[off - mStart];
@@ -420,15 +521,12 @@ namespace Org.BouncyCastle.Crypto.Signers
 			// if they've input a message check what we've recovered against
 			// what was input.
 			//
-			if (messageLength != 0)
+			if (messageLength != 0 && !updateWithRecoveredCalled)
 			{
 				if (!IsSameAs(mBuf, recoveredMessage))
 				{
-					ClearBlock(mBuf);
-					ClearBlock(block);
-					ClearBlock(recoveredMessage);
-
-					return false;
+//					ClearBlock(recoveredMessage);
+					return ReturnFalse(block);
 				}
 			}
 
@@ -436,6 +534,14 @@ namespace Org.BouncyCastle.Crypto.Signers
 			ClearBlock(block);
 
 			return true;
+		}
+
+		private bool ReturnFalse(byte[] block)
+		{
+			ClearBlock(mBuf);
+			ClearBlock(block);
+
+			return false;
 		}
 
 		/// <summary>

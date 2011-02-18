@@ -53,7 +53,7 @@ namespace iTextSharp.text {
     /// <seealso cref="T:iTextSharp.text.IElementListener"/>
     /// <seealso cref="T:iTextSharp.text.Document"/>
     /// <seealso cref="T:iTextSharp.text.DocWriter"/>
-    public interface IDocListener : IElementListener {
+    public interface IDocListener : IElementListener, IDisposable {
     
         // methods
     

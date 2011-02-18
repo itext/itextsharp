@@ -37,9 +37,9 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 				case CompressionAlgorithmTag.Uncompressed:
 					return GetInputStream();
 				case CompressionAlgorithmTag.Zip:
-					return new ZInflaterInputStream(GetInputStream(), true);
+					return new ZInputStream(GetInputStream(), true);
                 case CompressionAlgorithmTag.ZLib:
-					return new ZInflaterInputStream(GetInputStream());
+					return new ZInputStream(GetInputStream());
 				case CompressionAlgorithmTag.BZip2:
 					return new CBZip2InputStream(GetInputStream());
                 default:

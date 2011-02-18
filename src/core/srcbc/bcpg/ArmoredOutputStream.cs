@@ -323,7 +323,7 @@ namespace Org.BouncyCastle.Bcpg
 		private void DoWrite(
 			string s)
         {
-			byte[] bs = Encoding.ASCII.GetBytes(s);
+            byte[] bs = Strings.ToAsciiByteArray(s);
 			outStream.Write(bs, 0, bs.Length);
         }
     }

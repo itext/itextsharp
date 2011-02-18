@@ -321,7 +321,7 @@ namespace System.util.zlib {
             return Z_OK;
         }
 
-        static private byte[] mark = {(byte)0, (byte)0, (byte)0xff, (byte)0xff};
+        private static readonly byte[] mark = {(byte)0, (byte)0, (byte)0xff, (byte)0xff};
 
         internal int inflateSync(ZStream z){
             int n;       // number of bytes to look at

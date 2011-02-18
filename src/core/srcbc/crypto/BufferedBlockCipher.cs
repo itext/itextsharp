@@ -336,28 +336,31 @@ namespace Org.BouncyCastle.Crypto
 			byte[]	output,
 			int		outOff)
 		{
-			if (bufOff != 0)
+			try
 			{
-				if (!cipher.IsPartialBlockOkay)
+				if (bufOff != 0)
 				{
-					throw new DataLengthException("data not block size aligned");
+					if (!cipher.IsPartialBlockOkay)
+					{
+						throw new DataLengthException("data not block size aligned");
+					}
+	
+					if (outOff + bufOff > output.Length)
+					{
+						throw new DataLengthException("output buffer too short for DoFinal()");
+					}
+	
+					// NB: Can't copy directly, or we may write too much output
+					cipher.ProcessBlock(buf, 0, buf, 0);
+					Array.Copy(buf, 0, output, outOff, bufOff);
 				}
 
-				if (outOff + bufOff > output.Length)
-				{
-					throw new DataLengthException("output buffer too short for DoFinal()");
-				}
-
-				// NB: Can't copy directly, or we may write too much output
-				cipher.ProcessBlock(buf, 0, buf, 0);
-				Array.Copy(buf, 0, output, outOff, bufOff);
+				return bufOff;
 			}
-
-			int resultLen = bufOff;
-
-			Reset();
-
-			return resultLen;
+			finally
+			{
+				Reset();
+			}
 		}
 
 		/**

@@ -40,7 +40,7 @@ namespace System.util.zlib {
         private const int MANY=1440;
 
         // And'ing with mask[n] masks the lower n bits
-        static private int[] inflate_mask = {
+        private static readonly int[] inflate_mask = {
                                                 0x00000000, 0x00000001, 0x00000003, 0x00000007, 0x0000000f,
                                                 0x0000001f, 0x0000003f, 0x0000007f, 0x000000ff, 0x000001ff,
                                                 0x000003ff, 0x000007ff, 0x00000fff, 0x00001fff, 0x00003fff,
@@ -48,7 +48,7 @@ namespace System.util.zlib {
                                             };
 
         // Table for deflate from PKZIP's appnote.txt.
-        static int[] border = { // Order of the bit length code lengths
+        static readonly int[] border = { // Order of the bit length code lengths
                                   16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15
                               };
 

@@ -195,16 +195,11 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 				IDigest digest;
 				if (s2k != null)
                 {
+					string digestName = GetDigestName(s2k.HashAlgorithm);
+
                     try
                     {
-                        switch (s2k.HashAlgorithm)
-                        {
-							case HashAlgorithmTag.Sha1:
-								digest = DigestUtilities.GetDigest("SHA1");
-								break;
-							default:
-								throw new PgpException("unknown hash algorithm: " + s2k.HashAlgorithm);
-                        }
+						digest = DigestUtilities.GetDigest(digestName);
                     }
                     catch (Exception e)
                     {
@@ -305,31 +300,31 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 
 		/// <summary>Write out the passed in file as a literal data packet.</summary>
         public static void WriteFileToLiteralData(
-            Stream		outputStream,
+            Stream		output,
             char		fileType,
             FileInfo	file)
         {
-			Stream inStr = file.OpenRead();
-			Stream outStr = new PgpLiteralDataGenerator().Open(
-				outputStream, fileType, file.Name, file.Length, file.LastWriteTime);
-
-			Streams.PipeAll(inStr, outStr);
-
-			inStr.Close();
-			outStr.Close();
+            PgpLiteralDataGenerator lData = new PgpLiteralDataGenerator();
+			Stream pOut = lData.Open(output, fileType, file.Name, file.Length, file.LastWriteTime);
+			PipeFileContents(file, pOut, 4096);
         }
 
 		/// <summary>Write out the passed in file as a literal data packet in partial packet format.</summary>
         public static void WriteFileToLiteralData(
-            Stream		outputStream,
+            Stream		output,
             char		fileType,
             FileInfo	file,
             byte[]		buffer)
         {
             PgpLiteralDataGenerator lData = new PgpLiteralDataGenerator();
-            Stream pOut = lData.Open(outputStream, fileType, file.Name, file.LastWriteTime, buffer);
-            FileStream inputStream = file.OpenRead();
-            byte[] buf = new byte[buffer.Length];
+            Stream pOut = lData.Open(output, fileType, file.Name, file.LastWriteTime, buffer);
+			PipeFileContents(file, pOut, buffer.Length);
+        }
+
+		private static void PipeFileContents(FileInfo file, Stream pOut, int bufSize)
+		{
+			FileStream inputStream = file.OpenRead();
+			byte[] buf = new byte[bufSize];
 
 			int len;
             while ((len = inputStream.Read(buf, 0, buf.Length)) > 0)
@@ -337,9 +332,9 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
                 pOut.Write(buf, 0, len);
             }
 
-			lData.Close();
-            inputStream.Close();
-        }
+			pOut.Close();
+			inputStream.Close();
+		}
 
 		private const int ReadAhead = 60;
 

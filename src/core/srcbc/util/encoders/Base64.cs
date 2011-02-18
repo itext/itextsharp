@@ -6,8 +6,6 @@ namespace Org.BouncyCastle.Utilities.Encoders
 {
 	public sealed class Base64
 	{
-//		private static readonly IEncoder encoder = new Base64Encoder();
-
 		private Base64()
 		{
 		}
@@ -21,11 +19,7 @@ namespace Org.BouncyCastle.Utilities.Encoders
 			byte[] data)
 		{
 			string s = Convert.ToBase64String(data, 0, data.Length);
-			return Encoding.ASCII.GetBytes(s);
-
-//			MemoryStream bOut = new MemoryStream();
-//			encoder.Encode(data, 0, data.Length, bOut);
-//			return bOut.ToArray();
+            return Strings.ToAsciiByteArray(s);
 		}
 
 		/**
@@ -38,11 +32,9 @@ namespace Org.BouncyCastle.Utilities.Encoders
 			Stream	outStream)
 		{
 			string s = Convert.ToBase64String(data, 0, data.Length);
-			byte[] encoded = Encoding.ASCII.GetBytes(s);
+            byte[] encoded = Strings.ToAsciiByteArray(s);
 			outStream.Write(encoded, 0, encoded.Length);
 			return encoded.Length;
-
-//			return encoder.Encode(data, 0, data.Length, outStream);
 		}
 
 		/**
@@ -57,11 +49,9 @@ namespace Org.BouncyCastle.Utilities.Encoders
 			Stream	outStream)
 		{
 			string s = Convert.ToBase64String(data, off, length);
-			byte[] encoded = Encoding.ASCII.GetBytes(s);
+            byte[] encoded = Strings.ToAsciiByteArray(s);
 			outStream.Write(encoded, 0, encoded.Length);
 			return encoded.Length;
-
-//			return encoder.Encode(data, off, length, outStream);
 		}
 
 		/**
@@ -72,12 +62,8 @@ namespace Org.BouncyCastle.Utilities.Encoders
 		public static byte[] Decode(
 			byte[] data)
 		{
-			string s = Encoding.ASCII.GetString(data, 0, data.Length);
+            string s = Strings.FromAsciiByteArray(data);
 			return Convert.FromBase64String(s);
-
-//			MemoryStream bOut = new MemoryStream();
-//			encoder.Decode(data, 0, data.Length, bOut);
-//			return bOut.ToArray();
 		}
 
 		/**
@@ -89,10 +75,6 @@ namespace Org.BouncyCastle.Utilities.Encoders
 			string data)
 		{
 			return Convert.FromBase64String(data);
-
-//			MemoryStream bOut = new MemoryStream();
-//			encoder.DecodeString(data, bOut);
-//			return bOut.ToArray();
 		}
 
 		/**
@@ -108,8 +90,6 @@ namespace Org.BouncyCastle.Utilities.Encoders
 			byte[] decoded = Decode(data);
 			outStream.Write(decoded, 0, decoded.Length);
 			return decoded.Length;
-
-//			return encoder.DecodeString(data, outStream);
 		}
 	}
 }

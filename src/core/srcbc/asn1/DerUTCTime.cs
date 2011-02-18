@@ -2,6 +2,8 @@ using System;
 using System.Globalization;
 using System.Text;
 
+using Org.BouncyCastle.Utilities;
+
 namespace Org.BouncyCastle.Asn1
 {
     /**
@@ -93,7 +95,7 @@ namespace Org.BouncyCastle.Asn1
             //
             // explicitly convert to characters
             //
-			this.time = Encoding.ASCII.GetString(bytes, 0, bytes.Length);
+            this.time = Strings.FromAsciiByteArray(bytes);
         }
 
 //		public DateTime ToDateTime()
@@ -228,7 +230,7 @@ namespace Org.BouncyCastle.Asn1
 
         private byte[] GetOctets()
         {
-			return Encoding.ASCII.GetBytes(time);
+            return Strings.ToAsciiByteArray(time);
         }
 
 		internal override void Encode(

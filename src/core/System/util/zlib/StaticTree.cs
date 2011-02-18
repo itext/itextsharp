@@ -48,7 +48,7 @@ namespace System.util.zlib {
         // Bit length codes must not exceed MAX_BL_BITS bits
         internal const int MAX_BL_BITS=7; 
 
-        internal static short[] static_ltree = {
+        internal static readonly short[] static_ltree = {
                                                    12,  8, 140,  8,  76,  8, 204,  8,  44,  8,
                                                    172,  8, 108,  8, 236,  8,  28,  8, 156,  8,
                                                    92,  8, 220,  8,  60,  8, 188,  8, 124,  8,
@@ -109,7 +109,7 @@ namespace System.util.zlib {
                                                    163,  8,  99,  8, 227,  8
                                                };
 
-        internal static short[] static_dtree = {
+        internal static readonly short[] static_dtree = {
                                                    0, 5, 16, 5,  8, 5, 24, 5,  4, 5,
                                                    20, 5, 12, 5, 28, 5,  2, 5, 18, 5,
                                                    10, 5, 26, 5,  6, 5, 22, 5, 14, 5,
@@ -118,15 +118,15 @@ namespace System.util.zlib {
                                                    19, 5, 11, 5, 27, 5,  7, 5, 23, 5
                                                };
 
-        internal static StaticTree static_l_desc =
+        internal static readonly StaticTree static_l_desc =
             new StaticTree(static_ltree, Tree.extra_lbits,
             LITERALS+1, L_CODES, MAX_BITS);
 
-        internal static StaticTree static_d_desc =
+        internal static readonly StaticTree static_d_desc =
             new StaticTree(static_dtree, Tree.extra_dbits,
             0,  D_CODES, MAX_BITS);
 
-        internal static StaticTree static_bl_desc =
+        internal static readonly StaticTree static_bl_desc =
             new StaticTree(null, Tree.extra_blbits,
             0, BL_CODES, MAX_BL_BITS);
 

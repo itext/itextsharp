@@ -109,7 +109,7 @@ namespace Org.BouncyCastle.Cms
 				outer._digests.Add(digestOID, hash.Clone());
 
 				sig.Init(true, new ParametersWithRandom(key, random));
-#if NETCF_1_0 || NETCF_2_0
+#if NETCF_1_0 || NETCF_2_0 || SILVERLIGHT
 				Stream sigStr = new SigOutputStream(sig);
 #else
 				Stream sigStr = new BufferedStream(new SigOutputStream(sig));
@@ -164,7 +164,7 @@ namespace Org.BouncyCastle.Cms
 				Asn1Encodable sigX509Parameters = SignerUtilities.GetDefaultX509Parameters(signatureName);
 				AlgorithmIdentifier encAlgId = CmsSignedGenerator.GetEncAlgorithmIdentifier(
 					new DerObjectIdentifier(encOID), sigX509Parameters);
-
+				
                 return new SignerInfo(signerIdentifier, digAlgId,
                     signedAttr, encAlgId, new DerOctetString(sigBytes), unsignedAttr);
             }
@@ -304,7 +304,7 @@ namespace Org.BouncyCastle.Cms
 			Asn1.Cms.AttributeTable	unsignedAttr)
 		{
 			AddSigner(privateKey, subjectKeyID, GetEncOid(privateKey, digestOID), digestOID,
-				signedAttr, unsignedAttr);
+				signedAttr, unsignedAttr); 
 		}
 
 		/**

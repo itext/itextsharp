@@ -14,8 +14,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 	/// </remarks>
 	public class TlsMac
 	{
-		private long seqNo;
-		private HMac mac;
+		protected long seqNo;
+		protected HMac mac;
 
 		/**
 		* Generate a new instance of an TlsMac.
@@ -25,7 +25,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		* @param offset    The number of bytes to skip, before the key starts in the buffer.
 		* @param len       The length of the key.
 		*/
-		internal TlsMac(
+		public TlsMac(
 			IDigest	digest,
 			byte[]	key_block,
 			int		offset,
@@ -40,7 +40,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		/**
 		* @return The Keysize of the mac.
 		*/
-		internal int Size
+		public virtual int Size
 		{
 			get { return mac.GetMacSize(); }
 		}
@@ -56,7 +56,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		* @param len     The length of the message.
 		* @return A new byte-buffer containing the mac value.
 		*/
-		internal byte[] CalculateMac(
+		public virtual byte[] CalculateMac(
 			ContentType	type,
 			byte[]		message,
 			int			offset,

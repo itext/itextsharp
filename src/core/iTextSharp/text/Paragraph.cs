@@ -228,31 +228,7 @@ namespace iTextSharp.text {
         }
     
         // setting the membervariables
-    
-        /// <summary>
-        /// Sets the alignment of this paragraph.
-        /// </summary>
-        /// <param name="alignment">the new alignment as a string</param>
-        public void SetAlignment(string alignment) {
-            if (Util.EqualsIgnoreCase(alignment, ElementTags.ALIGN_CENTER)) {
-                this.alignment = Element.ALIGN_CENTER;
-                return;
-            }
-            if (Util.EqualsIgnoreCase(alignment, ElementTags.ALIGN_RIGHT)) {
-                this.alignment = Element.ALIGN_RIGHT;
-                return;
-            }
-            if (Util.EqualsIgnoreCase(alignment, ElementTags.ALIGN_JUSTIFIED)) {
-                this.alignment = Element.ALIGN_JUSTIFIED;
-                return;
-            }
-            if (Util.EqualsIgnoreCase(alignment, ElementTags.ALIGN_JUSTIFIED_ALL)) {
-                this.alignment = Element.ALIGN_JUSTIFIED_ALL;
-                return;
-            }
-            this.alignment = Element.ALIGN_LEFT;
-        }
-    
+        
         public override float Leading {
             set {
                 this.leading = value;
@@ -330,15 +306,6 @@ namespace iTextSharp.text {
             }
         }
     
-        /// <summary>
-        /// Checks if a given tag corresponds with this object.
-        /// </summary>
-        /// <param name="tag">the given tag</param>
-        /// <returns>true if the tag corresponds</returns>
-        public new static bool IsTag(string tag) {
-            return ElementTags.PARAGRAPH.Equals(tag);
-        }
-
         public float SpacingBefore {
             get {
                 return spacingBefore;

@@ -41,13 +41,13 @@ namespace Org.BouncyCastle.Asn1.Icao
 		public static DataGroupHash GetInstance(
             object obj)
         {
-            if (obj == null || obj is DataGroupHash)
+            if (obj is DataGroupHash)
                 return (DataGroupHash)obj;
 
-			if (obj is Asn1Sequence)
-                return new DataGroupHash(Asn1Sequence.GetInstance(obj));
+			if (obj != null)
+				return new DataGroupHash(Asn1Sequence.GetInstance(obj));
 
-			throw new ArgumentException("unknown object in GetInstance: " + obj.GetType().FullName);
+			throw new ArgumentException("null object in GetInstance()");
 		}
 
 		private DataGroupHash(

@@ -11,66 +11,29 @@ using Org.BouncyCastle.Crypto.Parameters;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
-	internal class DefaultTlsClient
+	public abstract class DefaultTlsClient
 		: TlsClient
 	{
-		private ICertificateVerifyer verifyer;
+		protected TlsCipherFactory cipherFactory;
 
-		private TlsProtocolHandler handler;
+		protected TlsClientContext context;
 
-		// (Optional) details for client-side authentication
-		private Certificate clientCert = new Certificate(new X509CertificateStructure[0]);
-		private AsymmetricKeyParameter clientPrivateKey = null;
-		private TlsSigner clientSigner = null;
+        protected CompressionMethod selectedCompressionMethod;
+        protected CipherSuite selectedCipherSuite;
 
-		private CipherSuite selectedCipherSuite;
-
-		internal DefaultTlsClient(ICertificateVerifyer verifyer)
+		public DefaultTlsClient()
+			: this(new DefaultTlsCipherFactory())
 		{
-			this.verifyer = verifyer;
 		}
 
-		internal void EnableClientAuthentication(Certificate clientCertificate,
-			AsymmetricKeyParameter clientPrivateKey)
+		public DefaultTlsClient(TlsCipherFactory cipherFactory)
 		{
-			if (clientCertificate == null)
-			{
-				throw new ArgumentNullException("clientCertificate");
-			}
-			if (clientCertificate.certs.Length == 0)
-			{
-				throw new ArgumentException("cannot be empty", "clientCertificate");
-			}
-			if (clientPrivateKey == null)
-			{
-				throw new ArgumentNullException("clientPrivateKey");
-			}
-			if (!clientPrivateKey.IsPrivate)
-			{
-				throw new ArgumentException("must be private", "clientPrivateKey");
-			}
-
-			if (clientPrivateKey is RsaKeyParameters)
-			{
-				clientSigner = new TlsRsaSigner();
-			}
-			else if (clientPrivateKey is DsaPrivateKeyParameters)
-			{
-				clientSigner = new TlsDssSigner();
-			}
-			else
-			{
-				throw new ArgumentException("type not supported: "
-					+ clientPrivateKey.GetType().FullName, "clientPrivateKey");
-			}
-
-			this.clientCert = clientCertificate;
-			this.clientPrivateKey = clientPrivateKey;
+			this.cipherFactory = cipherFactory;
 		}
 
-		public virtual void Init(TlsProtocolHandler handler)
+		public virtual void Init(TlsClientContext context)
 		{
-			this.handler = handler;
+			this.context = context;
 		}
 
         public virtual CipherSuite[] GetCipherSuites()
@@ -85,40 +48,21 @@ namespace Org.BouncyCastle.Crypto.Tls
 				CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA,
 				CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
 				CipherSuite.TLS_RSA_WITH_3DES_EDE_CBC_SHA,
-
-//	            CipherSuite.TLS_DH_RSA_WITH_AES_256_CBC_SHA,
-//	            CipherSuite.TLS_DH_DSS_WITH_AES_256_CBC_SHA,
-//	            CipherSuite.TLS_DH_RSA_WITH_AES_128_CBC_SHA,
-//	            CipherSuite.TLS_DH_DSS_WITH_AES_128_CBC_SHA,
-//	            CipherSuite.TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA,
-//	            CipherSuite.TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA,
-
-//	            CipherSuite.TLS_SRP_SHA_DSS_WITH_AES_256_CBC_SHA,
-//	            CipherSuite.TLS_SRP_SHA_DSS_WITH_AES_128_CBC_SHA,
-//	            CipherSuite.TLS_SRP_SHA_DSS_WITH_3DES_EDE_CBC_SHA,
-//	            CipherSuite.TLS_SRP_SHA_RSA_WITH_AES_256_CBC_SHA,
-//	            CipherSuite.TLS_SRP_SHA_RSA_WITH_AES_128_CBC_SHA,
-//	            CipherSuite.TLS_SRP_SHA_RSA_WITH_3DES_EDE_CBC_SHA,
-//	            CipherSuite.TLS_SRP_SHA_WITH_AES_256_CBC_SHA,
-//	            CipherSuite.TLS_SRP_SHA_WITH_AES_128_CBC_SHA,
-//	            CipherSuite.TLS_SRP_SHA_WITH_3DES_EDE_CBC_SHA,
 			};
 		}
 
-        public virtual CompressionMethod[] GetCompressionMethods()
+		public virtual CompressionMethod[] GetCompressionMethods()
         {
+			/*
+			 * To offer DEFLATE compression, override this method:
+			 *     return new CompressionMethod[] { CompressionMethod.DEFLATE, CompressionMethod.NULL };
+			 */
+
             return new CompressionMethod[] { CompressionMethod.NULL };
         }
 
-        public virtual IDictionary GenerateClientExtensions()
+        public virtual IDictionary GetClientExtensions()
 		{
-			// TODO[SRP]
-//	        Hashtable clientExtensions = new Hashtable();
-//	        ByteArrayOutputStream srpData = new ByteArrayOutputStream();
-//	        TlsUtils.writeOpaque8(SRP_identity, srpData);
-//
-//	        clientExtensions.put(ExtensionType.srp, srpData.toByteArray());
-//	        return clientExtensions;
 			return null;
 		}
 
@@ -134,7 +78,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 
         public virtual void NotifySelectedCompressionMethod(CompressionMethod selectedCompressionMethod)
         {
-            // TODO Store and use
+            this.selectedCompressionMethod = selectedCompressionMethod;
         }
 
         public virtual void NotifySecureRenegotiation(bool secureRenegotiation)
@@ -148,17 +92,15 @@ namespace Org.BouncyCastle.Crypto.Tls
 				 * In this case, some clients may want to terminate the handshake
 				 * instead of continuing; see Section 4.1 for discussion.
 				 */
-//				handler.FailWithError(AlertLevel.fatal, AlertDescription.handshake_failure);
+//				throw new TlsFatalAlert(AlertDescription.handshake_failure);
 			}
 		}
 
         public virtual void ProcessServerExtensions(IDictionary serverExtensions)
 		{
-			// TODO Validate/process serverExtensions (via client?)
-			// TODO[SRP]
 		}
 
-        public virtual TlsKeyExchange CreateKeyExchange()
+        public virtual TlsKeyExchange GetKeyExchange()
 		{
 			switch (selectedCipherSuite)
 			{
@@ -170,57 +112,42 @@ namespace Org.BouncyCastle.Crypto.Tls
 				case CipherSuite.TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA:
 				case CipherSuite.TLS_DH_DSS_WITH_AES_128_CBC_SHA:
 				case CipherSuite.TLS_DH_DSS_WITH_AES_256_CBC_SHA:
-					return CreateDHKeyExchange(TlsKeyExchangeAlgorithm.KE_DH_DSS);
+					return CreateDHKeyExchange(KeyExchangeAlgorithm.DH_DSS);
 
 				case CipherSuite.TLS_DH_RSA_WITH_3DES_EDE_CBC_SHA:
 				case CipherSuite.TLS_DH_RSA_WITH_AES_128_CBC_SHA:
 				case CipherSuite.TLS_DH_RSA_WITH_AES_256_CBC_SHA:
-					return CreateDHKeyExchange(TlsKeyExchangeAlgorithm.KE_DH_RSA);
+					return CreateDHKeyExchange(KeyExchangeAlgorithm.DH_RSA);
 
 				case CipherSuite.TLS_DHE_DSS_WITH_3DES_EDE_CBC_SHA:
 				case CipherSuite.TLS_DHE_DSS_WITH_AES_128_CBC_SHA:
 				case CipherSuite.TLS_DHE_DSS_WITH_AES_256_CBC_SHA:
-					return CreateDheKeyExchange(TlsKeyExchangeAlgorithm.KE_DHE_DSS);
+					return CreateDheKeyExchange(KeyExchangeAlgorithm.DHE_DSS);
 
 				case CipherSuite.TLS_DHE_RSA_WITH_3DES_EDE_CBC_SHA:
 				case CipherSuite.TLS_DHE_RSA_WITH_AES_128_CBC_SHA:
 				case CipherSuite.TLS_DHE_RSA_WITH_AES_256_CBC_SHA:
-					return CreateDheKeyExchange(TlsKeyExchangeAlgorithm.KE_DHE_RSA);
+					return CreateDheKeyExchange(KeyExchangeAlgorithm.DHE_RSA);
 
                 case CipherSuite.TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA:
                 case CipherSuite.TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA:
                 case CipherSuite.TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA:
-                    return CreateECDHKeyExchange(TlsKeyExchangeAlgorithm.KE_ECDH_ECDSA);
+                    return CreateECDHKeyExchange(KeyExchangeAlgorithm.ECDH_ECDSA);
 
                 case CipherSuite.TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA:
                 case CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA:
                 case CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:
-                    return CreateECDheKeyExchange(TlsKeyExchangeAlgorithm.KE_ECDHE_ECDSA);
+                    return CreateECDheKeyExchange(KeyExchangeAlgorithm.ECDHE_ECDSA);
 
                 case CipherSuite.TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA:
                 case CipherSuite.TLS_ECDH_RSA_WITH_AES_128_CBC_SHA:
                 case CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA:
-                    return CreateECDHKeyExchange(TlsKeyExchangeAlgorithm.KE_ECDH_RSA);
+                    return CreateECDHKeyExchange(KeyExchangeAlgorithm.ECDH_RSA);
 
                 case CipherSuite.TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA:
                 case CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA:
                 case CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:
-                    return CreateECDheKeyExchange(TlsKeyExchangeAlgorithm.KE_ECDHE_RSA);
-
-				case CipherSuite.TLS_SRP_SHA_WITH_3DES_EDE_CBC_SHA:
-				case CipherSuite.TLS_SRP_SHA_WITH_AES_128_CBC_SHA:
-				case CipherSuite.TLS_SRP_SHA_WITH_AES_256_CBC_SHA:
-					return CreateSrpKeyExchange(TlsKeyExchangeAlgorithm.KE_SRP);
-
-				case CipherSuite.TLS_SRP_SHA_RSA_WITH_3DES_EDE_CBC_SHA:
-				case CipherSuite.TLS_SRP_SHA_RSA_WITH_AES_128_CBC_SHA:
-				case CipherSuite.TLS_SRP_SHA_RSA_WITH_AES_256_CBC_SHA:
-                    return CreateSrpKeyExchange(TlsKeyExchangeAlgorithm.KE_SRP_RSA);
-
-				case CipherSuite.TLS_SRP_SHA_DSS_WITH_3DES_EDE_CBC_SHA:
-				case CipherSuite.TLS_SRP_SHA_DSS_WITH_AES_128_CBC_SHA:
-				case CipherSuite.TLS_SRP_SHA_DSS_WITH_AES_256_CBC_SHA:
-                    return CreateSrpKeyExchange(TlsKeyExchangeAlgorithm.KE_SRP_DSS);
+                    return CreateECDheKeyExchange(KeyExchangeAlgorithm.ECDHE_RSA);
 
 				default:
 					/*
@@ -229,41 +156,34 @@ namespace Org.BouncyCastle.Crypto.Tls
 					* suites, so if we now can't produce an implementation, we shouldn't have
 					* offered it!
 					*/
-					handler.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
-					return null; // Unreachable!
+					throw new TlsFatalAlert(AlertDescription.internal_error);
 			}
 		}
 
-        public virtual void ProcessServerCertificateRequest(ClientCertificateType[] certificateTypes,
-			IList certificateAuthorities)
+		public abstract TlsAuthentication GetAuthentication();
+
+		public virtual TlsCompression GetCompression()
 		{
-			// TODO There shouldn't be a certificate request for SRP
-
-			// TODO Use provided info to choose a certificate in GetCertificate()
-		}
-
-        public virtual Certificate GetCertificate()
-		{
-			return clientCert;
-		}
-
-        public virtual byte[] GenerateCertificateSignature(byte[] md5andsha1)
-		{
-			if (clientSigner == null)
-				return null;
-
-			try
+			switch (selectedCompressionMethod)
 			{
-				return clientSigner.CalculateRawSignature(clientPrivateKey, md5andsha1);
-			}
-			catch (CryptoException)
-			{
-				handler.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
-				return null;
+				case CompressionMethod.NULL:
+					return new TlsNullCompression();
+
+				case CompressionMethod.DEFLATE:
+					return new TlsDeflateCompression();
+
+				default:
+					/*
+					 * Note: internal error here; the TlsProtocolHandler verifies that the
+					 * server-selected compression method was in the list of client-offered compression
+					 * methods, so if we now can't produce an implementation, we shouldn't have
+					 * offered it!
+					 */
+					throw new TlsFatalAlert(AlertDescription.internal_error);
 			}
 		}
 
-        public virtual TlsCipher CreateCipher(SecurityParameters securityParameters)
+		public virtual TlsCipher GetCipher()
 		{
 			switch (selectedCipherSuite)
 			{
@@ -276,10 +196,7 @@ namespace Org.BouncyCastle.Crypto.Tls
                 case CipherSuite.TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA:
                 case CipherSuite.TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA:
                 case CipherSuite.TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA:
-                case CipherSuite.TLS_SRP_SHA_WITH_3DES_EDE_CBC_SHA:
-				case CipherSuite.TLS_SRP_SHA_RSA_WITH_3DES_EDE_CBC_SHA:
-				case CipherSuite.TLS_SRP_SHA_DSS_WITH_3DES_EDE_CBC_SHA:
-					return CreateDesEdeCipher(24, securityParameters);
+					return cipherFactory.CreateCipher(context, EncryptionAlgorithm.cls_3DES_EDE_CBC, DigestAlgorithm.SHA);
 
 				case CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA:
 				case CipherSuite.TLS_DH_DSS_WITH_AES_128_CBC_SHA:
@@ -290,10 +207,7 @@ namespace Org.BouncyCastle.Crypto.Tls
                 case CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA:
                 case CipherSuite.TLS_ECDH_RSA_WITH_AES_128_CBC_SHA:
                 case CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA:
-                case CipherSuite.TLS_SRP_SHA_WITH_AES_128_CBC_SHA:
-				case CipherSuite.TLS_SRP_SHA_RSA_WITH_AES_128_CBC_SHA:
-				case CipherSuite.TLS_SRP_SHA_DSS_WITH_AES_128_CBC_SHA:
-					return CreateAesCipher(16, securityParameters);
+					return cipherFactory.CreateCipher(context, EncryptionAlgorithm.AES_128_CBC, DigestAlgorithm.SHA);
 
 				case CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA:
 				case CipherSuite.TLS_DH_DSS_WITH_AES_256_CBC_SHA:
@@ -304,10 +218,7 @@ namespace Org.BouncyCastle.Crypto.Tls
                 case CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:
                 case CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA:
                 case CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:
-                case CipherSuite.TLS_SRP_SHA_WITH_AES_256_CBC_SHA:
-				case CipherSuite.TLS_SRP_SHA_RSA_WITH_AES_256_CBC_SHA:
-				case CipherSuite.TLS_SRP_SHA_DSS_WITH_AES_256_CBC_SHA:
-					return CreateAesCipher(32, securityParameters);
+					return cipherFactory.CreateCipher(context, EncryptionAlgorithm.AES_256_CBC, DigestAlgorithm.SHA);
 
 				default:
 					/*
@@ -316,66 +227,33 @@ namespace Org.BouncyCastle.Crypto.Tls
 					* suites, so if we now can't produce an implementation, we shouldn't have
 					* offered it!
 					*/
-					handler.FailWithError(AlertLevel.fatal, AlertDescription.internal_error);
-					return null; // Unreachable!
+					throw new TlsFatalAlert(AlertDescription.internal_error);
 			}
 		}
 
-		protected virtual TlsKeyExchange CreateDHKeyExchange(TlsKeyExchangeAlgorithm keyExchange)
+		protected virtual TlsKeyExchange CreateDHKeyExchange(KeyExchangeAlgorithm keyExchange)
 		{
-			return new TlsDHKeyExchange(handler, verifyer, keyExchange);
+			return new TlsDHKeyExchange(context, keyExchange);
 		}
 
-        protected virtual TlsKeyExchange CreateDheKeyExchange(TlsKeyExchangeAlgorithm keyExchange)
+        protected virtual TlsKeyExchange CreateDheKeyExchange(KeyExchangeAlgorithm keyExchange)
 		{
-			return new TlsDheKeyExchange(handler, verifyer, keyExchange);
+			return new TlsDheKeyExchange(context, keyExchange);
 		}
 
-        protected virtual TlsKeyExchange CreateECDHKeyExchange(TlsKeyExchangeAlgorithm keyExchange)
+        protected virtual TlsKeyExchange CreateECDHKeyExchange(KeyExchangeAlgorithm keyExchange)
         {
-            return new TlsECDHKeyExchange(handler, verifyer, keyExchange, clientCert, clientPrivateKey);
+            return new TlsECDHKeyExchange(context, keyExchange);
         }
 
-        protected virtual TlsKeyExchange CreateECDheKeyExchange(TlsKeyExchangeAlgorithm keyExchange)
+        protected virtual TlsKeyExchange CreateECDheKeyExchange(KeyExchangeAlgorithm keyExchange)
         {
-            return new TlsECDheKeyExchange(handler, verifyer, keyExchange, clientCert, clientPrivateKey);
+            return new TlsECDheKeyExchange(context, keyExchange);
         }
 
         protected virtual TlsKeyExchange CreateRsaKeyExchange()
 		{
-			return new TlsRsaKeyExchange(handler, verifyer);
+			return new TlsRsaKeyExchange(context);
 		}
-
-        protected virtual TlsKeyExchange CreateSrpKeyExchange(TlsKeyExchangeAlgorithm keyExchange)
-		{
-			return new TlsSrpKeyExchange(handler, verifyer, keyExchange);
-		}
-
-		protected virtual TlsCipher CreateAesCipher(int cipherKeySize, SecurityParameters securityParameters)
-		{
-			return new TlsBlockCipher(handler, CreateAesBlockCipher(), CreateAesBlockCipher(),
-                CreateSha1Digest(), CreateSha1Digest(), cipherKeySize, securityParameters);
-		}
-
-        protected virtual TlsCipher CreateDesEdeCipher(int cipherKeySize, SecurityParameters securityParameters)
-		{
-			return new TlsBlockCipher(handler, CreateDesEdeBlockCipher(), CreateDesEdeBlockCipher(),
-                CreateSha1Digest(), CreateSha1Digest(), cipherKeySize, securityParameters);
-		}
-
-		protected virtual IBlockCipher CreateAesBlockCipher()
-		{
-			return new CbcBlockCipher(new AesFastEngine());
-		}
-
-        protected virtual IBlockCipher CreateDesEdeBlockCipher()
-		{
-			return new CbcBlockCipher(new DesEdeEngine());
-		}
-
-        protected virtual IDigest CreateSha1Digest()
-        {
-            return new Sha1Digest();
-        }
     }
 }

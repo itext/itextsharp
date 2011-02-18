@@ -44,7 +44,7 @@ namespace Org.BouncyCastle.Cms
             ContentInfo content = comData.EncapContentInfo;
 
 			Asn1OctetString bytes = (Asn1OctetString) content.Content;
-			ZInflaterInputStream zIn = new ZInflaterInputStream(bytes.GetOctetStream());
+			ZInputStream zIn = new ZInputStream(bytes.GetOctetStream());
 
 			try
 			{
@@ -76,7 +76,7 @@ namespace Org.BouncyCastle.Cms
 
 			Asn1OctetString bytes = (Asn1OctetString)content.Content;
 
-			ZInflaterInputStream zIn = new ZInflaterInputStream(new MemoryStream(bytes.GetOctets(), false));
+			ZInputStream zIn = new ZInputStream(new MemoryStream(bytes.GetOctets(), false));
 
 			try
 			{

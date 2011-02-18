@@ -1,10 +1,16 @@
 using System;
 
+using Org.BouncyCastle.Security;
+
 namespace Org.BouncyCastle.Crypto.Tls
 {
-	internal interface TlsSigner
+	public interface TlsSigner
 	{
-    	byte[] CalculateRawSignature(AsymmetricKeyParameter privateKey, byte[] md5andsha1);
-		ISigner CreateVerifyer(AsymmetricKeyParameter publicKey);	
+    	byte[] CalculateRawSignature(SecureRandom random, AsymmetricKeyParameter privateKey,
+			byte[] md5andsha1);
+
+		ISigner CreateVerifyer(AsymmetricKeyParameter publicKey);
+
+		bool IsValidPublicKey(AsymmetricKeyParameter publicKey);
 	}
 }

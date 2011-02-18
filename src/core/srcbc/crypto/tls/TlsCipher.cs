@@ -1,11 +1,14 @@
 using System;
+using System.IO;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
-	internal interface TlsCipher
+	public interface TlsCipher
 	{
-		byte[] EncodePlaintext(ContentType type, byte[] plaintext, int offset, int len);// throws IOException;
+		/// <exception cref="IOException"></exception>
+		byte[] EncodePlaintext(ContentType type, byte[] plaintext, int offset, int len);
 
-		byte[] DecodeCiphertext(ContentType type, byte[] ciphertext, int offset, int len);// throws IOException;
+		/// <exception cref="IOException"></exception>
+		byte[] DecodeCiphertext(ContentType type, byte[] ciphertext, int offset, int len);
 	}
 }

@@ -258,8 +258,15 @@ namespace iTextSharp.text.pdf.parser {
             byte[] bytes = new byte[bytesToRead];
             PRTokeniser tokeniser = ps.GetTokeniser();
             
-            tokeniser.Read(); // skip next character (which better be a whitespace character - I suppose we could check for this)
-            for (int i = 0; i < bytesToRead; i++){
+            int shouldBeWhiteSpace = tokeniser.Read(); // skip next character (which better be a whitespace character - I suppose we could check for this)
+            // from the PDF spec:  Unless the image uses ASCIIHexDecode or ASCII85Decode as one of its filters, the ID operator shall be followed by a single white-space character, and the next character shall be interpreted as the first byte of image data.
+            // unfortunately, we've seen some PDFs where there is no space following the ID, so we have to capture this case and handle it
+            int startIndex = 0;
+            if (!PRTokeniser.IsWhitespace(shouldBeWhiteSpace)){
+                bytes[0] = (byte)shouldBeWhiteSpace;
+                startIndex++;
+            }
+            for (int i = startIndex; i < bytesToRead; i++){
                 int ch = tokeniser.Read();
                 if (ch == -1)
                     throw new InlineImageParseException("End of content stream reached before end of image data");

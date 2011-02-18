@@ -1,10 +1,13 @@
 using System;
 using System.Collections.Generic;
-using System.util;
+using System.Globalization;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.html;
+
 /*
+ * $Id: IncCell.java 4635 2010-11-28 17:38:03Z psoares33 $
+ *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
@@ -45,79 +48,95 @@ using iTextSharp.text.html;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-
 namespace iTextSharp.text.html.simpleparser {
+
     /**
-    *
-    * @author  psoares
-    */
-    public class IncCell : ITextElementArray {
-        
-        private List<Chunk> chunks = new List<Chunk>();
+     * We use a CellWrapper because we need some extra info
+     * that isn't available in PdfPCell.
+     * @author  psoares
+     * @since 5.0.6 (renamed)
+     */
+    public class CellWrapper : ITextElementArray {
+    	
+	    /** The cell that is wrapped in this stub. */
         private PdfPCell cell;
+        
         /**
          * The width of the cell.
          * @since iText 5.0.6
          */
         private float width;
+        
         /**
          * Indicates if the width is a percentage.
          * @since iText 5.0.6
          */
         private bool percentage;
-        
-        /** Creates a new instance of IncCell */
-        public IncCell(String tag, ChainedProperties props) {
-            cell = new PdfPCell();
-            String value = props["colspan"];
-            if (value != null)
-                cell.Colspan = int.Parse(value);
-            value = props["rowspan"];
-            if (value != null)
-                cell.Rowspan = int.Parse(value);
-            value = props["align"];
-            if (tag.Equals("th"))
-                cell.HorizontalAlignment = Element.ALIGN_CENTER;
-            if (value != null) {
-                if (Util.EqualsIgnoreCase(value, "center"))
-                    cell.HorizontalAlignment = Element.ALIGN_CENTER;
-                else if (Util.EqualsIgnoreCase(value, "right"))
-                    cell.HorizontalAlignment = Element.ALIGN_RIGHT;
-                else if (Util.EqualsIgnoreCase(value, "left"))
-                    cell.HorizontalAlignment = Element.ALIGN_LEFT;
-                else if (Util.EqualsIgnoreCase(value, "justify"))
-                    cell.HorizontalAlignment = Element.ALIGN_JUSTIFIED;
-            }
-            value = props["valign"];
-            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
-            if (value != null) {
-                if (Util.EqualsIgnoreCase(value, "top"))
-                    cell.VerticalAlignment = Element.ALIGN_TOP;
-                else if (Util.EqualsIgnoreCase(value, "bottom"))
-                    cell.VerticalAlignment = Element.ALIGN_BOTTOM;
-            }
-            value = props["border"];
-            float border = 0;
-            if (value != null)
-                border = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            cell.BorderWidth = border;
-            value = props["cellpadding"];
-            if (value != null)
-                cell.Padding = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
-            cell.UseDescender = true;
-            value = props["bgcolor"];
-            cell.BackgroundColor = Markup.DecodeColor(value);
-            value = props["width"];
+
+        /**
+         * Creates a new instance of IncCell.
+         * @param	tag		the cell that is wrapped in this object.
+         * @param	chain	properties such as width
+         * @since	5.0.6
+         */
+        public CellWrapper(String tag, ChainedProperties chain) {
+            this.cell = CreatePdfPCell(tag, chain);
+    	    String value = chain[HtmlTags.WIDTH];
             if (value != null) {
                 value = value.Trim();
-                if (value.EndsWith("%")) {
-                    percentage = true;
-                    value = value.Substring(0, value.Length - 1);
-                }
-                width = float.Parse(value, System.Globalization.NumberFormatInfo.InvariantInfo);
+        	    if (value.EndsWith("%")) {
+        		    percentage = true;
+        		    value = value.Substring(0, value.Length - 1);
+        	    }
+                width = float.Parse(value, CultureInfo.InvariantCulture);
             }
         }
         
+        /**
+         * Creates a PdfPCell element based on a tag and its properties.
+         * @param	tag		a cell tag
+         * @param	chain	the hierarchy chain
+         */
+	    public PdfPCell CreatePdfPCell(String tag, ChainedProperties chain) {
+		    PdfPCell cell = new PdfPCell((Phrase)null);
+            // colspan
+		    String value = chain[HtmlTags.COLSPAN];
+            if (value != null)
+                cell.Colspan = int.Parse(value);
+            // rowspan
+            value = chain[HtmlTags.ROWSPAN];
+            if (value != null)
+                cell.Rowspan = int.Parse(value);
+            // horizontal alignment
+            if (tag.Equals(HtmlTags.TH))
+                cell.HorizontalAlignment = Element.ALIGN_CENTER;
+            value = chain[HtmlTags.ALIGN];
+            if (value != null) {
+                cell.HorizontalAlignment = HtmlUtilities.AlignmentValue(value);
+            }
+            // vertical alignment
+            value = chain[HtmlTags.VALIGN];
+            cell.VerticalAlignment = Element.ALIGN_MIDDLE;
+            if (value != null) {
+                cell.VerticalAlignment = HtmlUtilities.AlignmentValue(value);
+            }
+            // border
+            value = chain[HtmlTags.BORDER];
+            float border = 0;
+            if (value != null)
+                border = float.Parse(value, CultureInfo.InvariantCulture);
+            cell.BorderWidth = border;
+            // cellpadding
+            value = chain[HtmlTags.CELLPADDING];
+            if (value != null)
+                cell.Padding = float.Parse(value, CultureInfo.InvariantCulture);
+            cell.UseDescender = true;
+            // background color
+            value = chain[HtmlTags.BGCOLOR];
+            cell.BackgroundColor = HtmlUtilities.DecodeColor(value);
+            return cell;
+	    }
+
         public bool Add(IElement o) {
             cell.AddElement(o);
             return true;
@@ -125,7 +144,7 @@ namespace iTextSharp.text.html.simpleparser {
         
         public List<Chunk> Chunks {
             get {
-                return chunks;
+                return null;
             }
         }
         

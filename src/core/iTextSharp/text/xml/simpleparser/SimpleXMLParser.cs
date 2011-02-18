@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.html;
+using iTextSharp.text.xml.simpleparser.handler;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
@@ -115,49 +116,51 @@ namespace iTextSharp.text.xml.simpleparser {
         private const int ATTRIBUTE_VALUE = 14;
         
         /** the state stack */
-        internal Stack<int> stack;
+        private Stack<int> stack;
         /** The current character. */
-        internal int character = 0;
+        private int character = 0;
         /** The previous character. */
-        internal int previousCharacter = -1;
+        private int previousCharacter = -1;
         /** the line we are currently reading */
-        internal int lines = 1;
+        private int lines = 1;
         /** the column where the current character occurs */
-        internal int columns = 0;
+        private int columns = 0;
         /** was the last character equivalent to a newline? */
-        internal bool eol = false;
+        private bool eol = false;
         /**
         * A boolean indicating if the next character should be taken into account
         * if it's a space character. When nospace is false, the previous character
         * wasn't whitespace.
         * @since 2.1.5
         */
-        internal bool nowhite = false;
+        private bool nowhite = false;
         /** the current state */
-        internal int state;
+        private int state;
         /** Are we parsing HTML? */
-        internal bool html;
+        private bool html;
         /** current text (whatever is encountered between tags) */
-        internal StringBuilder text = new StringBuilder();
+        private StringBuilder text = new StringBuilder();
         /** current entity (whatever is encountered between & and ;) */
-        internal StringBuilder entity = new StringBuilder();
+        private StringBuilder entity = new StringBuilder();
         /** current tagname */
-        internal String tag = null;
+        private String tag = null;
         /** current attributes */
-        internal Dictionary<string,string> attributes = null;
+        private Dictionary<string,string> attributes = null;
         /** The handler to which we are going to forward document content */
-        internal ISimpleXMLDocHandler doc;
+        private ISimpleXMLDocHandler doc;
         /** The handler to which we are going to forward comments. */
-        internal ISimpleXMLDocHandlerComment comment;
+        private ISimpleXMLDocHandlerComment comment;
         /** Keeps track of the number of tags that are open. */
-        internal int nested = 0;
+        private int nested = 0;
         /** the quote character that was used to open the quote. */
-        internal int quoteCharacter = '"';
+        private int quoteCharacter = '"';
         /** the attribute key. */
-        internal String attributekey = null;
+        private String attributekey = null;
         /** the attribute value. */
-        internal String attributevalue = null;
+        private String attributevalue = null;
         
+        private  INewLineHandler newLineHandler;
+
         /**
         * Creates a Simple XML parser object.
         * Call Go(BufferedReader) immediately after creation.
@@ -166,6 +169,11 @@ namespace iTextSharp.text.xml.simpleparser {
             this.doc = doc;
             this.comment = comment;
             this.html = html;
+            if (html) {
+                this.newLineHandler = new HTMLNewLineHandler();
+            } else {
+                this.newLineHandler = new NeverNewLineHandler();
+            }
             stack = new Stack<int>();
             state = html ? TEXT : UNKNOWN;
         }
@@ -550,11 +558,9 @@ namespace iTextSharp.text.xml.simpleparser {
                 doc.StartElement(tag,attributes);
             }
             else {
-                if (html) {
-                    // White spaces following new lines need to be ignored in HTML
-                    if (HtmlTags.IsNewLineTag(tag)) {
-                        nowhite = false;
-                    }
+                // White spaces following new lines need to be ignored in HTML
+                if (newLineHandler.IsNewLineTag(tag)) {
+                    nowhite = false;
                 }
                 nested--;
                 doc.EndElement(tag);
@@ -587,7 +593,7 @@ namespace iTextSharp.text.xml.simpleparser {
             int count = inp.Read(b4, 0, b4.Length);
             if (count != 4)
                 throw new IOException(MessageLocalization.GetComposedMessage("insufficient.length"));
-            String encoding = GetEncodingName(b4);
+            String encoding = XMLUtil.GetEncodingName(b4);
             String decl = null;
             if (encoding.Equals("UTF-8")) {
                 StringBuilder sb = new StringBuilder();
@@ -653,110 +659,7 @@ namespace iTextSharp.text.xml.simpleparser {
         * @return the escaped string
         */    
         public static String EscapeXML(String s, bool onlyASCII) {
-            char[] cc = s.ToCharArray();
-            int len = cc.Length;
-            StringBuilder sb = new StringBuilder();
-            for (int k = 0; k < len; ++k) {
-                int c = cc[k];
-                switch (c) {
-                    case '<':
-                        sb.Append("&lt;");
-                        break;
-                    case '>':
-                        sb.Append("&gt;");
-                        break;
-                    case '&':
-                        sb.Append("&amp;");
-                        break;
-                    case '"':
-                        sb.Append("&quot;");
-                        break;
-                    case '\'':
-                        sb.Append("&apos;");
-                        break;
-                    default:
-                        if ((c == 0x9) || (c == 0xA) || (c == 0xD)
-                            || ((c >= 0x20) && (c <= 0xD7FF))
-                            || ((c >= 0xE000) && (c <= 0xFFFD))
-                            || ((c >= 0x10000) && (c <= 0x10FFFF))) { 
-                            if (onlyASCII && c > 127)
-                                sb.Append("&#").Append(c).Append(';');
-                            else 
-                                sb.Append((char)c);
-                        }
-                        break;
-                }
-            }
-            return sb.ToString();
-        }
-        
-        /**
-        * Returns the IANA encoding name that is auto-detected from
-        * the bytes specified, with the endian-ness of that encoding where appropriate.
-        * (method found in org.apache.xerces.impl.XMLEntityManager, originaly published
-        * by the Apache Software Foundation under the Apache Software License; now being
-        * used in iText under the MPL)
-        * @param b4    The first four bytes of the input.
-        * @return an IANA-encoding string
-        */
-        private static String GetEncodingName(byte[] b4) {
-            // UTF-16, with BOM
-            int b0 = b4[0] & 0xFF;
-            int b1 = b4[1] & 0xFF;
-            if (b0 == 0xFE && b1 == 0xFF) {
-                // UTF-16, big-endian
-                return "UTF-16BE";
-            }
-            if (b0 == 0xFF && b1 == 0xFE) {
-                // UTF-16, little-endian
-                return "UTF-16LE";
-            }
-            
-            // UTF-8 with a BOM
-            int b2 = b4[2] & 0xFF;
-            if (b0 == 0xEF && b1 == 0xBB && b2 == 0xBF) {
-                return "UTF-8";
-            }
-            
-            // other encodings
-            int b3 = b4[3] & 0xFF;
-            if (b0 == 0x00 && b1 == 0x00 && b2 == 0x00 && b3 == 0x3C) {
-                // UCS-4, big endian (1234)
-                return "ISO-10646-UCS-4";
-            }
-            if (b0 == 0x3C && b1 == 0x00 && b2 == 0x00 && b3 == 0x00) {
-                // UCS-4, little endian (4321)
-                return "ISO-10646-UCS-4";
-            }
-            if (b0 == 0x00 && b1 == 0x00 && b2 == 0x3C && b3 == 0x00) {
-                // UCS-4, unusual octet order (2143)
-                // REVISIT: What should this be?
-                return "ISO-10646-UCS-4";
-            }
-            if (b0 == 0x00 && b1 == 0x3C && b2 == 0x00 && b3 == 0x00) {
-                // UCS-4, unusual octect order (3412)
-                // REVISIT: What should this be?
-                return "ISO-10646-UCS-4";
-            }
-            if (b0 == 0x00 && b1 == 0x3C && b2 == 0x00 && b3 == 0x3F) {
-                // UTF-16, big-endian, no BOM
-                // (or could turn out to be UCS-2...
-                // REVISIT: What should this be?
-                return "UTF-16BE";
-            }
-            if (b0 == 0x3C && b1 == 0x00 && b2 == 0x3F && b3 == 0x00) {
-                // UTF-16, little-endian, no BOM
-                // (or could turn out to be UCS-2...
-                return "UTF-16LE";
-            }
-            if (b0 == 0x4C && b1 == 0x6F && b2 == 0xA7 && b3 == 0x94) {
-                // EBCDIC
-                // a la xerces1, return CP037 instead of EBCDIC here
-                return "CP037";
-            }
-            
-            // default encoding
-            return "UTF-8";
+            return XMLUtil.EscapeXML(s, onlyASCII);
         }
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
+using Org.BouncyCastle.Math;
 
 namespace Org.BouncyCastle.Crypto.Encodings
 {
@@ -14,6 +15,9 @@ namespace Org.BouncyCastle.Crypto.Encodings
 	public class ISO9796d1Encoding
 		: IAsymmetricBlockCipher
 	{
+		private static readonly BigInteger Sixteen = BigInteger.ValueOf(16);
+		private static readonly BigInteger Six = BigInteger.ValueOf(6);
+
 		private static readonly byte[] shadows = { 0xe, 0x3, 0x5, 0x8, 0x9, 0x4, 0x2, 0xf,
 			0x0, 0xd, 0xb, 0x6, 0x7, 0xa, 0xc, 0x1 };
 		private static readonly byte[] inverse = { 0x8, 0xf, 0x6, 0x1, 0x5, 0x2, 0xb, 0xc,
@@ -23,6 +27,7 @@ namespace Org.BouncyCastle.Crypto.Encodings
 		private bool forEncryption;
 		private int bitSize;
 		private int padBits = 0;
+		private BigInteger modulus;
 
 		public ISO9796d1Encoding(
 			IAsymmetricBlockCipher   cipher)
@@ -57,7 +62,8 @@ namespace Org.BouncyCastle.Crypto.Encodings
 
 			engine.Init(forEncryption, parameters);
 
-			bitSize = kParam.Modulus.BitLength;
+			modulus = kParam.Modulus;
+			bitSize = modulus.BitLength;
 
 			this.forEncryption = forEncryption;
 		}
@@ -201,10 +207,24 @@ namespace Org.BouncyCastle.Crypto.Encodings
 			int     r = 1;
 			int     t = (bitSize + 13) / 16;
 
-			if ((block[block.Length - 1] & 0x0f) != 0x6)
+			BigInteger iS = new BigInteger(1, block);
+			BigInteger iR;
+			if (iS.Mod(Sixteen).Equals(Six))
 			{
-				throw new InvalidCipherTextException("invalid forcing byte in block");
+				iR = iS;
 			}
+			else
+			{
+				iR = modulus.Subtract(iS);
+
+				if (!iR.Mod(Sixteen).Equals(Six))
+					throw new InvalidCipherTextException("resulting integer iS or (modulus - iS) is not congruent to 6 mod 16");
+			}
+
+			block = iR.ToByteArrayUnsigned();
+
+			if ((block[block.Length - 1] & 0x0f) != 0x6)
+				throw new InvalidCipherTextException("invalid forcing byte in block");
 
 			block[block.Length - 1] =
 				(byte)(((ushort)(block[block.Length - 1] & 0xff) >> 4)
