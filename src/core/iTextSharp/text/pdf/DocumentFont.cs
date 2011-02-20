@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
+using iTextSharp.text.pdf.fonts.cmaps;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
@@ -269,6 +271,7 @@ namespace iTextSharp.text.pdf {
                         FillEncoding((PdfName)enc);
                     PdfArray diffs = encDic.GetAsArray(PdfName.DIFFERENCES);
                     if (diffs != null) {
+                        CMap toUnicode = null;
                         diffmap = new IntHashtable();
                         int currentNumber = 0;
                         for (int k = 0; k < diffs.Size; ++k) {
@@ -280,6 +283,19 @@ namespace iTextSharp.text.pdf {
                                 if (c != null && c.Length > 0) {
                                     uni2byte[c[0]] = currentNumber;
                                     diffmap[c[0]] = currentNumber;
+                                }
+                                else {
+                                    if (toUnicode == null) {
+                                        toUnicode = ProcessToUnicode();
+                                        if (toUnicode == null) {
+                                            toUnicode = new CMap();
+                                        }
+                                    }
+                                    string unicode = toUnicode.Lookup(new byte[]{(byte) currentNumber}, 0, 1);
+                                    if ((unicode != null) && (unicode.Length == 1)) {
+                                        this.uni2byte[unicode[0]] = currentNumber;
+                                        this.diffmap[unicode[0]] = currentNumber;
+                                    }
                                 }
                                 ++currentNumber;
                             }
@@ -324,6 +340,20 @@ namespace iTextSharp.text.pdf {
             FillFontDesc(font.GetAsDict(PdfName.FONTDESCRIPTOR));
         }
         
+        private CMap ProcessToUnicode() {
+            CMap cmapRet = null;
+            PdfObject toUni = PdfReader.GetPdfObject(this.font.Get(PdfName.TOUNICODE));
+            if (toUni != null) {
+                try {
+                    byte[] touni = PdfReader.GetStreamBytes((PRStream) PdfReader.GetPdfObjectRelease(toUni));
+                    CMapParser cmapParser = new CMapParser();
+                    cmapRet = cmapParser.Parse(new MemoryStream(touni));
+                } catch {
+                }
+            }
+            return cmapRet;
+        }
+
         private void FillFontDesc(PdfDictionary fontDesc) {
             if (fontDesc == null)
                 return;
