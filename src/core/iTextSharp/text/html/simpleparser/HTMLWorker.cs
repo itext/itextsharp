@@ -600,13 +600,19 @@ namespace iTextSharp.text.html.simpleparser {
                 totalWidth = 100 - totalWidth;
                 cellWidths.Reverse();
                 float[] widths = new float[cellWidths.Count];
+                bool hasZero = false;
                 for (int i = 0; i < widths.Length; i++) {
                     widths[i] = cellWidths[i];
                     if (widths[i] == 0 && percentage && zeroWidth > 0) {
                         widths[i] = totalWidth / zeroWidth;
                     }
+                    if (widths[i] == 0) {
+                        hasZero = true;
+                        break;
+                    }
                 }
-                table.ColWidths = widths;
+                if (!hasZero)
+                    table.ColWidths = widths;
             }
             stack.Push(table);
         }
