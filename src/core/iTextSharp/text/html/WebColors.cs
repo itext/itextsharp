@@ -243,9 +243,12 @@ namespace iTextSharp.text.html {
                     name = name.Substring(1); // lop off the # to unify hex parsing.
                 }
                 if (name.Length == 3) {
-                    c[0] = int.Parse(name.Substring(0, 1), NumberStyles.HexNumber) * 16;
-                    c[1] = int.Parse(name.Substring(1, 1), NumberStyles.HexNumber) * 16;
-                    c[2] = int.Parse(name.Substring(3), NumberStyles.HexNumber) * 16;
+			        String s = name.Substring(0, 1);
+				    c[0] = int.Parse(s+s, NumberStyles.HexNumber);
+				    String s2 = name.Substring(1, 1);
+                    c[1] = int.Parse(s2+s2, NumberStyles.HexNumber);
+				    String s3 = name.Substring(2);
+                    c[2] = int.Parse(s3+s3, NumberStyles.HexNumber);
                     return new BaseColor(c[0], c[1], c[2], c[3]);
                 }
                 if (name.Length == 6) {

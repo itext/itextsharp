@@ -190,5 +190,9 @@ namespace iTextSharp.text {
         public int ToArgb() {
             return color.ToArgb();
         }
+
+        public override string ToString() {
+            return color.ToString();
+        }
     }
 }
