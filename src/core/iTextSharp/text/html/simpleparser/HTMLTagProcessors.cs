@@ -103,9 +103,8 @@ namespace iTextSharp.text.html.simpleparser {
              */
             public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
                 tag = MapTag(tag);
-                attrs = new Dictionary<String, String>();
                 attrs[tag] = null;
-                worker.UpdateChain(tag, attrs);;
+                worker.UpdateChain(tag, attrs);
             }
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#endElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
