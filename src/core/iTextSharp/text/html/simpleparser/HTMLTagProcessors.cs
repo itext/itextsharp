@@ -362,6 +362,9 @@ namespace iTextSharp.text.html.simpleparser {
                 worker.SetSkipText(true);
                 // Table alignment should not affect children elements, thus remove
                 attrs.Remove(HtmlTags.ALIGN);
+                // In case this is a nested table reset colspan and rowspan
+			    attrs[HtmlTags.COLSPAN] = "1";
+			    attrs[HtmlTags.ROWSPAN] = "1";
                 worker.UpdateChain(tag, attrs);
             }
 
