@@ -1053,8 +1053,11 @@ namespace iTextSharp.text.pdf {
                         
                     }
                     else if (key=="Encoding"){
-                        fonts[j].encodingOffset = (int)args[0];
-                        ReadEncoding(fonts[j].encodingOffset);
+                        int encOffset = (int)args[0];
+                        if (encOffset > 0) {
+                            fonts[j].encodingOffset = encOffset;
+                            ReadEncoding(fonts[j].encodingOffset);
+                        }
                     }
                     else if (key=="CharStrings") {
                         fonts[j].charstringsOffset = (int)args[0];
