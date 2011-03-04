@@ -1431,8 +1431,8 @@ namespace iTextSharp.text.pdf {
             // Else do nothing
             // At the end of each object mark its ending (Even if wasn't written)
             for (int k=0; k<fonts[Font].FDArrayOffsets.Length-1; k++) {
-                if (FDArrayUsed.ContainsKey(k))
-                {
+                //if (FDArrayUsed.ContainsKey(k))
+                //{
                     // Goto begining of objects
                     Seek(fonts[Font].FDArrayOffsets[k]);
                     while (GetPosition() < fonts[Font].FDArrayOffsets[k+1])
@@ -1462,7 +1462,7 @@ namespace iTextSharp.text.pdf {
                         else  // other than private
                             OutputList.Add(new RangeItem(buf,p1,p2-p1));
                     }
-                }
+                //}
                 // Mark the ending of the object (even if wasn't written)
                 OutputList.Add(new IndexMarkerItem(fdOffsets[k],fdArrayBase));
             }
@@ -1484,8 +1484,8 @@ namespace iTextSharp.text.pdf {
             // Else do nothing
             for (int i=0;i<fonts[Font].fdprivateOffsets.Length;i++)
             {
-                if (FDArrayUsed.ContainsKey(i))
-                {
+                //if (FDArrayUsed.ContainsKey(i))
+                //{
                     // Mark beginning
                     OutputList.Add(new MarkerItem(fdPrivate[i]));
                     fdPrivateBase[i] = new IndexBaseItem();
@@ -1508,7 +1508,7 @@ namespace iTextSharp.text.pdf {
                         else
                             OutputList.Add(new RangeItem(buf,p1,p2-p1));
                     }
-                }
+                //}
             }
         }
         

@@ -1052,13 +1052,10 @@ namespace iTextSharp.text.pdf {
                         fonts[j].charsetOffset = (int)args[0];
                         
                     }
-                    //else if (key=="Encoding"){
-                    //    int encOffset = (int)args[0];
-                    //    if (encOffset > 0) {
-                    //        fonts[j].encodingOffset = encOffset;
-                    //        ReadEncoding(fonts[j].encodingOffset);
-                    //    }
-                    //}
+                    else if (key=="Encoding"){
+                        fonts[j].encodingOffset = (int)args[0];
+                        ReadEncoding(fonts[j].encodingOffset);
+                    }
                     else if (key=="CharStrings") {
                         fonts[j].charstringsOffset = (int)args[0];
                         //System.err.Println("charstrings "+fonts[j].charstringsOffset);
@@ -1098,13 +1095,13 @@ namespace iTextSharp.text.pdf {
                     
                     for (int k=0; k<fdarrayOffsets.Length-1; k++) {
                         Seek(fdarrayOffsets[k]);
-                        while (GetPosition() < fdarrayOffsets[k+1])
+                        while (GetPosition() < fdarrayOffsets[k+1]) {
                             GetDictItem();
-                        if (key=="Private") {
-                            fonts[j].fdprivateLengths[k]  = (int)args[0];
-                            fonts[j].fdprivateOffsets[k]  = (int)args[1];
-                        }
-                        
+                            if (key=="Private") {
+                                fonts[j].fdprivateLengths[k]  = (int)args[0];
+                                fonts[j].fdprivateOffsets[k]  = (int)args[1];
+                            }
+                        }                        
                     }
                 }
             }
