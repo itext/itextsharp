@@ -400,7 +400,7 @@ namespace iTextSharp.text.pdf {
         * @return  null
         */
 
-        public List<Chunk> Chunks {
+        public IList<Chunk> Chunks {
             get {
                 return null;
             }

@@ -228,7 +228,7 @@ namespace iTextSharp.text {
          * @since 5.0.6
          */
         public void AdjustListSymbolFont() {
-            System.Collections.Generic.List<Chunk> cks = Chunks;
+            System.Collections.Generic.IList<Chunk> cks = Chunks;
             if (cks.Count != 0 && symbol != null)
                 symbol.Font = cks[0].Font;
         }

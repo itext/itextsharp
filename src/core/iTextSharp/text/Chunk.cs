@@ -274,7 +274,7 @@ namespace iTextSharp.text {
         /// Gets all the chunks in this element.
         /// </summary>
         /// <value>an ArrayList</value>
-        public List<Chunk> Chunks {
+        public IList<Chunk> Chunks {
             get {
                 List<Chunk> tmp = new List<Chunk>();
                 tmp.Add(this);

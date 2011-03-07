@@ -83,7 +83,7 @@ namespace iTextSharp.text {
         *
         * @return  an <CODE>ArrayList</CODE>
         */
-        public virtual List<Chunk> Chunks {
+        public virtual IList<Chunk> Chunks {
             get {
                 return element.Chunks;
             }

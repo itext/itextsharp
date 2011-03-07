@@ -127,7 +127,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   tag     the tag that needs to be resolved
          * @param   attrs   existing style map that will be updated
          */
-        public void ApplyStyle(String tag, Dictionary<String, String> attrs) {
+        public void ApplyStyle(String tag, IDictionary<String, String> attrs) {
             // first fetch the styles corresponding with the tag name
             IDictionary<String, String> map;
             tagMap.TryGetValue(tag.ToLowerInvariant(), out map);

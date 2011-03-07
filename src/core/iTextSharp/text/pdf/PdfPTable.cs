@@ -1015,7 +1015,7 @@ namespace iTextSharp.text.pdf {
         *
         * @return    an <CODE>ArrayList</CODE>
         */
-        public List<Chunk> Chunks {
+        public IList<Chunk> Chunks {
             get {
                 return new List<Chunk>();
             }

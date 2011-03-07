@@ -293,7 +293,7 @@ namespace iTextSharp.text.pdf {
         public void StartDocument() {
         }
         
-        public void StartElement(String tag, Dictionary<string,string> h) {
+        public void StartElement(String tag, IDictionary<string,string> h) {
             if (xmlNames == null) {
                 if (tag.Equals("Destination")) {
                     xmlNames = new Dictionary<string,string>();

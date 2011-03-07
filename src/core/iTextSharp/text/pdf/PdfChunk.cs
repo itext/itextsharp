@@ -862,7 +862,7 @@ namespace iTextSharp.text.pdf {
                 return 0;
             if (IsAttribute(Chunk.CHAR_SPACING)) {
         	    float cs = (float) GetAttribute(Chunk.CHAR_SPACING);
-			    return font.Width(c) + cs;
+			    return font.Width(c) + cs * font.HorizontalScaling;
 		    }
             return font.Width(c);
         }

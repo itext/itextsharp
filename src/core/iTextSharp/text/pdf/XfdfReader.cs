@@ -54,8 +54,8 @@ namespace iTextSharp.text.pdf {
     public class XfdfReader : ISimpleXMLDocHandler {
         // stuff used during parsing to handle state
         private bool foundRoot = false;
-        private Stackr fieldNames = new Stackr();
-        private Stackr fieldValues = new Stackr();
+        private readonly Stackr fieldNames = new Stackr();
+        private readonly Stackr fieldValues = new Stackr();
 
         // storage for the field list and their values
         internal Dictionary<string,string>  fields;
@@ -158,7 +158,7 @@ namespace iTextSharp.text.pdf {
         * @param tag the tag name
         * @param h the tag's attributes
         */    
-        public void StartElement(String tag, Dictionary<string,string> h) {
+        public void StartElement(String tag, IDictionary<string,string> h) {
             if ( !foundRoot ) {
                 if (!tag.Equals("xfdf"))
                     throw new Exception(MessageLocalization.GetComposedMessage("root.element.is.not.xfdf.1", tag));
