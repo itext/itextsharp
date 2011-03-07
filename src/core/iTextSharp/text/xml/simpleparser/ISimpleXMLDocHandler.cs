@@ -53,7 +53,7 @@ namespace iTextSharp.text.xml.simpleparser {
         * @param tag the tag name
         * @param h the tag's attributes
         */    
-        void StartElement(String tag, Dictionary<string,string> h);
+        void StartElement(String tag, IDictionary<string,string> h);
         /**
         * Called when an end tag is found.
         * @param tag the tag name

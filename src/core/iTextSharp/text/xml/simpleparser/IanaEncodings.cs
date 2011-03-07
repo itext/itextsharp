@@ -538,10 +538,12 @@ namespace iTextSharp.text.xml.simpleparser {
                 return new UnicodeEncoding(false, false);
             if (nameU.Equals("UNICODELITTLE"))
                 return new UnicodeEncoding(false, true);
+            Encoding enc;
             if (map.ContainsKey(nameU))
-                return Encoding.GetEncoding(map[nameU]);
-            else
-                return Encoding.GetEncoding(name);
+                enc = Encoding.GetEncoding(map[nameU], new EncoderReplacementFallback(""), new DecoderReplacementFallback());
+            else 
+                enc = Encoding.GetEncoding(name, new EncoderReplacementFallback(""), new DecoderReplacementFallback());
+            return enc;
         }
     }
 }

@@ -204,7 +204,7 @@ namespace iTextSharp.text {
         /// Gets all the chunks in this element.
         /// </summary>
         /// <value>an ArrayList</value>
-        public virtual List<Chunk> Chunks {
+        public virtual IList<Chunk> Chunks {
             get {
                 List<Chunk> tmp = new List<Chunk>();
                 foreach (IElement ele in this) {

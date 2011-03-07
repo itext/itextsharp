@@ -175,7 +175,7 @@ namespace iTextSharp.text.html.simpleparser {
             return false;
         }
 
-        public List<Chunk> Chunks {
+        public IList<Chunk> Chunks {
             get {
                 return null;    
             }

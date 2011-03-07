@@ -116,7 +116,7 @@ namespace iTextSharp.text {
         public static float WmfFontCorrection = 0.86f;
 
         ///<summary> The IDocListener. </summary>
-        private List<IDocListener> listeners = new List<IDocListener>();
+        protected List<IDocListener> listeners = new List<IDocListener>();
 
         ///<summary> Is the document open or not? </summary>
         protected bool open;

@@ -107,7 +107,7 @@ namespace iTextSharp.text {
         /// Gets all the chunks in this element.
         /// </summary>
         /// <value>an ArrayList</value>
-        List<Chunk> Chunks {
+        IList<Chunk> Chunks {
             get;
         }
     

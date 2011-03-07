@@ -788,7 +788,7 @@ namespace iTextSharp.text.pdf {
         public void StartDocument() {
         }
         
-        public void StartElement(String tag, Dictionary<string,string> h) {
+        public void StartElement(String tag, IDictionary<string,string> h) {
             if (topList == null) {
                 if (tag.Equals("Bookmark")) {
                     topList = new List<Dictionary<String, Object>>();

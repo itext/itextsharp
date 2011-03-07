@@ -155,7 +155,7 @@ namespace iTextSharp.text.html.simpleparser {
         /**
          * @see com.itextpdf.text.xml.simpleparser.SimpleXMLDocHandler#startElement(java.lang.String, java.util.Dictionary)
          */
-        public virtual void StartElement(String tag, Dictionary<String, String> attrs) {
+        public virtual void StartElement(String tag, IDictionary<String, String> attrs) {
             IHTMLTagProcessor htmlTag;
             tags.TryGetValue(tag, out htmlTag);
             if (htmlTag == null) {

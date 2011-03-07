@@ -213,7 +213,7 @@ namespace iTextSharp.text {
             }
             else if (o is Paragraph) {
                 base.Add(o);
-                List<Chunk> chunks = this.Chunks;
+                IList<Chunk> chunks = this.Chunks;
                 if (chunks.Count > 0) {
                     Chunk tmp = chunks[chunks.Count - 1];
                     base.Add(new Chunk("\n", tmp.Font));

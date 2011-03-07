@@ -190,7 +190,7 @@ namespace iTextSharp.text
         /// Gets all the chunks in this element.
         /// </summary>
         /// <value>an ArrayList</value>
-        public override List<Chunk> Chunks 
+        public override IList<Chunk> Chunks 
         {
             get 
             {

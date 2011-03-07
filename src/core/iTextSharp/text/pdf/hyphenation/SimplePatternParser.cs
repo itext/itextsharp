@@ -189,7 +189,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         public void StartDocument() {
         }
         
-        public void StartElement(String tag, Dictionary<string,string> h) {
+        public void StartElement(String tag, IDictionary<string,string> h) {
             if (tag.Equals("hyphen-char")) {
                 String hh;
                 h.TryGetValue("value", out hh);

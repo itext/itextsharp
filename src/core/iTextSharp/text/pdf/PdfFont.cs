@@ -181,6 +181,10 @@ namespace iTextSharp.text.pdf {
             set {
                 this.hScale = value;
             }
+
+            get {
+                return hScale;
+            }
         }
     }
 }
