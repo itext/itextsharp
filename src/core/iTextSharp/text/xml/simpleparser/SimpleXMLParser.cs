@@ -244,10 +244,25 @@ namespace iTextSharp.text.xml.simpleparser {
                         entity.Length = 0;
                         state = ENTITY;
                         nowhite = true;
+                    } else if (character == ' ') {
+                        if (html && nowhite) {
+                            text.Append(' ');
+                            nowhite = false;
+                        } else {
+                            if (nowhite){
+                                text.Append((char)character);
+                            }
+                            nowhite = false;
+                        }
                     } else if (Char.IsWhiteSpace((char)character)) {
-                        if (nowhite)
-                            text.Append((char)character);
-                        nowhite = false;
+                        if (html) {
+                            // totally ignore other whitespace
+                        } else {
+                            if (nowhite){
+                                text.Append((char)character);
+                            }
+                            nowhite = false;
+                        }
                     } else {
                         text.Append((char)character);
                         nowhite = true;
