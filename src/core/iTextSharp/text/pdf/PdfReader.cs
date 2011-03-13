@@ -600,6 +600,12 @@ namespace iTextSharp.text.pdf {
                 s = enc.Get(PdfName.O).ToString();
                 strings.Remove((PdfString)enc.Get(PdfName.O));
                 oValue = DocWriter.GetISOBytes(s);
+                if (enc.Contains(PdfName.OE))
+                    strings.Remove((PdfString)enc.Get(PdfName.OE));
+                if (enc.Contains(PdfName.UE))
+                    strings.Remove((PdfString)enc.Get(PdfName.UE));
+                if (enc.Contains(PdfName.PERMS))
+                    strings.Remove((PdfString)enc.Get(PdfName.PERMS));
                 
                 o = enc.Get(PdfName.P);
                 if (!o.IsNumber())
@@ -639,6 +645,12 @@ namespace iTextSharp.text.pdf {
                         throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("no.compatible.encryption.found"));
                     PdfObject em = enc.Get(PdfName.ENCRYPTMETADATA);
                     if (em != null && em.ToString().Equals("false"))
+                        cryptoMode |= PdfWriter.DO_NOT_ENCRYPT_METADATA;
+                    break;
+                case 5:
+                    cryptoMode = PdfWriter.ENCRYPTION_AES_256;
+                    PdfObject em5 = enc.Get(PdfName.ENCRYPTMETADATA);
+                    if (em5 != null && em5.ToString().Equals("false"))
                         cryptoMode |= PdfWriter.DO_NOT_ENCRYPT_METADATA;
                     break;
                 default:
@@ -734,19 +746,24 @@ namespace iTextSharp.text.pdf {
             decrypt = new PdfEncryption();
             decrypt.SetCryptoMode(cryptoMode, lengthValue);
             
-            if (filter.Equals(PdfName.STANDARD))
-            {
-                //check by owner password
-                decrypt.SetupByOwnerPassword(documentID, password, uValue, oValue, pValue);
-                if (!EqualsArray(uValue, decrypt.userKey, (rValue == 3 || rValue == 4) ? 16 : 32)) {
-                    //check by user password
-                    decrypt.SetupByUserPassword(documentID, password, oValue, pValue);
-                    if (!EqualsArray(uValue, decrypt.userKey, (rValue == 3 || rValue == 4) ? 16 : 32)) {
-                        throw new BadPasswordException(MessageLocalization.GetComposedMessage("bad.user.password"));
-                    }
+            if (filter.Equals(PdfName.STANDARD)) {
+                if (rValue == 5) {
+                    ownerPasswordUsed = decrypt.ReadKey(enc, password);
+                    pValue = decrypt.GetPermissions();
                 }
-                else
-                    ownerPasswordUsed = true;
+                else {
+                    //check by owner password
+                    decrypt.SetupByOwnerPassword(documentID, password, uValue, oValue, pValue);
+                    if (!EqualsArray(uValue, decrypt.userKey, (rValue == 3 || rValue == 4) ? 16 : 32)) {
+                        //check by user password
+                        decrypt.SetupByUserPassword(documentID, password, oValue, pValue);
+                        if (!EqualsArray(uValue, decrypt.userKey, (rValue == 3 || rValue == 4) ? 16 : 32)) {
+                            throw new BadPasswordException(MessageLocalization.GetComposedMessage("bad.user.password"));
+                        }
+                    }
+                    else
+                        ownerPasswordUsed = true;
+                }
             } else if (filter.Equals(PdfName.PUBSEC)) {   
                 decrypt.SetupByEncryptionKey(encryptionKey, lengthValue); 
                 ownerPasswordUsed = true;

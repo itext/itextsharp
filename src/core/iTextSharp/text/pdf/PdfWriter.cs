@@ -1909,6 +1909,8 @@ namespace iTextSharp.text.pdf {
         public const int STANDARD_ENCRYPTION_128 = 1;
         /** Type of encryption */
         public const int ENCRYPTION_AES_128 = 2;
+        /** Type of encryption */
+        public const int ENCRYPTION_AES_256 = 3;
         /** Mask to separate the encryption type from the encryption mode. */
         internal const int ENCRYPTION_MASK = 7;
         /** Add this to the mode to keep the metadata in clear text */

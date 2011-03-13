@@ -124,6 +124,8 @@ namespace iTextSharp.text.pdf {
         /** A name */
         public static readonly PdfName AESV2 = new PdfName("AESV2");
         /** A name */
+        public static readonly PdfName AESV3 = new PdfName("AESV3");
+        /** A name */
         public static readonly PdfName AHX = new PdfName("AHx");
         /** A name */
         public static readonly PdfName AIS = new PdfName("AIS");
@@ -1038,6 +1040,8 @@ namespace iTextSharp.text.pdf {
         /** A name */
         public static readonly PdfName OCPROPERTIES = new PdfName("OCProperties");
         /** A name */
+        public static readonly PdfName OE = new PdfName("OE");
+        /** A name */
         public static readonly PdfName Off_ = new PdfName("Off");
         /** A name */
         public static readonly PdfName OFF = new PdfName("OFF");
@@ -1598,6 +1602,8 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName TYPE3 = new PdfName("Type3");
         /** A name of an attribute. */
         public static readonly PdfName U = new PdfName("U");
+        /** A name */
+        public static readonly PdfName UE = new PdfName("UE");
         /** A name of an attribute. */
         public static readonly PdfName UF = new PdfName("UF");
         /** A name of an attribute. */

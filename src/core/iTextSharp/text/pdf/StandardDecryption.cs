@@ -51,6 +51,7 @@ namespace iTextSharp.text.pdf.crypto {
         protected AESCipher cipher;
         private byte[] key;
         private const int AES_128 = 4;
+        private const int AES_256 = 5;
         private bool aes;
         private bool initiated;
         private byte[] iv = new byte[16];
@@ -58,7 +59,7 @@ namespace iTextSharp.text.pdf.crypto {
 
         /** Creates a new instance of StandardDecryption */
         public StandardDecryption(byte[] key, int off, int len, int revision) {
-            aes = revision == AES_128;
+            aes = (revision == AES_128 || revision == AES_256);
             if (aes) {
                 this.key = new byte[len];
                 System.Array.Copy(key, off, this.key, 0, len);

@@ -1,6 +1,5 @@
 using System;
 using Org.BouncyCastle.Crypto.Modes;
-using Org.BouncyCastle.Crypto.Paddings;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
@@ -50,51 +49,32 @@ using Org.BouncyCastle.Crypto.Parameters;
 namespace iTextSharp.text.pdf.crypto {
 
 /**
- * Creates an AES Cipher with CBC and padding PKCS5/7.
+ * Creates an AES Cipher with CBC and no padding.
  * @author Paulo Soares
  */
-    public class AESCipher {
-        private PaddedBufferedBlockCipher bp;
+    public class AESCipherCBCnoPad {
+        private IBlockCipher cbc;
         
         /** Creates a new instance of AESCipher */
-        public AESCipher(bool forEncryption, byte[] key, byte[] iv) {
+        public AESCipherCBCnoPad(bool forEncryption, byte[] key) {
             IBlockCipher aes = new AesFastEngine();
-            IBlockCipher cbc = new CbcBlockCipher(aes);
-            bp = new PaddedBufferedBlockCipher(cbc);
+            cbc = new CbcBlockCipher(aes);
             KeyParameter kp = new KeyParameter(key);
-            ParametersWithIV piv = new ParametersWithIV(kp, iv);
-            bp.Init(forEncryption, piv);
+            cbc.Init(forEncryption, kp);
         }
         
-        public byte[] Update(byte[] inp, int inpOff, int inpLen) {
-            int neededLen = bp.GetUpdateOutputSize(inpLen);
-            byte[] outp = null;
-            if (neededLen > 0)
-                outp = new byte[neededLen];
-            else
-                neededLen = 0;
-            bp.ProcessBytes(inp, inpOff, inpLen, outp, 0);
+        public byte[] ProcessBlock(byte[] inp, int inpOff, int inpLen) {
+            if ((inpLen % cbc.GetBlockSize()) != 0)
+                throw new ArgumentException("Not multiple of block: " + inpLen);
+            byte[] outp = new byte[inpLen];
+            int baseOffset = 0;
+            while (inpLen > 0) {
+                cbc.ProcessBlock(inp, inpOff, outp, baseOffset);
+                inpLen -= cbc.GetBlockSize();
+                baseOffset += cbc.GetBlockSize();
+                inpOff += cbc.GetBlockSize();
+            }
             return outp;
-        }
-        
-        public byte[] DoFinal() {
-            int neededLen = bp.GetOutputSize(0);
-            byte[] outp = new byte[neededLen];
-            int n = 0;
-            try {
-                n = bp.DoFinal(outp, 0);
-            }
-            catch {
-                return outp;
-            }
-            if (n != outp.Length) {
-                byte[] outp2 = new byte[n];
-                System.Array.Copy(outp, 0, outp2, 0, n);
-                return outp2;
-            }
-            else
-                return outp;
-        }
-        
+        }        
     }
 }

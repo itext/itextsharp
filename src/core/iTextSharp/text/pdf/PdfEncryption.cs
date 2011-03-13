@@ -63,6 +63,7 @@ public class PdfEncryption {
     public const int STANDARD_ENCRYPTION_40 = 2;
     public const int STANDARD_ENCRYPTION_128 = 3;
     public const int AES_128 = 4;
+    public const int AES_256 = 5;
 
     private static byte[] pad = {
         (byte)0x28, (byte)0xBF, (byte)0x4E, (byte)0x5E, (byte)0x4E, (byte)0x75,
@@ -79,7 +80,7 @@ public class PdfEncryption {
     /** The encryption key length for a particular object/generation */
     internal int keySize;
     /** The global encryption key */
-    internal byte[] mkey;
+    internal byte[] mkey = new byte[0];
     /** Work area to prepare the object/generation bytes */
     internal byte[] extra = new byte[5];
     /** The message digest algorithm MD5 */
@@ -88,6 +89,9 @@ public class PdfEncryption {
     internal byte[] ownerKey = new byte[32];
     /** The encryption key for the user */
     internal byte[] userKey = new byte[32];
+    internal byte[] oeKey;
+    internal byte[] ueKey;
+    internal byte[] perms;
     /** The public key security handler for certificate encryption */
     protected PdfPublicKeySecurityHandler publicKeyHandler = null;
     internal int permissions;
@@ -112,6 +116,9 @@ public class PdfEncryption {
     }
 
     public PdfEncryption(PdfEncryption enc) : this() {
+        if (enc.key != null)
+            key = (byte[]) enc.key.Clone();
+        keySize = enc.keySize;
         mkey = (byte[])enc.mkey.Clone();
         ownerKey = (byte[])enc.ownerKey.Clone();
         userKey = (byte[])enc.userKey.Clone();
@@ -127,8 +134,8 @@ public class PdfEncryption {
 
     public void SetCryptoMode(int mode, int kl) {
         cryptoMode = mode;
-		encryptMetadata = (mode & PdfWriter.DO_NOT_ENCRYPT_METADATA) != PdfWriter.DO_NOT_ENCRYPT_METADATA;
-		embeddedFilesOnly = (mode & PdfWriter.EMBEDDED_FILES_ONLY) == PdfWriter.EMBEDDED_FILES_ONLY;
+        encryptMetadata = (mode & PdfWriter.DO_NOT_ENCRYPT_METADATA) != PdfWriter.DO_NOT_ENCRYPT_METADATA;
+        embeddedFilesOnly = (mode & PdfWriter.EMBEDDED_FILES_ONLY) == PdfWriter.EMBEDDED_FILES_ONLY;
         mode &= PdfWriter.ENCRYPTION_MASK;
         switch (mode) {
             case PdfWriter.STANDARD_ENCRYPTION_40:
@@ -149,6 +156,11 @@ public class PdfEncryption {
                 keyLength = 128;
                 revision = AES_128;
                 break;
+            case PdfWriter.ENCRYPTION_AES_256:
+                keyLength = 256;
+                keySize = 32;
+                revision = AES_256;
+                break;
             default:
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("no.valid.encryption.mode"));
         }
@@ -160,6 +172,10 @@ public class PdfEncryption {
     
     public bool IsMetadataEncrypted() {
         return encryptMetadata;
+    }
+
+    public int GetPermissions() {
+        return permissions;
     }
 
     /**
@@ -288,16 +304,134 @@ public class PdfEncryption {
         if (ownerPassword == null || ownerPassword.Length == 0)
             ownerPassword = DigestComputeHash("MD5", CreateDocumentId());
         md5.Reset();
-        permissions |= (int)((revision == STANDARD_ENCRYPTION_128 || revision == AES_128) ? (uint)0xfffff0c0 : (uint)0xffffffc0);
+        permissions |= (int)((revision == STANDARD_ENCRYPTION_128 || revision == AES_128 || revision == AES_256) ? (uint)0xfffff0c0 : (uint)0xffffffc0);
         permissions &= unchecked((int)0xfffffffc);
-        //PDF refrence 3.5.2 Standard Security Handler, Algorithum 3.3-1
-        //If there is no owner password, use the user password instead.
-        byte[] userPad = PadPassword(userPassword);
-        byte[] ownerPad = PadPassword(ownerPassword);
+        this.permissions = permissions;
+        if (revision == AES_256) {
+            if (userPassword == null)
+                userPassword = new byte[0];
+            documentID = CreateDocumentId();
+            byte[] uvs = IVGenerator.GetIV(8);
+            byte[] uks = IVGenerator.GetIV(8);
+            key = IVGenerator.GetIV(32);
+            // Algorithm 3.8.1
+            IDigest md = DigestUtilities.GetDigest("SHA-256");
+            md.BlockUpdate(userPassword, 0, Math.Min(userPassword.Length, 127));
+            md.BlockUpdate(uvs, 0, uvs.Length);
+            userKey = new byte[48];
+            md.DoFinal(userKey, 0);
+            System.Array.Copy(uvs, 0, userKey, 32, 8);
+            System.Array.Copy(uks, 0, userKey, 40, 8);
+            // Algorithm 3.8.2
+            md.BlockUpdate(userPassword, 0, Math.Min(userPassword.Length, 127));
+            md.BlockUpdate(uks, 0, uks.Length);
+            byte[] tempDigest = new byte[32];
+            md.DoFinal(tempDigest, 0);
+            AESCipherCBCnoPad ac = new AESCipherCBCnoPad(true, tempDigest);
+            ueKey = ac.ProcessBlock(key, 0, key.Length);
+            // Algorithm 3.9.1
+            byte[] ovs = IVGenerator.GetIV(8);
+            byte[] oks = IVGenerator.GetIV(8);
+            md.BlockUpdate(ownerPassword, 0, Math.Min(ownerPassword.Length, 127));
+            md.BlockUpdate(ovs, 0, ovs.Length);
+            md.BlockUpdate(userKey, 0, userKey.Length);
+            ownerKey = new byte[48];
+            md.DoFinal(ownerKey, 0);
+            System.Array.Copy(ovs, 0, ownerKey, 32, 8);
+            System.Array.Copy(oks, 0, ownerKey, 40, 8);
+            // Algorithm 3.9.2
+            md.BlockUpdate(ownerPassword, 0, Math.Min(ownerPassword.Length, 127));
+            md.BlockUpdate(oks, 0, oks.Length);
+            md.BlockUpdate(userKey, 0, userKey.Length);
+            md.DoFinal(tempDigest, 0);
+            ac = new AESCipherCBCnoPad(true, tempDigest);
+            oeKey = ac.ProcessBlock(key, 0, key.Length);
+            // Algorithm 3.10
+            byte[] permsp = IVGenerator.GetIV(16);
+            permsp[0] = (byte)permissions;
+            permsp[1] = (byte)(permissions >> 8);
+            permsp[2] = (byte)(permissions >> 16);
+            permsp[3] = (byte)(permissions >> 24);
+            permsp[4] = (byte)(255);
+            permsp[5] = (byte)(255);
+            permsp[6] = (byte)(255);
+            permsp[7] = (byte)(255);
+            permsp[8] = encryptMetadata ? (byte)'T' : (byte)'F';
+            permsp[9] = (byte)'a';
+            permsp[10] = (byte)'d';
+            permsp[11] = (byte)'b';
+            ac = new AESCipherCBCnoPad(true, key);
+            perms = ac.ProcessBlock(permsp, 0, permsp.Length);
+        }
+        else {
+            //PDF refrence 3.5.2 Standard Security Handler, Algorithum 3.3-1
+            //If there is no owner password, use the user password instead.
+            byte[] userPad = PadPassword(userPassword);
+            byte[] ownerPad = PadPassword(ownerPassword);
 
-        this.ownerKey = ComputeOwnerKey(userPad, ownerPad);
-        documentID = CreateDocumentId();
-        SetupByUserPad(this.documentID, userPad, this.ownerKey, permissions);
+            this.ownerKey = ComputeOwnerKey(userPad, ownerPad);
+            documentID = CreateDocumentId();
+            SetupByUserPad(this.documentID, userPad, this.ownerKey, permissions);
+        }
+    }
+
+    private const int VALIDATION_SALT_OFFSET = 32;
+    private const int KEY_SALT_OFFSET = 40;
+    private const int SALT_LENGHT = 8;
+    private const int OU_LENGHT = 48;
+
+    public bool ReadKey(PdfDictionary enc, byte[] password) {
+        byte[] oValue = DocWriter.GetISOBytes(enc.Get(PdfName.O).ToString());
+        byte[] uValue = DocWriter.GetISOBytes(enc.Get(PdfName.U).ToString());
+        byte[] oeValue = DocWriter.GetISOBytes(enc.Get(PdfName.OE).ToString());
+        byte[] ueValue = DocWriter.GetISOBytes(enc.Get(PdfName.UE).ToString());
+        byte[] perms = DocWriter.GetISOBytes(enc.Get(PdfName.PERMS).ToString());
+        bool isUserPass = false;
+        IDigest md = DigestUtilities.GetDigest("SHA-256");
+        md.BlockUpdate(password, 0, Math.Min(password.Length, 127));
+        md.BlockUpdate(oValue, VALIDATION_SALT_OFFSET, SALT_LENGHT);
+        md.BlockUpdate(uValue, 0, OU_LENGHT);
+        byte[] hash = DigestUtilities.DoFinal(md);
+        bool isOwnerPass = CompareArray(hash, oValue, 32);
+        AESCipherCBCnoPad ac;
+        if (isOwnerPass) {
+            md.BlockUpdate(password, 0, Math.Min(password.Length, 127));
+            md.BlockUpdate(oValue, KEY_SALT_OFFSET, SALT_LENGHT);
+            md.BlockUpdate(uValue, 0, OU_LENGHT);
+            md.DoFinal(hash, 0);
+            ac = new AESCipherCBCnoPad(false, hash);
+            key = ac.ProcessBlock(oeValue, 0, oeValue.Length);
+        }
+        else {
+            md.BlockUpdate(password, 0, Math.Min(password.Length, 127));
+            md.BlockUpdate(uValue, VALIDATION_SALT_OFFSET, SALT_LENGHT);
+            md.DoFinal(hash, 0);
+            isUserPass = CompareArray(hash, uValue, 32);
+            if (!isUserPass)
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("bad.user.password"));
+            md.BlockUpdate(password, 0, Math.Min(password.Length, 127));
+            md.BlockUpdate(uValue, KEY_SALT_OFFSET, SALT_LENGHT);
+            md.DoFinal(hash, 0);
+            ac = new AESCipherCBCnoPad(false, hash);
+            key = ac.ProcessBlock(ueValue, 0, ueValue.Length);
+        }
+        ac = new AESCipherCBCnoPad(false, key);
+        byte[] decPerms = ac.ProcessBlock(perms, 0, perms.Length);
+        if (decPerms[9] != (byte)'a' || decPerms[10] != (byte)'d' || decPerms[11] != (byte)'b')
+            throw new ArgumentException(MessageLocalization.GetComposedMessage("bad.user.password"));
+        permissions = (decPerms[0] & 0xff) | ((decPerms[1] & 0xff) << 8)
+                | ((decPerms[2] & 0xff) << 16) | ((decPerms[2] & 0xff) << 24);
+        encryptMetadata = decPerms[8] == (byte)'T';
+        return isOwnerPass;
+    }
+
+    private static bool CompareArray(byte[] a, byte[] b, int len) {
+        for (int k = 0; k < len; ++k) {
+            if (a[k] != b[k]) {
+                return false;
+            }
+        }
+        return true;
     }
 
     public static byte[] CreateDocumentId() {
@@ -337,6 +471,8 @@ public class PdfEncryption {
     }    
 
     public void SetHashKey(int number, int generation) {
+        if (revision == AES_256)
+            return;
         md5.Reset();    //added by ujihara
         extra[0] = (byte)number;
         extra[1] = (byte)(number >> 8);
@@ -375,7 +511,7 @@ public class PdfEncryption {
             PdfArray recipients = null;
             
             dic.Put(PdfName.FILTER, PdfName.PUBSEC);  
-            dic.Put(PdfName.R, new PdfNumber(revision));	
+            dic.Put(PdfName.R, new PdfNumber(revision));    
 
             recipients = publicKeyHandler.GetEncodedRecipients();
             
@@ -446,6 +582,32 @@ public class PdfEncryption {
                 dic.Put(PdfName.LENGTH, new PdfNumber(128));
                 
             }
+            else if (revision == AES_256) {
+                if (!encryptMetadata)
+                    dic.Put(PdfName.ENCRYPTMETADATA, PdfBoolean.PDFFALSE);
+                dic.Put(PdfName.OE, new PdfLiteral(PdfContentByte.EscapeString(oeKey)));
+                dic.Put(PdfName.UE, new PdfLiteral(PdfContentByte.EscapeString(ueKey)));
+                dic.Put(PdfName.PERMS, new PdfLiteral(PdfContentByte.EscapeString(perms)));
+                dic.Put(PdfName.V, new PdfNumber(revision));
+                dic.Put(PdfName.LENGTH, new PdfNumber(256));
+                PdfDictionary stdcf = new PdfDictionary();
+                stdcf.Put(PdfName.LENGTH, new PdfNumber(32));
+                if (embeddedFilesOnly) {
+                    stdcf.Put(PdfName.AUTHEVENT, PdfName.EFOPEN);
+                    dic.Put(PdfName.EFF, PdfName.STDCF);
+                    dic.Put(PdfName.STRF, PdfName.IDENTITY);
+                    dic.Put(PdfName.STMF, PdfName.IDENTITY);
+                }
+                else {
+                    stdcf.Put(PdfName.AUTHEVENT, PdfName.DOCOPEN);
+                    dic.Put(PdfName.STRF, PdfName.STDCF);
+                    dic.Put(PdfName.STMF, PdfName.STDCF);
+                }
+                stdcf.Put(PdfName.CFM, PdfName.AESV3);
+                PdfDictionary cf = new PdfDictionary();
+                cf.Put(PdfName.STDCF, stdcf);
+                dic.Put(PdfName.CF, cf);
+            }
             else {
                 if (!encryptMetadata)
                     dic.Put(PdfName.ENCRYPTMETADATA, PdfBoolean.PDFFALSE);
@@ -487,7 +649,7 @@ public class PdfEncryption {
     }
     
     public int CalculateStreamSize(int n) {
-        if (revision == AES_128)
+        if (revision == AES_128 || revision == AES_256)
             return (n & 0x7ffffff0) + 32;
         else
             return n;
@@ -522,23 +684,23 @@ public class PdfEncryption {
         publicKeyHandler.AddRecipient(new PdfPublicKeyRecipient(cert, permission));
     }
 
-	public byte[] ComputeUserPassword(byte[] ownerPassword) {
-		byte[] userPad = ComputeOwnerKey(ownerKey, PadPassword(ownerPassword));
-		for (int i = 0; i < userPad.Length; i++) {
-			bool match = true;
-			for (int j = 0; j < userPad.Length - i; j++) {
-				if (userPad[i + j] != pad[j]) {
-					match = false;
-					break;
+    public byte[] ComputeUserPassword(byte[] ownerPassword) {
+        byte[] userPad = ComputeOwnerKey(ownerKey, PadPassword(ownerPassword));
+        for (int i = 0; i < userPad.Length; i++) {
+            bool match = true;
+            for (int j = 0; j < userPad.Length - i; j++) {
+                if (userPad[i + j] != pad[j]) {
+                    match = false;
+                    break;
                 }
-			}
-			if (!match) continue;
-			byte[] userPassword = new byte[i];
-			System.Array.Copy(userPad, 0, userPassword, 0, i);
-			return userPassword;
-		}
-		return userPad;
-	}
+            }
+            if (!match) continue;
+            byte[] userPassword = new byte[i];
+            System.Array.Copy(userPad, 0, userPassword, 0, i);
+            return userPassword;
+        }
+        return userPad;
+    }
 
     public static byte[] DigestComputeHash(string algo, byte[] b, int offset, int len) {
         IDigest d = DigestUtilities.GetDigest(algo);
