@@ -52,12 +52,13 @@ namespace iTextSharp.text.pdf {
     protected AESCipher cipher;
     private byte[] buf = new byte[1];
     private const int AES_128 = 4;
+    private const int AES_256 = 5;
     private bool aes;
     private bool finished;
 
         public OutputStreamEncryption(Stream outc, byte[] key, int off, int len, int revision) {
             this.outc = outc;
-            aes = revision == AES_128;
+            aes = (revision == AES_128 || revision == AES_256);
             if (aes) {
                 byte[] iv = IVGenerator.GetIV();
                 byte[] nkey = new byte[len];
