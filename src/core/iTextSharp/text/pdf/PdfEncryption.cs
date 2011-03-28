@@ -381,6 +381,8 @@ public class PdfEncryption {
     private const int OU_LENGHT = 48;
 
     public bool ReadKey(PdfDictionary enc, byte[] password) {
+        if (password == null)
+            password = new byte[0];
         byte[] oValue = DocWriter.GetISOBytes(enc.Get(PdfName.O).ToString());
         byte[] uValue = DocWriter.GetISOBytes(enc.Get(PdfName.U).ToString());
         byte[] oeValue = DocWriter.GetISOBytes(enc.Get(PdfName.OE).ToString());
@@ -408,7 +410,7 @@ public class PdfEncryption {
             md.DoFinal(hash, 0);
             isUserPass = CompareArray(hash, uValue, 32);
             if (!isUserPass)
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("bad.user.password"));
+                throw new BadPasswordException(MessageLocalization.GetComposedMessage("bad.user.password"));
             md.BlockUpdate(password, 0, Math.Min(password.Length, 127));
             md.BlockUpdate(uValue, KEY_SALT_OFFSET, SALT_LENGHT);
             md.DoFinal(hash, 0);
@@ -418,7 +420,7 @@ public class PdfEncryption {
         ac = new AESCipherCBCnoPad(false, key);
         byte[] decPerms = ac.ProcessBlock(perms, 0, perms.Length);
         if (decPerms[9] != (byte)'a' || decPerms[10] != (byte)'d' || decPerms[11] != (byte)'b')
-            throw new ArgumentException(MessageLocalization.GetComposedMessage("bad.user.password"));
+            throw new BadPasswordException(MessageLocalization.GetComposedMessage("bad.user.password"));
         permissions = (decPerms[0] & 0xff) | ((decPerms[1] & 0xff) << 8)
                 | ((decPerms[2] & 0xff) << 16) | ((decPerms[2] & 0xff) << 24);
         encryptMetadata = decPerms[8] == (byte)'T';
