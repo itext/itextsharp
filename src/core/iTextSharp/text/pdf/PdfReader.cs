@@ -2945,7 +2945,9 @@ namespace iTextSharp.text.pdf {
                     else if (ob2.IsString())
                         name = ob2.ToString();
                     if (name != null) {
-                        PdfArray dest = (PdfArray)names[name];
+                        PdfArray dest = null;
+                        if (names.ContainsKey(name) && names[name] is PdfArray)
+                            dest = (PdfArray)names[name];
                         if (dest != null) {
                             ((PdfDictionary)obj).Put(PdfName.DEST, dest);
                             SetXrefPartialObject(objIdx, obj);
