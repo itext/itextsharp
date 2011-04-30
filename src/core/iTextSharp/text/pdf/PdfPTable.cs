@@ -76,7 +76,11 @@ namespace iTextSharp.text.pdf {
         protected List<PdfPRow> rows = new List<PdfPRow>();
         protected float totalHeight = 0;
         protected PdfPCell[] currentRow;
-        protected int currentRowIdx = 0;
+        /**
+         * The current column index.
+         * @since 5.1.0 renamed from currentColIdx
+         */
+        protected int currentColIdx = 0;
         protected PdfPCell defaultCell = new PdfPCell((Phrase)null);
         protected float totalWidth = 0;
         protected float[] relativeWidths;
@@ -230,7 +234,7 @@ namespace iTextSharp.text.pdf {
             System.Array.Copy(sourceTable.absoluteWidths, 0, absoluteWidths, 0, NumberOfColumns);
             totalWidth = sourceTable.totalWidth;
             totalHeight = sourceTable.totalHeight;
-            currentRowIdx = 0;
+            currentColIdx = 0;
             tableEvent = sourceTable.tableEvent;
             runDirection = sourceTable.runDirection;
             defaultCell = new PdfPCell(sourceTable.defaultCell);
@@ -266,7 +270,7 @@ namespace iTextSharp.text.pdf {
             absoluteWidths = new float[relativeWidths.Length];
             totalHeight = 0;
             CalculateWidths();
-            CalculateHeights(true);
+            CalculateHeights();
         }
 
         /** Sets the relative widths of the table.
@@ -334,36 +338,25 @@ namespace iTextSharp.text.pdf {
                 this.totalWidth = value;
                 totalHeight = 0;
                 CalculateWidths();
-                CalculateHeights(true);
+                CalculateHeights();
             }
         }
 
         /**
-        * Calculates the heights of the table.
-        * 
-        * @param    firsttime   if true, the heights of the rows will be recalculated.
-        * This takes time; normally the heights of the rows are already calcultated,
-        * so in most cases, it's save to use false as parameter.
-        * @return   the total height of the table. Note that it will be 0 if you didn't
-        * specify the width of the table with SetTotalWidth().
-        * @since    2.1.5   added a parameter and a return type to an existing method,
-        * and made it public
-        */
-        public float CalculateHeights(bool firsttime) { 
+         * Calculates the heights of the table.
+         *
+         * @return  the total height of the table. Note that it will be 0 if you didn't
+         * specify the width of the table with setTotalWidth().
+         * and made it public
+         */
+        public float CalculateHeights() { 
             if (totalWidth <= 0)
                 return 0;
             totalHeight = 0;
             for (int k = 0; k < rows.Count; ++k) {
-                totalHeight += GetRowHeight(k, firsttime);
+                totalHeight += GetRowHeight(k, true);
             }
             return totalHeight;
-        }
-        
-        /**
-        * Calculates the heights of the table.
-        */
-        public void CalculateHeightsFast() {
-            CalculateHeights(false);
         }
         
         /**
@@ -404,7 +397,7 @@ namespace iTextSharp.text.pdf {
             
             int colspan = ncell.Colspan;
             colspan = Math.Max(colspan, 1);
-            colspan = Math.Min(colspan, currentRow.Length - currentRowIdx);
+            colspan = Math.Min(colspan, currentRow.Length - currentColIdx);
             ncell.Colspan = colspan;
 
             if (colspan != 1)
@@ -416,15 +409,15 @@ namespace iTextSharp.text.pdf {
             SkipColsWithRowspanAbove();
             
             bool cellAdded = false;
-            if (currentRowIdx < currentRow.Length) {  
-                currentRow[currentRowIdx] = ncell;
-                currentRowIdx += colspan;
+            if (currentColIdx < currentRow.Length) {  
+                currentRow[currentColIdx] = ncell;
+                currentColIdx += colspan;
                 cellAdded = true;
             }
 
             SkipColsWithRowspanAbove();
             
-            while (currentRowIdx >= currentRow.Length) {
+            while (currentColIdx >= currentRow.Length) {
                 int numCols = NumberOfColumns;
                 if (runDirection == PdfWriter.RUN_DIRECTION_RTL) {
                     PdfPCell[] rtlRow = new PdfPCell[numCols];
@@ -445,14 +438,14 @@ namespace iTextSharp.text.pdf {
                 }
                 rows.Add(row);
                 currentRow = new PdfPCell[numCols];
-                currentRowIdx = 0;
+                currentColIdx = 0;
                 SkipColsWithRowspanAbove();
                 rowCompleted = true;
             }
             
             if (!cellAdded) {
-                currentRow[currentRowIdx] = ncell;
-                currentRowIdx += colspan;
+                currentRow[currentColIdx] = ncell;
+                currentColIdx += colspan;
             }
         }
         
@@ -465,8 +458,8 @@ namespace iTextSharp.text.pdf {
             int direction = 1;
             if (runDirection == PdfWriter.RUN_DIRECTION_RTL)
                 direction = -1;
-            while (RowSpanAbove(rows.Count, currentRowIdx))
-                currentRowIdx += direction;
+            while (RowSpanAbove(rows.Count, currentColIdx))
+                currentColIdx += direction;
         }
 
         /**
@@ -495,7 +488,7 @@ namespace iTextSharp.text.pdf {
             
             if ((currCol >= NumberOfColumns) 
                     || (currCol < 0) 
-                    || (currRow == 0))
+                    || (currRow < 1))
                 return false;
             
             int row = currRow - 1;
@@ -841,7 +834,7 @@ namespace iTextSharp.text.pdf {
         * @return the height of a particular row
         * @since    3.0.0
         */    
-        public float GetRowHeight(int idx, bool firsttime) {
+        protected internal float GetRowHeight(int idx, bool firsttime) {
             if (totalWidth <= 0 || idx < 0 || idx >= rows.Count)
                 return 0;
             PdfPRow row = rows[idx];
@@ -899,6 +892,27 @@ namespace iTextSharp.text.pdf {
                 rowspanHeight += GetRowHeight(rowIndex + j);
             }
             return rowspanHeight;
+        }
+
+        /**
+         * Checks if a cell in a row has a rowspan greater than 1.
+         * @since 5.1.0
+         */
+        public bool HasRowspan(int rowIdx) {
+            for (int i = 0; i < NumberOfColumns; i++) {
+                if (RowSpanAbove(rowIdx, i))
+                    return true;
+            }
+            return false;
+        }
+        
+        /**
+         * Makes sure the footers value is lower than the headers value.
+         * @since 5.0.1
+         */
+        public void NormalizeHeadersFooters() {
+            if (footerRows > headerRows)
+                footerRows = headerRows;
         }
 
         /** Gets the height of the rows that constitute the header as defined by
@@ -1083,11 +1097,11 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
-        * Gets a row with a given index
-        * (added by Jin-Hsia Yang).
-        * @param idx
-        * @return the row at position idx
-        */
+         * Gets a row with a given index.
+         *
+         * @param idx
+         * @return the row at position idx
+         */
         public PdfPRow GetRow(int idx) {
             return rows[idx];
         }
@@ -1114,37 +1128,7 @@ namespace iTextSharp.text.pdf {
             if (start < 0 || end > Size) {
                 return list;
             }
-            PdfPRow firstRow = AdjustCellsInRow(start, end);
-            int colIndex = 0;
-            PdfPCell cell;
-            while (colIndex < NumberOfColumns) {
-                int rowIndex = start;
-                while (RowSpanAbove(rowIndex--, colIndex)) {
-                    PdfPRow row = GetRow(rowIndex);
-                    if (row != null) {
-                        PdfPCell replaceCell = row.GetCells()[colIndex];
-                        if (replaceCell != null) {
-                            firstRow.GetCells()[colIndex] = new PdfPCell(replaceCell);
-                            float extra = 0;
-                            int stop = Math.Min(rowIndex + replaceCell.Rowspan, end);
-                            for (int j = start + 1; j < stop; j++) {
-                                extra += GetRowHeight(j);
-                            }
-                            firstRow.SetExtraHeight(colIndex, extra);
-                            float diff = GetRowspanHeight(rowIndex, colIndex)
-                                - GetRowHeight(start) - extra;
-                            firstRow.GetCells()[colIndex].ConsumeHeight(diff);
-                        }
-                    }
-                }
-                cell = firstRow.GetCells()[colIndex];
-                if (cell == null)
-                    colIndex++;
-                else
-                    colIndex += cell.Colspan;
-            }
-            list.Add(firstRow);
-            for (int i = start + 1; i < end; i++) {
+            for (int i = start; i < end; i++) {
                 list.Add(AdjustCellsInRow(i, end));
             }
             return list;
@@ -1158,7 +1142,6 @@ namespace iTextSharp.text.pdf {
         */
         protected PdfPRow AdjustCellsInRow(int start, int end) {
             PdfPRow row = new PdfPRow(GetRow(start));
-            row.InitExtraHeights();
             PdfPCell cell;
             PdfPCell[] cells = row.GetCells();
             for (int i = 0; i < cells.Length; i++) {
@@ -1168,7 +1151,7 @@ namespace iTextSharp.text.pdf {
                 int stop = Math.Min(end, start + cell.Rowspan);
                 float extra = 0;
                 for (int k = start + 1; k < stop; k++) {
-                    extra += GetRowHeight(k);
+                    extra += GetRow(k).MaxHeights;
                 }
                 row.SetExtraHeight(i, extra);
             }

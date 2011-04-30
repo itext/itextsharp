@@ -89,6 +89,9 @@ namespace iTextSharp.text.pdf {
                 Put(PdfName.MATRIX, matrix);
             bytes = template.ToPdf(null);
             Put(PdfName.LENGTH, new PdfNumber(bytes.Length));
+            if (template.Additional != null) {
+                Merge(template.Additional);
+            }
             FlateCompress(compressionLevel);
         }
     

@@ -129,9 +129,9 @@ namespace iTextSharp.text.pdf {
 
             // loop over all the object-pairs in the Hashtable
             PdfObject value;
-            foreach (PdfName key in hashMap.Keys) {
-                value = hashMap[key];
-                key.ToPdf(writer, os);
+            foreach (KeyValuePair<PdfName, PdfObject> e in hashMap) {
+                value = e.Value;
+                e.Key.ToPdf(writer, os);
                 int type = value.Type;
                 if (type != PdfObject.ARRAY && type != PdfObject.DICTIONARY && type != PdfObject.NAME && type != PdfObject.STRING)
                     os.WriteByte((byte)' ');

@@ -231,7 +231,18 @@ public class ColumnText {
     
     protected int listIdx = 0;
     
-    private bool splittedRow;
+    /**
+     * Pointer for the row in a table that is being dealt with
+     * @since 5.1.0
+     */
+    protected int rowIdx = 0;
+
+    /**
+     * The index of the last row that needed to be splitted.
+     * @since 5.0.1 changed a boolean into an int
+     */
+    private int splittedRow = -1;
+
     
     protected Phrase waitPhrase;
     
@@ -301,7 +312,7 @@ public class ColumnText {
         splittedRow = org.splittedRow;
         if (org.composite) {
             compositeElements = new List<IElement>(org.compositeElements);
-            if (splittedRow) {
+            if (splittedRow != -1) {
                 PdfPTable table = (PdfPTable)compositeElements[0];
                 compositeElements[0] = new PdfPTable(table);
             }
@@ -309,6 +320,7 @@ public class ColumnText {
                 compositeColumn = Duplicate(org.compositeColumn);
         }
         listIdx = org.listIdx;
+        rowIdx = org.rowIdx;
         firstLineY = org.firstLineY;
         leftX = org.leftX;
         rightX = org.rightX;
@@ -357,7 +369,8 @@ public class ColumnText {
         compositeColumn = null;
         compositeElements = null;
         listIdx = 0;
-        splittedRow = false;
+        rowIdx = 0;
+        splittedRow = -1;
         waitPhrase = phrase;
     }
     
@@ -1061,7 +1074,7 @@ public class ColumnText {
             throw new DocumentException(MessageLocalization.GetComposedMessage("irregular.columns.are.not.supported.in.composite.mode"));
         linesWritten = 0;
         descender = 0;
-        bool firstPass = adjustFirstLine;
+        bool firstPass = true;
         main_loop:
         while (true) {
             if (compositeElements.Count == 0)
@@ -1085,12 +1098,12 @@ public class ColumnText {
                         compositeColumn.ArabicOptions = arabicOptions;
                         compositeColumn.SpaceCharRatio = spaceCharRatio;
                         compositeColumn.AddText(para);
-                        if (!firstPass) {
+                        if (!(firstPass && adjustFirstLine)) {
                             yLine -= para.SpacingBefore;
                         }
                         createHere = true;
                     }
-                    compositeColumn.UseAscender = (firstPass ? useAscender : false);
+                    compositeColumn.UseAscender = (firstPass && adjustFirstLine ? useAscender : false);
                     compositeColumn.leftX = leftX;
                     compositeColumn.rightX = rightX;
                     compositeColumn.yLine = yLine;
@@ -1098,7 +1111,7 @@ public class ColumnText {
                     compositeColumn.rectangularMode = rectangularMode;
                     compositeColumn.minY = minY;
                     compositeColumn.maxY = maxY;
-                    bool keepCandidate = (para.KeepTogether && createHere && !firstPass);
+                    bool keepCandidate = (para.KeepTogether && createHere && !(firstPass && adjustFirstLine));
                     status = compositeColumn.Go(simulate || (keepCandidate && keep == 0));
                     lastX = compositeColumn.LastX;
                     UpdateFilledWidth(compositeColumn.filledWidth);
@@ -1173,7 +1186,7 @@ public class ColumnText {
                         }
                         compositeColumn = new ColumnText(canvas);
 
-                        compositeColumn.UseAscender = (firstPass ? useAscender : false);
+                        compositeColumn.UseAscender = (firstPass && adjustFirstLine ? useAscender : false);
                         compositeColumn.Alignment = item.Alignment;
                         compositeColumn.Indent = item.IndentationLeft + listIndentation + item.FirstLineIndent;
                         compositeColumn.ExtraParagraphSpace = item.ExtraParagraphSpace;
@@ -1184,7 +1197,7 @@ public class ColumnText {
                         compositeColumn.ArabicOptions = arabicOptions;
                         compositeColumn.SpaceCharRatio = spaceCharRatio;
                         compositeColumn.AddText(item);
-                        if (!firstPass) {
+                        if (!(firstPass && adjustFirstLine)) {
                             yLine -= item.SpacingBefore;
                         }
                         createHere = true;
@@ -1196,7 +1209,7 @@ public class ColumnText {
                     compositeColumn.rectangularMode = rectangularMode;
                     compositeColumn.minY = minY;
                     compositeColumn.maxY = maxY;
-                    bool keepCandidate = (item.KeepTogether && createHere && !firstPass);
+                    bool keepCandidate = (item.KeepTogether && createHere && !(firstPass && adjustFirstLine));
                     status = compositeColumn.Go(simulate || (keepCandidate && keep == 0));
                     lastX = compositeColumn.LastX;
                     UpdateFilledWidth(compositeColumn.filledWidth);
@@ -1231,34 +1244,32 @@ public class ColumnText {
                 }
             }
             else if (element.Type == Element.PTABLE) {
-                // don't write anything in the current column if there's no more space available
-                if (yLine < minY || yLine > maxY)
-                    return NO_MORE_COLUMN;
-                
+                // INITIALISATIONS
+
                 // get the PdfPTable element
                 PdfPTable table = (PdfPTable)element;
                 
-                // we ignore tables without a body
+                // tables without a body are dismissed
                 if (table.Size <= table.HeaderRows) {
                     compositeElements.RemoveAt(0);
                     continue;
                 }
                 
-                // offsets
+                // Y-offset
                 float yTemp = yLine;
-                if (!firstPass && listIdx == 0) {
+                if (rowIdx == 0 && adjustFirstLine)
                     yTemp -= table.SpacingBefore;
-                }
-                float yLineWrite = yTemp;
                 
-                // don't write anything in the current column if there's no more space available
+                // if there's no space left, ask for new column
                 if (yTemp < minY || yTemp > maxY) {
                     return NO_MORE_COLUMN;
                 }
                 
                 // coordinates
-                currentLeading = 0;
+                float yLineWrite = yTemp;
                 float x1 = leftX;
+                currentLeading = 0;
+                // get the width of the table
                 float tableWidth;
                 if (table.LockedWidth) {
                     tableWidth = table.TotalWidth;
@@ -1269,80 +1280,98 @@ public class ColumnText {
                     table.TotalWidth = tableWidth;
                 }
                 
+                // HEADERS / FOOTERS
+
                 // how many header rows are real header rows; how many are footer rows?
+                table.NormalizeHeadersFooters();
                 int headerRows = table.HeaderRows;
                 int footerRows = table.FooterRows;
-                if (footerRows > headerRows)
-                    footerRows = headerRows;
                 int realHeaderRows = headerRows - footerRows;
                 float headerHeight = table.HeaderHeight;
                 float footerHeight = table.FooterHeight;
 
-                // make sure the header and footer fit on the page
-                bool skipHeader = (!firstPass && table.SkipFirstHeader && listIdx <= headerRows);
+                // do we need to skip the header?
+                bool skipHeader = table.SkipFirstHeader && rowIdx <= realHeaderRows;
+                // if not, we wan't to be able to add more than just a header and a footer
                 if (!skipHeader) {
                     yTemp -= headerHeight;
                     if (yTemp < minY || yTemp > maxY) {
-                        if (firstPass) {
-                            compositeElements.RemoveAt(0);
-                            continue;
-                        }
                         return NO_MORE_COLUMN;
                     }
                 }
                 
+                // MEASURE NECESSARY SPACE
+
                 // how many real rows (not header or footer rows) fit on a page?
-                int k;
-                if (listIdx < headerRows) {
-                    listIdx = headerRows;
-                }
+                int k = 0;
+                if (rowIdx < headerRows)
+                    rowIdx = headerRows;
+                // if the table isn't complete, we need to be able to add a footer
                 if (!table.ElementComplete) {
                     yTemp -= footerHeight;
                 }
-                for (k = listIdx; k < table.Size; ++k) {
+                // k will be the first row that doesn't fit
+                for (k = rowIdx; k < table.Size; ++k) {
                     float rowHeight = table.GetRowHeight(k);
                     if (yTemp - rowHeight < minY)
                         break;
                     yTemp -= rowHeight;
                 }
+                // only for incomplete tables:
                 if (!table.ElementComplete) {
                     yTemp += footerHeight;
                 }
-                // either k is the first row that doesn't fit on the page (break);
-                if (k < table.Size) {
-                    if (table.SplitRows && (!table.SplitLate || (k == listIdx && firstPass))) {
-                        if (!splittedRow) {
-                            splittedRow = true;
-                            table = new PdfPTable(table);
-                            compositeElements[0] = table;
-                            List<PdfPRow> rows = table.Rows;
-                            for (int i = headerRows; i < listIdx; ++i)
-                                rows[i] = null;
+                
+                // IF ROWS MAY NOT BE SPLIT
+                if (!table.SplitRows) {
+                    splittedRow = -1;
+                    if (k == rowIdx) {
+                        // drop the whole table
+                        if (k == table.Size) {
+                            compositeElements.RemoveAt(0);
+                            continue;
                         }
-                        float h = yTemp - minY;
-                        PdfPRow newRow = table.GetRow(k).SplitRow(table, k, h);
-                        if (newRow == null) {
-                            if (k == listIdx) {
-                                return NO_MORE_COLUMN;
-                            }
-                        }
+                        // or drop the row
                         else {
-                            yTemp = minY;
-                            table.Rows.Insert(++k, newRow);
+                            table.Rows.RemoveAt(k);
+                            return NO_MORE_COLUMN;
                         }
-                    }
-                    else if (!table.SplitRows && k == listIdx && firstPass) {
-                        compositeElements.RemoveAt(0);
-                        splittedRow = false;
-                        continue;
-                    }
-                    else if (k == listIdx && !firstPass && (!table.SplitRows || table.SplitLate) && (table.FooterRows == 0 || table.ElementComplete)) {
-                        return NO_MORE_COLUMN;
                     }
                 }
-                // or k is the number of rows in the table (for loop was done).
+                // IF ROWS SHOULD NOT BE SPLIT
+                else if (table.SplitLate && !table.HasRowspan(k - 1) && rowIdx < k) {
+                    splittedRow = -1;
+                }
+                // SPLIT ROWS (IF WANTED AND NECESSARY)
+                else if (k < table.Size) {
+                    // if the row hasn't been split before, we duplicate (part of) the table
+                    if (k != splittedRow) {
+                        splittedRow = k + 1;
+                        table = new PdfPTable(table);
+                        compositeElements[0] = table;
+                        List<PdfPRow> rows = table.Rows;
+                        for (int i = headerRows; i < rowIdx; ++i)
+                            rows[i] = null;
+                    }
+                    // we calculate the remaining vertical space
+                    float h = yTemp - minY;
+                    // we create a new row with the remaining content
+                    PdfPRow newRow = table.GetRow(k).SplitRow(table, k, h);
+                    // if the row isn't null add it as an extra row
+                    if (newRow == null) {
+                        splittedRow = -1;
+                        if (rowIdx == k)
+                            return NO_MORE_COLUMN;
+                    }
+                    else {
+                        yTemp = minY;
+                        table.Rows.Insert(++k, newRow);
+                    }
+                }
+                // We're no longer in the first pass
                 firstPass = false;
-                // we draw the table (for real now)
+                
+                // if not in simulation mode, draw the table
                 if (!simulate) {
                     // set the alignment
                     switch (table.HorizontalAlignment) {
@@ -1367,9 +1396,8 @@ public class ColumnText {
                         nt.HeaderRows = footerRows;
                     }
                     // then we add the real content
-                    sub.AddRange(table.GetRows(listIdx, k));
-                    // if k < table.size(), we must indicate that the new table is complete;
-                    // otherwise no footers will be added (because iText thinks the table continues on the same page)
+                    sub.AddRange(table.GetRows(rowIdx, k));
+                    // do we need to show a footer?
                     bool showFooter = !table.SkipLastFooter;
                     bool newPageFollows = false;
                     if (k < table.Size) {
@@ -1387,14 +1415,16 @@ public class ColumnText {
 
                     // we need a correction if the last row needs to be extended
                     float rowHeight = 0;
-                    PdfPRow last = sub[sub.Count - 1 - footerRows];
+                    int lastIdx = sub.Count - 1 - footerRows;
+                    PdfPRow last = sub[lastIdx];
                     if (table.IsExtendLastRow(newPageFollows)) {
                         rowHeight = last.MaxHeights;
                         last.MaxHeights = yTemp - minY + rowHeight;
                         yTemp = minY;
                     }
+                    
+                    // newPageFollows indicates that this table is being split
                     if (newPageFollows) {
-                        // newPageFollows indicate that this table is being split
                         IPdfPTableEvent tableEvent = table.TableEvent;
                         if (tableEvent is IPdfPTableEventSplit) {
                             ((IPdfPTableEventSplit)tableEvent).SplitTable(table);
@@ -1406,14 +1436,18 @@ public class ColumnText {
                         nt.WriteSelectedRows(0, -1, 0, -1, x1, yLineWrite, canvases, false);
                     else
                         nt.WriteSelectedRows(0, -1, 0, -1, x1, yLineWrite, canvas, false);
-                    if (splittedRow && table.Size > k) {
-                        PdfPRow splitted = table.Rows[k - footerRows];
-                        splitted.CopyContent(nt.GetRow(nt.Size - 1));
+                    // if the row was split, we copy the content of the last row
+                    // that was consumed into the first row shown on the next page
+                    if (splittedRow == k && k < table.Size) {
+                        PdfPRow splitted = table.Rows[k];
+                        splitted.CopyRowContent(nt, lastIdx);
                     }
+                    // reset the row height of the last row
                     if (table.IsExtendLastRow(newPageFollows)) {
                         last.MaxHeights = rowHeight;
                     }
                 }
+                // in simulation mode, we need to take extendLastRow into account
                 else if (table.ExtendLastRow && minY > PdfPRow.BOTTOM_LIMIT) {
                     yTemp = minY;
                 }
@@ -1430,16 +1464,16 @@ public class ColumnText {
                         yLine -= table.SpacingAfter;
                     }
                     compositeElements.RemoveAt(0);
-                    splittedRow = false;
-                    listIdx = 0;
+                    splittedRow = -1;
+                    rowIdx = 0;
                 }
                 else {
-                    if (splittedRow) {
+                    if (splittedRow != -1) {
                         List<PdfPRow> rows = table.Rows;
-                        for (int i = listIdx; i < k; ++i)
+                        for (int i = rowIdx; i < k; ++i)
                             rows[i] = null;
                     }
-                    listIdx = k;
+                    rowIdx = k;
                     return NO_MORE_COLUMN;
                 }
             }

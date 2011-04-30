@@ -142,7 +142,7 @@ namespace iTextSharp.text.pdf {
         * Initializes the extra heights array.
         * @since    2.1.6
         */
-        public void InitExtraHeights() {
+        protected internal void InitExtraHeights() {
             extraHeights = new float[cells.Length];
             for (int i = 0; i < extraHeights.Length; i++) {
                 extraHeights[i] = 0;
@@ -162,11 +162,11 @@ namespace iTextSharp.text.pdf {
         }
         
         /**
-        * Calculates the heights of each cell in the row.
-        * 
-        * @return the maximum height of the row.
-        */
-        public float CalculateHeights() {
+         * Calculates the heights of each cell in the row.
+         * 
+         * @return the maximum height of the row.
+         */
+        protected internal void CalculateHeights() {
             maxHeight = 0;
             for (int k = 0; k < cells.Length; ++k) {
                 PdfPCell cell = cells[k];
@@ -181,7 +181,6 @@ namespace iTextSharp.text.pdf {
                 }
             }
             calculated = true;
-            return maxHeight;
         }
 
         /**
@@ -508,10 +507,9 @@ namespace iTextSharp.text.pdf {
         */
         public float MaxHeights {
             get {
-                if (calculated)
-                    return maxHeight;
-                else
-                    return CalculateHeights();
+                if (!calculated)
+                    CalculateHeights();
+                return maxHeight;
             }
             set {
                 this.maxHeight = value;
@@ -539,15 +537,27 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
-         * Copies the content of one row to this row.
+         * Copies the content of a specific row in a table to this row.
          * Don't do this if the rows have a different number of cells.
-         * @param copy  the row that needs to be copied
+         * @param table the table from which you want to copy a row
+         * @param idx   the index of the row that needs to be copied
          * @since 5.1.0
          */
-        public void CopyContent(PdfPRow copy) {
+        public void CopyRowContent(PdfPTable table, int idx) {
+            if (table == null) {
+                return;
+            }
+            PdfPCell copy;
             for (int i = 0; i < cells.Length; ++i) {
-                if (cells[i] != null)
-                    cells[i].Column = copy.GetCells()[i].Column;
+                int lastRow = idx;
+                copy = table.GetRow(lastRow).GetCells()[i];
+                while (copy == null && lastRow > 0) {
+                    copy = table.GetRow(--lastRow).GetCells()[i];
+                }
+                if (cells[i] != null && copy != null) {
+                    cells[i].Column = copy.Column;
+                    this.calculated = false;
+                }
             }
         }
 
@@ -561,24 +571,25 @@ namespace iTextSharp.text.pdf {
         * an empty row would result
         */
         public PdfPRow SplitRow(PdfPTable table, int rowIndex, float new_height) {
+            // second part of the row
             PdfPCell[] newCells = new PdfPCell[cells.Length];
             float[] fixHs = new float[cells.Length];
             float[] minHs = new float[cells.Length];
             bool allEmpty = true;
+            // loop over all the cells
             for (int k = 0; k < cells.Length; ++k) {
                 float newHeight = new_height;
                 PdfPCell cell = cells[k];
                 if (cell == null) {
                     int index = rowIndex;
                     if (table.RowSpanAbove(index, k)) {
-                        newHeight += table.GetRowHeight(index);
                         while (table.RowSpanAbove(--index, k)) {
-                            newHeight += table.GetRowHeight(index);
+                            newHeight += table.GetRow(index).MaxHeights;
                         }
                         PdfPRow row = table.GetRow(index);
                         if (row != null && row.GetCells()[k] != null) {
                             newCells[k] = new PdfPCell(row.GetCells()[k]);
-                            newCells[k].ConsumeHeight(newHeight);
+                            newCells[k].Column = null;
                             newCells[k].Rowspan = row.GetCells()[k].Rowspan - rowIndex + index;
                             allEmpty = false;
                         }
@@ -644,7 +655,6 @@ namespace iTextSharp.text.pdf {
             CalculateHeights();
             PdfPRow split = new PdfPRow(newCells);
             split.widths = (float[]) widths.Clone();
-            split.CalculateHeights();
             return split;
         }
         
