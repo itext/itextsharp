@@ -84,10 +84,10 @@ namespace iTextSharp.text.pdf {
             pkcs = new PdfPKCS7(privKey, certChain, crlList, hashAlgorithm, PdfName.ADBE_PKCS7_SHA1.Equals(Get(PdfName.SUBFILTER)));
             pkcs.SetExternalDigest(externalDigest, externalRSAdata, digestEncryptionAlgorithm);
             if (PdfName.ADBE_X509_RSA_SHA1.Equals(Get(PdfName.SUBFILTER))) {
-                if (certChain.length > 1) {
+                if (certChain.Length > 1) {
                     PdfArray arr = new PdfArray();
                     for (int ii = 0; ii < certChain.Length; ii++) {
-                        arr.add(new PdfString(certChain[ii].GetEncoded()));
+                        arr.Add(new PdfString(certChain[ii].GetEncoded()));
                     }
                     Put(PdfName.CERT, arr);
                 }

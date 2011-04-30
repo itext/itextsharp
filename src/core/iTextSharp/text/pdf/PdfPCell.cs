@@ -744,28 +744,6 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
-        * Consumes part of the content of the cell.
-        * @param   height  the hight of the part that has to be consumed
-        * @since   2.1.6
-        */
-        internal void ConsumeHeight(float height) {
-            float rightLimit = Right - EffectivePaddingRight;
-            float leftLimit = Left + EffectivePaddingLeft;
-            float bry = height - EffectivePaddingTop - EffectivePaddingBottom;
-            if (Rotation != 90 && Rotation != 270) {
-                column.SetSimpleColumn(leftLimit, bry + 0.001f, rightLimit, 0);
-            }
-            else {
-                column.SetSimpleColumn(0, leftLimit, bry + 0.001f, rightLimit);
-            }
-            try {
-                column.Go(true);
-            } catch (DocumentException) {
-                // do nothing
-            }
-        }
-
-        /**
         * Returns the height of the cell.
         * @return  the height of the cell
         * @since   3.0.0

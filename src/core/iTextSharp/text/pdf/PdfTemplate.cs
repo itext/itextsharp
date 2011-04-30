@@ -69,6 +69,12 @@ namespace iTextSharp.text.pdf {
         protected IPdfOCG layer;
 
         /**
+         * A dictionary with additional information
+         * @since 5.1.0
+         */
+        private PdfDictionary additional = null;
+        
+        /**
         *Creates a <CODE>PdfTemplate</CODE>.
         */
         
@@ -251,6 +257,7 @@ namespace iTextSharp.text.pdf {
                     tpl.matrix = new PdfArray(matrix);
                 }
                 tpl.separator = separator;
+                tpl.additional = additional;
                 return tpl;
             }
         }
@@ -273,6 +280,22 @@ namespace iTextSharp.text.pdf {
             }
             set {
                 group = value;
+            }
+        }
+
+        /**
+         * Sets/gets a dictionary with extra entries, for instance /Measure.
+         *
+         * @param additional
+         *            a PdfDictionary with additional information.
+         * @since 5.1.0
+         */
+        public PdfDictionary Additional {
+            set {
+                additional = value;
+            }
+            get {
+                return additional;
             }
         }
     }

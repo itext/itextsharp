@@ -107,7 +107,7 @@ public class PdfArray : PdfObject {
      * @param   l   an ArrayList with PdfObjects
      * @since 2.1.3
      */
-    public PdfArray(List<PdfObject> l) : this() {
+    public PdfArray(IList<PdfObject> l) : this() {
         foreach (PdfObject o in l)
             Add(o);
     }

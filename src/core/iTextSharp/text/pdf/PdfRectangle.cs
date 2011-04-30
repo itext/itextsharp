@@ -60,7 +60,7 @@ namespace iTextSharp.text.pdf {
      * @see     PdfArray
      */
 
-    public class PdfRectangle : PdfArray {
+    public class PdfRectangle : NumberArray {
     
         // membervariables
     
