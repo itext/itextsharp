@@ -2,7 +2,9 @@ using System;
 using System.IO;
 using System.Text;
 using iTextSharp.text.pdf;
+using iTextSharp.text.error_messages;
 using iTextSharp.text.xml.simpleparser;
+using iTextSharp.text.xml;
 /*
  * $Id$
  *
@@ -77,6 +79,8 @@ namespace iTextSharp.text.pdf.parser {
             // get the StructTreeRoot from the root obj
             PdfDictionary catalog = reader.Catalog;
             PdfDictionary struc = catalog.GetAsDict(PdfName.STRUCTTREEROOT);
+            if (struc == null)
+                throw new IOException(MessageLocalization.GetComposedMessage("no.structtreeroot.found"));
             // Inspect the child or children of the StructTreeRoot
             InspectChild(struc.GetDirectObject(PdfName.K));
             outp.Flush();
@@ -218,7 +222,7 @@ namespace iTextSharp.text.pdf.parser {
                         listener);
                 processor.ProcessContent(PdfReader.GetPageContent(page), page
                         .GetAsDict(PdfName.RESOURCES));
-                outp.Write(SimpleXMLParser.EscapeXML(listener.GetResultantText(), true));
+                outp.Write(XMLUtil.EscapeXML(listener.GetResultantText(), true));
             }
             // if the identifier is an array, we call the parseTag method
             // recursively
