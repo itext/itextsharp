@@ -728,15 +728,23 @@ namespace iTextSharp.text.pdf {
         protected internal int textEmptySize;
 
         // [C9] Metadata for the page
-        /** XMP Metadata for the page. */
-        protected byte[] xmpMetadata = null;
         /**
-        * Use this method to set the XMP Metadata.
-        * @param xmpMetadata The xmpMetadata to set.
-        */
+         * Use this method to set the XMP Metadata.
+         * @param xmpMetadata The xmpMetadata to set.
+         * @throws IOException 
+         */
         public byte[] XmpMetadata {
             set {
-                xmpMetadata = value;
+                PdfStream xmp = new PdfStream(value);
+                xmp.Put(PdfName.TYPE, PdfName.METADATA);
+                xmp.Put(PdfName.SUBTYPE, PdfName.XML);
+                PdfEncryption crypto = writer.Encryption;
+                if (crypto != null && !crypto.IsMetadataEncrypted()) {
+                    PdfArray ar = new PdfArray();
+                    ar.Add(PdfName.CRYPT);
+                    xmp.Put(PdfName.FILTER, ar);
+                }
+                writer.AddPageDictEntry(PdfName.METADATA, writer.AddToBody(xmp).IndirectReference);
             }
         }
         
@@ -798,46 +806,15 @@ namespace iTextSharp.text.pdf {
             
             PdfPage page = new PdfPage(new PdfRectangle(pageSize, rotation), thisBoxSize, resources, rotation);
             page.Put(PdfName.TABS, writer.Tabs);
+            page.Merge(writer.PageDictEntries);
+            writer.ResetPageDictEntries();
 
             // we complete the page dictionary
             
-            // [C9] if there is XMP data to add: add it
-            if (xmpMetadata != null) {
-                PdfStream xmp = new PdfStream(xmpMetadata);
-                xmp.Put(PdfName.TYPE, PdfName.METADATA);
-                xmp.Put(PdfName.SUBTYPE, PdfName.XML);
-                PdfEncryption crypto = writer.Encryption;
-                if (crypto != null && !crypto.IsMetadataEncrypted()) {
-                    PdfArray ar = new PdfArray();
-                    ar.Add(PdfName.CRYPT);
-                    xmp.Put(PdfName.FILTER, ar);
-                }
-                page.Put(PdfName.METADATA, writer.AddToBody(xmp).IndirectReference);
-            }
-            
-            // [U3] page actions: transition, duration, additional actions
-            if (this.transition!=null) {
-                page.Put(PdfName.TRANS, this.transition.TransitionDictionary);
-                transition = null;
-            }
-            if (this.duration>0) {
-                page.Put(PdfName.DUR,new PdfNumber(this.duration));
-                duration = 0;
-            }
+        	// [U3] page actions: additional actions
             if (pageAA != null) {
                 page.Put(PdfName.AA, writer.AddToBody(pageAA).IndirectReference);
                 pageAA = null;
-            }
-            
-            // [U4] we add the thumbs
-            if (thumb != null) {
-                page.Put(PdfName.THUMB, thumb);
-                thumb = null;
-            }
-            
-            // [U8] we check if the userunit is defined
-            if (writer.Userunit > 0f) {
-                page.Put(PdfName.USERUNIT, new PdfNumber(writer.Userunit));
             }
             
             // [C5] and [C8] we add the annotations
@@ -2126,12 +2103,6 @@ namespace iTextSharp.text.pdf {
 
     //	[U3] page actions
 
-        /** The duration of the page */
-        protected int duration=-1; // negative values will indicate no duration
-        
-        /** The page transition */
-        protected PdfTransition transition=null; 
-        
         /**
         * Sets the display duration for the page (for presentations)
         * @param seconds   the number of seconds to display the page
@@ -2139,10 +2110,7 @@ namespace iTextSharp.text.pdf {
         internal int Duration {
             set {
                 if (value > 0)
-                    this.duration=value;
-                else
-                    this.duration=-1;
-            }
+                    writer.AddPageDictEntry(PdfName.DUR, new PdfNumber(value));            }
         }
         
         /**
@@ -2151,7 +2119,7 @@ namespace iTextSharp.text.pdf {
         */
         internal PdfTransition Transition {
             set {
-                this.transition=value;
+                writer.AddPageDictEntry(PdfName.TRANS, value.TransitionDictionary);
             }
         }
 
@@ -2166,11 +2134,9 @@ namespace iTextSharp.text.pdf {
         
     //	[U8] thumbnail images
 
-        protected internal PdfIndirectReference thumb;
-
         internal Image Thumbnail {
             set {
-                thumb = writer.GetImageReference(writer.AddDirectImageSimple(value));
+                writer.AddPageDictEntry(PdfName.THUMB, writer.GetImageReference(writer.AddDirectImageSimple(value)));
             }
         }
 
@@ -2307,12 +2273,8 @@ namespace iTextSharp.text.pdf {
             if (ptable.KeepTogether && !FitsPage(ptable, 0f) && currentHeight > 0)  {
                 NewPage();
             }
-            // add dummy paragraph if we aren't at the top of a page, so that
-            // spacingBefore will be taken into account by ColumnText
-            if (currentHeight > 0) {
-                Paragraph p = new Paragraph();
-                p.Leading = 0;
-                ct.AddElement(p);
+            if (currentHeight == 0) {
+                ct.AdjustFirstLine = false;
             }
             ct.AddElement(ptable);
             bool he = ptable.HeadersInEvent;

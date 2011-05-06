@@ -929,6 +929,38 @@ namespace iTextSharp.text.pdf {
         protected PdfName tabs = null;
 
         /**
+         * Additional page dictionary entries.
+         * @since 5.1.0
+         */
+        protected PdfDictionary pageDictEntries = new PdfDictionary();
+        
+        /**
+         * Adds an additional entry for the page dictionary.
+         * @since 5.1.0
+         */
+        public void AddPageDictEntry(PdfName key, PdfObject obj) {
+            pageDictEntries.Put(key, obj);
+        }
+        
+        /**
+         * Gets the additional pageDictEntries.
+         * @since 5.1.0
+         */
+        public PdfDictionary PageDictEntries {
+            get {
+                return pageDictEntries;
+            }
+        }
+        
+        /**
+         * Resets the additional pageDictEntries.
+         * @since 5.1.0
+         */
+        public void ResetPageDictEntries() {
+            pageDictEntries = new PdfDictionary();
+        }
+
+        /**
         * Use this method to make sure the page tree has a lineair structure
         * (every leave is attached directly to the root).
         * Use this method to allow page reordering with method reorderPages.
@@ -1005,6 +1037,15 @@ namespace iTextSharp.text.pdf {
             }
         }
 
+        /**
+         * Sets the Viewport for the next page.
+         * @param viewport an array consisting of Viewport dictionaries.
+         * @since 5.1.0
+         */
+        public void SetPageViewport(PdfArray vp) {
+            AddPageDictEntry(PdfName.VP, vp);
+        }
+        
         /**
         * Sets the value for the Tabs entry in the page tree.
         * @param	tabs	Can be PdfName.R, PdfName.C or PdfName.S.
@@ -2815,8 +2856,6 @@ namespace iTextSharp.text.pdf {
 
     //  [U8] user units     
 
-        protected float userunit = 0f;
-
         /**
         * A UserUnit is a value that defines the default user space unit.
         * The minimum UserUnit is 1 (1 unit = 1/72 inch).
@@ -2824,12 +2863,9 @@ namespace iTextSharp.text.pdf {
         * Remark that this userunit only works starting with PDF1.6!
         */
         public float Userunit {
-            get {
-                return userunit;
-            }
             set {
                 if (value < 1f || value > 75000f) throw new DocumentException(MessageLocalization.GetComposedMessage("userunit.should.be.a.value.between.1.and.75000"));
-                this.userunit = value;
+                AddPageDictEntry(PdfName.USERUNIT, new PdfNumber(value));
                 SetAtLeastPdfVersion(VERSION_1_6);
             }
         }

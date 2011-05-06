@@ -342,7 +342,8 @@ namespace iTextSharp.text.pdf.parser {
                 PdfLiteral oper = (PdfLiteral)operands[operands.Count-1];
                 if ("BI".Equals(oper.ToString())){
                     // we don't call invokeOperator for embedded images - this is one area of the PDF spec that is particularly nasty and inconsistent
-                    ImageRenderInfo renderInfo = ImageRenderInfo.CreatedForEmbeddedImage(Gs().ctm, InlineImageUtils.ParseInlineImage(ps));
+                    PdfDictionary colorSpaceDic = resources.GetAsDict(PdfName.COLORSPACE);
+                    ImageRenderInfo renderInfo = ImageRenderInfo.CreatedForEmbeddedImage(Gs().ctm, InlineImageUtils.ParseInlineImage(ps, colorSpaceDic));
                     renderListener.RenderImage(renderInfo);
                 } else {
                     InvokeOperator(oper, operands);
