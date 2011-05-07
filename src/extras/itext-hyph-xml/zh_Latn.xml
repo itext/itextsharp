@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <hyphenation-info>
 
-<!-- Portuguese Hyphenation Patterns -->
+<!-- Hyphenation patterns for unaccented pinyin syllables (CJK 4.8.0) -->
 
 <!-- (more info about the licence to be added later) -->
 
 <!-- This file is part of hyph-utf8 package and resulted from -->
 <!-- semi-manual conversions of hyphenation patterns into UTF-8 in June 2008. -->
 
-<!-- Source: pthyph.tex (1994-10-13 - date on CTAN) or (1996-07-21 - date in file) - no idea -->
-<!-- Author: Pedro J. de Rezende <rezende at dcc.unicamp.br>, J.Joao Dias Almeida <jj at di.uminho.pt> -->
+<!-- Source: pyhyph.tex (yyyy-mm-dd) -->
+<!-- Author: Werner Lemberg <wl at gnu.org> -->
 
 <!-- The above mentioned file should become obsolete, -->
 <!-- and the author of the original file should preferaby modify this file instead. -->
@@ -65,346 +65,230 @@
 
 <!-- ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐ -->
 
+<!-- This is the file pyhyph.tex of the CJK package -->
+<!-- for hyphenating Chinese pinyin syllables. -->
+ 
+<!-- created by Werner Lemberg <wl@gnu.org> -->
+ 
+<!-- Version 4.8.0 (22-May-2008) -->
+ 
+<!-- Copyright (C) 1994-2008  Werner Lemberg <wl@gnu.org> -->
+ 
+<!-- This program is free software; you can redistribute it and/or modify -->
+<!-- it under the terms of the GNU General Public License as published by -->
+<!-- the Free Software Foundation; either version 2 of the License, or -->
+<!-- (at your option) any later version. -->
+ 
+<!-- This program is distributed in the hope that it will be useful, -->
+<!-- but WITHOUT ANY WARRANTY; without even the implied warranty of -->
+<!-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the -->
+<!-- GNU General Public License for more details. -->
+ 
+<!-- You should have received a copy of the GNU General Public License -->
+<!-- along with this program in doc/COPYING; if not, write to the Free -->
+<!-- Software Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, -->
+<!-- MA 02110-1301 USA -->
+ 
+<!-- \message{Hyphenation patterns for unaccented pinyin syllables (CJK 4.7.0)} -->
 
-<!-- The Portuguese TeX hyphenation table. -->
-<!-- (C) 1996 by  Pedro J. de Rezende (rezende@dcc.unicamp.br) -->
-<!-- and J.Joao Dias Almeida (jj@di.uminho.pt) -->
-<!-- Version: 1.2 Release date: 21/07/96 -->
 
-<!-- (C) 1994 by Pedro J. de Rezende (rezende@dcc.unicamp.br) -->
-<!-- Version: 1.1 Release date: 04/12/94 -->
-
-<!-- (C) 1987 by Pedro J. de Rezende -->
-<!-- Version: 1.0 Release date: 02/13/87 -->
-
-<!-- ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐- -->
-<!-- IMPORTANT NOTICE: -->
-
-<!-- This program can be redistributed and/or modified under the terms -->
-<!-- of the LaTeX Project Public License Distributed from CTAN -->
-<!-- archives in directory macros/latex/base/lppl.txt; either -->
-<!-- version 1 of the License, or any later version. -->
-<!-- ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐- -->
-<!-- Remember! If you *must* change it, then call the resulting file  -->
-<!-- something  else and attach your name to your *documented* changes. -->
-<!-- ====================================================================== -->
-
-
-<hyphen-min before="2" after="3"/>
+<hyphen-min before="1" after="1"/>
 
 <exceptions>
-hard-ware
-soft-ware
 </exceptions>
 
 <patterns>
-1b2l
-1b2r
-1ba
-1be
-1bi
-1bo
-1bu
-1bá
-1bâ
-1bã
-1bé
-1bí
-1bó
-1bú
-1bê
-1bõ
-1c2h
-1c2l
-1c2r
-1ca
-1ce
-1ci
-1co
-1cu
-1cá
-1câ
-1cã
-1cé
-1cí
-1có
-1cú
-1cê
-1cõ
-1ça
-1çe
-1çi
-1ço
-1çu
-1çá
-1çâ
-1çã
-1çé
-1çí
-1çó
-1çú
-1çê
-1çõ
-1d2l
-1d2r
-1da
-1de
-1di
-1do
-1du
-1dá
-1dâ
-1dã
-1dé
-1dí
-1dó
-1dú
-1dê
-1dõ
-1f2l
-1f2r
-1fa
-1fe
-1fi
-1fo
-1fu
-1fá
-1fâ
-1fã
-1fé
-1fí
-1fó
-1fú
-1fê
-1fõ
-1g2l
-1g2r
+a1b
+a1c
+a1d
+a1f
+a1g
+a1h
+a1j
+a1k
+a1l
+a1m
+a1p
+a1q
+a1r
+a1s
+a1t
+a1w
+a1x
+a1y
+a1z
+e1b
+e1c
+e1d
+e1f
+e1g
+e1h
+e1j
+e1k
+e1l
+e1m
+e1p
+e1q
+e1s
+e1t
+e1w
+e1x
+e1y
+e1z
 1ga
+g1b
+g1c
+g1d
 1ge
-1gi
+g1f
+g1g
+g1h
+g1j
+g1k
+g1l
+g1m
+g1n
 1go
+g1p
+g1q
+g1r
+g1s
+g1t
 1gu
-1gu4a
-1gu4e
-1gu4i
-1gu4o
-1gá
-1gâ
-1gã
-1gé
-1gí
-1gó
-1gú
-1gê
-1gõ
-1ja
-1je
-1ji
-1jo
-1ju
-1já
-1jâ
-1jã
-1jé
-1jí
-1jó
-1jú
-1jê
-1jõ
-1k2l
-1k2r
-1ka
-1ke
-1ki
-1ko
-1ku
-1ká
-1kâ
-1kã
-1ké
-1kí
-1kó
-1kú
-1kê
-1kõ
-1l2h
-1la
-1le
-1li
-1lo
-1lu
-1lá
-1lâ
-1lã
-1lé
-1lí
-1ló
-1lú
-1lê
-1lõ
-1ma
-1me
-1mi
-1mo
-1mu
-1má
-1mâ
-1mã
-1mé
-1mí
-1mó
-1mú
-1mê
-1mõ
-1n2h
+g1w
+g1x
+g1y
+g1z
+i1b
+i1c
+i1d
+i1f
+i1g
+i1h
+i1j
+i1k
+i1l
+i1m
+i1p
+i1q
+i1r
+i1s
+i1t
+i1w
+i1x
+i1y
+i1z
 1na
+n1b
+n1c
+n1d
 1ne
+n1f
+n1h
 1ni
+n1j
+n1k
+n1l
+n1m
+n1n
 1no
+n1p
+n1q
+n1r
+n1s
+n1t
 1nu
-1ná
-1nâ
-1nã
-1né
-1ní
-1nó
-1nú
-1nê
-1nõ
-1p2l
-1p2r
-1pa
-1pe
-1pi
-1po
-1pu
-1pá
-1pâ
-1pã
-1pé
-1pí
-1pó
-1pú
-1pê
-1põ
-1qu4a
-1qu4e
-1qu4i
-1qu4o
+1nü
+n1w
+n1x
+n1y
+n1z
+o1b
+o1c
+o1d
+o1f
+o1g
+o1h
+o1j
+o1k
+o1l
+o1m
+o1p
+o1q
+o1r
+o1s
+o1t
+o1w
+o1x
+o1y
+o1z
 1ra
+r1b
+r1c
+r1d
 1re
+r1f
+r1g
+r1h
 1ri
+r1j
+r1k
+r1l
+r1m
+r1n
 1ro
+r1p
+r1q
+r1r
+r1s
+r1t
 1ru
-1rá
-1râ
-1rã
-1ré
-1rí
-1ró
-1rú
-1rê
-1rõ
-1sa
-1se
-1si
-1so
-1su
-1sá
-1sâ
-1sã
-1sé
-1sí
-1só
-1sú
-1sê
-1sõ
-1t2l
-1t2r
-1ta
-1te
-1ti
-1to
-1tu
-1tá
-1tâ
-1tã
-1té
-1tí
-1tó
-1tú
-1tê
-1tõ
-1v2l
-1v2r
-1va
-1ve
-1vi
-1vo
-1vu
-1vá
-1vâ
-1vã
-1vé
-1ví
-1vó
-1vú
-1vê
-1võ
-1w2l
-1w2r
-1xa
-1xe
-1xi
-1xo
-1xu
-1xá
-1xâ
-1xã
-1xé
-1xí
-1xó
-1xú
-1xê
-1xõ
-1za
-1ze
-1zi
-1zo
-1zu
-1zá
-1zâ
-1zã
-1zé
-1zí
-1zó
-1zú
-1zê
-1zõ
-a3a
-a3e
-a3o
-c3c
-e3a
-e3e
-e3o
-i3a
-i3e
-i3i
-i3o
-i3â
-i3ê
-i3ô
-o3a
-o3e
-o3o
-r3r
-s3s
-u3a
-u3e
-u3o
-u3u
-1-
+r1w
+r1x
+r1y
+r1z
+u1b
+u1c
+u1d
+u1f
+u1g
+u1h
+u1j
+u1k
+u1l
+u1m
+u1p
+u1q
+u1r
+u1s
+u1t
+u1w
+u1x
+u1y
+u1z
+ü1b
+ü1c
+ü1d
+ü1f
+ü1g
+ü1h
+ü1j
+ü1k
+ü1l
+ü1m
+ü1n
+ü1p
+ü1q
+ü1r
+ü1s
+ü1t
+ü1w
+ü1x
+ü1y
+ü1z
+’1a
+’1e
+’1o
 </patterns>
 
 </hyphenation-info>

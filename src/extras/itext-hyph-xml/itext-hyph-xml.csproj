@@ -1,167 +1,172 @@
-<VisualStudioProject>
-    <CSHARP
-        ProjectType = "Local"
-        ProductVersion = "7.10.3077"
-        SchemaVersion = "2.0"
-        ProjectGuid = "{63217779-2BD4-45B5-993C-2696F6EF5BBC}"
-    >
-        <Build>
-            <Settings
-                ApplicationIcon = ""
-                AssemblyKeyContainerName = ""
-                AssemblyName = "itext-hyph-xml"
-                AssemblyOriginatorKeyFile = ""
-                DefaultClientScript = "JScript"
-                DefaultHTMLPageLayout = "Grid"
-                DefaultTargetSchema = "IE50"
-                DelaySign = "false"
-                OutputType = "Library"
-                PreBuildEvent = ""
-                PostBuildEvent = ""
-                RootNamespace = "iTextSharp.text.pdf.hyphenation.hyph"
-                RunPostBuildEvent = "OnBuildSuccess"
-                StartupObject = ""
-            >
-                <Config
-                    Name = "Debug"
-                    AllowUnsafeBlocks = "false"
-                    BaseAddress = "285212672"
-                    CheckForOverflowUnderflow = "false"
-                    ConfigurationOverrideFile = ""
-                    DefineConstants = "DEBUG;TRACE"
-                    DocumentationFile = ""
-                    DebugSymbols = "true"
-                    FileAlignment = "4096"
-                    IncrementalBuild = "false"
-                    NoStdLib = "false"
-                    NoWarn = ""
-                    Optimize = "false"
-                    OutputPath = "bin\Debug\"
-                    RegisterForComInterop = "false"
-                    RemoveIntegerChecks = "false"
-                    TreatWarningsAsErrors = "false"
-                    WarningLevel = "4"
-                />
-                <Config
-                    Name = "Release"
-                    AllowUnsafeBlocks = "false"
-                    BaseAddress = "285212672"
-                    CheckForOverflowUnderflow = "false"
-                    ConfigurationOverrideFile = ""
-                    DefineConstants = "TRACE"
-                    DocumentationFile = ""
-                    DebugSymbols = "false"
-                    FileAlignment = "4096"
-                    IncrementalBuild = "false"
-                    NoStdLib = "false"
-                    NoWarn = ""
-                    Optimize = "true"
-                    OutputPath = "bin\Release\"
-                    RegisterForComInterop = "false"
-                    RemoveIntegerChecks = "false"
-                    TreatWarningsAsErrors = "false"
-                    WarningLevel = "4"
-                />
-            </Settings>
-            <References>
-                <Reference
-                    Name = "System"
-                    AssemblyName = "System"
-                    HintPath = "..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.dll"
-                />
-                <Reference
-                    Name = "System.Data"
-                    AssemblyName = "System.Data"
-                    HintPath = "..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.Data.dll"
-                />
-                <Reference
-                    Name = "System.XML"
-                    AssemblyName = "System.XML"
-                    HintPath = "..\..\WINDOWS\Microsoft.NET\Framework\v1.1.4322\System.XML.dll"
-                />
-            </References>
-        </Build>
-        <Files>
-            <Include>
-                <File
-                    RelPath = "AssemblyInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "da.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "de.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "de_DR.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "el.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "en.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "en_GB.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "en_US.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "es.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "fi.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "fr.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "hu.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "it.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "nl.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "no.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "pl.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "pt.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "ru.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "sk.xml"
-                    BuildAction = "EmbeddedResource"
-                />
-            </Include>
-        </Files>
-    </CSHARP>
-</VisualStudioProject>
-
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{63217779-2BD4-45B5-993C-2696F6EF5BBC}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>itext-hyph-xml</AssemblyName>
+    <AssemblyOriginatorKeyFile>itextsharp.snk</AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>iTextSharp.text.pdf.hyphenation.hyph</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.XML">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="itextsharp.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="af.xml" />
+    <EmbeddedResource Include="as.xml" />
+    <EmbeddedResource Include="bg.xml" />
+    <EmbeddedResource Include="bn.xml" />
+    <EmbeddedResource Include="ca.xml" />
+    <EmbeddedResource Include="cop.xml" />
+    <EmbeddedResource Include="cs.xml" />
+    <EmbeddedResource Include="cy.xml" />
+    <EmbeddedResource Include="da.xml" />
+    <EmbeddedResource Include="de.xml" />
+    <EmbeddedResource Include="de_1901.xml" />
+    <EmbeddedResource Include="de_CH.xml" />
+    <EmbeddedResource Include="de_DR.xml" />
+    <EmbeddedResource Include="el.xml" />
+    <EmbeddedResource Include="el_Polyton.xml" />
+    <EmbeddedResource Include="en.xml" />
+    <EmbeddedResource Include="en_GB.xml" />
+    <EmbeddedResource Include="en_US.xml" />
+    <EmbeddedResource Include="eo.xml" />
+    <EmbeddedResource Include="es.xml" />
+    <EmbeddedResource Include="et.xml" />
+    <EmbeddedResource Include="eu.xml" />
+    <EmbeddedResource Include="fi.xml" />
+    <EmbeddedResource Include="fr.xml" />
+    <EmbeddedResource Include="ga.xml" />
+    <EmbeddedResource Include="gl.xml" />
+    <EmbeddedResource Include="grc.xml" />
+    <EmbeddedResource Include="gu.xml" />
+    <EmbeddedResource Include="hi.xml" />
+    <EmbeddedResource Include="hr.xml" />
+    <EmbeddedResource Include="hsb.xml" />
+    <EmbeddedResource Include="hu.xml" />
+    <EmbeddedResource Include="hy.xml" />
+    <EmbeddedResource Include="ia.xml" />
+    <EmbeddedResource Include="id.xml" />
+    <EmbeddedResource Include="is.xml" />
+    <EmbeddedResource Include="it.xml" />
+    <EmbeddedResource Include="kmr.xml" />
+    <EmbeddedResource Include="kn.xml" />
+    <EmbeddedResource Include="la.xml" />
+    <EmbeddedResource Include="lo.xml" />
+    <EmbeddedResource Include="lt.xml" />
+    <EmbeddedResource Include="lv.xml" />
+    <EmbeddedResource Include="ml.xml" />
+    <EmbeddedResource Include="mn.xml" />
+    <EmbeddedResource Include="mr.xml" />
+    <EmbeddedResource Include="nb.xml" />
+    <EmbeddedResource Include="nl.xml" />
+    <EmbeddedResource Include="nn.xml" />
+    <EmbeddedResource Include="no.xml" />
+    <EmbeddedResource Include="or.xml" />
+    <EmbeddedResource Include="pa.xml" />
+    <EmbeddedResource Include="pl.xml" />
+    <EmbeddedResource Include="pt.xml" />
+    <EmbeddedResource Include="ro.xml" />
+    <EmbeddedResource Include="ru.xml" />
+    <EmbeddedResource Include="sa.xml" />
+    <EmbeddedResource Include="sk.xml" />
+    <EmbeddedResource Include="sl.xml" />
+    <EmbeddedResource Include="sr_Cyrl.xml" />
+    <EmbeddedResource Include="sr_Latn.xml" />
+    <EmbeddedResource Include="sv.xml" />
+    <EmbeddedResource Include="ta.xml" />
+    <EmbeddedResource Include="te.xml" />
+    <EmbeddedResource Include="tk.xml" />
+    <EmbeddedResource Include="tr.xml" />
+    <EmbeddedResource Include="uk.xml" />
+    <EmbeddedResource Include="zh_Latn.xml" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

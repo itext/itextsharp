@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <hyphenation-info>
 
-<!-- Portuguese Hyphenation Patterns -->
+<!-- Indonesian Hyphenation Patterns -->
 
 <!-- (more info about the licence to be added later) -->
 
 <!-- This file is part of hyph-utf8 package and resulted from -->
 <!-- semi-manual conversions of hyphenation patterns into UTF-8 in June 2008. -->
 
-<!-- Source: pthyph.tex (1994-10-13 - date on CTAN) or (1996-07-21 - date in file) - no idea -->
-<!-- Author: Pedro J. de Rezende <rezende at dcc.unicamp.br>, J.Joao Dias Almeida <jj at di.uminho.pt> -->
+<!-- Source: inhyph.tex (1997-09-19) -->
+<!-- Author: Jörg Knappen <knappen@vkpmzd.kph.uni-mainz.de>, Terry Mart <mart@kph.uni-mainz.de> -->
 
 <!-- The above mentioned file should become obsolete, -->
 <!-- and the author of the original file should preferaby modify this file instead. -->
@@ -65,346 +65,261 @@
 
 <!-- ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐ -->
 
+<!-- inhyph.tex  -->
+<!-- Version 1.3 19-SEP-1997 -->
 
-<!-- The Portuguese TeX hyphenation table. -->
-<!-- (C) 1996 by  Pedro J. de Rezende (rezende@dcc.unicamp.br) -->
-<!-- and J.Joao Dias Almeida (jj@di.uminho.pt) -->
-<!-- Version: 1.2 Release date: 21/07/96 -->
+<!-- Hyphenation patterns for bahasa indonesia (probably also usable -->
+<!-- for bahasa melayu) -->
 
-<!-- (C) 1994 by Pedro J. de Rezende (rezende@dcc.unicamp.br) -->
-<!-- Version: 1.1 Release date: 04/12/94 -->
+<!-- (c) Copyright 1996, 1997 Jörg Knappen and Terry Mart -->
+ 
+<!-- This patterns are free software according to the GNU General Public  -->
+<!-- licence version 2, June 1991. -->
 
-<!-- (C) 1987 by Pedro J. de Rezende -->
-<!-- Version: 1.0 Release date: 02/13/87 -->
+<!-- Please read the GNU licence for details. If you don't receive a GNU -->
+<!-- licence with these patterns, you can obtain it from  -->
 
-<!-- ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐- -->
-<!-- IMPORTANT NOTICE: -->
+<!-- Free Software Foundation, Inc. -->
+<!-- 675 Mass Ave, Cambridge, MA 02139, USA -->
 
-<!-- This program can be redistributed and/or modified under the terms -->
-<!-- of the LaTeX Project Public License Distributed from CTAN -->
-<!-- archives in directory macros/latex/base/lppl.txt; either -->
-<!-- version 1 of the License, or any later version. -->
-<!-- ‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐‐- -->
-<!-- Remember! If you *must* change it, then call the resulting file  -->
-<!-- something  else and attach your name to your *documented* changes. -->
-<!-- ====================================================================== -->
+<!-- If you make any changes to this file, please rename it so that it -->
+<!-- cannot be confused with the original one, and change the contact -->
+<!-- address for bug reports and suggestions. -->
+
+<!-- For bug reports, improvements, and suggestions, contact -->
+
+<!-- Jörg Knappen -->
+<!-- jk Unternehmensberatung -->
+<!-- Barbarossaring 43 -->
+<!-- 55118 Mainz -->
+
+<!-- knappen@vkpmzd.kph.uni-mainz.de -->
+
+<!-- or: -->
+<!-- Terry Mart -->
+
+<!-- Institut fuer Kernphysik -->
+<!-- Universitaet Mainz -->
+<!-- 55099 Mainz -->
+<!-- Germany -->
+
+<!-- phone : +49 6131 395174 -->
+<!-- fax   : +49 6131 395474 -->
+<!-- email : mart@kph.uni-mainz.de -->
+
+<!-- **************************************** -->
+
+<!-- The patterns are best used with the following parameters -->
+
+<!-- \lefthyphenmin=2 \righthyphenmin=2  -->
+
+<!-- **************************************** -->
 
 
-<hyphen-min before="2" after="3"/>
+<hyphen-min before="2" after="2"/>
 
 <exceptions>
-hard-ware
-soft-ware
+be-ra-be
+be-ra-hi
+be-rak
+be-ran-da
+be-ran-dal
+be-rang
+be-ra-ngas-an
+be-rang-sang
+be-ra-ngus
+be-ra-ni
+be-ran-tak-an
+be-ran-tam
+be-ran-tas
+be-ra-pa
+be-ras
+be-ren-deng
+be-re-ngut
+be-re-rot
+be-res
+be-re-wok
+be-ri
+be-ri-ngas
+be-ri-sik
+be-ri-ta
+be-rok
+be-ron-dong
+be-ron-tak
+be-ru-du
+be-ruk
+be-run-tun
+peng-eks-por
+peng-im-por
+te-ra
+te-rang
+te-ras
+te-ra-si
+te-ra-tai
+te-ra-wang
+te-ra-weh
+te-ri-ak
+te-ri-gu
+te-rik
+te-ri-ma
+te-ri-pang
+te-ro-bos
+te-ro-bos-an
+te-ro-mol
+te-rom-pah
+te-rom-pet
+te-ro-pong
+te-ro-wong-an
+te-ru-buk
+te-ru-na
+te-rus
+te-ru-si
 </exceptions>
 
 <patterns>
-1b2l
-1b2r
-1ba
-1be
-1bi
-1bo
-1bu
-1bá
-1bâ
-1bã
-1bé
-1bí
-1bó
-1bú
-1bê
-1bõ
-1c2h
-1c2l
-1c2r
-1ca
-1ce
-1ci
-1co
-1cu
-1cá
-1câ
-1cã
-1cé
-1cí
-1có
-1cú
-1cê
-1cõ
-1ça
-1çe
-1çi
-1ço
-1çu
-1çá
-1çâ
-1çã
-1çé
-1çí
-1çó
-1çú
-1çê
-1çõ
-1d2l
-1d2r
-1da
-1de
-1di
-1do
-1du
-1dá
-1dâ
-1dã
-1dé
-1dí
-1dó
-1dú
-1dê
-1dõ
-1f2l
-1f2r
-1fa
-1fe
-1fi
-1fo
-1fu
-1fá
-1fâ
-1fã
-1fé
-1fí
-1fó
-1fú
-1fê
-1fõ
-1g2l
-1g2r
-1ga
-1ge
-1gi
-1go
-1gu
-1gu4a
-1gu4e
-1gu4i
-1gu4o
-1gá
-1gâ
-1gã
-1gé
-1gí
-1gó
-1gú
-1gê
-1gõ
-1ja
-1je
-1ji
-1jo
-1ju
-1já
-1jâ
-1jã
-1jé
-1jí
-1jó
-1jú
-1jê
-1jõ
-1k2l
-1k2r
-1ka
-1ke
-1ki
-1ko
-1ku
-1ká
-1kâ
-1kã
-1ké
-1kí
-1kó
-1kú
-1kê
-1kõ
-1l2h
-1la
-1le
-1li
-1lo
-1lu
-1lá
-1lâ
-1lã
-1lé
-1lí
-1ló
-1lú
-1lê
-1lõ
-1ma
-1me
-1mi
-1mo
-1mu
-1má
-1mâ
-1mã
-1mé
-1mí
-1mó
-1mú
-1mê
-1mõ
-1n2h
-1na
-1ne
-1ni
-1no
-1nu
-1ná
-1nâ
-1nã
-1né
-1ní
-1nó
-1nú
-1nê
-1nõ
-1p2l
-1p2r
-1pa
-1pe
-1pi
-1po
-1pu
-1pá
-1pâ
-1pã
-1pé
-1pí
-1pó
-1pú
-1pê
-1põ
-1qu4a
-1qu4e
-1qu4i
-1qu4o
-1ra
-1re
-1ri
-1ro
-1ru
-1rá
-1râ
-1rã
-1ré
-1rí
-1ró
-1rú
-1rê
-1rõ
-1sa
-1se
-1si
-1so
-1su
-1sá
-1sâ
-1sã
-1sé
-1sí
-1só
-1sú
-1sê
-1sõ
-1t2l
-1t2r
-1ta
-1te
-1ti
-1to
-1tu
-1tá
-1tâ
-1tã
-1té
-1tí
-1tó
-1tú
-1tê
-1tõ
-1v2l
-1v2r
-1va
-1ve
-1vi
-1vo
-1vu
-1vá
-1vâ
-1vã
-1vé
-1ví
-1vó
-1vú
-1vê
-1võ
-1w2l
-1w2r
-1xa
-1xe
-1xi
-1xo
-1xu
-1xá
-1xâ
-1xã
-1xé
-1xí
-1xó
-1xú
-1xê
-1xõ
-1za
-1ze
-1zi
-1zo
-1zu
-1zá
-1zâ
-1zã
-1zé
-1zí
-1zó
-1zú
-1zê
-1zõ
-a3a
-a3e
-a3o
-c3c
-e3a
-e3e
-e3o
-i3a
-i3e
-i3i
-i3o
-i3â
-i3ê
-i3ô
-o3a
-o3e
-o3o
-r3r
-s3s
-u3a
-u3e
-u3o
-u3u
-1-
+a1
+e1
+i1
+o1
+u1
+2b1d
+2b1j
+2b1k
+2b1n
+2b1s
+2b1t
+2c1k
+2c1n
+2d1k
+2d1n
+2d1p
+2f1d
+2f1k
+2f1n
+2f1t
+2g1g
+2g1k
+2g1n
+2h1k
+2h1l
+2h1m
+2h1n
+2h1w
+2j1k
+2j1n
+2k1b
+2k1k
+2k1m
+2k1n
+2k1r
+2k1s
+2k1t
+2l1b
+2l1f
+2l1g
+2l1h
+2l1k
+2l1m
+2l1n
+2l1s
+2l1t
+2l1q
+2m1b
+2m1k
+2m1l
+2m1m
+2m1n
+2m1p
+2m1r
+2m1s
+2n1c
+2n1d
+2n1f
+2n1j
+2n1k
+2n1n
+2n1p
+2n1s
+2n1t
+2n1v
+2p1k
+2p1n
+2p1p
+2p1r
+2p1t
+2r1b
+2r1c
+2r1f
+2r1g
+2r1h
+2r1j
+2r1k
+2r1l
+2r1m
+2r1n
+2r1p
+2r1r
+2r1s
+2r1t
+2r1w
+2r1y
+2s1b
+2s1k
+2s1l
+2s1m
+2s1n
+2s1p
+2s1r
+2s1s
+2s1t
+2s1w
+2t1k
+2t1l
+2t1n
+2t1t
+2w1t
+2ng1g
+2ng1h
+2ng1k
+2ng1n
+2ng1s
+2n3s2t
+.be2r3
+.te2r3
+.me2ng3
+.pe2r3
+2ng.
+2ny.
+i2o1n
+a2ir
+1ba1ga2i
+2b1an.
+2c1an.
+2d1an.
+2f1an.
+2g1an.
+2h1an.
+2j1an.
+2k1an.
+2l1an.
+2m1an.
+2ng1an.
+2n1an.
+2p1an.
+2r1an.
+2s1an.
+2t1an.
+2v1an.
+2z1an.
+3an.
+.a2ta2u
+.ta3ng4an.
+.le3ng4an.
+.ja3ng4an.
+.ma3ng4an.
+.pa3ng4an.
+.ri3ng4an.
+.de3ng4an.
 </patterns>
 
 </hyphenation-info>
