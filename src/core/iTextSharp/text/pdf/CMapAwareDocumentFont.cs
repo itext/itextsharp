@@ -93,11 +93,11 @@ namespace iTextSharp.text.pdf {
          */
         private void ProcessToUnicode(){
             
-            PdfObject toUni = fontDic.Get(PdfName.TOUNICODE);
-            if (toUni != null){
+            PdfObject toUni = PdfReader.GetPdfObjectRelease(fontDic.Get(PdfName.TOUNICODE));
+            if (toUni is PRStream){
                 
                 try {
-                    byte[] touni = PdfReader.GetStreamBytes((PRStream)PdfReader.GetPdfObjectRelease(toUni));
+                    byte[] touni = PdfReader.GetStreamBytes((PRStream)toUni);
         
                     CMapParser cmapParser = new CMapParser();
                     toUnicodeCmap = cmapParser.Parse(new MemoryStream(touni));
