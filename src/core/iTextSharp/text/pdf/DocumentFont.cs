@@ -147,7 +147,7 @@ namespace iTextSharp.text.pdf {
             IntHashtable widths = ReadWidths((PdfArray)PdfReader.GetPdfObjectRelease(cidft.Get(PdfName.W)));
             PdfDictionary fontDesc = (PdfDictionary)PdfReader.GetPdfObjectRelease(cidft.Get(PdfName.FONTDESCRIPTOR));
             FillFontDesc(fontDesc);
-            if (toUniObject != null){
+            if (toUniObject is PRStream){
                 FillMetrics(PdfReader.GetStreamBytes((PRStream)toUniObject), widths, dw);
             }
         }
@@ -342,10 +342,10 @@ namespace iTextSharp.text.pdf {
         
         private CMap ProcessToUnicode() {
             CMap cmapRet = null;
-            PdfObject toUni = PdfReader.GetPdfObject(this.font.Get(PdfName.TOUNICODE));
-            if (toUni != null) {
+            PdfObject toUni = PdfReader.GetPdfObjectRelease(this.font.Get(PdfName.TOUNICODE));
+            if (toUni is PRStream) {
                 try {
-                    byte[] touni = PdfReader.GetStreamBytes((PRStream) PdfReader.GetPdfObjectRelease(toUni));
+                    byte[] touni = PdfReader.GetStreamBytes((PRStream)toUni);
                     CMapParser cmapParser = new CMapParser();
                     cmapRet = cmapParser.Parse(new MemoryStream(touni));
                 } catch {
