@@ -1339,7 +1339,7 @@ public class ColumnText {
                     }
                 }
                 // IF ROWS SHOULD NOT BE SPLIT
-                else if (table.SplitLate && !table.HasRowspan(k - 1) && rowIdx < k) {
+                else if (table.SplitLate && !table.HasRowspan(k) && rowIdx < k) {
                     splittedRow = -1;
                 }
                 // SPLIT ROWS (IF WANTED AND NECESSARY)

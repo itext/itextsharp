@@ -518,19 +518,38 @@ namespace iTextSharp.text.pdf {
 
         //end add
 
-        internal float[] GetEventWidth(float xPos) {
-            int n = 0;
-            for (int k = 0; k < cells.Length; ++k) {
-                if (cells[k] != null)
-                    ++n;
-            }
-            float[] width = new float[n + 1];
-            n = 0;
-            width[n++] = xPos;
-            for (int k = 0; k < cells.Length; ++k) {
+        internal float[] GetEventWidth(float xPos, float[] absoluteWidths) {
+            int n = 1;
+            for (int k = 0; k < cells.Length; ) {
                 if (cells[k] != null) {
-                    width[n] = width[n - 1] + cells[k].Width;
-                    ++n;
+                    n++;
+                    k += cells[k].Colspan;
+                }
+                else {
+                    while (k < cells.Length && cells[k] == null) {
+                        n++;
+                        k++;
+                    }
+                }
+            }
+            float[] width = new float[n];
+            width[0] = xPos;
+            n = 1;
+            for (int k = 0; k < cells.Length && n < width.Length; ) {
+                if (cells[k] != null) {
+                    int colspan = cells[k].Colspan;
+                    width[n] = width[n - 1];
+                    for (int i = 0; i < colspan && k < absoluteWidths.Length; i++) {
+                        width[n] += absoluteWidths[k++];
+                    }
+                    n++;
+                }
+                else {
+                    width[n] = width[n - 1];
+                    while (k < cells.Length && cells[k] == null) {
+                        width[n] += absoluteWidths[k++];
+                    }
+                    n++;
                 }
             }
             return width;
@@ -668,6 +687,18 @@ namespace iTextSharp.text.pdf {
         */
         public PdfPCell[] GetCells() {
             return cells;
+        }
+
+        /**
+         * Checks if a cell in the row has a rowspan greater than 1.
+         * @since 5.1.0
+         */
+        public bool HasRowspan() {
+            for (int i = 0; i < cells.Length; i++) {
+                if (cells[i] != null && cells[i].Rowspan > 1)
+                    return true;
+            }
+            return false;
         }
     }
 }

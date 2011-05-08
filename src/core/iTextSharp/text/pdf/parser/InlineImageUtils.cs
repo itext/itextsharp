@@ -129,9 +129,9 @@ namespace iTextSharp.text.pdf.parser {
          * @throws IOException if anything goes wring with the parsing
          * @throws InlineImageParseException if parsing of the inline image failed due to issues specific to inline image processing
          */
-        public static PdfImageObject ParseInlineImage(PdfContentParser ps) {
+        public static PdfImageObject ParseInlineImage(PdfContentParser ps, PdfDictionary colorSpaceDic) {
             PdfDictionary inlineImageDictionary = ParseInlineImageDictionary(ps);
-            byte[] samples = ParseInlineImageSamples(inlineImageDictionary, ps);
+            byte[] samples = ParseInlineImageSamples(inlineImageDictionary, colorSpaceDic, ps);
             return new PdfImageObject(inlineImageDictionary, samples);
         }
         
@@ -202,7 +202,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param colorSpaceName the name of the color space. If null, a bi-tonal (black and white) color space is assumed.
          * @return the components per pixel for the specified color space
          */
-        private static int GetComponentsPerPixel(PdfName colorSpaceName){
+        private static int GetComponentsPerPixel(PdfName colorSpaceName, PdfDictionary colorSpaceDic){
             if (colorSpaceName == null)
                 return 1;
             if (colorSpaceName.Equals(PdfName.DEVICEGRAY))
@@ -212,6 +212,15 @@ namespace iTextSharp.text.pdf.parser {
             if (colorSpaceName.Equals(PdfName.DEVICECMYK))
                 return 4;
             
+            if (colorSpaceDic != null){
+                PdfArray colorSpace = colorSpaceDic.GetAsArray(colorSpaceName);
+                if (colorSpace != null){
+                    if (PdfName.INDEXED.Equals(colorSpace.GetAsName(0))){
+                        return 1;
+                    }
+                }
+            }
+
             throw new ArgumentException("Unexpected color space " + colorSpaceName);
         }
         
@@ -222,10 +231,10 @@ namespace iTextSharp.text.pdf.parser {
          * @param imageDictionary the dictionary of the inline image
          * @return the number of bytes per row of the image
          */
-        private static int ComputeBytesPerRow(PdfDictionary imageDictionary){
+        private static int ComputeBytesPerRow(PdfDictionary imageDictionary, PdfDictionary colorSpaceDic){
             PdfNumber wObj = imageDictionary.GetAsNumber(PdfName.WIDTH);
             PdfNumber bpcObj = imageDictionary.GetAsNumber(PdfName.BITSPERCOMPONENT);
-            int cpp = GetComponentsPerPixel(imageDictionary.GetAsName(PdfName.COLORSPACE));
+            int cpp = GetComponentsPerPixel(imageDictionary.GetAsName(PdfName.COLORSPACE), colorSpaceDic);
             
             int w = wObj.IntValue;
             int bpc = bpcObj != null ? bpcObj.IntValue : 1;
@@ -246,7 +255,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the samples of the image
          * @throws IOException if anything bad happens during parsing
          */
-        private static byte[] ParseUnfilteredSamples(PdfDictionary imageDictionary, PdfContentParser ps) {
+        private static byte[] ParseUnfilteredSamples(PdfDictionary imageDictionary, PdfDictionary colorSpaceDic, PdfContentParser ps) {
             // special case:  when no filter is specified, we just read the number of bits
             // per component, multiplied by the width and height.
             if (imageDictionary.Contains(PdfName.FILTER))
@@ -254,7 +263,7 @@ namespace iTextSharp.text.pdf.parser {
             
             PdfNumber h = imageDictionary.GetAsNumber(PdfName.HEIGHT);
             
-            int bytesToRead = ComputeBytesPerRow(imageDictionary) * h.IntValue;
+            int bytesToRead = ComputeBytesPerRow(imageDictionary, colorSpaceDic) * h.IntValue;
             byte[] bytes = new byte[bytesToRead];
             PRTokeniser tokeniser = ps.GetTokeniser();
             
@@ -290,11 +299,11 @@ namespace iTextSharp.text.pdf.parser {
          * @return the samples of the image
          * @throws IOException if anything bad happens during parsing
          */
-        private static byte[] ParseInlineImageSamples(PdfDictionary imageDictionary, PdfContentParser ps) {
+        private static byte[] ParseInlineImageSamples(PdfDictionary imageDictionary, PdfDictionary colorSpaceDic, PdfContentParser ps) {
             // by the time we get to here, we have already parsed the ID operator
             
             if (!imageDictionary.Contains(PdfName.FILTER)){
-                return ParseUnfilteredSamples(imageDictionary, ps);
+                return ParseUnfilteredSamples(imageDictionary, colorSpaceDic, ps);
             }
             
             

@@ -252,7 +252,9 @@ namespace iTextSharp.text.pdf {
 			return status;
 		}
     
-		internal void WriteLine(PdfLine line, PdfContentByte text, PdfContentByte graphics)  {
+        private float curCharSpace = 0f;
+        
+        internal void WriteLine(PdfLine line, PdfContentByte text, PdfContentByte graphics)  {
 			PdfFont currentFont = null;
 			foreach(PdfChunk chunk in line) {
 				if (chunk.Font.CompareTo(currentFont) != 0) {
@@ -260,6 +262,12 @@ namespace iTextSharp.text.pdf {
 					text.SetFontAndSize(currentFont.Font, currentFont.Size);
 				}
 				BaseColor color = chunk.Color;
+                object charSpace = chunk.GetAttribute(Chunk.CHAR_SPACING);
+                // no char space setting means "leave it as is".
+                if (charSpace != null && !curCharSpace.Equals(charSpace)) {
+            	    curCharSpace = (float)charSpace;
+            	    text.SetCharacterSpacing(curCharSpace);
+                }
 				if (color != null)
 					text.SetColorFill(color);
 				text.ShowText(chunk.ToString());

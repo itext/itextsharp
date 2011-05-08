@@ -899,8 +899,11 @@ namespace iTextSharp.text.pdf {
          * @since 5.1.0
          */
         public bool HasRowspan(int rowIdx) {
+            if (rowIdx < rows.Count && GetRow(rowIdx).HasRowspan()) {
+                return true;
+            }
             for (int i = 0; i < NumberOfColumns; i++) {
-                if (RowSpanAbove(rowIdx, i))
+                if (RowSpanAbove(rowIdx - 1, i))
                     return true;
             }
             return false;
@@ -1198,7 +1201,7 @@ namespace iTextSharp.text.pdf {
                         if (row == null)
                             ++n;
                         else
-                            widths[n++] = row.GetEventWidth(xPos);
+                            widths[n++] = row.GetEventWidth(xPos, absoluteWidths);
                     }
                 }
                 for (; firstRow < lastRow; ++firstRow) {
@@ -1206,7 +1209,7 @@ namespace iTextSharp.text.pdf {
                         if (row == null)
                             ++n;
                         else
-                            widths[n++] = row.GetEventWidth(xPos);
+                            widths[n++] = row.GetEventWidth(xPos, absoluteWidths);
                 }
             }
             else {
