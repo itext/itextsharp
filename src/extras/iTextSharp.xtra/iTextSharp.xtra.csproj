@@ -1,0 +1,63 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BE1934CF-90A9-43D3-A794-7E540874EDBB}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>iTextSharp.xtra</RootNamespace>
+    <AssemblyName>iTextSharp.xtra</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="itextsharp, Version=5.0.6.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\core\bin\Debug\itextsharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="iTextSharp\text\pdf\richmedia\CuePoint.cs" />
+    <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaActivation.cs" />
+    <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaAnimation.cs" />
+    <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaAnnotation.cs" />
+    <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaCommand.cs" />
+    <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaConfiguration.cs" />
+    <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaDeactivation.cs" />
+    <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaExecuteAction.cs" />
+    <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaInstance.cs" />
+    <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaParams.cs" />
+    <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaPosition.cs" />
+    <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaPresentation.cs" />
+    <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaWindow.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
