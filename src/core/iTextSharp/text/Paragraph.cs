@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.util;
 using iTextSharp.text.factories;
+using iTextSharp.text.api;
 
 /*
  * $Id$
@@ -69,7 +70,7 @@ namespace iTextSharp.text {
     /// <seealso cref="T:iTextSharp.text.Element"/>
     /// <seealso cref="T:iTextSharp.text.Phrase"/>
     /// <seealso cref="T:iTextSharp.text.ListItem"/>
-    public class Paragraph : Phrase {
+    public class Paragraph : Phrase, IIndentable, ISpaceable {
     
         // membervariables
     

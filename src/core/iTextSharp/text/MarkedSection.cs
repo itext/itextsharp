@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using System.util;
 using System.Collections.Generic;
+using iTextSharp.text.api;
 /*
  * $Id$
  * 
@@ -57,7 +58,7 @@ namespace iTextSharp.text {
     * the MarkedObject functionality.
     */
 
-    public class MarkedSection : MarkedObject {
+    public class MarkedSection : MarkedObject, IIndentable {
 
         /** This is the title of this section. */
         protected MarkedObject title = null;
@@ -222,6 +223,9 @@ namespace iTextSharp.text {
         * @param   indentation     the indentation
         */
         public float IndentationLeft {
+            get {
+                return ((Section)element).IndentationLeft;
+            }
             set {
                 ((Section)element).IndentationLeft = value;
             }
@@ -234,6 +238,9 @@ namespace iTextSharp.text {
         */
             
         public float IndentationRight {
+            get {
+                return ((Section)element).IndentationRight;
+            }
             set {
                 ((Section)element).IndentationRight = value;
             }
