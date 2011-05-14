@@ -7,6 +7,7 @@ using System.util;
 using System.Reflection;
 using iTextSharp.text.error_messages;
 
+using iTextSharp.text.api;
 using iTextSharp.text.pdf;
 using iTextSharp.text.factories;
 using iTextSharp.text.pdf.codec;
@@ -63,7 +64,7 @@ namespace iTextSharp.text {
     /// </summary>
     /// <seealso cref="T:iTextSharp.text.Element"/>
     /// <seealso cref="T:iTextSharp.text.Rectangle"/>
-    public abstract class Image : Rectangle {
+    public abstract class Image : Rectangle, IIndentable, ISpaceable {
     
         // static membervariables (concerning the presence of borders)
     

@@ -165,7 +165,7 @@ namespace iTextSharp.text {
          * @param rotation the rotation (0, 90, 180, or 270)
          * @since iText 5.0.6
          */
-        public Rectangle(float llx, float lly, float urx, float ury, int rotation) : this(0, 0, urx, ury) {
+        public Rectangle(float llx, float lly, float urx, float ury, int rotation) : this(llx, lly, urx, ury) {
             Rotation = rotation;
         }
 

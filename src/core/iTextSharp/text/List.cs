@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.util;
+using iTextSharp.text.api;
 using iTextSharp.text.factories;
 
 /*
@@ -93,7 +94,7 @@ namespace iTextSharp.text {
     /// </example>
     /// <seealso cref="T:iTextSharp.text.Element"/>
     /// <seealso cref="T:iTextSharp.text.ListItem"/>
-    public class List : ITextElementArray {
+    public class List : ITextElementArray, IIndentable {
     
         // membervariables
         /** a possible value for the numbered parameter */

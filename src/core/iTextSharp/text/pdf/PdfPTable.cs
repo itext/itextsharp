@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
+using iTextSharp.text.api;
 using iTextSharp.text.pdf.events;
 
 /*
@@ -58,7 +59,7 @@ namespace iTextSharp.text.pdf {
     * @author Paulo Soares
     */
 
-    public class PdfPTable : ILargeElement{
+    public class PdfPTable : ILargeElement, ISpaceable{
         
         /** The index of the original <CODE>PdfcontentByte</CODE>.
         */    

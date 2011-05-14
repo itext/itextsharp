@@ -4076,6 +4076,8 @@
     <EmbeddedResource Include="iTextSharp\text\pdf\fonts\ZapfDingbats.afm" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="iTextSharp\text\api\IIndentable.cs" />
+    <Compile Include="iTextSharp\text\api\ISpaceable.cs" />
     <Compile Include="iTextSharp\text\html\HtmlUtilities.cs" />
     <Compile Include="iTextSharp\text\html\simpleparser\CellWrapper.cs" />
     <Compile Include="iTextSharp\text\html\simpleparser\ElementFactory.cs" />
@@ -4085,6 +4087,10 @@
     <Compile Include="iTextSharp\text\html\simpleparser\ILinkProcessor.cs" />
     <Compile Include="iTextSharp\text\html\simpleparser\ImageStore.cs" />
     <Compile Include="iTextSharp\text\html\simpleparser\TableWrapper.cs" />
+    <Compile Include="iTextSharp\text\log\ILogger.cs" />
+    <Compile Include="iTextSharp\text\log\Level.cs" />
+    <Compile Include="iTextSharp\text\log\LoggerFactory.cs" />
+    <Compile Include="iTextSharp\text\log\NoOpLogger.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWCompressor.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWStringTable.cs" />
     <Compile Include="iTextSharp\text\pdf\crypto\AESCipherCBCnoPad.cs" />

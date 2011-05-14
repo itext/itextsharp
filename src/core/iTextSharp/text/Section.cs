@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using System.util;
+using iTextSharp.text.api;
 using iTextSharp.text.factories;
 using iTextSharp.text.error_messages;
 
@@ -77,7 +78,7 @@ namespace iTextSharp.text {
     /// section11.Add(someSectionText);</strong>strong>
     /// </code>
     /// </example>
-    public class Section : List<IElement>, ITextElementArray, ILargeElement {
+    public class Section : List<IElement>, ITextElementArray, ILargeElement, IIndentable {
         
         // constant
         /**
