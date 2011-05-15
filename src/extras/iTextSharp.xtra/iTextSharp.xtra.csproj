@@ -8,7 +8,9 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>iTextSharp.xtra</RootNamespace>
-    <AssemblyName>iTextSharp.xtra</AssemblyName>
+    <AssemblyName>itextsharp.xtra</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>itextsharp.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -50,7 +52,24 @@
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaPosition.cs" />
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaPresentation.cs" />
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaWindow.cs" />
+    <Compile Include="iTextSharp\text\pdf\spatial\units\SpacialUnits.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="iTextSharp\text\pdf\spatial\CoordinateSystem.cs" />
+    <Content Include="iTextSharp\text\pdf\spatial\GeographicCoordinateSystem.cs" />
+    <Content Include="iTextSharp\text\pdf\spatial\Measure.cs" />
+    <Content Include="iTextSharp\text\pdf\spatial\MeasureGeospatial.cs" />
+    <Content Include="iTextSharp\text\pdf\spatial\MeasureRectilinear.cs" />
+    <Content Include="iTextSharp\text\pdf\spatial\objects\NumberFormatArray.cs" />
+    <Content Include="iTextSharp\text\pdf\spatial\objects\NumberFormatDictionary.cs" />
+    <Content Include="iTextSharp\text\pdf\spatial\objects\XYArray.cs" />
+    <Content Include="iTextSharp\text\pdf\spatial\PointData.cs" />
+    <Content Include="iTextSharp\text\pdf\spatial\ProjectedCoordinateSystem.cs" />
+    <Content Include="iTextSharp\text\pdf\spatial\Viewport.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="itextsharp.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

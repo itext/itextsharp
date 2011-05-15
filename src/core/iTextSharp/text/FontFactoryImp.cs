@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 
 using iTextSharp.text.pdf;
+using iTextSharp.text.log;
 using iTextSharp.text;
 
 /*
@@ -57,6 +58,8 @@ namespace iTextSharp.text {
     /// without having to enter a path as parameter.
     /// </summary>
     public class FontFactoryImp : IFontProvider {
+        
+        private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(FontFactoryImp));
         
         /// <summary> This is a map of postscriptfontnames of True Type fonts and the path of their ttf- or ttc-file. </summary>
         private Dictionary<string,string> trueTypeFonts = new Dictionary<string,string>();
@@ -426,6 +429,8 @@ namespace iTextSharp.text {
                     }
                 }
                 else if (path.ToLower(CultureInfo.InvariantCulture).EndsWith(".ttc")) {
+                    if (alias != null)
+                        LOGGER.Error("You can't define an alias for a true type collection.");
                     string[] names = BaseFont.EnumerateTTCNames(path);
                     for (int i = 0; i < names.Length; i++) {
                         Register(path + "," + i);
@@ -439,6 +444,9 @@ namespace iTextSharp.text {
                     RegisterFamily(familyName, fullName, null);
                     trueTypeFonts[psName] = path;
                     trueTypeFonts[fullName] = path;
+                }
+                if (LOGGER.IsLogging(Level.TRACE)) {
+                    LOGGER.Trace(String.Format("Registered {0}", path));
                 }
             }
             catch (DocumentException de) {
@@ -466,6 +474,9 @@ namespace iTextSharp.text {
         * @since 2.1.2
         */
         public int RegisterDirectory(String dir, bool scanSubdirectories) {
+            if (LOGGER.IsLogging(Level.DEBUG)) {
+                LOGGER.Debug(String.Format("Registering directory {0}, looking for fonts", dir));
+            }
             int count = 0;
             try {
                 if (!Directory.Exists(dir))
