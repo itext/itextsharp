@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.util;
 using iTextSharp.text;
+using iTextSharp.text.log;
 using iTextSharp.text.html;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.draw;
@@ -55,6 +56,7 @@ namespace iTextSharp.text.html.simpleparser {
 
     public class HTMLWorker : ISimpleXMLDocHandler, IDocListener {
 
+        private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(HTMLWorker));
         /**
          * DocListener that will listen to the Elements
          * produced by parsing the HTML.
@@ -120,6 +122,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @throws IOException
          */
         public void Parse(TextReader reader) {
+            LOGGER.Info("Please note, there is a more extended version of the HTMLWorker available in the iText XMLWorker");
             SimpleXMLParser.Parse(this, null, reader, true);
         }
 
