@@ -77,7 +77,7 @@ namespace iTextSharp.text.pdf {
             fontDic = (PdfDictionary)PdfReader.GetPdfObjectRelease(refFont);
 
             ProcessToUnicode();
-            if (toUnicodeCmap == null)
+            //if (toUnicodeCmap == null)
                 ProcessUni2Byte();
             
             spaceWidth = base.GetWidth(' ');
@@ -116,7 +116,8 @@ namespace iTextSharp.text.pdf {
         private void ProcessUni2Byte(){
             IntHashtable uni2byte = Uni2Byte;
             int[] e = uni2byte.ToOrderedKeys();
-            
+            if (e.Length == 0)
+                return;
             cidbyte2uni = new char[256];
             for (int k = 0; k < e.Length; ++k) {
                 int n = uni2byte[e[k]];
@@ -182,7 +183,11 @@ namespace iTextSharp.text.pdf {
             if (toUnicodeCmap != null){
                 if (offset + len > bytes.Length)
                     throw new  IndexOutOfRangeException(MessageLocalization.GetComposedMessage("invalid.index.1", offset + len));
-                return toUnicodeCmap.Lookup(bytes, offset, len);
+                string s = toUnicodeCmap.Lookup(bytes, offset, len);
+                if (s != null)
+                    return s;
+                if (len != 1 || cidbyte2uni == null)
+                    return null;
             }
 
             if (len == 1){
