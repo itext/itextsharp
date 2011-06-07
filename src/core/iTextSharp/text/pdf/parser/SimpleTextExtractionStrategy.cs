@@ -124,7 +124,7 @@ namespace iTextSharp.text.pdf.parser {
                 //System.out.Println("<< Hard Return >>");
                 result.Append('\n');
             } else if (!firstRender){ 
-                if (result[result.Length-1] != ' ' && renderInfo.GetText()[0] != ' '){ // we only insert a blank space if the trailing character of the previous string wasn't a space, and the leading character of the current string isn't a space
+                if (result[result.Length-1] != ' ' && renderInfo.GetText().Length > 0 && renderInfo.GetText()[0] != ' '){ // we only insert a blank space if the trailing character of the previous string wasn't a space, and the leading character of the current string isn't a space
                     float spacing = lastEnd.Subtract(start).Length;
                     if (spacing > renderInfo.GetSingleSpaceWidth()/2f){
                         result.Append(' ');
