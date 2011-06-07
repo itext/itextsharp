@@ -2357,13 +2357,13 @@ namespace iTextSharp.text.pdf {
         protected PdfReaderInstance currentPdfReaderInstance;
 
         protected internal virtual int GetNewObjectNumber(PdfReader reader, int number, int generation) {
+            if (currentPdfReaderInstance == null) {
+        	    currentPdfReaderInstance = GetPdfReaderInstance(reader);
+            }
             return currentPdfReaderInstance.GetNewObjectNumber(number, generation);
         }
 
         internal virtual RandomAccessFileOrArray GetReaderFile(PdfReader reader) {
-            if (currentPdfReaderInstance == null) {
-        	    currentPdfReaderInstance = GetPdfReaderInstance(reader);
-            }
             return currentPdfReaderInstance.ReaderFile;
         }
 
