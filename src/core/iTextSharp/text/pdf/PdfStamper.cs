@@ -62,7 +62,7 @@ namespace iTextSharp.text.pdf {
         * The writer
         */    
         protected PdfStamperImp stamper;
-        private Dictionary<String, String> moreInfo;
+        private IDictionary<String, String> moreInfo;
         private bool hasSignature;
         private PdfSignatureAppearance sigApp;
         
@@ -118,7 +118,7 @@ namespace iTextSharp.text.pdf {
         * @param moreInfo additional entries to the info dictionary
         *
         */
-        public Dictionary<String, String> MoreInfo {
+        public IDictionary<String, String> MoreInfo {
             set {
                 moreInfo = value;
             }

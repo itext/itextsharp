@@ -2574,14 +2574,14 @@ namespace iTextSharp.text.pdf {
         private void AddASEvent(PdfName eventa, PdfName category) {
             PdfArray arr = new PdfArray();
             foreach (PdfLayer layer in documentOCG.Keys) {
-                PdfDictionary usage = (PdfDictionary)layer.Get(PdfName.USAGE);
+                PdfDictionary usage = layer.GetAsDict(PdfName.USAGE);
                 if (usage != null && usage.Get(category) != null)
                     arr.Add(layer.Ref);
             }
             if (arr.Size == 0)
                 return;
-            PdfDictionary d = (PdfDictionary)vOCProperties.Get(PdfName.D);
-            PdfArray arras = (PdfArray)d.Get(PdfName.AS);
+            PdfDictionary d = OCProperties.GetAsDict(PdfName.D);
+            PdfArray arras = d.GetAsArray(PdfName.AS);
             if (arras == null) {
                 arras = new PdfArray();
                 d.Put(PdfName.AS, arras);

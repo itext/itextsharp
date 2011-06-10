@@ -1,10 +1,13 @@
 using System;
-using System.Text;
-using iTextSharp.text.factories;
-
+using System.Collections.Generic;
+using iTextSharp.text.api;
+using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.draw;
 /*
- * This file is part of the iText project.
- * Copyright (c) 1998-2009 1T3XT BVBA
+ * $Id: WritableDirectElement.java 4880 2011-05-23 23:28:09Z redlab_b $
+ *
+ * This file is part of the iText (R) project.
+ * Copyright (c) 1998-2011 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -29,8 +32,8 @@ using iTextSharp.text.factories;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -45,66 +48,64 @@ using iTextSharp.text.factories;
  */
 namespace iTextSharp.text {
 
-/**
- * 
- * A special-version of <CODE>LIST</CODE> which use roman-letters.
- * 
- * @see com.lowagie.text.List
- * @version 2003-06-22
- * @author Michael Niedermair
- */
+    /**
+     * An element that is not an element, it holds {@link Element#WRITABLE_DIRECT}
+     * as Element type. It implements WriterOperation to do operations on the
+     * {@link PdfWriter} and the {@link Document} that must be done at the time of
+     * the writing. Much like a {@link VerticalPositionMark} but little different.
+     *
+     * @author itextpdf.com
+     *
+     */
+    public abstract class WritableDirectElement : IElement, IWriterOperation {
 
-    public class RomanList : List {
-
-        /**
-        * Initialization
-        */
-        public RomanList() : base(true) {
+        /*
+         * (non-Javadoc)
+         *
+         * @see com.itextpdf.text.Element#process(com.itextpdf.text.ElementListener)
+         */
+        public bool Process(IElementListener listener) {
+            throw new NotSupportedException();
         }
 
         /**
-        * Initialization
-        * 
-        * @param symbolIndent    indent
-        */
-        public RomanList(int symbolIndent) : base(true, symbolIndent){
-        }
-
-        /**
-        * Initialization 
-        * @param    romanlower        roman-char in lowercase   
-        * @param     symbolIndent    indent
-        */
-        public RomanList(bool romanlower, int symbolIndent) : base(true, symbolIndent) {
-            this.lowercase = romanlower;
-        }
-
-        /**
-        * Adds an <CODE>Object</CODE> to the <CODE>List</CODE>.
-        *
-        * @param    o    the object to add.
-        * @return true if adding the object succeeded
-        */
-        public override bool Add(IElement o) {
-            if (o is ListItem) {
-                ListItem item = (ListItem) o;
-                Chunk chunk = new Chunk(preSymbol, symbol.Font);
-                chunk.Attributes = symbol.Attributes;
-                chunk.Append(RomanNumberFactory.GetString(first + list.Count, lowercase));
-                chunk.Append(postSymbol);
-                item.ListSymbol = chunk;
-                item.SetIndentationLeft(symbolIndent, autoindent);
-                item.IndentationRight = 0;
-                list.Add(item);
-                return true;
-            } else if (o is List) {
-                List nested = (List) o;
-                nested.IndentationLeft = nested.IndentationLeft + symbolIndent;
-                first--;
-                list.Add(nested);
-                return true;
+         * @return {@link Element#WRITABLE_DIRECT}
+         */
+        public int Type {
+            get {
+                return Element.WRITABLE_DIRECT;
             }
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see com.itextpdf.text.Element#isContent()
+         */
+        public bool IsContent() {
             return false;
         }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see com.itextpdf.text.Element#isNestable()
+         */
+        public bool IsNestable() {
+            throw new NotSupportedException();
+        }
+
+        /*
+         * (non-Javadoc)
+         *
+         * @see com.itextpdf.text.Element#getChunks()
+         */
+        public IList<Chunk> Chunks {
+            get {
+                return new List<Chunk>();
+            }
+        }
+
+        public abstract void Write(PdfWriter writer, Document doc);
     }
 }

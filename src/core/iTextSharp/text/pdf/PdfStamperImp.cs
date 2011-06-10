@@ -129,7 +129,7 @@ namespace iTextSharp.text.pdf {
             initialXrefSize = reader.XrefSize;
         }
         
-        internal void Close(Dictionary<String, String> moreInfo) {
+        internal void Close(IDictionary<String, String> moreInfo) {
             if (closed)
                 return;
             if (useVp) {
@@ -213,6 +213,36 @@ namespace iTextSharp.text.pdf {
                 buf.Append(Document.Version);
                 producer = buf.ToString();
             }
+            PdfIndirectReference info = null;
+            PdfDictionary newInfo = new PdfDictionary();
+            if (oldInfo != null) {
+                foreach (PdfName key in oldInfo.Keys) {
+                    PdfObject value = PdfReader.GetPdfObject(oldInfo.Get(key));
+                    newInfo.Put(key, value);
+                }
+            }
+            if (moreInfo != null) {
+                foreach (KeyValuePair<string,string> entry in moreInfo) {
+                    PdfName keyName = new PdfName(entry.Key);
+                    String value = entry.Value;
+                    if (value == null)
+                        newInfo.Remove(keyName);
+                    else
+                        newInfo.Put(keyName, new PdfString(value, PdfObject.TEXT_UNICODE));
+                }
+            }
+            PdfDate date = new PdfDate();
+            newInfo.Put(PdfName.MODDATE, date);
+            newInfo.Put(PdfName.PRODUCER, new PdfString(producer, PdfObject.TEXT_UNICODE));
+            if (append) {
+                if (iInfo == null)
+                    info = AddToBody(newInfo, false).IndirectReference;
+                else
+                    info = AddToBody(newInfo, iInfo.Number, false).IndirectReference;
+            }
+            else {
+                info = AddToBody(newInfo, false).IndirectReference;
+            }
             // XMP
             byte[] altMetadata = null;
             PdfObject xmpo = PdfReader.GetPdfObject(catalog.Get(PdfName.METADATA));
@@ -223,20 +253,31 @@ namespace iTextSharp.text.pdf {
             if (xmpMetadata != null) {
                 altMetadata = xmpMetadata;
             }
-            // if there is XMP data to add: add it
-            PdfDate date = new PdfDate();
             if (altMetadata != null) {
                 PdfStream xmp;
                 try {
-                    XmpReader xmpr = new XmpReader(altMetadata);
-                    if (!(xmpr.ReplaceNode("http://ns.adobe.com/pdf/1.3/", "Producer", producer)
-                        || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/pdf/1.3/", "Producer", producer)))
-                        xmpr.Add("rdf:Description", "http://ns.adobe.com/pdf/1.3/", "pdf:Producer", producer);
-                    if (!(xmpr.ReplaceNode("http://ns.adobe.com/xap/1.0/", "ModifyDate", date.GetW3CDate())
-                        || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/xap/1.0/", "ModifyDate", date.GetW3CDate())))
-                        xmpr.Add("rdf:Description", "http://ns.adobe.com/xap/1.0/", "xmp:ModifyDate", date.GetW3CDate());
-                    if (!(xmpr.ReplaceNode("http://ns.adobe.com/xap/1.0/", "MetadataDate", date.GetW3CDate())
-                            || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/xap/1.0/", "MetadataDate", date.GetW3CDate()))) {
+                    XmpReader xmpr;
+                    if (moreInfo == null) {
+                        xmpr = new XmpReader(altMetadata);
+                        if (!(xmpr.ReplaceNode("http://ns.adobe.com/pdf/1.3/", "Producer", producer)
+                            || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/pdf/1.3/", "Producer", producer)))
+                            xmpr.Add("rdf:Description", "http://ns.adobe.com/pdf/1.3/", "pdf:Producer", producer);
+                        if (!(xmpr.ReplaceNode("http://ns.adobe.com/xap/1.0/", "ModifyDate", date.GetW3CDate())
+                            || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/xap/1.0/", "ModifyDate", date.GetW3CDate())))
+                            xmpr.Add("rdf:Description", "http://ns.adobe.com/xap/1.0/", "xmp:ModifyDate", date.GetW3CDate());
+                        if (!(xmpr.ReplaceNode("http://ns.adobe.com/xap/1.0/", "MetadataDate", date.GetW3CDate())
+                                || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/xap/1.0/", "MetadataDate", date.GetW3CDate()))) {
+                        }
+                    }
+                    else {
+                        MemoryStream baos = new MemoryStream();
+                        try {
+                            XmpWriter xmpw = new XmpWriter(baos, newInfo, PDFXConformance);
+                            xmpw.Close();
+                        }
+                        catch (IOException) {
+                        }
+                        xmpr = new XmpReader(baos.ToArray());
                     }
                     xmp = new PdfStream(xmpr.SerializeDoc());
                 }
@@ -311,35 +352,6 @@ namespace iTextSharp.text.pdf {
                 fileID = PdfEncryption.CreateInfoId(PdfEncryption.CreateDocumentId());
             PRIndirectReference iRoot = (PRIndirectReference)reader.trailer.Get(PdfName.ROOT);
             PdfIndirectReference root = new PdfIndirectReference(0, GetNewObjectNumber(reader, iRoot.Number, 0));
-            PdfIndirectReference info = null;
-            PdfDictionary newInfo = new PdfDictionary();
-            if (oldInfo != null) {
-                foreach (PdfName key in oldInfo.Keys) {
-                    PdfObject value = PdfReader.GetPdfObject(oldInfo.Get(key));
-                    newInfo.Put(key, value);
-                }
-            }
-            if (moreInfo != null) {
-                foreach (KeyValuePair<string,string> entry in moreInfo) {
-                    PdfName keyName = new PdfName(entry.Key);
-                    String value = entry.Value;
-                    if (value == null)
-                        newInfo.Remove(keyName);
-                    else
-                        newInfo.Put(keyName, new PdfString(value, PdfObject.TEXT_UNICODE));
-                }
-            }
-            newInfo.Put(PdfName.MODDATE, date);
-            newInfo.Put(PdfName.PRODUCER, new PdfString(producer, PdfObject.TEXT_UNICODE));
-            if (append) {
-                if (iInfo == null)
-                    info = AddToBody(newInfo, false).IndirectReference;
-                else
-                    info = AddToBody(newInfo, iInfo.Number, false).IndirectReference;
-            }
-            else {
-                info = AddToBody(newInfo, false).IndirectReference;
-            }
             // write the cross-reference table of the body
             body.WriteCrossReferenceTable(os, root, info, encryption, fileID, prevxref);
             if (fullCompression) {

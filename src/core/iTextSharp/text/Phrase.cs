@@ -255,7 +255,7 @@ namespace iTextSharp.text {
                     element.Type == Element.ANCHOR ||
                     element.Type == Element.ANNOTATION ||
                     element.Type == Element.YMARK || 
-                    element.Type == Element.MARKED) {
+                    element.Type == Element.MARKED || element.Type == Element.WRITABLE_DIRECT) {
                     base.Insert(index, element);
                 }
                 else {
@@ -313,6 +313,7 @@ namespace iTextSharp.text {
                     case Element.PTABLE: // case added by Karen Vardanyan
                     case Element.LIST:
                     case Element.YMARK:
+                    case Element.WRITABLE_DIRECT:
                         base.Add(element);
                         return true;
                     default:

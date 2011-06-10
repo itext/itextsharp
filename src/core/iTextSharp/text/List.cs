@@ -274,6 +274,7 @@ namespace iTextSharp.text {
                 ListItem item = (ListItem) o;
                 if (numbered || lettered) {
                     Chunk chunk = new Chunk(preSymbol, symbol.Font);
+                    chunk.Attributes = symbol.Attributes;
                     int index = first + list.Count;
                     if (lettered)
                         chunk.Append(RomanAlphabetFactory.GetString(index, lowercase));
