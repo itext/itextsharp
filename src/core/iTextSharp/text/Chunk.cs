@@ -353,7 +353,7 @@ namespace iTextSharp.text {
         }
 
         /// <summary>
-        /// Gets the attributes for this Chunk.
+        /// Sets/Gets the attributes for this Chunk.
         /// </summary>
         /// <remarks>
         /// It may be null.

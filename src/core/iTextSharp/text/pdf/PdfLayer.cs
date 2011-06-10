@@ -111,7 +111,7 @@ namespace iTextSharp.text.pdf {
         */    
         public void AddChild(PdfLayer child) {
             if (child.parent != null)
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.layer.1.already.has.a.parent", ((PdfString)child.Get(PdfName.NAME)).ToUnicodeString()));
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.layer.1.already.has.a.parent", child.GetAsString(PdfName.NAME).ToUnicodeString()));
             child.parent = this;
             if (children == null)
                 children = new List<PdfLayer>();
@@ -188,7 +188,7 @@ namespace iTextSharp.text.pdf {
         
         private PdfDictionary Usage {
             get {
-                PdfDictionary usage = (PdfDictionary)Get(PdfName.USAGE);
+                PdfDictionary usage = GetAsDict(PdfName.USAGE);
                 if (usage == null) {
                     usage = new PdfDictionary();
                     Put(PdfName.USAGE, usage);

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.util.collections;
 using iTextSharp.text;
+using iTextSharp.text.api;
 using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.draw;
 using iTextSharp.text.pdf.collection;
@@ -669,6 +670,11 @@ namespace iTextSharp.text.pdf {
                     mo.Process(this);
                     break;
                 }
+                case Element.WRITABLE_DIRECT:
+                    if (null != writer) {
+                        ((IWriterOperation)element).Write(writer, this);
+                    }
+                    break;
                 default:
                     return false;
             }

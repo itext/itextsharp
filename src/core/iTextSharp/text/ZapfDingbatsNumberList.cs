@@ -109,6 +109,7 @@ namespace iTextSharp.text
             if (o is ListItem) {
                 ListItem item = (ListItem) o;
                 Chunk chunk = new Chunk(preSymbol, symbol.Font);
+                chunk.Attributes = symbol.Attributes;
                 switch (type ) {
                     case 0:
                         chunk.Append(((char)(first + list.Count + 171)).ToString());

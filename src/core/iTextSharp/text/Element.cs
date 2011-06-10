@@ -168,6 +168,12 @@ namespace iTextSharp.text
         */
         public const int YMARK = 55;
 
+        /**
+         * This is an element thats not an element.
+         * @see WritableDirectElement
+         */
+        public const int WRITABLE_DIRECT = 666;
+
         // static membervariables (alignment)
        
         /// <summary>

@@ -97,6 +97,7 @@ namespace iTextSharp.text
             if (o is ListItem) {
                 ListItem item = (ListItem) o;
                 Chunk chunk = new Chunk(preSymbol, symbol.Font);
+                chunk.Attributes = symbol.Attributes;
                 chunk.Append(GreekAlphabetFactory.GetString(first + list.Count, lowercase));
                 chunk.Append(postSymbol);
                 item.ListSymbol = chunk;

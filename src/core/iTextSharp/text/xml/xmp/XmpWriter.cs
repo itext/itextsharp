@@ -218,10 +218,10 @@ namespace iTextSharp.text.xml.xmp {
                         p.AddProducer(((PdfString)obj).ToUnicodeString());
                     }
                     if (PdfName.CREATIONDATE.Equals(key)) {
-                        basic.AddCreateDate(((PdfDate)obj).GetW3CDate());
+                        basic.AddCreateDate(PdfDate.GetW3CDate(obj.ToString()));
                     }
                     if (PdfName.MODDATE.Equals(key)) {
-                        basic.AddModDate(((PdfDate)obj).GetW3CDate());
+                        basic.AddModDate(PdfDate.GetW3CDate(obj.ToString()));
                     }
                 }
                 if (dc.Count > 0) AddRdfDescription(dc);

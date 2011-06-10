@@ -107,6 +107,7 @@ namespace iTextSharp.text
             if (o is ListItem) {
                 ListItem item = (ListItem) o;
                 Chunk chunk = new Chunk(preSymbol, symbol.Font);
+                chunk.Attributes = symbol.Attributes;
                 chunk.Append(((char)zn).ToString());
                 chunk.Append(postSymbol);
                 item.ListSymbol = chunk;
