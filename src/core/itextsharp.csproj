@@ -4079,6 +4079,7 @@
     <Compile Include="iTextSharp\text\api\IIndentable.cs" />
     <Compile Include="iTextSharp\text\api\ISpaceable.cs" />
     <Compile Include="iTextSharp\text\api\IWriterOperation.cs" />
+    <Compile Include="iTextSharp\text\error_messages\LocalizedResource.cs" />
     <Compile Include="iTextSharp\text\html\HtmlUtilities.cs" />
     <Compile Include="iTextSharp\text\html\simpleparser\CellWrapper.cs" />
     <Compile Include="iTextSharp\text\html\simpleparser\ElementFactory.cs" />
