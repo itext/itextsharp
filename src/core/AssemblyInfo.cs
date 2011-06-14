@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 //
 // General Information about an assembly is controlled through the following 
@@ -14,6 +15,8 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyCopyright("Copyright (C) 1999-2011 by Bruno Lowagie and Paulo Soares. All Rights Reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]        
+
+[assembly: ComVisibleAttribute(false)]
 
 //
 // Version information for an assembly consists of the following four values:
