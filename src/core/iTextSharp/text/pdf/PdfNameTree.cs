@@ -129,17 +129,19 @@ namespace iTextSharp.text.pdf {
         }
         
         private static void IterateItems(PdfDictionary dic, Dictionary<string, PdfObject> items) {
-            PdfArray nn = (PdfArray)PdfReader.GetPdfObjectRelease(dic.Get(PdfName.NAMES));
+            PdfArray nn = PdfReader.GetPdfObjectRelease(dic.Get(PdfName.NAMES)) as PdfArray;
             if (nn != null) {
                 for (int k = 0; k < nn.Size; ++k) {
-                    PdfString s = (PdfString)PdfReader.GetPdfObjectRelease(nn[k++]);
-                    items[PdfEncodings.ConvertToString(s.GetBytes(), null)] = nn[k];
+                    PdfString s = PdfReader.GetPdfObjectRelease(nn[k++]) as PdfString;
+                    if (s != null)
+                        items[PdfEncodings.ConvertToString(s.GetBytes(), null)] = nn[k];
                 }
             }
-            else if ((nn = (PdfArray)PdfReader.GetPdfObjectRelease(dic.Get(PdfName.KIDS))) != null) {
+            else if ((nn = PdfReader.GetPdfObjectRelease(dic.Get(PdfName.KIDS)) as PdfArray) != null) {
                 for (int k = 0; k < nn.Size; ++k) {
-                    PdfDictionary kid = (PdfDictionary)PdfReader.GetPdfObjectRelease(nn[k]);
-                    IterateItems(kid, items);
+                    PdfDictionary kid = PdfReader.GetPdfObjectRelease(nn[k]) as PdfDictionary;
+                    if (kid != null)
+                        IterateItems(kid, items);
                 }
             }
         }
