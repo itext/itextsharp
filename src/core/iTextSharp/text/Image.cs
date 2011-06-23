@@ -345,6 +345,7 @@ namespace iTextSharp.text {
             Stream istr = null;
             try {
                 WebRequest w = WebRequest.Create(url);
+                w.Credentials = CredentialCache.DefaultCredentials;
                 istr = w.GetResponse().GetResponseStream();
                 int c1 = istr.ReadByte();
                 int c2 = istr.ReadByte();

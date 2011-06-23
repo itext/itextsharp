@@ -170,7 +170,9 @@ namespace iTextSharp.text.pdf {
                 // GIF, JPEG or PNG
                 String errorID;
                 if (image.RawData == null){
-                    isp = WebRequest.Create(image.Url).GetResponse().GetResponseStream();
+                    WebRequest wr = WebRequest.Create(image.Url);
+                    wr.Credentials = CredentialCache.DefaultCredentials;
+                    isp = wr.GetResponse().GetResponseStream();
                     errorID = image.Url.ToString();
                 }
                 else{
