@@ -109,7 +109,7 @@ namespace iTextSharp.text {
                 return new Uri(filename);
             }
             catch {
-                return new Uri("file:///" + filename);
+                return new Uri(Path.GetFullPath(filename));
             }
         }
     
