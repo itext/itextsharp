@@ -109,6 +109,7 @@ namespace iTextSharp.text {
                 string errorID;
                 if (rawData == null){
                     WebRequest w = WebRequest.Create(url);
+                    w.Credentials = CredentialCache.DefaultCredentials;
                     istr = w.GetResponse().GetResponseStream();
                     errorID = url.ToString();
                 }
@@ -154,6 +155,7 @@ namespace iTextSharp.text {
             try {
                 if (rawData == null){
                     WebRequest w = WebRequest.Create(url);
+                    w.Credentials = CredentialCache.DefaultCredentials;
                     istr = w.GetResponse().GetResponseStream();
                 }
                 else{

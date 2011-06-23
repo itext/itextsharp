@@ -187,7 +187,9 @@ namespace iTextSharp.text.pdf.codec {
         public static Image GetImage(Uri url) {
             Stream isp = null;
             try {
-                isp = WebRequest.Create(url).GetResponse().GetResponseStream();
+                WebRequest wr = WebRequest.Create(url);
+                wr.Credentials = CredentialCache.DefaultCredentials;
+                isp = wr.GetResponse().GetResponseStream();
                 Image img = GetImage(isp);
                 img.Url = url;
                 return img;

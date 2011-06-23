@@ -676,7 +676,9 @@ namespace iTextSharp.text.pdf.codec.wmf
         Stream imgIn;
         byte[] data = null;
         if (image.OriginalData == null) {
-            imgIn = WebRequest.Create(image.Url).GetResponse().GetResponseStream();
+            WebRequest wr = WebRequest.Create(image.Url);
+            wr.Credentials = CredentialCache.DefaultCredentials;
+            imgIn = wr.GetResponse().GetResponseStream();
             MemoryStream outp = new MemoryStream();
             int b = 0;
             while ((b = imgIn.ReadByte()) != -1)
