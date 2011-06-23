@@ -67,7 +67,7 @@ namespace iTextSharp.text.pdf.parser {
          * This class delegates this call
          * @see com.itextpdf.text.pdf.parser.TextExtractionStrategy#getResultantText()
          */
-        public String GetResultantText() {
+        public virtual String GetResultantText() {
             return deleg.GetResultantText();
         }
     }
