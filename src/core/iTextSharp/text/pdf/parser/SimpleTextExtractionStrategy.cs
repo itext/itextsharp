@@ -75,20 +75,20 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @since 5.0.1
          */
-        public void BeginTextBlock() {
+        public virtual void BeginTextBlock() {
         }
 
         /**
          * @since 5.0.1
          */
-        public void EndTextBlock() {
+        public virtual void EndTextBlock() {
         }
         
         /**
          * Returns the result so far.
          * @return  a String with the resulting text.
          */
-        public String GetResultantText(){
+        public virtual String GetResultantText(){
             return result.ToString();
         }
 
@@ -96,7 +96,7 @@ namespace iTextSharp.text.pdf.parser {
          * Captures text using a simplified algorithm for inserting hard returns and spaces
          * @param   renderInfo  render info
          */
-        public void RenderText(TextRenderInfo renderInfo) {
+        public virtual void RenderText(TextRenderInfo renderInfo) {
             bool firstRender = result.Length == 0;
             bool hardReturn = false;
 
@@ -147,7 +147,7 @@ namespace iTextSharp.text.pdf.parser {
          * @see com.itextpdf.text.pdf.parser.RenderListener#renderImage(com.itextpdf.text.pdf.parser.ImageRenderInfo)
          * @since 5.0.1
          */
-        public void RenderImage(ImageRenderInfo renderInfo) {
+        public virtual void RenderImage(ImageRenderInfo renderInfo) {
             // do nothing - we aren't tracking images in this renderer
         }
     }

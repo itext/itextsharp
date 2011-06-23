@@ -83,20 +83,20 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @see com.itextpdf.text.pdf.parser.RenderListener#beginTextBlock()
          */
-        public void BeginTextBlock(){
+        public virtual void BeginTextBlock(){
         }
 
         /**
          * @see com.itextpdf.text.pdf.parser.RenderListener#endTextBlock()
          */
-        public void EndTextBlock(){
+        public virtual void EndTextBlock(){
         }
 
         /**
          * Returns the result so far.
          * @return  a String with the resulting text.
          */
-        public String GetResultantText(){
+        public virtual String GetResultantText(){
 
             if (DUMP_STATE) DumpState();
             
@@ -147,7 +147,7 @@ namespace iTextSharp.text.pdf.parser {
          * 
          * @see com.itextpdf.text.pdf.parser.RenderListener#renderText(com.itextpdf.text.pdf.parser.TextRenderInfo)
          */
-        public void RenderText(TextRenderInfo renderInfo) {
+        public virtual void RenderText(TextRenderInfo renderInfo) {
             LineSegment segment = renderInfo.GetBaseline();
             TextChunk location = new TextChunk(renderInfo.GetText(), segment.GetStartPoint(), segment.GetEndPoint(), renderInfo.GetSingleSpaceWidth());
             locationalResult.Add(location);        
