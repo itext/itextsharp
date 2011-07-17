@@ -2580,7 +2580,7 @@ namespace iTextSharp.text.pdf {
             }
             if (arr.Size == 0)
                 return;
-            PdfDictionary d = OCProperties.GetAsDict(PdfName.D);
+            PdfDictionary d = vOCProperties.GetAsDict(PdfName.D);
             PdfArray arras = d.GetAsArray(PdfName.AS);
             if (arras == null) {
                 arras = new PdfArray();
