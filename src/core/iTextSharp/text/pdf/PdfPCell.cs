@@ -156,7 +156,7 @@ namespace iTextSharp.text.pdf {
                 Padding = borderWidth / 2;
             }
             else {
-                column.AddText(this.phrase = new Phrase(new Chunk(image, 0, 0)));
+                column.AddText(this.phrase = new Phrase(new Chunk(image, 0, 0, true)));
                 column.SetLeading(0, 1);
                 Padding = 0;
             }
