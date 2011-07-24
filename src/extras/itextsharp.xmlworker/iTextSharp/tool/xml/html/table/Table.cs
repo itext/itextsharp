@@ -114,11 +114,11 @@ namespace iTextSharp.tool.xml.html.table {
                     }
                 }
                 if(repeatFooter == null || !Util.EqualsIgnoreCase(repeatFooter, "yes")) {
-                    tableRows.Sort(delegate(TableRowElement o1, TableRowElement o2) {
+                    InsertionSort<TableRowElement>(tableRows, delegate(TableRowElement o1, TableRowElement o2) {
                         return o1.RowPlace.Normal.CompareTo(o2.RowPlace.Normal);
                     });
                 } else {
-                    tableRows.Sort(delegate(TableRowElement o1, TableRowElement o2) {
+                    InsertionSort<TableRowElement>(tableRows, delegate(TableRowElement o1, TableRowElement o2) {
                         return o1.RowPlace.Repeated.CompareTo(o2.RowPlace.Repeated);
                     });
                 }
@@ -687,6 +687,30 @@ namespace iTextSharp.tool.xml.html.table {
          */
         public override bool IsStackOwner() {
             return true;
+        }
+
+        /// <summary>
+        /// A stable sort
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="list"></param>
+        /// <param name="comparison"></param>
+        private static void InsertionSort<T>(IList<T> list, Comparison<T> comparison) {
+            if (list == null)
+                throw new ArgumentNullException("list");
+            if (comparison == null)
+                throw new ArgumentNullException("comparison");
+
+            int count = list.Count;
+            for (int j = 1; j < count; j++) {
+                T key = list[j];
+
+                int i = j - 1;
+                for (; i >= 0 && comparison(list[i], key) > 0; i--) {
+                    list[i + 1] = list[i];
+                }
+                list[i + 1] = key;
+            }
         }
     }
 }
