@@ -108,8 +108,8 @@ namespace iTextSharp.tool.xml.parser.state {
                         }
                         this.parser.Memory().WhitespaceTag("");
                     }
-                    bool whitespace = Char.IsWhiteSpace((char)this.lastChar);
-                    bool noWhiteSpace = !Char.IsWhiteSpace((char)character);
+                    bool whitespace = HTMLUtils.IsWhiteSpace((char)this.lastChar);
+                    bool noWhiteSpace = !HTMLUtils.IsWhiteSpace((char)character);
                     if (!whitespace || (whitespace && noWhiteSpace)) {
                         if (noWhiteSpace) {
                             this.parser.Append(character);
