@@ -200,16 +200,15 @@ namespace iTextSharp.text.pdf {
 
         public int GetStartxref(int arrLength) {
             int fileLength = file.Length;
-            int size = Math.Min(arrLength, fileLength);
-            int pos = file.Length - size;
-            file.Seek(pos);
-            String str = ReadString(arrLength);
-            int idx = str.LastIndexOf("startxref");
-            if (idx < 0 && size == fileLength)
-                throw new InvalidPdfException(MessageLocalization.GetComposedMessage("pdf.startxref.not.found"));
-            if (idx < 0)
-                return GetStartxref(arrLength + 1024);
-            return pos + idx;
+            int pos = fileLength - arrLength;
+            while (pos > 0){
+                file.Seek(pos);
+                String str = ReadString(arrLength);
+                int idx = str.LastIndexOf("startxref");
+                if (idx >= 0) return pos + idx;
+                pos = pos - arrLength + 9; // 9 = "startxref".length()
+            }
+            throw new InvalidPdfException(MessageLocalization.GetComposedMessage("pdf.startxref.not.found"));
         }
 
         public static int GetHex(int v) {
