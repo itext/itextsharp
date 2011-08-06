@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.tool.xml.parser;
+using iTextSharp.tool.xml.html;
 /*
  * $Id: TagAttributeState.java 105 2011-05-26 10:18:21Z redlab_b $
  *
@@ -71,7 +72,7 @@ namespace iTextSharp.tool.xml.parser.state {
                 this.parser.Memory().CurrentAttr(this.parser.BufferToString());
                 this.parser.Flush();
                 this.parser.SelectState().AttributeValue();
-            } else if (Char.IsWhiteSpace((char)character)){
+            } else if (HTMLUtils.IsWhiteSpace((char)character)){
                 SetAttribute();
             } else if (character == '>') {
                 CheckAttributeWithNoValue();
@@ -83,7 +84,7 @@ namespace iTextSharp.tool.xml.parser.state {
                 this.parser.StartElement();
                 this.parser.Flush();
                 this.parser.SelectState().Xml();
-            } else if (this.parser.Memory().HasCurrentAttribute() && !Char.IsWhiteSpace((char)character)) {
+            } else if (this.parser.Memory().HasCurrentAttribute() && !HTMLUtils.IsWhiteSpace((char)character)) {
                 // assume attribute with no value, example tag <?formServer defaultPDFRenderFormat acrobat8.1dynamic?>
                 this.parser.Memory().PutCurrentAttrValue("");
                 this.parser.Append(character);

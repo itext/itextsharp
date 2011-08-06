@@ -62,8 +62,8 @@ namespace iTextSharp.tool.xml.html {
             bool first = true;
             bool gotChar = false;
             foreach (char c in str) {
-                if (!Char.IsWhiteSpace(c)) {
-                    if (((!gotChar && !trim) || gotChar)  && !first && Char.IsWhiteSpace(previous)) {
+                if (!IsWhiteSpace(c)) {
+                    if (((!gotChar && !trim) || gotChar)  && !first && IsWhiteSpace(previous)) {
                         builder.Append(' ');
                     }
                     builder.Append(c);
@@ -72,7 +72,7 @@ namespace iTextSharp.tool.xml.html {
                 previous = c;
                 first = false;
             }
-            if (gotChar && !trim && Char.IsWhiteSpace(previous)) {
+            if (gotChar && !trim && IsWhiteSpace(previous)) {
                 builder.Append(' ');
             }
             return builder.ToString();
@@ -92,6 +92,17 @@ namespace iTextSharp.tool.xml.html {
          */
         public static String SanitizeInline(String str) {
             return Sanitize(str, false);
+        }
+
+        /// <summary>
+        /// Whitespace as Java sees it.
+        /// </summary>
+        /// <param name="c"></param>
+        /// <returns></returns>
+        public static bool IsWhiteSpace(char c) {
+            if (c == '\u00a0' || c == '\u2007' || c == '\u202f')
+                return false;
+            return char.IsWhiteSpace(c);
         }
     }
 }

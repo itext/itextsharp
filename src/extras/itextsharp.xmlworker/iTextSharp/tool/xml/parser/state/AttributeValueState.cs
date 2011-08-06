@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.tool.xml.parser;
+using iTextSharp.tool.xml.html;
 /*
  * $Id: AttributeValueState.java 105 2011-05-26 10:18:21Z redlab_b $
  *
@@ -71,7 +72,7 @@ namespace iTextSharp.tool.xml.parser.state {
                 this.parser.SelectState().SingleQuotedAttr();
             } else if (character == '"') {
                 this.parser.SelectState().DoubleQuotedAttr();
-            } else if (!Char.IsWhiteSpace((char) character)){
+            } else if (!HTMLUtils.IsWhiteSpace((char) character)){
                 this.parser.Append(character);
                 this.parser.SelectState().UnquotedAttr();
             }

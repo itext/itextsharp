@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.tool.xml.parser;
+using iTextSharp.tool.xml.html;
 /*
  * $Id: ClosingTagState.java 105 2011-05-26 10:18:21Z redlab_b $
  *
@@ -73,7 +74,7 @@ namespace iTextSharp.tool.xml.parser.state {
             } else if (character == ':') {
                 this.parser.Memory().Namespace(this.parser.BufferToString());
                 this.parser.Flush();
-            } else if (!Char.IsWhiteSpace((char)character)){
+            } else if (!HTMLUtils.IsWhiteSpace((char)character)){
                 this.parser.Append(character);
             }
         }

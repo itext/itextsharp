@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.tool.xml.parser;
+using iTextSharp.tool.xml.html;
 /*
  * $Id: TagEncounteredState.java 105 2011-05-26 10:18:21Z redlab_b $
  *
@@ -67,7 +68,7 @@ namespace iTextSharp.tool.xml.parser.state {
          */
         public void Process(int character) {
             String tag = this.parser.BufferToString();
-            if (Char.IsWhiteSpace((char)character) || character == '>' || character == '/' || character == ':' || tag.Equals("!--") || tag.Equals("![CDATA[")) {
+            if (HTMLUtils.IsWhiteSpace((char)character) || character == '>' || character == '/' || character == ':' || tag.Equals("!--") || tag.Equals("![CDATA[")) {
                 // cope with <? xml and <! DOCTYPE
                 if (tag.Length > 0) {
                     if (tag.Equals("!--")) {
@@ -88,7 +89,7 @@ namespace iTextSharp.tool.xml.parser.state {
                         this.parser.Flush();
                         parser.SelectState().Doctype();
                         this.parser.Append(character);
-                    } else if (Char.IsWhiteSpace((char)character)) {
+                    } else if (HTMLUtils.IsWhiteSpace((char)character)) {
                         this.parser.Memory().CurrentTag(this.parser.BufferToString());
                         this.parser.Flush();
                         this.parser.SelectState().TagAttributes();

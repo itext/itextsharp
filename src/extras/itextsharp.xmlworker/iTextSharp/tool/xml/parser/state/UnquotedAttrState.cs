@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.tool.xml.parser;
+using iTextSharp.tool.xml.html;
 /*
  * $Id: UnquotedAttrState.java 105 2011-05-26 10:18:21Z redlab_b $
  *
@@ -64,7 +65,7 @@ namespace iTextSharp.tool.xml.parser.state {
          * @see com.itextpdf.tool.xml.parser.State#process(int)
          */
         public void Process(int character) {
-            if (!Char.IsWhiteSpace((char)character)) {
+            if (!HTMLUtils.IsWhiteSpace((char)character)) {
                 this.parser.Append(character);
             } else {
                 this.parser.Memory().PutCurrentAttrValue(this.parser.BufferToString());
