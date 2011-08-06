@@ -67,7 +67,7 @@ namespace iTextSharp.text.pdf {
          *  Mapping between CID code (single byte only for now) and unicode equivalent
          *  as derived by the font's encoding.  Only needed if the ToUnicode CMap is not provided.
          */
-        private char[] cidbyte2uni;
+        private char[] cidbyte2uni = new char[256];
         
         /**
          * Creates an instance of a CMapAwareFont based on an indirect reference to a font.

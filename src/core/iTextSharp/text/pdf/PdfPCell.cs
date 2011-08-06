@@ -98,7 +98,7 @@ namespace iTextSharp.text.pdf {
         private IPdfPCellEvent cellEvent;
 
         /** Holds value of property useDescender. */
-        private bool useDescender = true;
+        private bool useDescender = false;
 
         /** Increases padding to include border if true */
         private bool useBorderPadding = false;
@@ -120,7 +120,6 @@ namespace iTextSharp.text.pdf {
             borderWidth = 0.5f;
             border = BOX;
             column.SetLeading(0, 1);
-            column.UseAscender = true;
         }
 
         /** Constructs a <CODE>PdfPCell</CODE> with a <CODE>Phrase</CODE>.
@@ -132,7 +131,6 @@ namespace iTextSharp.text.pdf {
             border = BOX;
             column.AddText(this.phrase = phrase);
             column.SetLeading(0, 1);
-            column.UseAscender = true;
         }
         
         /** Constructs a <CODE>PdfPCell</CODE> with an <CODE>Image</CODE>.
@@ -150,14 +148,13 @@ namespace iTextSharp.text.pdf {
         public PdfPCell(Image image, bool fit) : base(0, 0, 0, 0) {
             borderWidth = 0.5f;
             border = BOX;
+            column.SetLeading(0, 1);
             if (fit) {
                 this.image = image;
-                column.SetLeading(0, 1);
                 Padding = borderWidth / 2;
             }
             else {
                 column.AddText(this.phrase = new Phrase(new Chunk(image, 0, 0, true)));
-                column.SetLeading(0, 1);
                 Padding = 0;
             }
         }

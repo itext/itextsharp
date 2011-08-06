@@ -2684,6 +2684,7 @@ namespace iTextSharp.text.pdf {
         public void DrawRadioField(float llx, float lly, float urx, float ury, bool on) {
             if (llx > urx) { float x = llx; llx = urx; urx = x; }
             if (lly > ury) { float y = lly; lly = ury; ury = y; }
+            SaveState();
             // silver circle
             SetLineWidth(1);
             SetLineCap(1);
@@ -2710,6 +2711,7 @@ namespace iTextSharp.text.pdf {
                 Arc(llx + 4f, lly + 4f, urx - 4f, ury - 4f, 0, 360);
                 Fill();
             }
+            RestoreState();
         }
     
         /**
@@ -2719,6 +2721,7 @@ namespace iTextSharp.text.pdf {
         public void DrawTextField(float llx, float lly, float urx, float ury) {
             if (llx > urx) { float x = llx; llx = urx; urx = x; }
             if (lly > ury) { float y = lly; lly = ury; ury = y; }
+            SaveState();
             // silver rectangle not filled
             SetColorStroke(new BaseColor(0xC0, 0xC0, 0xC0));
             SetLineWidth(1);
@@ -2755,6 +2758,7 @@ namespace iTextSharp.text.pdf {
             LineTo(llx + 2f, ury - 2f);
             LineTo(urx - 2f, ury - 2f);
             Stroke();
+            RestoreState();
         }
     
         /**
@@ -2764,6 +2768,7 @@ namespace iTextSharp.text.pdf {
         public void DrawButton(float llx, float lly, float urx, float ury, string text, BaseFont bf, float size) {
             if (llx > urx) { float x = llx; llx = urx; urx = x; }
             if (lly > ury) { float y = lly; lly = ury; ury = y; }
+            SaveState();
             // black rectangle not filled
             SetColorStroke(new BaseColor(0x00, 0x00, 0x00));
             SetLineWidth(1);
@@ -2798,6 +2803,7 @@ namespace iTextSharp.text.pdf {
             SetFontAndSize(bf, size);
             ShowTextAligned(PdfContentByte.ALIGN_CENTER, text, llx + (urx - llx) / 2, lly + (ury - lly - size) / 2, 0);
             EndText();
+            RestoreState();
         }
     
         internal virtual PageResources PageResources {
