@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using iTextSharp.text;
 using iTextSharp.text.log;
 using iTextSharp.tool.xml;
@@ -82,17 +83,17 @@ namespace iTextSharp.tool.xml.html {
                         Tag child = tag.Children[i];
                         if (size == 1) {
                             child.CSS[CSS.Property.MARGIN_TOP] =
-                                        CalculateTopOrBottomSpacing(true, false, tag, child, ctx) + "pt";
+                                        CalculateTopOrBottomSpacing(true, false, tag, child, ctx).ToString(CultureInfo.InvariantCulture) + "pt";
                             float marginBottom = CalculateTopOrBottomSpacing(false, false, tag, child, ctx);
-                            child.CSS[CSS.Property.MARGIN_BOTTOM] = marginBottom + "pt";
+                            child.CSS[CSS.Property.MARGIN_BOTTOM] = marginBottom.ToString(CultureInfo.InvariantCulture) + "pt";
                         } else {
                             if (i == 0) {
                                 child.CSS[CSS.Property.MARGIN_TOP] =
-                                            CalculateTopOrBottomSpacing(true, false, tag, child, ctx) + "pt";
+                                            CalculateTopOrBottomSpacing(true, false, tag, child, ctx).ToString(CultureInfo.InvariantCulture) + "pt";
                             }
                             if (i == size - 1) {
                                 float marginBottom = CalculateTopOrBottomSpacing(false, true, tag, child, ctx);
-                                child.CSS[CSS.Property.MARGIN_BOTTOM] = marginBottom + "pt";
+                                child.CSS[CSS.Property.MARGIN_BOTTOM] = marginBottom.ToString(CultureInfo.InvariantCulture) + "pt";
                             }
                         }
                         try {
