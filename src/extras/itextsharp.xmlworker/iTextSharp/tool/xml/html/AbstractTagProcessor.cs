@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using System.Globalization;
 using iTextSharp.text;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
@@ -105,7 +106,7 @@ namespace iTextSharp.tool.xml.html {
          */
         public virtual IList<IElement> StartElement(IWorkerContext ctx, Tag tag) {
             float fontSize = fontsizeTrans.TranslateFontSize(tag);
-            tag.CSS[CSS.Property.FONT_SIZE] = fontSize + "pt";
+            tag.CSS[CSS.Property.FONT_SIZE] = fontSize.ToString(CultureInfo.InvariantCulture) + "pt";
             String pagebreak;
             tag.CSS.TryGetValue(CSS.Property.PAGE_BREAK_BEFORE, out pagebreak);
             if (null != pagebreak && Util.EqualsIgnoreCase(CSS.Value.ALWAYS, pagebreak)) {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.util;
 using iTextSharp.text;
 using iTextSharp.tool.xml;
@@ -121,12 +122,12 @@ namespace iTextSharp.tool.xml.css.apply {
             // setDefaultMargin to largestFont if no margin-top is set and p-tag is child of the root tag.
             if (null != t.Parent) {
                 String parent = t.Parent.TagName;
-                if (css.ContainsKey(CSS.Property.MARGIN_TOP) && configuration.GetRootTags().Contains(parent)) {
-                    p.SpacingBefore = p.SpacingBefore+utils.CalculateMarginTop(fontSize+"pt", 0, configuration);
+                if (!css.ContainsKey(CSS.Property.MARGIN_TOP) && configuration.GetRootTags().Contains(parent)) {
+                    p.SpacingBefore = p.SpacingBefore+utils.CalculateMarginTop(fontSize.ToString(CultureInfo.InvariantCulture) +"pt", 0, configuration);
                 }
-                if (css.ContainsKey(CSS.Property.MARGIN_BOTTOM) && configuration.GetRootTags().Contains(parent)) {
+                if (!css.ContainsKey(CSS.Property.MARGIN_BOTTOM) && configuration.GetRootTags().Contains(parent)) {
                     p.SpacingAfter = p.SpacingAfter+fontSize;
-                    css[CSS.Property.MARGIN_BOTTOM]=  fontSize+"pt";
+                    css[CSS.Property.MARGIN_BOTTOM]=  fontSize.ToString(CultureInfo.InvariantCulture)+"pt";
                     lmb = fontSize;
                     hasLMB = true;
                 }
