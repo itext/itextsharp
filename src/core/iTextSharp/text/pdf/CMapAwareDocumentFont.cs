@@ -67,7 +67,7 @@ namespace iTextSharp.text.pdf {
          *  Mapping between CID code (single byte only for now) and unicode equivalent
          *  as derived by the font's encoding.  Only needed if the ToUnicode CMap is not provided.
          */
-        private char[] cidbyte2uni = new char[256];
+        private char[] cidbyte2uni;
         
         /**
          * Creates an instance of a CMapAwareFont based on an indirect reference to a font.
@@ -191,7 +191,10 @@ namespace iTextSharp.text.pdf {
             }
 
             if (len == 1){
-                return new String(cidbyte2uni, 0xff & bytes[offset], 1);
+                if (cidbyte2uni == null)
+                    return "";
+                else
+                    return new String(cidbyte2uni, 0xff & bytes[offset], 1);
             }
             
             throw new ArgumentException("Multi-byte glyphs not implemented yet");
