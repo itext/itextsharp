@@ -150,6 +150,24 @@ namespace iTextSharp.text.pdf {
                 }
                 n = n.NextSibling;
             }
+        if (datasetsNode == null)
+        	CreateDatasetsNode(domDocument.FirstChild);
+        }
+        
+        /**
+         * Some XFA forms don't have a datasets node.
+         * If this is the case, we have to add one.
+         */
+        private void CreateDatasetsNode(XmlNode n) {
+            while (n.ChildNodes.Count == 0) {
+                n = n.NextSibling;
+            }
+            if (n != null) {
+                XmlElement e = n.OwnerDocument.CreateElement("xfa:datasets");
+                e.SetAttribute("xmlns:xfa", XFA_DATA_SCHEMA);
+                datasetsNode = e;
+                n.AppendChild(datasetsNode);
+            }
         }
         
         /**

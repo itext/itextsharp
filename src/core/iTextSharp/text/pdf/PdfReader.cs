@@ -1258,7 +1258,7 @@ namespace iTextSharp.text.pdf {
         protected internal void ReadXref() {
             hybridXref = false;
             newXrefType = false;
-            tokens.Seek(tokens.GetStartxref(1024));
+            tokens.Seek(tokens.GetStartxref());
             tokens.NextToken();
             if (!tokens.StringValue.Equals("startxref"))
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("startxref.not.found"));

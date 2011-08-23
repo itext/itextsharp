@@ -4106,6 +4106,7 @@
     <Compile Include="iTextSharp\text\xml\simpleparser\handler\NeverNewLineHandler.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\INewLineHandler.cs" />
     <Compile Include="iTextSharp\text\xml\XmlDomWriter.cs" />
+    <Compile Include="iTextSharp\text\xml\XmlToTxt.cs" />
     <Compile Include="iTextSharp\text\xml\XMLUtil.cs" />
     <Compile Include="srcbc\asn1\Asn1Exception.cs" />
     <Compile Include="srcbc\asn1\Asn1ParsingException.cs" />

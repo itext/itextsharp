@@ -86,6 +86,7 @@ namespace iTextSharp.text.pdf {
         private X509Certificate signCert;
         private byte[] digest;
         private IDigest messageDigest;
+        private IDigest encContDigest; // Stefan Santesson
         private String digestAlgorithm, digestEncryptionAlgorithm;
         private ISigner sig;
         private ICipherParameters privKey;
@@ -475,6 +476,7 @@ namespace iTextSharp.text.pdf {
             }
             if (RSAdata != null || digestAttr != null) {
                 messageDigest = GetHashClass();
+                encContDigest = GetHashClass();
             }
             sig = SignerUtilities.GetSigner(GetDigestAlgorithm());
             sig.Init(false, signCert.GetPublicKey());
@@ -570,10 +572,20 @@ namespace iTextSharp.text.pdf {
                 messageDigest.DoFinal(msgDigestBytes, 0);
                 bool verifyRSAdata = true;
                 sig.BlockUpdate(sigAttr, 0, sigAttr.Length);
+                // Stefan Santesson fixed a bug, keeping the code backward compatible
+                bool encContDigestCompare = false;
                 if (RSAdata != null) {
                     verifyRSAdata = Arrays.AreEqual(msgDigestBytes, RSAdata);
+                    encContDigest.BlockUpdate(RSAdata, 0, RSAdata.Length);
+                    byte[] encContDigestBytes = new byte[encContDigest.GetDigestSize()];
+                    encContDigest.DoFinal(encContDigestBytes, 0);
+                    encContDigestCompare = Arrays.AreEqual(encContDigestBytes, digestAttr);
                 }
-                verifyResult = Arrays.AreEqual(msgDigestBytes, digestAttr) && sig.VerifySignature(digest) && verifyRSAdata;
+                bool absentEncContDigestCompare = Arrays.AreEqual(msgDigestBytes, digestAttr);
+                bool concludingDigestCompare = absentEncContDigestCompare || encContDigestCompare;
+                bool sigVerify = sig.VerifySignature(digest);
+                verifyResult = concludingDigestCompare && sigVerify && verifyRSAdata;
+                //verifyResult = Arrays.AreEqual(msgDigestBytes, digestAttr) && sig.VerifySignature(digest) && verifyRSAdata;
             }
             else {
                 if (RSAdata != null){
@@ -698,6 +710,24 @@ namespace iTextSharp.text.pdf {
         public int SigningInfoVersion {
             get {
                 return signerversion;
+            }
+        }
+
+        /**
+         * Getter for the digest encryption algorithm
+         */
+        public String DigestEncryptionAlgorithmOid {
+            get {
+                return digestEncryptionAlgorithm;
+            }
+        }
+
+        /**
+         * Getter for the digest algorithm
+         */
+        public String DigestAlgorithmOid {
+            get {
+                return digestAlgorithm;
             }
         }
         

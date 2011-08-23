@@ -262,7 +262,7 @@ namespace iTextSharp.text.pdf {
             else {
                 if (enc.IsName())
                     FillEncoding((PdfName)enc);
-                else {
+                else if (enc.IsDictionary()) {
                     PdfDictionary encDic = (PdfDictionary)enc;
                     enc = PdfReader.GetPdfObject(encDic.Get(PdfName.BASEENCODING));
                     if (enc == null)

@@ -2954,6 +2954,7 @@ namespace iTextSharp.text.pdf {
         public void BeginMarkedContentSequence(PdfName tag, PdfDictionary property, bool inline) {
             if (property == null) {
                 content.Append(tag.GetBytes()).Append(" BMC").Append_i(separator);
+                ++mcDepth;
                 return;
             }
             content.Append(tag.GetBytes()).Append(' ');

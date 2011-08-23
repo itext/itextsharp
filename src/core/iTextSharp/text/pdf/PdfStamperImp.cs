@@ -261,10 +261,10 @@ namespace iTextSharp.text.pdf {
                         xmpr = new XmpReader(altMetadata);
                         if (!(xmpr.ReplaceNode("http://ns.adobe.com/pdf/1.3/", "Producer", producer)
                             || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/pdf/1.3/", "Producer", producer)))
-                            xmpr.Add("rdf:Description", "http://ns.adobe.com/pdf/1.3/", "pdf:Producer", producer);
+                            xmpr.Add("rdf:Description", "http://ns.adobe.com/pdf/1.3/", "Producer", producer);
                         if (!(xmpr.ReplaceNode("http://ns.adobe.com/xap/1.0/", "ModifyDate", date.GetW3CDate())
                             || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/xap/1.0/", "ModifyDate", date.GetW3CDate())))
-                            xmpr.Add("rdf:Description", "http://ns.adobe.com/xap/1.0/", "xmp:ModifyDate", date.GetW3CDate());
+                            xmpr.Add("rdf:Description", "http://ns.adobe.com/xap/1.0/", "ModifyDate", date.GetW3CDate());
                         if (!(xmpr.ReplaceNode("http://ns.adobe.com/xap/1.0/", "MetadataDate", date.GetW3CDate())
                                 || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/xap/1.0/", "MetadataDate", date.GetW3CDate()))) {
                         }

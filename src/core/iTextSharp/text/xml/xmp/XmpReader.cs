@@ -134,13 +134,16 @@ namespace iTextSharp.text.xml.xmp {
 			    return false;
 		    XmlNode pNode;
 		    XmlNode node;
+            String prefix;
 		    for (int i = 0; i < nodes.Count; i++) {
 			    pNode = nodes[i];
 			    XmlAttributeCollection attrs = pNode.Attributes;
 			    for (int j = 0; j < attrs.Count; j++) {
 				    node = attrs[j];
 				    if (namespaceURI.Equals(node.Value)) {
-					    node = domDocument.CreateElement(localName);
+                        prefix = node.LocalName;
+                        node = domDocument.CreateElement(localName, namespaceURI);
+                        node.Prefix = prefix;
 					    node.AppendChild(domDocument.CreateTextNode(value));
 					    pNode.AppendChild(node);
 					    return true;
