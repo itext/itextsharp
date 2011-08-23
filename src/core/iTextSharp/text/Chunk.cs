@@ -316,12 +316,12 @@ namespace iTextSharp.text {
         /// <value>a string</value>
         public virtual string Content {
             get {
-                return content.ToString();
+                return content.ToString().Replace("\t", "");
             }
         }
 
         public override string ToString() {
-            return content.ToString();
+            return Content;
         }
 
 

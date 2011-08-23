@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Xml;
 using System.util;
 using System.util.collections;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.xml;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
@@ -1243,11 +1245,14 @@ namespace iTextSharp.text.pdf {
         
         /**
          * Sets the rich value for the given field.  See <a href="http://www.adobe.com/content/dam/Adobe/en/devnet/pdf/pdfs/PDF32000_2008.pdf">PDF Reference</a> chapter 
-         * 12.7.3.4 (Rich Text) and 12.7.4.3 (Text Fields) for further details.
+         * 12.7.3.4 (Rich Text) and 12.7.4.3 (Text Fields) for further details. Note that iText doesn't create an appearance for Rich Text fields.
+         * So you either need to use XML Worker to create an appearance (/N entry in the /AP dictionary), or you need to use setGenerateAppearances(false) to tell the viewer
+         * that iText didn't create any appearances.
          * @param name  Field name
          * @param richValue html markup 
          * @return success/failure (will fail if the field isn't found, isn't a text field, or doesn't support rich text)
          * @throws DocumentException
+         * @throws IOException 
          * @since 5.0.6
          */
         public bool SetFieldRichValue(String name, String richValue) {
@@ -1281,6 +1286,9 @@ namespace iTextSharp.text.pdf {
             PdfString richString = new PdfString(richValue);
             item.WriteToAll(PdfName.RV, richString, Item.WRITE_MERGED | Item.WRITE_VALUE);
             
+            Stream isp = new MemoryStream(Encoding.Default.GetBytes(richValue));
+            PdfString valueString = new PdfString(XmlToTxt.Parse(isp));
+            item.WriteToAll(PdfName.V, valueString, Item.WRITE_MERGED | Item.WRITE_VALUE);
             return true;
         }
 

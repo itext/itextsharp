@@ -198,9 +198,11 @@ namespace iTextSharp.text.pdf {
             file.StartOffset = idx;
         }
 
-        public int GetStartxref(int arrLength) {
+        public int GetStartxref() {
+            int arrLength = 1024;
             int fileLength = file.Length;
             int pos = fileLength - arrLength;
+            if (pos < 1) pos = 1;
             while (pos > 0){
                 file.Seek(pos);
                 String str = ReadString(arrLength);
