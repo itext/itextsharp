@@ -85,7 +85,7 @@ namespace iTextSharp.tool.xml.css {
                         width = utils.ParseRelativeValue(widthValue, firstAncestorsWidth);
                     }
                 }
-            } else if (roottags.Contains(tag.TagName)){
+            } else if (roottags.Contains(tag.Name)){
                 width = pagewidth;
             }
             return width;

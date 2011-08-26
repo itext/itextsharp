@@ -65,7 +65,7 @@ namespace iTextSharp.tool.xml.html.head {
          * @see com.itextpdf.tool.xml.ITagProcessor#startElement(com.itextpdf.tool.xml.Tag)
          */
         public override IList<IElement> Start(IWorkerContext ctx, Tag tag) {
-            if (tag.Attributes.ContainsKey(HTML.Attribute.TYPE) && Util.EqualsIgnoreCase(tag.Attributes[HTML.Attribute.TYPE], "text/css")) {
+            if (tag.Attributes.ContainsKey(HTML.Attribute.TYPE) && Util.EqualsIgnoreCase(tag.Attributes[HTML.Attribute.TYPE], HTML.Attribute.Value.TEXTCSS)) {
                 String href;
                 tag.Attributes.TryGetValue(HTML.Attribute.HREF, out href);
                 if (null != href) {

@@ -204,7 +204,7 @@ namespace iTextSharp.tool.xml.html.table {
                     tableWidthFixed = true;
                 } else if (initialTotalWidth <= max) {
                     targetWidth = initialTotalWidth;
-                } else if (null == tag.Parent || (null != tag.Parent && htmlPipelineContext.GetRootTags().Contains(tag.Parent.TagName))) {
+                } else if (null == tag.Parent || (null != tag.Parent && htmlPipelineContext.GetRootTags().Contains(tag.Parent.Name))) {
                     targetWidth = max;
                 } else /* this table is an inner table and width adjustment is done in outer table */{
                     targetWidth = GetTableWidth(columnWidths, outerWidth);
@@ -343,7 +343,7 @@ namespace iTextSharp.tool.xml.html.table {
                     // all invalid row elements taken as caption
                     int i = 0;
                     Tag captionTag = tag.Children[i++];
-                    while (!Util.EqualsIgnoreCase(captionTag.TagName, HTML.Tag.CAPTION) && i < tag.Children.Count) {
+                    while (!Util.EqualsIgnoreCase(captionTag.Name, HTML.Tag.CAPTION) && i < tag.Children.Count) {
                         captionTag = tag.Children[i];
                         i++;
                     }
@@ -402,7 +402,7 @@ namespace iTextSharp.tool.xml.html.table {
             } else if (start <= max) {
                 targetWidth = start;
             } else if (null == tag.Parent
-                    || (null != tag.Parent && htmlPipelineContext.GetRootTags().Contains(tag.Parent.TagName))) {
+                    || (null != tag.Parent && htmlPipelineContext.GetRootTags().Contains(tag.Parent.Name))) {
                 targetWidth = max;
             } else /*
                      * this table is an inner table and width adjustment is done in

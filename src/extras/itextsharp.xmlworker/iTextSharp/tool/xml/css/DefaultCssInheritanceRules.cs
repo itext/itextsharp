@@ -89,13 +89,13 @@ namespace iTextSharp.tool.xml.css {
             if (GLOBAL.Contains(key)) {
                 return false;
             }
-            if (HTML.Tag.TABLE.Equals(tag.TagName)) {
+            if (HTML.Tag.TABLE.Equals(tag.Name)) {
                 return !PARENT_TO_TABLE.Contains(key);
             }
-            if (HTML.Tag.TABLE.Equals(tag.Parent.TagName)) {
+            if (HTML.Tag.TABLE.Equals(tag.Parent.Name)) {
                 return !TABLE_IN_ROW.Contains(key);
             }
-            if (Util.EqualsIgnoreCase(HTML.Tag.TD, tag.Parent.TagName)) {
+            if (Util.EqualsIgnoreCase(HTML.Tag.TD, tag.Parent.Name)) {
                 return !TD_TO_CONTENT.Contains(key);
             }
             return true;

@@ -157,7 +157,7 @@ namespace iTextSharp.tool.xml.html {
                 String marginValue;
                 tag.CSS.TryGetValue(CSS.Property.MARGIN+end, out marginValue);
                 if (marginValue==null) {
-                    if (null != tag.Parent && GetHtmlPipelineContext(ctx).GetRootTags().Contains(tag.Parent.TagName)) {
+                    if (null != tag.Parent && GetHtmlPipelineContext(ctx).GetRootTags().Contains(tag.Parent.Name)) {
                         ownMargin = ownFontSize;
                     }
                 } else {

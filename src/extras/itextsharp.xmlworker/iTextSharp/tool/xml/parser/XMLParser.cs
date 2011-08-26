@@ -63,19 +63,25 @@ namespace iTextSharp.tool.xml.parser {
         private IList<IXMLParserListener> listeners;
         private XMLParserMemory memory;
         private IParserMonitor monitor;
-        private byte[] text = null;
+        private string text = null;
         private TagState tagState;
+        private Encoding charset;
 
         /**
          * Constructs a default XMLParser ready for HTML/XHTML processing.
          */
-        public XMLParser() : this(true) {
+        public XMLParser() : this(true, Encoding.Default) {
         }
+
         /**
          * Constructs a XMLParser.
-         * @param isHtml false if this parser is not going to parse HTML and whitespace should be submitted as text too.
+         *
+         * @param isHtml false if this parser is not going to parse HTML and
+         *            whitespace should be submitted as text too.
+         * @param charset charset
          */
-        public XMLParser(bool isHtml) {
+        public XMLParser(bool isHtml, Encoding charset) {
+            this.charset = charset;
             this.controller = new StateController(this, isHtml);
             controller.Unknown();
             memory = new XMLParserMemory();
@@ -83,18 +89,42 @@ namespace iTextSharp.tool.xml.parser {
         }
 
         /**
-         * Construct an HTML XMLParser with the given XMLParserConfig.
+         * Construct an XMLParser with the given XMLParserConfig ready for
+         * HTML/XHTML processing..
+         *
          * @param listener the listener
+         * @param charset the Charset
          */
-        public XMLParser(IXMLParserListener listener) : this(true) {
+        public XMLParser(IXMLParserListener listener, Encoding charset) : this(true, charset) {
             listeners.Add(listener);
         }
+
         /**
-         * Construct an HTML XMLParser with the given XMLParserConfig.
-         * @param isHtml false if this parser is not going to parse HTML and whitespace should be submitted as text too.
-         * @param listener the listener
+         * Constructs a new Parser with the default jvm charset.
+         * @param b true if HTML is being parsed
+         * @param listener the XMLParserListener
          */
-        public XMLParser(bool isHtml, IXMLParserListener listener) : this(isHtml) {
+        public XMLParser(bool b, IXMLParserListener listener) : this(b, Encoding.Default) {
+            listeners.Add(listener);
+        }
+
+        /**
+         * Constructs a new Parser with HTML parsing set to true and the default jvm charset.
+         * @param listener the XMLParserListener
+         */
+        public XMLParser(IXMLParserListener listener) : this(true, Encoding.Default){
+            listeners.Add(listener);
+        }
+
+        /**
+         * Construct a XMLParser with the given XMLParserConfig.
+         *
+         * @param isHtml false if this parser is not going to parse HTML and
+         *            whitespace should be submitted as text too.
+         * @param listener the listener
+         * @param charset the Charset to use
+         */
+        public XMLParser(bool isHtml, IXMLParserListener listener, Encoding charset) : this(isHtml, charset) {
             listeners.Add(listener);
         }
 
@@ -125,7 +155,7 @@ namespace iTextSharp.tool.xml.parser {
          * @throws IOException if IO went wrong
          */
         public void Parse(Stream inp) {
-            ParseStream(inp);
+            Parse(new StreamReader(inp));
         }
 
         /**
@@ -142,45 +172,47 @@ namespace iTextSharp.tool.xml.parser {
             }
         }
 
+	    /**
+	     * Parses an InputStream using the given encoding
+	     * @param in the stream to read
+	     * @param charSet to use for the constructed reader.
+	     * @throws IOException if reading fails
+	     */
+	    public void Parse(Stream inp, Encoding charSet) {
+		    this.charset = charSet;
+		    StreamReader reader = new StreamReader(inp, charSet);
+		    Parse(reader);
+	    }
+
         /**
          * Parse an Reader
+         *
          * @param reader the reader
          * @throws IOException if IO went wrong
          */
         public void Parse(TextReader reader) {
+            ParseWithReader(reader);
+        }
+
+        /**
+         * The actual parse method
+         * @param r
+         * @throws IOException
+         */
+        private void ParseWithReader(TextReader reader) {
             foreach (IXMLParserListener l in listeners) {
                 l.Init();
             }
-            int read = -1;
             TextReader r;
             if (monitor != null) {
                 r = new MonitorInputReader(reader, monitor);
             } else {
                 r = reader;
             }
+            char[] read = new char[1];
             try {
-            while (-1 != (read = r.Read())) {
-                state.Process(read);
-            }
-            } finally {
-                foreach (IXMLParserListener l in listeners) {
-                    l.Close();
-                }
-                r.Close();
-            }
-        }
-        /**
-         * @param r
-         * @throws IOException
-         */
-        private void ParseStream(Stream r) {
-            foreach (IXMLParserListener l in listeners) {
-                l.Init();
-            }
-            int read = -1;
-            try {
-                while (-1 != (read = r.ReadByte())) {
-                    state.Process(read);
+                while (1 == (r.Read(read, 0, 1))) {
+                    state.Process(read[0]);
                 }
             } finally {
                 foreach (IXMLParserListener l in listeners) {
@@ -225,7 +257,7 @@ namespace iTextSharp.tool.xml.parser {
                 decl = Encoding.GetEncoding(37).GetString(bi.ToArray());
             }
             if (decl != null) {
-                decl = GetDeclaredEncoding(decl);
+                decl = EncodingUtil.GetDeclaredEncoding(decl);
                 if (decl != null)
                     encoding = decl;
             }
@@ -242,21 +274,11 @@ namespace iTextSharp.tool.xml.parser {
         }
 
         /**
-         * @param character the int that will be converted to a character.
-         * @return the parser
-         */
-        public XMLParser Append(int character) {
-            this.memory.Current().WriteByte((byte)character);
-            return this;
-
-        }
-
-        /**
          * @param character the character to append
          * @return the parser
          */
         public XMLParser Append(char character) {
-            this.memory.Current().WriteByte((byte)character);
+            this.memory.Current().Append(character);
             return this;
 
         }
@@ -299,8 +321,8 @@ namespace iTextSharp.tool.xml.parser {
          * Returns the current content of the text buffer.
          * @return current buffer content
          */
-        public byte[] Current() {
-            return this.memory.Current().ToArray();
+        public string Current() {
+            return this.memory.Current().ToString();
         }
 
         /**
@@ -321,6 +343,7 @@ namespace iTextSharp.tool.xml.parser {
             foreach (IXMLParserListener l in listeners) {
                 l.StartElement(this.memory.GetCurrentTag(), this.memory.GetAttributes(), this.memory.GetNameSpace());
             }
+            this.memory.FlushNameSpace();
         }
 
         /**
@@ -352,7 +375,7 @@ namespace iTextSharp.tool.xml.parser {
          *
          * @param bs the content
          */
-        public void Text(byte[] bs) {
+        public void Text(string bs) {
             text = bs;
         }
 
@@ -366,40 +389,15 @@ namespace iTextSharp.tool.xml.parser {
             }
         }
 
-        private static String GetDeclaredEncoding(String decl) {
-            if (decl == null)
-                return null;
-            int idx = decl.IndexOf("encoding");
-            if (idx < 0)
-                return null;
-            int idx1 = decl.IndexOf('"', idx);
-            int idx2 = decl.IndexOf('\'', idx);
-            if (idx1 == idx2)
-                return null;
-            if (idx1 < 0 && idx2 > 0 || idx2 > 0 && idx2 < idx1) {
-                int idx3 = decl.IndexOf('\'', idx2 + 1);
-                if (idx3 < 0)
-                    return null;
-                return decl.Substring(idx2 + 1, idx3 - (idx2 + 1));
-            }
-            if (idx2 < 0 && idx1 > 0 || idx1 > 0 && idx1 < idx2) {
-                int idx3 = decl.IndexOf('"', idx1 + 1);
-                if (idx3 < 0)
-                    return null;
-                return decl.Substring(idx1 + 1, idx3 - (idx1 + 1));
-            }
-            return null;
-        }
-
         /**
          * @return the current last character of the buffer or ' ' if none.
          */
         public char CurrentLastChar() {
-            byte[] current = this.memory.Current().ToArray();
-            if (current.Length > 0) {
-                return (char)(current.Length -1);
-            }
-            return ' ';
+            StringBuilder sb = this.memory.Current();
+            if (sb.Length == 0)
+                return ' ';
+            else
+                return sb[sb.Length - 1];
         }
 
         /**
@@ -434,23 +432,43 @@ namespace iTextSharp.tool.xml.parser {
          * @return the current buffer as a String
          */
         public String BufferToString() {
-            return Encoding.ASCII.GetString(this.memory.Current().ToArray());
+            return this.memory.Current().ToString();
         }
+
         /**
          * @param bytes the byte array to append
-         * @return this XMLParser
+         * @return this instance of the XMLParser
          */
-        public XMLParser Append(byte[] bytes) {
-            foreach (byte b in bytes) {
-                this.memory.Current().WriteByte(b);
-            }
+        public XMLParser Append(char[] bytes) {
+            this.memory.Current().Append(bytes);
             return this;
         }
+
         /**
          * @return the size of the buffer
          */
         public int BufferSize() {
-            return (null != this.memory.Current())?(int)this.memory.Current().Length:0;
+            return (null != this.memory.Current())?this.memory.Current().Length:0;
+        }
+
+        /**
+         * Appends the given string to the buffer.
+         * @param string the String to append
+         * @return this instance of the XMLParser
+         */
+        public XMLParser Append(String str) {
+            this.memory.Current().Append(str);
+            return this;
+
+        }
+        /**
+         * Returns the current used character set.
+         * @return the charset
+         */
+        public Encoding Charset {
+            get {
+                return charset;
+            }
         }
     }
 }

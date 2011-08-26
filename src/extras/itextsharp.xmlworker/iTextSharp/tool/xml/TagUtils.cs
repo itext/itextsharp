@@ -75,7 +75,7 @@ namespace iTextSharp.tool.xml {
                 IList<Tag> siblings = t.Parent.Children;
                 sibling = siblings[siblings.IndexOf(t)+i];
             } catch (ArgumentOutOfRangeException e) {
-                throw new NoSiblingException(String.Format(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_SIBLING),t.TagName, i), e);
+                throw new NoSiblingException(String.Format(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_SIBLING),t.Name, i), e);
             }
             return sibling;
         }

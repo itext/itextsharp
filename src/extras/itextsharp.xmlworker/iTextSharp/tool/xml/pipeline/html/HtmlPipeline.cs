@@ -86,7 +86,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
         public override IPipeline Open(IWorkerContext context, Tag t, ProcessObject po) {
             HtmlPipelineContext hcc = (HtmlPipelineContext)GetLocalContext(context);
             try {
-                ITagProcessor tp = hcc.ResolveProcessor(t.TagName, t.NameSpace);
+                ITagProcessor tp = hcc.ResolveProcessor(t.Name, t.NameSpace);
                 if (tp.IsStackOwner()) {
                     hcc.AddFirst(new StackKeeper(t));
                 }
@@ -122,18 +122,18 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @see com.itextpdf.tool.xml.pipeline.IPipeline#content(com.itextpdf.tool
          * .xml.Tag, java.lang.String, com.itextpdf.tool.xml.pipeline.ProcessObject)
          */
-        public override IPipeline Content(IWorkerContext context, Tag t, byte[] b, ProcessObject po) {
+        public override IPipeline Content(IWorkerContext context, Tag t, string text, ProcessObject po) {
             HtmlPipelineContext hcc = (HtmlPipelineContext)GetLocalContext(context);
             ITagProcessor tp;
             try {
-                tp = hcc.ResolveProcessor(t.TagName, t.NameSpace);
-                String ctn = null;
-                if (null != hcc.CharSet()) {
-                    ctn = hcc.CharSet().GetString(b);
-                } else {
-                    ctn = Encoding.Default.GetString(b);
-                }
-                IList<IElement> elems = tp.Content(context, t, ctn);
+                tp = hcc.ResolveProcessor(t.Name, t.NameSpace);
+                //String ctn = null;
+                //if (null != hcc.CharSet()) {
+                //    ctn = hcc.CharSet().GetString(b);
+                //} else {
+                //    ctn = Encoding.Default.GetString(b);
+                //}
+                IList<IElement> elems = tp.Content(context, t, text);
                 if (elems.Count > 0) {
                     StackKeeper peek;
                     try {
@@ -168,7 +168,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
             HtmlPipelineContext hcc = (HtmlPipelineContext)GetLocalContext(context);
             ITagProcessor tp;
             try {
-                tp = hcc.ResolveProcessor(t.TagName, t.NameSpace);
+                tp = hcc.ResolveProcessor(t.Name, t.NameSpace);
                 IList<IElement> elems = null;
                 if (tp.IsStackOwner()) {
                     // remove the element from the StackKeeper Queue if end tag is

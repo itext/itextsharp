@@ -76,7 +76,7 @@ namespace iTextSharp.tool.xml {
          * @return the next pipeline in line
          * @throws PipelineException can be thrown to indicate that something went wrong.
          */
-        IPipeline Content(IWorkerContext context, Tag t, byte[] content, ProcessObject po);
+        IPipeline Content(IWorkerContext context, Tag t, string content, ProcessObject po);
 
         /**
          * Called when a closing tag has been encountered.

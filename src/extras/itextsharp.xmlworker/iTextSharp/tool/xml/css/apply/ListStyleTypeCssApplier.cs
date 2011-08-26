@@ -120,10 +120,10 @@ namespace iTextSharp.tool.xml.css.apply {
                     SynchronizeSymbol(fontSize, lst);
                     lst.Lowercase = false;
                 }
-            } else if (Util.EqualsIgnoreCase(t.TagName, HTML.Tag.OL)) {
+            } else if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.OL)) {
                 lst = new List(List.ORDERED);
                 SynchronizeSymbol(fontSize, lst);
-            } else if (Util.EqualsIgnoreCase(t.TagName, HTML.Tag.UL)) {
+            } else if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.UL)) {
                 lst = new List(List.UNORDERED);
                 ShrinkSymbol(lst, fontSize);
             }

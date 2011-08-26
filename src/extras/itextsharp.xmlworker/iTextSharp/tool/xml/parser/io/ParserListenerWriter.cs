@@ -77,8 +77,8 @@ namespace iTextSharp.tool.xml.parser.io {
         public void UnknownText(String str) {
         }
 
-        public void Text(byte[] b) {
-            writer.Append(Encoding.ASCII.GetString(b));
+        public void Text(string text) {
+            writer.Append(text);
         }
 
         public void StartElement(String currentTag, IDictionary<String, String> attributes, String ns) {

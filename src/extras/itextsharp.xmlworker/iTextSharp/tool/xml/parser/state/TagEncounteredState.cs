@@ -66,9 +66,9 @@ namespace iTextSharp.tool.xml.parser.state {
          *
          * @see com.itextpdf.tool.xml.parser.State#process(int)
          */
-        public void Process(int character) {
+        public void Process(char character) {
             String tag = this.parser.BufferToString();
-            if (HTMLUtils.IsWhiteSpace((char)character) || character == '>' || character == '/' || character == ':' || tag.Equals("!--") || tag.Equals("![CDATA[")) {
+            if (HTMLUtils.IsWhiteSpace(character) || character == '>' || character == '/' || character == ':' || tag.Equals("!--") || tag.Equals("![CDATA[")) {
                 // cope with <? xml and <! DOCTYPE
                 if (tag.Length > 0) {
                     if (tag.Equals("!--")) {
@@ -89,7 +89,7 @@ namespace iTextSharp.tool.xml.parser.state {
                         this.parser.Flush();
                         parser.SelectState().Doctype();
                         this.parser.Append(character);
-                    } else if (HTMLUtils.IsWhiteSpace((char)character)) {
+                    } else if (HTMLUtils.IsWhiteSpace(character)) {
                         this.parser.Memory().CurrentTag(this.parser.BufferToString());
                         this.parser.Flush();
                         this.parser.SelectState().TagAttributes();

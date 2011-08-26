@@ -454,42 +454,51 @@ namespace iTextSharp.tool.xml.css {
             }
             return f;
         }
+
         /**
-         * Parses an length with an allowed metric unit (px, in, cm, mm, pc, em or ex) or numeric value (e.g. 123, 1.23, .123) to pt.<br />
-         * A numeric value is considered to be in px as is default in HTML/CSS.
+         * Parses a length with an allowed metric unit (px, pt, in, cm, mm, pc, em or ex) or numeric value (e.g. 123, 1.23, .123) to pt.<br />
+         * A numeric value (without px, pt, etc in the given length string) is considered to be in the default metric that was given.
          * @param length the string containing the length.
-         * @return float the parsed length in pt.
+         * @param defaultMetric the string containing the metric if it is possible that the length string does not contain one. If null the length is considered to be in px as is default in HTML/CSS.
+         * @return
          */
-        public float ParsePxInCmMmPcToPt(String length) {
+        public float ParsePxInCmMmPcToPt(String length, String defaultMetric) {
             int pos = DeterminePositionBetweenValueAndUnit(length);
             if (pos == 0)
                 return 0f;
             float f = float.Parse(length.Substring(0, pos), CultureInfo.InvariantCulture);
             String unit = length.Substring(pos);
             // inches
-            if (unit.StartsWith("in")) {
+            if (unit.StartsWith(CSS.Value.IN) || (unit.Equals("") && defaultMetric.Equals(CSS.Value.IN))) {
                 f *= 72f;
             }
             // centimeters
-            else if (unit.StartsWith("cm")) {
+            else if (unit.StartsWith(CSS.Value.CM) || (unit.Equals("") && defaultMetric.Equals(CSS.Value.CM))) {
                 f = (f / 2.54f) * 72f;
             }
             // millimeters
-            else if (unit.StartsWith("mm")) {
+            else if (unit.StartsWith(CSS.Value.MM) || (unit.Equals("") && defaultMetric.Equals(CSS.Value.MM))) {
                 f = (f / 25.4f) * 72f;
             }
             // picas
-            else if (unit.StartsWith("pc")) {
+            else if (unit.StartsWith(CSS.Value.PC) || (unit.Equals("") && defaultMetric.Equals(CSS.Value.PC))) {
                 f *= 12f;
             }
-            // points
-            else if (unit.StartsWith("pt")) {
-            }
-            // default: we assume the length was measured in pixels (1px = 0.75pt).
-            else {
+            // pixels (1px = 0.75pt).
+            else if (unit.StartsWith(CSS.Value.PX) || (unit.Equals("") && defaultMetric.Equals(CSS.Value.PX))) {
                 f *= 0.75f;
             }
             return f;
+        }
+
+        /**
+         * Parses a length with an allowed metric unit (px, pt, in, cm, mm, pc, em or ex) or numeric value (e.g. 123, 1.23, .123) to pt.<br />
+         * A numeric value is considered to be in px as is default in HTML/CSS.
+         * @param length the string containing the length.
+         * @return float the parsed length in pt.
+         */
+        public float ParsePxInCmMmPcToPt(String length) {
+            return ParsePxInCmMmPcToPt(length, CSS.Value.PX);
         }
 
         /**

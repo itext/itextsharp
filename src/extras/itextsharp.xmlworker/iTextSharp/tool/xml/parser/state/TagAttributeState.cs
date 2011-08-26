@@ -64,7 +64,7 @@ namespace iTextSharp.tool.xml.parser.state {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.parser.State#process(int)
          */
-        public void Process(int character) {
+        public void Process(char character) {
             if (character == '/') {
                 // self closing tag detected
                 parser.SelectState().SelfClosing();
@@ -72,7 +72,7 @@ namespace iTextSharp.tool.xml.parser.state {
                 this.parser.Memory().CurrentAttr(this.parser.BufferToString());
                 this.parser.Flush();
                 this.parser.SelectState().AttributeValue();
-            } else if (HTMLUtils.IsWhiteSpace((char)character)){
+            } else if (HTMLUtils.IsWhiteSpace(character)){
                 SetAttribute();
             } else if (character == '>') {
                 CheckAttributeWithNoValue();
@@ -84,7 +84,7 @@ namespace iTextSharp.tool.xml.parser.state {
                 this.parser.StartElement();
                 this.parser.Flush();
                 this.parser.SelectState().Xml();
-            } else if (this.parser.Memory().HasCurrentAttribute() && !HTMLUtils.IsWhiteSpace((char)character)) {
+            } else if (this.parser.Memory().HasCurrentAttribute() && !HTMLUtils.IsWhiteSpace(character)) {
                 // assume attribute with no value, example tag <?formServer defaultPDFRenderFormat acrobat8.1dynamic?>
                 this.parser.Memory().PutCurrentAttrValue("");
                 this.parser.Append(character);

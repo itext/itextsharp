@@ -65,7 +65,7 @@ namespace iTextSharp.tool.xml.parser {
          * Triggered by content.
          * @param text the content encountered between tags.
          */
-        void Text(byte[] text);
+        void Text(string text);
 
         /**
          * Triggered on a closing tag.

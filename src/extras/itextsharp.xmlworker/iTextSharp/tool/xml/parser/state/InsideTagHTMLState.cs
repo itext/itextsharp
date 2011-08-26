@@ -54,7 +54,6 @@ namespace iTextSharp.tool.xml.parser.state {
     public class InsideTagHTMLState : IState {
 
         private XMLParser parser;
-        private int lastChar = ' ';
         private IList<String> noSanitize = new List<String>(1);
         private IList<String> ignoreLastChars = new List<String>(9);
         /**
@@ -87,7 +86,7 @@ namespace iTextSharp.tool.xml.parser.state {
          *
          * @see com.itextpdf.tool.xml.parser.State#process(int)
          */
-        public void Process(int character) {
+        public void Process(char character) {
             if (character == '<') {
                 if (this.parser.BufferSize() > 0) {
                     this.parser.Text(this.parser.Current());
@@ -104,12 +103,12 @@ namespace iTextSharp.tool.xml.parser.state {
                 } else {
                     if (this.parser.Memory().WhitespaceTag().Length != 0) {
                         if (ignoreLastChars.Contains(this.parser.Memory().WhitespaceTag())) {
-                            lastChar = ' ';
+                            parser.Memory().LastChar = ' ';
                         }
                         this.parser.Memory().WhitespaceTag("");
                     }
-                    bool whitespace = HTMLUtils.IsWhiteSpace((char)this.lastChar);
-                    bool noWhiteSpace = !HTMLUtils.IsWhiteSpace((char)character);
+                    bool whitespace = HTMLUtils.IsWhiteSpace(parser.Memory().LastChar);
+                    bool noWhiteSpace = !HTMLUtils.IsWhiteSpace(character);
                     if (!whitespace || (whitespace && noWhiteSpace)) {
                         if (noWhiteSpace) {
                             this.parser.Append(character);
@@ -117,7 +116,7 @@ namespace iTextSharp.tool.xml.parser.state {
                             this.parser.Append(' ');
                         }
                     }
-                    this.lastChar = character;
+                    parser.Memory().LastChar = character;
                 }
             }
         }

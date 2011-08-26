@@ -136,6 +136,8 @@ namespace iTextSharp.tool.xml.net {
                 inp = w.GetResponse().GetResponseStream();
             } else if (isfile) {
                 inp = new FileStream(f, FileMode.Open, FileAccess.Read, FileShare.Read);
+            } else {
+                throw new IOException(LocaleMessages.GetInstance().GetMessage("retrieve.file.from.nothing"));
             }
             Read(processor, inp);
         }

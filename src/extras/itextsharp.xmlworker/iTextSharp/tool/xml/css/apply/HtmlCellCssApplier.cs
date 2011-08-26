@@ -81,7 +81,7 @@ namespace iTextSharp.tool.xml.css.apply {
         public HtmlCell Apply(HtmlCell cell, Tag t) {
             TableStyleValues values = new TableStyleValues();
             Tag table = t.Parent;
-            while (!table.TagName.Equals("table")){
+            while (!table.Name.Equals("table")){
                 table = table.Parent;
             }
             String border;

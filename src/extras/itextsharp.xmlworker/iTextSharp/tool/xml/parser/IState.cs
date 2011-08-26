@@ -53,9 +53,9 @@ namespace iTextSharp.tool.xml.parser {
 
         /**
          * Processes a character and does something with it or does nothing.
-         * @param character the character (int) to process.
+         * @param read the character for processing.
          */
-        void Process(int character);
+        void Process(char read);
 
     }
 }

@@ -129,7 +129,7 @@ namespace iTextSharp.tool.xml {
          *
          * @return the tag name
          */
-        public String TagName {
+        public String Name {
             get {
                 return this.tag;
             }
@@ -182,6 +182,22 @@ namespace iTextSharp.tool.xml {
             get {
                 return this.children;
             }
+        }
+
+        /**
+         * Returns all children of this tag with the given name.
+         * @param name the name of the tags to look for
+         *
+         * @return the children tags of this tag with the given name.
+         */
+        public IList<Tag> GetChildren(String name) {
+            List<Tag> named = new List<Tag>();
+            foreach (Tag child in this.children) {
+                if(child.Name.Equals(name)) {
+                    named.Add(child);
+                }
+            }
+            return named;
         }
 
         /**

@@ -88,7 +88,7 @@ namespace iTextSharp.tool.xml.pipeline {
          * Just calls getNext.
          *
          */
-        public virtual IPipeline Content(IWorkerContext context, Tag t,  byte[] content, ProcessObject po) {
+        public virtual IPipeline Content(IWorkerContext ctx, Tag currentTag,  string text, ProcessObject po) {
             return GetNext();
         }
 
