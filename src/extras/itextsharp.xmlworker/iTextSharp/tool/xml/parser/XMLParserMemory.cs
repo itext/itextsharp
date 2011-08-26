@@ -60,10 +60,11 @@ namespace iTextSharp.tool.xml.parser {
         private String currentAttr;
         private StringBuilder currentEntity = new StringBuilder();
         private StringBuilder comment = new StringBuilder();
-        private MemoryStream baos = new MemoryStream();
+        private StringBuilder baos = new StringBuilder();
         private IDictionary<String, String> attr;
         private String wsTag = "";
         private String currentNameSpace = "";
+        private char lastChar;
 
         /**
          *
@@ -116,7 +117,7 @@ namespace iTextSharp.tool.xml.parser {
          *
          * @return current text buffer
          */
-        public MemoryStream Current() {
+        public StringBuilder Current() {
             return baos;
         }
 
@@ -198,7 +199,16 @@ namespace iTextSharp.tool.xml.parser {
          * Resets the MemoryStream of this class.
          */
         public void ResetBuffer() {
-            this.baos = new MemoryStream();
+            baos.Length = 0;
+        }
+
+        public char LastChar {
+            get {
+                return lastChar;
+            }
+            set {
+                lastChar = value;
+            }
         }
     }
 }

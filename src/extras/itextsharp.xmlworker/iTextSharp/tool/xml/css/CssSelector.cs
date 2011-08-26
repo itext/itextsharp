@@ -81,27 +81,27 @@ namespace iTextSharp.tool.xml.css {
          */
         public IDictionary<String,object> CreateTagSelectors(Tag t) {
             IDictionary<String,object> selectors = new Dictionary<String,object>();
-            selectors[t.TagName] = null;;
+            selectors[t.Name] = null;;
             if (null != t.Parent) {
                 Tag parent = t.Parent;
-                StringBuilder b = new StringBuilder(t.TagName);
-                StringBuilder bStripped = new StringBuilder(t.TagName);
-                StringBuilder bElem = new StringBuilder(t.TagName);
-                StringBuilder bChild = new StringBuilder(t.TagName);
-                StringBuilder bChildSpaced = new StringBuilder(t.TagName);
+                StringBuilder b = new StringBuilder(t.Name);
+                StringBuilder bStripped = new StringBuilder(t.Name);
+                StringBuilder bElem = new StringBuilder(t.Name);
+                StringBuilder bChild = new StringBuilder(t.Name);
+                StringBuilder bChildSpaced = new StringBuilder(t.Name);
                 Tag child = t;
                 while (null != parent) {
                     if (parent.Children.IndexOf(child) == 0) {
-                        bChild.Insert(0, '+').Insert(0, parent.TagName);
-                        bChildSpaced.Insert(0, " + ").Insert(0, parent.TagName);
+                        bChild.Insert(0, '+').Insert(0, parent.Name);
+                        bChildSpaced.Insert(0, " + ").Insert(0, parent.Name);
                         selectors[bChild.ToString()] = null;
                         selectors[bChildSpaced.ToString()] = null;
                     }
-                    b.Insert(0, " > ").Insert(0, parent.TagName);
+                    b.Insert(0, " > ").Insert(0, parent.Name);
                     selectors[b.ToString()] = null;;
-                    bStripped.Insert(0, ">").Insert(0, parent.TagName);
+                    bStripped.Insert(0, ">").Insert(0, parent.Name);
                     selectors[bStripped.ToString()] = null;;
-                    bElem.Insert(0, ' ').Insert(0, parent.TagName);
+                    bElem.Insert(0, ' ').Insert(0, parent.Name);
                     selectors[bElem.ToString()] = null;
                     child = parent;
                     parent = parent.Parent;

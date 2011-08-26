@@ -95,7 +95,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          */
         public override IPipeline Open(IWorkerContext context, Tag t, ProcessObject po) {
             try {
-                String tagName = t.TagName;
+                String tagName = t.Name;
                 if (tag.Equals(tagName)) {
                     MapContext cc;
                     cc = (MapContext) context.Get(typeof(PdfWriterPipeline).FullName);
@@ -111,7 +111,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
                     }
 
                 }
-                if (Util.EqualsIgnoreCase(t.TagName, opentag)) {
+                if (Util.EqualsIgnoreCase(t.Name, opentag)) {
                     MapContext cc;
                     cc = (MapContext) context.Get(typeof(PdfWriterPipeline).FullName);
                     Document d = (Document) cc[PdfWriterPipeline.DOCUMENT];
@@ -154,7 +154,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * .xml.Tag, com.itextpdf.tool.xml.pipeline.ProcessObject)
          */
         public override IPipeline Close(IWorkerContext context, Tag t, ProcessObject po) {
-            String tagName = t.TagName;
+            String tagName = t.Name;
             if (tag.Equals(tagName)) {
                 MapContext cc;
                 try {

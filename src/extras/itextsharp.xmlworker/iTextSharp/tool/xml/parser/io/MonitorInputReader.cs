@@ -69,9 +69,9 @@ namespace iTextSharp.tool.xml.parser.io {
         /**
          * Currently the only overridden method that sends data to the given monitor.
          */
-        public override int Read() {
-            int i = reader.Read();
-            monitor.Read(i);
+        public override int Read(char[] buffer, int index, int count) {
+            int i = reader.Read(buffer, index, count);
+            monitor.Read(buffer, index, i);
             return i;
         }
 

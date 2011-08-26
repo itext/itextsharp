@@ -122,7 +122,12 @@ namespace iTextSharp.tool.xml.css {
             public const String PAGE_BREAK_AFTER = "page-break-after";
             public const String REPEAT_HEADER = "repeat-header";
             public const String REPEAT_FOOTER = "repeat-footer";
-            public const String LEFT = "LEFT";
+		    public const String LEFT = "left";
+		    public const String DISPLAY = "display";
+		    public const String MIN_WIDTH = "min-width";
+		    public const String MAX_WIDTH = "max-width";
+		    public static readonly Object MIN_HEIGHT = "min-height";
+		    public static readonly Object MAX_HEIGHT = "max-height";
         }
 
         /**
@@ -199,6 +204,8 @@ namespace iTextSharp.tool.xml.css {
             public const String EM = "em";
             public const String EX = "ex";
             public const String ALWAYS = "always";
+            public const String ABSOLUTE = "absolute";
+            public const String AUTO = "auto";
         }
     }
 }

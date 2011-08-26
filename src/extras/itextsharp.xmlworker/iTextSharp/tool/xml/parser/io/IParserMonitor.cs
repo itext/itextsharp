@@ -55,6 +55,6 @@ namespace iTextSharp.tool.xml.parser.io {
          * Called when read is called.
          * @param i the int read.
          */
-        void Read(int i);
+        void Read(char[] c, int offset, int length);
     }
 }

@@ -162,7 +162,7 @@ namespace iTextSharp.tool.xml.css {
             }
             // inherit css from parent tags, as defined in provided CssInheritanceRules or if property = inherit
             IDictionary<String, String> css = t.CSS;
-            if (MustInherit(t.TagName) && null != t.Parent && null != t.Parent.CSS) {
+            if (MustInherit(t.Name) && null != t.Parent && null != t.Parent.CSS) {
                 if (null != this.inherit) {
                     foreach (KeyValuePair<String, String> entry in t.Parent.CSS) {
                         String key = entry.Key;

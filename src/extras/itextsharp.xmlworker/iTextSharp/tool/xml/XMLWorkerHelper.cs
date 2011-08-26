@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Text;
 using System.Reflection;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
@@ -62,7 +63,8 @@ namespace iTextSharp.tool.xml {
     public class XMLWorkerHelper {
 
         private static XMLWorkerHelper myself = new XMLWorkerHelper();
-        private static ICssFile defaultCssFile;
+        private ICssFile defaultCssFile;
+        private ITagProcessorFactory tpf;
 
         /**
          * Get a Singleton XMLWorkerHelper
@@ -84,7 +86,7 @@ namespace iTextSharp.tool.xml {
          * @return the default css file.
          */
         public ICssFile GetDefaultCSS() {
-            if (null == XMLWorkerHelper.defaultCssFile) {
+            if (null == defaultCssFile) {
                 Stream inp = Assembly.GetExecutingAssembly().GetManifestResourceStream("iTextSharp.tool.xml.css.default.css");
                 if (null != inp) {
                     CssFileProcessor cssFileProcessor = new CssFileProcessor();
@@ -93,7 +95,7 @@ namespace iTextSharp.tool.xml {
                         while (-1 != (i = inp.ReadByte())) {
                             cssFileProcessor.Process((char) i);
                         }
-                        XMLWorkerHelper.defaultCssFile = new CSSFileWrapper(cssFileProcessor.GetCss(), true);
+                        defaultCssFile = new CSSFileWrapper(cssFileProcessor.GetCss(), true);
                     } catch (IOException e) {
                         throw new RuntimeWorkerException(e);
                     } finally {
@@ -123,11 +125,12 @@ namespace iTextSharp.tool.xml {
             cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
             HtmlPipelineContext hpc = new HtmlPipelineContext();
-            hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(Tags.GetHtmlTagProcessorFactory());
+            hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(GetDefaultTagProcessorFactory());
             IPipeline pipeline = new CssResolverPipeline(cssResolver, new HtmlPipeline(hpc, new ElementHandlerPipeline(d,
                     null)));
             XMLWorker worker = new XMLWorker(pipeline, true);
-            XMLParser p = new XMLParser(true, worker);
+            XMLParser p = new XMLParser();
+            p.AddListener(worker);
             p.Parse(inp);
         }
 
@@ -146,11 +149,12 @@ namespace iTextSharp.tool.xml {
             cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
             HtmlPipelineContext hpc = new HtmlPipelineContext();
-            hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(Tags.GetHtmlTagProcessorFactory());
+            hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(GetDefaultTagProcessorFactory());
             IPipeline pipeline = new CssResolverPipeline(cssResolver, new HtmlPipeline(hpc, new PdfWriterPipeline(doc,
                     writer)));
             XMLWorker worker = new XMLWorker(pipeline, true);
-            XMLParser p = new XMLParser(true, worker);
+            XMLParser p = new XMLParser();
+            p.AddListener(worker);
             p.Parse(inp);
         }
 
@@ -160,16 +164,16 @@ namespace iTextSharp.tool.xml {
          * @param inp
          * @throws IOException
          */
-        public void ParseXHtml(PdfWriter writer, Document doc, Stream inp) {
+        public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Encoding charset) {
             CssFilesImpl cssFiles = new CssFilesImpl();
             cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
             HtmlPipelineContext hpc = new HtmlPipelineContext();
-            hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(Tags.GetHtmlTagProcessorFactory());
+            hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(GetDefaultTagProcessorFactory());
             IPipeline pipeline = new CssResolverPipeline(cssResolver, new HtmlPipeline(hpc, new PdfWriterPipeline(doc,
                     writer)));
             XMLWorker worker = new XMLWorker(pipeline, true);
-            XMLParser p = new XMLParser(true, worker);
+            XMLParser p = new XMLParser(true, worker, charset);
             p.Parse(inp);
         }
 
@@ -178,16 +182,16 @@ namespace iTextSharp.tool.xml {
          * @param inp the Stream
          * @throws IOException if something went seriously wrong with IO.
          */
-        public void ParseXHtml(IElementHandler d, Stream inp) {
+        public void ParseXHtml(IElementHandler d, Stream inp, Encoding charset) {
             CssFilesImpl cssFiles = new CssFilesImpl();
             cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
             HtmlPipelineContext hpc = new HtmlPipelineContext();
-            hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(Tags.GetHtmlTagProcessorFactory());
+            hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(GetDefaultTagProcessorFactory());
             IPipeline pipeline = new CssResolverPipeline(cssResolver, new HtmlPipeline(hpc, new ElementHandlerPipeline(d,
                     null)));
             XMLWorker worker = new XMLWorker(pipeline, true);
-            XMLParser p = new XMLParser(true, worker);
+            XMLParser p = new XMLParser(true, worker, charset);
             p.Parse(inp);
         }
 
@@ -204,6 +208,20 @@ namespace iTextSharp.tool.xml {
                 resolver.AddCss(GetDefaultCSS());
             }
             return resolver;
+        }
+
+        /**
+         * Retrieves the default factory for processing HTML tags from
+         * {@link Tags#getHtmlTagProcessorFactory()}. On subsequent calls the same
+         * {@link TagProcessorFactory} is returned every time. <br />
+         * @return a
+         *         <code>DefaultTagProcessorFactory<code> that maps HTML tags to {@link TagProcessor}s
+         */
+        protected internal ITagProcessorFactory GetDefaultTagProcessorFactory() {
+            if (null == tpf) {
+                tpf = Tags.GetHtmlTagProcessorFactory();
+            }
+            return tpf;
         }
     }
 }

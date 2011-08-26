@@ -74,7 +74,7 @@ namespace iTextSharp.tool.xml.css.apply {
          * @see com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag)
          */
         public Paragraph Apply(Paragraph p, Tag t) {
-            if (this.configuration.GetRootTags().Contains(t.TagName)) {
+            if (this.configuration.GetRootTags().Contains(t.Name)) {
                 m.SetLeading(t);
             } else {
                 m.SetVariablesBasedOnChildren(t);
@@ -121,7 +121,7 @@ namespace iTextSharp.tool.xml.css.apply {
             }
             // setDefaultMargin to largestFont if no margin-bottom is set and p-tag is child of the root tag.
             if (null != t.Parent) {
-                String parent = t.Parent.TagName;
+                String parent = t.Parent.Name;
                 if (!css.ContainsKey(CSS.Property.MARGIN_TOP) && configuration.GetRootTags().Contains(parent)) {
                     p.SpacingBefore = p.SpacingBefore+utils.CalculateMarginTop(fontSize.ToString(CultureInfo.InvariantCulture)+"pt", 0, configuration);
                 }

@@ -63,7 +63,7 @@ namespace iTextSharp.tool.xml.parser.state {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.parser.State#process(int)
          */
-        public void Process(int character) {
+        public void Process(char character) {
             if (character == '-') {
                 this.parser.Memory().Comment().Append('-');
                 parser.SelectState().CloseComment();

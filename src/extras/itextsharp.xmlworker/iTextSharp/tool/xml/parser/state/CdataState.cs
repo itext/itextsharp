@@ -64,13 +64,13 @@ namespace iTextSharp.tool.xml.parser.state {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.parser.State#process(int)
          */
-        public void Process(int character) {
+        public void Process(char character) {
             if (character == '>' && "]]".Equals(this.parser.Memory().Comment().ToString()) ) {
                 this.parser.Memory().Comment().Length = 0;
                 this.parser.Flush();
                 this.parser.SelectState().InTag();
             } else if (character == ']') {
-                this.parser.Memory().Comment().Append((char) character);
+                this.parser.Memory().Comment().Append(character);
             } else {
                 this.parser.Memory().Comment().Length = 0;
             }

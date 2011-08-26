@@ -65,7 +65,7 @@ namespace iTextSharp.tool.xml.parser.state {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.parser.State#process(int)
          */
-        public void Process(int character) {
+        public void Process(char character) {
             StringBuilder entity = this.parser.Memory().CurrentEntity();
             if (character == ';') {
     //          if ("nbsp".Equals(entity.ToString())) {
@@ -73,20 +73,22 @@ namespace iTextSharp.tool.xml.parser.state {
     //          } else {
                     char decoded = EntitiesToUnicode.DecodeEntity(entity.ToString());
                     if (decoded == '\0') {
-                        parser.Append('&').Append(Encoding.ASCII.GetBytes(entity.ToString())).Append(';');
+                        parser.Append('&').Append(entity.ToString()).Append(';');
+                        parser.Memory().LastChar = ';';
                     } else {
                         parser.Append(decoded);
+                        parser.Memory().LastChar = decoded;
                     }
     //          }
                 parser.SelectState().InTag();
                 this.parser.Memory().CurrentEntity().Length = 0;
              } else if (character != '#' && (character < '0' || character > '9') && (character < 'a' || character > 'z')
                     && (character < 'A' || character > 'Z') || entity.Length >= 7) {
-                 parser.Append('&').Append(Encoding.ASCII.GetBytes(entity.ToString()));
+                 parser.Append('&').Append(entity.ToString());
                  parser.SelectState().InTag();
                  this.parser.Memory().CurrentEntity().Length = 0;
             } else {
-                entity.Append((char) character);
+                entity.Append(character);
             }
         }
     }

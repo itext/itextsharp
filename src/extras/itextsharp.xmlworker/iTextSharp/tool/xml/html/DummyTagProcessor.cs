@@ -70,11 +70,5 @@ namespace iTextSharp.tool.xml.html {
         public bool IsStackOwner() {
             return false;
         }
-
-        /* (non-Javadoc)
-         * @see com.itextpdf.tool.xml.html.ITagProcessor#setContext(com.itextpdf.tool.xml.WorkerContext)
-         */
-        public void SetContext(IWorkerContext context) {
-        }
     }
 }

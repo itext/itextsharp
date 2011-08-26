@@ -89,7 +89,7 @@ namespace iTextSharp.tool.xml.pipeline.end {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.pipeline.AbstractPipeline#content(com.itextpdf.tool.xml.Tag, java.lang.String, com.itextpdf.tool.xml.pipeline.ProcessObject)
          */
-        public override IPipeline Content(IWorkerContext context, Tag t, byte[] content, ProcessObject po) {
+        public override IPipeline Content(IWorkerContext context, Tag t, string text, ProcessObject po) {
             Consume(context, po);
             return GetNext();
         }

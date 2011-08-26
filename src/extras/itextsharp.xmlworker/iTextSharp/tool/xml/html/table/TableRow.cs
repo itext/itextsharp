@@ -62,11 +62,11 @@ namespace iTextSharp.tool.xml.html.table {
         public override IList<IElement> End(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
             TableRowElement row = null;
             IList<IElement> l = new List<IElement>(1);
-            if (Util.EqualsIgnoreCase(tag.Parent.TagName, HTML.Tag.THEAD)) {
+            if (Util.EqualsIgnoreCase(tag.Parent.Name, HTML.Tag.THEAD)) {
                 row = new TableRowElement(currentContent, TableRowElement.Place.HEADER);
-            } else if (Util.EqualsIgnoreCase(tag.Parent.TagName, HTML.Tag.TBODY)) {
+            } else if (Util.EqualsIgnoreCase(tag.Parent.Name, HTML.Tag.TBODY)) {
                 row = new TableRowElement(currentContent, TableRowElement.Place.BODY);
-            } else if (Util.EqualsIgnoreCase(tag.Parent.TagName, HTML.Tag.TFOOT)) {
+            } else if (Util.EqualsIgnoreCase(tag.Parent.Name, HTML.Tag.TFOOT)) {
                 row = new TableRowElement(currentContent, TableRowElement.Place.FOOTER);
             } else {
                 row = new TableRowElement(currentContent, TableRowElement.Place.BODY);

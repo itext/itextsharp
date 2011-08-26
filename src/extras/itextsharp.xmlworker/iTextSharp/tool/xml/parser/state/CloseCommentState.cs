@@ -64,7 +64,7 @@ namespace iTextSharp.tool.xml.parser.state {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.parser.State#process(int)
          */
-        public void Process(int character) {
+        public void Process(char character) {
             if (character == '-') {
                 this.parser.Memory().Comment().Append('-');
             } else if (character == '>' && this.parser.Memory().Comment().Length == 2) {
@@ -73,7 +73,7 @@ namespace iTextSharp.tool.xml.parser.state {
                 this.parser.Flush();
                 parser.SelectState().InTag();
             } else  {
-                this.parser.Append(Encoding.ASCII.GetBytes(this.parser.Memory().Comment().ToString()));
+                this.parser.Append(this.parser.Memory().Comment().ToString());
                 this.parser.Memory().Comment().Length = 0;
                 parser.SelectState().Comment();
             }

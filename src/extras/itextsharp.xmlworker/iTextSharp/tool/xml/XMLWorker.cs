@@ -83,7 +83,7 @@ namespace iTextSharp.tool.xml {
         public void Init()  {
             IPipeline p = rootpPipe;
             try {
-                while ((p = p.Init((IWorkerContext)Thread.GetData(context)))!= null);
+                while ((p = p.Init(GetLocalWC()))!= null);
             } catch (PipelineException e) {
                 throw new RuntimeWorkerException(e);
             }
@@ -91,7 +91,7 @@ namespace iTextSharp.tool.xml {
 
         public void StartElement(String tag, IDictionary<String, String> attr, String ns) {
             Tag t = CreateTag(tag, attr, ns);
-            WorkerContextImpl ctx = (WorkerContextImpl)Thread.GetData(context);
+            WorkerContextImpl ctx = (WorkerContextImpl)GetLocalWC();
             if (null != ctx.GetCurrentTag()) {
                 ctx.GetCurrentTag().AddChild(t);
             }
@@ -143,11 +143,11 @@ namespace iTextSharp.tool.xml {
             } else {
                 thetag = tag;
             }
-            WorkerContextImpl ctx = (WorkerContextImpl)Thread.GetData(context);
-            if (null != ctx.GetCurrentTag() && !thetag.Equals(ctx.GetCurrentTag().TagName)) {
+            IWorkerContext ctx = GetLocalWC();
+            if (null != ctx.GetCurrentTag() && !thetag.Equals(ctx.GetCurrentTag().Name)) {
                 throw new RuntimeWorkerException(String.Format(
                         LocaleMessages.GetInstance().GetMessage(LocaleMessages.INVALID_NESTED_TAG), thetag,
-                        ctx.GetCurrentTag().TagName));
+                        ctx.GetCurrentTag().Name));
             }
             IPipeline wp = rootpPipe;
             ProcessObject po = new ProcessObject();
@@ -167,14 +167,14 @@ namespace iTextSharp.tool.xml {
          * {@link Pipeline#content(WorkerContext, Tag, byte[], ProcessObject)}
          * method.
          */
-        public void Text(byte[] b) {
-            WorkerContextImpl ctx = (WorkerContextImpl)Thread.GetData(context);
+        public void Text(String text) {
+            IWorkerContext ctx = GetLocalWC();
             if (null != ctx.GetCurrentTag()) {
-                if (b.Length > 0) {
+                if (text.Length > 0) {
                     IPipeline wp = rootpPipe;
                     ProcessObject po = new ProcessObject();
                     try {
-                        while (null != (wp = wp.Content(ctx, ctx.GetCurrentTag(), b, po)))
+                        while (null != (wp = wp.Content(ctx, ctx.GetCurrentTag(), text, po)))
                             ;
                     } catch (PipelineException e) {
                         throw new RuntimeWorkerException(e);
@@ -212,8 +212,17 @@ namespace iTextSharp.tool.xml {
          * @return the current tag
          */
         protected internal Tag GetCurrentTag() {
-            WorkerContextImpl ctx = (WorkerContextImpl)Thread.GetData(context);
-            return ctx.GetCurrentTag();
+            return GetLocalWC().GetCurrentTag();
         }
-    }
+
+        /**
+         * Returns the local WorkerContext, beware: could be a newly initialized
+         * one, if {@link XMLWorker#close()} has been called before.
+         *
+         * @return the local WorkerContext
+         */
+        protected internal IWorkerContext GetLocalWC() {
+            return (IWorkerContext)Thread.GetData(context);
+        }
+}
 }

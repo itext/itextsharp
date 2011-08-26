@@ -104,7 +104,7 @@ namespace iTextSharp.tool.xml.html {
          * @return
          */
         private int GetLevel(Tag tag) {
-            return int.Parse(tag.TagName.Substring(1,1));
+            return int.Parse(tag.Name.Substring(1,1));
         }
 
         /*
