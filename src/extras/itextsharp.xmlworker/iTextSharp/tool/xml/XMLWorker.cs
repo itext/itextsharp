@@ -222,7 +222,12 @@ namespace iTextSharp.tool.xml {
          * @return the local WorkerContext
          */
         protected internal IWorkerContext GetLocalWC() {
-            return (IWorkerContext)Thread.GetData(context);
+            IWorkerContext ik = (IWorkerContext)Thread.GetData(context);
+            if (ik == null) {
+                ik = new WorkerContextImpl();
+                Thread.SetData(context, ik);
+            }
+            return ik;
         }
-}
+    }
 }
