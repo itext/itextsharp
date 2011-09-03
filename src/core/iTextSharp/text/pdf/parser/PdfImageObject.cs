@@ -74,6 +74,7 @@ namespace iTextSharp.text.pdf.parser {
         public const string TYPE_JPG = "jpg";
         public const string TYPE_JP2 = "jp2";
         public const string TYPE_TIF = "tif";
+        public const string TYPE_JBIG2 = "jbig2";
         
         protected string fileType;
 
@@ -208,6 +209,9 @@ namespace iTextSharp.text.pdf.parser {
                 }
                 else if (PdfName.JPXDECODE.Equals(filter)) {
                     fileType = TYPE_JP2;
+                    return streamBytes;
+                } else if (PdfName.JBIG2DECODE.Equals(filter)){
+                    fileType = TYPE_JBIG2;
                     return streamBytes;
                 }
                 throw new UnsupportedPdfException("Unsupported stream filter " + filter);
