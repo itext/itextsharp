@@ -185,7 +185,11 @@ namespace iTextSharp.text.pdf.parser {
                 this.endLocation = endLocation;
                 this.charSpaceWidth = charSpaceWidth;
                 
-                orientationVector = endLocation.Subtract(startLocation).Normalize();
+                Vector oVector = endLocation.Subtract(startLocation);
+                if (oVector.Length == 0) {
+                    oVector = new Vector(1, 0, 0);
+                }
+                orientationVector = oVector.Normalize();
                 orientationMagnitude = (int)(Math.Atan2(orientationVector[Vector.I2], orientationVector[Vector.I1])*1000);
 
                 // see http://mathworld.wolfram.com/Point-LineDistance2-Dimensional.html
