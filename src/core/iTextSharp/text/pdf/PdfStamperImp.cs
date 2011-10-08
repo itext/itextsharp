@@ -1250,11 +1250,14 @@ namespace iTextSharp.text.pdf {
 
         internal void DeleteOutlines() {
             PdfDictionary catalog = reader.Catalog;
-            PRIndirectReference outlines = (PRIndirectReference)catalog.Get(PdfName.OUTLINES);
-            if (outlines == null)
+            PdfObject obj = catalog.Get(PdfName.OUTLINES);
+            if (obj == null)
                 return;
-            OutlineTravel(outlines);
-            PdfReader.KillIndirect(outlines);
+            if (obj is PRIndirectReference) {
+                PRIndirectReference outlines = (PRIndirectReference)obj;
+                OutlineTravel(outlines);
+                PdfReader.KillIndirect(outlines);
+            }
             catalog.Remove(PdfName.OUTLINES);
             MarkUsed(catalog);
         }

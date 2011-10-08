@@ -620,6 +620,14 @@ public class ColumnText {
     }
 
     /**
+     * Simplified method for rectangular columns.
+     * @param rect  the rectangle for the column
+     */
+    public void SetSimpleColumn(Rectangle rect) {
+        SetSimpleColumn(rect.Left, rect.Bottom, rect.Right, rect.Top);
+    }
+
+    /**
      * Sets the leading fixed and variable. The resultant leading will be
      * fixedLeading+multipliedLeading*maxFontSize where maxFontSize is the
      * size of the bigest font in the line.
@@ -670,6 +678,15 @@ public class ColumnText {
         }
     }
     
+    /**
+     * Gets the number of rows that were drawn when a table is involved.
+     */
+    public int RowsDrawn {
+        get {
+            return rowIdx;
+        }
+    }
+
     /**
      * Gets the Element.
      * @return the alignment
@@ -1530,6 +1547,12 @@ public class ColumnText {
      */
     public bool ZeroHeightElement() {
         return composite && compositeElements.Count != 0 && ((IElement)compositeElements[0]).Type == Element.YMARK;
+    }
+
+    public IList<IElement> CompositeElements {
+        get {
+    	    return compositeElements;
+        }
     }
 
     /**

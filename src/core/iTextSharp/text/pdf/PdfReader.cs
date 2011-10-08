@@ -2145,7 +2145,7 @@ namespace iTextSharp.text.pdf {
         }
         
         /**
-         * Decode a byte[] applying the filters specified in the provided dictionary.
+         * Decode a byte[] applying the filters specified in the provided dictionary using default filter handlers.
          * @param b the bytes to decode
          * @param streamDictionary the dictionary that contains filter information
          * @return the decoded bytes
@@ -2153,6 +2153,19 @@ namespace iTextSharp.text.pdf {
          * @since 5.0.4
          */
         public static byte[] DecodeBytes(byte[] b, PdfDictionary streamDictionary) {
+            return DecodeBytes(b, streamDictionary, FilterHandlers.GetDefaultFilterHandlers());
+        }
+        
+        /**
+         * Decode a byte[] applying the filters specified in the provided dictionary using the provided filter handlers.
+         * @param b the bytes to decode
+         * @param streamDictionary the dictionary that contains filter information
+         * @param filterHandlers the map used to look up a handler for each type of filter
+         * @return the decoded bytes
+         * @throws IOException if there are any problems decoding the bytes
+         * @since 5.0.4
+         */
+        public static byte[] DecodeBytes(byte[] b, PdfDictionary streamDictionary, IDictionary<PdfName, FilterHandlers.IFilterHandler> filterHandlers) {
             PdfObject filter = GetPdfObjectRelease(streamDictionary.Get(PdfName.FILTER));
             List<PdfObject> filters = new List<PdfObject>();
             if (filter != null) {
@@ -2171,89 +2184,28 @@ namespace iTextSharp.text.pdf {
                 else if (dpo.IsArray())
                     dp = ((PdfArray)dpo).ArrayList;
             }
-            PdfName name;
             for (int j = 0; j < filters.Count; ++j) {
-                name = ((PdfName)GetPdfObjectRelease(filters[j]));
-                if (PdfName.FLATEDECODE.Equals(name) || PdfName.FL.Equals(name)) {
-                    b = FlateDecode(b);
-                    PdfObject dicParam = null;
-                    if (j < dp.Count) {
-                        dicParam = (PdfObject)dp[j];
-                        b = DecodePredictor(b, dicParam);
+                PdfName filterName = (PdfName)filters[j];
+                FilterHandlers.IFilterHandler filterHandler;
+                filterHandlers.TryGetValue(filterName, out filterHandler);
+                if (filterHandler == null)
+                    throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("the.filter.1.is.not.supported", filterName));
+                
+                PdfDictionary decodeParams;
+                if (j < dp.Count){
+                    PdfObject dpEntry = GetPdfObject(dp[j]);
+                    if (dpEntry is PdfDictionary){
+                        decodeParams = (PdfDictionary)dpEntry;
+                    } else if (dpEntry == null || dpEntry is PdfNull) {
+                        decodeParams = null;
+                    } else {
+                        throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("the.decode.parameter.type.1.is.not.supported", dpEntry.GetType().FullName));
                     }
+                    
+                } else {
+                    decodeParams = null;
                 }
-                else if (PdfName.ASCIIHEXDECODE.Equals(name) || PdfName.AHX.Equals(name))
-                    b = ASCIIHexDecode(b);
-                else if (PdfName.ASCII85DECODE.Equals(name) || PdfName.A85.Equals(name))
-                    b = ASCII85Decode(b);
-                else if (PdfName.LZWDECODE.Equals(name)) {
-                    b = LZWDecode(b);
-                    PdfObject dicParam = null;
-                    if (j < dp.Count) {
-                        dicParam = (PdfObject)dp[j];
-                        b = DecodePredictor(b, dicParam);
-                    }
-                }
-                else if (PdfName.CCITTFAXDECODE.Equals(name)) {
-                    PdfNumber wn = (PdfNumber)GetPdfObjectRelease(streamDictionary.Get(PdfName.WIDTH));
-                    PdfNumber hn = (PdfNumber)GetPdfObjectRelease(streamDictionary.Get(PdfName.HEIGHT));
-                    if (wn == null || hn == null)
-                        throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("filter.ccittfaxdecode.is.only.supported.for.images"));
-                    int width = wn.IntValue;
-                    int height = hn.IntValue;
-                    PdfDictionary param = null;
-                    if (j < dp.Count) {
-                        PdfObject objParam = GetPdfObjectRelease((PdfObject)dp[j]);
-                        if (objParam != null && (objParam is PdfDictionary))
-                            param = (PdfDictionary)objParam;
-                    }
-                    int k = 0;
-                    bool blackIs1 = false;
-                    bool byteAlign = false;
-                    if (param != null) {
-                        PdfNumber kn = param.GetAsNumber(PdfName.K);
-                        if (kn != null)
-                            k = kn.IntValue;
-                        PdfBoolean bo = param.GetAsBoolean(PdfName.BLACKIS1);
-                        if (bo != null)
-                            blackIs1 = bo.BooleanValue;
-                        bo = param.GetAsBoolean(PdfName.ENCODEDBYTEALIGN);
-                        if (bo != null)
-                            byteAlign = bo.BooleanValue;
-                    }
-                    byte[] outBuf = new byte[(width + 7) / 8 * height];
-                    TIFFFaxDecompressor decoder = new TIFFFaxDecompressor();
-                    if (k == 0 || k > 0) {
-                        int tiffT4Options = k > 0 ? TIFFConstants.GROUP3OPT_2DENCODING : 0;
-                        tiffT4Options |= byteAlign ? TIFFConstants.GROUP3OPT_FILLBITS : 0;
-                        decoder.SetOptions(1, TIFFConstants.COMPRESSION_CCITTFAX3, tiffT4Options, 0);
-                        decoder.DecodeRaw(outBuf, b, width, height);
-                        if (decoder.fails > 0) {
-                            byte[] outBuf2 = new byte[(width + 7) / 8 * height];
-                            int oldFails = decoder.fails;
-                            decoder.SetOptions(1, TIFFConstants.COMPRESSION_CCITTRLE, tiffT4Options, 0);
-                            decoder.DecodeRaw(outBuf2, b, width, height);
-                            if (decoder.fails < oldFails) {
-                                outBuf = outBuf2;
-                            }
-                        }
-                    }
-                    else {
-                        TIFFFaxDecoder deca = new TIFFFaxDecoder(1, width, height);
-                        deca.DecodeT6(outBuf, b, 0, height, 0);
-                    }
-                    if (!blackIs1) {
-                        int len = outBuf.Length;
-                        for (int t = 0; t < len; ++t) {
-                            outBuf[t] ^= 0xff;
-                        }
-                    }
-                    b = outBuf;
-                }
-                else if (PdfName.CRYPT.Equals(name)) {
-                }
-                else
-                    throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("the.filter.1.is.not.supported", name));
+                b = filterHandler.Decode(b, filterName, decodeParams, streamDictionary);
             }
             return b;
         }

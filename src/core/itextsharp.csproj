@@ -4097,6 +4097,7 @@
     <Compile Include="iTextSharp\text\pdf\codec\LZWCompressor.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWStringTable.cs" />
     <Compile Include="iTextSharp\text\pdf\crypto\AESCipherCBCnoPad.cs" />
+    <Compile Include="iTextSharp\text\pdf\FilterHandlers.cs" />
     <Compile Include="iTextSharp\text\pdf\NumberArray.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\InlineImageUtils.cs" />
     <Compile Include="iTextSharp\text\pdf\IPdfPTableEventSplit.cs" />

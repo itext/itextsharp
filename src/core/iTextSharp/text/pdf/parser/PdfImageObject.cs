@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Drawing;
+using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.codec;
 using iTextSharp.text.exceptions;
@@ -56,10 +58,56 @@ namespace iTextSharp.text.pdf.parser {
      */
     public class PdfImageObject {
 
+        /**
+         * Different types of data that can be stored in the bytes of a {@link PdfImageObject}
+         * @since 5.0.4
+         */
+        public sealed class ImageBytesType{
+            public static readonly ImageBytesType PNG = new ImageBytesType("png"); // the stream contains png encoded data
+            public static readonly ImageBytesType JPG = new ImageBytesType("jpg"); // the stream contains jpg encoded data
+            public static readonly ImageBytesType JP2 = new ImageBytesType("jp2"); // the stream contains jp2 encoded data
+            public static readonly ImageBytesType CCITT = new ImageBytesType("tif"); // the stream contains ccitt encoded data
+            public static readonly ImageBytesType JBIG2 = new ImageBytesType("jbig2"); // the stream contains JBIG2 encoded data
+            
+            /**
+             * the recommended file extension for streams of this type
+             */
+            private String fileExtension;
+            
+            /**
+             * @param fileExtension the recommended file extension for use with data of this type (for example, if the bytes were just saved to a file, what extension should the file have)
+             */
+            private ImageBytesType(String fileExtension) {
+                this.fileExtension = fileExtension;
+            }
+            
+            /**
+             * @return the file extension registered when this type was created
+             */
+            public String FileExtension {
+                get {
+                    return fileExtension;
+                }
+            }
+        }
+
+        /**
+         * A filter that does nothing, but keeps track of the filter type that was used
+         * @since 5.0.4 
+         */
+        private sealed class TrackingFilter : FilterHandlers.IFilterHandler{
+            public PdfName lastFilterName = null;
+            
+            public byte[] Decode(byte[] b, PdfName filterName, PdfObject decodeParams, PdfDictionary streamDictionary) {
+                lastFilterName = filterName;
+                return b;
+            }
+        }
+
         /** The image dictionary. */
         private PdfDictionary dictionary;
         /** The decoded image bytes (after applying filters), or the raw image bytes if unable to decode */
-        private byte[] streamBytes;
+        private byte[] imageBytes;
 
         private int pngColorType = -1;
         private int pngBitDepth;
@@ -69,19 +117,23 @@ namespace iTextSharp.text.pdf.parser {
         private byte[] palette;
         private byte[] icc;
         private int stride;
-        private bool decoded;
-        public const string TYPE_PNG = "png";
-        public const string TYPE_JPG = "jpg";
-        public const string TYPE_JP2 = "jp2";
-        public const string TYPE_TIF = "tif";
-        public const string TYPE_JBIG2 = "jbig2";
         
-        protected string fileType;
+        /**
+         * Tracks the type of data that is actually stored in the streamBytes member
+         */
+        private ImageBytesType streamContentType = null;
 
         public string GetFileType() {
-            return fileType;
+            return streamContentType.FileExtension;
         }
 
+        /**
+         * @return the type of image data that is returned by getImageBytes()
+         */
+        public ImageBytesType GetImageBytesType(){
+            return streamContentType;
+        }
+        
         /**
          * Creates a PdfImage object.
          * @param stream a PRStream
@@ -98,13 +150,23 @@ namespace iTextSharp.text.pdf.parser {
          */
         protected internal PdfImageObject(PdfDictionary dictionary, byte[] samples)  {
             this.dictionary = dictionary;
-            try{
-                streamBytes = PdfReader.DecodeBytes(samples, dictionary);
-                decoded = true;
-            } catch (UnsupportedPdfException){
-                // it's possible that the filter type was jpx or jpg, in which case we can still use the streams as-is, so we'll just hold onto the samples
-                streamBytes = samples;
-                decoded = false;
+            TrackingFilter trackingFilter = new TrackingFilter();
+            IDictionary<PdfName, FilterHandlers.IFilterHandler> handlers = new Dictionary<PdfName, FilterHandlers.IFilterHandler>(FilterHandlers.GetDefaultFilterHandlers());
+            handlers[PdfName.JBIG2DECODE] = trackingFilter;
+            handlers[PdfName.DCTDECODE] = trackingFilter;
+            handlers[PdfName.JPXDECODE] = trackingFilter;
+
+            imageBytes = PdfReader.DecodeBytes(samples, dictionary, handlers);
+            
+            if (trackingFilter.lastFilterName != null){
+                if (PdfName.JBIG2DECODE.Equals(trackingFilter.lastFilterName))
+                    streamContentType = ImageBytesType.JBIG2;
+                else if (PdfName.DCTDECODE.Equals(trackingFilter.lastFilterName))
+                    streamContentType = ImageBytesType.JPG;
+                else if (PdfName.JPXDECODE.Equals(trackingFilter.lastFilterName))
+                    streamContentType = ImageBytesType.JP2;
+            } else {
+                DecodeImageBytes();
             }
         }
         
@@ -126,15 +188,17 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
-         * Returns the image bytes.
-         * @return the streamBytes
+         * Sets state of this object according to the color space 
+         * @param colorspace the colorspace to use
+         * @param allowIndexed whether indexed color spaces will be resolved (used for recursive call)
+         * @throws IOException if there is a problem with reading from the underlying stream  
          */
-        public byte[] GetStreamBytes() {
-            return streamBytes;
-        }
-        
         private void FindColorspace(PdfObject colorspace, bool allowIndexed) {
-            if (PdfName.DEVICEGRAY.Equals(colorspace)) {
+            if (colorspace == null && bpc == 1){ // handle imagemasks
+                stride = (width*bpc + 7) / 8;
+                pngColorType = 0;
+            }
+            else if (PdfName.DEVICEGRAY.Equals(colorspace)) {
                 stride = (width * bpc + 7) / 8;
                 pngColorType = 0;
             }
@@ -188,35 +252,16 @@ namespace iTextSharp.text.pdf.parser {
             }
         }
 
-        public byte[] GetImageAsBytes() {
-            if (streamBytes == null)
-                return null;
-            if (!decoded) {
-                // if the stream hasn't been decoded, check to see if it is a single stage JPG or JPX encoded stream.  If it is,
-                // then we can just use stream as-is
-                PdfName filter = dictionary.GetAsName(PdfName.FILTER);
-                if (filter == null){
-                    PdfArray filterArray = dictionary.GetAsArray(PdfName.FILTER);
-                    if (filterArray.Size == 1){
-                        filter = filterArray.GetAsName(0);
-                    } else {
-                        throw new UnsupportedPdfException("Multi-stage filters not supported here (" + filterArray + ")");
-                    }
-                }
-                if (PdfName.DCTDECODE.Equals(filter)) {
-                    fileType = TYPE_JPG;
-                    return streamBytes;
-                }
-                else if (PdfName.JPXDECODE.Equals(filter)) {
-                    fileType = TYPE_JP2;
-                    return streamBytes;
-                } else if (PdfName.JBIG2DECODE.Equals(filter)){
-                    fileType = TYPE_JBIG2;
-                    return streamBytes;
-                }
-                throw new UnsupportedPdfException("Unsupported stream filter " + filter);
-            }
+        /**
+         * decodes the bytes currently captured in the streamBytes and replaces it with an image representation of the bytes
+         * (this will either be a png or a tiff, depending on the color depth of the image)
+         * @throws IOException
+         */
+        private void DecodeImageBytes() {
+            if (streamContentType != null)
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("Decoding.can't.happen.on.this.type.of.stream.(.1.)", streamContentType.FileExtension));
             pngColorType = -1;
+            PdfArray decode = dictionary.GetAsArray(PdfName.DECODE);
             width = dictionary.GetAsNumber(PdfName.WIDTH).IntValue;
             height = dictionary.GetAsNumber(PdfName.HEIGHT).IntValue;
             bpc = dictionary.GetAsNumber(PdfName.BITSPERCOMPONENT).IntValue;
@@ -229,23 +274,23 @@ namespace iTextSharp.text.pdf.parser {
             MemoryStream ms = new MemoryStream();
             if (pngColorType < 0) {
                 if (bpc != 8)
-                    return null;
+                    throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("the.color.depth.1.is.not.supported", bpc));
                 if (PdfName.DEVICECMYK.Equals(colorspace)) {
                 }
                 else if (colorspace is PdfArray) {
                     PdfArray ca = (PdfArray)colorspace;
                     PdfObject tyca = ca.GetDirectObject(0);
                     if (!PdfName.ICCBASED.Equals(tyca))
-                        return null;
+                        throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("the.color.space.1.is.not.supported", colorspace));
                     PRStream pr = (PRStream)ca.GetDirectObject(1);
                     int n = pr.GetAsNumber(PdfName.N).IntValue;
                     if (n != 4) {
-                        return null;
+                        throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("N.value.1.is.not.supported", n));
                     }
                     icc = PdfReader.GetStreamBytes(pr);
                 }
                 else
-                    return null;
+                    throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("the.color.space.1.is.not.supported", colorspace));
                 stride = 4 * width;
                 TiffWriter wr = new TiffWriter();
                 wr.AddField(new TiffWriter.FieldShort(TIFFConstants.TIFFTAG_SAMPLESPERPIXEL, 4));
@@ -261,26 +306,53 @@ namespace iTextSharp.text.pdf.parser {
                 wr.AddField(new TiffWriter.FieldShort(TIFFConstants.TIFFTAG_RESOLUTIONUNIT, TIFFConstants.RESUNIT_INCH));
                 wr.AddField(new TiffWriter.FieldAscii(TIFFConstants.TIFFTAG_SOFTWARE, Document.Version));
                 MemoryStream comp = new MemoryStream();
-                TiffWriter.CompressLZW(comp, 2, streamBytes, height, 4, stride);
+                TiffWriter.CompressLZW(comp, 2, imageBytes, height, 4, stride);
                 byte[] buf = comp.ToArray();
                 wr.AddField(new TiffWriter.FieldImage(buf));
                 wr.AddField(new TiffWriter.FieldLong(TIFFConstants.TIFFTAG_STRIPBYTECOUNTS, buf.Length));
                 if (icc != null)
                     wr.AddField(new TiffWriter.FieldUndefined(TIFFConstants.TIFFTAG_ICCPROFILE, icc));
                 wr.WriteFile(ms);
-                fileType = TYPE_TIF;
-                return ms.ToArray();
+                streamContentType = ImageBytesType.CCITT;
+                imageBytes = ms.ToArray();
+                return;
+            } 
+            else {
+                PngWriter png = new PngWriter(ms);
+                if (decode != null){
+                    if (pngBitDepth == 1){
+                        // if the decode array is 1,0, then we need to invert the image
+                        if (decode.GetAsNumber(0).IntValue == 1 && decode.GetAsNumber(1).IntValue == 0){
+                            int len = imageBytes.Length;
+                            for (int t = 0; t < len; ++t) {
+                                imageBytes[t] ^= 0xff;
+                            }
+                        } else {
+                            // if the decode array is 0,1, do nothing.  It's possible that the array could be 0,0 or 1,1 - but that would be silly, so we'll just ignore that case
+                        }
+                    } else {
+                        // todo: add decode transformation for other depths
+                    }
+                }
+                png.WriteHeader(width, height, pngBitDepth, pngColorType);
+                if (icc != null)
+                    png.WriteIccProfile(icc);
+                if (palette != null)
+                    png.WritePalette(palette);
+                png.WriteData(imageBytes, stride);
+                png.WriteEnd();
+                streamContentType = ImageBytesType.PNG;
+                imageBytes = ms.ToArray();
             }
-            PngWriter png = new PngWriter(ms);
-            png.WriteHeader(width, height, pngBitDepth, pngColorType);
-            if (icc != null)
-                png.WriteIccProfile(icc);
-            if (palette != null)
-                png.WritePalette(palette);
-            png.WriteData(streamBytes, stride);
-            png.WriteEnd();
-            fileType = TYPE_PNG;
-            return ms.ToArray();
+        }
+
+        /**
+         * @return the bytes of the image (the format will be as specified in {@link PdfImageObject#getImageBytesType()}
+         * @throws IOException
+         * @since 5.0.4
+         */
+        public byte[] GetImageAsBytes() {
+            return imageBytes; 
         }
 
         public System.Drawing.Image GetDrawingImage() {

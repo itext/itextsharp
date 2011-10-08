@@ -333,6 +333,12 @@ namespace iTextSharp.text.pdf {
             }
             if (first != null && last != null && newWidths != null) {
                 int f = first.IntValue;
+                int nSize = f + newWidths.Size;
+                if (widths.Length < nSize) {
+                    int[] tmp = new int[nSize];
+                    System.Array.Copy(widths, 0, tmp, 0, f);
+                    widths = tmp;
+                }
                 for (int k = 0; k < newWidths.Size; ++k) {
                     widths[f + k] = newWidths.GetAsNumber(k).IntValue;
                 }
