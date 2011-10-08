@@ -296,6 +296,7 @@ namespace iTextSharp.text.pdf {
         internal void SetExtraIndent(float extra) {
             left += extra;
             width -= extra;
+            originalWidth -= extra;
         }
 
         /**

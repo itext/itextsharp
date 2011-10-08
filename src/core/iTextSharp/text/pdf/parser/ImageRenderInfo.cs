@@ -94,12 +94,8 @@ namespace iTextSharp.text.pdf.parser {
          * @since 5.0.2
          */
         public PdfImageObject GetImage() {
-            try {
-                PrepareImageObject();
-                return imageObject;
-            } catch (IOException) {
-                return null;
-            }
+            PrepareImageObject();
+            return imageObject;
         }
         
         private void PrepareImageObject() {

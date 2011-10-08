@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using System.util;
+using iTextSharp.text.xml;
 using iTextSharp.text.xml.simpleparser;
 using iTextSharp.text.error_messages;
 
@@ -144,6 +145,10 @@ namespace iTextSharp.text.pdf {
                             else if (PdfName.URI.Equals(PdfReader.GetPdfObjectRelease(action.Get(PdfName.S)))) {
                                 map["Action"] = "URI";
                                 map["URI"] = ((PdfString)PdfReader.GetPdfObjectRelease(action.Get(PdfName.URI))).ToUnicodeString();
+                            }
+                            else if (PdfName.JAVASCRIPT.Equals(PdfReader.GetPdfObjectRelease(action.Get(PdfName.S)))) {
+                                map["Action"] = "JS";
+                                map["Code"] = PdfReader.GetPdfObjectRelease(action.Get(PdfName.JS)).ToString();
                             }
                             else if (PdfName.GOTOR.Equals(PdfReader.GetPdfObjectRelease(action.Get(PdfName.S)))) {
                                 dest = PdfReader.GetPdfObjectRelease(action.Get(PdfName.D));
@@ -479,6 +484,12 @@ namespace iTextSharp.text.pdf {
                         outline.Put(PdfName.A, dic);
                     }
                 }
+                else if ("JS".Equals(action)) {
+                    String code = GetVal(map, "Code");
+                    if(code != null) {
+                        outline.Put(PdfName.A, PdfAction.JavaScript(code, writer));
+                    }
+                }
                 else if ("Launch".Equals(action)) {
                     String file = GetVal(map, "File");
                     if (file != null) {
@@ -596,14 +607,14 @@ namespace iTextSharp.text.pdf {
                         String value = (String)entry.Value;
                         if (key.Equals("Named") || key.Equals("NamedN"))
                             value = EscapeBinaryString(value);
-                        outp.Write(SimpleXMLParser.EscapeXML(value, onlyASCII));
+                        outp.Write(XMLUtil.EscapeXML(value, onlyASCII));
                         outp.Write("\" ");
                     }
                 }
                 outp.Write(">");
                 if (title == null)
                     title = "";
-                outp.Write(SimpleXMLParser.EscapeXML(title, onlyASCII));
+                outp.Write(XMLUtil.EscapeXML(title, onlyASCII));
                 if (kids != null) {
                     outp.Write("\n");
                     ExportToXMLNode(kids, outp, indent + 1, onlyASCII);
@@ -656,7 +667,7 @@ namespace iTextSharp.text.pdf {
         */
         public static void ExportToXML(IList<Dictionary<String, Object>> list, TextWriter wrt, String encoding, bool onlyASCII) {
             wrt.Write("<?xml version=\"1.0\" encoding=\"");
-            wrt.Write(SimpleXMLParser.EscapeXML(encoding, onlyASCII));
+            wrt.Write(XMLUtil.EscapeXML(encoding, onlyASCII));
             wrt.Write("\"?>\n<Bookmark>\n");
             ExportToXMLNode(list, wrt, 1, onlyASCII);
             wrt.Write("</Bookmark>\n");

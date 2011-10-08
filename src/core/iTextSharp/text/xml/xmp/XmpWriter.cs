@@ -194,28 +194,30 @@ namespace iTextSharp.text.xml.xmp {
                 PdfSchema p = new PdfSchema();
                 XmpBasicSchema basic = new XmpBasicSchema();
                 PdfObject obj;
+                String value;
                 foreach (PdfName key in info.Keys) {
                     obj = info.Get(key);
                     if (obj == null)
                         continue;
+                    value = XMLUtil.EscapeXML(((PdfString)obj).ToUnicodeString(), false);
                     if (PdfName.TITLE.Equals(key)) {
-                        dc.AddTitle(((PdfString)obj).ToUnicodeString());
+                        dc.AddTitle(value);
                     }
                     if (PdfName.AUTHOR.Equals(key)) {
-                        dc.AddAuthor(((PdfString)obj).ToUnicodeString());
+                        dc.AddAuthor(value);
                     }
                     if (PdfName.SUBJECT.Equals(key)) {
-                        dc.AddSubject(((PdfString)obj).ToUnicodeString());
-                        dc.AddDescription(((PdfString)obj).ToUnicodeString());
+                        dc.AddSubject(value);
+                        dc.AddDescription(value);
                     }
                     if (PdfName.KEYWORDS.Equals(key)) {
-                        p.AddKeywords(((PdfString)obj).ToUnicodeString());
+                        p.AddKeywords(value);
                     }
                     if (PdfName.CREATOR.Equals(key)) {
-                        basic.AddCreatorTool(((PdfString)obj).ToUnicodeString());
+                        basic.AddCreatorTool(value);
                     }
                     if (PdfName.PRODUCER.Equals(key)) {
-                        p.AddProducer(((PdfString)obj).ToUnicodeString());
+                        p.AddProducer(value);
                     }
                     if (PdfName.CREATIONDATE.Equals(key)) {
                         basic.AddCreateDate(PdfDate.GetW3CDate(obj.ToString()));
