@@ -69,19 +69,22 @@ namespace iTextSharp.text.pdf {
     */
     public class TSAClientBouncyCastle : ITSAClient {
         /** URL of the Time Stamp Authority */
-	    protected String tsaURL;
+	    protected internal String tsaURL;
 	    /** TSA Username */
-        protected String tsaUsername;
+        protected internal String tsaUsername;
         /** TSA password */
-        protected String tsaPassword;
+        protected internal String tsaPassword;
         /** Estimate of the received time stamp token */
-        protected int tokSzEstimate;
-        
+        protected internal int tokSzEstimate;
+        protected internal String digestAlgorithm;
+        private const String defaultDigestAlgorithm = "SHA-1";
+
         /**
         * Creates an instance of a TSAClient that will use BouncyCastle.
         * @param url String - Time Stamp Authority URL (i.e. "http://tsatest1.digistamp.com/TSA")
         */
-        public TSAClientBouncyCastle(String url) : this(url, null, null, 4096) {
+        public TSAClientBouncyCastle(String url) 
+            : this(url, null, null, 4096, defaultDigestAlgorithm) {
         }
         
         /**
@@ -90,7 +93,8 @@ namespace iTextSharp.text.pdf {
         * @param username String - user(account) name
         * @param password String - password
         */
-        public TSAClientBouncyCastle(String url, String username, String password) : this(url, username, password, 4096) {
+        public TSAClientBouncyCastle(String url, String username, String password) 
+            : this(url, username, password, 4096, defaultDigestAlgorithm) {
         }
         
         /**
@@ -103,11 +107,12 @@ namespace iTextSharp.text.pdf {
         * @param password String - password
         * @param tokSzEstimate int - estimated size of received time stamp token (DER encoded)
         */
-        public TSAClientBouncyCastle(String url, String username, String password, int tokSzEstimate) {
+        public TSAClientBouncyCastle(String url, String username, String password, int tokSzEstimate, String digestAlgorithm) {
             this.tsaURL       = url;
             this.tsaUsername  = username;
             this.tsaPassword  = password;
             this.tokSzEstimate = tokSzEstimate;
+            this.digestAlgorithm = digestAlgorithm;
         }
         
         /**
@@ -115,34 +120,29 @@ namespace iTextSharp.text.pdf {
         * Returned value reflects the result of the last succesfull call, padded
         * @return an estimate of the token size
         */
-        public int GetTokenSizeEstimate() {
+        public virtual int GetTokenSizeEstimate() {
             return tokSzEstimate;
         }
         
-        /**
-        * Get RFC 3161 timeStampToken.
-        * Method may return null indicating that timestamp should be skipped.
-        * @param caller PdfPKCS7 - calling PdfPKCS7 instance (in case caller needs it)
-        * @param imprint byte[] - data imprint to be time-stamped
-        * @return byte[] - encoded, TSA signed data of the timeStampToken
-        * @throws Exception - TSA request failed
-        * @see com.lowagie.text.pdf.TSAClient#getTimeStampToken(com.lowagie.text.pdf.PdfPKCS7, byte[])
-        */
-        public byte[] GetTimeStampToken(PdfPKCS7 caller, byte[] imprint) {
-            return GetTimeStampToken(imprint);
+        public virtual String GetDigestAlgorithm() {
+            return digestAlgorithm;
         }
-        
+
         /**
-        * Get timestamp token - Bouncy Castle request encoding / decoding layer
-        */
-        protected internal byte[] GetTimeStampToken(byte[] imprint) {
+         * Get RFC 3161 timeStampToken.
+         * Method may return null indicating that timestamp should be skipped.
+         * @param imprint byte[] - data imprint to be time-stamped
+         * @return byte[] - encoded, TSA signed data of the timeStampToken
+         * @throws Exception - TSA request failed
+         */
+        public virtual byte[] GetTimeStampToken(byte[] imprint) {
             byte[] respBytes = null;
             // Setup the time stamp request
             TimeStampRequestGenerator tsqGenerator = new TimeStampRequestGenerator();
             tsqGenerator.SetCertReq(true);
             // tsqGenerator.setReqPolicy("1.3.6.1.4.1.601.10.3.1");
             BigInteger nonce = BigInteger.ValueOf(DateTime.Now.Ticks + Environment.TickCount);
-            TimeStampRequest request = tsqGenerator.Generate(X509ObjectIdentifiers.IdSha1.Id, imprint, nonce);
+            TimeStampRequest request = tsqGenerator.Generate(PdfPKCS7.GetAllowedDigests(GetDigestAlgorithm()), imprint, nonce);
             byte[] requestBytes = request.GetEncoded();
             
             // Call the communications layer

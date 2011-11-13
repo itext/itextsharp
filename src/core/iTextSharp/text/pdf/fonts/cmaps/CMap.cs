@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using iTextSharp.text.error_messages;
 /**
  * Copyright (c) 2005, www.fontbox.org
@@ -154,5 +155,27 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             return codeSpaceRanges;
         }
 
+        public IDictionary<int, int> CreateReverseMapping() {
+            IDictionary<int, int> result = new Dictionary<int, int>();
+            foreach (KeyValuePair<int, String> entry in singleByteMappings) {
+                result[ConvertToInt(entry.Value)] = entry.Key;
+            }
+            foreach (KeyValuePair<int, String> entry in doubleByteMappings) {
+                result[ConvertToInt(entry.Value)] = entry.Key;
+            }
+            return result;
+        }
+        
+        private int ConvertToInt(String s) {
+            UnicodeEncoding ue = new UnicodeEncoding(true, false);
+            byte[] b = ue.GetBytes(s);
+            int value = 0;
+            for (int i = 0; i < b.Length - 1; i++) {
+                value += b[i] & 0xff;
+                value <<= 8;
+            }
+            value += b[b.Length - 1] & 0xff;
+            return value;
+        }
     }
 }

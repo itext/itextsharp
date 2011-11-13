@@ -189,6 +189,9 @@ namespace iTextSharp.text.pdf {
                     if (d.Contains(PdfName.S)) {
                         type = ((PdfName)d.Get(PdfName.S)).ToString()[1];
                     }
+                    else {
+                        type = 'e';
+                    }
                 }
                 switch (type) {
                 default:
@@ -205,6 +208,9 @@ namespace iTextSharp.text.pdf {
                     break;
                 case 'a':
                     labelstrings[i] = prefix + RomanAlphabetFactory.GetLowerCaseString(pagecount);
+                    break;
+                case 'e':
+                    labelstrings[i] = prefix;
                     break;
                 }
                 pagecount++;

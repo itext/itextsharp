@@ -392,6 +392,10 @@ namespace iTextSharp.text.pdf {
                     ury = t;
                 }
             }
+            float maxAscent = Math.Max(ury, Ascender);
+            float minDescent = Math.Min(lly, Descender);
+            Ascender = maxAscent * 1000 / (maxAscent - minDescent);
+            Descender = minDescent * 1000 / (maxAscent - minDescent);
         }
         
         private void FillEncoding(PdfName encoding) {

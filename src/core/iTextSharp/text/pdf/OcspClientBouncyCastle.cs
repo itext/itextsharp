@@ -9,6 +9,8 @@ using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Asn1.Ocsp;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.log;
+
 /*
  * $Id$
  *
@@ -61,24 +63,7 @@ namespace iTextSharp.text.pdf {
     * @since	2.1.6
     */
     public class OcspClientBouncyCastle : IOcspClient {
-        /** root certificate */
-        private X509Certificate rootCert;
-        /** check certificate */
-        private X509Certificate checkCert;
-        /** OCSP URL */
-        private String url;
-        
-        /**
-        * Creates an instance of an OcspClient that will be using BouncyCastle.
-        * @param checkCert	the check certificate
-        * @param rootCert	the root certificate
-        * @param url	the OCSP URL
-        */
-        public OcspClientBouncyCastle(X509Certificate checkCert, X509Certificate rootCert, String url) {
-            this.checkCert = checkCert;
-            this.rootCert = rootCert;
-            this.url = url;
-        }
+        private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(OcspClientBouncyCastle));
         
         /**
         * Generates an OCSP request using BouncyCastle.
@@ -108,46 +93,63 @@ namespace iTextSharp.text.pdf {
         }
         
         /**
-        * @return 	a byte array
-        * @see com.lowagie.text.pdf.OcspClient#getEncoded()
-        */
-        public byte[] GetEncoded() {
-            OcspReq request = GenerateOCSPRequest(rootCert, checkCert.SerialNumber);
-            byte[] array = request.GetEncoded();
-            HttpWebRequest con = (HttpWebRequest)WebRequest.Create(url);
-            con.ContentLength = array.Length;
-            con.ContentType = "application/ocsp-request";
-            con.Accept = "application/ocsp-response";
-            con.Method = "POST";
-            Stream outp = con.GetRequestStream();
-            outp.Write(array, 0, array.Length);
-            outp.Close();
-            HttpWebResponse response = (HttpWebResponse)con.GetResponse();
-            if (response.StatusCode != HttpStatusCode.OK)
-                throw new IOException(MessageLocalization.GetComposedMessage("invalid.http.response.1", (int)response.StatusCode));
-            Stream inp = response.GetResponseStream();
-            OcspResp ocspResponse = new OcspResp(inp);
-            inp.Close();
-            response.Close();
+         * Gets an encoded byte array with OCSP validation. The method should not throw an exception.
+         * @param checkCert to certificate to check
+         * @param rootCert the parent certificate
+         * @param the url to get the verification. It it's null it will be taken
+         * from the check cert or from other implementation specific source
+         * @return  a byte array with the validation or null if the validation could not be obtained
+         */
+        public virtual byte[] GetEncoded(X509Certificate checkCert, X509Certificate rootCert, String url) {
+            try {
+                if (checkCert == null || rootCert == null)
+                    return null;
+                if (url == null) {
+                    url = PdfPKCS7.GetOCSPURL(checkCert);
+                }
+                if (url == null)
+                    return null;
+                OcspReq request = GenerateOCSPRequest(rootCert, checkCert.SerialNumber);
+                byte[] array = request.GetEncoded();
+                HttpWebRequest con = (HttpWebRequest)WebRequest.Create(url);
+                con.ContentLength = array.Length;
+                con.ContentType = "application/ocsp-request";
+                con.Accept = "application/ocsp-response";
+                con.Method = "POST";
+                Stream outp = con.GetRequestStream();
+                outp.Write(array, 0, array.Length);
+                outp.Close();
+                HttpWebResponse response = (HttpWebResponse)con.GetResponse();
+                if (response.StatusCode != HttpStatusCode.OK)
+                    throw new IOException(MessageLocalization.GetComposedMessage("invalid.http.response.1", (int)response.StatusCode));
+                Stream inp = response.GetResponseStream();
+                OcspResp ocspResponse = new OcspResp(inp);
+                inp.Close();
+                response.Close();
 
-            if (ocspResponse.Status != 0)
-                throw new IOException(MessageLocalization.GetComposedMessage("invalid.status.1", ocspResponse.Status));
-            BasicOcspResp basicResponse = (BasicOcspResp) ocspResponse.GetResponseObject();
-            if (basicResponse != null) {
-                SingleResp[] responses = basicResponse.Responses;
-                if (responses.Length == 1) {
-                    SingleResp resp = responses[0];
-                    Object status = resp.GetCertStatus();
-                    if (status == CertificateStatus.Good) {
-                        return basicResponse.GetEncoded();
-                    }
-                    else if (status is Org.BouncyCastle.Ocsp.RevokedStatus) {
-                        throw new IOException(MessageLocalization.GetComposedMessage("ocsp.status.is.revoked"));
-                    }
-                    else {
-                        throw new IOException(MessageLocalization.GetComposedMessage("ocsp.status.is.unknown"));
+                if (ocspResponse.Status != 0)
+                    throw new IOException(MessageLocalization.GetComposedMessage("invalid.status.1", ocspResponse.Status));
+                BasicOcspResp basicResponse = (BasicOcspResp) ocspResponse.GetResponseObject();
+                if (basicResponse != null) {
+                    SingleResp[] responses = basicResponse.Responses;
+                    if (responses.Length == 1) {
+                        SingleResp resp = responses[0];
+                        Object status = resp.GetCertStatus();
+                        if (status == CertificateStatus.Good) {
+                            return basicResponse.GetEncoded();
+                        }
+                        else if (status is Org.BouncyCastle.Ocsp.RevokedStatus) {
+                            throw new IOException(MessageLocalization.GetComposedMessage("ocsp.status.is.revoked"));
+                        }
+                        else {
+                            throw new IOException(MessageLocalization.GetComposedMessage("ocsp.status.is.unknown"));
+                        }
                     }
                 }
+            }
+            catch (Exception ex) {
+                if (LOGGER.IsLogging(Level.ERROR))
+                    LOGGER.Error("OcspClientBouncyCastle", ex);
             }
             return null;
         }

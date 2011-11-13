@@ -199,7 +199,7 @@ namespace iTextSharp.text.xml.xmp {
                     obj = info.Get(key);
                     if (obj == null)
                         continue;
-                    value = XMLUtil.EscapeXML(((PdfString)obj).ToUnicodeString(), false);
+                    value = ((PdfString)obj).ToUnicodeString();
                     if (PdfName.TITLE.Equals(key)) {
                         dc.AddTitle(value);
                     }

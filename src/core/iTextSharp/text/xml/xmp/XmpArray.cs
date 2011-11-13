@@ -81,7 +81,7 @@ namespace iTextSharp.text.xml.xmp {
             buf.Append('>');
             foreach (String s in this) {
                 buf.Append("<rdf:li>");
-                buf.Append(XmpSchema.Escape(s));
+                buf.Append(XMLUtil.EscapeXML(s, false));
                 buf.Append("</rdf:li>");
             }
             buf.Append("</");

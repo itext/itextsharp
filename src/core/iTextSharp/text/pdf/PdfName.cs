@@ -288,6 +288,8 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName CENTERWINDOW = new PdfName("CenterWindow");
         /** A name */
         public static readonly PdfName CERT = new PdfName("Cert");
+
+        public static readonly PdfName CERTS = new PdfName("Certs");
         /** A name */
         public static readonly PdfName CF = new PdfName("CF");
         /** A name */
@@ -389,6 +391,8 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName CREATOR = new PdfName("Creator");
         /** A name */
         public static readonly PdfName CREATORINFO = new PdfName("CreatorInfo");
+        public static readonly PdfName CRL = new PdfName("CRL");
+        public static readonly PdfName CRLS = new PdfName("CRLs");
         /** A name */
         public static readonly PdfName CROPBOX = new PdfName("CropBox");
         /** A name */
@@ -490,6 +494,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName DOCOPEN = new PdfName("DocOpen");
         /**
          * A name.
+         * @since 5.1.3
+         */
+        public static readonly PdfName DOCTIMESTAMP = new PdfName( "DocTimeStamp" );
+        /**
+         * A name.
          * @since 2.1.6
          */
         public static readonly PdfName DOCUMENT = new PdfName( "Document" );
@@ -501,6 +510,7 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName DR = new PdfName("DR");
         /** A name */
         public static readonly PdfName DS = new PdfName("DS");
+        public static readonly PdfName DSS = new PdfName("DSS");
         /** A name */
         public static readonly PdfName DUR = new PdfName("Dur");
         /** A name */
@@ -557,6 +567,8 @@ namespace iTextSharp.text.pdf {
          * @since 5.1.0
          */
         public static readonly PdfName EPSG = new PdfName("EPSG");
+
+        public static readonly PdfName ETSI_RFC3161 = new PdfName("ETSI.RFC3161");
         /** A name */
         public static readonly PdfName EXTEND = new PdfName("Extend");
         /**
@@ -1099,6 +1111,8 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName OCMD = new PdfName("OCMD");
         /** A name */
         public static readonly PdfName OCPROPERTIES = new PdfName("OCProperties");
+        public static readonly PdfName OCSP = new PdfName("OCSP");
+        public static readonly PdfName OCSPS = new PdfName("OCSPs");
         /** A name */
         public static readonly PdfName OE = new PdfName("OE");
         /** A name */
@@ -1674,6 +1688,7 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName TRIMBOX = new PdfName("TrimBox");
         /** A name */
         public static readonly PdfName TRUETYPE = new PdfName("TrueType");
+        public static readonly PdfName TS = new PdfName("TS");
         public static readonly PdfName TTL = new PdfName("Ttl");
         /** A name */
         public static readonly PdfName TU = new PdfName("TU");
@@ -1787,6 +1802,7 @@ namespace iTextSharp.text.pdf {
          * @since 5.1.0
          */
         public static readonly PdfName VP = new PdfName("VP");
+        public static readonly PdfName VRI = new PdfName("VRI");
         /** A name of an attribute. */
         public static readonly PdfName W = new PdfName("W");
         /** A name of an attribute. */

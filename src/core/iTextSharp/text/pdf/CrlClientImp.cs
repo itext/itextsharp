@@ -1,8 +1,10 @@
 using System;
+using System.IO;
+using System.Net;
 using Org.BouncyCastle.X509;
+using iTextSharp.text.log;
+using iTextSharp.text.error_messages;
 /*
- * $Id$
- *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
@@ -47,18 +49,43 @@ using Org.BouncyCastle.X509;
 namespace iTextSharp.text.pdf {
 
     /**
-    * Interface for the OCSP Client.
-    * @since 2.1.6
-    */
-    public interface IOcspClient {
-	    /**
-	     * Gets an encoded byte array with OCSP validation. The method should not throw an exception.
-         * @param checkCert to certificate to check
-         * @param rootCert the parent certificate
-         * @param the url to get the verification. It it's null it will be taken
-         * from the check cert or from other implementation specific source
-	     * @return	a byte array with the validation or null if the validation could not be obtained
-	     */
-        byte[] GetEncoded(X509Certificate checkCert, X509Certificate rootCert, String url);
+     *
+     * @author psoares
+     */
+    public class CrlClientImp : ICrlClient {
+        private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(CrlClientImp));
+
+        public virtual byte[] GetEncoded(X509Certificate checkCert, String url) {
+            try {
+                if (url == null) {
+                    if (checkCert == null)
+                        return null;
+                    url = PdfPKCS7.GetCrlUrl(checkCert);
+                }
+                if (url == null)
+                    return null;
+                HttpWebRequest con = (HttpWebRequest)WebRequest.Create(url);
+                HttpWebResponse response = (HttpWebResponse)con.GetResponse();
+                if (response.StatusCode != HttpStatusCode.OK)
+                    throw new IOException(MessageLocalization.GetComposedMessage("invalid.http.response.1", (int)response.StatusCode));
+                //Get Response
+                Stream inp = response.GetResponseStream();
+                byte[] buf = new byte[1024];
+                MemoryStream bout = new MemoryStream();
+                while (true) {
+                    int n = inp.Read(buf, 0, buf.Length);
+                    if (n <= 0)
+                        break;
+                    bout.Write(buf, 0, n);
+                }
+                inp.Close();
+                return bout.ToArray();
+            }
+            catch (Exception ex) {
+                if (LOGGER.IsLogging(Level.ERROR))
+                    LOGGER.Error("CrlClientImp", ex);
+            }
+            return null;
+        }
     }
 }
