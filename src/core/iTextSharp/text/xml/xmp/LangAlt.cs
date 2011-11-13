@@ -66,7 +66,7 @@ namespace iTextSharp.text.xml.xmp {
          * Add a language.
          */
         public void AddLanguage(String language, String value) {
-            this[language] = XmpSchema.Escape(value);
+            this[language] = XMLUtil.EscapeXML(value, false);
         }
 
         /**

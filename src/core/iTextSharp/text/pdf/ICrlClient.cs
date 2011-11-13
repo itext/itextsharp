@@ -1,8 +1,6 @@
 using System;
 using Org.BouncyCastle.X509;
 /*
- * $Id$
- *
  * This file is part of the iText project.
  * Copyright (c) 1998-2009 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
@@ -47,18 +45,14 @@ using Org.BouncyCastle.X509;
 namespace iTextSharp.text.pdf {
 
     /**
-    * Interface for the OCSP Client.
-    * @since 2.1.6
-    */
-    public interface IOcspClient {
+     *
+     * @author psoares
+     */
+    public interface ICrlClient {
 	    /**
-	     * Gets an encoded byte array with OCSP validation. The method should not throw an exception.
-         * @param checkCert to certificate to check
-         * @param rootCert the parent certificate
-         * @param the url to get the verification. It it's null it will be taken
-         * from the check cert or from other implementation specific source
-	     * @return	a byte array with the validation or null if the validation could not be obtained
+	     * Gets an encoded byte array.
+	     * @return	a byte array
 	     */
-        byte[] GetEncoded(X509Certificate checkCert, X509Certificate rootCert, String url);
+        byte[] GetEncoded(X509Certificate checkCert, String url);
     }
 }

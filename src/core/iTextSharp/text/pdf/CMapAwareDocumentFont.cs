@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using iTextSharp.text.pdf.fonts.cmaps;
@@ -69,6 +70,8 @@ namespace iTextSharp.text.pdf {
          */
         private char[] cidbyte2uni;
         
+        private IDictionary<int,int> uni2cid;
+
         /**
          * Creates an instance of a CMapAwareFont based on an indirect reference to a font.
          * @param refFont   the indirect reference to a font
@@ -101,6 +104,7 @@ namespace iTextSharp.text.pdf {
         
                     CMapParser cmapParser = new CMapParser();
                     toUnicodeCmap = cmapParser.Parse(new MemoryStream(touni));
+                    uni2cid = toUnicodeCmap.CreateReverseMapping();
                 } catch {
                     // technically, we should log this or provide some sort of feedback... but sometimes the cmap will be junk, but it's still possible to get text, so we don't want to throw an exception
                     //throw new IllegalStateException("Unable to process ToUnicode map - " + e.GetMessage(), e);
@@ -168,7 +172,10 @@ namespace iTextSharp.text.pdf {
         public override int GetWidth(int char1) {
             if (char1 == ' ')
                 return spaceWidth;
-            
+            if (uni2cid != null && uni2cid.ContainsKey(char1)) {
+                char1 = uni2cid[char1];
+                return widths[char1];
+            }
             return base.GetWidth(char1);
         }
         

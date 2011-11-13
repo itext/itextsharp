@@ -89,7 +89,7 @@ namespace iTextSharp.text.xml.xmp {
 			    return false;
 		    for (int i = 0; i < nodes.Count; i++) {
 			    node = nodes[i];
-			    SetNodeText(domDocument, node, XMLUtil.EscapeXML(value, false));
+			    SetNodeText(domDocument, node, value);
 		    }
 		    return true;
 	    }    

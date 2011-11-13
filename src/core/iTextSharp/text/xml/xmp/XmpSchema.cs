@@ -107,7 +107,7 @@ namespace iTextSharp.text.xml.xmp {
         
         public override string this[string key] {
             set {
-                base[key] = Escape(value);
+                base[key] = XMLUtil.EscapeXML(value, false);
             }
         }
         
@@ -131,30 +131,7 @@ namespace iTextSharp.text.xml.xmp {
         * @return
         */
         public static String Escape(String content) {
-            StringBuilder buf = new StringBuilder();
-            for (int i = 0; i < content.Length; i++) {
-                switch (content[i]) {
-                case '<':
-                    buf.Append("&lt;");
-                    break;
-                case '>':
-                    buf.Append("&gt;");
-                    break;
-                case '\'':
-                    buf.Append("&apos;");
-                    break;
-                case '\"':
-                    buf.Append("&quot;");
-                    break;
-                case '&':
-                    buf.Append("&amp;");
-                    break;
-                default:
-                    buf.Append(content[i]);
-                    break;
-                }
-            }
-            return buf.ToString();
+            return XMLUtil.EscapeXML(content, false);
         }
     }
 }

@@ -225,6 +225,12 @@ namespace iTextSharp.text.pdf {
                 return oid;
         }
         
+        public static String GetAllowedDigests(String name) {
+            string ret;
+            allowedDigests.TryGetValue(name.ToUpperInvariant(), out ret);
+            return ret;
+        }
+
         /**
         * Gets the timestamp token if there is one.
         * @return the timestamp token or null
@@ -499,7 +505,8 @@ namespace iTextSharp.text.pdf {
                         String hashAlgorithm, bool hasRSAdata) {
             this.privKey = privKey;
             
-            if (!allowedDigests.TryGetValue(hashAlgorithm.ToUpper(CultureInfo.InvariantCulture), out digestAlgorithm))
+            digestAlgorithm = GetAllowedDigests(hashAlgorithm);
+            if (digestAlgorithm == null)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.hash.algorithm.1", hashAlgorithm));
             
             version = signerversion = 1;
@@ -943,6 +950,34 @@ namespace iTextSharp.text.pdf {
             return null;
         }
         
+        public static String GetCrlUrl(X509Certificate certificate)  {
+            try {
+                Asn1Object obj = GetExtensionValue(certificate, X509Extensions.CrlDistributionPoints.Id);
+                if (obj == null) {
+                    return null;
+                }
+                CrlDistPoint dist = CrlDistPoint.GetInstance(obj);
+                DistributionPoint[] dists = dist.GetDistributionPoints();
+                foreach (DistributionPoint p in dists) {
+                    DistributionPointName distributionPointName = p.DistributionPointName;
+                    if (DistributionPointName.FullName != distributionPointName.PointType) {
+                        continue;
+                    }
+                    GeneralNames generalNames = (GeneralNames)distributionPointName.Name;
+                    GeneralName[] names = generalNames.GetNames();
+                    foreach (GeneralName name in names) {
+                        if (name.TagNo != GeneralName.UniformResourceIdentifier) {
+                            continue;
+                        }
+                        DerIA5String derStr = DerIA5String.GetInstance(name.ToAsn1Object());
+                        return derStr.GetString();
+                    }
+                }
+            } catch {
+            }
+            return null;
+        }
+
         /**
         * Checks if OCSP revocation refers to the document signing certificate.
         * @return true if it checks false otherwise
@@ -1175,8 +1210,8 @@ namespace iTextSharp.text.pdf {
             // Added by Martin Brunecky, 07/12/2007 folowing Aiken Sam, 2006-11-15
             // Sam found Adobe expects time-stamped SHA1-1 of the encrypted digest
             if (tsaClient != null) {
-                byte[] tsImprint = PdfEncryption.DigestComputeHash("SHA1", digest);
-                byte[] tsToken = tsaClient.GetTimeStampToken(this, tsImprint);
+                byte[] tsImprint = PdfEncryption.DigestComputeHash(tsaClient.GetDigestAlgorithm(), digest);
+                byte[] tsToken = tsaClient.GetTimeStampToken(tsImprint);
                 if (tsToken != null) {
                     Asn1EncodableVector unauthAttributes = BuildUnauthenticatedAttributes(tsToken);
                     if (unauthAttributes != null) {

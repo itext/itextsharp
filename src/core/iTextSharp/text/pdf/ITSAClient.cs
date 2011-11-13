@@ -63,13 +63,18 @@ namespace iTextSharp.text.pdf {
         int GetTokenSizeEstimate();
         
         /**
-        * Get RFC 3161 timeStampToken.
-        * Method may return null indicating that timestamp should be skipped.
-        * @param caller PdfPKCS7 - calling PdfPKCS7 instance (in case caller needs it)
-        * @param imprint byte[] - data imprint to be time-stamped
-        * @return byte[] - encoded, TSA signed data of the timeStampToken
-        * @throws Exception - TSA request failed
-        */
-        byte[] GetTimeStampToken(PdfPKCS7 caller, byte[] imprint);
+         * Gets the algorithm used to digest the data imprint
+         * @return the digest algorithm name
+         */
+        String GetDigestAlgorithm();
+
+        /**
+         * Get RFC 3161 timeStampToken.
+         * Method may return null indicating that timestamp should be skipped.
+         * @param imprint byte[] - data imprint to be time-stamped
+         * @return byte[] - encoded, TSA signed data of the timeStampToken
+         * @throws Exception - TSA request failed
+         */
+        byte[] GetTimeStampToken(byte[] imprint);
     }
 }
