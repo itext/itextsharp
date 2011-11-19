@@ -851,6 +851,7 @@ namespace iTextSharp.text.pdf {
         public void PreClose(Dictionary<PdfName, int> exclusionSizes) {
             if (preClosed)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("document.already.pre.closed"));
+            stamper.MergeVerification();
             preClosed = true;
             AcroFields af = writer.AcroFields;
             String name = FieldName;
