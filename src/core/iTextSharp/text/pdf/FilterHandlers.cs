@@ -4,6 +4,7 @@ using System.IO;
 using iTextSharp.text.pdf.codec;
 using iTextSharp.text.exceptions;
 using iTextSharp.text.error_messages;
+using System.util.collections;
 /*
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2011 1T3XT BVBA
@@ -83,7 +84,7 @@ namespace iTextSharp.text.pdf {
             map[PdfName.CRYPT] = new Filter_DoNothing();
             map[PdfName.RUNLENGTHDECODE] = new Filter_RUNLENGTHDECODE();
             
-            defaults = new Dictionary<PdfName, IFilterHandler>();
+            defaults = new ReadOnlyDictionary<PdfName, IFilterHandler>(map);
         }
         
         /**

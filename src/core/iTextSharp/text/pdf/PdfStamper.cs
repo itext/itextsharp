@@ -65,6 +65,7 @@ namespace iTextSharp.text.pdf {
         private IDictionary<String, String> moreInfo;
         private bool hasSignature;
         private PdfSignatureAppearance sigApp;
+        private LtvVerification verification;
         
         /** Starts the process of adding extra content to an existing PDF
         * document.
@@ -173,6 +174,7 @@ namespace iTextSharp.text.pdf {
             if (stamper.closed)
                 return;
             if (!hasSignature) {
+                MergeVerification();
                 stamper.Close(moreInfo);
                 return;
             }
@@ -759,6 +761,20 @@ namespace iTextSharp.text.pdf {
 
         public virtual void Dispose() {
             Close();
+        }
+
+        public LtvVerification LtvVerification {
+            get {
+                if (verification == null)
+                    verification = new LtvVerification(this);
+                return verification;
+            }
+        }
+        
+        internal void MergeVerification() {
+            if (verification == null)
+                return;
+            verification.Merge();
         }
     }
 }

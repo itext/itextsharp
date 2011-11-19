@@ -4179,6 +4179,7 @@
     <Compile Include="srcbc\util\zlib\ZInputStream.cs" />
     <Compile Include="srcbc\util\zlib\ZOutputStream.cs" />
     <Compile Include="System\util\collections\LinkedDictionary.cs" />
+    <Compile Include="System\util\collections\ReadOnlyDictionary.cs" />
     <Compile Include="System\util\zlib\ZInputStream.cs" />
     <Compile Include="System\util\zlib\ZOutputStream.cs" />
   </ItemGroup>

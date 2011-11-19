@@ -715,7 +715,9 @@ namespace iTextSharp.text {
         }
 
         public virtual void Dispose() {
-            Close();
+            if (IsOpen()) {
+                Close();
+            }
         }
     }
 }

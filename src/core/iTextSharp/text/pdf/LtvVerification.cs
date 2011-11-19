@@ -204,7 +204,7 @@ namespace iTextSharp.text.pdf {
          * a new one.
          * @throws IOException 
          */
-        void Merge() {
+        internal void Merge() {
             if (used || validated.Count == 0)
                 return;
             used = true;

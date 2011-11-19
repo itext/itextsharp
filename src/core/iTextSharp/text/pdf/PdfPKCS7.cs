@@ -969,7 +969,7 @@ namespace iTextSharp.text.pdf {
                         if (name.TagNo != GeneralName.UniformResourceIdentifier) {
                             continue;
                         }
-                        DerIA5String derStr = DerIA5String.GetInstance(name.ToAsn1Object());
+                        DerIA5String derStr = DerIA5String.GetInstance(name.Name);
                         return derStr.GetString();
                     }
                 }
