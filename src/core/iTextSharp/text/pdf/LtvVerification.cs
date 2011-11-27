@@ -5,6 +5,7 @@ using System.Collections;
 using System.Text;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.Asn1;
+using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Utilities;
 using iTextSharp.text.error_messages;
 /*
@@ -143,9 +144,9 @@ namespace iTextSharp.text.pdf {
                 if (ocsp != null && level != Level.CRL && k < xc.Length - 1) {
                     ocspEnc = ocsp.GetEncoded(xc[k], xc[k + 1], null);
                     if (ocspEnc != null)
-                        vd.ocsps.Add(ocspEnc);
+                        vd.ocsps.Add(BuildOCSPResponse(ocspEnc));
                 }
-                if (crl != null && (level != Level.OCSP || (level == Level.OCSP_OPTIONAL_CRL && ocspEnc == null))) {
+                if (crl != null && (level == Level.CRL || level == Level.OCSP_CRL || (level == Level.OCSP_OPTIONAL_CRL && ocspEnc == null))) {
                     byte[] cim = crl.GetEncoded(xc[k], null);
                     if (cim != null) {
                         bool dup = false;
@@ -171,6 +172,19 @@ namespace iTextSharp.text.pdf {
             }
             validated[GetSignatureHashKey(signatureName)] = vd;
             return true;
+        }
+
+        private static byte[] BuildOCSPResponse(byte[] BasicOCSPResponse) {
+            DerOctetString doctet = new DerOctetString(BasicOCSPResponse);
+            Asn1EncodableVector v2 = new Asn1EncodableVector();
+            v2.Add(OcspObjectIdentifiers.PkixOcspBasic);
+            v2.Add(doctet);
+            DerEnumerated den = new DerEnumerated(0);
+            Asn1EncodableVector v3 = new Asn1EncodableVector();
+            v3.Add(den);
+            v3.Add(new DerTaggedObject(true, 0, new DerSequence(v2)));            
+            DerSequence seq = new DerSequence(v3);
+            return seq.GetEncoded();
         }
 
         private PdfName GetSignatureHashKey(String signatureName) {
