@@ -1107,10 +1107,25 @@ namespace iTextSharp.text.pdf {
 			    data.AppendChild(domDocument.ImportNode(node, true));
 		    }
 		    else {
-			    data.ReplaceChild(domDocument.ImportNode(node, true), data.FirstChild);
+                // There's a possibility that first child node of XFA data is not an ELEMENT but simply a TEXT. In this case data will be duplicated.
+                XmlNode firstNode = GetFirstElementNode(data);
+                if (firstNode != null)
+                    data.ReplaceChild(domDocument.ImportNode(node, true), firstNode);
 		    }
             ExtractNodes();
 		    Changed = true;
         }
-}
+
+        private XmlNode GetFirstElementNode(XmlNode src) {
+            XmlNode result = null;
+            XmlNodeList list = src.ChildNodes;
+            for (int i = 0; i < list.Count; i++) {
+                if (list[i].NodeType ==  XmlNodeType.Element) {
+                    result = list[i];
+                    break;
+                }
+            }
+            return result;
+        }
+    }
 }
