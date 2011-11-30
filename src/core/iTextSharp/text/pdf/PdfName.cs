@@ -672,6 +672,8 @@ namespace iTextSharp.text.pdf {
         /** A name */
         public static readonly PdfName FONTDESCRIPTOR = new PdfName("FontDescriptor");
         /** A name */
+        public static readonly PdfName FONTFAMILY = new PdfName("FontFamily");
+        /** A name */
         public static readonly PdfName FONTFILE = new PdfName("FontFile");
         /** A name */
         public static readonly PdfName FONTFILE2 = new PdfName("FontFile2");
