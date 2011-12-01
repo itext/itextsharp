@@ -56,7 +56,7 @@ namespace iTextSharp.tool.xml.css.apply {
      * Applies CSS Rules to Chunks
      *
      */
-    public class ChunkCssApplier : ICssApplier<Chunk> {
+    public class ChunkCssApplier {
         /**
          * FF4 and IE8 provide normal text and bold text. All other values are translated to one of these 2 styles <br />
          * 100 - 500 and "lighter" = normal.<br />
@@ -73,20 +73,31 @@ namespace iTextSharp.tool.xml.css.apply {
          * com.itextpdf.tool.xml.Tag)
          */
         public Chunk Apply(Chunk c, Tag t) {
-            String fontName = BaseFont.HELVETICA;
+            String fontName = null;
             String encoding = BaseFont.CP1252;
             float size = new FontSizeTranslator().GetFontSize(t);
-            int style = Font.NORMAL;
-            BaseColor color = BaseColor.BLACK;
+            int style = Font.UNDEFINED;
+            BaseColor color = null;
             IDictionary<String, String> rules = t.CSS;
             foreach (KeyValuePair<String, String> entry in rules) {
                 String key = entry.Key;
                 String value = entry.Value;
-                if (Util.EqualsIgnoreCase(CSS.Property.FONT_WEIGHT, key) && CSS.Value.BOLD.Contains(value)) {
-                    if (style == Font.ITALIC)
-                        style = Font.BOLDITALIC;
-                    else
-                        style = Font.BOLD;
+                if (Util.EqualsIgnoreCase(CSS.Property.FONT_WEIGHT, key)) {
+                    if (CSS.Value.BOLD.Contains(value)) {
+                        if (style == Font.ITALIC) {
+                            style = Font.BOLDITALIC;
+                        }
+                        else {
+                            style = Font.BOLD;
+                        }
+                    }
+                    else {
+                        if (style == Font.BOLDITALIC) {
+                            style = Font.ITALIC;
+                        } else {
+                            style = Font.NORMAL;
+                        }
+                    }
                 } else if (Util.EqualsIgnoreCase(CSS.Property.FONT_STYLE, key)) {
                     if (Util.EqualsIgnoreCase(value, CSS.Value.ITALIC)) {
                         if (style == Font.BOLD)

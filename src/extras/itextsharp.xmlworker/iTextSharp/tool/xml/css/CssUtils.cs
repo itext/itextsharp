@@ -6,7 +6,8 @@ using System.Globalization;
 using System.util;
 using iTextSharp.text.html;
 using iTextSharp.tool.xml;
-using iTextSharp.tool.xml.pipeline.html;
+using iTextSharp.tool.xml.css.apply;
+using iTextSharp.tool.xml.exceptions;
 
 /*
  * $Id: CssUtils.java 126 2011-05-27 13:02:27Z emielackermann $
@@ -608,7 +609,7 @@ namespace iTextSharp.tool.xml.css {
          * @param configuration XmlWorkerConfig containing the last margin bottom.
          * @return an offset
          */
-        public float CalculateMarginTop(String value, float largestFont, HtmlPipelineContext configuration) {
+        public float CalculateMarginTop(String value, float largestFont, IMarginMemory configuration) {
             return CalculateMarginTop(ParseValueToPt(value, largestFont), configuration);
         }
 
@@ -621,14 +622,12 @@ namespace iTextSharp.tool.xml.css {
          * @param configuration XmlWorkerConfig containing the last margin bottom.
          * @return an offset
          */
-        public float CalculateMarginTop(float value, HtmlPipelineContext configuration) {
+        public float CalculateMarginTop(float value, IMarginMemory configuration) {
             float marginTop = value;
-            IDictionary<String, Object> memory = configuration.GetMemory();
-            Object mb;
-            memory.TryGetValue(HtmlPipelineContext.LAST_MARGIN_BOTTOM, out mb);
-            if (mb != null) {
-                float marginBottom = (float)mb;
+            try {
+                float marginBottom = configuration.LastMarginBottom;
                 marginTop = (marginTop>marginBottom)?marginTop-marginBottom:0;
+            } catch (NoDataException) {
             }
             return marginTop;
         }

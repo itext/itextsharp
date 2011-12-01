@@ -57,28 +57,24 @@ namespace iTextSharp.tool.xml.css.apply {
      * @author itextpdf.com
      *
      */
-    public class ParagraphCssApplier : ICssApplier<Paragraph> {
+    public class ParagraphCssApplier {
         private CssUtils utils = CssUtils.GetInstance();
-        private MaxLeadingAndSize m = new MaxLeadingAndSize();
-        private HtmlPipelineContext configuration;
 
         /**
-         * Construct a ParagraphCssApplier with the given {@link HtmlPipelineContext}
-         * @param htmlPipelineContext the context
+         * Construct a ParagraphCssApplier
          */
-        public ParagraphCssApplier(HtmlPipelineContext htmlPipelineContext) {
-            this.configuration = htmlPipelineContext;
+        public ParagraphCssApplier() {
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag)
          */
-        public Paragraph Apply(Paragraph p, Tag t) {
-            if (this.configuration.GetRootTags().Contains(t.Name)) {
+        public Paragraph Apply(Paragraph p, Tag t, IMarginMemory configuration) {
+            /*if (this.configuration.GetRootTags().Contains(t.Name)) {
                 m.SetLeading(t);
             } else {
                 m.SetVariablesBasedOnChildren(t);
-            }
+            }*/
             float fontSize = FontSizeTranslator.GetInstance().GetFontSize(t);
             float lmb = 0;
             bool hasLMB = false;
@@ -117,10 +113,18 @@ namespace iTextSharp.tool.xml.css.apply {
                     }
                 } else if (Util.EqualsIgnoreCase(CSS.Property.TEXT_INDENT, key)) {
                     p.FirstLineIndent = utils.ParseValueToPt(value, fontSize);
+                } else if (Util.EqualsIgnoreCase(CSS.Property.LINE_HEIGHT, key)) {
+                    if(utils.IsNumericValue(value)) {
+                        p.Leading = float.Parse(value, CultureInfo.InvariantCulture) * fontSize;
+                    } else if (utils.IsRelativeValue(value)) {
+                        p.Leading = utils.ParseRelativeValue(value, fontSize);
+                    } else if (utils.IsMetricValue(value)){
+                        p.Leading = utils.ParsePxInCmMmPcToPt(value);
+                    }
                 }
             }
             // setDefaultMargin to largestFont if no margin-bottom is set and p-tag is child of the root tag.
-            if (null != t.Parent) {
+            /*if (null != t.Parent) {
                 String parent = t.Parent.Name;
                 if (!css.ContainsKey(CSS.Property.MARGIN_TOP) && configuration.GetRootTags().Contains(parent)) {
                     p.SpacingBefore = p.SpacingBefore+utils.CalculateMarginTop(fontSize.ToString(CultureInfo.InvariantCulture)+"pt", 0, configuration);
@@ -135,11 +139,14 @@ namespace iTextSharp.tool.xml.css.apply {
                 if (p.Alignment == -1) {
                     p.Alignment = Element.ALIGN_LEFT;
                 }
-            }
+            }*/
 
             if (hasLMB) {
-                configuration.GetMemory()[HtmlPipelineContext.LAST_MARGIN_BOTTOM] = lmb;
+                configuration.LastMarginBottom = lmb;
             }
+            //TODO this only work around for applaying of font properties to paragraph
+            Chunk dummy = new ChunkCssApplier().Apply(new Chunk("dummy"), t);
+            p.Font = dummy.Font;
             return p;
         }
     }

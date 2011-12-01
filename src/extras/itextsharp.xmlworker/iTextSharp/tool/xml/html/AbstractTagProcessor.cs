@@ -5,7 +5,6 @@ using System.Globalization;
 using iTextSharp.text;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
-using iTextSharp.tool.xml.css.apply;
 using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.html.pdfelement;
 using iTextSharp.tool.xml.pipeline.css;
@@ -106,7 +105,9 @@ namespace iTextSharp.tool.xml.html {
          */
         public virtual IList<IElement> StartElement(IWorkerContext ctx, Tag tag) {
             float fontSize = fontsizeTrans.TranslateFontSize(tag);
-            tag.CSS[CSS.Property.FONT_SIZE] = fontSize.ToString(CultureInfo.InvariantCulture) + "pt";
+            if (fontSize != Font.UNDEFINED) {
+                tag.CSS[CSS.Property.FONT_SIZE] = fontSize.ToString(CultureInfo.InvariantCulture) + "pt";
+            }
             String pagebreak;
             tag.CSS.TryGetValue(CSS.Property.PAGE_BREAK_BEFORE, out pagebreak);
             if (null != pagebreak && Util.EqualsIgnoreCase(CSS.Value.ALWAYS, pagebreak)) {
@@ -196,23 +197,22 @@ namespace iTextSharp.tool.xml.html {
                 IList<IElement> list = new List<IElement>();
                 if (currentContent.Count > 0) {
                     if (addNewLines) {
-                        Paragraph p = new Paragraph();
+                        Paragraph p = new Paragraph(float.NaN);
                         foreach (IElement e in currentContent) {
                             p.Add(e);
                         }
                         if (applyCSS) {
-                            p = new ParagraphCssApplier(GetHtmlPipelineContext(ctx)).Apply(p, tag);
+                            p = (Paragraph) CssAppliers.GetInstance().Apply(p, tag, GetHtmlPipelineContext(ctx));
                         }
                         list.Add(p);
                     } else {
-                        NoNewLineParagraph p = new NoNewLineParagraph();
+                        NoNewLineParagraph p = new NoNewLineParagraph(float.NaN);
                         foreach (IElement e in currentContent) {
                             p.Add(e);
                         }
-                        p = new NoNewLineParagraphCssApplier(GetHtmlPipelineContext(ctx)).Apply(p, tag);
+                        p = (NoNewLineParagraph) CssAppliers.GetInstance().Apply(p, tag, GetHtmlPipelineContext(ctx));
                         list.Add(p);
                     }
-                    // TODO enhance
                 }
                 return list;
             } catch (NoCustomContextException e) {

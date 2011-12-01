@@ -65,7 +65,7 @@ namespace iTextSharp.tool.xml.html {
             if (sanitized.Length > 0) {
                 Chunk c = new ChunkCssApplier().Apply(new Chunk(sanitized), tag);
                 try {
-                    l.Add(new NoNewLineParagraphCssApplier(GetHtmlPipelineContext(ctx)).Apply(new NoNewLineParagraph(c), tag));
+                    l.Add(CssAppliers.GetInstance().Apply(new NoNewLineParagraph(c), tag, GetHtmlPipelineContext(ctx)));
                 } catch (NoCustomContextException e) {
                     throw new RuntimeWorkerException(e);
                 }
@@ -80,15 +80,14 @@ namespace iTextSharp.tool.xml.html {
          * com.itextpdf.tool.xml.ITagProcessor#endElement(com.itextpdf.tool.xml.Tag,
          * java.util.List, com.itextpdf.text.Document)
          */
-        public override IList<IElement> End(IWorkerContext context, Tag tag, IList<IElement> currentContent) {
+        public override IList<IElement> End(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
             try {
                 Paragraph p = null;
                 IList<IElement> l = new List<IElement>(1);
                 foreach (IElement e in currentContent) {
                     if (e is Paragraph) {
                         if (p != null) {
-                            p = new ParagraphCssApplier(GetHtmlPipelineContext(context)).Apply(p, tag);
-                            l.Add(p);
+                            l.Add(CssAppliers.GetInstance().Apply(p, tag, GetHtmlPipelineContext(ctx)));
                             p = null;
                         }
                         l.Add(e);
@@ -100,8 +99,7 @@ namespace iTextSharp.tool.xml.html {
                     }
                 }
                 if (p != null) {
-                    p = new ParagraphCssApplier(GetHtmlPipelineContext(context)).Apply(p, tag);
-                    l.Add(p);
+                    l.Add(CssAppliers.GetInstance().Apply(p, tag, GetHtmlPipelineContext(ctx)));
                 }
                 return l;
             } catch (NoCustomContextException e) {

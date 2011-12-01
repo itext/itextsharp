@@ -17,21 +17,12 @@ namespace iTextSharp.tool.xml.css.apply {
      * @author Emiel Ackermann
      *
      */
-    public class LineSeparatorCssApplier : ICssApplier<LineSeparator>{
-
-        private HtmlPipelineContext configuration;
-
-        /**
-         * @param htmlPipelineContext the context
-         */
-        public LineSeparatorCssApplier(HtmlPipelineContext htmlPipelineContext) {
-            this.configuration = htmlPipelineContext;
-        }
+    public class LineSeparatorCssApplier {
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag)
          */
-        public LineSeparator Apply(LineSeparator ls, Tag t) {
+        public LineSeparator Apply(LineSeparator ls, Tag t, IPageSizeContainable psc) {
             float lineWidth = 1;
             IDictionary<String, String> css = t.CSS;
             if (css.ContainsKey(CSS.Property.HEIGHT)) {
@@ -52,7 +43,7 @@ namespace iTextSharp.tool.xml.css.apply {
                 if (widthStr.Contains("%")) {
                     percentage = float.Parse(widthStr.Replace("%", ""), CultureInfo.InvariantCulture);
                 } else {
-                    percentage = (CssUtils.GetInstance().ParsePxInCmMmPcToPt(widthStr)/configuration.GetPageSize().Width)*100;
+                    percentage = (CssUtils.GetInstance().ParsePxInCmMmPcToPt(widthStr)/psc.PageSize.Width)*100;
                 }
             }
             ls.Percentage = percentage;

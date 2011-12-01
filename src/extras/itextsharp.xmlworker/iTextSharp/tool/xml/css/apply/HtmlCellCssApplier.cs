@@ -59,18 +59,10 @@ namespace iTextSharp.tool.xml.css.apply {
      * @author Emiel Ackermann
      *
      */
-    public class HtmlCellCssApplier : ICssApplier<HtmlCell> {
+    public class HtmlCellCssApplier {
 
         private CssUtils utils = CssUtils.GetInstance();
-        private HtmlPipelineContext configuration;
 
-
-        /**
-         * @param htmlPipelineContext the context
-         */
-        public HtmlCellCssApplier(HtmlPipelineContext htmlPipelineContext) {
-            this.configuration = htmlPipelineContext;
-        }
         /*
          * (non-Javadoc)
          *
@@ -78,7 +70,7 @@ namespace iTextSharp.tool.xml.css.apply {
          * com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element,
          * com.itextpdf.tool.xml.Tag)
          */
-        public HtmlCell Apply(HtmlCell cell, Tag t) {
+        public HtmlCell Apply(HtmlCell cell, Tag t, IMarginMemory memory, IPageSizeContainable psc) {
             TableStyleValues values = new TableStyleValues();
             Tag table = t.Parent;
             while (!table.Name.Equals("table")){
@@ -98,7 +90,7 @@ namespace iTextSharp.tool.xml.css.apply {
             } else {
                 cell.VerticalAlignment = Element.ALIGN_MIDDLE; // Default css behavior. Implementation of "vertical-align" style further along.
                 if (t.Attributes.ContainsKey(HTML.Attribute.WIDTH) || css.ContainsKey(HTML.Attribute.WIDTH)) {
-                    cell.FixedWidth = new WidthCalculator().GetWidth(t, configuration.GetRootTags(), configuration.GetPageSize().Width);
+                    cell.FixedWidth = new WidthCalculator().GetWidth(t, memory.GetRootTags(), psc.PageSize.Width);
                 }
                 String colspan;
                 t.Attributes.TryGetValue(HTML.Attribute.COLSPAN, out colspan);

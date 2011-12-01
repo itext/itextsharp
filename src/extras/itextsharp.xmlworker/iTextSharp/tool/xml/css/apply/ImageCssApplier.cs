@@ -52,7 +52,7 @@ namespace iTextSharp.tool.xml.css.apply {
      * @author redlab_b
      *
      */
-    public class ImageCssApplier : ICssApplier<Image> {
+    public class ImageCssApplier {
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag)

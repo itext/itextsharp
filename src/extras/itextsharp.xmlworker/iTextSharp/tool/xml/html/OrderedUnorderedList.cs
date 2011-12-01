@@ -5,7 +5,6 @@ using iTextSharp.text;
 using iTextSharp.text.log;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
-using iTextSharp.tool.xml.css.apply;
 using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.pipeline.html;
 /*
@@ -69,14 +68,13 @@ namespace iTextSharp.tool.xml.html {
             IList<IElement> returnedList = new List<IElement>();
             if (size > 0) {
                 HtmlPipelineContext htmlPipelineContext = null;
+                List list;
                 try {
                     htmlPipelineContext = GetHtmlPipelineContext(ctx);
-                } catch (NoCustomContextException e) {
-                    if (LOG.IsLogging(Level.ERROR)) {
-                        LOG.Error(String.Format(LocaleMessages.GetInstance().GetMessage("customcontext.404.continue"), typeof(HtmlPipeline).FullName), e);
-                    }
+                    list = (List) CssAppliers.GetInstance().Apply(new List(), tag, htmlPipelineContext);
+                } catch (NoCustomContextException) {
+                    list = (List) CssAppliers.GetInstance().Apply(new List(), tag, null);
                 }
-                List list = new ListStyleTypeCssApplier().Apply(new List(), tag, htmlPipelineContext);
                 int i = 0;
                 foreach (IElement li in listElements) {
                     if (li is ListItem) {
@@ -97,7 +95,7 @@ namespace iTextSharp.tool.xml.html {
                             }
                         }
                         try {
-                            list.Add(new ParagraphCssApplier(GetHtmlPipelineContext(ctx)).Apply((ListItem) li, child));
+                            list.Add(CssAppliers.GetInstance().Apply(li, child, GetHtmlPipelineContext(ctx)));
                         } catch (NoCustomContextException e1) {
                             throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e1);
                         }

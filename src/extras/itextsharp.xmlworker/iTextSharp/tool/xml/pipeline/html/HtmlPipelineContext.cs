@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using iTextSharp.text;
 using iTextSharp.tool.xml;
+using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.css.apply;
 using iTextSharp.tool.xml.html;
 /*
@@ -56,7 +57,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
      * @author redlab_b
      *
      */
-    public class HtmlPipelineContext : ICustomContext, ICloneable {
+    public class HtmlPipelineContext : ICustomContext, ICloneable, IMarginMemory, IPageSizeContainable {
 
         /**
          *  Key for the memory, used to store bookmark nodes
@@ -71,7 +72,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
         private ITagProcessorFactory tagFactory;
         private IList<IElement> ctn = new List<IElement>();
         private IImageProvider imageProvider;
-        private Rectangle pageSize = PageSize.A4;
+        private Rectangle pageSize = iTextSharp.text.PageSize.A4;
         private Encoding charset;
         private IList<String> roottags = new List<string>(new String[] { "body", "div" });
         private ILinkProvider linkprovider;
@@ -189,13 +190,6 @@ namespace iTextSharp.tool.xml.pipeline.html {
          */
         public Encoding CharSet() {
             return charset;
-        }
-        /**
-         * Returns a {@link Rectangle}
-         * @return the pagesize.
-         */
-        public Rectangle GetPageSize() {
-            return this.pageSize;
         }
 
         /**
@@ -330,6 +324,28 @@ namespace iTextSharp.tool.xml.pipeline.html {
         public HtmlPipelineContext SetLinkProvider(ILinkProvider linkprovider) {
             this.linkprovider = linkprovider;
             return this;
+        }
+
+        public float LastMarginBottom {
+            get {
+                IDictionary<String, Object> memory = GetMemory();
+                Object o;
+                memory.TryGetValue(HtmlPipelineContext.LAST_MARGIN_BOTTOM, out o);
+                if (null == o) {
+                    throw new NoDataException();
+                } else {
+                    return (float) o;
+                }
+            }
+            set {
+                GetMemory()[HtmlPipelineContext.LAST_MARGIN_BOTTOM] = value;
+            }
+        }
+
+        public Rectangle PageSize {
+            get {
+                return this.pageSize;
+            }
         }
     }
 }

@@ -194,10 +194,10 @@ namespace iTextSharp.tool.xml.html.table {
     //          float targetWidth = calculateTargetWidth(tag, columnWidths, outerWidth, ctx);
                 float targetWidth = 0;
                 HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
-                float max = htmlPipelineContext.GetPageSize().Width - outerWidth;
+                float max = htmlPipelineContext.PageSize.Width - outerWidth;
                 bool tableWidthFixed = false;
                 if (tag.Attributes.ContainsKey(CSS.Property.WIDTH) || tag.CSS.ContainsKey(CSS.Property.WIDTH)) {
-                    targetWidth = new WidthCalculator().GetWidth(tag, htmlPipelineContext.GetRootTags(), htmlPipelineContext.GetPageSize().Width);
+                    targetWidth = new WidthCalculator().GetWidth(tag, htmlPipelineContext.GetRootTags(), htmlPipelineContext.PageSize.Width);
                     if (targetWidth > max) {
                         targetWidth = max;
                     }
@@ -279,7 +279,7 @@ namespace iTextSharp.tool.xml.html.table {
                                     // to
                                     // its
                                     // minimum width (= widestWords array).
-                                    float pageWidth = GetHtmlPipelineContext(ctx).GetPageSize().Width;
+                                    float pageWidth = GetHtmlPipelineContext(ctx).PageSize.Width;
                                     if (GetTableWidth(widestWords, outerWidth) < pageWidth) {
                                         targetWidth = GetTableWidth(widestWords, outerWidth);
                                         leftToReduce = 0;
@@ -391,11 +391,11 @@ namespace iTextSharp.tool.xml.html.table {
                 IWorkerContext ctx) {
             float targetWidth = 0;
             HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
-            float max = htmlPipelineContext.GetPageSize().Width - outerWidth;
+            float max = htmlPipelineContext.PageSize.Width - outerWidth;
             float start = GetTableWidth(columnWidths, 0);
             if (tag.Attributes.ContainsKey(CSS.Property.WIDTH) || tag.CSS.ContainsKey(CSS.Property.WIDTH)) {
                 targetWidth = new WidthCalculator().GetWidth(tag, htmlPipelineContext.GetRootTags(), htmlPipelineContext
-                        .GetPageSize().Width);
+                        .PageSize.Width);
                 if (targetWidth > max) {
                     targetWidth = max;
                 }
@@ -620,13 +620,13 @@ namespace iTextSharp.tool.xml.html.table {
          * @throws NoCustomContextException
          */
         private float GetTableOuterWidth(Tag tag, float horBorderSpacing, IWorkerContext ctx) {
-            float total = utils.GetLeftAndRightMargin(tag, GetHtmlPipelineContext(ctx).GetPageSize().Width)
+            float total = utils.GetLeftAndRightMargin(tag, GetHtmlPipelineContext(ctx).PageSize.Width)
                 + utils.CheckMetricStyle(tag, CSS.Property.BORDER_LEFT_WIDTH)
                 + utils.CheckMetricStyle(tag, CSS.Property.BORDER_RIGHT_WIDTH)
                 + horBorderSpacing;
             Tag parent = tag.Parent;
             if (parent != null) {
-                total += utils.GetLeftAndRightMargin(parent, GetHtmlPipelineContext(ctx).GetPageSize().Width);
+                total += utils.GetLeftAndRightMargin(parent, GetHtmlPipelineContext(ctx).PageSize.Width);
             }
             return total;
         }
