@@ -261,6 +261,8 @@ namespace iTextSharp.tool.xml.parser {
                 if (decl != null)
                     encoding = decl;
             }
+            if (inp.CanSeek)
+                inp.Seek(0, SeekOrigin.Begin);
             return new StreamReader(inp, IanaEncodings.GetEncodingEncoding(encoding));
         }
 

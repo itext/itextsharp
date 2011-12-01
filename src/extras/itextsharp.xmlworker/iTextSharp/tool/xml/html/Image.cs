@@ -5,7 +5,6 @@ using iTextSharp.text;
 using iTextSharp.text.log;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
-using iTextSharp.tool.xml.css.apply;
 using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.net;
 using iTextSharp.tool.xml.net.exc;
@@ -115,7 +114,12 @@ namespace iTextSharp.tool.xml.html {
                         widthInPoints = img.Width * heightInPoints / img.Height;
                         img.ScaleAbsolute(widthInPoints, heightInPoints);
                     }
-                    l.Add(new ChunkCssApplier().Apply(new Chunk(new ImageCssApplier().Apply(img, tag), 0, 0, true), tag));
+                    try {
+                        HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
+                        l.Add(CssAppliers.GetInstance().Apply(new Chunk((iTextSharp.text.Image) CssAppliers.GetInstance().Apply(img, tag, htmlPipelineContext), 0, 0, true), tag, htmlPipelineContext));
+                    } catch (NoCustomContextException e) {
+                        throw new RuntimeWorkerException(e);
+                    }
                 }
             }
             return l;

@@ -1,8 +1,6 @@
 using System;
-using iTextSharp.text;
-using iTextSharp.tool.xml;
 /*
- * $Id: CssApplier.java 28 2011-05-05 20:33:36Z redlab_b $
+ * $Id: CssResolverException.java 85 2011-05-19 09:21:03Z redlab_b $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2011 1T3XT BVBA
@@ -44,23 +42,39 @@ using iTextSharp.tool.xml;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-namespace iTextSharp.tool.xml.css {
+namespace iTextSharp.tool.xml.exceptions {
 
     /**
-     * Applies CSS to an Element.
-     *
+     * Thrown when something that needs data to function does not have that data.
      * @author redlab_b
-     * @param <T> the {@link Element} this CSSApplier must apply css on;
      *
      */
-    public interface ICssApplier<T> where T : IElement {
+    public class NoDataException : Exception {
+
+
         /**
-         * Apply CSS from a given tag to a given element.
          *
-         * @param element the element
-         * @param t the tag the CSS has to be taken from
-         * @return the given element
          */
-        T Apply(T element, Tag t);
+        public NoDataException() {
+        }
+
+        /**
+         * @param message
+         */
+        public NoDataException(String message) : base(message) {
+        }
+
+        /**
+         * @param cause
+         */
+        public NoDataException(Exception cause) : base("", cause) {
+        }
+
+        /**
+         * @param message
+         * @param cause
+         */
+        public NoDataException(String message, Exception cause) : base(message, cause) {
+        }
     }
 }

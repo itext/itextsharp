@@ -5,6 +5,7 @@ using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css.apply;
 using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.html;
+using iTextSharp.tool.xml.pipeline.html;
 using iTextSharp.tool.xml.html.pdfelement;
 /*
  * $Id: TableData.java 118 2011-05-27 11:10:19Z redlab_b $
@@ -89,7 +90,8 @@ namespace iTextSharp.tool.xml.html.table {
                 cell.AddElement(e);
             }
             try {
-                l.Add(new HtmlCellCssApplier(GetHtmlPipelineContext(ctx)).Apply(cell, tag));
+                HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
+                l.Add(new HtmlCellCssApplier().Apply(cell, tag, htmlPipelineContext, htmlPipelineContext));
             } catch (NoCustomContextException e1) {
                 throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e1);
             }

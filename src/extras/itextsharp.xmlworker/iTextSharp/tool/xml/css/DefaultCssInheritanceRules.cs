@@ -65,15 +65,26 @@ namespace iTextSharp.tool.xml.css {
             return true;
         }
 
-        private static readonly IList<String> GLOBAL = new List<string>(new String[] { "width", "height", "min-width", "max-width", "min-height",
-                "max-height", "margin", "margin-left", "margin-right", "margin-top",
-                "margin-bottom", "padding", "padding-left", "padding-right", "padding-top", "padding-bottom",
-                "border-top-width", "border-top-style", "border-top-color", "border-bottom-width",
-                "border-bottom-style", "border-bottom-color", "border-left-width", "border-left-style",
-                "border-left-color", "border-right-width", "border-right-style", "border-right-color",
-                CSS.Property.PAGE_BREAK_BEFORE ,CSS.Property.PAGE_BREAK_AFTER });
-        private static readonly IList<String> PARENT_TO_TABLE = new List<string>(new String[] { "line-height", "font-size", "font-style", "font-weight",
-                "text-indent" });
+        private static readonly IList<String> GLOBAL = new List<string>(new String[] {
+            CSS.Property.WIDTH, CSS.Property.HEIGHT,
+            CSS.Property.MIN_WIDTH, CSS.Property.MAX_WIDTH,
+            CSS.Property.MIN_HEIGHT, CSS.Property.MAX_HEIGHT,
+            CSS.Property.MARGIN,
+            CSS.Property.MARGIN_LEFT, CSS.Property.MARGIN_RIGHT,
+            CSS.Property.MARGIN_TOP, CSS.Property.MARGIN_BOTTOM,
+            CSS.Property.PADDING,
+            CSS.Property.PADDING_LEFT, CSS.Property.PADDING_RIGHT,
+            CSS.Property.PADDING_TOP, CSS.Property.PADDING_BOTTOM,
+            CSS.Property.BORDER_TOP_WIDTH, CSS.Property.BORDER_TOP_STYLE, CSS.Property.BORDER_TOP_COLOR,
+            CSS.Property.BORDER_BOTTOM_WIDTH,CSS.Property.BORDER_BOTTOM_STYLE, CSS.Property.BORDER_BOTTOM_COLOR,
+            CSS.Property.BORDER_LEFT_WIDTH, CSS.Property.BORDER_LEFT_STYLE, CSS.Property.BORDER_LEFT_COLOR,
+            CSS.Property.BORDER_RIGHT_WIDTH, CSS.Property.BORDER_RIGHT_STYLE,CSS.Property.BORDER_RIGHT_COLOR,
+            CSS.Property.PAGE_BREAK_BEFORE, CSS.Property.PAGE_BREAK_AFTER,
+            CSS.Property.LEFT, CSS.Property.TOP,CSS.Property.RIGHT,CSS.Property.BOTTOM,
+            CSS.Property.POSITION });
+        private static readonly IList<String> PARENT_TO_TABLE = new List<string>(new String[] {"line-height", "font-size",
+            "font-style", "font-weight",
+            "text-indent" });
         private static readonly IList<String> TABLE_IN_ROW = new List<string>(new String[] { "background-color" });
         // styles that should not be applied on the content of a td-tag.
         private static readonly IList<String> TD_TO_CONTENT = new List<string>(new String[] { "vertical-align" });

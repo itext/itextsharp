@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf.draw;
 using iTextSharp.tool.xml;
-using iTextSharp.tool.xml.css.apply;
 using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.pipeline.html;
 /*
@@ -64,10 +63,10 @@ namespace iTextSharp.tool.xml.html {
             try {
                 IList<IElement> list = new List<IElement>();
 			    HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
-			    LineSeparator lineSeparator = new LineSeparatorCssApplier(htmlPipelineContext).Apply(new LineSeparator(), tag);
+			    LineSeparator lineSeparator = (LineSeparator) CssAppliers.GetInstance().Apply(new LineSeparator(), tag, htmlPipelineContext);
                 Paragraph p = new Paragraph();
                 p.Add(lineSeparator);
-                list.Add(new ParagraphCssApplier(htmlPipelineContext).Apply(p, tag));
+                list.Add(CssAppliers.GetInstance().Apply(p, tag, htmlPipelineContext));
                 return list;
             } catch (NoCustomContextException e) {
                 throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);

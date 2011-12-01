@@ -45,8 +45,10 @@
     <Compile Include="iTextSharp\tool\xml\css\apply\ImageCssApplier.cs" />
     <Compile Include="iTextSharp\tool\xml\css\apply\LineSeparatorCssApplier.cs" />
     <Compile Include="iTextSharp\tool\xml\css\apply\ListStyleTypeCssApplier.cs" />
+    <Compile Include="iTextSharp\tool\xml\css\apply\IMarginMemory.cs" />
     <Compile Include="iTextSharp\tool\xml\css\apply\MaxLeadingAndSize.cs" />
     <Compile Include="iTextSharp\tool\xml\css\apply\NoNewLineParagraphCssApplier.cs" />
+    <Compile Include="iTextSharp\tool\xml\css\apply\IPageSizeContainable.cs" />
     <Compile Include="iTextSharp\tool\xml\css\apply\ParagraphCssApplier.cs" />
     <Compile Include="iTextSharp\tool\xml\css\CSS.cs" />
     <Compile Include="iTextSharp\tool\xml\css\CssFileImpl.cs" />
@@ -58,7 +60,6 @@
     <Compile Include="iTextSharp\tool\xml\css\DefaultCssInheritanceRules.cs" />
     <Compile Include="iTextSharp\tool\xml\css\FontSizeTranslator.cs" />
     <Compile Include="iTextSharp\tool\xml\css\ICssFile.cs" />
-    <Compile Include="iTextSharp\tool\xml\css\ICssApplier.cs" />
     <Compile Include="iTextSharp\tool\xml\css\ICssFiles.cs" />
     <Compile Include="iTextSharp\tool\xml\css\ICssInheritanceRules.cs" />
     <Compile Include="iTextSharp\tool\xml\css\parser\CssStateController.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="iTextSharp\tool\xml\css\WidthCalculator.cs" />
     <Compile Include="iTextSharp\tool\xml\exceptions\CssResolverException.cs" />
     <Compile Include="iTextSharp\tool\xml\exceptions\LocaleMessages.cs" />
+    <Compile Include="iTextSharp\tool\xml\exceptions\NoDataException.cs" />
     <Compile Include="iTextSharp\tool\xml\exceptions\NoSiblingException.cs" />
     <Compile Include="iTextSharp\tool\xml\exceptions\NoTagProcessorException.cs" />
     <Compile Include="iTextSharp\tool\xml\exceptions\NotImplementedException.cs" />
@@ -81,6 +83,7 @@
     <Compile Include="iTextSharp\tool\xml\html\Anchor.cs" />
     <Compile Include="iTextSharp\tool\xml\html\Body.cs" />
     <Compile Include="iTextSharp\tool\xml\html\Break.cs" />
+    <Compile Include="iTextSharp\tool\xml\html\CssAppliers.cs" />
     <Compile Include="iTextSharp\tool\xml\html\DefaultTagProcessorFactory.cs" />
     <Compile Include="iTextSharp\tool\xml\html\Div.cs" />
     <Compile Include="iTextSharp\tool\xml\html\DummyTagProcessor.cs" />
@@ -183,6 +186,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="itextsharp.snk" />
+    <EmbeddedResource Include="iTextSharp\errors\errors_en.properties" />
     <EmbeddedResource Include="iTextSharp\errors\errors.properties" />
     <EmbeddedResource Include="iTextSharp\errors\errors_nl.properties" />
   </ItemGroup>

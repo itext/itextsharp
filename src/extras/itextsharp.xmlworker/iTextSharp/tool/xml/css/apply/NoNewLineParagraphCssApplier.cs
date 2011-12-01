@@ -57,28 +57,18 @@ namespace iTextSharp.tool.xml.css.apply {
      * @author itextpdf.com
      *
      */
-    public class NoNewLineParagraphCssApplier : ICssApplier<NoNewLineParagraph> {
+    public class NoNewLineParagraphCssApplier {
         private CssUtils utils = CssUtils.GetInstance();
-        private MaxLeadingAndSize m = new MaxLeadingAndSize();
-        private HtmlPipelineContext configuration;
-
-        /**
-         * Construct a NoNewLineParagraphCssApplier with the given {@link HtmlPipelineContext}
-         * @param htmlPipelineContext the context
-         */
-        public NoNewLineParagraphCssApplier(HtmlPipelineContext htmlPipelineContext) {
-            this.configuration = htmlPipelineContext;
-        }
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag)
          */
-        public NoNewLineParagraph Apply(NoNewLineParagraph p, Tag t) {
-            if (this.configuration.GetRootTags().Contains(t.Name)) {
+        public NoNewLineParagraph Apply(NoNewLineParagraph p, Tag t, IMarginMemory configuration) {
+            /*if (this.configuration.GetRootTags().Contains(t.Name)) {
                 m.SetLeading(t);
             } else {
                 m.SetVariablesBasedOnChildren(t);
-            }
+            }*/
             float fontSize = FontSizeTranslator.GetInstance().GetFontSize(t);
             float lmb = 0;
             bool hasLMB = false;
@@ -131,14 +121,14 @@ namespace iTextSharp.tool.xml.css.apply {
                     lmb = fontSize;
                     hasLMB = true;
                 }
-                p.Leading = m.GetLargestLeading();
+                //p.Leading = m.GetLargestLeading();
                 if (p.Alignment == -1) {
                     p.Alignment = Element.ALIGN_LEFT;
                 }
             }
 
             if (hasLMB) {
-                configuration.GetMemory()[HtmlPipelineContext.LAST_MARGIN_BOTTOM] = lmb;
+                configuration.LastMarginBottom = lmb;
             }
             return p;
         }

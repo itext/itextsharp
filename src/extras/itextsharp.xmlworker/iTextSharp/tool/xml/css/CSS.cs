@@ -126,8 +126,11 @@ namespace iTextSharp.tool.xml.css {
 		    public const String DISPLAY = "display";
 		    public const String MIN_WIDTH = "min-width";
 		    public const String MAX_WIDTH = "max-width";
-		    public static readonly Object MIN_HEIGHT = "min-height";
-		    public static readonly Object MAX_HEIGHT = "max-height";
+            public const String MIN_HEIGHT = "min-height";
+            public const String MAX_HEIGHT = "max-height";
+            public const String RIGHT = "right";
+            public const String BOTTOM = "bottom";
+            public const String FLOAT = "float";
         }
 
         /**
@@ -206,6 +209,8 @@ namespace iTextSharp.tool.xml.css {
             public const String ALWAYS = "always";
             public const String ABSOLUTE = "absolute";
             public const String AUTO = "auto";
+		    public const String INLINE = "inline";
+		    public const String BLOCK = "block";
         }
     }
 }

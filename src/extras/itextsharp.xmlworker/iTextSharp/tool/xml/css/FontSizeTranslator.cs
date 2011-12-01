@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.util;
+using iTextSharp.text;
 using iTextSharp.tool.xml;
 /**
  *
@@ -53,7 +54,7 @@ namespace iTextSharp.tool.xml.css {
          * @return float font size of the content of the tag in pt.
          */
         public float TranslateFontSize(Tag tag) {
-            float size = 12;
+            float size = Font.UNDEFINED;
             if (tag.CSS.ContainsKey(CSS.Property.FONT_SIZE)) {
                 String value = tag.CSS[CSS.Property.FONT_SIZE];
                  if (Util.EqualsIgnoreCase(value, CSS.Value.XX_SMALL)){
@@ -119,10 +120,11 @@ namespace iTextSharp.tool.xml.css {
                  } else if (utils.IsMetricValue(value)||utils.IsNumericValue(value)){
                      size = utils.ParsePxInCmMmPcToPt(value);
                  } else if (utils.IsRelativeValue(value)) {
-                    float baseValue = 0;
+                    float baseValue = Font.UNDEFINED;
                     if (tag.Parent != null) {
                         baseValue = GetFontSize(tag.Parent);
-                    } else {
+                    }
+                    if (baseValue == Font.UNDEFINED) {
                         baseValue = 12;
                     }
                     size = utils.ParseRelativeValue(value, baseValue);
@@ -142,7 +144,7 @@ namespace iTextSharp.tool.xml.css {
             if (null != str) {
                 return float.Parse(str.Replace("pt", ""), CultureInfo.InvariantCulture);
             }
-            return 12 ;
+            return Font.UNDEFINED;
         }
     }
 }

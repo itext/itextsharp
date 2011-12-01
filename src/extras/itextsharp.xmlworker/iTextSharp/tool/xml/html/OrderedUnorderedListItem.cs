@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.tool.xml;
-using iTextSharp.tool.xml.css.apply;
+using iTextSharp.tool.xml.exceptions;
 /*
  * $Id: OrderedUnorderedListItem.java 94 2011-05-23 23:38:48Z redlab_b $
  *
@@ -61,7 +61,11 @@ namespace iTextSharp.tool.xml.html {
             String sanitized = HTMLUtils.SanitizeInline(content);
             IList<IElement> l = new List<IElement>(1);
             if (sanitized.Length > 0) {
-                l.Add(new ChunkCssApplier().Apply(new Chunk(sanitized), tag));
+                try {
+                    l.Add( CssAppliers.GetInstance().Apply(new Chunk(sanitized), tag, GetHtmlPipelineContext(ctx)));
+                } catch (NoCustomContextException e) {
+                    throw new RuntimeWorkerException(e);
+                }
             }
             return l;
         }

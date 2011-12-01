@@ -4,6 +4,7 @@ using System.IO;
 using System.util;
 using iTextSharp.text;
 using iTextSharp.text.log;
+using iTextSharp.text.html;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
 using iTextSharp.tool.xml.exceptions;
@@ -76,12 +77,15 @@ namespace iTextSharp.tool.xml.css.apply {
          * This means: <strong>Always replace your list with the returned one and add content to the list after applying!</strong>
          */
         // not implemented: list-style-type:armenian, georgian, decimal-leading-zero.
-        public List Apply(List list, Tag t, HtmlPipelineContext htmlPipelineContext) {
+        public List Apply(List list, Tag t, IImageProvider htmlPipelineContext) {
             float fontSize = FontSizeTranslator.GetInstance().GetFontSize(t);
             List lst = list;
             IDictionary<String, String> css = t.CSS;
             String styleType;
             css.TryGetValue(CSS.Property.LIST_STYLE_TYPE, out styleType);
+            BaseColor color = HtmlUtilities.DecodeColor(css.ContainsKey(CSS.Property.COLOR) ? css[CSS.Property.COLOR] : null);
+            if (null == color) color = BaseColor.BLACK;
+
             if (null != styleType) {
                 if (Util.EqualsIgnoreCase(styleType, CSS.Value.NONE)) {
                     lst.Lettered = false;
@@ -89,43 +93,50 @@ namespace iTextSharp.tool.xml.css.apply {
                     lst.SetListSymbol("");
                 } else if (Util.EqualsIgnoreCase(CSS.Value.DECIMAL, styleType)) {
                     lst = new List(List.ORDERED);
-                    SynchronizeSymbol(fontSize, lst);
+                    SynchronizeSymbol(fontSize, lst, color);
                 } else if (Util.EqualsIgnoreCase(CSS.Value.DISC, styleType)) {
                     lst = new ZapfDingbatsList(108);
-                    ShrinkSymbol(lst, fontSize);
+                    ShrinkSymbol(lst, fontSize, color);
                 } else if (Util.EqualsIgnoreCase(CSS.Value.SQUARE, styleType)) {
                     lst = new ZapfDingbatsList(110);
-                    ShrinkSymbol(lst, fontSize);
+                    ShrinkSymbol(lst, fontSize, color);
                 } else if (Util.EqualsIgnoreCase(CSS.Value.CIRCLE, styleType)) {
                     lst = new ZapfDingbatsList(109);
-                    ShrinkSymbol(lst, fontSize);
+                    ShrinkSymbol(lst, fontSize, color);
                 } else if (CSS.Value.LOWER_ROMAN.Equals(styleType)) {
                     lst = new RomanList(true, 0);
-                    SynchronizeSymbol(fontSize, lst);
+                    lst.Autoindent = true;
+                    SynchronizeSymbol(fontSize, lst, color);
                 } else if (CSS.Value.UPPER_ROMAN.Equals(styleType)) {
                     lst = new RomanList(false, 0);
-                    SynchronizeSymbol(fontSize, lst);
+                    SynchronizeSymbol(fontSize, lst, color);
+                    lst.Autoindent = true;
                 } else if (CSS.Value.LOWER_GREEK.Equals(styleType)) {
                     lst = new GreekList(true, 0);
-                    SynchronizeSymbol(fontSize, lst);
+                    SynchronizeSymbol(fontSize, lst, color);
+                    lst.Autoindent = true;
                 } else if (CSS.Value.UPPER_GREEK.Equals(styleType)) {
                     lst = new GreekList(false, 0);
-                    SynchronizeSymbol(fontSize, lst);
+                    SynchronizeSymbol(fontSize, lst, color);
+                    lst.Autoindent = true;
                 } else if (CSS.Value.LOWER_ALPHA.Equals(styleType) || CSS.Value.LOWER_LATIN.Equals(styleType)) {
                     lst = new List(List.ORDERED, List.ALPHABETICAL);
-                    SynchronizeSymbol(fontSize, lst);
+                    SynchronizeSymbol(fontSize, lst, color);
                     lst.Lowercase = true;
+                    lst.Autoindent = true;
                 } else if (CSS.Value.UPPER_ALPHA.Equals(styleType) || CSS.Value.UPPER_LATIN.Equals(styleType)) {
                     lst = new List(List.ORDERED, List.ALPHABETICAL);
-                    SynchronizeSymbol(fontSize, lst);
+                    SynchronizeSymbol(fontSize, lst, color);
                     lst.Lowercase = false;
+                    lst.Autoindent = true;
                 }
             } else if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.OL)) {
                 lst = new List(List.ORDERED);
-                SynchronizeSymbol(fontSize, lst);
+                SynchronizeSymbol(fontSize, lst, color);
+                lst.Autoindent = true;
             } else if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.UL)) {
                 lst = new List(List.UNORDERED);
-                ShrinkSymbol(lst, fontSize);
+                ShrinkSymbol(lst, fontSize, color);
             }
             if (css.ContainsKey(CSS.Property.LIST_STYLE_IMAGE)
                     && !Util.EqualsIgnoreCase(css[CSS.Property.LIST_STYLE_IMAGE], CSS.Value.NONE)) {
@@ -137,10 +148,10 @@ namespace iTextSharp.tool.xml.css.apply {
                         img = new ImageRetrieve().RetrieveImage(url);
                     } else {
                         try {
-                            img = new ImageRetrieve(htmlPipelineContext.GetImageProvider()).RetrieveImage(url);
-                        } catch (NoImageProviderException) {
+                            img = new ImageRetrieve(htmlPipelineContext).RetrieveImage(url);
+                        } catch (NoImageException) {
                             if (LOG.IsLogging(Level.TRACE)) {
-                                LOG.Trace(String.Format(LocaleMessages.GetInstance().GetMessage("pipeline.html.noimageprovider"), htmlPipelineContext.GetType().FullName));
+                                LOG.Trace(String.Format(LocaleMessages.GetInstance().GetMessage("css.applier.list.noimage")));
                             }
                             img = new ImageRetrieve().RetrieveImage(url);
                         }
@@ -161,9 +172,9 @@ namespace iTextSharp.tool.xml.css.apply {
                     }
                     lst = new List(List.UNORDERED);
                 }
+                lst.Autoindent = false;
             }
             lst.Alignindent = false;
-            lst.Autoindent = false;
             float leftIndent = 0;
             if (css.ContainsKey(CSS.Property.LIST_STYLE_POSITION) && Util.EqualsIgnoreCase(css[CSS.Property.LIST_STYLE_POSITION], CSS.Value.INSIDE)) {
                 leftIndent += 30;
@@ -176,16 +187,20 @@ namespace iTextSharp.tool.xml.css.apply {
             return lst;
         }
 
-        private void SynchronizeSymbol(float fontSize, List lst) {
-            lst.Symbol.Font.Size = fontSize;
+        private void SynchronizeSymbol(float fontSize, List lst, BaseColor color) {
+            Font font = lst.Symbol.Font;
+            font.Size = fontSize;
+            font.Color = color;
             lst.SymbolIndent = fontSize;
         }
 
-        private void ShrinkSymbol(List lst, float fontSize) {
+        private void ShrinkSymbol(List lst, float fontSize, BaseColor color) {
             lst.SymbolIndent = 12;
             Chunk symbol = lst.Symbol;
             symbol.SetTextRise(2);
-            symbol.Font.Size = 7;
+            Font font = symbol.Font;
+            font.Size = 7;
+            font.Color = color;
         }
     }
 }

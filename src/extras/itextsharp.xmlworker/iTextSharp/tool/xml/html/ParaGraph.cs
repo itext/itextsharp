@@ -4,8 +4,9 @@ using iTextSharp.text;
 using iTextSharp.text.pdf.draw;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
-using iTextSharp.tool.xml.css.apply;
+using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.html.pdfelement;
+using iTextSharp.tool.xml.pipeline.html;
 /*
  * $Id: ParaGraph.java 122 2011-05-27 12:20:58Z redlab_b $
  *
@@ -56,18 +57,24 @@ namespace iTextSharp.tool.xml.html {
             String sanitized = HTMLUtils.Sanitize(content);
             IList<IElement> l = new List<IElement>(1);
             if (sanitized.Length > 0) {
+                HtmlPipelineContext myctx;
+                try {
+                    myctx = GetHtmlPipelineContext(ctx);
+                } catch (NoCustomContextException e) {
+                    throw new RuntimeWorkerException(e);
+                }
                 if (tag.CSS.ContainsKey(CSS.Property.TAB_INTERVAL)) {
                     TabbedChunk tabbedChunk = new TabbedChunk(sanitized);
                     if (null != GetLastChild(tag) && GetLastChild(tag).CSS.ContainsKey(CSS.Property.XFA_TAB_COUNT)) {
                         tabbedChunk.TabCount = int.Parse(GetLastChild(tag).CSS[CSS.Property.XFA_TAB_COUNT]);
                     }
-                    l.Add(new ChunkCssApplier().Apply(tabbedChunk, tag));
+                    l.Add(CssAppliers.GetInstance().Apply(tabbedChunk, tag,myctx));
                 } else if (null != GetLastChild(tag) && GetLastChild(tag).CSS.ContainsKey(CSS.Property.XFA_TAB_COUNT)) {
                     TabbedChunk tabbedChunk = new TabbedChunk(sanitized);
                     tabbedChunk.TabCount = int.Parse(GetLastChild(tag).CSS[CSS.Property.XFA_TAB_COUNT]);
-                    l.Add(new ChunkCssApplier().Apply(tabbedChunk, tag));
+                    l.Add(CssAppliers.GetInstance().Apply(tabbedChunk, tag, myctx));
                 } else {
-                    l.Add(new ChunkCssApplier().Apply(new Chunk(sanitized), tag));
+                    l.Add(CssAppliers.GetInstance().Apply(new Chunk(sanitized), tag, myctx));
                 }
             }
             return l;
@@ -126,6 +133,8 @@ namespace iTextSharp.tool.xml.html {
                     TabbedChunk tab = new TabbedChunk(new VerticalPositionMark(), width, false);
                     p.Add(new Chunk(tab));
                     p.Add(new Chunk((TabbedChunk) e));
+                } else {
+                    p.Add(e);
                 }
             }
         }
