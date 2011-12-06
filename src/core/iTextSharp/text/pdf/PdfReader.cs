@@ -84,9 +84,9 @@ namespace iTextSharp.text.pdf {
         // type 0 -> -1, 0
         // type 1 -> offset, 0
         // type 2 -> index, obj num
-        protected internal int[] xref;
+		protected internal long[] xref;
         protected internal Dictionary<int, IntHashtable> objStmMark;
-        protected internal IntHashtable objStmToOffset;
+        protected internal LongHashtable objStmToOffset;
         protected internal bool newXrefType;
         private List<PdfObject> xrefObj;
         PdfDictionary rootPages;
@@ -99,8 +99,8 @@ namespace iTextSharp.text.pdf {
         protected internal bool rebuilt = false;
         protected internal int freeXref;
         protected internal bool tampered = false;
-        protected internal int lastXref;
-        protected internal int eofPos;
+        protected internal long lastXref;
+        protected internal long eofPos;
         protected internal char pdfVersion;
         protected internal PdfEncryption decrypt;
         protected internal byte[] password = null; //added by ujihara for decryption
@@ -115,7 +115,7 @@ namespace iTextSharp.text.pdf {
         protected internal int pValue;
         private int objNum;
         private int objGen;
-        private int fileLength;
+        private long fileLength;
         private bool hybridXref;
         private int lastXrefPartial = -1;
         private bool partial;
@@ -522,7 +522,7 @@ namespace iTextSharp.text.pdf {
         
         protected internal void ReadPdfPartial() {
             try {
-                fileLength = tokens.File.Length;
+				fileLength = tokens.File.Length;
                 pdfVersion = tokens.CheckPdfHeader();
                 try {
                     ReadXref();
@@ -963,9 +963,9 @@ namespace iTextSharp.text.pdf {
             }
             ReadDecryptedDocObj();
             if (objStmToOffset != null) {
-                int[] keys = objStmToOffset.GetKeys();
+                long[] keys = objStmToOffset.GetKeys();
                 for (int k = 0; k < keys.Length; ++k) {
-                    int n = keys[k];
+                    long n = keys[k];
                     objStmToOffset[n] = xref[n * 2];
                     xref[n * 2] = -1;
                 }
@@ -975,7 +975,7 @@ namespace iTextSharp.text.pdf {
         protected internal PdfObject ReadSingleObject(int k) {
             strings.Clear();
             int k2 = k * 2;
-            int pos = xref[k2];
+			long pos = xref[k2];
             if (pos < 0)
                 return null;
             if (xref[k2 + 1] > 0)
@@ -1009,19 +1009,19 @@ namespace iTextSharp.text.pdf {
                 obj = null;
             }
             if (xref[k2 + 1] > 0) {
-                obj = ReadOneObjStm((PRStream)obj, xref[k2]);
+                obj = ReadOneObjStm((PRStream)obj, (int)xref[k2]);
             }
             xrefObj[k] = obj;
             return obj;
         }
         
-        protected internal PdfObject ReadOneObjStm(PRStream stream, int idx) {
+		protected internal PdfObject ReadOneObjStm (PRStream stream, int idx) {
             int first = stream.GetAsNumber(PdfName.FIRST).IntValue;
             byte[] b = GetStreamBytes(stream, tokens.File);
             PRTokeniser saveTokens = tokens;
             tokens = new PRTokeniser(b);
             try {
-                int address = 0;
+				int address = 0;
                 bool ok = true;
                 ++idx;
                 for (int k = 0; k < idx; ++k) {
@@ -1079,7 +1079,7 @@ namespace iTextSharp.text.pdf {
                 xrefObj.Add(null);
             }
             for (int k = 2; k < xref.Length; k += 2) {
-                int pos = xref[k];
+				long pos = xref[k];
                 if (pos <= 0 || xref[k + 1] > 0)
                     continue;
                 tokens.Seek(pos);
@@ -1123,10 +1123,10 @@ namespace iTextSharp.text.pdf {
         }
         
         private void CheckPRStreamLength(PRStream stream) {
-            int fileLength = tokens.Length;
-            int start = stream.Offset;
+            long fileLength = tokens.Length;
+			long start = stream.Offset;
             bool calc = false;
-            int streamLength = 0;
+			long streamLength = 0;
             PdfObject obj = GetPdfObjectRelease(stream.Get(PdfName.LENGTH));
             if (obj != null && obj.Type == PdfObject.NUMBER) {
                 streamLength = ((PdfNumber)obj).IntValue;
@@ -1148,7 +1148,7 @@ namespace iTextSharp.text.pdf {
                 byte[] tline = new byte[16];
                 tokens.Seek(start);
                 while (true) {
-                    int pos = tokens.FilePointer;
+                    long pos = tokens.FilePointer;
                     if (!tokens.ReadLineSegment(tline))
                         break;
                     if (Equalsn(tline, endstream)) {
@@ -1166,7 +1166,7 @@ namespace iTextSharp.text.pdf {
                     }
                 }
             }
-            stream.Length = streamLength;
+            stream.Length = (int)streamLength;
         }
         
         protected internal void ReadObjStm(PRStream stream, IntHashtable map) {
@@ -1245,10 +1245,10 @@ namespace iTextSharp.text.pdf {
             if (size == 0)
                 return;
             if (xref == null)
-                xref = new int[size];
+				xref = new long[size];
             else {
                 if (xref.Length < size) {
-                    int[] xref2 = new int[size];
+					long[] xref2 = new long[size];
                     Array.Copy(xref, 0, xref2, 0, xref.Length);
                     xref = xref2;
                 }
@@ -1265,7 +1265,7 @@ namespace iTextSharp.text.pdf {
             tokens.NextToken();
             if (tokens.TokenType != PRTokeniser.TokType.NUMBER)
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("startxref.is.not.followed.by.a.number"));
-            int startxref = tokens.IntValue;
+            long startxref = tokens.LongValue;
             lastXref = startxref;
             eofPos = tokens.FilePointer;
             try {
@@ -1283,7 +1283,7 @@ namespace iTextSharp.text.pdf {
                 PdfNumber prev = (PdfNumber)trailer2.Get(PdfName.PREV);
                 if (prev == null)
                     break;
-                tokens.Seek(prev.IntValue);
+                tokens.Seek(prev.LongValue);
                 trailer2 = ReadXrefSection();
             }
         }
@@ -1294,7 +1294,7 @@ namespace iTextSharp.text.pdf {
                 tokens.ThrowError(MessageLocalization.GetComposedMessage("xref.subsection.not.found"));
             int start = 0;
             int end = 0;
-            int pos = 0;
+            long pos = 0;
             int gen = 0;
             while (true) {
                 tokens.NextValidToken();
@@ -1308,9 +1308,9 @@ namespace iTextSharp.text.pdf {
                     tokens.ThrowError(MessageLocalization.GetComposedMessage("number.of.entries.in.this.xref.subsection.not.found"));
                 end = tokens.IntValue + start;
                 if (start == 1) { // fix incorrect start number
-                    int back = tokens.FilePointer;
+					long back = tokens.FilePointer;
                     tokens.NextValidToken();
-                    pos = tokens.IntValue;
+					pos = tokens.LongValue;
                     tokens.NextValidToken();
                     gen = tokens.IntValue;
                     if (pos == 0 && gen == PdfWriter.GENERATION_MAX) {
@@ -1322,7 +1322,7 @@ namespace iTextSharp.text.pdf {
                 EnsureXrefSize(end * 2);
                 for (int k = start; k < end; ++k) {
                     tokens.NextValidToken();
-                    pos = tokens.IntValue;
+					pos = tokens.LongValue;
                     tokens.NextValidToken();
                     gen = tokens.IntValue;
                     tokens.NextValidToken();
@@ -1361,7 +1361,7 @@ namespace iTextSharp.text.pdf {
             return trailer;
         }
         
-        protected internal bool ReadXRefStream(int ptr) {
+        protected internal bool ReadXRefStream(long ptr) {
             tokens.Seek(ptr);
             int thisStream = 0;
             if (!tokens.NextToken())
@@ -1397,10 +1397,10 @@ namespace iTextSharp.text.pdf {
             else
                 index = (PdfArray)obj;
             PdfArray w = (PdfArray)stm.Get(PdfName.W);
-            int prev = -1;
+            long prev = -1;
             obj = stm.Get(PdfName.PREV);
             if (obj != null)
-                prev = ((PdfNumber)obj).IntValue;
+                prev = ((PdfNumber)obj).LongValue;
             // Each xref pair is a position
             // type 0 -> -1, 0
             // type 1 -> offset, 0
@@ -1409,7 +1409,7 @@ namespace iTextSharp.text.pdf {
             if (objStmMark == null && !partial)
                 objStmMark = new Dictionary<int,IntHashtable>();
             if (objStmToOffset == null && partial)
-                objStmToOffset = new IntHashtable();
+                objStmToOffset = new LongHashtable();
             byte[] b = GetStreamBytes(stm, tokens.File);
             int bptr = 0;
             int[] wc = new int[3];
@@ -1426,7 +1426,7 @@ namespace iTextSharp.text.pdf {
                         for (int k = 0; k < wc[0]; ++k)
                             type = (type << 8) + (b[bptr++] & 0xff);
                     }
-                    int field2 = 0;
+                    long field2 = 0;
                     for (int k = 0; k < wc[1]; ++k)
                         field2 = (field2 << 8) + (b[bptr++] & 0xff);
                     int field3 = 0;
@@ -1449,10 +1449,10 @@ namespace iTextSharp.text.pdf {
                                 }
                                 else {
                                     IntHashtable seq;
-                                    if (!objStmMark.TryGetValue(field2, out seq)) {
+                                    if (!objStmMark.TryGetValue((int)field2, out seq)) {
                                         seq = new IntHashtable();
                                         seq[field3] = 1;
-                                        objStmMark[field2] = seq;
+                                        objStmMark[(int)field2] = seq;
                                     }
                                     else
                                         seq[field3] = 1;
@@ -1476,12 +1476,12 @@ namespace iTextSharp.text.pdf {
             hybridXref = false;
             newXrefType = false;
             tokens.Seek(0);
-            int[][] xr = new int[1024][];
-            int top = 0;
+			long[][] xr = new long[1024][];
+			long top = 0;
             trailer = null;
             byte[] line = new byte[64];
             for (;;) {
-                int pos = tokens.FilePointer;
+				long pos = tokens.FilePointer;
                 if (!tokens.ReadLineSegment(line))
                     break;
                 if (line[0] == 't') {
@@ -1502,14 +1502,14 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 else if (line[0] >= '0' && line[0] <= '9') {
-                    int[] obj = PRTokeniser.CheckObjectStart(line);
+                    long[] obj = PRTokeniser.CheckObjectStart(line);
                     if (obj == null)
                         continue;
-                    int num = obj[0];
-                    int gen = obj[1];
+					long num = obj[0];
+					long gen = obj[1];
                     if (num >= xr.Length) {
-                        int newLength = num * 2;
-                        int[][] xr2 = new int[newLength][];
+						long newLength = num * 2;
+						long[][] xr2 = new long[newLength][];
                         Array.Copy(xr, 0, xr2, 0, top);
                         xr = xr2;
                     }
@@ -1523,9 +1523,9 @@ namespace iTextSharp.text.pdf {
             }
             if (trailer == null)
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("trailer.not.found"));
-            xref = new int[top * 2];
+			xref = new long[top * 2];
             for (int k = 0; k < top; ++k) {
-                int[] obj = xr[k];
+				long[] obj = xr[k];
                 if (obj != null)
                     xref[k * 2] = obj[0];
             }
@@ -1578,7 +1578,7 @@ namespace iTextSharp.text.pdf {
                     ++readDepth;
                     PdfDictionary dic = ReadDictionary();
                     --readDepth;
-                    int pos = tokens.FilePointer;
+					long pos = tokens.FilePointer;
                     // be careful in the trailer. May not be a "next" token.
                     bool hasNext;
                     do {
@@ -2389,7 +2389,7 @@ namespace iTextSharp.text.pdf {
         * Gets the byte address of the last xref table.
         * @return the byte address of the last xref table
         */    
-        public int LastXref {
+        public long LastXref {
             get {
                 return lastXref;
             }
@@ -2409,7 +2409,7 @@ namespace iTextSharp.text.pdf {
         * Gets the byte address of the %%EOF marker.
         * @return the byte address of the %%EOF marker
         */    
-        public int EofPos {
+		public long EofPos {
             get {
                 return eofPos;
             }
@@ -3270,7 +3270,7 @@ namespace iTextSharp.text.pdf {
         * Getter for property fileLength.
         * @return Value of property fileLength.
         */
-        public int FileLength {
+        public long FileLength {
             get {
                 return fileLength;
             }

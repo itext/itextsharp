@@ -48,13 +48,13 @@ using System.IO;
 namespace iTextSharp.text.pdf {
     public class OutputStreamCounter : Stream {
         protected Stream outc;
-        protected int counter = 0;
+        protected long counter = 0;
 
         public OutputStreamCounter(Stream _outc) {
             outc = _outc;
         }  
 
-        public int Counter {
+        public long Counter {
             get {
                 return counter;
             }

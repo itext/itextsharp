@@ -225,7 +225,7 @@ namespace iTextSharp.text.pdf.codec {
         }
 
         void ReadSegment(JBIG2Segment s) {
-            int ptr = ra.FilePointer;
+            int ptr = (int)ra.FilePointer;
 
             if (s.dataLength == 0xffffffffL) {
                 // TODO figure this bit out, 7.2.7
@@ -237,7 +237,7 @@ namespace iTextSharp.text.pdf.codec {
             s.data = data;
 
             if (s.type == PAGE_INFORMATION) {
-                int last = ra.FilePointer;
+                int last = (int)ra.FilePointer;
                 ra.Seek(ptr);
                 int page_bitmap_width = ra.ReadInt();
                 int page_bitmap_height = ra.ReadInt();
@@ -253,7 +253,7 @@ namespace iTextSharp.text.pdf.codec {
         }
 
         JBIG2Segment ReadHeader() {
-            int ptr = ra.FilePointer;
+            int ptr = (int)ra.FilePointer;
             // 7.2.1
             int segment_number = ra.ReadInt();
             JBIG2Segment s = new JBIG2Segment(segment_number);
@@ -321,7 +321,7 @@ namespace iTextSharp.text.pdf.codec {
 
             // 7.2.6
             int segment_page_association;
-            int page_association_offset = ra.FilePointer - ptr;
+            int page_association_offset = (int)ra.FilePointer - ptr;
             if (page_association_size) {
                 segment_page_association = ra.ReadInt();
             }
@@ -351,7 +351,7 @@ namespace iTextSharp.text.pdf.codec {
             // TODO the 0xffffffff value that might be here, and how to understand those afflicted segments
             s.dataLength = segment_data_length;
 
-            int end_ptr = ra.FilePointer;
+            int end_ptr = (int)ra.FilePointer;
             ra.Seek(ptr);
             byte[] header_data = new byte[end_ptr - ptr];
             ra.Read(header_data);

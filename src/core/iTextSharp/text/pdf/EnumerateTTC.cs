@@ -82,7 +82,7 @@ namespace iTextSharp.text.pdf {
                 rf.SkipBytes(4);
                 int dirCount = rf.ReadInt();
                 names = new String[dirCount];
-                int dirPos = rf.FilePointer;
+                int dirPos = (int)rf.FilePointer;
                 for (int dirIdx = 0; dirIdx < dirCount; ++dirIdx) {
                     tables.Clear();
                     rf.Seek(dirPos);

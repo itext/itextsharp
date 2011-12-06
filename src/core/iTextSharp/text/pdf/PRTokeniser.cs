@@ -90,13 +90,13 @@ namespace iTextSharp.text.pdf {
             this.file = file;
         }
 
-        public void Seek(int pos) {
+        public void Seek(long pos) {
             file.Seek(pos);
         }
     
-        public int FilePointer {
+        public long FilePointer {
             get {
-                return file.FilePointer;
+				return file.FilePointer;
             }
         }
 
@@ -104,9 +104,9 @@ namespace iTextSharp.text.pdf {
             file.Close();
         }
     
-        public int Length {
+        public long Length {
             get {
-                return file.Length;
+				return file.Length;
             }
         }
 
@@ -176,7 +176,7 @@ namespace iTextSharp.text.pdf {
         }
     
         public void ThrowError(string error) {
-            throw new InvalidPdfException(MessageLocalization.GetComposedMessage("1.at.file.pointer.2", error, file.FilePointer));
+			throw new InvalidPdfException (MessageLocalization.GetComposedMessage ("1.at.file.pointer.2", error, file.FilePointer));
         }
     
         public char CheckPdfHeader() {
@@ -198,10 +198,10 @@ namespace iTextSharp.text.pdf {
             file.StartOffset = idx;
         }
 
-        public int GetStartxref() {
+        public long GetStartxref() {
             int arrLength = 1024;
-            int fileLength = file.Length;
-            int pos = fileLength - arrLength;
+			long fileLength = file.Length;
+            long pos = fileLength - arrLength;
             if (pos < 1) pos = 1;
             while (pos > 0){
                 file.Seek(pos);
@@ -227,7 +227,7 @@ namespace iTextSharp.text.pdf {
             int level = 0;
             string n1 = null;
             string n2 = null;
-            int ptr = 0;
+            long ptr = 0;
             while (NextToken()) {
                 if (type == TokType.COMMENT)
                     continue;
@@ -235,7 +235,7 @@ namespace iTextSharp.text.pdf {
                     case 0: {
                         if (type != TokType.NUMBER)
                             return;
-                        ptr = file.FilePointer;
+						ptr = file.FilePointer;
                         n1 = stringValue;
                         ++level;
                         break;
@@ -472,6 +472,10 @@ namespace iTextSharp.text.pdf {
             return true;
         }
     
+		public long LongValue {
+			get { return long.Parse (stringValue); }
+		}
+
         public int IntValue {
             get {
                 return int.Parse(stringValue);
@@ -497,7 +501,7 @@ namespace iTextSharp.text.pdf {
                         break;
                     case '\r':
                         eol = true;
-                        int cur = FilePointer;
+                        long cur = FilePointer;
                         if ((Read()) != '\n') {
                             Seek(cur);
                         }
@@ -525,7 +529,7 @@ namespace iTextSharp.text.pdf {
                             break;
                         case '\r':
                             eol = true;
-                            int cur = FilePointer;
+                            long cur = FilePointer;
                             if ((Read()) != '\n') {
                                 Seek(cur);
                             }
@@ -544,7 +548,7 @@ namespace iTextSharp.text.pdf {
             return true;
         }
         
-        public static int[] CheckObjectStart(byte[] line) {
+		public static long[] CheckObjectStart (byte[] line) {
             try {
                 PRTokeniser tk = new PRTokeniser(line);
                 int num = 0;
@@ -559,7 +563,7 @@ namespace iTextSharp.text.pdf {
                     return null;
                 if (!tk.StringValue.Equals("obj"))
                     return null;
-                return new int[]{num, gen};
+                return new long[]{num, gen};
             }
             catch {
             }

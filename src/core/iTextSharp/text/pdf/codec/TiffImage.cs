@@ -387,7 +387,7 @@ namespace iTextSharp.text.pdf.codec {
                     throw new IOException(MessageLocalization.GetComposedMessage("missing.tag.s.for.ojpeg.compression"));
                 }
                 int jpegOffset = (int)dir.GetFieldAsLong(TIFFConstants.TIFFTAG_JPEGIFOFFSET);
-                int jpegLength = s.Length - jpegOffset;
+                int jpegLength = (int)s.Length - jpegOffset;
 
                 if (dir.IsTagPresent(TIFFConstants.TIFFTAG_JPEGIFBYTECOUNT)) {
                     jpegLength = (int)dir.GetFieldAsLong(TIFFConstants.TIFFTAG_JPEGIFBYTECOUNT) +
@@ -396,7 +396,7 @@ namespace iTextSharp.text.pdf.codec {
 
                 byte[] jpeg = new byte[Math.Min(jpegLength, s.Length - jpegOffset)];
 
-                int posFilePointer = s.FilePointer;
+                int posFilePointer = (int)s.FilePointer;
                 posFilePointer += jpegOffset;
                 s.Seek(posFilePointer);
                 s.ReadFully(jpeg);

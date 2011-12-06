@@ -4096,6 +4096,7 @@
     <Compile Include="iTextSharp\text\log\SysoLogger.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWCompressor.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWStringTable.cs" />
+    <Compile Include="iTextSharp\text\pdf\LongHashtable.cs" />
     <Compile Include="iTextSharp\text\pdf\CrlClientImp.cs" />
     <Compile Include="iTextSharp\text\pdf\crypto\AESCipherCBCnoPad.cs" />
     <Compile Include="iTextSharp\text\pdf\FilterHandlers.cs" />

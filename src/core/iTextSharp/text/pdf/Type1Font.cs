@@ -481,7 +481,7 @@ namespace iTextSharp.text.pdf {
                     rf = new RandomAccessFileOrArray(filePfb, true);
                 else
                     rf = new RandomAccessFileOrArray(pfb);
-                int fileLength = rf.Length;
+                int fileLength = (int)rf.Length;
                 byte[] st = new byte[fileLength - 18];
                 int[] lengths = new int[3];
                 int bytePtr = 0;
