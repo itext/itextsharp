@@ -93,6 +93,17 @@ namespace iTextSharp.text.pdf {
             this.value = value;
             this.Content = value.ToString();
         }
+
+        /**
+         * Constructs a new long <CODE>PdfNumber</CODE>-object.
+         *
+         * @param        value                value of the new <CODE>PdfNumber</CODE>-object
+         */
+    
+        public PdfNumber(long value) : base(NUMBER) {
+            this.value = value;
+            this.Content = value.ToString();
+        }
     
         /**
          * Constructs a new REAL <CODE>PdfNumber</CODE>-object.
@@ -124,6 +135,18 @@ namespace iTextSharp.text.pdf {
         public int IntValue {
             get {
                 return (int) value;
+            }
+        }
+    
+        /**
+         * Returns the primitive <CODE>long</CODE> value of this object.
+         *
+         * @return        a value
+         */
+    
+        public long LongValue {
+            get {
+                return (long) value;
             }
         }
     

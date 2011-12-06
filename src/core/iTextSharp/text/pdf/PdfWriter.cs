@@ -110,7 +110,7 @@ namespace iTextSharp.text.pdf {
                 private int type;
                 
                 /** Byte offset in the PDF file. */
-                private int offset;
+                private long offset;
                 
                 private int refnum;
                 /** generation of the object. */
@@ -124,7 +124,7 @@ namespace iTextSharp.text.pdf {
                 * @param    generation  generationnumber of the object
                 */
                 
-                internal PdfCrossReference(int refnum, int offset, int generation) {
+                internal PdfCrossReference(int refnum, long offset, int generation) {
                     type = 0;
                     this.offset = offset;
                     this.refnum = refnum;
@@ -137,14 +137,14 @@ namespace iTextSharp.text.pdf {
                 * @param    offset      byte offset of the object
                 */
                 
-                internal PdfCrossReference(int refnum, int offset) {
+                internal PdfCrossReference(int refnum, long offset) {
                     type = 1;
                     this.offset = offset;
                     this.refnum = refnum;
                     this.generation = 0;
                 }
                 
-                internal PdfCrossReference(int type, int refnum, int offset, int generation) {
+                internal PdfCrossReference(int type, int refnum, long offset, int generation) {
                     this.type = type;
                     this.offset = offset;
                     this.refnum = refnum;
@@ -224,7 +224,7 @@ namespace iTextSharp.text.pdf {
             private OrderedTree xrefs;
             private int refnum;
             /** the current byteposition in the body. */
-            private int position;
+            private long position;
             private PdfWriter writer;
             private ByteBuffer index;
             private ByteBuffer streamObjects;
@@ -372,7 +372,7 @@ namespace iTextSharp.text.pdf {
                     xrefs.Remove(pxref);
                     xrefs[pxref] = null;
                     indirect.WriteTo(writer.Os);
-                    position = writer.Os.Counter;
+					position = writer.Os.Counter;
                     return indirect;
                 }
             }
@@ -383,7 +383,7 @@ namespace iTextSharp.text.pdf {
             * @return       an offset
             */
             
-            internal int Offset {
+            internal long Offset {
                 get {
                     return position;
                 }
@@ -412,7 +412,7 @@ namespace iTextSharp.text.pdf {
             * @throws IOException
             */
             
-            internal void WriteCrossReferenceTable(Stream os, PdfIndirectReference root, PdfIndirectReference info, PdfIndirectReference encryption, PdfObject fileID, int prevxref) {
+            internal void WriteCrossReferenceTable(Stream os, PdfIndirectReference root, PdfIndirectReference info, PdfIndirectReference encryption, PdfObject fileID, long prevxref) {
                 int refNumber = 0;
                 if (writer.FullCompression) {
                     FlushObjStm();
@@ -435,8 +435,8 @@ namespace iTextSharp.text.pdf {
                 sections.Add(first);
                 sections.Add(len);
                 if (writer.FullCompression) {
-                    int mid = 4;
-                    uint mask = 0xff000000;
+                    int mid = 5;
+                    long mask = 0xff00000000L;
                     for (; mid > 1; --mid) {
                         if ((mask & position) != 0)
                             break;
@@ -507,7 +507,7 @@ namespace iTextSharp.text.pdf {
             
             // membervariables
             
-            internal int offset;
+			internal long offset;
             
             // constructors
             
@@ -523,7 +523,7 @@ namespace iTextSharp.text.pdf {
             * @param prevxref
             */
             
-            internal PdfTrailer(int size, int offset, PdfIndirectReference root, PdfIndirectReference info, PdfIndirectReference encryption, PdfObject fileID, int prevxref) {
+            internal PdfTrailer(int size, long offset, PdfIndirectReference root, PdfIndirectReference info, PdfIndirectReference encryption, PdfObject fileID, long prevxref) {
                 this.offset = offset;
                 Put(PdfName.SIZE, new PdfNumber(size));
                 Put(PdfName.ROOT, root);
@@ -1134,7 +1134,7 @@ namespace iTextSharp.text.pdf {
     //  Open en Close method + method that create the PDF
 
         /** A number refering to the previous Cross-Reference Table. */
-        protected int prevxref = 0;
+        protected long prevxref = 0;
 
         /**
         * Signals that the <CODE>Document</CODE> has been opened and that
@@ -2348,7 +2348,7 @@ namespace iTextSharp.text.pdf {
         * and an idea of the current size is needed.
         * @return the approximate size without fonts or templates
         */    
-        public int CurrentDocumentSize {
+		public long CurrentDocumentSize {
             get {
                 return body.Offset + body.Size * 20 + 0x48;
             }

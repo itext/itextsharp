@@ -59,12 +59,12 @@ namespace iTextSharp.text.pdf {
         internal FileStream rf;
         internal String filename;
         internal byte[] arrayIn;
-        internal int arrayInPtr;
+        internal long arrayInPtr;
         internal byte back;
         internal bool isBack = false;
         
         /** Holds value of property startOffset. */
-        private int startOffset = 0;
+        private long startOffset = 0;
         
         public RandomAccessFileOrArray(String filename) : this(filename, false) {
         }
@@ -191,7 +191,7 @@ namespace iTextSharp.text.pdf {
                 if (arrayInPtr >= arrayIn.Length)
                     return -1;
                 if (arrayInPtr + len > arrayIn.Length)
-                    len = arrayIn.Length - arrayInPtr;
+                    len = (int)(arrayIn.Length - arrayInPtr);
                 Array.Copy(arrayIn, arrayInPtr, b, off, len);
                 arrayInPtr += len;
                 return len + n;
@@ -219,10 +219,10 @@ namespace iTextSharp.text.pdf {
         }
         
         public long Skip(long n) {
-            return SkipBytes((int)n);
+            return SkipBytes(n);
         }
         
-        public int SkipBytes(int n) {
+        public long SkipBytes(long n) {
             if (n <= 0) {
                 return 0;
             }
@@ -237,11 +237,11 @@ namespace iTextSharp.text.pdf {
                     adj = 1;
                 }
             }
-            int pos;
-            int len;
-            int newpos;
+            long pos;
+            long len;
+            long newpos;
             
-            pos = FilePointer;
+			pos = FilePointer;
             len = Length;
             newpos = pos + n;
             if (newpos > len) {
@@ -277,18 +277,18 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public int Length {
+        public long Length {
             get {
                 if (arrayIn == null) {
                     InsureOpen();
-                    return (int)rf.Length - startOffset;
+                    return (rf.Length - startOffset);
                 }
                 else
-                    return arrayIn.Length - startOffset;
+                    return (arrayIn.Length - startOffset);
             }
         }
         
-        public void Seek(int pos) {
+        public void Seek(long pos) {
             pos += startOffset;
             isBack = false;
             if (arrayIn == null) {
@@ -299,16 +299,16 @@ namespace iTextSharp.text.pdf {
                 arrayInPtr = pos;
         }
         
-        public void Seek(long pos) {
-            Seek((int)pos);
+        public void Seek(int pos) {
+            Seek((long)pos);
         }
         
-        public int FilePointer {
+        public long FilePointer {
             get {
                 InsureOpen();
                 int n = isBack ? 1 : 0;
                 if (arrayIn == null) {
-                    return (int)rf.Position - n - startOffset;
+                    return rf.Position - n - startOffset;
                 }
                 else
                     return arrayInPtr - n - startOffset;
@@ -578,7 +578,7 @@ namespace iTextSharp.text.pdf {
                         break;
                     case '\r':
                         eol = true;
-                        int cur = FilePointer;
+						long cur = FilePointer;
                         if ((Read()) != '\n') {
                             Seek(cur);
                         }
@@ -595,7 +595,7 @@ namespace iTextSharp.text.pdf {
             return input.ToString();
         }
         
-        public int StartOffset {
+        public long StartOffset {
             get {
                 return startOffset;
             }

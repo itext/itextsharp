@@ -140,7 +140,7 @@ namespace iTextSharp.text.pdf {
                     def.Finish();
                 if (ose != null)
                     ose.Finish();
-                inputStreamLength = osc.Counter;
+                inputStreamLength = (int)osc.Counter;
             }
             else {
                 if (crypto == null) {

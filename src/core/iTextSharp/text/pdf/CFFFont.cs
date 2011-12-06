@@ -188,7 +188,7 @@ namespace iTextSharp.text.pdf {
         }
         
         internal int GetPosition() {
-            return buf.FilePointer;
+            return (int)buf.FilePointer;
         }
 
         internal int nextIndexOffset;

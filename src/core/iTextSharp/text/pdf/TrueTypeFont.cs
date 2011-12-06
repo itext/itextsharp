@@ -550,7 +550,7 @@ namespace iTextSharp.text.pdf {
                 int length = rf.ReadUnsignedShort();
                 int offset = rf.ReadUnsignedShort();
                 if (nameID == id) {
-                    int pos = rf.FilePointer;
+                    int pos = (int)rf.FilePointer;
                     rf.Seek(table_location[0] + startOfStorage + offset);
                     string name;
                     if (platformID == 0 || platformID == 3 || (platformID == 2 && platformEncodingID == 1)){
@@ -591,7 +591,7 @@ namespace iTextSharp.text.pdf {
                 int nameID = rf.ReadUnsignedShort();
                 int length = rf.ReadUnsignedShort();
                 int offset = rf.ReadUnsignedShort();
-                int pos = rf.FilePointer;
+                int pos = (int)rf.FilePointer;
                 rf.Seek(table_location[0] + startOfStorage + offset);
                 String name;
                 if (platformID == 0 || platformID == 3 || (platformID == 2 && platformEncodingID == 1)){

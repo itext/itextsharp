@@ -55,7 +55,7 @@ namespace iTextSharp.text.pdf
 
     public class PdfLiteral : PdfObject {
 
-        private int position;
+        private long position;
 
         public PdfLiteral(string text) : base(0, text) {}
     
@@ -78,7 +78,7 @@ namespace iTextSharp.text.pdf
             base.ToPdf(writer, os);
         }
 
-        public int Position {
+        public long Position {
             get {
                 return position;
             }

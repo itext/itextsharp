@@ -109,7 +109,7 @@ namespace iTextSharp.text.pdf {
         private PdfStamper stamper;
         private bool preClosed = false;
         private PdfSigGenericPKCS sigStandard;
-        private int[] range;
+        private long[] range;
         private FileStream raf;
         private byte[] bout;
         private int boutLen;
@@ -946,12 +946,12 @@ namespace iTextSharp.text.pdf {
             }
             writer.Close(stamper.MoreInfo);
             
-            range = new int[exclusionLocations.Count * 2];
-            int byteRangePosition = exclusionLocations[PdfName.BYTERANGE].Position;
+            range = new long[exclusionLocations.Count * 2];
+            long byteRangePosition = exclusionLocations[PdfName.BYTERANGE].Position;
             exclusionLocations.Remove(PdfName.BYTERANGE);
             int idx = 1;
             foreach (PdfLiteral lit in exclusionLocations.Values) {
-                int n = lit.Position;
+                long n = lit.Position;
                 range[idx++] = n;
                 range[idx++] = lit.PosLength + n;
             }
@@ -973,8 +973,8 @@ namespace iTextSharp.text.pdf {
             else {
                 try {
                     raf = new FileStream(tempFile, FileMode.Open, FileAccess.ReadWrite);
-                    int boutLen = (int)raf.Length;
-                    range[range.Length - 1] = boutLen - range[range.Length - 2];
+                    long len = raf.Length;
+                    range[range.Length - 1] = len - range[range.Length - 2];
                     ByteBuffer bf = new ByteBuffer();
                     bf.Append('[');
                     for (int k = 0; k < range.Length; ++k)
@@ -1031,10 +1031,10 @@ namespace iTextSharp.text.pdf {
                 else {
                     if (originalout != null) {
                         raf.Seek(0, SeekOrigin.Begin);
-                        int length = (int)raf.Length;
+                        long length = raf.Length;
                         byte[] buf = new byte[8192];
                         while (length > 0) {
-                            int r = raf.Read(buf, 0, Math.Min(buf.Length, length));
+                            int r = raf.Read(buf, 0, (int)Math.Min((long)buf.Length, length));
                             if (r < 0)
                                 throw new EndOfStreamException(MessageLocalization.GetComposedMessage("unexpected.eof"));
                             originalout.Write(buf, 0, r);
@@ -1332,10 +1332,10 @@ namespace iTextSharp.text.pdf {
             private byte[] b = new byte[1];
             private FileStream raf;
             private byte[] bout;
-            private int[] range;
-            private int rangePosition = 0;
+            private long[] range;
+            private long rangePosition = 0;
             
-            internal FRangeStream(FileStream raf, byte[] bout, int[] range) {
+            internal FRangeStream(FileStream raf, byte[] bout, long[] range) {
                 this.raf = raf;
                 this.bout = bout;
                 this.range = range;
@@ -1367,12 +1367,12 @@ namespace iTextSharp.text.pdf {
                     return 0;
                 }
                 for (int k = 0; k < range.Length; k += 2) {
-                    int start = range[k];
-                    int end = start + range[k + 1];
+                    long start = range[k];
+                    long end = start + range[k + 1];
                     if (rangePosition < start)
                         rangePosition = start;
                     if (rangePosition >= start && rangePosition < end) {
-                        int lenf = Math.Min(len, end - rangePosition);
+                        int lenf = (int)Math.Min((long)len, end - rangePosition);
                         if (raf == null)
                             Array.Copy(bout, rangePosition, b, off, lenf);
                         else {

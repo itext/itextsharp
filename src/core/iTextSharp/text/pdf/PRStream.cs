@@ -53,7 +53,7 @@ namespace iTextSharp.text.pdf {
 public class PRStream : PdfStream {
     
     protected PdfReader reader;
-    protected int offset;
+	protected long offset;
     protected int length;
     
     //added by ujihara for decryption
@@ -80,7 +80,7 @@ public class PRStream : PdfStream {
         this.reader = reader;
     }
 
-    public PRStream(PdfReader reader, int offset) {
+	public PRStream (PdfReader reader, long offset) {
         this.reader = reader;
         this.offset = offset;
     }
@@ -169,7 +169,7 @@ public class PRStream : PdfStream {
         }
     }
     
-    public int Offset {
+	public long Offset {
         get {
             return offset;
         }
