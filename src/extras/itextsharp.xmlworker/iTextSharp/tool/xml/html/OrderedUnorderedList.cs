@@ -166,7 +166,7 @@ namespace iTextSharp.tool.xml.html {
                    ownPadding = utils.ParseValueToPt(tag.CSS[CSS.Property.PADDING+end],ownFontSize);
                 float childFontSize = fst.GetFontSize(child);
                 float childMargin = 0;
-                if (tag.CSS.ContainsKey(CSS.Property.MARGIN+end))
+                if (child.CSS.ContainsKey(CSS.Property.MARGIN+end))
                     childMargin = utils.ParseValueToPt(child.CSS[CSS.Property.MARGIN+end],childFontSize);
                 //Margin values of this tag and its first child need to be compared if paddingTop or bottom = 0.
                 if (ownPadding == 0) {
