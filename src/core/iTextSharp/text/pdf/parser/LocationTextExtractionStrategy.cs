@@ -93,6 +93,24 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
+         * @param str
+         * @return true if the string starts with a space character, false if the string is empty or starts with a non-space character
+         */
+        private bool StartsWithSpace(String str){
+            if (str.Length == 0) return false;
+            return str[0] == ' ';
+        }
+        
+        /**
+         * @param str
+         * @return true if the string ends with a space character, false if the string is empty or ends with a non-space character
+         */
+        private bool EndsWithSpace(String str){
+            if (str.Length == 0) return false;
+            return str[str.Length-1] == ' ';
+        }
+
+        /**
          * Returns the result so far.
          * @return  a String with the resulting text.
          */
@@ -116,7 +134,7 @@ namespace iTextSharp.text.pdf.parser {
                             sb.Append(' ');
 
                         // we only insert a blank space if the trailing character of the previous string wasn't a space, and the leading character of the current string isn't a space
-                        else if (dist > chunk.charSpaceWidth/2.0f && chunk.text[0] != ' ' && lastChunk.text[lastChunk.text.Length-1] != ' ')
+                        else if (dist > chunk.charSpaceWidth/2.0f && !StartsWithSpace(chunk.text) && !EndsWithSpace(lastChunk.text))
                             sb.Append(' ');
 
                         sb.Append(chunk.text);
