@@ -85,6 +85,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="78-EUC-H" />
     <EmbeddedResource Include="78-EUC-V" />
     <EmbeddedResource Include="78-H" />
@@ -104,10 +109,34 @@
     <EmbeddedResource Include="Add-RKSJ-H" />
     <EmbeddedResource Include="Add-RKSJ-V" />
     <EmbeddedResource Include="Add-V" />
+    <EmbeddedResource Include="Adobe-CNS1-0" />
+    <EmbeddedResource Include="Adobe-CNS1-1" />
+    <EmbeddedResource Include="Adobe-CNS1-2" />
+    <EmbeddedResource Include="Adobe-CNS1-3" />
+    <EmbeddedResource Include="Adobe-CNS1-4" />
+    <EmbeddedResource Include="Adobe-CNS1-5" />
+    <EmbeddedResource Include="Adobe-CNS1-6" />
+    <EmbeddedResource Include="Adobe-GB1-0" />
+    <EmbeddedResource Include="Adobe-GB1-1" />
+    <EmbeddedResource Include="Adobe-GB1-2" />
+    <EmbeddedResource Include="Adobe-GB1-3" />
+    <EmbeddedResource Include="Adobe-GB1-4" />
+    <EmbeddedResource Include="Adobe-GB1-5" />
+    <EmbeddedResource Include="Adobe-Japan1-0" />
+    <EmbeddedResource Include="Adobe-Japan1-1" />
+    <EmbeddedResource Include="Adobe-Japan1-2" />
+    <EmbeddedResource Include="Adobe-Japan1-3" />
+    <EmbeddedResource Include="Adobe-Japan1-4" />
+    <EmbeddedResource Include="Adobe-Japan1-5" />
+    <EmbeddedResource Include="Adobe-Japan1-6" />
+    <EmbeddedResource Include="Adobe-Korea1-0" />
+    <EmbeddedResource Include="Adobe-Korea1-1" />
+    <EmbeddedResource Include="Adobe-Korea1-2" />
     <EmbeddedResource Include="B5-H" />
     <EmbeddedResource Include="B5-V" />
     <EmbeddedResource Include="B5pc-H" />
     <EmbeddedResource Include="B5pc-V" />
+    <EmbeddedResource Include="cjk_registry.properties" />
     <EmbeddedResource Include="CNS-EUC-H" />
     <EmbeddedResource Include="CNS-EUC-V" />
     <EmbeddedResource Include="CNS1-H" />
@@ -116,6 +145,8 @@
     <EmbeddedResource Include="CNS2-V" />
     <EmbeddedResource Include="ETen-B5-H" />
     <EmbeddedResource Include="ETen-B5-V" />
+    <EmbeddedResource Include="ETenms-B5-H" />
+    <EmbeddedResource Include="ETenms-B5-V" />
     <EmbeddedResource Include="ETHK-B5-H" />
     <EmbeddedResource Include="ETHK-B5-V" />
     <EmbeddedResource Include="EUC-H" />
@@ -144,6 +175,8 @@
     <EmbeddedResource Include="GBTpc-EUC-V" />
     <EmbeddedResource Include="H" />
     <EmbeddedResource Include="Hankaku" />
+    <EmbeddedResource Include="HeiseiKakuGo-W5.properties" />
+    <EmbeddedResource Include="HeiseiMin-W3.properties" />
     <EmbeddedResource Include="Hiragana" />
     <EmbeddedResource Include="HKdla-B5-H" />
     <EmbeddedResource Include="HKdla-B5-V" />
@@ -157,7 +190,12 @@
     <EmbeddedResource Include="HKm471-B5-V" />
     <EmbeddedResource Include="HKscs-B5-H" />
     <EmbeddedResource Include="HKscs-B5-V" />
+    <EmbeddedResource Include="HYGoThic-Medium.properties" />
+    <EmbeddedResource Include="HYSMyeongJo-Medium.properties" />
+    <EmbeddedResource Include="HYSMyeongJoStd-Medium.properties" />
+    <None Include="itextsharp.snk" />
     <EmbeddedResource Include="Katakana" />
+    <EmbeddedResource Include="KozMinPro-Regular.properties" />
     <EmbeddedResource Include="KSC-EUC-H" />
     <EmbeddedResource Include="KSC-EUC-V" />
     <EmbeddedResource Include="KSC-H" />
@@ -170,11 +208,16 @@
     <EmbeddedResource Include="KSCms-UHC-V" />
     <EmbeddedResource Include="KSCpc-EUC-H" />
     <EmbeddedResource Include="KSCpc-EUC-V" />
+    <EmbeddedResource Include="MHei-Medium.properties" />
+    <EmbeddedResource Include="MSung-Light.properties" />
+    <EmbeddedResource Include="MSungStd-Light.properties" />
     <EmbeddedResource Include="NWP-H" />
     <EmbeddedResource Include="NWP-V" />
     <EmbeddedResource Include="RKSJ-H" />
     <EmbeddedResource Include="RKSJ-V" />
     <EmbeddedResource Include="Roman" />
+    <EmbeddedResource Include="STSong-Light.properties" />
+    <EmbeddedResource Include="STSongStd-Light.properties" />
     <EmbeddedResource Include="UniCNS-UCS2-H" />
     <EmbeddedResource Include="UniCNS-UCS2-V" />
     <EmbeddedResource Include="UniCNS-UTF16-H" />
@@ -201,11 +244,19 @@
     <EmbeddedResource Include="UniJIS-UTF32-V" />
     <EmbeddedResource Include="UniJIS-UTF8-H" />
     <EmbeddedResource Include="UniJIS-UTF8-V" />
+    <EmbeddedResource Include="UniJIS2004-UTF16-H" />
+    <EmbeddedResource Include="UniJIS2004-UTF16-V" />
+    <EmbeddedResource Include="UniJIS2004-UTF32-H" />
+    <EmbeddedResource Include="UniJIS2004-UTF32-V" />
+    <EmbeddedResource Include="UniJIS2004-UTF8-H" />
+    <EmbeddedResource Include="UniJIS2004-UTF8-V" />
     <EmbeddedResource Include="UniJISPro-UCS2-HW-V" />
     <EmbeddedResource Include="UniJISPro-UCS2-V" />
     <EmbeddedResource Include="UniJISPro-UTF8-V" />
     <EmbeddedResource Include="UniJISX0213-UTF32-H" />
     <EmbeddedResource Include="UniJISX0213-UTF32-V" />
+    <EmbeddedResource Include="UniJISX02132004-UTF32-H" />
+    <EmbeddedResource Include="UniJISX02132004-UTF32-V" />
     <EmbeddedResource Include="UniKS-UCS2-H" />
     <EmbeddedResource Include="UniKS-UCS2-V" />
     <EmbeddedResource Include="UniKS-UTF16-H" />
@@ -216,12 +267,6 @@
     <EmbeddedResource Include="UniKS-UTF8-V" />
     <EmbeddedResource Include="V" />
     <EmbeddedResource Include="WP-Symbol" />
-    <Compile Include="AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="itextsharp.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
