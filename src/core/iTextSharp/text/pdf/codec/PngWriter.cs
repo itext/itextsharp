@@ -86,9 +86,15 @@ namespace iTextSharp.text.pdf.codec {
         public void WriteData(byte[] data, int stride) {
             MemoryStream stream = new MemoryStream();
             ZDeflaterOutputStream zip = new ZDeflaterOutputStream(stream, 5);
-            for (int k = 0; k < data.Length; k += stride) {
+            int k;
+            for (k = 0; k < data.Length - stride; k += stride) {
                 zip.WriteByte(0);
                 zip.Write(data, k, stride);
+            }
+            int remaining = data.Length - k;
+            if (remaining > 0){
+                zip.WriteByte(0);
+                zip.Write(data, k, remaining);
             }
             zip.Finish();
             WriteChunk(IDAT, stream.ToArray());
