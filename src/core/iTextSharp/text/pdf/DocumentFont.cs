@@ -63,22 +63,11 @@ namespace iTextSharp.text.pdf {
         private float urx = 100;
         private float ury = 900;
         private bool isType0 = false;
+        protected internal String cjkEncoding;
+        protected internal String uniMap;
         
         private BaseFont cjkMirror;
         
-        private static String[] cjkNames = {"HeiseiMin-W3", "HeiseiKakuGo-W5", "STSong-Light", "MHei-Medium",
-            "MSung-Light", "HYGoThic-Medium", "HYSMyeongJo-Medium", "MSungStd-Light", "STSongStd-Light",
-            "HYSMyeongJoStd-Medium", "KozMinPro-Regular"};
-            
-        private static String[] cjkEncs = {"UniJIS-UCS2-H", "UniJIS-UCS2-H", "UniGB-UCS2-H", "UniCNS-UCS2-H",
-            "UniCNS-UCS2-H", "UniKS-UCS2-H", "UniKS-UCS2-H", "UniCNS-UCS2-H", "UniGB-UCS2-H",
-            "UniKS-UCS2-H", "UniJIS-UCS2-H"};
-            
-        private static String[] cjkNames2 = {"MSungStd-Light", "STSongStd-Light", "HYSMyeongJoStd-Medium", "KozMinPro-Regular"};
-            
-        private static String[] cjkEncs2 = {"UniCNS-UCS2-H", "UniGB-UCS2-H", "UniKS-UCS2-H", "UniJIS-UCS2-H",
-            "UniCNS-UTF16-H", "UniGB-UTF16-H", "UniKS-UTF16-H", "UniJIS-UTF16-H"};
-
         private static int[] stdEnc = {
             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
             0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -110,23 +99,14 @@ namespace iTextSharp.text.pdf {
             if (PdfName.TYPE1.Equals(subType) || PdfName.TRUETYPE.Equals(subType))
                 DoType1TT();
             else {
-                for (int k = 0; k < cjkNames.Length; ++k) {
-                    if (fontName.StartsWith(cjkNames[k])) {
-                        fontName = cjkNames[k];
-                        cjkMirror = BaseFont.CreateFont(fontName, cjkEncs[k], false);
-                        return;
-                    }
-                }
                 PdfName encodingName = font.GetAsName(PdfName.ENCODING);
                 if (encodingName != null){
                     String enc = PdfName.DecodeName(encodingName.ToString());
-                    for (int k = 0; k < cjkEncs2.Length; ++k) {
-                        if (enc.StartsWith(cjkEncs2[k])) {
-                            if (k > 3)
-                                k -= 4;
-                            cjkMirror = BaseFont.CreateFont(cjkNames2[k], cjkEncs2[k], false);
-                            return;
-                        }
+                    String ffontname = CJKFont.GetCompatibleFont(enc);
+                    if (ffontname != null) {
+                        cjkMirror = BaseFont.CreateFont(ffontname, enc, false);
+                        cjkEncoding = enc;
+                        uniMap = ((CJKFont)cjkMirror).UniMap;
                     }
                     if (PdfName.TYPE0.Equals(subType) && enc.Equals("Identity-H")) {
                         ProcessType0(font);
@@ -271,7 +251,7 @@ namespace iTextSharp.text.pdf {
                         FillEncoding((PdfName)enc);
                     PdfArray diffs = encDic.GetAsArray(PdfName.DIFFERENCES);
                     if (diffs != null) {
-                        CMap toUnicode = null;
+                        CMapToUnicode toUnicode = null;
                         diffmap = new IntHashtable();
                         int currentNumber = 0;
                         for (int k = 0; k < diffs.Size; ++k) {
@@ -288,7 +268,7 @@ namespace iTextSharp.text.pdf {
                                     if (toUnicode == null) {
                                         toUnicode = ProcessToUnicode();
                                         if (toUnicode == null) {
-                                            toUnicode = new CMap();
+                                            toUnicode = new CMapToUnicode();
                                         }
                                     }
                                     string unicode = toUnicode.Lookup(new byte[]{(byte) currentNumber}, 0, 1);
@@ -346,15 +326,17 @@ namespace iTextSharp.text.pdf {
             FillFontDesc(font.GetAsDict(PdfName.FONTDESCRIPTOR));
         }
         
-        private CMap ProcessToUnicode() {
-            CMap cmapRet = null;
+        private CMapToUnicode ProcessToUnicode() {
+            CMapToUnicode cmapRet = null;
             PdfObject toUni = PdfReader.GetPdfObjectRelease(this.font.Get(PdfName.TOUNICODE));
             if (toUni is PRStream) {
                 try {
                     byte[] touni = PdfReader.GetStreamBytes((PRStream)toUni);
-                    CMapParser cmapParser = new CMapParser();
-                    cmapRet = cmapParser.Parse(new MemoryStream(touni));
+                    CidLocationFromByte lb = new CidLocationFromByte(touni);
+                    cmapRet = new CMapToUnicode();
+                    CMapParserEx.ParseCid("", cmapRet, lb);
                 } catch {
+                    cmapRet = null;
                 }
             }
             return cmapRet;
@@ -604,7 +586,7 @@ namespace iTextSharp.text.pdf {
         
         internal override byte[] ConvertToBytes(String text) {
             if (cjkMirror != null)
-                return PdfEncodings.ConvertToBytes(text, CJKFont.CJK_ENCODING);
+                return cjkMirror.ConvertToBytes(text);
             else if (isType0) {
                 char[] chars = text.ToCharArray();
                 int len = chars.Length;
@@ -647,7 +629,7 @@ namespace iTextSharp.text.pdf {
         
         internal override byte[] ConvertToBytes(int char1) {
             if (cjkMirror != null)
-                return PdfEncodings.ConvertToBytes((char)char1, CJKFont.CJK_ENCODING);
+                return cjkMirror.ConvertToBytes(char1);
             else if (isType0) {
                 int[] ws;
                 metrics.TryGetValue((int)char1, out ws);

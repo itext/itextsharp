@@ -471,9 +471,6 @@
     <Compile Include="iTextSharp\text\pdf\FontSelector.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMap.cs" />
-    <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapParser.cs" />
-    <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CodespaceRange.cs" />
     <Compile Include="iTextSharp\text\pdf\GlyphList.cs">
       <SubType>Code</SubType>
     </Compile>
