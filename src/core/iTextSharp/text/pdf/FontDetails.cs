@@ -167,9 +167,25 @@ namespace iTextSharp.text.pdf {
                 }
                 case BaseFont.FONT_TYPE_CJK: {
                     int len = text.Length;
-                    for (int k = 0; k < len; ++k)
-                        cjkTag[cjkFont.GetCidCode(text[k])] = 0;
-                    b = baseFont.ConvertToBytes(text);
+                    if (cjkFont.IsIdentity()) {
+                        foreach (char c in text) {
+                            cjkTag[c] = 0;
+                        }
+                    }
+                    else {
+                        for (int k = 0; k < len; ++k) {
+                            int val;
+                            if (Utilities.IsSurrogatePair(text, k)) {
+                                val = Utilities.ConvertToUtf32(text, k);
+                                k++;
+                            }
+                            else {
+                                val = text[k];
+                            }
+                            cjkTag[cjkFont.GetCidCode(val)] = 0;
+                        }
+                    }
+                    b = cjkFont.ConvertToBytes(text);
                     break;
                 }
                 case BaseFont.FONT_TYPE_DOCUMENT: {

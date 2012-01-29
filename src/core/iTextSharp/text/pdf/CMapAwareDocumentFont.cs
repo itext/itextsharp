@@ -63,7 +63,9 @@ namespace iTextSharp.text.pdf {
         /** The CMap constructed from the ToUnicode map from the font's dictionary, if present.
          *  This CMap transforms CID values into unicode equivalent
          */
-        private CMap toUnicodeCmap;
+        private CMapToUnicode toUnicodeCmap;
+        private CMapByteCid byteCid;
+        private CMapCidUni cidUni;
         /**
          *  Mapping between CID code (single byte only for now) and unicode equivalent
          *  as derived by the font's encoding.  Only needed if the ToUnicode CMap is not provided.
@@ -87,7 +89,11 @@ namespace iTextSharp.text.pdf {
             if (spaceWidth == 0){
                 spaceWidth = ComputeAverageWidth();
             }
-            
+            if (cjkEncoding != null) {
+                byteCid = CMapCache.GetCachedCMapByteCid(cjkEncoding);
+                cidUni = CMapCache.GetCachedCMapCidUni(uniMap);
+            }
+
         }
 
         /**
@@ -95,17 +101,17 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.7
          */
         private void ProcessToUnicode(){
-            
             PdfObject toUni = PdfReader.GetPdfObjectRelease(fontDic.Get(PdfName.TOUNICODE));
             if (toUni is PRStream){
-                
                 try {
                     byte[] touni = PdfReader.GetStreamBytes((PRStream)toUni);
-        
-                    CMapParser cmapParser = new CMapParser();
-                    toUnicodeCmap = cmapParser.Parse(new MemoryStream(touni));
+                    CidLocationFromByte lb = new CidLocationFromByte(touni);
+                    toUnicodeCmap = new CMapToUnicode();
+                    CMapParserEx.ParseCid("", toUnicodeCmap, lb);
                     uni2cid = toUnicodeCmap.CreateReverseMapping();
                 } catch {
+                    toUnicodeCmap = null;
+                    uni2cid = null;
                     // technically, we should log this or provide some sort of feedback... but sometimes the cmap will be junk, but it's still possible to get text, so we don't want to throw an exception
                     //throw new IllegalStateException("Unable to process ToUnicode map - " + e.GetMessage(), e);
                 }
@@ -216,16 +222,26 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.7
          */
         public String Decode(byte[] cidbytes, int offset, int len){
-            StringBuilder sb = new StringBuilder(); // it's a shame we can't make this StringBuilder
-            for (int i = offset; i < offset + len; i++){
-                String rslt = DecodeSingleCID(cidbytes, i, 1);
-                if (rslt == null && i < offset + len - 1){
-                    rslt = DecodeSingleCID(cidbytes, i, 2);
-                    i++;
+            StringBuilder sb = new StringBuilder();
+            if (toUnicodeCmap == null && byteCid != null) {
+                CMapSequence seq = new CMapSequence(cidbytes, offset, len);
+                String cid = byteCid.DecodeSequence(seq);
+                foreach (char ca in cid) {
+                    int c = cidUni.Lookup(ca);
+                    if (c > 0)
+                        sb.Append(Utilities.ConvertFromUtf32(c));
                 }
-                sb.Append(rslt);
             }
-
+            else {
+                for (int i = offset; i < offset + len; i++){
+                    String rslt = DecodeSingleCID(cidbytes, i, 1);
+                    if (rslt == null && i < offset + len - 1){
+                        rslt = DecodeSingleCID(cidbytes, i, 2);
+                        i++;
+                    }
+                    sb.Append(rslt);
+                }
+            }
             return sb.ToString();
         }
 
