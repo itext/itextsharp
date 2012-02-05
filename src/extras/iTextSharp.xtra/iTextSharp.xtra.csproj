@@ -30,10 +30,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="itextsharp, Version=5.0.6.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\core\bin\Debug\itextsharp.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -70,6 +66,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="itextsharp.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\itextsharp.csproj">
+      <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
+      <Name>itextsharp</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
