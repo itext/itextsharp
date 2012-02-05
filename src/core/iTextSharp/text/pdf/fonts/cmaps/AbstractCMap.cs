@@ -84,6 +84,9 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             byte[] a2 = DecodeStringToByte(to);
             if (a1.Length != a2.Length || a1.Length == 0)
                 throw new ArgumentException("Invalid map.");
+            byte[] sout = null;
+            if (code is PdfString)
+                sout = DecodeStringToByte((PdfString)code);
             int start = a1[a1.Length - 1] & 0xff;
             int end = a2[a2.Length - 1] & 0xff;
             for (int k = start; k <= end; ++k) {
@@ -96,6 +99,12 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
                 else if (code is PdfNumber) {
                     int nn = ((PdfNumber)code).IntValue + k - start;
                     AddChar(s, new PdfNumber(nn));
+                }
+                else if (code is PdfString) {
+                    PdfString s1 = new PdfString(sout);
+                    s1.SetHexWriting(true);
+                    ++sout[sout.Length - 1];
+                    AddChar(s, s1);
                 }
             }
         }

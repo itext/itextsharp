@@ -451,10 +451,24 @@ namespace iTextSharp.text.pdf {
                     outBuf = new StringBuilder();
                     if (ch == '-' || ch == '+' || ch == '.' || (ch >= '0' && ch <= '9')) {
                         type = TokType.NUMBER;
-                        do {
+                        if (ch == '-') {
+                            // Take care of number like "--234". If Acrobat can read them so must we.
+                            bool minus = false;
+                            do {
+                                minus = !minus;
+                                ch = file.Read();
+                            } while (ch == '-');
+                            if (minus)
+                                outBuf.Append('-');
+                        }
+                        else {
                             outBuf.Append((char)ch);
                             ch = file.Read();
-                        } while (ch != -1 && ((ch >= '0' && ch <= '9') || ch == '.'));
+                        }
+                        while (ch != -1 && ((ch >= '0' && ch <= '9') || ch == '.')) {
+                            outBuf.Append((char)ch);
+                            ch = file.Read();
+                        }
                     }
                     else {
                         type = TokType.OTHER;

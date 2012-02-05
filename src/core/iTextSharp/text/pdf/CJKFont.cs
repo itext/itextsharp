@@ -74,7 +74,7 @@ namespace iTextSharp.text.pdf {
         private static bool propertiesLoaded = false;
         
         /** The path to the font resources. */
-        public const String RESOURCE_PATH_CMAP = RESOURCE_PATH + "cmaps/";
+        public const String RESOURCE_PATH_CMAP = RESOURCE_PATH + "cmaps.";
         private static Dictionary<String,Dictionary<String,object>> registryNames = new Dictionary<string,Dictionary<string,object>>();
         private CMapCidByte cidByte;
         private CMapUniCid uniCid;
