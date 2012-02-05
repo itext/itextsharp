@@ -178,10 +178,6 @@ namespace iTextSharp.text.pdf {
         public override int GetWidth(int char1) {
             if (char1 == ' ')
                 return spaceWidth;
-            if (uni2cid != null && uni2cid.ContainsKey(char1)) {
-                char1 = uni2cid[char1];
-                return widths[char1];
-            }
             return base.GetWidth(char1);
         }
         
