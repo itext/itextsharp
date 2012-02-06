@@ -683,6 +683,8 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName FONTMATRIX = new PdfName("FontMatrix");
         /** A name */
         public static readonly PdfName FONTNAME = new PdfName("FontName");
+        /** A name */
+        public static readonly PdfName FONTWEIGHT = new PdfName("FontWeight");
         /**
          * A name
          * @since	2.1.6

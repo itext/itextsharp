@@ -58,6 +58,7 @@ namespace iTextSharp.text.pdf {
         private float CapHeight = 700;
         private float Descender = -200;
         private float ItalicAngle = 0;
+        private float fontWeight = 0;
         private float llx = -50;
         private float lly = -200;
         private float urx = 100;
@@ -318,6 +319,7 @@ namespace iTextSharp.text.pdf {
                 CapHeight = bf.GetFontDescriptor(CAPHEIGHT, 1000);
                 Descender = bf.GetFontDescriptor(DESCENT, 1000);
                 ItalicAngle = bf.GetFontDescriptor(ITALICANGLE, 1000);
+                fontWeight = bf.GetFontDescriptor(FONT_WEIGHT, 1000);
                 llx = bf.GetFontDescriptor(BBOXLLX, 1000);
                 lly = bf.GetFontDescriptor(BBOXLLY, 1000);
                 urx = bf.GetFontDescriptor(BBOXURX, 1000);
@@ -369,6 +371,10 @@ namespace iTextSharp.text.pdf {
             v = fontDesc.GetAsNumber(PdfName.ITALICANGLE);
             if (v != null)
                 ItalicAngle = v.FloatValue;
+            v = fontDesc.GetAsNumber(PdfName.FONTWEIGHT);
+            if (v != null) {
+                fontWeight = v.FloatValue;
+            }
             PdfArray bbox = fontDesc.GetAsArray(PdfName.FONTBBOX);
             if (bbox != null) {
                 llx = bbox.GetAsNumber(0).FloatValue;
@@ -463,6 +469,8 @@ namespace iTextSharp.text.pdf {
                     return 0;
                 case AWT_MAXADVANCE:
                     return (urx - llx) * fontSize / 1000;
+                case FONT_WEIGHT:
+                    return fontWeight * fontSize / 1000;
             }
             return 0;
         }
