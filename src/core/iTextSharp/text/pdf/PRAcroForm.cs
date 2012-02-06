@@ -139,7 +139,9 @@ namespace iTextSharp.text.pdf {
             hashMap = root.hashMap;
             PushAttrib(root);
             PdfArray fieldlist = (PdfArray)PdfReader.GetPdfObjectRelease(root.Get(PdfName.FIELDS));
-            IterateFields(fieldlist, null, null);
+            if (fieldlist != null) {
+                IterateFields(fieldlist, null, null);
+            }
         }
         
         /**

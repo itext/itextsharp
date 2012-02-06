@@ -271,7 +271,7 @@ namespace iTextSharp.text.pdf.parser {
             // from the PDF spec:  Unless the image uses ASCIIHexDecode or ASCII85Decode as one of its filters, the ID operator shall be followed by a single white-space character, and the next character shall be interpreted as the first byte of image data.
             // unfortunately, we've seen some PDFs where there is no space following the ID, so we have to capture this case and handle it
             int startIndex = 0;
-            if (!PRTokeniser.IsWhitespace(shouldBeWhiteSpace)){
+            if (!PRTokeniser.IsWhitespace(shouldBeWhiteSpace) || shouldBeWhiteSpace == 0){ // tokeniser treats 0 as whitespace, but for our purposes, we shouldn't)
                 bytes[0] = (byte)shouldBeWhiteSpace;
                 startIndex++;
             }

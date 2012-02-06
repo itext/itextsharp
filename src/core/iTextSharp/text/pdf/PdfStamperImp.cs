@@ -1595,14 +1595,16 @@ namespace iTextSharp.text.pdf {
                 obj = arr[i];
                 if (obj.IsIndirect()) {
                     layer = ocgmap[obj.ToString()];
-                    layer.OnPanel = true;
-                    RegisterLayer(layer);
-                    if (parent != null) {
-                        parent.AddChild(layer);
-                    }
-                    if (arr.Size > i + 1 && arr[i + 1].IsArray()) {
-                        i++;
-                        AddOrder(layer, (PdfArray)arr[i], ocgmap);
+                    if (layer != null) {
+                        layer.OnPanel = true;
+                        RegisterLayer(layer);
+                        if (parent != null) {
+                            parent.AddChild(layer);
+                        }
+                        if (arr.Size > i + 1 && arr[i + 1].IsArray()) {
+                            i++;
+                            AddOrder(layer, (PdfArray)arr[i], ocgmap);
+                        }
                     }
                 }
                 else if (obj.IsArray()) {
