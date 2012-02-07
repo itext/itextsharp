@@ -124,24 +124,33 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.7
          */
         private void ProcessUni2Byte(){
-            IntHashtable uni2byte = Uni2Byte;
-            int[] e = uni2byte.ToOrderedKeys();
-            if (e.Length == 0)
-                return;
             cidbyte2uni = new char[256];
-            for (int k = 0; k < e.Length; ++k) {
-                int n = uni2byte[e[k]];
-                
-                // this is messy, messy - an encoding can have multiple unicode values mapping to the same cid - we are going to arbitrarily choose the first one
-                // what we really need to do is to parse the encoding, and handle the differences info ourselves.  This is a huge duplication of code of what is already
-                // being done in DocumentFont, so I really hate to go down that path without seriously thinking about a change in the organization of the Font class hierarchy
-                if (n < 256 && cidbyte2uni[n] == 0)
-                    cidbyte2uni[n] = (char)e[k];
+            if (toUnicodeCmap != null) {
+                IDictionary<int,int> dm = toUnicodeCmap.CreateDirectMapping();
+                foreach (KeyValuePair<int,int> kv in dm) {
+                    if (kv.Key < 256)
+                        cidbyte2uni[kv.Key] = (char)kv.Value;
+                }
+            }
+            else {
+                IntHashtable uni2byte = Uni2Byte;
+                int[] e = uni2byte.ToOrderedKeys();
+                if (e.Length == 0)
+                    return;
+                for (int k = 0; k < e.Length; ++k) {
+                    int n = uni2byte[e[k]];
+                    
+                    // this is messy, messy - an encoding can have multiple unicode values mapping to the same cid - we are going to arbitrarily choose the first one
+                    // what we really need to do is to parse the encoding, and handle the differences info ourselves.  This is a huge duplication of code of what is already
+                    // being done in DocumentFont, so I really hate to go down that path without seriously thinking about a change in the organization of the Font class hierarchy
+                    if (n < 256 && cidbyte2uni[n] == 0)
+                        cidbyte2uni[n] = (char)e[k];
+                }
             }
             IntHashtable diffmap = Diffmap;
             if (diffmap != null) {
                 // the difference array overrides the existing encoding
-                e = diffmap.ToOrderedKeys();
+                int[] e = diffmap.ToOrderedKeys();
                 for (int k = 0; k < e.Length; ++k) {
                     int n = diffmap[e[k]];
                     if (n < 256)
