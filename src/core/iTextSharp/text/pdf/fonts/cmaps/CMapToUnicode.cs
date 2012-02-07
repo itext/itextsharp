@@ -110,6 +110,17 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             return result;
         }
 
+        public IDictionary<int, int> CreateDirectMapping() {
+            IDictionary<int, int> result = new Dictionary<int, int>();
+            foreach (KeyValuePair<int, String> entry in singleByteMappings) {
+                result[entry.Key] = ConvertToInt(entry.Value);
+            }
+            foreach (KeyValuePair<int, String> entry in doubleByteMappings) {
+                result[entry.Key] = ConvertToInt(entry.Value);
+            }
+            return result;
+        }
+
         private int ConvertToInt(String s) {
             UnicodeEncoding ue = new UnicodeEncoding(true, false);
             byte[] b = ue.GetBytes(s);
