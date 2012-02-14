@@ -124,19 +124,12 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.7
          */
         private void ProcessUni2Byte(){
+            IntHashtable uni2byte = Uni2Byte;
+            int[] e = uni2byte.ToOrderedKeys();
+            if (e.Length == 0)
+                return;
             cidbyte2uni = new char[256];
-            if (toUnicodeCmap != null) {
-                IDictionary<int,int> dm = toUnicodeCmap.CreateDirectMapping();
-                foreach (KeyValuePair<int,int> kv in dm) {
-                    if (kv.Key < 256)
-                        cidbyte2uni[kv.Key] = (char)kv.Value;
-                }
-            }
-            else {
-                IntHashtable uni2byte = Uni2Byte;
-                int[] e = uni2byte.ToOrderedKeys();
-                if (e.Length == 0)
-                    return;
+            if (toUnicodeCmap == null) {
                 for (int k = 0; k < e.Length; ++k) {
                     int n = uni2byte[e[k]];
                     
@@ -147,10 +140,17 @@ namespace iTextSharp.text.pdf {
                         cidbyte2uni[n] = (char)e[k];
                 }
             }
+            else {
+                IDictionary<int,int> dm = toUnicodeCmap.CreateDirectMapping();
+                foreach (KeyValuePair<int,int> kv in dm) {
+                    if (kv.Key < 256)
+                        cidbyte2uni[kv.Key] = (char)kv.Value;
+                }
+            }
             IntHashtable diffmap = Diffmap;
             if (diffmap != null) {
                 // the difference array overrides the existing encoding
-                int[] e = diffmap.ToOrderedKeys();
+                e = diffmap.ToOrderedKeys();
                 for (int k = 0; k < e.Length; ++k) {
                     int n = diffmap[e[k]];
                     if (n < 256)

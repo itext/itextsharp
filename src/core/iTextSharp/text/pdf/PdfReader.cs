@@ -500,9 +500,13 @@ namespace iTextSharp.text.pdf {
                         throw new InvalidPdfException(ne.Message);
                     rebuilt = true;
                     encrypted = false;
-                    RebuildXref();
-                    lastXref = -1;
-                    ReadDocObj();
+                    try {
+                        RebuildXref();
+                        lastXref = -1;
+                        ReadDocObj();
+                    } catch (Exception ne2){
+                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("rebuild.failed.1.original.message.2", ne2.Message, ne.Message));
+                    }
                 }
                 
                 strings.Clear();

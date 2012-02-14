@@ -237,11 +237,18 @@ namespace iTextSharp.text.pdf {
         }
 
         private void DoType1TT() {
-            bool toUnicodeUsed = false;
             CMapToUnicode toUnicode = null;
             PdfObject enc = PdfReader.GetPdfObject(font.Get(PdfName.ENCODING));
-            if (enc == null)
+            if (enc == null) {
                 FillEncoding(null);
+                toUnicode = ProcessToUnicode();
+                if (toUnicode != null) {
+                    IDictionary<int, int> rm = toUnicode.CreateReverseMapping();
+                    foreach (KeyValuePair<int,int> kv in rm) {
+                        uni2byte[kv.Key] = kv.Value;
+                    }
+                }
+            }
             else {
                 if (enc.IsName())
                     FillEncoding((PdfName)enc);
@@ -272,8 +279,6 @@ namespace iTextSharp.text.pdf {
                                         if (toUnicode == null) {
                                             toUnicode = new CMapToUnicode();
                                         }
-                                        else
-                                            toUnicodeUsed = true;
                                     }
                                     string unicode = toUnicode.Lookup(new byte[]{(byte) currentNumber}, 0, 1);
                                     if ((unicode != null) && (unicode.Length == 1)) {
@@ -284,15 +289,6 @@ namespace iTextSharp.text.pdf {
                                 ++currentNumber;
                             }
                         }
-                    }
-                }
-            }
-            if (!toUnicodeUsed) {
-                toUnicode = ProcessToUnicode();
-                if (toUnicode != null) {
-                    IDictionary<int, int> rm = toUnicode.CreateReverseMapping();
-                    foreach (KeyValuePair<int,int> kv in rm) {
-                        uni2byte[kv.Key] = kv.Value;
                     }
                 }
             }
