@@ -132,7 +132,7 @@ namespace iTextSharp.text.pdf.parser {
         public static PdfImageObject ParseInlineImage(PdfContentParser ps, PdfDictionary colorSpaceDic) {
             PdfDictionary inlineImageDictionary = ParseInlineImageDictionary(ps);
             byte[] samples = ParseInlineImageSamples(inlineImageDictionary, colorSpaceDic, ps);
-            return new PdfImageObject(inlineImageDictionary, samples);
+            return new PdfImageObject(inlineImageDictionary, samples, colorSpaceDic);
         }
         
         /**
