@@ -244,7 +244,8 @@ namespace iTextSharp.text.pdf {
                         rslt = DecodeSingleCID(cidbytes, i, 2);
                         i++;
                     }
-                    sb.Append(rslt);
+                    if (rslt != null)
+                        sb.Append(rslt);
                 }
             }
             return sb.ToString();
