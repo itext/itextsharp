@@ -108,6 +108,7 @@ namespace iTextSharp.text.pdf.parser {
         private PdfDictionary dictionary;
         /** The decoded image bytes (after applying filters), or the raw image bytes if unable to decode */
         private byte[] imageBytes;
+        private PdfDictionary colorSpaceDic;
 
         private int pngColorType = -1;
         private int pngBitDepth;
@@ -139,7 +140,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param stream a PRStream
          * @throws IOException
          */
-        public PdfImageObject(PRStream stream) : this(stream, PdfReader.GetStreamBytesRaw(stream)) {
+        public PdfImageObject(PRStream stream) : this(stream, PdfReader.GetStreamBytesRaw(stream), null) {
         }
         
         /**
@@ -148,8 +149,9 @@ namespace iTextSharp.text.pdf.parser {
          * @param samples the samples
          * @since 5.0.3
          */
-        protected internal PdfImageObject(PdfDictionary dictionary, byte[] samples)  {
+        protected internal PdfImageObject(PdfDictionary dictionary, byte[] samples, PdfDictionary colorSpaceDic)  {
             this.dictionary = dictionary;
+            this.colorSpaceDic = colorSpaceDic;
             TrackingFilter trackingFilter = new TrackingFilter();
             IDictionary<PdfName, FilterHandlers.IFilterHandler> handlers = new Dictionary<PdfName, FilterHandlers.IFilterHandler>(FilterHandlers.GetDefaultFilterHandlers());
             handlers[PdfName.JBIG2DECODE] = trackingFilter;
@@ -267,6 +269,12 @@ namespace iTextSharp.text.pdf.parser {
             bpc = dictionary.GetAsNumber(PdfName.BITSPERCOMPONENT).IntValue;
             pngBitDepth = bpc;
             PdfObject colorspace = dictionary.GetDirectObject(PdfName.COLORSPACE);
+            if (colorspace is PdfName && colorSpaceDic != null){
+                PdfObject csLookup = colorSpaceDic.GetDirectObject((PdfName)colorspace);
+                if (csLookup != null)
+                    colorspace = csLookup;
+            }
+
             palette = null;
             icc = null;
             stride = 0;
