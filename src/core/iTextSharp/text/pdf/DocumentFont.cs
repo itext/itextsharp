@@ -88,12 +88,23 @@ namespace iTextSharp.text.pdf {
             0,230,0,0,0,305,0,0,322,248,339,223,0,0,0,0};
 
         /** Creates a new instance of DocumentFont */
+        internal DocumentFont(PdfDictionary font) {
+            this.refFont = null;
+            this.font = font;
+            Init();
+        }
+
+        /** Creates a new instance of DocumentFont */
         internal DocumentFont(PRIndirectReference refFont) {
+            this.refFont = refFont;
+            font = (PdfDictionary)PdfReader.GetPdfObject(refFont);
+            Init();
+        }
+
+        private void Init() {
             encoding = "";
             fontSpecific = false;
-            this.refFont = refFont;
             fontType = FONT_TYPE_DOCUMENT;
-            font = (PdfDictionary)PdfReader.GetPdfObject(refFont);
             PdfName baseFont = font.GetAsName(PdfName.BASEFONT);
             fontName = baseFont != null ? PdfName.DecodeName(baseFont.ToString()) : "Unspecified Font Name";
             PdfName subType = font.GetAsName(PdfName.SUBTYPE);
@@ -666,6 +677,8 @@ namespace iTextSharp.text.pdf {
         
         internal PdfIndirectReference IndirectReference {
             get {
+                if (refFont == null)
+                    throw new ArgumentException("Font reuse not allowed with direct font objects.");
                 return refFont;
             }
         }

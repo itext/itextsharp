@@ -139,6 +139,10 @@ namespace iTextSharp.text.pdf.parser {
             return font;
         }
 
+        public CMapAwareDocumentFont GetFont(PdfDictionary fontResource) {
+            return new CMapAwareDocumentFont(fontResource);
+        }
+
         /**
          * Loads all the supported graphics and text state operators in a map.
          */
@@ -553,7 +557,12 @@ namespace iTextSharp.text.pdf.parser {
                 float size = ((PdfNumber)operands[1]).FloatValue;
 
                 PdfDictionary fontsDictionary = processor.resources.GetAsDict(PdfName.FONT);
-                CMapAwareDocumentFont font = processor.GetFont((PRIndirectReference)fontsDictionary.Get(fontResourceName));
+                CMapAwareDocumentFont font;
+                PdfObject fontObject = fontsDictionary.Get(fontResourceName);
+                if (fontObject is PdfDictionary)
+                    font = processor.GetFont((PdfDictionary)fontObject);
+                else
+                    font = processor.GetFont((PRIndirectReference)fontObject);
 
                 processor.Gs().font = font;
                 processor.Gs().fontSize = size;
