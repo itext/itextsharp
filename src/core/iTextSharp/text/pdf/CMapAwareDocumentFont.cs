@@ -74,13 +74,21 @@ namespace iTextSharp.text.pdf {
         
         private IDictionary<int,int> uni2cid;
 
+        public CMapAwareDocumentFont(PdfDictionary font) : base(font) {
+            fontDic = font;
+            InitFont();
+        }
+        
         /**
          * Creates an instance of a CMapAwareFont based on an indirect reference to a font.
          * @param refFont   the indirect reference to a font
          */
-        public CMapAwareDocumentFont(PRIndirectReference refFont) : base(refFont){
+        public CMapAwareDocumentFont(PRIndirectReference refFont) : base(refFont) {
             fontDic = (PdfDictionary)PdfReader.GetPdfObjectRelease(refFont);
+            InitFont();
+        }
 
+        private void InitFont() {
             ProcessToUnicode();
             //if (toUnicodeCmap == null)
                 ProcessUni2Byte();
