@@ -196,7 +196,11 @@ namespace iTextSharp.text.pdf.parser {
          * @since 2.1.7
          */
         public IContentOperator RegisterContentOperator(String operatorString, IContentOperator oper){
-            return operators[operatorString] = oper;
+            IContentOperator value = null;
+            if (operators.ContainsKey(operatorString))
+                value = operators[operatorString];
+            operators[operatorString] = oper;
+            return value;
         }
 
         /**
