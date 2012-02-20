@@ -72,8 +72,16 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             try {
                 List<PdfObject> list = new List<PdfObject>();
                 PdfContentParser cp = new PdfContentParser(inp);
+                int maxExc = 50;
                 while (true) {
-                    cp.Parse(list);
+                    try {
+                        cp.Parse(list);
+                    }
+                    catch {
+                        if (--maxExc < 0)
+                            break;
+                        continue;
+                    }
                     if (list.Count == 0)
                         break;
                     String last = list[list.Count - 1].ToString();
