@@ -180,7 +180,18 @@ namespace iTextSharp.text.pdf {
             PdfObject ob = null;
             bool notFound = true;
             int nestLevel = 0;
-            while ((notFound || nestLevel > 0) && (ob = ps.ReadPRObject()) != null) {
+            int maxExc = 50;
+            while ((notFound || nestLevel > 0)) {
+                try {
+                    ob = ps.ReadPRObject();
+                }
+                catch {
+                    if (--maxExc < 0)
+                        break;
+                    continue;
+                }
+                if (ob == null)
+                    break;
                 if (ob.Type == PdfContentParser.COMMAND_TYPE) {
                     if (ob.ToString().Equals("begin")) {
                         notFound = false;
