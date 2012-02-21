@@ -21,6 +21,14 @@ namespace System.util {
             this.height = height;
         }
 
+        public RectangleJ(iTextSharp.text.Rectangle rect) {
+            rect.Normalize();
+            x = rect.Left;
+            y = rect.Bottom;
+            width = rect.Width;
+            height = rect.Height;
+        }
+
         public float X {
             get {
                 return this.x;

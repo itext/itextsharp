@@ -64,6 +64,14 @@ namespace iTextSharp.text.pdf.parser {
             this.filterRect = filterRect;
         }
 
+        /**
+         * Constructs a filter
+         * @param filterRect the rectangle to filter text against.
+         */
+        public RegionTextRenderFilter(iTextSharp.text.Rectangle filterRect) {
+            this.filterRect = new RectangleJ(filterRect);
+        }
+ 
         /** 
          * @see com.itextpdf.text.pdf.parser.RenderFilter#allowText(com.itextpdf.text.pdf.parser.TextRenderInfo)
          */
