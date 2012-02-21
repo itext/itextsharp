@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.util;
 using iTextSharp.text.xml.simpleparser;
+using iTextSharp.text.xml;
 using iTextSharp.text.error_messages;
 /*
  * This file is part of the iText project.
@@ -119,14 +120,14 @@ namespace iTextSharp.text.pdf {
         */
         public static void ExportToXML(Dictionary<string,string> names, TextWriter wrt, String encoding, bool onlyASCII) {
             wrt.Write("<?xml version=\"1.0\" encoding=\"");
-            wrt.Write(SimpleXMLParser.EscapeXML(encoding, onlyASCII));
+            wrt.Write(XMLUtil.EscapeXML(encoding, onlyASCII));
             wrt.Write("\"?>\n<Destination>\n");
             foreach (String key in names.Keys) {
                 String value = names[key];
                 wrt.Write("  <Name Page=\"");
-                wrt.Write(SimpleXMLParser.EscapeXML(value, onlyASCII));
+                wrt.Write(XMLUtil.EscapeXML(value, onlyASCII));
                 wrt.Write("\">");
-                wrt.Write(SimpleXMLParser.EscapeXML(EscapeBinaryString(key), onlyASCII));
+                wrt.Write(XMLUtil.EscapeXML(EscapeBinaryString(key), onlyASCII));
                 wrt.Write("</Name>\n");
             }
             wrt.Write("</Destination>\n");

@@ -831,7 +831,7 @@ public class ColumnText {
                 if (UseAscender && float.IsNaN(firstLineY))
                     currentLeading = line.Ascender;
                 else
-                    currentLeading = Math.Max(fixedLeading + maxSize[0] * multipliedLeading, maxSize[1]);
+                    currentLeading = Math.Max(fixedLeading + maxSize[0] * multipliedLeading, maxSize[1] - descender);
                 if (yLine > maxY || yLine - currentLeading < minY ) {
                     status = NO_MORE_COLUMN;
                     bidiLine.Restore();

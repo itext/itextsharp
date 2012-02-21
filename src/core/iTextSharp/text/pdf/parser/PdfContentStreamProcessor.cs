@@ -129,7 +129,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the font
          * @since 5.0.6
          */
-        public CMapAwareDocumentFont GetFont(PRIndirectReference ind) {
+        private CMapAwareDocumentFont GetFont(PRIndirectReference ind) {
             CMapAwareDocumentFont font;
             cachedFonts.TryGetValue(ind.Number, out font);
             if (font == null) {
@@ -139,7 +139,7 @@ namespace iTextSharp.text.pdf.parser {
             return font;
         }
 
-        public CMapAwareDocumentFont GetFont(PdfDictionary fontResource) {
+        private CMapAwareDocumentFont GetFont(PdfDictionary fontResource) {
             return new CMapAwareDocumentFont(fontResource);
         }
 
@@ -336,7 +336,8 @@ namespace iTextSharp.text.pdf.parser {
         }
         
         /**
-         * Processes PDF syntax
+         * Processes PDF syntax.
+         * <b>Note:</b> If you re-use a given {@link PdfContentStreamProcessor}, you must call {@link PdfContentStreamProcessor#reset()}
          * @param contentBytes  the bytes of a content stream
          * @param resources     the resources that come with the content stream
          */

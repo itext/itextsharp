@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+using iTextSharp.text.pdf.draw;
 /*
  *
  * This file is part of the iText project.
@@ -378,8 +378,6 @@ namespace iTextSharp.text.pdf {
                     lastSplit = currentChar;
                 width -= charWidth;
                 lastValidChunk = ck;
-                if (surrogate)
-                    ++currentChar;
                 if (ck.IsTab()) {
                     Object[] tab = (Object[])ck.GetAttribute(Chunk.TAB);
                     float tabPosition = (float)tab[1];
@@ -389,7 +387,21 @@ namespace iTextSharp.text.pdf {
                     }
                     detailChunks[currentChar].AdjustLeft(leftX);
                     width = originalWidth - tabPosition;
+                } 
+                else if (ck.IsSeparator()) {
+                    Object[] sep = (Object[])ck.GetAttribute(Chunk.SEPARATOR);
+                    IDrawInterface di = (IDrawInterface)sep[0];
+                    bool vertical = (bool)sep[1];
+                    if (vertical && di is LineSeparator) {
+                        float separatorWidth = originalWidth * ((LineSeparator) di).Percentage / 100f;
+                        width -= separatorWidth;
+                        if (width < 0) {
+                            width = 0;
+                        }
+                    }
                 }
+                if (surrogate)
+                    ++currentChar;
             }
             if (lastValidChunk == null) {
                 // not even a single char fit; must output the first char
