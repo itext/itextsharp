@@ -162,15 +162,15 @@ namespace Org.BouncyCastle.Cms
 		{
 			IDictionary param = Platform.CreateHashtable();
 
-			param[CmsAttributeTableParameter.ContentType] = contentType;
+            if (contentType != null)
+            {
+                param[CmsAttributeTableParameter.ContentType] = contentType;
+            }
+
 			param[CmsAttributeTableParameter.DigestAlgorithmIdentifier] = digAlgId;
+            param[CmsAttributeTableParameter.Digest] = hash.Clone();
 
-			if (hash != null)
-			{
-				param[CmsAttributeTableParameter.Digest] = hash.Clone();
-			}
-
-			return param;
+            return param;
 		}
 
 		internal protected virtual Asn1Set GetAttributeSet(
@@ -255,7 +255,7 @@ namespace Org.BouncyCastle.Cms
 
 		internal static SignerIdentifier GetSignerIdentifier(byte[] subjectKeyIdentifier)
 		{
-			return new SignerIdentifier(new DerOctetString(subjectKeyIdentifier));
+			return new SignerIdentifier(new DerOctetString(subjectKeyIdentifier));    
 		}
 	}
 }

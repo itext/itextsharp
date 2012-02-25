@@ -38,7 +38,7 @@ namespace Org.BouncyCastle.Ocsp
 			AlgorithmIdentifier hashAlg = new AlgorithmIdentifier(
 				new DerObjectIdentifier(hashAlgorithm), DerNull.Instance);
 
-			this.id = createCertID(hashAlg, issuerCert, new DerInteger(serialNumber));
+			this.id = CreateCertID(hashAlg, issuerCert, new DerInteger(serialNumber));
 		}
 
 		public string HashAlgOid
@@ -68,7 +68,7 @@ namespace Org.BouncyCastle.Ocsp
 		public bool MatchesIssuer(
 			X509Certificate	issuerCert)
 		{
-			return createCertID(id.HashAlgorithm, issuerCert, id.SerialNumber).Equals(id);
+			return CreateCertID(id.HashAlgorithm, issuerCert, id.SerialNumber).Equals(id);
 		}
 
 		public CertID ToAsn1Object()
@@ -95,7 +95,23 @@ namespace Org.BouncyCastle.Ocsp
 			return id.ToAsn1Object().GetHashCode();
 		}
 
-        private static CertID createCertID(
+
+		/**
+		 * Create a new CertificateID for a new serial number derived from a previous one
+		 * calculated for the same CA certificate.
+		 *
+		 * @param original the previously calculated CertificateID for the CA.
+		 * @param newSerialNumber the serial number for the new certificate of interest.
+		 *
+		 * @return a new CertificateID for newSerialNumber
+		 */
+		public static CertificateID DeriveCertificateID(CertificateID original, BigInteger newSerialNumber)
+		{
+			return new CertificateID(new CertID(original.id.HashAlgorithm, original.id.IssuerNameHash,
+				original.id.IssuerKeyHash, new DerInteger(newSerialNumber)));
+		}
+
+        private static CertID CreateCertID(
 			AlgorithmIdentifier	hashAlg,
 			X509Certificate		issuerCert,
 			DerInteger			serialNumber)

@@ -123,12 +123,12 @@ namespace Org.BouncyCastle.Utilities.Collections
 			this.parent = parent;
 		}
 
-		public object Current
+		public virtual object Current
 		{
 			get { return Entry; }
 		}
 
-		public DictionaryEntry Entry
+		public virtual DictionaryEntry Entry
 		{
 			get
 			{
@@ -137,7 +137,7 @@ namespace Org.BouncyCastle.Utilities.Collections
 			}
 		}
 
-		public object Key
+		public virtual object Key
 		{
 			get
 			{
@@ -145,19 +145,19 @@ namespace Org.BouncyCastle.Utilities.Collections
 			}
 		}
 
-		public bool MoveNext()
+		public virtual bool MoveNext()
 		{
 			if (pos >= parent.keys.Count)
 				return false;
 			return ++pos < parent.keys.Count;
 		}
 
-		public void Reset()
+		public virtual void Reset()
 		{
 			this.pos = -1;
 		}
 
-		public object Value
+		public virtual object Value
 		{
 			get
 			{

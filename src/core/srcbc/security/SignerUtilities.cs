@@ -309,25 +309,20 @@ namespace Org.BouncyCastle.Security
 			if (mechanism == null)
 				mechanism = algorithm;
 
-			switch (mechanism)
+			if (mechanism == "PSSwithRSA")
 			{
-			case "PSSwithRSA":
 				// TODO The Sha1Digest here is a default. In JCE version, the actual digest
 				// to be used can be overridden by subsequent parameter settings.
 				return GetPssX509Parameters("SHA-1");
-			case "SHA-1withRSAandMGF1":
-				return GetPssX509Parameters("SHA-1");
-			case "SHA-224withRSAandMGF1":
-				return GetPssX509Parameters("SHA-224");
-			case "SHA-256withRSAandMGF1":
-				return GetPssX509Parameters("SHA-256");
-			case "SHA-384withRSAandMGF1":
-				return GetPssX509Parameters("SHA-384");
-			case "SHA-512withRSAandMGF1":
-				return GetPssX509Parameters("SHA-512");
-			default:
-				return DerNull.Instance;
 			}
+
+			if (mechanism.EndsWith("withRSAandMGF1"))
+			{
+				string digestName = mechanism.Substring(0, mechanism.Length - "withRSAandMGF1".Length);
+				return GetPssX509Parameters(digestName);
+			}
+
+			return DerNull.Instance;
 		}
 
 		private static Asn1Encodable GetPssX509Parameters(

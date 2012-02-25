@@ -41,7 +41,7 @@ namespace Org.BouncyCastle.Asn1.Icao
 			if (obj != null)
 				return new LdsSecurityObject(Asn1Sequence.GetInstance(obj));
 
-			throw new ArgumentException("null object in GetInstance()");
+			return null;
 		}
 
 		private LdsSecurityObject(

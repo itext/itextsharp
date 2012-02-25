@@ -38,6 +38,11 @@ namespace Org.BouncyCastle.Utilities.Collections
 			return l.IndexOf(o);
 		}
 
+		public override bool IsFixedSize
+		{
+			get { return l.IsFixedSize; }
+		}
+
 		public override bool IsSynchronized
 		{
 			get { return l.IsSynchronized; }

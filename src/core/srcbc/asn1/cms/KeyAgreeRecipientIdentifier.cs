@@ -31,14 +31,10 @@ namespace Org.BouncyCastle.Asn1.Cms
 			object obj)
 		{
 			if (obj == null || obj is KeyAgreeRecipientIdentifier)
-			{
 				return (KeyAgreeRecipientIdentifier)obj;
-			}
 
 			if (obj is Asn1Sequence)
-			{
 				return new KeyAgreeRecipientIdentifier(IssuerAndSerialNumber.GetInstance(obj));
-			}
 
 			if (obj is Asn1TaggedObject && ((Asn1TaggedObject)obj).TagNo == 0)
 			{

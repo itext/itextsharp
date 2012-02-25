@@ -4,12 +4,12 @@ using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Parameters
 {
-    public class DsaKeyParameters
+    public abstract class DsaKeyParameters
 		: AsymmetricKeyParameter
     {
 		private readonly DsaParameters parameters;
 
-		public DsaKeyParameters(
+		protected DsaKeyParameters(
             bool			isPrivate,
             DsaParameters	parameters)
 			: base(isPrivate)

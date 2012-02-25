@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Globalization;
+using System.IO;
 using System.Text;
 
 using NetUtils = Org.BouncyCastle.Utilities.Net;
@@ -187,8 +188,19 @@ namespace Org.BouncyCastle.Asn1.X509
 					case RegisteredID:
 						return new GeneralName(tag, DerObjectIdentifier.GetInstance(tagObj, false));
 				}
+	        }
 
-            }
+            if (obj is byte[])
+	        {
+	            try
+	            {
+	                return GetInstance(Asn1Object.FromByteArray((byte[])obj));
+	            }
+	            catch (IOException)
+	            {
+	                throw new ArgumentException("unable to parse encoded general name");
+	            }
+	        }
 
 			throw new ArgumentException("unknown object in GetInstance: " + obj.GetType().FullName, "obj");
 		}

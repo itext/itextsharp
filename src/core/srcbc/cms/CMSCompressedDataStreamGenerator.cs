@@ -127,6 +127,9 @@ namespace Org.BouncyCastle.Cms
 			public override void Close()
 			{
 				_out.Close();
+
+				// TODO Parent context(s) should really be be closed explicitly
+
 				_eiGen.Close();
 				_cGen.Close();
 				_sGen.Close();

@@ -21,7 +21,7 @@ namespace Org.BouncyCastle.Cms
 
 			try
 			{
-				Asn1StreamParser inStream = new Asn1StreamParser(data, CmsUtilities.MaximumMemory);
+				Asn1StreamParser inStream = new Asn1StreamParser(data);
 
 				this.contentInfo = new ContentInfoParser((Asn1SequenceParser)inStream.ReadObject());
 			}

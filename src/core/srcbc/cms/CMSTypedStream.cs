@@ -2,6 +2,7 @@ using System;
 using System.IO;
 
 using Org.BouncyCastle.Asn1.Pkcs;
+using Org.BouncyCastle.Asn1.Utilities;
 using Org.BouncyCastle.Utilities.IO;
 
 namespace Org.BouncyCastle.Cms
@@ -32,7 +33,11 @@ namespace Org.BouncyCastle.Cms
 			int		bufSize)
 		{
 			_oid = oid;
-			_in = new FullReaderStream(inStream, bufSize);
+#if NETCF_1_0 || NETCF_2_0 || SILVERLIGHT
+			_in = new FullReaderStream(inStream);
+#else
+			_in = new FullReaderStream(new BufferedStream(inStream, bufSize));
+#endif
 		}
 
 		public string ContentType
@@ -51,35 +56,16 @@ namespace Org.BouncyCastle.Cms
 			_in.Close();
 		}
 
-		private class FullReaderStream
-			: BaseInputStream
+		private class FullReaderStream : FilterStream
 		{
-			internal Stream _stream;
-
-			internal FullReaderStream(
-				Stream	inStream,
-				int		bufSize)
+			internal FullReaderStream(Stream input)
+				: base(input)
 			{
-				_stream = inStream;
 			}
 
-			public override int ReadByte()
+			public override int Read(byte[]	buf, int off, int len)
 			{
-				return _stream.ReadByte();
-			}
-
-			public override int Read(
-				byte[]	buf,
-				int		off,
-				int		len)
-			{
-				return Streams.ReadFully(_stream, buf, off, len);
-			}
-
-			public override void Close()
-			{
-				_stream.Close();
-				base.Close();
+				return Streams.ReadFully(base.s, buf, off, len);
 			}
 		}
 	}

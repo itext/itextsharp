@@ -20,6 +20,22 @@ namespace Org.BouncyCastle.Asn1.Cms
             this.date = date;
             this.other = other;
         }
+		
+		public RecipientKeyIdentifier(
+			byte[] subjectKeyIdentifier)
+			: this(subjectKeyIdentifier, null, null)
+		{
+		}
+
+		public RecipientKeyIdentifier(
+			byte[]				subjectKeyIdentifier,
+			DerGeneralizedTime	date,
+			OtherKeyAttribute	other)
+		{
+			this.subjectKeyIdentifier = new DerOctetString(subjectKeyIdentifier);
+			this.date = date;
+			this.other = other;
+		}
 
 		public RecipientKeyIdentifier(
             Asn1Sequence seq)
@@ -76,14 +92,10 @@ namespace Org.BouncyCastle.Asn1.Cms
 			object obj)
 		{
             if (obj == null || obj is RecipientKeyIdentifier)
-			{
                 return (RecipientKeyIdentifier) obj;
-            }
 
 			if (obj is Asn1Sequence)
-			{
 				return new RecipientKeyIdentifier((Asn1Sequence) obj);
-            }
 
 			throw new ArgumentException("Invalid RecipientKeyIdentifier: " + obj.GetType().Name);
         }
@@ -118,17 +130,7 @@ namespace Org.BouncyCastle.Asn1.Cms
         public override Asn1Object ToAsn1Object()
         {
             Asn1EncodableVector v = new Asn1EncodableVector(subjectKeyIdentifier);
-
-			if (date != null)
-            {
-                v.Add(date);
-            }
-
-			if (other != null)
-            {
-                v.Add(other);
-            }
-
+			v.AddOptional(date, other);
 			return new DerSequence(v);
         }
     }

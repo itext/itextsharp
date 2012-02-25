@@ -308,7 +308,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 							/*
 							 * Read the server hello message
 							 */
-							TlsUtilities.CheckVersion(inStr, this);
+							TlsUtilities.CheckVersion(inStr);
 
 							/*
 							 * Read the server random
@@ -461,12 +461,23 @@ namespace Org.BouncyCastle.Crypto.Tls
 				case HandshakeType.server_hello_done:
 					switch (connection_state)
 					{
+						case CS_SERVER_HELLO_RECEIVED:
 						case CS_SERVER_CERTIFICATE_RECEIVED:
 						case CS_SERVER_KEY_EXCHANGE_RECEIVED:
 						case CS_CERTIFICATE_REQUEST_RECEIVED:
 
 							// NB: Original code used case label fall-through
-							if (connection_state == CS_SERVER_CERTIFICATE_RECEIVED)
+
+							if (connection_state == CS_SERVER_HELLO_RECEIVED)
+							{
+								// There was no server certificate message; check it's OK
+								this.keyExchange.SkipServerCertificate();
+								this.authentication = null;
+
+								// There was no server key exchange message; check it's OK
+								this.keyExchange.SkipServerKeyExchange();
+							}
+							else if (connection_state == CS_SERVER_CERTIFICATE_RECEIVED)
 							{
 								// There was no server key exchange message; check it's OK
 								this.keyExchange.SkipServerKeyExchange();
@@ -779,8 +790,15 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			MemoryStream bos = new MemoryStream();
 			TlsUtilities.WriteUint8((byte)HandshakeType.certificate, bos);
+
+			// Reserve space for length
+			TlsUtilities.WriteUint24(0, bos);
+
 			clientCert.Encode(bos);
 			byte[] message = bos.ToArray();
+
+			// Patch actual length back in
+			TlsUtilities.WriteUint24(message.Length - 4, message, 1);
 
 			rs.WriteMessage(ContentType.handshake, message, 0, message.Length);
 		}
@@ -789,8 +807,15 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			MemoryStream bos = new MemoryStream();
             TlsUtilities.WriteUint8((byte)HandshakeType.client_key_exchange, bos);
+
+			// Reserve space for length
+			TlsUtilities.WriteUint24(0, bos);
+
 			this.keyExchange.GenerateClientKeyExchange(bos);
 			byte[] message = bos.ToArray();
+
+			// Patch actual length back in
+			TlsUtilities.WriteUint24(message.Length - 4, message, 1);
 
 			rs.WriteMessage(ContentType.handshake, message, 0, message.Length);
 		}

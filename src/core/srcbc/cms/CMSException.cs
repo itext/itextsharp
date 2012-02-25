@@ -2,24 +2,24 @@ using System;
 
 namespace Org.BouncyCastle.Cms
 {
-    public class CmsException
-        : Exception
-    {
+		public class CmsException
+			: Exception
+		{
 		public CmsException()
 		{
 		}
 
 		public CmsException(
-			string name)
-			: base(name)
-        {
-        }
+			string msg)
+			: base(msg)
+		{
+		}
 
 		public CmsException(
-			string		name,
+			string		msg,
 			Exception	e)
-			: base(name, e)
-        {
-        }
-    }
+			: base(msg, e)
+		{
+		}
+	}
 }

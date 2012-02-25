@@ -12,10 +12,7 @@ namespace Org.BouncyCastle.Crypto.Modes.Gcm
 
 		public void Init(byte[] x)
 		{
-			// Initial value is little-endian 1
-			lookupPowX2[0] = new byte[16];
-			lookupPowX2[0][0] = (byte)0x80;
-
+			lookupPowX2[0] = GcmUtilities.OneAsBytes();
 			lookupPowX2[1] = Arrays.Clone(x); 
 
 			for (int i = 2; i != 64; ++i)
@@ -28,7 +25,6 @@ namespace Org.BouncyCastle.Crypto.Modes.Gcm
 
 		public void ExponentiateX(long pow, byte[] output)
 		{
-			// Initial value is little-endian 1
 			byte[] y = GcmUtilities.OneAsBytes();
 			int powX2 = 1;
 

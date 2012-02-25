@@ -59,16 +59,12 @@ namespace Org.BouncyCastle.Asn1.Cms
             object obj)
         {
             if (obj == null || obj is KekRecipientInfo)
-            {
                 return (KekRecipientInfo)obj;
-            }
 
-            if(obj is Asn1Sequence)
-            {
+			if(obj is Asn1Sequence)
                 return new KekRecipientInfo((Asn1Sequence)obj);
-            }
 
-            throw new ArgumentException("Invalid KekRecipientInfo: " + obj.GetType().Name);
+			throw new ArgumentException("Invalid KekRecipientInfo: " + obj.GetType().Name);
         }
 
 		public DerInteger Version

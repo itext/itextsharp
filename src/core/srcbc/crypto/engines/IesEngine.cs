@@ -224,10 +224,10 @@ namespace Org.BouncyCastle.Crypto.Engines
 
 			BigInteger z = agree.CalculateAgreement(pubParam);
 
-			// TODO Check that this is right (...Unsigned? Check length?)
-			byte[] zBytes = z.ToByteArray();
+			// TODO Is a fixed length result expected?
+			byte[] zBytes = z.ToByteArrayUnsigned();
 
-			return forEncryption
+            return forEncryption
 				?	EncryptBlock(input, inOff, inLen, zBytes)
                 :	DecryptBlock(input, inOff, inLen, zBytes);
         }

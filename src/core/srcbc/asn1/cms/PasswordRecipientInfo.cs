@@ -77,14 +77,10 @@ namespace Org.BouncyCastle.Asn1.Cms
             object obj)
         {
             if (obj == null || obj is PasswordRecipientInfo)
-            {
                 return (PasswordRecipientInfo) obj;
-            }
 
 			if (obj is Asn1Sequence)
-            {
                 return new PasswordRecipientInfo((Asn1Sequence) obj);
-            }
 
 			throw new ArgumentException("Invalid PasswordRecipientInfo: " + obj.GetType().Name);
         }

@@ -75,16 +75,12 @@ namespace Org.BouncyCastle.Asn1.Cms
             object obj)
         {
             if (obj == null || obj is KekIdentifier)
-            {
                 return (KekIdentifier)obj;
-            }
 
-            if (obj is Asn1Sequence)
-            {
+			if (obj is Asn1Sequence)
                 return new KekIdentifier((Asn1Sequence)obj);
-            }
 
-            throw new ArgumentException("Invalid KekIdentifier: " + obj.GetType().Name);
+			throw new ArgumentException("Invalid KekIdentifier: " + obj.GetType().Name);
         }
 
 		public Asn1OctetString KeyIdentifier
@@ -115,17 +111,7 @@ namespace Org.BouncyCastle.Asn1.Cms
         public override Asn1Object ToAsn1Object()
         {
             Asn1EncodableVector v = new Asn1EncodableVector(keyIdentifier);
-
-			if (date != null)
-            {
-                v.Add(date);
-            }
-
-			if (other != null)
-            {
-                v.Add(other);
-            }
-
+			v.AddOptional(date, other);
 			return new DerSequence(v);
         }
     }

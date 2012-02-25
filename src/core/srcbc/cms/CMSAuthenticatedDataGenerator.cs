@@ -9,6 +9,7 @@ using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.IO;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities.IO;
 
 namespace Org.BouncyCastle.Cms
 {
@@ -49,18 +50,18 @@ namespace Org.BouncyCastle.Cms
 	     * generate an enveloped object that contains an CMS Enveloped Data
 	     * object using the given provider and the passed in key generator.
 	     */
-	    private CmsAuthenticatedData Generate(
-	        CmsProcessable		content,
-	        string				macOid,
-	        CipherKeyGenerator	keyGen)
-	    {
-	        AlgorithmIdentifier macAlgId;
-	        KeyParameter encKey;
-	        Asn1OctetString encContent;
-	        Asn1OctetString macResult;
+		private CmsAuthenticatedData Generate(
+			CmsProcessable		content,
+			string				macOid,
+			CipherKeyGenerator	keyGen)
+		{
+			AlgorithmIdentifier macAlgId;
+			KeyParameter encKey;
+			Asn1OctetString encContent;
+			Asn1OctetString macResult;
 
-	        try
-	        {
+			try
+			{
 				// FIXME Will this work for macs?
 				byte[] encKeyBytes = keyGen.GenerateKey();
 				encKey = ParameterUtilities.CreateKeyParameter(macOid, encKeyBytes);
@@ -69,27 +70,27 @@ namespace Org.BouncyCastle.Cms
 
 				ICipherParameters cipherParameters;
 				macAlgId = GetAlgorithmIdentifier(
-					macOid, encKey, asn1Params, out cipherParameters);
-				
-	            IMac mac = MacUtilities.GetMac(macOid);
+				macOid, encKey, asn1Params, out cipherParameters);
+
+				IMac mac = MacUtilities.GetMac(macOid);
 				// TODO Confirm no ParametersWithRandom needed
 				// FIXME Only passing key at the moment
 //	            mac.Init(cipherParameters);
-	            mac.Init(encKey);
+				mac.Init(encKey);
 
 				MemoryStream bOut = new MemoryStream();
-	            MacStream mOut = new MacStream(bOut, null, mac);
+				Stream mOut = new TeeOutputStream(bOut, new MacOutputStream(mac));
 
-	            content.Write(mOut);
+				content.Write(mOut);
 
-	            mOut.Close();
-	            bOut.Close();
+				mOut.Close();
+				bOut.Close();
 
-	            encContent = new BerOctetString(bOut.ToArray());
+				encContent = new BerOctetString(bOut.ToArray());
 
-				byte[] macOctets = MacUtilities.DoFinal(mOut.WriteMac());
-	            macResult = new DerOctetString(macOctets);
-	        }
+				byte[] macOctets = MacUtilities.DoFinal(mac);
+				macResult = new DerOctetString(macOctets);
+			}
 			catch (SecurityUtilityException e)
 			{
 				throw new CmsException("couldn't create cipher.", e);
@@ -103,33 +104,32 @@ namespace Org.BouncyCastle.Cms
 				throw new CmsException("exception decoding algorithm parameters.", e);
 			}
 
-
-	        Asn1EncodableVector recipientInfos = new Asn1EncodableVector();
+			Asn1EncodableVector recipientInfos = new Asn1EncodableVector();
 
 			foreach (RecipientInfoGenerator rig in recipientInfoGenerators) 
-	        {
-	            try
-	            {
-	                recipientInfos.Add(rig.Generate(encKey, rand));
-	            }
-	            catch (InvalidKeyException e)
-	            {
-	                throw new CmsException("key inappropriate for algorithm.", e);
-	            }
-	            catch (GeneralSecurityException e)
-	            {
-	                throw new CmsException("error making encrypted content.", e);
-	            }
-	        }
-
-	        ContentInfo eci = new ContentInfo(CmsObjectIdentifiers.Data, encContent);
-
-	        ContentInfo contentInfo = new ContentInfo(
-	        	CmsObjectIdentifiers.AuthenticatedData,
-				new AuthenticatedData(null, new DerSet(recipientInfos), macAlgId, null, eci, null, macResult, null));
-
-	        return new CmsAuthenticatedData(contentInfo);
-	    }
+			{
+				try
+				{
+					recipientInfos.Add(rig.Generate(encKey, rand));
+				}
+				catch (InvalidKeyException e)
+				{
+					throw new CmsException("key inappropriate for algorithm.", e);
+				}
+				catch (GeneralSecurityException e)
+				{
+					throw new CmsException("error making encrypted content.", e);
+				}
+			}
+			
+			ContentInfo eci = new ContentInfo(CmsObjectIdentifiers.Data, encContent);
+			
+			ContentInfo contentInfo = new ContentInfo(
+			CmsObjectIdentifiers.AuthenticatedData,
+			new AuthenticatedData(null, new DerSet(recipientInfos), macAlgId, null, eci, null, macResult, null));
+			
+			return new CmsAuthenticatedData(contentInfo);
+		}
 
 	    /**
 	     * generate an authenticated object that contains an CMS Authenticated Data object

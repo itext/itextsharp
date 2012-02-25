@@ -140,6 +140,11 @@ namespace Org.BouncyCastle.Asn1.Tsp
 			this.extensions = extensions;
 		}
 
+        public DerInteger Version
+        {
+            get { return version; }
+        }
+
 		public MessageImprint MessageImprint
 		{
 			get { return messageImprint; }

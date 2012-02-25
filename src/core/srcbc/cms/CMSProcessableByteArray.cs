@@ -17,7 +17,7 @@ namespace Org.BouncyCastle.Cms
 			this.bytes = bytes;
 		}
 
-		public virtual Stream Read()
+		public Stream GetInputStream()
 		{
 			return new MemoryStream(bytes, false);
 		}

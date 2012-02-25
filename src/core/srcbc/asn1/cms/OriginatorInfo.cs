@@ -74,14 +74,10 @@ namespace Org.BouncyCastle.Asn1.Cms
             object obj)
         {
             if (obj == null || obj is OriginatorInfo)
-            {
                 return (OriginatorInfo)obj;
-            }
 
 			if (obj is Asn1Sequence)
-            {
                 return new OriginatorInfo((Asn1Sequence)obj);
-            }
 
 			throw new ArgumentException("Invalid OriginatorInfo: " + obj.GetType().Name);
         }

@@ -45,14 +45,10 @@ namespace Org.BouncyCastle.Asn1.Cms
             object obj)
         {
             if (obj == null || obj is EncryptedContentInfo)
-            {
                 return (EncryptedContentInfo)obj;
-            }
 
 			if (obj is Asn1Sequence)
-            {
                 return new EncryptedContentInfo((Asn1Sequence)obj);
-            }
 
 			throw new ArgumentException("Invalid EncryptedContentInfo: " + obj.GetType().Name);
         }

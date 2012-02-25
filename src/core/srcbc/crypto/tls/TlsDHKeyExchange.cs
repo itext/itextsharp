@@ -4,12 +4,8 @@ using System.IO;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
-using Org.BouncyCastle.Crypto.Agreement;
-using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Crypto.Parameters;
-using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
-using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
@@ -159,11 +155,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			 * Diffie-Hellman key, then Yc is implicit and does not need to be sent again. In
 			 * this case, the Client Key Exchange message will be sent, but will be empty.
 			 */
-			if (agreementCredentials != null)
-			{
-				TlsUtilities.WriteUint24(0, output);
-			}
-			else
+			if (agreementCredentials == null)
 			{
 				GenerateEphemeralClientKeyExchange(dhAgreeServerPublicKey.Parameters, output);
 			}
@@ -187,53 +179,23 @@ namespace Org.BouncyCastle.Crypto.Tls
 		protected virtual byte[] CalculateDHBasicAgreement(DHPublicKeyParameters publicKey,
 			DHPrivateKeyParameters privateKey)
 		{
-			DHBasicAgreement dhAgree = new DHBasicAgreement();
-			dhAgree.Init(dhAgreeClientPrivateKey);
-			BigInteger agreement = dhAgree.CalculateAgreement(dhAgreeServerPublicKey);
-			return BigIntegers.AsUnsignedByteArray(agreement);
+			return TlsDHUtilities.CalculateDHBasicAgreement(publicKey, privateKey);
 		}
 
 		protected virtual AsymmetricCipherKeyPair GenerateDHKeyPair(DHParameters dhParams)
 		{
-			DHBasicKeyPairGenerator dhGen = new DHBasicKeyPairGenerator();
-			dhGen.Init(new DHKeyGenerationParameters(context.SecureRandom, dhParams));
-			return dhGen.GenerateKeyPair();
+			return TlsDHUtilities.GenerateDHKeyPair(context.SecureRandom, dhParams);
 		}
 
 		protected virtual void GenerateEphemeralClientKeyExchange(DHParameters dhParams, Stream output)
 		{
-			AsymmetricCipherKeyPair dhAgreeClientKeyPair = GenerateDHKeyPair(dhParams);
-			this.dhAgreeClientPrivateKey = (DHPrivateKeyParameters)dhAgreeClientKeyPair.Private;
-
-			BigInteger Yc = ((DHPublicKeyParameters)dhAgreeClientKeyPair.Public).Y;
-			byte[] keData = BigIntegers.AsUnsignedByteArray(Yc);
-			TlsUtilities.WriteUint24(keData.Length + 2, output);
-			TlsUtilities.WriteOpaque16(keData, output);
+			this.dhAgreeClientPrivateKey = TlsDHUtilities.GenerateEphemeralClientKeyExchange(
+				context.SecureRandom, dhParams, output);
 		}
 
 		protected virtual DHPublicKeyParameters ValidateDHPublicKey(DHPublicKeyParameters key)
 		{
-			BigInteger Y = key.Y;
-			DHParameters parameters = key.Parameters;
-			BigInteger p = parameters.P;
-			BigInteger g = parameters.G;
-
-			if (!p.IsProbablePrime(2))
-			{
-				throw new TlsFatalAlert(AlertDescription.illegal_parameter);
-			}
-			if (g.CompareTo(BigInteger.Two) < 0 || g.CompareTo(p.Subtract(BigInteger.Two)) > 0)
-			{
-				throw new TlsFatalAlert(AlertDescription.illegal_parameter);
-			}
-			if (Y.CompareTo(BigInteger.Two) < 0 || Y.CompareTo(p.Subtract(BigInteger.One)) > 0)
-			{
-				throw new TlsFatalAlert(AlertDescription.illegal_parameter);
-			}
-
-			// TODO See RFC 2631 for more discussion of Diffie-Hellman validation
-
-			return key;
+			return TlsDHUtilities.ValidateDHPublicKey(key);
 		}
 	}
 }

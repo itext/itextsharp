@@ -81,13 +81,17 @@ namespace Org.BouncyCastle.Cms
 
         private void DoCreateStandardAttributeTable(IDictionary parameters, IDictionary std)
         {
-            if (!std.Contains(CmsAttributes.ContentType))
+            // contentType will be absent if we're trying to generate a counter signature.
+            if (parameters.Contains(CmsAttributeTableParameter.ContentType))
             {
-                DerObjectIdentifier contentType = (DerObjectIdentifier)
-                    parameters[CmsAttributeTableParameter.ContentType];
-                Asn1.Cms.Attribute attr = new Asn1.Cms.Attribute(CmsAttributes.ContentType,
-                    new DerSet(contentType));
-                std[attr.AttrType] = attr;
+                if (!std.Contains(CmsAttributes.ContentType))
+                {
+                    DerObjectIdentifier contentType = (DerObjectIdentifier)
+                        parameters[CmsAttributeTableParameter.ContentType];
+                    Asn1.Cms.Attribute attr = new Asn1.Cms.Attribute(CmsAttributes.ContentType,
+                        new DerSet(contentType));
+                    std[attr.AttrType] = attr;
+                }
             }
 
             if (!std.Contains(CmsAttributes.SigningTime))
@@ -106,7 +110,7 @@ namespace Org.BouncyCastle.Cms
             }
         }
 
-		/**
+        /**
 		 * @param parameters source parameters
 		 * @return the populated attribute table
 		 */

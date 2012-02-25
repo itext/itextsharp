@@ -33,17 +33,13 @@ namespace Org.BouncyCastle.Asn1.X509
 		public static RoleSyntax GetInstance(
 			object obj)
 		{
-			if (obj == null || obj is RoleSyntax)
-			{
-				return (RoleSyntax) obj;
-			}
+			if (obj is RoleSyntax)
+				return (RoleSyntax)obj;
 
-			if (obj is Asn1Sequence)
-			{
-				return new RoleSyntax((Asn1Sequence) obj);
-			}
+			if (obj != null)
+				return new RoleSyntax(Asn1Sequence.GetInstance(obj));
 
-			throw new ArgumentException("unknown object in 'RoleSyntax' factory: " + obj.GetType().Name, "obj");
+			return null;
 		}
 
 		/**

@@ -84,10 +84,7 @@ namespace Org.BouncyCastle.Crypto.Modes.Gcm
 				z[3] ^= m[3];
 			}
 
-			Pack.UInt32_To_BE(z[0], x, 0);
-			Pack.UInt32_To_BE(z[1], x, 4);
-			Pack.UInt32_To_BE(z[2], x, 8);
-			Pack.UInt32_To_BE(z[3], x, 12);
+			Pack.UInt32_To_BE(z, x, 0);
 		}
 	}
 }

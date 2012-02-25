@@ -13,6 +13,7 @@ using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Generators;
 using Org.BouncyCastle.Utilities;
+using Org.BouncyCastle.Utilities.Collections;
 
 namespace Org.BouncyCastle.Security
 {
@@ -24,6 +25,7 @@ namespace Org.BouncyCastle.Security
 
 		private static readonly IDictionary kgAlgorithms = Platform.CreateHashtable();
         private static readonly IDictionary kpgAlgorithms = Platform.CreateHashtable();
+		private static readonly IDictionary defaultKeySizes = Platform.CreateHashtable();
 
 		static GeneratorUtilities()
 		{
@@ -162,6 +164,28 @@ namespace Org.BouncyCastle.Security
 				"GOST-3410-94");
 			AddKpgAlgorithm("RSA",
 				"1.2.840.113549.1.1.1");
+
+			AddDefaultKeySizeEntries(64, "DES");
+			AddDefaultKeySizeEntries(80, "SKIPJACK");
+			AddDefaultKeySizeEntries(128, "AES128", "BLOWFISH", "CAMELLIA128", "CAST5", "DESEDE",
+				"HC128", "HMACMD2", "HMACMD4", "HMACMD5", "HMACRIPEMD128", "IDEA", "NOEKEON",
+				"RC2", "RC4", "RC5", "SALSA20", "SEED", "TEA", "XTEA", "VMPC", "VMPC-KSA3");
+			AddDefaultKeySizeEntries(160, "HMACRIPEMD160", "HMACSHA1");
+			AddDefaultKeySizeEntries(192, "AES", "AES192", "CAMELLIA192", "DESEDE3", "HMACTIGER",
+				"RIJNDAEL", "SERPENT");
+			AddDefaultKeySizeEntries(224, "HMACSHA224");
+			AddDefaultKeySizeEntries(256, "AES256", "CAMELLIA", "CAMELLIA256", "CAST6", "GOST28147",
+				"HC256", "HMACSHA256", "RC5-64", "RC6", "TWOFISH");
+			AddDefaultKeySizeEntries(384, "HMACSHA384");
+			AddDefaultKeySizeEntries(512, "HMACSHA512");
+		}
+
+		private static void AddDefaultKeySizeEntries(int size, params string[] algorithms)
+		{
+			foreach (string algorithm in algorithms)
+			{
+				defaultKeySizes.Add(algorithm, size);
+			}
 		}
 
 		private static void AddKgAlgorithm(
@@ -237,16 +261,13 @@ namespace Org.BouncyCastle.Security
 				throw new SecurityUtilityException("KeyGenerator " + algorithm
 					+ " (" + canonicalName + ") not supported.");
 
-			switch (canonicalName)
-			{
-				case "DES":
-					return new DesKeyGenerator(defaultKeySize);
-				case "DESEDE":
-				case "DESEDE3":
-					return new DesEdeKeyGenerator(defaultKeySize);
-				default:
-					return new CipherKeyGenerator(defaultKeySize);
-			}
+			if (canonicalName == "DES")
+				return new DesKeyGenerator(defaultKeySize);
+
+			if (canonicalName == "DESEDE" || canonicalName == "DESEDE3")
+				return new DesEdeKeyGenerator(defaultKeySize);
+
+			return new CipherKeyGenerator(defaultKeySize);
 		}
 
 		public static IAsymmetricCipherKeyPairGenerator GetKeyPairGenerator(
@@ -263,28 +284,24 @@ namespace Org.BouncyCastle.Security
 			if (canonicalName == null)
 				throw new SecurityUtilityException("KeyPairGenerator " + algorithm + " not recognised.");
 
-			switch (canonicalName)
-			{
-				case "DH":
-					return new DHKeyPairGenerator();
-				case "DSA":
-					return new DsaKeyPairGenerator();
-				case "EC":
-				case "ECDH":
-				case "ECDHC":
-				case "ECDSA":
-				case "ECGOST3410":
-				case "ECMQV":
-					return new ECKeyPairGenerator(canonicalName);
-				case "ELGAMAL":
-					return new ElGamalKeyPairGenerator();
-				case "GOST3410":
-					return new Gost3410KeyPairGenerator();
-				case "RSA":
-					return new RsaKeyPairGenerator();
-				default:
-					break;
-			}
+			if (canonicalName == "DH")
+				return new DHKeyPairGenerator();
+
+			if (canonicalName == "DSA")
+				return new DsaKeyPairGenerator();
+
+			// "EC", "ECDH", "ECDHC", "ECDSA", "ECGOST3410", "ECMQV"
+			if (canonicalName.StartsWith("EC"))
+				return new ECKeyPairGenerator(canonicalName);
+
+			if (canonicalName == "ELGAMAL")
+				return new ElGamalKeyPairGenerator();
+
+			if (canonicalName == "GOST3410")
+				return new Gost3410KeyPairGenerator();
+
+			if (canonicalName == "RSA")
+				return new RsaKeyPairGenerator();
 
 			throw new SecurityUtilityException("KeyPairGenerator " + algorithm
 				+ " (" + canonicalName + ") not supported.");
@@ -315,65 +332,10 @@ namespace Org.BouncyCastle.Security
 		private static int FindDefaultKeySize(
 			string canonicalName)
 		{
-			switch (canonicalName)
-			{
-				case "DES":
-					return 64;
-				case "SKIPJACK":
-					return 80;
-				case "AES128":
-				case "BLOWFISH":
-				case "CAMELLIA128":
-				case "CAST5":
-				case "DESEDE":
-				case "HC128":
-				case "HMACMD2":
-				case "HMACMD4":
-				case "HMACMD5":
-				case "HMACRIPEMD128":
-				case "IDEA":
-				case "NOEKEON":
-				case "RC2":
-				case "RC4":
-				case "RC5":
-				case "SALSA20":
-				case "SEED":
-				case "TEA":
-				case "XTEA":
-				case "VMPC":
-				case "VMPC-KSA3":
-					return 128;
-				case "HMACRIPEMD160":
-				case "HMACSHA1":
-					return 160;
-				case "AES":
-				case "AES192":
-				case "CAMELLIA192":
-				case "DESEDE3":
-				case "HMACTIGER":
-				case "RIJNDAEL":
-				case "SERPENT":
-					return 192;
-				case "HMACSHA224":
-					return 224;
-				case "AES256":
-				case "CAMELLIA":
-				case "CAMELLIA256":
-				case "CAST6":
-				case "GOST28147":
-				case "HC256":
-				case "HMACSHA256":
-				case "RC5-64":
-				case "RC6":
-				case "TWOFISH":
-					return 256;
-				case "HMACSHA384":
-					return 384;
-				case "HMACSHA512":
-					return 512;
-				default:
-					return -1;
-			}
+			if (!defaultKeySizes.Contains(canonicalName))
+				return -1;
+
+			return (int)defaultKeySizes[canonicalName];
 		}
 	}
 }

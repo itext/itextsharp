@@ -4,6 +4,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Macs;
+using Org.BouncyCastle.Crypto.Utilities;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
 
@@ -20,13 +21,19 @@ namespace Org.BouncyCastle.Crypto.Generators
 	public class Pkcs5S2ParametersGenerator
 		: PbeParametersGenerator
 	{
-		private readonly IMac hMac = new HMac(new Sha1Digest());
+		private readonly IMac hMac;
 
 		/**
 		* construct a Pkcs5 Scheme 2 Parameters generator.
 		*/
 		public Pkcs5S2ParametersGenerator()
+			: this(new Sha1Digest())
 		{
+		}
+
+		public Pkcs5S2ParametersGenerator(IDigest digest)
+		{
+			hMac = new HMac(digest);
 		}
 
 		private void F(
@@ -66,16 +73,6 @@ namespace Org.BouncyCastle.Crypto.Generators
 			}
 		}
 
-		private void IntToOctet(
-			byte[]  Buffer,
-			int     i)
-		{
-			Buffer[0] = (byte)((uint) i >> 24);
-			Buffer[1] = (byte)((uint) i >> 16);
-			Buffer[2] = (byte)((uint) i >> 8);
-			Buffer[3] = (byte)i;
-		}
-
 		private byte[] GenerateDerivedKey(
 			int dkLen)
 		{
@@ -86,7 +83,7 @@ namespace Org.BouncyCastle.Crypto.Generators
 
 			for (int i = 1; i <= l; i++)
 			{
-				IntToOctet(iBuf, i);
+				Pack.UInt32_To_BE((uint)i, iBuf);
 
 				F(mPassword, mSalt, mIterationCount, iBuf, outBytes, (i - 1) * hLen);
 			}

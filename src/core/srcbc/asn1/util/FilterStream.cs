@@ -62,6 +62,6 @@ namespace Org.BouncyCastle.Asn1.Utilities
         {
             s.WriteByte(value);
         }
-        private readonly Stream s;
+        protected readonly Stream s;
     }
 }

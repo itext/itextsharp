@@ -141,8 +141,8 @@ namespace Org.BouncyCastle.Math
 			for (int i = 0; i < primeLists.Length; ++i)
 			{
 				int[] primeList = primeLists[i];
-				int product = 1;
-				for (int j = 0; j < primeList.Length; ++j)
+				int product = primeList[0];
+				for (int j = 1; j < primeList.Length; ++j)
 				{
 					product *= primeList[j];
 				}
@@ -162,10 +162,6 @@ namespace Org.BouncyCastle.Math
 			return (nBits + BitsPerByte - 1) / BitsPerByte;
 		}
 
-		private BigInteger()
-		{
-		}
-
 		private BigInteger(
 			int		signum,
 			int[]	mag,
@@ -181,7 +177,7 @@ namespace Org.BouncyCastle.Math
 
 				if (i == mag.Length)
 				{
-//					this.sign = 0;
+					this.sign = 0;
 					this.magnitude = ZeroMagnitude;
 				}
 				else
@@ -508,7 +504,7 @@ namespace Org.BouncyCastle.Math
 
 			if (sign == 0)
 			{
-				//this.sign = 0;
+				this.sign = 0;
 				this.magnitude = ZeroMagnitude;
 			}
 			else
@@ -531,7 +527,7 @@ namespace Org.BouncyCastle.Math
 
 			if (sizeInBits == 0)
 			{
-//				this.sign = 0;
+				this.sign = 0;
 				this.magnitude = ZeroMagnitude;
 				return;
 			}
@@ -1545,17 +1541,15 @@ namespace Org.BouncyCastle.Math
 //				}
 //			}
 
-			BigInteger x = new BigInteger();
-			BigInteger gcd = ExtEuclid(this.Mod(m), m, x, null);
+            BigInteger x;
+            BigInteger gcd = ExtEuclid(this.Mod(m), m, out x);
 
 			if (!gcd.Equals(One))
 				throw new ArithmeticException("Numbers not relatively prime.");
 
 			if (x.sign < 0)
 			{
-				x.sign = 1;
-				//x = m.Subtract(x);
-				x.magnitude = doSubBigLil(m.magnitude, x.magnitude);
+                x = x.Add(m);
 			}
 
 			return x;
@@ -1579,10 +1573,10 @@ namespace Org.BouncyCastle.Math
 		 * @return     The greatest common divisor of a and b
 		 */
 		private static BigInteger ExtEuclid(
-			BigInteger	a,
-			BigInteger	b,
-			BigInteger	u1Out,
-			BigInteger	u2Out)
+			BigInteger	    a,
+			BigInteger	    b,
+			out BigInteger  u1Out)
+            //BigInteger	    u2Out)
 		{
 			BigInteger u1 = One;
 			BigInteger u3 = a;
@@ -1602,20 +1596,21 @@ namespace Org.BouncyCastle.Math
 				v3 = q[1];
 			}
 
-			if (u1Out != null)
-			{
-				u1Out.sign = u1.sign;
-				u1Out.magnitude = u1.magnitude;
-			}
+            //if (u1Out != null)
+            //{
+            //    u1Out.sign = u1.sign;
+            //    u1Out.magnitude = u1.magnitude;
+            //}
+            u1Out = u1;
 
-			if (u2Out != null)
-			{
-				BigInteger tmp = u1.Multiply(a);
-				tmp = u3.Subtract(tmp);
-				BigInteger res = tmp.Divide(b);
-				u2Out.sign = res.sign;
-				u2Out.magnitude = res.magnitude;
-			}
+            //if (u2Out != null)
+            //{
+            //    BigInteger tmp = u1.Multiply(a);
+            //    tmp = u3.Subtract(tmp);
+            //    BigInteger res = tmp.Divide(b);
+            //    u2Out.sign = res.sign;
+            //    u2Out.magnitude = res.magnitude;
+            //}
 
 			return u3;
 		}
@@ -1880,37 +1875,35 @@ namespace Org.BouncyCastle.Math
 
 			int xBase = x.Length - y.Length;
 
-			for (;;)
+			do
 			{
 				long a = z[--i] & IMASK;
 				long val = 0;
 
-				for (int j = y.Length - 1; j >= 0; j--)
+				if (a != 0)
 				{
-					val += a * (y[j] & IMASK) + (x[xBase + j] & IMASK);
-
-					x[xBase + j] = (int)val;
-
-					val = (long)((ulong)val >> 32);
+					for (int j = y.Length - 1; j >= 0; j--)
+					{
+						val += a * (y[j] & IMASK) + (x[xBase + j] & IMASK);
+	
+						x[xBase + j] = (int)val;
+	
+						val = (long)((ulong)val >> 32);
+					}
 				}
 
 				--xBase;
 
-				if (i < 1)
+				if (xBase >= 0)
 				{
-					if (xBase >= 0)
-					{
-						x[xBase] = (int)val;
-					}
-					else
-					{
-						Debug.Assert(val == 0);
-					}
-					break;
+					x[xBase] = (int)val;
 				}
-
-				x[xBase] = (int)val;
+				else
+				{
+					Debug.Assert(val == 0);
+				}
 			}
+			while (i > 0);
 
 			return x;
 		}

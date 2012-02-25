@@ -10,12 +10,12 @@ namespace Org.BouncyCastle.Utilities.Collections
 		{
 		}
 
-		public void Add(object k, object v)
+		public virtual void Add(object k, object v)
 		{
 			throw new NotSupportedException();
 		}
 
-		public void Clear()
+		public virtual void Clear()
 		{
 			throw new NotSupportedException();
 		}
@@ -33,17 +33,14 @@ namespace Org.BouncyCastle.Utilities.Collections
 
 		public abstract IDictionaryEnumerator GetEnumerator();
 
-		public void Remove(object k)
+		public virtual void Remove(object k)
 		{
 			throw new NotSupportedException();
 		}
 
-		public bool IsFixedSize
-		{
-			get { return true; }
-		}
+		public abstract bool IsFixedSize { get; }
 
-		public bool IsReadOnly
+		public virtual bool IsReadOnly
 		{
 			get { return true; }
 		}
@@ -56,7 +53,7 @@ namespace Org.BouncyCastle.Utilities.Collections
 
 		public abstract ICollection Values { get; }
 
-		public object this[object k]
+		public virtual object this[object k]
 		{
 			get { return GetValue(k); }
 			set { throw new NotSupportedException(); }

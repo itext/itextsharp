@@ -4,12 +4,12 @@ using Org.BouncyCastle.Crypto;
 
 namespace Org.BouncyCastle.Crypto
 {
-    public class AsymmetricKeyParameter
+    public abstract class AsymmetricKeyParameter
 		: ICipherParameters
     {
         private readonly bool privateKey;
 
-        public AsymmetricKeyParameter(
+        protected AsymmetricKeyParameter(
             bool privateKey)
         {
             this.privateKey = privateKey;

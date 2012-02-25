@@ -5,6 +5,7 @@ using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Macs;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
@@ -15,6 +16,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 	public class TlsMac
 	{
 		protected long seqNo;
+		protected byte[] secret;
 		protected HMac mac;
 
 		/**
@@ -31,10 +33,38 @@ namespace Org.BouncyCastle.Crypto.Tls
 			int		offset,
 			int		len)
 		{
-			this.mac = new HMac(digest);
-			KeyParameter param = new KeyParameter(key_block, offset, len);
-			this.mac.Init(param);
 			this.seqNo = 0;
+
+			KeyParameter param = new KeyParameter(key_block, offset, len);
+
+			this.secret = Arrays.Clone(param.GetKey());
+
+			this.mac = new HMac(digest);
+			this.mac.Init(param);
+		}
+
+		/**
+		 * @return the MAC write secret
+		 */
+		public virtual byte[] GetMacSecret()
+		{
+			return this.secret;
+		}
+
+		/**
+		 * @return the current write sequence number
+		 */
+		public virtual long SequenceNumber
+		{
+			get { return this.seqNo; }
+		}
+
+		/**
+		 * Increment the current write sequence number
+		 */
+		public virtual void IncSequenceNumber()
+		{
+			this.seqNo++;
 		}
 
 		/**

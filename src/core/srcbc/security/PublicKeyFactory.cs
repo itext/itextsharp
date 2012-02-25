@@ -129,33 +129,29 @@ namespace Org.BouncyCastle.Security
 			}
 			else if (algOid.Equals(X9ObjectIdentifiers.IdECPublicKey))
 			{
-				X962Parameters para = new X962Parameters(
-					algID.Parameters.ToAsn1Object());
-				X9ECParameters ecP;
+				X962Parameters para = new X962Parameters(algID.Parameters.ToAsn1Object());
 
+                X9ECParameters x9;
 				if (para.IsNamedCurve)
 				{
-					ecP = ECKeyPairGenerator.FindECCurveByOid((DerObjectIdentifier)para.Parameters);
+					x9 = ECKeyPairGenerator.FindECCurveByOid((DerObjectIdentifier)para.Parameters);
 				}
 				else
 				{
-					ecP = new X9ECParameters((Asn1Sequence)para.Parameters);
+					x9 = new X9ECParameters((Asn1Sequence)para.Parameters);
 				}
 
-				ECDomainParameters dParams = new ECDomainParameters(
-					ecP.Curve,
-					ecP.G,
-					ecP.N,
-					ecP.H,
-					ecP.GetSeed());
+                Asn1OctetString key = new DerOctetString(keyInfo.PublicKeyData.GetBytes());
+                X9ECPoint derQ = new X9ECPoint(x9.Curve, key);
+                ECPoint q = derQ.Point;
 
-				DerBitString bits = keyInfo.PublicKeyData;
-				byte[] data = bits.GetBytes();
-				Asn1OctetString key = new DerOctetString(data);
+                if (para.IsNamedCurve)
+                {
+                    return new ECPublicKeyParameters("EC", q, (DerObjectIdentifier)para.Parameters);
+                }
 
-				X9ECPoint derQ = new X9ECPoint(dParams.Curve, key);
-
-				return new ECPublicKeyParameters(derQ.Point, dParams);
+                ECDomainParameters dParams = new ECDomainParameters(x9.Curve, x9.G, x9.N, x9.H, x9.GetSeed());
+				return new ECPublicKeyParameters(q, dParams);
 			}
 			else if (algOid.Equals(CryptoProObjectIdentifiers.GostR3410x2001))
 			{

@@ -147,7 +147,7 @@ namespace Org.BouncyCastle.Math.EC
 				// z = g^(u+1) + p, p = 4u + 3
 				ECFieldElement z = new FpFieldElement(q, x.ModPow(q.ShiftRight(2).Add(BigInteger.One), q));
 
-				return z.Square().Equals(this) ? z : null;
+                return this.Equals(z.Square()) ? z : null;
 			}
 
 			// p mod 4 == 1

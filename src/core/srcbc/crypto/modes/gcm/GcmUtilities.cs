@@ -75,9 +75,19 @@ namespace Org.BouncyCastle.Crypto.Modes.Gcm
 
 		internal static void MultiplyP8(uint[] x)
 		{
-			for (int i = 8; i != 0; --i)
+//			for (int i = 8; i != 0; --i)
+//			{
+//				MultiplyP(x);
+//			}
+
+			uint lsw = x[3];
+			ShiftRightN(x, 8);
+			for (int i = 7; i >= 0; --i)
 			{
-				MultiplyP(x);
+				if ((lsw & (1 << i)) != 0)
+				{
+					x[0] ^= (0xe1000000 >> (7 - i));
+				}
 			}
 		}
 
@@ -104,6 +114,19 @@ namespace Org.BouncyCastle.Crypto.Modes.Gcm
 				block[i] = (b >> 1) | bit;
 				if (++i == 4) break;
 				bit = b << 31;
+			}
+		}
+
+		internal static void ShiftRightN(uint[] block, int n)
+		{
+			int i = 0;
+			uint bit = 0;
+			for (;;)
+			{
+				uint b = block[i];
+				block[i] = (b >> n) | bit;
+				if (++i == 4) break;
+				bit = b << (32 - n);
 			}
 		}
 

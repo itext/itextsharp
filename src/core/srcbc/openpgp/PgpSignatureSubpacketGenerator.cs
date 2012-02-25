@@ -155,6 +155,31 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			list.Add(new NotationData(isCritical, isHumanReadable, notationName, notationValue));
 		}
 
+		/// <summary>
+		/// Sets revocation reason sub packet
+		/// </summary>	    
+		public void SetRevocationReason(bool isCritical, RevocationReasonTag reason,
+			string description)
+		{
+			list.Add(new RevocationReason(isCritical, reason, description));
+		}
+
+		/// <summary>
+		/// Sets revocation key sub packet
+		/// </summary>	
+		public void SetRevocationKey(bool isCritical, PublicKeyAlgorithmTag keyAlgorithm, byte[] fingerprint)
+		{
+			list.Add(new RevocationKey(isCritical, RevocationKeyTag.ClassDefault, keyAlgorithm, fingerprint));
+		}
+
+		/// <summary>
+		/// Sets issuer key sub packet
+		/// </summary>	
+		public void SetIssuerKeyID(bool isCritical, long keyID)
+		{
+			list.Add(new IssuerKeyId(isCritical, keyID));
+		}    
+
 		public PgpSignatureSubpacketVector Generate()
         {
             SignatureSubpacket[] a = new SignatureSubpacket[list.Count];

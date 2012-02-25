@@ -13,6 +13,7 @@ using Org.BouncyCastle.Crypto.IO;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Security.Certificates;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.IO;
 using Org.BouncyCastle.X509;
 
@@ -169,7 +170,7 @@ namespace Org.BouncyCastle.Cms
 				cipher.Init(true, new ParametersWithRandom(cipherParameters, rand));
 				CipherStream cOut = new CipherStream(octetOutputStream, null, cipher);
 
-				return new CmsEnvelopedDataOutputStream(cOut, cGen, envGen, eiGen);
+				return new CmsEnvelopedDataOutputStream(this, cOut, cGen, envGen, eiGen);
 			}
 			catch (SecurityUtilityException e)
 			{
@@ -219,17 +220,21 @@ namespace Org.BouncyCastle.Cms
 		private class CmsEnvelopedDataOutputStream
 			: BaseOutputStream
 		{
+            private readonly CmsEnvelopedGenerator _outer;
+
 			private readonly CipherStream			_out;
 			private readonly BerSequenceGenerator	_cGen;
 			private readonly BerSequenceGenerator	_envGen;
 			private readonly BerSequenceGenerator	_eiGen;
 
 			public CmsEnvelopedDataOutputStream(
+				CmsEnvelopedGenerator	outer,
 				CipherStream			outStream,
 				BerSequenceGenerator	cGen,
 				BerSequenceGenerator	envGen,
 				BerSequenceGenerator	eiGen)
 			{
+				_outer = outer;
 				_out = outStream;
 				_cGen = cGen;
 				_envGen = envGen;
@@ -253,9 +258,19 @@ namespace Org.BouncyCastle.Cms
 			public override void Close()
 			{
 				_out.Close();
+
+				// TODO Parent context(s) should really be be closed explicitly
+
 				_eiGen.Close();
 
-				// [TODO] unprotected attributes go here
+                if (_outer.unprotectedAttributeGenerator != null)
+                {
+                    Asn1.Cms.AttributeTable attrTable = _outer.unprotectedAttributeGenerator.GetAttributes(Platform.CreateHashtable());
+
+                    Asn1Set unprotectedAttrs = new BerSet(attrTable.ToAsn1EncodableVector());
+
+                    _envGen.AddObject(new DerTaggedObject(false, 1, unprotectedAttrs));
+                }
 
 				_envGen.Close();
 				_cGen.Close();

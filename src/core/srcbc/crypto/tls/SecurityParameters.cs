@@ -1,23 +1,26 @@
 using System;
 
-public class SecurityParameters
+namespace Org.BouncyCastle.Crypto.Tls
 {
-    internal byte[] clientRandom = null;
-    internal byte[] serverRandom = null;
-    internal byte[] masterSecret = null;
-
-	public byte[] ClientRandom
+	public class SecurityParameters
 	{
-		get { return clientRandom; }
-	}
+		internal byte[] clientRandom = null;
+		internal byte[] serverRandom = null;
+		internal byte[] masterSecret = null;
 
-	public byte[] ServerRandom
-	{
-		get { return serverRandom; }
-	}
+		public byte[] ClientRandom
+		{
+			get { return clientRandom; }
+		}
 
-	public byte[] MasterSecret
-	{
-		get { return masterSecret; }
+		public byte[] ServerRandom
+		{
+			get { return serverRandom; }
+		}
+
+		public byte[] MasterSecret
+		{
+			get { return masterSecret; }
+		}
 	}
 }

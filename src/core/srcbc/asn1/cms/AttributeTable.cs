@@ -51,7 +51,13 @@ namespace Org.BouncyCastle.Asn1.Cms
             }
         }
 
-        private void AddAttribute(
+		public AttributeTable(
+			Attributes attrs)
+			: this(Asn1Set.GetInstance(attrs.ToAsn1Object()))
+		{
+		}
+
+		private void AddAttribute(
             Attribute a)
         {
 			DerObjectIdentifier oid = a.AttrType;
@@ -135,6 +141,28 @@ namespace Org.BouncyCastle.Asn1.Cms
 			return v;
         }
 
+		public int Count
+		{
+			get
+			{
+				int total = 0;
+
+				foreach (object o in attributes.Values)
+				{
+					if (o is IList)
+					{
+						total += ((IList)o).Count;
+					}
+					else
+					{
+						++total;
+					}
+				}
+
+				return total;
+			}
+		}
+
         public IDictionary ToDictionary()
         {
             return Platform.CreateHashtable(attributes);
@@ -169,6 +197,11 @@ namespace Org.BouncyCastle.Asn1.Cms
 
 			return v;
         }
+
+		public Attributes ToAttributes()
+		{
+			return new Attributes(this.ToAsn1EncodableVector());
+		}
 
 		/**
 		 * Return a new table with the passed in attribute added.

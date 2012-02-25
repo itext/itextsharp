@@ -74,14 +74,10 @@ namespace Org.BouncyCastle.Asn1.Cms
             object obj)
         {
             if (obj == null || obj is KeyAgreeRecipientInfo)
-            {
                 return (KeyAgreeRecipientInfo)obj;
-            }
 
 			if (obj is Asn1Sequence)
-            {
                 return new KeyAgreeRecipientInfo((Asn1Sequence)obj);
-            }
 
 			throw new ArgumentException(
                 "Illegal object in KeyAgreeRecipientInfo: " + obj.GetType().Name);

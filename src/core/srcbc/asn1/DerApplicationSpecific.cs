@@ -44,9 +44,11 @@ namespace Org.BouncyCastle.Asn1
 			int				tag,
 			Asn1Encodable	obj)
 		{
-			byte[] data = obj.GetDerEncoded();
+            Asn1Object asn1Obj = obj.ToAsn1Object();
 
-			this.isConstructed = isExplicit;
+            byte[] data = asn1Obj.GetDerEncoded();
+
+			this.isConstructed = isExplicit || asn1Obj is Asn1Set || asn1Obj is Asn1Sequence;
 			this.tag = tag;
 
 			if (isExplicit)
@@ -55,7 +57,7 @@ namespace Org.BouncyCastle.Asn1
 			}
 			else
 			{
-				int lenBytes = GetLengthOfLength(data);
+				int lenBytes = GetLengthOfHeader(data);
 				byte[] tmp = new byte[data.Length - lenBytes];
 				Array.Copy(data, lenBytes, tmp, 0, tmp.Length);
 				this.octets = tmp;
@@ -74,9 +76,9 @@ namespace Org.BouncyCastle.Asn1
 			{
 				try
 				{
-					byte[] bs = vec[i].GetEncoded();
+					byte[] bs = vec[i].GetDerEncoded();
 					bOut.Write(bs, 0, bs.Length);
-				}
+                }
 				catch (IOException e)
 				{
 					throw new InvalidOperationException("malformed object", e);
@@ -85,18 +87,31 @@ namespace Org.BouncyCastle.Asn1
 			this.octets = bOut.ToArray();
 		}
 
-		private int GetLengthOfLength(
+		private int GetLengthOfHeader(
 			byte[] data)
 		{
-			int count = 2;	// TODO: assumes only a 1 byte tag number
+            int length = data[1]; // TODO: assumes 1 byte tag
 
-			while((data[count - 1] & 0x80) != 0)
-			{
-				count++;
-			}
+            if (length == 0x80)
+            {
+                return 2;      // indefinite-length encoding
+            }
 
-			return count;
-		}
+            if (length > 127)
+            {
+                int size = length & 0x7f;
+
+                // Note: The invalid long form "0xff" (see X.690 8.1.3.5c) will be caught here
+                if (size > 4)
+                {
+                    throw new InvalidOperationException("DER length more than 4 bytes: " + size);
+                }
+
+                return size + 2;
+            }
+
+            return 2;
+        }
 
 		public bool IsConstructed()
         {

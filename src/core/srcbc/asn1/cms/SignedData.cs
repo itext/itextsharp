@@ -24,14 +24,10 @@ namespace Org.BouncyCastle.Asn1.Cms
             object obj)
         {
             if (obj is SignedData)
-            {
                 return (SignedData) obj;
-            }
 
 			if (obj is Asn1Sequence)
-            {
                 return new SignedData((Asn1Sequence) obj);
-            }
 
 			throw new ArgumentException("Unknown object in factory: " + obj.GetType().FullName, "obj");
 		}
@@ -134,18 +130,12 @@ namespace Org.BouncyCastle.Asn1.Cms
 				return new DerInteger(4);
 			}
 
-			if (attrCertV1Found)
+			if (attrCertV1Found || !CmsObjectIdentifiers.Data.Equals(contentOid) || CheckForVersion3(signerInfs))
 			{
 				return new DerInteger(3);
 			}
 
-			if (contentOid.Equals(CmsObjectIdentifiers.Data)
-				&& !CheckForVersion3(signerInfs))
-			{
-				return new DerInteger(1);
-			}
-
-			return new DerInteger(3);
+            return new DerInteger(1);
 		}
 
 		private bool CheckForVersion3(

@@ -19,8 +19,18 @@ namespace Org.BouncyCastle.Crypto.Tls
         protected IBlockCipher encryptCipher;
         protected IBlockCipher decryptCipher;
 
-        protected TlsMac writeMac;
-        protected TlsMac readMac;
+        protected TlsMac wMac;
+        protected TlsMac rMac;
+
+		public virtual TlsMac WriteMac
+		{
+            get { return wMac; }
+		}
+
+		public virtual TlsMac ReadMac
+		{
+            get { return rMac; }
+		}
 
 		public TlsBlockCipher(TlsClientContext context, IBlockCipher encryptCipher,
 			IBlockCipher decryptCipher, IDigest writeDigest, IDigest readDigest, int cipherKeySize)
@@ -42,8 +52,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 			int offset = 0;
 
 			// Init MACs
-			writeMac = CreateTlsMac(writeDigest, keyBlock, ref offset);
-			readMac = CreateTlsMac(readDigest, keyBlock, ref offset);
+			wMac = CreateTlsMac(writeDigest, keyBlock, ref offset);
+            rMac = CreateTlsMac(readDigest, keyBlock, ref offset);
 
 			// Build keys
 			KeyParameter encryptKey = CreateKeyParameter(keyBlock, ref offset, cipherKeySize);
@@ -91,15 +101,15 @@ namespace Org.BouncyCastle.Crypto.Tls
 			int blocksize = encryptCipher.GetBlockSize();
 
 			// Add a random number of extra blocks worth of padding
-			int minPaddingSize = blocksize - ((len + writeMac.Size + 1) % blocksize);
+            int minPaddingSize = blocksize - ((len + wMac.Size + 1) % blocksize);
 			int maxExtraPadBlocks = (255 - minPaddingSize) / blocksize;
 			int actualExtraPadBlocks = ChooseExtraPadBlocks(context.SecureRandom, maxExtraPadBlocks);
 			int paddingsize = minPaddingSize + (actualExtraPadBlocks * blocksize);
 
-			int totalsize = len + writeMac.Size + paddingsize + 1;
+            int totalsize = len + wMac.Size + paddingsize + 1;
 			byte[] outbuf = new byte[totalsize];
 			Array.Copy(plaintext, offset, outbuf, 0, len);
-			byte[] mac = writeMac.CalculateMac(type, plaintext, offset, len);
+            byte[] mac = wMac.CalculateMac(type, plaintext, offset, len);
 			Array.Copy(mac, 0, outbuf, len, mac.Length);
 			int paddoffset = len + mac.Length;
 			for (int i = 0; i <= paddingsize; i++)
@@ -117,7 +127,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			// TODO TLS 1.1 (RFC 4346) introduces an explicit IV
 
-			int minLength = readMac.Size + 1;
+            int minLength = rMac.Size + 1;
 			int blocksize = decryptCipher.GetBlockSize();
 			bool decrypterror = false;
 
@@ -184,7 +194,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			* mac verification failed or padding verification failed.
 			*/
 			int plaintextlength = len - minLength - paddingsize;
-			byte[] calculatedMac = readMac.CalculateMac(type, ciphertext, offset, plaintextlength);
+            byte[] calculatedMac = rMac.CalculateMac(type, ciphertext, offset, plaintextlength);
 
 			/*
 			* Check all bytes in the mac (constant-time comparison).

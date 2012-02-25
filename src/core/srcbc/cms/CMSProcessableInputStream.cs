@@ -17,7 +17,7 @@ namespace Org.BouncyCastle.Cms
 			this.input = input;
 		}
 
-		public Stream Read()
+		public Stream GetInputStream()
 		{
 			CheckSingleUsage();
 
@@ -32,9 +32,10 @@ namespace Org.BouncyCastle.Cms
 			input.Close();
 		}
 
+		[Obsolete]
 		public object GetContent()
 		{
-			return Read();
+			return GetInputStream();
 		}
 
 		private void CheckSingleUsage()

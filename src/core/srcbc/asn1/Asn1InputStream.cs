@@ -75,7 +75,7 @@ namespace Org.BouncyCastle.Asn1
 		{
 			bool isConstructed = (tag & Asn1Tags.Constructed) != 0;
 
-			DefiniteLengthInputStream defIn = new DefiniteLengthInputStream(this, length);
+			DefiniteLengthInputStream defIn = new DefiniteLengthInputStream(this.s, length);
 
 			if ((tag & Asn1Tags.Application) != 0)
 			{
@@ -156,21 +156,21 @@ namespace Org.BouncyCastle.Asn1
 			//
 			// calculate tag number
 			//
-			int tagNo = ReadTagNumber(this, tag);
+			int tagNo = ReadTagNumber(this.s, tag);
 
 			bool isConstructed = (tag & Asn1Tags.Constructed) != 0;
 
 			//
 			// calculate length
 			//
-			int length = ReadLength(this, limit);
+			int length = ReadLength(this.s, limit);
 
 			if (length < 0) // indefinite length method
 			{
 				if (!isConstructed)
 					throw new IOException("indefinite length primitive encoding encountered");
 
-				IndefiniteLengthInputStream indIn = new IndefiniteLengthInputStream(this, limit);
+				IndefiniteLengthInputStream indIn = new IndefiniteLengthInputStream(this.s, limit);
             	Asn1StreamParser sp = new Asn1StreamParser(indIn, limit);
 
 				if ((tag & Asn1Tags.Application) != 0)

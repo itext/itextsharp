@@ -46,7 +46,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 		public void ReadData()
 		{
 			ContentType type = (ContentType)TlsUtilities.ReadUint8(inStr);
-			TlsUtilities.CheckVersion(inStr, handler);
+			TlsUtilities.CheckVersion(inStr);
 			int size = TlsUtilities.ReadUint16(inStr);
 			byte[] buf = DecodeAndVerify(type, inStr, size);
 			handler.ProcessData(type, buf, 0, buf.Length);

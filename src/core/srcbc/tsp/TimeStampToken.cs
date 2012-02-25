@@ -5,6 +5,7 @@ using System.IO;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Ess;
 using Org.BouncyCastle.Asn1.Nist;
+using Org.BouncyCastle.Asn1.Oiw;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.Tsp;
 using Org.BouncyCastle.Asn1.X509;
@@ -126,12 +127,6 @@ namespace Org.BouncyCastle.Tsp
 			get { return tsaSignerInfo.UnsignedAttributes; }
 		}
 
-//		public IX509Store GetCertificatesAndCrls(
-//			string type)
-//		{
-//			return tsToken.GetCertificatesAndCrls(type);
-//		}
-
 		public IX509Store GetCertificates(
 			string type)
 		{
@@ -143,6 +138,12 @@ namespace Org.BouncyCastle.Tsp
 		{
 			return tsToken.GetCrls(type);
 		}
+
+	    public IX509Store GetAttributeCertificates(
+			string type)
+	    {
+	        return tsToken.GetAttributeCertificates(type);
+	    }
 
 		/**
 		 * Validate the time stamp token.
@@ -164,7 +165,7 @@ namespace Org.BouncyCastle.Tsp
 			try
 			{
 				byte[] hash = DigestUtilities.CalculateDigest(
-					certID.GetHashAlgorithm(), cert.GetEncoded());
+					certID.GetHashAlgorithmName(), cert.GetEncoded());
 
 				if (!Arrays.ConstantTimeAreEqual(certID.GetCertHash(), hash))
 				{
@@ -265,7 +266,7 @@ namespace Org.BouncyCastle.Tsp
 				this.certID = null;
 			}
 
-			public string GetHashAlgorithm()
+			public string GetHashAlgorithmName()
 			{
 				if (certID != null)
 					return "SHA-1";
@@ -274,6 +275,13 @@ namespace Org.BouncyCastle.Tsp
 					return "SHA-256";
 
 				return certIDv2.HashAlgorithm.ObjectID.Id;
+			}
+
+			public AlgorithmIdentifier GetHashAlgorithm()
+			{
+				return (certID != null)
+					?	new AlgorithmIdentifier(OiwObjectIdentifiers.IdSha1)
+					:	certIDv2.HashAlgorithm;
 			}
 
 			public byte[] GetCertHash()

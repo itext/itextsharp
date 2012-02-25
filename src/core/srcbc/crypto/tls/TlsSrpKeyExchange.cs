@@ -176,7 +176,6 @@ namespace Org.BouncyCastle.Crypto.Tls
 		{
 			byte[] keData = BigIntegers.AsUnsignedByteArray(srpClient.GenerateClientCredentials(s,
 				this.identity, this.password));
-            TlsUtilities.WriteUint24(keData.Length + 2, output);
             TlsUtilities.WriteOpaque16(keData, output);
 		}
 

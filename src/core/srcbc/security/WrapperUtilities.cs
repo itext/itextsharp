@@ -18,6 +18,9 @@ namespace Org.BouncyCastle.Security
 	/// </remarks>
 	public sealed class WrapperUtilities
 	{
+		private enum WrapAlgorithm { AESWRAP, CAMELLIAWRAP, DESEDEWRAP, RC2WRAP, SEEDWRAP,
+			DESEDERFC3211WRAP, AESRFC3211WRAP, CAMELLIARFC3211WRAP };
+
 		private WrapperUtilities()
 		{
 		}
@@ -27,6 +30,9 @@ namespace Org.BouncyCastle.Security
 
 		static WrapperUtilities()
 		{
+			// Signal to obfuscation tools not to change enum constants
+			((WrapAlgorithm)Enums.GetArbitraryValue(typeof(WrapAlgorithm))).ToString();
+
 			algorithms[NistObjectIdentifiers.IdAes128Wrap.Id] = "AESWRAP";
 			algorithms[NistObjectIdentifiers.IdAes192Wrap.Id] = "AESWRAP";
 			algorithms[NistObjectIdentifiers.IdAes256Wrap.Id] = "AESWRAP";
@@ -59,24 +65,25 @@ namespace Org.BouncyCastle.Security
 				mechanism = upper;
 			}
 
-			switch (mechanism)
+			try
 			{
-				case "AESWRAP":
-					return new AesWrapEngine();
-				case "CAMELLIAWRAP":
-					return new CamelliaWrapEngine();
-				case "DESEDEWRAP":
-					return new DesEdeWrapEngine();
-				case "RC2WRAP":
-					return new RC2WrapEngine();
-				case "SEEDWRAP":
-					return new SeedWrapEngine();
-				case "DESEDERFC3211WRAP":
-					return new Rfc3211WrapEngine(new DesEdeEngine());
-				case "AESRFC3211WRAP":
-					return new Rfc3211WrapEngine(new AesFastEngine());
-				case "CAMELLIARFC3211WRAP":
-					return new Rfc3211WrapEngine(new CamelliaEngine());
+				WrapAlgorithm wrapAlgorithm = (WrapAlgorithm)Enums.GetEnumValue(
+					typeof(WrapAlgorithm), mechanism);
+
+				switch (wrapAlgorithm)
+				{
+					case WrapAlgorithm.AESWRAP:				return new AesWrapEngine();
+					case WrapAlgorithm.CAMELLIAWRAP:		return new CamelliaWrapEngine();
+					case WrapAlgorithm.DESEDEWRAP:			return new DesEdeWrapEngine();
+					case WrapAlgorithm.RC2WRAP:				return new RC2WrapEngine();
+					case WrapAlgorithm.SEEDWRAP:			return new SeedWrapEngine();
+					case WrapAlgorithm.DESEDERFC3211WRAP:	return new Rfc3211WrapEngine(new DesEdeEngine());
+					case WrapAlgorithm.AESRFC3211WRAP:		return new Rfc3211WrapEngine(new AesFastEngine());
+					case WrapAlgorithm.CAMELLIARFC3211WRAP:	return new Rfc3211WrapEngine(new CamelliaEngine());
+				}
+			}
+			catch (ArgumentException)
+			{
 			}
 
 			// Create an IBufferedCipher and use it as IWrapper (via BufferedCipherWrapper)
@@ -137,7 +144,7 @@ namespace Org.BouncyCastle.Security
 				int		length)
 			{
 				if (forWrapping)
-					throw new InvalidOperationException("Not initialised for Unwrapping");
+					throw new InvalidOperationException("Not initialised for unwrapping");
 
 				return cipher.DoFinal(input, inOff, length);
 			}

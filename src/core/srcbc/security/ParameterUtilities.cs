@@ -23,6 +23,7 @@ namespace Org.BouncyCastle.Security
 		}
 
 		private static readonly IDictionary algorithms = Platform.CreateHashtable();
+		private static readonly IDictionary basicIVSizes = Platform.CreateHashtable();
 
 		static ParameterUtilities()
 		{
@@ -109,6 +110,14 @@ namespace Org.BouncyCastle.Security
 			AddAlgorithm("VMPC");
 			AddAlgorithm("VMPC-KSA3");
 			AddAlgorithm("XTEA");
+
+			AddBasicIVSizeEntries(8, "BLOWFISH", "DES", "DESEDE", "DESEDE3");
+			AddBasicIVSizeEntries(16, "AES", "AES128", "AES192", "AES256",
+				"CAMELLIA", "CAMELLIA128", "CAMELLIA192", "CAMELLIA256", "NOEKEON", "SEED");
+
+			// TODO These algorithms support an IV
+			// but JCE doesn't seem to provide an AlgorithmParametersGenerator for them
+			// "RIJNDAEL", "SKIPJACK", "TWOFISH"
 		}
 
 		private static void AddAlgorithm(
@@ -120,6 +129,14 @@ namespace Org.BouncyCastle.Security
 			foreach (object alias in aliases)
 			{
 				algorithms[alias.ToString()] = canonicalName;
+			}
+		}
+
+		private static void AddBasicIVSizeEntries(int size, params string[] algorithms)
+		{
+			foreach (string algorithm in algorithms)
+			{
+				basicIVSizes.Add(algorithm, size);
 			}
 		}
 
@@ -166,18 +183,16 @@ namespace Org.BouncyCastle.Security
 			if (canonical == null)
 				throw new SecurityUtilityException("Algorithm " + algorithm + " not recognised.");
 
-			switch (canonical)
-			{
-				case "DES":
-					return new DesParameters(keyBytes, offset, length);
-				case "DESEDE":
-				case "DESEDE3":
-					return new DesEdeParameters(keyBytes, offset, length);
-				case "RC2":
-					return new RC2Parameters(keyBytes, offset, length);
-				default:
-					return new KeyParameter(keyBytes, offset, length);
-			}
+			if (canonical == "DES")
+				return new DesParameters(keyBytes, offset, length);
+
+			if (canonical == "DESEDE" || canonical =="DESEDE3")
+				return new DesEdeParameters(keyBytes, offset, length);
+
+			if (canonical == "RC2")
+				return new RC2Parameters(keyBytes, offset, length);
+
+			return new KeyParameter(keyBytes, offset, length);
 		}
 
 		public static ICipherParameters GetCipherParameters(
@@ -205,38 +220,29 @@ namespace Org.BouncyCastle.Security
 
 			try
 			{
-				switch (canonical)
+				// TODO These algorithms support an IV
+				// but JCE doesn't seem to provide an AlgorithmParametersGenerator for them
+				// "RIJNDAEL", "SKIPJACK", "TWOFISH"
+
+				int basicIVKeySize = FindBasicIVSize(canonical);
+				if (basicIVKeySize != -1
+					|| canonical == "RIJNDAEL" || canonical == "SKIPJACK" || canonical == "TWOFISH")
 				{
-					case "AES":
-					case "AES128":
-					case "AES192":
-					case "AES256":
-					case "BLOWFISH":
-					case "CAMELLIA":
-					case "CAMELLIA128":
-					case "CAMELLIA192":
-					case "CAMELLIA256":
-					case "DES":
-					case "DESEDE":
-					case "DESEDE3":
-					case "NOEKEON":
-					case "RIJNDAEL":
-					case "SEED":
-					case "SKIPJACK":
-					case "TWOFISH":
-						iv = ((Asn1OctetString) asn1Params).GetOctets();
-						break;
-					case "RC2":
-						iv = RC2CbcParameter.GetInstance(asn1Params).GetIV();
-						break;
+					iv = ((Asn1OctetString) asn1Params).GetOctets();
+				}
+				else if (canonical == "CAST5")
+				{
+					iv = Cast5CbcParameters.GetInstance(asn1Params).GetIV();
+				}
 #if INCLUDE_IDEA
-					case "IDEA":
-						iv = IdeaCbcPar.GetInstance(asn1Params).GetIV();
-						break;
+				else if (canonical == "IDEA")
+				{
+					iv = IdeaCbcPar.GetInstance(asn1Params).GetIV();
+				}
 #endif
-					case "CAST5":
-						iv = Cast5CbcParameters.GetInstance(asn1Params).GetIV();
-						break;
+				else if (canonical == "RC2")
+				{
+					iv = RC2CbcParameter.GetInstance(asn1Params).GetIV();
 				}
 			}
 			catch (Exception e)
@@ -271,43 +277,24 @@ namespace Org.BouncyCastle.Security
 			if (canonical == null)
 				throw new SecurityUtilityException("Algorithm " + algorithm + " not recognised.");
 
-			switch (canonical)
-			{
-				// TODO These algorithms support an IV (see GetCipherParameters)
-				// but JCE doesn't seem to provide an AlgorithmParametersGenerator for them
-//				case "RIJNDAEL":
-//				case "SKIPJACK":
-//				case "TWOFISH":
+			// TODO These algorithms support an IV
+			// but JCE doesn't seem to provide an AlgorithmParametersGenerator for them
+			// "RIJNDAEL", "SKIPJACK", "TWOFISH"
 
-				case "AES":
-				case "AES128":
-				case "AES192":
-				case "AES256":
-					return CreateIVOctetString(random, 16);
-				case "BLOWFISH":
-					return CreateIVOctetString(random, 8);
-				case "CAMELLIA":
-				case "CAMELLIA128":
-				case "CAMELLIA192":
-				case "CAMELLIA256":
-					return CreateIVOctetString(random, 16);
-				case "CAST5":
-					return new Cast5CbcParameters(CreateIV(random, 8), 128);
-				case "DES":
-				case "DESEDE":
-				case "DESEDE3":
-					return CreateIVOctetString(random, 8);
+			int basicIVKeySize = FindBasicIVSize(canonical);
+			if (basicIVKeySize != -1)
+				return CreateIVOctetString(random, basicIVKeySize);
+
+			if (canonical == "CAST5")
+				return new Cast5CbcParameters(CreateIV(random, 8), 128);
+
 #if INCLUDE_IDEA
-				case "IDEA":
-					return new IdeaCbcPar(CreateIV(random, 8));
+			if (canonical == "IDEA")
+				return new IdeaCbcPar(CreateIV(random, 8));
 #endif
-				case "NOEKEON":
-					return CreateIVOctetString(random, 16);
-				case "RC2":
-					return new RC2CbcParameter(CreateIV(random, 8));
-				case "SEED":
-					return CreateIVOctetString(random, 16);
-			}
+
+			if (canonical == "RC2")
+				return new RC2CbcParameter(CreateIV(random, 8));
 
 			throw new SecurityUtilityException("Algorithm " + algorithm + " not recognised.");
 		}
@@ -326,6 +313,15 @@ namespace Org.BouncyCastle.Security
 			byte[] iv = new byte[ivLength];
 			random.NextBytes(iv);
 			return iv;
+		}
+
+		private static int FindBasicIVSize(
+			string canonicalName)
+		{
+			if (!basicIVSizes.Contains(canonicalName))
+				return -1;
+
+			return (int)basicIVSizes[canonicalName];
 		}
 	}
 }

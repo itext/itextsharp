@@ -31,7 +31,7 @@ namespace Org.BouncyCastle.Asn1.Icao
 			if (obj != null)
 				return new LdsVersionInfo(Asn1Sequence.GetInstance(obj));
 
-			throw new ArgumentException("null object in GetInstance()");
+			return null;
 		}
 
 		public virtual string GetLdsVersion()

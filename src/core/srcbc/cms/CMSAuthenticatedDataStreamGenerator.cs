@@ -167,9 +167,9 @@ namespace Org.BouncyCastle.Cms
 				IMac mac = MacUtilities.GetMac(macAlgId.ObjectID);
 				// TODO Confirm no ParametersWithRandom needed
 	            mac.Init(cipherParameters);
-				MacStream mOut = new MacStream(octetOutputStream, null, mac);
-				
-				return new CmsAuthenticatedDataOutputStream(mOut, cGen, authGen, eiGen);
+				Stream mOut = new TeeOutputStream(octetOutputStream, new MacOutputStream(mac));
+
+				return new CmsAuthenticatedDataOutputStream(mOut, mac, cGen, authGen, eiGen);
 			}
 			catch (SecurityUtilityException e)
 			{
@@ -217,18 +217,21 @@ namespace Org.BouncyCastle.Cms
 		private class CmsAuthenticatedDataOutputStream
 			: BaseOutputStream
 		{
-			private readonly MacStream				macStream;
+			private readonly Stream					macStream;
+			private readonly IMac					mac;
 			private readonly BerSequenceGenerator	cGen;
 			private readonly BerSequenceGenerator	authGen;
 			private readonly BerSequenceGenerator	eiGen;
 
 			public CmsAuthenticatedDataOutputStream(
-				MacStream				macStream,
+				Stream					macStream,
+				IMac					mac,
 				BerSequenceGenerator	cGen,
 				BerSequenceGenerator	authGen,
 				BerSequenceGenerator	eiGen)
 			{
 				this.macStream = macStream;
+				this.mac = mac;
 				this.cGen = cGen;
 				this.authGen = authGen;
 				this.eiGen = eiGen;
@@ -251,10 +254,13 @@ namespace Org.BouncyCastle.Cms
 			public override void Close()
 			{
 				macStream.Close();
+
+				// TODO Parent context(s) should really be be closed explicitly
+
 				eiGen.Close();
 
-				// [TODO] auth attributes go here           
-				byte[] macOctets = MacUtilities.DoFinal(macStream.WriteMac());
+				// [TODO] auth attributes go here 
+				byte[] macOctets = MacUtilities.DoFinal(mac);
 				authGen.AddObject(new DerOctetString(macOctets));
 				// [TODO] unauth attributes go here
 

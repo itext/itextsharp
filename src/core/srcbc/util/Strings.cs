@@ -10,6 +10,16 @@ namespace Org.BouncyCastle.Utilities
 		{
 		}
 
+		internal static bool IsOneOf(string s, params string[] candidates)
+		{
+			foreach (string candidate in candidates)
+			{
+				if (s == candidate)
+					return true;
+			}
+			return false;
+		}
+
 		public static string FromByteArray(
 			byte[] bs)
 		{

@@ -8,6 +8,7 @@ using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
 
 namespace Org.BouncyCastle.Security
@@ -162,6 +163,7 @@ namespace Org.BouncyCastle.Security
 		{
 			RSAParameters rp = ToRSAParameters(rsaKey);
 			RSACryptoServiceProvider rsaCsp = new RSACryptoServiceProvider();
+			// TODO This call appears to not work for private keys (when no CRT info)
 			rsaCsp.ImportParameters(rp);
 			return rsaCsp;
 		}
@@ -179,7 +181,7 @@ namespace Org.BouncyCastle.Security
 			RSAParameters rp = new RSAParameters();
 			rp.Modulus = rsaKey.Modulus.ToByteArrayUnsigned();
 			if (rsaKey.IsPrivate)
-				rp.D = rsaKey.Exponent.ToByteArrayUnsigned();
+				rp.D = ConvertRSAParametersField(rsaKey.Exponent, rp.Modulus.Length);
 			else
 				rp.Exponent = rsaKey.Exponent.ToByteArrayUnsigned();
 			return rp;
@@ -190,13 +192,29 @@ namespace Org.BouncyCastle.Security
 			RSAParameters rp = new RSAParameters();
 			rp.Modulus = privKey.Modulus.ToByteArrayUnsigned();
 			rp.Exponent = privKey.PublicExponent.ToByteArrayUnsigned();
-			rp.D = privKey.Exponent.ToByteArrayUnsigned();
 			rp.P = privKey.P.ToByteArrayUnsigned();
 			rp.Q = privKey.Q.ToByteArrayUnsigned();
-			rp.DP = privKey.DP.ToByteArrayUnsigned();
-			rp.DQ = privKey.DQ.ToByteArrayUnsigned();
-			rp.InverseQ = privKey.QInv.ToByteArrayUnsigned();
+			rp.D = ConvertRSAParametersField(privKey.Exponent, rp.Modulus.Length);
+			rp.DP = ConvertRSAParametersField(privKey.DP, rp.P.Length);
+			rp.DQ = ConvertRSAParametersField(privKey.DQ, rp.Q.Length);
+			rp.InverseQ = ConvertRSAParametersField(privKey.QInv, rp.Q.Length);
 			return rp;
+		}
+
+		// TODO Move functionality to more general class
+		private static byte[] ConvertRSAParametersField(BigInteger n, int size)
+		{
+			byte[] bs = n.ToByteArrayUnsigned();
+
+			if (bs.Length == size)
+				return bs;
+
+			if (bs.Length > size)
+				throw new ArgumentException("Specified size too small", "size");
+
+			byte[] padded = new byte[size];
+			Array.Copy(bs, 0, padded, size - bs.Length, bs.Length);
+			return padded;
 		}
 	}
 }

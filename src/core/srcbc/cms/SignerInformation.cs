@@ -37,6 +37,7 @@ namespace Org.BouncyCastle.Cms
 		// Derived
 		private Asn1.Cms.AttributeTable	signedAttributeTable;
 		private Asn1.Cms.AttributeTable	unsignedAttributeTable;
+		private readonly bool isCounterSignature;
 
 		internal SignerInformation(
 			SignerInfo			info,
@@ -47,6 +48,7 @@ namespace Org.BouncyCastle.Cms
 			this.info = info;
 			this.sid = new SignerID();
 			this.contentType = contentType;
+			this.isCounterSignature = contentType == null;
 
 			try
 			{
@@ -80,6 +82,11 @@ namespace Org.BouncyCastle.Cms
 
 			this.content = content;
 			this.digestCalculator = digestCalculator;
+		}
+
+		public bool IsCounterSignature
+		{
+			get { return isCounterSignature; }
 		}
 
 		public DerObjectIdentifier ContentType
@@ -267,7 +274,7 @@ namespace Org.BouncyCastle.Cms
 
 					string digestName = CmsSignedHelper.Instance.GetDigestAlgName(si.DigestAlgorithm.ObjectID.Id);
 
-					counterSignatures.Add(new SignerInformation(si, CmsAttributes.CounterSignature, null, new CounterSignatureDigestCalculator(digestName, GetSignature())));
+					counterSignatures.Add(new SignerInformation(si, null, null, new CounterSignatureDigestCalculator(digestName, GetSignature())));
 				}
 			}
 
@@ -368,9 +375,6 @@ namespace Org.BouncyCastle.Cms
 			{
 				throw new CmsException("can't process mime object to create signature.", e);
 			}
-
-			// TODO Shouldn't be using attribute OID as contentType (should be null)
-			bool isCounterSignature = contentType.Equals(CmsAttributes.CounterSignature);
 
 			// RFC 3852 11.1 Check the content-type attribute is correct
 			{

@@ -46,6 +46,21 @@ namespace Org.BouncyCastle.Asn1
 			}
 		}
 
+		public void AddOptional(
+			params Asn1Encodable[] objs)
+		{
+			if (objs != null)
+			{
+				foreach (Asn1Encodable obj in objs)
+				{
+					if (obj != null)
+					{
+						v.Add(obj);
+					}
+				}
+			}
+		}
+
 		public Asn1Encodable this[
 			int index]
 		{

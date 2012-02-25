@@ -37,30 +37,25 @@ namespace Org.BouncyCastle.Asn1.Cms
             object o)
         {
             if (o == null || o is SignerIdentifier)
-            {
                 return (SignerIdentifier) o;
-            }
 
 			if (o is IssuerAndSerialNumber)
-            {
                 return new SignerIdentifier((IssuerAndSerialNumber) o);
-            }
 
 			if (o is Asn1OctetString)
-            {
                 return new SignerIdentifier((Asn1OctetString) o);
-            }
 
 			if (o is Asn1Object)
-            {
                 return new SignerIdentifier((Asn1Object) o);
-            }
 
 			throw new ArgumentException(
 				"Illegal object in SignerIdentifier: " + o.GetType().Name);
         }
 
-		public bool IsTagged { get { return (id is Asn1TaggedObject); } }
+		public bool IsTagged
+		{
+			get { return (id is Asn1TaggedObject); }
+		}
 
 		public Asn1Encodable ID
         {

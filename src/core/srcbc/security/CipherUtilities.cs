@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Globalization;
 
@@ -27,11 +27,87 @@ namespace Org.BouncyCastle.Security
 	/// </remarks>
 	public sealed class CipherUtilities
 	{
+		private enum CipherAlgorithm {
+			AES,
+			ARC4,
+			BLOWFISH,
+			CAMELLIA,
+			CAST5,
+			CAST6,
+			DES,
+			DESEDE,
+			ELGAMAL,
+			GOST28147,
+			HC128,
+			HC256,
+			IDEA,
+			NOEKEON,
+			PBEWITHSHAAND128BITRC4,
+			PBEWITHSHAAND40BITRC4,
+			RC2,
+			RC5,
+			RC5_64,
+			RC6,
+			RIJNDAEL,
+			RSA,
+			SALSA20,
+			SEED,
+			SERPENT,
+			SKIPJACK,
+			TEA,
+			TWOFISH,
+			VMPC,
+			VMPC_KSA3,
+			XTEA,
+		};
+		
+		private enum CipherMode { ECB, NONE, CBC, CCM, CFB, CTR, CTS, EAX, GCM, GOFB, OFB, OPENPGPCFB, SIC };
+		private enum CipherPadding
+		{
+			NOPADDING,
+			RAW,
+			ISO10126PADDING,
+			ISO10126D2PADDING,
+			ISO10126_2PADDING,
+			ISO7816_4PADDING,
+			ISO9797_1PADDING,
+			ISO9796_1,
+			ISO9796_1PADDING,
+			OAEP,
+			OAEPPADDING,
+			OAEPWITHMD5ANDMGF1PADDING,
+			OAEPWITHSHA1ANDMGF1PADDING,
+			OAEPWITHSHA_1ANDMGF1PADDING,
+			OAEPWITHSHA224ANDMGF1PADDING,
+			OAEPWITHSHA_224ANDMGF1PADDING,
+			OAEPWITHSHA256ANDMGF1PADDING,
+			OAEPWITHSHA_256ANDMGF1PADDING,
+			OAEPWITHSHA384ANDMGF1PADDING,
+			OAEPWITHSHA_384ANDMGF1PADDING,
+			OAEPWITHSHA512ANDMGF1PADDING,
+			OAEPWITHSHA_512ANDMGF1PADDING,
+			PKCS1,
+			PKCS1PADDING,
+			PKCS5,
+			PKCS5PADDING,
+			PKCS7,
+			PKCS7PADDING,
+			TBCPADDING,
+			WITHCTS,
+			X923PADDING,
+			ZEROBYTEPADDING,
+		};
+
 		private static readonly IDictionary algorithms = Platform.CreateHashtable();
         private static readonly IDictionary oids = Platform.CreateHashtable();
 
 		static CipherUtilities()
 		{
+			// Signal to obfuscation tools not to change enum constants
+			((CipherAlgorithm)Enums.GetArbitraryValue(typeof(CipherAlgorithm))).ToString();
+			((CipherMode)Enums.GetArbitraryValue(typeof(CipherMode))).ToString();
+			((CipherPadding)Enums.GetArbitraryValue(typeof(CipherPadding))).ToString();
+
 			// TODO Flesh out the list of aliases
 
 			algorithms[NistObjectIdentifiers.IdAes128Ecb.Id] = "AES/ECB/PKCS7PADDING";
@@ -204,37 +280,47 @@ namespace Org.BouncyCastle.Security
 
 			if (algorithm.StartsWith("PBE"))
 			{
-				switch (algorithm)
+				if (algorithm.EndsWith("-CBC"))
 				{
-					case "PBEWITHSHAAND2-KEYTRIPLEDES-CBC":
-					case "PBEWITHSHAAND3-KEYTRIPLEDES-CBC":
-						return new PaddedBufferedBlockCipher(
-							new CbcBlockCipher(new DesEdeEngine()));
-
-					case "PBEWITHSHAAND128BITRC2-CBC":
-					case "PBEWITHSHAAND40BITRC2-CBC":
-						return new PaddedBufferedBlockCipher(
-							new CbcBlockCipher(new RC2Engine()));
-
-					case "PBEWITHSHAAND128BITAES-CBC-BC":
-					case "PBEWITHSHAAND192BITAES-CBC-BC":
-					case "PBEWITHSHAAND256BITAES-CBC-BC":
-					case "PBEWITHSHA256AND128BITAES-CBC-BC":
-					case "PBEWITHSHA256AND192BITAES-CBC-BC":
-					case "PBEWITHSHA256AND256BITAES-CBC-BC":
-					case "PBEWITHMD5AND128BITAES-CBC-OPENSSL":
-					case "PBEWITHMD5AND192BITAES-CBC-OPENSSL":
-					case "PBEWITHMD5AND256BITAES-CBC-OPENSSL":
-						return new PaddedBufferedBlockCipher(
-							new CbcBlockCipher(new AesFastEngine()));
-
-					case "PBEWITHSHA1ANDDES-CBC":
+					if (algorithm == "PBEWITHSHA1ANDDES-CBC")
+					{
 						return new PaddedBufferedBlockCipher(
 							new CbcBlockCipher(new DesEngine()));
-
-					case "PBEWITHSHA1ANDRC2-CBC":
+					}
+					else if (algorithm == "PBEWITHSHA1ANDRC2-CBC")
+					{
 						return new PaddedBufferedBlockCipher(
 							new CbcBlockCipher(new RC2Engine()));
+					}
+					else if (Strings.IsOneOf(algorithm,
+						"PBEWITHSHAAND2-KEYTRIPLEDES-CBC", "PBEWITHSHAAND3-KEYTRIPLEDES-CBC"))
+					{
+						return new PaddedBufferedBlockCipher(
+							new CbcBlockCipher(new DesEdeEngine()));
+					}
+					else if (Strings.IsOneOf(algorithm,
+						"PBEWITHSHAAND128BITRC2-CBC", "PBEWITHSHAAND40BITRC2-CBC"))
+					{
+						return new PaddedBufferedBlockCipher(
+							new CbcBlockCipher(new RC2Engine()));
+					}
+				}
+				else if (algorithm.EndsWith("-BC") || algorithm.EndsWith("-OPENSSL"))
+				{
+					if (Strings.IsOneOf(algorithm,
+						"PBEWITHSHAAND128BITAES-CBC-BC",
+						"PBEWITHSHAAND192BITAES-CBC-BC",
+						"PBEWITHSHAAND256BITAES-CBC-BC",
+						"PBEWITHSHA256AND128BITAES-CBC-BC",
+						"PBEWITHSHA256AND192BITAES-CBC-BC",
+						"PBEWITHSHA256AND256BITAES-CBC-BC",
+						"PBEWITHMD5AND128BITAES-CBC-OPENSSL",
+						"PBEWITHMD5AND192BITAES-CBC-OPENSSL",
+						"PBEWITHMD5AND256BITAES-CBC-OPENSSL"))
+					{
+						return new PaddedBufferedBlockCipher(
+							new CbcBlockCipher(new AesFastEngine()));
+					}
 				}
 			}
 
@@ -246,99 +332,110 @@ namespace Org.BouncyCastle.Security
 			IAsymmetricBlockCipher asymBlockCipher = null;
 			IStreamCipher streamCipher = null;
 
-			switch (parts[0])
+			string algorithmName = parts[0];
+			CipherAlgorithm cipherAlgorithm;
+			try
 			{
-				case "AES":
+				cipherAlgorithm = (CipherAlgorithm)Enums.GetEnumValue(typeof(CipherAlgorithm), algorithmName);
+			}
+			catch (ArgumentException)
+			{
+				throw new SecurityUtilityException("Cipher " + algorithm + " not recognised.");
+			}
+
+			switch (cipherAlgorithm)
+			{
+				case CipherAlgorithm.AES:
 					blockCipher = new AesFastEngine();
 					break;
-				case "ARC4":
+				case CipherAlgorithm.ARC4:
 					streamCipher = new RC4Engine();
 					break;
-				case "BLOWFISH":
+				case CipherAlgorithm.BLOWFISH:
 					blockCipher = new BlowfishEngine();
 					break;
-				case "CAMELLIA":
+				case CipherAlgorithm.CAMELLIA:
 					blockCipher = new CamelliaEngine();
 					break;
-				case "CAST5":
+				case CipherAlgorithm.CAST5:
 					blockCipher = new Cast5Engine();
 					break;
-				case "CAST6":
+				case CipherAlgorithm.CAST6:
 					blockCipher = new Cast6Engine();
 					break;
-				case "DES":
+				case CipherAlgorithm.DES:
 					blockCipher = new DesEngine();
 					break;
-				case "DESEDE":
+				case CipherAlgorithm.DESEDE:
 					blockCipher = new DesEdeEngine();
 					break;
-				case "ELGAMAL":
+				case CipherAlgorithm.ELGAMAL:
 					asymBlockCipher = new ElGamalEngine();
 					break;
-				case "GOST28147":
+				case CipherAlgorithm.GOST28147:
 					blockCipher = new Gost28147Engine();
 					break;
-				case "HC128":
+				case CipherAlgorithm.HC128:
 					streamCipher = new HC128Engine();
 					break;
-				case "HC256":
+				case CipherAlgorithm.HC256:
 					streamCipher = new HC256Engine();
 					break;
 #if INCLUDE_IDEA
-				case "IDEA":
+				case CipherAlgorithm.IDEA:
 					blockCipher = new IdeaEngine();
 					break;
 #endif
-				case "NOEKEON":
+				case CipherAlgorithm.NOEKEON:
 					blockCipher = new NoekeonEngine();
 					break;
-				case "PBEWITHSHAAND128BITRC4":
-				case "PBEWITHSHAAND40BITRC4":
+				case CipherAlgorithm.PBEWITHSHAAND128BITRC4:
+				case CipherAlgorithm.PBEWITHSHAAND40BITRC4:
 					streamCipher = new RC4Engine();
 					break;
-				case "RC2":
+				case CipherAlgorithm.RC2:
 					blockCipher = new RC2Engine();
 					break;
-				case "RC5":
+				case CipherAlgorithm.RC5:
 					blockCipher = new RC532Engine();
 					break;
-				case "RC5-64":
+				case CipherAlgorithm.RC5_64:
 					blockCipher = new RC564Engine();
 					break;
-				case "RC6":
+				case CipherAlgorithm.RC6:
 					blockCipher = new RC6Engine();
 					break;
-				case "RIJNDAEL":
+				case CipherAlgorithm.RIJNDAEL:
 					blockCipher = new RijndaelEngine();
 					break;
-				case "RSA":
+				case CipherAlgorithm.RSA:
 					asymBlockCipher = new RsaBlindedEngine();
 					break;
-				case "SALSA20":
+				case CipherAlgorithm.SALSA20:
 					streamCipher = new Salsa20Engine();
 					break;
-				case "SEED":
+				case CipherAlgorithm.SEED:
 					blockCipher = new SeedEngine();
 					break;
-				case "SERPENT":
+				case CipherAlgorithm.SERPENT:
 					blockCipher = new SerpentEngine();
 					break;
-				case "SKIPJACK":
+				case CipherAlgorithm.SKIPJACK:
 					blockCipher = new SkipjackEngine();
 					break;
-				case "TEA":
+				case CipherAlgorithm.TEA:
 					blockCipher = new TeaEngine();
 					break;
-				case "TWOFISH":
+				case CipherAlgorithm.TWOFISH:
 					blockCipher = new TwofishEngine();
 					break;
-				case "VMPC":
+				case CipherAlgorithm.VMPC:
 					streamCipher = new VmpcEngine();
 					break;
-				case "VMPC-KSA3":
+				case CipherAlgorithm.VMPC_KSA3:
 					streamCipher = new VmpcKsa3Engine();
 					break;
-				case "XTEA":
+				case CipherAlgorithm.XTEA:
 					blockCipher = new XteaEngine();
 					break;
 				default:
@@ -364,75 +461,96 @@ namespace Org.BouncyCastle.Security
 				if (streamCipher != null)
 					throw new ArgumentException("Paddings not used for stream ciphers");
 
-				switch (parts[2])
+				string paddingName = parts[2];
+
+				CipherPadding cipherPadding;
+				if (paddingName == "")
 				{
-					case "NOPADDING":
+					cipherPadding = CipherPadding.RAW;
+				}
+				else if (paddingName == "X9.23PADDING")
+				{
+					cipherPadding = CipherPadding.X923PADDING;
+				}
+				else
+				{
+					try
+					{
+						cipherPadding = (CipherPadding)Enums.GetEnumValue(typeof(CipherPadding), paddingName);
+					}
+					catch (ArgumentException)
+					{
+						throw new SecurityUtilityException("Cipher " + algorithm + " not recognised.");
+					}
+				}
+
+				switch (cipherPadding)
+				{
+					case CipherPadding.NOPADDING:
 						padded = false;
 						break;
-					case "":
-					case "RAW":
+					case CipherPadding.RAW:
 						break;
-					case "ISO10126PADDING":
-					case "ISO10126D2PADDING":
-					case "ISO10126-2PADDING":
+					case CipherPadding.ISO10126PADDING:
+					case CipherPadding.ISO10126D2PADDING:
+					case CipherPadding.ISO10126_2PADDING:
 						padding = new ISO10126d2Padding();
 						break;
-					case "ISO7816-4PADDING":
-					case "ISO9797-1PADDING":
+					case CipherPadding.ISO7816_4PADDING:
+					case CipherPadding.ISO9797_1PADDING:
 						padding = new ISO7816d4Padding();
 						break;
-					case "ISO9796-1":
-					case "ISO9796-1PADDING":
+					case CipherPadding.ISO9796_1:
+					case CipherPadding.ISO9796_1PADDING:
 						asymBlockCipher = new ISO9796d1Encoding(asymBlockCipher);
 						break;
-					case "OAEP":
-					case "OAEPPADDING":
+					case CipherPadding.OAEP:
+					case CipherPadding.OAEPPADDING:
 						asymBlockCipher = new OaepEncoding(asymBlockCipher);
 						break;
-					case "OAEPWITHMD5ANDMGF1PADDING":
+					case CipherPadding.OAEPWITHMD5ANDMGF1PADDING:
 						asymBlockCipher = new OaepEncoding(asymBlockCipher, new MD5Digest());
 						break;
-					case "OAEPWITHSHA1ANDMGF1PADDING":
-					case "OAEPWITHSHA-1ANDMGF1PADDING":
+					case CipherPadding.OAEPWITHSHA1ANDMGF1PADDING:
+					case CipherPadding.OAEPWITHSHA_1ANDMGF1PADDING:
 						asymBlockCipher = new OaepEncoding(asymBlockCipher, new Sha1Digest());
 						break;
-					case "OAEPWITHSHA224ANDMGF1PADDING":
-					case "OAEPWITHSHA-224ANDMGF1PADDING":
+					case CipherPadding.OAEPWITHSHA224ANDMGF1PADDING:
+					case CipherPadding.OAEPWITHSHA_224ANDMGF1PADDING:
 						asymBlockCipher = new OaepEncoding(asymBlockCipher, new Sha224Digest());
 						break;
-					case "OAEPWITHSHA256ANDMGF1PADDING":
-					case "OAEPWITHSHA-256ANDMGF1PADDING":
+					case CipherPadding.OAEPWITHSHA256ANDMGF1PADDING:
+					case CipherPadding.OAEPWITHSHA_256ANDMGF1PADDING:
 						asymBlockCipher = new OaepEncoding(asymBlockCipher, new Sha256Digest());
 						break;
-					case "OAEPWITHSHA384ANDMGF1PADDING":
-					case "OAEPWITHSHA-384ANDMGF1PADDING":
+					case CipherPadding.OAEPWITHSHA384ANDMGF1PADDING:
+					case CipherPadding.OAEPWITHSHA_384ANDMGF1PADDING:
 						asymBlockCipher = new OaepEncoding(asymBlockCipher, new Sha384Digest());
 						break;
-					case "OAEPWITHSHA512ANDMGF1PADDING":
-					case "OAEPWITHSHA-512ANDMGF1PADDING":
+					case CipherPadding.OAEPWITHSHA512ANDMGF1PADDING:
+					case CipherPadding.OAEPWITHSHA_512ANDMGF1PADDING:
 						asymBlockCipher = new OaepEncoding(asymBlockCipher, new Sha512Digest());
 						break;
-					case "PKCS1":
-					case "PKCS1PADDING":
+					case CipherPadding.PKCS1:
+					case CipherPadding.PKCS1PADDING:
 						asymBlockCipher = new Pkcs1Encoding(asymBlockCipher);
 						break;
-					case "PKCS5":
-					case "PKCS5PADDING":
-					case "PKCS7":
-					case "PKCS7PADDING":
+					case CipherPadding.PKCS5:
+					case CipherPadding.PKCS5PADDING:
+					case CipherPadding.PKCS7:
+					case CipherPadding.PKCS7PADDING:
 						padding = new Pkcs7Padding();
 						break;
-					case "TBCPADDING":
+					case CipherPadding.TBCPADDING:
 						padding = new TbcPadding();
 						break;
-					case "WITHCTS":
+					case CipherPadding.WITHCTS:
 						cts = true;
 						break;
-					case "X9.23PADDING":
-					case "X923PADDING":
+					case CipherPadding.X923PADDING:
 						padding = new X923Padding();
 						break;
-					case "ZEROBYTEPADDING":
+					case CipherPadding.ZEROBYTEPADDING:
 						padding = new ZeroBytePadding();
 						break;
 					default:
@@ -448,64 +566,74 @@ namespace Org.BouncyCastle.Security
 				int di = GetDigitIndex(mode);
 				string modeName = di >= 0 ? mode.Substring(0, di) : mode;
 
-				switch (modeName)
+				try
 				{
-					case "":
-					case "ECB":
-					case "NONE":
-						break;
-					case "CBC":
-						blockCipher = new CbcBlockCipher(blockCipher);
-						break;
-					case "CCM":
-						aeadBlockCipher = new CcmBlockCipher(blockCipher);
-						break;
-					case "CFB":
-					{
-						int bits = (di < 0)
-							?	8 * blockCipher.GetBlockSize()
-							:	int.Parse(mode.Substring(di));
+					CipherMode cipherMode = modeName == ""
+						? CipherMode.NONE
+						: (CipherMode)Enums.GetEnumValue(typeof(CipherMode), modeName);
 
-						blockCipher = new CfbBlockCipher(blockCipher, bits);
-						break;
-					}
-					case "CTR":
-						blockCipher = new SicBlockCipher(blockCipher);
-						break;
-					case "CTS":
-						cts = true;
-						blockCipher = new CbcBlockCipher(blockCipher);
-						break;
-					case "EAX":
-						aeadBlockCipher = new EaxBlockCipher(blockCipher);
-						break;
-					case "GCM":
-						aeadBlockCipher = new GcmBlockCipher(blockCipher);
-						break;
-					case "GOFB":
-						blockCipher = new GOfbBlockCipher(blockCipher);
-						break;
-					case "OFB":
+					switch (cipherMode)
 					{
-						int bits = (di < 0)
-							?	8 * blockCipher.GetBlockSize()
-							:	int.Parse(mode.Substring(di));
-
-						blockCipher = new OfbBlockCipher(blockCipher, bits);
-						break;
-					}
-					case "OPENPGPCFB":
-						blockCipher = new OpenPgpCfbBlockCipher(blockCipher);
-						break;
-					case "SIC":
-						if (blockCipher.GetBlockSize() < 16)
+						case CipherMode.ECB:
+						case CipherMode.NONE:
+							break;
+						case CipherMode.CBC:
+							blockCipher = new CbcBlockCipher(blockCipher);
+							break;
+						case CipherMode.CCM:
+							aeadBlockCipher = new CcmBlockCipher(blockCipher);
+							break;
+						case CipherMode.CFB:
 						{
-							throw new ArgumentException("Warning: SIC-Mode can become a twotime-pad if the blocksize of the cipher is too small. Use a cipher with a block size of at least 128 bits (e.g. AES)");
+							int bits = (di < 0)
+								?	8 * blockCipher.GetBlockSize()
+								:	int.Parse(mode.Substring(di));
+	
+							blockCipher = new CfbBlockCipher(blockCipher, bits);
+							break;
 						}
-						blockCipher = new SicBlockCipher(blockCipher);
-						break;
-					default:
-						throw new SecurityUtilityException("Cipher " + algorithm + " not recognised.");
+						case CipherMode.CTR:
+							blockCipher = new SicBlockCipher(blockCipher);
+							break;
+						case CipherMode.CTS:
+							cts = true;
+							blockCipher = new CbcBlockCipher(blockCipher);
+							break;
+						case CipherMode.EAX:
+							aeadBlockCipher = new EaxBlockCipher(blockCipher);
+							break;
+						case CipherMode.GCM:
+							aeadBlockCipher = new GcmBlockCipher(blockCipher);
+							break;
+						case CipherMode.GOFB:
+							blockCipher = new GOfbBlockCipher(blockCipher);
+							break;
+						case CipherMode.OFB:
+						{
+							int bits = (di < 0)
+								?	8 * blockCipher.GetBlockSize()
+								:	int.Parse(mode.Substring(di));
+	
+							blockCipher = new OfbBlockCipher(blockCipher, bits);
+							break;
+						}
+						case CipherMode.OPENPGPCFB:
+							blockCipher = new OpenPgpCfbBlockCipher(blockCipher);
+							break;
+						case CipherMode.SIC:
+							if (blockCipher.GetBlockSize() < 16)
+							{
+								throw new ArgumentException("Warning: SIC-Mode can become a twotime-pad if the blocksize of the cipher is too small. Use a cipher with a block size of at least 128 bits (e.g. AES)");
+							}
+							blockCipher = new SicBlockCipher(blockCipher);
+							break;
+						default:
+							throw new SecurityUtilityException("Cipher " + algorithm + " not recognised.");
+					}
+				}
+				catch (ArgumentException)
+				{
+					throw new SecurityUtilityException("Cipher " + algorithm + " not recognised.");
 				}
 			}
 

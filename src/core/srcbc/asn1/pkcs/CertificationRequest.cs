@@ -25,12 +25,12 @@ namespace Org.BouncyCastle.Asn1.Pkcs
 			object obj)
 		{
 			if (obj is CertificationRequest)
-				return (CertificationRequest) obj;
+				return (CertificationRequest)obj;
 
-			if (obj is Asn1Sequence)
-				return new CertificationRequest((Asn1Sequence) obj);
+			if (obj != null)
+				return new CertificationRequest((Asn1Sequence)obj);
 
-			throw new ArgumentException("Unknown object in factory: " + obj.GetType().FullName, "obj");
+			return null;
 		}
 
 		protected CertificationRequest()

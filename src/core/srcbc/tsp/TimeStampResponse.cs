@@ -156,7 +156,10 @@ namespace Org.BouncyCastle.Tsp
 
 				if (scV1 != null && scV2 != null)
 				{
-					throw new TspValidationException("conflicting signing certificate attributes present.");
+					/*
+					 * RFC 5035 5.4. If both attributes exist in a single message,
+					 * they are independently evaluated. 
+					 */
 				}
 
 				if (request.ReqPolicy != null && !request.ReqPolicy.Equals(tstInfo.Policy))

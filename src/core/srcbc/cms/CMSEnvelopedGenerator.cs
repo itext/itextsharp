@@ -102,6 +102,8 @@ namespace Org.BouncyCastle.Cms
 		internal readonly IList recipientInfoGenerators = Platform.CreateArrayList();
 		internal readonly SecureRandom rand;
 
+        internal CmsAttributeTableGenerator unprotectedAttributeGenerator = null;
+
 		public CmsEnvelopedGenerator()
 			: this(new SecureRandom())
 		{
@@ -114,6 +116,12 @@ namespace Org.BouncyCastle.Cms
 		{
 			this.rand = rand;
 		}
+
+        public CmsAttributeTableGenerator UnprotectedAttributeGenerator
+        {
+            get { return this.unprotectedAttributeGenerator; }
+            set { this.unprotectedAttributeGenerator = value; }
+        }
 
 		/**
 		 * add a recipient.
@@ -255,7 +263,7 @@ namespace Org.BouncyCastle.Cms
 			recipientInfoGenerators.Add(karig);
 		}
 
-		protected internal virtual AlgorithmIdentifier GetAlgorithmIdentifier(
+        protected internal virtual AlgorithmIdentifier GetAlgorithmIdentifier(
 			string					encryptionOid,
 			KeyParameter			encKey,
 			Asn1Encodable			asn1Params,

@@ -13,12 +13,16 @@ using Org.BouncyCastle.Cms;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities;
+using Org.BouncyCastle.Utilities.Collections;
 using Org.BouncyCastle.X509;
 
 namespace Org.BouncyCastle.Tsp
 {
 	public class TspUtil
 	{
+		private static ISet EmptySet = CollectionUtilities.ReadOnly(new HashSet());
+		private static IList EmptyList = CollectionUtilities.ReadOnly(Platform.CreateArrayList());
+
 		private static readonly IDictionary digestLengths = Platform.CreateHashtable();
         private static readonly IDictionary digestNames = Platform.CreateHashtable();
 
@@ -30,6 +34,10 @@ namespace Org.BouncyCastle.Tsp
 			digestLengths.Add(NistObjectIdentifiers.IdSha256.Id, 32);
 			digestLengths.Add(NistObjectIdentifiers.IdSha384.Id, 48);
 			digestLengths.Add(NistObjectIdentifiers.IdSha512.Id, 64);
+			digestLengths.Add(TeleTrusTObjectIdentifiers.RipeMD128.Id, 16);
+			digestLengths.Add(TeleTrusTObjectIdentifiers.RipeMD160.Id, 20);
+			digestLengths.Add(TeleTrusTObjectIdentifiers.RipeMD256.Id, 32);
+			digestLengths.Add(CryptoProObjectIdentifiers.GostR3411.Id, 32);
 
 			digestNames.Add(PkcsObjectIdentifiers.MD5.Id, "MD5");
 			digestNames.Add(OiwObjectIdentifiers.IdSha1.Id, "SHA1");
@@ -152,19 +160,10 @@ namespace Org.BouncyCastle.Tsp
 		internal static int GetDigestLength(
 			string digestAlgOID)
 		{
-			try
-			{
-				if (digestLengths.Contains(digestAlgOID))
-				{
-					return (int) digestLengths[digestAlgOID];
-				}
+			if (!digestLengths.Contains(digestAlgOID))
+				throw new TspException("digest algorithm cannot be found.");
 
-				return CreateDigestInstance(digestAlgOID).GetDigestSize();
-			}
-			catch (SecurityUtilityException e)
-			{
-				throw new TspException("digest algorithm cannot be found.", e);
-			}
+			return (int)digestLengths[digestAlgOID];
 		}
 
 		internal static IDigest CreateDigestInstance(
@@ -173,6 +172,31 @@ namespace Org.BouncyCastle.Tsp
 	        string digestName = GetDigestAlgName(digestAlgOID);
 
 			return DigestUtilities.GetDigest(digestName);
+		}
+
+		internal static ISet GetCriticalExtensionOids(X509Extensions extensions)
+		{
+			if (extensions == null)
+				return EmptySet;
+
+			return CollectionUtilities.ReadOnly(new HashSet(extensions.GetCriticalExtensionOids()));
+		}
+
+		internal static ISet GetNonCriticalExtensionOids(X509Extensions extensions)
+		{
+			if (extensions == null)
+				return EmptySet;
+
+			// TODO: should probably produce a set that imposes correct ordering
+			return CollectionUtilities.ReadOnly(new HashSet(extensions.GetNonCriticalExtensionOids()));
+		}
+		
+		internal static IList GetExtensionOids(X509Extensions extensions)
+		{
+			if (extensions == null)
+				return EmptyList;
+
+			return CollectionUtilities.ReadOnly(Platform.CreateArrayList(extensions.GetExtensionOids()));
 		}
 	}
 }
