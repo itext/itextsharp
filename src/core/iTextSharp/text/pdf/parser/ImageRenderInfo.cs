@@ -55,12 +55,25 @@ namespace iTextSharp.text.pdf.parser {
         private Matrix ctm;
         /** A reference to the image XObject */
         private PdfIndirectReference refi;
+        /** A reference to an inline image */
+        private InlineImageInfo inlineImageInfo;
+        /** the color space associated with the image */
+        private PdfDictionary colorSpaceDictionary;
         /** the image object to be rendered, if it has been parsed already.  Null otherwise. */
         private PdfImageObject imageObject = null;
         
-        private ImageRenderInfo(Matrix ctm, PdfIndirectReference refi) {
+        private ImageRenderInfo(Matrix ctm, PdfIndirectReference refi, PdfDictionary colorSpaceDictionary) {
             this.ctm = ctm;
             this.refi = refi;
+            this.inlineImageInfo = null;
+            this.colorSpaceDictionary = colorSpaceDictionary;
+        }
+
+        private ImageRenderInfo(Matrix ctm, InlineImageInfo inlineImageInfo, PdfDictionary colorSpaceDictionary) {
+            this.ctm = ctm;
+            this.refi = null;
+            this.inlineImageInfo = inlineImageInfo;
+            this.colorSpaceDictionary = colorSpaceDictionary;
         }
         
         /**
@@ -70,8 +83,8 @@ namespace iTextSharp.text.pdf.parser {
          * @return the ImageRenderInfo representing the rendered XObject
          * @since 5.0.1
          */
-        public static ImageRenderInfo CreateForXObject(Matrix ctm, PdfIndirectReference refi){
-            return new ImageRenderInfo(ctm, refi);
+        public static ImageRenderInfo CreateForXObject(Matrix ctm, PdfIndirectReference refi, PdfDictionary colorSpaceDictionary){
+            return new ImageRenderInfo(ctm, refi, colorSpaceDictionary);
         }
         
         /**
@@ -82,9 +95,8 @@ namespace iTextSharp.text.pdf.parser {
          * @return the ImageRenderInfo representing the rendered embedded image
          * @since 5.0.1
          */
-        protected internal static ImageRenderInfo CreatedForEmbeddedImage(Matrix ctm, PdfImageObject imageObject){
-            ImageRenderInfo renderInfo = new ImageRenderInfo(ctm, null);
-            renderInfo.imageObject = imageObject;
+        protected internal static ImageRenderInfo CreateForEmbeddedImage(Matrix ctm, InlineImageInfo inlineImageInfo, PdfDictionary colorSpaceDictionary) {
+            ImageRenderInfo renderInfo = new ImageRenderInfo(ctm, inlineImageInfo, colorSpaceDictionary);
             return renderInfo;
         }
         
@@ -102,8 +114,12 @@ namespace iTextSharp.text.pdf.parser {
             if (imageObject != null)
                 return;
             
-            PRStream stream = (PRStream)PdfReader.GetPdfObject(refi);
-            imageObject = new PdfImageObject(stream);        
+            if (refi != null){
+                PRStream stream = (PRStream)PdfReader.GetPdfObject(refi);
+                imageObject = new PdfImageObject(stream, colorSpaceDictionary);
+            } else if (inlineImageInfo != null){
+                imageObject = new PdfImageObject(inlineImageInfo.ImageDictionary, inlineImageInfo.Samples, colorSpaceDictionary);
+            }
         }
         
         /**

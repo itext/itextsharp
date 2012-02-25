@@ -342,7 +342,6 @@ namespace iTextSharp.text.pdf.parser {
          * @param resources     the resources that come with the content stream
          */
         public void ProcessContent(byte[] contentBytes, PdfDictionary resources){
-
             this.resources.Push(resources);
             PRTokeniser tokeniser = new PRTokeniser(contentBytes);
             PdfContentParser ps = new PdfContentParser(tokeniser);
@@ -352,13 +351,12 @@ namespace iTextSharp.text.pdf.parser {
                 if ("BI".Equals(oper.ToString())){
                     // we don't call invokeOperator for embedded images - this is one area of the PDF spec that is particularly nasty and inconsistent
                     PdfDictionary colorSpaceDic = resources != null ? resources.GetAsDict(PdfName.COLORSPACE) : null;
-                    ImageRenderInfo renderInfo = ImageRenderInfo.CreatedForEmbeddedImage(Gs().ctm, InlineImageUtils.ParseInlineImage(ps, colorSpaceDic));
+                    ImageRenderInfo renderInfo = ImageRenderInfo.CreateForEmbeddedImage(Gs().ctm, InlineImageUtils.ParseInlineImage(ps, colorSpaceDic), colorSpaceDic);
                     renderListener.RenderImage(renderInfo);
                 } else {
                     InvokeOperator(oper, operands);
                 }
             }
-
             this.resources.Pop();
         }
         
@@ -820,7 +818,8 @@ namespace iTextSharp.text.pdf.parser {
         private class ImageXObjectDoHandler : IXObjectDoHandler{
 
             public void HandleXObject(PdfContentStreamProcessor processor, PdfStream xobjectStream, PdfIndirectReference refi) {
-                ImageRenderInfo renderInfo = ImageRenderInfo.CreateForXObject(processor.Gs().ctm, refi);
+                PdfDictionary colorSpaceDic = processor.resources.GetAsDict(PdfName.COLORSPACE);
+                ImageRenderInfo renderInfo = ImageRenderInfo.CreateForXObject(processor.Gs().ctm, refi, colorSpaceDic);
                 processor.renderListener.RenderImage(renderInfo);
             }
         }

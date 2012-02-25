@@ -1,12 +1,11 @@
 using System;
-using System.IO;
-using iTextSharp.text;
+using iTextSharp.text.pdf;
 /*
- * $Id:  $
+ * $Id: ImageRenderInfo.java 4972 2011-10-07 14:50:27Z blowagie $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2011 1T3XT BVBA
- * Authors: Bruno Lowagie, Paulo Soares, et al.
+ * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -44,79 +43,37 @@ using iTextSharp.text;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-namespace iTextSharp.text.pdf {
+namespace iTextSharp.text.pdf.parser {
 
     /**
-     * Wrapper class for PdfCopy and PdfSmartCopy.
-     * Allows you to concatenate existing PDF documents with much less code.
+     * Represents an inline image from a PDF
+     * @since 5.1.4
      */
-    public class PdfConcatenate {
-        /** The Document object for PdfCopy. */
-        protected internal Document document;
-        /** The actual PdfWriter */
-        protected internal PdfCopy copy;
+    public class InlineImageInfo {
+        private byte[] samples;
+        private PdfDictionary imageDictionary;
         
-        /**
-         * Creates an instance of the concatenation class.
-         * @param os    the Stream for the PDF document
-         */
-        public PdfConcatenate(Stream os) : this(os, false) {
-        }
-
-        /**
-         * Creates an instance of the concatenation class.
-         * @param os    the Stream for the PDF document
-         * @param smart do we want PdfCopy to detect redundant content?
-         */
-        public PdfConcatenate(Stream os, bool smart) {
-            document = new Document();
-            if (smart)
-                copy = new PdfSmartCopy(document, os);
-            else
-                copy = new PdfCopy(document, os);   
+        public InlineImageInfo(byte[] samples, PdfDictionary imageDictionary) {
+            this.samples = samples;
+            this.imageDictionary = imageDictionary;
         }
         
         /**
-         * Adds the pages from an existing PDF document.
-         * @param reader    the reader for the existing PDF document
-         * @return          the number of pages that were added
-         * @throws DocumentException
-         * @throws IOException
+         * @return the image dictionary associated with this inline image
          */
-        public int AddPages(PdfReader reader) {
-            Open();
-            int n = reader.NumberOfPages;
-            for (int i = 1; i <= n; i++) {
-                copy.AddPage(copy.GetImportedPage(reader, i));
-            }
-            copy.FreeReader(reader);
-            return n;
-        }
-        
-        /**
-         * Gets the PdfCopy instance so that you can add bookmarks or change preferences before you close PdfConcatenate.
-         */
-        public PdfCopy Writer {
+        public PdfDictionary ImageDictionary {
             get {
-                return copy;
+                return imageDictionary;
             }
         }
         
         /**
-         * Opens the document (if it isn't open already).
-         * Opening the document is done implicitly.
+         * @return the raw samples associated with this inline image
          */
-        public void Open() {
-            if (!document.IsOpen()) {
-                document.Open();
+        public byte[] Samples {
+            get {
+                return samples;
             }
-        }
-        
-        /**
-         * We've finished writing the concatenated document.
-         */
-        public void Close() {
-            document.Close();
         }
     }
 }

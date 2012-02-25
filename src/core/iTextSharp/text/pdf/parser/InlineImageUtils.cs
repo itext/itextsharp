@@ -129,10 +129,10 @@ namespace iTextSharp.text.pdf.parser {
          * @throws IOException if anything goes wring with the parsing
          * @throws InlineImageParseException if parsing of the inline image failed due to issues specific to inline image processing
          */
-        public static PdfImageObject ParseInlineImage(PdfContentParser ps, PdfDictionary colorSpaceDic) {
+        public static InlineImageInfo ParseInlineImage(PdfContentParser ps, PdfDictionary colorSpaceDic) {
             PdfDictionary inlineImageDictionary = ParseInlineImageDictionary(ps);
             byte[] samples = ParseInlineImageSamples(inlineImageDictionary, colorSpaceDic, ps);
-            return new PdfImageObject(inlineImageDictionary, samples, colorSpaceDic);
+            return new InlineImageInfo(samples, inlineImageDictionary);
         }
         
         /**

@@ -4113,6 +4113,7 @@
     <Compile Include="iTextSharp\text\pdf\LtvTimestamp.cs" />
     <Compile Include="iTextSharp\text\pdf\LtvVerification.cs" />
     <Compile Include="iTextSharp\text\pdf\NumberArray.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\InlineImageInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\InlineImageUtils.cs" />
     <Compile Include="iTextSharp\text\pdf\IPdfPTableEventSplit.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfConcatenate.cs" />
