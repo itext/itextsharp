@@ -6,8 +6,8 @@ using System.Runtime.CompilerServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly: AssemblyTitle("iTextAsianCmaps")]
-[assembly: AssemblyDescription("Extended CJK CMAPS for iTextSharp.")]
+[assembly: AssemblyTitle("iTextAsian")]
+[assembly: AssemblyDescription("CJK CMAPS for iTextSharp.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
