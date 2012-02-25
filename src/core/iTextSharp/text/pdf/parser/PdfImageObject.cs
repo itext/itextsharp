@@ -144,6 +144,15 @@ namespace iTextSharp.text.pdf.parser {
         }
         
         /**
+         * Creates a PdfImage object.
+         * @param stream a PRStream
+         * @param colorSpaceDic a color space dictionary
+         * @throws IOException
+         */
+        public PdfImageObject(PRStream stream, PdfDictionary colorSpaceDic) : this(stream, PdfReader.GetStreamBytesRaw(stream), colorSpaceDic) {
+        }
+
+        /**
          * Creats a PdfImage object using an explicitly provided dictionary and image bytes
          * @param dictionary the dictionary for the image
          * @param samples the samples

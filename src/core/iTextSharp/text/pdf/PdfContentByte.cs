@@ -703,6 +703,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void MoveTo(float x, float y) {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append(x).Append(' ').Append(y).Append(" m").Append_i(separator);
         }
     
@@ -715,6 +718,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void LineTo(float x, float y) {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append(x).Append(' ').Append(y).Append(" l").Append_i(separator);
         }
     
@@ -730,6 +736,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void CurveTo(float x1, float y1, float x2, float y2, float x3, float y3) {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append(x1).Append(' ').Append(y1).Append(' ').Append(x2).Append(' ').Append(y2).Append(' ').Append(x3).Append(' ').Append(y3).Append(" c").Append_i(separator);
         }
     
@@ -743,6 +752,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void CurveTo(float x2, float y2, float x3, float y3) {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append(x2).Append(' ').Append(y2).Append(' ').Append(x3).Append(' ').Append(y3).Append(" v").Append_i(separator);
         }
     
@@ -756,6 +768,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void CurveFromTo(float x1, float y1, float x3, float y3) {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append(x1).Append(' ').Append(y1).Append(' ').Append(x3).Append(' ').Append(y3).Append(" y").Append_i(separator);
         }
     
@@ -786,6 +801,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void Rectangle(float x, float y, float w, float h) {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append(x).Append(' ').Append(y).Append(' ').Append(w).Append(' ').Append(h).Append(" re").Append_i(separator);
         }
     
@@ -1019,6 +1037,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void ClosePath() {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append('h').Append_i(separator);
         }
     
@@ -1027,6 +1048,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void NewPath() {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append('n').Append_i(separator);
         }
     
@@ -1035,6 +1059,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void Stroke() {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append('S').Append_i(separator);
         }
     
@@ -1043,6 +1070,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void ClosePathStroke() {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append('s').Append_i(separator);
         }
     
@@ -1051,6 +1081,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void Fill() {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append('f').Append_i(separator);
         }
     
@@ -1059,6 +1092,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void EoFill() {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append("f*").Append_i(separator);
         }
     
@@ -1067,6 +1103,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void FillStroke() {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append('B').Append_i(separator);
         }
     
@@ -1075,6 +1114,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void ClosePathFillStroke() {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append('b').Append_i(separator);
         }
     
@@ -1083,6 +1125,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void EoFillStroke() {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append("B*").Append_i(separator);
         }
     
@@ -1091,6 +1136,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void ClosePathEoFillStroke() {
+            if (inText) {
+                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+            }
             content.Append("b*").Append_i(separator);
         }
     

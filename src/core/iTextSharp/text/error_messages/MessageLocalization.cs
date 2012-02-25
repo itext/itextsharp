@@ -97,73 +97,16 @@ namespace iTextSharp.text.error_messages {
         }
 
         /**
-        * Get a message without parameters.
+        * Get a message with parameters. The parameters will replace the strings
+        * "{1}", "{2}", ..., "{n}" found in the message.
         * @param key the key to the message
+        * @param p the variable parameter
         * @return the message
         */
-        public static String GetComposedMessage(String key) {
-            return GetComposedMessage(key, null, null);
-        }
-
-        /**
-        * Get a message with one parameter. The parameter will replace the string
-        * "{1}" found in the message.
-        * @param key the key to the message
-        * @param p1 the parameter
-        * @return the message
-        */
-        public static String GetComposedMessage(String key, Object p1) {
-            return GetComposedMessage(key, p1, null);
-        }
-
-        /**
-        * Get a message with one parameter. The parameter will replace the string
-        * "{1}", "{2}" found in the message.
-        * @param key the key to the message
-        * @param p1 the parameter
-        * @param p2 the parameter
-        * @return the message
-        */
-        public static String GetComposedMessage(String key, Object p1, Object p2) {
-            return GetComposedMessage(key, p1, p2, null, null);
-        }
-
-        /**
-        * Get a message with one parameter. The parameter will replace the string
-        * "{1}", "{2}", "{3}" found in the message.
-        * @param key the key to the message
-        * @param p1 the parameter
-        * @param p2 the parameter
-        * @param p3 the parameter
-        * @return the message
-        */
-        public static String GetComposedMessage(String key, Object p1, Object p2, Object p3) {
-            return GetComposedMessage(key, p1, p2, p3, null);
-        }
-
-        /**
-        * Get a message with two parameters. The parameters will replace the strings
-        * "{1}", "{2}", "{3}", "{4}" found in the message.
-        * @param key the key to the message
-        * @param p1 the parameter
-        * @param p2 the parameter
-        * @param p3 the parameter
-        * @param p4 the parameter
-        * @return the message
-        */
-        public static String GetComposedMessage(String key, Object p1, Object p2, Object p3, Object p4) {
+        public static String GetComposedMessage(String key, params object[] p) {
             String msg = GetMessage(key);
-            if (p1 != null) {
-                msg = msg.Replace("{1}", p1.ToString());
-            }
-            if (p2 != null) {
-                msg = msg.Replace("{2}", p2.ToString());
-            }
-            if (p3 != null) {
-                msg = msg.Replace("{3}", p3.ToString());
-            }
-            if (p4 != null) {
-                msg = msg.Replace("{4}", p4.ToString());
+            for (int k = 0; k < p.Length; ++k) {
+                msg = msg.Replace("{"+(k+1)+"}", p[k].ToString());
             }
             return msg;
         }
