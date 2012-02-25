@@ -19,17 +19,13 @@ namespace Org.BouncyCastle.Asn1.IsisMtt.X509
 		public static Restriction GetInstance(
 			object obj)
 		{
-			if (obj == null || obj is Restriction)
-			{
+			if (obj is Restriction)
 				return (Restriction) obj;
-			}
 
 			if (obj is IAsn1String)
-			{
 				return new Restriction(DirectoryString.GetInstance(obj));
-			}
 
-			throw new ArgumentException("unknown object in factory: " + obj.GetType().Name, "obj");
+			throw new ArgumentException("Unknown object in GetInstance: " + obj.GetType().Name, "obj");
 		}
 
 		/**

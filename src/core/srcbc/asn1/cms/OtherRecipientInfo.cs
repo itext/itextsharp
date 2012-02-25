@@ -51,14 +51,10 @@ namespace Org.BouncyCastle.Asn1.Cms
             object obj)
         {
             if (obj == null || obj is OtherRecipientInfo)
-            {
                 return (OtherRecipientInfo)obj;
-            }
 
 			if (obj is Asn1Sequence)
-            {
                 return new OtherRecipientInfo((Asn1Sequence)obj);
-            }
 
 			throw new ArgumentException("Invalid OtherRecipientInfo: " + obj.GetType().Name);
         }

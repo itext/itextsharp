@@ -81,29 +81,19 @@ namespace Org.BouncyCastle.Asn1.Cms
             object o)
         {
             if (o == null || o is OriginatorIdentifierOrKey)
-            {
                 return (OriginatorIdentifierOrKey)o;
-            }
 
 			if (o is IssuerAndSerialNumber)
-			{
 				return new OriginatorIdentifierOrKey((IssuerAndSerialNumber)o);
-			}
 
 			if (o is SubjectKeyIdentifier)
-			{
 				return new OriginatorIdentifierOrKey((SubjectKeyIdentifier)o);
-			}
 
 			if (o is OriginatorPublicKey)
-			{
 				return new OriginatorIdentifierOrKey((OriginatorPublicKey)o);
-			}
 
 			if (o is Asn1TaggedObject)
-			{
 				return new OriginatorIdentifierOrKey((Asn1TaggedObject)o);
-			}
 
 			throw new ArgumentException("Invalid OriginatorIdentifierOrKey: " + o.GetType().Name);
         }

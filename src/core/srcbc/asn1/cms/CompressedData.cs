@@ -65,14 +65,10 @@ namespace Org.BouncyCastle.Asn1.Cms
             object obj)
         {
             if (obj == null || obj is CompressedData)
-            {
                 return (CompressedData)obj;
-            }
 
-            if (obj is Asn1Sequence)
-            {
+			if (obj is Asn1Sequence)
                 return new CompressedData((Asn1Sequence) obj);
-            }
 
 			throw new ArgumentException("Invalid CompressedData: " + obj.GetType().Name);
         }

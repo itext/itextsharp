@@ -52,14 +52,10 @@ namespace Org.BouncyCastle.Asn1.Cms
             object obj)
         {
             if (obj == null || obj is OriginatorPublicKey)
-            {
                 return (OriginatorPublicKey)obj;
-            }
 
 			if (obj is Asn1Sequence)
-            {
                 return new OriginatorPublicKey((Asn1Sequence) obj);
-            }
 
 			throw new ArgumentException("Invalid OriginatorPublicKey: " + obj.GetType().Name);
         }

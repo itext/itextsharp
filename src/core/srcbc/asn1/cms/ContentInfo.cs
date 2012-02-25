@@ -15,14 +15,10 @@ namespace Org.BouncyCastle.Asn1.Cms
 			object obj)
 		{
 			if (obj == null || obj is ContentInfo)
-			{
 				return (ContentInfo) obj;
-			}
 
 			if (obj is Asn1Sequence)
-			{
 				return new ContentInfo((Asn1Sequence) obj);
-			}
 
 			throw new ArgumentException("unknown object in factory: " + obj.GetType().Name);
 		}

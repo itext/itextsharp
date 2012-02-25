@@ -38,6 +38,7 @@ namespace Org.BouncyCastle.Tsp
 		 * add a given extension field for the standard extensions tag (tag 3)
 		 * @throws IOException
 		 */
+		[Obsolete("Use method taking DerObjectIdentifier")]
 		public void AddExtension(
 			string			oid,
 			bool			critical,
@@ -51,6 +52,7 @@ namespace Org.BouncyCastle.Tsp
 		* The value parameter becomes the contents of the octet string associated
 		* with the extension.
 		*/
+		[Obsolete("Use method taking DerObjectIdentifier")]
 		public void AddExtension(
 			string	oid,
 			bool	critical,
@@ -59,6 +61,32 @@ namespace Org.BouncyCastle.Tsp
 			DerObjectIdentifier derOid = new DerObjectIdentifier(oid);
 			extensions[derOid] = new X509Extension(critical, new DerOctetString(value));
 			extOrdering.Add(derOid);
+		}
+
+		/**
+		 * add a given extension field for the standard extensions tag (tag 3)
+		 * @throws IOException
+		 */
+		public virtual void AddExtension(
+			DerObjectIdentifier	oid,
+			bool				critical,
+			Asn1Encodable 		extValue)
+		{
+			this.AddExtension(oid, critical, extValue.GetEncoded());
+		}
+
+		/**
+		 * add a given extension field for the standard extensions tag
+		 * The value parameter becomes the contents of the octet string associated
+		 * with the extension.
+		 */
+		public virtual void AddExtension(
+			DerObjectIdentifier	oid,
+			bool				critical,
+			byte[]				extValue)
+		{
+			extensions.Add(oid, new X509Extension(critical, new DerOctetString(extValue)));
+			extOrdering.Add(oid);
 		}
 
 		public TimeStampRequest Generate(
@@ -96,6 +124,16 @@ namespace Org.BouncyCastle.Tsp
 
 			return new TimeStampRequest(
 				new TimeStampReq(messageImprint, reqPolicy, derNonce, certReq, ext));
+		}
+
+		public virtual TimeStampRequest Generate(DerObjectIdentifier digestAlgorithm, byte[] digest)
+		{
+			return Generate(digestAlgorithm.Id, digest);
+		}
+
+		public virtual TimeStampRequest Generate(DerObjectIdentifier digestAlgorithm, byte[] digest, BigInteger nonce)
+		{
+			return Generate(digestAlgorithm.Id, digest, nonce);
 		}
 	}
 }

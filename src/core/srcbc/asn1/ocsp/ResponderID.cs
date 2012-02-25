@@ -56,6 +56,36 @@ namespace Org.BouncyCastle.Asn1.Ocsp
 			this.id = id;
         }
 
+		public static ResponderID GetInstance(
+			Asn1TaggedObject	obj,
+			bool				isExplicit)
+		{
+			return GetInstance(obj.GetObject()); // must be explicitly tagged
+		}
+
+		public virtual byte[] GetKeyHash()
+		{
+			if (id is Asn1OctetString)
+			{
+				return ((Asn1OctetString)id).GetOctets();
+			}
+
+			return null;
+		}
+
+		public virtual X509Name Name
+		{
+			get
+			{
+				if (id is Asn1OctetString)
+				{
+					return null;
+				}
+
+				return X509Name.GetInstance(id);
+			}
+		}
+
 		/**
          * Produce an object suitable for an Asn1OutputStream.
          * <pre>

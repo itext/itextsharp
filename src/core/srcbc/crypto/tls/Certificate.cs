@@ -76,7 +76,6 @@ namespace Org.BouncyCastle.Crypto.Tls
 				totalSize += encCert.Length + 3;
 			}
 
-			TlsUtilities.WriteUint24(totalSize + 3, outStr);
 			TlsUtilities.WriteUint24(totalSize, outStr);
 
 			foreach (byte[] encCert in encCerts)

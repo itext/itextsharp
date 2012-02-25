@@ -37,7 +37,7 @@ namespace Org.BouncyCastle.Asn1.X509
 			if (obj != null)
 				return new X509CertificateStructure(Asn1Sequence.GetInstance(obj));
 
-			throw new ArgumentException("null object in factory", "obj");
+			return null;
         }
 
 		public X509CertificateStructure(

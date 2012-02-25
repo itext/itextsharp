@@ -41,15 +41,16 @@ namespace Org.BouncyCastle.Security
 			// TODO Compared to JDK, we don't auto-seed if the client forgets - problem?
 
 			// TODO Support all digests more generally, by stripping PRNG and calling DigestUtilities?
+			string drgName = algorithm.ToUpper(CultureInfo.InvariantCulture);
+
 			IRandomGenerator drg = null;
-			switch (algorithm.ToUpper(CultureInfo.InvariantCulture))
+			if (drgName == "SHA1PRNG")
 			{
-				case "SHA1PRNG":
-					drg = sha1Generator;
-					break;
-				case "SHA256PRNG":
-					drg = sha256Generator;
-					break;
+				drg = sha1Generator;
+			}
+			else if (drgName == "SHA256PRNG")
+			{
+				drg = sha256Generator;
 			}
 
 			if (drg != null)

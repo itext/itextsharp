@@ -14,6 +14,7 @@ using Org.BouncyCastle.Crypto.IO;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Date;
 using Org.BouncyCastle.X509;
 
@@ -120,9 +121,17 @@ namespace Org.BouncyCastle.Cms
                 encAlgId,
                 encContent);
 
-            ContentInfo contentInfo = new ContentInfo(
+			Asn1Set unprotectedAttrSet = null;
+            if (unprotectedAttributeGenerator != null)
+            {
+                Asn1.Cms.AttributeTable attrTable = unprotectedAttributeGenerator.GetAttributes(Platform.CreateHashtable());
+
+                unprotectedAttrSet = new BerSet(attrTable.ToAsn1EncodableVector());
+            }
+
+			ContentInfo contentInfo = new ContentInfo(
                 CmsObjectIdentifiers.EnvelopedData,
-                new EnvelopedData(null, new DerSet(recipientInfos), eci, null));
+                new EnvelopedData(null, new DerSet(recipientInfos), eci, unprotectedAttrSet));
 
             return new CmsEnvelopedData(contentInfo);
         }

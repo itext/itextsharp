@@ -30,7 +30,7 @@ namespace Org.BouncyCastle.Cms
 			_bufSize = bufSize;
 		}
 
-		public virtual Stream Read()
+		public virtual Stream GetInputStream()
 		{
 			return new FileStream(
 				_file.FullName, FileMode.Open, FileAccess.Read, FileShare.Read, _bufSize);
@@ -39,12 +39,13 @@ namespace Org.BouncyCastle.Cms
 		public virtual void Write(
 			Stream zOut)
 		{
-			Stream inStr = Read();
+			Stream inStr = GetInputStream();
 			Streams.PipeAll(inStr, zOut);
 			inStr.Close();
 		}
 
 		/// <returns>The file handle</returns>
+		[Obsolete]
 		public virtual object GetContent()
 		{
 			return _file;

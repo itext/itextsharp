@@ -146,6 +146,11 @@ namespace Org.BouncyCastle.Asn1.Cms
 			get { return macAlgorithm; }
 		}
 
+        public AlgorithmIdentifier DigestAlgorithm
+        {
+            get { return digestAlgorithm; }
+        }
+
 		public ContentInfo EncapsulatedContentInfo
 		{
 			get { return encapsulatedContentInfo; }
@@ -196,8 +201,7 @@ namespace Org.BouncyCastle.Asn1.Cms
 				v.Add(new DerTaggedObject(false, 0, originatorInfo));
 			}
 
-			v.Add(recipientInfos);
-			v.Add(macAlgorithm);
+			v.Add(recipientInfos, macAlgorithm);
 
 			if (digestAlgorithm != null)
 			{

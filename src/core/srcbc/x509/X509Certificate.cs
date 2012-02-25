@@ -116,6 +116,11 @@ namespace Org.BouncyCastle.X509
 //        {
 //        }
 
+		public virtual X509CertificateStructure CertificateStructure
+		{
+			get { return c; }
+		}
+
 		/// <summary>
         /// Return true if the current time is within the start and end times nominated on the certificate.
         /// </summary>

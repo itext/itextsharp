@@ -211,5 +211,16 @@ namespace Org.BouncyCastle.Utilities
 		{
 			return data == null ? null : (int[]) data.Clone();
 		}
+
+		public static void Fill(
+			byte[]	buf,
+			byte	b)
+		{
+			int i = buf.Length;
+			while (i > 0)
+			{
+				buf[--i] = b;
+			}
+		}
 	}
 }

@@ -108,15 +108,30 @@ namespace Org.BouncyCastle.Asn1.Cms
 			throw new ArgumentException("Invalid EnvelopedData: " + obj.GetType().Name);
         }
 
-		public DerInteger Version { get { return version; } }
+		public DerInteger Version
+		{
+			get { return version; }
+		}
 
-		public OriginatorInfo OriginatorInfo { get { return originatorInfo; } }
+		public OriginatorInfo OriginatorInfo
+		{
+			get { return originatorInfo; }
+		}
 
-		public Asn1Set RecipientInfos { get { return recipientInfos; } }
+		public Asn1Set RecipientInfos
+		{
+			get { return recipientInfos; }
+		}
 
-		public EncryptedContentInfo EncryptedContentInfo { get { return encryptedContentInfo; } }
+		public EncryptedContentInfo EncryptedContentInfo
+		{
+			get { return encryptedContentInfo; }
+		}
 
-		public Asn1Set UnprotectedAttrs { get { return unprotectedAttrs; } }
+		public Asn1Set UnprotectedAttrs
+		{
+			get { return unprotectedAttrs; }
+		}
 
 		/**
          * Produce an object suitable for an Asn1OutputStream.

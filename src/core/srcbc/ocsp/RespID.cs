@@ -25,14 +25,7 @@ namespace Org.BouncyCastle.Ocsp
 		public RespID(
 			X509Name name)
 		{
-		    try
-		    {
-		        this.id = new ResponderID(name);
-		    }
-		    catch (Exception e)
-		    {
-		        throw new ArgumentException("can't decode name.", e);
-		    }
+	        this.id = new ResponderID(name);
 		}
 
 		public RespID(

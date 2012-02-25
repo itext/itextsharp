@@ -5,6 +5,6 @@ namespace Org.BouncyCastle.Cms
 {
 	internal interface CmsReadable
 	{
-		Stream Read();
+		Stream GetInputStream();
 	}
 }

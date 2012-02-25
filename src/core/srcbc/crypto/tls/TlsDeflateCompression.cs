@@ -37,6 +37,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			{
 				this.z = z;
 				this.compress = compress;
+                // TODO http://www.bolet.org/~pornin/deflate-flush.html says we should use Z_SYNC_FLUSH
 				this.FlushMode = JZlib.Z_PARTIAL_FLUSH;
 			}
 		}

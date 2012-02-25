@@ -20,14 +20,10 @@ namespace Org.BouncyCastle.Asn1.Cms
             object obj)
         {
             if (obj == null || obj is Attribute)
-			{
 				return (Attribute) obj;
-			}
 
 			if (obj is Asn1Sequence)
-            {
                 return new Attribute((Asn1Sequence) obj);
-            }
 
 			throw new ArgumentException("unknown object in factory: " + obj.GetType().Name, "obj");
         }
@@ -47,9 +43,15 @@ namespace Org.BouncyCastle.Asn1.Cms
             this.attrValues = attrValues;
         }
 
-        public DerObjectIdentifier AttrType { get { return attrType; } }
+        public DerObjectIdentifier AttrType
+		{
+			get { return attrType; }
+		}
 
-		public Asn1Set AttrValues { get { return attrValues; } }
+		public Asn1Set AttrValues
+		{
+			get { return attrValues; }
+		}
 
 		/**
         * Produce an object suitable for an Asn1OutputStream.

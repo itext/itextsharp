@@ -192,15 +192,7 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 
 			foreach (PgpSecretKey sk in secretRing.keys)
 			{
-				PgpPublicKey pk = null;
-				try
-				{
-					pk = publicRing.GetPublicKey(sk.KeyId);
-				}
-				catch (PgpException e)
-				{
-					throw new InvalidOperationException(e.Message, e);
-				}
+				PgpPublicKey pk = publicRing.GetPublicKey(sk.KeyId);
 
 				newList.Add(PgpSecretKey.ReplacePublicKey(sk, pk));
 			}

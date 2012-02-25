@@ -70,7 +70,8 @@ namespace Org.BouncyCastle.Asn1.X509
 		private SubjectDirectoryAttributes(
 			Asn1Sequence seq)
 		{
-			foreach (object o in seq)
+            this.attributes = Platform.CreateArrayList();
+            foreach (object o in seq)
 			{
 				Asn1Sequence s = Asn1Sequence.GetInstance(o);
 				attributes.Add(AttributeX509.GetInstance(s));

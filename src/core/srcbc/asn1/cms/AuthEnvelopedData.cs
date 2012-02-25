@@ -114,14 +114,10 @@ namespace Org.BouncyCastle.Asn1.Cms
 			object	obj)
 		{
 			if (obj == null || obj is AuthEnvelopedData)
-			{
 				return (AuthEnvelopedData)obj;
-			}
 
 			if (obj is Asn1Sequence)
-			{
 				return new AuthEnvelopedData((Asn1Sequence)obj);
-			}
 
 			throw new ArgumentException("Invalid AuthEnvelopedData: " + obj.GetType().Name);
 		}
@@ -182,10 +178,9 @@ namespace Org.BouncyCastle.Asn1.Cms
 			{
 				v.Add(new DerTaggedObject(false, 0, originatorInfo));
 			}
-			
-			v.Add(recipientInfos);
-			v.Add(authEncryptedContentInfo);
-			
+
+			v.Add(recipientInfos, authEncryptedContentInfo);
+
 			// "authAttrs optionally contains the authenticated attributes."
 			if (authAttrs != null)
 			{
@@ -193,15 +188,15 @@ namespace Org.BouncyCastle.Asn1.Cms
 				// AuthEnvelopedData structure is BER encoded."
 				v.Add(new DerTaggedObject(false, 1, authAttrs));
 			}
-			
+
 			v.Add(mac);
-			
+
 			// "unauthAttrs optionally contains the unauthenticated attributes."
 			if (unauthAttrs != null)
 			{
 				v.Add(new DerTaggedObject(false, 2, unauthAttrs));
 			}
-			
+
 			return new BerSequence(v);
 		}
 	}

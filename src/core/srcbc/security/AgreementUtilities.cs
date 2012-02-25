@@ -47,18 +47,17 @@ namespace Org.BouncyCastle.Security
 				mechanism = upper;
 			}
 
-			switch (mechanism)
-			{
-				case "DH":
-				case "DIFFIEHELLMAN":
-					return new DHBasicAgreement();
-				case "ECDH":
-					return new ECDHBasicAgreement();
-				case "ECDHC":
-					return new ECDHCBasicAgreement();
-				case "ECMQV":
-					return new ECMqvBasicAgreement();
-			}
+			if (mechanism == "DH" || mechanism == "DIFFIEHELLMAN")
+				return new DHBasicAgreement();
+
+			if (mechanism == "ECDH")
+				return new ECDHBasicAgreement();
+
+			if (mechanism == "ECDHC")
+				return new ECDHCBasicAgreement();
+
+			if (mechanism == "ECMQV")
+				return new ECMqvBasicAgreement();
 
 			throw new SecurityUtilityException("Basic Agreement " + algorithm + " not recognised.");
 		}
@@ -82,21 +81,18 @@ namespace Org.BouncyCastle.Security
 				mechanism = upper;
 			}
 
-			switch (mechanism)
-			{
-				// 'DHWITHSHA1KDF' retained for backward compatibility
-				case "DHWITHSHA1KDF":
-				case "ECDHWITHSHA1KDF":
-					return new ECDHWithKdfBasicAgreement(
-						wrapAlgorithm,
-						new ECDHKekGenerator(
-							new Sha1Digest()));
-				case "ECMQVWITHSHA1KDF":
-					return new ECMqvWithKdfBasicAgreement(
-						wrapAlgorithm,
-						new ECDHKekGenerator(
-							new Sha1Digest()));
-			}
+			// 'DHWITHSHA1KDF' retained for backward compatibility
+			if (mechanism == "DHWITHSHA1KDF" || mechanism == "ECDHWITHSHA1KDF")
+				return new ECDHWithKdfBasicAgreement(
+					wrapAlgorithm,
+					new ECDHKekGenerator(
+						new Sha1Digest()));
+
+			if (mechanism == "ECMQVWITHSHA1KDF")
+				return new ECMqvWithKdfBasicAgreement(
+					wrapAlgorithm,
+					new ECDHKekGenerator(
+						new Sha1Digest()));
 
 			throw new SecurityUtilityException("Basic Agreement (with KDF) " + agreeAlgorithm + " not recognised.");
 		}

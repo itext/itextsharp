@@ -20,11 +20,13 @@ namespace Org.BouncyCastle.Tsp
 		: X509ExtensionBase
 	{
 		private TimeStampReq req;
+		private X509Extensions extensions;
 
 		public TimeStampRequest(
 			TimeStampReq req)
 		{
 			this.req = req;
+			this.extensions = req.Extensions;
 		}
 
 		/**
@@ -169,6 +171,21 @@ namespace Org.BouncyCastle.Tsp
 		internal X509Extensions Extensions
 		{
 			get { return req.Extensions; }
+		}
+		
+		public virtual bool HasExtensions
+		{
+			get { return extensions != null; }
+		}
+
+		public virtual X509Extension GetExtension(DerObjectIdentifier oid)
+		{
+			return extensions == null ? null : extensions.GetExtension(oid);
+		}
+
+		public virtual IList GetExtensionOids()
+		{
+			return TspUtil.GetExtensionOids(extensions);
 		}
 
 		protected override X509Extensions GetX509Extensions()

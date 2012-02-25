@@ -95,7 +95,7 @@ namespace Org.BouncyCastle.Crypto.Signers
 
 				BigInteger d = ((ECPrivateKeyParameters)key).D;
 
-				s = k.ModInverse(n).Multiply(e.Add(d.Multiply(r))).Mod(n);
+				s = k.ModInverse(n).Multiply(e.Add(d.Multiply(r).Mod(n))).Mod(n);
 			}
 			while (s.SignValue == 0);
 

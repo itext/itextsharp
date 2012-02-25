@@ -89,8 +89,7 @@ namespace Org.BouncyCastle.Cms
 			internal SignerInfo ToSignerInfo(
                 DerObjectIdentifier	contentType,
                 CmsProcessable		content,
-				SecureRandom		random,
-				bool				isCounterSignature)
+				SecureRandom		random)
             {
                 AlgorithmIdentifier digAlgId = DigestAlgorithmID;
 				string digestName = Helper.GetDigestAlgName(digestOID);
@@ -123,12 +122,15 @@ namespace Org.BouncyCastle.Cms
 //					Asn1.Cms.AttributeTable signed = sAttr.GetAttributes(Collections.unmodifiableMap(parameters));
 					Asn1.Cms.AttributeTable signed = sAttr.GetAttributes(parameters);
 
-					if (isCounterSignature)
-					{
-						IDictionary tmpSigned = signed.ToDictionary();
-						tmpSigned.Remove(CmsAttributes.ContentType);
-						signed = new Asn1.Cms.AttributeTable(tmpSigned);
-					}
+                    if (contentType == null) //counter signature
+                    {
+                        if (signed != null && signed[CmsAttributes.ContentType] != null)
+                        {
+                            IDictionary tmpSigned = signed.ToDictionary();
+                            tmpSigned.Remove(CmsAttributes.ContentType);
+                            signed = new Asn1.Cms.AttributeTable(tmpSigned);
+                        }
+                    }
 
 					// TODO Validate proposed signed attributes
 
@@ -442,18 +444,18 @@ namespace Org.BouncyCastle.Cms
 			//
             // add the SignerInfo objects
             //
-			bool isCounterSignature = (signedContentType == null);
+            bool isCounterSignature = (signedContentType == null);
 
-			DerObjectIdentifier contentTypeOID = isCounterSignature
-				?	CmsObjectIdentifiers.Data
+            DerObjectIdentifier contentTypeOid = isCounterSignature
+                ?   null
 				:	new DerObjectIdentifier(signedContentType);
 
-			foreach (SignerInf signer in signerInfs)
+            foreach (SignerInf signer in signerInfs)
             {
 				try
                 {
 					digestAlgs.Add(signer.DigestAlgorithmID);
-					signerInfos.Add(signer.ToSignerInfo(contentTypeOID, content, rand, isCounterSignature));
+                    signerInfos.Add(signer.ToSignerInfo(contentTypeOid, content, rand));
 				}
                 catch (IOException e)
                 {
@@ -505,7 +507,7 @@ namespace Org.BouncyCastle.Cms
 				octs = new BerOctetString(bOut.ToArray());
             }
 
-			ContentInfo encInfo = new ContentInfo(contentTypeOID, octs);
+            ContentInfo encInfo = new ContentInfo(contentTypeOid, octs);
 
             SignedData sd = new SignedData(
                 new DerSet(digestAlgs),

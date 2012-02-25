@@ -1,4 +1,5 @@
-﻿using System.Collections;
+using System;
+using System.Collections;
 using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
@@ -19,6 +20,15 @@ namespace Org.BouncyCastle.Security
     /// </remarks>
     public sealed class DigestUtilities
     {
+		private enum DigestAlgorithm {
+			GOST3411,
+			MD2, MD4, MD5,
+			RIPEMD128, RIPEMD160, RIPEMD256, RIPEMD320,
+			SHA_1, SHA_224, SHA_256, SHA_384, SHA_512,
+			TIGER,
+			WHIRLPOOL,
+		};
+
 		private DigestUtilities()
 		{
 		}
@@ -28,6 +38,9 @@ namespace Org.BouncyCastle.Security
 
         static DigestUtilities()
         {
+			// Signal to obfuscation tools not to change enum constants
+			((DigestAlgorithm)Enums.GetArbitraryValue(typeof(DigestAlgorithm))).ToString();
+			
             algorithms[PkcsObjectIdentifiers.MD2.Id] = "MD2";
             algorithms[PkcsObjectIdentifiers.MD4.Id] = "MD4";
             algorithms[PkcsObjectIdentifiers.MD5.Id] = "MD5";
@@ -113,26 +126,35 @@ namespace Org.BouncyCastle.Security
 				mechanism = upper;
 			}
 
-			switch (mechanism)
+			try
 			{
-				case "GOST3411":	return new Gost3411Digest();
-				case "MD2":			return new MD2Digest();
-				case "MD4":			return new MD4Digest();
-				case "MD5":			return new MD5Digest();
-				case "RIPEMD128":	return new RipeMD128Digest();
-				case "RIPEMD160":	return new RipeMD160Digest();
-				case "RIPEMD256":	return new RipeMD256Digest();
-				case "RIPEMD320":	return new RipeMD320Digest();
-				case "SHA-1":		return new Sha1Digest();
-				case "SHA-224":		return new Sha224Digest();
-				case "SHA-256":		return new Sha256Digest();
-				case "SHA-384":		return new Sha384Digest();
-				case "SHA-512":		return new Sha512Digest();
-				case "TIGER":		return new TigerDigest();
-				case "WHIRLPOOL":	return new WhirlpoolDigest();
-				default:
-					throw new SecurityUtilityException("Digest " + mechanism + " not recognised.");
+				DigestAlgorithm digestAlgorithm = (DigestAlgorithm)Enums.GetEnumValue(
+					typeof(DigestAlgorithm), mechanism);
+
+				switch (digestAlgorithm)
+				{
+					case DigestAlgorithm.GOST3411:	return new Gost3411Digest();
+					case DigestAlgorithm.MD2:		return new MD2Digest();
+					case DigestAlgorithm.MD4:		return new MD4Digest();
+					case DigestAlgorithm.MD5:		return new MD5Digest();
+					case DigestAlgorithm.RIPEMD128:	return new RipeMD128Digest();
+					case DigestAlgorithm.RIPEMD160:	return new RipeMD160Digest();
+					case DigestAlgorithm.RIPEMD256:	return new RipeMD256Digest();
+					case DigestAlgorithm.RIPEMD320:	return new RipeMD320Digest();
+					case DigestAlgorithm.SHA_1:		return new Sha1Digest();
+					case DigestAlgorithm.SHA_224:	return new Sha224Digest();
+					case DigestAlgorithm.SHA_256:	return new Sha256Digest();
+					case DigestAlgorithm.SHA_384:	return new Sha384Digest();
+					case DigestAlgorithm.SHA_512:	return new Sha512Digest();
+					case DigestAlgorithm.TIGER:		return new TigerDigest();
+					case DigestAlgorithm.WHIRLPOOL:	return new WhirlpoolDigest();
+				}
 			}
+			catch (ArgumentException)
+			{
+			}
+
+			throw new SecurityUtilityException("Digest " + mechanism + " not recognised.");
         }
 
 		public static string GetAlgorithmName(

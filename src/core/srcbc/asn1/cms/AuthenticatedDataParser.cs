@@ -97,6 +97,24 @@ namespace Org.BouncyCastle.Asn1.Cms
 	        return null;
 	    }
 
+		public AlgorithmIdentifier GetDigestAlgorithm()
+		{
+			if (nextObject == null)
+			{
+				nextObject = seq.ReadObject();
+			}
+
+			if (nextObject is Asn1TaggedObjectParser)
+			{
+				AlgorithmIdentifier obj = AlgorithmIdentifier.GetInstance(
+					(Asn1TaggedObject)nextObject.ToAsn1Object(), false);
+				nextObject = null;
+				return obj;
+			}
+
+			return null;
+		}
+
 	    public ContentInfoParser GetEnapsulatedContentInfo()
 	    {
 	        if (nextObject == null)

@@ -37,30 +37,25 @@ namespace Org.BouncyCastle.Asn1.Cms
             object o)
         {
             if (o == null || o is RecipientIdentifier)
-            {
                 return (RecipientIdentifier)o;
-            }
 
 			if (o is IssuerAndSerialNumber)
-            {
                 return new RecipientIdentifier((IssuerAndSerialNumber) o);
-            }
 
 			if (o is Asn1OctetString)
-            {
                 return new RecipientIdentifier((Asn1OctetString) o);
-            }
 
 			if (o is Asn1Object)
-            {
                 return new RecipientIdentifier((Asn1Object) o);
-            }
 
 			throw new ArgumentException(
               "Illegal object in RecipientIdentifier: " + o.GetType().Name);
         }
 
-		public bool IsTagged { get { return (id is Asn1TaggedObject); } }
+		public bool IsTagged
+		{
+			get { return (id is Asn1TaggedObject); }
+		}
 
 		public Asn1Encodable ID
         {

@@ -162,7 +162,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return bytes;
 		}
 
-		internal static void CheckVersion(byte[] readVersion, TlsProtocolHandler handler)
+		internal static void CheckVersion(byte[] readVersion)
 		{
 			if ((readVersion[0] != 3) || (readVersion[1] != 1))
 			{
@@ -170,7 +170,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			}
 		}
 
-		internal static void CheckVersion(Stream inStr, TlsProtocolHandler handler)
+		internal static void CheckVersion(Stream inStr)
 		{
 			int i1 = inStr.ReadByte();
 			int i2 = inStr.ReadByte();
@@ -244,6 +244,16 @@ namespace Org.BouncyCastle.Crypto.Tls
 			{
 				buf[i] ^= prf[i];
 			}
+			return buf;
+		}
+
+		internal static byte[] PRF_1_2(IDigest digest, byte[] secret, string asciiLabel, byte[] seed, int size)
+		{
+            byte[] label = Strings.ToAsciiByteArray(asciiLabel);
+			byte[] labelSeed = Concat(label, seed);
+
+			byte[] buf = new byte[size];
+			hmac_hash(digest, secret, labelSeed, buf);
 			return buf;
 		}
 

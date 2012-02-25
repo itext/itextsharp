@@ -167,14 +167,22 @@ namespace Org.BouncyCastle.Cms
 					Asn1Set signedAttr = null;
 					if (_sAttr != null)
 					{
-						IDictionary parameters = outer.GetBaseParameters(
-							contentType, digestAlgorithm, calculatedDigest);
+						IDictionary parameters = outer.GetBaseParameters(contentType, digestAlgorithm, calculatedDigest);
+
 //						Asn1.Cms.AttributeTable signed = _sAttr.GetAttributes(Collections.unmodifiableMap(parameters));
 						Asn1.Cms.AttributeTable signed = _sAttr.GetAttributes(parameters);
 
-						// TODO Handle countersignatures (see CMSSignedDataGenerator)
+                        if (contentType == null) //counter signature
+                        {
+                            if (signed != null && signed[CmsAttributes.ContentType] != null)
+                            {
+                                IDictionary tmpSigned = signed.ToDictionary();
+                                tmpSigned.Remove(CmsAttributes.ContentType);
+                                signed = new Asn1.Cms.AttributeTable(tmpSigned);
+                            }
+                        }
 
-						signedAttr = outer.GetAttributeSet(signed);
+                        signedAttr = outer.GetAttributeSet(signed);
 
                 		// sig must be composed from the DER encoding.
 						bytesToSign = signedAttr.GetEncoded(Asn1Encodable.Der);
@@ -546,7 +554,13 @@ namespace Org.BouncyCastle.Cms
             BerSequenceGenerator sigGen = new BerSequenceGenerator(
 				sGen.GetRawOutputStream(), 0, true);
 
-			sigGen.AddObject(CalculateVersion(signedContentType));
+            bool isCounterSignature = (signedContentType == null);
+
+            DerObjectIdentifier contentTypeOid = isCounterSignature
+                ? null
+                : new DerObjectIdentifier(signedContentType);
+
+            sigGen.AddObject(CalculateVersion(contentTypeOid));
 
 			Asn1EncodableVector digestAlgs = new Asn1EncodableVector();
 
@@ -562,7 +576,7 @@ namespace Org.BouncyCastle.Cms
 			}
 
 			BerSequenceGenerator eiGen = new BerSequenceGenerator(sigGen.GetRawOutputStream());
-			eiGen.AddObject(new DerObjectIdentifier(signedContentType));
+            eiGen.AddObject(contentTypeOid);
 
         	// If encapsulating, add the data as an octet string in the sequence
 			Stream encapStream = encapsulate
@@ -644,7 +658,7 @@ namespace Org.BouncyCastle.Cms
 		//       ELSE version MUST be 1
 		//
 		private DerInteger CalculateVersion(
-			string contentOid)
+			DerObjectIdentifier contentOid)
 		{
 			bool otherCert = false;
 			bool otherCrl = false;
@@ -703,18 +717,12 @@ namespace Org.BouncyCastle.Cms
 				return new DerInteger(4);
 			}
 
-			if (attrCertV1Found)
-			{
-				return new DerInteger(3);
-			}
+            if (attrCertV1Found || !CmsObjectIdentifiers.Data.Equals(contentOid) || CheckForVersion3(_signers))
+            {
+                return new DerInteger(3);
+            }
 
-			if (contentOid.Equals(Data)
-				&& !CheckForVersion3(_signers))
-			{
-				return new DerInteger(1);
-			}
-
-			return new DerInteger(3);
+            return new DerInteger(1);
         }
 
 		private bool CheckForVersion3(
@@ -804,6 +812,9 @@ namespace Org.BouncyCastle.Cms
 			public override void Close()
             {
                 _out.Close();
+
+				// TODO Parent context(s) should really be be closed explicitly
+
                 _eiGen.Close();
 
 				outer._digests.Clear();    // clear the current preserved digest state

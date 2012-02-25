@@ -33,6 +33,11 @@ namespace Org.BouncyCastle.Utilities.Collections
 			return d.GetEnumerator();
 		}
 
+		public override bool IsFixedSize
+		{
+			get { return d.IsFixedSize; }
+		}
+
 		public override bool IsSynchronized
 		{
 			get { return d.IsSynchronized; }

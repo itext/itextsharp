@@ -31,7 +31,7 @@ namespace Org.BouncyCastle.Crypto.Agreement.Srp
 	        digest.BlockUpdate(output, 0, output.Length);
 	        digest.DoFinal(output, 0);
 
-	        return new BigInteger(1, output).Mod(N);
+	        return new BigInteger(1, output);
 	    }
 
 		public static BigInteger GeneratePrivateValue(IDigest digest, BigInteger N, BigInteger g, SecureRandom random)
@@ -67,7 +67,7 @@ namespace Org.BouncyCastle.Crypto.Agreement.Srp
 	        byte[] output = new byte[digest.GetDigestSize()];
 	        digest.DoFinal(output, 0);
 
-	        return new BigInteger(1, output).Mod(N);
+	        return new BigInteger(1, output);
 		}
 
 		private static byte[] GetPadded(BigInteger n, int length)

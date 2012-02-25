@@ -20,17 +20,13 @@ namespace Org.BouncyCastle.Asn1.IsisMtt.X509
 		public static AdditionalInformationSyntax GetInstance(
 			object obj)
 		{
-			if (obj == null || obj is AdditionalInformationSyntax)
-			{
+			if (obj is AdditionalInformationSyntax)
 				return (AdditionalInformationSyntax) obj;
-			}
 
 			if (obj is IAsn1String)
-			{
 				return new AdditionalInformationSyntax(DirectoryString.GetInstance(obj));
-			}
 
-			throw new ArgumentException("unknown object in factory: " + obj.GetType().Name, "obj");
+			throw new ArgumentException("Unknown object in GetInstance: " + obj.GetType().Name, "obj");
 		}
 
 		private AdditionalInformationSyntax(

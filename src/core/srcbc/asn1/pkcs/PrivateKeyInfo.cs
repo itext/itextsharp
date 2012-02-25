@@ -15,19 +15,15 @@ namespace Org.BouncyCastle.Asn1.Pkcs
 		private readonly Asn1Set				attributes;
 
 		public static PrivateKeyInfo GetInstance(
-            object obj)
-        {
-            if (obj is PrivateKeyInfo || obj == null)
-            {
-                return (PrivateKeyInfo) obj;
-            }
+			object obj)
+		{
+			if (obj is PrivateKeyInfo)
+				return (PrivateKeyInfo) obj;
 
 			if (obj != null)
-			{
 				return new PrivateKeyInfo(Asn1Sequence.GetInstance(obj));
-			}
 
-        	throw new ArgumentException("null object in factory");
+			return null;
 		}
 
 		public PrivateKeyInfo(

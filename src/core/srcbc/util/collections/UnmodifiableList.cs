@@ -10,12 +10,12 @@ namespace Org.BouncyCastle.Utilities.Collections
 		{
 		}
 
-		public int Add(object o)
+		public virtual int Add(object o)
 		{
 			throw new NotSupportedException();
 		}
-		
-		public void Clear()
+
+		public virtual void Clear()
 		{
 			throw new NotSupportedException();
 		}
@@ -30,36 +30,33 @@ namespace Org.BouncyCastle.Utilities.Collections
 
 		public abstract int IndexOf(object o);
 
-		public void Insert(int i, object o)
+		public virtual void Insert(int i, object o)
 		{
 			throw new NotSupportedException();
 		}
 
-		public bool IsFixedSize
-		{
-			get { return true; }
-		}
+		public abstract bool IsFixedSize { get; }
 
-		public bool IsReadOnly
+		public virtual bool IsReadOnly
 		{
 			get { return true; }
 		}
 
 		public abstract bool IsSynchronized { get; }
 
-		public void Remove(object o)
+		public virtual void Remove(object o)
 		{
 			throw new NotSupportedException();
 		}
 
-		public void RemoveAt(int i)
+		public virtual void RemoveAt(int i)
 		{
 			throw new NotSupportedException();
 		}
 
 		public abstract object SyncRoot { get; }
 		
-		public object this[int i]
+		public virtual object this[int i]
 		{
 			get { return GetValue(i); }
 			set { throw new NotSupportedException(); }

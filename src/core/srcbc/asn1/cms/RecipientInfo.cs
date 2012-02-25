@@ -49,19 +49,13 @@ namespace Org.BouncyCastle.Asn1.Cms
             object o)
         {
             if (o == null || o is RecipientInfo)
-            {
                 return (RecipientInfo) o;
-            }
 
 			if (o is Asn1Sequence)
-            {
                 return new RecipientInfo((Asn1Sequence) o);
-            }
 
 			if (o is Asn1TaggedObject)
-            {
                 return new RecipientInfo((Asn1TaggedObject) o);
-            }
 
 			throw new ArgumentException("unknown object in factory: " + o.GetType().Name);
         }

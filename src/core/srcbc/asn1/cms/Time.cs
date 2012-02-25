@@ -54,20 +54,14 @@ namespace Org.BouncyCastle.Asn1.Cms
 		public static Time GetInstance(
             object obj)
         {
-            if (obj is Time)
-            {
+            if (obj == null || obj is Time)
                 return (Time)obj;
-            }
 
 			if (obj is DerUtcTime)
-            {
                 return new Time((DerUtcTime)obj);
-            }
 
 			if (obj is DerGeneralizedTime)
-            {
                 return new Time((DerGeneralizedTime)obj);
-            }
 
 			throw new ArgumentException("unknown object in factory: " + obj.GetType().Name, "obj");
         }

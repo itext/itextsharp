@@ -7,6 +7,32 @@ namespace Org.BouncyCastle.Crypto.Utilities
 		private Pack()
 		{
 		}
+		
+		internal static void UInt16_To_BE(ushort n, byte[] bs)
+		{
+			bs[0] = (byte)(n >>  8);
+			bs[1] = (byte)(n      );
+		}
+
+		internal static void UInt16_To_BE(ushort n, byte[] bs, int off)
+		{
+			bs[  off] = (byte)(n >>  8);
+			bs[++off] = (byte)(n      );
+		}
+
+		internal static ushort BE_To_UInt16(byte[] bs)
+		{
+			uint n = (uint)bs[0] << 8;
+			n |= (uint)bs[1];
+			return (ushort)n;
+		}
+
+		internal static ushort BE_To_UInt16(byte[] bs, int off)
+		{
+			uint n = (uint)bs[off] << 8;
+			n |= (uint)bs[++off];
+			return (ushort)n;
+		}
 
 		internal static void UInt32_To_BE(uint n, byte[] bs)
 		{
@@ -22,6 +48,15 @@ namespace Org.BouncyCastle.Crypto.Utilities
 			bs[++off] = (byte)(n >> 16);
 			bs[++off] = (byte)(n >>  8);
 			bs[++off] = (byte)(n      );
+		}
+
+		internal static void UInt32_To_BE(uint[] ns, byte[] bs, int off)
+		{
+			for (int i = 0; i < ns.Length; ++i)
+			{
+				UInt32_To_BE(ns[i], bs, off);
+				off += 4;
+			}
 		}
 
 		internal static uint BE_To_UInt32(byte[] bs)
@@ -40,6 +75,15 @@ namespace Org.BouncyCastle.Crypto.Utilities
 			n |= (uint)bs[++off] << 8;
 			n |= (uint)bs[++off];
 			return n;
+		}
+
+		internal static void BE_To_UInt32(byte[] bs, int off, uint[] ns)
+		{
+			for (int i = 0; i < ns.Length; ++i)
+			{
+				ns[i] = BE_To_UInt32(bs, off);
+				off += 4;
+			}
 		}
 
 		internal static ulong BE_To_UInt64(byte[] bs)
@@ -68,6 +112,32 @@ namespace Org.BouncyCastle.Crypto.Utilities
 	        UInt32_To_BE((uint)(n      ), bs, off + 4);
 	    }
 
+		internal static void UInt16_To_LE(ushort n, byte[] bs)
+		{
+			bs[0] = (byte)(n      );
+			bs[1] = (byte)(n >>  8);
+		}
+
+		internal static void UInt16_To_LE(ushort n, byte[] bs, int off)
+		{
+			bs[  off] = (byte)(n      );
+			bs[++off] = (byte)(n >>  8);
+		}
+
+		internal static ushort LE_To_UInt16(byte[] bs)
+		{
+			uint n = (uint)bs[0];
+			n |= (uint)bs[1] << 8;
+			return (ushort)n;
+		}
+
+		internal static ushort LE_To_UInt16(byte[] bs, int off)
+		{
+			uint n = (uint)bs[off];
+			n |= (uint)bs[++off] << 8;
+			return (ushort)n;
+		}
+
 		internal static void UInt32_To_LE(uint n, byte[] bs)
 		{
 			bs[0] = (byte)(n      );
@@ -82,6 +152,15 @@ namespace Org.BouncyCastle.Crypto.Utilities
 			bs[++off] = (byte)(n >>  8);
 			bs[++off] = (byte)(n >> 16);
 			bs[++off] = (byte)(n >> 24);
+		}
+
+		internal static void UInt32_To_LE(uint[] ns, byte[] bs, int off)
+		{
+			for (int i = 0; i < ns.Length; ++i)
+			{
+				UInt32_To_LE(ns[i], bs, off);
+				off += 4;
+			}
 		}
 
 		internal static uint LE_To_UInt32(byte[] bs)
@@ -100,6 +179,15 @@ namespace Org.BouncyCastle.Crypto.Utilities
 			n |= (uint)bs[++off] << 16;
 			n |= (uint)bs[++off] << 24;
 			return n;
+		}
+
+		internal static void LE_To_UInt32(byte[] bs, int off, uint[] ns)
+		{
+			for (int i = 0; i < ns.Length; ++i)
+			{
+				ns[i] = LE_To_UInt32(bs, off);
+				off += 4;
+			}
 		}
 
 		internal static ulong LE_To_UInt64(byte[] bs)

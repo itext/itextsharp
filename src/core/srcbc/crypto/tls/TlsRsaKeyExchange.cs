@@ -110,29 +110,8 @@ namespace Org.BouncyCastle.Crypto.Tls
 		
         public virtual void GenerateClientKeyExchange(Stream output)
 		{
-			/*
-			* Choose a PremasterSecret and send it encrypted to the server
-			*/
-			premasterSecret = new byte[48];
-			context.SecureRandom.NextBytes(premasterSecret);
-			TlsUtilities.WriteVersion(premasterSecret, 0);
-
-			Pkcs1Encoding encoding = new Pkcs1Encoding(new RsaBlindedEngine());
-			encoding.Init(true, new ParametersWithRandom(this.rsaServerPublicKey, context.SecureRandom));
-
-			try
-			{
-				byte[] keData = encoding.ProcessBlock(premasterSecret, 0, premasterSecret.Length);
-                TlsUtilities.WriteUint24(keData.Length + 2, output);
-                TlsUtilities.WriteOpaque16(keData, output);
-			}
-			catch (InvalidCipherTextException)
-			{
-				/*
-				* This should never happen, only during decryption.
-				*/
-				throw new TlsFatalAlert(AlertDescription.internal_error);
-			}
+			this.premasterSecret = TlsRsaUtilities.GenerateEncryptedPreMasterSecret(
+				context.SecureRandom, this.rsaServerPublicKey, output);
 		}
 
 		public virtual byte[] GeneratePremasterSecret()

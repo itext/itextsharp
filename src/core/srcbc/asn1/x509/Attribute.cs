@@ -55,6 +55,11 @@ namespace Org.BouncyCastle.Asn1.X509
 			get { return attrType; }
 		}
 
+		public Asn1Encodable[] GetAttributeValues()
+		{
+			return attrValues.ToArray();
+		}
+
 		public Asn1Set AttrValues
 		{
 			get { return attrValues; }

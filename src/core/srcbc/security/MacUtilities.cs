@@ -41,6 +41,7 @@ namespace Org.BouncyCastle.Security
 
 			algorithms["DES"] = "DESMAC";
 			algorithms["DES/CFB8"] = "DESMAC/CFB8";
+			algorithms["DES64"] = "DESMAC64";
 			algorithms["DESEDE"] = "DESEDEMAC";
 			algorithms[PkcsObjectIdentifiers.DesEde3Cbc.Id] = "DESEDEMAC";
 			algorithms["DESEDE/CFB8"] = "DESEDEMAC/CFB8";
@@ -142,6 +143,10 @@ namespace Org.BouncyCastle.Security
 			if (mechanism == "DESMAC/CFB8")
 			{
 				return new CfbBlockCipherMac(new DesEngine());
+			}
+			if (mechanism == "DESMAC64")
+			{
+				return new CbcBlockCipherMac(new DesEngine(), 64);
 			}
 			if (mechanism == "DESEDECMAC")
 			{

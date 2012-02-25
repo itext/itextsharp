@@ -56,6 +56,8 @@ namespace Org.BouncyCastle.X509
 			algorithms.Add("DSAWITHSHA1", X9ObjectIdentifiers.IdDsaWithSha1);
 			algorithms.Add("SHA224WITHDSA", NistObjectIdentifiers.DsaWithSha224);
 			algorithms.Add("SHA256WITHDSA", NistObjectIdentifiers.DsaWithSha256);
+			algorithms.Add("SHA384WITHDSA", NistObjectIdentifiers.DsaWithSha384);
+			algorithms.Add("SHA512WITHDSA", NistObjectIdentifiers.DsaWithSha512);
 			algorithms.Add("SHA1WITHECDSA", X9ObjectIdentifiers.ECDsaWithSha1);
 			algorithms.Add("ECDSAWITHSHA1", X9ObjectIdentifiers.ECDsaWithSha1);
 			algorithms.Add("SHA224WITHECDSA", X9ObjectIdentifiers.ECDsaWithSha224);
@@ -80,6 +82,8 @@ namespace Org.BouncyCastle.X509
 			noParams.Add(X9ObjectIdentifiers.IdDsaWithSha1);
 			noParams.Add(NistObjectIdentifiers.DsaWithSha224);
 			noParams.Add(NistObjectIdentifiers.DsaWithSha256);
+			noParams.Add(NistObjectIdentifiers.DsaWithSha384);
+			noParams.Add(NistObjectIdentifiers.DsaWithSha512);
 
 			//
 			// RFC 4491

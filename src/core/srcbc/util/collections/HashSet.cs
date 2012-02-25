@@ -12,7 +12,7 @@ namespace Org.BouncyCastle.Utilities.Collections
 		{
 		}
 
-		public HashSet(ISet s)
+		public HashSet(IEnumerable s)
 		{
 			foreach (object o in s)
 			{
@@ -20,12 +20,12 @@ namespace Org.BouncyCastle.Utilities.Collections
 			}
 		}
 
-		public void Add(object o)
+		public virtual void Add(object o)
 		{
 			impl[o] = null;
 		}
 
-		public void AddAll(IEnumerable e)
+		public virtual void AddAll(IEnumerable e)
 		{
 			foreach (object o in e)
 			{
@@ -33,47 +33,57 @@ namespace Org.BouncyCastle.Utilities.Collections
 			}
 		}
 
-		public void Clear()
+		public virtual void Clear()
 		{
 			impl.Clear();
 		}
 
-		public bool Contains(object o)
+		public virtual bool Contains(object o)
 		{
 			return impl.Contains(o);
 		}
 
-		public void CopyTo(Array array, int index)
+		public virtual void CopyTo(Array array, int index)
 		{
 			impl.Keys.CopyTo(array, index);
 		}
 
-		public int Count
+		public virtual int Count
 		{
 			get { return impl.Count; }
 		}
 
-		public IEnumerator GetEnumerator()
+		public virtual IEnumerator GetEnumerator()
 		{
 			return impl.Keys.GetEnumerator();
 		}
 
-		public bool IsEmpty
+		public virtual bool IsEmpty
 		{
 			get { return impl.Count == 0; }
 		}
 
-		public bool IsSynchronized
+		public virtual bool IsFixedSize
+		{
+			get { return impl.IsFixedSize; }
+		}
+
+		public virtual bool IsReadOnly
+		{
+			get { return impl.IsReadOnly; }
+		}
+
+		public virtual bool IsSynchronized
 		{
 			get { return impl.IsSynchronized; }
 		}
 
-		public void Remove(object o)
+		public virtual void Remove(object o)
 		{
 			impl.Remove(o);
 		}
 
-		public void RemoveAll(IEnumerable e)
+		public virtual void RemoveAll(IEnumerable e)
 		{
 			foreach (object o in e)
 			{
@@ -81,7 +91,7 @@ namespace Org.BouncyCastle.Utilities.Collections
 			}
 		}
 
-		public object SyncRoot
+		public virtual object SyncRoot
 		{
 			get { return impl.SyncRoot; }
 		}

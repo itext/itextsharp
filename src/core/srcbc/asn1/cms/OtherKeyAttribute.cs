@@ -20,14 +20,10 @@ namespace Org.BouncyCastle.Asn1.Cms
             object obj)
         {
             if (obj == null || obj is OtherKeyAttribute)
-            {
                 return (OtherKeyAttribute) obj;
-            }
 
 			if (obj is Asn1Sequence)
-            {
                 return new OtherKeyAttribute((Asn1Sequence) obj);
-            }
 
 			throw new ArgumentException("unknown object in factory: " + obj.GetType().Name, "obj");
         }

@@ -80,7 +80,7 @@ namespace Org.BouncyCastle.Cms
 
 			try
 			{
-				return new CmsTypedStream(readable.Read());
+				return new CmsTypedStream(readable.GetInputStream());
 			}
 			catch (IOException e)
 			{

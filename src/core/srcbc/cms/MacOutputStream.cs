@@ -8,8 +8,7 @@ namespace Org.BouncyCastle.Cms
 	internal class MacOutputStream
 		: BaseOutputStream
 	{
-		// FIXME Need internal access in RecipientInformation atm
-		internal readonly IMac mac;
+		private readonly IMac mac;
 
 		internal MacOutputStream(IMac mac)
 		{

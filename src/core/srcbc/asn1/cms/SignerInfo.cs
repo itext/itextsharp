@@ -21,14 +21,10 @@ namespace Org.BouncyCastle.Asn1.Cms
             object obj)
         {
             if (obj == null || obj is SignerInfo)
-            {
                 return (SignerInfo) obj;
-            }
 
 			if (obj is Asn1Sequence)
-            {
                 return new SignerInfo((Asn1Sequence) obj);
-            }
 
 			throw new ArgumentException("Unknown object in factory: " + obj.GetType().FullName, "obj");
 		}
@@ -101,19 +97,40 @@ namespace Org.BouncyCastle.Asn1.Cms
             }
         }
 
-		public DerInteger Version { get { return version; } }
+		public DerInteger Version
+		{
+			get { return version; }
+		}
 
-		public SignerIdentifier SignerID { get { return sid; } }
+		public SignerIdentifier SignerID
+		{
+			get { return sid; }
+		}
 
-		public Asn1Set AuthenticatedAttributes { get { return authenticatedAttributes; } }
+		public Asn1Set AuthenticatedAttributes
+		{
+			get { return authenticatedAttributes; }
+		}
 
-		public AlgorithmIdentifier DigestAlgorithm { get { return digAlgorithm; } }
+		public AlgorithmIdentifier DigestAlgorithm
+		{
+			get { return digAlgorithm; }
+		}
 
-		public Asn1OctetString EncryptedDigest { get { return encryptedDigest; } }
+		public Asn1OctetString EncryptedDigest
+		{
+			get { return encryptedDigest; }
+		}
 
-		public AlgorithmIdentifier DigestEncryptionAlgorithm { get { return digEncryptionAlgorithm; } }
+		public AlgorithmIdentifier DigestEncryptionAlgorithm
+		{
+			get { return digEncryptionAlgorithm; }
+		}
 
-		public Asn1Set UnauthenticatedAttributes { get { return unauthenticatedAttributes; } }
+		public Asn1Set UnauthenticatedAttributes
+		{
+			get { return unauthenticatedAttributes; }
+		}
 
 		/**
          * Produce an object suitable for an Asn1OutputStream.

@@ -68,11 +68,22 @@ namespace Org.BouncyCastle.Asn1
 			return new DerObjectIdentifier(identifier + "." + branchID);
 		}
 
-		internal DerObjectIdentifier(
-			byte[] bytes)
-			: this(MakeOidStringFromBytes(bytes))
-		{
-		}
+        /**
+         * Return  true if this oid is an extension of the passed in branch, stem.
+         * @param stem the arc or branch that is a possible parent.
+         * @return  true if the branch is on the passed in stem, false otherwise.
+         */
+        public virtual bool On(DerObjectIdentifier stem)
+        {
+            string id = Id, stemId = stem.Id;
+            return id.Length > stemId.Length && id[stemId.Length] == '.' && id.StartsWith(stemId);
+        }
+
+        internal DerObjectIdentifier(
+            byte[] bytes)
+            : this(MakeOidStringFromBytes(bytes))
+        {
+        }
 
 		private void WriteField(
             Stream	outputStream,

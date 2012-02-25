@@ -54,12 +54,18 @@ namespace Org.BouncyCastle.X509
 				{
 					f = X509CertificateStructure.GetInstance(
 						Asn1Object.FromByteArray(forward.GetEncoded()));
+
+					if (f == null)
+						throw new CertificateEncodingException("unable to get encoding for forward");
 				}
 
 				if (reverse != null)
 				{
 					r = X509CertificateStructure.GetInstance(
 						Asn1Object.FromByteArray(reverse.GetEncoded()));
+
+					if (r == null)
+						throw new CertificateEncodingException("unable to get encoding for reverse");
 				}
 
 				return new CertificatePair(f, r).GetDerEncoded();

@@ -159,19 +159,26 @@ namespace Org.BouncyCastle.Asn1
 			char sign = '+';
             DateTime time = ToDateTime();
 
-            // Note: GetUtcOffset incorporates Daylight Savings offset
 #if SILVERLIGHT
-            int minutes = TimeZoneInfo.Local.GetUtcOffset(time).Minutes;
-#else
-            int minutes = TimeZone.CurrentTimeZone.GetUtcOffset(time).Minutes;
-#endif
-			if (minutes < 0)
+			long offset = time.Ticks - time.ToUniversalTime().Ticks;
+			if (offset < 0)
 			{
 				sign = '-';
-				minutes = -minutes;
+				offset = -offset;
 			}
-			int hours = minutes / 60;
-			minutes %= 60;
+			int hours = (int)(offset / TimeSpan.TicksPerHour);
+			int minutes = (int)(offset / TimeSpan.TicksPerMinute) % 60;
+#else
+            // Note: GetUtcOffset incorporates Daylight Savings offset
+			TimeSpan offset =  TimeZone.CurrentTimeZone.GetUtcOffset(time);
+			if (offset.CompareTo(TimeSpan.Zero) < 0)
+			{
+				sign = '-';
+				offset = offset.Duration();
+			}
+			int hours = offset.Hours;
+			int minutes = offset.Minutes;
+#endif
 
 			return "GMT" + sign + Convert(hours) + ":" + Convert(minutes);
 		}

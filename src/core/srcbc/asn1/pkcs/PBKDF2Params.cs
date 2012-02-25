@@ -46,6 +46,15 @@ namespace Org.BouncyCastle.Asn1.Pkcs
 			this.iterationCount = new DerInteger(iterationCount);
 		}
 
+        public Pbkdf2Params(
+            byte[]  salt,
+            int     iterationCount,
+            int     keyLength)
+            : this(salt, iterationCount)
+        {
+            this.keyLength = new DerInteger(keyLength);
+        }
+
 		public byte[] GetSalt()
 		{
 			return octStr.GetOctets();

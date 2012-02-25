@@ -16,14 +16,10 @@ namespace Org.BouncyCastle.Asn1.Cms
             object obj)
         {
             if (obj is IssuerAndSerialNumber)
-            {
                 return (IssuerAndSerialNumber)obj;
-            }
 
 			if (obj is Asn1Sequence)
-            {
                 return new IssuerAndSerialNumber((Asn1Sequence)obj);
-            }
 
 			throw new ArgumentException(
                 "Illegal object in IssuerAndSerialNumber: " + obj.GetType().Name);

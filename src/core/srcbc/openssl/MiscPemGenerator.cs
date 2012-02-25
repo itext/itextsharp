@@ -50,7 +50,7 @@ namespace Org.BouncyCastle.OpenSsl
 			this.random = random;
 		}
 
-		private PemObject CreatePemObject(object o)
+		private static PemObject CreatePemObject(object obj)
 		{
 			if (obj == null)
 				throw new ArgumentNullException("obj");
@@ -63,11 +63,11 @@ namespace Org.BouncyCastle.OpenSsl
 			string type;
 			byte[] encoding;
 
-			if (o is PemObject)
-				return (PemObject)o;
+			if (obj is PemObject)
+				return (PemObject)obj;
 
-			if (o is PemObjectGenerator)
-				return ((PemObjectGenerator)o).Generate();
+			if (obj is PemObjectGenerator)
+				return ((PemObjectGenerator)obj).Generate();
 
 			if (obj is X509Certificate)
 			{
@@ -148,7 +148,7 @@ namespace Org.BouncyCastle.OpenSsl
 //			return new string(chars);
 //		}
 
-		private PemObject CreatePemObject(
+		private static PemObject CreatePemObject(
 			object			obj,
 			string			algorithm,
 			char[]			password,
@@ -213,7 +213,7 @@ namespace Org.BouncyCastle.OpenSsl
 			return new PemObject(type, headers, encData);
 		}
 
-		private byte[] EncodePrivateKey(
+		private static byte[] EncodePrivateKey(
 			AsymmetricKeyParameter	akp,
 			out string				keyType)
 		{

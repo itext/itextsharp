@@ -32,7 +32,7 @@ namespace Org.BouncyCastle.Asn1.X509
 			if (obj != null)
 				return new SubjectPublicKeyInfo(Asn1Sequence.GetInstance(obj));
 
-			throw new ArgumentException("null object in factory", "obj");
+			return null;
         }
 
 		public SubjectPublicKeyInfo(

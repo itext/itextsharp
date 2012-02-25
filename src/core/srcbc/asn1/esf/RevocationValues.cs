@@ -8,12 +8,12 @@ using Org.BouncyCastle.Utilities.Collections;
 namespace Org.BouncyCastle.Asn1.Esf
 {
 	/// <remarks>
-	/// RFC 3126: 4.3.2 Revocation Values Attribute Definition
+	/// RFC 5126: 6.3.4.  revocation-values Attribute Definition
 	/// <code>
 	/// RevocationValues ::=  SEQUENCE {
 	///		crlVals			[0] SEQUENCE OF CertificateList     OPTIONAL,
 	///		ocspVals		[1] SEQUENCE OF BasicOCSPResponse   OPTIONAL,
-	///		otherRevVals	[2] OtherRevVals
+	///		otherRevVals	[2] OtherRevVals OPTIONAL
 	/// }
 	/// </code>
 	/// </remarks>
@@ -30,13 +30,7 @@ namespace Org.BouncyCastle.Asn1.Esf
 			if (obj == null || obj is RevocationValues)
 				return (RevocationValues) obj;
 
-			if (obj is Asn1Sequence)
-				return new RevocationValues((Asn1Sequence) obj);
-
-			throw new ArgumentException(
-				"Unknown object in 'RevocationValues' factory: "
-				+ obj.GetType().Name,
-				"obj");
+			return new RevocationValues(Asn1Sequence.GetInstance(obj));
 		}
 
 		private RevocationValues(
@@ -44,10 +38,8 @@ namespace Org.BouncyCastle.Asn1.Esf
 		{
 			if (seq == null)
 				throw new ArgumentNullException("seq");
-			if (seq.Count < 1 || seq.Count > 3)
+			if (seq.Count > 3)
 				throw new ArgumentException("Bad sequence size: " + seq.Count, "seq");
-
-			bool otherRevValsFound = false;
 
 			foreach (Asn1TaggedObject taggedObj in seq)
 			{
@@ -72,15 +64,11 @@ namespace Org.BouncyCastle.Asn1.Esf
 						break;
 					case 2:
 						this.otherRevVals = OtherRevVals.GetInstance(asn1Obj);
-						otherRevValsFound = true;
 						break;
 					default:
 						throw new ArgumentException("Illegal tag in RevocationValues", "seq");
 				}
 			}
-
-			if (!otherRevValsFound)
-				throw new ArgumentException("No otherRevVals found", "seq");
 		}
 
 		public RevocationValues(
@@ -88,9 +76,6 @@ namespace Org.BouncyCastle.Asn1.Esf
 			BasicOcspResponse[]	ocspVals,
 			OtherRevVals		otherRevVals)
 		{
-			if (otherRevVals == null)
-				throw new ArgumentNullException("otherRevVals");
-
 			if (crlVals != null)
 			{
 				this.crlVals = new DerSequence(crlVals);
@@ -109,9 +94,6 @@ namespace Org.BouncyCastle.Asn1.Esf
 			IEnumerable			ocspVals,
 			OtherRevVals		otherRevVals)
 		{
-			if (otherRevVals == null)
-				throw new ArgumentNullException("otherRevVals");
-
 			if (crlVals != null)
 			{
 				if (!CollectionUtilities.CheckElementsAreOfType(crlVals, typeof(CertificateList)))
@@ -153,6 +135,11 @@ namespace Org.BouncyCastle.Asn1.Esf
 			return result;
 		}
 
+		public OtherRevVals OtherRevVals
+		{
+			get { return otherRevVals; }
+		}
+
 		public override Asn1Object ToAsn1Object()
 		{
 			Asn1EncodableVector v = new Asn1EncodableVector();
@@ -167,7 +154,10 @@ namespace Org.BouncyCastle.Asn1.Esf
 				v.Add(new DerTaggedObject(true, 1, ocspVals));
 			}
 
-			v.Add(new DerTaggedObject(true, 2, otherRevVals.ToAsn1Object()));
+			if (otherRevVals != null)
+			{
+				v.Add(new DerTaggedObject(true, 2, otherRevVals.ToAsn1Object()));
+			}
 
 			return new DerSequence(v);
 		}

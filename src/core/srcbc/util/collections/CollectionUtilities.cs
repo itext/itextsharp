@@ -40,6 +40,11 @@ namespace Org.BouncyCastle.Utilities.Collections
             return new UnmodifiableListProxy(l);
         }
 
+        public static ISet ReadOnly(ISet s)
+        {
+            return new UnmodifiableSetProxy(s);
+        }
+
         public static string ToString(
 			IEnumerable c)
 		{

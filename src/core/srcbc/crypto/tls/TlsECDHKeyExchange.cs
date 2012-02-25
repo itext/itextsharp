@@ -159,11 +159,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 
 		public virtual void GenerateClientKeyExchange(Stream output)
         {
-			if (agreementCredentials != null)
-			{
-				TlsUtilities.WriteUint24(0, output);
-			}
-			else
+			if (agreementCredentials == null)
 			{
 				GenerateEphemeralClientKeyExchange(ecAgreeServerPublicKey.Parameters, output);
 			}
@@ -213,7 +209,6 @@ namespace Org.BouncyCastle.Crypto.Tls
 			this.ecAgreeClientPrivateKey = (ECPrivateKeyParameters)ecAgreeClientKeyPair.Private;
 
 			byte[] keData = ExternalizeKey((ECPublicKeyParameters)ecAgreeClientKeyPair.Public);
-			TlsUtilities.WriteUint24(keData.Length + 1, output);
 			TlsUtilities.WriteOpaque8(keData, output);
 		}
 

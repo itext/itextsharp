@@ -41,6 +41,12 @@ namespace Org.BouncyCastle.Asn1.X509
 			names = new GeneralName[]{ name };
 		}
 
+        public GeneralNames(
+            GeneralName[] names)
+        {
+            this.names = (GeneralName[])names.Clone();
+        }
+
 		private GeneralNames(
 			Asn1Sequence seq)
 		{
