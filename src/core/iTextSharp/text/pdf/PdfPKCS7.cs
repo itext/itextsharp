@@ -1,5 +1,4 @@
 using System;
-//using System.Collections;
 using System.Collections.Generic;
 using System.Collections;
 using System.Text;
@@ -615,8 +614,10 @@ namespace iTextSharp.text.pdf {
         public bool VerifyTimestampImprint() {
             if (timeStampToken == null)
                 return false;
-            MessageImprint imprint = timeStampToken.TimeStampInfo.TstInfo.MessageImprint;
-            byte[] md = PdfEncryption.DigestComputeHash("SHA1", digest);
+            TimeStampTokenInfo info = timeStampToken.TimeStampInfo;
+            MessageImprint imprint = info.TstInfo.MessageImprint;
+            String algOID = info.MessageImprintAlgOid;
+            byte[] md = PdfEncryption.DigestComputeHash(GetDigest(algOID), digest);
             byte[] imphashed = imprint.GetHashedMessage();
             bool res = Arrays.AreEqual(md, imphashed);
             return res;
