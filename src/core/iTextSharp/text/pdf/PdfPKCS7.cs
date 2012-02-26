@@ -94,6 +94,7 @@ namespace iTextSharp.text.pdf {
         private bool verifyResult;
         private byte[] externalDigest;
         private byte[] externalRSAdata;
+        private bool isTsp;
         
         private const String ID_PKCS7_DATA = "1.2.840.113549.1.7.1";
         private const String ID_PKCS7_SIGNED_DATA = "1.2.840.113549.1.7.2";
@@ -276,6 +277,16 @@ namespace iTextSharp.text.pdf {
             sig.Init(false, signCert.GetPublicKey());
         }
         
+        /**
+         * Check if it's a PAdES-LTV timestamp.
+         * @return true if it's a PAdES-LTV timestamp, false otherwise
+         */
+        public bool IsTsp {
+            get {
+               return isTsp;
+            }
+        }
+
         private BasicOcspResp basicResp;
         
         /**
@@ -345,7 +356,11 @@ namespace iTextSharp.text.pdf {
         * @throws NoSuchProviderException on error
         * @throws NoSuchAlgorithmException on error
         */    
-        public PdfPKCS7(byte[] contentsKey) {
+        public PdfPKCS7(byte[] contentsKey) : this(contentsKey, false){
+        }
+
+        public PdfPKCS7(byte[] contentsKey, bool tsp) {
+            isTsp = tsp;
             Asn1InputStream din = new Asn1InputStream(new MemoryStream(contentsKey));
             
             //
@@ -479,12 +494,21 @@ namespace iTextSharp.text.pdf {
                     this.timeStampToken = new TimeStampToken(contentInfo);
                 }
             }
-            if (RSAdata != null || digestAttr != null) {
-                messageDigest = GetHashClass();
-                encContDigest = GetHashClass();
+            if (isTsp) {
+                Org.BouncyCastle.Asn1.Cms.ContentInfo contentInfoTsp = Org.BouncyCastle.Asn1.Cms.ContentInfo.GetInstance(signedData);
+                this.timeStampToken = new TimeStampToken(contentInfoTsp);
+                TimeStampTokenInfo info = timeStampToken.TimeStampInfo;
+                String algOID = info.MessageImprintAlgOid;
+                messageDigest = DigestUtilities.GetDigest(algOID);
             }
-            sig = SignerUtilities.GetSigner(GetDigestAlgorithm());
-            sig.Init(false, signCert.GetPublicKey());
+            else {
+                if (RSAdata != null || digestAttr != null) {
+                    messageDigest = GetHashClass();
+                    encContDigest = GetHashClass();
+                }
+                sig = SignerUtilities.GetSigner(GetDigestAlgorithm());
+                sig.Init(false, signCert.GetPublicKey());
+            }
         }
 
         /**
@@ -559,7 +583,7 @@ namespace iTextSharp.text.pdf {
         * @throws SignatureException on error
         */
         public void Update(byte[] buf, int off, int len) {
-            if (RSAdata != null || digestAttr != null)
+            if (RSAdata != null || digestAttr != null || isTsp)
                 messageDigest.BlockUpdate(buf, off, len);
             else
                 sig.BlockUpdate(buf, off, len);
@@ -573,33 +597,43 @@ namespace iTextSharp.text.pdf {
         public bool Verify() {
             if (verified)
                 return verifyResult;
-            if (sigAttr != null) {
-                byte[] msgDigestBytes = new byte[messageDigest.GetDigestSize()];
-                messageDigest.DoFinal(msgDigestBytes, 0);
-                bool verifyRSAdata = true;
-                sig.BlockUpdate(sigAttr, 0, sigAttr.Length);
-                // Stefan Santesson fixed a bug, keeping the code backward compatible
-                bool encContDigestCompare = false;
-                if (RSAdata != null) {
-                    verifyRSAdata = Arrays.AreEqual(msgDigestBytes, RSAdata);
-                    encContDigest.BlockUpdate(RSAdata, 0, RSAdata.Length);
-                    byte[] encContDigestBytes = new byte[encContDigest.GetDigestSize()];
-                    encContDigest.DoFinal(encContDigestBytes, 0);
-                    encContDigestCompare = Arrays.AreEqual(encContDigestBytes, digestAttr);
-                }
-                bool absentEncContDigestCompare = Arrays.AreEqual(msgDigestBytes, digestAttr);
-                bool concludingDigestCompare = absentEncContDigestCompare || encContDigestCompare;
-                bool sigVerify = sig.VerifySignature(digest);
-                verifyResult = concludingDigestCompare && sigVerify && verifyRSAdata;
-                //verifyResult = Arrays.AreEqual(msgDigestBytes, digestAttr) && sig.VerifySignature(digest) && verifyRSAdata;
+            if (isTsp) {
+                TimeStampTokenInfo info = timeStampToken.TimeStampInfo;
+                MessageImprint imprint = info.TstInfo.MessageImprint;
+                byte[] md = new byte[messageDigest.GetDigestSize()];
+                messageDigest.DoFinal(md, 0);
+                byte[] imphashed = imprint.GetHashedMessage();
+                verifyResult = Arrays.AreEqual(md, imphashed);
             }
             else {
-                if (RSAdata != null){
-                    byte[] msd = new byte[messageDigest.GetDigestSize()];
-                    messageDigest.DoFinal(msd, 0);
-                    sig.BlockUpdate(msd, 0, msd.Length);
+                if (sigAttr != null) {
+                    byte[] msgDigestBytes = new byte[messageDigest.GetDigestSize()];
+                    messageDigest.DoFinal(msgDigestBytes, 0);
+                    bool verifyRSAdata = true;
+                    sig.BlockUpdate(sigAttr, 0, sigAttr.Length);
+                    // Stefan Santesson fixed a bug, keeping the code backward compatible
+                    bool encContDigestCompare = false;
+                    if (RSAdata != null) {
+                        verifyRSAdata = Arrays.AreEqual(msgDigestBytes, RSAdata);
+                        encContDigest.BlockUpdate(RSAdata, 0, RSAdata.Length);
+                        byte[] encContDigestBytes = new byte[encContDigest.GetDigestSize()];
+                        encContDigest.DoFinal(encContDigestBytes, 0);
+                        encContDigestCompare = Arrays.AreEqual(encContDigestBytes, digestAttr);
+                    }
+                    bool absentEncContDigestCompare = Arrays.AreEqual(msgDigestBytes, digestAttr);
+                    bool concludingDigestCompare = absentEncContDigestCompare || encContDigestCompare;
+                    bool sigVerify = sig.VerifySignature(digest);
+                    verifyResult = concludingDigestCompare && sigVerify && verifyRSAdata;
+                    //verifyResult = Arrays.AreEqual(msgDigestBytes, digestAttr) && sig.VerifySignature(digest) && verifyRSAdata;
                 }
-                verifyResult = sig.VerifySignature(digest);
+                else {
+                    if (RSAdata != null){
+                        byte[] msd = new byte[messageDigest.GetDigestSize()];
+                        messageDigest.DoFinal(msd, 0);
+                        sig.BlockUpdate(msd, 0, msd.Length);
+                    }
+                    verifyResult = sig.VerifySignature(digest);
+                }
             }
             verified = true;
             return verifyResult;
@@ -617,7 +651,7 @@ namespace iTextSharp.text.pdf {
             TimeStampTokenInfo info = timeStampToken.TimeStampInfo;
             MessageImprint imprint = info.TstInfo.MessageImprint;
             String algOID = info.MessageImprintAlgOid;
-            byte[] md = PdfEncryption.DigestComputeHash(GetDigest(algOID), digest);
+            byte[] md = PdfEncryption.DigestComputeHash(algOID, digest);
             byte[] imphashed = imprint.GetHashedMessage();
             bool res = Arrays.AreEqual(md, imphashed);
             return res;

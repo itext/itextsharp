@@ -2175,6 +2175,9 @@ namespace iTextSharp.text.pdf {
                     cert = v.GetAsArray(PdfName.CERT).GetAsString(0);
                 pk = new PdfPKCS7(contents.GetOriginalBytes(), cert.GetBytes());
             }
+            else if (sub.Equals(PdfName.ETSI_RFC3161)) {
+                pk = new PdfPKCS7(contents.GetOriginalBytes(), true);
+            }
             else
                 pk = new PdfPKCS7(contents.GetOriginalBytes());
             UpdateByteRange(pk, v);
