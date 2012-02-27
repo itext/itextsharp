@@ -9,7 +9,7 @@ using iTextSharp.tool.xml.html.pdfelement;
  * $Id: Div.java 157 2011-06-07 08:57:34Z emielackermann $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2011 1T3XT BVBA
+ * Copyright (c) 1998-2012 1T3XT BVBA
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify

@@ -8,7 +8,7 @@ using Org.BouncyCastle.Crypto.Parameters;
  * $Id: AESCipher.cs 106 2009-12-07 12:23:50Z psoares33 $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2009 1T3XT BVBA
+ * Copyright (c) 1998-2012 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify

@@ -12,7 +12,7 @@ using iTextSharp.tool.xml.pipeline.css;
  * $Id: StyleAttrCSSResolver.java 137 2011-05-30 20:25:16Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2011 1T3XT BVBA
+ * Copyright (c) 1998-2012 1T3XT BVBA
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
