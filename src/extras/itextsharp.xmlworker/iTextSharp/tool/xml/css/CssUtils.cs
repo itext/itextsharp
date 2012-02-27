@@ -13,7 +13,7 @@ using iTextSharp.tool.xml.exceptions;
  * $Id: CssUtils.java 126 2011-05-27 13:02:27Z emielackermann $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2011 1T3XT BVBA
+ * Copyright (c) 1998-2012 1T3XT BVBA
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify

@@ -4,7 +4,7 @@ using iTextSharp.text;
  * $Id: ALink.java 4113 2009-12-01 11:08:59Z blowagie $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2009 1T3XT BVBA
+ * Copyright (c) 1998-2012 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify

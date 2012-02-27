@@ -5,7 +5,7 @@ using iTextSharp.text.pdf;
  * $Id: WriterOperation.java 4880 2011-05-23 23:28:09Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2011 1T3XT BVBA
+ * Copyright (c) 1998-2012 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify

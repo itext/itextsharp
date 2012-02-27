@@ -5,7 +5,7 @@ using System.util;
 /*
  * $Id: CssFilesImpl.java 123 2011-05-27 12:30:40Z redlab_b $
  *
- * This file is part of the iText (R) project. Copyright (c) 1998-2011 1T3XT BVBA Authors: Balder Van Camp, Emiel
+ * This file is part of the iText (R) project. Copyright (c) 1998-2012 1T3XT BVBA Authors: Balder Van Camp, Emiel
  * Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General

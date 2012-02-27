@@ -5,7 +5,7 @@ using iTextSharp.tool.xml;
  * $Id: CssFiles.java 28 2011-05-05 20:33:36Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2011 1T3XT BVBA
+ * Copyright (c) 1998-2012 1T3XT BVBA
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
