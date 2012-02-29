@@ -904,6 +904,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName L = new PdfName("L");
         /** A name */
         public static readonly PdfName L2R = new PdfName("L2R");
+        /**
+         * A name
+         * @since 5.1.4
+         */
+        public static readonly PdfName LAB = new PdfName("Lab");
         /** A name */
         public static readonly PdfName LANG = new PdfName("Lang");
         /** A name */
