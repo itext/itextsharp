@@ -958,6 +958,8 @@ namespace iTextSharp.text.pdf {
                 acrodic.Put(PdfName.FIELDS, new PdfArray());
             }
             acrodic.Remove(PdfName.SIGFLAGS);
+            acrodic.Remove(PdfName.NEEDAPPEARANCES);
+            acrodic.Remove(PdfName.DR);
     //        PdfReader.KillIndirect(acro);
     //        reader.GetCatalog().Remove(PdfName.ACROFORM);
         }
