@@ -1081,10 +1081,8 @@ namespace iTextSharp.text.pdf {
         * <p>
         * @return the document bytes that are hashable
         */    
-        public Stream RangeStream {
-            get {
-                return new PdfSignatureAppearance.FRangeStream(raf, bout, range);
-            }
+        public Stream GetRangeStream() {
+            return new PdfSignatureAppearance.FRangeStream(raf, bout, range);
         }
         
         /**

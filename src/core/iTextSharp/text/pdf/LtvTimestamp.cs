@@ -72,7 +72,7 @@ namespace iTextSharp.text.pdf {
             Dictionary<PdfName,int> exc = new Dictionary<PdfName,int>();
             exc[PdfName.CONTENTS] = contentEstimated * 2 + 2;
             sap.PreClose(exc);
-            Stream data = sap.RangeStream;
+            Stream data = sap.GetRangeStream();
             IDigest messageDigest = DigestUtilities.GetDigest(tsa.GetDigestAlgorithm());
             byte[] buf = new byte[4096];
             int n;
