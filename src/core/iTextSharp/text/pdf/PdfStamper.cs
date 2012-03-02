@@ -184,7 +184,7 @@ namespace iTextSharp.text.pdf {
             int totalBuf = (lit.PosLength - 2) / 2;
             byte[] buf = new byte[8192];
             int n;
-            Stream inp = sigApp.RangeStream;
+            Stream inp = sigApp.GetRangeStream();
             while ((n = inp.Read(buf, 0, buf.Length)) > 0) {
                 sig.Signer.Update(buf, 0, n);
             }
