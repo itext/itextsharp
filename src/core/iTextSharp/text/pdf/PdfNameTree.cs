@@ -127,29 +127,37 @@ namespace iTextSharp.text.pdf {
                 top = tt;
             }
         }
-        
-        private static void IterateItems(PdfDictionary dic, Dictionary<string, PdfObject> items) {
-            PdfArray nn = PdfReader.GetPdfObjectRelease(dic.Get(PdfName.NAMES)) as PdfArray;
+
+        private static PdfString IterateItems(PdfDictionary dic, Dictionary<string, PdfObject> items, PdfString leftOverString) {
+            PdfArray nn = (PdfArray)PdfReader.GetPdfObjectRelease(dic.Get(PdfName.NAMES));
             if (nn != null) {
                 for (int k = 0; k < nn.Size; ++k) {
-                    PdfString s = PdfReader.GetPdfObjectRelease(nn[k++]) as PdfString;
-                    if (s != null)
+                    PdfString s;
+                    if (leftOverString == null)
+                        s = (PdfString)PdfReader.GetPdfObjectRelease(nn[k++]);
+                    else {
+                        // this is the leftover string from the previous loop
+                        s = leftOverString;
+                        leftOverString = null;
+                    }
+                    if (k < nn.Size) // could have a mistake int the pdf file
                         items[PdfEncodings.ConvertToString(s.GetBytes(), null)] = nn[k];
+                    else
+                        return s;
                 }
-            }
-            else if ((nn = PdfReader.GetPdfObjectRelease(dic.Get(PdfName.KIDS)) as PdfArray) != null) {
+            } else if ((nn = (PdfArray)PdfReader.GetPdfObjectRelease(dic.Get(PdfName.KIDS))) != null) {
                 for (int k = 0; k < nn.Size; ++k) {
-                    PdfDictionary kid = PdfReader.GetPdfObjectRelease(nn[k]) as PdfDictionary;
-                    if (kid != null)
-                        IterateItems(kid, items);
+                    PdfDictionary kid = (PdfDictionary)PdfReader.GetPdfObjectRelease(nn[k]);
+                    leftOverString = IterateItems(kid, items, leftOverString);
                 }
             }
+            return null;
         }
         
         public static Dictionary<string, PdfObject> ReadTree(PdfDictionary dic) {
             Dictionary<string, PdfObject> items = new Dictionary<string,PdfObject>();
             if (dic != null)
-                IterateItems(dic, items);
+                IterateItems(dic, items, null);
             return items;
         }
 
