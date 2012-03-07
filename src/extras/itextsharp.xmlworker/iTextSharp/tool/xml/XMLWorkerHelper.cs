@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Reflection;
 using iTextSharp.text;
@@ -85,30 +86,35 @@ namespace iTextSharp.tool.xml {
         /**
          * @return the default css file.
          */
-        public ICssFile GetDefaultCSS() {
-            if (null == defaultCssFile) {
-                Stream inp = Assembly.GetExecutingAssembly().GetManifestResourceStream("iTextSharp.tool.xml.css.default.css");
-                if (null != inp) {
-                    CssFileProcessor cssFileProcessor = new CssFileProcessor();
-                    int i = -1;
+        [MethodImpl(MethodImplOptions.Synchronized)]
+    	public ICssFile GetCSS(Stream inp) {
+			if (null != inp) {
+				CssFileProcessor cssFileProcessor = new CssFileProcessor();
+                int i = -1;
+                try {
+                    while (-1 != (i = inp.ReadByte())) {
+                        cssFileProcessor.Process((char) i);
+                    }
+                    defaultCssFile = new CSSFileWrapper(cssFileProcessor.GetCss(), true);
+                } catch (IOException e) {
+                    throw new RuntimeWorkerException(e);
+                } finally {
                     try {
-                        while (-1 != (i = inp.ReadByte())) {
-                            cssFileProcessor.Process((char) i);
-                        }
-                        defaultCssFile = new CSSFileWrapper(cssFileProcessor.GetCss(), true);
+                        inp.Close();
                     } catch (IOException e) {
                         throw new RuntimeWorkerException(e);
-                    } finally {
-                        try {
-                            inp.Close();
-                        } catch (IOException e) {
-                            throw new RuntimeWorkerException(e);
-                        }
                     }
                 }
             }
             return defaultCssFile;
         }
+
+    public ICssFile GetDefaultCSS() {
+        if (defaultCssFile == null) {
+            defaultCssFile = GetCSS(Assembly.GetExecutingAssembly().GetManifestResourceStream("iTextSharp.tool.xml.css.default.css"));
+        }
+        return defaultCssFile;
+    }
 
         /**
          * Parses the xml data in the given reader and sends created {@link Element}
@@ -124,7 +130,7 @@ namespace iTextSharp.tool.xml {
             CssFilesImpl cssFiles = new CssFilesImpl();
             cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
-            HtmlPipelineContext hpc = new HtmlPipelineContext();
+            HtmlPipelineContext hpc = new HtmlPipelineContext(null);
             hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(GetDefaultTagProcessorFactory());
             IPipeline pipeline = new CssResolverPipeline(cssResolver, new HtmlPipeline(hpc, new ElementHandlerPipeline(d,
                     null)));
@@ -148,7 +154,7 @@ namespace iTextSharp.tool.xml {
             CssFilesImpl cssFiles = new CssFilesImpl();
             cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
-            HtmlPipelineContext hpc = new HtmlPipelineContext();
+            HtmlPipelineContext hpc = new HtmlPipelineContext(null);
             hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(GetDefaultTagProcessorFactory());
             IPipeline pipeline = new CssResolverPipeline(cssResolver, new HtmlPipeline(hpc, new PdfWriterPipeline(doc,
                     writer)));
@@ -164,11 +170,11 @@ namespace iTextSharp.tool.xml {
          * @param inp
          * @throws IOException
          */
-        public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Encoding charset) {
+	public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, Encoding charset) {
             CssFilesImpl cssFiles = new CssFilesImpl();
-            cssFiles.Add(GetDefaultCSS());
+            cssFiles.Add(GetCSS(inCssFile));
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
-            HtmlPipelineContext hpc = new HtmlPipelineContext();
+            HtmlPipelineContext hpc = new HtmlPipelineContext(null);
             hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(GetDefaultTagProcessorFactory());
             IPipeline pipeline = new CssResolverPipeline(cssResolver, new HtmlPipeline(hpc, new PdfWriterPipeline(doc,
                     writer)));
@@ -186,7 +192,7 @@ namespace iTextSharp.tool.xml {
             CssFilesImpl cssFiles = new CssFilesImpl();
             cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
-            HtmlPipelineContext hpc = new HtmlPipelineContext();
+            HtmlPipelineContext hpc = new HtmlPipelineContext(null);
             hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(GetDefaultTagProcessorFactory());
             IPipeline pipeline = new CssResolverPipeline(cssResolver, new HtmlPipeline(hpc, new ElementHandlerPipeline(d,
                     null)));

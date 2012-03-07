@@ -80,11 +80,6 @@ namespace iTextSharp.tool.xml.parser.state {
                         this.parser.Flush();
                         parser.SelectState().Cdata();
                         this.parser.Append(character);
-                    } else if (tag.Equals("?xml")) {
-                        this.parser.Memory().CurrentTag("xml");
-                        this.parser.Flush();
-                        parser.SelectState().TagAttributes();
-                        this.parser.Append(character);
                     } else if (tag.Equals("!DOCTYPE")) {
                         this.parser.Flush();
                         parser.SelectState().Doctype();
@@ -106,8 +101,13 @@ namespace iTextSharp.tool.xml.parser.state {
                         this.parser.Memory().Namespace(tag);
                         this.parser.Flush();
                     }
-                } else if (character == '/') {
-                    this.parser.SelectState().ClosingTag();
+                } else {
+                    if (character == '/') {
+				        this.parser.SelectState().ClosingTag();
+			        } else if (character == '?') {
+                        this.parser.Append(character);
+                        this.parser.SelectState().ProcessingInstructions();
+                    }
                 }
             } else {
                 this.parser.Append(character);

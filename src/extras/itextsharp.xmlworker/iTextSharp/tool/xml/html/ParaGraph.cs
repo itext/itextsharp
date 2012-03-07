@@ -68,13 +68,13 @@ namespace iTextSharp.tool.xml.html {
                     if (null != GetLastChild(tag) && GetLastChild(tag).CSS.ContainsKey(CSS.Property.XFA_TAB_COUNT)) {
                         tabbedChunk.TabCount = int.Parse(GetLastChild(tag).CSS[CSS.Property.XFA_TAB_COUNT]);
                     }
-                    l.Add(CssAppliers.GetInstance().Apply(tabbedChunk, tag,myctx));
+                    l.Add(GetCssAppliers().Apply(tabbedChunk, tag,myctx));
                 } else if (null != GetLastChild(tag) && GetLastChild(tag).CSS.ContainsKey(CSS.Property.XFA_TAB_COUNT)) {
                     TabbedChunk tabbedChunk = new TabbedChunk(sanitized);
                     tabbedChunk.TabCount = int.Parse(GetLastChild(tag).CSS[CSS.Property.XFA_TAB_COUNT]);
-                    l.Add(CssAppliers.GetInstance().Apply(tabbedChunk, tag, myctx));
+                    l.Add(GetCssAppliers().Apply(tabbedChunk, tag, myctx));
                 } else {
-                    l.Add(CssAppliers.GetInstance().Apply(new Chunk(sanitized), tag, myctx));
+                    l.Add(GetCssAppliers().Apply(new Chunk(sanitized), tag, myctx));
                 }
             }
             return l;
@@ -94,28 +94,84 @@ namespace iTextSharp.tool.xml.html {
          * com.itextpdf.tool.xml.ITagProcessor#endElement(com.itextpdf.tool.xml.Tag,
          * java.util.List, com.itextpdf.text.Document)
          */
-        public override IList<IElement> End(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
-            IList<IElement> l = new List<IElement>(1);
-            if (currentContent.Count > 0) {
-                Paragraph p = new Paragraph();
-                IDictionary<String, String> css = tag.CSS;
-                if (css.ContainsKey(CSS.Property.TAB_INTERVAL)) {
-                    AddTabIntervalContent(currentContent, p, css[CSS.Property.TAB_INTERVAL]);
-                    l.Add(p);
-                } else if (css.ContainsKey(CSS.Property.TAB_STOPS)) { // <para tabstops=".." /> could use same implementation page 62
-                    AddTabStopsContent(currentContent, p, css[CSS.Property.TAB_STOPS]);
-                    l.Add(p);
-                } else if (css.ContainsKey(CSS.Property.XFA_TAB_STOPS)) { // <para tabStops=".." /> could use same implementation page 63
-                    AddTabStopsContent(currentContent, p, css[CSS.Property.XFA_TAB_STOPS]); // leader elements needs to be
-                    l.Add(p);                                                                   // extracted.
-                } else {
-                    foreach (IElement e in CurrentContentToParagraph(currentContent, true, true, tag, ctx)) {
-                        l.Add(e);
+	public override IList<IElement> End(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
+        IList<IElement> l = new List<IElement>(1);
+        if (currentContent.Count > 0) {
+            List<IElement> elements = new List<IElement>();
+            List<ListItem> listItems = new List<ListItem>();
+            foreach (IElement el in currentContent) {
+                if (el is ListItem) {
+                    if (elements.Count > 0) {
+                        ProcessParagraphItems(ctx, tag, elements, l);
+                        elements.Clear();
                     }
+                    listItems.Add((ListItem)el);
+                } else {
+                    if (listItems.Count > 0) {
+                        ProcessListItems(ctx, tag, listItems, l);
+                        listItems.Clear();
+                    }
+                    elements.Add(el);
                 }
             }
-            return l;
+            if (elements.Count > 0) {
+                ProcessParagraphItems(ctx, tag, elements, l);
+                elements.Clear();
+            } else if (listItems.Count > 0) {
+                ProcessListItems(ctx, tag, listItems, l);
+                listItems.Clear();
+            }
         }
+		return l;
+	}
+
+    protected void ProcessParagraphItems(IWorkerContext ctx, Tag tag, IList<IElement> paragraphItems, IList<IElement> l) {
+                Paragraph p = new Paragraph();
+        p.MultipliedLeading = 1.2f;
+        IElement lastElement = paragraphItems[paragraphItems.Count - 1];
+        if (lastElement == Chunk.NEWLINE) {
+            paragraphItems.RemoveAt(paragraphItems.Count - 1);
+        }
+        IDictionary<String, String> css = tag.CSS;
+        if (css.ContainsKey(CSS.Property.TAB_INTERVAL)) {
+            AddTabIntervalContent(paragraphItems, p, css[CSS.Property.TAB_INTERVAL]);
+            l.Add(p);
+        } else if (css.ContainsKey(CSS.Property.TAB_STOPS)) { // <para tabstops=".." /> could use same implementation page 62
+            AddTabStopsContent(paragraphItems, p, css[CSS.Property.TAB_STOPS]);
+            l.Add(p);
+        } else if (css.ContainsKey(CSS.Property.XFA_TAB_STOPS)) { // <para tabStops=".." /> could use same implementation page 63
+            AddTabStopsContent(paragraphItems, p, css[CSS.Property.XFA_TAB_STOPS]); // leader elements needs to be
+            l.Add(p);                                                                    // extracted.
+        } else {
+            foreach (IElement e in CurrentContentToParagraph(paragraphItems, true, true, tag, ctx)) {
+                l.Add(e);
+            }
+        }
+    }
+    protected void ProcessListItems(IWorkerContext ctx, Tag tag, IList<ListItem> listItems, IList<IElement> l) {
+        try {
+            List list = new List();
+            list.Alignindent = false;
+            list.Autoindent = false;
+            list = (List) GetCssAppliers().Apply(list, tag, GetHtmlPipelineContext(ctx));
+            int i = 0;
+            foreach (ListItem li in listItems) {
+                ListItem listItem = (ListItem) GetCssAppliers().Apply(li, tag, GetHtmlPipelineContext(ctx));
+                if (i != listItems.Count - 1) {
+                    listItem.SpacingAfter = 0;
+                }
+                if (i != 0 ) {
+                    listItem.SpacingBefore = 0;
+                }
+                i++;
+                listItem.MultipliedLeading = 1.2f;
+                list.Add(listItem);
+            }
+            l.Add(list);
+        } catch (NoCustomContextException e) {
+            throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
+        }
+    }
 
         /**
          * Applies the tab interval of the p tag on its {@link TabbedChunk} elements. <br />
@@ -125,19 +181,22 @@ namespace iTextSharp.tool.xml.html {
          * @param p paragraph to which the tabbed chunks will be added.
          * @param value the value of style "tab-interval".
          */
-        private void AddTabIntervalContent(IList<IElement> currentContent, Paragraph p, String value) {
-            float width = 0;
-            foreach (IElement e in currentContent) {
-                if (e is TabbedChunk) {
-                    width += ((TabbedChunk) e).TabCount*CssUtils.GetInstance().ParsePxInCmMmPcToPt(value);
-                    TabbedChunk tab = new TabbedChunk(new VerticalPositionMark(), width, false);
-                    p.Add(new Chunk(tab));
-                    p.Add(new Chunk((TabbedChunk) e));
-                } else {
-                    p.Add(e);
+    private void AddTabIntervalContent(IList<IElement> currentContent, Paragraph p, String value) {
+        float width = 0;
+		foreach(IElement e in currentContent) {
+		    if (e is TabbedChunk) {
+			    width += ((TabbedChunk) e).TabCount * CssUtils.GetInstance().ParsePxInCmMmPcToPt(value);
+                TabbedChunk tab = new TabbedChunk(new VerticalPositionMark(), width, false);
+			    p.Add(new Chunk(tab));
+			    p.Add(new Chunk((TabbedChunk) e));
+            } else {
+                if (e is LineSeparator) {
+                    p.Add(Chunk.NEWLINE);
                 }
+			    p.Add(e);
             }
         }
+    }
 
         /**
          * Applies the tab stops of the p tag on its {@link TabbedChunk} elements.

@@ -1,5 +1,5 @@
 /*
- * $Id: CssAppliers.java 287 2012-02-27 16:56:22Z blowagie $
+ * $Id: CssFiles.java 182 2011-06-29 22:17:16Z redlab_b $
  * 
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -29,58 +29,26 @@
  * 
  * For more information, please contact iText Software Corp. at this address: sales@itextpdf.com
  */
-using iTextSharp.text;
-using iTextSharp.tool.xml.css.apply;
-using iTextSharp.tool.xml.pipeline.html;
-namespace iTextSharp.tool.xml.html {
+namespace iTextSharp.tool.xml.html
+{
 
-/**
- * @author redlab
- *
- */
+    /**
+     * @author redlab_b
+     * 
+     */
 
-    public interface CssAppliers
+    public interface CssAppliersAware
     {
 
         /**
-         * Given the element e, this method will lookup the right applier for the given Element. The mapping is done by
-         * instance of.<br />
-         * order of check:
-         * <ol>
-         * <li>{@link Chunk}</li>
-         * <li>{@link Paragraph}</li>
-         * <li>{@link NoNewLineParagraph}</li>
-         * <li>{@link HtmlCell}</li>
-         * <li>{@link List}</li>
-         * <li>{@link LineSeparator}</li>
-         * <li>{@link Image}</li>
-         * </ol>
-         *
-         * @param e the Element
-         * @param t the tag
-         * @param mm the MarginMemory
-         * @param psc the {@link PageSize} container
-         * @param ip an ImageProvider
-         * @return the element with CSS applied onto, note: the element can be a new element.
+         * @param cssAppliers the CssAppliers
          */
-        IElement Apply(IElement e, Tag t, IMarginMemory mm, IPageSizeContainable psc, IImageProvider ip);
+        void SetCssAppliers(CssAppliers cssAppliers);
 
         /**
-         * Convenience method.
          *
-         * @see #apply(Element, Tag, MarginMemory, PageSizeContainable, ImageProvider)
-         * @param e the Element
-         * @param t the tag
-         * @param ctx the Context object
-         * @return the element with CSS applied onto, note: the element can be a new element.
+         * @return the CssAppliers
          */
-        IElement Apply(IElement e, Tag t, HtmlPipelineContext ctx);
-
-        /**
-         * @return the chunk css applier
-         */
-        ChunkCssApplier ChunkCssAplier { get; }
-
-        CssAppliers Clone();
+        CssAppliers GetCssAppliers();
     }
 }

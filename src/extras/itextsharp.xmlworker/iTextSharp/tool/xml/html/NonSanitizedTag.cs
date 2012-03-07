@@ -48,7 +48,7 @@ namespace iTextSharp.tool.xml.html {
             IList<IElement> l = new List<IElement>(1);
             if (null != content && content.Length > 0) {
                 try {
-                    l.Add(CssAppliers.GetInstance().Apply(new Chunk(content), tag, GetHtmlPipelineContext(ctx)));
+                    l.Add(GetCssAppliers().Apply(new Chunk(content), tag, GetHtmlPipelineContext(ctx)));
                 } catch (NoCustomContextException e) {
                     throw new RuntimeWorkerException(e);
                 }

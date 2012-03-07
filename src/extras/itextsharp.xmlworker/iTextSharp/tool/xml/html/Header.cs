@@ -6,6 +6,8 @@ using iTextSharp.text.pdf;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.pipeline.html;
+using iTextSharp.tool.xml.util;
+
 /*
  * $Id: Header.java 161 2011-06-07 10:08:43Z emielackermann $
  *
@@ -66,7 +68,7 @@ namespace iTextSharp.tool.xml.html {
             IList<IElement> l = new List<IElement>(1);
             if (sanitized.Length > 0) {
                 try {
-                    l.Add(CssAppliers.GetInstance().Apply(new Chunk(sanitized), tag, GetHtmlPipelineContext(ctx)));
+                    l.Add(GetCssAppliers().Apply(new Chunk(sanitized), tag, GetHtmlPipelineContext(ctx)));
                 } catch (NoCustomContextException e) {
                     throw new RuntimeWorkerException(e);
                 }
@@ -81,9 +83,14 @@ namespace iTextSharp.tool.xml.html {
             List<IElement> l = new List<IElement>(1);
             if (currentContent.Count > 0) {
                 IList<IElement> currentContentToParagraph = CurrentContentToParagraph(currentContent, true, true, tag, ctx);
-                HtmlPipelineContext context;
+                ParentTreeUtil pt = new ParentTreeUtil();
                 try {
-                    context = GetHtmlPipelineContext(ctx);
+                    HtmlPipelineContext context = GetHtmlPipelineContext(ctx);
+                    
+                    bool oldBookmark = context.AutoBookmark();
+                    if (pt.GetParentTree(tag).Contains(HTML.Tag.TD))
+                        context.AutoBookmark(false);
+
                     if (context.AutoBookmark()) {
                         Paragraph title = new Paragraph();
                         foreach (IElement w in currentContentToParagraph) {
@@ -92,6 +99,8 @@ namespace iTextSharp.tool.xml.html {
 
                         l.Add(new WriteH(context, tag, this, title));
                     }
+
+                    context.AutoBookmark(oldBookmark);
                 } catch (NoCustomContextException e) {
                     if (LOGGER.IsLogging(Level.ERROR)) {
                         LOGGER.Error(LocaleMessages.GetInstance().GetMessage(LocaleMessages.HEADER_BM_DISABLED), e);

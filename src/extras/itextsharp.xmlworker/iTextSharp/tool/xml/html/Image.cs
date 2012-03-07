@@ -76,7 +76,7 @@ namespace iTextSharp.tool.xml.html {
             attributes.TryGetValue(HTML.Attribute.SRC, out src);
             iTextSharp.text.Image img = null;
             IList<IElement> l = new List<IElement>(1);
-            if (null != src && src.Length > 0) {
+            if (!string.IsNullOrEmpty(src)) {
                 // check if the image was already added once
                 try {
                     if (logger.IsLogging(Level.TRACE)) {
@@ -99,6 +99,7 @@ namespace iTextSharp.tool.xml.html {
                     throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
                 }
                 if (null != img) {
+                    img.ScaleToFitLineWhenOverflow = true;
                     String width;
                     attributes.TryGetValue(HTML.Attribute.WIDTH, out width);
                     float widthInPoints = utils.ParsePxInCmMmPcToPt(width);
@@ -116,7 +117,7 @@ namespace iTextSharp.tool.xml.html {
                     }
                     try {
                         HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
-                        l.Add(CssAppliers.GetInstance().Apply(new Chunk((iTextSharp.text.Image) CssAppliers.GetInstance().Apply(img, tag, htmlPipelineContext), 0, 0, true), tag, htmlPipelineContext));
+                        l.Add(GetCssAppliers().Apply(new Chunk((iTextSharp.text.Image) GetCssAppliers().Apply(img, tag, htmlPipelineContext), 0, 0, true), tag, htmlPipelineContext));
                     } catch (NoCustomContextException e) {
                         throw new RuntimeWorkerException(e);
                     }

@@ -118,6 +118,8 @@ namespace iTextSharp.tool.xml.html {
             factory.AddProcessor(HTML.Tag.H5, headers);
             factory.AddProcessor(HTML.Tag.H6, headers);
             factory.AddProcessor(HTML.Tag.HR, defaultpackage + "HorizontalRule");
+            //added by Jeroen Nouws
+            factory.AddProcessor(HTML.Tag.LABEL, span);
             return factory;
         }
     }

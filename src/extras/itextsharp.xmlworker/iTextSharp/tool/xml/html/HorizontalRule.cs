@@ -63,10 +63,8 @@ namespace iTextSharp.tool.xml.html {
             try {
                 IList<IElement> list = new List<IElement>();
 			    HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
-			    LineSeparator lineSeparator = (LineSeparator) CssAppliers.GetInstance().Apply(new LineSeparator(), tag, htmlPipelineContext);
-                Paragraph p = new Paragraph();
-                p.Add(lineSeparator);
-                list.Add(CssAppliers.GetInstance().Apply(p, tag, htmlPipelineContext));
+			    LineSeparator lineSeparator = (LineSeparator) GetCssAppliers().Apply(new LineSeparator(), tag, htmlPipelineContext);
+                list.Add(lineSeparator);
                 return list;
             } catch (NoCustomContextException e) {
                 throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);

@@ -55,6 +55,7 @@
     <Compile Include="iTextSharp\tool\xml\css\CssUtils.cs" />
     <Compile Include="iTextSharp\tool\xml\css\DefaultCssInheritanceRules.cs" />
     <Compile Include="iTextSharp\tool\xml\css\FontSizeTranslator.cs" />
+    <Compile Include="iTextSharp\tool\xml\css\HeightCalculator.cs" />
     <Compile Include="iTextSharp\tool\xml\css\ICssFile.cs" />
     <Compile Include="iTextSharp\tool\xml\css\ICssFiles.cs" />
     <Compile Include="iTextSharp\tool\xml\css\ICssInheritanceRules.cs" />
@@ -80,6 +81,8 @@
     <Compile Include="iTextSharp\tool\xml\html\Body.cs" />
     <Compile Include="iTextSharp\tool\xml\html\Break.cs" />
     <Compile Include="iTextSharp\tool\xml\html\CssAppliers.cs" />
+    <Compile Include="iTextSharp\tool\xml\html\CssAppliersAware.cs" />
+    <Compile Include="iTextSharp\tool\xml\html\CssAppliersImpl.cs" />
     <Compile Include="iTextSharp\tool\xml\html\DefaultTagProcessorFactory.cs" />
     <Compile Include="iTextSharp\tool\xml\html\Div.cs" />
     <Compile Include="iTextSharp\tool\xml\html\DummyTagProcessor.cs" />
@@ -142,6 +145,7 @@
     <Compile Include="iTextSharp\tool\xml\parser\state\DoubleQuotedAttrValueState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\InsideTagHTMLState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\InsideTagState.cs" />
+    <Compile Include="iTextSharp\tool\xml\parser\state\ProcessingInstructionEncounteredState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\SelfClosingTagState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\SingleQuotedAttrValueState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\SpecialCharState.cs" />
@@ -176,7 +180,9 @@
     <Compile Include="iTextSharp\tool\xml\ProcessObject.cs" />
     <Compile Include="iTextSharp\tool\xml\Tag.cs" />
     <Compile Include="iTextSharp\tool\xml\TagUtils.cs" />
+    <Compile Include="iTextSharp\tool\xml\util\ParentTreeUtil.cs" />
     <Compile Include="iTextSharp\tool\xml\XMLWorker.cs" />
+    <Compile Include="iTextSharp\tool\xml\XMLWorkerFontProvider.cs" />
     <Compile Include="iTextSharp\tool\xml\XMLWorkerHelper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

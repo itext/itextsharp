@@ -102,7 +102,7 @@ namespace iTextSharp.tool.xml.parser.state {
                     this.parser.Append(character);
                 } else {
                     if (this.parser.Memory().WhitespaceTag().Length != 0) {
-                        if (ignoreLastChars.Contains(this.parser.Memory().WhitespaceTag())) {
+                        if (ignoreLastChars.Contains(this.parser.Memory().WhitespaceTag().ToLower())) {
                             parser.Memory().LastChar = ' ';
                         }
                         this.parser.Memory().WhitespaceTag("");

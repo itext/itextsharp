@@ -83,6 +83,16 @@ namespace iTextSharp.tool.xml.html.table {
          */
         public override IList<IElement> End(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
             try {
+			    bool percentage = false;
+                String widthValue = null;
+                tag.CSS.TryGetValue(HTML.Attribute.WIDTH, out widthValue);
+			    if (!tag.CSS.TryGetValue(HTML.Attribute.WIDTH, out widthValue)
+                    && !tag.Attributes.TryGetValue(HTML.Attribute.WIDTH, out widthValue)) {
+			        widthValue = null;
+			    }
+			    if(widthValue != null && widthValue.Trim().EndsWith("%")) {
+				    percentage = true;
+			    }
                 int numberOfColumns = 0;
                 List<TableRowElement> tableRows = new List<TableRowElement>(currentContent.Count);
                 IList<IElement> invalidRowElements = new List<IElement>(1);
@@ -313,9 +323,18 @@ namespace iTextSharp.tool.xml.html.table {
                 } catch (DocumentException e) {
                     throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
                 }
+                float? tableHeight = new HeightCalculator().GetHeight(tag, GetHtmlPipelineContext(ctx).PageSize.Height);
                 foreach (TableRowElement row in tableRows) {
                     int columnNumber = -1;
+                    float? computedRowHeight = null;
+                    if ( tableHeight != null &&  tableRows.IndexOf(row) == tableRows.Count - 1) {
+                        float computedTableHeigt = table.CalculateHeights();
+                        computedRowHeight = tableHeight - computedTableHeigt;
+                    }
                     foreach (HtmlCell cell in row.Content) {
+                        if (computedRowHeight != null && computedRowHeight > 0) {
+                            cell.FixedHeight = computedRowHeight.Value;
+                        }
                         columnNumber += cell.Colspan;
                         IList<IElement> compositeElements = cell.CompositeElements;
                         if (compositeElements != null) {
@@ -338,6 +357,10 @@ namespace iTextSharp.tool.xml.html.table {
                     }
                     table.CompleteRow();
                 }
+                if (percentage) {
+				    table.WidthPercentage = utils.ParsePxInCmMmPcToPt(widthValue);
+				    table.LockedWidth = false;
+			    }
                 List<IElement> elems = new List<IElement>();
                 if (invalidRowElements.Count > 0) {
                     // all invalid row elements taken as caption

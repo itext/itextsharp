@@ -59,7 +59,7 @@ namespace iTextSharp.tool.xml.html {
             IList<IElement> l = new List<IElement>(1);
             if (sanitized.Length > 0) {
                 try {
-                    l.Add(CssAppliers.GetInstance().Apply(new Chunk(sanitized), tag, GetHtmlPipelineContext(ctx)));
+                    l.Add(GetCssAppliers().Apply(new Chunk(sanitized), tag, GetHtmlPipelineContext(ctx)));
                 } catch (NoCustomContextException e) {
                     throw new RuntimeWorkerException(e);
                 }
@@ -114,7 +114,7 @@ namespace iTextSharp.tool.xml.html {
                         }
                         p.Add(e);
                     }
-                    elems.Add(CssAppliers.GetInstance().Apply(p, tag, GetHtmlPipelineContext(ctx)));
+                    elems.Add(GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx)));
                 } else
                 // !currentContent > 0 ; An empty "a" tag has been encountered.
                 // we're using an anchor space hack here. without the space, reader

@@ -232,6 +232,10 @@ namespace iTextSharp.tool.xml.css {
             }
         }
 
+        public String StripDoubleSpacesTrimAndToLowerCase(String str) {
+            return StripDoubleSpacesAndTrim(str).ToLower();
+        }
+
         /**
          * Preparation before implementing the background style in iText. Splits the
          * given background style and its attributes into background-color,
@@ -630,6 +634,21 @@ namespace iTextSharp.tool.xml.css {
             } catch (NoDataException) {
             }
             return marginTop;
+        }
+
+        /**
+         * Trims a string and removes surrounding " or '.
+         *
+         * @param s the string
+         * @return trimmed and unquoted string
+         */
+
+        public String TrimAndRemoveQuoutes(String s) {
+            s = s.Trim();
+            if ((s.StartsWith("\"") || s.StartsWith("'")) && s.EndsWith("\"") || s.EndsWith("'")) {
+                s = s.Substring(1, s.Length - 2);
+            }
+            return s;
         }
     }
 }

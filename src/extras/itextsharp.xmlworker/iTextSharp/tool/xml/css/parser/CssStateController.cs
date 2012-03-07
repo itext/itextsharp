@@ -74,7 +74,7 @@ namespace iTextSharp.tool.xml.css.parser {
             foreach (String prop in split) {
                 String[] propSplit = prop.Split(':');
                 if (propSplit.Length == 2) {
-                    map[utils.StripDoubleSpacesAndTrim(propSplit[0])] = utils.StripDoubleSpacesAndTrim(propSplit[1]);
+                    map[utils.StripDoubleSpacesTrimAndToLowerCase(propSplit[0])] = utils.StripDoubleSpacesAndTrim(propSplit[1]);
                 }
             }
             if (currentSelector.Contains(",")) {

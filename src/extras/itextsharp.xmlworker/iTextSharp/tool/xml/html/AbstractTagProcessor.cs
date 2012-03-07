@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Globalization;
 using iTextSharp.text;
+using iTextSharp.text.pdf.draw;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
 using iTextSharp.tool.xml.exceptions;
@@ -58,16 +59,20 @@ namespace iTextSharp.tool.xml.html {
      * @author redlab_b
      *
      */
-    public abstract class AbstractTagProcessor : ITagProcessor {
+
+    public abstract class AbstractTagProcessor : ITagProcessor, CssAppliersAware
+    {
 
         /**
          * The configuration object of the XMLWorker.
          */
         private FontSizeTranslator fontsizeTrans;
+        private CssAppliers cssAppliers;
 
         /**
          *
          */
+
         public AbstractTagProcessor() {
             fontsizeTrans = FontSizeTranslator.GetInstance();
         }
@@ -145,13 +150,52 @@ namespace iTextSharp.tool.xml.html {
          * currentContentList after calling
          * {@link AbstractTagProcessor#end(Tag, List)}.
          */
-        public virtual IList<IElement> EndElement(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
-            IList<IElement> list = End(ctx, tag, currentContent);
+
+        public IList<IElement> EndElement(IWorkerContext ctx, Tag tag, IList<IElement> currentContent)
+        {
+            IList<IElement> list = new List<IElement>();
+            if (currentContent.Count == 0)
+            {
+                list = End(ctx, tag, currentContent);
+            }
+            else
+            {
+                IList<IElement> elements = new List<IElement>();
+                foreach (IElement el in currentContent)
+                {
+                    if (el is Chunk && ((Chunk) el).HasAttributes() &&
+                        ((Chunk) el).Attributes.ContainsKey(Chunk.NEWPAGE))
+                    {
+                        if (elements.Count > 0)
+                        {
+                            IList<IElement> addedElements = End(ctx, tag, elements);
+                            foreach (IElement addedElement in addedElements)
+                            {
+                                list.Add(addedElement);
+                            }
+                            elements.Clear();
+                        }
+                        list.Add(el);
+                    }
+                    else
+                    {
+                        elements.Add(el);
+                    }
+                }
+                if (elements.Count > 0)
+                {
+                    IList<IElement> addedElements = End(ctx, tag, elements);
+                    foreach (IElement addedElement in addedElements)
+                    {
+                        list.Add(addedElement);
+                    }
+                    elements.Clear();
+                }
+            }
             String pagebreak;
-            tag.CSS.TryGetValue(CSS.Property.PAGE_BREAK_AFTER, out pagebreak);
-            if (null != pagebreak && Util.EqualsIgnoreCase(CSS.Value.ALWAYS, pagebreak)) {
+            if (tag.CSS.TryGetValue(CSS.Property.PAGE_BREAK_AFTER, out pagebreak) && Util.EqualsIgnoreCase(CSS.Value.ALWAYS, pagebreak))
+            {
                 list.Add(Chunk.NEXTPAGE);
-                return list;
             }
             return list;
         }
@@ -191,32 +235,50 @@ namespace iTextSharp.tool.xml.html {
          * @param tag the relevant tag
          * @return a List with paragraphs
          */
+
         public virtual IList<IElement> CurrentContentToParagraph(IList<IElement> currentContent,
-                bool addNewLines, bool applyCSS, Tag tag, IWorkerContext ctx) {
-            try {
+                                                                 bool addNewLines, bool applyCSS, Tag tag,
+                                                                 IWorkerContext ctx)
+        {
+            try
+            {
                 IList<IElement> list = new List<IElement>();
-                if (currentContent.Count > 0) {
-                    if (addNewLines) {
+                if (currentContent.Count > 0)
+                {
+                    if (addNewLines)
+                    {
                         Paragraph p = new Paragraph(float.NaN);
-                        foreach (IElement e in currentContent) {
+                        foreach (IElement e in currentContent)
+                        {
+                            if (e is LineSeparator)
+                            {
+                                p.Add(Chunk.NEWLINE);
+                            }
                             p.Add(e);
                         }
-                        if (applyCSS) {
-                            p = (Paragraph) CssAppliers.GetInstance().Apply(p, tag, GetHtmlPipelineContext(ctx));
+                        if (applyCSS)
+                        {
+                            p = (Paragraph) GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx));
                         }
                         list.Add(p);
-                    } else {
+                    }
+                    else
+                    {
                         NoNewLineParagraph p = new NoNewLineParagraph(float.NaN);
-                        foreach (IElement e in currentContent) {
+                        foreach (IElement e in currentContent)
+                        {
                             p.Add(e);
                         }
-                        p = (NoNewLineParagraph) CssAppliers.GetInstance().Apply(p, tag, GetHtmlPipelineContext(ctx));
+                        p = (NoNewLineParagraph) GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx));
                         list.Add(p);
                     }
                 }
                 return list;
-            } catch (NoCustomContextException e) {
-                throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
+            }
+            catch (NoCustomContextException e)
+            {
+                throw new RuntimeWorkerException(
+                    LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
             }
         }
 
@@ -228,9 +290,21 @@ namespace iTextSharp.tool.xml.html {
          *            returned, true if new line should be added or not.
          * @return a List with paragraphs
          */
+
         public virtual IList<IElement> CurrentContentToParagraph(IList<IElement> currentContent,
-                bool addNewLines) {
+                                                                 bool addNewLines)
+        {
             return this.CurrentContentToParagraph(currentContent, addNewLines, false, null, null);
+        }
+
+        public void SetCssAppliers(CssAppliers cssAppliers)
+        {
+            this.cssAppliers = cssAppliers;
+        }
+
+        public CssAppliers GetCssAppliers()
+        {
+            return cssAppliers;
         }
     }
 }

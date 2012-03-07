@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using iTextSharp.tool.xml;
 using iTextSharp.text;
 /*
  * $Id: ITagProcessor.java 122 2011-05-27 12:20:58Z redlab_b $

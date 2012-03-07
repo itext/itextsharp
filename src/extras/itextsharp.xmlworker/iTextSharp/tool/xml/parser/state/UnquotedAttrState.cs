@@ -65,12 +65,20 @@ namespace iTextSharp.tool.xml.parser.state {
          * @see com.itextpdf.tool.xml.parser.State#process(int)
          */
         public void Process(char character) {
-            if (!HTMLUtils.IsWhiteSpace(character)) {
-                this.parser.Append(character);
-            } else {
+            if (Char.IsWhiteSpace(character)) {
                 this.parser.Memory().PutCurrentAttrValue(this.parser.BufferToString());
                 this.parser.Flush();
                 this.parser.SelectState().TagAttributes();
+            } else if (character == '>') {
+                this.parser.Memory().PutCurrentAttrValue(this.parser.BufferToString());
+                this.parser.StartElement();
+                this.parser.SelectState().InTag();
+            } else if (character == '/') {
+                this.parser.Memory().PutCurrentAttrValue(this.parser.BufferToString());
+                this.parser.Flush();
+                this.parser.SelectState().SelfClosing();
+            } else {
+                this.parser.Append(character);
             }
         }
 

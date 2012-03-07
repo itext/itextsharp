@@ -312,6 +312,8 @@ namespace iTextSharp.tool.xml.html {
             public const String TYPE = "type";
             public const String COLSPAN = "colspan";
             public const String ROWSPAN = "rowspan";
+            public const String VALIGN  = "valign";
+            public const String ALIGN  = "align";
 
             /**
              * Possible attribute values.
