@@ -65,7 +65,7 @@ namespace iTextSharp.tool.xml.html {
             if (sanitized.Length > 0) {
                 Chunk c = new ChunkCssApplier().Apply(new Chunk(sanitized), tag);
                 try {
-                    l.Add(CssAppliers.GetInstance().Apply(new NoNewLineParagraph(c), tag, GetHtmlPipelineContext(ctx)));
+                    l.Add(GetCssAppliers().Apply(new NoNewLineParagraph(c), tag, GetHtmlPipelineContext(ctx)));
                 } catch (NoCustomContextException e) {
                     throw new RuntimeWorkerException(e);
                 }
@@ -87,7 +87,7 @@ namespace iTextSharp.tool.xml.html {
                 foreach (IElement e in currentContent) {
                     if (e is Paragraph) {
                         if (p != null) {
-                            l.Add(CssAppliers.GetInstance().Apply(p, tag, GetHtmlPipelineContext(ctx)));
+                            l.Add(GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx)));
                             p = null;
                         }
                         l.Add(e);
@@ -99,7 +99,7 @@ namespace iTextSharp.tool.xml.html {
                     }
                 }
                 if (p != null) {
-                    l.Add(CssAppliers.GetInstance().Apply(p, tag, GetHtmlPipelineContext(ctx)));
+                    l.Add(GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx)));
                 }
                 return l;
             } catch (NoCustomContextException e) {

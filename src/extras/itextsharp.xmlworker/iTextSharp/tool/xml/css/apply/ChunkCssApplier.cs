@@ -1,14 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.util;
-using iTextSharp.text;
-using iTextSharp.text.html;
-using iTextSharp.text.pdf;
-using iTextSharp.tool.xml;
-using iTextSharp.tool.xml.css;
 /*
- * $Id: ChunkCssApplier.java 108 2011-05-26 12:11:05Z emielackermann $
+ * $Id: ChunkCssApplier.java 287 2012-02-27 16:56:22Z blowagie $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -50,48 +41,143 @@ using iTextSharp.tool.xml.css;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+
+using System;
+using System.Collections.Generic;
+using System.util;
+using iTextSharp.text;
+using iTextSharp.text.html;
+using iTextSharp.text.pdf;
+
 namespace iTextSharp.tool.xml.css.apply {
 
-    /**
-     * Applies CSS Rules to Chunks
-     *
-     */
-    public class ChunkCssApplier {
+/**
+ * Applies CSS Rules to Chunks
+ */
+
+    public class ChunkCssApplier
+    {
         /**
          * FF4 and IE8 provide normal text and bold text. All other values are translated to one of these 2 styles <br />
          * 100 - 500 and "lighter" = normal.<br />
          * 600 - 900 and "bolder" = bold.
          */
-        public static readonly IList<String> BOLD = new List<string>(new String[] { "bold", "bolder", "600", "700", "800", "900" });
-        private CssUtils utils = CssUtils.GetInstance();
+        public static IList<String> BOLD = new List<string>(new String[] {"bold", "bolder", "600", "700", "800", "900"});
+        protected CssUtils utils = CssUtils.GetInstance();
+        protected IFontProvider fontProvider;
 
-         /*
-         * (non-Javadoc)
+        public ChunkCssApplier() : this(null)
+        {
+        }
+
+        public ChunkCssApplier(IFontProvider fontProvider)
+        {
+            if (fontProvider != null)
+            {
+                this.fontProvider = fontProvider;
+            }
+            else
+            {
+                this.fontProvider = new FontFactoryImp();
+            }
+        }
+
+        /**
          *
-         * @see
-         * com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element,
-         * com.itextpdf.tool.xml.Tag)
+         * @param c the Chunk to apply CSS to.
+         * @param t the tag containing the chunk data
+         * @return the styled chunk
          */
-        public Chunk Apply(Chunk c, Tag t) {
+
+        public Chunk Apply(Chunk c, Tag t)
+        {
+            Font f = ApplyFontStyles(t);
+            float size = f.Size;
+            String value = null;
+            IDictionary<String, String> rules = t.CSS;
+            foreach (KeyValuePair<String, String> entry in rules)
+            {
+                String key = entry.Key;
+                value = entry.Value;
+                if (Util.EqualsIgnoreCase(CSS.Property.FONT_STYLE, key)) {
+                    if (Util.EqualsIgnoreCase(CSS.Value.OBLIQUE, value))
+                    {
+                        c.SetSkew(0, 12);
+                    }
+                } else if (Util.EqualsIgnoreCase(CSS.Property.LETTER_SPACING, key)) {
+                    c.SetCharacterSpacing(utils.ParsePxInCmMmPcToPt(value));
+                } else if (Util.EqualsIgnoreCase(CSS.Property.XFA_FONT_HORIZONTAL_SCALE, key)) {
+                    // only % allowed; need a catch block NumberFormatExc?
+                    c.SetHorizontalScaling(
+                        float.Parse(value.Replace("%", ""))/100);
+                }
+            }
+            // following styles are separate from the for each loop, because they are based on font settings like size.
+            if (rules.TryGetValue(CSS.Property.VERTICAL_ALIGN, out value))
+            {
+                if (Util.EqualsIgnoreCase(CSS.Value.SUPER, value)
+                    || Util.EqualsIgnoreCase(CSS.Value.TOP, value)
+                    || Util.EqualsIgnoreCase(CSS.Value.TEXT_TOP, value)) {
+                    c.SetTextRise((float) (size/2 + 0.5));
+                } else if (Util.EqualsIgnoreCase(CSS.Value.SUB, value)
+                    || Util.EqualsIgnoreCase(CSS.Value.BOTTOM, value)
+                    || Util.EqualsIgnoreCase(CSS.Value.TEXT_BOTTOM, value)) {
+                    c.SetTextRise(-size/2);
+                } else {
+                    c.SetTextRise(utils.ParsePxInCmMmPcToPt(value));
+                }
+            }
+            String xfaVertScale;
+            if (rules.TryGetValue(CSS.Property.XFA_FONT_VERTICAL_SCALE, out xfaVertScale))
+            {
+                if (xfaVertScale.Contains("%"))
+                {
+                    size *= float.Parse(xfaVertScale.Replace("%", ""))/100;
+                    c.SetHorizontalScaling(100/float.Parse(xfaVertScale.Replace("%", "")));
+                }
+            }
+            if (rules.TryGetValue(CSS.Property.TEXT_DECORATION, out value))
+            {
+                // Restriction? In html a underline and a line-through is possible on one piece of text. A Chunk can set an underline only once.
+                if (Util.EqualsIgnoreCase(CSS.Value.UNDERLINE, value))
+                {
+                    c.SetUnderline(0.75f, -size/8f);
+                }
+                if (Util.EqualsIgnoreCase(CSS.Value.LINE_THROUGH, value))
+                {
+                    c.SetUnderline(0.75f, size/4f);
+                }
+            }
+            if (rules.TryGetValue(CSS.Property.BACKGROUND_COLOR, out value))
+            {
+                c.SetBackground(HtmlUtilities.DecodeColor(value));
+            }
+            f.Size = size;
+            c.Font = f;
+            return c;
+        }
+
+        public Font ApplyFontStyles(Tag t)
+        {
             String fontName = null;
             String encoding = BaseFont.CP1252;
             float size = new FontSizeTranslator().GetFontSize(t);
             int style = Font.UNDEFINED;
             BaseColor color = null;
             IDictionary<String, String> rules = t.CSS;
-            foreach (KeyValuePair<String, String> entry in rules) {
+            foreach (KeyValuePair< String, String > entry in rules)
+            {
                 String key = entry.Key;
                 String value = entry.Value;
                 if (Util.EqualsIgnoreCase(CSS.Property.FONT_WEIGHT, key)) {
-                    if (CSS.Value.BOLD.Contains(value)) {
+                    if (CSS.Value.BOLD.Contains(value))
+                    {
                         if (style == Font.ITALIC) {
                             style = Font.BOLDITALIC;
-                        }
-                        else {
+                        } else {
                             style = Font.BOLD;
                         }
-                    }
-                    else {
+                    } else {
                         if (style == Font.BOLDITALIC) {
                             style = Font.ITALIC;
                         } else {
@@ -99,80 +185,75 @@ namespace iTextSharp.tool.xml.css.apply {
                         }
                     }
                 } else if (Util.EqualsIgnoreCase(CSS.Property.FONT_STYLE, key)) {
-                    if (Util.EqualsIgnoreCase(value, CSS.Value.ITALIC)) {
-                        if (style == Font.BOLD)
+                    if (Util.EqualsIgnoreCase(CSS.Value.ITALIC, value))
+                    {
+                        if (style == Font.BOLD) {
                             style = Font.BOLDITALIC;
-                        else
+                        } else {
                             style = Font.ITALIC;
-                    }
-                    if (Util.EqualsIgnoreCase(value, CSS.Value.OBLIQUE)) {
-                        c.SetSkew(0, 12);
+                        }
                     }
                 } else if (Util.EqualsIgnoreCase(CSS.Property.FONT_FAMILY, key)) {
-                    if (value.Contains(",")){
-                        String[] fonts = value.Split(',');
-                        foreach (String s in fonts) {
-                            string s2 = s.Trim();
-                            if (!Util.EqualsIgnoreCase(FontFactory.GetFont(s2).Familyname, "unknown")){
-                                fontName = s2;
-                                break;
+                    // TODO improve fontfamily parsing (what if a font family has a comma in the name ? )
+                    fontName = value;
+                }
+                else if (Util.EqualsIgnoreCase(CSS.Property.COLOR, key)) {
+                    color = HtmlUtilities.DecodeColor(value);
+                }
+            }
+            if (fontName != null)
+            {
+                if (fontName.Contains(","))
+                {
+                    String[] fonts = fontName.Split(new Char[]{','});
+                    Font firstFont = null;
+                    foreach (String s in fonts)
+                    {
+                        String trimmedS = utils.TrimAndRemoveQuoutes(s);
+                        if (fontProvider.IsRegistered(trimmedS))
+                        {
+                            Font f = fontProvider.GetFont(trimmedS, encoding, BaseFont.EMBEDDED, size, style, color);
+                            if (f != null &&
+                                (style == Font.NORMAL || style == Font.UNDEFINED || (f.Style & style) == 0))
+                            {
+                                return f;
+                            }
+                            if (firstFont == null)
+                            {
+                                firstFont = f;
                             }
                         }
-                    } else {
-                        fontName = value;
                     }
-                } else if (Util.EqualsIgnoreCase(CSS.Property.COLOR, key)) {
-                    color = HtmlUtilities.DecodeColor(value);
-                } else if (Util.EqualsIgnoreCase(CSS.Property.LETTER_SPACING, key)) {
-                    c.SetCharacterSpacing(utils.ParsePxInCmMmPcToPt(value));
-                } else if (rules.ContainsKey(CSS.Property.XFA_FONT_HORIZONTAL_SCALE)) { // only % allowed; need a catch block NumberFormatExc?
-                    c.SetHorizontalScaling(float.Parse(rules[CSS.Property.XFA_FONT_HORIZONTAL_SCALE].Replace("%", ""), CultureInfo.InvariantCulture)/100f);
-                }
-            }
-            // following styles are separate from the for each loop, because they are based on font settings like size.
-            if (rules.ContainsKey(CSS.Property.VERTICAL_ALIGN)) {
-                String value = rules[CSS.Property.VERTICAL_ALIGN];
-                if (Util.EqualsIgnoreCase(value, CSS.Value.SUPER)||Util.EqualsIgnoreCase(value, CSS.Value.TOP)||Util.EqualsIgnoreCase(value, CSS.Value.TEXT_TOP)) {
-                    c.SetTextRise((float) (size / 2 + 0.5));
-                } else if (Util.EqualsIgnoreCase(value, CSS.Value.SUB)||Util.EqualsIgnoreCase(value, CSS.Value.BOTTOM)||Util.EqualsIgnoreCase(value, CSS.Value.TEXT_BOTTOM)) {
-                    c.SetTextRise(-size / 2);
+                    if (firstFont != null)
+                    {
+                        return firstFont;
+                    }else {
+                        if (fonts.Length > 0) {
+                            fontName = utils.TrimAndRemoveQuoutes(fontName.Split(new Char[] { ',' })[0]);
+                        } else {
+                            fontName = null;
+                        }
+                    }
                 } else {
-                    c.SetTextRise(utils.ParsePxInCmMmPcToPt(value));
+                    fontName = utils.TrimAndRemoveQuoutes(fontName);
                 }
             }
-            String xfaVertScale;
-            rules.TryGetValue(CSS.Property.XFA_FONT_VERTICAL_SCALE, out xfaVertScale);
-            if (null != xfaVertScale) { // only % allowed; need a catch block NumberFormatExc?
-                if (xfaVertScale.Contains("%")) {
-                    size *= float.Parse(xfaVertScale.Replace("%", ""), CultureInfo.InvariantCulture)/100;
-                    c.SetHorizontalScaling(100/float.Parse(xfaVertScale.Replace("%", ""), CultureInfo.InvariantCulture));
-                }
-            }
-            if (rules.ContainsKey(CSS.Property.TEXT_DECORATION)) { // Restriction? In html a underline and a line-through is possible on one piece of text. A Chunk can set an underline only once.
-                String value = rules[CSS.Property.TEXT_DECORATION];
-                if (Util.EqualsIgnoreCase(CSS.Value.UNDERLINE, value)) {
-                    c.SetUnderline(0.75f, -size/8f);
-                }
-                if (Util.EqualsIgnoreCase(CSS.Value.LINE_THROUGH, value)) {
-                    c.SetUnderline(0.75f, size/4f);
-                }
-            }
-            if (rules.ContainsKey(CSS.Property.BACKGROUND_COLOR)) {
-                c.SetBackground(HtmlUtilities.DecodeColor(rules[CSS.Property.BACKGROUND_COLOR]));
-            }
-            Font f  = FontFactory.GetFont(fontName, encoding, BaseFont.EMBEDDED, size, style, color);
-            c.Font = f;
-            return c;
+
+            return fontProvider.GetFont(fontName, encoding, BaseFont.EMBEDDED, size, style, color);
         }
+
         /**
          * Method used for retrieving the widest word of a chunk of text. All styles of the chunk will be taken into account when calculating the width of the words.
+         *
          * @param c chunk of which the widest word is required.
+         *
          * @return float containing the width of the widest word.
          */
         public float GetWidestWord(Chunk c) {
             String[] words = c.Content.Split(CssUtils.whitespace);
             float widestWord = 0;
-            for (int i = 0; i<words.Length ; i++) {
+            for (int i = 0; i < words.Length; i++)
+            {
                 Chunk word = new Chunk(words[i]);
                 CopyChunkStyles(c, word);
                 if (word.GetWidthPoint() > widestWord) {
@@ -181,16 +262,31 @@ namespace iTextSharp.tool.xml.css.apply {
             }
             return widestWord;
         }
+
         /**
          * Method used for copying styles from one chunk to another. Could be deprecated if the content of a chunk can be overwritten.
+         *
          * @param source chunk which contains the required styles.
          * @param target chunk which needs the required styles.
          */
-        public void CopyChunkStyles(Chunk source, Chunk target) {
+
+        public void CopyChunkStyles(Chunk source, Chunk target)
+        {
             target.Font = source.Font;
             target.Attributes = source.Attributes;
             target.SetCharacterSpacing(source.GetCharacterSpacing());
             target.SetHorizontalScaling(source.HorizontalScaling);
+            target.SetHorizontalScaling(source.HorizontalScaling);
+        }
+
+        public IFontProvider FontProvider
+        {
+            get {
+                return fontProvider;
+            }
+            set {
+                fontProvider = value;
+            }
         }
     }
 }

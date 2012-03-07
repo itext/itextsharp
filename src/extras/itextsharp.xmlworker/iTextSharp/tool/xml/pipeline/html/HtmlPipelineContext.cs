@@ -57,8 +57,9 @@ namespace iTextSharp.tool.xml.pipeline.html {
      * @author redlab_b
      *
      */
-    public class HtmlPipelineContext : ICustomContext, ICloneable, IMarginMemory, IPageSizeContainable {
 
+    public class HtmlPipelineContext : ICustomContext, ICloneable, IMarginMemory, IPageSizeContainable, CssAppliersAware
+    {
         /**
          *  Key for the memory, used to store bookmark nodes
          */
@@ -74,25 +75,38 @@ namespace iTextSharp.tool.xml.pipeline.html {
         private IImageProvider imageProvider;
         private Rectangle pageSize = iTextSharp.text.PageSize.A4;
         private Encoding charset;
-        private IList<String> roottags = new List<string>(new String[] { "body", "div" });
+        private IList<String> roottags = new List<string>(new String[] {"body", "div"});
         private ILinkProvider linkprovider;
         private bool autoBookmark = true;
         private IDictionary<String, Object> memory;
-
+        private CssAppliers cssAppliers;
         /**
          * Construct a new HtmlPipelineContext object
          */
-        public HtmlPipelineContext() {
+
+        public HtmlPipelineContext(CssAppliers cssAppliers)
+        {
             this.queue = new LinkedList<StackKeeper>();
             this.memory = new Dictionary<String, Object>();
+            this.cssAppliers = cssAppliers;
+            if (this.cssAppliers == null) {
+                this.cssAppliers = new CssAppliersImpl(new XMLWorkerFontProvider());
+            }
         }
+
         /**
          * @param tag the tag to find a ITagProcessor for
          * @param nameSpace the namespace.
          * @return a ITagProcessor
          */
-        protected internal ITagProcessor ResolveProcessor(String tag, String nameSpace) {
+
+        protected internal ITagProcessor ResolveProcessor(String tag, String nameSpace)
+        {
             ITagProcessor tp = tagFactory.GetProcessor(tag, nameSpace);
+            if (tp is CssAppliersAware)
+            {
+                ((CssAppliersAware) tp).SetCssAppliers(this.cssAppliers);
+            }
             return tp;
         }
 
@@ -100,7 +114,9 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * Add a {@link StackKeeper} to the top of the stack list.
          * @param stackKeeper the {@link StackKeeper}
          */
-        protected internal void AddFirst(StackKeeper stackKeeper) {
+
+        protected internal void AddFirst(StackKeeper stackKeeper)
+        {
             this.queue.AddFirst(stackKeeper);
 
         }
@@ -110,7 +126,9 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @return a StackKeeper
          * @throws NoStackException if there are no elements on the stack
          */
-        protected internal StackKeeper Peek() {
+
+        protected internal StackKeeper Peek()
+        {
             if (queue.Count == 0)
                 throw new NoStackException();
             return this.queue.First.Value;
@@ -119,21 +137,27 @@ namespace iTextSharp.tool.xml.pipeline.html {
         /**
          * @return the current content of elements.
          */
-        protected internal IList<IElement> CurrentContent() {
+
+        protected internal IList<IElement> CurrentContent()
+        {
             return ctn;
         }
 
         /**
          * @return if this pipelines tag processing accept unknown tags: true. False otherwise
          */
-        public bool AcceptUnknown() {
+
+        public bool AcceptUnknown()
+        {
             return this.acceptUnknown;
         }
 
         /**
          * @return returns true if the stack is empty
          */
-        protected internal bool IsEmpty() {
+
+        protected internal bool IsEmpty()
+        {
             return queue.Count == 0;
         }
 
@@ -142,34 +166,49 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @return a StackKeeper
          * @throws NoStackException if there are no elements on the stack
          */
-        protected internal StackKeeper Poll() {
-            try {
+
+        protected internal StackKeeper Poll()
+        {
+            try
+            {
                 StackKeeper sk = this.queue.First.Value;
                 this.queue.RemoveFirst();
                 return sk;
-            } catch (InvalidOperationException) {
+            }
+            catch (InvalidOperationException)
+            {
                 throw new NoStackException();
             }
         }
+
         /**
          * @return true if auto-bookmarks should be enabled. False otherwise.
          */
-        public bool AutoBookmark() {
+
+        public bool AutoBookmark()
+        {
             return autoBookmark;
         }
+
         /**
          * @return the memory
          */
-        public IDictionary<String, Object> GetMemory() {
+
+        public IDictionary<String, Object> GetMemory()
+        {
             return memory;
         }
+
         /**
          * @return the image provider.
          * @throws NoImageProviderException if there is no {@link IImageProvide}
          *
          */
-        public IImageProvider GetImageProvider() {
-            if (null == this.imageProvider) {
+
+        public IImageProvider GetImageProvider()
+        {
+            if (null == this.imageProvider)
+            {
                 throw new NoImageProviderException();
             }
             return this.imageProvider;
@@ -181,14 +220,19 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @param cSet the charset.
          * @return this <code>HtmlPipelineContext</code>
          */
-        public HtmlPipelineContext CharSet(Encoding cSet) {
+
+        public HtmlPipelineContext CharSet(Encoding cSet)
+        {
             this.charset = cSet;
             return this;
         }
+
         /**
          * @return the {@link Charset} to use, or null if none configured.
          */
-        public Encoding CharSet() {
+
+        public Encoding CharSet()
+        {
             return charset;
         }
 
@@ -197,7 +241,9 @@ namespace iTextSharp.tool.xml.pipeline.html {
          *         margins. By default the root-tags are &lt;body&gt; and
          *         &lt;div&gt;
          */
-        public IList<String> GetRootTags() {
+
+        public IList<String> GetRootTags()
+        {
             return roottags;
         }
 
@@ -207,15 +253,20 @@ namespace iTextSharp.tool.xml.pipeline.html {
          *
          * @return the ILinkProvider if any.
          */
-        public ILinkProvider GetLinkProvider() {
+
+        public ILinkProvider GetLinkProvider()
+        {
             return linkprovider;
         }
+
         /**
          * If no pageSize is set, the default value A4 is used.
          * @param pageSize the pageSize to set
          * @return this <code>HtmlPipelineContext</code>
          */
-        public HtmlPipelineContext SetPageSize(Rectangle pageSize) {
+
+        public HtmlPipelineContext SetPageSize(Rectangle pageSize)
+        {
             this.pageSize = pageSize;
             return this;
         }
@@ -230,18 +281,23 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * (Charset.forName to get a new charset), autobookmark (primitive) are
          * copied.
          */
-        public object Clone() {
-            HtmlPipelineContext newCtx = new HtmlPipelineContext();
-            if (this.imageProvider != null) {
-                String rootPath =  imageProvider.GetImageRootPath();
+
+        public object Clone()
+        {
+            CssAppliers cloneCssApliers = this.cssAppliers.Clone();
+            HtmlPipelineContext newCtx = new HtmlPipelineContext(cloneCssApliers);
+            if (this.imageProvider != null)
+            {
+                String rootPath = imageProvider.GetImageRootPath();
                 newCtx.SetImageProvider(new CloneImageProvider(rootPath));
             }
-            if (null != this.charset) {
+            if (null != this.charset)
+            {
                 newCtx.CharSet(Encoding.GetEncoding(this.charset.CodePage));
             }
             newCtx.SetPageSize(new Rectangle(this.pageSize)).SetLinkProvider(this.linkprovider)
-                    .SetRootTags(new List<String>(this.roottags)).AutoBookmark(this.autoBookmark)
-                    .SetTagFactory(this.tagFactory).SetAcceptUnknown(this.acceptUnknown);
+                .SetRootTags(new List<String>(this.roottags)).AutoBookmark(this.autoBookmark)
+                .SetTagFactory(this.tagFactory).SetAcceptUnknown(this.acceptUnknown);
             return newCtx;
         }
 
@@ -257,7 +313,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
             }
         }
 
-        /**
+    /**
          * Set to true to allow the HtmlPipeline to accept tags it does not find in
          * the given {@link TagProcessorFactory}
          *
@@ -347,5 +403,5 @@ namespace iTextSharp.tool.xml.pipeline.html {
                 return this.pageSize;
             }
         }
-    }
+        public CssAppliers GetCssAppliers() {            return cssAppliers;        }        public void SetCssAppliers(CssAppliers cssAppliers) {            this.cssAppliers = cssAppliers;        }    }
 }

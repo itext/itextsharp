@@ -1,14 +1,5 @@
-using System;
-using System.Collections.Generic;
-using iTextSharp.text;
-using iTextSharp.tool.xml;
-using iTextSharp.tool.xml.css.apply;
-using iTextSharp.tool.xml.exceptions;
-using iTextSharp.tool.xml.html;
-using iTextSharp.tool.xml.pipeline.html;
-using iTextSharp.tool.xml.html.pdfelement;
 /*
- * $Id: TableData.java 118 2011-05-27 11:10:19Z redlab_b $
+ * $Id: TableData.java 287 2012-02-27 16:56:22Z blowagie $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -50,60 +41,102 @@ using iTextSharp.tool.xml.html.pdfelement;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+
+using System;
+using System.Collections.Generic;
+using iTextSharp.text;
+using iTextSharp.text.pdf.draw;
+using iTextSharp.tool.xml.css.apply;
+using iTextSharp.tool.xml.exceptions;
+using iTextSharp.tool.xml.html.pdfelement;
+using iTextSharp.tool.xml.pipeline.html;
+
 namespace iTextSharp.tool.xml.html.table {
 
-    /**
-     * @author redlab_b
-     *
-     */
+/**
+ * @author redlab_b
+ * 
+ */
     public class TableData : AbstractTagProcessor {
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * com.itextpdf.tool.xml.ITagProcessor#content(com.itextpdf.tool.xml.Tag,
-         * java.util.List, com.itextpdf.text.Document, java.lang.String)
-         */
-        public override IList<IElement> Content(IWorkerContext ctx, Tag tag, String content) {
-            String sanitized = HTMLUtils.SanitizeInline(content);
-            IList<IElement> l = new List<IElement>(1);
-            if (sanitized.Length > 0) {
-                Chunk c = new ChunkCssApplier().Apply(new Chunk(sanitized), tag);
-    //          NoNewLineParagraph noNewLineParagraph = new NoNewLineParagraphCssApplier(configuration).Apply(new NoNewLineParagraph(c), tag);
-                l.Add(c);
-            }
-            return l;
-        }
+	    public override IList<IElement> Content(IWorkerContext ctx, Tag tag,
+			    String content) {
+		    String sanitized = HTMLUtils.SanitizeInline(content);
+		    IList<IElement> l = new List<IElement>(1);
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see
-         * com.itextpdf.tool.xml.ITagProcessor#endElement(com.itextpdf.tool.xml.Tag,
-         * java.util.List, com.itextpdf.text.Document)
-         */
-        public override IList<IElement> End(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
-            HtmlCell cell = new HtmlCell();
-            IList<IElement> l = new List<IElement>(1);
-            foreach (IElement e in currentContent) {
-                cell.AddElement(e);
-            }
+		    if (sanitized.Length > 0) {
+			    Chunk c = GetCssAppliers().ChunkCssAplier.Apply(new Chunk(sanitized), tag);
+			    l.Add(c);
+		    }
+		    return l;
+	    }
+
+	    /*
+	     * (non-Javadoc)
+	     * 
+	     * @see
+	     * com.itextpdf.tool.xml.TagProcessor#endElement(com.itextpdf.tool.xml.Tag,
+	     * java.util.List, com.itextpdf.text.Document)
+	     */
+	    public override IList<IElement> End(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
+		    HtmlCell cell = new HtmlCell();
             try {
                 HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
-                l.Add(new HtmlCellCssApplier().Apply(cell, tag, htmlPipelineContext, htmlPipelineContext));
+                cell = new HtmlCellCssApplier().Apply(cell, tag, htmlPipelineContext, htmlPipelineContext);
             } catch (NoCustomContextException e1) {
                 throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e1);
             }
-            return l;
-        }
+            cell.Column.UseAscender = true;
+		    IList<IElement> l = new List<IElement>(1);
+            IList<IElement> chunks = new List<IElement>();
+		    foreach (IElement e in currentContent) {
+                if (e is Chunk || e is NoNewLineParagraph || e is LineSeparator) {
+                    if (e == Chunk.NEWLINE) {
+                        int index = currentContent.IndexOf(e);
+                        if (index == currentContent.Count - 1) {
+                            continue;
+                        } else {
+                            IElement nextElement = currentContent[index + 1];
+                            if (nextElement is Paragraph) {
+                                continue;
+                            }
+                            if (chunks.Count == 0) {
+                                continue;
+                            }
 
-        /* (non-Javadoc)
-         * @see com.itextpdf.tool.xml.ITagProcessor#isStackOwner()
-         */
-        public override bool IsStackOwner() {
-            return true;
-        }
+                        }
+                    } else if (e is LineSeparator) {
+                        chunks.Add(Chunk.NEWLINE);
+                    }
+                    chunks.Add(e);
+                    continue;
+                } else if (chunks.Count > 0) {
+                    Paragraph p = new Paragraph();
+                    p.MultipliedLeading = 1.2f;
+                    p.AddAll(chunks);
+                    p.Alignment = cell.HorizontalAlignment;
+                    cell.AddElement(p);
+                    chunks.Clear();
+                }
 
+                if (e is Paragraph) {
+                    ((Paragraph)e).Alignment = cell.HorizontalAlignment;
+                }
+
+			    cell.AddElement(e);
+		    }
+            if ( chunks.Count > 0 ) {
+                Paragraph p = new Paragraph();
+                p.MultipliedLeading = 1.2f;
+                p.AddAll(chunks);
+                p.Alignment = cell.HorizontalAlignment;
+                cell.AddElement(p);
+            }
+    	    l.Add(cell);
+		    return l;
+	    }
+	    public override bool IsStackOwner() {
+		    return true;
+	    }
     }
 }

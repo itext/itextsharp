@@ -68,6 +68,7 @@ namespace iTextSharp.tool.xml.parser {
         private IState xml;
         private IState doctype;
         private IState unquoted;
+        private IState processingInstruction;
         private XMLParser parser;
         private IState currentState;
         private IState previousState;
@@ -95,6 +96,7 @@ namespace iTextSharp.tool.xml.parser {
             xml = new XmlState(parser);
             doctype = new DocTypeState(parser);
             unquoted = new UnquotedAttrState(parser);
+            processingInstruction = new ProcessingInstructionEncounteredState(parser);
             previousState = null;
             currentState = null;
         }
@@ -173,6 +175,14 @@ namespace iTextSharp.tool.xml.parser {
          */
         public XMLParser DoubleQuotedAttr() {
             return SetState(doubleQuoted);
+        }
+
+        /**
+	     * set Parser state to {@link ProcessingInstructionEncounteredState}.
+	     * @return Parser
+	     */
+        public XMLParser ProcessingInstructions() {
+            return SetState(processingInstruction);
         }
 
         /**

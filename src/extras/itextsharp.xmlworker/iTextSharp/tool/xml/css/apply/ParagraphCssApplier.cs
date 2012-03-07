@@ -1,13 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.util;
-using iTextSharp.text;
-using iTextSharp.tool.xml;
-using iTextSharp.tool.xml.css;
-using iTextSharp.tool.xml.pipeline.html;
 /*
- * $Id: ParagraphCssApplier.java 122 2011-05-27 12:20:58Z redlab_b $
+ * $Id: ParagraphCssApplier.java 287 2012-02-27 16:56:22Z blowagie $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -49,104 +41,165 @@ using iTextSharp.tool.xml.pipeline.html;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+using System;
+using System.Collections.Generic;
+using System.util;
+using iTextSharp.text;
+using iTextSharp.tool.xml.html;
+
 namespace iTextSharp.tool.xml.css.apply {
 
 
-    /**
-     * Applies CSS on a {@link Paragraph}
-     * @author itextpdf.com
-     *
-     */
-    public class ParagraphCssApplier {
-        private CssUtils utils = CssUtils.GetInstance();
+/**
+ * Applies CSS on a {@link Paragraph}
+ *
+ * @author itextpdf.com
+ */
+
+    public class ParagraphCssApplier
+    {
+
+
+        private CssAppliers appliers;
 
         /**
-         * Construct a ParagraphCssApplier
+         * Construct a ParagraphCssApplier.
+         *
          */
-        public ParagraphCssApplier() {
+
+        public ParagraphCssApplier(CssAppliers appliers)
+        {
+            this.appliers = appliers;
         }
 
-        /* (non-Javadoc)
-         * @see com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag)
+        /**
+         * Styles a paragraph
+         *
+         * @param p the paragraph
+         * @param t the tag
+         * @param configuration the MarginMemory
+         * @return a styled {@link Paragraph}
          */
-        public Paragraph Apply(Paragraph p, Tag t, IMarginMemory configuration) {
-            /*if (this.configuration.GetRootTags().Contains(t.Name)) {
+
+        public Paragraph Apply(Paragraph p, Tag t, IMarginMemory configuration)
+        {
+            /*MaxLeadingAndSize m = new MaxLeadingAndSize();
+            if (configuration.GetRootTags().Contains(t.GetName())) {
                 m.SetLeading(t);
             } else {
                 m.SetVariablesBasedOnChildren(t);
             }*/
+            CssUtils utils = CssUtils.GetInstance();
             float fontSize = FontSizeTranslator.GetInstance().GetFontSize(t);
+            if (fontSize < 0) {
+                fontSize = 0;
+            }
             float lmb = 0;
             bool hasLMB = false;
             IDictionary<String, String> css = t.CSS;
-            foreach (KeyValuePair<String, String> entry in css) {
+            foreach (KeyValuePair<String, String> entry in css)
+            {
                 String key = entry.Key;
                 String value = entry.Value;
-                if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_TOP, key)) {
+                if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_TOP, key))
+                {
                     p.SpacingBefore = p.SpacingBefore + utils.CalculateMarginTop(value, fontSize, configuration);
-                } else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_TOP, key)) {
+                }
+                else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_TOP, key))
+                {
                     p.SpacingBefore = p.SpacingBefore + utils.ParseValueToPt(value, fontSize);
-                } else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_BOTTOM, key)) {
+                }
+                else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_BOTTOM, key))
+                {
                     float after = utils.ParseValueToPt(value, fontSize);
                     p.SpacingAfter = p.SpacingAfter + after;
                     lmb = after;
                     hasLMB = true;
-                } else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_BOTTOM, key)) {
+                }
+                else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_BOTTOM, key))
+                {
                     p.SpacingAfter = p.SpacingAfter + utils.ParseValueToPt(value, fontSize);
-                } else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_LEFT, key)) {
+                }
+                else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_LEFT, key))
+                {
                     p.IndentationLeft = p.IndentationLeft + utils.ParseValueToPt(value, fontSize);
-                } else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_RIGHT, key)) {
+                }
+                else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_RIGHT, key))
+                {
                     p.IndentationRight = p.IndentationRight + utils.ParseValueToPt(value, fontSize);
-                } else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_LEFT, key)) {
+                }
+                else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_LEFT, key))
+                {
                     p.IndentationLeft = p.IndentationLeft + utils.ParseValueToPt(value, fontSize);
-                } else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_RIGHT, key)) {
+                }
+                else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_RIGHT, key))
+                {
                     p.IndentationRight = p.IndentationRight + utils.ParseValueToPt(value, fontSize);
-                } else if (Util.EqualsIgnoreCase(CSS.Property.TEXT_ALIGN, key)) {
-                    if (Util.EqualsIgnoreCase(CSS.Value.RIGHT, value)){
+                }
+                else if (Util.EqualsIgnoreCase(CSS.Property.TEXT_ALIGN, key))
+                {
+                    if (Util.EqualsIgnoreCase(CSS.Value.RIGHT, value))
+                    {
                         p.Alignment = Element.ALIGN_RIGHT;
-                    } else if (Util.EqualsIgnoreCase(CSS.Value.CENTER, value)){
+                    }
+                    else if (Util.EqualsIgnoreCase(CSS.Value.CENTER, value))
+                    {
                         p.Alignment = Element.ALIGN_CENTER;
-                    } else if (Util.EqualsIgnoreCase(CSS.Value.LEFT, value)){
+                    }
+                    else if (Util.EqualsIgnoreCase(CSS.Value.LEFT, value))
+                    {
                         p.Alignment = Element.ALIGN_LEFT;
-                    } else if (Util.EqualsIgnoreCase(CSS.Value.JUSTIFY, value)) {
+                    }
+                    else if (Util.EqualsIgnoreCase(CSS.Value.JUSTIFY, value))
+                    {
                         p.Alignment = Element.ALIGN_JUSTIFIED;
                     }
-                } else if (Util.EqualsIgnoreCase(CSS.Property.TEXT_INDENT, key)) {
+                }
+                else if (Util.EqualsIgnoreCase(CSS.Property.TEXT_INDENT, key))
+                {
                     p.FirstLineIndent = utils.ParseValueToPt(value, fontSize);
-                } else if (Util.EqualsIgnoreCase(CSS.Property.LINE_HEIGHT, key)) {
-                    if(utils.IsNumericValue(value)) {
-                        p.Leading = float.Parse(value, CultureInfo.InvariantCulture) * fontSize;
-                    } else if (utils.IsRelativeValue(value)) {
+                }
+                else if (Util.EqualsIgnoreCase(CSS.Property.LINE_HEIGHT, key))
+                {
+                    if (utils.IsNumericValue(value))
+                    {
+                        p.Leading = float.Parse(value)*fontSize;
+                    }
+                    else if (utils.IsRelativeValue(value))
+                    {
                         p.Leading = utils.ParseRelativeValue(value, fontSize);
-                    } else if (utils.IsMetricValue(value)){
+                    }
+                    else if (utils.IsMetricValue(value))
+                    {
                         p.Leading = utils.ParsePxInCmMmPcToPt(value);
                     }
                 }
             }
             // setDefaultMargin to largestFont if no margin-bottom is set and p-tag is child of the root tag.
-            /*if (null != t.Parent) {
-                String parent = t.Parent.Name;
-                if (!css.ContainsKey(CSS.Property.MARGIN_TOP) && configuration.GetRootTags().Contains(parent)) {
-                    p.SpacingBefore = p.SpacingBefore+utils.CalculateMarginTop(fontSize.ToString(CultureInfo.InvariantCulture)+"pt", 0, configuration);
+            /*if (null != t.GetParent()) {
+                String parent = t.GetParent().GetName();
+                if (css[CSS.Property.MARGIN_TOP] == null && configuration.GetRootTags().Contains(parent)) {
+                    p.SetSpacingBefore(p.GetSpacingBefore() + utils.CalculateMarginTop(fontSize + "pt", 0, configuration));
                 }
-                if (!css.ContainsKey(CSS.Property.MARGIN_BOTTOM) && configuration.GetRootTags().Contains(parent)) {
-                    p.SpacingAfter = p.SpacingAfter+fontSize;
-                    css[CSS.Property.MARGIN_BOTTOM] = fontSize.ToString(CultureInfo.InvariantCulture)+"pt";
+                if (css[CSS.Property.MARGIN_BOTTOM] == null && configuration.GetRootTags().Contains(parent)) {
+                    p.SetSpacingAfter(p.GetSpacingAfter() + fontSize);
+                    css.Put(CSS.Property.MARGIN_BOTTOM, fontSize + "pt");
                     lmb = fontSize;
                     hasLMB = true;
                 }
-                p.Leading = m.GetLargestLeading();
-                if (p.Alignment == -1) {
-                    p.Alignment = Element.ALIGN_LEFT;
+                //p.SetLeading(m.GetLargestLeading());  We need possibility to detect that line-height undefined;
+                if (p.GetAlignment() == -1) {
+                    p.SetAlignment(Element.ALIGN_LEFT);
                 }
             }*/
 
-            if (hasLMB) {
+            if (hasLMB)
+            {
                 configuration.LastMarginBottom = lmb;
             }
-            //TODO this only work around for applaying of font properties to paragraph
-            Chunk dummy = new ChunkCssApplier().Apply(new Chunk("dummy"), t);
-            p.Font = dummy.Font;
+            Font font = appliers.ChunkCssAplier.ApplyFontStyles(t);
+            p.Font = font;
+            // TODO reactive for positioning and implement more
             return p;
         }
     }

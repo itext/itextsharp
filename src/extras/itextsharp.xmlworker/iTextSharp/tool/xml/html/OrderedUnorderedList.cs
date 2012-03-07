@@ -71,9 +71,9 @@ namespace iTextSharp.tool.xml.html {
                 List list;
                 try {
                     htmlPipelineContext = GetHtmlPipelineContext(ctx);
-                    list = (List) CssAppliers.GetInstance().Apply(new List(), tag, htmlPipelineContext);
+                    list = (List) GetCssAppliers().Apply(new List(), tag, htmlPipelineContext);
                 } catch (NoCustomContextException) {
-                    list = (List) CssAppliers.GetInstance().Apply(new List(), tag, null);
+                    list = (List) GetCssAppliers().Apply(new List(), tag, null);
                 }
                 int i = 0;
                 foreach (IElement li in listElements) {
@@ -95,7 +95,7 @@ namespace iTextSharp.tool.xml.html {
                             }
                         }
                         try {
-                            list.Add(CssAppliers.GetInstance().Apply(li, child, GetHtmlPipelineContext(ctx)));
+                            list.Add(GetCssAppliers().Apply(li, child, GetHtmlPipelineContext(ctx)));
                         } catch (NoCustomContextException e1) {
                             throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e1);
                         }

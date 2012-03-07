@@ -1,11 +1,8 @@
-using System;
-using System.Collections.Generic;
-using iTextSharp.tool.xml;
-using System.util;
 /*
- * $Id: CssFilesImpl.java 123 2011-05-27 12:30:40Z redlab_b $
+ * $Id: CssFilesImpl.java 287 2012-02-27 16:56:22Z blowagie $
  *
- * This file is part of the iText (R) project. Copyright (c) 1998-2012 1T3XT BVBA Authors: Balder Van Camp, Emiel
+ * This file is part of the iText (R) project.
+ * Copyright (c) 1998-2012 1T3XT BVBA Authors: Balder Van Camp, Emiel
  * Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General
@@ -32,13 +29,19 @@ using System.util;
  *
  * For more information, please contact iText Software Corp. at this address: sales@itextpdf.com
  */
-namespace iTextSharp.tool.xml.css {
 
-    /**
-     * @author itextpdf.com
-     *
-     */
-    public class CssFilesImpl : ICssFiles {
+using System;
+using System.Collections.Generic;
+using System.util;
+
+namespace iTextSharp.tool.xml.css {
+/**
+ * @author itextpdf.com
+ *
+ */
+
+    public class CssFilesImpl : ICssFiles
+    {
 
         private IList<ICssFile> files;
         private CssUtils utils;
@@ -47,6 +50,7 @@ namespace iTextSharp.tool.xml.css {
         /**
          * Constructs a new CssFilesImpl.
          */
+
         public CssFilesImpl() {
             this.files = new List<ICssFile>();
             this.utils = CssUtils.GetInstance();
@@ -57,7 +61,8 @@ namespace iTextSharp.tool.xml.css {
          * Construct a new CssFilesImpl with the given css file.
          * @param css the css file
          */
-        public CssFilesImpl(ICssFile css) : this() {
+
+        public CssFilesImpl(ICssFile css): this() {
             this.Add(css);
         }
 
@@ -66,8 +71,9 @@ namespace iTextSharp.tool.xml.css {
          *
          * @see com.itextpdf.tool.xml.css.CssFiles#hasFiles()
          */
+
         public bool HasFiles() {
-            return this.files.Count != 0;
+            return this.files.Count > 0;
         }
 
         /**
@@ -80,10 +86,12 @@ namespace iTextSharp.tool.xml.css {
          * <li>element+element ( and a spaced version element + element)</li>
          * </ul>
          */
+
         public IDictionary<String, String> GetCSS(Tag t) {
             IDictionary<String, String> aggregatedProps = new Dictionary<String, String>();
-            IDictionary<String,object> childSelectors = select.CreateAllSelectors(t);
-            foreach (String selector in childSelectors.Keys) {
+            IDictionary<String, Object> childSelectors = select.CreateAllSelectors(t);
+            foreach (String selector in childSelectors.Keys)
+            {
                 PopulateCss(aggregatedProps, selector);
             }
             return aggregatedProps;
@@ -93,47 +101,50 @@ namespace iTextSharp.tool.xml.css {
          * @param aggregatedProps the map to put the properties in.
          * @param selector the selector to search for.
          */
+
         public void PopulateCss(IDictionary<String, String> aggregatedProps, String selector) {
-            foreach (ICssFile cssFile in this.files) {
-                IDictionary<String, String> t = cssFile.Get(selector);
-                IDictionary<String, String> css = new Dictionary<String, String>();
-                foreach (KeyValuePair<String, String> e in t) {
-                    String key = utils.StripDoubleSpacesAndTrim(e.Key);
-                    String value = utils.StripDoubleSpacesAndTrim(e.Value);
-                    if (Util.EqualsIgnoreCase(CSS.Property.BORDER, key)) {
-                        CssUtils.MapPutAll(css, utils.ParseBorder(value));
-                    } else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN, key)) {
-                        CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "margin-", ""));
-                    } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_WIDTH, key)) {
-                        CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "border-", "-width"));
-                    } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_STYLE, key)) {
-                        CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "border-", "-style"));
-                    } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_COLOR, key)) {
-                        CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "border-", "-color"));
-                    } else if (Util.EqualsIgnoreCase(CSS.Property.PADDING, key)) {
-                        CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "padding-", ""));
-                    } else if (Util.EqualsIgnoreCase(CSS.Property.FONT, key)) {
-                        CssUtils.MapPutAll(css, utils.ProcessFont(value));
-                    } else if (Util.EqualsIgnoreCase(CSS.Property.LIST_STYLE, key)) {
-                        CssUtils.MapPutAll(css, utils.ProcessListStyle(value));
-                    } else {
-                        css[key] = value;
-                    }
-                }
-                CssUtils.MapPutAll(aggregatedProps, css);
+            foreach (ICssFile cssFile in this.files)
+            {
+                PopulateOneCss(cssFile, aggregatedProps, selector);
             }
         }
 
-        /* (non-Javadoc)
-         * @see com.itextpdf.tool.xml.css.CssFiles#addFile(com.itextpdf.tool.xml.css.CssFile)
-         */
-        public void Add(ICssFile css) {
-            this.files.Add(css);
+        public void PopulateOneCss(ICssFile cssFile, IDictionary<String, String> aggregatedProps, String selector)
+        {
+            IDictionary<String, String> t = cssFile.Get(selector);
+            IDictionary<String, String> css = new Dictionary<String, String>();
+            foreach (KeyValuePair<String, String> e in t) {
+                String key = utils.StripDoubleSpacesTrimAndToLowerCase(e.Key);
+                String value = utils.StripDoubleSpacesAndTrim(e.Value);
+                if (Util.EqualsIgnoreCase(CSS.Property.BORDER, key)) {
+                    CssUtils.MapPutAll(css, utils.ParseBorder(value));
+                } else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN, key)) {
+                    CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "margin-", ""));
+                } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_WIDTH, key)) {
+                    CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "border-", "-width"));
+                } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_STYLE, key)) {
+                    CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "border-", "-style"));
+                } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_COLOR, key)) {
+                    CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "border-", "-color"));
+                } else if (Util.EqualsIgnoreCase(CSS.Property.PADDING, key)) {
+                    CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "padding-", ""));
+                } else if (Util.EqualsIgnoreCase(CSS.Property.FONT, key)) {
+                    CssUtils.MapPutAll(css, utils.ProcessFont(value));
+                } else if (Util.EqualsIgnoreCase(CSS.Property.LIST_STYLE, key)) {
+                    CssUtils.MapPutAll(css, utils.ProcessListStyle(value));
+                } else {
+                    css[key] = value;
+                }
+            }
+            CssUtils.MapPutAll(aggregatedProps, css);
         }
 
-        /* (non-Javadoc)
-         * @see com.itextpdf.tool.xml.css.CssFiles#clear()
-         */
+        public void Add(ICssFile css) {
+            if (css != null) {
+                this.files.Add(css);
+            }
+        }
+
         public void Clear() {
             for (int k = 0; k < files.Count; ++k) {
                 if (!files[k].IsPersistent()) {
@@ -143,4 +154,5 @@ namespace iTextSharp.tool.xml.css {
             }
         }
     }
+
 }
