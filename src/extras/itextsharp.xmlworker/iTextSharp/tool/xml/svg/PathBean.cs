@@ -1,13 +1,9 @@
-using System;
-using System.Text;
-using iTextSharp.tool.xml;
-using iTextSharp.tool.xml.css;
 /*
- * $Id: CSSResolver.java 138 2011-05-31 10:11:40Z redlab_b $
+ * $Id: $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
- * Authors: Balder Van Camp, Emiel Ackermann, et al.
+ * Authors: VVB, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -45,58 +41,44 @@ using iTextSharp.tool.xml.css;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-namespace iTextSharp.tool.xml.pipeline.css {
 
-    /**
-     * Resolves CSS rules for a given tag.
-     *
-     * @author redlab_b
-     *
-     */
-    public interface ICSSResolver {
+using System.Collections.Generic;
 
-        /**
-         * This method should resolve css, meaning, it will look at the css and
-         * retrieve relevant css rules for the given tag. The rules must then be set
-         * in {@link Tag#setCSS(java.util.Map)}.
-         *
-         * @param t the tag.
-         */
-        void ResolveStyles(Tag t);
+namespace iTextSharp.tool.xml.svg
+{
 
-        /**
-         * Add a piece of CSS code.
-         * @param content the CSS
-         * @param charSet a charset
-         * @throws CssResolverException thrown if something goes wrong
-         */
-        void AddCss(String content, String charSet, bool isPersistent);
+    public class PathBean
+    {
+        public class Builder
+        {
+            private IList<PathItem> items;
 
-        /**
-         * Add a
-         * @param href the link to the css file ( an absolute uri )
-         * @throws CssResolverException thrown if something goes wrong
-         */
-        void AddCssFile(String href, bool isPersistent);
+            public Builder()
+            {
+                items = new List<PathItem>();
+            }
 
-        /**
-         * Add a piece of CSS code.
-         * @param content the content to parse to css
-         * @throws CssResolverException thrown if something goes wrong
-         */
-        void AddCss(String content, bool isPersistent);
+            public void SetPathItem(PathItem item)
+            {
+                items.Add(item);
+            }
 
-        /**
-         * Add a CssFile
-         * @param file the CssFile
-         */
-        void AddCss(ICssFile file);
+            public PathBean Build()
+            {
+                return new PathBean(items);
+            }
+        }
 
-        /**
-         * @return
-         * @throws CssResolverException
-         */
-        ICSSResolver Clear();
+        private IList<PathItem> items;
 
+        public PathBean(IList<PathItem> items)
+        {
+            this.items = items;
+        }
+
+        public IList<PathItem> PathItems
+        {
+            get { return items; }
+        }
     }
 }

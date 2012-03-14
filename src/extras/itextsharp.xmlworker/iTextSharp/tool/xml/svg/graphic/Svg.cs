@@ -1,13 +1,9 @@
-using System;
-using System.Text;
-using iTextSharp.tool.xml;
-using iTextSharp.tool.xml.css;
 /*
- * $Id: CSSResolver.java 138 2011-05-31 10:11:40Z redlab_b $
+ * $Id: $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
- * Authors: Balder Van Camp, Emiel Ackermann, et al.
+ * Authors: VVB, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -45,58 +41,47 @@ using iTextSharp.tool.xml.css;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-namespace iTextSharp.tool.xml.pipeline.css {
 
-    /**
-     * Resolves CSS rules for a given tag.
-     *
-     * @author redlab_b
-     *
-     */
-    public interface ICSSResolver {
+using System;
+using System.Collections.Generic;
+using iTextSharp.text.pdf;
+using iTextSharp.tool.xml.svg.tags;
 
-        /**
-         * This method should resolve css, meaning, it will look at the css and
-         * retrieve relevant css rules for the given tag. The rules must then be set
-         * in {@link Tag#setCSS(java.util.Map)}.
-         *
-         * @param t the tag.
-         */
-        void ResolveStyles(Tag t);
+namespace iTextSharp.tool.xml.svg.graphic {
 
-        /**
-         * Add a piece of CSS code.
-         * @param content the CSS
-         * @param charSet a charset
-         * @throws CssResolverException thrown if something goes wrong
-         */
-        void AddCss(String content, String charSet, bool isPersistent);
+    public class Svg : Graphic
+    {
+        private float height;
+        private float width;
+        private text.Rectangle viewBox;
 
-        /**
-         * Add a
-         * @param href the link to the css file ( an absolute uri )
-         * @throws CssResolverException thrown if something goes wrong
-         */
-        void AddCssFile(String href, bool isPersistent);
+        public Svg(float height, float width, text.Rectangle viewBox, IDictionary<String, String> css) : base(css)
+        {
+            this.height = height;
+            this.width = width;
+            this.viewBox = viewBox;
+        }
 
-        /**
-         * Add a piece of CSS code.
-         * @param content the content to parse to css
-         * @throws CssResolverException thrown if something goes wrong
-         */
-        void AddCss(String content, bool isPersistent);
+        protected override void Draw(PdfContentByte cb)
+        {
+            //change the coordinate system for all what follows
+            //bottom left corner to top right corner
+            cb.ConcatCTM(1, 0, 0, -1, -viewBox.Left, height - viewBox.Bottom);
+        }
 
-        /**
-         * Add a CssFile
-         * @param file the CssFile
-         */
-        void AddCss(ICssFile file);
+        public float Width
+        {
+            get { return width; }
+        }
 
-        /**
-         * @return
-         * @throws CssResolverException
-         */
-        ICSSResolver Clear();
+        public float Height
+        {
+            get { return height; }
+        }
 
+        public text.Rectangle ViewBox
+        {
+            get { return viewBox; }
+        }
     }
 }

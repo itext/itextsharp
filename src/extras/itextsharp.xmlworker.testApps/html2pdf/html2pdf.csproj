@@ -4,11 +4,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{5E04F865-CFCC-4861-B0EC-D43E21752799}</ProjectGuid>
+    <ProjectGuid>{1166F3EA-F34A-435C-B8A6-09CB365D8555}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>itextsharp.xmlworkertest</RootNamespace>
-    <AssemblyName>itextsharp.xmlworkertest</AssemblyName>
+    <RootNamespace>html2pdf</RootNamespace>
+    <AssemblyName>html2pdf</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,11 +36,11 @@
     <Compile Include="Html2Pdf.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\itextsharp.csproj">
+    <ProjectReference Include="..\..\..\core\itextsharp.csproj">
       <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
       <Name>itextsharp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\itextsharp.xmlworker\itextsharp.xmlworker.csproj">
+    <ProjectReference Include="..\..\itextsharp.xmlworker\itextsharp.xmlworker.csproj">
       <Project>{96647204-4A3E-41D7-BC74-B1608D6D1857}</Project>
       <Name>itextsharp.xmlworker</Name>
     </ProjectReference>

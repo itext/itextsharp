@@ -1,13 +1,9 @@
-using System;
-using System.Text;
-using iTextSharp.tool.xml;
-using iTextSharp.tool.xml.css;
 /*
- * $Id: CSSResolver.java 138 2011-05-31 10:11:40Z redlab_b $
+ * $Id: $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
- * Authors: Balder Van Camp, Emiel Ackermann, et al.
+ * Authors: VVB, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -45,58 +41,60 @@ using iTextSharp.tool.xml.css;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-namespace iTextSharp.tool.xml.pipeline.css {
 
-    /**
-     * Resolves CSS rules for a given tag.
-     *
-     * @author redlab_b
-     *
-     */
-    public interface ICSSResolver {
+using System;
+using System.Collections.Generic;
+using iTextSharp.text;
+using iTextSharp.tool.xml.exceptions;
+using iTextSharp.tool.xml.svg.graphic;
 
-        /**
-         * This method should resolve css, meaning, it will look at the css and
-         * retrieve relevant css rules for the given tag. The rules must then be set
-         * in {@link Tag#setCSS(java.util.Map)}.
-         *
-         * @param t the tag.
-         */
-        void ResolveStyles(Tag t);
+namespace iTextSharp.tool.xml.svg.tags {
 
-        /**
-         * Add a piece of CSS code.
-         * @param content the CSS
-         * @param charSet a charset
-         * @throws CssResolverException thrown if something goes wrong
-         */
-        void AddCss(String content, String charSet, bool isPersistent);
-
-        /**
-         * Add a
-         * @param href the link to the css file ( an absolute uri )
-         * @throws CssResolverException thrown if something goes wrong
-         */
-        void AddCssFile(String href, bool isPersistent);
-
-        /**
-         * Add a piece of CSS code.
-         * @param content the content to parse to css
-         * @throws CssResolverException thrown if something goes wrong
-         */
-        void AddCss(String content, bool isPersistent);
-
-        /**
-         * Add a CssFile
-         * @param file the CssFile
-         */
-        void AddCss(ICssFile file);
-
-        /**
-         * @return
-         * @throws CssResolverException
-         */
-        ICSSResolver Clear();
-
+    public class TextPathTag : TextTag
+    {
+        public override IList<IElement> End(IWorkerContext ctx, Tag tag,
+                    IList<IElement> currentContent)
+        {
+            Path path = null;
+            try
+            {
+                IDictionary<String, String> attributes = tag.Attributes;
+                SvgPipelineContext context = GetSvgPipelineContext(ctx);
+                String id;
+                if (attributes.TryGetValue("xlink:href", out id) && id != null)
+                {
+                    IList<IElement> list = context.GetSymbolById(id.Substring(1));
+                    //TODO need to check that the element list contains only one element 
+                    //and the type needs to be Path
+                    if (list != null && list.Count == 1) {
+                        path = (Path)list[0];
+                    }
+                }
+            }
+            catch (NoCustomContextException e)
+            {
+                throw new RuntimeWorkerException(e);
+            }
+            //if the path is not found, do exactly the same as when Text
+            if (path == null && currentContent.Count > 0)
+            {
+                TextGroup group =
+                    new TextGroup(currentContent, 0, 0, 500f, 500f, tag.CSS);
+                IList<IElement> l = new List<IElement>(1);
+                l.Add(group);
+                return l;
+            }
+            else if (currentContent.Count > 0)
+            {
+                TextPathGroup group =
+                    new TextPathGroup(currentContent, 0, 0, 500f, 500f, tag.CSS, path);
+                IList<IElement> l = new List<IElement>(1);
+                l.Add(group);
+                return l;
+            }
+            //draw the content
+            return new List<IElement>(0);
+        }
     }
+
 }
