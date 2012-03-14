@@ -1,13 +1,16 @@
 using System;
-using System.Text;
+using System.Collections.Generic;
+
+using iTextSharp.text;
 using iTextSharp.tool.xml;
-using iTextSharp.tool.xml.css;
+using iTextSharp.tool.xml.svg;
+using iTextSharp.tool.xml.svg.graphic;
 /*
- * $Id: CSSResolver.java 138 2011-05-31 10:11:40Z redlab_b $
+ * $Id: $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
- * Authors: Balder Van Camp, Emiel Ackermann, et al.
+ * Authors: VVB, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -45,58 +48,69 @@ using iTextSharp.tool.xml.css;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-namespace iTextSharp.tool.xml.pipeline.css {
+namespace iTextSharp.tool.xml.svg.tags {
 
-    /**
-     * Resolves CSS rules for a given tag.
-     *
-     * @author redlab_b
-     *
-     */
-    public interface ICSSResolver {
+    public class CircleTag : AbstractGraphicProcessor
+    {
+        //	<circle cx="60" cy="60" r="50"/>
 
-        /**
-         * This method should resolve css, meaning, it will look at the css and
-         * retrieve relevant css rules for the given tag. The rules must then be set
-         * in {@link Tag#setCSS(java.util.Map)}.
-         *
-         * @param t the tag.
-         */
-        void ResolveStyles(Tag t);
+        static String CX = "cx";
+        static String CY = "cy";
+        static String RADIUS = "r";
 
-        /**
-         * Add a piece of CSS code.
-         * @param content the CSS
-         * @param charSet a charset
-         * @throws CssResolverException thrown if something goes wrong
-         */
-        void AddCss(String content, String charSet, bool isPersistent);
+        public override IList<IElement> End(IWorkerContext ctx, Tag tag,
+                    IList<IElement> currentContent)
+        {
 
-        /**
-         * Add a
-         * @param href the link to the css file ( an absolute uri )
-         * @throws CssResolverException thrown if something goes wrong
-         */
-        void AddCssFile(String href, bool isPersistent);
+            IDictionary<String, String> attributes = tag.Attributes;
+            if (attributes != null) {
+                float radius = 0;
+                try
+                {
+                    if (attributes.ContainsKey(RADIUS)) {
+                        radius = int.Parse(attributes[RADIUS]);
+                    } else {
+                        return new List<IElement>(0);    
+                    }
+                } catch (Exception e) {
+                    return new List<IElement>(0);
+                }
+                if (radius <= 0)
+                {
+                    return new List<IElement>(0);
+                }
 
-        /**
-         * Add a piece of CSS code.
-         * @param content the content to parse to css
-         * @throws CssResolverException thrown if something goes wrong
-         */
-        void AddCss(String content, bool isPersistent);
+                float x = 0, y = 0;
+                try
+                {
+                    if (attributes.ContainsKey(CX)) {
+                        x = int.Parse(attributes[CX]);
+                    }
+                } catch (Exception e) {
+                    // TODO: handle exception
+                }
 
-        /**
-         * Add a CssFile
-         * @param file the CssFile
-         */
-        void AddCss(ICssFile file);
+                try
+                {
+                    if (attributes.ContainsKey(CY)) {
+                        y = int.Parse(attributes[CY]);
+                    }
+                } catch (Exception e) {
+                    // TODO: handle exception
+                }
 
-        /**
-         * @return
-         * @throws CssResolverException
-         */
-        ICSSResolver Clear();
+                IList<IElement> l = new List<IElement>(1);
 
+                l.Add(new Circle(x, y, radius, tag.CSS));
+                return l;
+            } else {
+                return new List<IElement>(0);
+            }
+        }
+
+        public override bool IsElementWithId()
+        {
+            return true;
+        }
     }
 }

@@ -259,14 +259,17 @@ namespace iTextSharp.tool.xml.css {
          * (non-Javadoc)
          * @see com.itextpdf.tool.xml.pipeline.css.CSSResolver#addCss(java.lang.String, java.lang.String)
          */
-        public void AddCss(String content, Encoding charSet, bool isPersistent) {
+        public void AddCss(String content, String charSet, bool isPersistent) {
             CssFileProcessor proc = new CssFileProcessor();
             try {
-                retrieve.ProcessFromStream(new MemoryStream(charSet.GetBytes(content)), proc);
+                retrieve.ProcessFromStream(new MemoryStream(Encoding.GetEncoding(charSet).GetBytes(content)), proc);
                 ICssFile css = proc.GetCss();
                 css.IsPersistent(isPersistent);
                 this.cssFiles.Add(css);
-            } catch (IOException e) {
+            } catch (ArgumentException e) {
+                throw new CssResolverException(e);
+            }
+            catch (IOException e) {
                 throw new CssResolverException(e);
             }
         }

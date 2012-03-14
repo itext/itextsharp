@@ -1,13 +1,9 @@
-using System;
-using System.Text;
-using iTextSharp.tool.xml;
-using iTextSharp.tool.xml.css;
 /*
- * $Id: CSSResolver.java 138 2011-05-31 10:11:40Z redlab_b $
+ * $Id: $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
- * Authors: Balder Van Camp, Emiel Ackermann, et al.
+ * Authors: VVB, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -45,58 +41,46 @@ using iTextSharp.tool.xml.css;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-namespace iTextSharp.tool.xml.pipeline.css {
 
-    /**
-     * Resolves CSS rules for a given tag.
-     *
-     * @author redlab_b
-     *
-     */
-    public interface ICSSResolver {
+using System;
+using System.Collections.Generic;
+using iTextSharp.text;
+using iTextSharp.tool.xml.exceptions;
+using iTextSharp.tool.xml.svg.graphic;
 
-        /**
-         * This method should resolve css, meaning, it will look at the css and
-         * retrieve relevant css rules for the given tag. The rules must then be set
-         * in {@link Tag#setCSS(java.util.Map)}.
-         *
-         * @param t the tag.
-         */
-        void ResolveStyles(Tag t);
+namespace iTextSharp.tool.xml.svg.tags {
 
-        /**
-         * Add a piece of CSS code.
-         * @param content the CSS
-         * @param charSet a charset
-         * @throws CssResolverException thrown if something goes wrong
-         */
-        void AddCss(String content, String charSet, bool isPersistent);
-
-        /**
-         * Add a
-         * @param href the link to the css file ( an absolute uri )
-         * @throws CssResolverException thrown if something goes wrong
-         */
-        void AddCssFile(String href, bool isPersistent);
-
-        /**
-         * Add a piece of CSS code.
-         * @param content the content to parse to css
-         * @throws CssResolverException thrown if something goes wrong
-         */
-        void AddCss(String content, bool isPersistent);
-
-        /**
-         * Add a CssFile
-         * @param file the CssFile
-         */
-        void AddCss(ICssFile file);
-
-        /**
-         * @return
-         * @throws CssResolverException
-         */
-        ICSSResolver Clear();
-
+    public class UseTag : AbstractGraphicProcessor {
+	    public override IList<IElement> Start(IWorkerContext ctx, Tag tag) {
+		    //<use>: get the symbol and add the elements from the symbol here
+		    //use the current CSS but overwrite with the CSS of the symbol
+		    try{
+			    IDictionary<String, String> attributes = tag.Attributes;
+			     SvgPipelineContext context = GetSvgPipelineContext(ctx);
+			     String id;
+			     if (attributes.TryGetValue("xlink:href", out id) && id != null){
+				     IList<IElement> list = context.GetSymbolById(id.Substring(1));				 
+				     if (list != null){
+					     IList<IElement> l = new List<IElement>(1);
+					     l.Add(new Group(list, GetAttribute("x", attributes), GetAttribute("y", attributes), GetAttribute("width", attributes), GetAttribute("height", attributes), tag.CSS, true));
+					     return l;
+				     }
+			     }	 
+		    } catch (NoCustomContextException e) {
+			    throw new RuntimeWorkerException(e);
+		    }			
+		    return new List<IElement>(0);
+	    }
+    	
+	    private float GetAttribute(String name, IDictionary<String, String> attributes){
+		    try{
+                if (attributes.ContainsKey(name)) {
+                    return float.Parse(attributes[name]);
+                }
+		        return 0f;
+		    } catch(Exception exp) {
+			    return 0f;
+		    }		
+	    }
     }
 }
