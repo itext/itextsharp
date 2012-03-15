@@ -276,7 +276,28 @@ namespace iTextSharp.text.pdf {
             }
             return BookmarkDepth(reader, (PdfDictionary)PdfReader.GetPdfObjectRelease(outlines.Get(PdfName.FIRST)), pages);
         }
-        
+
+        /**
+        * Gets a <CODE>List</CODE> with the bookmarks that are children of <CODE>outline</CODE>. It returns <CODE>null</CODE> if
+        * the document doesn't have any bookmarks.
+        * @param reader the document
+        * @param outline the outline dictionary to get bookmarks from
+        * @return a <CODE>List</CODE> with the bookmarks or <CODE>null</CODE> if the
+        * document doesn't have any
+        */
+        public static IList<Dictionary<String, Object>> GetBookmark(PdfReader reader, PdfDictionary outline) {
+            PdfDictionary catalog = reader.Catalog;
+            if (outline == null)
+                return null;
+            IntHashtable pages = new IntHashtable();
+            int numPages = reader.NumberOfPages;
+            for (int k = 1; k <= numPages; ++k) {
+                pages[reader.GetPageOrigRef(k).Number] = k;
+                reader.ReleasePage(k);
+            }
+            return BookmarkDepth(reader, (PdfDictionary)PdfReader.GetPdfObjectRelease(outline.Get(PdfName.FIRST)), pages);
+        }
+
         /**
         * Removes the bookmark entries for a number of page ranges. The page ranges
         * consists of a number of pairs with the start/end page range. The page numbers
