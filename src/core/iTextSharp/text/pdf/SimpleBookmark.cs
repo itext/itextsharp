@@ -99,7 +99,7 @@ namespace iTextSharp.text.pdf {
         private SimpleBookmark() {
         }
         
-        private static IList<Dictionary<String, Object>> BookmarkDepth(PdfReader reader, PdfDictionary outline, IntHashtable pages) {
+        private static IList<Dictionary<String, Object>> BookmarkDepth(PdfReader reader, PdfDictionary outline, IntHashtable pages, bool processCurrentOutlineOnly) {
             List<Dictionary<String, Object>> list = new List<Dictionary<String, Object>>();
             while (outline != null) {
                 Dictionary<String, Object> map = new Dictionary<string,object>();
@@ -205,10 +205,13 @@ namespace iTextSharp.text.pdf {
                 }
                 PdfDictionary first = (PdfDictionary)PdfReader.GetPdfObjectRelease(outline.Get(PdfName.FIRST));
                 if (first != null) {
-                    map["Kids"] = BookmarkDepth(reader, first, pages);
+                    map["Kids"] = BookmarkDepth(reader, first, pages, false);
                 }
                 list.Add(map);
-                outline = (PdfDictionary)PdfReader.GetPdfObjectRelease(outline.Get(PdfName.NEXT));
+                if (!processCurrentOutlineOnly)
+                    outline = (PdfDictionary)PdfReader.GetPdfObjectRelease(outline.Get(PdfName.NEXT));
+                else
+                    outline = null;
             }
             return list;
         }
@@ -268,13 +271,7 @@ namespace iTextSharp.text.pdf {
             if (obj == null || !obj.IsDictionary())
                 return null;
             PdfDictionary outlines = (PdfDictionary)obj;
-            IntHashtable pages = new IntHashtable();
-            int numPages = reader.NumberOfPages;
-            for (int k = 1; k <= numPages; ++k) {
-                pages[reader.GetPageOrigRef(k).Number] = k;
-                reader.ReleasePage(k);
-            }
-            return BookmarkDepth(reader, (PdfDictionary)PdfReader.GetPdfObjectRelease(outlines.Get(PdfName.FIRST)), pages);
+            return SimpleBookmark.GetBookmark(reader, outlines, false);
         }
 
         /**
@@ -282,11 +279,11 @@ namespace iTextSharp.text.pdf {
         * the document doesn't have any bookmarks.
         * @param reader the document
         * @param outline the outline dictionary to get bookmarks from
+        * @param includeRoot indicates if to include <CODE>outline</CODE> parameter itself into returned list of bookmarks
         * @return a <CODE>List</CODE> with the bookmarks or <CODE>null</CODE> if the
         * document doesn't have any
         */
-        public static IList<Dictionary<String, Object>> GetBookmark(PdfReader reader, PdfDictionary outline) {
-            PdfDictionary catalog = reader.Catalog;
+        public static IList<Dictionary<String, Object>> GetBookmark(PdfReader reader, PdfDictionary outline, bool includeRoot) {
             if (outline == null)
                 return null;
             IntHashtable pages = new IntHashtable();
@@ -295,7 +292,10 @@ namespace iTextSharp.text.pdf {
                 pages[reader.GetPageOrigRef(k).Number] = k;
                 reader.ReleasePage(k);
             }
-            return BookmarkDepth(reader, (PdfDictionary)PdfReader.GetPdfObjectRelease(outline.Get(PdfName.FIRST)), pages);
+            if (includeRoot)
+                return BookmarkDepth(reader, outline, pages, true);
+            else
+                return BookmarkDepth(reader, (PdfDictionary)PdfReader.GetPdfObjectRelease(outline.Get(PdfName.FIRST)), pages, false);
         }
 
         /**
@@ -409,7 +409,7 @@ namespace iTextSharp.text.pdf {
                     ShiftPageNumbers(kids, pageShift, pageRange);
             }
         }
-        
+
         public static string GetVal(Dictionary<String, Object> map, string key) {
             object v;
             map.TryGetValue(key, out v);
@@ -598,15 +598,17 @@ namespace iTextSharp.text.pdf {
         * some other XML document.
         * @param list the bookmarks
         * @param out the export destination. The writer is not closed
-        * @param indent the indentation level. Pretty printing significant only
+        * @param indent the indentation level. Pretty printing significant only. Use <CODE>-1</CODE> for no indents.
         * @param onlyASCII codes above 127 will always be escaped with &amp;#nn; if <CODE>true</CODE>,
         * whatever the encoding
         * @throws IOException on error
         */
         public static void ExportToXMLNode(IList<Dictionary<String, Object>> list, TextWriter outp, int indent, bool onlyASCII) {
             String dep = "";
-            for (int k = 0; k < indent; ++k)
-                dep += "  ";
+            if (indent != -1) {
+                for (int k = 0; k < indent; ++k)
+                    dep += "  ";
+            }
             foreach (Dictionary<String, Object> map in list) {
                 String title = null;
                 outp.Write(dep);
@@ -638,13 +640,13 @@ namespace iTextSharp.text.pdf {
                 outp.Write(XMLUtil.EscapeXML(title, onlyASCII));
                 if (kids != null) {
                     outp.Write("\n");
-                    ExportToXMLNode(kids, outp, indent + 1, onlyASCII);
+                    ExportToXMLNode(kids, outp, indent == -1 ? indent : indent + 1, onlyASCII);
                     outp.Write(dep);
                 }
                 outp.Write("</Title>\n");
             }
         }
-        
+
         /**
         * Exports the bookmarks to XML. The DTD for this XML is:
         * <p>
