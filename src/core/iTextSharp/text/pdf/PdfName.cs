@@ -493,6 +493,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName DL = new PdfName("DL");
         /** A name */
         public static readonly PdfName DM = new PdfName("Dm");
+        /**
+         * A name.
+         * @since 5.2.1
+         */
+        public static readonly PdfName DOS = new PdfName("DOS");
         /** A name */
         public static readonly PdfName DOCMDP = new PdfName("DocMDP");
         /** A name */
@@ -976,6 +981,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName LZWDECODE = new PdfName("LZWDecode");
         /** A name */
         public static readonly PdfName M = new PdfName("M");
+        /**
+         * A name.
+         * @since 5.2.1
+         */
+        public static readonly PdfName MAC = new PdfName("Mac");
         /**
          * A name
          * @since	2.1.6
@@ -1734,6 +1744,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName UHC = new PdfName("UHC");
         /** A name of an attribute. */
         public static readonly PdfName UNDERLINE = new PdfName("Underline");
+        /**
+         * A name.
+         * @since 5.2.1
+         */
+        public static readonly PdfName UNIX = new PdfName("Unix");
         /** A name */
         public static readonly PdfName UR = new PdfName("UR");
         /** A name */
