@@ -1069,27 +1069,44 @@ namespace iTextSharp.text.pdf {
 
         public void FillXfaForm(string file) {
             using (FileStream fs = new FileStream(file, FileMode.Open)) {
-		        FillXfaForm(fs);
+		        FillXfaForm(fs, false);
             }
         }
-        
+
         public void FillXfaForm(Stream stream) {
-    	    FillXfaForm(new XmlTextReader(stream));
+            FillXfaForm(stream, false);
         }
-    		
         
+        public void FillXfaForm(Stream stream, bool readOnly) {
+    	    FillXfaForm(new XmlTextReader(stream), readOnly);
+        }
+
         public void FillXfaForm(XmlReader reader) {
+            FillXfaForm(reader, false);
+        }
+        
+        public void FillXfaForm(XmlReader reader, bool readOnly) {
             XmlDocument doc = new XmlDocument();
             doc.PreserveWhitespace = true;
             doc.Load(reader);
     	    FillXfaForm(doc.DocumentElement);
+        }
+
+        public void FillXfaForm(XmlNode node) {
+            FillXfaForm(node, false);
         }
         
         /**
         * Replaces the data under datasets/data.
         * @since	iText 5.0.0
         */
-        public void FillXfaForm(XmlNode node) {
+        public void FillXfaForm(XmlNode node, bool readOnly) {
+            if (readOnly) {
+                XmlNodeList nodeList = domDocument.GetElementsByTagName("field");
+                for (int i = 0; i < nodeList.Count; i++) {
+                    ((XmlElement)nodeList.Item(i)).SetAttribute("access", "readOnly");
+                }
+            }
             XmlNodeList allChilds = datasetsNode.ChildNodes;
             XmlNode data = null;
             foreach (XmlNode n in allChilds) {

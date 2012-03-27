@@ -79,7 +79,7 @@ namespace iTextSharp.tool.xml.html {
         /**
          * @return the chunk css applier
          */
-        ChunkCssApplier ChunkCssAplier { get; }
+        ChunkCssApplier ChunkCssAplier { get; set; }
 
         CssAppliers Clone();
     }

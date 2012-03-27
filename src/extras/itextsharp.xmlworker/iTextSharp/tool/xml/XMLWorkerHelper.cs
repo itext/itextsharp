@@ -180,8 +180,12 @@ namespace iTextSharp.tool.xml {
                     writer)));
             XMLWorker worker = new XMLWorker(pipeline, true);
             XMLParser p = new XMLParser(true, worker, charset);
-            p.Parse(inp);
-        }
+            if (charset != null) {
+                p.Parse(inp, charset);
+            } else {
+                p.Parse(inp);
+            }
+	}
 
         /**
          * @param d the ElementHandler
@@ -198,7 +202,11 @@ namespace iTextSharp.tool.xml {
                     null)));
             XMLWorker worker = new XMLWorker(pipeline, true);
             XMLParser p = new XMLParser(true, worker, charset);
-            p.Parse(inp);
+            if (charset != null) {
+                p.Parse(inp, charset);
+            } else {
+                p.Parse(inp);
+            }
         }
 
         /**

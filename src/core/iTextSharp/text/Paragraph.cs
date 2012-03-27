@@ -180,6 +180,52 @@ namespace iTextSharp.text {
                 SpacingBefore = p.SpacingBefore;
             }
         }
+
+        /**
+         * Creates a shallow clone of the Paragraph.
+         * @return
+         */
+        public Paragraph cloneShallow(bool spacingBefore) {
+            Paragraph copy = new Paragraph();
+            copy.Font = Font;
+            copy.Alignment = Alignment;
+            copy.SetLeading(Leading, multipliedLeading);
+            copy.IndentationLeft = IndentationLeft;
+            copy.IndentationRight = IndentationRight;
+            copy.FirstLineIndent = FirstLineIndent;
+            copy.SpacingAfter = SpacingAfter;
+            if (spacingBefore)
+                copy.SpacingBefore = SpacingBefore;
+            copy.ExtraParagraphSpace = ExtraParagraphSpace;
+            return copy;
+        }
+
+        /**
+         * Breaks this Paragraph up in different parts, separating paragraphs, lists and tables from each other.
+         * @return
+         */
+        public IList<IElement> breakUp() {
+            IList<IElement> list = new List<IElement>();
+            Paragraph tmp = cloneShallow(true);
+            foreach (IElement e in this) {
+                if (e.Type == Element.LIST || e.Type == Element.PTABLE || e.Type == Element.PARAGRAPH) {
+                    if (tmp.Count > 0) {
+                        tmp.SpacingAfter = 0;
+                        list.Add(tmp);
+                        tmp = cloneShallow(false);
+                    }
+                    list.Add(e);
+                }
+                else {
+                    tmp.Add(e);
+                }
+            }
+            if (tmp.Count > 0) {
+                list.Add(tmp);
+            }
+            return list;
+        }
+    
     
         // implementation of the Element-methods
     

@@ -67,18 +67,20 @@ namespace iTextSharp.tool.xml.svg.tags {
 			    PathBean.Builder pathBuilder = new PathBean.Builder();
     			
 			    IList<String> list = SplitPath(fullPath);
-			    foreach (String str in list) {
-				    if(str.Length == 1 && Char.IsLetter(str[0])){
-					    if(itemBuilder != null) {
-						    pathBuilder.SetPathItem(itemBuilder.Build());
-					    }					
-					    itemBuilder = new PathItem.Builder();
-					    itemBuilder.SetType(str[0]);
-                    } else if (itemBuilder != null) {
-					    itemBuilder.AddCoordinate(str);
-				    }
-			    }
-			    if(itemBuilder != null){
+                if (list != null) {
+                    foreach (String str in list) {
+                        if (str.Length == 1 && Char.IsLetter(str[0])) {
+                            if (itemBuilder != null) {
+                                pathBuilder.SetPathItem(itemBuilder.Build());
+                            }
+                            itemBuilder = new PathItem.Builder();
+                            itemBuilder.SetType(str[0]);
+                        } else if (itemBuilder != null) {
+                            itemBuilder.AddCoordinate(str);
+                        }
+                    }
+                }
+		        if(itemBuilder != null){
 				    pathBuilder.SetPathItem(itemBuilder.Build());
 			    }
     			

@@ -344,9 +344,11 @@ namespace iTextSharp.tool.xml.svg.css {
 	     * The {@link FileRetrieve} implementation to use in {@link StyleAttrCSSResolver#addCss(String, bool)}.
 	     * @param retrieve the retrieve to set
 	     */
-	    public void SetFileRetrieve(IFileRetrieve retrieve) {
-		    this.retrieve = retrieve;
-	    }
+        public IFileRetrieve FileRetrieve {
+            set {
+                this.retrieve = retrieve;
+            }
+        }
 
 	    /* (non-Javadoc)
 	     * @see com.itextpdf.tool.xml.pipeline.css.CSSResolver#clear()

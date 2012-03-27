@@ -172,7 +172,7 @@ namespace iTextSharp.tool.xml.html.table {
                                 }
                             }
                         }
-                        if (cell.CompositeElements != null) {
+                        if (cell.CompositeElements != null && colspan == 1) {
                             float[] widthValues = SetCellWidthAndWidestWord(cell);
                             float cellWidth = widthValues[0] / colspan;
                             float widestWordOfCell = widthValues[1] / colspan;
@@ -324,6 +324,7 @@ namespace iTextSharp.tool.xml.html.table {
                     throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
                 }
                 float? tableHeight = new HeightCalculator().GetHeight(tag, GetHtmlPipelineContext(ctx).PageSize.Height);
+                int rowNumber = 0;
                 foreach (TableRowElement row in tableRows) {
                     int columnNumber = -1;
                     float? computedRowHeight = null;
@@ -332,9 +333,6 @@ namespace iTextSharp.tool.xml.html.table {
                         computedRowHeight = tableHeight - computedTableHeigt;
                     }
                     foreach (HtmlCell cell in row.Content) {
-                        if (computedRowHeight != null && computedRowHeight > 0) {
-                            cell.FixedHeight = computedRowHeight.Value;
-                        }
                         columnNumber += cell.Colspan;
                         IList<IElement> compositeElements = cell.CompositeElements;
                         if (compositeElements != null) {
@@ -356,6 +354,13 @@ namespace iTextSharp.tool.xml.html.table {
                         table.AddCell(cell);
                     }
                     table.CompleteRow();
+                    if (computedRowHeight != null && computedRowHeight > 0) {
+                        float rowHeight = table.GetRow(rowNumber).MaxHeights;
+                        if (rowHeight < computedRowHeight) {
+                            table.GetRow(rowNumber).MaxHeights = computedRowHeight.Value;
+                        }
+                    }
+                    rowNumber++;
                 }
                 if (percentage) {
 				    table.WidthPercentage = utils.ParsePxInCmMmPcToPt(widthValue);
@@ -497,8 +502,8 @@ namespace iTextSharp.tool.xml.html.table {
          * @return horizontal or vertical spacing between two cells or a cell and
          *         the border of the table.
          */
-        public float GetBorderOrCellSpacing(bool getHor, IDictionary<String, String> css, IDictionary<String, String> attributes) {
-            float spacing = 1.5f;
+        static public float GetBorderOrCellSpacing(bool getHor, IDictionary<String, String> css, IDictionary<String, String> attributes) {
+            float spacing = 0f;
             String collapse;
             css.TryGetValue("border-collapse", out collapse);
             if(collapse == null || collapse.Equals("seperate")) {
@@ -521,7 +526,7 @@ namespace iTextSharp.tool.xml.html.table {
                 } else if (cellSpacing != null){
                     spacing = utils.ParsePxInCmMmPcToPt(cellSpacing);
                 } else if (borderAttr != null){
-                    spacing = 1.5f;
+                    spacing = utils.ParsePxInCmMmPcToPt(borderAttr);
                 }
             } else if (collapse.Equals("collapse")){
                 spacing = 0;
@@ -680,15 +685,16 @@ namespace iTextSharp.tool.xml.html.table {
          * @param values {@link TableStyleValues} containing border widths and border spacing values.
          * @throws NoCustomContextException
          */
-        private void SetVerticalMargin(PdfPTable table, Tag t, TableStyleValues values, IWorkerContext ctx) {
-            float spacingBefore = values.BorderWidthTop;
-            IDictionary<String, Object> memory = GetHtmlPipelineContext(ctx).GetMemory();
+        private void SetVerticalMargin(PdfPTable table, Tag t, TableStyleValues values, IWorkerContext ctx)
+        {
+            float spacingBefore = 0;// values.BorderWidthTop;
+            /*IDictionary<String, Object> memory = GetHtmlPipelineContext(ctx).GetMemory();
             Object mb;
             memory.TryGetValue(HtmlPipelineContext.LAST_MARGIN_BOTTOM, out mb);
             if(mb != null) {
                 spacingBefore += (float)mb;
-            }
-            float spacingAfter = values.VerBorderSpacing+values.BorderWidthBottom;
+            }*/
+            float spacingAfter = 0;// values.VerBorderSpacing + values.BorderWidthBottom;
             foreach (KeyValuePair<String, String> css in t.CSS) {
                 String key = css.Key;
                 String value = css.Value;

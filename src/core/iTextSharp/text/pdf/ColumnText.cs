@@ -444,8 +444,26 @@ public class ColumnText {
             bidiLine = null;
             waitPhrase = null;
         }
+        if (element.Type == Element.PARAGRAPH) {
+            Paragraph p = (Paragraph)element;
+            IList<IElement> paragraphElements = p.breakUp();
+            foreach (IElement paragraphElement in paragraphElements) {
+                compositeElements.Add(paragraphElement);    
+            }
+            return;
+        }
         compositeElements.Add(element);
     }
+
+    public static bool isAllowedElement(IElement element) {
+        int type = element.Type;
+        if (type == Element.CHUNK || type == Element.PHRASE
+                || type == Element.PARAGRAPH || type == Element.LIST
+                || type == Element.YMARK || type == Element.PTABLE) return true;
+        if (element is Image) return true;
+        return false;
+    }
+    
     
     /**
      * Converts a sequence of lines representing one of the column bounds into
@@ -1276,6 +1294,7 @@ public class ColumnText {
                 
                 // Y-offset
                 float yTemp = yLine;
+                yTemp += descender;
                 if (rowIdx == 0 && adjustFirstLine)
                     yTemp -= table.SpacingBefore;
                 
@@ -1471,6 +1490,7 @@ public class ColumnText {
                     yTemp = minY;
                 }
                 yLine = yTemp;
+                descender = 0;
                 if (!(skipHeader || table.ElementComplete)) {
                     yLine += footerHeight;
                 }

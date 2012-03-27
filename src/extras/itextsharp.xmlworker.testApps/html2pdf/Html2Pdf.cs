@@ -20,7 +20,7 @@ namespace html2pdf {
 
             doc.Open();
             XMLWorkerHelper.GetInstance()
-                .ParseXHtml(instance, doc, new FileStream(args[0], FileMode.Open), new FileStream(args[1], FileMode.Open), Encoding.Default);
+                .ParseXHtml(instance, doc, new FileStream(args[0], FileMode.Open), new FileStream(args[1], FileMode.Open), null);
             doc.Close();
         }
     }

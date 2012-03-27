@@ -237,22 +237,25 @@ namespace iTextSharp.tool.xml.parser {
                 throw new IOException("Insufficient length");
             String encoding = XMLUtil.GetEncodingName(b4);
             String decl = null;
+            int bytesNumber = 0; 
             if (encoding.Equals("UTF-8")) {
                 StringBuilder sb = new StringBuilder();
                 int c;
-                while ((c = inp.ReadByte()) != -1) {
+                while (bytesNumber < 1028 && ((c = inp.ReadByte()) != -1)) {
                     if (c == '>')
                         break;
                     sb.Append((char) c);
+                    bytesNumber++;
                 }
                 decl = sb.ToString();
             } else if (encoding.Equals("CP037")) {
                 MemoryStream bi = new MemoryStream();
                 int c;
-                while ((c = inp.ReadByte()) != -1) {
+                while (bytesNumber < 1028 && ((c = inp.ReadByte()) != -1)) {
                     if (c == 0x6e) // that's '>' in ebcdic
                         break;
                     bi.WriteByte((byte)c);
+                    bytesNumber++;
                 }
                 decl = Encoding.GetEncoding(37).GetString(bi.ToArray());
             }

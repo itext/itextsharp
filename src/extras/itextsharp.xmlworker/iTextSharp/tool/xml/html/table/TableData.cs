@@ -86,7 +86,6 @@ namespace iTextSharp.tool.xml.html.table {
             } catch (NoCustomContextException e1) {
                 throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e1);
             }
-            cell.Column.UseAscender = true;
 		    IList<IElement> l = new List<IElement>(1);
             IList<IElement> chunks = new List<IElement>();
 		    foreach (IElement e in currentContent) {
