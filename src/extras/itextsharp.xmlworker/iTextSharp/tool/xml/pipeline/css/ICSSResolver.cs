@@ -2,6 +2,8 @@ using System;
 using System.Text;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
+using iTextSharp.tool.xml.net;
+
 /*
  * $Id: CSSResolver.java 138 2011-05-31 10:11:40Z redlab_b $
  *
@@ -91,6 +93,12 @@ namespace iTextSharp.tool.xml.pipeline.css {
          * @param file the CssFile
          */
         void AddCss(ICssFile file);
+
+        /**
+	     * The {@link FileRetrieve} implementation to use in {@link CSSResolver#addCss(String, boolean)}.
+	     * @param retrieve the retrieve to set
+	     */
+        IFileRetrieve FileRetrieve {set;}
 
         /**
          * @return

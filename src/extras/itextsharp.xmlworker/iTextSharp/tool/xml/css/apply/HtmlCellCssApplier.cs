@@ -116,15 +116,17 @@ namespace iTextSharp.tool.xml.css.apply {
             String align = null;
             if (t.Attributes.ContainsKey(HTML.Attribute.ALIGN)) {
                 align = t.Attributes[HTML.Attribute.ALIGN];
-            } else if (css.ContainsKey(HTML.Attribute.ALIGN)) {
-                align = css[HTML.Attribute.ALIGN];
-                }
+            } else if (css.ContainsKey(CSS.Property.TEXT_ALIGN)) {
+                align = css[CSS.Property.TEXT_ALIGN];
+            }
 
             if (align != null) {
                 if (Util.EqualsIgnoreCase(CSS.Value.CENTER, align)) {
                     cell.HorizontalAlignment = Element.ALIGN_CENTER;
                 } else if (Util.EqualsIgnoreCase(CSS.Value.RIGHT, align)) {
                     cell.HorizontalAlignment = Element.ALIGN_RIGHT;
+                } else if (Util.EqualsIgnoreCase(CSS.Value.JUSTIFY, align)) {
+                    cell.HorizontalAlignment = Element.ALIGN_JUSTIFIED;
                 }
             }
 
@@ -194,8 +196,8 @@ namespace iTextSharp.tool.xml.css.apply {
                     }
                 }
             }
-            float horSpacing = new Table().GetBorderOrCellSpacing(true, table.CSS, table.Attributes);
-            float verSpacing = new Table().GetBorderOrCellSpacing(false, table.CSS, table.Attributes);
+            float horSpacing = Table.GetBorderOrCellSpacing(true, table.CSS, table.Attributes);
+            float verSpacing = Table.GetBorderOrCellSpacing(false, table.CSS, table.Attributes);
             values.HorBorderSpacing = horSpacing;
             values.VerBorderSpacing = verSpacing;
             cell.PaddingLeft = cell.PaddingLeft+horSpacing+values.BorderWidthLeft;

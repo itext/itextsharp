@@ -78,6 +78,9 @@ namespace iTextSharp.text.xml {
                             if (IsValidCharacterValue(esc)) {
                                 c = (char)int.Parse(esc);
                                 i = pos;
+                            } else {
+                                i = pos;
+                                continue;
                             }
                         }
                         else {

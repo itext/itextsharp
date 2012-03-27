@@ -51,6 +51,8 @@ namespace iTextSharp.tool.xml {
 
     public class XMLWorkerFontProvider : FontFactoryImp
     {
+        public const String DONTLOOKFORFONTS = "\ufffc";
+
         private Dictionary<String, String> fontSubstitutionMap = new Dictionary<String, String>();
 
         public XMLWorkerFontProvider():this(null, null){}
@@ -59,16 +61,19 @@ namespace iTextSharp.tool.xml {
 
         public XMLWorkerFontProvider(String fontsPath, Dictionary<String, String> fontSubstitutionMap)
         {
-            if (!String.IsNullOrEmpty(fontsPath)) {
-                base.RegisterDirectory(fontsPath, true);
-            }
-            else {
+            if (string.IsNullOrEmpty(fontsPath)) {
                 base.RegisterDirectories();
+            } else if (!fontsPath.Equals(DONTLOOKFORFONTS)) {
+                base.RegisterDirectory(fontsPath, true);
             }
 
             if (fontSubstitutionMap != null) {
                 this.fontSubstitutionMap = fontSubstitutionMap;
             }
+        }
+
+        public void AddFontSubstitute(String font, String substitute) {
+            fontSubstitutionMap[font] = substitute;
         }
 
         public override Font GetFont(String fontname, String encoding, bool embedded, float size, int style,

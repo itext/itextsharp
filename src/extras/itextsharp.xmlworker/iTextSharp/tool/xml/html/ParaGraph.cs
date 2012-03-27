@@ -143,7 +143,14 @@ namespace iTextSharp.tool.xml.html {
             AddTabStopsContent(paragraphItems, p, css[CSS.Property.XFA_TAB_STOPS]); // leader elements needs to be
             l.Add(p);                                                                    // extracted.
         } else {
-            foreach (IElement e in CurrentContentToParagraph(paragraphItems, true, true, tag, ctx)) {
+            IList<IElement> paraList = CurrentContentToParagraph(paragraphItems, true, true, tag, ctx);
+            if (l.Count > 0 && paraList.Count > 0) {
+                IElement firstElement = paraList[0];
+                if (firstElement is Paragraph ) {
+                    ((Paragraph) firstElement).SpacingBefore = 0;
+                }
+            }
+            foreach (IElement e in paraList) {
                 l.Add(e);
             }
         }
@@ -166,6 +173,12 @@ namespace iTextSharp.tool.xml.html {
                 i++;
                 listItem.MultipliedLeading = 1.2f;
                 list.Add(listItem);
+            }
+            if (l.Count > 0) {
+                IElement latestElement = l[l.Count - 1];
+                if (latestElement is Paragraph ) {
+                    ((Paragraph) latestElement).SpacingAfter = 0;
+                }
             }
             l.Add(list);
         } catch (NoCustomContextException e) {

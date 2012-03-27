@@ -328,8 +328,10 @@ namespace iTextSharp.tool.xml.css {
          * The {@link FileRetrieve} implementation to use in {@link StyleAttrCSSResolver#addCssFile(String)}.
          * @param retrieve the retrieve to set
          */
-        public void SetFileRetrieve(IFileRetrieve retrieve) {
-            this.retrieve = retrieve;
+        public IFileRetrieve FileRetrieve {
+            set {
+                this.retrieve = retrieve;
+            }
         }
 
         /* (non-Javadoc)

@@ -474,7 +474,7 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName DEVICECMYK = new PdfName("DeviceCMYK");
         /**
          * A name.
-         * @since 5.1.4
+         * @since 5.2.1
          */
         public static readonly PdfName DEVICEN = new PdfName("DeviceN");
         /** A name */

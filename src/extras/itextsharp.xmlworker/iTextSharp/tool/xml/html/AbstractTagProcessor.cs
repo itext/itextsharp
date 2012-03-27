@@ -248,6 +248,7 @@ namespace iTextSharp.tool.xml.html {
                     if (addNewLines)
                     {
                         Paragraph p = new Paragraph(float.NaN);
+                        p.MultipliedLeading = 1.2f;
                         foreach (IElement e in currentContent)
                         {
                             if (e is LineSeparator)
@@ -265,6 +266,7 @@ namespace iTextSharp.tool.xml.html {
                     else
                     {
                         NoNewLineParagraph p = new NoNewLineParagraph(float.NaN);
+                        p.MultipliedLeading = 1.2f;
                         foreach (IElement e in currentContent)
                         {
                             p.Add(e);

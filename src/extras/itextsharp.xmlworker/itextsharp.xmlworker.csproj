@@ -70,6 +70,7 @@
     <Compile Include="iTextSharp\tool\xml\css\parser\state\Unknown.cs" />
     <Compile Include="iTextSharp\tool\xml\css\StyleAttrCSSResolver.cs" />
     <Compile Include="iTextSharp\tool\xml\css\WidthCalculator.cs" />
+    <Compile Include="iTextSharp\tool\xml\ElementList.cs" />
     <Compile Include="iTextSharp\tool\xml\exceptions\CssResolverException.cs" />
     <Compile Include="iTextSharp\tool\xml\exceptions\LocaleMessages.cs" />
     <Compile Include="iTextSharp\tool\xml\exceptions\NoDataException.cs" />

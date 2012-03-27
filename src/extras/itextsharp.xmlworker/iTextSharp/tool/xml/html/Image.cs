@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.log;
+using iTextSharp.text.xml;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
 using iTextSharp.tool.xml.exceptions;
@@ -77,6 +78,8 @@ namespace iTextSharp.tool.xml.html {
             iTextSharp.text.Image img = null;
             IList<IElement> l = new List<IElement>(1);
             if (!string.IsNullOrEmpty(src)) {
+                src = XMLUtil.UnescapeXML(src);
+                src = src.Trim();
                 // check if the image was already added once
                 try {
                     if (logger.IsLogging(Level.TRACE)) {

@@ -93,6 +93,12 @@ namespace iTextSharp.tool.xml.net {
             }
         }
 
+        public FileRetrieveImpl(String rootdir) : this() {
+            if (Directory.Exists(rootdir)) {
+                rootdirs.Add(rootdir);
+            }
+        }
+
         /**
          * ProcessFromHref first tries to create an {@link URL} from the given <code>href</code>,
          * if that throws a {@link MalformedURLException}, it will prepend the given

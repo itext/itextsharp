@@ -72,6 +72,12 @@ namespace iTextSharp.tool.xml.html.pdfelement {
          */
         public HtmlCell() : base() {
             fixedWidth = 0;
+            PaddingLeft = 0;
+            PaddingRight = 0;
+            PaddingTop = 0;
+            PaddingBottom = 0;
+            UseAscender = true;
+            UseDescender = true;
         }
 
         /**
