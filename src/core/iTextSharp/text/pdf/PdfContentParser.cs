@@ -127,6 +127,8 @@ namespace iTextSharp.text.pdf {
                     throw new IOException(MessageLocalization.GetComposedMessage("unexpected.end.of.file"));
                     if (tokeniser.TokenType == PRTokeniser.TokType.END_DIC)
                         break;
+                    if (tokeniser.TokenType == PRTokeniser.TokType.OTHER && "def".CompareTo(tokeniser.StringValue) == 0)
+                        continue;
                     if (tokeniser.TokenType != PRTokeniser.TokType.NAME)
                         throw new IOException(MessageLocalization.GetComposedMessage("dictionary.key.is.not.a.name"));
                     PdfName name = new PdfName(tokeniser.StringValue, false);
