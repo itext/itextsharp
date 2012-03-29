@@ -158,7 +158,6 @@ namespace iTextSharp.text.pdf {
             digestNames["1.3.36.3.3.1.3"] = "RIPEMD128";
             digestNames["1.3.36.3.3.1.2"] = "RIPEMD160";
             digestNames["1.3.36.3.3.1.4"] = "RIPEMD256";
-            digestNames["1.2.643.2.2.9"] = "GOST3411";
             
             algorithmNames["1.2.840.113549.1.1.1"] = "RSA";
             algorithmNames["1.2.840.10040.4.1"] = "DSA";
@@ -175,7 +174,6 @@ namespace iTextSharp.text.pdf {
             algorithmNames["1.3.36.3.3.1.3"] = "RSA";
             algorithmNames["1.3.36.3.3.1.2"] = "RSA";
             algorithmNames["1.3.36.3.3.1.4"] = "RSA";
-            algorithmNames["1.2.643.2.2.19"] = "ECGOST3410";
             
             allowedDigests["MD5"] = "1.2.840.113549.2.5";
             allowedDigests["MD2"] = "1.2.840.113549.2.2";
