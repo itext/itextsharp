@@ -346,7 +346,7 @@ namespace iTextSharp.tool.xml.svg.css {
 	     */
         public IFileRetrieve FileRetrieve {
             set {
-                this.retrieve = retrieve;
+                this.retrieve = value;
             }
         }
 

@@ -330,7 +330,7 @@ namespace iTextSharp.tool.xml.css {
          */
         public IFileRetrieve FileRetrieve {
             set {
-                this.retrieve = retrieve;
+                this.retrieve = value;
             }
         }
 
