@@ -108,7 +108,7 @@ namespace iTextSharp.tool.xml.svg.utils {
                     return null;
                 }
             }
-            catch (SvgParseException exp)
+            catch (SvgParseException)
             {
                 //when a mistake happens, do nothing
                 return null;
@@ -200,7 +200,7 @@ namespace iTextSharp.tool.xml.svg.utils {
                 }
                 return result;
             }
-            catch (Exception exp)
+            catch 
             {
                 throw new SvgParseException("Could not parse the transform");
             }

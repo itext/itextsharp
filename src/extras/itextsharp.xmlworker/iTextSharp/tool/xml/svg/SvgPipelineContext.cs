@@ -161,7 +161,7 @@ namespace iTextSharp.tool.xml.svg {
                 StackKeeper first = this.queue.First.Value;
                 this.queue.RemoveFirst();
                 return first;
-            } catch (InvalidOperationException e) {
+            } catch (InvalidOperationException) {
                 throw new NoStackException();
             }
         }

@@ -135,7 +135,7 @@ namespace iTextSharp.tool.xml.svg {
 					    foreach (IElement e in elements) {
 						    peek.Add(e);
 					    }
-				    } catch (NoStackException e) {
+				    } catch (NoStackException) {
 					    if(!hcc.IsDefinition()){
 						    foreach (IElement elem in elements) {
 							    po.Add((IWritable)elem);
@@ -199,7 +199,7 @@ namespace iTextSharp.tool.xml.svg {
 					    foreach (IElement elem in elements) {
 						    stack.Add(elem);
 					    }
-				    } catch (NoStackException e) {
+				    } catch (NoStackException) {
 					    //don't write definities, part of defs
 					    if(!hcc.IsDefinition()){
 						    foreach (IElement elem in elements) {

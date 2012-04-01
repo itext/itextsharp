@@ -83,7 +83,7 @@ namespace iTextSharp.tool.xml.svg.graphic {
                 {
                     cb.SetFontAndSize(bf2, font2.Size);
                 }
-            } catch (Exception exp) { }
+            } catch { }
 
         }
 
@@ -165,7 +165,7 @@ namespace iTextSharp.tool.xml.svg.graphic {
                 try
                 {
                     cb.SetLineWidth(float.Parse(width));
-                } catch (Exception exp) {
+                } catch {
                     //DO nothing
                 }
             }
@@ -197,7 +197,7 @@ namespace iTextSharp.tool.xml.svg.graphic {
                         allZero = false;
                     }
                     i++;
-                } catch (Exception exp) {
+                } catch {
                 }
             }
             if (!allZero)

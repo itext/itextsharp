@@ -49,9 +49,6 @@ namespace iTextSharp.tool.xml.svg.exceptions {
 
     public class EllipseArcException : RuntimeWorkerException
     {
-        /** */
-        private static long serialVersionUID = 644639213479124050L;
-
         public EllipseArcException(String message)
             : base(message) {}
     }

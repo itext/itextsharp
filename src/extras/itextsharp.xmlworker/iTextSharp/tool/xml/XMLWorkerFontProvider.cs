@@ -118,7 +118,7 @@ namespace iTextSharp.tool.xml {
                         font = base.GetFont(substFontName, BaseFont.IDENTITY_H, BaseFont.EMBEDDED, size, style, null);
                     }
                 }
-            } catch (Exception uce) {
+            } catch {
                 BaseFont baseFont = null;
                 font = base.GetFont(fontName, encoding, BaseFont.EMBEDDED, size, style, null);
 

@@ -49,9 +49,6 @@ namespace iTextSharp.tool.xml.svg.exceptions
 {
     public class SvgParseException : RuntimeWorkerException
     {
-        /** */
-        private static long serialVersionUID = -3420618803693948175L;
-
         public SvgParseException(String message) : base(message) {}
     }
 }

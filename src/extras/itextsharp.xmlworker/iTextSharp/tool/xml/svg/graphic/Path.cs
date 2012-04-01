@@ -100,7 +100,7 @@ namespace iTextSharp.tool.xml.svg.graphic {
                     }
                 }
             }
-            catch (Exception exp)
+            catch
             {
                 //when an exception occurs in one of the translate methods, stop looking at the rest of the path and return the list
             }
@@ -387,7 +387,7 @@ namespace iTextSharp.tool.xml.svg.graphic {
                         //System.out.Println(item);
                     }
                 }
-            } catch (Exception exp) {
+            } catch {
                 //TODO
             }
         }
