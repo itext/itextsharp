@@ -131,7 +131,7 @@ namespace iTextSharp.tool.xml.html {
             {
                 return this.Apply(e, t, ctx, ctx, ctx.GetImageProvider());
             }
-            catch (NoImageProviderException e1)
+            catch (NoImageProviderException)
             {
                 return this.Apply(e, t, ctx, ctx, null);
             }

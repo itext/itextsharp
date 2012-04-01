@@ -71,7 +71,7 @@ namespace iTextSharp.tool.xml.svg.tags {
                     if (attributes.ContainsKey(X)) {
                         x = int.Parse(attributes[X]);
                     }
-			    }catch (Exception e) {
+			    }catch {
 				    // TODO: handle exception
 			    }
     			
@@ -79,7 +79,7 @@ namespace iTextSharp.tool.xml.svg.tags {
                     if (attributes.ContainsKey(Y)) {
                         y = int.Parse(attributes[Y]);
                     }
-			    }catch (Exception e) {
+			    }catch {
 				    // TODO: handle exception
 			    }
 		    }		
@@ -106,7 +106,7 @@ namespace iTextSharp.tool.xml.svg.tags {
 		    for (int i = 0; i < list.Count; i++) {
 			    try{
 				    result.Add(int.Parse(list[i]));
-			    }catch(Exception exp){
+			    }catch {
 				    //TODO, check what 
 			    }
 		    }

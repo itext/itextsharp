@@ -395,7 +395,7 @@ namespace iTextSharp.tool.xml.svg.graphic {
             {
                 DrawGroup(cb);
             }
-            catch (Exception exp)
+            catch 
             {
                 //System.out.Println(exp.GetMessage());
             }

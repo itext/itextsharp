@@ -73,7 +73,7 @@ namespace iTextSharp.tool.xml.svg {
                 {
                     coordinates.Add(float.Parse(number));
                 }
-                catch (Exception exp)
+                catch 
                 {
                     //TODO handle this exception
                     coordinates.Add(0f);

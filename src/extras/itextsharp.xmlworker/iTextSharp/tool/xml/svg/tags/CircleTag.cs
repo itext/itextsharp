@@ -72,7 +72,7 @@ namespace iTextSharp.tool.xml.svg.tags {
                     } else {
                         return new List<IElement>(0);    
                     }
-                } catch (Exception e) {
+                } catch {
                     return new List<IElement>(0);
                 }
                 if (radius <= 0)
@@ -86,7 +86,7 @@ namespace iTextSharp.tool.xml.svg.tags {
                     if (attributes.ContainsKey(CX)) {
                         x = int.Parse(attributes[CX]);
                     }
-                } catch (Exception e) {
+                } catch {
                     // TODO: handle exception
                 }
 
@@ -95,7 +95,7 @@ namespace iTextSharp.tool.xml.svg.tags {
                     if (attributes.ContainsKey(CY)) {
                         y = int.Parse(attributes[CY]);
                     }
-                } catch (Exception e) {
+                } catch {
                     // TODO: handle exception
                 }
 

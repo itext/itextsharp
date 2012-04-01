@@ -65,7 +65,7 @@ namespace iTextSharp.tool.xml.svg.tags {
                 if (attributes.ContainsKey(name)) {
                     value = int.Parse(attributes[name]);
                 }
-            } catch (Exception e) {
+            } catch {
                 //do nothing
             }
             return value;

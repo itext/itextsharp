@@ -137,7 +137,7 @@ stroke-miterlimit 10*/
 				    if(result < 0){
 					    return false;
 				    }
-			    }catch(Exception exp){
+			    }catch {
 				    return false;
 			    }			
 		    }
@@ -201,7 +201,7 @@ stroke-miterlimit 10*/
 			    if(result >= 0){
 				    return true;
 			    }
-		    }catch(Exception exp){
+		    }catch {
 			    return false;
 		    }
 		    return false;

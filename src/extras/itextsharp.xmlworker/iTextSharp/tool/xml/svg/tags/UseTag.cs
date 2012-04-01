@@ -78,7 +78,7 @@ namespace iTextSharp.tool.xml.svg.tags {
                     return float.Parse(attributes[name]);
                 }
 		        return 0f;
-		    } catch(Exception exp) {
+		    } catch {
 			    return 0f;
 		    }		
 	    }

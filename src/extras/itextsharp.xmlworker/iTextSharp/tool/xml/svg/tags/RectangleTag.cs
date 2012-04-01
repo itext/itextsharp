@@ -64,7 +64,7 @@ namespace iTextSharp.tool.xml.svg.tags {
                 {
                     width = int.Parse(attributes["width"]);
                 }
-                catch (Exception e)
+                catch 
                 {
                     return new List<IElement>(0);
                 }
@@ -72,7 +72,7 @@ namespace iTextSharp.tool.xml.svg.tags {
                 {
                     height = int.Parse(attributes["height"]);
                 }
-                catch (Exception e)
+                catch
                 {
                     return new List<IElement>(0);
                 }
@@ -88,7 +88,7 @@ namespace iTextSharp.tool.xml.svg.tags {
                 {
                     x = int.Parse(attributes["x"]);
                 }
-                catch (Exception e)
+                catch 
                 {
                     // TODO: handle exception
                 }
@@ -97,7 +97,7 @@ namespace iTextSharp.tool.xml.svg.tags {
                 {
                     y = int.Parse(attributes["y"]);
                 }
-                catch (Exception e)
+                catch 
                 {
                     // TODO: handle exception
                 }
@@ -108,7 +108,7 @@ namespace iTextSharp.tool.xml.svg.tags {
                 {
                     rx = int.Parse(attributes["rx"]);
                 }
-                catch (Exception e)
+                catch 
                 {
                     rx = -1;
                 }
@@ -117,7 +117,7 @@ namespace iTextSharp.tool.xml.svg.tags {
                 {
                     ry = int.Parse(attributes["ry"]);
                 }
-                catch (Exception e)
+                catch 
                 {
                     ry = -1;
                 }

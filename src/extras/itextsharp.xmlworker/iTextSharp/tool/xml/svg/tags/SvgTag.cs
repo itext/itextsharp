@@ -64,14 +64,14 @@ namespace iTextSharp.tool.xml.svg.tags {
                     if (attributes.ContainsKey("height")) {
                         height = float.Parse(attributes["height"]);
                     }
-			    }catch(Exception exp){
+			    }catch {
 				    //TODO
 			    }	
 			    try{
                     if (attributes.ContainsKey("width")) {
                         width = float.Parse(attributes["width"]);
                     }
-			    }catch(Exception exp){
+			    }catch {
 				    //TODO
 			    }		
 			    try{
@@ -89,7 +89,7 @@ namespace iTextSharp.tool.xml.svg.tags {
                             r.Top = r.Bottom + float.Parse(st.NextToken());
                         r.Normalize();
                     }
-			    } catch(Exception exp) {
+			    } catch {
 				    //TODO
 			    }
 		    }
