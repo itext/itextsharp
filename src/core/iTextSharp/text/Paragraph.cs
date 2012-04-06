@@ -206,10 +206,10 @@ namespace iTextSharp.text {
          */
         public IList<IElement> breakUp() {
             IList<IElement> list = new List<IElement>();
-            Paragraph tmp = cloneShallow(true);
+            Paragraph tmp = null;
             foreach (IElement e in this) {
                 if (e.Type == Element.LIST || e.Type == Element.PTABLE || e.Type == Element.PARAGRAPH) {
-                    if (tmp.Count > 0) {
+                    if (tmp != null && tmp.Count > 0) {
                         tmp.SpacingAfter = 0;
                         list.Add(tmp);
                         tmp = cloneShallow(false);
@@ -217,10 +217,13 @@ namespace iTextSharp.text {
                     list.Add(e);
                 }
                 else {
+                    if (tmp == null) {
+                        tmp = cloneShallow(list.Count == 0);
+                    }
                     tmp.Add(e);
                 }
             }
-            if (tmp.Count > 0) {
+            if (tmp != null && tmp.Count > 0) {
                 list.Add(tmp);
             }
             return list;
