@@ -135,11 +135,11 @@ namespace iTextSharp.tool.xml.css {
         public void ResolveStyles(Tag t) {
             // get css for this tag from resolver
             IDictionary<String, String> tagCss = new Dictionary<String, String>();
-            IDictionary<String, String> paragraphListCss = null;
+            IDictionary<String, String> listCss = null;
             if (null != cssFiles && cssFiles.HasFiles()) {
                 tagCss = cssFiles.GetCSS(t);
-                if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.P)) {
-                    paragraphListCss = cssFiles.GetCSS(new Tag(HTML.Tag.UL));
+                if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.P) || Util.EqualsIgnoreCase(t.Name, HTML.Tag.TD)) {
+                    listCss = cssFiles.GetCSS(new Tag(HTML.Tag.UL));
                 }
             }
             // get css from style attr
@@ -166,8 +166,8 @@ namespace iTextSharp.tool.xml.css {
             }
             // inherit css from parent tags, as defined in provided CssInheritanceRules or if property = inherit
             IDictionary<String, String> css = t.CSS;
-            if (paragraphListCss != null && paragraphListCss.ContainsKey(CSS.Property.LIST_STYLE_TYPE)) {
-                css[CSS.Property.LIST_STYLE_TYPE] = paragraphListCss[CSS.Property.LIST_STYLE_TYPE];
+            if (listCss != null && listCss.ContainsKey(CSS.Property.LIST_STYLE_TYPE)) {
+                css[CSS.Property.LIST_STYLE_TYPE] = listCss[CSS.Property.LIST_STYLE_TYPE];
             }
             if (MustInherit(t.Name) && null != t.Parent && null != t.Parent.CSS) {
                 if (null != this.inherit) {
