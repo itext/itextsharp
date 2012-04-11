@@ -88,34 +88,41 @@ namespace iTextSharp.tool.xml.html.table {
             }
 		    IList<IElement> l = new List<IElement>(1);
             IList<IElement> chunks = new List<IElement>();
+            IList<ListItem> listItems = new List<ListItem>();
+	        int index = -1;
 		    foreach (IElement e in currentContent) {
+		        index++;
                 if (e is Chunk || e is NoNewLineParagraph || e is LineSeparator) {
+                    if (listItems.Count > 0) {
+                        ProcessListItems(ctx, tag, listItems, cell);
+                    }
                     if (e == Chunk.NEWLINE) {
-                        int index = currentContent.IndexOf(e);
                         if (index == currentContent.Count - 1) {
                             continue;
                         } else {
                             IElement nextElement = currentContent[index + 1];
-                            if (nextElement is Paragraph) {
+                            if (!(nextElement is Chunk) && !(nextElement is NoNewLineParagraph)) {
                                 continue;
                             }
-                            if (chunks.Count == 0) {
-                                continue;
-                            }
-
                         }
                     } else if (e is LineSeparator) {
                         chunks.Add(Chunk.NEWLINE);
                     }
                     chunks.Add(e);
                     continue;
-                } else if (chunks.Count > 0) {
-                    Paragraph p = new Paragraph();
-                    p.MultipliedLeading = 1.2f;
-                    p.AddAll(chunks);
-                    p.Alignment = cell.HorizontalAlignment;
-                    cell.AddElement(p);
-                    chunks.Clear();
+                } else if (e is ListItem) {
+                    if (chunks.Count >0 ) {
+                        ProcessChunkItems(chunks, cell);
+                    }
+                    listItems.Add((ListItem)e);
+                    continue;
+                } else {
+		            if (chunks.Count > 0) {
+                       ProcessChunkItems(chunks, cell); 
+                    }
+                    if (listItems.Count > 0) {
+                        ProcessListItems(ctx, tag, listItems, cell);
+                    }
                 }
 
                 if (e is Paragraph) {
@@ -134,8 +141,39 @@ namespace iTextSharp.tool.xml.html.table {
     	    l.Add(cell);
 		    return l;
 	    }
+
 	    public override bool IsStackOwner() {
 		    return true;
 	    }
+
+        private void ProcessChunkItems(IList<IElement> chunks, HtmlCell cell) {
+            Paragraph p = new Paragraph();
+            p.MultipliedLeading = 1.2f;
+            p.AddAll(chunks);
+            p.Alignment = cell.HorizontalAlignment;
+            cell.AddElement(p);
+            chunks.Clear();    
+        }
+
+        private void ProcessListItems(IWorkerContext ctx, Tag tag, IList<ListItem> listItems, HtmlCell cell) {
+            try {
+                List list = new List();
+                list.Alignindent = false;
+                list.Autoindent = false;
+                list = (List) GetCssAppliers().Apply(list, tag, GetHtmlPipelineContext(ctx));
+                foreach (ListItem li in listItems) {
+                    ListItem listItem = (ListItem) GetCssAppliers().Apply(li, tag, GetHtmlPipelineContext(ctx));
+                    listItem.SpacingAfter = 0;
+                    listItem.SpacingBefore = 0;
+
+                    listItem.MultipliedLeading = 1.2f;
+                    list.Add(listItem);
+                }
+                cell.AddElement(list);
+                listItems.Clear();
+            } catch (NoCustomContextException e) {
+                throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
+            }
+        }
     }
 }
