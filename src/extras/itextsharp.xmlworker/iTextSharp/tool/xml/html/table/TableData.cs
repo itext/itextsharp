@@ -82,7 +82,7 @@ namespace iTextSharp.tool.xml.html.table {
 		    HtmlCell cell = new HtmlCell();
             try {
                 HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
-                cell = new HtmlCellCssApplier().Apply(cell, tag, htmlPipelineContext, htmlPipelineContext);
+                cell = (HtmlCell) GetCssAppliers().Apply(cell, tag, htmlPipelineContext);
             } catch (NoCustomContextException e1) {
                 throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e1);
             }
@@ -96,7 +96,7 @@ namespace iTextSharp.tool.xml.html.table {
                     if (listItems.Count > 0) {
                         ProcessListItems(ctx, tag, listItems, cell);
                     }
-                    if (e == Chunk.NEWLINE) {
+                    if (e is Chunk && Chunk.NEWLINE.Content.Equals(((Chunk)e).Content)) {
                         if (index == currentContent.Count - 1) {
                             continue;
                         } else {
@@ -106,7 +106,13 @@ namespace iTextSharp.tool.xml.html.table {
                             }
                         }
                     } else if (e is LineSeparator) {
-                        chunks.Add(Chunk.NEWLINE);
+                        try {
+                            HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
+                            Chunk newLine = (Chunk)GetCssAppliers().Apply(new Chunk(Chunk.NEWLINE), tag, htmlPipelineContext);
+                            chunks.Add(newLine);
+                        } catch (NoCustomContextException exc) {
+                            throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), exc);
+                        }
                     }
                     chunks.Add(e);
                     continue;
@@ -158,9 +164,9 @@ namespace iTextSharp.tool.xml.html.table {
         private void ProcessListItems(IWorkerContext ctx, Tag tag, IList<ListItem> listItems, HtmlCell cell) {
             try {
                 List list = new List();
-                list.Alignindent = false;
                 list.Autoindent = false;
                 list = (List) GetCssAppliers().Apply(list, tag, GetHtmlPipelineContext(ctx));
+                list.IndentationLeft = 0;
                 foreach (ListItem li in listItems) {
                     ListItem listItem = (ListItem) GetCssAppliers().Apply(li, tag, GetHtmlPipelineContext(ctx));
                     listItem.SpacingAfter = 0;

@@ -2,6 +2,9 @@ using System;
 using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.tool.xml;
+using iTextSharp.tool.xml.exceptions;
+using iTextSharp.tool.xml.pipeline.html;
+
 /*
  * $Id: Break.java 94 2011-05-23 23:38:48Z redlab_b $
  *
@@ -58,7 +61,13 @@ namespace iTextSharp.tool.xml.html {
          */
         public override IList<IElement> End(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
             IList<IElement> l = new List<IElement>(1);
-            l.Add(Chunk.NEWLINE);
+            try {
+                HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
+                Chunk newLine = (Chunk)GetCssAppliers().Apply(new Chunk(Chunk.NEWLINE), tag, htmlPipelineContext);
+                l.Add(newLine);
+            } catch (NoCustomContextException exc) {
+                throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), exc);
+            }
             return l;
         }
     }

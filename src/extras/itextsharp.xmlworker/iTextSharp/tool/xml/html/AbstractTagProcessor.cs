@@ -249,26 +249,26 @@ namespace iTextSharp.tool.xml.html {
                     {
                         Paragraph p = new Paragraph(float.NaN);
                         p.MultipliedLeading = 1.2f;
-                        foreach (IElement e in currentContent)
-                        {
-                            if (e is LineSeparator)
-                            {
-                                p.Add(Chunk.NEWLINE);
+                        foreach (IElement e in currentContent) {
+                            if (e is LineSeparator) {
+                                try {
+                                    HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
+                                    Chunk newLine = (Chunk)GetCssAppliers().Apply(new Chunk(Chunk.NEWLINE), tag, htmlPipelineContext);
+                                    p.Add(newLine);
+                                } catch (NoCustomContextException exc) {
+                                    throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), exc);
+                                }
                             }
                             p.Add(e);
                         }
-                        if (applyCSS)
-                        {
+                        if (applyCSS) {
                             p = (Paragraph) GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx));
                         }
                         list.Add(p);
-                    }
-                    else
-                    {
+                    } else {
                         NoNewLineParagraph p = new NoNewLineParagraph(float.NaN);
                         p.MultipliedLeading = 1.2f;
-                        foreach (IElement e in currentContent)
-                        {
+                        foreach (IElement e in currentContent) {
                             p.Add(e);
                         }
                         p = (NoNewLineParagraph) GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx));
@@ -276,9 +276,7 @@ namespace iTextSharp.tool.xml.html {
                     }
                 }
                 return list;
-            }
-            catch (NoCustomContextException e)
-            {
+            } catch (NoCustomContextException e) {
                 throw new RuntimeWorkerException(
                     LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
             }
