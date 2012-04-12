@@ -129,12 +129,12 @@ namespace iTextSharp.tool.xml.html {
                 Paragraph p = new Paragraph();
         p.MultipliedLeading = 1.2f;
         IElement lastElement = paragraphItems[paragraphItems.Count - 1];
-        if (lastElement == Chunk.NEWLINE) {
+        if (lastElement is Chunk && Chunk.NEWLINE.Content.Equals(((Chunk)lastElement).Content)) {
             paragraphItems.RemoveAt(paragraphItems.Count - 1);
         }
         IDictionary<String, String> css = tag.CSS;
         if (css.ContainsKey(CSS.Property.TAB_INTERVAL)) {
-            AddTabIntervalContent(paragraphItems, p, css[CSS.Property.TAB_INTERVAL]);
+            AddTabIntervalContent(ctx, tag, paragraphItems, p, css[CSS.Property.TAB_INTERVAL]);
             l.Add(p);
         } else if (css.ContainsKey(CSS.Property.TAB_STOPS)) { // <para tabstops=".." /> could use same implementation page 62
             AddTabStopsContent(paragraphItems, p, css[CSS.Property.TAB_STOPS]);
@@ -158,9 +158,9 @@ namespace iTextSharp.tool.xml.html {
     protected void ProcessListItems(IWorkerContext ctx, Tag tag, IList<ListItem> listItems, IList<IElement> l) {
         try {
             List list = new List();
-            list.Alignindent = false;
             list.Autoindent = false;
             list = (List) GetCssAppliers().Apply(list, tag, GetHtmlPipelineContext(ctx));
+            list.IndentationLeft = 0;
             int i = 0;
             foreach (ListItem li in listItems) {
                 ListItem listItem = (ListItem) GetCssAppliers().Apply(li, tag, GetHtmlPipelineContext(ctx));
@@ -194,7 +194,7 @@ namespace iTextSharp.tool.xml.html {
          * @param p paragraph to which the tabbed chunks will be added.
          * @param value the value of style "tab-interval".
          */
-    private void AddTabIntervalContent(IList<IElement> currentContent, Paragraph p, String value) {
+        private void AddTabIntervalContent(IWorkerContext ctx, Tag tag, IList<IElement> currentContent, Paragraph p, String value) {
         float width = 0;
 		foreach(IElement e in currentContent) {
 		    if (e is TabbedChunk) {
@@ -204,7 +204,13 @@ namespace iTextSharp.tool.xml.html {
 			    p.Add(new Chunk((TabbedChunk) e));
             } else {
                 if (e is LineSeparator) {
-                    p.Add(Chunk.NEWLINE);
+                    try {
+                        HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
+                        Chunk newLine = (Chunk)GetCssAppliers().Apply(new Chunk(Chunk.NEWLINE), tag, htmlPipelineContext);
+                        p.Add(newLine);
+                    } catch (NoCustomContextException exc) {
+                        throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), exc);
+                    }
                 }
 			    p.Add(e);
             }
