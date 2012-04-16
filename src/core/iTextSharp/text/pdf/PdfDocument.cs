@@ -442,7 +442,7 @@ namespace iTextSharp.text.pdf {
                 case Element.PHRASE: {
                     leadingCount++;
                     // we cast the element to a phrase and set the leading of the document
-                    leading = ((Phrase) element).Leading;
+                    leading = ((Phrase) element).GetTotalLeading();
                     // we process the element
                     element.Process(this);
                     leadingCount--;

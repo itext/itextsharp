@@ -436,6 +436,10 @@ namespace iTextSharp.text {
             }
         }
     
+        public virtual float GetTotalLeading() {
+            return this.Leading;
+        }
+
         /// <summary>
         /// Gets the font of the first Chunk that appears in this Phrase.
         /// </summary>
