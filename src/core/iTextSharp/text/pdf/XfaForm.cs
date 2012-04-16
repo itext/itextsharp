@@ -809,32 +809,34 @@ namespace iTextSharp.text.pdf {
             }
 
             private void ProcessDatasetsInternal(XmlNode n) {
-                Dictionary<String, int> ss = new Dictionary<string,int>();
-                XmlNode n2 = n.FirstChild;
-                while (n2 != null) {
-                    if (n2.NodeType == XmlNodeType.Element) {
-                        String s = EscapeSom(n2.LocalName);
-                        int i;
-                        if (!ss.ContainsKey(s))
-                            i = 0;
-                        else
-                            i = ss[s] + 1;
-                        ss[s] = i;
-                        if (HasChildren(n2)) {
-                            stack.Push(s + "[" + i.ToString() + "]");
-                            ProcessDatasetsInternal(n2);
-                            stack.Pop();
+                if (n != null) {
+                    Dictionary<String, int> ss = new Dictionary<string,int>();
+                    XmlNode n2 = n.FirstChild;
+                    while (n2 != null) {
+                        if (n2.NodeType == XmlNodeType.Element) {
+                            String s = EscapeSom(n2.LocalName);
+                            int i;
+                            if (!ss.ContainsKey(s))
+                                i = 0;
+                            else
+                                i = ss[s] + 1;
+                            ss[s] = i;
+                            if (HasChildren(n2)) {
+                                stack.Push(s + "[" + i.ToString() + "]");
+                                ProcessDatasetsInternal(n2);
+                                stack.Pop();
+                            }
+                            else {
+                                stack.Push(s + "[" + i.ToString() + "]");
+                                String unstack = PrintStack();
+                                order.Add(unstack);
+                                InverseSearchAdd(unstack);
+                                name2Node[unstack] = n2;
+                                stack.Pop();
+                            }
                         }
-                        else {
-                            stack.Push(s + "[" + i.ToString() + "]");
-                            String unstack = PrintStack();
-                            order.Add(unstack);
-                            InverseSearchAdd(unstack);
-                            name2Node[unstack] = n2;
-                            stack.Pop();
-                        }
+                        n2 = n2.NextSibling;
                     }
-                    n2 = n2.NextSibling;
                 }
             }
         }
