@@ -362,7 +362,7 @@ namespace iTextSharp.tool.xml.html.pdfelement {
          * true.
          * @return the total leading (fixed and multiplied)
          */
-        public float GetTotalLeading() {
+        public override float GetTotalLeading() {
             float m = font == null ?
                     Font.DEFAULTSIZE * multipliedLeading : font.GetCalculatedLeading(multipliedLeading);
             if (m > 0 && !HasLeading()) {
