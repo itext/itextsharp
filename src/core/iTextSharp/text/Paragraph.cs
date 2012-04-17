@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.util;
 using iTextSharp.text.factories;
 using iTextSharp.text.api;
+using iTextSharp.text.pdf;
 
 /*
  * $Id$
@@ -214,6 +215,24 @@ namespace iTextSharp.text {
                         list.Add(tmp);
                         tmp = cloneShallow(false);
                     }
+                    if (list.Count == 0) {
+                        switch (e.Type) {
+                            case Element.PTABLE:
+                                ((PdfPTable)e).SpacingBefore = SpacingBefore;
+                                break;
+                            case Element.PARAGRAPH:
+                                ((Paragraph)e).SpacingBefore = SpacingBefore;
+                                break;
+                            case Element.LIST:
+                                ListItem firstItem = ((List)e).GetFirstItem();
+                                if (firstItem != null) {
+                                    firstItem.SpacingBefore = SpacingBefore;
+                                }
+                                break;
+                            default:
+                                break;
+                        }
+                    }
                     list.Add(e);
                 }
                 else {
@@ -225,6 +244,25 @@ namespace iTextSharp.text {
             }
             if (tmp != null && tmp.Count > 0) {
                 list.Add(tmp);
+            }
+            if (list.Count != 0) {
+                IElement lastElement = list[list.Count - 1];
+                switch (lastElement.Type) {
+                    case Element.PTABLE:
+                        ((PdfPTable)lastElement).SpacingAfter = SpacingAfter;
+                        break;
+                    case Element.PARAGRAPH:
+                        ((Paragraph)lastElement).SpacingAfter = SpacingAfter;
+                        break;
+                    case Element.LIST:
+                        ListItem lastItem = ((List)lastElement).GetLastItem();
+                        if (lastItem != null) {
+                            lastItem.SpacingAfter = SpacingAfter;
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
             return list;
         }

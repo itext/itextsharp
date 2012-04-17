@@ -86,6 +86,11 @@ namespace iTextSharp.tool.xml.pipeline.html {
         public override IPipeline Open(IWorkerContext context, Tag t, ProcessObject po) {
             HtmlPipelineContext hcc = (HtmlPipelineContext)GetLocalContext(context);
             try {
+                Object lastMarginBottom = null;
+                if (hcc.GetMemory().TryGetValue(HtmlPipelineContext.LAST_MARGIN_BOTTOM, out lastMarginBottom)) {
+                    t.LastMarginBottom = lastMarginBottom;
+                    hcc.GetMemory().Remove(HtmlPipelineContext.LAST_MARGIN_BOTTOM);
+                }
                 ITagProcessor tp = hcc.ResolveProcessor(t.Name, t.NameSpace);
                 if (tp.IsStackOwner()) {
                     hcc.AddFirst(new StackKeeper(t));
@@ -168,6 +173,11 @@ namespace iTextSharp.tool.xml.pipeline.html {
             HtmlPipelineContext hcc = (HtmlPipelineContext)GetLocalContext(context);
             ITagProcessor tp;
             try {
+                if (t.LastMarginBottom != null) {
+                    hcc.GetMemory()[HtmlPipelineContext.LAST_MARGIN_BOTTOM] = t.LastMarginBottom;
+                } else {
+                    hcc.GetMemory().Remove(HtmlPipelineContext.LAST_MARGIN_BOTTOM);
+                }
                 tp = hcc.ResolveProcessor(t.Name, t.NameSpace);
                 IList<IElement> elems = null;
                 if (tp.IsStackOwner()) {

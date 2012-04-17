@@ -71,20 +71,20 @@ namespace iTextSharp.tool.xml.css.apply {
          * com.itextpdf.tool.xml.Tag)
          */
     public HtmlCell Apply(HtmlCell cell, Tag t, IMarginMemory memory, IPageSizeContainable psc) {
-        TableStyleValues values = new TableStyleValues();
-        Tag table = t.Parent;
         Tag row = t.Parent;
         while(row != null && !row.Name.Equals(HTML.Tag.TR)){
            row = row.Parent;
 	    }
-        while(table!= null && !table.Name.Equals(HTML.Tag.TABLE)){
+        Tag table = t.Parent;
+        while(table != null && !table.Name.Equals(HTML.Tag.TABLE)){
 		    table = table.Parent;
         }
+        TableStyleValues values = Table.SetStyleValues(table);
         String border;
         table.Attributes.TryGetValue(CSS.Property.BORDER, out border);
         if (border != null && !border.Equals("0")) {
             values.BorderColor = BaseColor.BLACK;
-            values.BorderWidth = 0.75f;
+            values.BorderWidth = Table.DEFAULT_CELL_BORDER_WIDTH;
         }
         IDictionary<String, String> css = t.CSS;
         String emptyCells;
@@ -203,7 +203,7 @@ namespace iTextSharp.tool.xml.css.apply {
             cell.PaddingLeft = cell.PaddingLeft+horSpacing+values.BorderWidthLeft;
             cell.PaddingRight = cell.PaddingRight+values.BorderWidthRight;
             cell.PaddingTop = cell.PaddingTop+verSpacing+values.BorderWidthTop;
-            cell.PaddingBottom = cell.PaddingBottom+values.BorderWidthBottom+1;
+            cell.PaddingBottom = cell.PaddingBottom + values.BorderWidthBottom;
         }
         cell.Border = Rectangle.NO_BORDER;
         cell.CellEvent = new CellSpacingEvent(values);

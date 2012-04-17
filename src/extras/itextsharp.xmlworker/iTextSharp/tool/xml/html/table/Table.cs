@@ -64,6 +64,8 @@ namespace iTextSharp.tool.xml.html.table {
      */
     public class Table : AbstractTagProcessor {
 
+        public static float DEFAULT_CELL_BORDER_WIDTH = 0.75f;
+
         private static ILogger LOG = LoggerFactory.GetLogger(typeof(Table));
         private static CssUtils utils = CssUtils.GetInstance();
         private static FontSizeTranslator fst = FontSizeTranslator.GetInstance();
@@ -459,7 +461,7 @@ namespace iTextSharp.tool.xml.html.table {
          * @param tag containing attributes and css.
          * @return a {@link TableStyleValues} object containing the table's style values.
          */
-        private TableStyleValues SetStyleValues(Tag tag) {
+        public static TableStyleValues SetStyleValues(Tag tag) {
             TableStyleValues styleValues = new TableStyleValues();
             IDictionary<String, String> css = tag.CSS;
             IDictionary<String, String> attributes = tag.Attributes;
@@ -505,14 +507,13 @@ namespace iTextSharp.tool.xml.html.table {
         static public float GetBorderOrCellSpacing(bool getHor, IDictionary<String, String> css, IDictionary<String, String> attributes) {
             float spacing = 0f;
             String collapse;
-            css.TryGetValue("border-collapse", out collapse);
-            if(collapse == null || collapse.Equals("seperate")) {
-                String borderSpacing;
-                css.TryGetValue("border-spacing", out borderSpacing);
-                String cellSpacing;
-                attributes.TryGetValue("cellspacing", out cellSpacing);
-                String borderAttr;
-                attributes.TryGetValue("border", out borderAttr);
+
+            css.TryGetValue(CSS.Property.BORDER_COLLAPSE, out collapse);
+		if (collapse == null || collapse.Equals(CSS.Value.SEPARATE)) {
+			String borderSpacing;
+            css.TryGetValue(CSS.Property.BORDER_SPACING, out borderSpacing);
+            String cellSpacing;
+            attributes.TryGetValue(HTML.Attribute.CELLSPACING, out cellSpacing);
                 if(borderSpacing != null) {
                     if(borderSpacing.Contains(" ")){
                         if(getHor) {
@@ -525,10 +526,10 @@ namespace iTextSharp.tool.xml.html.table {
                     }
                 } else if (cellSpacing != null){
                     spacing = utils.ParsePxInCmMmPcToPt(cellSpacing);
-                } else if (borderAttr != null){
-                    spacing = utils.ParsePxInCmMmPcToPt(borderAttr);
+                } else {
+                    spacing = 2f * DEFAULT_CELL_BORDER_WIDTH;
                 }
-            } else if (collapse.Equals("collapse")){
+            } else if (collapse.Equals(CSS.Value.COLLAPSE)) {
                 spacing = 0;
             }
             return spacing;
@@ -687,19 +688,14 @@ namespace iTextSharp.tool.xml.html.table {
          */
         private void SetVerticalMargin(PdfPTable table, Tag t, TableStyleValues values, IWorkerContext ctx)
         {
-            float spacingBefore = 0;// values.BorderWidthTop;
-            /*IDictionary<String, Object> memory = GetHtmlPipelineContext(ctx).GetMemory();
-            Object mb;
-            memory.TryGetValue(HtmlPipelineContext.LAST_MARGIN_BOTTOM, out mb);
-            if(mb != null) {
-                spacingBefore += (float)mb;
-            }*/
-            float spacingAfter = 0;// values.VerBorderSpacing + values.BorderWidthBottom;
+            float spacingBefore = values.BorderWidthTop;
+            float spacingAfter = values.VerBorderSpacing + values.BorderWidthBottom;
             foreach (KeyValuePair<String, String> css in t.CSS) {
                 String key = css.Key;
                 String value = css.Value;
                 if(Util.EqualsIgnoreCase(CSS.Property.MARGIN_TOP, key)) {
-                    spacingBefore += utils.ParseValueToPt(value, fst.GetFontSize(t));
+                    CssUtils utils = CssUtils.GetInstance();
+				    spacingBefore += utils.CalculateMarginTop(value, fst.GetFontSize(t), GetHtmlPipelineContext(ctx));
                 } else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_BOTTOM, key)) {
                     float marginBottom = utils.ParseValueToPt(value, fst.GetFontSize(t));
                     spacingAfter += marginBottom;
