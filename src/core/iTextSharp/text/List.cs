@@ -563,5 +563,29 @@ namespace iTextSharp.text {
                 return preSymbol;
             }
 	    }
+
+        public ListItem GetFirstItem() {
+            IElement lastElement = list.Count > 0 ? list[0] : null;
+            if (lastElement != null) {
+                if (lastElement is ListItem) {
+                    return (ListItem)lastElement;
+                } else if (lastElement is List) {
+                    return ((List)lastElement).GetFirstItem();
+                }
+            }
+            return null;
+        }
+
+        public ListItem GetLastItem() {
+            IElement lastElement = list.Count > 0 ? list[list.Count - 1] : null;
+            if (lastElement != null) {
+                if (lastElement is ListItem) {
+                    return (ListItem)lastElement;
+                } else if (lastElement is List) {
+                    return ((List)lastElement).GetLastItem();
+                }
+            }
+            return null;
+        }
     }
 }

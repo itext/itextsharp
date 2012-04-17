@@ -1140,7 +1140,7 @@ public class ColumnText {
                         }
                         createHere = true;
                     }
-                    compositeColumn.UseAscender = (firstPass && adjustFirstLine ? useAscender : false);
+                    compositeColumn.UseAscender = ((firstPass || descender == 0) && adjustFirstLine ? useAscender : false);
                     compositeColumn.leftX = leftX;
                     compositeColumn.rightX = rightX;
                     compositeColumn.yLine = yLine;
@@ -1223,7 +1223,7 @@ public class ColumnText {
                         }
                         compositeColumn = new ColumnText(canvas);
 
-                        compositeColumn.UseAscender = (firstPass && adjustFirstLine ? useAscender : false);
+                        compositeColumn.UseAscender = ((firstPass || descender == 0) && adjustFirstLine ? useAscender : false);
                         compositeColumn.Alignment = item.Alignment;
                         compositeColumn.Indent = item.IndentationLeft + listIndentation + item.FirstLineIndent;
                         compositeColumn.ExtraParagraphSpace = item.ExtraParagraphSpace;

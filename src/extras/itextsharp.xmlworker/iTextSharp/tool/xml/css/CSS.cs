@@ -75,6 +75,8 @@ namespace iTextSharp.tool.xml.css {
             public const String BORDER_WIDTH = "border-width";
             public const String BORDER_STYLE = "border-style";
             public const String BORDER_COLOR = "border-color";
+            public const String BORDER_COLLAPSE = "border-collapse";
+            public const String BORDER_SPACING = "border-spacing";
             public const String BORDER_TOP_WIDTH = "border-top-width";
             public const String BORDER_BOTTOM_WIDTH = "border-bottom-width";
             public const String BORDER_LEFT_WIDTH = "border-left-width";
@@ -211,6 +213,8 @@ namespace iTextSharp.tool.xml.css {
             public const String AUTO = "auto";
 		    public const String INLINE = "inline";
 		    public const String BLOCK = "block";
+            public const String SEPARATE = "separate";
+            public const String COLLAPSE = "collapse";
         }
     }
 }

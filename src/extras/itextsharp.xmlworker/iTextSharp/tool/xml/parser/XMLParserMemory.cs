@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Text;
-using iTextSharp.tool.xml.parser.state;
 /*
  * $Id: XMLParserMemory.java 112 2011-05-26 13:44:09Z emielackermann $
  *
@@ -65,12 +63,14 @@ namespace iTextSharp.tool.xml.parser {
         private String wsTag = "";
         private String currentNameSpace = "";
         private char lastChar;
+        private bool isHtml;
 
         /**
          *
          */
-        public XMLParserMemory() {
+        public XMLParserMemory(bool isHtml) {
             this.attr = new Dictionary<String, String>();
+            this.isHtml = isHtml;
         }
 
         /**
@@ -106,8 +106,11 @@ namespace iTextSharp.tool.xml.parser {
          */
         public void PutCurrentAttrValue(String content) {
             if (null != this.currentAttr) {
-                // TODO (html==true)? attr to lowercase?
-                attr[this.currentAttr] = content;
+                if (isHtml) {
+                    attr[this.currentAttr.ToLower()] = content;
+                } else {
+                    attr[this.currentAttr] = content;
+                }
                 this.currentAttr = null;
             }
         }

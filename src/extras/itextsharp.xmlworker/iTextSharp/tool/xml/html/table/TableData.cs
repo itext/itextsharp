@@ -101,7 +101,7 @@ namespace iTextSharp.tool.xml.html.table {
                             continue;
                         } else {
                             IElement nextElement = currentContent[index + 1];
-                            if (!(nextElement is Chunk) && !(nextElement is NoNewLineParagraph)) {
+                            if (chunks.Count > 0 && !(nextElement is Chunk) && !(nextElement is NoNewLineParagraph)) {
                                 continue;
                             }
                         }

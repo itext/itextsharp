@@ -84,7 +84,7 @@ namespace iTextSharp.tool.xml.parser {
             this.charset = charset;
             this.controller = new StateController(this, isHtml);
             controller.Unknown();
-            memory = new XMLParserMemory();
+            memory = new XMLParserMemory(isHtml);
             listeners = new List<IXMLParserListener>();
         }
 

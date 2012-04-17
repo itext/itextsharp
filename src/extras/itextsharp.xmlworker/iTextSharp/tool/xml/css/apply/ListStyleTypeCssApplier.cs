@@ -96,6 +96,7 @@ namespace iTextSharp.tool.xml.css.apply {
                     SynchronizeSymbol(fontSize, lst, color);
                 } else if (Util.EqualsIgnoreCase(CSS.Value.DISC, styleType)) {
                     lst = new ZapfDingbatsList(108);
+                    fontSize *= 0.7f;
                     ShrinkSymbol(lst, fontSize, color);
                 } else if (Util.EqualsIgnoreCase(CSS.Value.SQUARE, styleType)) {
                     lst = new ZapfDingbatsList(110);
@@ -197,9 +198,9 @@ namespace iTextSharp.tool.xml.css.apply {
         private void ShrinkSymbol(List lst, float fontSize, BaseColor color) {
             lst.SymbolIndent = 12;
             Chunk symbol = lst.Symbol;
-            symbol.SetTextRise(2);
+            //symbol.SetTextRise(2);
             Font font = symbol.Font;
-            font.Size = 7;
+            font.Size = fontSize;
             font.Color = color;
         }
     }

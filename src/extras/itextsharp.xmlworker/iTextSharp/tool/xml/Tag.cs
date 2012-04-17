@@ -60,6 +60,7 @@ namespace iTextSharp.tool.xml {
         private IDictionary<String, String> css;
         private IList<Tag> children;
         private String ns;
+        private Object lastMarginBottom;
 
         /**
          * Construct a tag.
@@ -160,6 +161,11 @@ namespace iTextSharp.tool.xml {
             get {
                 return attributes;
             }
+        }
+
+        public Object LastMarginBottom {
+            get { return lastMarginBottom; }
+            set { lastMarginBottom = value; }
         }
 
         /**
