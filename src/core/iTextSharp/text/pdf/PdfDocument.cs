@@ -2313,7 +2313,8 @@ namespace iTextSharp.text.pdf {
             }
             // ensuring that a new line has been started.
             EnsureNewLine();
-            return table.TotalHeight + ((currentHeight > 0) ? table.SpacingBefore : 0f)
+            float spaceNeeded = table.SkipFirstHeader ? table.TotalHeight - table.HeaderHeight : table.TotalHeight;
+            return spaceNeeded + (currentHeight > 0 ? table.SpacingBefore : 0f)
                 <= IndentTop - currentHeight - IndentBottom - margin;
         } 
        
