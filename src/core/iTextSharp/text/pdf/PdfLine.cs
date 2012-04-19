@@ -513,7 +513,8 @@ namespace iTextSharp.text.pdf {
                         ascender = Math.Max(ascender, ck.Image.ScaledHeight + ck.ImageOffsetY);
                     else {
                         PdfFont font = ck.Font;
-                        ascender = Math.Max(ascender, font.Font.GetFontDescriptor(BaseFont.ASCENT, font.Size));
+                        float textRise = ck.TextRise;
+                        ascender = Math.Max(ascender, (textRise > 0 ? textRise : 0) + font.Font.GetFontDescriptor(BaseFont.ASCENT, font.Size));
                     }
                 }
                 return ascender;
@@ -533,7 +534,8 @@ namespace iTextSharp.text.pdf {
                         descender = Math.Min(descender, ck.ImageOffsetY);
                     else {
                         PdfFont font = ck.Font;
-                        descender = Math.Min(descender, font.Font.GetFontDescriptor(BaseFont.DESCENT, font.Size));
+                        float textRise = ck.TextRise;
+                        descender = Math.Min(descender, (textRise < 0 ? textRise : 0) + font.Font.GetFontDescriptor(BaseFont.DESCENT, font.Size));
                     }
                 }
                 return descender;

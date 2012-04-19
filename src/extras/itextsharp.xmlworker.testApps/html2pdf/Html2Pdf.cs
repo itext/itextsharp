@@ -56,6 +56,7 @@ namespace html2pdf {
             foreach (FileStream fileStream in fileList)
             {
                 Document doc = new Document(PageSize.LETTER);
+                doc.SetMargins(doc.LeftMargin, doc.RightMargin, 30, 30);
                 String path = Path.GetDirectoryName(Path.GetFullPath(fileStream.Name)) + Path.DirectorySeparatorChar +
                               Path.GetFileNameWithoutExtension(fileStream.Name) + ".pdf";
                 PdfWriter pdfWriter = PdfWriter.GetInstance(doc, new FileStream(path, FileMode.Create));
