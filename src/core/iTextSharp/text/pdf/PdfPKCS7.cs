@@ -158,6 +158,7 @@ namespace iTextSharp.text.pdf {
             digestNames["1.3.36.3.3.1.3"] = "RIPEMD128";
             digestNames["1.3.36.3.3.1.2"] = "RIPEMD160";
             digestNames["1.3.36.3.3.1.4"] = "RIPEMD256";
+            digestNames["1.2.643.2.2.9"] = "GOST3411";
             
             algorithmNames["1.2.840.113549.1.1.1"] = "RSA";
             algorithmNames["1.2.840.10040.4.1"] = "DSA";
@@ -174,6 +175,7 @@ namespace iTextSharp.text.pdf {
             algorithmNames["1.3.36.3.3.1.3"] = "RSA";
             algorithmNames["1.3.36.3.3.1.2"] = "RSA";
             algorithmNames["1.3.36.3.3.1.4"] = "RSA";
+            algorithmNames["1.2.643.2.2.19"] = "ECGOST3410";
             
             allowedDigests["MD5"] = "1.2.840.113549.2.5";
             allowedDigests["MD2"] = "1.2.840.113549.2.2";
@@ -272,7 +274,7 @@ namespace iTextSharp.text.pdf {
             signCert = certs[0];
             crls = new List<X509Crl>();
             Asn1InputStream inp = new Asn1InputStream(new MemoryStream(contentsKey));
-            digest = ((DerOctetString)inp.ReadObject()).GetOctets();
+            digest = ((Asn1OctetString)inp.ReadObject()).GetOctets();
             sig = SignerUtilities.GetSigner("SHA1withRSA");
             sig.Init(false, signCert.GetPublicKey());
         }
@@ -338,7 +340,7 @@ namespace iTextSharp.text.pdf {
                 if (ret)
                     return;
             }
-            DerOctetString os = (DerOctetString)seq[1];
+            Asn1OctetString os = (Asn1OctetString)seq[1];
             Asn1InputStream inp = new Asn1InputStream(os.GetOctets());
             BasicOcspResponse resp = BasicOcspResponse.GetInstance(inp.ReadObject());
             basicResp = new BasicOcspResp(resp);
@@ -381,7 +383,7 @@ namespace iTextSharp.text.pdf {
             DerObjectIdentifier objId = (DerObjectIdentifier)signedData[0];
             if (!objId.Id.Equals(ID_PKCS7_SIGNED_DATA))
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("not.a.valid.pkcs.7.object.not.signed.data"));
-            Asn1Sequence content = (Asn1Sequence)((DerTaggedObject)signedData[1]).GetObject();
+            Asn1Sequence content = (Asn1Sequence)((Asn1TaggedObject)signedData[1]).GetObject();
             // the positions that we care are:
             //     0 - version
             //     1 - digestAlgorithms
@@ -413,13 +415,13 @@ namespace iTextSharp.text.pdf {
             // the possible ID_PKCS7_DATA
             Asn1Sequence rsaData = (Asn1Sequence)content[2];
             if (rsaData.Count > 1) {
-                DerOctetString rsaDataContent = (DerOctetString)((DerTaggedObject)rsaData[1]).GetObject();
+                Asn1OctetString rsaDataContent = (Asn1OctetString)((Asn1TaggedObject)rsaData[1]).GetObject();
                 RSAdata = rsaDataContent.GetOctets();
             }
             
             // the signerInfos
             int next = 3;
-            while (content[next] is DerTaggedObject)
+            while (content[next] is Asn1TaggedObject)
                 ++next;
             Asn1Set signerInfos = (Asn1Set)content[next];
             if (signerInfos.Count != 1)
@@ -481,9 +483,9 @@ namespace iTextSharp.text.pdf {
                 ++next;
             }
             digestEncryptionAlgorithm = ((DerObjectIdentifier)((Asn1Sequence)signerInfo[next++])[0]).Id;
-            digest = ((DerOctetString)signerInfo[next++]).GetOctets();
+            digest = ((Asn1OctetString)signerInfo[next++]).GetOctets();
             if (next < signerInfo.Count && (signerInfo[next] is DerTaggedObject)) {
-                DerTaggedObject taggedObject = (DerTaggedObject) signerInfo[next];
+                Asn1TaggedObject taggedObject = (Asn1TaggedObject) signerInfo[next];
                 Asn1Set unat = Asn1Set.GetInstance(taggedObject, false);
                 Org.BouncyCastle.Asn1.Cms.AttributeTable attble = new Org.BouncyCastle.Asn1.Cms.AttributeTable(unat);
                 Org.BouncyCastle.Asn1.Cms.Attribute ts = attble[PkcsObjectIdentifiers.IdAASignatureTimeStampToken];
@@ -1049,7 +1051,7 @@ namespace iTextSharp.text.pdf {
         }
         
         private static String GetStringFromGeneralName(Asn1Object names) {
-            DerTaggedObject taggedObject = (DerTaggedObject) names ;
+            Asn1TaggedObject taggedObject = (Asn1TaggedObject) names ;
             return Encoding.GetEncoding(1252).GetString(Asn1OctetString.GetInstance(taggedObject, false).GetOctets());
         }
 
@@ -1061,7 +1063,7 @@ namespace iTextSharp.text.pdf {
         private static Asn1Object GetIssuer(byte[] enc) {
             Asn1InputStream inp = new Asn1InputStream(new MemoryStream(enc));
             Asn1Sequence seq = (Asn1Sequence)inp.ReadObject();
-            return (Asn1Object)seq[seq[0] is DerTaggedObject ? 3 : 2];
+            return (Asn1Object)seq[seq[0] is Asn1TaggedObject ? 3 : 2];
         }
 
         /**
@@ -1072,7 +1074,7 @@ namespace iTextSharp.text.pdf {
         private static Asn1Object GetSubject(byte[] enc) {
             Asn1InputStream inp = new Asn1InputStream(new MemoryStream(enc));
             Asn1Sequence seq = (Asn1Sequence)inp.ReadObject();
-            return (Asn1Object)seq[seq[0] is DerTaggedObject ? 5 : 4];
+            return (Asn1Object)seq[seq[0] is Asn1TaggedObject ? 5 : 4];
         }
 
         /**
