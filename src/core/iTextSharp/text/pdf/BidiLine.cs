@@ -317,8 +317,8 @@ namespace iTextSharp.text.pdf {
                     dest += size;
             }
         }
-    
-        public PdfLine ProcessLine(float leftX, float width, int alignment, int runDirection, int arabicOptions) {
+
+        public PdfLine ProcessLine(float leftX, float width, int alignment, int runDirection, int arabicOptions, float minY, float yLine, float descender) {
             this.arabicOptions = arabicOptions;
             Save();
             bool isRTL = (runDirection == PdfWriter.RUN_DIRECTION_RTL);
@@ -346,6 +346,13 @@ namespace iTextSharp.text.pdf {
             bool surrogate = false;
             for (; currentChar < totalTextLength; ++currentChar) {
                 ck = detailChunks[currentChar];
+                if (ck.IsImage() && minY < yLine) {
+                    Image img = ck.Image;
+                    if (img.ScaleToFitLineWhenOverflow && yLine + 2 * descender - img.ScaledHeight - ck.ImageOffsetY - img.SpacingBefore < minY) {
+                        float scalePercent = (yLine + 2 * descender - ck.ImageOffsetY - img.SpacingBefore - minY) / img.Height * 100;
+                        img.ScalePercent(scalePercent);
+                    }
+                }
                 surrogate = Utilities.IsSurrogatePair(text, currentChar);
                 if (surrogate)
                     uniC = ck.GetUnicodeEquivalent(Utilities.ConvertToUtf32(text, currentChar));

@@ -53,7 +53,7 @@ namespace iTextSharp.tool.xml {
     {
         public const String DONTLOOKFORFONTS = "\ufffc";
 
-        private Dictionary<String, String> fontSubstitutionMap = new Dictionary<String, String>();
+        protected Dictionary<String, String> fontSubstitutionMap = new Dictionary<String, String>();
 
         public XMLWorkerFontProvider():this(null, null){}
 

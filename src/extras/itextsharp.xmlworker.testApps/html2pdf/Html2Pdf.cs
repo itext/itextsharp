@@ -6,24 +6,32 @@ using iTextSharp.text.pdf;
 using iTextSharp.tool.xml;
 
 namespace html2pdf {
-    class UnembedFontProvider : FontFactoryImp {
+    class UnembedFontProvider : XMLWorkerFontProvider {
         private String _baseFontEncoding = BaseFont.CP1252;
 
-        public UnembedFontProvider() : this(null, null) { }
-        public UnembedFontProvider(String fontsPath) : this(fontsPath, null) { }
-        public UnembedFontProvider(String fontsPath, String fontEncoding) {
+        public UnembedFontProvider(String fontsPath, Dictionary<String, String> fontSubstitutionMap) : base(fontsPath, fontSubstitutionMap){}
+
+        public UnembedFontProvider(String fontsPath, Dictionary<String, String> fontSubstitutionMap, String fontEncoding) : base(fontsPath, fontSubstitutionMap) {
             if (fontEncoding != null) {
                 _baseFontEncoding = fontEncoding;
-            }
-            if (string.IsNullOrEmpty(fontsPath)) {
-                base.RegisterDirectories();
-            } else if (!fontsPath.Equals(XMLWorkerFontProvider.DONTLOOKFORFONTS)) {
-                RegisterDirectory(fontsPath, true);
-            }
+            }        
         }
 
         public override Font GetFont(String fontname, String encoding, bool embedded, float size, int style, BaseColor color) {
-            return base.GetFont(fontname, _baseFontEncoding, false, size, style, color);
+            String substFontName = null;
+            Font font = base.GetFont(fontSubstitutionMap.TryGetValue(fontname, out substFontName) ? substFontName : fontname, _baseFontEncoding, false, size, style, color);
+            if (font.BaseFont != null) {
+                float ascent = Math.Max(font.BaseFont.GetFontDescriptor(BaseFont.ASCENT, 1000f), font.BaseFont.GetFontDescriptor(BaseFont.BBOXURY, 1000f));
+                float descent = Math.Min(font.BaseFont.GetFontDescriptor(BaseFont.DESCENT, 1000f), font.BaseFont.GetFontDescriptor(BaseFont.BBOXLLY, 1000f));
+                font.BaseFont.SetFontDescriptor(BaseFont.ASCENT, ascent);
+                font.BaseFont.SetFontDescriptor(BaseFont.DESCENT, descent);
+            }
+            return font;
+        }
+
+        public override bool IsRegistered(String fontName) {
+            String substFontName;
+            return base.IsRegistered(fontSubstitutionMap.TryGetValue(fontName, out substFontName) ? substFontName : fontName);
         }
     }
 
@@ -56,18 +64,19 @@ namespace html2pdf {
             foreach (FileStream fileStream in fileList)
             {
                 Document doc = new Document(PageSize.LETTER);
-                doc.SetMargins(doc.LeftMargin, doc.RightMargin, 30, 30);
+                doc.SetMargins(doc.LeftMargin, doc.RightMargin, 35, 0);
                 String path = Path.GetDirectoryName(Path.GetFullPath(fileStream.Name)) + Path.DirectorySeparatorChar +
                               Path.GetFileNameWithoutExtension(fileStream.Name) + ".pdf";
                 PdfWriter pdfWriter = PdfWriter.GetInstance(doc, new FileStream(path, FileMode.Create));
 
                 doc.Open();
+                Dictionary<String, String> substFonts = new Dictionary<String, String>();
+                substFonts["Arial Unicode MS"] = "Helvetica";
                 XMLWorkerHelper.GetInstance()
                     .ParseXHtml(pdfWriter, doc, fileStream,
-                                new FileStream(args[1], FileMode.Open), new UnembedFontProvider());
+                                new FileStream(args[1], FileMode.Open), new UnembedFontProvider(XMLWorkerFontProvider.DONTLOOKFORFONTS, substFonts));
                 doc.Close();
             }
-            
         }
     }
 }
