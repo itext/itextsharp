@@ -840,7 +840,7 @@ public class ColumnText {
                     status = NO_MORE_TEXT;
                     break;
                 }
-                line = bidiLine.ProcessLine(leftX, rectangularWidth - firstIndent - rightIndent, alignment, localRunDirection, arabicOptions);
+                line = bidiLine.ProcessLine(leftX, rectangularWidth - firstIndent - rightIndent, alignment, localRunDirection, arabicOptions, minY, yLine, descender);
                 if (line == null) {
                     status = NO_MORE_TEXT;
                     break;
@@ -888,7 +888,7 @@ public class ColumnText {
                     text.BeginText();
                     dirty = true;
                 }
-                line = bidiLine.ProcessLine(x1, x2 - x1 - firstIndent - rightIndent, alignment, localRunDirection, arabicOptions);
+                line = bidiLine.ProcessLine(x1, x2 - x1 - firstIndent - rightIndent, alignment, localRunDirection, arabicOptions, minY, yLine, descender);
                 if (line == null) {
                     status = NO_MORE_TEXT;
                     yLine = yTemp;
@@ -1018,7 +1018,7 @@ public class ColumnText {
         ColumnText ct = new ColumnText(null);
         ct.AddText(phrase);
         ct.AddWaitingPhrase();
-        PdfLine line = ct.bidiLine.ProcessLine(0, 20000, Element.ALIGN_LEFT, runDirection, arabicOptions);
+        PdfLine line = ct.bidiLine.ProcessLine(0, 20000, Element.ALIGN_LEFT, runDirection, arabicOptions, 0, 0, 0);
         if (line == null)
             return 0;
         else

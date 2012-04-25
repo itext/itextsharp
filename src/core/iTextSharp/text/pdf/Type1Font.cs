@@ -681,6 +681,28 @@ namespace iTextSharp.text.pdf {
             }
             return 0;
         }
+
+        /** Sets the font parameter identified by <CODE>key</CODE>. Valid values
+         * for <CODE>key</CODE> are <CODE>ASCENT</CODE>, <CODE>CAPHEIGHT</CODE>, <CODE>DESCENT</CODE>,
+         * <CODE>ITALICANGLE</CODE>, <CODE>BBOXLLX</CODE>, <CODE>BBOXLLY</CODE>, <CODE>BBOXURX</CODE>
+         * and <CODE>BBOXURY</CODE>.
+         * @param key the parameter to be updated
+         * @param value the parameter value
+         */
+        public override void SetFontDescriptor(int key, float value) {
+            switch (key) {
+                case AWT_ASCENT:
+                case ASCENT:
+                    Ascender = (int)value;
+                    break;
+                case AWT_DESCENT:
+                case DESCENT:
+                    Descender = (int)value;
+                    break;
+                default:
+                    break;
+            }
+        }
     
         /** Gets the postscript font name.
          * @return the postscript font name

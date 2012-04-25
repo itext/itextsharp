@@ -1089,6 +1089,15 @@ namespace iTextSharp.text.pdf {
          * @return the parameter in points
          */
         public abstract float GetFontDescriptor(int key, float fontSize);
+
+        /** Sets the font parameter identified by <CODE>key</CODE>. Valid values
+         * for <CODE>key</CODE> are <CODE>ASCENT</CODE>, <CODE>CAPHEIGHT</CODE>, <CODE>DESCENT</CODE>,
+         * <CODE>ITALICANGLE</CODE>, <CODE>BBOXLLX</CODE>, <CODE>BBOXLLY</CODE>, <CODE>BBOXURX</CODE>
+         * and <CODE>BBOXURY</CODE>.
+         * @param key the parameter to be updated
+         * @param value the parameter value
+         */
+        public virtual void SetFontDescriptor(int key, float value){}
     
         /** Gets the font type. The font types can be: FONT_TYPE_T1,
          * FONT_TYPE_TT, FONT_TYPE_CJK and FONT_TYPE_TTUNI.
