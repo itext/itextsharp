@@ -117,7 +117,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
                         }
                     }
                     else if (last.Equals(USECMAP) && list.Count == 2 && list[0] is PdfName) {
-                        ParseCid(cmapName, cmap, location, level + 1);
+                        ParseCid(PdfName.DecodeName(list[0].ToString()), cmap, location, level + 1);
                     }
                 }
             }
