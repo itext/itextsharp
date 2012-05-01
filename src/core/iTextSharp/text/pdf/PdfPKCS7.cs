@@ -1498,7 +1498,7 @@ namespace iTextSharp.text.pdf {
             public static DerObjectIdentifier UID = new DerObjectIdentifier("0.9.2342.19200300.100.1.1");
 
             /** A Hashtable with default symbols */
-            public static Dictionary<DerObjectIdentifier,string> DefaultSymbols = new Dictionary<DerObjectIdentifier,string>();
+            public static readonly Dictionary<DerObjectIdentifier,string> DefaultSymbols = new Dictionary<DerObjectIdentifier,string>();
             
             static X509Name(){
                 DefaultSymbols[C] = "C";

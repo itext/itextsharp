@@ -361,7 +361,13 @@ namespace iTextSharp.text.pdf {
                 String text;
                 if (layer2Text == null) {
                     StringBuilder buf = new StringBuilder();
-                    buf.Append("Digitally signed by ").Append(PdfPKCS7.GetSubjectFields((X509Certificate)certChain[0]).GetField("CN")).Append('\n');
+                    buf.Append("Digitally signed by ");
+                    String name = PdfPKCS7.GetSubjectFields((X509Certificate)certChain[0]).GetField("CN");
+                    if (name == null)
+                        name = PdfPKCS7.GetSubjectFields((X509Certificate)certChain[0]).GetField("E");
+                    if (name == null)
+                        name = "";
+                    buf.Append(name).Append('\n');
                     buf.Append("Date: ").Append(signDate.ToString("yyyy.MM.dd HH:mm:ss zzz"));
                     if (reason != null)
                         buf.Append('\n').Append("Reason: ").Append(reason);
@@ -446,6 +452,10 @@ namespace iTextSharp.text.pdf {
 
                 if (Render == SignatureRender.NameAndDescription) {
                     string signedBy = iTextSharp.text.pdf.PdfPKCS7.GetSubjectFields(this.certChain[0]).GetField("CN");
+                    if (signedBy == null)
+                        signedBy = PdfPKCS7.GetSubjectFields((X509Certificate)certChain[0]).GetField("E");
+                    if (signedBy == null)
+                        signedBy = "";
                     Rectangle sr2 = new Rectangle(signatureRect.Width - MARGIN, signatureRect.Height - MARGIN );
                     float signedSize = FitText(font, signedBy, sr2, -1, runDirection);
 
