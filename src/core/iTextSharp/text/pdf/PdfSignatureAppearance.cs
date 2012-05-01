@@ -6,6 +6,7 @@ using Org.BouncyCastle.X509;
 using Org.BouncyCastle.Crypto;
 using iTextSharp.text;
 using iTextSharp.text.error_messages;
+using Org.BouncyCastle.Security;
 /*
  * $Id$
  * 
@@ -1083,6 +1084,68 @@ namespace iTextSharp.text.pdf {
             PdfArray types = new PdfArray();
             types.Add(reference);
             crypto.Put(PdfName.REFERENCE, types);
+        }
+
+        /**
+         * Signs the document using the detached mode.
+         * @param pk the private key
+         * @param chain the certificate chain
+         * @param ocspClient the OCSP client
+         * @param tsaClient the Timestamp client
+         * @param hashAlgorithm the hash algorithm to use with the authenticated attributes. SHA256 will be used if null
+         * @param estimatedSize the reserved size for the signature. It will be estimated if 0
+         * @throws Exception 
+         */
+        public void SignDetached(ICipherParameters pk, X509Certificate[] chain, IOcspClient ocspClient, ITSAClient tsaClient, String hashAlgorithm, int estimatedSize) {
+            if (estimatedSize == 0) {
+                estimatedSize = 8192;
+                if (ocspClient != null)
+                    estimatedSize += 4192;
+                if (tsaClient != null)
+                    estimatedSize += 4192;
+            }
+            if (hashAlgorithm == null)
+                hashAlgorithm = "SHA256";
+            SetCrypto(null, chain, null, null);
+            PdfSignature dic = new PdfSignature(PdfName.ADOBE_PPKLITE, PdfName.ADBE_PKCS7_DETACHED);
+            dic.Reason = Reason;
+            dic.Location = Location;
+            dic.Contact = Contact;
+            dic.Date = new PdfDate(SignDate);
+            CryptoDictionary = dic;
+
+            Dictionary<PdfName,int> exc = new Dictionary<PdfName,int>();
+            exc[PdfName.CONTENTS] = estimatedSize * 2 + 2;
+            PreClose(exc);
+
+            PdfPKCS7 sgn = new PdfPKCS7(pk, chain, null, hashAlgorithm, false);
+            IDigest messageDigest = DigestUtilities.GetDigest(hashAlgorithm);
+            Stream data = GetRangeStream();
+            byte[] buf = new byte[8192];
+            int n;
+            while ((n = data.Read(buf, 0, buf.Length)) > 0) {
+                messageDigest.BlockUpdate(buf, 0, n);
+            }
+            byte[] hash = new byte[messageDigest.GetDigestSize()];
+            messageDigest.DoFinal(hash, 0);
+            DateTime cal = DateTime.Now;
+            byte[] ocsp = null;
+            if (chain.Length >= 2 && ocspClient != null) {
+                ocsp = ocspClient.GetEncoded(chain[0], chain[1], null);
+            }
+            byte[] sh = sgn.GetAuthenticatedAttributeBytes(hash, cal, ocsp);
+            sgn.Update(sh, 0, sh.Length);
+
+            byte[] encodedSig = sgn.GetEncodedPKCS7(hash, cal, tsaClient, ocsp);
+            if (estimatedSize + 2 < encodedSig.Length)
+                throw new Exception("Not enough space");
+
+            byte[] paddedSig = new byte[estimatedSize];
+            System.Array.Copy(encodedSig, 0, paddedSig, 0, encodedSig.Length);
+
+            PdfDictionary dic2 = new PdfDictionary();
+            dic2.Put(PdfName.CONTENTS, new PdfString(paddedSig).SetHexWriting(true));
+            Close(dic2);
         }
 
         /**
