@@ -143,6 +143,19 @@ namespace iTextSharp.tool.xml.html {
             return new List<IElement>(0);
         }
 
+        protected List<IElement> TextContent(IWorkerContext ctx, Tag tag, String content) {
+		    List<Chunk> sanitizedChunks = HTMLUtils.Sanitize(content, false);
+		    List<IElement> l = new List<IElement>(1);
+            foreach (Chunk sanitized in sanitizedChunks) {
+                try {
+                    l.Add(GetCssAppliers().Apply(sanitized, tag, GetHtmlPipelineContext(ctx)));
+                } catch (NoCustomContextException e) {
+                    throw new RuntimeWorkerException(e);
+                }
+            }
+		    return l;
+	    }
+
         /**
          * Checks for
          * {@link com.itextpdf.tool.xml.css.CSS.Property#PAGE_BREAK_AFTER}, if the
@@ -261,10 +274,13 @@ namespace iTextSharp.tool.xml.html {
                             }
                             p.Add(e);
                         }
-                        if (applyCSS) {
-                            p = (Paragraph) GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx));
+                        if (p.Trim()) {
+                            if (applyCSS)
+                            {
+                                p = (Paragraph) GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx));
+                            }
+                            list.Add(p);
                         }
-                        list.Add(p);
                     } else {
                         NoNewLineParagraph p = new NoNewLineParagraph(float.NaN);
                         p.MultipliedLeading = 1.2f;

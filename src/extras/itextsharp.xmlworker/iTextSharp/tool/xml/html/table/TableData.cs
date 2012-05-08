@@ -61,14 +61,7 @@ namespace iTextSharp.tool.xml.html.table {
 
 	    public override IList<IElement> Content(IWorkerContext ctx, Tag tag,
 			    String content) {
-		    String sanitized = HTMLUtils.SanitizeInline(content);
-		    IList<IElement> l = new List<IElement>(1);
-
-		    if (sanitized.Length > 0) {
-			    Chunk c = GetCssAppliers().ChunkCssAplier.Apply(new Chunk(sanitized), tag);
-			    l.Add(c);
-		    }
-		    return l;
+            return TextContent(ctx, tag, content);
 	    }
 
 	    /*
@@ -157,7 +150,9 @@ namespace iTextSharp.tool.xml.html.table {
             p.MultipliedLeading = 1.2f;
             p.AddAll(chunks);
             p.Alignment = cell.HorizontalAlignment;
-            cell.AddElement(p);
+            if (p.Trim()) {
+                cell.AddElement(p);
+            }
             chunks.Clear();    
         }
 

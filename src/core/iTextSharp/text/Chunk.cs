@@ -748,5 +748,27 @@ namespace iTextSharp.text {
             else
 		        return 0f;
 	    }
+        
+        public const String WHITESPACE = "WHITESPACE";
+
+        public static Chunk createWhitespace(String content) {
+            return createWhitespace(content, false);
+        }
+
+        public static Chunk createWhitespace(String content, bool preserve) {
+            Chunk whitespace = null;
+            if (!preserve) {
+                whitespace = new Chunk(' ');
+                whitespace.SetAttribute(WHITESPACE, content);
+            } else {
+                 whitespace = new Chunk(content);
+            }
+
+            return whitespace;
+        }
+
+        public bool isWhitespace() {
+            return attributes != null && attributes.ContainsKey(WHITESPACE);
+        }
     }
 }

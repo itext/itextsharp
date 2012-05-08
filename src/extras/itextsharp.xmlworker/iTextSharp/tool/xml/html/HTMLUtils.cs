@@ -1,5 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
+using iTextSharp.text;
+
 /*
  * $Id: HTMLUtils.java 122 2011-05-27 12:20:58Z redlab_b $
  *
@@ -56,43 +59,55 @@ namespace iTextSharp.tool.xml.html {
          * @param trim to trim or not to trim
          * @return sanitized string
          */
-        public static String Sanitize(String str, bool trim) {
-            StringBuilder builder = new StringBuilder();
-            char previous = '\0';
-            bool first = true;
-            bool gotChar = false;
-            foreach (char c in str) {
-                if (!IsWhiteSpace(c)) {
-                    if (((!gotChar && !trim) || gotChar)  && !first && IsWhiteSpace(previous)) {
-                        builder.Append(' ');
+        private static List<Chunk> Sanitize(String str, bool preserveWhiteSpace, bool replaceNonBreakableSpaces) {
+		    StringBuilder builder = new StringBuilder();
+            StringBuilder whitespaceBuilder = new StringBuilder();
+            List<Chunk> chunkList = new List<Chunk>();
+		    bool isWhitespace = str.Length > 0 ? IsWhiteSpace(str[0]) : true;
+		    foreach (char c in str) {
+			    if (isWhitespace && !IsWhiteSpace(c)) {
+                    if (builder.Length == 0) {
+                        chunkList.Add(Chunk.createWhitespace(builder.ToString(), preserveWhiteSpace));
+                    } else {
+                        builder.Append(" ");
                     }
-                    builder.Append(c);
-                    gotChar = true;
+                    whitespaceBuilder = new StringBuilder();
                 }
-                previous = c;
-                first = false;
+
+                isWhitespace = IsWhiteSpace(c);
+                if (isWhitespace) {
+                    whitespaceBuilder.Append(c);
+                } else {
+                    builder.Append(c);
+                }
+		    }
+
+            if (builder.Length > 0) {
+                chunkList.Add(new Chunk(replaceNonBreakableSpaces ? builder.ToString().Replace(Char.ConvertFromUtf32(0x00a0), " ") : builder.ToString()));
             }
-            if (gotChar && !trim && IsWhiteSpace(previous)) {
-                builder.Append(' ');
+
+            if (whitespaceBuilder.Length > 0) {
+                chunkList.Add(Chunk.createWhitespace(whitespaceBuilder.ToString(), preserveWhiteSpace));
             }
-            return builder.ToString();
-        }
-        /**
-         * Sanitize the String for use in tags that must trim leading and trailing white space.
-         * @param str the string to sanitize
-         * @return a sanitized String
-         */
-        public static String Sanitize(String str) {
-            return Sanitize(str, false);
-        }
-        /**
-         * Sanitize the String for use in in-line tags.
-         * @param str the string to sanitize
-         * @return a sanitized String for use in in-line tags
-         */
-        public static String SanitizeInline(String str) {
-            return Sanitize(str, false);
-        }
+
+		    return chunkList;
+	    }
+
+    public static List<Chunk> Sanitize(String str, bool preserveWhiteSpace) {
+        return Sanitize(str, preserveWhiteSpace, false);
+    }
+	/**
+	 * Sanitize the String for use in in-line tags.
+	 * @param str the string to sanitize
+	 * @return a sanitized String for use in in-line tags
+	 */
+	public static List<Chunk> SanitizeInline(String str, bool preserveWhiteSpace) {
+		return Sanitize(str, preserveWhiteSpace, false);
+	}
+
+    public static List<Chunk> SanitizeInline(String str, bool preserveWhiteSpace, bool replaceNonBreakableSpaces) {
+		return Sanitize(str, preserveWhiteSpace, replaceNonBreakableSpaces);
+	}
 
         /// <summary>
         /// Whitespace as Java sees it.

@@ -49,16 +49,24 @@ namespace iTextSharp.tool.xml.html {
          * com.itextpdf.text.Document, java.lang.String)
          */
         public override IList<IElement> Content(IWorkerContext ctx, Tag tag, String content) {
-            String sanitized = HTMLUtils.Sanitize(content);
-            IList<IElement> l = new List<IElement>(1);
-            if (sanitized.Length > 0) {
+            List<Chunk> sanitizedChunks = HTMLUtils.Sanitize(content, false);
+		    List<IElement> l = new List<IElement>(1);
+            NoNewLineParagraph sanitizedNoNewLineParagraph = new NoNewLineParagraph();
+            foreach (Chunk sanitized in sanitizedChunks) {
+                sanitizedNoNewLineParagraph.Add(sanitized);
+            }
+            if (sanitizedNoNewLineParagraph.Count > 0) {
                 try {
-                    l.Add(GetCssAppliers().Apply(new NoNewLineParagraph(sanitized), tag, GetHtmlPipelineContext(ctx)));
+                    l.Add(GetCssAppliers().Apply(sanitizedNoNewLineParagraph, tag, GetHtmlPipelineContext(ctx)));
                 } catch (NoCustomContextException e) {
                     throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
                 }
             }
-            return l;
+		    return l;
+        }
+
+        public override IList<IElement> End(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
+            return CurrentContentToParagraph(currentContent, true, true, tag, ctx);
         }
     }
 }

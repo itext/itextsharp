@@ -54,9 +54,9 @@ namespace iTextSharp.tool.xml.html {
          * java.util.List, com.itextpdf.text.Document, java.lang.String)
          */
         public override IList<IElement> Content(IWorkerContext ctx, Tag tag, String content) {
-            String sanitized = HTMLUtils.Sanitize(content);
-            IList<IElement> l = new List<IElement>(1);
-            if (sanitized.Length > 0) {
+            List<Chunk> sanitizedChunks = HTMLUtils.Sanitize(content, false);
+		    List<IElement> l = new List<IElement>(1);
+            foreach (Chunk sanitized in sanitizedChunks) {
                 HtmlPipelineContext myctx;
                 try {
                     myctx = GetHtmlPipelineContext(ctx);
@@ -64,17 +64,17 @@ namespace iTextSharp.tool.xml.html {
                     throw new RuntimeWorkerException(e);
                 }
                 if (tag.CSS.ContainsKey(CSS.Property.TAB_INTERVAL)) {
-                    TabbedChunk tabbedChunk = new TabbedChunk(sanitized);
+                    TabbedChunk tabbedChunk = new TabbedChunk(sanitized.Content);
                     if (null != GetLastChild(tag) && GetLastChild(tag).CSS.ContainsKey(CSS.Property.XFA_TAB_COUNT)) {
                         tabbedChunk.TabCount = int.Parse(GetLastChild(tag).CSS[CSS.Property.XFA_TAB_COUNT]);
                     }
                     l.Add(GetCssAppliers().Apply(tabbedChunk, tag,myctx));
                 } else if (null != GetLastChild(tag) && GetLastChild(tag).CSS.ContainsKey(CSS.Property.XFA_TAB_COUNT)) {
-                    TabbedChunk tabbedChunk = new TabbedChunk(sanitized);
+                    TabbedChunk tabbedChunk = new TabbedChunk(sanitized.Content);
                     tabbedChunk.TabCount = int.Parse(GetLastChild(tag).CSS[CSS.Property.XFA_TAB_COUNT]);
                     l.Add(GetCssAppliers().Apply(tabbedChunk, tag, myctx));
                 } else {
-                    l.Add(GetCssAppliers().Apply(new Chunk(sanitized), tag, myctx));
+                    l.Add(GetCssAppliers().Apply(sanitized, tag, myctx));
                 }
             }
             return l;
