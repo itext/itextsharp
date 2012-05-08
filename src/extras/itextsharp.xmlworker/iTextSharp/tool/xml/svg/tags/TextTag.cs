@@ -106,7 +106,7 @@ namespace iTextSharp.tool.xml.svg.tags {
 	    public override IList<IElement> Content(IWorkerContext ctx, Tag tag, String content) {
     	    IList<IElement> l = new List<IElement>(1);
     	   	    
-		    String sanitized = HTMLUtils.SanitizeInline(content); //TODO check this
+		    String sanitized = content.Trim(); //TODO check this
     		
     	    if (sanitized.Length > 0) {
     		    Chunk c = new ChunkCssApplier().Apply(new Chunk(sanitized), tag);

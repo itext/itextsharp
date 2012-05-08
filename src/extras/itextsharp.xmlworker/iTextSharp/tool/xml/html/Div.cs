@@ -60,14 +60,18 @@ namespace iTextSharp.tool.xml.html {
          * @see com.itextpdf.tool.xml.ITagProcessor#content(com.itextpdf.tool.xml.Tag, java.lang.String)
          */
         public override IList<IElement> Content(IWorkerContext ctx, Tag tag, String content) {
-            String sanitized = HTMLUtils.SanitizeInline(content);
-            IList<IElement> l = new List<IElement>(1);
-            if (sanitized.Length > 0) {
-                Chunk c = new ChunkCssApplier().Apply(new Chunk(sanitized), tag);
+            List<Chunk> sanitizedChunks = HTMLUtils.Sanitize(content, false);
+            List<IElement> l = new List<IElement>(1);
+            NoNewLineParagraph sanitizedNoNewLineParagraph = new NoNewLineParagraph();
+            foreach (Chunk sanitized in sanitizedChunks) {
+                sanitizedNoNewLineParagraph.Add(sanitized);
+            }
+            if (sanitizedNoNewLineParagraph.Count > 0) {
                 try {
-                    l.Add(GetCssAppliers().Apply(new NoNewLineParagraph(c), tag, GetHtmlPipelineContext(ctx)));
-                } catch (NoCustomContextException e) {
-                    throw new RuntimeWorkerException(e);
+                    l.Add(GetCssAppliers().Apply(sanitizedNoNewLineParagraph, tag, GetHtmlPipelineContext(ctx)));
+                }
+                catch (NoCustomContextException e) {
+                    throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
                 }
             }
             return l;

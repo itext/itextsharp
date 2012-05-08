@@ -58,16 +58,7 @@ namespace iTextSharp.tool.xml.html {
          * @see com.itextpdf.tool.xml.ITagProcessor#content(com.itextpdf.tool.xml.Tag, java.lang.String)
          */
         public override IList<IElement> Content(IWorkerContext ctx, Tag tag, String content) {
-            String sanitized = HTMLUtils.SanitizeInline(content);
-            IList<IElement> l = new List<IElement>(1);
-            if (sanitized.Length > 0) {
-                try {
-                    l.Add(GetCssAppliers().Apply(new Chunk(sanitized), tag, GetHtmlPipelineContext(ctx)));
-                } catch (NoCustomContextException e) {
-                    throw new RuntimeWorkerException(e);
-                }
-            }
-            return l;
+            return TextContent(ctx, tag, content);
         }
 
         /* (non-Javadoc)
@@ -79,7 +70,9 @@ namespace iTextSharp.tool.xml.html {
             foreach (IElement e in currentContent) {
                     li.Add(e);
             }
-            l.Add(li); // css applying is handled in the OrderedUnorderedList Class.
+            if (li.Trim()) {
+                l.Add(li); // css applying is handled in the OrderedUnorderedList Class.
+            }
             return l;
         }
 

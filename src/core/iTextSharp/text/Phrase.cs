@@ -549,5 +549,25 @@ namespace iTextSharp.text {
             }
     	    return p;
         }
+
+        public bool Trim() {
+            while (this.Count > 0) {
+                IElement firstChunk = this[0];
+                if (firstChunk is Chunk && ((Chunk)firstChunk).isWhitespace()) {
+                    this.Remove(firstChunk);
+                } else {
+                    break;
+                }
+            }
+            while (this.Count > 0) {
+                IElement lastChunk = this[this.Count - 1];
+                if (lastChunk is Chunk && ((Chunk)lastChunk).isWhitespace()) {
+                    this.Remove(lastChunk);
+                } else {
+                    break;
+                }
+            }
+            return Count > 0;
+        }
     }
 }

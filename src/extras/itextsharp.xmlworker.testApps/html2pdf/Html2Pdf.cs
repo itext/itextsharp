@@ -4,6 +4,12 @@ using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.tool.xml;
+using iTextSharp.tool.xml.css;
+using iTextSharp.tool.xml.html;
+using iTextSharp.tool.xml.parser;
+using iTextSharp.tool.xml.pipeline.css;
+using iTextSharp.tool.xml.pipeline.end;
+using iTextSharp.tool.xml.pipeline.html;
 
 namespace html2pdf {
     class UnembedFontProvider : XMLWorkerFontProvider {
@@ -19,7 +25,7 @@ namespace html2pdf {
 
         public override Font GetFont(String fontname, String encoding, bool embedded, float size, int style, BaseColor color) {
             String substFontName = null;
-            Font font = base.GetFont(fontSubstitutionMap.TryGetValue(fontname, out substFontName) ? substFontName : fontname, _baseFontEncoding, false, size, style, color);
+            Font font = base.GetFont(fontname != null && fontSubstitutionMap.TryGetValue(fontname, out substFontName) ? substFontName : fontname, _baseFontEncoding, false, size, style, color);
             if (font.BaseFont != null) {
                 float ascent = Math.Max(font.BaseFont.GetFontDescriptor(BaseFont.ASCENT, 1000f), font.BaseFont.GetFontDescriptor(BaseFont.BBOXURY, 1000f));
                 float descent = Math.Min(font.BaseFont.GetFontDescriptor(BaseFont.DESCENT, 1000f), font.BaseFont.GetFontDescriptor(BaseFont.BBOXLLY, 1000f));
@@ -35,6 +41,18 @@ namespace html2pdf {
         }
     }
 
+    class ImageProvider : AbstractImageProvider {
+        String imageRootPath;
+
+        public ImageProvider(String inputHtmlFilePath) {
+            imageRootPath = File.Exists(inputHtmlFilePath) ? Path.GetDirectoryName(inputHtmlFilePath) : inputHtmlFilePath + Path.DirectorySeparatorChar;
+        }
+
+        public override String GetImageRootPath() {
+            return imageRootPath;
+        }
+    }
+
     class Html2Pdf {
         static void Main(string[] args) {
             if (args.Length < 2) {
@@ -47,12 +65,7 @@ namespace html2pdf {
             if (File.Exists(args[0])) {
                 fileList.Add(new FileStream(args[0], FileMode.Open));
             } else if (Directory.Exists(args[0])) {
-                DirectoryInfo directory = new DirectoryInfo(args[0]);
-                foreach(FileInfo fi in directory.GetFileSystemInfos()) {
-                    if (fi.Exists && fi.Extension.ToLower().Equals(".html")) {
-                        fileList.Add(fi.Open(FileMode.Open));    
-                    }    
-                }
+                CollectHtmlFiles(fileList, args[0]);
             }
 
             if (fileList.Count == 0) {
@@ -72,11 +85,32 @@ namespace html2pdf {
                 doc.Open();
                 Dictionary<String, String> substFonts = new Dictionary<String, String>();
                 substFonts["Arial Unicode MS"] = "Helvetica";
-                XMLWorkerHelper.GetInstance()
-                    .ParseXHtml(pdfWriter, doc, fileStream,
-                                new FileStream(args[1], FileMode.Open), new UnembedFontProvider(XMLWorkerFontProvider.DONTLOOKFORFONTS, substFonts));
+                CssFilesImpl cssFiles = new CssFilesImpl();
+                cssFiles.Add(XMLWorkerHelper.GetCSS(new FileStream(args[1], FileMode.Open)));
+                StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
+                HtmlPipelineContext hpc = new HtmlPipelineContext(new CssAppliersImpl(new UnembedFontProvider(XMLWorkerFontProvider.DONTLOOKFORFONTS, substFonts)));
+                hpc.SetImageProvider(new ImageProvider(args[0]));
+                hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(Tags.GetHtmlTagProcessorFactory());
+                HtmlPipeline htmlPipeline = new HtmlPipeline(hpc, new PdfWriterPipeline(doc, pdfWriter));
+                IPipeline pipeline = new CssResolverPipeline(cssResolver, htmlPipeline);
+                XMLWorker worker = new XMLWorker(pipeline, true);
+                XMLParser xmlParse = new XMLParser(true, worker, null);
+		        xmlParse.Parse(fileStream);
                 doc.Close();
             }
+        }
+
+        static protected void CollectHtmlFiles(List<FileStream> fileList, String directoryPath) {
+            DirectoryInfo directory = new DirectoryInfo(directoryPath);
+            try {
+                foreach (FileSystemInfo fi in directory.GetFileSystemInfos()) {
+                    if (fi is FileInfo && fi.Extension.ToLower().Equals(".html")) {
+                        fileList.Add(((FileInfo)fi).Open(FileMode.Open));
+                    } else {
+                        CollectHtmlFiles(fileList, fi.FullName);
+                    }
+                }
+            } catch {}
         }
     }
 }
