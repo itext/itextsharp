@@ -132,6 +132,23 @@ namespace iTextSharp.text.pdf {
         * @since    2.1.5
         */
         private void ExtractNodes() {
+            Dictionary<String, XmlNode> xfaNodes = ExtractXFANodes(domDocument);
+
+            if (xfaNodes.ContainsKey("template")) {
+                templateNode = xfaNodes["template"];
+                templateSom = new Xml2SomTemplate(templateNode);
+            }
+            if (xfaNodes.ContainsKey("datasets")) {
+                datasetsNode = xfaNodes["datasets"];
+                datasetsSom = new Xml2SomDatasets(datasetsNode.FirstChild);
+            }
+
+            if (datasetsNode == null)
+        	    CreateDatasetsNode(domDocument.FirstChild);
+        }
+
+        public static Dictionary<String, XmlNode> ExtractXFANodes(XmlDocument domDocument) {
+            Dictionary<String, XmlNode> xfaNodes = new Dictionary<string, XmlNode>();
             XmlNode n = domDocument.FirstChild;
             while (n.NodeType != XmlNodeType.Element || n.ChildNodes.Count == 0)
                 n = n.NextSibling;
@@ -139,19 +156,11 @@ namespace iTextSharp.text.pdf {
             while (n != null) {
                 if (n.NodeType == XmlNodeType.Element) {
                     String s = n.LocalName;
-                    if ("template".Equals(s)) {
-                        templateNode = n;
-                        templateSom = new Xml2SomTemplate(n);
-                    }
-                    else if ("datasets".Equals(s)) {
-                        datasetsNode = n;
-                        datasetsSom = new Xml2SomDatasets(n.FirstChild);
-                    }
+                    xfaNodes[s] = n;
                 }
                 n = n.NextSibling;
             }
-        if (datasetsNode == null)
-        	CreateDatasetsNode(domDocument.FirstChild);
+            return xfaNodes;
         }
         
         /**
