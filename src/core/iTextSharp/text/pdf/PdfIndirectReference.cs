@@ -97,7 +97,7 @@ namespace iTextSharp.text.pdf {
          * @param        number            the object number.
          */
     
-        internal PdfIndirectReference(int type, int number) : this(type, number, 0) {}
+        internal protected PdfIndirectReference(int type, int number) : this(type, number, 0) {}
     
         // methods
     

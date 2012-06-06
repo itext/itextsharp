@@ -104,7 +104,7 @@ namespace iTextSharp.text.pdf {
             * <CODE>PdfCrossReference</CODE> is an entry in the PDF Cross-Reference table.
             */
             
-            internal class PdfCrossReference : IComparable {
+            public class PdfCrossReference : IComparable {
                 
                 // membervariables
                 private int type;
@@ -124,7 +124,7 @@ namespace iTextSharp.text.pdf {
                 * @param    generation  generationnumber of the object
                 */
                 
-                internal PdfCrossReference(int refnum, long offset, int generation) {
+                public PdfCrossReference(int refnum, long offset, int generation) {
                     type = 0;
                     this.offset = offset;
                     this.refnum = refnum;
@@ -137,14 +137,14 @@ namespace iTextSharp.text.pdf {
                 * @param    offset      byte offset of the object
                 */
                 
-                internal PdfCrossReference(int refnum, long offset) {
+                public PdfCrossReference(int refnum, long offset) {
                     type = 1;
                     this.offset = offset;
                     this.refnum = refnum;
                     this.generation = 0;
                 }
                 
-                internal PdfCrossReference(int type, int refnum, long offset, int generation) {
+                public PdfCrossReference(int type, int refnum, long offset, int generation) {
                     this.type = type;
                     this.offset = offset;
                     this.refnum = refnum;
@@ -383,7 +383,7 @@ namespace iTextSharp.text.pdf {
             * @return       an offset
             */
             
-            internal long Offset {
+            public long Offset {
                 get {
                     return position;
                 }
@@ -503,7 +503,7 @@ namespace iTextSharp.text.pdf {
         * section 5.16 (page 59-60).
         */
         
-        internal class PdfTrailer : PdfDictionary {
+        public class PdfTrailer : PdfDictionary {
             
             // membervariables
             
@@ -523,7 +523,7 @@ namespace iTextSharp.text.pdf {
             * @param prevxref
             */
             
-            internal PdfTrailer(int size, long offset, PdfIndirectReference root, PdfIndirectReference info, PdfIndirectReference encryption, PdfObject fileID, long prevxref) {
+            public PdfTrailer(int size, long offset, PdfIndirectReference root, PdfIndirectReference info, PdfIndirectReference encryption, PdfObject fileID, long prevxref) {
                 this.offset = offset;
                 Put(PdfName.SIZE, new PdfNumber(size));
                 Put(PdfName.ROOT, root);
@@ -846,7 +846,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        internal int IndirectReferenceNumber {
+        internal protected int IndirectReferenceNumber {
             get {
                 return body.IndirectReferenceNumber;
             }
@@ -856,7 +856,7 @@ namespace iTextSharp.text.pdf {
         * Returns the outputStreamCounter.
         * @return the outputStreamCounter
         */
-        internal OutputStreamCounter Os {
+        public OutputStreamCounter Os {
             get {
                 return os;
             }

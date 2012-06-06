@@ -121,6 +121,23 @@ namespace iTextSharp.text.pdf {
          * Holds value of property indRef.
          */
         protected PRIndirectReference indRef;
+
+        /**
+         * Hash code of the PdfObject instance. 
+         * Unfortunately, default C# behavior does not generate unique hash code.
+         */
+        private int hashCode = IncrementObjCounter();
+        
+        /**
+         * Used for generating hash code.
+         */
+        static private int objCounter = 0;
+
+        /**
+         * Making hash code generation thread safe.
+         */
+        static readonly object locker = new object();
+
     
         // constructors
     
@@ -373,5 +390,18 @@ namespace iTextSharp.text.pdf {
                 indRef = value;
             }
         }
+
+        public override int GetHashCode() {
+            return hashCode;
+        }
+
+        static private int IncrementObjCounter() {
+            lock (locker) {
+                objCounter++;
+            }
+            return objCounter;
+        }
+
+
     }
 }
