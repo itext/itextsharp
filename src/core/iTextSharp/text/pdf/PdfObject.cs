@@ -67,7 +67,7 @@ namespace iTextSharp.text.pdf {
  * @see        PdfIndirectReference
  */
 
-    public abstract class PdfObject {
+    public abstract class PdfObject : IComparable<PdfObject> {
     
         // static membervariables (all the possible types of a PdfObject)
     
@@ -395,11 +395,16 @@ namespace iTextSharp.text.pdf {
             return hashCode;
         }
 
+        public int CompareTo(PdfObject obj) {
+            return this.GetHashCode().CompareTo(obj.GetHashCode());
+        }
+
         static private int IncrementObjCounter() {
             lock (locker) {
                 objCounter++;
+                return objCounter;
             }
-            return objCounter;
+            
         }
 
 
