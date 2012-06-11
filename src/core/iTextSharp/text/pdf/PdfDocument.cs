@@ -357,6 +357,9 @@ namespace iTextSharp.text.pdf {
             if (writer != null && writer.IsPaused()) {
                 return false;
             }
+            if (element.Type != Element.DIV) {
+                FlushFloatingElements();
+            }
             switch (element.Type) {
                 
                 // Information (headers)
@@ -675,6 +678,13 @@ namespace iTextSharp.text.pdf {
                         ((IWriterOperation)element).Write(writer, this);
                     }
                     break;
+                case Element.DIV:
+                    EnsureNewLine();
+                    FlushLines();
+                    AddDiv((PdfDiv)element);
+                    pageEmpty = false;
+                    //newLine();
+                    break;
                 default:
                     return false;
             }
@@ -779,6 +789,8 @@ namespace iTextSharp.text.pdf {
             // the following 2 lines were added by Pelikan Stephan
             indentation.imageIndentLeft = 0;
             indentation.imageIndentRight = 0;
+
+            FlushFloatingElements();
             
             // we flush the arraylist with recently written lines
             FlushLines();
@@ -1338,11 +1350,11 @@ namespace iTextSharp.text.pdf {
                             LocalGoto((String)chunk.GetAttribute(Chunk.LOCALGOTO), xMarker, yMarker, xMarker + width - subtract, yMarker + fontSize);
                         }
                         if (chunk.IsAttribute(Chunk.LOCALDESTINATION)) {
-                            float subtract = lastBaseFactor;
+                            /*float subtract = lastBaseFactor;
                             if (nextChunk != null && nextChunk.IsAttribute(Chunk.LOCALDESTINATION))
                                 subtract = 0;
                             if (nextChunk == null)
-                                subtract += hangingCorrection;
+                                subtract += hangingCorrection;*/
                             LocalDestination((String)chunk.GetAttribute(Chunk.LOCALDESTINATION), new PdfDestination(PdfDestination.XYZ, xMarker, yMarker + fontSize, 0));
                         }
                         if (chunk.IsAttribute(Chunk.GENERICTAG)) {
@@ -2304,6 +2316,30 @@ namespace iTextSharp.text.pdf {
                 NewPage();
             }
             ptable.HeadersInEvent = he;
+        }
+
+        internal List<IElement> floatingElements = new List<IElement>();
+
+        internal void AddDiv(PdfDiv div) {
+            if (floatingElements == null) {
+                floatingElements = new List<IElement>();
+            }
+            floatingElements.Add(div);
+        }
+
+        internal void FlushFloatingElements() {
+            if (floatingElements != null && floatingElements.Count > 0) {
+                List<IElement> cashedFloatingElements = floatingElements;
+                floatingElements = null;
+                FloatLayout fl = new FloatLayout(writer.DirectContent, cashedFloatingElements);
+
+                fl.SetSimpleColumn(IndentLeft, IndentBottom, IndentRight, IndentTop - currentHeight);
+                int status = fl.layout(false);
+                //if ((status & ColumnText.NO_MORE_TEXT) != 0) {
+                    text.MoveText(0, fl.getYLine() - IndentTop + currentHeight);
+                    currentHeight = IndentTop - fl.getYLine();
+                //}
+            }
         }
         
         internal bool FitsPage(PdfPTable table, float margin) {

@@ -88,6 +88,7 @@ namespace iTextSharp.tool.xml.css {
         private static readonly IList<String> TABLE_IN_ROW = new List<string>(new String[] { "background-color" });
         // styles that should not be applied on the content of a td-tag.
         private static readonly IList<String> TD_TO_CONTENT = new List<string>(new String[] { "vertical-align" });
+        private static readonly List<String> DIV_TO_CONTENT = new List<string>(new String[] { CSS.Property.BACKGROUND, CSS.Property.BACKGROUND_COLOR, CSS.Property.FLOAT });
 
         /*
          * (non-Javadoc)
@@ -108,6 +109,9 @@ namespace iTextSharp.tool.xml.css {
             }
             if (Util.EqualsIgnoreCase(HTML.Tag.TD, tag.Parent.Name)) {
                 return !TD_TO_CONTENT.Contains(key);
+            }
+            if (Util.EqualsIgnoreCase(HTML.Tag.DIV, tag.Parent.Name)) {
+                return !DIV_TO_CONTENT.Contains(key);
             }
             return true;
         }

@@ -2,7 +2,6 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Text;
-using iTextSharp.text.xml;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2012 1T3XT BVBA

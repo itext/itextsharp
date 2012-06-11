@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 
 using iTextSharp.text;
+using iTextSharp.text.error_messages;
 
 /*
  * $Id$
@@ -83,17 +84,21 @@ namespace iTextSharp.text.pdf {
         PdfRectangle mediaBox;
     
         // constructors
-    
+
         /**
          * Constructs a <CODE>PdfPage</CODE>.
          *
-         * @param       mediaBox        a value for the <B>MediaBox</B> key
-         * @param       resources       an indirect reference to a <CODE>PdfResources</CODE>-object
-         * @param       rotate          a value for the <B>Rotate</B> key
+         * @param		mediaBox		a value for the <B>MediaBox</B> key
+         * @param		resources		an indirect reference to a <CODE>PdfResources</CODE>-object
+         * @param		rotate			a value for the <B>Rotate</B> key
+         * @throws DocumentException 
          */
     
         internal PdfPage(PdfRectangle mediaBox, Dictionary<string, PdfRectangle> boxSize, PdfDictionary resources, int rotate) : base(PAGE) {
             this.mediaBox = mediaBox;
+            if (mediaBox != null && (mediaBox.Width > 14400 || mediaBox.Height > 14400)) {
+                throw new DocumentException(MessageLocalization.GetComposedMessage("the.page.size.must.be.smaller.than.14400.by.14400.its.1.by.2", mediaBox.Width, mediaBox.Height));
+            }
             Put(PdfName.MEDIABOX, mediaBox);
             Put(PdfName.RESOURCES, resources);
             if (rotate != 0) {
@@ -105,12 +110,13 @@ namespace iTextSharp.text.pdf {
                 Put(boxNames[k], boxSize[boxStrings[k]]);
             }
         }
-    
+
         /**
          * Constructs a <CODE>PdfPage</CODE>.
          *
-         * @param       mediaBox        a value for the <B>MediaBox</B> key
-         * @param       resources       an indirect reference to a <CODE>PdfResources</CODE>-object
+         * @param		mediaBox		a value for the <B>MediaBox</B> key
+         * @param		resources		an indirect reference to a <CODE>PdfResources</CODE>-object
+         * @throws DocumentException 
          */
     
         internal PdfPage(PdfRectangle mediaBox, Dictionary<string, PdfRectangle> boxSize, PdfDictionary resources) : this(mediaBox, boxSize, resources, 0) {

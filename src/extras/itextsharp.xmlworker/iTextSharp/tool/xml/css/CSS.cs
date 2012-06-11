@@ -55,7 +55,7 @@ namespace iTextSharp.tool.xml.css {
          *
          */
         public static class Property {
-
+            public const String BACKGROUND = "background";
             public const String BACKGROUND_IMAGE = "background-image";
             public const String BACKGROUND_REPEAT = "background-repeat";
             public const String BACKGROUND_ATTACHMENT = "background-attachment";

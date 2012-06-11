@@ -356,12 +356,13 @@ namespace iTextSharp.text.pdf {
             iPage.SetCopied();
             ++currentPageNumber;
         }
-        
+
         /**
          * Adds a blank page.
          * @param	rect The page dimension
          * @param	rotation The rotation angle in degrees
          * @since	2.1.5
+         * @throws DocumentException
          */
         public void AddPage(Rectangle rect, int rotation) {
             PdfRectangle mediabox = new PdfRectangle(rect, rotation);

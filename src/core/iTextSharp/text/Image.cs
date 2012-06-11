@@ -1463,7 +1463,7 @@ namespace iTextSharp.text {
          * when the image exceeds the available width.
          * @since iText 5.0.6
          */
-        protected internal bool scaleToFitLineWhenOverflow;
+        protected internal bool scaleToFitLineWhenOverflow = true;
 
         public bool ScaleToFitLineWhenOverflow {
             get { return scaleToFitLineWhenOverflow; }

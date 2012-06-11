@@ -127,11 +127,24 @@ namespace iTextSharp.tool.xml.css {
                 } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_COLOR, key)) {
                     CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "border-", "-color"));
                 } else if (Util.EqualsIgnoreCase(CSS.Property.PADDING, key)) {
-                    CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "padding-", ""));
+                    IDictionary<String, String> paddings = utils.ParseBoxValues(value, "padding-", "");
+                    foreach (String paddingKey in paddings.Keys) {
+                        if (!css.ContainsKey(paddingKey)) {
+                            css.Add(paddingKey, paddings[paddingKey]);
+                        }
+                    }
+                    //CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "padding-", ""));
                 } else if (Util.EqualsIgnoreCase(CSS.Property.FONT, key)) {
                     CssUtils.MapPutAll(css, utils.ProcessFont(value));
                 } else if (Util.EqualsIgnoreCase(CSS.Property.LIST_STYLE, key)) {
                     CssUtils.MapPutAll(css, utils.ProcessListStyle(value));
+                } else if (Util.EqualsIgnoreCase(CSS.Property.BACKGROUND, key)) {
+                    IDictionary<String, String> backgroundStyles = utils.ProcessBackground(value);
+                    foreach (String backgroundKey in backgroundStyles.Keys) {
+                        if (!css.ContainsKey(backgroundKey)) {
+                            css.Add(backgroundKey, backgroundStyles[backgroundKey]);
+                        }
+                    }
                 } else {
                     css[key] = value;
                 }
