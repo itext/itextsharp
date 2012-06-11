@@ -96,14 +96,25 @@ namespace iTextSharp.tool.xml.css.apply {
                     SynchronizeSymbol(fontSize, lst, color);
                 } else if (Util.EqualsIgnoreCase(CSS.Value.DISC, styleType)) {
                     lst = new ZapfDingbatsList(108);
-                    fontSize *= 0.7f;
-                    ShrinkSymbol(lst, fontSize, color);
+                    lst.Autoindent = false;
+                    lst.SymbolIndent = 7.75f;
+                    Chunk symbol = lst.Symbol;
+                    symbol.SetTextRise(1.5f);
+                    Font font = symbol.Font;
+                    font.Size = 4.5f;
+                    font.Color = color;
                 } else if (Util.EqualsIgnoreCase(CSS.Value.SQUARE, styleType)) {
                     lst = new ZapfDingbatsList(110);
                     ShrinkSymbol(lst, fontSize, color);
                 } else if (Util.EqualsIgnoreCase(CSS.Value.CIRCLE, styleType)) {
                     lst = new ZapfDingbatsList(109);
-                    ShrinkSymbol(lst, fontSize, color);
+                    lst.Autoindent = false;
+                    lst.SymbolIndent = 7.75f;
+                    Chunk symbol = lst.Symbol;
+                    symbol.SetTextRise(1.5f);
+                    Font font = symbol.Font;
+                    font.Size = 4.5f;
+                    font.Color = color;
                 } else if (CSS.Value.LOWER_ROMAN.Equals(styleType)) {
                     lst = new RomanList(true, 0);
                     lst.Autoindent = true;

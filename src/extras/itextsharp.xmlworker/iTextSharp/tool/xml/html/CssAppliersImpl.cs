@@ -30,6 +30,7 @@
  * For more information, please contact iText Software Corp. at this address: sales@itextpdf.com
  */
 using iTextSharp.text;
+using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.draw;
 using iTextSharp.tool.xml.css.apply;
 using iTextSharp.tool.xml.pipeline.html;
@@ -53,13 +54,14 @@ namespace iTextSharp.tool.xml.html {
          *
          * public static CssAppliersImpl GetInstance() { return myself; }
          */
-        private ChunkCssApplier chunk;
-        private ParagraphCssApplier paragraph;
+        protected ChunkCssApplier chunk;
+        protected ParagraphCssApplier paragraph;
         private NoNewLineParagraphCssApplier nonewlineparagraph;
         private HtmlCellCssApplier htmlcell;
         private ListStyleTypeCssApplier list;
         private LineSeparatorCssApplier lineseparator;
         private ImageCssApplier image;
+        private DivCssApplier div;
         /**
          *
          */
@@ -73,6 +75,7 @@ namespace iTextSharp.tool.xml.html {
             list = new ListStyleTypeCssApplier();
             lineseparator = new LineSeparatorCssApplier();
             image = new ImageCssApplier();
+            div = new DivCssApplier();
         }
 
         public CssAppliersImpl(IFontProvider fontProvider)
@@ -116,6 +119,8 @@ namespace iTextSharp.tool.xml.html {
             else if (e is text.Image)
             {
                 e = image.Apply((text.Image) e, t);
+            } else if (e is PdfDiv) {
+                e = div.apply((PdfDiv)e, t, mm, psc);
             }
             return e;
 
@@ -158,6 +163,7 @@ namespace iTextSharp.tool.xml.html {
             clone.list = list;
             clone.lineseparator = lineseparator;
             clone.image = image;
+            clone.div = div;
 
             return clone;
         }

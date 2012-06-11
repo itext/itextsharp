@@ -257,7 +257,7 @@ namespace iTextSharp.text.pdf {
                 PdfStream xmp;
                 try {
                     XmpReader xmpr;
-                    if (moreInfo == null) {
+                    if (moreInfo == null || xmpMetadata != null) {
                         xmpr = new XmpReader(altMetadata);
                         if (!(xmpr.ReplaceNode("http://ns.adobe.com/pdf/1.3/", "Producer", producer)
                             || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/pdf/1.3/", "Producer", producer)))

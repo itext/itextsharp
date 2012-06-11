@@ -144,9 +144,13 @@ namespace iTextSharp.tool.xml.html.table {
                 float[] columnWidths = new float[numberOfColumns];
                 float[] widestWords = new float[numberOfColumns];
                 float[] fixedWidths = new float[numberOfColumns];
+                float[] colspanWidestWords = new float[numberOfColumns];
                 int[] rowspanValue = new int[numberOfColumns];
                 float largestColumn = 0;
-                int indexOfLargestColumn = 0;
+                float largestColspanColumn = 0;
+                int indexOfLargestColumn = -1;
+                int indexOfLargestColspanColumn = -1;
+
                 // Initial fill of the widths arrays
                 foreach (TableRowElement row in tableRows) {
                     int column = 0;
@@ -174,7 +178,7 @@ namespace iTextSharp.tool.xml.html.table {
                                 }
                             }
                         }
-                        if (cell.CompositeElements != null && colspan == 1) {
+                        if (cell.CompositeElements != null) {
                             float[] widthValues = SetCellWidthAndWidestWord(cell);
                             float cellWidth = widthValues[0] / colspan;
                             float widestWordOfCell = widthValues[1] / colspan;
@@ -182,13 +186,26 @@ namespace iTextSharp.tool.xml.html.table {
                                 int c = column + i;
                                 if (fixedWidths[c] == 0 && cellWidth > columnWidths[c]) {
                                     columnWidths[c] = cellWidth;
-                                    if (cellWidth > largestColumn) {
-                                        largestColumn = cellWidth;
-                                        indexOfLargestColumn = c;
+                                    if (colspan == 1) {
+                                        if (cellWidth > largestColumn) {
+                                            largestColumn = cellWidth;
+                                            indexOfLargestColumn = c;
+                                        }
+                                    } else {
+                                        if (cellWidth > largestColspanColumn) {
+                                            largestColspanColumn = cellWidth;
+                                            indexOfLargestColspanColumn = c;
+                                        }
                                     }
                                 }
-                                if (widestWordOfCell > widestWords[c]) {
-                                    widestWords[c] = widestWordOfCell;
+                                if (colspan == 1) {
+                                    if (widestWordOfCell > widestWords[c]) {
+                                        widestWords[c] = widestWordOfCell;
+                                    }
+                                } else {
+                                    if (widestWordOfCell > colspanWidestWords[c]) {
+                                        colspanWidestWords[c] = widestWordOfCell;
+                                    }
                                 }
                             }
                         }
@@ -199,6 +216,17 @@ namespace iTextSharp.tool.xml.html.table {
                             column += colspan - 1;
                         }
                         column++;
+                    }
+                }
+
+                if (indexOfLargestColumn == -1) {
+                    indexOfLargestColumn = indexOfLargestColspanColumn;
+                    if (indexOfLargestColumn == -1) {
+                        indexOfLargestColumn = 0;
+                    }
+
+                    for (int column = 0; column < numberOfColumns; column++) {
+                        widestWords[column] = colspanWidestWords[column];
                     }
                 }
                 float outerWidth = GetTableOuterWidth(tag, styleValues.HorBorderSpacing, ctx);

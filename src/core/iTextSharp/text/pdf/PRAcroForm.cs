@@ -58,16 +58,31 @@ namespace iTextSharp.text.pdf {
         * This class holds the information for a single field
         */
         public class FieldInformation {
-            internal String name;
+            internal String fieldName;
             internal PdfDictionary info;
             internal PRIndirectReference refi;
             
-            internal FieldInformation(String name, PdfDictionary info, PRIndirectReference refi) {
-                this.name = name; this.info = info; this.refi = refi;
+            internal FieldInformation(String fieldName, PdfDictionary info, PRIndirectReference refi) {
+                this.fieldName = fieldName;
+        	    this.info = info;
+                this.refi = refi;
+            }
+        
+            /**
+             * Returns the name of the widget annotation (the /NM entry).
+             * @return	a String or null (if there's no /NM key)
+             */
+            public String WidgetName {
+                get {
+                    PdfObject name = info.Get(PdfName.NM);
+                    if (name != null)
+                        return name.ToString();
+                    return null;
+                }
             }
             public String Name {
                 get {
-                    return name; 
+                    return fieldName; 
                 }
             }
             public PdfDictionary Info {
@@ -143,33 +158,36 @@ namespace iTextSharp.text.pdf {
                 IterateFields(fieldlist, null, null);
             }
         }
-        
+
         /**
         * After reading, we index all of the fields. Recursive.
         * @param fieldlist An array of fields
         * @param fieldDict the last field dictionary we encountered (recursively)
-        * @param title the pathname of the field, up to this point or null
+        * @param parentPath the pathname of the field, up to this point or null
         */
-        protected void IterateFields(PdfArray fieldlist, PRIndirectReference fieldDict, String title) {
+        protected void IterateFields(PdfArray fieldlist, PRIndirectReference fieldDict, String parentPath) {
             foreach (PRIndirectReference refi in fieldlist.ArrayList) {
                 PdfDictionary dict = (PdfDictionary) PdfReader.GetPdfObjectRelease(refi);
                 
                 // if we are not a field dictionary, pass our parent's values
                 PRIndirectReference myFieldDict = fieldDict;
-                String myTitle = title;
+                String fullPath = parentPath;
                 PdfString tField = (PdfString)dict.Get(PdfName.T);
                 bool isFieldDict = tField != null;
                 
                 if (isFieldDict) {
                     myFieldDict = refi;
-                    if (title == null) myTitle = tField.ToString();
-                    else myTitle = title + '.' + tField.ToString();
+                    if (parentPath == null) {
+                        fullPath = tField.ToString();
+                    } else {
+                        fullPath = parentPath + '.' + tField.ToString();
+                    }
                 }
                 
                 PdfArray kids = (PdfArray)dict.Get(PdfName.KIDS);
                 if (kids != null) {
                     PushAttrib(dict);
-                    IterateFields(kids, myFieldDict, myTitle);
+                    IterateFields(kids, myFieldDict, fullPath);
                     stack.RemoveAt(stack.Count - 1);   // pop
                 }
                 else {          // leaf node
@@ -178,10 +196,10 @@ namespace iTextSharp.text.pdf {
                         if (isFieldDict)
                             mergedDict = MergeAttrib(mergedDict, dict);
                         
-                        mergedDict.Put(PdfName.T, new PdfString(myTitle));
-                        FieldInformation fi = new FieldInformation(myTitle, mergedDict, myFieldDict);
+                        mergedDict.Put(PdfName.T, new PdfString(fullPath));
+                        FieldInformation fi = new FieldInformation(fullPath, mergedDict, myFieldDict);
                         fields.Add(fi);
-                        fieldByName[myTitle] = fi;
+                        fieldByName[fullPath] = fi;
                     }
                 }
             }
@@ -200,7 +218,7 @@ namespace iTextSharp.text.pdf {
                 if (key.Equals(PdfName.DR) || key.Equals(PdfName.DA) ||
                 key.Equals(PdfName.Q)  || key.Equals(PdfName.FF) ||
                 key.Equals(PdfName.DV) || key.Equals(PdfName.V)
-                || key.Equals(PdfName.FT)
+                || key.Equals(PdfName.FT) || key.Equals(PdfName.NM)
                 || key.Equals(PdfName.F)) {
                     targ.Put(key,child.Get(key));
                 }

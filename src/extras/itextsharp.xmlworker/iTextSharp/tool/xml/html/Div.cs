@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using iTextSharp.text;
+using iTextSharp.text.pdf;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css.apply;
 using iTextSharp.tool.xml.exceptions;
@@ -64,6 +65,8 @@ namespace iTextSharp.tool.xml.html {
             List<IElement> l = new List<IElement>(1);
             NoNewLineParagraph sanitizedNoNewLineParagraph = new NoNewLineParagraph();
             foreach (Chunk sanitized in sanitizedChunks) {
+                Font f = GetCssAppliers().ChunkCssAplier.ApplyFontStyles(tag);
+                sanitized.Font = f;
                 sanitizedNoNewLineParagraph.Add(sanitized);
             }
             if (sanitizedNoNewLineParagraph.Count > 0) {
@@ -87,24 +90,30 @@ namespace iTextSharp.tool.xml.html {
         public override IList<IElement> End(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
             try {
                 Paragraph p = null;
-                IList<IElement> l = new List<IElement>(1);
-                foreach (IElement e in currentContent) {
-                    if (e is Paragraph) {
-                        if (p != null) {
-                            l.Add(GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx)));
-                            p = null;
-                        }
-                        l.Add(e);
+                PdfDiv div = (PdfDiv)GetCssAppliers().Apply(new PdfDiv(), tag, GetHtmlPipelineContext(ctx));
+			    foreach (IElement e in currentContent) {
+				    if (e is Paragraph || e is PdfDiv) {
+					    if (p != null) {
+                            if (p.Trim()) {
+						        div.AddElement(p);
+                            }
+						    p = null;
+					    }
+					    div.AddElement(e);
                     } else {
-                        if (p == null) {
-                            p = new Paragraph();
-                        }
-                        p.Add(e);
-                    }
-                }
-                if (p != null) {
-                    l.Add(GetCssAppliers().Apply(p, tag, GetHtmlPipelineContext(ctx)));
-                }
+					    if (p == null) {
+						    p = new Paragraph();
+                            p.MultipliedLeading = 1.2f;
+					    }
+					    p.Add(e);
+				    }
+			    }
+			    if (p != null && p.Trim()) {
+                    div.AddElement(p);
+			    }
+
+			    List<IElement> l = new List<IElement>(1);
+                l.Add(div);
                 return l;
             } catch (NoCustomContextException e) {
                 throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);

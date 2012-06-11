@@ -38,6 +38,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="iTextSharp\tool\xml\css\apply\ChunkCssApplier.cs" />
+    <Compile Include="iTextSharp\tool\xml\css\apply\DivCssApplier.cs" />
     <Compile Include="iTextSharp\tool\xml\css\apply\HtmlCellCssApplier.cs" />
     <Compile Include="iTextSharp\tool\xml\css\apply\ImageCssApplier.cs" />
     <Compile Include="iTextSharp\tool\xml\css\apply\LineSeparatorCssApplier.cs" />

@@ -53,7 +53,8 @@ namespace iTextSharp.tool.xml.html {
 		    List<IElement> l = new List<IElement>(1);
             NoNewLineParagraph sanitizedNoNewLineParagraph = new NoNewLineParagraph();
             foreach (Chunk sanitized in sanitizedChunks) {
-                sanitizedNoNewLineParagraph.Add(sanitized);
+                Chunk c = GetCssAppliers().ChunkCssAplier.Apply(sanitized, tag);
+                sanitizedNoNewLineParagraph.Add(c);
             }
             if (sanitizedNoNewLineParagraph.Count > 0) {
                 try {

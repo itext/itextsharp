@@ -477,10 +477,12 @@ namespace iTextSharp.text.pdf {
             if (uchoices == null)
                 uchoices = new String[0];
             int topChoice = GetTopChoice();
-            if (text == null)
-                text = ""; //fixed by Kazuya Ujihara (ujihara.jp)
-            if (topChoice >= 0)
+            if (uchoices.Length > topChoice)
                 text = uchoices[topChoice];
+
+            if (text == null)
+                text = "";
+        
             PdfFormField field = null;
             String[,] mix = null;
             if (choiceExports == null) {

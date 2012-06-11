@@ -210,6 +210,7 @@ public class ColumnText {
     private float spaceCharRatio = GLOBAL_SPACE_CHAR_RATIO;
 
     private bool lastWasNewline = true;
+    private bool repeatFirstLineIndent = true;
 
     /** Holds value of property linesWritten. */
     private int linesWritten;
@@ -304,6 +305,7 @@ public class ColumnText {
         rectangularMode = org.rectangularMode;
         spaceCharRatio = org.spaceCharRatio;
         lastWasNewline = org.lastWasNewline;
+        repeatFirstLineIndent = org.repeatFirstLineIndent;
         linesWritten = org.linesWritten;
         arabicOptions = org.arabicOptions;
         runDirection = org.runDirection;
@@ -436,7 +438,7 @@ public class ColumnText {
         else if (element.Type == Element.PHRASE) {
             element = new Paragraph((Phrase)element);
         }
-        if (element.Type != Element.PARAGRAPH && element.Type != Element.LIST && element.Type != Element.PTABLE && element.Type != Element.YMARK)
+        if (element.Type != Element.PARAGRAPH && element.Type != Element.LIST && element.Type != Element.PTABLE && element.Type != Element.YMARK && element.Type != Element.DIV)
             throw new ArgumentException(MessageLocalization.GetComposedMessage("element.not.allowed"));
         if (!composite) {
             composite = true;
@@ -728,10 +730,22 @@ public class ColumnText {
             return indent;
         }
 
-        set {
-            this.indent = value;
-            lastWasNewline = true;
+            	
+       set {
+            SetIndent(value, true);
         }
+    }
+
+    /**
+     * Sets the first paragraph line indent.
+     *
+     * @param indent the indent
+     * @param	repeatFirstLineIndent	do we need to repeat the indentation of the first line after a newline?
+     */
+    public void SetIndent(float indent, bool repeatFirstLineIndent) {
+        this.indent = indent;
+        lastWasNewline = true;
+        this.repeatFirstLineIndent = repeatFirstLineIndent;
     }
     
     /**
@@ -901,7 +915,7 @@ public class ColumnText {
                 lastX = pdf.WriteLineToContent(line, text, graphics, currentValues, ratio);
                 currentFont = (PdfFont)currentValues[0];
             }
-            lastWasNewline = line.NewlineSplit;
+            lastWasNewline = repeatFirstLineIndent && line.NewlineSplit;
             yLine -= line.NewlineSplit ? extraParagraphSpace : 0;
             ++linesWritten;
             descender = line.Descender;
@@ -1106,6 +1120,61 @@ public class ColumnText {
         ShowTextAligned(canvas, alignment, phrase, x, y, rotation, PdfWriter.RUN_DIRECTION_NO_BIDI, 0);
     }
 
+    /**
+     * Fits the text to some rectangle adjusting the font size as needed.
+     * @param font the font to use
+     * @param text the text
+     * @param rect the rectangle where the text must fit
+     * @param maxFontSize the maximum font size
+     * @param runDirection the run direction
+     * @return the calculated font size that makes the text fit
+     */
+    public static float FitText(Font font, String text, Rectangle rect, float maxFontSize, int runDirection) {
+        ColumnText ct = null;
+        int status = 0;
+        if (maxFontSize <= 0) {
+            int cr = 0;
+            int lf = 0;
+            char[] t = text.ToCharArray();
+            for (int k = 0; k < t.Length; ++k) {
+                if (t[k] == '\n')
+                    ++lf;
+                else if (t[k] == '\r')
+                    ++cr;
+            }
+            int minLines = Math.Max(cr, lf) + 1;
+            maxFontSize = Math.Abs(rect.Height) / minLines - 0.001f;
+        }
+        font.Size = maxFontSize;
+        Phrase ph = new Phrase(text, font);
+        ct = new ColumnText(null);
+        ct.SetSimpleColumn(ph, rect.Left, rect.Bottom, rect.Right, rect.Top, maxFontSize, Element.ALIGN_LEFT);
+        ct.RunDirection = runDirection;
+        status = ct.Go(true);
+        if ((status & NO_MORE_TEXT) != 0)
+            return maxFontSize;
+        float precision = 0.1f;
+        float min = 0;
+        float max = maxFontSize;
+        float size = maxFontSize;
+        for (int k = 0; k < 50; ++k) { //just in case it doesn't converge
+            size = (min + max) / 2;
+            ct = new ColumnText(null);
+            font.Size = size;
+            ct.SetSimpleColumn(new Phrase(text, font), rect.Left, rect.Bottom, rect.Right, rect.Top, size, Element.ALIGN_LEFT);
+            ct.RunDirection = runDirection;
+            status = ct.Go(true);
+            if ((status & NO_MORE_TEXT) != 0) {
+                if (max - min < size * precision)
+                    return size;
+                min = size;
+            }
+            else
+                max = size;
+        }
+        return size;
+	}
+
     protected int GoComposite(bool simulate) {
         if (!rectangularMode)
             throw new DocumentException(MessageLocalization.GetComposedMessage("irregular.columns.are.not.supported.in.composite.mode"));
@@ -1126,7 +1195,7 @@ public class ColumnText {
                     if (compositeColumn == null) {
                         compositeColumn = new ColumnText(canvas);
                         compositeColumn.Alignment = para.Alignment;
-                        compositeColumn.Indent = para.IndentationLeft + para.FirstLineIndent;
+                        compositeColumn.SetIndent(para.IndentationLeft + para.FirstLineIndent, false);
                         compositeColumn.ExtraParagraphSpace = para.ExtraParagraphSpace;
                         compositeColumn.FollowingIndent = para.IndentationLeft;
                         compositeColumn.RightIndent = para.IndentationRight;
@@ -1225,7 +1294,7 @@ public class ColumnText {
 
                         compositeColumn.UseAscender = ((firstPass || descender == 0) && adjustFirstLine ? useAscender : false);
                         compositeColumn.Alignment = item.Alignment;
-                        compositeColumn.Indent = item.IndentationLeft + listIndentation + item.FirstLineIndent;
+                        compositeColumn.SetIndent(item.IndentationLeft + listIndentation + item.FirstLineIndent, false);
                         compositeColumn.ExtraParagraphSpace = item.ExtraParagraphSpace;
                         compositeColumn.FollowingIndent = compositeColumn.Indent;
                         compositeColumn.RightIndent = item.IndentationRight + list.IndentationRight;
@@ -1522,8 +1591,38 @@ public class ColumnText {
                     zh.Draw(canvas, leftX, minY, rightX, maxY, yLine);
                 }
                 compositeElements.RemoveAt(0);
-            }
-            else
+            } else if (element.Type == Element.DIV) {
+                List<IElement> floatingElements = new List<IElement>();
+                do {
+                    floatingElements.Add(element);
+                    compositeElements.RemoveAt(0);
+                    element = compositeElements.Count > 0 ? compositeElements[0] : null;
+                } while (element != null && element.Type == Element.DIV);
+
+                compositeColumn = new ColumnText(canvas);
+                compositeColumn.UseAscender = (firstPass || descender == 0) && adjustFirstLine ? useAscender : false;
+                //compositeColumn.setAlignment(div.getTextAlignment());
+                //compositeColumn.setIndent(para.getIndentationLeft() + para.getFirstLineIndent());
+                compositeColumn.RunDirection = runDirection;
+                compositeColumn.ArabicOptions = arabicOptions;
+                compositeColumn.SpaceCharRatio = spaceCharRatio;
+
+
+                FloatLayout fl = new FloatLayout(compositeColumn, floatingElements);
+                fl.SetSimpleColumn(leftX, minY, rightX, yLine);
+                int status = fl.layout(simulate);
+
+                //firstPass = false;
+                yLine = fl.getYLine();
+                descender = 0;
+                compositeColumn = null;
+                if ((status & NO_MORE_TEXT) == 0) {
+                    foreach (IElement floatingElement in floatingElements) {
+                        compositeElements.Add(floatingElement);
+                    }
+                    return status;
+                }
+            } else
                 compositeElements.RemoveAt(0);
         }
     }

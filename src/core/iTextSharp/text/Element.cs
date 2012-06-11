@@ -157,6 +157,12 @@ namespace iTextSharp.text
          */
         public const int JBIG2 = 36;
 
+        /**
+         * This is a possible type of <CODE>Element</CODE>.
+         * @since	5.3.0
+         */
+        public const int DIV = 37;
+
         /// <summary> This is a possible type of <CODE>Element</CODE>. </summary>
         public const int MULTI_COLUMN_TEXT = 40;
 	

@@ -14,6 +14,9 @@ namespace iTextSharp.tool.xml.css {
      */
     public class FontSizeTranslator {
 
+        public const float DEFAULT_FONT_SIZE = 12f;
+
+
         /**
          *
          */

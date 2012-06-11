@@ -4093,6 +4093,8 @@
     <Compile Include="iTextSharp\text\log\SysoLogger.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWCompressor.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWStringTable.cs" />
+    <Compile Include="iTextSharp\text\pdf\CompareTool.cs" />
+    <Compile Include="iTextSharp\text\pdf\FloatLayout.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\AbstractCMap.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CidLocationFromByte.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CidResource.cs" />
@@ -4117,6 +4119,7 @@
     <Compile Include="iTextSharp\text\pdf\parser\InlineImageUtils.cs" />
     <Compile Include="iTextSharp\text\pdf\IPdfPTableEventSplit.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfConcatenate.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfDiv.cs" />
     <Compile Include="iTextSharp\text\WritableDirectElement.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\handler\HTMLNewLineHandler.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\handler\NeverNewLineHandler.cs" />

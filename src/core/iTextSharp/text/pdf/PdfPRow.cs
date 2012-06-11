@@ -333,6 +333,9 @@ namespace iTextSharp.text.pdf {
                     }
                     bool vf = false;
                     if (cell.Height > currentMaxHeight) {
+                        if (!img.ScaleToFitLineWhenOverflow) {
+                            continue;
+                        }
                         img.ScalePercent(100);
                         float scale = (currentMaxHeight - cell.EffectivePaddingTop - cell
                                 .EffectivePaddingBottom)
@@ -620,7 +623,9 @@ namespace iTextSharp.text.pdf {
                 Image img = cell.Image;
                 PdfPCell newCell = new PdfPCell(cell);
                 if (img != null) {
-                    if (newHeight > cell.EffectivePaddingBottom + cell.EffectivePaddingTop + 2) {
+                    float padding = cell.EffectivePaddingBottom + cell.EffectivePaddingTop + 2;
+                    if ((img.ScaleToFitLineWhenOverflow || img.ScaledHeight + padding < newHeight)
+                        && newHeight > padding) {
                         newCell.Phrase = null;
                         allEmpty = false;
                     }
