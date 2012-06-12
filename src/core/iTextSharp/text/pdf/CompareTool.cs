@@ -18,18 +18,21 @@ public class CompareTool {
     static private String differentPages = "File <filename> differs on page <pagenumber>.";
     static private String undefinedGsPath = "Path to GhostScript is not specified. Please use -DgsExec=<path_to_ghostscript> (e.g. -DgsExec=\"C:/Program Files/gs/gs8.64/bin/gswin32c.exe\")";
 
-    private readonly String outPdf;
-    private readonly String cmpPdf;
+    private String outPdf;
+    private String outPdfName;
+    private String outImage;
+    private String cmpPdf;
+    private String cmpPdfName;
+    private String cmpImage;
 
 
     public CompareTool(String outPdf, String cmpPdf) {
         gsExec = Environment.GetEnvironmentVariable("gsExec");
         compareExec = Environment.GetEnvironmentVariable("compareExec");
-        this.outPdf = outPdf;
-        this.cmpPdf = cmpPdf;
+        init(outPdf, cmpPdf);
     }
 
-    public String Compare(String outPath, String outImage, String cmpImage, String differenceImage) {
+    public String Compare(String outPath, String differenceImage) {
         if (gsExec == null || gsExec.Length == 0) {
             return undefinedGsPath;
         }
@@ -158,6 +161,20 @@ public class CompareTool {
         return null;
     }
 
+    public String Compare(String outPdf, String cmpPdf, String outPath, String differenceImage) {
+        init(outPdf, cmpPdf);
+        return Compare(outPath, differenceImage);
+    }
+
+    private void init(String outPdf, String cmpPdf) {
+        this.outPdf = outPdf;
+        this.cmpPdf = cmpPdf;
+        outPdfName = Path.GetFileNameWithoutExtension(outPdf);
+        cmpPdfName = Path.GetFileNameWithoutExtension(cmpPdf);
+        outImage = outPdfName + "-%03d.png";
+        cmpImage = "cmp_" + outPdfName + "-%03d.png";
+    }
+
     private bool CompareStreams(FileStream is1, FileStream is2) {
         byte[] buffer1 = new byte[64 * 1024];
         byte[] buffer2 = new byte[64 * 1024];
@@ -187,14 +204,14 @@ public class CompareTool {
         String ap = pathname.Name;
         bool b1 = ap.EndsWith(".png");
         bool b2 = ap.Contains("cmp_");
-        return b1 && !b2 && ap.Contains(Path.GetFileNameWithoutExtension(outPdf));
+        return b1 && !b2 && ap.Contains(outPdfName);
     }
 
     private bool CmpPngPredicate(FileSystemInfo pathname) {
         String ap = pathname.Name;
         bool b1 = ap.EndsWith(".png");
         bool b2 = ap.Contains("cmp_");
-        return b1 && b2 && ap.Contains(Path.GetFileNameWithoutExtension(cmpPdf));
+        return b1 && b2 && ap.Contains(cmpPdfName);
     }
 
     class ImageNameComparator : IComparer<FileSystemInfo> {
