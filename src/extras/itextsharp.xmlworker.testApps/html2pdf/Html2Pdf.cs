@@ -106,8 +106,7 @@ namespace html2pdf {
                     String cmpImage = "cmp_<testName>-%03d.png".Replace("<testName>", Path.GetFileNameWithoutExtension(fileStream.Name) );
                     String diffPath = Path.GetDirectoryName(Path.GetFullPath(fileStream.Name)) +
                                       Path.DirectorySeparatorChar + "diff_" + Path.GetFileNameWithoutExtension(fileStream.Name) + ".png";
-                    String errorMessage = ct.Compare(Path.GetDirectoryName(Path.GetFullPath(fileStream.Name)) + Path.DirectorySeparatorChar + "compare" + Path.DirectorySeparatorChar, outImage,
-                               cmpImage, diffPath);
+                    String errorMessage = ct.Compare(Path.GetDirectoryName(Path.GetFullPath(fileStream.Name)) + Path.DirectorySeparatorChar + "compare" + Path.DirectorySeparatorChar, diffPath);
                     if (errorMessage != null) {
                         Console.WriteLine(errorMessage);
                     }
