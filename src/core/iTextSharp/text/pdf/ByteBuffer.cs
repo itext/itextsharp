@@ -260,6 +260,15 @@ namespace iTextSharp.text.pdf {
             return Append((double)i);
         }
     
+        /**
+         * Appends the string representation of a <CODE>long</CODE>.
+         * @param i the <CODE>long</CODE> to be appended
+         * @return a reference to this <CODE>ByteBuffer</CODE> object
+         */
+        public ByteBuffer Append(long i) {
+            return Append(i.ToString(CultureInfo.InvariantCulture));
+        }
+        
         public ByteBuffer Append(byte b) {
             return Append_i(b);
         }
@@ -518,11 +527,12 @@ namespace iTextSharp.text.pdf {
                     return res.ToString();
                 }
             } else {
-                StringBuilder res = new StringBuilder();
-                if (negative) res.Append('-');
                 d += 0.5;
                 long v = (long) d;
-                return res.Append(v).ToString();
+                if (negative) 
+                    return "-" + v.ToString(CultureInfo.InvariantCulture);
+                else
+                    return v.ToString(CultureInfo.InvariantCulture);
             }
         }
     
