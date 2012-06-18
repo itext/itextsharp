@@ -777,6 +777,15 @@ public class ColumnText {
             lastWasNewline = true;
         }
     }
+
+    /**
+    * Gets the currentLeading.
+    *
+    * @return the currentLeading
+    */
+    public float CurrentLeading {
+        get { return currentLeading; }
+    }
     
     /**
      * Outputs the lines to the document. It is equivalent to <CODE>go(false)</CODE>.
@@ -1239,6 +1248,7 @@ public class ColumnText {
                     linesWritten += compositeColumn.linesWritten;
                     descender = compositeColumn.descender;
                 }
+                currentLeading = compositeColumn.currentLeading;
                 if ((status & NO_MORE_TEXT) != 0) {
                     compositeColumn = null;
                     compositeElements.RemoveAt(0);
@@ -1337,6 +1347,7 @@ public class ColumnText {
                 yLine = compositeColumn.yLine;
                 linesWritten += compositeColumn.linesWritten;
                 descender = compositeColumn.descender;
+                currentLeading = compositeColumn.currentLeading;
                 if (!float.IsNaN(compositeColumn.firstLineY) && !compositeColumn.firstLineYDone) {
                     if (!simulate)
                         ShowTextAligned(canvas, Element.ALIGN_LEFT, new Phrase(item.ListSymbol), compositeColumn.leftX + listIndentation, compositeColumn.firstLineY, 0);
@@ -1562,6 +1573,7 @@ public class ColumnText {
                 }
                 yLine = yTemp;
                 descender = 0;
+                currentLeading = 0;
                 if (!(skipHeader || table.ElementComplete)) {
                     yLine += footerHeight;
                 }
