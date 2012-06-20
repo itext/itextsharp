@@ -159,16 +159,13 @@ namespace iTextSharp.text {
             originalType = ORIGINAL_JPEG2000;
             inp = null;
             try {
-                string errorID;
                 if (rawData == null){
                     WebRequest w = WebRequest.Create(url);
                     w.Credentials = CredentialCache.DefaultCredentials;
                     inp = w.GetResponse().GetResponseStream();
-                    errorID = url.ToString();
                 }
                 else{
                     inp = new MemoryStream(rawData);
-                    errorID = "Byte array";
                 }
                 boxLength = Cio_read(4);
                 if (boxLength == 0x0000000c) {
