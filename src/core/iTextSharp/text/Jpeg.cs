@@ -87,8 +87,12 @@ namespace iTextSharp.text {
         public const int M_APP0 = 0xE0;
         public const int M_APP2 = 0xE2;
         public const int M_APPE = 0xEE;
+        /** Marker value for Photoshop IRB */
+        public const int M_APPD = 0xED;
     
         public static byte[] JFIF_ID = {0x4A, 0x46, 0x49, 0x46, 0x00};
+        /** sequence preceding Photoshop resolution data */
+        public static readonly byte[] PS_8BIM_RESO = {0x38, 0x42, 0x49, 0x4d, 0x03, (byte) 0xed};
 
         private byte[][] icc;
 
@@ -278,6 +282,82 @@ namespace iTextSharp.text {
                                     if (icc == null)
                                         icc = new byte[count][];
                                     icc[order - 1] = byteapp2;
+                                }
+                            }
+                            continue;
+                        }
+                        if (marker == M_APPD) {
+                            len = GetShort(istr) - 2;
+                            byte[] byteappd = new byte[len];
+                            for (int k = 0; k < len; k++) {
+                                byteappd[k] = (byte)istr.ReadByte();
+                            }
+                            // search for '8BIM Resolution' marker
+                            int j = 0;
+                            for (j = 0; j < len-PS_8BIM_RESO.Length; j++) {
+                                bool found = true;
+                                for (int i = 0; i < PS_8BIM_RESO.Length; i++) {
+                                    if (byteappd[j+i] != PS_8BIM_RESO[i]) {
+                                        found = false;
+                                        break;
+                                    }
+                                }
+                                if (found)
+                                    break;
+                            }
+
+                            j+=PS_8BIM_RESO.Length;
+                            if (j < len-PS_8BIM_RESO.Length) {
+                                // "PASCAL String" for name, i.e. string prefix with length byte
+                                // padded to be even length; 2 null bytes if empty
+                                byte namelength = byteappd[j];
+                                // add length byte
+                                namelength++;
+                                // add padding
+                                if (namelength % 2 == 1)
+                                    namelength++;
+                                // just skip name
+                                j += namelength;
+                                // size of the resolution data
+                                int resosize = (byteappd[j] << 24) + (byteappd[j+1] << 16) + (byteappd[j+2] << 8) + byteappd[j+3];
+                                // should be 16
+                                if (resosize != 16) {
+                                    // fail silently, for now
+                                    //System.err.println("DEBUG: unsupported resolution IRB size");
+                                    continue;
+                                }
+                                j+=4;
+                                int dx = (byteappd[j] << 8) + byteappd[j+1];
+                                j+=2;
+                                // skip 2 unknown bytes
+                                j+=2;
+                                int unitsx = (byteappd[j] << 8) + byteappd[j+1];
+                                j+=2;
+                                // skip 2 unknown bytes
+                                j+=2;
+                                int dy = (byteappd[j] << 8) + byteappd[j+1];
+                                j+=2;
+                                // skip 2 unknown bytes
+                                j+=2;
+                                int unitsy = (byteappd[j] << 8) + byteappd[j+1];
+                                
+                                if (unitsx == 1 || unitsx == 2) {
+                                    dx = (unitsx == 2 ? (int)(dx * 2.54f + 0.5f) : dx);
+                                    // make sure this is consistent with JFIF data
+                                    if (dpiX != 0 && dpiX != dx) {
+                                        //System.err.println("DEBUG: inconsistent metadata (dpiX: " + dpiX + " vs " + dx + ")");
+                                    }
+                                    else
+                                        dpiX = dx;
+                                }
+                                if (unitsy == 1 || unitsy == 2) {
+                                    dy = (unitsy == 2 ? (int)(dy * 2.54f + 0.5f) : dy);
+                                    // make sure this is consistent with JFIF data
+                                    if (dpiY != 0 && dpiY != dy) {
+                                        //System.err.println("DEBUG: inconsistent metadata (dpiY: " + dpiY + " vs " + dy + ")");
+                                    }
+                                    else
+                                        dpiY = dy;
                                 }
                             }
                             continue;
