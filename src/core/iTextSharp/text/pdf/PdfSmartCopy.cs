@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using iTextSharp.text;
 /*
  * $Id$
  * 
@@ -86,6 +85,13 @@ namespace iTextSharp.text.pdf {
                 streamKey = new ByteStore((PRStream)srcObj);
                 validStream = true;
                 PdfIndirectReference streamRef;
+                if (streamMap.TryGetValue(streamKey, out streamRef)) {
+                    return streamRef;
+                }
+            } else if (srcObj.IsDictionary()) {
+                streamKey = new ByteStore((PdfDictionary)srcObj);
+                validStream = true;
+                PdfIndirectReference streamRef = null;
                 if (streamMap.TryGetValue(streamKey, out streamRef)) {
                     return streamRef;
                 }
@@ -183,6 +189,13 @@ namespace iTextSharp.text.pdf {
                 ByteBuffer bb = new ByteBuffer();
                 int level = 100;
                 SerObject(str, level, bb);
+                this.b = bb.ToByteArray();
+            }
+
+            internal ByteStore(PdfDictionary dict) {
+                ByteBuffer bb = new ByteBuffer();
+                int level = 100;
+                SerObject(dict, level, bb);
                 this.b = bb.ToByteArray();
             }
 
