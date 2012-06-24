@@ -13,7 +13,7 @@ using Org.BouncyCastle.Asn1.Cmp;
 using Org.BouncyCastle.Asn1.Tsp;
 using iTextSharp.text.error_messages;
 /*
- * $Id$
+ * $Id: TSAClientBouncyCastle.cs 106 2009-12-07 12:23:50Z psoares33 $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -56,7 +56,7 @@ using iTextSharp.text.error_messages;
  * address: sales@itextpdf.com
  */
 
-namespace iTextSharp.text.pdf {
+namespace iTextSharp.text.pdf.security {
 
     /**
     * Time Stamp Authority Client interface implementation using Bouncy Castle
@@ -74,17 +74,23 @@ namespace iTextSharp.text.pdf {
         protected internal String tsaUsername;
         /** TSA password */
         protected internal String tsaPassword;
+        /** The default value for the hash algorithm */
+        public const int DEFAULTTOKENSIZE = 4096;
+        
         /** Estimate of the received time stamp token */
-        protected internal int tokSzEstimate;
+        protected internal int tokenSizeEstimate;
+        
+        /** The default value for the hash algorithm */
+        public const String DEFAULTHASHALGORITHM = "SHA-1";
+        
+        /** Hash algorithm */
         protected internal String digestAlgorithm;
-        private const String defaultDigestAlgorithm = "SHA-1";
-
         /**
         * Creates an instance of a TSAClient that will use BouncyCastle.
         * @param url String - Time Stamp Authority URL (i.e. "http://tsatest1.digistamp.com/TSA")
         */
         public TSAClientBouncyCastle(String url) 
-            : this(url, null, null, 4096, defaultDigestAlgorithm) {
+            : this(url, null, null, DEFAULTTOKENSIZE, DEFAULTHASHALGORITHM) {
         }
         
         /**
@@ -94,7 +100,7 @@ namespace iTextSharp.text.pdf {
         * @param password String - password
         */
         public TSAClientBouncyCastle(String url, String username, String password) 
-            : this(url, username, password, 4096, defaultDigestAlgorithm) {
+            : this(url, username, password, DEFAULTTOKENSIZE, DEFAULTHASHALGORITHM) {
         }
         
         /**
@@ -111,7 +117,7 @@ namespace iTextSharp.text.pdf {
             this.tsaURL       = url;
             this.tsaUsername  = username;
             this.tsaPassword  = password;
-            this.tokSzEstimate = tokSzEstimate;
+            this.tokenSizeEstimate = tokSzEstimate;
             this.digestAlgorithm = digestAlgorithm;
         }
         
@@ -121,7 +127,7 @@ namespace iTextSharp.text.pdf {
         * @return an estimate of the token size
         */
         public virtual int GetTokenSizeEstimate() {
-            return tokSzEstimate;
+            return tokenSizeEstimate;
         }
         
         public virtual String GetDigestAlgorithm() {
@@ -131,9 +137,8 @@ namespace iTextSharp.text.pdf {
         /**
          * Get RFC 3161 timeStampToken.
          * Method may return null indicating that timestamp should be skipped.
-         * @param imprint byte[] - data imprint to be time-stamped
-         * @return byte[] - encoded, TSA signed data of the timeStampToken
-         * @throws Exception - TSA request failed
+         * @param imprint data imprint to be time-stamped
+         * @return encoded, TSA signed data of the timeStampToken
          */
         public virtual byte[] GetTimeStampToken(byte[] imprint) {
             byte[] respBytes = null;
@@ -142,7 +147,7 @@ namespace iTextSharp.text.pdf {
             tsqGenerator.SetCertReq(true);
             // tsqGenerator.setReqPolicy("1.3.6.1.4.1.601.10.3.1");
             BigInteger nonce = BigInteger.ValueOf(DateTime.Now.Ticks + Environment.TickCount);
-            TimeStampRequest request = tsqGenerator.Generate(PdfPKCS7.GetAllowedDigests(GetDigestAlgorithm()), imprint, nonce);
+            TimeStampRequest request = tsqGenerator.Generate(DigestAlgorithms.GetAllowedDigests(GetDigestAlgorithm()), imprint, nonce);
             byte[] requestBytes = request.GetEncoded();
             
             // Call the communications layer
@@ -157,7 +162,7 @@ namespace iTextSharp.text.pdf {
             int value = (failure == null) ? 0 : failure.IntValue;
             if (value != 0) {
                 // @todo: Translate value of 15 error codes defined by PKIFailureInfo to string
-                throw new Exception(MessageLocalization.GetComposedMessage("invalid.tsa.1.response.code.2", tsaURL, value));
+                throw new IOException(MessageLocalization.GetComposedMessage("invalid.tsa.1.response.code.2", tsaURL, value));
             }
             // @todo: validate the time stap certificate chain (if we want
             //        assure we do not sign using an invalid timestamp).
@@ -165,13 +170,13 @@ namespace iTextSharp.text.pdf {
             // extract just the time stamp token (removes communication status info)
             TimeStampToken  tsToken = response.TimeStampToken;
             if (tsToken == null) {
-                throw new Exception(MessageLocalization.GetComposedMessage("tsa.1.failed.to.return.time.stamp.token.2", tsaURL, response.GetStatusString()));
+                throw new IOException(MessageLocalization.GetComposedMessage("tsa.1.failed.to.return.time.stamp.token.2", tsaURL, response.GetStatusString()));
             }
             TimeStampTokenInfo info = tsToken.TimeStampInfo; // to view details
             byte[] encoded = tsToken.GetEncoded();
             
             // Update our token size estimate for the next call (padded to be safe)
-            this.tokSzEstimate = encoded.Length + 32;
+            this.tokenSizeEstimate = encoded.Length + 32;
             return encoded;
         }
         

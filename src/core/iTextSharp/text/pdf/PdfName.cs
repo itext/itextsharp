@@ -578,6 +578,7 @@ namespace iTextSharp.text.pdf {
          */
         public static readonly PdfName EPSG = new PdfName("EPSG");
 
+        public static readonly PdfName ETSI_CADES_DETACHED = new PdfName("ETSI.CAdES.detached");
         public static readonly PdfName ETSI_RFC3161 = new PdfName("ETSI.RFC3161");
         /** A name */
         public static readonly PdfName EXTEND = new PdfName("Extend");

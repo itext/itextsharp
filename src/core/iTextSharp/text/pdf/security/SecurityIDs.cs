@@ -1,9 +1,8 @@
 using System;
-using Org.BouncyCastle.X509;
 /*
- * $Id$
+ * $Id: SecurityIDs.java 5190 2012-06-18 10:46:23Z blowagie $
  *
- * This file is part of the iText project.
+ * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
@@ -29,8 +28,8 @@ using Org.BouncyCastle.X509;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -43,22 +42,24 @@ using Org.BouncyCastle.X509;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-
-namespace iTextSharp.text.pdf {
+namespace iTextSharp.text.pdf.security {
 
     /**
-    * Interface for the OCSP Client.
-    * @since 2.1.6
-    */
-    public interface IOcspClient {
-	    /**
-	     * Gets an encoded byte array with OCSP validation. The method should not throw an exception.
-         * @param checkCert to certificate to check
-         * @param rootCert the parent certificate
-         * @param the url to get the verification. It it's null it will be taken
-         * from the check cert or from other implementation specific source
-	     * @return	a byte array with the validation or null if the validation could not be obtained
-	     */
-        byte[] GetEncoded(X509Certificate checkCert, X509Certificate rootCert, String url);
+     * A list of IDs that are used by the security classes
+     */
+    public class SecurityIDs {
+
+	    public const String ID_PKCS7_DATA = "1.2.840.113549.1.7.1";
+	    public const String ID_PKCS7_SIGNED_DATA = "1.2.840.113549.1.7.2";
+	    public const String ID_RSA = "1.2.840.113549.1.1.1";
+	    public const String ID_DSA = "1.2.840.10040.4.1";
+	    public const String ID_CONTENT_TYPE = "1.2.840.113549.1.9.3";
+	    public const String ID_MESSAGE_DIGEST = "1.2.840.113549.1.9.4";
+	    public const String ID_SIGNING_TIME = "1.2.840.113549.1.9.5";
+	    public const String ID_ADBE_REVOCATION = "1.2.840.113583.1.1.8";
+	    public const String ID_TSA = "1.2.840.113583.1.1.9.1";
+	    public const String ID_OCSP = "1.3.6.1.5.5.7.48.1";
+	    public const String ID_AA_SIGNING_CERTIFICATE_V2 = "1.2.840.113549.1.9.16.2.47";
+
     }
 }

@@ -1,7 +1,7 @@
 using System;
+using System.Collections.Generic;
+using Org.BouncyCastle.X509;
 /*
- * $Id$
- *
  * This file is part of the iText project.
  * Copyright (c) 1998-2012 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
@@ -43,38 +43,20 @@ using System;
  * address: sales@itextpdf.com
  */
 
-namespace iTextSharp.text.pdf {
+namespace iTextSharp.text.pdf.security {
 
     /**
-    * Time Stamp Authority client (caller) interface.
-    * <p>
-    * Interface used by the PdfPKCS7 digital signature builder to call
-    * Time Stamp Authority providing RFC 3161 compliant time stamp token.
-    * @author Martin Brunecky, 07/17/2007
-    * @since    2.1.6
-    */
-    public interface ITSAClient {
+     * Interface that needs to be implemented if you want to embed
+     * Certificate Revocation Lists into your PDF.
+     * @author Paulo Soares
+     */
+    public interface ICrlClient {
         /**
-        * Get the time stamp token size estimate.
-        * Implementation must return value large enough to accomodate the entire token
-        * returned by getTimeStampToken() _prior_ to actual getTimeStampToken() call.
-        * @return   an estimate of the token size
-        */
-        int GetTokenSizeEstimate();
-        
-        /**
-         * Gets the algorithm used to digest the data imprint
-         * @return the digest algorithm name
+         * Gets a collection of byte array each representing a crl.
+         * @param	checkCert	the certificate from which a CRL URL can be obtained
+         * @param	url		a CRL url if you don't want to obtain it from the certificate
+         * @return	a collection of byte array each representing a crl. It may return null or an empty collection
          */
-        String GetDigestAlgorithm();
-
-        /**
-         * Get RFC 3161 timeStampToken.
-         * Method may return null indicating that timestamp should be skipped.
-         * @param imprint byte[] - data imprint to be time-stamped
-         * @return byte[] - encoded, TSA signed data of the timeStampToken
-         * @throws Exception - TSA request failed
-         */
-        byte[] GetTimeStampToken(byte[] imprint);
+        ICollection<byte[]> GetEncoded(X509Certificate checkCert, String url);
     }
 }

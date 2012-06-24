@@ -6,6 +6,7 @@ using System.Xml;
 using System.util;
 using System.util.collections;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.pdf.security;
 using iTextSharp.text.xml;
 /*
  * This file is part of the iText project.

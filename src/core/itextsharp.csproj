@@ -558,9 +558,6 @@
     <Compile Include="iTextSharp\text\pdf\IntHashtable.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\pdf\IOcspClient.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="iTextSharp\text\pdf\IPdfOCG.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -573,16 +570,10 @@
     <Compile Include="iTextSharp\text\pdf\IPdfPTableEvent.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\pdf\ITSAClient.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="iTextSharp\text\pdf\LZWDecoder.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\MultiColumnText.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="iTextSharp\text\pdf\OcspClientBouncyCastle.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\OutputStreamCounter.cs">
@@ -825,9 +816,6 @@
     <Compile Include="iTextSharp\text\pdf\PdfPCell.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\pdf\PdfPKCS7.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfPRow.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -862,9 +850,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfShadingPattern.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="iTextSharp\text\pdf\PdfSigGenericPKCS.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfSignature.cs">
@@ -995,9 +980,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\TrueTypeFontUnicode.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="iTextSharp\text\pdf\TSAClientBouncyCastle.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\Type1Font.cs">
@@ -4108,18 +4090,33 @@
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapUniCid.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\ICidLocation.cs" />
     <Compile Include="iTextSharp\text\pdf\LongHashtable.cs" />
-    <Compile Include="iTextSharp\text\pdf\CrlClientImp.cs" />
     <Compile Include="iTextSharp\text\pdf\crypto\AESCipherCBCnoPad.cs" />
     <Compile Include="iTextSharp\text\pdf\FilterHandlers.cs" />
-    <Compile Include="iTextSharp\text\pdf\ICrlClient.cs" />
-    <Compile Include="iTextSharp\text\pdf\LtvTimestamp.cs" />
-    <Compile Include="iTextSharp\text\pdf\LtvVerification.cs" />
     <Compile Include="iTextSharp\text\pdf\NumberArray.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\InlineImageInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\InlineImageUtils.cs" />
     <Compile Include="iTextSharp\text\pdf\IPdfPTableEventSplit.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfConcatenate.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfDiv.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\CertificateInfo.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\CertificateUtil.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\CertificateVerification.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\CrlClientImp.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\CrlClientOffline.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\DigestAlgorithms.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\EncryptionAlgorithms.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\ICrlClient.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\IExternalSignature.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\IOcspClient.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\ITSAClient.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\LtvTimestamp.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\LtvVerification.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\MakeSignature.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\OcspClientBouncyCastle.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\PdfPKCS7.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\PrivateKeySignature.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\SecurityIDs.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\TSAClientBouncyCastle.cs" />
     <Compile Include="iTextSharp\text\WritableDirectElement.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\handler\HTMLNewLineHandler.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\handler\NeverNewLineHandler.cs" />

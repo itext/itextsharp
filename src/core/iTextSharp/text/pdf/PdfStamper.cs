@@ -5,6 +5,7 @@ using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.collection;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.pdf.security;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -178,25 +179,9 @@ namespace iTextSharp.text.pdf {
                 stamper.Close(moreInfo);
                 return;
             }
-            sigApp.PreClose();
-            PdfSigGenericPKCS sig = sigApp.SigStandard;
-            PdfLiteral lit = (PdfLiteral)sig.Get(PdfName.CONTENTS);
-            int totalBuf = (lit.PosLength - 2) / 2;
-            byte[] buf = new byte[8192];
-            int n;
-            Stream inp = sigApp.GetRangeStream();
-            while ((n = inp.Read(buf, 0, buf.Length)) > 0) {
-                sig.Signer.Update(buf, 0, n);
+            else {
+                throw new DocumentException("Signature defined. Must be closed in PdfSignatureAppearance.");
             }
-            buf = new byte[totalBuf];
-            byte[] bsig = sig.SignerContents;
-            Array.Copy(bsig, 0, buf, 0, bsig.Length);
-            PdfString str = new PdfString(buf);
-            str.SetHexWriting(true);
-            PdfDictionary dic = new PdfDictionary();
-            dic.Put(PdfName.CONTENTS, str);
-            sigApp.Close(dic);
-            stamper.reader.Close();
         }
 
         /** Gets a <CODE>PdfContentByte</CODE> to write under the page of
@@ -761,6 +746,10 @@ namespace iTextSharp.text.pdf {
 
         public virtual void Dispose() {
             Close();
+        }
+
+        public void MarkUsed(PdfObject obj) {
+            stamper.MarkUsed(obj);
         }
 
         public LtvVerification LtvVerification {

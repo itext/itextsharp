@@ -12,7 +12,7 @@ using iTextSharp.text.error_messages;
 using iTextSharp.text.log;
 
 /*
- * $Id$
+ * $Id: OcspClientBouncyCastle.cs 220 2010-12-22 13:38:35Z psoares33 $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -55,12 +55,11 @@ using iTextSharp.text.log;
  * address: sales@itextpdf.com
  */
 
-namespace iTextSharp.text.pdf {
+namespace iTextSharp.text.pdf.security {
 
     /**
     * OcspClient implementation using BouncyCastle.
-    * @author psoares
-    * @since	2.1.6
+    * @author Paulo Soares
     */
     public class OcspClientBouncyCastle : IOcspClient {
         private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(OcspClientBouncyCastle));
@@ -105,7 +104,7 @@ namespace iTextSharp.text.pdf {
                 if (checkCert == null || rootCert == null)
                     return null;
                 if (url == null) {
-                    url = PdfPKCS7.GetOCSPURL(checkCert);
+                    url = CertificateUtil.GetOCSPURL(checkCert);
                 }
                 if (url == null)
                     return null;
