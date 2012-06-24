@@ -50,14 +50,15 @@ using iTextSharp.text.error_messages;
  * address: sales@itextpdf.com
  */
 
-namespace iTextSharp.text.pdf {
+namespace iTextSharp.text.pdf.security {
 
     /**
      * Add verification according to PAdES-LTV (part 4)
      * @author psoares
      */
     public class LtvVerification {
-        private PdfStamperImp writer;
+        private PdfStamper stp;
+        private PdfWriter writer;
         private PdfReader reader;
         private AcroFields acroFields;
         private IDictionary<PdfName,ValidationData> validated = new Dictionary<PdfName,ValidationData>();
@@ -112,12 +113,16 @@ namespace iTextSharp.text.pdf {
              */
             NO
         }
+
         /**
-         * The verification constructor
+         * The verification constructor. This class should only be created with
+         * PdfStamper.getLtvVerification() otherwise the information will not be
+         * added to the Pdf.
          * @param stp the PdfStamper to apply the validation to
          */
-        internal LtvVerification(PdfStamper stp) {
-            writer = (PdfStamperImp)stp.Writer;
+        public LtvVerification(PdfStamper stp) {
+            this.stp = stp;
+            writer = stp.Writer;
             reader = stp.Reader;
             acroFields = stp.AcroFields;
         }
@@ -147,17 +152,19 @@ namespace iTextSharp.text.pdf {
                         vd.ocsps.Add(BuildOCSPResponse(ocspEnc));
                 }
                 if (crl != null && (level == Level.CRL || level == Level.OCSP_CRL || (level == Level.OCSP_OPTIONAL_CRL && ocspEnc == null))) {
-                    byte[] cim = crl.GetEncoded(xc[k], null);
-                    if (cim != null) {
-                        bool dup = false;
-                        foreach (byte[] b in vd.crls) {
-                            if (Arrays.AreEqual(b, cim)) {
-                                dup = true;
-                                break;
+                    ICollection<byte[]> cims = crl.GetEncoded((X509Certificate)xc[k], null);
+                    if (cims != null) {
+                        foreach (byte[] cim in cims) {
+                            bool dup = false;
+                            foreach (byte[] b in vd.crls) {
+                                if (Arrays.AreEqual(b, cim)) {
+                                    dup = true;
+                                    break;
+                                }
                             }
+                            if (!dup)
+                                vd.crls.Add(cim);
                         }
-                        if (!dup)
-                            vd.crls.Add(cim);
                     }
                 }
                 if (certOption == CertificateOption.SIGNING_CERTIFICATE)
@@ -168,6 +175,37 @@ namespace iTextSharp.text.pdf {
             if (certInclude == CertificateInclusion.YES) {
                 foreach (X509Certificate c in xc) {
                     vd.certs.Add(c.GetEncoded());
+                }
+            }
+            validated[GetSignatureHashKey(signatureName)] = vd;
+            return true;
+        }
+
+        /**
+         * Alternative addVerification.
+         * I assume that inputs are deduplicated.
+         *
+         * @throws IOException
+         * @throws GeneralSecurityException
+         *
+         */
+        public bool AddVerification(String signatureName, ICollection<byte[]> ocsps, ICollection<byte[]> crls, ICollection<byte[]> certs) {
+            if (used)
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("verification.already.output"));
+            ValidationData vd = new ValidationData();
+            if (ocsps != null) {
+                foreach (byte[] ocsp in ocsps) {
+                    vd.ocsps.Add(BuildOCSPResponse(ocsp));
+                }
+            }
+            if (crls != null) {
+                foreach (byte[] crl in crls) {
+                    vd.crls.Add(crl);
+                }
+            }
+            if (certs != null) {
+                foreach (byte[] cert in certs) {
+                    vd.certs.Add(cert);
                 }
             }
             validated[GetSignatureHashKey(signatureName)] = vd;
@@ -218,7 +256,7 @@ namespace iTextSharp.text.pdf {
          * a new one.
          * @throws IOException 
          */
-        internal void Merge() {
+        public void Merge() {
             if (used || validated.Count == 0)
                 return;
             used = true;
@@ -232,7 +270,7 @@ namespace iTextSharp.text.pdf {
         
         private void UpdateDss() {
             PdfDictionary catalog = reader.Catalog;
-            writer.MarkUsed(catalog);
+            stp.MarkUsed(catalog);
             PdfDictionary dss = catalog.GetAsDict(PdfName.DSS);
             PdfArray ocsps = dss.GetAsArray(PdfName.OCSPS);
             PdfArray crls = dss.GetAsArray(PdfName.CRLS);
@@ -289,7 +327,7 @@ namespace iTextSharp.text.pdf {
         
         private void OutputDss(PdfDictionary dss, PdfDictionary vrim, PdfArray ocsps, PdfArray crls, PdfArray certs) {
             PdfDictionary catalog = reader.Catalog;
-            writer.MarkUsed(catalog);
+            stp.MarkUsed(catalog);
             foreach (PdfName vkey in validated.Keys) {
                 PdfArray ocsp = new PdfArray();
                 PdfArray crl = new PdfArray();

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using Org.BouncyCastle.X509;
@@ -46,21 +47,30 @@ using iTextSharp.text.error_messages;
  * address: sales@itextpdf.com
  */
 
-namespace iTextSharp.text.pdf {
+namespace iTextSharp.text.pdf.security {
 
     /**
-     *
-     * @author psoares
+     * An implementation of the CrlClient that fetches the CRL bytes
+     * from an URL.
+     * @author Paulo Soares
      */
     public class CrlClientImp : ICrlClient {
         private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(CrlClientImp));
 
-        public virtual byte[] GetEncoded(X509Certificate checkCert, String url) {
+        /**
+         * Fetches the CRL bytes from an URL.
+         * If no url is passed as parameter, the url will be obtained from the certificate.
+         * If you want to load a CRL from a local file, subclass this method and pass an
+         * URL with the path to the local file to this method. An other option is to use
+         * the CrlClientOffline class.
+         * @see com.itextpdf.text.pdf.security.CrlClient#getEncoded(java.security.cert.X509Certificate, java.lang.String)
+         */
+        public virtual ICollection<byte[]> GetEncoded(X509Certificate checkCert, String url) {
             try {
                 if (url == null) {
                     if (checkCert == null)
                         return null;
-                    url = PdfPKCS7.GetCrlUrl(checkCert);
+                    url = CertificateUtil.GetCRLURL(checkCert);
                 }
                 if (url == null)
                     return null;
@@ -79,7 +89,7 @@ namespace iTextSharp.text.pdf {
                     bout.Write(buf, 0, n);
                 }
                 inp.Close();
-                return bout.ToArray();
+                return new byte[][]{bout.ToArray()};
             }
             catch (Exception ex) {
                 if (LOGGER.IsLogging(Level.ERROR))

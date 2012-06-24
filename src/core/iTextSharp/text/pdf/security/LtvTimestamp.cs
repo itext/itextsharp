@@ -46,13 +46,13 @@ using iTextSharp.text;
  * address: sales@itextpdf.com
  */
 
-namespace iTextSharp.text.pdf {
+namespace iTextSharp.text.pdf.security {
 
     /**
      * PAdES-LTV Timestamp
      * @author Pulo Soares
      */
-    public class LtvTimestamp {
+    public static class LtvTimestamp {
         /**
          * Signs a document with a PAdES-LTV Timestamp. The document is closed at the end.
          * @param sap the signature appearance

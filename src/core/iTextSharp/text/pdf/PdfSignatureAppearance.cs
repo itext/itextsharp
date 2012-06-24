@@ -1,16 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using Org.BouncyCastle.X509;
-using Org.BouncyCastle.Crypto;
-using iTextSharp.text;
 using iTextSharp.text.error_messages;
-using Org.BouncyCastle.Security;
+using System.Text;
+using System.Collections.Generic;
+using iTextSharp.text.pdf.security;
 /*
  * $Id$
- * 
- * This file is part of the iText project.
+ *
+ * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
@@ -36,8 +34,8 @@ using Org.BouncyCastle.Security;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -53,610 +51,71 @@ using Org.BouncyCastle.Security;
 namespace iTextSharp.text.pdf {
 
     /**
-    * This class takes care of the cryptographic options and appearances that form a signature.
-    */
+     * Class that takes care of the cryptographic options
+     * and appearances that form a signature.
+     */
     public class PdfSignatureAppearance {
-    
-        /**
-        * Enumeration representing the different rendering options of a signature
-        */  
-        public enum SignatureRender {
-            Description,
-            NameAndDescription,
-            GraphicAndDescription,
-            Graphic
-        }  
-        
-        /**
-        * The self signed filter.
-        */
-        public static PdfName SELF_SIGNED = PdfName.ADOBE_PPKLITE;
-        /**
-        * The VeriSign filter.
-        */
-        public static PdfName VERISIGN_SIGNED = PdfName.VERISIGN_PPKVS;
-        /**
-        * The Windows Certificate Security.
-        */
-        public static PdfName WINCER_SIGNED = PdfName.ADOBE_PPKMS;
 
-        public const int NOT_CERTIFIED = 0;
-        public const int CERTIFIED_NO_CHANGES_ALLOWED = 1;
-        public const int CERTIFIED_FORM_FILLING = 2;
-        public const int CERTIFIED_FORM_FILLING_AND_ANNOTATIONS = 3;
-
-        private const float TOP_SECTION = 0.3f;
-        private const float MARGIN = 2;
-        private Rectangle rect;
-        private Rectangle pageRect;
-        private PdfTemplate[] app = new PdfTemplate[5];
-        private PdfTemplate frm; 
-        private PdfStamperImp writer;
-        private String layer2Text;
-        private String reason;
-        private String location;
-        private DateTime signDate;
-        private int page = 1;
-        private String fieldName;
-        private ICipherParameters privKey;
-        private X509Certificate[] certChain;
-        private object[] crlList;
-        private PdfName filter;
-        private bool newField;
-        private ByteBuffer sigout;
-        private Stream originalout;
-        private string tempFile;
-        private PdfDictionary cryptoDictionary;
-        private PdfStamper stamper;
-        private bool preClosed = false;
-        private PdfSigGenericPKCS sigStandard;
-        private long[] range;
-        private FileStream raf;
-        private byte[] bout;
-        private int boutLen;
-        private byte[] externalDigest;
-        private byte[] externalRSAdata;
-        private String digestEncryptionAlgorithm;
-        private Dictionary<PdfName, PdfLiteral> exclusionLocations;
-            
+        /**
+         * Constructs a PdfSignatureAppearance object.
+         * @param writer    the writer to which the signature will be written.
+         */
         internal PdfSignatureAppearance(PdfStamperImp writer) {
             this.writer = writer;
             signDate = DateTime.Now;
             fieldName = GetNewSigName();
         }		
+        
+        /*
+         * SIGNATURE
+         */
+
+        // signature types
+        
+        /** Approval signature */
+        public const int NOT_CERTIFIED = 0;
+        
+        /** Author signature, no changes allowed */
+        public const int CERTIFIED_NO_CHANGES_ALLOWED = 1;
+        
+        /** Author signature, form filling allowed */
+        public const int CERTIFIED_FORM_FILLING = 2;
+        
+        /** Author signature, form filling and annotations allowed */
+        public const int CERTIFIED_FORM_FILLING_AND_ANNOTATIONS = 3;
+
+        /** The certification level */
+        private int certificationLevel = NOT_CERTIFIED;
 
         /**
-        * Gets the rendering mode for this signature .
-        * @return the rectangle rendering mode for this signature. 
-        */    
-        private SignatureRender render = SignatureRender.Description;
-
-        public SignatureRender Render {
+         * Sets the document type to certified instead of simply signed.
+         * @param certificationLevel the values can be: <code>NOT_CERTIFIED</code>, <code>CERTIFIED_NO_CHANGES_ALLOWED</code>,
+         * <code>CERTIFIED_FORM_FILLING</code> and <code>CERTIFIED_FORM_FILLING_AND_ANNOTATIONS</code>
+         */
+        public int CertificationLevel {
             get {
-                return render;
+                return certificationLevel;
             }
             set {
-                render = value;
-            }
-        }
-
-        /**
-        * Sets the Image object to render when Render is set to SignatureRender.GraphicAndDescription
-        * @param image rendered. If <CODE>null</CODE> the mode is defaulted
-        * to SignatureRender.Description
-        */    
-        private Image signatureGraphic = null;
-
-        public Image SignatureGraphic {
-            get {
-                return signatureGraphic;
-            }
-            set {
-                signatureGraphic = value;
+                certificationLevel = value;
             }
         }
         
-        /**
-        * Sets the signature text identifying the signer.
-        * @param text the signature text identifying the signer. If <CODE>null</CODE> or not set
-        * a standard description will be used
-        */    
-        public string Layer2Text {
-            get {
-                return layer2Text;
-            }
-            set {
-                layer2Text = value;
-            }
-        }
+        // signature info
+
+        /** The reason for signing. */
+        private String reason;
+
+        /** Holds value of property location. */
+        private String location;
+
+        /** Holds value of property signDate. */
+        private DateTime signDate;
         
         /**
-        * Sets the text identifying the signature status.
-        * @param text the text identifying the signature status. If <CODE>null</CODE> or not set
-        * the description "Signature Not Verified" will be used
-        */    
-        public string Layer4Text {
-            get {
-                return layer4Text;
-            }
-            set {
-                layer4Text = value;
-            }
-        }
-        
-        /**
-        * Gets the rectangle representing the signature dimensions.
-        * @return the rectangle representing the signature dimensions. It may be <CODE>null</CODE>
-        * or have zero width or height for invisible signatures
-        */    
-        public Rectangle Rect {
-            get {
-                return rect;
-            }
-        }
-        
-        /**
-        * Gets the visibility status of the signature.
-        * @return the visibility status of the signature
-        */    
-        public bool IsInvisible() {
-            return (rect == null || rect.Width == 0 || rect.Height == 0);
-        }
-        
-        /**
-        * Sets the cryptographic parameters.
-        * @param privKey the private key
-        * @param certChain the certificate chain
-        * @param crlList the certificate revocation list. It may be <CODE>null</CODE>
-        * @param filter the crytographic filter type. It can be SELF_SIGNED, VERISIGN_SIGNED or WINCER_SIGNED
-        */    
-        public void SetCrypto(ICipherParameters privKey, X509Certificate[] certChain, object[] crlList, PdfName filter) {
-            this.privKey = privKey;
-            this.certChain = certChain;
-            this.crlList = crlList;
-            this.filter = filter;
-        }
-        
-        /**
-        * Sets the signature to be visible. It creates a new visible signature field.
-        * @param pageRect the position and dimension of the field in the page
-        * @param page the page to place the field. The fist page is 1
-        * @param fieldName the field name or <CODE>null</CODE> to generate automatically a new field name
-        */    
-        public void SetVisibleSignature(Rectangle pageRect, int page, String fieldName) {
-            if (fieldName != null) {
-                if (fieldName.IndexOf('.') >= 0)
-                    throw new ArgumentException(MessageLocalization.GetComposedMessage("field.names.cannot.contain.a.dot"));
-                AcroFields af = writer.AcroFields;
-                AcroFields.Item item = af.GetFieldItem(fieldName);
-                if (item != null)
-                    throw new ArgumentException(MessageLocalization.GetComposedMessage("the.field.1.already.exists", fieldName));
-                this.fieldName = fieldName;
-            }
-            if (page < 1 || page > writer.reader.NumberOfPages)
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.page.number.1", page));
-            this.pageRect = new Rectangle(pageRect);
-            this.pageRect.Normalize();
-            rect = new Rectangle(this.pageRect.Width, this.pageRect.Height);
-            this.page = page;
-            newField = true;
-        }
-        
-        /**
-        * Sets the signature to be visible. An empty signature field with the same name must already exist.
-        * @param fieldName the existing empty signature field name
-        */    
-        public void SetVisibleSignature(String fieldName) {
-            AcroFields af = writer.AcroFields;
-            AcroFields.Item item = af.GetFieldItem(fieldName);
-            if (item == null)
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.field.1.does.not.exist", fieldName));
-            PdfDictionary merged = item.GetMerged(0);
-            if (!PdfName.SIG.Equals(PdfReader.GetPdfObject(merged.Get(PdfName.FT))))
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.field.1.is.not.a.signature.field", fieldName));
-            this.fieldName = fieldName;
-            PdfArray r = merged.GetAsArray(PdfName.RECT);
-            float llx = r.GetAsNumber(0).FloatValue;
-            float lly = r.GetAsNumber(1).FloatValue;
-            float urx = r.GetAsNumber(2).FloatValue;
-            float ury = r.GetAsNumber(3).FloatValue;
-            pageRect = new Rectangle(llx, lly, urx, ury);
-            pageRect.Normalize();
-            page = item.GetPage(0);
-            int rotation = writer.reader.GetPageRotation(page);
-            Rectangle pageSize = writer.reader.GetPageSizeWithRotation(page);
-            switch (rotation) {
-                case 90:
-                    pageRect = new Rectangle(
-                    pageRect.Bottom,
-                    pageSize.Top - pageRect.Left,
-                    pageRect.Top,
-                    pageSize.Top - pageRect.Right);
-                    break;
-                case 180:
-                    pageRect = new Rectangle(
-                    pageSize.Right - pageRect.Left,
-                    pageSize.Top - pageRect.Bottom,
-                    pageSize.Right - pageRect.Right,
-                    pageSize.Top - pageRect.Top);
-                    break;
-                case 270:
-                    pageRect = new Rectangle(
-                    pageSize.Right - pageRect.Bottom,
-                    pageRect.Left,
-                    pageSize.Right - pageRect.Top,
-                    pageRect.Right);
-                    break;
-            }
-            if (rotation != 0)
-                pageRect.Normalize();
-            rect = new Rectangle(this.pageRect.Width, this.pageRect.Height);
-        }
-        
-        /**
-        * Gets a template layer to create a signature appearance. The layers can go from 0 to 4.
-        * <p>
-        * Consult <A HREF="http://partners.adobe.com/asn/developer/pdfs/tn/PPKAppearances.pdf">PPKAppearances.pdf</A>
-        * for further details.
-        * @param layer the layer
-        * @return a template
-        */    
-        public PdfTemplate GetLayer(int layer) {
-            if (layer < 0 || layer >= app.Length)
-                return null;
-            PdfTemplate t = app[layer];
-            if (t == null) {
-                t = app[layer] = new PdfTemplate(writer);
-                t.BoundingBox = rect;
-                writer.AddDirectTemplateSimple(t, new PdfName("n" + layer));
-            }
-            return t;
-        }
-        
-        /**
-        * Gets the template that aggregates all appearance layers. This corresponds to the /FRM resource.
-        * <p>
-        * Consult <A HREF="http://partners.adobe.com/asn/developer/pdfs/tn/PPKAppearances.pdf">PPKAppearances.pdf</A>
-        * for further details.
-        * @return the template that aggregates all appearance layers
-        */    
-        public PdfTemplate GetTopLayer() {
-            if (frm == null) {
-                frm = new PdfTemplate(writer);
-                frm.BoundingBox = rect;
-                writer.AddDirectTemplateSimple(frm, new PdfName("FRM"));
-            }
-            return frm;
-        }
-        
-        /**
-        * Gets the main appearance layer.
-        * <p>
-        * Consult <A HREF="http://partners.adobe.com/asn/developer/pdfs/tn/PPKAppearances.pdf">PPKAppearances.pdf</A>
-        * for further details.
-        * </p>
-        * @return the main appearance layer
-        * @throws DocumentException on error
-        * @throws IOException on error
-        */    
-        public PdfTemplate GetAppearance() {
-            if (IsInvisible()) {
-                PdfTemplate t = new PdfTemplate(writer);
-                t.BoundingBox = new Rectangle(0, 0);
-                writer.AddDirectTemplateSimple(t, null);
-                return t;
-            }
-            if (app[0] == null) {
-                PdfTemplate t = app[0] = new PdfTemplate(writer);
-                t.BoundingBox = new Rectangle(100, 100);
-                writer.AddDirectTemplateSimple(t, new PdfName("n0"));
-                t.SetLiteral("% DSBlank\n");
-            }
-            if (app[1] == null && !acro6Layers) {
-                PdfTemplate t = app[1] = new PdfTemplate(writer);
-                t.BoundingBox = new Rectangle(100, 100);
-                writer.AddDirectTemplateSimple(t, new PdfName("n1"));
-                t.SetLiteral(questionMark);
-            }
-            if (app[2] == null) {
-                String text;
-                if (layer2Text == null) {
-                    StringBuilder buf = new StringBuilder();
-                    buf.Append("Digitally signed by ");
-                    String name = PdfPKCS7.GetSubjectFields((X509Certificate)certChain[0]).GetField("CN");
-                    if (name == null)
-                        name = PdfPKCS7.GetSubjectFields((X509Certificate)certChain[0]).GetField("E");
-                    if (name == null)
-                        name = "";
-                    buf.Append(name).Append('\n');
-                    buf.Append("Date: ").Append(signDate.ToString("yyyy.MM.dd HH:mm:ss zzz"));
-                    if (reason != null)
-                        buf.Append('\n').Append("Reason: ").Append(reason);
-                    if (location != null)
-                        buf.Append('\n').Append("Location: ").Append(location);
-                    text = buf.ToString();
-                }
-                else
-                    text = layer2Text;
-                PdfTemplate t = app[2] = new PdfTemplate(writer);
-                t.BoundingBox = rect;
-                writer.AddDirectTemplateSimple(t, new PdfName("n2"));
-                if (image != null) {
-                    if (imageScale == 0) {
-                        t.AddImage(image, rect.Width, 0, 0, rect.Height, 0, 0);
-                    }
-                    else {
-                        float usableScale = imageScale;
-                        if (imageScale < 0)
-                            usableScale = Math.Min(rect.Width / image.Width, rect.Height / image.Height);
-                        float w = image.Width * usableScale;
-                        float h = image.Height * usableScale;
-                        float x = (rect.Width - w) / 2;
-                        float y = (rect.Height - h) / 2;
-                        t.AddImage(image, w, 0, 0, h, x, y);
-                    }
-                }
-                Font font;
-                if (layer2Font == null)
-                    font = new Font();
-                else
-                    font = new Font(layer2Font);
-                float size = font.Size;
-
-                Rectangle dataRect = null;
-                Rectangle signatureRect = null;
-
-                if (Render == SignatureRender.NameAndDescription || 
-                    (Render == SignatureRender.GraphicAndDescription && this.SignatureGraphic != null)) {
-                    // origin is the bottom-left
-                    signatureRect = new Rectangle(
-                        MARGIN, 
-                        MARGIN, 
-                        rect.Width / 2 - MARGIN,
-                        rect.Height - MARGIN);
-                    dataRect = new Rectangle(
-                        rect.Width / 2 +  MARGIN / 2, 
-                        MARGIN, 
-                        rect.Width - MARGIN / 2,
-                        rect.Height - MARGIN);
-
-                    if (rect.Height > rect.Width) {
-                        signatureRect = new Rectangle(
-                            MARGIN, 
-                            rect.Height / 2, 
-                            rect.Width - MARGIN,
-                            rect.Height);
-                        dataRect = new Rectangle(
-                            MARGIN, 
-                            MARGIN, 
-                            rect.Width - MARGIN,
-                            rect.Height / 2 - MARGIN);
-                    }
-                }
-                else if (render == SignatureRender.Graphic) {
-                    if (signatureGraphic == null) {
-                        throw new InvalidOperationException(MessageLocalization.GetComposedMessage("a.signature.image.should.be.present.when.rendering.mode.is.graphic.only"));
-                    }
-                    signatureRect = new Rectangle(
-                            MARGIN,
-                            MARGIN,
-                            rect.Width - MARGIN, // take all space available
-                            rect.Height - MARGIN);
-                }
-                else {
-                    dataRect = new Rectangle(
-                        MARGIN, 
-                        MARGIN, 
-                        rect.Width - MARGIN,
-                        rect.Height * (1 - TOP_SECTION) - MARGIN);
-                }
-
-                if (Render == SignatureRender.NameAndDescription) {
-                    string signedBy = iTextSharp.text.pdf.PdfPKCS7.GetSubjectFields(this.certChain[0]).GetField("CN");
-                    if (signedBy == null)
-                        signedBy = PdfPKCS7.GetSubjectFields((X509Certificate)certChain[0]).GetField("E");
-                    if (signedBy == null)
-                        signedBy = "";
-                    Rectangle sr2 = new Rectangle(signatureRect.Width - MARGIN, signatureRect.Height - MARGIN );
-                    float signedSize = FitText(font, signedBy, sr2, -1, runDirection);
-
-                    ColumnText ct2 = new ColumnText(t);
-                    ct2.RunDirection = runDirection;
-                    ct2.SetSimpleColumn(new Phrase(signedBy, font), signatureRect.Left, signatureRect.Bottom, signatureRect.Right, signatureRect.Top, signedSize, Element.ALIGN_LEFT);
-
-                    ct2.Go();
-                }
-                else if (Render == SignatureRender.GraphicAndDescription) {
-                    ColumnText ct2 = new ColumnText(t);
-                    ct2.RunDirection = runDirection;
-                    ct2.SetSimpleColumn(signatureRect.Left, signatureRect.Bottom, signatureRect.Right, signatureRect.Top, 0, Element.ALIGN_RIGHT);
-
-                    Image im = Image.GetInstance(SignatureGraphic);
-                    im.ScaleToFit(signatureRect.Width, signatureRect.Height);
-
-                    Paragraph p = new Paragraph();
-                    // must calculate the point to draw from to make image appear in middle of column
-                    float x = 0;
-                    // experimentation found this magic number to counteract Adobe's signature graphic, which
-                    // offsets the y co-ordinate by 15 units
-                    float y = -im.ScaledHeight + 15;
-
-                    x = x + (signatureRect.Width - im.ScaledWidth) / 2;
-                    y = y - (signatureRect.Height - im.ScaledHeight) / 2;
-                    p.Add(new Chunk(im, x + (signatureRect.Width - im.ScaledWidth) / 2, y, false));
-                    ct2.AddElement(p);
-                    ct2.Go();
-                }
-
-                else if (render == SignatureRender.Graphic) {
-                    ColumnText ct2 = new ColumnText(t);
-                    ct2.RunDirection = runDirection;
-                    ct2.SetSimpleColumn(signatureRect.Left, signatureRect.Bottom, signatureRect.Right, signatureRect.Top, 0, Element.ALIGN_RIGHT);
-
-                    Image im = Image.GetInstance(signatureGraphic);
-                    im.ScaleToFit(signatureRect.Width, signatureRect.Height);
-
-                    Paragraph p = new Paragraph();
-                    // must calculate the point to draw from to make image appear in middle of column
-                    float x = 0;
-                    // experimentation found this magic number to counteract Adobe's signature graphic, which
-                    // offsets the y co-ordinate by 15 units
-                    float y = -im.ScaledHeight + 15;
-
-                    x = x + (signatureRect.Width - im.ScaledWidth) / 2;
-                    y = y - (signatureRect.Height - im.ScaledHeight) / 2;
-                    p.Add(new Chunk(im, x, y, false));
-                    ct2.AddElement(p);
-                    ct2.Go();
-                }
-                
-                if (render != SignatureRender.Graphic) {
-                    if (size <= 0) {
-                        Rectangle sr = new Rectangle(dataRect.Width, dataRect.Height);
-                        size = FitText(font, text, sr, 12, runDirection);
-                    }
-                    ColumnText ct = new ColumnText(t);
-                    ct.RunDirection = runDirection;
-                    ct.SetSimpleColumn(new Phrase(text, font), dataRect.Left, dataRect.Bottom, dataRect.Right, dataRect.Top, size, Element.ALIGN_LEFT);
-                    ct.Go();
-                }
-            }
-            if (app[3] == null && !acro6Layers) {
-                PdfTemplate t = app[3] = new PdfTemplate(writer);
-                t.BoundingBox = new Rectangle(100, 100);
-                writer.AddDirectTemplateSimple(t, new PdfName("n3"));
-                t.SetLiteral("% DSBlank\n");
-            }
-            if (app[4] == null && !acro6Layers) {
-                PdfTemplate t = app[4] = new PdfTemplate(writer);
-                t.BoundingBox = new Rectangle(0, rect.Height * (1 - TOP_SECTION), rect.Right, rect.Top);
-                writer.AddDirectTemplateSimple(t, new PdfName("n4"));
-                Font font;
-                if (layer2Font == null)
-                    font = new Font();
-                else
-                    font = new Font(layer2Font);
-                float size = font.Size;
-                String text = "Signature Not Verified";
-                if (layer4Text != null)
-                    text = layer4Text;
-                Rectangle sr = new Rectangle(rect.Width - 2 * MARGIN, rect.Height * TOP_SECTION - 2 * MARGIN);
-                size = FitText(font, text, sr, 15, runDirection);
-                ColumnText ct = new ColumnText(t);
-                ct.RunDirection = runDirection;
-                ct.SetSimpleColumn(new Phrase(text, font), MARGIN, 0, rect.Width - MARGIN, rect.Height - MARGIN, size, Element.ALIGN_LEFT);
-                ct.Go();
-            }
-            int rotation = writer.reader.GetPageRotation(page);
-            Rectangle rotated = new Rectangle(rect);
-            int n = rotation;
-            while (n > 0) {
-                rotated = rotated.Rotate();
-                n -= 90;
-            }
-            if (frm == null) {
-                frm = new PdfTemplate(writer);
-                frm.BoundingBox = rotated;
-                writer.AddDirectTemplateSimple(frm, new PdfName("FRM"));
-                float scale = Math.Min(rect.Width, rect.Height) * 0.9f;
-                float x = (rect.Width - scale) / 2;
-                float y = (rect.Height - scale) / 2;
-                scale /= 100;
-                if (rotation == 90)
-                    frm.ConcatCTM(0, 1, -1, 0, rect.Height, 0);
-                else if (rotation == 180)
-                    frm.ConcatCTM(-1, 0, 0, -1, rect.Width, rect.Height);
-                else if (rotation == 270)
-                    frm.ConcatCTM(0, -1, 1, 0, 0, rect.Width);
-                frm.AddTemplate(app[0], 0, 0);
-                if (!acro6Layers)
-                    frm.AddTemplate(app[1], scale, 0, 0, scale, x, y);
-                frm.AddTemplate(app[2], 0, 0);
-                if (!acro6Layers) {
-                    frm.AddTemplate(app[3], scale, 0, 0, scale, x, y);
-                    frm.AddTemplate(app[4], 0, 0);
-                }
-            }
-            PdfTemplate napp = new PdfTemplate(writer);
-            napp.BoundingBox = rotated;
-            writer.AddDirectTemplateSimple(napp, null);
-            napp.AddTemplate(frm, 0, 0);
-            return napp;
-        }
-        
-        /**
-        * Fits the text to some rectangle adjusting the font size as needed.
-        * @param font the font to use
-        * @param text the text
-        * @param rect the rectangle where the text must fit
-        * @param maxFontSize the maximum font size
-        * @param runDirection the run direction
-        * @return the calculated font size that makes the text fit
-        */    
-        public static float FitText(Font font, String text, Rectangle rect, float maxFontSize, int runDirection) {
-            ColumnText ct = null;
-            int status = 0;
-            if (maxFontSize <= 0) {
-                int cr = 0;
-                int lf = 0;
-                char[] t = text.ToCharArray();
-                for (int k = 0; k < t.Length; ++k) {
-                    if (t[k] == '\n')
-                        ++lf;
-                    else if (t[k] == '\r')
-                        ++cr;
-                }
-                int minLines = Math.Max(cr, lf) + 1;
-                maxFontSize = Math.Abs(rect.Height) / minLines - 0.001f;
-            }
-            font.Size = maxFontSize;
-            Phrase ph = new Phrase(text, font);
-            ct = new ColumnText(null);
-            ct.SetSimpleColumn(ph, rect.Left, rect.Bottom, rect.Right, rect.Top, maxFontSize, Element.ALIGN_LEFT);
-            ct.RunDirection = runDirection;
-            status = ct.Go(true);
-            if ((status & ColumnText.NO_MORE_TEXT) != 0)
-                return maxFontSize;
-            float precision = 0.1f;
-            float min = 0;
-            float max = maxFontSize;
-            float size = maxFontSize;
-            for (int k = 0; k < 50; ++k) { //just in case it doesn't converge
-                size = (min + max) / 2;
-                ct = new ColumnText(null);
-                font.Size = size;
-                ct.SetSimpleColumn(new Phrase(text, font), rect.Left, rect.Bottom, rect.Right, rect.Top, size, Element.ALIGN_LEFT);
-                ct.RunDirection = runDirection;
-                status = ct.Go(true);
-                if ((status & ColumnText.NO_MORE_TEXT) != 0) {
-                    if (max - min < size * precision)
-                        return size;
-                    min = size;
-                }
-                else
-                    max = size;
-            }
-            return size;
-        }
-        
-        /**
-        * Sets the digest/signature to an external calculated value.
-        * @param digest the digest. This is the actual signature
-        * @param RSAdata the extra data that goes into the data tag in PKCS#7
-        * @param digestEncryptionAlgorithm the encryption algorithm. It may must be <CODE>null</CODE> if the <CODE>digest</CODE>
-        * is also <CODE>null</CODE>. If the <CODE>digest</CODE> is not <CODE>null</CODE>
-        * then it may be "RSA" or "DSA"
-        */    
-        public void SetExternalDigest(byte[] digest, byte[] RSAdata, String digestEncryptionAlgorithm) {
-            externalDigest = digest;
-            externalRSAdata = RSAdata;
-            this.digestEncryptionAlgorithm = digestEncryptionAlgorithm;
-        }
-
-        /**
-        * Sets the signing reason.
-        * @param reason the signing reason
-        */    
+         * Gets the signing reason.
+         * @return the signing reason
+         */
         public string Reason {
             get {
                 return reason;
@@ -667,9 +126,9 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
-        * Sets the signing location.
-        * @param location the signing location
-        */    
+         * Gets the signing location.
+         * @return the signing location
+         */
         public string Location {
             get {
                 return location;
@@ -678,539 +137,14 @@ namespace iTextSharp.text.pdf {
                 location = value;
             }
         }
-            
-        /**
-        * Gets the private key.
-        * @return the private key
-        */    
-        public ICipherParameters PrivKey {
-            get {
-                return privKey;
-            }
-        }
-        
-        /**
-        * Gets the certificate chain.
-        * @return the certificate chain
-        */    
-        public X509Certificate[] CertChain {
-            get {
-                return this.certChain;
-            }
-        }
-        
-        /**
-        * Gets the certificate revocation list.
-        * @return the certificate revocation list
-        */    
-        public object[] CrlList {
-            get {
-                return this.crlList;
-            }
-        }
-        
-        /**
-        * Gets the filter used to sign the document.
-        * @return the filter used to sign the document
-        */    
-        public PdfName Filter {
-            get {
-                return filter;
-            }
-        }
-        
-        /**
-        * Checks if a new field was created.
-        * @return <CODE>true</CODE> if a new field was created, <CODE>false</CODE> if signing
-        * an existing field or if the signature is invisible
-        */    
-        public bool IsNewField() {
-            return this.newField;
-        }
-        
-        /**
-        * Gets the page number of the field.
-        * @return the page number of the field
-        */    
-        public int Page {
-            get {
-                return page;
-            }
-        }
-        
-        /**
-        * Gets the field name.
-        * @return the field name
-        */    
-        public String FieldName {
-            get {
-                return fieldName;
-            }
-        }
-        
-        /**
-        * Gets the rectangle that represent the position and dimension of the signature in the page.
-        * @return the rectangle that represent the position and dimension of the signature in the page
-        */    
-        public Rectangle PageRect {
-            get {
-                return pageRect;
-            }
-        }
-        
-        /**
-        * Gets the signature date.
-        * @return the signature date
-        */    
-        public DateTime SignDate {
-            get {
-                return signDate;
-            }
-            set {
-                signDate = value;
-            }
-        }
-        
-        internal ByteBuffer Sigout {
-            get {
-                return sigout;
-            }
-            set {
-                sigout = value;
-            }
-        }
-                
-        internal Stream Originalout {
-            get {
-                return originalout;
-            }
-            set {
-                originalout = value;
-            }
-        }
-        
-        /**
-        * Gets the temporary file.
-        * @return the temporary file or <CODE>null</CODE> is the document is created in memory
-        */    
-        public string TempFile {
-            get {
-                return tempFile;
-            }
-        }
 
-        internal void SetTempFile(string tempFile) {
-            this.tempFile = tempFile;
-        }
-
-        /**
-        * Gets a new signature fied name that doesn't clash with any existing name.
-        * @return a new signature fied name
-        */    
-        public String GetNewSigName() {
-            AcroFields af = writer.AcroFields;
-            String name = "Signature";
-            int step = 0;
-            bool found = false;
-            while (!found) {
-                ++step;
-                String n1 = name + step;
-                if (af.GetFieldItem(n1) != null)
-                    continue;
-                n1 += ".";
-                found = true;
-                foreach (String fn in af.Fields.Keys) {
-                    if (fn.StartsWith(n1)) {
-                        found = false;
-                        break;
-                    }
-                }
-            }
-            name += step;
-            return name;
-        }
+        /** The contact name of the signer. */
+        private String contact;
         
         /**
-        * This is the first method to be called when using external signatures. The general sequence is:
-        * PreClose(), GetDocumentBytes() and Close().
-        * <p>
-        * If calling PreClose() <B>dont't</B> call PdfStamper.Close().
-        * <p>
-        * No external signatures are allowed if this methos is called.
-        * @throws IOException on error
-        * @throws DocumentException on error
-        */    
-        public void PreClose() {
-            PreClose(null);
-        }
-        /**
-        * This is the first method to be called when using external signatures. The general sequence is:
-        * PreClose(), GetDocumentBytes() and Close().
-        * <p>
-        * If calling PreClose() <B>dont't</B> call PdfStamper.Close().
-        * <p>
-        * If using an external signature <CODE>exclusionSizes</CODE> must contain at least
-        * the <CODE>PdfName.CONTENTS</CODE> key with the size that it will take in the
-        * document. Note that due to the hex string coding this size should be
-        * byte_size*2+2.
-        * @param exclusionSizes a <CODE>Hashtable</CODE> with names and sizes to be excluded in the signature
-        * calculation. The key is a <CODE>PdfName</CODE> and the value an
-        * <CODE>Integer</CODE>. At least the <CODE>PdfName.CONTENTS</CODE> must be present
-        * @throws IOException on error
-        * @throws DocumentException on error
-        */    
-        public void PreClose(Dictionary<PdfName, int> exclusionSizes) {
-            if (preClosed)
-                throw new DocumentException(MessageLocalization.GetComposedMessage("document.already.pre.closed"));
-            stamper.MergeVerification();
-            preClosed = true;
-            AcroFields af = writer.AcroFields;
-            String name = FieldName;
-            bool fieldExists = !(IsInvisible() || IsNewField());
-            PdfIndirectReference refSig = writer.PdfIndirectReference;
-            writer.SigFlags = 3;
-            if (fieldExists) {
-                PdfDictionary widget = af.GetFieldItem(name).GetWidget(0);
-                writer.MarkUsed(widget);
-                widget.Put(PdfName.P, writer.GetPageReference(Page));
-                widget.Put(PdfName.V, refSig);
-                PdfObject obj = PdfReader.GetPdfObjectRelease(widget.Get(PdfName.F));
-                int flags = 0;
-                if (obj != null && obj.IsNumber())
-                    flags = ((PdfNumber)obj).IntValue;
-                flags |= PdfAnnotation.FLAGS_LOCKED;
-                widget.Put(PdfName.F, new PdfNumber(flags));
-                PdfDictionary ap = new PdfDictionary();
-                ap.Put(PdfName.N, GetAppearance().IndirectReference);
-                widget.Put(PdfName.AP, ap);
-            }
-            else {
-                PdfFormField sigField = PdfFormField.CreateSignature(writer);
-                sigField.FieldName = name;
-                sigField.Put(PdfName.V, refSig);
-                sigField.Flags = PdfAnnotation.FLAGS_PRINT | PdfAnnotation.FLAGS_LOCKED;
-
-                int pagen = Page;
-                if (!IsInvisible())
-                    sigField.SetWidget(PageRect, null);
-                else
-                    sigField.SetWidget(new Rectangle(0, 0), null);
-                sigField.SetAppearance(PdfAnnotation.APPEARANCE_NORMAL, GetAppearance());
-                sigField.Page = pagen;
-                writer.AddAnnotation(sigField, pagen);
-            }
-
-            exclusionLocations = new Dictionary<PdfName,PdfLiteral>();
-            if (cryptoDictionary == null) {
-                if (PdfName.ADOBE_PPKLITE.Equals(Filter))
-                    sigStandard = new PdfSigGenericPKCS.PPKLite();
-                else if (PdfName.ADOBE_PPKMS.Equals(Filter))
-                    sigStandard = new PdfSigGenericPKCS.PPKMS();
-                else if (PdfName.VERISIGN_PPKVS.Equals(Filter))
-                    sigStandard = new PdfSigGenericPKCS.VeriSign();
-                else
-                    throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.filter.1", Filter));
-                sigStandard.SetExternalDigest(externalDigest, externalRSAdata, digestEncryptionAlgorithm);
-                if (Reason != null)
-                    sigStandard.Reason = Reason;
-                if (Location != null)
-                    sigStandard.Location = Location;
-                if (Contact != null)
-                    sigStandard.Contact = Contact;
-                sigStandard.Put(PdfName.M, new PdfDate(SignDate));
-                sigStandard.SetSignInfo(PrivKey, CertChain, CrlList);
-                PdfString contents = (PdfString)sigStandard.Get(PdfName.CONTENTS);
-                PdfLiteral lit = new PdfLiteral((contents.ToString().Length + (PdfName.ADOBE_PPKLITE.Equals(Filter)?0:64)) * 2 + 2);
-                exclusionLocations[PdfName.CONTENTS] = lit;
-                sigStandard.Put(PdfName.CONTENTS, lit);
-                lit = new PdfLiteral(80);
-                exclusionLocations[PdfName.BYTERANGE] = lit;
-                sigStandard.Put(PdfName.BYTERANGE, lit);
-                if (certificationLevel > 0)
-                    AddDocMDP(sigStandard);
-                if (signatureEvent != null)
-                    signatureEvent.GetSignatureDictionary(sigStandard);
-                writer.AddToBody(sigStandard, refSig, false);
-            }
-            else {
-                PdfLiteral lit = new PdfLiteral(80);
-                exclusionLocations[PdfName.BYTERANGE] = lit;
-                cryptoDictionary.Put(PdfName.BYTERANGE, lit);
-                foreach (KeyValuePair<PdfName,int> entry in exclusionSizes) {
-                    PdfName key = entry.Key;
-                    int v = entry.Value;
-                    lit = new PdfLiteral(v);
-                    exclusionLocations[key] = lit;
-                    cryptoDictionary.Put(key, lit);
-                }
-                if (certificationLevel > 0)
-                    AddDocMDP(cryptoDictionary);
-                if (signatureEvent != null)
-                    signatureEvent.GetSignatureDictionary(cryptoDictionary);
-                writer.AddToBody(cryptoDictionary, refSig, false);
-            }
-            if (certificationLevel > 0) {
-                // add DocMDP entry to root
-                PdfDictionary docmdp = new PdfDictionary();
-                docmdp.Put(new PdfName("DocMDP"), refSig);
-                writer.reader.Catalog.Put(new PdfName("Perms"), docmdp);
-            }
-            writer.Close(stamper.MoreInfo);
-            
-            range = new long[exclusionLocations.Count * 2];
-            long byteRangePosition = exclusionLocations[PdfName.BYTERANGE].Position;
-            exclusionLocations.Remove(PdfName.BYTERANGE);
-            int idx = 1;
-            foreach (PdfLiteral lit in exclusionLocations.Values) {
-                long n = lit.Position;
-                range[idx++] = n;
-                range[idx++] = lit.PosLength + n;
-            }
-            Array.Sort(range, 1, range.Length - 2);
-            for (int k = 3; k < range.Length - 2; k += 2)
-                range[k] -= range[k - 1];
-            
-            if (tempFile == null) {
-                bout = sigout.Buffer;
-                boutLen = sigout.Size;
-                range[range.Length - 1] = boutLen - range[range.Length - 2];
-                ByteBuffer bf = new ByteBuffer();
-                bf.Append('[');
-                for (int k = 0; k < range.Length; ++k)
-                    bf.Append(range[k]).Append(' ');
-                bf.Append(']');
-                Array.Copy(bf.Buffer, 0, bout, byteRangePosition, bf.Size);
-            }
-            else {
-                try {
-                    raf = new FileStream(tempFile, FileMode.Open, FileAccess.ReadWrite);
-                    long len = raf.Length;
-                    range[range.Length - 1] = len - range[range.Length - 2];
-                    ByteBuffer bf = new ByteBuffer();
-                    bf.Append('[');
-                    for (int k = 0; k < range.Length; ++k)
-                        bf.Append(range[k]).Append(' ');
-                    bf.Append(']');
-                    raf.Seek(byteRangePosition, SeekOrigin.Begin);
-                    raf.Write(bf.Buffer, 0, bf.Size);
-                }
-                catch (IOException e) {
-                    try{raf.Close();}catch{}
-                    try{File.Delete(tempFile);}catch{}
-                    throw e;
-                }
-            }
-        }
-        
-        /**
-        * This is the last method to be called when using external signatures. The general sequence is:
-        * PreClose(), GetDocumentBytes() and Close().
-        * <p>
-        * <CODE>update</CODE> is a <CODE>PdfDictionary</CODE> that must have exactly the
-        * same keys as the ones provided in {@link #preClose(Hashtable)}.
-        * @param update a <CODE>PdfDictionary</CODE> with the key/value that will fill the holes defined
-        * in {@link #preClose(Hashtable)}
-        * @throws DocumentException on error
-        * @throws IOException on error
-        */    
-        public void Close(PdfDictionary update) {
-            try {
-                if (!preClosed)
-                    throw new DocumentException(MessageLocalization.GetComposedMessage("preclose.must.be.called.first"));
-                ByteBuffer bf = new ByteBuffer();
-                foreach (PdfName key in update.Keys) {
-                    PdfObject obj = update.Get(key);
-                    PdfLiteral lit = exclusionLocations[key];
-                    if (lit == null)
-                        throw new ArgumentException(MessageLocalization.GetComposedMessage("the.key.1.didn.t.reserve.space.in.preclose", key.ToString()));
-                    bf.Reset();
-                    obj.ToPdf(null, bf);
-                    if (bf.Size > lit.PosLength)
-                        throw new ArgumentException(MessageLocalization.GetComposedMessage("the.key.1.is.too.big.is.2.reserved.3", key.ToString(), bf.Size, lit.PosLength));
-                    if (tempFile == null)
-                        Array.Copy(bf.Buffer, 0, bout, lit.Position, bf.Size);
-                    else {
-                        raf.Seek(lit.Position, SeekOrigin.Begin);
-                        raf.Write(bf.Buffer, 0, bf.Size);
-                    }
-                }
-                if (update.Size != exclusionLocations.Count)
-                    throw new ArgumentException(MessageLocalization.GetComposedMessage("the.update.dictionary.has.less.keys.than.required"));
-                if (tempFile == null) {
-                    originalout.Write(bout, 0, boutLen);
-                }
-                else {
-                    if (originalout != null) {
-                        raf.Seek(0, SeekOrigin.Begin);
-                        long length = raf.Length;
-                        byte[] buf = new byte[8192];
-                        while (length > 0) {
-                            int r = raf.Read(buf, 0, (int)Math.Min((long)buf.Length, length));
-                            if (r < 0)
-                                throw new EndOfStreamException(MessageLocalization.GetComposedMessage("unexpected.eof"));
-                            originalout.Write(buf, 0, r);
-                            length -= r;
-                        }
-                    }
-                }
-            }
-            finally {
-                if (tempFile != null) {
-                    try{raf.Close();}catch{}
-                    if (originalout != null)
-                        try{File.Delete(tempFile);}catch{}
-                }
-                if (originalout != null)
-                    try{originalout.Close();}catch{}
-            }
-        }
-        
-        private void AddDocMDP(PdfDictionary crypto) {
-            PdfDictionary reference = new PdfDictionary();
-            PdfDictionary transformParams = new PdfDictionary();
-            transformParams.Put(PdfName.P, new PdfNumber(certificationLevel));
-            transformParams.Put(PdfName.V, new PdfName("1.2"));
-            transformParams.Put(PdfName.TYPE, PdfName.TRANSFORMPARAMS);
-            reference.Put(PdfName.TRANSFORMMETHOD, PdfName.DOCMDP);
-            reference.Put(PdfName.TYPE, PdfName.SIGREF);
-            reference.Put(PdfName.TRANSFORMPARAMS, transformParams);
-            reference.Put(new PdfName("DigestValue"), new PdfString("aa"));
-            PdfArray loc = new PdfArray();
-            loc.Add(new PdfNumber(0));
-            loc.Add(new PdfNumber(0));
-            reference.Put(new PdfName("DigestLocation"), loc);
-            reference.Put(new PdfName("DigestMethod"), new PdfName("MD5"));
-            reference.Put(PdfName.DATA, writer.reader.Trailer.Get(PdfName.ROOT));
-            PdfArray types = new PdfArray();
-            types.Add(reference);
-            crypto.Put(PdfName.REFERENCE, types);
-        }
-
-        /**
-         * Signs the document using the detached mode.
-         * @param pk the private key
-         * @param chain the certificate chain
-         * @param ocspClient the OCSP client
-         * @param tsaClient the Timestamp client
-         * @param hashAlgorithm the hash algorithm to use with the authenticated attributes. SHA256 will be used if null
-         * @param estimatedSize the reserved size for the signature. It will be estimated if 0
-         * @throws Exception 
+         * Gets the signing contact.
+         * @return the signing contact
          */
-        public void SignDetached(ICipherParameters pk, X509Certificate[] chain, IOcspClient ocspClient, ITSAClient tsaClient, String hashAlgorithm, int estimatedSize) {
-            if (estimatedSize == 0) {
-                estimatedSize = 8192;
-                if (ocspClient != null)
-                    estimatedSize += 4192;
-                if (tsaClient != null)
-                    estimatedSize += 4192;
-            }
-            if (hashAlgorithm == null)
-                hashAlgorithm = "SHA256";
-            SetCrypto(null, chain, null, null);
-            PdfSignature dic = new PdfSignature(PdfName.ADOBE_PPKLITE, PdfName.ADBE_PKCS7_DETACHED);
-            dic.Reason = Reason;
-            dic.Location = Location;
-            dic.Contact = Contact;
-            dic.Date = new PdfDate(SignDate);
-            CryptoDictionary = dic;
-
-            Dictionary<PdfName,int> exc = new Dictionary<PdfName,int>();
-            exc[PdfName.CONTENTS] = estimatedSize * 2 + 2;
-            PreClose(exc);
-
-            PdfPKCS7 sgn = new PdfPKCS7(pk, chain, null, hashAlgorithm, false);
-            IDigest messageDigest = DigestUtilities.GetDigest(hashAlgorithm);
-            Stream data = GetRangeStream();
-            byte[] buf = new byte[8192];
-            int n;
-            while ((n = data.Read(buf, 0, buf.Length)) > 0) {
-                messageDigest.BlockUpdate(buf, 0, n);
-            }
-            byte[] hash = new byte[messageDigest.GetDigestSize()];
-            messageDigest.DoFinal(hash, 0);
-            DateTime cal = DateTime.Now;
-            byte[] ocsp = null;
-            if (chain.Length >= 2 && ocspClient != null) {
-                ocsp = ocspClient.GetEncoded(chain[0], chain[1], null);
-            }
-            byte[] sh = sgn.GetAuthenticatedAttributeBytes(hash, cal, ocsp);
-            sgn.Update(sh, 0, sh.Length);
-
-            byte[] encodedSig = sgn.GetEncodedPKCS7(hash, cal, tsaClient, ocsp);
-            if (estimatedSize + 2 < encodedSig.Length)
-                throw new Exception("Not enough space");
-
-            byte[] paddedSig = new byte[estimatedSize];
-            System.Array.Copy(encodedSig, 0, paddedSig, 0, encodedSig.Length);
-
-            PdfDictionary dic2 = new PdfDictionary();
-            dic2.Put(PdfName.CONTENTS, new PdfString(paddedSig).SetHexWriting(true));
-            Close(dic2);
-        }
-
-        /**
-        * Gets the document bytes that are hashable when using external signatures. The general sequence is:
-        * PreClose(), GetRangeStream() and Close().
-        * <p>
-        * @return the document bytes that are hashable
-        */    
-        public Stream GetRangeStream() {
-            return new PdfSignatureAppearance.FRangeStream(raf, bout, range);
-        }
-        
-        /**
-        * Gets the user made signature dictionary. This is the dictionary at the /V key.
-        * @return the user made signature dictionary
-        */    
-        public PdfDictionary CryptoDictionary {
-            get {
-                return cryptoDictionary;
-            }
-            set {
-                cryptoDictionary = value;
-            }
-        }
-        
-        /**
-        * Gets the <CODE>PdfStamper</CODE> associated with this instance.
-        * @return the <CODE>PdfStamper</CODE> associated with this instance
-        */    
-        public PdfStamper Stamper {
-            get {
-                return stamper;
-            }
-        }
-        
-        internal void SetStamper(PdfStamper stamper) {
-            this.stamper = stamper;
-        }
-        
-        /**
-        * Checks if the document is in the process of closing.
-        * @return <CODE>true</CODE> if the document is in the process of closing,
-        * <CODE>false</CODE> otherwise
-        */    
-        public bool IsPreClosed() {
-            return preClosed;
-        }
-        
-        /**
-        * Gets the instance of the standard signature dictionary. This instance
-        * is only available after pre close.
-        * <p>
-        * The main use is to insert external signatures.
-        * @return the instance of the standard signature dictionary
-        */    
-        public PdfSigGenericPKCS SigStandard {
-            get {
-                return sigStandard;
-            }
-        }
-        
-        /**
-        * Sets the signing contact.
-        * @param contact the signing contact
-        */
         public string Contact {
             get {
                 return contact;
@@ -1219,186 +153,43 @@ namespace iTextSharp.text.pdf {
                 contact = value;
             }
         }
-        
+
         /**
-        * Sets the n2 and n4 layer font. If the font size is zero, auto-fit will be used.
-        * @param layer2Font the n2 and n4 font
-        */
-        public Font Layer2Font {
+         * Gets the signature date.
+         * @return the signature date
+         */
+        public DateTime SignDate {
             get {
-                return layer2Font;
+                return signDate;
             }
             set {
-                layer2Font = value;
-            }
-        }
-        
-        /**
-        * Acrobat 6.0 and higher recomends that only layer n2 and n4 be present. This method sets that mode.
-        * @param acro6Layers if <code>true</code> only the layers n2 and n4 will be present
-        */
-        public bool Acro6Layers {
-            get {
-                return acro6Layers;
-            }
-            set {
-                acro6Layers = value;
-            }
-        }
-        
-        /** Sets the run direction in the n2 and n4 layer. 
-        * @param runDirection the run direction
-        */    
-        public int RunDirection {
-            set {
-                if (value < PdfWriter.RUN_DIRECTION_DEFAULT || value > PdfWriter.RUN_DIRECTION_RTL)
-                    throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.run.direction.1", runDirection));
-                this.runDirection = value;
-            }
-            get {
-                return runDirection;
-            }
-        }
-        
-        /**
-        * Sets the signature event to allow modification of the signature dictionary.
-        * @param signatureEvent the signature event
-        */
-        public ISignatureEvent SignatureEvent {
-            get {
-                return signatureEvent;
-            }
-            set {
-                signatureEvent = value;
-            }
-        }
-        /**
-        * Gets the background image for the layer 2.
-        * @return the background image for the layer 2
-        */
-        public Image GetImage() {
-            return this.image;
-        }
-        
-        /**
-        * Sets the background image for the layer 2.
-        * @param image the background image for the layer 2
-        */
-        public Image Image {
-            get {
-                return image;
-            }
-            set {
-                image = value;
-            }
-        }
-        
-        /**
-        * Sets the scaling to be applied to the background image. If it's zero the image
-        * will fully fill the rectangle. If it's less than zero the image will fill the rectangle but
-        * will keep the proportions. If it's greater than zero that scaling will be applied.
-        * In any of the cases the image will always be centered. It's zero by default.
-        * @param imageScale the scaling to be applied to the background image
-        */
-        public float ImageScale {
-            get {
-                return imageScale;
-            }
-            set {
-                imageScale = value;
+                signDate = value;
             }
         }
 
-        /**
-        * Commands to draw a yellow question mark in a stream content
-        */    
-        public const String questionMark = 
-            "% DSUnknown\n" +
-            "q\n" +
-            "1 G\n" +
-            "1 g\n" +
-            "0.1 0 0 0.1 9 0 cm\n" +
-            "0 J 0 j 4 M []0 d\n" +
-            "1 i \n" +
-            "0 g\n" +
-            "313 292 m\n" +
-            "313 404 325 453 432 529 c\n" +
-            "478 561 504 597 504 645 c\n" +
-            "504 736 440 760 391 760 c\n" +
-            "286 760 271 681 265 626 c\n" +
-            "265 625 l\n" +
-            "100 625 l\n" +
-            "100 828 253 898 381 898 c\n" +
-            "451 898 679 878 679 650 c\n" +
-            "679 555 628 499 538 435 c\n" +
-            "488 399 467 376 467 292 c\n" +
-            "313 292 l\n" +
-            "h\n" +
-            "308 214 170 -164 re\n" +
-            "f\n" +
-            "0.44 G\n" +
-            "1.2 w\n" +
-            "1 1 0.4 rg\n" +
-            "287 318 m\n" +
-            "287 430 299 479 406 555 c\n" +
-            "451 587 478 623 478 671 c\n" +
-            "478 762 414 786 365 786 c\n" +
-            "260 786 245 707 239 652 c\n" +
-            "239 651 l\n" +
-            "74 651 l\n" +
-            "74 854 227 924 355 924 c\n" +
-            "425 924 653 904 653 676 c\n" +
-            "653 581 602 525 512 461 c\n" +
-            "462 425 441 402 441 318 c\n" +
-            "287 318 l\n" +
-            "h\n" +
-            "282 240 170 -164 re\n" +
-            "B\n" +
-            "Q\n";
+        // the PDF file
+        
+        /** The file right before the signature is added (can be null). */
+        private FileStream raf;
+        /** The bytes of the file right before the signature is added (if raf is null) */
+        private byte[] bout;
+        /** Array containing the byte positions of the bytes that need to be hashed. */
+        private long[] range;
         
         /**
-        * Holds value of property contact.
-        */
-        private String contact;
+         * Gets the document bytes that are hashable when using external signatures. The general sequence is:
+         * preClose(), getRangeStream() and close().
+         * <p>
+         * @return the document bytes that are hashable
+         */
+        public Stream GetRangeStream() {
+            return new PdfSignatureAppearance.FRangeStream(raf, bout, range);
+        }
         
         /**
-        * Holds value of property layer2Font.
-        */
-        private Font layer2Font;
-        
-        /**
-        * Holds value of property layer4Text.
-        */
-        private String layer4Text;
-        
-        /**
-        * Holds value of property acro6Layers.
-        */
-        private bool acro6Layers;
-        
-        /**
-        * Holds value of property runDirection.
-        */
-        private int runDirection = PdfWriter.RUN_DIRECTION_NO_BIDI;
-        
-        /**
-        * Holds value of property signatureEvent.
-        */
-        private ISignatureEvent signatureEvent;
-        
-        /**
-        * Holds value of property image.
-        */
-        private Image image;
-        
-        /**
-        * Holds value of property imageScale.
-        */
-        private float imageScale;
-        
-        /**
-        *
-        */    
+         * An InputStream that allows you to read that part of a PDF
+         * document that needs to be hashed.
+         */
         public class FRangeStream : Stream {
             private byte[] b = new byte[1];
             private FileStream raf;
@@ -1516,6 +307,43 @@ namespace iTextSharp.text.pdf {
             }
         }
         
+        /** The signing certificate */
+        private X509Certificate signCertificate;
+
+        
+        // Crypto dictionary
+        
+        /** The crypto dictionary */
+        private PdfDictionary cryptoDictionary;
+        /**
+         * Gets the user made signature dictionary. This is the dictionary at the /V key.
+         * @return the user made signature dictionary
+         */
+        public PdfDictionary CryptoDictionary {
+            get {
+                return cryptoDictionary;
+            }
+            set {
+                cryptoDictionary = value;
+            }
+        }
+        
+        /**
+         * Sets the certificate used to provide the text in the appearance.
+         * This certificate doesn't take part in the actual signing process.
+         * @param signCertificate the certificate 
+         */
+        public X509Certificate Certificate {
+            get {
+                return signCertificate;
+            }
+            set {
+                signCertificate = value;
+            }
+        }
+
+        // Signature event
+        
         /**
         * An interface to retrieve the signature dictionary for modification.
         */    
@@ -1526,20 +354,1048 @@ namespace iTextSharp.text.pdf {
             */        
             void GetSignatureDictionary(PdfDictionary sig);
         }
-
-        private int certificationLevel = NOT_CERTIFIED;
+        
+        /**
+         * Holds value of property signatureEvent.
+         */
+        private ISignatureEvent signatureEvent;
 
         /**
-        * Sets the document type to certified instead of simply signed.
-        * @param certificationLevel the values can be: <code>NOT_CERTIFIED</code>, <code>CERTIFIED_NO_CHANGES_ALLOWED</code>,
-        * <code>CERTIFIED_FORM_FILLING</code> and <code>CERTIFIED_FORM_FILLING_AND_ANNOTATIONS</code>
+        * Sets the signature event to allow modification of the signature dictionary.
+        * @param signatureEvent the signature event
         */
-        public int CertificationLevel {
+        public ISignatureEvent SignatureEvent {
             get {
-                return certificationLevel;
+                return signatureEvent;
             }
             set {
-                certificationLevel = value;
+                signatureEvent = value;
+            }
+        }
+        
+        /*
+         * SIGNATURE FIELD
+         */
+        
+        /** The name of the field */
+        private String fieldName;
+
+        /**
+         * Gets the field name.
+         * @return the field name
+         */
+        public String FieldName {
+            get {
+                return fieldName;
+            }
+        }
+
+        /**
+         * Gets a new signature field name that
+         * doesn't clash with any existing name.
+         * @return a new signature field name
+         */
+        public String GetNewSigName() {
+            AcroFields af = writer.AcroFields;
+            String name = "Signature";
+            int step = 0;
+            bool found = false;
+            while (!found) {
+                ++step;
+                String n1 = name + step;
+                if (af.GetFieldItem(n1) != null)
+                    continue;
+                n1 += ".";
+                found = true;
+                foreach (String fn in af.Fields.Keys) {
+                    if (fn.StartsWith(n1)) {
+                        found = false;
+                        break;
+                    }
+                }
+            }
+            name += step;
+            return name;
+        }
+
+        /** Indicates if a new field was created. */
+        private bool newField;
+        
+        /**
+         * Checks if a new field was created.
+         * @return <CODE>true</CODE> if a new field was created, <CODE>false</CODE> if signing
+         * an existing field or if the signature is invisible
+         */
+        public bool IsNewField() {
+            return this.newField;
+        }
+        
+        /**
+         * The page where the signature will appear.
+         */
+        private int page = 1;
+
+        /**
+         * Gets the page number of the field.
+         * @return the page number of the field
+         */
+        public int Page {
+            get {
+                return page;
+            }
+        }
+        
+        /**
+         * The coordinates of the rectangle for a visible signature,
+         * or a zero-width, zero-height rectangle for an invisible signature.
+         */
+        private Rectangle rect;
+        
+        /**
+         * Gets the rectangle representing the signature dimensions.
+         * @return the rectangle representing the signature dimensions. It may be <CODE>null</CODE>
+         * or have zero width or height for invisible signatures
+         */
+        public Rectangle Rect {
+            get {
+                return rect;
+            }
+        }
+        
+        /** rectangle that represent the position and dimension of the signature in the page. */
+        private Rectangle pageRect;
+        
+        /**
+         * Gets the rectangle that represent the position and dimension of the signature in the page.
+         * @return the rectangle that represent the position and dimension of the signature in the page
+         */
+        public Rectangle PageRect {
+            get {
+                return pageRect;
+            }
+        }
+
+        /**
+         * Gets the visibility status of the signature.
+         * @return the visibility status of the signature
+         */
+        public bool IsInvisible() {
+            return (rect == null || rect.Width == 0 || rect.Height == 0);
+        }
+
+        /**
+         * Sets the signature to be visible. It creates a new visible signature field.
+         * @param pageRect the position and dimension of the field in the page
+         * @param page the page to place the field. The fist page is 1
+         * @param fieldName the field name or <CODE>null</CODE> to generate automatically a new field name
+         */
+        public void SetVisibleSignature(Rectangle pageRect, int page, String fieldName) {
+            if (fieldName != null) {
+                if (fieldName.IndexOf('.') >= 0)
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("field.names.cannot.contain.a.dot"));
+                AcroFields af = writer.AcroFields;
+                AcroFields.Item item = af.GetFieldItem(fieldName);
+                if (item != null)
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("the.field.1.already.exists", fieldName));
+                this.fieldName = fieldName;
+            }
+            if (page < 1 || page > writer.reader.NumberOfPages)
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.page.number.1", page));
+            this.pageRect = new Rectangle(pageRect);
+            this.pageRect.Normalize();
+            rect = new Rectangle(this.pageRect.Width, this.pageRect.Height);
+            this.page = page;
+            newField = true;
+        }
+
+        /**
+         * Sets the signature to be visible. An empty signature field with the same name must already exist.
+         * @param fieldName the existing empty signature field name
+         */
+        public void SetVisibleSignature(String fieldName) {
+            AcroFields af = writer.AcroFields;
+            AcroFields.Item item = af.GetFieldItem(fieldName);
+            if (item == null)
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.field.1.does.not.exist", fieldName));
+            PdfDictionary merged = item.GetMerged(0);
+            if (!PdfName.SIG.Equals(PdfReader.GetPdfObject(merged.Get(PdfName.FT))))
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.field.1.is.not.a.signature.field", fieldName));
+            this.fieldName = fieldName;
+            PdfArray r = merged.GetAsArray(PdfName.RECT);
+            float llx = r.GetAsNumber(0).FloatValue;
+            float lly = r.GetAsNumber(1).FloatValue;
+            float urx = r.GetAsNumber(2).FloatValue;
+            float ury = r.GetAsNumber(3).FloatValue;
+            pageRect = new Rectangle(llx, lly, urx, ury);
+            pageRect.Normalize();
+            page = item.GetPage(0);
+            int rotation = writer.reader.GetPageRotation(page);
+            Rectangle pageSize = writer.reader.GetPageSizeWithRotation(page);
+            switch (rotation) {
+                case 90:
+                    pageRect = new Rectangle(
+                    pageRect.Bottom,
+                    pageSize.Top - pageRect.Left,
+                    pageRect.Top,
+                    pageSize.Top - pageRect.Right);
+                    break;
+                case 180:
+                    pageRect = new Rectangle(
+                    pageSize.Right - pageRect.Left,
+                    pageSize.Top - pageRect.Bottom,
+                    pageSize.Right - pageRect.Right,
+                    pageSize.Top - pageRect.Top);
+                    break;
+                case 270:
+                    pageRect = new Rectangle(
+                    pageSize.Right - pageRect.Bottom,
+                    pageRect.Left,
+                    pageSize.Right - pageRect.Top,
+                    pageRect.Right);
+                    break;
+            }
+            if (rotation != 0)
+                pageRect.Normalize();
+            rect = new Rectangle(this.pageRect.Width, this.pageRect.Height);
+        }
+
+        /*
+         * SIGNATURE APPEARANCE
+         */
+        
+        /**
+         * Signature rendering modes
+         * @since 5.0.1
+         */
+        public enum RenderingMode {
+            /**
+             * The rendering mode is just the description.
+             */
+            DESCRIPTION,
+            /**
+             * The rendering mode is the name of the signer and the description.
+             */
+            NAME_AND_DESCRIPTION,
+            /**
+             * The rendering mode is an image and the description.
+             */
+            GRAPHIC_AND_DESCRIPTION,
+            /**
+             * The rendering mode is just an image.
+             */
+            GRAPHIC
+        }
+
+        /** The rendering mode chosen for visible signatures */
+        private RenderingMode renderingMode = RenderingMode.DESCRIPTION;
+
+        /**
+        * Gets the rendering mode for this signature.
+        * @return the rendering mode for this signature
+        * @since 5.0.1
+        */
+        public RenderingMode SignatureRenderingMode {
+            get {
+                return renderingMode;
+            }
+            set {
+                renderingMode = value;
+            }
+        }
+
+        /** The image that needs to be used for a visible signature */
+        private Image signatureGraphic = null;
+
+        /**
+         * Sets the Image object to render when Render is set to <CODE>RenderingMode.GRAPHIC</CODE>
+         * or <CODE>RenderingMode.GRAPHIC_AND_DESCRIPTION</CODE>.
+         * @param signatureGraphic image rendered. If <CODE>null</CODE> the mode is defaulted
+         * to <CODE>RenderingMode.DESCRIPTION</CODE>
+         */
+        public Image SignatureGraphic {
+            get {
+                return signatureGraphic;
+            }
+            set {
+                signatureGraphic = value;
+            }
+        }
+        
+        /** Appearance compliant with the recommendations introduced in Acrobat 6? */
+        private bool acro6Layers = true;
+        
+        /**
+         * Acrobat 6.0 and higher recommends that only layer n0 and n2 be present.
+         * Use this method with value <code>false</code> if you want to ignore this recommendation.
+         * @param acro6Layers if <code>true</code> only the layers n0 and n2 will be present
+         */
+        public bool Acro6Layers {
+            get {
+                return acro6Layers;
+            }
+            set {
+                acro6Layers = value;
+            }
+        }
+        
+        /** Layers for a visible signature. */
+        private PdfTemplate[] app = new PdfTemplate[5];
+
+        /**
+         * Gets a template layer to create a signature appearance. The layers can go from 0 to 4,
+         * but only layer 0 and 2 will be used if acro6Layers is true.
+         * <p>
+         * Consult <A HREF="http://partners.adobe.com/asn/developer/pdfs/tn/PPKAppearances.pdf">PPKAppearances.pdf</A>
+         * for further details.
+         * @param layer the layer
+         * @return a template
+         */
+        public PdfTemplate GetLayer(int layer) {
+            if (layer < 0 || layer >= app.Length)
+                return null;
+            PdfTemplate t = app[layer];
+            if (t == null) {
+                t = app[layer] = new PdfTemplate(writer);
+                t.BoundingBox = rect;
+                writer.AddDirectTemplateSimple(t, new PdfName("n" + layer));
+            }
+            return t;
+        }
+
+        // layer 1
+        
+        /** An appearance that can be used for layer 1 (if acro6Layers is false). */
+        public const String questionMark =
+            "% DSUnknown\n" +
+            "q\n" +
+            "1 G\n" +
+            "1 g\n" +
+            "0.1 0 0 0.1 9 0 cm\n" +
+            "0 J 0 j 4 M []0 d\n" +
+            "1 i \n" +
+            "0 g\n" +
+            "313 292 m\n" +
+            "313 404 325 453 432 529 c\n" +
+            "478 561 504 597 504 645 c\n" +
+            "504 736 440 760 391 760 c\n" +
+            "286 760 271 681 265 626 c\n" +
+            "265 625 l\n" +
+            "100 625 l\n" +
+            "100 828 253 898 381 898 c\n" +
+            "451 898 679 878 679 650 c\n" +
+            "679 555 628 499 538 435 c\n" +
+            "488 399 467 376 467 292 c\n" +
+            "313 292 l\n" +
+            "h\n" +
+            "308 214 170 -164 re\n" +
+            "f\n" +
+            "0.44 G\n" +
+            "1.2 w\n" +
+            "1 1 0.4 rg\n" +
+            "287 318 m\n" +
+            "287 430 299 479 406 555 c\n" +
+            "451 587 478 623 478 671 c\n" +
+            "478 762 414 786 365 786 c\n" +
+            "260 786 245 707 239 652 c\n" +
+            "239 651 l\n" +
+            "74 651 l\n" +
+            "74 854 227 924 355 924 c\n" +
+            "425 924 653 904 653 676 c\n" +
+            "653 581 602 525 512 461 c\n" +
+            "462 425 441 402 441 318 c\n" +
+            "287 318 l\n" +
+            "h\n" +
+            "282 240 170 -164 re\n" +
+            "B\n" +
+            "Q\n";
+
+        // layer 2
+        
+        /** A background image for the text in layer 2. */
+        private Image image;
+        
+        /**
+         * Gets the background image for the layer 2.
+         * @return the background image for the layer 2
+         */
+        public Image Image {
+            get {
+                return image;
+            }
+            set {
+                image = value;
+            }
+        }
+
+        /** the scaling to be applied to the background image.t  */
+        private float imageScale;
+
+        /**
+         * Sets the scaling to be applied to the background image. If it's zero the image
+         * will fully fill the rectangle. If it's less than zero the image will fill the rectangle but
+         * will keep the proportions. If it's greater than zero that scaling will be applied.
+         * In any of the cases the image will always be centered. It's zero by default.
+         * @param imageScale the scaling to be applied to the background image
+         */
+        public float ImageScale {
+            get {
+                return imageScale;
+            }
+            set {
+                imageScale = value;
+            }
+        }
+        
+        /** The text that goes in Layer 2 of the signature appearance. */
+        private String layer2Text;
+        
+        /**
+         * Sets the signature text identifying the signer.
+         * @param text the signature text identifying the signer. If <CODE>null</CODE> or not set
+         * a standard description will be used
+         */
+        public string Layer2Text {
+            get {
+                return layer2Text;
+            }
+            set {
+                layer2Text = value;
+            }
+        }
+        
+        /** Font for the text in Layer 2. */
+        private Font layer2Font;
+        
+        /**
+         * Sets the n2 and n4 layer font. If the font size is zero, auto-fit will be used.
+         * @param layer2Font the n2 and n4 font
+         */
+        public Font Layer2Font {
+            get {
+                return layer2Font;
+            }
+            set {
+                layer2Font = value;
+            }
+        }
+
+        /** Run direction for the text in layers 2 and 4. */
+        private int runDirection = PdfWriter.RUN_DIRECTION_NO_BIDI;
+        
+        /** Sets the run direction in the n2 and n4 layer.
+         * @param runDirection the run direction
+         */
+        public int RunDirection {
+            set {
+                if (value < PdfWriter.RUN_DIRECTION_DEFAULT || value > PdfWriter.RUN_DIRECTION_RTL)
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.run.direction.1", runDirection));
+                this.runDirection = value;
+            }
+            get {
+                return runDirection;
+            }
+        }
+        
+        // layer 4
+        
+        /** The text that goes in Layer 4 of the appearance. */
+        private String layer4Text;
+        
+        /**
+         * Sets the text identifying the signature status. Will be ignored if acro6Layers is true.
+         * @param text the text identifying the signature status. If <CODE>null</CODE> or not set
+         * the description "Signature Not Verified" will be used
+         */
+        public string Layer4Text {
+            get {
+                return layer4Text;
+            }
+            set {
+                layer4Text = value;
+            }
+        }
+
+        // all layers
+        
+        /** Template containing all layers drawn on top of each other. */
+        private PdfTemplate frm;
+        
+        /**
+         * Gets the template that aggregates all appearance layers. This corresponds to the /FRM resource.
+         * <p>
+         * Consult <A HREF="http://partners.adobe.com/asn/developer/pdfs/tn/PPKAppearances.pdf">PPKAppearances.pdf</A>
+         * for further details.
+         * @return the template that aggregates all appearance layers
+         */
+        public PdfTemplate GetTopLayer() {
+            if (frm == null) {
+                frm = new PdfTemplate(writer);
+                frm.BoundingBox = rect;
+                writer.AddDirectTemplateSimple(frm, new PdfName("FRM"));
+            }
+            return frm;
+        }
+        
+        // creating the appearance
+        
+        /** extra space at the top. */
+        private const float TOP_SECTION = 0.3f;
+        
+        /** margin for the content inside the signature rectangle. */
+        private const float MARGIN = 2;
+        
+        /**
+         * Gets the main appearance layer.
+         * <p>
+         * Consult <A HREF="http://partners.adobe.com/asn/developer/pdfs/tn/PPKAppearances.pdf">PPKAppearances.pdf</A>
+         * for further details.
+         * @return the main appearance layer
+         * @throws DocumentException on error
+         */
+        public PdfTemplate GetAppearance() {
+            if (IsInvisible()) {
+                PdfTemplate t = new PdfTemplate(writer);
+                t.BoundingBox = new Rectangle(0, 0);
+                writer.AddDirectTemplateSimple(t, null);
+                return t;
+            }
+            if (app[0] == null) {
+                PdfTemplate t = app[0] = new PdfTemplate(writer);
+                t.BoundingBox = new Rectangle(100, 100);
+                writer.AddDirectTemplateSimple(t, new PdfName("n0"));
+                t.SetLiteral("% DSBlank\n");
+            }
+            if (app[1] == null && !acro6Layers) {
+                PdfTemplate t = app[1] = new PdfTemplate(writer);
+                t.BoundingBox = new Rectangle(100, 100);
+                writer.AddDirectTemplateSimple(t, new PdfName("n1"));
+                t.SetLiteral(questionMark);
+            }
+            if (app[2] == null) {
+                String text;
+                if (layer2Text == null) {
+                    StringBuilder buf = new StringBuilder();
+                    buf.Append("Digitally signed by ");
+                    String name = CertificateInfo.GetSubjectFields(signCertificate).GetField("CN");
+                    if (name == null)
+                        name = CertificateInfo.GetSubjectFields(signCertificate).GetField("E");
+                    if (name == null)
+                        name = "";
+                    buf.Append(name).Append('\n');
+                    buf.Append("Date: ").Append(signDate.ToString("yyyy.MM.dd HH:mm:ss zzz"));
+                    if (reason != null)
+                        buf.Append('\n').Append("Reason: ").Append(reason);
+                    if (location != null)
+                        buf.Append('\n').Append("Location: ").Append(location);
+                    text = buf.ToString();
+                }
+                else
+                    text = layer2Text;
+                PdfTemplate t = app[2] = new PdfTemplate(writer);
+                t.BoundingBox = rect;
+                writer.AddDirectTemplateSimple(t, new PdfName("n2"));
+                if (image != null) {
+                    if (imageScale == 0) {
+                        t.AddImage(image, rect.Width, 0, 0, rect.Height, 0, 0);
+                    }
+                    else {
+                        float usableScale = imageScale;
+                        if (imageScale < 0)
+                            usableScale = Math.Min(rect.Width / image.Width, rect.Height / image.Height);
+                        float w = image.Width * usableScale;
+                        float h = image.Height * usableScale;
+                        float x = (rect.Width - w) / 2;
+                        float y = (rect.Height - h) / 2;
+                        t.AddImage(image, w, 0, 0, h, x, y);
+                    }
+                }
+                Font font;
+                if (layer2Font == null)
+                    font = new Font();
+                else
+                    font = new Font(layer2Font);
+                float size = font.Size;
+
+                Rectangle dataRect = null;
+                Rectangle signatureRect = null;
+
+                if (renderingMode == RenderingMode.NAME_AND_DESCRIPTION || 
+                    (renderingMode == RenderingMode.GRAPHIC_AND_DESCRIPTION && this.SignatureGraphic != null)) {
+                    // origin is the bottom-left
+                    signatureRect = new Rectangle(
+                        MARGIN, 
+                        MARGIN, 
+                        rect.Width / 2 - MARGIN,
+                        rect.Height - MARGIN);
+                    dataRect = new Rectangle(
+                        rect.Width / 2 +  MARGIN / 2, 
+                        MARGIN, 
+                        rect.Width - MARGIN / 2,
+                        rect.Height - MARGIN);
+
+                    if (rect.Height > rect.Width) {
+                        signatureRect = new Rectangle(
+                            MARGIN, 
+                            rect.Height / 2, 
+                            rect.Width - MARGIN,
+                            rect.Height);
+                        dataRect = new Rectangle(
+                            MARGIN, 
+                            MARGIN, 
+                            rect.Width - MARGIN,
+                            rect.Height / 2 - MARGIN);
+                    }
+                }
+                else if (renderingMode == RenderingMode.GRAPHIC) {
+                    if (signatureGraphic == null) {
+                        throw new InvalidOperationException(MessageLocalization.GetComposedMessage("a.signature.image.should.be.present.when.rendering.mode.is.graphic.only"));
+                    }
+                    signatureRect = new Rectangle(
+                            MARGIN,
+                            MARGIN,
+                            rect.Width - MARGIN, // take all space available
+                            rect.Height - MARGIN);
+                }
+                else {
+                    dataRect = new Rectangle(
+                        MARGIN, 
+                        MARGIN, 
+                        rect.Width - MARGIN,
+                        rect.Height * (1 - TOP_SECTION) - MARGIN);
+                }
+
+                if (renderingMode == RenderingMode.NAME_AND_DESCRIPTION) {
+                    string signedBy = CertificateInfo.GetSubjectFields(signCertificate).GetField("CN");
+                    if (signedBy == null)
+                        signedBy = CertificateInfo.GetSubjectFields(signCertificate).GetField("E");
+                    if (signedBy == null)
+                        signedBy = "";
+                    Rectangle sr2 = new Rectangle(signatureRect.Width - MARGIN, signatureRect.Height - MARGIN );
+                    float signedSize = ColumnText.FitText(font, signedBy, sr2, -1, runDirection);
+
+                    ColumnText ct2 = new ColumnText(t);
+                    ct2.RunDirection = runDirection;
+                    ct2.SetSimpleColumn(new Phrase(signedBy, font), signatureRect.Left, signatureRect.Bottom, signatureRect.Right, signatureRect.Top, signedSize, Element.ALIGN_LEFT);
+
+                    ct2.Go();
+                }
+                else if (renderingMode == RenderingMode.GRAPHIC_AND_DESCRIPTION) {
+                    ColumnText ct2 = new ColumnText(t);
+                    ct2.RunDirection = runDirection;
+                    ct2.SetSimpleColumn(signatureRect.Left, signatureRect.Bottom, signatureRect.Right, signatureRect.Top, 0, Element.ALIGN_RIGHT);
+
+                    Image im = Image.GetInstance(SignatureGraphic);
+                    im.ScaleToFit(signatureRect.Width, signatureRect.Height);
+
+                    Paragraph p = new Paragraph();
+                    // must calculate the point to draw from to make image appear in middle of column
+                    float x = 0;
+                    // experimentation found this magic number to counteract Adobe's signature graphic, which
+                    // offsets the y co-ordinate by 15 units
+                    float y = -im.ScaledHeight + 15;
+
+                    x = x + (signatureRect.Width - im.ScaledWidth) / 2;
+                    y = y - (signatureRect.Height - im.ScaledHeight) / 2;
+                    p.Add(new Chunk(im, x + (signatureRect.Width - im.ScaledWidth) / 2, y, false));
+                    ct2.AddElement(p);
+                    ct2.Go();
+                }
+
+                else if (renderingMode == RenderingMode.GRAPHIC) {
+                    ColumnText ct2 = new ColumnText(t);
+                    ct2.RunDirection = runDirection;
+                    ct2.SetSimpleColumn(signatureRect.Left, signatureRect.Bottom, signatureRect.Right, signatureRect.Top, 0, Element.ALIGN_RIGHT);
+
+                    Image im = Image.GetInstance(signatureGraphic);
+                    im.ScaleToFit(signatureRect.Width, signatureRect.Height);
+
+                    Paragraph p = new Paragraph(signatureRect.Height);
+                    // must calculate the point to draw from to make image appear in middle of column
+                    float x = (signatureRect.Width - im.ScaledWidth) / 2;
+                    float y = (signatureRect.Height - im.ScaledHeight) / 2;
+                    p.Add(new Chunk(im, x, y, false));
+                    ct2.AddElement(p);
+                    ct2.Go();
+                }
+                
+                if (renderingMode != RenderingMode.GRAPHIC) {
+                    if (size <= 0) {
+                        Rectangle sr = new Rectangle(dataRect.Width, dataRect.Height);
+                        size = ColumnText.FitText(font, text, sr, 12, runDirection);
+                    }
+                    ColumnText ct = new ColumnText(t);
+                    ct.RunDirection = runDirection;
+                    ct.SetSimpleColumn(new Phrase(text, font), dataRect.Left, dataRect.Bottom, dataRect.Right, dataRect.Top, size, Element.ALIGN_LEFT);
+                    ct.Go();
+                }
+            }
+            if (app[3] == null && !acro6Layers) {
+                PdfTemplate t = app[3] = new PdfTemplate(writer);
+                t.BoundingBox = new Rectangle(100, 100);
+                writer.AddDirectTemplateSimple(t, new PdfName("n3"));
+                t.SetLiteral("% DSBlank\n");
+            }
+            if (app[4] == null && !acro6Layers) {
+                PdfTemplate t = app[4] = new PdfTemplate(writer);
+                t.BoundingBox = new Rectangle(0, rect.Height * (1 - TOP_SECTION), rect.Right, rect.Top);
+                writer.AddDirectTemplateSimple(t, new PdfName("n4"));
+                Font font;
+                if (layer2Font == null)
+                    font = new Font();
+                else
+                    font = new Font(layer2Font);
+                float size = font.Size;
+                String text = "Signature Not Verified";
+                if (layer4Text != null)
+                    text = layer4Text;
+                Rectangle sr = new Rectangle(rect.Width - 2 * MARGIN, rect.Height * TOP_SECTION - 2 * MARGIN);
+                size = ColumnText.FitText(font, text, sr, 15, runDirection);
+                ColumnText ct = new ColumnText(t);
+                ct.RunDirection = runDirection;
+                ct.SetSimpleColumn(new Phrase(text, font), MARGIN, 0, rect.Width - MARGIN, rect.Height - MARGIN, size, Element.ALIGN_LEFT);
+                ct.Go();
+            }
+            int rotation = writer.reader.GetPageRotation(page);
+            Rectangle rotated = new Rectangle(rect);
+            int n = rotation;
+            while (n > 0) {
+                rotated = rotated.Rotate();
+                n -= 90;
+            }
+            if (frm == null) {
+                frm = new PdfTemplate(writer);
+                frm.BoundingBox = rotated;
+                writer.AddDirectTemplateSimple(frm, new PdfName("FRM"));
+                float scale = Math.Min(rect.Width, rect.Height) * 0.9f;
+                float x = (rect.Width - scale) / 2;
+                float y = (rect.Height - scale) / 2;
+                scale /= 100;
+                if (rotation == 90)
+                    frm.ConcatCTM(0, 1, -1, 0, rect.Height, 0);
+                else if (rotation == 180)
+                    frm.ConcatCTM(-1, 0, 0, -1, rect.Width, rect.Height);
+                else if (rotation == 270)
+                    frm.ConcatCTM(0, -1, 1, 0, 0, rect.Width);
+                frm.AddTemplate(app[0], 0, 0);
+                if (!acro6Layers)
+                    frm.AddTemplate(app[1], scale, 0, 0, scale, x, y);
+                frm.AddTemplate(app[2], 0, 0);
+                if (!acro6Layers) {
+                    frm.AddTemplate(app[3], scale, 0, 0, scale, x, y);
+                    frm.AddTemplate(app[4], 0, 0);
+                }
+            }
+            PdfTemplate napp = new PdfTemplate(writer);
+            napp.BoundingBox = rotated;
+            writer.AddDirectTemplateSimple(napp, null);
+            napp.AddTemplate(frm, 0, 0);
+            return napp;
+        }
+
+        /*
+         * Creating the signed file.
+         */
+
+        /** The PdfStamper that creates the signed PDF. */
+        private PdfStamper stamper;
+
+        /**
+         * Gets the <CODE>PdfStamper</CODE> associated with this instance.
+         * @return the <CODE>PdfStamper</CODE> associated with this instance
+         */
+        public PdfStamper Stamper {
+            get {
+                return stamper;
+            }
+        }
+        
+        internal void SetStamper(PdfStamper stamper) {
+            this.stamper = stamper;
+        }
+
+        /** The PdfStamperImp object corresponding with the stamper. */
+        private PdfStamperImp writer;
+        
+        /** A byte buffer containing the bytes of the Stamper. */
+        private ByteBuffer sigout;
+        
+        /**
+         * Getter for the byte buffer.
+         */
+        internal ByteBuffer Sigout {
+            get {
+                return sigout;
+            }
+            set {
+                sigout = value;
+            }
+        }
+
+        /** OutputStream for the bytes of the stamper. */
+        private Stream originalout;
+        
+        internal Stream Originalout {
+            get {
+                return originalout;
+            }
+            set {
+                originalout = value;
+            }
+        }
+
+        /** Temporary file in case you don't want to sign in memory. */
+        private string tempFile;
+        
+        /**
+        * Gets the temporary file.
+        * @return the temporary file or <CODE>null</CODE> is the document is created in memory
+        */    
+        public string TempFile {
+            get {
+                return tempFile;
+            }
+        }
+
+        internal void SetTempFile(string tempFile) {
+            this.tempFile = tempFile;
+        }
+
+        /** Name and content of keys that can only be added in the close() method. */
+        private Dictionary<PdfName, PdfLiteral> exclusionLocations;
+        
+        /** Length of the output. */
+        private int boutLen;
+        
+        /** Indicates if the stamper has already been pre-closed. */
+        private bool preClosed = false;
+        
+        /**
+         * Checks if the document is in the process of closing.
+         * @return <CODE>true</CODE> if the document is in the process of closing,
+         * <CODE>false</CODE> otherwise
+         */
+        public bool IsPreClosed() {
+            return preClosed;
+        }
+        
+        /**
+         * This is the first method to be called when using external signatures. The general sequence is:
+         * preClose(), getDocumentBytes() and close().
+         * <p>
+         * If calling preClose() <B>dont't</B> call PdfStamper.close().
+         * <p>
+         * <CODE>exclusionSizes</CODE> must contain at least
+         * the <CODE>PdfName.CONTENTS</CODE> key with the size that it will take in the
+         * document. Note that due to the hex string coding this size should be
+         * byte_size*2+2.
+         * @param exclusionSizes a <CODE>HashMap</CODE> with names and sizes to be excluded in the signature
+         * calculation. The key is a <CODE>PdfName</CODE> and the value an
+         * <CODE>Integer</CODE>. At least the <CODE>PdfName.CONTENTS</CODE> must be present
+         * @throws IOException on error
+         * @throws DocumentException on error
+         */
+        public void PreClose(Dictionary<PdfName, int> exclusionSizes) {
+            if (preClosed)
+                throw new DocumentException(MessageLocalization.GetComposedMessage("document.already.pre.closed"));
+            stamper.MergeVerification();
+            preClosed = true;
+            AcroFields af = writer.AcroFields;
+            String name = FieldName;
+            bool fieldExists = !(IsInvisible() || IsNewField());
+            PdfIndirectReference refSig = writer.PdfIndirectReference;
+            writer.SigFlags = 3;
+            if (fieldExists) {
+                PdfDictionary widget = af.GetFieldItem(name).GetWidget(0);
+                writer.MarkUsed(widget);
+                widget.Put(PdfName.P, writer.GetPageReference(Page));
+                widget.Put(PdfName.V, refSig);
+                PdfObject obj = PdfReader.GetPdfObjectRelease(widget.Get(PdfName.F));
+                int flags = 0;
+                if (obj != null && obj.IsNumber())
+                    flags = ((PdfNumber)obj).IntValue;
+                flags |= PdfAnnotation.FLAGS_LOCKED;
+                widget.Put(PdfName.F, new PdfNumber(flags));
+                PdfDictionary ap = new PdfDictionary();
+                ap.Put(PdfName.N, GetAppearance().IndirectReference);
+                widget.Put(PdfName.AP, ap);
+            }
+            else {
+                PdfFormField sigField = PdfFormField.CreateSignature(writer);
+                sigField.FieldName = name;
+                sigField.Put(PdfName.V, refSig);
+                sigField.Flags = PdfAnnotation.FLAGS_PRINT | PdfAnnotation.FLAGS_LOCKED;
+
+                int pagen = Page;
+                if (!IsInvisible())
+                    sigField.SetWidget(PageRect, null);
+                else
+                    sigField.SetWidget(new Rectangle(0, 0), null);
+                sigField.SetAppearance(PdfAnnotation.APPEARANCE_NORMAL, GetAppearance());
+                sigField.Page = pagen;
+                writer.AddAnnotation(sigField, pagen);
+            }
+
+            exclusionLocations = new Dictionary<PdfName,PdfLiteral>();
+            if (cryptoDictionary == null) {
+                throw new DocumentException("No crypto dictionary defined.");
+            }
+            else {
+                PdfLiteral lit = new PdfLiteral(80);
+                exclusionLocations[PdfName.BYTERANGE] = lit;
+                cryptoDictionary.Put(PdfName.BYTERANGE, lit);
+                foreach (KeyValuePair<PdfName,int> entry in exclusionSizes) {
+                    PdfName key = entry.Key;
+                    int v = entry.Value;
+                    lit = new PdfLiteral(v);
+                    exclusionLocations[key] = lit;
+                    cryptoDictionary.Put(key, lit);
+                }
+                if (certificationLevel > 0)
+                    AddDocMDP(cryptoDictionary);
+                if (signatureEvent != null)
+                    signatureEvent.GetSignatureDictionary(cryptoDictionary);
+                writer.AddToBody(cryptoDictionary, refSig, false);
+            }
+            if (certificationLevel > 0) {
+                // add DocMDP entry to root
+                PdfDictionary docmdp = new PdfDictionary();
+                docmdp.Put(new PdfName("DocMDP"), refSig);
+                writer.reader.Catalog.Put(new PdfName("Perms"), docmdp);
+            }
+            writer.Close(stamper.MoreInfo);
+            
+            range = new long[exclusionLocations.Count * 2];
+            long byteRangePosition = exclusionLocations[PdfName.BYTERANGE].Position;
+            exclusionLocations.Remove(PdfName.BYTERANGE);
+            int idx = 1;
+            foreach (PdfLiteral lit in exclusionLocations.Values) {
+                long n = lit.Position;
+                range[idx++] = n;
+                range[idx++] = lit.PosLength + n;
+            }
+            Array.Sort(range, 1, range.Length - 2);
+            for (int k = 3; k < range.Length - 2; k += 2)
+                range[k] -= range[k - 1];
+            
+            if (tempFile == null) {
+                bout = sigout.Buffer;
+                boutLen = sigout.Size;
+                range[range.Length - 1] = boutLen - range[range.Length - 2];
+                ByteBuffer bf = new ByteBuffer();
+                bf.Append('[');
+                for (int k = 0; k < range.Length; ++k)
+                    bf.Append(range[k]).Append(' ');
+                bf.Append(']');
+                Array.Copy(bf.Buffer, 0, bout, byteRangePosition, bf.Size);
+            }
+            else {
+                try {
+                    raf = new FileStream(tempFile, FileMode.Open, FileAccess.ReadWrite);
+                    long len = raf.Length;
+                    range[range.Length - 1] = len - range[range.Length - 2];
+                    ByteBuffer bf = new ByteBuffer();
+                    bf.Append('[');
+                    for (int k = 0; k < range.Length; ++k)
+                        bf.Append(range[k]).Append(' ');
+                    bf.Append(']');
+                    raf.Seek(byteRangePosition, SeekOrigin.Begin);
+                    raf.Write(bf.Buffer, 0, bf.Size);
+                }
+                catch (IOException e) {
+                    try{raf.Close();}catch{}
+                    try{File.Delete(tempFile);}catch{}
+                    throw e;
+                }
+            }
+        }
+
+        /**
+         * Adds keys to the signature dictionary that define
+         * the certification level and the permissions.
+         * This method is only used for Certifying signatures.
+         * @param crypto the signature dictionary
+         */
+        private void AddDocMDP(PdfDictionary crypto) {
+            PdfDictionary reference = new PdfDictionary();
+            PdfDictionary transformParams = new PdfDictionary();
+            transformParams.Put(PdfName.P, new PdfNumber(certificationLevel));
+            transformParams.Put(PdfName.V, new PdfName("1.2"));
+            transformParams.Put(PdfName.TYPE, PdfName.TRANSFORMPARAMS);
+            reference.Put(PdfName.TRANSFORMMETHOD, PdfName.DOCMDP);
+            reference.Put(PdfName.TYPE, PdfName.SIGREF);
+            reference.Put(PdfName.TRANSFORMPARAMS, transformParams);
+            reference.Put(new PdfName("DigestValue"), new PdfString("aa"));
+            PdfArray loc = new PdfArray();
+            loc.Add(new PdfNumber(0));
+            loc.Add(new PdfNumber(0));
+            reference.Put(new PdfName("DigestLocation"), loc);
+            reference.Put(new PdfName("DigestMethod"), new PdfName("MD5"));
+            reference.Put(PdfName.DATA, writer.reader.Trailer.Get(PdfName.ROOT));
+            PdfArray types = new PdfArray();
+            types.Add(reference);
+            crypto.Put(PdfName.REFERENCE, types);
+        }
+
+        /**
+         * This is the last method to be called when using external signatures. The general sequence is:
+         * preClose(), getDocumentBytes() and close().
+         * <p>
+         * <CODE>update</CODE> is a <CODE>PdfDictionary</CODE> that must have exactly the
+         * same keys as the ones provided in {@link #preClose(HashMap)}.
+         * @param update a <CODE>PdfDictionary</CODE> with the key/value that will fill the holes defined
+         * in {@link #preClose(HashMap)}
+         * @throws DocumentException on error
+         * @throws IOException on error
+         */
+        public void Close(PdfDictionary update) {
+            try {
+                if (!preClosed)
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("preclose.must.be.called.first"));
+                ByteBuffer bf = new ByteBuffer();
+                foreach (PdfName key in update.Keys) {
+                    PdfObject obj = update.Get(key);
+                    PdfLiteral lit = exclusionLocations[key];
+                    if (lit == null)
+                        throw new ArgumentException(MessageLocalization.GetComposedMessage("the.key.1.didn.t.reserve.space.in.preclose", key.ToString()));
+                    bf.Reset();
+                    obj.ToPdf(null, bf);
+                    if (bf.Size > lit.PosLength)
+                        throw new ArgumentException(MessageLocalization.GetComposedMessage("the.key.1.is.too.big.is.2.reserved.3", key.ToString(), bf.Size, lit.PosLength));
+                    if (tempFile == null)
+                        Array.Copy(bf.Buffer, 0, bout, lit.Position, bf.Size);
+                    else {
+                        raf.Seek(lit.Position, SeekOrigin.Begin);
+                        raf.Write(bf.Buffer, 0, bf.Size);
+                    }
+                }
+                if (update.Size != exclusionLocations.Count)
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("the.update.dictionary.has.less.keys.than.required"));
+                if (tempFile == null) {
+                    originalout.Write(bout, 0, boutLen);
+                }
+                else {
+                    if (originalout != null) {
+                        raf.Seek(0, SeekOrigin.Begin);
+                        long length = raf.Length;
+                        byte[] buf = new byte[8192];
+                        while (length > 0) {
+                            int r = raf.Read(buf, 0, (int)Math.Min((long)buf.Length, length));
+                            if (r < 0)
+                                throw new EndOfStreamException(MessageLocalization.GetComposedMessage("unexpected.eof"));
+                            originalout.Write(buf, 0, r);
+                            length -= r;
+                        }
+                    }
+                }
+            }
+            finally {
+                if (tempFile != null) {
+                    try{raf.Close();}catch{}
+                    if (originalout != null)
+                        try{File.Delete(tempFile);}catch{}
+                }
+                if (originalout != null)
+                    try{originalout.Close();}catch{}
             }
         }
     }
