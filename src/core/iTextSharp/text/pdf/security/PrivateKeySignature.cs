@@ -73,9 +73,9 @@ namespace iTextSharp.text.pdf.security {
             this.pk = pk;
             this.hashAlgorithm = DigestAlgorithms.GetDigest(DigestAlgorithms.GetAllowedDigests(hashAlgorithm));
             if (pk is RsaKeyParameters)
-                encryptionAlgorithm = SecurityIDs.ID_RSA;
+                encryptionAlgorithm = "RSA";
             else if (pk is DsaKeyParameters)
-                encryptionAlgorithm = SecurityIDs.ID_DSA;
+                encryptionAlgorithm = "DSA";
             else
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.key.algorithm.1", pk.ToString()));
         }
