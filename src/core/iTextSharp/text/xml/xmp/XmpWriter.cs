@@ -199,6 +199,8 @@ namespace iTextSharp.text.xml.xmp {
                     obj = info.Get(key);
                     if (obj == null)
                         continue;
+                    if (!obj.IsString())
+                        continue;
                     value = ((PdfString)obj).ToUnicodeString();
                     if (PdfName.TITLE.Equals(key)) {
                         dc.AddTitle(value);
