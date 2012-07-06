@@ -64,7 +64,7 @@ namespace iTextSharp.text.pdf {
          * @param        generation        the generation number.
          */
     
-        internal protected PRIndirectReference(PdfReader reader, int number, int generation) {
+        public PRIndirectReference(PdfReader reader, int number, int generation) {
             type = INDIRECT;
             this.number = number;
             this.generation = generation;
@@ -78,7 +78,7 @@ namespace iTextSharp.text.pdf {
          * @param        number            the object number.
          */
     
-        internal PRIndirectReference(PdfReader reader, int number) : this(reader, number, 0) {}
+        public PRIndirectReference(PdfReader reader, int number) : this(reader, number, 0) {}
     
         // methods
     
