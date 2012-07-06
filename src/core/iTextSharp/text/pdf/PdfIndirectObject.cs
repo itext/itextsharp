@@ -89,10 +89,10 @@ public class PdfIndirectObject {
     * @param        objecti            the direct objecti
     */
         
-        internal protected PdfIndirectObject(int number, PdfObject objecti, PdfWriter writer) : this(number, 0, objecti, writer) {
+        public PdfIndirectObject(int number, PdfObject objecti, PdfWriter writer) : this(number, 0, objecti, writer) {
         }
         
-        internal PdfIndirectObject(PdfIndirectReference refi, PdfObject objecti, PdfWriter writer) : this(refi.Number,refi.Generation,objecti,writer) {
+        public PdfIndirectObject(PdfIndirectReference refi, PdfObject objecti, PdfWriter writer) : this(refi.Number,refi.Generation,objecti,writer) {
         }
     /**
     * Constructs a <CODE>PdfIndirectObject</CODE>.
@@ -102,7 +102,7 @@ public class PdfIndirectObject {
     * @param        objecti            the direct objecti
     */
         
-        internal PdfIndirectObject(int number, int generation, PdfObject objecti, PdfWriter writer) {
+        public PdfIndirectObject(int number, int generation, PdfObject objecti, PdfWriter writer) {
             this.writer = writer;
             this.number = number;
             this.generation = generation;
@@ -135,7 +135,7 @@ public class PdfIndirectObject {
     * @param os the stream to write to
     * @throws IOException on write error
     */
-        internal protected void WriteTo(Stream os) {
+        public void WriteTo(Stream os) {
             byte[] tmp = DocWriter.GetISOBytes(number.ToString());
             os.Write(tmp, 0, tmp.Length);
             os.WriteByte((byte)' ');

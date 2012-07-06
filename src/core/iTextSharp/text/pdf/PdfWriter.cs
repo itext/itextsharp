@@ -151,7 +151,7 @@ namespace iTextSharp.text.pdf {
                     this.generation = generation;
                 }
                 
-                internal int Refnum {
+                public int Refnum {
                     get {
                         return refnum;
                     }
@@ -221,15 +221,15 @@ namespace iTextSharp.text.pdf {
             private const int OBJSINSTREAM = 200;
             
             /** array containing the cross-reference table of the normal objects. */
-            private OrderedTree xrefs;
-            private int refnum;
+            protected OrderedTree xrefs;
+            protected int refnum;
             /** the current byteposition in the body. */
-            private long position;
-            private PdfWriter writer;
-            private ByteBuffer index;
-            private ByteBuffer streamObjects;
-            private int currentObjNum;
-            private int numObj = 0;
+            protected long position;
+            protected PdfWriter writer;
+            protected ByteBuffer index;
+            protected ByteBuffer streamObjects;
+            protected int currentObjNum;
+            protected int numObj = 0;
 
             // constructors
             
@@ -237,7 +237,7 @@ namespace iTextSharp.text.pdf {
             * Constructs a new <CODE>PdfBody</CODE>.
             * @param writer
             */
-            internal PdfBody(PdfWriter writer) {
+            internal protected PdfBody(PdfWriter writer) {
                 xrefs = new OrderedTree();
                 xrefs[new PdfCrossReference(0, 0, GENERATION_MAX)] = null;
                 position = writer.Os.Counter;
@@ -273,7 +273,7 @@ namespace iTextSharp.text.pdf {
                 return new PdfWriter.PdfBody.PdfCrossReference(2, nObj, currentObjNum, idx);
             }
             
-            internal void FlushObjStm() {
+            virtual internal protected void FlushObjStm() {
                 if (numObj == 0)
                     return;
                 int first = index.Size;
@@ -322,7 +322,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             
-            internal int IndirectReferenceNumber {
+            internal protected int IndirectReferenceNumber {
                 get {
                     int n = refnum++;
                     xrefs[new PdfCrossReference(n, 0, GENERATION_MAX)] = null;
@@ -358,7 +358,7 @@ namespace iTextSharp.text.pdf {
                 return Add(objecta, refNumber, true); // to false
             }
             
-            internal PdfIndirectObject Add(PdfObject objecta, int refNumber, bool inObjStm) {
+            virtual internal protected PdfIndirectObject Add(PdfObject objecta, int refNumber, bool inObjStm) {
                 if (inObjStm && objecta.CanBeInObjStm() && writer.FullCompression) {
                     PdfCrossReference pxref = AddToObjStm(objecta, refNumber);
                     PdfIndirectObject indirect = new PdfIndirectObject(refNumber, objecta, writer);
@@ -395,7 +395,7 @@ namespace iTextSharp.text.pdf {
             * @return   a number of objects
             */
             
-            internal int Size {
+            public int Size {
                 get {
                     return Math.Max(((PdfCrossReference)xrefs.GetMaxKey()).Refnum + 1, refnum);
                 }
@@ -411,8 +411,7 @@ namespace iTextSharp.text.pdf {
             * @param prevxref
             * @throws IOException
             */
-            
-            internal void WriteCrossReferenceTable(Stream os, PdfIndirectReference root, PdfIndirectReference info, PdfIndirectReference encryption, PdfObject fileID, long prevxref) {
+            virtual public void WriteCrossReferenceTable(Stream os, PdfIndirectReference root, PdfIndirectReference info, PdfIndirectReference encryption, PdfObject fileID, long prevxref) {
                 int refNumber = 0;
                 if (writer.FullCompression) {
                     FlushObjStm();
@@ -1808,7 +1807,7 @@ namespace iTextSharp.text.pdf {
         public const int PDFA1B = 4;
 
         /** Stores the PDF/X level. */
-        private PdfXConformanceImp pdfxConformance = new PdfXConformanceImp();
+        protected PdfXConformanceImp pdfxConformance = new PdfXConformanceImp();
 
         /**
         * Sets the PDFX conformance level. Allowed values are PDFX1A2001 and PDFX32002. It
