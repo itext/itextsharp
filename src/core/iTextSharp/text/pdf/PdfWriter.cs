@@ -253,7 +253,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             
-            private PdfWriter.PdfBody.PdfCrossReference AddToObjStm(PdfObject obj, int nObj) {
+            protected PdfWriter.PdfBody.PdfCrossReference AddToObjStm(PdfObject obj, int nObj) {
                 if (numObj >= OBJSINSTREAM)
                     FlushObjStm();
                 if (index == null) {
