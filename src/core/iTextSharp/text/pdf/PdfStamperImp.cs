@@ -54,12 +54,12 @@ namespace iTextSharp.text.pdf {
     public class PdfStamperImp : PdfWriter {
         internal Dictionary<PdfReader, IntHashtable> readers2intrefs = new Dictionary<PdfReader,IntHashtable>();
         internal Dictionary<PdfReader, RandomAccessFileOrArray> readers2file = new Dictionary<PdfReader,RandomAccessFileOrArray>();
-        internal RandomAccessFileOrArray file;
+        internal protected RandomAccessFileOrArray file;
         internal PdfReader reader;
         internal IntHashtable myXref = new IntHashtable();
         /** Integer(page number) -> PageStamp */
         internal Dictionary<PdfDictionary, PageStamp> pagesToContent = new Dictionary<PdfDictionary,PageStamp>();
-        internal bool closed = false;
+        internal protected bool closed = false;
         /** Holds value of property rotateContents. */
         private bool rotateContents = true;
         protected AcroFields acroFields;
@@ -86,7 +86,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         * @throws IOException
         */
-        internal PdfStamperImp(PdfReader reader, Stream os, char pdfVersion, bool append) : base(new PdfDocument(), os) {
+        internal protected PdfStamperImp(PdfReader reader, Stream os, char pdfVersion, bool append) : base(new PdfDocument(), os) {
             if (!reader.IsOpenedWithFullPermissions)
                 throw new BadPasswordException(MessageLocalization.GetComposedMessage("pdfreader.not.opened.with.owner.password"));
             if (reader.Tampered)
@@ -129,7 +129,7 @@ namespace iTextSharp.text.pdf {
             initialXrefSize = reader.XrefSize;
         }
         
-        internal void Close(IDictionary<String, String> moreInfo) {
+        virtual internal protected void Close(IDictionary<String, String> moreInfo) {
             if (closed)
                 return;
             if (useVp) {
@@ -404,7 +404,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        internal void AlterContents() {
+        internal protected void AlterContents() {
             foreach (PageStamp ps in pagesToContent.Values) {
                 PdfDictionary pageN = ps.pageN;
                 MarkUsed(pageN);
@@ -804,7 +804,7 @@ namespace iTextSharp.text.pdf {
             return true;
         }
         
-        internal void FlatFields() {
+        internal protected void FlatFields() {
             if (append)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("field.flattening.is.not.supported.in.append.mode"));
             AcroFields af = AcroFields;
@@ -977,7 +977,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        private void FlatFreeTextFields() {
+        protected void FlatFreeTextFields() {
             if (append)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("freetext.flattening.is.not.supported.in.append.mode"));
             
@@ -1094,7 +1094,7 @@ namespace iTextSharp.text.pdf {
             MarkUsed(fields);
         }
         
-        internal void AddFieldResources() {
+        internal protected void AddFieldResources() {
             if (fieldTemplates.Count == 0)
                 return;
             PdfDictionary catalog = reader.Catalog;
@@ -1264,7 +1264,7 @@ namespace iTextSharp.text.pdf {
             MarkUsed(catalog);
         }
         
-        internal void SetJavaScript() {
+        internal protected void SetJavaScript() {
             Dictionary<string,PdfObject> djs = pdf.GetDocumentLevelJS();
             if (djs.Count == 0)
                 return;
@@ -1280,7 +1280,7 @@ namespace iTextSharp.text.pdf {
             names.Put(PdfName.JAVASCRIPT, AddToBody(tree).IndirectReference);
         }
             
-        void AddFileAttachments() {
+        protected void AddFileAttachments() {
             Dictionary<string,PdfObject> fs = pdf.GetDocumentFileAttachment();
             if (fs.Count == 0)
                 return;
@@ -1323,7 +1323,7 @@ namespace iTextSharp.text.pdf {
             catalog.Put( PdfName.COLLECTION, collection );
         }
 
-        internal void SetOutlines() {
+        internal protected void SetOutlines() {
             if (newBookmarks == null)
                 return;
             DeleteOutlines();

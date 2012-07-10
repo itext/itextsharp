@@ -1796,12 +1796,15 @@ namespace iTextSharp.text.pdf {
 
         protected internal PdfPageLabels pageLabels;
 
-        internal PdfPageLabels PageLabels {
-            set {
+        public PdfPageLabels PageLabels {
+            get {
+                return pageLabels;
+            }
+            internal set {
                 this.pageLabels = value;
             }
         }
-        
+
     //  [C5] named objects: local destinations, javascript, embedded files
 
         /**
