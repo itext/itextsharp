@@ -78,7 +78,7 @@ public class PdfIndirectObject {
         internal static byte[] ENDOBJ = DocWriter.GetISOBytes("\nendobj\n");
         internal static int SIZEOBJ = STARTOBJ.Length + ENDOBJ.Length;
         internal protected PdfObject objecti;
-        internal PdfWriter writer;
+        internal protected PdfWriter writer;
         
         // constructors
         
@@ -123,7 +123,7 @@ public class PdfIndirectObject {
     * @return        a <CODE>PdfIndirectReference</CODE>
     */
         
-        public PdfIndirectReference IndirectReference {
+        virtual public PdfIndirectReference IndirectReference {
             get {
                 return new PdfIndirectReference(objecti.Type, number, generation);
             }
