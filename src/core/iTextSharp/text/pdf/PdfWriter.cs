@@ -273,7 +273,7 @@ namespace iTextSharp.text.pdf {
                 return new PdfWriter.PdfBody.PdfCrossReference(2, nObj, currentObjNum, idx);
             }
             
-            virtual internal protected void FlushObjStm() {
+            virtual public void FlushObjStm() {
                 if (numObj == 0)
                     return;
                 int first = index.Size;
