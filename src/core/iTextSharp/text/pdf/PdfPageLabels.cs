@@ -150,7 +150,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the page label dictionary to insert into the document.
          * @return the page label dictionary
          */    
-        internal PdfDictionary GetDictionary(PdfWriter writer) {
+        public PdfDictionary GetDictionary(PdfWriter writer) {
             return PdfNumberTree.WriteTree(map, writer);
         }
 

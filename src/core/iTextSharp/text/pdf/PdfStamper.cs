@@ -108,7 +108,11 @@ namespace iTextSharp.text.pdf {
         public PdfStamper(PdfReader reader, Stream os, char pdfVersion, bool append) {
             stamper = new PdfStamperImp(reader, os, pdfVersion, append);
         }
+
+        protected PdfStamper() { 
         
+        }
+
         /** Gets the optional <CODE>String</CODE> map to add or change values in
         * the info dictionary.
         * @return the map or <CODE>null</CODE>

@@ -3236,7 +3236,7 @@ namespace iTextSharp.text.pdf {
             SetViewerPreferences(this.viewerPreferences);
         }
         
-        internal virtual void SetViewerPreferences(PdfViewerPreferencesImp vp) {
+        public virtual void SetViewerPreferences(PdfViewerPreferencesImp vp) {
             vp.AddToCatalog(catalog);
         }
 
