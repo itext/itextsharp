@@ -563,7 +563,8 @@ namespace iTextSharp.text.pdf {
         /**
         * Constructs a <CODE>PdfWriter</CODE>.
         */
-        protected PdfWriter() {
+        protected PdfWriter(){
+            pdfIsoConformance = GetPdfIsoConformance();
             root = new PdfPages(this);
         }
         
@@ -578,6 +579,7 @@ namespace iTextSharp.text.pdf {
         */
         
         protected PdfWriter(PdfDocument document, Stream os) : base(document, os) {
+            pdfIsoConformance = GetPdfIsoConformance();
             root = new PdfPages(this);
             pdf = document;
             directContent = new PdfContentByte(this);
@@ -1392,6 +1394,11 @@ namespace iTextSharp.text.pdf {
             pdf_version.SetAtLeastPdfVersion(version);
         }
 
+        /** @see com.itextpdf.text.pdf.interfaces.PdfVersion#setPdfVersion(char) */
+        public void SetPdfVersion(char version) {
+            pdf_version.SetPdfVersion(version);
+        }
+
         /**
         * @see com.lowagie.text.pdf.interfaces.PdfVersion#setPdfVersion(com.lowagie.text.pdf.PdfName)
         */
@@ -1807,9 +1814,9 @@ namespace iTextSharp.text.pdf {
         public const int PDFA1B = 4;
 
         /** Stores the PDF/X level. */
-        protected IPdfIsoConformance pdfIsoConformance = GetPdfIsoConformance();
+        protected IPdfIsoConformance pdfIsoConformance;
 
-        protected static IPdfIsoConformance GetPdfIsoConformance()
+        virtual protected internal IPdfIsoConformance GetPdfIsoConformance()
         {
             return new PdfXConformanceImp();
         }
@@ -1847,7 +1854,7 @@ namespace iTextSharp.text.pdf {
          * Checks if any PDF ISO conformance is necessary.
          * @return <code>true</code> if the PDF has to be in conformance with any of the PDF ISO specifications
          */
-        public bool IsPdfIso()
+        virtual public bool IsPdfIso()
         {
             return pdfIsoConformance.IsPdfIso();
         }
@@ -1863,8 +1870,9 @@ namespace iTextSharp.text.pdf {
         * @param info a value
         * @param destOutputProfile a value
         * @throws IOException on error
-        */    
-        public void SetOutputIntents(String outputConditionIdentifier, String outputCondition, String registryName, String info, ICC_Profile colorProfile) {
+        */
+        virtual public void SetOutputIntents(String outputConditionIdentifier, String outputCondition, String registryName, String info, ICC_Profile colorProfile)
+        {
             PdfDictionary outa = ExtraCatalog; //force the creation
             outa = new PdfDictionary(PdfName.OUTPUTINTENT);
             if (outputCondition != null)
@@ -1908,7 +1916,8 @@ namespace iTextSharp.text.pdf {
         *
         * @throws IOException
         */
-        public void SetOutputIntents(String outputConditionIdentifier, String outputCondition, String registryName, String info, byte[] destOutputProfile) {
+        virtual public void SetOutputIntents(String outputConditionIdentifier, String outputCondition, String registryName, String info, byte[] destOutputProfile)
+        {
             ICC_Profile colorProfile = (destOutputProfile == null) ? null : ICC_Profile.GetInstance(destOutputProfile);
             SetOutputIntents(outputConditionIdentifier, outputCondition, registryName, info, colorProfile);
         }
@@ -1921,7 +1930,7 @@ namespace iTextSharp.text.pdf {
         * @return <CODE>true</CODE> if the output intent dictionary exists, <CODE>false</CODE>
         * otherwise
         */    
-        public bool SetOutputIntents(PdfReader reader, bool checkExistence) {
+        virtual public bool SetOutputIntents(PdfReader reader, bool checkExistence) {
             PdfDictionary catalog = reader.Catalog;
             PdfArray outs = catalog.GetAsArray(PdfName.OUTPUTINTENTS);
             if (outs == null)
@@ -3198,7 +3207,7 @@ namespace iTextSharp.text.pdf {
 
         protected TtfUnicodeWriter ttfUnicodeWriter = null;
 
-        protected TtfUnicodeWriter GetTtfUnicodeWriter() {
+        virtual protected internal TtfUnicodeWriter GetTtfUnicodeWriter() {
             if (ttfUnicodeWriter == null)
                 ttfUnicodeWriter = new TtfUnicodeWriter(this);
             return ttfUnicodeWriter;
@@ -3211,7 +3220,7 @@ namespace iTextSharp.text.pdf {
                 writer.CheckPdfIsoConformance(key, obj1);
         }
 
-        internal protected void CheckPdfIsoConformance(int key, Object obj1) {
+        virtual internal protected void CheckPdfIsoConformance(int key, Object obj1) {
             PdfXConformanceImp.CheckPDFXConformance(this, key, obj1);
         }
 

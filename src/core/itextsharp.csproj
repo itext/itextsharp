@@ -1051,9 +1051,6 @@
     <Compile Include="iTextSharp\text\xml\xmp\LangAlt.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\xml\xmp\PdfA1Schema.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="iTextSharp\text\xml\xmp\PdfSchema.cs">
       <SubType>Code</SubType>
     </Compile>
