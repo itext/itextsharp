@@ -57,7 +57,7 @@ namespace iTextSharp.text.pdf {
      * as Thai.
      * @author  Paulo Soares
      */
-    internal class TrueTypeFontUnicode : TrueTypeFont, IComparer<int[]> {
+    public class TrueTypeFontUnicode : TrueTypeFont, IComparer<int[]> {
     
         /** <CODE>true</CODE> if the encoding is vertical.
          */    
@@ -165,7 +165,7 @@ namespace iTextSharp.text.pdf {
          * @throws DocumentException on error
          * @return the stream representing this CMap or <CODE>null</CODE>
          */    
-        private PdfStream GetToUnicode(Object[] metrics) {
+        public PdfStream GetToUnicode(Object[] metrics) {
             if (metrics.Length == 0)
                 return null;
             StringBuilder buf = new StringBuilder(
@@ -226,7 +226,7 @@ namespace iTextSharp.text.pdf {
          * @param metrics the horizontal width metrics
          * @return a stream
          */    
-        private PdfDictionary GetCIDFontType2(PdfIndirectReference fontDescriptor, string subsetPrefix, Object[] metrics) {
+        public PdfDictionary GetCIDFontType2(PdfIndirectReference fontDescriptor, string subsetPrefix, Object[] metrics) {
             PdfDictionary dic = new PdfDictionary(PdfName.FONT);
             // sivan; cff
             if (cff) {
@@ -281,7 +281,7 @@ namespace iTextSharp.text.pdf {
          * @param toUnicode the ToUnicode stream
          * @return the stream
          */    
-        private PdfDictionary GetFontBaseType(PdfIndirectReference descendant, string subsetPrefix, PdfIndirectReference toUnicode) {
+        public PdfDictionary GetFontBaseType(PdfIndirectReference descendant, string subsetPrefix, PdfIndirectReference toUnicode) {
             PdfDictionary dic = new PdfDictionary(PdfName.FONT);
 
             dic.Put(PdfName.SUBTYPE, PdfName.TYPE0);

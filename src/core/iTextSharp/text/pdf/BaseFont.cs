@@ -248,7 +248,7 @@ namespace iTextSharp.text.pdf {
         /** The fake CID code that represents a newline. */    
         public const char CID_NEWLINE = '\u7fff';
 
-        protected List<int[]> subsetRanges;
+        public IList<int[]> subsetRanges;
 
         /** The font type.
          */    
@@ -257,52 +257,52 @@ namespace iTextSharp.text.pdf {
         public const string notdef = ".notdef";
     
         /** table of characters widths for this encoding */
-        protected int[] widths = new int[256];
+        internal protected int[] widths = new int[256];
     
         /** encoding names */
-        protected string[] differences = new string[256];
+        internal protected string[] differences = new string[256];
         /** same as differences but with the unicode codes */
-        protected char[] unicodeDifferences = new char[256];
-        protected int[][] charBBoxes = new int[256][];
+        internal protected char[] unicodeDifferences = new char[256];
+        internal protected int[][] charBBoxes = new int[256][];
         /** encoding used with this font */
-        protected string encoding;
+        internal protected string encoding;
     
         /** true if the font is to be embedded in the PDF */
-        protected bool embedded;
+        internal protected bool embedded;
     
         /**
         * The compression level for the font stream.
         * @since   2.1.3
         */
-        protected int compressionLevel = PdfStream.DEFAULT_COMPRESSION;
+        public int compressionLevel = PdfStream.DEFAULT_COMPRESSION;
 
         /**
          * true if the font must use its built in encoding. In that case the
          * <CODE>encoding</CODE> is only used to map a char to the position inside
          * the font, not to the expected char name.
          */
-        protected bool fontSpecific = true;
+        internal protected bool fontSpecific = true;
     
         /** cache for the fonts already used. */
-        protected static Dictionary<String, BaseFont> fontCache = new Dictionary<string,BaseFont>();
+        internal protected static Dictionary<String, BaseFont> fontCache = new Dictionary<string,BaseFont>();
     
         /** list of the 14 built in fonts. */
-        protected static Dictionary<String, PdfName> BuiltinFonts14 = new Dictionary<string,PdfName>();
+        internal protected static Dictionary<String, PdfName> BuiltinFonts14 = new Dictionary<string,PdfName>();
     
         /** Forces the output of the width array. Only matters for the 14
          * built-in fonts.
          */
-        protected bool forceWidthsOutput = false;
+        internal protected bool forceWidthsOutput = false;
     
         /** Converts <CODE>char</CODE> directly to <CODE>byte</CODE>
          * by casting.
          */
-        protected bool directTextToByte = false;
+        internal protected bool directTextToByte = false;
     
         /** Indicates if all the glyphs and widths for that particular
          * encoding should be included in the document.
          */
-        protected bool subset = true;
+        public bool subset = true;
     
         protected bool fastWinansi = false;
 
@@ -310,9 +310,9 @@ namespace iTextSharp.text.pdf {
         * Custom encodings use this map to key the Unicode character
         * to the single byte code.
         */
-        protected IntHashtable specialMap;
+        internal protected IntHashtable specialMap;
 
-        protected static internal List<object> resourceSearch = new List<object>();
+        internal protected static IList<object> resourceSearch = new List<object>();
 
         private static Random random = new Random();
 
@@ -336,7 +336,7 @@ namespace iTextSharp.text.pdf {
         /** Generates the PDF stream with the Type1 and Truetype fonts returning
          * a PdfStream.
          */
-        internal class StreamFont : PdfStream {
+        public class StreamFont : PdfStream {
         
             /** Generates the PDF stream with the Type1 and Truetype fonts returning
             * a PdfStream.
@@ -346,7 +346,7 @@ namespace iTextSharp.text.pdf {
             * @throws DocumentException error in the stream compression
             * @since   2.1.3 (replaces the constructor without param compressionLevel)
             */
-            internal StreamFont(byte[] contents, int[] lengths, int compressionLevel) {
+            public StreamFont(byte[] contents, int[] lengths, int compressionLevel) {
                 bytes = contents;
                 Put(PdfName.LENGTH, new PdfNumber(bytes.Length));
                 for (int k = 0; k < lengths.Length; ++k) {
@@ -363,7 +363,7 @@ namespace iTextSharp.text.pdf {
             * @throws DocumentException error in the stream compression
             * @since   2.1.3 (replaces the constructor without param compressionLevel)
             */
-            internal StreamFont(byte[] contents, string subType, int compressionLevel) {
+            public StreamFont(byte[] contents, string subType, int compressionLevel) {
                 bytes = contents;
                 Put(PdfName.LENGTH, new PdfNumber(bytes.Length));
                 if (subType != null)
@@ -429,7 +429,7 @@ namespace iTextSharp.text.pdf {
         * <P>
         * This method calls:<br>
         * <PRE>
-        * createFont(name, encoding, embedded, true, null, null);
+        * CreateFont(name, encoding, embedded, true, null, null);
         * </PRE>
         * @param name the name of the font or its location on file
         * @param encoding the encoding to be applied to this font
@@ -481,7 +481,7 @@ namespace iTextSharp.text.pdf {
         * <P>
         * This method calls:<br>
         * <PRE>
-        * createFont(name, encoding, embedded, true, null, null);
+        * CreateFont(name, encoding, embedded, true, null, null);
         * </PRE>
         * @param name the name of the font or its location on file
         * @param encoding the encoding to be applied to this font
@@ -1130,7 +1130,7 @@ namespace iTextSharp.text.pdf {
         /** Creates a unique subset prefix to be added to the font name when the font is embedded and subset.
          * @return the subset prefix
          */
-        internal static string CreateSubsetPrefix() {
+        public static string CreateSubsetPrefix() {
             char[] s = new char[7];
             lock (random) {
                 for (int k = 0; k < 6; ++k)
@@ -1227,7 +1227,7 @@ namespace iTextSharp.text.pdf {
         * @param ttfAfm the true type font or the afm in a byte array
         * @throws DocumentException on error
         * @throws IOException on error
-        * @return an array of Object[] built with {getPostscriptFontName(), getFamilyFontName(), getFullFontName()}
+        * @return an array of Object[] built with {getPostscriptFontName(), GetFamilyFontName(), GetFullFontName()}
         */
         public static String[][] GetAllNameEntries(String name, String encoding, byte[] ttfAfm) {
             String nameBase = GetBaseName(name);
@@ -1478,7 +1478,7 @@ namespace iTextSharp.text.pdf {
             return true;
         }
         
-        private static void AddFont(PRIndirectReference fontRef, IntHashtable hits, List<object[]> fonts) {
+        private static void AddFont(PRIndirectReference fontRef, IntHashtable hits, IList<object[]> fonts) {
             PdfObject obj = PdfReader.GetPdfObject(fontRef);
             if (obj == null || !obj.IsDictionary())
                 return;
@@ -1491,7 +1491,7 @@ namespace iTextSharp.text.pdf {
             hits[fontRef.Number] = 1;
         }
         
-        private static void RecourseFonts(PdfDictionary page, IntHashtable hits, List<object[]> fonts, int level) {
+        private static void RecourseFonts(PdfDictionary page, IntHashtable hits, IList<object[]> fonts, int level) {
             ++level;
             if (level > 50) // in case we have an endless loop
                 return;
@@ -1523,15 +1523,15 @@ namespace iTextSharp.text.pdf {
         }
         
         /**
-        * Gets a list of all document fonts. Each element of the <CODE>ArrayList</CODE>
+        * Gets a list of all document fonts. Each element of the <CODE>List</CODE>
         * contains a <CODE>Object[]{String,PRIndirectReference}</CODE> with the font name
         * and the indirect reference to it.
         * @param reader the document where the fonts are to be listed from
         * @return the list of fonts and references
         */    
-        public static List<object[]> GetDocumentFonts(PdfReader reader) {
+        public static IList<object[]> GetDocumentFonts(PdfReader reader) {
             IntHashtable hits = new IntHashtable();
-            List<object[]> fonts = new List<object[]>();
+            IList<object[]> fonts = new List<object[]>();
             int npages = reader.NumberOfPages;
             for (int k = 1; k <= npages; ++k)
                 RecourseFonts(reader.GetPageN(k), hits, fonts, 1);
@@ -1539,16 +1539,16 @@ namespace iTextSharp.text.pdf {
         }
         
         /**
-        * Gets a list of the document fonts in a particular page. Each element of the <CODE>ArrayList</CODE>
+        * Gets a list of the document fonts in a particular page. Each element of the <CODE>List</CODE>
         * contains a <CODE>Object[]{String,PRIndirectReference}</CODE> with the font name
         * and the indirect reference to it.
         * @param reader the document where the fonts are to be listed from
         * @param page the page to list the fonts from
         * @return the list of fonts and references
         */    
-        public static List<object[]> GetDocumentFonts(PdfReader reader, int page) {
+        public static IList<object[]> GetDocumentFonts(PdfReader reader, int page) {
             IntHashtable hits = new IntHashtable();
-            List<object[]> fonts = new List<object[]>();
+            IList<object[]> fonts = new List<object[]>();
             RecourseFonts(reader.GetPageN(page), hits, fonts, 1);
             return fonts;
         }

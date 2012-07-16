@@ -124,7 +124,7 @@ namespace iTextSharp.text.pdf {
         */
         public float FillOpacity {
             set {
-                Put(PdfName.ca_, new PdfNumber(value));
+                Put(PdfName.ca, new PdfNumber(value));
             }
         }
         

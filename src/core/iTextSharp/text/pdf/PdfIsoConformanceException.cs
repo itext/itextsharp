@@ -1,8 +1,11 @@
 using System;
+using System.Collections.Generic;
+using System.Text;
+
 /*
- * $Id$
+ * $Id: PdfIsoConformanceException.java 5222 2012-06-27 08:54:55Z achingarev $
  *
- * This file is part of the iText project.
+ * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
@@ -28,8 +31,8 @@ using System;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -42,25 +45,23 @@ using System;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+namespace iTextSharp.text.pdf
+{
 
-namespace iTextSharp.text.pdf.interfaces {
+    public class PdfIsoConformanceException : Exception
+    {
 
-    public interface IPdfXConformance : IPdfIsoConformance {
-        /**
-        * Sets the PDF/X conformance level.
-        * Allowed values are PDFX1A2001, PDFX32002, PDFA1A and PDFA1B.
-        * It must be called before opening the document.
-        * @param pdfxConformance the conformance level
-        */    
-        int PDFXConformance{
-            set;
-            get;
+        /** Creates a new instance of PdfIsoConformanceException. */
+        public PdfIsoConformanceException()
+        {
         }
 
         /**
-        * Checks if the PDF/X Conformance is necessary.
-        * @return true if the PDF has to be in conformance with any of the PDF/X specifications
-        */
-        bool IsPdfX();
+         * Creates a new instance of PdfIsoConformanceException.
+         * @param s
+         */
+        public PdfIsoConformanceException(String s) : base(s)
+        {            
+        }
     }
 }
