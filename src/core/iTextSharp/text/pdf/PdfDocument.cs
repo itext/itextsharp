@@ -275,13 +275,14 @@ namespace iTextSharp.text.pdf {
         * Constructs a new PDF document.
         * @throws DocumentException on error
         */
-        internal protected PdfDocument() {
+        public PdfDocument()
+        {
             AddProducer();
             AddCreationDate();
         }
         
         /** The <CODE>PdfWriter</CODE>. */
-        protected internal PdfWriter writer;
+        internal protected PdfWriter writer;
         
         /**
         * Adds a <CODE>PdfWriter</CODE> to the <CODE>PdfDocument</CODE>.
@@ -290,7 +291,7 @@ namespace iTextSharp.text.pdf {
         *                     what is added to this document to an outputstream.
         * @throws DocumentException on error
         */
-        internal protected void AddWriter(PdfWriter writer) {
+        public void AddWriter(PdfWriter writer) {
             if (this.writer == null) {
                 this.writer = writer;
                 annotationsImp = new PdfAnnotationsImp(writer);

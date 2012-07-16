@@ -4055,6 +4055,7 @@
     <EmbeddedResource Include="iTextSharp\text\pdf\fonts\ZapfDingbats.afm" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IDocListener.cs" />
     <Compile Include="iTextSharp\text\api\IIndentable.cs" />
     <Compile Include="iTextSharp\text\api\ISpaceable.cs" />
     <Compile Include="iTextSharp\text\api\IWriterOperation.cs" />
@@ -4089,6 +4090,8 @@
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapToUnicode.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapUniCid.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\ICidLocation.cs" />
+    <Compile Include="iTextSharp\text\pdf\interfaces\IPdfIsoConformance.cs" />
+    <Compile Include="iTextSharp\text\pdf\intern\PdfIsoKeys.cs" />
     <Compile Include="iTextSharp\text\pdf\LongHashtable.cs" />
     <Compile Include="iTextSharp\text\pdf\crypto\AESCipherCBCnoPad.cs" />
     <Compile Include="iTextSharp\text\pdf\FilterHandlers.cs" />
@@ -4098,6 +4101,7 @@
     <Compile Include="iTextSharp\text\pdf\IPdfPTableEventSplit.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfConcatenate.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfDiv.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfIsoConformanceException.cs" />
     <Compile Include="iTextSharp\text\pdf\security\CertificateInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\security\CertificateUtil.cs" />
     <Compile Include="iTextSharp\text\pdf\security\CertificateVerification.cs" />
@@ -4118,6 +4122,7 @@
     <Compile Include="iTextSharp\text\pdf\security\SecurityIDs.cs" />
     <Compile Include="iTextSharp\text\pdf\security\TSAClientBouncyCastle.cs" />
     <Compile Include="iTextSharp\text\pdf\security\X509Certificate2Signature.cs" />
+    <Compile Include="iTextSharp\text\pdf\TftUnicodeWriter.cs" />
     <Compile Include="iTextSharp\text\WritableDirectElement.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\handler\HTMLNewLineHandler.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\handler\NeverNewLineHandler.cs" />

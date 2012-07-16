@@ -289,5 +289,59 @@ namespace iTextSharp.text.xml.xmp {
                 if (basic.Count > 0) AddRdfDescription(basic);
             }
         }
+
+         /**
+         * @param os
+         * @param info
+         * @throws IOException
+         */
+        public XmpWriter(Stream os, PdfDictionary info) : this(os) {
+            
+            if (info != null) {
+        	    DublinCoreSchema dc = new DublinCoreSchema();
+        	    PdfSchema p = new PdfSchema();
+        	    XmpBasicSchema basic = new XmpBasicSchema();
+        	    PdfName key;
+        	    PdfObject obj;
+        	    String value;
+        	    foreach (PdfName pdfName in info.Keys) {
+        		    key = pdfName;
+        		    obj = info.Get(key);
+        		    if (obj == null)
+        			    continue;
+        		    if (!obj.IsString())
+        			    continue;
+        		    value = ((PdfString)obj).ToUnicodeString();
+        		    if (PdfName.TITLE.Equals(key)) {
+        			    dc.AddTitle(value);
+        		    }
+        		    if (PdfName.AUTHOR.Equals(key)) {
+        			    dc.AddAuthor(value);
+        		    }
+        		    if (PdfName.SUBJECT.Equals(key)) {
+        			    dc.AddSubject(value);
+        			    dc.AddDescription(value);
+        		    }
+        		    if (PdfName.KEYWORDS.Equals(key)) {
+        			    p.AddKeywords(value);
+        		    }
+        		    if (PdfName.CREATOR.Equals(key)) {
+        			    basic.AddCreatorTool(value);
+        		    }
+        		    if (PdfName.PRODUCER.Equals(key)) {
+        			    p.AddProducer(value);
+        		    }
+        		    if (PdfName.CREATIONDATE.Equals(key)) {
+        			    basic.AddCreateDate(PdfDate.GetW3CDate(obj.ToString()));
+        		    }
+        		    if (PdfName.MODDATE.Equals(key)) {
+        			    basic.AddModDate(PdfDate.GetW3CDate(obj.ToString()));
+        		    }
+        	    }
+        	    if (dc.Count > 0) AddRdfDescription(dc);
+                if (p.Count > 0) AddRdfDescription(p);
+                if (basic.Count > 0) AddRdfDescription(basic);
+            }
+        }
     }
 }

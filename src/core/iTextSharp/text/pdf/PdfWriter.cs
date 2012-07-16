@@ -295,7 +295,7 @@ namespace iTextSharp.text.pdf {
             * This methods creates a <CODE>PdfIndirectObject</CODE> with a
             * certain number, containing the given <CODE>PdfObject</CODE>.
             * It also adds a <CODE>PdfCrossReference</CODE> for this object
-            * to an <CODE>ArrayList</CODE> that will be used to build the
+            * to an <CODE>IList</CODE> that will be used to build the
             * Cross-reference Table.
             *
             * @param        object          a <CODE>PdfObject</CODE>
@@ -337,7 +337,7 @@ namespace iTextSharp.text.pdf {
             * This methods creates a <CODE>PdfIndirectObject</CODE> with the number given by
             * <CODE>ref</CODE>, containing the given <CODE>PdfObject</CODE>.
             * It also adds a <CODE>PdfCrossReference</CODE> for this object
-            * to an <CODE>ArrayList</CODE> that will be used to build the
+            * to an <CODE>IList</CODE> that will be used to build the
             * Cross-reference Table.
             *
             * @param        object          a <CODE>PdfObject</CODE>
@@ -420,7 +420,7 @@ namespace iTextSharp.text.pdf {
                 }
                 int first = ((PdfCrossReference)xrefs.GetMinKey()).Refnum;
                 int len = 0;
-                List<int> sections = new List<int>();
+                IList<int> sections = new List<int>();
                 foreach (PdfCrossReference entry in xrefs.Keys) {
                     if (first + len == entry.Refnum)
                         ++len;
@@ -918,7 +918,7 @@ namespace iTextSharp.text.pdf {
         /** The root of the page tree. */
         protected PdfPages root;
         /** The PdfIndirectReference to the pages. */
-        protected List<PdfIndirectReference> pageReferences = new List<PdfIndirectReference>();
+        protected IList<PdfIndirectReference> pageReferences = new List<PdfIndirectReference>();
         /** The current page number. */
         protected int currentPageNumber = 1;
         /**
@@ -971,7 +971,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Use this method to reorder the pages in the document.
         * A <CODE>null</CODE> argument value only returns the number of pages to process.
-        * It is advisable to issue a <CODE>Document.newPage()</CODE> before using this method.
+        * It is advisable to issue a <CODE>Document.NewPage()</CODE> before using this method.
         * @return the total number of pages
         * @param order an array with the new page sequence. It must have the
         * same size as the number of pages.
@@ -1146,7 +1146,7 @@ namespace iTextSharp.text.pdf {
             base.Open();
             pdf_version.WriteHeader(os);
             body = new PdfBody(this);
-            if (pdfxConformance.IsPdfX32002()) {
+            if (((PdfXConformanceImp)pdfIsoConformance).IsPdfX32002()) {
                 PdfDictionary sec = new PdfDictionary();
                 sec.Put(PdfName.GAMMA, new PdfArray(new float[]{2.2f,2.2f,2.2f}));
                 sec.Put(PdfName.MATRIX, new PdfArray(new float[]{0.4124f,0.2126f,0.0193f,0.3576f,0.7152f,0.1192f,0.1805f,0.0722f,0.9505f}));
@@ -1194,8 +1194,8 @@ namespace iTextSharp.text.pdf {
                 }
                 // [C10] make pdfx conformant
                 if (IsPdfX()) {
-                    pdfxConformance.CompleteInfoDictionary(Info);
-                    pdfxConformance.CompleteExtraCatalog(ExtraCatalog);
+                    ((PdfXConformanceImp)pdfIsoConformance).CompleteInfoDictionary(Info);
+                    ((PdfXConformanceImp)pdfIsoConformance).CompleteExtraCatalog(ExtraCatalog);
                 }
                 // [C11] Output Intents
                 if (extraCatalog != null) {
@@ -1785,10 +1785,10 @@ namespace iTextSharp.text.pdf {
         private byte[] CreateXmpMetadataBytes() {
             MemoryStream baos = new MemoryStream();
             try {
-                XmpWriter xmp = new XmpWriter(baos, pdf.Info, pdfxConformance.PDFXConformance);
+                XmpWriter xmp = new XmpWriter(baos, pdf.Info, ((PdfXConformanceImp)pdfIsoConformance).PDFXConformance);
                 xmp.Close();
             }
-            catch(IOException) {
+            catch (IOException) {
             }
             return baos.ToArray();
         }
@@ -1807,16 +1807,21 @@ namespace iTextSharp.text.pdf {
         public const int PDFA1B = 4;
 
         /** Stores the PDF/X level. */
-        protected PdfXConformanceImp pdfxConformance = new PdfXConformanceImp();
+        protected IPdfIsoConformance pdfIsoConformance = GetPdfIsoConformance();
+
+        protected static IPdfIsoConformance GetPdfIsoConformance()
+        {
+            return new PdfXConformanceImp();
+        }
 
         /**
         * Sets the PDFX conformance level. Allowed values are PDFX1A2001 and PDFX32002. It
         * must be called before opening the document.
-        * @param pdfxConformance the conformance level
+        * @param ((PdfXConformance)pdfIsoConformance) the conformance level
         */    
         public int PDFXConformance {
             set {
-                if (pdfxConformance.PDFXConformance == value)
+                if (((PdfXConformanceImp)pdfIsoConformance).PDFXConformance == value)
                     return;
                 if (pdf.IsOpen())
                     throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("pdfx.conformance.can.only.be.set.before.opening.the.document"));
@@ -1826,16 +1831,25 @@ namespace iTextSharp.text.pdf {
                     PdfVersion = VERSION_1_4;
                 else if (value != PDFXNONE)
                     PdfVersion = VERSION_1_3;
-                pdfxConformance.PDFXConformance = value;
+                ((PdfXConformanceImp)pdfIsoConformance).PDFXConformance = value;
             }
             get {
-                return pdfxConformance.PDFXConformance;
+                return ((PdfXConformanceImp)pdfIsoConformance).PDFXConformance;
             }
         }
 
         /** @see com.lowagie.text.pdf.interfaces.PdfXConformance#isPdfX() */
         public bool IsPdfX() {
-            return pdfxConformance.IsPdfX();
+            return ((PdfXConformanceImp)pdfIsoConformance).IsPdfX();
+        }
+
+        /**
+         * Checks if any PDF ISO conformance is necessary.
+         * @return <code>true</code> if the PDF has to be in conformance with any of the PDF ISO specifications
+         */
+        public bool IsPdfIso()
+        {
+            return pdfIsoConformance.IsPdfIso();
         }
 
     //  [C11] Output intents
@@ -1867,7 +1881,8 @@ namespace iTextSharp.text.pdf {
             }
 
             PdfName intentSubtype;
-            if (pdfxConformance.IsPdfA1() || "PDFA/1".Equals(outputCondition)) {
+            if (((PdfXConformanceImp)pdfIsoConformance).IsPdfA1() || "PDFA/1".Equals(outputCondition))
+            {
                 intentSubtype = PdfName.GTS_PDFA1;
             }
             else {
@@ -1885,7 +1900,7 @@ namespace iTextSharp.text.pdf {
         *
         * Prefer the <CODE>ICC_Profile</CODE>-based version of this method.
         * @param outputConditionIdentifier a value
-        * @param outputCondition           a value, "PDFA/A" to force GTS_PDFA1, otherwise cued by pdfxConformance.
+        * @param outputCondition           a value, "PDFA/A" to force GTS_PDFA1, otherwise cued by ((PdfXConformance)pdfIsoConformance).
         * @param registryName              a value
         * @param info                      a value
         * @param destOutputProfile         a value
@@ -1911,7 +1926,7 @@ namespace iTextSharp.text.pdf {
             PdfArray outs = catalog.GetAsArray(PdfName.OUTPUTINTENTS);
             if (outs == null)
                 return false;
-            List<PdfObject> arr = outs.ArrayList;
+            IList<PdfObject> arr = outs.ArrayList;
             if (outs.Size == 0)
                 return false;
             PdfDictionary outa = outs.GetAsDict(0);
@@ -2503,7 +2518,7 @@ namespace iTextSharp.text.pdf {
     //  [F13] Optional Content Groups    
 
         protected Dictionary<IPdfOCG, object> documentOCG = new Dictionary<IPdfOCG,object>();
-        protected List<IPdfOCG> documentOCGorder = new List<IPdfOCG>();
+        protected IList<IPdfOCG> documentOCGorder = new List<IPdfOCG>();
         protected PdfOCProperties vOCProperties;
         protected PdfArray OCGRadioGroup = new PdfArray();
         protected PdfArray OCGLocked = new PdfArray();
@@ -2528,7 +2543,7 @@ namespace iTextSharp.text.pdf {
         * ON, all others must be turned OFF.
         * @param group the radio group
         */    
-        public void AddOCGRadioGroup(List<PdfLayer> group) {
+        public void AddOCGRadioGroup(IList<PdfLayer> group) {
             PdfArray ar = new PdfArray();
             for (int k = 0; k < group.Count; ++k) {
                 PdfLayer layer = group[k];
@@ -2557,7 +2572,7 @@ namespace iTextSharp.text.pdf {
                 return;
             if (layer.Title == null)
                 order.Add(layer.Ref);
-            List<PdfLayer> children = layer.Children;
+            IList<PdfLayer> children = layer.Children;
             if (children == null)
                 return;
             PdfArray kids = new PdfArray();
@@ -2608,7 +2623,7 @@ namespace iTextSharp.text.pdf {
             }
             if (vOCProperties.Get(PdfName.D) != null)
                 return;
-            List<IPdfOCG> docOrder = new List<IPdfOCG>(documentOCGorder);
+            IList<IPdfOCG> docOrder = new List<IPdfOCG>(documentOCGorder);
             for (ListIterator<IPdfOCG> it = new ListIterator<IPdfOCG>(docOrder); it.HasNext();) {
                 PdfLayer layer = (PdfLayer)it.Next();
                 if (layer.Parent != null)
@@ -2703,9 +2718,9 @@ namespace iTextSharp.text.pdf {
         
         /**
         * Use this method to make sure a page is added,
-        * even if it's empty. If you use setPageEmpty(false),
-        * invoking newPage() after a blank page will add a newPage.
-        * setPageEmpty(true) won't have any effect.
+        * even if it's empty. If you use SetPageEmpty(false),
+        * invoking NewPage() after a blank page will add a newPage.
+        * SetPageEmpty(true) won't have any effect.
         * @param pageEmpty the state
         */
         public bool PageEmpty {
@@ -3180,5 +3195,25 @@ namespace iTextSharp.text.pdf {
                 this.rgbTransparencyBlending = value;
             }
         }
+
+        protected TtfUnicodeWriter ttfUnicodeWriter = null;
+
+        protected TtfUnicodeWriter GetTtfUnicodeWriter() {
+            if (ttfUnicodeWriter == null)
+                ttfUnicodeWriter = new TtfUnicodeWriter(this);
+            return ttfUnicodeWriter;
+        }
+
+        internal protected XmpWriter xmpWriter = null;
+
+        public static void CheckPdfIsoConformance(PdfWriter writer, int key, Object obj1) {
+            if (writer != null)
+                writer.CheckPdfIsoConformance(key, obj1);
+        }
+
+        internal protected void CheckPdfIsoConformance(int key, Object obj1) {
+            PdfXConformanceImp.CheckPDFXConformance(this, key, obj1);
+        }
+
     }
 }
