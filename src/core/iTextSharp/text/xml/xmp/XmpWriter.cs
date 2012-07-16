@@ -230,17 +230,10 @@ namespace iTextSharp.text.xml.xmp {
                 }
                 if (dc.Count > 0) AddRdfDescription(dc);
                 if (p.Count > 0) AddRdfDescription(p);
-                if (basic.Count > 0) AddRdfDescription(basic);
-                if (PdfXConformance == PdfWriter.PDFA1A || PdfXConformance == PdfWriter.PDFA1B) {
-                    PdfA1Schema a1 = new PdfA1Schema();
-                    if (PdfXConformance == PdfWriter.PDFA1A)
-                        a1.AddConformance("A");
-                    else
-                        a1.AddConformance("B");
-                    AddRdfDescription(a1);
-                }
-            }
+                if (basic.Count > 0) AddRdfDescription(basic);              
+             }
         }
+        
         
         /**
         * @param os

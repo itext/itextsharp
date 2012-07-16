@@ -107,7 +107,22 @@ namespace iTextSharp.text.pdf.intern {
                 this.catalog_version = version;
             }
         }
-        
+
+        /**
+         * @see com.itextpdf.text.pdf.interfaces.PdfVersion#setPdfVersion(char)
+         */
+        public void SetPdfVersion(char version)
+        {
+            if (headerWasWritten || appendmode)
+            {
+                SetPdfVersion(GetVersionAsName(version));
+            }
+            else
+            {
+                this.header_version = version;
+            }
+        }
+
         /**
         * Sets the append mode.
         */
@@ -164,7 +179,7 @@ namespace iTextSharp.text.pdf.intern {
 
 	    /** Adds the version to the Catalog dictionary. */
 	    public void AddToCatalog(PdfDictionary catalog) {
-		    if(catalog_version != null) {
+		    if (catalog_version != null) {
 			    catalog.Put(PdfName.VERSION, catalog_version);
 		    }
             if (extensions != null) {
