@@ -111,35 +111,20 @@ namespace iTextSharp.text.xml.xmp {
             }
         }
         
-	/**
-	 * @see java.util.Properties#setProperty(java.lang.String, java.lang.String)
-	 */
-    public Object SetProperty(String key, String value) {
-		return base[key] = XMLUtil.EscapeXML(value, false);
-	}
-
-	/**
-	 * @see java.util.Properties#setProperty(java.lang.String, java.lang.String)
-	 *
-	 * @param key
-	 * @param value
-	 * @return the previous property (null if there wasn't one)
-	 */
-	public Object SetProperty(String key, XmpArray value) {
-		return base[key] = value.ToString();
-	}
-
-	/**
-	 * @see java.util.Properties#setProperty(java.lang.String, java.lang.String)
-	 *
-	 * @param key
-	 * @param value
-	 * @return the previous property (null if there wasn't one)
-	 */
-	public Object SetProperty(String key, LangAlt value) {
-		return base[key] = value.ToString();
-	 }
-
+        public void SetProperty(string key, XmpArray value) {
+            base[key] = value.ToString();
+        }
+        
+        /**
+        * @see java.util.Properties#setProperty(java.lang.String, java.lang.String)
+        * 
+        * @param key
+        * @param value
+        * @return the previous property (null if there wasn't one)
+        */
+        public void SetProperty(String key, LangAlt value) {
+            base[key] = value.ToString();
+        }
         
         /**
         * @param content

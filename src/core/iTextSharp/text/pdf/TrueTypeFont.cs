@@ -57,7 +57,7 @@ namespace iTextSharp.text.pdf {
      *
      * @author Paulo Soares
      */
-    public class TrueTypeFont : BaseFont {
+    internal class TrueTypeFont : BaseFont {
 
         /** The code pages possible for a True Type font.
          */    
@@ -126,47 +126,37 @@ namespace iTextSharp.text.pdf {
                                         "708 Arabic; ASMO 708",
                                         "850 WE/Latin 1",
                                         "437 US"};
-
-        internal protected bool justNames = false;
+ 
+        protected bool justNames = false;
         /** Contains the location of the several tables. The key is the name of
          * the table and the value is an <CODE>int[2]</CODE> where position 0
          * is the offset from the start of the file and position 1 is the length
          * of the table.
          */
-        internal protected Dictionary<String, int[]> tables;
+        protected Dictionary<String, int[]> tables;
         /** The file in use.
          */
-        internal protected RandomAccessFileOrArray rf;
-
-        public RandomAccessFileOrArray Rf { get { return rf; } }
-
+        protected RandomAccessFileOrArray rf;
         /** The file name.
          */
-        internal protected string fileName;
-
-        public string FileName { get { return fileName; } }
+        protected string fileName;
     
-        internal protected bool cff = false;
-
-        public bool Cff { get { return cff; } }
-
-        internal protected int cffOffset;
-
-        internal protected int cffLength;
+        protected bool cff = false;
+    
+        protected int cffOffset;
+    
+        protected int cffLength;
     
         /** The offset from the start of the file to the table directory.
          * It is 0 for TTF and may vary for TTC depending on the chosen font.
-         */
-        internal protected int directoryOffset;
-
-        public int DirectoryOffset { get { return directoryOffset; } }
-
+         */    
+        protected int directoryOffset;
         /** The index for the TTC font. It is an empty <CODE>string</CODE> for a
          * TTF file.
-         */
-        internal protected string ttcIndex;
+         */    
+        protected string ttcIndex;
         /** The style modifier */
-        internal protected string style = "";
+        protected string style = "";
         /** The content of table 'head'.
          */
         protected FontHeader head = new FontHeader();
@@ -179,16 +169,16 @@ namespace iTextSharp.text.pdf {
         /** The width of the glyphs. This is essentially the content of table
          * 'hmtx' normalized to 1000 units.
          */
-        internal protected int[] GlyphWidths;
+        protected int[] GlyphWidths;
 
-        internal protected int[][] bboxes;
+        protected int[][] bboxes;
 
         /** The map containing the code information for the table 'cmap', encoding 1.0.
          * The key is the code and the value is an <CODE>int[2]</CODE> where position 0
          * is the glyph number and position 1 is the glyph width normalized to 1000
          * units.
          */
-        internal protected Dictionary<int, int[]> cmap10;
+        protected Dictionary<int, int[]> cmap10;
         /** The map containing the code information for the table 'cmap', encoding 3.1
          * in Unicode.
          * <P>
@@ -196,13 +186,13 @@ namespace iTextSharp.text.pdf {
          * is the glyph number and position 1 is the glyph width normalized to 1000
          * units.
          */
-        internal protected Dictionary<int, int[]> cmap31;
+        protected Dictionary<int, int[]> cmap31;
 
 
         /// <summary>
         /// By James for unicode Ext.B
         /// </summary>
-        internal protected Dictionary<int, int[]> cmapExt;
+        protected Dictionary<int, int[]> cmapExt;
 
 
         /** The map containing the kerning information. It represents the content of
@@ -211,25 +201,25 @@ namespace iTextSharp.text.pdf {
         * glyph number for the second character. The value is the amount of kerning in
         * normalized 1000 units as an <CODE>Integer</CODE>. This value is usually negative.
         */
-        internal protected IntHashtable kerning = new IntHashtable();
+        protected IntHashtable kerning = new IntHashtable();
         /**
          * The font name.
          * This name is usually extracted from the table 'name' with
          * the 'Name ID' 6.
          */
-        internal protected string fontName;
+        protected string fontName;
     
         /** The full name of the font
-         */
-        internal protected string[][] fullName;
+         */    
+        protected string[][] fullName;
 
         /** All the names auf the Names-Table
         */
-        internal protected string[][] allNameEntries;
+        protected string[][] allNameEntries;
         
         /** The family name of the font
-         */
-        internal protected string[][] familyName;
+         */    
+        protected string[][] familyName;
         /** The italic angle. It is usually extracted from the 'post' table or in it's
          * absence with the code:
          * <P>
@@ -237,14 +227,14 @@ namespace iTextSharp.text.pdf {
          * -Math.Atan2(hhea.caretSlopeRun, hhea.caretSlopeRise) * 180 / Math.PI
          * </PRE>
          */
-        internal protected double italicAngle;
+        protected double italicAngle;
         /** <CODE>true</CODE> if all the glyphs have the same width.
          */
-        internal protected bool isFixedPitch = false;
-
-        internal protected int underlinePosition;
-
-        internal protected int underlineThickness;
+        protected bool isFixedPitch = false;
+    
+        protected int underlinePosition;
+        
+        protected int underlineThickness;
 
         /** The components of table 'head'.
          */
@@ -1061,8 +1051,7 @@ namespace iTextSharp.text.pdf {
          * @param fontStream the indirect reference to a PdfStream containing the font or <CODE>null</CODE>
          * @throws DocumentException if there is an error
          */
-        public PdfDictionary GetFontDescriptor(PdfIndirectReference fontStream, string subsetPrefix, PdfIndirectReference cidset)
-        {
+        protected PdfDictionary GetFontDescriptor(PdfIndirectReference fontStream, string subsetPrefix, PdfIndirectReference cidset) {
             PdfDictionary dic = new PdfDictionary(PdfName.FONTDESCRIPTOR);
             dic.Put(PdfName.ASCENT, new PdfNumber((int)os_2.sTypoAscender * 1000 / head.unitsPerEm));
             dic.Put(PdfName.CAPHEIGHT, new PdfNumber((int)os_2.sCapHeight * 1000 / head.unitsPerEm));
@@ -1112,8 +1101,7 @@ namespace iTextSharp.text.pdf {
          * @param fontDescriptor the indirect reference to a PdfDictionary containing the font descriptor or <CODE>null</CODE>
          * @throws DocumentException if there is an error
          */
-        internal protected PdfDictionary GetFontBaseType(PdfIndirectReference fontDescriptor, string subsetPrefix, int firstChar, int lastChar, byte[] shortTag)
-        {
+        protected PdfDictionary GetFontBaseType(PdfIndirectReference fontDescriptor, string subsetPrefix, int firstChar, int lastChar, byte[] shortTag) {
             PdfDictionary dic = new PdfDictionary(PdfName.FONT);
             if (cff) {
                 dic.Put(PdfName.SUBTYPE, PdfName.TYPE1);
@@ -1166,9 +1154,8 @@ namespace iTextSharp.text.pdf {
                 dic.Put(PdfName.FONTDESCRIPTOR, fontDescriptor);
             return dic;
         }
-
-        public byte[] GetFullFont()
-        {
+        
+        protected byte[] GetFullFont() {
             RandomAccessFileOrArray rf2 = null;
             try {
                 rf2 = new RandomAccessFileOrArray(rf);
@@ -1181,9 +1168,8 @@ namespace iTextSharp.text.pdf {
                 try {if (rf2 != null) rf2.Close();} catch {}
             }
         }
-
-        internal protected static int[] CompactRanges(List<int[]> ranges)
-        {
+        
+        protected static int[] CompactRanges(List<int[]> ranges) {
             List<int[]> simp = new List<int[]>();
             for (int k = 0; k < ranges.Count; ++k) {
                 int[] r = ranges[k];
@@ -1212,7 +1198,7 @@ namespace iTextSharp.text.pdf {
             return s;
         }
         
-        public void AddRangeUni(Dictionary<int, int[]> longTag, bool includeMetrics, bool subsetp) {
+        protected void AddRangeUni(Dictionary<int, int[]> longTag, bool includeMetrics, bool subsetp) {
             if (!subsetp && (subsetRanges != null || directoryOffset > 0)) {
                 int[] rg = (subsetRanges == null && directoryOffset > 0) ? new int[]{0, 0xffff} : CompactRanges(subsetRanges);
                 Dictionary<int, int[]> usemap;
@@ -1324,7 +1310,7 @@ namespace iTextSharp.text.pdf {
         * @return  a byte array
         * @since   2.1.3
         */
-        public byte[] ReadCffFont() {
+        protected internal byte[] ReadCffFont() {
             RandomAccessFileOrArray rf2 = new RandomAccessFileOrArray(rf);
             byte[] b = new byte[cffLength];
             try {

@@ -57,7 +57,7 @@ namespace iTextSharp.text.pdf {
      *
      * @author  Paulo Soares
      */
-    public class TrueTypeFontSubSet {
+    internal class TrueTypeFontSubSet {
         internal static string[] tableNamesSimple = {"cvt ", "fpgm", "glyf", "head",
                                                "hhea", "hmtx", "loca", "maxp", "prep"};
         internal static string[] tableNamesCmap = {"cmap", "cvt ", "fpgm", "glyf", "head",
@@ -111,7 +111,7 @@ namespace iTextSharp.text.pdf {
          * @param glyphsUsed the glyphs used
          * @param includeCmap <CODE>true</CODE> if the table cmap is to be included in the generated font
          */
-        public TrueTypeFontSubSet(string fileName, RandomAccessFileOrArray rf, Dictionary<int,int[]> glyphsUsed, int directoryOffset, bool includeCmap, bool includeExtras) {
+        internal TrueTypeFontSubSet(string fileName, RandomAccessFileOrArray rf, Dictionary<int,int[]> glyphsUsed, int directoryOffset, bool includeCmap, bool includeExtras) {
             this.fileName = fileName;
             this.rf = rf;
             this.glyphsUsed = glyphsUsed;
@@ -126,7 +126,7 @@ namespace iTextSharp.text.pdf {
          * @throws DocumentException on error
          * @return the subset font
          */    
-        public byte[] Process() {
+        internal byte[] Process() {
             try {
                 rf.ReOpen();
                 CreateTableDirectory();

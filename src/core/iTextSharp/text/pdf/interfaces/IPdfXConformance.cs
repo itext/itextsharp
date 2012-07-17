@@ -45,7 +45,7 @@ using System;
 
 namespace iTextSharp.text.pdf.interfaces {
 
-    public interface IPdfXConformance : IPdfIsoConformance {
+    public interface IPdfXConformance {
         /**
         * Sets the PDF/X conformance level.
         * Allowed values are PDFX1A2001, PDFX32002, PDFA1A and PDFA1B.
