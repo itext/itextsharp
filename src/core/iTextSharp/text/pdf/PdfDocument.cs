@@ -275,14 +275,13 @@ namespace iTextSharp.text.pdf {
         * Constructs a new PDF document.
         * @throws DocumentException on error
         */
-        public PdfDocument()
-        {
+        internal protected PdfDocument() {
             AddProducer();
             AddCreationDate();
         }
         
         /** The <CODE>PdfWriter</CODE>. */
-        internal protected PdfWriter writer;
+        protected internal PdfWriter writer;
         
         /**
         * Adds a <CODE>PdfWriter</CODE> to the <CODE>PdfDocument</CODE>.
@@ -291,7 +290,7 @@ namespace iTextSharp.text.pdf {
         *                     what is added to this document to an outputstream.
         * @throws DocumentException on error
         */
-        public void AddWriter(PdfWriter writer) {
+        internal protected void AddWriter(PdfWriter writer) {
             if (this.writer == null) {
                 this.writer = writer;
                 annotationsImp = new PdfAnnotationsImp(writer);
@@ -801,7 +800,7 @@ namespace iTextSharp.text.pdf {
             int rotation = pageSize.Rotation;
             
             // [C10]
-            if (writer.IsPdfIso()) {
+            if (writer.IsPdfX()) {
                 if (thisBoxSize.ContainsKey("art") && thisBoxSize.ContainsKey("trim"))
                     throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("only.one.of.artbox.or.trimbox.can.exist.in.the.page"));
                 if (!thisBoxSize.ContainsKey("art") && !thisBoxSize.ContainsKey("trim")) {

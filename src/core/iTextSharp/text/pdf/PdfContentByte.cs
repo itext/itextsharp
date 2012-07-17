@@ -538,7 +538,7 @@ namespace iTextSharp.text.pdf {
          * @param   blue    the intensity of blue. A value between 0 and 1
          */
         private void HelperRGB(float red, float green, float blue) {
-            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_RGB, null);
+            PdfXConformanceImp.CheckPDFXConformance(writer, PdfXConformanceImp.PDFXKEY_RGB, null);
             if (red < 0)
                 red = 0.0f;
             else if (red > 1.0f)
@@ -2263,7 +2263,7 @@ namespace iTextSharp.text.pdf {
          * @param color the color
          */    
         public virtual void SetColorStroke(BaseColor value) {
-            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, value);
+            PdfXConformanceImp.CheckPDFXConformance(writer, PdfXConformanceImp.PDFXKEY_COLOR, value);
             int type = ExtendedColor.GetType(value);
             switch (type) {
                 case ExtendedColor.TYPE_GRAY: {
@@ -2301,7 +2301,7 @@ namespace iTextSharp.text.pdf {
          * @param color the color
          */    
         public virtual void SetColorFill(BaseColor value) {
-            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, value);
+            PdfXConformanceImp.CheckPDFXConformance(writer, PdfXConformanceImp.PDFXKEY_COLOR, value);
             int type = ExtendedColor.GetType(value);
             switch (type) {
                 case ExtendedColor.TYPE_GRAY: {
@@ -2383,7 +2383,7 @@ namespace iTextSharp.text.pdf {
          * @param tint the tint if it is a spot color, ignored otherwise
          */    
         internal void OutputColorNumbers(BaseColor color, float tint) {
-            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, color);
+            PdfXConformanceImp.CheckPDFXConformance(writer, PdfXConformanceImp.PDFXKEY_COLOR, color);
             int type = ExtendedColor.GetType(color);
             switch (type) {
                 case ExtendedColor.TYPE_RGB:

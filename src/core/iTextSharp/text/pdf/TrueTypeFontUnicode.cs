@@ -57,7 +57,7 @@ namespace iTextSharp.text.pdf {
      * as Thai.
      * @author  Paulo Soares
      */
-    public class TrueTypeFontUnicode : TrueTypeFont, IComparer<int[]> {
+    internal class TrueTypeFontUnicode : TrueTypeFont, IComparer<int[]> {
     
         /** <CODE>true</CODE> if the encoding is vertical.
          */    
@@ -165,7 +165,7 @@ namespace iTextSharp.text.pdf {
          * @throws DocumentException on error
          * @return the stream representing this CMap or <CODE>null</CODE>
          */    
-        public PdfStream GetToUnicode(Object[] metrics) {
+        private PdfStream GetToUnicode(Object[] metrics) {
             if (metrics.Length == 0)
                 return null;
             StringBuilder buf = new StringBuilder(
@@ -226,7 +226,7 @@ namespace iTextSharp.text.pdf {
          * @param metrics the horizontal width metrics
          * @return a stream
          */    
-        public PdfDictionary GetCIDFontType2(PdfIndirectReference fontDescriptor, string subsetPrefix, Object[] metrics) {
+        private PdfDictionary GetCIDFontType2(PdfIndirectReference fontDescriptor, string subsetPrefix, Object[] metrics) {
             PdfDictionary dic = new PdfDictionary(PdfName.FONT);
             // sivan; cff
             if (cff) {
@@ -281,7 +281,7 @@ namespace iTextSharp.text.pdf {
          * @param toUnicode the ToUnicode stream
          * @return the stream
          */    
-        public PdfDictionary GetFontBaseType(PdfIndirectReference descendant, string subsetPrefix, PdfIndirectReference toUnicode) {
+        private PdfDictionary GetFontBaseType(PdfIndirectReference descendant, string subsetPrefix, PdfIndirectReference toUnicode) {
             PdfDictionary dic = new PdfDictionary(PdfName.FONT);
 
             dic.Put(PdfName.SUBTYPE, PdfName.TYPE0);
@@ -322,7 +322,78 @@ namespace iTextSharp.text.pdf {
          * @throws DocumentException error in generating the object
          */
         internal override void WriteFont(PdfWriter writer, PdfIndirectReference piref, Object[] parms) {
-            writer.GetTtfUnicodeWriter().WriteFont(this, piref, parms, rotbits);
+            Dictionary<int, int[]> longTag = (Dictionary<int, int[]>)parms[0];
+            AddRangeUni(longTag, true, subset);
+            int[][] metrics = new int[longTag.Count][];
+            longTag.Values.CopyTo(metrics, 0);
+            Array.Sort(metrics, this);
+            PdfIndirectReference ind_font = null;
+            PdfObject pobj = null;
+            PdfIndirectObject obj = null;
+            PdfIndirectReference cidset = null;
+            if (writer.PDFXConformance == PdfWriter.PDFA1A || writer.PDFXConformance == PdfWriter.PDFA1B) {
+                PdfStream stream;
+                if (metrics.Length == 0) {
+                    stream = new PdfStream(new byte[]{(byte)0x80});
+                }
+                else {
+                    int top = metrics[metrics.Length - 1][0];
+                    byte[] bt = new byte[top / 8 + 1];
+                    int length = metrics.GetLength(0);
+                    for (int k = 0; k < length; ++k) {
+                        int v = metrics[k][0];
+                        bt[v / 8] |= rotbits[v % 8];
+                    }
+                    stream = new PdfStream(bt);
+                    stream.FlateCompress(compressionLevel);
+                }
+                cidset = writer.AddToBody(stream).IndirectReference;
+            }
+            // sivan: cff
+            if (cff) {
+                byte[] b = ReadCffFont();
+                if (subset || subsetRanges != null) {
+                    CFFFontSubset cffs = new CFFFontSubset(new RandomAccessFileOrArray(b),longTag);
+                    b = cffs.Process((cffs.GetNames())[0] );
+                }
+                
+                pobj = new StreamFont(b, "CIDFontType0C", compressionLevel);
+                obj = writer.AddToBody(pobj);
+                ind_font = obj.IndirectReference;
+            } else {
+                byte[] b;
+                if (subset || directoryOffset != 0) {
+                    TrueTypeFontSubSet sb = new TrueTypeFontSubSet(fileName, new RandomAccessFileOrArray(rf), longTag, directoryOffset, false, false);
+                    b = sb.Process();
+                }
+                else {
+                    b = GetFullFont();
+                }
+                int[] lengths = new int[]{b.Length};
+                pobj = new StreamFont(b, lengths, compressionLevel);
+                obj = writer.AddToBody(pobj);
+                ind_font = obj.IndirectReference;
+            }
+            String subsetPrefix = "";
+            if (subset)
+                subsetPrefix = CreateSubsetPrefix();
+            PdfDictionary dic = GetFontDescriptor(ind_font, subsetPrefix, cidset);
+            obj = writer.AddToBody(dic);
+            ind_font = obj.IndirectReference;
+
+            pobj = GetCIDFontType2(ind_font, subsetPrefix, metrics);
+            obj = writer.AddToBody(pobj);
+            ind_font = obj.IndirectReference;
+
+            pobj = GetToUnicode(metrics);
+            PdfIndirectReference toUnicodeRef = null;
+            if (pobj != null) {
+                obj = writer.AddToBody(pobj);
+                toUnicodeRef = obj.IndirectReference;
+            }
+
+            pobj = GetFontBaseType(ind_font, subsetPrefix, toUnicodeRef);
+            writer.AddToBody(pobj, piref);
         }
 
         /**
