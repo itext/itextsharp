@@ -1,11 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-
 using iTextSharp.text;
 
-namespace iTextSharp.text.pdf
-{
+namespace iTextSharp.text.pdf{
 
     public class TtfUnicodeWriter {
 
@@ -15,11 +12,11 @@ namespace iTextSharp.text.pdf
             this.writer = writer;
         }
 
-        internal void WriteFont(TrueTypeFontUnicode font, PdfIndirectReference refer, Object[] parameters, byte[] rotbits)
+        public virtual void WriteFont(TrueTypeFontUnicode font, PdfIndirectReference refer, Object[] parms, byte[] rotbits)
         {
-            Dictionary<int, int[]> longTag = (Dictionary<int, int[]>)parameters[0];
+            Dictionary<int, int[]> longTag = (Dictionary<int, int[]>)parms[0];
             font.AddRangeUni(longTag, true, font.subset);
-            int[][] metrics = new int[0][] ;
+            int[][] metrics = new int[0][];
             longTag.Values.CopyTo(metrics,0);
             Array.Sort(metrics, font);
             PdfIndirectReference ind_font = null;
@@ -52,7 +49,7 @@ namespace iTextSharp.text.pdf
             }
             String subsetPrefix = "";
             if (font.subset)
-                subsetPrefix = TrueTypeFont.CreateSubsetPrefix();
+                subsetPrefix = TrueTypeFontUnicode.CreateSubsetPrefix();
             PdfDictionary dic = font.GetFontDescriptor(ind_font, subsetPrefix, cidset);
             obj = writer.AddToBody(dic);
             ind_font = obj.IndirectReference;
@@ -72,8 +69,5 @@ namespace iTextSharp.text.pdf
             pobj = font.GetFontBaseType(ind_font, subsetPrefix, toUnicodeRef);
             writer.AddToBody(pobj, refer);
         }
-
-
     }
-
 }

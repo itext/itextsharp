@@ -275,6 +275,7 @@ namespace iTextSharp.text.pdf {
         * Constructs a new PDF document.
         * @throws DocumentException on error
         */
+        public PdfDocument() {
         public PdfDocument()
         {
             AddProducer();
@@ -801,7 +802,7 @@ namespace iTextSharp.text.pdf {
             int rotation = pageSize.Rotation;
             
             // [C10]
-            if (writer.IsPdfX()) {
+            if (writer.IsPdfIso()) {
                 if (thisBoxSize.ContainsKey("art") && thisBoxSize.ContainsKey("trim"))
                     throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("only.one.of.artbox.or.trimbox.can.exist.in.the.page"));
                 if (!thisBoxSize.ContainsKey("art") && !thisBoxSize.ContainsKey("trim")) {

@@ -248,7 +248,10 @@ namespace iTextSharp.text.pdf {
         /** The fake CID code that represents a newline. */    
         public const char CID_NEWLINE = '\u7fff';
 
+        internal protected List<int[]> subsetRanges;
         public IList<int[]> subsetRanges;
+
+        public List<int[]> SubsetRanges { get { return subsetRanges; } }
 
         /** The font type.
          */    
@@ -269,11 +272,13 @@ namespace iTextSharp.text.pdf {
     
         /** true if the font is to be embedded in the PDF */
         internal protected bool embedded;
+        internal protected bool embedded;
     
         /**
         * The compression level for the font stream.
         * @since   2.1.3
         */
+        internal protected int compressionLevel = PdfStream.DEFAULT_COMPRESSION;
         public int compressionLevel = PdfStream.DEFAULT_COMPRESSION;
 
         /**
@@ -282,11 +287,14 @@ namespace iTextSharp.text.pdf {
          * the font, not to the expected char name.
          */
         internal protected bool fontSpecific = true;
+        internal protected bool fontSpecific = true;
     
         /** cache for the fonts already used. */
+        internal protected static Dictionary<String, BaseFont> fontCache = new Dictionary<string, BaseFont>();
         internal protected static Dictionary<String, BaseFont> fontCache = new Dictionary<string,BaseFont>();
     
         /** list of the 14 built in fonts. */
+        internal protected static Dictionary<String, PdfName> BuiltinFonts14 = new Dictionary<string, PdfName>();
         internal protected static Dictionary<String, PdfName> BuiltinFonts14 = new Dictionary<string,PdfName>();
     
         /** Forces the output of the width array. Only matters for the 14
@@ -302,9 +310,10 @@ namespace iTextSharp.text.pdf {
         /** Indicates if all the glyphs and widths for that particular
          * encoding should be included in the document.
          */
+        internal protected bool subset = true;
         public bool subset = true;
-    
-        protected bool fastWinansi = false;
+
+        internal protected bool fastWinansi = false;
 
         /**
         * Custom encodings use this map to key the Unicode character
