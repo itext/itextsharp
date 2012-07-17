@@ -316,7 +316,7 @@ namespace iTextSharp.text.pdf {
             * @return a PdfIndirectReference
             */
             
-            internal PdfIndirectReference PdfIndirectReference {
+            virtual public PdfIndirectReference PdfIndirectReference {
                 get {
                     return new PdfIndirectReference(0, IndirectReferenceNumber);
                 }
