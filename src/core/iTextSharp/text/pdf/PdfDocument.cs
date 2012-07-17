@@ -275,7 +275,6 @@ namespace iTextSharp.text.pdf {
         * Constructs a new PDF document.
         * @throws DocumentException on error
         */
-        public PdfDocument() {
         public PdfDocument()
         {
             AddProducer();

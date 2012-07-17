@@ -72,12 +72,8 @@ namespace iTextSharp.text.pdf.intern {
 
         /**
          * @see com.itextpdf.text.pdf.interfaces.IPdfIsoConformance#IsPdfIso()
-	     * @see com.itextpdf.text.pdf.interfaces.PdfIsoConformance#isPdfIso()
-         */
 	     */
         public bool IsPdfIso()
-        public bool IsPdfIso()
-        {
         {
             return IsPdfX();
         }
