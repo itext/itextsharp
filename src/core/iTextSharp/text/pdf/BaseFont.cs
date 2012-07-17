@@ -250,6 +250,8 @@ namespace iTextSharp.text.pdf {
 
         protected List<int[]> subsetRanges;
 
+        public List<int[]> SubsetRanges { get { return subsetRanges; } }
+
         /** The font type.
          */    
         internal int fontType;
@@ -336,7 +338,7 @@ namespace iTextSharp.text.pdf {
         /** Generates the PDF stream with the Type1 and Truetype fonts returning
          * a PdfStream.
          */
-        internal class StreamFont : PdfStream {
+        public class StreamFont : PdfStream {
         
             /** Generates the PDF stream with the Type1 and Truetype fonts returning
             * a PdfStream.
@@ -346,7 +348,7 @@ namespace iTextSharp.text.pdf {
             * @throws DocumentException error in the stream compression
             * @since   2.1.3 (replaces the constructor without param compressionLevel)
             */
-            internal StreamFont(byte[] contents, int[] lengths, int compressionLevel) {
+            public StreamFont(byte[] contents, int[] lengths, int compressionLevel) {
                 bytes = contents;
                 Put(PdfName.LENGTH, new PdfNumber(bytes.Length));
                 for (int k = 0; k < lengths.Length; ++k) {
@@ -363,7 +365,8 @@ namespace iTextSharp.text.pdf {
             * @throws DocumentException error in the stream compression
             * @since   2.1.3 (replaces the constructor without param compressionLevel)
             */
-            internal StreamFont(byte[] contents, string subType, int compressionLevel) {
+            public StreamFont(byte[] contents, string subType, int compressionLevel)
+            {
                 bytes = contents;
                 Put(PdfName.LENGTH, new PdfNumber(bytes.Length));
                 if (subType != null)
@@ -1130,7 +1133,7 @@ namespace iTextSharp.text.pdf {
         /** Creates a unique subset prefix to be added to the font name when the font is embedded and subset.
          * @return the subset prefix
          */
-        internal static string CreateSubsetPrefix() {
+        public static string CreateSubsetPrefix() {
             char[] s = new char[7];
             lock (random) {
                 for (int k = 0; k < 6; ++k)

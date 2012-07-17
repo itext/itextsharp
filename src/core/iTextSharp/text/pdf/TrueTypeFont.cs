@@ -57,7 +57,7 @@ namespace iTextSharp.text.pdf {
      *
      * @author Paulo Soares
      */
-    internal class TrueTypeFont : BaseFont {
+    public class TrueTypeFont : BaseFont {
 
         /** The code pages possible for a True Type font.
          */    
@@ -137,11 +137,17 @@ namespace iTextSharp.text.pdf {
         /** The file in use.
          */
         protected RandomAccessFileOrArray rf;
+
+        public RandomAccessFileOrArray Rf { get { return rf; } }
         /** The file name.
          */
         protected string fileName;
+
+        public string FileName { get { return fileName; } }
     
         protected bool cff = false;
+
+        public bool Cff { get { return cff; } }
     
         protected int cffOffset;
     
@@ -151,6 +157,9 @@ namespace iTextSharp.text.pdf {
          * It is 0 for TTF and may vary for TTC depending on the chosen font.
          */    
         protected int directoryOffset;
+
+        public int DirectoryOffset { get { return directoryOffset; } }
+
         /** The index for the TTC font. It is an empty <CODE>string</CODE> for a
          * TTF file.
          */    
@@ -1051,7 +1060,7 @@ namespace iTextSharp.text.pdf {
          * @param fontStream the indirect reference to a PdfStream containing the font or <CODE>null</CODE>
          * @throws DocumentException if there is an error
          */
-        protected PdfDictionary GetFontDescriptor(PdfIndirectReference fontStream, string subsetPrefix, PdfIndirectReference cidset) {
+        public PdfDictionary GetFontDescriptor(PdfIndirectReference fontStream, string subsetPrefix, PdfIndirectReference cidset) {
             PdfDictionary dic = new PdfDictionary(PdfName.FONTDESCRIPTOR);
             dic.Put(PdfName.ASCENT, new PdfNumber((int)os_2.sTypoAscender * 1000 / head.unitsPerEm));
             dic.Put(PdfName.CAPHEIGHT, new PdfNumber((int)os_2.sCapHeight * 1000 / head.unitsPerEm));
@@ -1155,7 +1164,7 @@ namespace iTextSharp.text.pdf {
             return dic;
         }
         
-        protected byte[] GetFullFont() {
+        public byte[] GetFullFont() {
             RandomAccessFileOrArray rf2 = null;
             try {
                 rf2 = new RandomAccessFileOrArray(rf);
@@ -1198,7 +1207,7 @@ namespace iTextSharp.text.pdf {
             return s;
         }
         
-        protected void AddRangeUni(Dictionary<int, int[]> longTag, bool includeMetrics, bool subsetp) {
+        public void AddRangeUni(Dictionary<int, int[]> longTag, bool includeMetrics, bool subsetp) {
             if (!subsetp && (subsetRanges != null || directoryOffset > 0)) {
                 int[] rg = (subsetRanges == null && directoryOffset > 0) ? new int[]{0, 0xffff} : CompactRanges(subsetRanges);
                 Dictionary<int, int[]> usemap;
@@ -1310,7 +1319,7 @@ namespace iTextSharp.text.pdf {
         * @return  a byte array
         * @since   2.1.3
         */
-        protected internal byte[] ReadCffFont() {
+        public byte[] ReadCffFont() {
             RandomAccessFileOrArray rf2 = new RandomAccessFileOrArray(rf);
             byte[] b = new byte[cffLength];
             try {
