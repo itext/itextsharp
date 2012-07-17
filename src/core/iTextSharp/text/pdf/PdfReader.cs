@@ -88,7 +88,7 @@ namespace iTextSharp.text.pdf {
         protected internal Dictionary<int, IntHashtable> objStmMark;
         protected internal LongHashtable objStmToOffset;
         protected internal bool newXrefType;
-        private List<PdfObject> xrefObj;
+        protected List<PdfObject> xrefObj;
         PdfDictionary rootPages;
         protected internal PdfDictionary trailer;
         protected internal PdfDictionary catalog;
