@@ -72,7 +72,7 @@ namespace iTextSharp.text.pdf {
         IPdfVersion,
         IPdfDocumentActions,
         IPdfPageActions,
-        IPdfXConformance,
+        IPdfIsoConformance,
         IPdfRunDirection,
         IPdfAnnotations {
         
@@ -295,7 +295,7 @@ namespace iTextSharp.text.pdf {
             * This methods creates a <CODE>PdfIndirectObject</CODE> with a
             * certain number, containing the given <CODE>PdfObject</CODE>.
             * It also adds a <CODE>PdfCrossReference</CODE> for this object
-            * to an <CODE>ArrayList</CODE> that will be used to build the
+            * to an <CODE>List</CODE> that will be used to build the
             * Cross-reference Table.
             *
             * @param        object          a <CODE>PdfObject</CODE>
@@ -337,7 +337,7 @@ namespace iTextSharp.text.pdf {
             * This methods creates a <CODE>PdfIndirectObject</CODE> with the number given by
             * <CODE>ref</CODE>, containing the given <CODE>PdfObject</CODE>.
             * It also adds a <CODE>PdfCrossReference</CODE> for this object
-            * to an <CODE>ArrayList</CODE> that will be used to build the
+            * to an <CODE>List</CODE> that will be used to build the
             * Cross-reference Table.
             *
             * @param        object          a <CODE>PdfObject</CODE>
@@ -564,6 +564,7 @@ namespace iTextSharp.text.pdf {
         * Constructs a <CODE>PdfWriter</CODE>.
         */
         protected PdfWriter() {
+            pdfIsoConformance = GetPdfIsoConformance();
             root = new PdfPages(this);
         }
         
@@ -578,6 +579,7 @@ namespace iTextSharp.text.pdf {
         */
         
         protected PdfWriter(PdfDocument document, Stream os) : base(document, os) {
+            pdfIsoConformance = GetPdfIsoConformance();
             root = new PdfPages(this);
             pdf = document;
             directContent = new PdfContentByte(this);
@@ -971,7 +973,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Use this method to reorder the pages in the document.
         * A <CODE>null</CODE> argument value only returns the number of pages to process.
-        * It is advisable to issue a <CODE>Document.newPage()</CODE> before using this method.
+        * It is advisable to issue a <CODE>Document.NewPage()</CODE> before using this method.
         * @return the total number of pages
         * @param order an array with the new page sequence. It must have the
         * same size as the number of pages.
@@ -1146,7 +1148,8 @@ namespace iTextSharp.text.pdf {
             base.Open();
             pdf_version.WriteHeader(os);
             body = new PdfBody(this);
-            if (pdfxConformance.IsPdfX32002()) {
+            if (IsPdfX() && ((PdfXConformanceImp)pdfIsoConformance).IsPdfX32002())
+            {
                 PdfDictionary sec = new PdfDictionary();
                 sec.Put(PdfName.GAMMA, new PdfArray(new float[]{2.2f,2.2f,2.2f}));
                 sec.Put(PdfName.MATRIX, new PdfArray(new float[]{0.4124f,0.2126f,0.0193f,0.3576f,0.7152f,0.1192f,0.1805f,0.0722f,0.9505f}));
@@ -1194,8 +1197,8 @@ namespace iTextSharp.text.pdf {
                 }
                 // [C10] make pdfx conformant
                 if (IsPdfX()) {
-                    pdfxConformance.CompleteInfoDictionary(Info);
-                    pdfxConformance.CompleteExtraCatalog(ExtraCatalog);
+                    CompleteInfoDictionary(Info);
+                    CompleteExtraCatalog(ExtraCatalog);
                 }
                 // [C11] Output Intents
                 if (extraCatalog != null) {
@@ -1785,10 +1788,10 @@ namespace iTextSharp.text.pdf {
         private byte[] CreateXmpMetadataBytes() {
             MemoryStream baos = new MemoryStream();
             try {
-                XmpWriter xmp = new XmpWriter(baos, pdf.Info, pdfxConformance.PDFXConformance);
+                XmpWriter xmp = GetXmpWriter(baos, pdf.Info);
                 xmp.Close();
             }
-            catch(IOException) {
+            catch (IOException) {
             }
             return baos.ToArray();
         }
@@ -1801,14 +1804,14 @@ namespace iTextSharp.text.pdf {
         public const int PDFX1A2001 = 1;
         /** PDF/X level */
         public const int PDFX32002 = 2;
-        /** PDFA-1A level. */
-        public const int PDFA1A = 3;
-        /** PDFA-1B level. */
-        public const int PDFA1B = 4;
 
-        /** Stores the PDF/X level. */
-        protected PdfXConformanceImp pdfxConformance = new PdfXConformanceImp();
+        /** Stores the PDF ISO conformance. */
+        protected IPdfIsoConformance pdfIsoConformance;
 
+        public virtual IPdfIsoConformance GetPdfIsoConformance()
+        {
+            return ((IPdfIsoConformance)(new PdfXConformanceImp()));
+        }
         /**
         * Sets the PDFX conformance level. Allowed values are PDFX1A2001 and PDFX32002. It
         * must be called before opening the document.
@@ -1816,26 +1819,42 @@ namespace iTextSharp.text.pdf {
         */    
         public int PDFXConformance {
             set {
-                if (pdfxConformance.PDFXConformance == value)
+                if (!(pdfIsoConformance is PdfXConformanceImp))
+			        return;
+                if (((IPdfXConformance)pdfIsoConformance).PDFXConformance == value)
                     return;
                 if (pdf.IsOpen())
                     throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("pdfx.conformance.can.only.be.set.before.opening.the.document"));
                 if (crypto != null)
                     throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("a.pdfx.conforming.document.cannot.be.encrypted"));
-                if (value == PDFA1A || value == PDFA1B)
-                    PdfVersion = VERSION_1_4;
-                else if (value != PDFXNONE)
+                if (value != PDFXNONE)
                     PdfVersion = VERSION_1_3;
-                pdfxConformance.PDFXConformance = value;
+                ((IPdfXConformance)pdfIsoConformance).PDFXConformance = value;
             }
             get {
-                return pdfxConformance.PDFXConformance;
+                if (pdfIsoConformance is PdfXConformanceImp)
+        	        return ((IPdfXConformance)pdfIsoConformance).PDFXConformance;
+		        else
+			        return PDFXNONE;
             }
         }
 
+        /**
+        * Checks if any PDF ISO conformance is necessary.
+        * @return <code>true</code> if the PDF has to be in conformance with any of the PDF ISO specifications
+        */
+        public virtual bool IsPdfIso()
+        {
+            return pdfIsoConformance.IsPdfIso();
+        }
+
+
         /** @see com.lowagie.text.pdf.interfaces.PdfXConformance#isPdfX() */
         public bool IsPdfX() {
-            return pdfxConformance.IsPdfX();
+            if (pdfIsoConformance is PdfXConformanceImp)
+        	    return ((IPdfXConformance)pdfIsoConformance).IsPdfX();
+		    else
+			    return false;
         }
 
     //  [C11] Output intents
@@ -1849,8 +1868,9 @@ namespace iTextSharp.text.pdf {
         * @param info a value
         * @param destOutputProfile a value
         * @throws IOException on error
-        */    
-        public void SetOutputIntents(String outputConditionIdentifier, String outputCondition, String registryName, String info, ICC_Profile colorProfile) {
+        */
+        public virtual void SetOutputIntents(String outputConditionIdentifier, String outputCondition, String registryName, String info, ICC_Profile colorProfile)
+        {
             PdfDictionary outa = ExtraCatalog; //force the creation
             outa = new PdfDictionary(PdfName.OUTPUTINTENT);
             if (outputCondition != null)
@@ -1866,15 +1886,7 @@ namespace iTextSharp.text.pdf {
                 outa.Put(PdfName.DESTOUTPUTPROFILE, AddToBody(stream).IndirectReference);
             }
 
-            PdfName intentSubtype;
-            if (pdfxConformance.IsPdfA1() || "PDFA/1".Equals(outputCondition)) {
-                intentSubtype = PdfName.GTS_PDFA1;
-            }
-            else {
-                intentSubtype = PdfName.GTS_PDFX;
-            }
-
-            outa.Put(PdfName.S, intentSubtype);
+            outa.Put(PdfName.S, PdfName.GTS_PDFX);
 
             extraCatalog.Put(PdfName.OUTPUTINTENTS, new PdfArray(outa));
         }
@@ -1893,7 +1905,8 @@ namespace iTextSharp.text.pdf {
         *
         * @throws IOException
         */
-        public void SetOutputIntents(String outputConditionIdentifier, String outputCondition, String registryName, String info, byte[] destOutputProfile) {
+        public virtual void SetOutputIntents(String outputConditionIdentifier, String outputCondition, String registryName, String info, byte[] destOutputProfile)
+        {
             ICC_Profile colorProfile = (destOutputProfile == null) ? null : ICC_Profile.GetInstance(destOutputProfile);
             SetOutputIntents(outputConditionIdentifier, outputCondition, registryName, info, colorProfile);
         }
@@ -1906,7 +1919,7 @@ namespace iTextSharp.text.pdf {
         * @return <CODE>true</CODE> if the output intent dictionary exists, <CODE>false</CODE>
         * otherwise
         */    
-        public bool SetOutputIntents(PdfReader reader, bool checkExistence) {
+        public virtual bool SetOutputIntents(PdfReader reader, bool checkExistence) {
             PdfDictionary catalog = reader.Catalog;
             PdfArray outs = catalog.GetAsArray(PdfName.OUTPUTINTENTS);
             if (outs == null)
@@ -2213,7 +2226,7 @@ namespace iTextSharp.text.pdf {
             }
             FontDetails ret;
             if (!documentFonts.TryGetValue(bf, out ret)) {
-                PdfXConformanceImp.CheckPDFXConformance(this, PdfXConformanceImp.PDFXKEY_FONT, bf);
+                PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_FONT, bf);
                 ret = new FontDetails(new PdfName("F" + (fontNumber++)), body.PdfIndirectReference, bf);
                 documentFonts[bf] = ret;
             }
@@ -2443,7 +2456,7 @@ namespace iTextSharp.text.pdf {
 
         internal PdfObject[] AddSimpleExtGState(PdfDictionary gstate) {
             if (!documentExtGState.ContainsKey(gstate)) {
-                PdfXConformanceImp.CheckPDFXConformance(this, PdfXConformanceImp.PDFXKEY_GSTATE, gstate);
+                PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_GSTATE, gstate);
                 documentExtGState[gstate] = new PdfObject[]{new PdfName("GS" + (documentExtGState.Count + 1)), PdfIndirectReference};
             }
             return documentExtGState[gstate];
@@ -2456,7 +2469,7 @@ namespace iTextSharp.text.pdf {
         internal PdfObject[] AddSimpleProperty(Object prop, PdfIndirectReference refi) {
             if (!documentProperties.ContainsKey(prop)) {
                 if (prop is IPdfOCG)
-                    PdfXConformanceImp.CheckPDFXConformance(this, PdfXConformanceImp.PDFXKEY_LAYER, null);
+                    PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_LAYER, null);
                 documentProperties[prop] = new PdfObject[]{new PdfName("Pr" + (documentProperties.Count + 1)), refi};
             }
             return documentProperties[prop];
@@ -2640,7 +2653,7 @@ namespace iTextSharp.text.pdf {
         }
         
         internal void RegisterLayer(IPdfOCG layer) {
-            PdfXConformanceImp.CheckPDFXConformance(this, PdfXConformanceImp.PDFXKEY_LAYER, null);
+            PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_LAYER, null);
             if (layer is PdfLayer) {
                 PdfLayer la = (PdfLayer)layer;
                 if (la.Title == null) {
@@ -2703,9 +2716,9 @@ namespace iTextSharp.text.pdf {
         
         /**
         * Use this method to make sure a page is added,
-        * even if it's empty. If you use setPageEmpty(false),
-        * invoking newPage() after a blank page will add a newPage.
-        * setPageEmpty(true) won't have any effect.
+        * even if it's empty. If you use SetPageEmpty(false),
+        * invoking NewPage() after a blank page will add a newPage.
+        * SetPageEmpty(true) won't have any effect.
         * @param pageEmpty the state
         */
         public bool PageEmpty {
@@ -3079,7 +3092,7 @@ namespace iTextSharp.text.pdf {
         */        
         internal virtual PdfIndirectReference Add(PdfImage pdfImage, PdfIndirectReference fixedRef) {
             if (! imageDictionary.Contains(pdfImage.Name)) {
-                PdfXConformanceImp.CheckPDFXConformance(this, PdfXConformanceImp.PDFXKEY_IMAGE, pdfImage);
+                PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_IMAGE, pdfImage);
                 if (fixedRef is PRIndirectReference) {
                     PRIndirectReference r2 = (PRIndirectReference)fixedRef;
                     fixedRef = new PdfIndirectReference(0, GetNewObjectNumber(r2.Reader, r2.Number, r2.Generation));
@@ -3178,6 +3191,68 @@ namespace iTextSharp.text.pdf {
             }
             set {
                 this.rgbTransparencyBlending = value;
+            }
+        }
+
+        
+        protected TtfUnicodeWriter ttfUnicodeWriter = null;
+
+        internal protected virtual TtfUnicodeWriter GetTtfUnicodeWriter() {
+            if (ttfUnicodeWriter == null)
+                ttfUnicodeWriter = new TtfUnicodeWriter(this);
+            return ttfUnicodeWriter;
+        }
+
+        protected XmpWriter xmpWriter = null;
+
+        internal protected virtual XmpWriter GetXmpWriter(MemoryStream baos, PdfDocument.PdfInfo info) {
+            if (xmpWriter == null)
+                xmpWriter = new XmpWriter(baos, info);
+            return xmpWriter;
+        }
+
+        public static void CheckPdfIsoConformance(PdfWriter writer, int key, Object obj1) {
+            if (writer != null)
+                writer.CheckPdfIsoConformance(key, obj1);
+        }
+
+        protected internal virtual void CheckPdfIsoConformance(int key, Object obj1) {
+            PdfXConformanceImp.CheckPDFXConformance(this, key, obj1);
+        }
+
+        private void CompleteInfoDictionary(PdfDictionary info) {
+            if (IsPdfX()) {
+                if (info.Get(PdfName.GTS_PDFXVERSION) == null) {
+                    if (((PdfXConformanceImp)pdfIsoConformance).IsPdfX1A2001()) {
+                        info.Put(PdfName.GTS_PDFXVERSION, new PdfString("PDF/X-1:2001"));
+                        info.Put(new PdfName("GTS_PDFXConformance"), new PdfString("PDF/X-1a:2001"));
+                    }
+                    else if (((PdfXConformanceImp)pdfIsoConformance).IsPdfX32002())
+                        info.Put(PdfName.GTS_PDFXVERSION, new PdfString("PDF/X-3:2002"));
+                }
+                if (info.Get(PdfName.TITLE) == null) {
+                    info.Put(PdfName.TITLE, new PdfString("Pdf document"));
+                }
+                if (info.Get(PdfName.CREATOR) == null) {
+                    info.Put(PdfName.CREATOR, new PdfString("Unknown"));
+                }
+                if (info.Get(PdfName.TRAPPED) == null) {
+                    info.Put(PdfName.TRAPPED, new PdfName("False"));
+                }
+            }
+        }
+
+        private void CompleteExtraCatalog(PdfDictionary extraCatalog) {
+            if (IsPdfX()) {
+                if (extraCatalog.Get(PdfName.OUTPUTINTENTS) == null) {
+                    PdfDictionary outD = new PdfDictionary(PdfName.OUTPUTINTENT);
+                    outD.Put(PdfName.OUTPUTCONDITION, new PdfString("SWOP CGATS TR 001-1995"));
+                    outD.Put(PdfName.OUTPUTCONDITIONIDENTIFIER, new PdfString("CGATS TR 001"));
+                    outD.Put(PdfName.REGISTRYNAME, new PdfString("http://www.color.org"));
+                    outD.Put(PdfName.INFO, new PdfString(""));
+                    outD.Put(PdfName.S, PdfName.GTS_PDFX);
+                    extraCatalog.Put(PdfName.OUTPUTINTENTS, new PdfArray(outD));
+                }
             }
         }
     }

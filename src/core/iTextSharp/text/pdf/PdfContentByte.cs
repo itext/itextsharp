@@ -538,7 +538,7 @@ namespace iTextSharp.text.pdf {
          * @param   blue    the intensity of blue. A value between 0 and 1
          */
         private void HelperRGB(float red, float green, float blue) {
-            PdfXConformanceImp.CheckPDFXConformance(writer, PdfXConformanceImp.PDFXKEY_RGB, null);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_RGB, null);
             if (red < 0)
                 red = 0.0f;
             else if (red > 1.0f)
@@ -725,7 +725,7 @@ namespace iTextSharp.text.pdf {
         }
     
         /**
-         * Appends a Bêzier curve to the path, starting from the current point.
+         * Appends a Bezier curve to the path, starting from the current point.
          *
          * @param       x1      x-coordinate of the first control point
          * @param       y1      y-coordinate of the first control point
@@ -743,7 +743,7 @@ namespace iTextSharp.text.pdf {
         }
     
         /**
-         * Appends a Bêzier curve to the path, starting from the current point.
+         * Appends a Bezier curve to the path, starting from the current point.
          *
          * @param       x2      x-coordinate of the second control point
          * @param       y2      y-coordinate of the second control point
@@ -759,7 +759,7 @@ namespace iTextSharp.text.pdf {
         }
     
         /**
-         * Appends a Bêzier curve to the path, starting from the current point.
+         * Appends a Bezier curve to the path, starting from the current point.
          *
          * @param       x1      x-coordinate of the first control point
          * @param       y1      y-coordinate of the first control point
@@ -1848,7 +1848,7 @@ namespace iTextSharp.text.pdf {
          * <P>
          * (x1, y1) and (x2, y2) are the corners of the enclosing rectangle.
          * Angles, measured in degrees, start with 0 to the right (the positive X
-         * axis) and increase counter-clockwise.  The arc extends from startAng
+         * axis) and increase counter-clockwise.  The arc : from startAng
          * to startAng+extent.  I.e. startAng=0 and extent=180 yields an openside-down
          * semi-circle.
          * <P>
@@ -2263,7 +2263,7 @@ namespace iTextSharp.text.pdf {
          * @param color the color
          */    
         public virtual void SetColorStroke(BaseColor value) {
-            PdfXConformanceImp.CheckPDFXConformance(writer, PdfXConformanceImp.PDFXKEY_COLOR, value);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, value);
             int type = ExtendedColor.GetType(value);
             switch (type) {
                 case ExtendedColor.TYPE_GRAY: {
@@ -2301,7 +2301,7 @@ namespace iTextSharp.text.pdf {
          * @param color the color
          */    
         public virtual void SetColorFill(BaseColor value) {
-            PdfXConformanceImp.CheckPDFXConformance(writer, PdfXConformanceImp.PDFXKEY_COLOR, value);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, value);
             int type = ExtendedColor.GetType(value);
             switch (type) {
                 case ExtendedColor.TYPE_GRAY: {
@@ -2383,7 +2383,7 @@ namespace iTextSharp.text.pdf {
          * @param tint the tint if it is a spot color, ignored otherwise
          */    
         internal void OutputColorNumbers(BaseColor color, float tint) {
-            PdfXConformanceImp.CheckPDFXConformance(writer, PdfXConformanceImp.PDFXKEY_COLOR, color);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, color);
             int type = ExtendedColor.GetType(color);
             switch (type) {
                 case ExtendedColor.TYPE_RGB:
@@ -3035,10 +3035,10 @@ namespace iTextSharp.text.pdf {
         * Checks for any dangling state: Mismatched save/restore state, begin/end text,
         * begin/end layer, or begin/end marked content sequence.
         * If found, this function will throw.  This function is called automatically
-        * during a reset() (from Document.newPage() for example), and before writing 
-        * itself out in toPdf().
-        * One possible cause: not calling myPdfGraphics2D.dispose() will leave dangling
-        *                     saveState() calls.
+        * during a Reset() (from Document.NewPage() for example), and before writing 
+        * itself out in ToPdf().
+        * One possible cause: not calling myPdfGraphics2D.Dispose() will leave dangling
+        *                     SaveState() calls.
         * @since 2.1.6
         * @throws IllegalPdfSyntaxException (a runtime exception)
         */

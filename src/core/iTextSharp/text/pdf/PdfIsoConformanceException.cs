@@ -1,10 +1,7 @@
-using System;
-
 /*
- * $Id$
- * 
+ * $Id: PdfIsoConformanceException.java 5222 2012-06-27 08:54:55Z achingarev $
  *
- * This file is part of the iText project.
+ * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
@@ -30,8 +27,8 @@ using System;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -44,44 +41,24 @@ using System;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+using System;
 
-namespace iTextSharp.text.xml.xmp {
+namespace iTextSharp.text.pdf{
 
-    /**
-    * An implementation of an XmpSchema.
-    */
-    public class PdfA1Schema : XmpSchema {
-        
-        /** default namespace identifier*/
-        public const String DEFAULT_XPATH_ID = "pdfaid";
-        /** default namespace uri*/
-        public const String DEFAULT_XPATH_URI = "http://www.aiim.org/pdfa/ns/id/";
-        /** Part, always 1. */
-        public const String PART = "pdfaid:part";
-        /** Conformance, A or B. */
-        public const String CONFORMANCE = "pdfaid:conformance";
-        
-        /**
-        * @throws IOException
-        */
-        public PdfA1Schema() : base("xmlns:" + DEFAULT_XPATH_ID + "=\"" + DEFAULT_XPATH_URI + "\"") {
-            AddPart("1");
+    public class PdfIsoConformanceException : Exception
+    {
+
+        /** Creates a new instance of PdfIsoConformanceException. */
+        public PdfIsoConformanceException()
+        {
         }
-        
+
         /**
-        * Adds part.
-        * @param part
-        */
-        public void AddPart(String part) {
-            this[PART] = part;
-        }
-        
-        /**
-        * Adds the conformance.
-        * @param conformance
-        */
-        public void AddConformance(String conformance) {
-            this[CONFORMANCE] = conformance;
+         * Creates a new instance of PdfIsoConformanceException.
+         * @param s
+         */
+        public PdfIsoConformanceException(String s) : base(s)
+        {            
         }
     }
 }
