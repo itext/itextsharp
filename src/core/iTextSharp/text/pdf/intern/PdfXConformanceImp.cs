@@ -53,21 +53,6 @@ namespace iTextSharp.text.pdf.intern {
 
     public class PdfXConformanceImp : IPdfXConformance {
 
-        /** A key for an aspect that can be checked for PDF/X Conformance. */
-        public const int PDFXKEY_COLOR = 1;
-        /** A key for an aspect that can be checked for PDF/X Conformance. */
-        public const int PDFXKEY_CMYK = 2;
-        /** A key for an aspect that can be checked for PDF/X Conformance. */
-        public const int PDFXKEY_RGB = 3;
-        /** A key for an aspect that can be checked for PDF/X Conformance. */
-        public const int PDFXKEY_FONT = 4;
-        /** A key for an aspect that can be checked for PDF/X Conformance. */
-        public const int PDFXKEY_IMAGE = 5;
-        /** A key for an aspect that can be checked for PDF/X Conformance. */
-        public const int PDFXKEY_GSTATE = 6;
-        /** A key for an aspect that can be checked for PDF/X Conformance. */
-        public const int PDFXKEY_LAYER = 7;
-
         /**
         * The value indicating if the PDF has to be in conformance with PDF/X.
         */
@@ -86,10 +71,18 @@ namespace iTextSharp.text.pdf.intern {
         }
 
         /**
+         * @see com.itextpdf.text.pdf.interfaces.IPdfIsoConformance#IsPdfIso()
 	     * @see com.itextpdf.text.pdf.interfaces.PdfIsoConformance#isPdfIso()
+         */
 	     */
         public bool IsPdfIso()
+        public bool IsPdfIso()
         {
+        {
+            return IsPdfX();
+        }
+
+        /**
             return IsPdfX();
         }
 
@@ -114,63 +107,11 @@ namespace iTextSharp.text.pdf.intern {
         public bool IsPdfX32002() {
             return pdfxConformance == PdfWriter.PDFX32002;
         }
-        
-        /**
-        * Checks if the PDF has to be in conformance with PDFA1
-        * @return true of the PDF has to be in conformance with PDFA1
-        */
-        public bool IsPdfA1() {
-    	    return pdfxConformance == PdfWriter.PDFA1A || pdfxConformance == PdfWriter.PDFA1B;
-        }
-        
-        /**
-        * Checks if the PDF has to be in conformance with PDFA1A
-        * @return true of the PDF has to be in conformance with PDFA1A
-        */
-        public bool IsPdfA1A() {
-    	    return pdfxConformance == PdfWriter.PDFA1A;
-        }
-
-        public void CompleteInfoDictionary(PdfDictionary info) {
-            if (IsPdfX() && !IsPdfA1()) {
-                if (info.Get(PdfName.GTS_PDFXVERSION) == null) {
-                    if (IsPdfX1A2001()) {
-                        info.Put(PdfName.GTS_PDFXVERSION, new PdfString("PDF/X-1:2001"));
-                        info.Put(new PdfName("GTS_PDFXConformance"), new PdfString("PDF/X-1a:2001"));
-                    }
-                    else if (IsPdfX32002())
-                        info.Put(PdfName.GTS_PDFXVERSION, new PdfString("PDF/X-3:2002"));
-                }
-                if (info.Get(PdfName.TITLE) == null) {
-                    info.Put(PdfName.TITLE, new PdfString("Pdf document"));
-                }
-                if (info.Get(PdfName.CREATOR) == null) {
-                    info.Put(PdfName.CREATOR, new PdfString("Unknown"));
-                }
-                if (info.Get(PdfName.TRAPPED) == null) {
-                    info.Put(PdfName.TRAPPED, new PdfName("False"));
-                }
-            }
-        }
-        
-        public void CompleteExtraCatalog(PdfDictionary extraCatalog) {
-            if (IsPdfX() && !IsPdfA1()) {
-                if (extraCatalog.Get(PdfName.OUTPUTINTENTS) == null) {
-                    PdfDictionary outp = new PdfDictionary(PdfName.OUTPUTINTENT);
-                    outp.Put(PdfName.OUTPUTCONDITION, new PdfString("SWOP CGATS TR 001-1995"));
-                    outp.Put(PdfName.OUTPUTCONDITIONIDENTIFIER, new PdfString("CGATS TR 001"));
-                    outp.Put(PdfName.REGISTRYNAME, new PdfString("http://www.color.org"));
-                    outp.Put(PdfName.INFO, new PdfString(""));
-                    outp.Put(PdfName.S, PdfName.GTS_PDFX);
-                    extraCatalog.Put(PdfName.OUTPUTINTENTS, new PdfArray(outp));
-                }
-            }
-        }
-        
+                
         /**
         * Business logic that checks if a certain object is in conformance with PDF/X.
         * @param writer    the writer that is supposed to write the PDF/X file
-        * @param key       the type of PDF/X conformance that has to be checked
+        * @param key       the type of PDF ISO conformance that has to be checked
         * @param obj1      the object that is checked for conformance
         */
         public static void CheckPDFXConformance(PdfWriter writer, int key, Object obj1) {
@@ -178,7 +119,7 @@ namespace iTextSharp.text.pdf.intern {
                 return;
             int conf = writer.PDFXConformance;
             switch (key) {
-                case PDFXKEY_COLOR:
+                case PdfIsoKeys.PDFISOKEY_COLOR:
                     switch (conf) {
                         case PdfWriter.PDFX1A2001:
                             if (obj1 is ExtendedColor) {
@@ -191,15 +132,15 @@ namespace iTextSharp.text.pdf.intern {
                                         throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("colorspace.rgb.is.not.allowed"));
                                     case ExtendedColor.TYPE_SEPARATION:
                                         SpotColor sc = (SpotColor)ec;
-                                        CheckPDFXConformance(writer, PDFXKEY_COLOR, sc.PdfSpotColor.AlternativeCS);
+                                        CheckPDFXConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, sc.PdfSpotColor.AlternativeCS);
                                         break;
                                     case ExtendedColor.TYPE_SHADING:
                                         ShadingColor xc = (ShadingColor)ec;
-                                        CheckPDFXConformance(writer, PDFXKEY_COLOR, xc.PdfShadingPattern.Shading.ColorSpace);
+                                        CheckPDFXConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, xc.PdfShadingPattern.Shading.ColorSpace);
                                         break;
                                     case ExtendedColor.TYPE_PATTERN:
                                         PatternColor pc = (PatternColor)ec;
-                                        CheckPDFXConformance(writer, PDFXKEY_COLOR, pc.Painter.DefaultColor);
+                                        CheckPDFXConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, pc.Painter.DefaultColor);
                                         break;
                                 }
                             }
@@ -208,17 +149,17 @@ namespace iTextSharp.text.pdf.intern {
                             break;
                     }
                     break;
-                case PDFXKEY_CMYK:
+                case PdfIsoKeys.PDFISOKEY_CMYK:
                     break;
-                case PDFXKEY_RGB:
+                case PdfIsoKeys.PDFISOKEY_RGB:
                     if (conf == PdfWriter.PDFX1A2001)
                         throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("colorspace.rgb.is.not.allowed"));
                     break;
-                case PDFXKEY_FONT:
+                case PdfIsoKeys.PDFISOKEY_FONT:
                     if (!((BaseFont)obj1).IsEmbedded())
                         throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("all.the.fonts.must.be.embedded.this.one.isn.t.1", ((BaseFont)obj1).PostscriptFontName));
                     break;
-                case PDFXKEY_IMAGE:
+                case PdfIsoKeys.PDFISOKEY_IMAGE:
                     PdfImage image = (PdfImage)obj1;
                     if (image.Get(PdfName.SMASK) != null)
                         throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("the.smask.key.is.not.allowed.in.images"));
@@ -238,7 +179,7 @@ namespace iTextSharp.text.pdf.intern {
                             break;
                     }
                     break;
-                case PDFXKEY_GSTATE:
+                case PdfIsoKeys.PDFISOKEY_GSTATE:
                     PdfDictionary gs = (PdfDictionary)obj1;
                     PdfObject obj = gs.Get(PdfName.BM);
                     if (obj != null && !PdfGState.BM_NORMAL.Equals(obj) && !PdfGState.BM_COMPATIBLE.Equals(obj))
@@ -252,7 +193,7 @@ namespace iTextSharp.text.pdf.intern {
                     if (obj != null && (v = ((PdfNumber)obj).DoubleValue) != 1.0)
                         throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("transparency.is.not.allowed.ca.eq.1", v));
                     break;
-                case PDFXKEY_LAYER:
+                case PdfIsoKeys.PDFISOKEY_LAYER:
                     throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("layers.are.not.allowed"));
             }
         }

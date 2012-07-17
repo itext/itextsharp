@@ -1021,9 +1021,6 @@
     <Compile Include="iTextSharp\text\Utilities.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\xml\ParserBase.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="iTextSharp\text\xml\simpleparser\EntitiesToSymbol.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -4087,7 +4084,7 @@
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapToUnicode.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapUniCid.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\ICidLocation.cs" />
-    <Compile Include="iTextSharp\text\pdf\interfaces\IPdfIsoConformance.cs" />
+    <Compile Include="iTextSharp\text\pdf\interfaces\IPdfIsoConfimance.cs" />
     <Compile Include="iTextSharp\text\pdf\intern\PdfIsoKeys.cs" />
     <Compile Include="iTextSharp\text\pdf\LongHashtable.cs" />
     <Compile Include="iTextSharp\text\pdf\crypto\AESCipherCBCnoPad.cs" />
@@ -4098,7 +4095,7 @@
     <Compile Include="iTextSharp\text\pdf\IPdfPTableEventSplit.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfConcatenate.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfDiv.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfIsoConformanceException.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfIsoConfirmanceException.cs" />
     <Compile Include="iTextSharp\text\pdf\security\CertificateInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\security\CertificateUtil.cs" />
     <Compile Include="iTextSharp\text\pdf\security\CertificateVerification.cs" />

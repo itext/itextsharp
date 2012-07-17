@@ -46,7 +46,7 @@ namespace iTextSharp.text.pdf {
     *
     * @author  psoares
     */
-    public class PdfXConformanceException : Exception {
+    public class PdfXConformanceException : PdfIsoConformanceException {
         
         /** Creates a new instance of PdfXConformanceException. */
         public PdfXConformanceException() {

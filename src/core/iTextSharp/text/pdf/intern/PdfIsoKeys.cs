@@ -1,6 +1,5 @@
-namespace iTextSharp.text.pdf
+namespace iTextSharp.text.pdf.intern
 {
-
     public class PdfIsoKeys
     {
         /** A key for an aspect that can be checked for PDF ISO Conformance. */
