@@ -771,6 +771,8 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         */
         public override bool NewPage() {
+            FlushFloatingElements();
+
             lastElementType = -1;
             if (PageEmpty) {
                 SetNewPageSizeAndMargins();
@@ -789,8 +791,6 @@ namespace iTextSharp.text.pdf {
             // the following 2 lines were added by Pelikan Stephan
             indentation.imageIndentLeft = 0;
             indentation.imageIndentRight = 0;
-
-            FlushFloatingElements();
             
             // we flush the arraylist with recently written lines
             FlushLines();
@@ -2335,13 +2335,25 @@ namespace iTextSharp.text.pdf {
                 List<IElement> cashedFloatingElements = floatingElements;
                 floatingElements = null;
                 FloatLayout fl = new FloatLayout(writer.DirectContent, cashedFloatingElements);
-
-                fl.SetSimpleColumn(IndentLeft, IndentBottom, IndentRight, IndentTop - currentHeight);
-                int status = fl.layout(false);
-                //if ((status & ColumnText.NO_MORE_TEXT) != 0) {
-                    text.MoveText(0, fl.getYLine() - IndentTop + currentHeight);
-                    currentHeight = IndentTop - fl.getYLine();
-                //}
+                int loop = 0;
+                while (true) {
+                    fl.SetSimpleColumn(IndentLeft, IndentBottom, IndentRight, IndentTop - currentHeight);
+                    int status = fl.layout(false);
+                    if ((status & ColumnText.NO_MORE_TEXT) != 0) {
+                        text.MoveText(0, fl.getYLine() - IndentTop + currentHeight);
+                        currentHeight = IndentTop - fl.getYLine();
+                        break;
+                    }
+                    if (IndentTop - currentHeight == fl.getYLine() || PageEmpty)
+                        ++loop;
+                    else {
+                        loop = 0;
+                    }
+                    if (loop == 2) {
+                        return;
+                    }
+                    NewPage();
+                }
             }
         }
         
