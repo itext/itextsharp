@@ -287,6 +287,7 @@ namespace iTextSharp.text.pdf {
             float minY = Math.Min(lly, ury);
             float rightX = Math.Max(llx, urx);
             float yLine = maxY;
+            bool contentCutByFixedHeight = false;
 
             if (width != null && width > 0) {
                 if (width < rightX - leftX) {
@@ -301,11 +302,15 @@ namespace iTextSharp.text.pdf {
 
             if (height != null && height > 0) {
                 if (height < maxY - minY) {
+                    contentCutByFixedHeight = true;
                     minY = maxY - (float)height;
                 } else if (height > maxY - minY) {
                     return ColumnText.NO_MORE_COLUMN;
                 }
             } else if (percentageHeight != null) {
+                if (percentageHeight < 1.0) {
+                    contentCutByFixedHeight = true;
+                }
                 contentHeight = (maxY - minY) * (float)percentageHeight;
                 minY = maxY - contentHeight;
             }
@@ -367,10 +372,10 @@ namespace iTextSharp.text.pdf {
             int status = ColumnText.NO_MORE_TEXT;
 
             if (content.Count > 0) {
-                //if (floatLayout == null) {
-                List<IElement> floatingElements = new List<IElement>(content);
-                floatLayout = new FloatLayout(compositeColumn, floatingElements);
-                //}
+                if (floatLayout == null) {
+                    List<IElement> floatingElements = new List<IElement>(content);
+                    floatLayout = new FloatLayout(compositeColumn, floatingElements);
+                }
 
                 floatLayout.SetSimpleColumn(leftX, minY, rightX, yLine);
                 status = floatLayout.layout(simulate);
@@ -394,7 +399,7 @@ namespace iTextSharp.text.pdf {
                 contentWidth += paddingLeft + paddingRight;
             }
 
-            return status;
+            return contentCutByFixedHeight ? ColumnText.NO_MORE_TEXT : status;
         }
     }
 }

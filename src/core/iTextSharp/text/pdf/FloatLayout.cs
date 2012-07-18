@@ -113,6 +113,8 @@ namespace iTextSharp.text.pdf {
             filledWidth = 0;
 
             List<IElement> floatingElements = new List<IElement>();
+            List<IElement> content = simulate ? new List<IElement>(this.content) : this.content;
+            ColumnText compositeColumn = simulate ? ColumnText.Duplicate(this.compositeColumn) : this.compositeColumn;
 
             while (content.Count > 0) {
                 if (content[0] is PdfDiv) {
@@ -122,11 +124,13 @@ namespace iTextSharp.text.pdf {
                         content.RemoveAt(0);
                     } else {
                         if (floatingElements.Count > 0) {
-                            status = floatingLayout(floatingElements, simulate);
-                            //if ((status & ColumnText.NO_MORE_TEXT) == 0) {
-                            //    break;
-                            //}
+                            status = floatingLayout(compositeColumn, floatingElements, simulate);
+                            if ((status & ColumnText.NO_MORE_TEXT) == 0) {
+                                break;
+                            }
                         }
+
+                        content.RemoveAt(0);
 
                         status = floatingElement.layout(compositeColumn, true, floatLeftX, minY, floatRightX, yLine);
 
@@ -139,10 +143,10 @@ namespace iTextSharp.text.pdf {
                         if (floatingElement.getActualWidth() > filledWidth) {
                             filledWidth = floatingElement.getActualWidth();
                         }
-                        //if ((status & ColumnText.NO_MORE_TEXT) == 0) {
-                        //    break;
-                        //}
-                        content.RemoveAt(0);
+                        if ((status & ColumnText.NO_MORE_TEXT) == 0) {
+                            content.Insert(0, floatingElement);
+                            break;
+                        }
                     }
                 } else {
                     floatingElements.Add(content[0]);
@@ -150,19 +154,18 @@ namespace iTextSharp.text.pdf {
                 }
             }
 
-            if (/*(status & ColumnText.NO_MORE_TEXT) != 0 && */floatingElements.Count > 0) {
-                status = floatingLayout(floatingElements, simulate);
+            if ((status & ColumnText.NO_MORE_TEXT) != 0 && floatingElements.Count > 0) {
+                status = floatingLayout(compositeColumn, floatingElements, simulate);
             }
 
-            //foreach (IElement floatingElement in floatingElements) {
-            //    content.Add(floatingElement);    
-            //}
-
+            foreach (IElement floatingElement in floatingElements) {
+                content.Insert(0, floatingElement);    
+            }
 
             return status;
         }
 
-        private int floatingLayout(List<IElement> floatingElements, bool simulate) {
+        private int floatingLayout(ColumnText compositeColumn, List<IElement> floatingElements, bool simulate) {
             int status = ColumnText.NO_MORE_TEXT;
             float minYLine = yLine;
             float leftWidth = 0;
@@ -171,15 +174,17 @@ namespace iTextSharp.text.pdf {
             while (floatingElements.Count > 0) {
                 if (floatingElements[0] is PdfDiv) {
                     PdfDiv floatingElement = (PdfDiv)floatingElements[0];
+                    floatingElements.RemoveAt(0);
                     status = floatingElement.layout(compositeColumn, true, floatLeftX, minY, floatRightX, yLine);
                     if ((status & ColumnText.NO_MORE_TEXT) == 0) {
                         yLine = minYLine;
                         floatLeftX = leftX;
                         floatRightX = rightX;
                         status = floatingElement.layout(compositeColumn, true, floatLeftX, minY, floatRightX, yLine);
-                        //if ((status & ColumnText.NO_MORE_TEXT) == 0) {
-                        //    break;
-                        //}
+                        if ((status & ColumnText.NO_MORE_TEXT) == 0) {
+                            floatingElements.Insert(0, floatingElement);
+                            break;
+                        }
                     }
                     if (floatingElement.Float == PdfDiv.FloatType.LEFT) {
                         status = floatingElement.layout(compositeColumn, simulate, floatLeftX, minY, floatRightX, yLine);
@@ -197,6 +202,7 @@ namespace iTextSharp.text.pdf {
                         yLine -= ((ISpaceable)firstElement).SpacingBefore;
                     }
                     compositeColumn.AddElement(firstElement);
+                    floatingElements.RemoveAt(0);
                     if (yLine > minYLine)
                         compositeColumn.SetSimpleColumn(floatLeftX, yLine, floatRightX, minYLine);
                     else
@@ -241,13 +247,16 @@ namespace iTextSharp.text.pdf {
                         yLine = compositeColumn.YLine + compositeColumn.Descender;
                     }
 
-                    compositeColumn.CompositeElements.Clear();
-                    //if ((status & ColumnText.NO_MORE_TEXT) == 0) {
-                    //    break;
-                    //}
+                    if ((status & ColumnText.NO_MORE_TEXT) == 0) {
+                        foreach (IElement element in compositeColumn.CompositeElements) {
+                            floatingElements.Insert(0, element);
+                        }
+                        compositeColumn.CompositeElements.Clear();
+                        break;
+                    } else {
+                        compositeColumn.CompositeElements.Clear();
+                    }
                 }
-
-                floatingElements.RemoveAt(0);
             }
 
 
