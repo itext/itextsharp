@@ -116,7 +116,7 @@ namespace iTextSharp.text.pdf {
         * Gets the stream representing this pattern
         * @return the stream representing this pattern
         */
-        internal PdfPattern GetPattern() {
+        public PdfPattern GetPattern() {
             return new PdfPattern(this);
         }
         
@@ -126,7 +126,7 @@ namespace iTextSharp.text.pdf {
         * @return the stream representing this pattern
         * @since   2.1.3
         */
-        internal PdfPattern GetPattern(int compressionLevel) {
+        public PdfPattern GetPattern(int compressionLevel) {
             return new PdfPattern(this, compressionLevel);
         }
     

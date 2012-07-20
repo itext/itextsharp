@@ -66,7 +66,7 @@ namespace iTextSharp.text.pdf {
         * @since   2.1.3   (replacing the method without param compressionLevel)
         * @throws IOException
         */
-        internal override PdfStream GetFormXObject(int compressionLevel) {
+        override public PdfStream GetFormXObject(int compressionLevel) {
             PdfStream s = new PdfStream(content.ToByteArray());
             s.Put(PdfName.TYPE, PdfName.XOBJECT);
             s.Put(PdfName.SUBTYPE, PdfName.PS);

@@ -131,7 +131,7 @@ namespace iTextSharp.text.pdf {
         * @return the stream representing this page
         * @since   2.1.3   (replacing the method without param compressionLevel)
         */
-        internal override PdfStream GetFormXObject(int compressionLevel) {
+        override public PdfStream GetFormXObject(int compressionLevel) {
             return readerInstance.GetFormXObject(pageNumber, compressionLevel);
         }
     
