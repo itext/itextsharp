@@ -461,7 +461,7 @@ public class ColumnText {
         int type = element.Type;
         if (type == Element.CHUNK || type == Element.PHRASE
                 || type == Element.PARAGRAPH || type == Element.LIST
-                || type == Element.YMARK || type == Element.PTABLE) return true;
+                || type == Element.YMARK || type == Element.PTABLE || type == Element.DIV) return true;
         if (element is Image) return true;
         return false;
     }

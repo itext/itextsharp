@@ -61,15 +61,30 @@ namespace iTextSharp.text.pdf
         
         protected ICC_Profile() {
         }
-        
-        public static ICC_Profile GetInstance(byte[] data) {
+
+        public static ICC_Profile GetInstance(byte[] data, int numComponents) {
             if (data.Length < 128 || data[36] != 0x61 || data[37] != 0x63 
                 || data[38] != 0x73 || data[39] != 0x70)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.icc.profile"));
             ICC_Profile icc = new ICC_Profile();
             icc.data = data;
-            cstags.TryGetValue(Encoding.ASCII.GetString(data, 16, 4), out icc.numComponents);
+
+            if (!cstags.TryGetValue(Encoding.ASCII.GetString(data, 16, 4), out icc.numComponents)) {
+                icc.numComponents = 0;
+            }
+            // invalid ICC
+            if (icc.numComponents != numComponents) {
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("ICC profile contains " + icc.numComponents + " component(s), the image data contains " + numComponents + " component(s)"));
+            }
             return icc;
+        }
+
+        public static ICC_Profile GetInstance(byte[] data) {
+            int numComponents;
+            if (!cstags.TryGetValue(Encoding.ASCII.GetString(data, 16, 4), out numComponents)) {
+                numComponents = 0;
+            }
+            return GetInstance(data, numComponents);
         }
         
         public static ICC_Profile GetInstance(Stream file) {
