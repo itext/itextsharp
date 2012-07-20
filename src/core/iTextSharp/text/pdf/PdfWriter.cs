@@ -1251,7 +1251,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        protected void AddSharedObjectsToBody() {
+        virtual protected void AddSharedObjectsToBody() {
             // add the fonts
             foreach (FontDetails details in documentFonts.Values) {
                 details.WriteFont(this);

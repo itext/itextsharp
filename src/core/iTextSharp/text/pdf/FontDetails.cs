@@ -239,7 +239,7 @@ namespace iTextSharp.text.pdf {
         /** Writes the font definition to the document.
          * @param writer the <CODE>PdfWriter</CODE> of this document
          */    
-        internal void WriteFont(PdfWriter writer) {
+        public void WriteFont(PdfWriter writer) {
             switch (fontType) {
                 case BaseFont.FONT_TYPE_T3:
                     baseFont.WriteFont(writer, indirectReference, null);

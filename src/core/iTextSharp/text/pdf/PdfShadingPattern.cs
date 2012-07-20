@@ -99,7 +99,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        internal void AddToBody() {
+        public void AddToBody() {
             Put(PdfName.SHADING, ShadingReference);
             Put(PdfName.MATRIX, new PdfArray(matrix));
             writer.AddToBody(this, PatternReference);

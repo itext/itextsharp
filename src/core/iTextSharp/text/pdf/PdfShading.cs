@@ -229,7 +229,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        internal void AddToBody() {
+        public void AddToBody() {
             if (bBox != null)
                 shading.Put(PdfName.BBOX, new PdfArray(bBox));
             if (antiAlias)
