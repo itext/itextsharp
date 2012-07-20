@@ -337,8 +337,8 @@ namespace iTextSharp.text.pdf.codec {
                 properties["y_pixels_per_meter"] = yPelsPerMeter;
                 properties["colors_used"] = colorsUsed;
                 properties["colors_important"] = colorsImportant;
-                
-                if (size == 40) {
+
+                if (size == 40 || size == 52 || size == 56) {
                     // Windows 3.x and Windows NT
                     switch ((int)compression) {
                         
@@ -371,6 +371,22 @@ namespace iTextSharp.text.pdf.codec {
                                 properties["green_mask"] = greenMask;
                                 properties["blue_mask"] = blueMask;
                             }
+
+                            // 52 and 56 byte header have mandatory R, G and B masks
+                            if (size >= 52) {
+                                redMask = (int)ReadDWord(inputStream);
+                                greenMask = (int)ReadDWord(inputStream);
+                                blueMask = (int)ReadDWord(inputStream);
+                                properties["red_mask"] = redMask;
+                                properties["green_mask"] = greenMask;
+                                properties["blue_mask"] = blueMask;
+                            }
+                            // 56 byte header has mandatory alpha mask
+                            if (size == 56) {
+                                alphaMask = (int)ReadDWord(inputStream);
+                                properties["alpha_mask"] = alphaMask;
+                            }
+
 
                             // Read in the palette
                             int numberOfEntries = (int)((bitmapOffset-14-size) / 4);

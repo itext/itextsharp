@@ -308,6 +308,7 @@ namespace iTextSharp.text {
                         }
                         return success;
                     case Element.MARKED:
+                    case Element.DIV:
                     case Element.ANCHOR:
                     case Element.ANNOTATION:
                     case Element.PTABLE: // case added by Karen Vardanyan

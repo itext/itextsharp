@@ -404,8 +404,10 @@ namespace iTextSharp.text.pdf {
                         PdfChunk overflow;
                         while ((overflow = line.Add(chunk)) != null) {
                             CarriageReturn();
+                            bool newlineSplit = chunk.IsNewlineSplit();
                             chunk = overflow;
-                            chunk.TrimFirstSpace();
+                            if (newlineSplit)
+                                chunk.TrimFirstSpace();
                         }
                     }
                     pageEmpty = false;

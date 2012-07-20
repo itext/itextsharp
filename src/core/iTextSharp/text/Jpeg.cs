@@ -409,7 +409,7 @@ namespace iTextSharp.text {
                     total += icc[k].Length - 14;
                 }
                 try {
-                    ICC_Profile icc_prof = ICC_Profile.GetInstance(ficc);
+                    ICC_Profile icc_prof = ICC_Profile.GetInstance(ficc, colorspace);
                     TagICC = icc_prof;
                 }
                 catch {}
