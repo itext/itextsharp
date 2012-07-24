@@ -79,13 +79,8 @@ namespace iTextSharp.tool.xml.css.apply {
         while(table != null && !table.Name.Equals(HTML.Tag.TABLE)){
 		    table = table.Parent;
         }
-        TableStyleValues values = Table.SetStyleValues(table);
-        String border;
-        table.Attributes.TryGetValue(CSS.Property.BORDER, out border);
-        if (border != null && !border.Equals("0")) {
-            values.BorderColor = BaseColor.BLACK;
-            values.BorderWidth = Table.DEFAULT_CELL_BORDER_WIDTH;
-        }
+        TableStyleValues values = Table.setBorderAttributeForCell(table);
+
         IDictionary<String, String> css = t.CSS;
         String emptyCells;
         css.TryGetValue(CSS.Property.EMPTY_CELLS, out emptyCells);
@@ -196,13 +191,9 @@ namespace iTextSharp.tool.xml.css.apply {
                     }
                 }
             }
-            float horSpacing = Table.GetBorderOrCellSpacing(true, table.CSS, table.Attributes);
-            float verSpacing = Table.GetBorderOrCellSpacing(false, table.CSS, table.Attributes);
-            values.HorBorderSpacing = horSpacing;
-            values.VerBorderSpacing = verSpacing;
-            cell.PaddingLeft = cell.PaddingLeft+horSpacing+values.BorderWidthLeft;
-            cell.PaddingRight = cell.PaddingRight+values.BorderWidthRight;
-            cell.PaddingTop = cell.PaddingTop+verSpacing+values.BorderWidthTop;
+            cell.PaddingLeft = cell.PaddingLeft + values.HorBorderSpacing + values.BorderWidthLeft;
+            cell.PaddingRight = cell.PaddingRight + values.BorderWidthRight;
+            cell.PaddingTop = cell.PaddingTop + values.VerBorderSpacing + values.BorderWidthTop;
             cell.PaddingBottom = cell.PaddingBottom + values.BorderWidthBottom;
         }
         cell.Border = Rectangle.NO_BORDER;

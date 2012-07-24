@@ -496,25 +496,88 @@ namespace iTextSharp.tool.xml.html.table {
             string v;
             if (attributes.ContainsKey(CSS.Property.BORDER)) {
                 styleValues.BorderColor = BaseColor.BLACK;
-                styleValues.BorderWidth = utils.ParsePxInCmMmPcToPt(attributes[CSS.Property.BORDER]);
+                String borderValue = null;
+                if (attributes.TryGetValue(CSS.Property.BORDER, out borderValue) && "".Equals(borderValue))
+                    styleValues.BorderWidth = DEFAULT_CELL_BORDER_WIDTH;
+                else
+                    styleValues.BorderWidth = utils.ParsePxInCmMmPcToPt(borderValue);
             } else {
-                css.TryGetValue(CSS.Property.BORDER_BOTTOM_COLOR, out v);
-                styleValues.BorderColorBottom = HtmlUtilities.DecodeColor(v);
-                css.TryGetValue(CSS.Property.BORDER_TOP_COLOR, out v);
-                styleValues.BorderColorTop = HtmlUtilities.DecodeColor(v);
-                css.TryGetValue(CSS.Property.BORDER_LEFT_COLOR, out v);
-                styleValues.BorderColorLeft = HtmlUtilities.DecodeColor(v);
-                css.TryGetValue(CSS.Property.BORDER_RIGHT_COLOR, out v);
-                styleValues.BorderColorRight = HtmlUtilities.DecodeColor(v);
-                styleValues.BorderWidthBottom = utils.CheckMetricStyle(css, CSS.Property.BORDER_BOTTOM_WIDTH);
-                styleValues.BorderWidthTop = utils.CheckMetricStyle(css, CSS.Property.BORDER_TOP_WIDTH);
-                styleValues.BorderWidthLeft = utils.CheckMetricStyle(css, CSS.Property.BORDER_LEFT_WIDTH);
-                styleValues.BorderWidthRight = utils.CheckMetricStyle(css, CSS.Property.BORDER_RIGHT_WIDTH);
+                foreach (KeyValuePair<String, String> entry in css) {
+                    String key = entry.Key;
+                    String value = entry.Value;
+                    if (Util.EqualsIgnoreCase(key, CSS.Property.BORDER_LEFT_STYLE)
+                        && Util.EqualsIgnoreCase(CSS.Value.SOLID, value)) {
+                        styleValues.BorderColorLeft = BaseColor.BLACK;
+                        styleValues.BorderWidthLeft = DEFAULT_CELL_BORDER_WIDTH;
+                    } else if (Util.EqualsIgnoreCase(key, CSS.Property.BORDER_RIGHT_STYLE)
+                        && Util.EqualsIgnoreCase(CSS.Value.SOLID, value)) {
+                        styleValues.BorderColorRight = BaseColor.BLACK;
+                        styleValues.BorderWidthRight = DEFAULT_CELL_BORDER_WIDTH;
+                    } else if (Util.EqualsIgnoreCase(key,CSS.Property.BORDER_TOP_STYLE)
+                        && Util.EqualsIgnoreCase(CSS.Value.SOLID, value)) {
+                        styleValues.BorderColorTop = BaseColor.BLACK;
+                        styleValues.BorderWidthTop = DEFAULT_CELL_BORDER_WIDTH;
+                    }  else if (Util.EqualsIgnoreCase(key, CSS.Property.BORDER_BOTTOM_STYLE)
+                        && Util.EqualsIgnoreCase(CSS.Value.SOLID, value)) {
+                        styleValues.BorderColorBottom = BaseColor.BLACK;
+                        styleValues.BorderWidthBottom = DEFAULT_CELL_BORDER_WIDTH;
+                    }
+                }
+                
+                String color = null;
+                if (css.TryGetValue(CSS.Property.BORDER_BOTTOM_COLOR, out color)) {
+			        styleValues.BorderColorBottom = HtmlUtilities.DecodeColor(color);
+                }
+                if (css.TryGetValue(CSS.Property.BORDER_TOP_COLOR, out color)) {
+                    styleValues.BorderColorTop = HtmlUtilities.DecodeColor(color);
+                }
+                if (css.TryGetValue(CSS.Property.BORDER_LEFT_COLOR, out color)) {
+                    styleValues.BorderColorLeft = HtmlUtilities.DecodeColor(color);
+                }
+                if (css.TryGetValue(CSS.Property.BORDER_RIGHT_COLOR, out color)) {
+                    styleValues.BorderColorRight = HtmlUtilities.DecodeColor(color);
+                }
+
+                float? width = utils.CheckMetricStyle(css, CSS.Property.BORDER_BOTTOM_WIDTH);
+                if (width != null) {
+			        styleValues.BorderWidthBottom = (float)width;
+                }
+                width =  utils.CheckMetricStyle(css, CSS.Property.BORDER_TOP_WIDTH);
+                if (width != null) {
+                    styleValues.BorderWidthTop = (float)width;
+                }
+                width =  utils.CheckMetricStyle(css, CSS.Property.BORDER_RIGHT_WIDTH);
+                if (width != null) {
+                    styleValues.BorderWidthRight = (float) width;
+                }
+                width = utils.CheckMetricStyle(css, CSS.Property.BORDER_LEFT_WIDTH);
+                if (width != null) {
+                    styleValues.BorderWidthLeft = (float)width;
+                }
             }
+
             css.TryGetValue(CSS.Property.BACKGROUND_COLOR, out v);
             styleValues.Background = HtmlUtilities.DecodeColor(v);
             styleValues.HorBorderSpacing = GetBorderOrCellSpacing(true, css, attributes);
             styleValues.VerBorderSpacing = GetBorderOrCellSpacing(false, css, attributes);
+            return styleValues;
+        }
+
+        public static TableStyleValues setBorderAttributeForCell(Tag tag) {
+            TableStyleValues styleValues = new TableStyleValues();
+
+            IDictionary<String, String> attributes = tag.Attributes;
+            IDictionary<String, String> css = tag.CSS;
+            String border = null;
+            if (attributes.TryGetValue(CSS.Property.BORDER, out border) 
+                && ("".Equals(border) || utils.ParsePxInCmMmPcToPt(border) > 0)) {
+                styleValues.BorderColor = BaseColor.BLACK;
+                styleValues.BorderWidth = DEFAULT_CELL_BORDER_WIDTH;
+            }
+
+            styleValues.HorBorderSpacing = GetBorderOrCellSpacing(true, css, attributes);
+            styleValues.VerBorderSpacing = GetBorderOrCellSpacing(false, css, attributes);
+
             return styleValues;
         }
 

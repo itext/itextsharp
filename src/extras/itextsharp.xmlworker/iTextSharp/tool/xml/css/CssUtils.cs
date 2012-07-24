@@ -366,7 +366,12 @@ namespace iTextSharp.tool.xml.css {
          * @return float the parsed value of the style or 0f if the value was invalid.
          */
         public float CheckMetricStyle(Tag t, String style) {
-            return CheckMetricStyle(t.CSS, style);
+            float? metricValue = CheckMetricStyle(t.CSS, style);
+            if (metricValue != null) {
+                return (float)metricValue;
+            } else {
+                return 0f;
+            }
         }
         /**
          * Use only if value of style is a metric value ({@link CssUtils#isMetricValue(String)}) or a numeric value in pixels ({@link CssUtils#isNumericValue(String)}).<br />
@@ -375,13 +380,13 @@ namespace iTextSharp.tool.xml.css {
          * @param style the style which needs to be checked.
          * @return float the parsed value of the style or 0f if the value was invalid.
          */
-        public float CheckMetricStyle(IDictionary<String,String> css, String style) {
+        public float? CheckMetricStyle(IDictionary<String,String> css, String style) {
             String value;
             css.TryGetValue(style, out value);
             if (value != null && (IsMetricValue(value) || IsNumericValue(value))) {
                 return ParsePxInCmMmPcToPt(value);
             }
-            return 0f;
+            return null;
         }
 
         /**
