@@ -163,7 +163,7 @@ namespace iTextSharp.text.pdf {
             
             internal void AddProducer() {
                 // This line may only be changed by Bruno Lowagie or Paulo Soares
-                Put(PdfName.PRODUCER, new PdfString(Version));
+                Put(PdfName.PRODUCER, new PdfString(Version.GetInstance().GetVersion));
                 // Do not edit the line above!
             }
             

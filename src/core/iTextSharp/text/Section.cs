@@ -310,6 +310,8 @@ namespace iTextSharp.text {
         /// <param name="collection">a collection of Paragraphs, Lists and/or Tables</param>
         /// <returns>true if the action succeeded, false if not.</returns>
         public bool AddAll<T>(ICollection<T> collection) where T : IElement {
+            if (collection.Count == 0)
+                return false;
             foreach (IElement itm in collection) {
                 this.Add(itm);
             }

@@ -4119,6 +4119,7 @@
     <Compile Include="iTextSharp\text\pdf\security\TSAClientBouncyCastle.cs" />
     <Compile Include="iTextSharp\text\pdf\security\X509Certificate2Signature.cs" />
     <Compile Include="iTextSharp\text\pdf\TtfUnicodeWriter.cs" />
+    <Compile Include="iTextSharp\text\Version.cs" />
     <Compile Include="iTextSharp\text\WritableDirectElement.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\handler\HTMLNewLineHandler.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\handler\NeverNewLineHandler.cs" />

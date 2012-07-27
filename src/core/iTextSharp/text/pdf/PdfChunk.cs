@@ -92,6 +92,7 @@ namespace iTextSharp.text.pdf {
             keysAttributes.Add(Chunk.SEPARATOR, null);
             keysAttributes.Add(Chunk.TAB, null);
             keysAttributes.Add(Chunk.CHAR_SPACING, null);
+            keysAttributes.Add(Chunk.LINEHEIGHT, null);
             keysNoStroke.Add(Chunk.SUBSUPSCRIPT, null);
             keysNoStroke.Add(Chunk.SPLITCHARACTER, null);
             keysNoStroke.Add(Chunk.HYPHENATION, null);
@@ -144,6 +145,9 @@ namespace iTextSharp.text.pdf {
         /** Indicates if the height and offset of the Image has to be taken into account */
         protected bool changeLeading = false;
 
+        /** The leading that can overrule the existing leading. */
+        protected float leading = 0;
+
         // constructors
     
         /**
@@ -162,6 +166,8 @@ namespace iTextSharp.text.pdf {
             this.attributes = other.attributes;
             this.noStroke = other.noStroke;
             this.baseFont = other.baseFont;
+            this.changeLeading = other.changeLeading;
+            this.leading = other.leading;
             Object[] obj = null;
             if (attributes.ContainsKey(Chunk.IMAGE))
                 obj = (Object[])attributes[Chunk.IMAGE];
@@ -251,6 +257,12 @@ namespace iTextSharp.text.pdf {
             // the color can't be stored in a PdfFont
             noStroke[Chunk.COLOR] = f.Color;
             noStroke[Chunk.ENCODING] = font.Font.Encoding;
+            Object lh;
+            if (attributes.TryGetValue(Chunk.LINEHEIGHT, out lh)) {
+                changeLeading = true;
+                leading = (float)lh;
+            }
+        
             Object[] obj2 = null;
             if (attributes.ContainsKey(Chunk.IMAGE))
                 obj2 = (Object[])attributes[Chunk.IMAGE];
@@ -854,6 +866,13 @@ namespace iTextSharp.text.pdf {
         public bool ChangeLeading {
             get {
                 return changeLeading;
+            }
+        }
+
+
+        public float Leading {
+            get {
+                return leading;
             }
         }
     

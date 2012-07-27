@@ -192,31 +192,46 @@ namespace iTextSharp.text
         /// <value>an ArrayList</value>
         public override IList<Chunk> Chunks 
         {
-            get 
+            get
             {
                 List<Chunk> tmp = new List<Chunk>();
                 bool localDestination = (reference != null && reference.StartsWith("#"));
                 bool notGotoOK = true;
-                foreach (Chunk chunk in this) 
-                {
-                    if (name != null && notGotoOK && !chunk.IsEmpty()) 
-                    {
-                        chunk.SetLocalDestination(name);
-                        notGotoOK = false;
+                foreach (IElement element in this) {
+                    if (element is Chunk) {
+                        Chunk chunk = (Chunk) element;
+                        notGotoOK = ApplyAnchor(chunk, notGotoOK, localDestination);
+                        tmp.Add(chunk);
+                    } else {
+                        foreach (Chunk c in element.Chunks) {
+                            notGotoOK = ApplyAnchor(c, notGotoOK, localDestination);
+                            tmp.Add(c);
+                        }
                     }
-                    if (localDestination) 
-                    {
-                        chunk.SetLocalGoto(reference.Substring(1));
-                    }
-                    else if (reference != null) 
-                    {
-                        chunk.SetAnchor(reference);
-                    }
-
-                    tmp.Add(chunk);
                 }
+
                 return tmp;
             }
+        }
+
+
+        /**
+         * Applies the properties of the Anchor to a Chunk.
+         * @param chunk			the Chunk (part of the Anchor)
+         * @param notGotoOK		if true, this chunk will determine the local destination
+         * @param localDestination	true if the chunk is a local goto and the reference a local destination
+         * @return	the value of notGotoOK or false, if a previous Chunk was used to determine the local destination
+         */
+        protected bool ApplyAnchor(Chunk chunk, bool notGotoOK, bool localDestination) {
+            if (name != null && notGotoOK && !chunk.IsEmpty()) {
+                chunk.SetLocalDestination(name);
+                notGotoOK = false;
+            }
+            if (localDestination) {
+                chunk.SetLocalGoto(reference.Substring(1));
+            } else if (reference != null)
+                chunk.SetAnchor(reference);
+            return notGotoOK;
         }
     
         /// <summary>

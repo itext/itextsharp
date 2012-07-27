@@ -619,6 +619,19 @@ namespace iTextSharp.text {
             return SetAttribute(GENERICTAG, text);
         }
 
+        /** Key for line-height (alternative for leading in Phrase). */
+	    public static String LINEHEIGHT = "LINEHEIGHT";
+
+	    /**
+	     * Sets a line height tag.
+	     *
+	     * @return this <CODE>Chunk</CODE>
+	     */
+
+	    public Chunk setLineHeight(float lineheight) {
+		    return SetAttribute(LINEHEIGHT, lineheight);
+	    }
+
         ///<summary> Key for image. </summary>
         public const string IMAGE = "IMAGE";
 

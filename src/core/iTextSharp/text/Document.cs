@@ -95,20 +95,6 @@ namespace iTextSharp.text {
     /// </example>
     public class Document : IDocListener {
 
-        // membervariables
-        /**
-        * This constant may only be changed by Paulo Soares and/or Bruno Lowagie.
-        * @since	2.1.6
-        */
-	    private const String ITEXT = "iTextSharp";
-        /**
-        * This constant may only be changed by Paulo Soares and/or Bruno Lowagie.
-        * @since	2.1.6
-        */
-	    private const String RELEASE = "5.3.1-SNAPSHOT";
-	    /** This constant may only be changed by Paulo Soares and/or Bruno Lowagie. */
-	    private const String ITEXT_VERSION = ITEXT + " " + RELEASE + " (c) 1T3XT BVBA";
-
         ///<summary> Allows the pdf documents to be produced without compression for debugging purposes. </summary>
         public static bool Compress = true;
 
@@ -447,7 +433,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <returns>true if successful, false otherwise</returns>
         public bool AddProducer() {
-            return Add(new Meta(Element.PRODUCER, Version));
+            return Add(new Meta(Element.PRODUCER, Version.GetInstance().GetVersion));
         }
 
         /// <summary>
@@ -592,40 +578,6 @@ namespace iTextSharp.text {
         /// <returns>true if the document is open</returns>
         public bool IsOpen() {
             return open;
-        }
-
-        /**
-        * Gets the product name.
-        * This method may only be changed by Paulo Soares and/or Bruno Lowagie.
-        * @return the product name
-        * @since	2.1.6
-        */    
-        public static String Product {
-            get {
-                    return ITEXT;
-                }
-        }
-        
-        /**
-        * Gets the release number.
-        * This method may only be changed by Paulo Soares and/or Bruno Lowagie.
-        * @return the product name
-        * @since	2.1.6
-        */    
-        public static String Release {
-            get {
-                    return RELEASE;
-                }
-        }
-        
-        /// <summary>
-        /// Gets the iText version.
-        /// </summary>
-        /// <value>iText version</value>
-        public static string Version {
-            get {
-                return ITEXT_VERSION;
-            }
         }
 
         /// <summary>

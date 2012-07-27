@@ -154,6 +154,23 @@ namespace iTextSharp.tool.xml.css.apply {
             }
             f.Size = size;
             c.Font = f;
+
+
+            float? leading = null;
+            value = null;
+            if (rules.TryGetValue(CSS.Property.LINE_HEIGHT, out value)) {
+                if (utils.IsNumericValue(value)) {
+                    leading = float.Parse(value) * c.Font.Size;
+                } else if (utils.IsRelativeValue(value)) {
+                    leading = utils.ParseRelativeValue(value, c.Font.Size);
+                } else if (utils.IsMetricValue(value)) {
+                    leading = utils.ParsePxInCmMmPcToPt(value);
+                }
+            }
+
+            if (leading != null) {
+                c.setLineHeight((float)leading);
+            }
             return c;
         }
 

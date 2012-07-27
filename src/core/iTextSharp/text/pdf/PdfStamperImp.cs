@@ -143,7 +143,8 @@ namespace iTextSharp.text.pdf {
             AddFieldResources();
             PdfDictionary catalog = reader.Catalog;
             PdfDictionary pages = (PdfDictionary)PdfReader.GetPdfObject(catalog.Get(PdfName.PAGES));
-            pages.Put(PdfName.ITXT, new PdfString(Document.Release));
+            Version version = Version.GetInstance();
+            pages.Put(PdfName.ITXT, new PdfString(version.Release));
             MarkUsed(pages);
             PdfDictionary acroForm = (PdfDictionary)PdfReader.GetPdfObject(catalog.Get(PdfName.ACROFORM), reader.Catalog);
             if (acroFields != null && acroFields.Xfa.Changed) {
@@ -205,12 +206,12 @@ namespace iTextSharp.text.pdf {
             if (oldInfo != null && oldInfo.Get(PdfName.PRODUCER) != null)
                 producer = oldInfo.GetAsString(PdfName.PRODUCER).ToUnicodeString();
             if (producer == null) {
-                producer = Document.Version;
+                producer = version.GetVersion;
             }
-            else if (producer.IndexOf(Document.Product) == -1) {
+            else if (producer.IndexOf(version.Product) == -1) {
                 StringBuilder buf = new StringBuilder(producer);
                 buf.Append("; modified using ");
-                buf.Append(Document.Version);
+                buf.Append(version.GetVersion);
                 producer = buf.ToString();
             }
             PdfIndirectReference info = null;
