@@ -147,7 +147,7 @@ namespace iTextSharp.text.pdf.security {
                 asn1obj = Asn1Object.FromByteArray(octets.GetOctets());
                 Asn1Sequence asn1seq = Asn1Sequence.GetInstance(asn1obj);
                 return GetStringFromGeneralName(asn1seq[1].ToAsn1Object());
-            } catch (IOException e) {
+            } catch (IOException) {
                 return null;
             }
         }

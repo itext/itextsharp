@@ -868,11 +868,11 @@ public class ColumnText {
                     status = NO_MORE_TEXT;
                     break;
                 }
-                float[] maxSize = line.GetMaxSize();
+                float[] maxSize = line.GetMaxSize(fixedLeading, multipliedLeading);
                 if (UseAscender && float.IsNaN(firstLineY))
                     currentLeading = line.Ascender;
                 else
-                    currentLeading = Math.Max(fixedLeading + maxSize[0] * multipliedLeading, maxSize[1] - descender);
+                    currentLeading = Math.Max(maxSize[0], maxSize[1] - descender);
                 if (yLine > maxY || yLine - currentLeading < minY ) {
                     status = NO_MORE_COLUMN;
                     bidiLine.Restore();

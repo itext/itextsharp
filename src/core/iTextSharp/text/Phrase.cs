@@ -240,8 +240,8 @@ namespace iTextSharp.text {
         /// <param name="o">an object of type Chunk, Anchor, or Phrase</param>
         public virtual void Add(int index, IElement element) {
             if (element == null) return;
-            try {
-                if (element.Type == Element.CHUNK) {
+            switch (element.Type) {
+                case Element.CHUNK:
                     Chunk chunk = (Chunk)element;
                     if (!font.IsStandardFont()) {
                         chunk.Font = font.Difference(chunk.Font);
@@ -250,20 +250,21 @@ namespace iTextSharp.text {
                         chunk.SetHyphenation(hyphenation);
                     }
                     base.Insert(index, chunk);
-                }
-                else if (element.Type == Element.PHRASE ||
-                    element.Type == Element.ANCHOR ||
-                    element.Type == Element.ANNOTATION ||
-                    element.Type == Element.YMARK || 
-                    element.Type == Element.MARKED || element.Type == Element.WRITABLE_DIRECT) {
+                    return;
+                case Element.PHRASE:
+                case Element.PARAGRAPH:
+                case Element.MARKED:
+                case Element.DIV:
+                case Element.ANCHOR:
+                case Element.ANNOTATION:
+                case Element.PTABLE:
+                case Element.LIST:
+                case Element.YMARK:
+                case Element.WRITABLE_DIRECT:
                     base.Insert(index, element);
-                }
-                else {
-                    throw new Exception(element.Type.ToString());
-                }
-            }
-            catch (Exception cce) {
-                throw new Exception(MessageLocalization.GetComposedMessage("insertion.of.illegal.element.1", cce.Message));
+                    return;
+                default:
+                    throw new Exception(MessageLocalization.GetComposedMessage("insertion.of.illegal.element.1", element.Type.ToString()));
             }
         }
     

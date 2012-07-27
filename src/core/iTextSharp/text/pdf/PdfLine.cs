@@ -194,10 +194,15 @@ namespace iTextSharp.text.pdf {
         }
     
         private void AddToLine(PdfChunk chunk) {
-            if (chunk.ChangeLeading && chunk.IsImage()) {
-                Image img = chunk.Image;
-                float f = img.ScaledHeight + chunk.ImageOffsetY
-                    + img.BorderWidthTop + img.SpacingBefore;
+            if (chunk.ChangeLeading) {
+                float f;
+                if (chunk.IsImage()) {
+                    Image img = chunk.Image;
+                    f = img.ScaledHeight + chunk.ImageOffsetY
+                            + img.BorderWidthTop + img.SpacingBefore;
+                } else {
+                    f = chunk.Leading;
+                }
                 if (f > height) height = f;
             }
             line.Add(chunk);
@@ -446,14 +451,17 @@ namespace iTextSharp.text.pdf {
          * @return  an extra leading for images
          * @since   2.1.5
          */
-        internal float[] GetMaxSize() {
+        internal float[] GetMaxSize(float fixedLeading, float multipliedLeading) {
             float normal_leading = 0;
             float image_leading = -10000;
             PdfChunk chunk;
             for (int k = 0; k < line.Count; ++k) {
                 chunk = line[k];
                 if (!chunk.IsImage()) {
-                    normal_leading = Math.Max(chunk.Font.Size, normal_leading);
+                    if (chunk.ChangeLeading)
+                        normal_leading = Math.Max(chunk.Leading, normal_leading);
+                    else
+                        normal_leading = Math.Max(fixedLeading + multipliedLeading * chunk.Font.Size, normal_leading);
                 }
                 else {
                     Image img = chunk.Image;
@@ -463,7 +471,7 @@ namespace iTextSharp.text.pdf {
                     }
                 }
             }
-            return new float[]{normal_leading, image_leading};
+            return new float[]{normal_leading > 0 ? normal_leading : fixedLeading, image_leading};
         }
     
         internal bool RTL {

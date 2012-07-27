@@ -1,7 +1,5 @@
 using System;
 
-using iTextSharp.text;
-
 /*
  * $Id$
  * 
@@ -69,7 +67,7 @@ namespace iTextSharp.text.xml.xmp {
         * @throws IOException
         */
         public PdfSchema() : base("xmlns:" + DEFAULT_XPATH_ID + "=\"" + DEFAULT_XPATH_URI + "\"") {
-            AddProducer(Document.Version);
+            AddProducer(Version.GetInstance().GetVersion);
         }
         
         /**

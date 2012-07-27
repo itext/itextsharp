@@ -321,7 +321,7 @@ namespace iTextSharp.text.pdf.parser {
                 wr.AddField(new TiffWriter.FieldRational(TIFFConstants.TIFFTAG_XRESOLUTION, new int[]{300,1}));
                 wr.AddField(new TiffWriter.FieldRational(TIFFConstants.TIFFTAG_YRESOLUTION, new int[]{300,1}));
                 wr.AddField(new TiffWriter.FieldShort(TIFFConstants.TIFFTAG_RESOLUTIONUNIT, TIFFConstants.RESUNIT_INCH));
-                wr.AddField(new TiffWriter.FieldAscii(TIFFConstants.TIFFTAG_SOFTWARE, Document.Version));
+                wr.AddField(new TiffWriter.FieldAscii(TIFFConstants.TIFFTAG_SOFTWARE, Version.GetInstance().GetVersion));
                 MemoryStream comp = new MemoryStream();
                 TiffWriter.CompressLZW(comp, 2, imageBytes, height, 4, stride);
                 byte[] buf = comp.ToArray();
