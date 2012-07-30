@@ -18,7 +18,7 @@ namespace iTextSharp.text.pdf{
         {
             Dictionary<int, int[]> longTag = (Dictionary<int, int[]>)parms[0];
             font.AddRangeUni(longTag, true, font.Subset);
-            int[][] metrics = new int[0][];
+            int[][] metrics = new int[longTag.Count][];
             longTag.Values.CopyTo(metrics, 0);
             Array.Sort(metrics, font);
             PdfIndirectReference ind_font = null;
