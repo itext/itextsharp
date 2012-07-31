@@ -356,6 +356,7 @@ namespace iTextSharp.text.pdf {
             // write the cross-reference table of the body
             body.WriteCrossReferenceTable(os, root, info, encryption, fileID, prevxref);
             if (fullCompression) {
+                WriteKeyInfo(os);
                 byte[] tmp = GetISOBytes("startxref\n");
                 os.Write(tmp, 0, tmp.Length);
                 tmp = GetISOBytes(body.Offset.ToString());
