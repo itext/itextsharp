@@ -67,8 +67,13 @@ namespace iTextSharp.text {
 	     * This String contains the version number of this iText release.
 	     * For debugging purposes, we request you NOT to change this constant.
 	     */
-	    static private String release = "5.3.1-SNAPSHOT";
-    	
+	    static private String release = "5.3.2-SNAPSHOT";
+
+        /**
+         * The license key.
+         */
+        private String key = null;
+
 	    /**
 	     * This String contains the iText version as shown in the producer line.
 	     * iText is a product developed by 1T3XT BVBA.
@@ -88,14 +93,50 @@ namespace iTextSharp.text {
 	    public static Version GetInstance() {
 		    if (version == null) {
 			    version = new Version();
-			    /*try {
-				    Type type = Type.GetType("com.itextpdf.license.LicenseKey");
-                    MethodInfo m = type.GetMethod("LicenseeCompany");
-				    String company = (String)m.Invoke(Activator.CreateInstance(type), null);
-				    version.iTextVersion += " (Licensed to " + company + ")";
-			    } catch (Exception) {*/
+			    try {
+                    Type type = Type.GetType("iTextSharp.license.LicenseKey");
+                    MethodInfo m = type.GetMethod("GetLicenseeInfo");
+                    String[] info = (String[])m.Invoke(Activator.CreateInstance(type), null);
+                    if (info[3] != null && info[3].Trim().Length > 0)
+                    {
+                        version.key = info[3];
+                    }
+                    else
+                    {
+                        version.key = "Trial version ";
+                        if (info[5] == null)
+                        {
+                            version.key += "unauthorised";
+                        }
+                        else
+                        {
+                            version.key += info[5];
+                        }
+                    }
+                    if (info[4] != null && info[4].Trim().Length > 0)
+                    {
+                        version.iTextVersion = info[4];
+                    }
+                    else if (info[2] != null && info[2].Trim().Length > 0)
+                    {
+                        version.iTextVersion += " (" + info[2];
+                        if (!version.key.ToLower().StartsWith("trial"))
+                        {
+                            version.iTextVersion += "; licensed version)";
+                        }
+                        else
+                        {
+                            version.iTextVersion += "; " + version.key + ")";
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception();
+                    }
+
+			    } catch (Exception) {
 				    version.iTextVersion += " (AGPL-version)";
-			    //}
+			    }
 		    }
 		    return version;
 	    }
@@ -134,6 +175,16 @@ namespace iTextSharp.text {
         public String GetVersion {
             get {
                 return iTextVersion;
+            }
+        }
+
+        /**
+        * Returns a license key if one was provided, or null if not.
+        * @return a license key.
+        */
+        public String Key {
+            get {
+                return key;
             }
         }
 

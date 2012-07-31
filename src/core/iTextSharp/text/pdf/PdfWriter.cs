@@ -547,7 +547,9 @@ namespace iTextSharp.text.pdf {
                 byte[] tmp = GetISOBytes("trailer\n");
                 os.Write(tmp, 0, tmp.Length);
                 base.ToPdf(null, os);
-                tmp = GetISOBytes("\nstartxref\n");
+                tmp = GetISOBytes("startxref\n");
+                os.Write(new byte[] { (byte)'\n' }, 0, 1);
+                WriteKeyInfo(os);
                 os.Write(tmp, 0, tmp.Length);
                 tmp = GetISOBytes(offset.ToString());
                 os.Write(tmp, 0, tmp.Length);
@@ -1231,6 +1233,7 @@ namespace iTextSharp.text.pdf {
                 // make the trailer
                 // [F2] full compression
                 if (fullCompression) {
+                    WriteKeyInfo(os);
                     byte[] tmp = GetISOBytes("startxref\n");
                     os.Write(tmp, 0, tmp.Length);
                     tmp = GetISOBytes(body.Offset.ToString());
@@ -3194,7 +3197,14 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        
+         protected static void WriteKeyInfo(Stream os) {
+    	    Version version = Version.GetInstance();
+    	    if (version.Key == null)
+    		    return;
+            byte[] tmp = GetISOBytes(String.Format("%%%s-%s\n", version.Key, version.Release));
+            os.Write(tmp, 0, tmp.Length);        	
+        }
+     
         protected TtfUnicodeWriter ttfUnicodeWriter = null;
 
         internal protected virtual TtfUnicodeWriter GetTtfUnicodeWriter() {
