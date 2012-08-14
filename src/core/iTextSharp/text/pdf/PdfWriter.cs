@@ -1254,11 +1254,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        virtual protected void AddSharedObjectsToBody() {
-            // add the fonts
-            foreach (FontDetails details in documentFonts.Values) {
-                details.WriteFont(this);
-            }
+        virtual protected void AddXFormsToBody() {
             // add the form XObjects
             foreach (Object[] objs in formXObjects.Values) {
                 PdfTemplate template = (PdfTemplate)objs[1];
@@ -1268,6 +1264,15 @@ namespace iTextSharp.text.pdf {
                     AddToBody(template.GetFormXObject(compressionLevel), template.IndirectReference);
                 }
             }
+        }
+
+        virtual protected void AddSharedObjectsToBody() {
+            // add the fonts
+            foreach (FontDetails details in documentFonts.Values) {
+                details.WriteFont(this);
+            }
+            // add the form XObjects
+            AddXFormsToBody();
             // add all the dependencies in the imported pages
             foreach (PdfReaderInstance rd in readerInstances.Values) {
                 currentPdfReaderInstance = rd;
