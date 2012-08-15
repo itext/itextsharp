@@ -89,7 +89,7 @@ namespace iTextSharp.tool.xml.css.apply {
          * @return the styled chunk
          */
 
-        public Chunk Apply(Chunk c, Tag t)
+        virtual public Chunk Apply(Chunk c, Tag t)
         {
             Font f = ApplyFontStyles(t);
             float size = f.Size;
@@ -174,7 +174,7 @@ namespace iTextSharp.tool.xml.css.apply {
             return c;
         }
 
-        public Font ApplyFontStyles(Tag t)
+        virtual public Font ApplyFontStyles(Tag t)
         {
             String fontName = null;
             String encoding = BaseFont.CP1252;

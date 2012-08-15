@@ -68,7 +68,7 @@ namespace iTextSharp.tool.xml.parser.state {
          */
         public void Process(char character) {
             String tag = this.parser.BufferToString();
-            if (HTMLUtils.IsWhiteSpace(character) || character == '>' || character == '/' || character == ':' || tag.Equals("!--") || tag.Equals("![CDATA[")) {
+            if (HTMLUtils.IsWhiteSpace(character) || character == '>' || character == '/' || character == ':' || tag.Equals("!--") || tag.Equals("![CDATA[") || character == '?') {
                 // cope with <? xml and <! DOCTYPE
                 if (tag.Length > 0) {
                     if (tag.Equals("!--")) {
