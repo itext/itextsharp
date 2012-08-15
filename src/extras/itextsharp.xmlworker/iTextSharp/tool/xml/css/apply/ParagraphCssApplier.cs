@@ -50,11 +50,11 @@ using iTextSharp.tool.xml.html;
 namespace iTextSharp.tool.xml.css.apply {
 
 
-/**
- * Applies CSS on a {@link Paragraph}
- *
- * @author itextpdf.com
- */
+    /**
+     * Applies CSS on a {@link Paragraph}
+     *
+     * @author itextpdf.com
+     */
 
     public class ParagraphCssApplier
     {
@@ -81,7 +81,7 @@ namespace iTextSharp.tool.xml.css.apply {
          * @return a styled {@link Paragraph}
          */
 
-        public Paragraph Apply(Paragraph p, Tag t, IMarginMemory configuration)
+        virtual public Paragraph Apply(Paragraph p, Tag t, IMarginMemory configuration)
         {
             /*MaxLeadingAndSize m = new MaxLeadingAndSize();
             if (configuration.GetRootTags().Contains(t.GetName())) {

@@ -114,7 +114,7 @@ namespace iTextSharp.tool.xml {
          * @param ns the namespace if any
          * @return a Tag
          */
-        protected Tag CreateTag(String tag, IDictionary<String, String> attr, String ns) {
+        virtual protected Tag CreateTag(String tag, IDictionary<String, String> attr, String ns) {
             if (parseHtml) {
                 tag = tag.ToLowerInvariant();
             }
@@ -167,15 +167,14 @@ namespace iTextSharp.tool.xml {
          * {@link Pipeline#content(WorkerContext, Tag, byte[], ProcessObject)}
          * method.
          */
-        public void Text(String text) {
+        virtual public void Text(String text) {
             IWorkerContext ctx = GetLocalWC();
             if (null != ctx.GetCurrentTag()) {
                 if (text.Length > 0) {
                     IPipeline wp = rootpPipe;
                     ProcessObject po = new ProcessObject();
                     try {
-                        while (null != (wp = wp.Content(ctx, ctx.GetCurrentTag(), text, po)))
-                            ;
+                        while (null != (wp = wp.Content(ctx, ctx.GetCurrentTag(), text, po)));
                     } catch (PipelineException e) {
                         throw new RuntimeWorkerException(e);
                     }
@@ -203,7 +202,7 @@ namespace iTextSharp.tool.xml {
             // TODO xml comment encountered
         }
 
-        public void Close() {
+        virtual public void Close() {
             Thread.SetData(context, new WorkerContextImpl());
         }
 

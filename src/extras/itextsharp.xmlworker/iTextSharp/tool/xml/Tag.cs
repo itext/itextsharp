@@ -116,7 +116,7 @@ namespace iTextSharp.tool.xml {
          *
          * @param parent the parent tag of this tag
          */
-        public Tag Parent {
+        virtual public Tag Parent {
             set {
                 parent = value;
             }
@@ -173,7 +173,7 @@ namespace iTextSharp.tool.xml {
          *
          * @param t the tag
          */
-        public void AddChild(Tag t) {
+        virtual public void AddChild(Tag t) {
             t.Parent = this;
             this.children.Add(t);
 
