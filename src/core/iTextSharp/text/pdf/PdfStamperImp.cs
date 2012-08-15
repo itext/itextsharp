@@ -128,13 +128,17 @@ namespace iTextSharp.text.pdf {
             }
             initialXrefSize = reader.XrefSize;
         }
-        
+
+        virtual protected void SetViewerPreferences() {
+            reader.SetViewerPreferences(viewerPreferences);
+            MarkUsed(reader.Trailer.Get(PdfName.ROOT));
+        }
+
         virtual internal protected void Close(IDictionary<String, String> moreInfo) {
             if (closed)
                 return;
             if (useVp) {
-                reader.SetViewerPreferences(viewerPreferences);
-                MarkUsed(reader.Trailer.Get(PdfName.ROOT));
+                SetViewerPreferences();
             }
             if (flat)
                 FlatFields();
@@ -300,6 +304,10 @@ namespace iTextSharp.text.pdf {
                     MarkUsed(catalog);
                 }
             }
+            Close(info, skipInfo);
+        }
+
+        virtual protected void Close(PdfIndirectReference info, int skipInfo) {
             try {
                 file.ReOpen();
                 AlterContents();
@@ -319,8 +327,7 @@ namespace iTextSharp.text.pdf {
                             AddToBody(obj, GetNewObjectNumber(reader, k, 0));
                         }
                     }
-                }
-                else {
+                } else {
                     for (int k = 1; k < reader.XrefSize; ++k) {
                         PdfObject obj = reader.GetPdfObjectRelease(k);
                         if (obj != null && skipInfo != k) {
@@ -328,12 +335,10 @@ namespace iTextSharp.text.pdf {
                         }
                     }
                 }
-            }
-            finally {
+            } finally {
                 try {
                     file.Close();
-                }
-                catch  {
+                } catch {
                     // empty on purpose
                 }
             }
@@ -342,14 +347,12 @@ namespace iTextSharp.text.pdf {
             if (crypto != null) {
                 if (append) {
                     encryption = reader.GetCryptoRef();
-                }
-                else {
+                } else {
                     PdfIndirectObject encryptionObject = AddToBody(crypto.GetEncryptionDictionary(), false);
                     encryption = encryptionObject.IndirectReference;
                 }
                 fileID = crypto.FileID;
-            }
-            else
+            } else
                 fileID = PdfEncryption.CreateInfoId(PdfEncryption.CreateDocumentId());
             PRIndirectReference iRoot = (PRIndirectReference)reader.trailer.Get(PdfName.ROOT);
             PdfIndirectReference root = new PdfIndirectReference(0, GetNewObjectNumber(reader, iRoot.Number, 0));
@@ -363,8 +366,7 @@ namespace iTextSharp.text.pdf {
                 os.Write(tmp, 0, tmp.Length);
                 tmp = GetISOBytes("\n%%EOF\n");
                 os.Write(tmp, 0, tmp.Length);
-            }
-            else {
+            } else {
                 PdfTrailer trailer = new PdfTrailer(body.Size,
                 body.Offset,
                 root,
@@ -378,7 +380,7 @@ namespace iTextSharp.text.pdf {
                 os.Close();
             reader.Close();
         }
-        
+
         internal void ApplyRotation(PdfDictionary pageN, ByteBuffer out_p) {
             if (!rotateContents)
                 return;
