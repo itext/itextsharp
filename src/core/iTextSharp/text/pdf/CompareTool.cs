@@ -217,7 +217,7 @@ public class CompareTool {
         outPdfName = Path.GetFileNameWithoutExtension(outPdf);
         cmpPdfName = Path.GetFileNameWithoutExtension(cmpPdf);
         outImage = outPdfName + "-%03d.png";
-        cmpImage = "cmp_" + outPdfName + "-%03d.png";
+        cmpImage = cmpPdfName + "-%03d.png";
     }
 
     private bool CompareStreams(FileStream is1, FileStream is2) {
