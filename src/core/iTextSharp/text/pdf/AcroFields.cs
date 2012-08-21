@@ -2037,10 +2037,13 @@ namespace iTextSharp.text.pdf {
             dic.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
         }
 
+        private List<string> orderedSignatureNames;
+        
         private void FindSignatureNames() {
             if (sigNames != null)
                 return;
             sigNames = new Dictionary<string,int[]>();
+            orderedSignatureNames = new List<string>();
             List<object[]> sorter = new List<object[]>();
             foreach (KeyValuePair<string,Item> entry in fields) {
                 Item item = entry.Value;
@@ -2074,6 +2077,7 @@ namespace iTextSharp.text.pdf {
                     int[] p = (int[])objs[1];
                     p[1] = k + 1;
                     sigNames[name] = p;
+                    orderedSignatureNames.Add(name);
                 }
             }
         }
@@ -2084,7 +2088,7 @@ namespace iTextSharp.text.pdf {
         */    
         public List<string> GetSignatureNames() {
             FindSignatureNames();
-            return new List<string>(sigNames.Keys);
+            return new List<string>(orderedSignatureNames);
         }
         
         /**
