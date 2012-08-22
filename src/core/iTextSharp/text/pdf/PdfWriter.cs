@@ -1117,7 +1117,7 @@ namespace iTextSharp.text.pdf {
         * @return the <CODE>PdfPageEvent</CODE> for this document or <CODE>null</CODE>
         * if none is set
         */
-        public IPdfPageEvent PageEvent {
+        public virtual IPdfPageEvent PageEvent {
             get {
                 return pageEvent;
             }

@@ -980,6 +980,9 @@ namespace iTextSharp.text.pdf {
                     ct2.Go();
                 }
                 else if (renderingMode == RenderingMode.GRAPHIC_AND_DESCRIPTION) {
+                    if (signatureGraphic == null) {
+                        throw new InvalidOperationException(MessageLocalization.GetComposedMessage("a.signature.image.should.be.present.when.rendering.mode.is.graphic.and.description"));
+                    }
                     ColumnText ct2 = new ColumnText(t);
                     ct2.RunDirection = runDirection;
                     ct2.SetSimpleColumn(signatureRect.Left, signatureRect.Bottom, signatureRect.Right, signatureRect.Top, 0, Element.ALIGN_RIGHT);
@@ -1204,9 +1207,16 @@ namespace iTextSharp.text.pdf {
             bool fieldExists = !(IsInvisible() || IsNewField());
             PdfIndirectReference refSig = writer.PdfIndirectReference;
             writer.SigFlags = 3;
+            PdfDictionary fieldLock = null;
             if (fieldExists) {
                 PdfDictionary widget = af.GetFieldItem(name).GetWidget(0);
                 writer.MarkUsed(widget);
+                fieldLock = widget.GetAsDict(PdfName.LOCK);
+                if (fieldLock != null) {
+                    if (!fieldLock.Contains(PdfName.FIELDS)) {
+                        fieldLock = null;
+                    }
+                }
                 widget.Put(PdfName.P, writer.GetPageReference(Page));
                 widget.Put(PdfName.V, refSig);
                 PdfObject obj = PdfReader.GetPdfObjectRelease(widget.Get(PdfName.F));
@@ -1252,6 +1262,8 @@ namespace iTextSharp.text.pdf {
                 }
                 if (certificationLevel > 0)
                     AddDocMDP(cryptoDictionary);
+                if (fieldLock != null)
+                    AddFieldMDP(cryptoDictionary, fieldLock);
                 if (signatureEvent != null)
                     signatureEvent.GetSignatureDictionary(cryptoDictionary);
                 writer.AddToBody(cryptoDictionary, refSig, false);
@@ -1322,6 +1334,33 @@ namespace iTextSharp.text.pdf {
             transformParams.Put(PdfName.V, new PdfName("1.2"));
             transformParams.Put(PdfName.TYPE, PdfName.TRANSFORMPARAMS);
             reference.Put(PdfName.TRANSFORMMETHOD, PdfName.DOCMDP);
+            reference.Put(PdfName.TYPE, PdfName.SIGREF);
+            reference.Put(PdfName.TRANSFORMPARAMS, transformParams);
+            reference.Put(new PdfName("DigestValue"), new PdfString("aa"));
+            PdfArray loc = new PdfArray();
+            loc.Add(new PdfNumber(0));
+            loc.Add(new PdfNumber(0));
+            reference.Put(new PdfName("DigestLocation"), loc);
+            reference.Put(new PdfName("DigestMethod"), new PdfName("MD5"));
+            reference.Put(PdfName.DATA, writer.reader.Trailer.Get(PdfName.ROOT));
+            PdfArray types = new PdfArray();
+            types.Add(reference);
+            crypto.Put(PdfName.REFERENCE, types);
+        }
+
+        /**
+         * Adds keys to the signature dictionary that define
+         * the field permissions.
+         * This method is only used for signatures that lock fields.
+         * @param crypto the signature dictionary
+         */
+        private void AddFieldMDP(PdfDictionary crypto, PdfDictionary fieldLock) {
+            PdfDictionary reference = new PdfDictionary();
+            PdfDictionary transformParams = new PdfDictionary();
+            transformParams.Merge(fieldLock);
+            transformParams.Put(PdfName.TYPE, PdfName.TRANSFORMPARAMS);
+            transformParams.Put(PdfName.V, new PdfName("1.2"));
+            reference.Put(PdfName.TRANSFORMMETHOD, PdfName.FIELDMDP);
             reference.Put(PdfName.TYPE, PdfName.SIGREF);
             reference.Put(PdfName.TRANSFORMPARAMS, transformParams);
             reference.Put(new PdfName("DigestValue"), new PdfString("aa"));
