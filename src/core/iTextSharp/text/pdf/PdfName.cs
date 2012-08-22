@@ -130,6 +130,8 @@ namespace iTextSharp.text.pdf {
         /** A name */
         public static readonly PdfName AIS = new PdfName("AIS");
         /** A name */
+        public static readonly PdfName ALL = new PdfName("All");
+        /** A name */
         public static readonly PdfName ALLPAGES = new PdfName("AllPages");
         /** A name */
         public static readonly PdfName ALT = new PdfName("Alt");
@@ -581,6 +583,8 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName ETSI_CADES_DETACHED = new PdfName("ETSI.CAdES.detached");
         public static readonly PdfName ETSI_RFC3161 = new PdfName("ETSI.RFC3161");
         /** A name */
+        public static readonly PdfName EXCLUDE = new PdfName("Exclude");
+        /** A name */
         public static readonly PdfName EXTEND = new PdfName("Extend");
         /**
          * A name
@@ -623,6 +627,8 @@ namespace iTextSharp.text.pdf {
         /** A name */
         public static readonly PdfName FFILTER = new PdfName("FFilter");
         public static readonly PdfName FG = new PdfName("FG");
+        /** A name */
+        public static readonly PdfName FIELDMDP = new PdfName("FieldMDP");
         /** A name */
         public static readonly PdfName FIELDS = new PdfName("Fields");
         /**
@@ -854,6 +860,8 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName IMAGEI = new PdfName("ImageI");
         /** A name */
         public static readonly PdfName IMAGEMASK = new PdfName("ImageMask");
+        /** A name */
+        public static readonly PdfName INCLUDE = new PdfName("Include");
         public static readonly PdfName IND = new PdfName("Ind");
         /** A name */
         public static readonly PdfName INDEX = new PdfName("Index");
@@ -1513,6 +1521,8 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName SHIFT_JIS = new PdfName("Shift-JIS");
         /** A name */
         public static readonly PdfName SIG = new PdfName("Sig");
+        /** A name */
+        public static readonly PdfName SIGFIELDLOCK = new PdfName("SigFieldLock");
         /** A name */
         public static readonly PdfName SIGFLAGS = new PdfName("SigFlags");
         /** A name */

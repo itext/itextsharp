@@ -131,6 +131,17 @@ namespace iTextSharp.text.pdf {
             indirectMap = new Dictionary<PdfReader,Dictionary<RefKey,IndirectReferences>>();
         }
 
+        /**
+         * Setting page events isn't possible with Pdf(Smart)Copy.
+         * Use the PageStamp class if you want to add content to copied pages.
+         * @see com.itextpdf.text.pdf.PdfWriter#setPageEvent(com.itextpdf.text.pdf.PdfPageEvent)
+         */
+        public override IPdfPageEvent PageEvent {
+            set {
+                throw new InvalidOperationException();
+            }
+        }
+
         /** Checks if the content is automatically adjusted to compensate
         * the original page rotation.
         * @return the auto-rotation status
