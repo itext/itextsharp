@@ -400,6 +400,32 @@ namespace iTextSharp.text.pdf.codec {
                 posFilePointer += jpegOffset;
                 s.Seek(posFilePointer);
                 s.ReadFully(jpeg);
+                // if quantization and/or Huffman tables are stored separately in the tiff,
+                // we need to add them to the jpeg data
+                TIFFField jpegtables = dir.GetField(TIFFConstants.TIFFTAG_JPEGTABLES);
+                if (jpegtables != null)
+                {
+                    byte[] temp = jpegtables.GetAsBytes();
+                    int tableoffset = 0;
+                    int tablelength = temp.Length;
+                    // remove FFD8 from start
+                    if (temp[0] == (byte)0xFF && temp[1] == (byte)0xD8)
+                    {
+                        tableoffset = 2;
+                        tablelength -= 2;
+                    }
+                    // remove FFD9 from end
+                    if (temp[temp.Length - 2] == (byte)0xFF && temp[temp.Length - 1] == (byte)0xD9)
+                        tablelength -= 2;
+                    byte[] tables = new byte[tablelength];
+                    Array.Copy(temp, tableoffset, tables, 0, tablelength);
+                    // TODO insert after JFIF header, instead of at the start
+                    byte[] jpegwithtables = new byte[jpeg.Length + tables.Length];
+                    Array.Copy(jpeg, 0, jpegwithtables, 0, 2);
+                    Array.Copy(tables, 0, jpegwithtables, 2, tables.Length);
+                    Array.Copy(jpeg, 2, jpegwithtables, tables.Length + 2, jpeg.Length - 2);
+                    jpeg = jpegwithtables;
+                }
                 img = new Jpeg(jpeg);
             } 
             else if (compression == TIFFConstants.COMPRESSION_JPEG) {

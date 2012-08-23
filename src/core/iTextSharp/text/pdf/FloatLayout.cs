@@ -82,9 +82,9 @@ namespace iTextSharp.text.pdf {
 
         protected float filledWidth;
 
-        protected ColumnText compositeColumn;
+        public ColumnText compositeColumn;
 
-        protected List<IElement> content;
+        public List<IElement> content;
 
         public FloatLayout(ColumnText compositeColumn, List<IElement> elements) {
             this.compositeColumn = ColumnText.Duplicate(compositeColumn);

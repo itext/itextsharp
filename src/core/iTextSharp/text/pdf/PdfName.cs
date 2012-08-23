@@ -137,6 +137,7 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName ALT = new PdfName("Alt");
         /** A name */
         public static readonly PdfName ALTERNATE = new PdfName("Alternate");
+
         public static readonly PdfName AND = new PdfName("And");
         /**
          * A name.

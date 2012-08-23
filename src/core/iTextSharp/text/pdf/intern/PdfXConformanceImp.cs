@@ -53,21 +53,6 @@ namespace iTextSharp.text.pdf.intern {
 
     public class PdfXConformanceImp : IPdfXConformance {
 
-        /** A key for an aspect that can be checked for PDF/X Conformance. */
-        public const int PDFXKEY_COLOR = 1;
-        /** A key for an aspect that can be checked for PDF/X Conformance. */
-        public const int PDFXKEY_CMYK = 2;
-        /** A key for an aspect that can be checked for PDF/X Conformance. */
-        public const int PDFXKEY_RGB = 3;
-        /** A key for an aspect that can be checked for PDF/X Conformance. */
-        public const int PDFXKEY_FONT = 4;
-        /** A key for an aspect that can be checked for PDF/X Conformance. */
-        public const int PDFXKEY_IMAGE = 5;
-        /** A key for an aspect that can be checked for PDF/X Conformance. */
-        public const int PDFXKEY_GSTATE = 6;
-        /** A key for an aspect that can be checked for PDF/X Conformance. */
-        public const int PDFXKEY_LAYER = 7;
-
         /**
         * The value indicating if the PDF has to be in conformance with PDF/X.
         */

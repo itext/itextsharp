@@ -374,7 +374,23 @@ namespace iTextSharp.text.pdf {
             if (content.Count > 0) {
                 if (floatLayout == null) {
                     List<IElement> floatingElements = new List<IElement>(content);
+                    if (simulate){
+                        FloatLayout = new FloatLayout(compositeColumn, floatingElements);
+                    }
+                    else{
+                        floatLayout = this.floatLayout = new FloatLayout(compositeColumn, floatingElements);
+                    }
                     floatLayout = new FloatLayout(compositeColumn, floatingElements);
+                }
+                else{
+                    if (simulate){
+                        List<IElement> floatingElements = new List<IElement>(this.floatLayout.content);
+                        floatLayout = new FloatLayout(this.floatLayout.compositeColumn, floatingElements);
+                    }
+                    else
+                    {
+                        floatLayout = this.floatLayout;
+                    }
                 }
 
                 floatLayout.SetSimpleColumn(leftX, minY, rightX, yLine);

@@ -155,7 +155,13 @@ namespace iTextSharp.text.pdf.intern {
                 if (dic.IsAnnotation()) {
                     array.Add(dic.IndirectReference);
                     if (!dic.IsUsed()) {
-                        PdfRectangle rect = (PdfRectangle)dic.Get(PdfName.RECT);
+                        PdfArray tmp = dic.GetAsArray(PdfName.RECT);
+                        PdfRectangle rect = new PdfRectangle(tmp.GetAsNumber(0).FloatValue, tmp.GetAsNumber(1).FloatValue);
+                        if (tmp.Size == 4)
+                        {
+                            rect.Add(tmp.GetAsNumber(2));
+                            rect.Add(tmp.GetAsNumber(3));
+                        }
                         if (rect != null) {
                             switch (rotation) {
                                 case 90:

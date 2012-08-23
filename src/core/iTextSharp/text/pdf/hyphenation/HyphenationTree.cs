@@ -330,6 +330,7 @@ namespace iTextSharp.text.pdf.hyphenation {
                     }
                 }
             }
+            int origlen = len;
             len = iLength;
             if (len < (remainCharCount + pushCharCount)) {
                 // word is too short to be hyphenated
@@ -382,7 +383,7 @@ namespace iTextSharp.text.pdf.hyphenation {
                 // trim result array
                 int[] res = new int[k];
                 Array.Copy(result, 0, res, 0, k);
-                return new Hyphenation(new String(w, offset, len), res);
+                return new Hyphenation(new String(w, offset, origlen), res);
             } else {
                 return null;
             }

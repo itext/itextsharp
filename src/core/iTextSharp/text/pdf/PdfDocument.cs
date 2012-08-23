@@ -406,7 +406,7 @@ namespace iTextSharp.text.pdf {
                             CarriageReturn();
                             bool newlineSplit = chunk.IsNewlineSplit();
                             chunk = overflow;
-                            if (newlineSplit)
+                            if (!newlineSplit)
                                 chunk.TrimFirstSpace();
                         }
                     }

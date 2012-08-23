@@ -146,10 +146,6 @@ namespace iTextSharp.text.pdf {
                 FlatFreeTextFields();
             AddFieldResources();
             PdfDictionary catalog = reader.Catalog;
-            PdfDictionary pages = (PdfDictionary)PdfReader.GetPdfObject(catalog.Get(PdfName.PAGES));
-            Version version = Version.GetInstance();
-            pages.Put(PdfName.ITXT, new PdfString(version.Release));
-            MarkUsed(pages);
             PdfDictionary acroForm = (PdfDictionary)PdfReader.GetPdfObject(catalog.Get(PdfName.ACROFORM), reader.Catalog);
             if (acroFields != null && acroFields.Xfa.Changed) {
                 MarkUsed(acroForm);
@@ -209,6 +205,7 @@ namespace iTextSharp.text.pdf {
                 skipInfo = iInfo.Number;
             if (oldInfo != null && oldInfo.Get(PdfName.PRODUCER) != null)
                 producer = oldInfo.GetAsString(PdfName.PRODUCER).ToUnicodeString();
+            Version version = Version.GetInstance();
             if (producer == null) {
                 producer = version.GetVersion;
             }
