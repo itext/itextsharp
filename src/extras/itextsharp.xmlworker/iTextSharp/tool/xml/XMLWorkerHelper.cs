@@ -167,7 +167,10 @@ namespace iTextSharp.tool.xml {
 
         public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, Encoding charset, IFontProvider fontProvider) {
             CssFilesImpl cssFiles = new CssFilesImpl();
-            cssFiles.Add(GetCSS(inCssFile));
+            if (inCssFile != null)
+                cssFiles.Add(GetCSS(inCssFile));
+            else
+                cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
             HtmlPipelineContext hpc = new HtmlPipelineContext(new CssAppliersImpl(fontProvider));
             hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(GetDefaultTagProcessorFactory());

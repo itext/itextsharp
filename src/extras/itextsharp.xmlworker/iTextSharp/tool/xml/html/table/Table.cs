@@ -372,7 +372,10 @@ namespace iTextSharp.tool.xml.html.table {
                                     float totalBordersWidth = cellValues.IsLastInRow ? styleValues.HorBorderSpacing * 2
                                             : styleValues.HorBorderSpacing;
                                     totalBordersWidth += cellValues.BorderWidthLeft + cellValues.BorderWidthRight;
-                                    float columnWidth = columnWidths[columnNumber];
+                                    float columnWidth = 0;
+                                    for (int currentColumnNumber = columnNumber + 1; currentColumnNumber <= columnNumber + cell.Colspan; currentColumnNumber++){
+                                        columnWidth += columnWidths[currentColumnNumber];
+                                    }
                                     IPdfPTableEvent tableEvent = ((PdfPTable) baseLevel).TableEvent;
                                     TableStyleValues innerStyleValues = ((TableBorderEvent) tableEvent).TableStyleValues;
                                     totalBordersWidth += innerStyleValues.BorderWidthLeft;
@@ -381,6 +384,8 @@ namespace iTextSharp.tool.xml.html.table {
                                 }
                             }
                         }
+                        columnNumber += cell.Colspan;
+
                         table.AddCell(cell);
                     }
                     table.CompleteRow();
