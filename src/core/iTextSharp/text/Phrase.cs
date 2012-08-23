@@ -334,6 +334,8 @@ namespace iTextSharp.text {
         /// <param name="collection">a collection of Chunks, Anchors and Phrases.</param>
         /// <returns>true if the action succeeded, false if not.</returns>
         public bool AddAll<T>(ICollection<T> collection) where T : IElement {
+            if (collection.Count == 0)
+                return false;
             foreach (IElement itm in collection) {
                 this.Add(itm);
             }

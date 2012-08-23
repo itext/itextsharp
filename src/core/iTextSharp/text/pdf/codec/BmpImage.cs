@@ -424,7 +424,14 @@ namespace iTextSharp.text.pdf.codec {
                             redMask = (int)ReadDWord(inputStream);
                             greenMask = (int)ReadDWord(inputStream);
                             blueMask = (int)ReadDWord(inputStream);
-                            
+
+                            // 56 byte header has mandatory alpha mask
+                            if (size == 56)
+                            {
+                                alphaMask = (int)ReadDWord(inputStream);
+                                properties["alpha_mask"] = alphaMask;
+                            }
+
                             properties["red_mask"] = redMask;
                             properties["green_mask"] = greenMask;
                             properties["blue_mask"] = blueMask;

@@ -184,12 +184,13 @@ namespace iTextSharp.text.xml.xmp {
         }
 
         /**
+        * @deprecated
         * @param os
         * @param info
         * @param PdfXConformance
         * @throws IOException
         */
-        public XmpWriter(Stream os, PdfDictionary info, int PdfXConformance) : this(os) {
+        public XmpWriter(Stream os, PdfDictionary info, int PdfXConformance) : this(os, info) {
             if (info != null) {
                 DublinCoreSchema dc = new DublinCoreSchema();
                 PdfSchema p = new PdfSchema();

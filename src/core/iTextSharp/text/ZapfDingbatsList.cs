@@ -85,6 +85,17 @@ namespace iTextSharp.text
         }
 
         /**
+        * Sets the dingbat's color.
+        *
+        * @param zapfDingbatColor color for the ZapfDingbat
+        */
+        public void setDingbatColor(BaseColor zapfDingbatColor)
+        {
+            float fontsize = symbol.Font.Size;
+            symbol.Font = FontFactory.GetFont(FontFactory.ZAPFDINGBATS, fontsize, Font.NORMAL, zapfDingbatColor);
+        }
+
+        /**
         * set the char-number 
         * @param zn a char-number
         */
