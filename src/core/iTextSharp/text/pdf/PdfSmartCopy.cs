@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using iTextSharp.text.pdf.security;
 /*
  * $Id$
  * 
@@ -144,7 +145,7 @@ namespace iTextSharp.text.pdf {
                     bb.Append("$B");
                     SerDic((PdfDictionary)obj, level - 1, bb);
                     if (level > 0) {
-                        bb.Append(PdfEncryption.DigestComputeHash("MD5", PdfReader.GetStreamBytesRaw((PRStream)obj)));
+                        bb.Append(DigestAlgorithms.Digest("MD5", PdfReader.GetStreamBytesRaw((PRStream)obj)));
                     }
                 }
                 else if (obj.IsDictionary()) {

@@ -3,6 +3,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.Crypto.Parameters;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.pdf.security;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Asn1;
 using System.IO;
@@ -560,7 +561,7 @@ namespace iTextSharp.text.pdf.security {
          * @return the bytes for the PKCS7SignedData object
          */
         public byte[] GetEncodedPKCS7() {
-            return GetEncodedPKCS7(null, DateTime.Now, null, null, null, false);
+            return GetEncodedPKCS7(null, DateTime.Now, null, null, null, CryptoStandard.CMS);
         }
 
         /**
@@ -571,7 +572,7 @@ namespace iTextSharp.text.pdf.security {
          * @return the bytes for the PKCS7SignedData object
          */
         public byte[] GetEncodedPKCS7(byte[] secondDigest, DateTime signingTime) {
-            return GetEncodedPKCS7(secondDigest, signingTime, null, null, null, false);
+            return GetEncodedPKCS7(secondDigest, signingTime, null, null, null, CryptoStandard.CMS);
         }
 
         /**
@@ -584,7 +585,7 @@ namespace iTextSharp.text.pdf.security {
          * @return byte[] the bytes for the PKCS7SignedData object
          * @since   2.1.6
          */
-        public byte[] GetEncodedPKCS7(byte[] secondDigest, DateTime signingTime, ITSAClient tsaClient, byte[] ocsp, ICollection<byte[]> crlBytes, bool cades) {
+        public byte[] GetEncodedPKCS7(byte[] secondDigest, DateTime signingTime, ITSAClient tsaClient, byte[] ocsp, ICollection<byte[]> crlBytes, CryptoStandard sigtype) {
             if (externalDigest != null) {
                 digest = externalDigest;
                 if (RSAdata != null)
@@ -651,7 +652,7 @@ namespace iTextSharp.text.pdf.security {
             
             // add the authenticated attribute if present
             if (secondDigest != null /*&& signingTime != null*/) {
-                signerinfo.Add(new DerTaggedObject(false, 0, GetAuthenticatedAttributeSet(secondDigest, signingTime, ocsp, crlBytes, cades)));
+                signerinfo.Add(new DerTaggedObject(false, 0, GetAuthenticatedAttributeSet(secondDigest, signingTime, ocsp, crlBytes, sigtype)));
             }
             // Add the digestEncryptionAlgorithm
             v = new Asn1EncodableVector();
@@ -666,7 +667,7 @@ namespace iTextSharp.text.pdf.security {
             // Added by Martin Brunecky, 07/12/2007 folowing Aiken Sam, 2006-11-15
             // Sam found Adobe expects time-stamped SHA1-1 of the encrypted digest
             if (tsaClient != null) {
-                byte[] tsImprint = PdfEncryption.DigestComputeHash(tsaClient.GetDigestAlgorithm(), digest);
+                byte[] tsImprint = DigestAlgorithms.Digest(tsaClient.GetMessageDigest(), digest);
                 byte[] tsToken = tsaClient.GetTimeStampToken(tsImprint);
                 if (tsToken != null) {
                     Asn1EncodableVector unauthAttributes = BuildUnauthenticatedAttributes(tsToken);
@@ -759,8 +760,8 @@ namespace iTextSharp.text.pdf.security {
          * @param signingTime the signing time
          * @return the byte array representation of the authenticatedAttributes ready to be signed
          */
-        public byte[] getAuthenticatedAttributeBytes(byte[] secondDigest, DateTime signingTime, byte[] ocsp, ICollection<byte[]> crlBytes, bool cades) {
-            return GetAuthenticatedAttributeSet(secondDigest, signingTime, ocsp, crlBytes, cades).GetEncoded(Asn1Encodable.Der);
+        public byte[] getAuthenticatedAttributeBytes(byte[] secondDigest, DateTime signingTime, byte[] ocsp, ICollection<byte[]> crlBytes, CryptoStandard sigtype) {
+            return GetAuthenticatedAttributeSet(secondDigest, signingTime, ocsp, crlBytes, sigtype).GetEncoded(Asn1Encodable.Der);
         }
 
         /**
@@ -771,7 +772,7 @@ namespace iTextSharp.text.pdf.security {
          * @param signingTime the signing time
          * @return the byte array representation of the authenticatedAttributes ready to be signed
          */
-        private DerSet GetAuthenticatedAttributeSet(byte[] secondDigest, DateTime signingTime, byte[] ocsp, ICollection<byte[]> crlBytes, bool cades) {
+        private DerSet GetAuthenticatedAttributeSet(byte[] secondDigest, DateTime signingTime, byte[] ocsp, ICollection<byte[]> crlBytes, CryptoStandard sigtype) {
             Asn1EncodableVector attribute = new Asn1EncodableVector();
             Asn1EncodableVector v = new Asn1EncodableVector();
             v.Add(new DerObjectIdentifier(SecurityIDs.ID_CONTENT_TYPE));
@@ -829,14 +830,14 @@ namespace iTextSharp.text.pdf.security {
                 v.Add(new DerSet(new DerSequence(revocationV)));
                 attribute.Add(new DerSequence(v));
             }
-            if (cades) {
+            if (sigtype == CryptoStandard.CADES) {
                 v = new Asn1EncodableVector();
                 v.Add(new DerObjectIdentifier(SecurityIDs.ID_AA_SIGNING_CERTIFICATE_V2));
 
                 Asn1EncodableVector aaV2 = new Asn1EncodableVector();
                 AlgorithmIdentifier algoId = new AlgorithmIdentifier(new DerObjectIdentifier(digestAlgorithmOid), null);
                 aaV2.Add(algoId);
-                byte[] dig = PdfEncryption.DigestComputeHash(GetHashAlgorithm(), signCert.GetEncoded()); 
+                byte[] dig = DigestAlgorithms.Digest(GetHashAlgorithm(), signCert.GetEncoded()); 
                 aaV2.Add(new DerOctetString(dig));
                 
                 v.Add(new DerSet(new DerSequence(new DerSequence(new DerSequence(aaV2)))));
@@ -927,7 +928,7 @@ namespace iTextSharp.text.pdf.security {
             TimeStampTokenInfo info = timeStampToken.TimeStampInfo;
             MessageImprint imprint = info.TstInfo.MessageImprint;
             String algOID = info.MessageImprintAlgOid;
-            byte[] md = PdfEncryption.DigestComputeHash(algOID, digest);
+            byte[] md = DigestAlgorithms.Digest(algOID, digest);
             byte[] imphashed = imprint.GetHashedMessage();
             bool res = Arrays.AreEqual(md, imphashed);
             return res;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Crypto;
+using iTextSharp.text.log;
 /*
  * $Id: MakeSignature.java 5199 2012-06-18 20:14:38Z psoares33 $
  *
@@ -49,15 +50,17 @@ using Org.BouncyCastle.Crypto;
  */
 namespace iTextSharp.text.pdf.security {
 
+    public enum CryptoStandard {
+        CMS, CADES
+    }
+
     /**
      * Class that signs your PDF.
      * @author Paulo Soares
      */
     public static class MakeSignature {
-	    /** Parameter to indicate that you want to sign using the Cryptographic Message Syntax. */
-        public const bool CMS = false;
-	    /** Parameter to indicate that you want to sign using CMS Advanced Electronic Signatures. */
-        public const bool CADES = true;
+        /** The Logger instance. */
+        private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(MakeSignature));
         
         /**
          * Signs the document using the detached mode, CMS or CAdES equivalent.
@@ -77,10 +80,13 @@ namespace iTextSharp.text.pdf.security {
          * @throws Exception 
          */
         public static void SignDetached(PdfSignatureAppearance sap, IExternalSignature externalSignature, ICollection<X509Certificate> chain, ICollection<ICrlClient> crlList, IOcspClient ocspClient,
-                ITSAClient tsaClient, int estimatedSize, bool cades) {
+                ITSAClient tsaClient, int estimatedSize, CryptoStandard sigtype) {
             List<X509Certificate> certa = new List<X509Certificate>(chain);
-            ICollection<byte[]> crlBytes = ProcessCrl(certa[0], crlList);
-    	    if (estimatedSize == 0) {
+            ICollection<byte[]> crlBytes = null;
+            int i = 0;
+            while (crlBytes == null && i < certa.Count)
+        	    crlBytes = ProcessCrl(certa[i++], crlList);
+            if (estimatedSize == 0) {
                 estimatedSize = 8192;
                 if (crlBytes != null) {
                     foreach (byte[] element in crlBytes) {
@@ -93,7 +99,7 @@ namespace iTextSharp.text.pdf.security {
                     estimatedSize += 4192;
             }
             sap.Certificate = certa[0];
-            PdfSignature dic = new PdfSignature(PdfName.ADOBE_PPKLITE, cades ? PdfName.ETSI_CADES_DETACHED : PdfName.ADBE_PKCS7_DETACHED);
+            PdfSignature dic = new PdfSignature(PdfName.ADOBE_PPKLITE, sigtype == CryptoStandard.CADES ? PdfName.ETSI_CADES_DETACHED : PdfName.ADBE_PKCS7_DETACHED);
             dic.Reason = sap.Reason;
             dic.Location = sap.Location;
             dic.Contact = sap.Contact;
@@ -108,23 +114,17 @@ namespace iTextSharp.text.pdf.security {
             PdfPKCS7 sgn = new PdfPKCS7(null, chain, hashAlgorithm, false);
             IDigest messageDigest = DigestUtilities.GetDigest(hashAlgorithm);
             Stream data = sap.GetRangeStream();
-            byte[] buf = new byte[8192];
-            int n;
-            while ((n = data.Read(buf, 0, buf.Length)) > 0) {
-                messageDigest.BlockUpdate(buf, 0, n);
-            }
-            byte[] hash = new byte[messageDigest.GetDigestSize()];
-            messageDigest.DoFinal(hash, 0);
+            byte[] hash = DigestAlgorithms.Digest(data, hashAlgorithm);
             DateTime cal = DateTime.Now;
             byte[] ocsp = null;
             if (chain.Count >= 2 && ocspClient != null) {
                 ocsp = ocspClient.GetEncoded(certa[0], certa[1], null);
             }
-            byte[] sh = sgn.getAuthenticatedAttributeBytes(hash, cal, ocsp, crlBytes, cades);
+            byte[] sh = sgn.getAuthenticatedAttributeBytes(hash, cal, ocsp, crlBytes, sigtype);
             byte[] extSignature = externalSignature.Sign(sh);
             sgn.SetExternalDigest(extSignature, null, externalSignature.GetEncryptionAlgorithm());
 
-            byte[] encodedSig = sgn.GetEncodedPKCS7(hash, cal, tsaClient, ocsp, crlBytes, cades);
+            byte[] encodedSig = sgn.GetEncodedPKCS7(hash, cal, tsaClient, ocsp, crlBytes, sigtype);
 
             if (estimatedSize + 2 < encodedSig.Length)
                 throw new IOException("Not enough space");
@@ -153,6 +153,7 @@ namespace iTextSharp.text.pdf.security {
                 ICollection<byte[]> b = cc.GetEncoded(cert, null);
                 if (b == null)
                     continue;
+                LOGGER.Info("Processing " + cc.GetType().Name);
                 crlBytes.AddRange(b);
             }
             if (crlBytes.Count == 0)

@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.security;
 /*
  * $Id$
  *
@@ -92,7 +93,7 @@ namespace iTextSharp.text {
             if ( globals != null ) {
                 this.global = globals;
                 try {
-                    this.globalHash = PdfEncryption.DigestComputeHash("MD5", this.global);
+                    this.globalHash = DigestAlgorithms.Digest("MD5", this.global);
                 } catch {
                     //ignore
                 }

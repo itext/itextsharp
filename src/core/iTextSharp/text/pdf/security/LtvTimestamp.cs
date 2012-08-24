@@ -73,7 +73,7 @@ namespace iTextSharp.text.pdf.security {
             exc[PdfName.CONTENTS] = contentEstimated * 2 + 2;
             sap.PreClose(exc);
             Stream data = sap.GetRangeStream();
-            IDigest messageDigest = DigestUtilities.GetDigest(tsa.GetDigestAlgorithm());
+            IDigest messageDigest = tsa.GetMessageDigest();
             byte[] buf = new byte[4096];
             int n;
             while ((n = data.Read(buf, 0, buf.Length)) > 0) {

@@ -1,9 +1,9 @@
 using System;
-using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Tsp;
 /*
- * $Id$
+ * $Id: TSAInfoBouncyCastle.java 5345 2012-08-22 08:14:09Z blowagie $
  *
- * This file is part of the iText project.
+ * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
@@ -29,8 +29,8 @@ using Org.BouncyCastle.Crypto;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -43,39 +43,20 @@ using Org.BouncyCastle.Crypto;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-
 namespace iTextSharp.text.pdf.security {
 
     /**
-    * Time Stamp Authority client (caller) interface.
-    * <p>
-    * Interface used by the PdfPKCS7 digital signature builder to call
-    * Time Stamp Authority providing RFC 3161 compliant time stamp token.
-    * @author Martin Brunecky, 07/17/2007
-    * @since    2.1.6
-    */
-    public interface ITSAClient {
-        /**
-        * Get the time stamp token size estimate.
-        * Implementation must return value large enough to accomodate the entire token
-        * returned by getTimeStampToken() _prior_ to actual getTimeStampToken() call.
-        * @return   an estimate of the token size
-        */
-        int GetTokenSizeEstimate();
-        
-        /**
-         * Gets the MessageDigest to digest the data imprint
-         * @return the digest algorithm name
-         */
-        IDigest GetMessageDigest();
+     * Interface you can implement and pass to TSAClientBouncyCastle in case
+     * you want to do something with the information returned
+     */
+    public interface ITSAInfoBouncyCastle {
 
         /**
-         * Get RFC 3161 timeStampToken.
-         * Method may return null indicating that timestamp should be skipped.
-         * @param imprint byte[] - data imprint to be time-stamped
-         * @return byte[] - encoded, TSA signed data of the timeStampToken
-         * @throws Exception - TSA request failed
+         * When a timestamp is created using TSAClientBouncyCastle,
+         * this method is triggered passing an object that contains
+         * info about the timestamp and the time stamping authority.
+         * @param info a TimeStampTokenInfo object
          */
-        byte[] GetTimeStampToken(byte[] imprint);
+        void InspectTimeStampTokenInfo(TimeStampTokenInfo info);
     }
 }
