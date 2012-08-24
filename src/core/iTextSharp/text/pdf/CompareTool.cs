@@ -110,9 +110,10 @@ public class CompareTool {
             Process p = new Process();
             p.StartInfo.FileName = @gsExec;
             p.StartInfo.Arguments = @gsParams;
-            p.StartInfo.UseShellExecute = false;
+            p.StartInfo.UseShellExecute = false;   
             p.StartInfo.RedirectStandardError = true;
             p.StartInfo.RedirectStandardOutput = true;
+            p.StartInfo.CreateNoWindow = true;
             p.Start();
 
             String line;
@@ -133,6 +134,7 @@ public class CompareTool {
                 p.StartInfo.UseShellExecute = false;
                 p.StartInfo.RedirectStandardError = true;
                 p.StartInfo.RedirectStandardOutput = true;
+                p.StartInfo.CreateNoWindow = true;
                 p.Start();
                 while ((line = p.StandardOutput.ReadLine()) != null) {
                     Console.WriteLine(line);
@@ -171,6 +173,7 @@ public class CompareTool {
                                 p.StartInfo.Arguments = @compareParams;
                                 p.StartInfo.UseShellExecute = false;
                                 p.StartInfo.RedirectStandardError = true;
+                                p.StartInfo.CreateNoWindow = true;
                                 p.Start();
 
                                 while ((line = p.StandardError.ReadLine()) != null) {
