@@ -363,7 +363,6 @@ namespace iTextSharp.tool.xml.html.table {
                         computedRowHeight = tableHeight - computedTableHeigt;
                     }
                     foreach (HtmlCell cell in row.Content) {
-                        columnNumber += cell.Colspan;
                         IList<IElement> compositeElements = cell.CompositeElements;
                         if (compositeElements != null) {
                             foreach (IElement baseLevel in compositeElements) {
