@@ -371,33 +371,34 @@ namespace iTextSharp.text.pdf {
 
             int status = ColumnText.NO_MORE_TEXT;
 
-            if (content.Count > 0) {
-                if (floatLayout == null) {
+            if (content.Count > 0)
+            {
+                FloatLayout floatLay = null;
+                if (this.floatLayout == null) {
                     List<IElement> floatingElements = new List<IElement>(content);
                     if (simulate){
-                        FloatLayout = new FloatLayout(compositeColumn, floatingElements);
+                        floatLay = new FloatLayout(compositeColumn, floatingElements);
                     }
                     else{
-                        floatLayout = this.floatLayout = new FloatLayout(compositeColumn, floatingElements);
+                        floatLay = this.floatLayout = new FloatLayout(compositeColumn, floatingElements);
                     }
-                    floatLayout = new FloatLayout(compositeColumn, floatingElements);
                 }
                 else{
                     if (simulate){
                         List<IElement> floatingElements = new List<IElement>(this.floatLayout.content);
-                        floatLayout = new FloatLayout(this.floatLayout.compositeColumn, floatingElements);
+                        floatLay = new FloatLayout(this.floatLayout.compositeColumn, floatingElements);
                     }
                     else
                     {
-                        floatLayout = this.floatLayout;
+                        floatLay = this.floatLayout;
                     }
                 }
 
-                floatLayout.SetSimpleColumn(leftX, minY, rightX, yLine);
-                status = floatLayout.layout(simulate);
-                yLine = floatLayout.getYLine();
-                if (percentageWidth == null && contentWidth < floatLayout.getFilledWidth()) {
-                    contentWidth = floatLayout.getFilledWidth();
+                floatLay.SetSimpleColumn(leftX, minY, rightX, yLine);
+                status = floatLay.layout(simulate);
+                yLine = floatLay.getYLine();
+                if (percentageWidth == null && contentWidth < floatLay.getFilledWidth()) {
+                    contentWidth = floatLay.getFilledWidth();
                 }
             }
 
