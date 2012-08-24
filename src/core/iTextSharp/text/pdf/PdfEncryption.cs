@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text;
 using System.IO;
 using iTextSharp.text.pdf.crypto;
+using iTextSharp.text.pdf.security;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Security;
@@ -206,12 +207,12 @@ public class PdfEncryption {
     private byte[] ComputeOwnerKey(byte[] userPad, byte[] ownerPad) {
         byte[] ownerKey = new byte[32];
 
-        byte[] digest = DigestComputeHash("MD5", ownerPad);
+        byte[] digest = DigestAlgorithms.Digest("MD5", ownerPad);
         if (revision == STANDARD_ENCRYPTION_128 || revision == AES_128) {
             byte[] mkey = new byte[keyLength / 8];
             // only use for the input as many bit as the key consists of
             for (int k = 0; k < 50; ++k)
-                Array.Copy(DigestComputeHash("MD5", digest, 0, mkey.Length), 0, digest, 0, mkey.Length);
+                Array.Copy(DigestAlgorithms.Digest("MD5", digest, 0, mkey.Length), 0, digest, 0, mkey.Length);
             Array.Copy(userPad, 0, ownerKey, 0, 32);
             for (int i = 0; i < 20; ++i) {
                 for (int j = 0; j < mkey.Length ; ++j)
@@ -265,7 +266,7 @@ public class PdfEncryption {
         // only use the really needed bits as input for the hash
         if (revision == STANDARD_ENCRYPTION_128 || revision == AES_128) {
             for (int k = 0; k < 50; ++k) {
-                Array.Copy(DigestComputeHash("MD5", digest), 0, digest, 0, mkey.Length);
+                Array.Copy(DigestAlgorithms.Digest("MD5", digest), 0, digest, 0, mkey.Length);
             }
         }
         Array.Copy(digest, 0, mkey, 0, mkey.Length);
@@ -302,7 +303,7 @@ public class PdfEncryption {
     // gets keylength and revision and uses revison to choose the initial values for permissions
     public void SetupAllKeys(byte[] userPassword, byte[] ownerPassword, int permissions) {
         if (ownerPassword == null || ownerPassword.Length == 0)
-            ownerPassword = DigestComputeHash("MD5", CreateDocumentId());
+            ownerPassword = DigestAlgorithms.Digest("MD5", CreateDocumentId());
         md5.Reset();
         permissions |= (int)((revision == STANDARD_ENCRYPTION_128 || revision == AES_128 || revision == AES_256) ? (uint)0xfffff0c0 : (uint)0xffffffc0);
         permissions &= unchecked((int)0xfffffffc);
@@ -441,7 +442,7 @@ public class PdfEncryption {
         long mem = GC.GetTotalMemory(false);
         String s = time + "+" + mem + "+" + (seq++);
         byte[] b = Encoding.ASCII.GetBytes(s);            
-        return DigestComputeHash("MD5", b);
+        return DigestAlgorithms.Digest("MD5", b);
     }
 
     public void SetupByUserPassword(byte[] documentID, byte[] userPassword, byte[] ownerKey, int permissions) {
@@ -702,18 +703,6 @@ public class PdfEncryption {
             return userPassword;
         }
         return userPad;
-    }
-
-    public static byte[] DigestComputeHash(string algo, byte[] b, int offset, int len) {
-        IDigest d = DigestUtilities.GetDigest(algo);
-        d.BlockUpdate(b, offset, len);
-        byte[] r = new byte[d.GetDigestSize()];
-        d.DoFinal(r, 0);
-        return r;
-    }
-
-    public static byte[] DigestComputeHash(string algo, byte[] b) {
-        return DigestComputeHash(algo, b, 0, b.Length);
     }
 }
 }

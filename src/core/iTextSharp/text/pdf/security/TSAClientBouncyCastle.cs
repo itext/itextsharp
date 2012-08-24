@@ -11,6 +11,8 @@ using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Asn1.Cmp;
 using Org.BouncyCastle.Asn1.Tsp;
+using Org.BouncyCastle.Crypto;
+using iTextSharp.text.log;
 using iTextSharp.text.error_messages;
 /*
  * $Id: TSAClientBouncyCastle.cs 106 2009-12-07 12:23:50Z psoares33 $
@@ -68,12 +70,18 @@ namespace iTextSharp.text.pdf.security {
     * @since	2.1.6
     */
     public class TSAClientBouncyCastle : ITSAClient {
+
+        /** The Logger instance. */
+        private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(TSAClientBouncyCastle));
+
         /** URL of the Time Stamp Authority */
 	    protected internal String tsaURL;
 	    /** TSA Username */
         protected internal String tsaUsername;
         /** TSA password */
         protected internal String tsaPassword;
+        /** An interface that allows you to inspect the timestamp info. */
+        protected ITSAInfoBouncyCastle tsaInfo;
         /** The default value for the hash algorithm */
         public const int DEFAULTTOKENSIZE = 4096;
         
@@ -81,7 +89,7 @@ namespace iTextSharp.text.pdf.security {
         protected internal int tokenSizeEstimate;
         
         /** The default value for the hash algorithm */
-        public const String DEFAULTHASHALGORITHM = "SHA-1";
+        public const String DEFAULTHASHALGORITHM = "SHA-256";
         
         /** Hash algorithm */
         protected internal String digestAlgorithm;
@@ -122,6 +130,13 @@ namespace iTextSharp.text.pdf.security {
         }
         
         /**
+         * @param tsaInfo the tsaInfo to set
+         */
+        public void SetTSAInfo(ITSAInfoBouncyCastle tsaInfo) {
+            this.tsaInfo = tsaInfo;
+        }
+
+        /**
         * Get the token size estimate.
         * Returned value reflects the result of the last succesfull call, padded
         * @return an estimate of the token size
@@ -130,8 +145,12 @@ namespace iTextSharp.text.pdf.security {
             return tokenSizeEstimate;
         }
         
-        public virtual String GetDigestAlgorithm() {
-            return digestAlgorithm;
+        /**
+         * Gets the MessageDigest to digest the data imprint
+         * @return the digest algorithm name
+         */
+        public IDigest GetMessageDigest() {
+            return DigestAlgorithms.GetMessageDigest(digestAlgorithm);
         }
 
         /**
@@ -147,7 +166,7 @@ namespace iTextSharp.text.pdf.security {
             tsqGenerator.SetCertReq(true);
             // tsqGenerator.setReqPolicy("1.3.6.1.4.1.601.10.3.1");
             BigInteger nonce = BigInteger.ValueOf(DateTime.Now.Ticks + Environment.TickCount);
-            TimeStampRequest request = tsqGenerator.Generate(DigestAlgorithms.GetAllowedDigests(GetDigestAlgorithm()), imprint, nonce);
+            TimeStampRequest request = tsqGenerator.Generate(DigestAlgorithms.GetAllowedDigests(digestAlgorithm), imprint, nonce);
             byte[] requestBytes = request.GetEncoded();
             
             // Call the communications layer
@@ -168,13 +187,17 @@ namespace iTextSharp.text.pdf.security {
             //        assure we do not sign using an invalid timestamp).
             
             // extract just the time stamp token (removes communication status info)
-            TimeStampToken  tsToken = response.TimeStampToken;
+            TimeStampToken tsToken = response.TimeStampToken;
             if (tsToken == null) {
                 throw new IOException(MessageLocalization.GetComposedMessage("tsa.1.failed.to.return.time.stamp.token.2", tsaURL, response.GetStatusString()));
             }
-            TimeStampTokenInfo info = tsToken.TimeStampInfo; // to view details
+            TimeStampTokenInfo tsTokenInfo = tsToken.TimeStampInfo; // to view details
             byte[] encoded = tsToken.GetEncoded();
             
+            LOGGER.Info("Timestamp generated: " + tsTokenInfo.GenTime);
+            if (tsaInfo != null) {
+                tsaInfo.InspectTimeStampTokenInfo(tsTokenInfo);
+            }
             // Update our token size estimate for the next call (padded to be safe)
             this.tokenSizeEstimate = encoded.Length + 32;
             return encoded;

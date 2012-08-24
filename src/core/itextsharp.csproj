@@ -4102,8 +4102,8 @@
     <Compile Include="iTextSharp\text\pdf\security\CertificateInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\security\CertificateUtil.cs" />
     <Compile Include="iTextSharp\text\pdf\security\CertificateVerification.cs" />
-    <Compile Include="iTextSharp\text\pdf\security\CrlClientImp.cs" />
     <Compile Include="iTextSharp\text\pdf\security\CrlClientOffline.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\CrlClientOnline.cs" />
     <Compile Include="iTextSharp\text\pdf\security\DigestAlgorithms.cs" />
     <Compile Include="iTextSharp\text\pdf\security\EncryptionAlgorithms.cs" />
     <Compile Include="iTextSharp\text\pdf\security\ICrlClient.cs" />
@@ -4118,6 +4118,7 @@
     <Compile Include="iTextSharp\text\pdf\security\PrivateKeySignature.cs" />
     <Compile Include="iTextSharp\text\pdf\security\SecurityIDs.cs" />
     <Compile Include="iTextSharp\text\pdf\security\TSAClientBouncyCastle.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\ITSAInfoBouncyCastle.cs" />
     <Compile Include="iTextSharp\text\pdf\security\X509Certificate2Signature.cs" />
     <Compile Include="iTextSharp\text\pdf\TtfUnicodeWriter.cs" />
     <Compile Include="iTextSharp\text\Version.cs" />

@@ -53,15 +53,6 @@ namespace iTextSharp.text.pdf.security {
     public interface IExternalSignature {
         
         /**
-         * Creates a message digest using the hash algorithm
-         * and signs it using the encryption algorithm.
-         * @param message   the message you want to be hashed and signed
-         * @return  a signed message digest
-         * @throws GeneralSecurityException
-         */
-        byte[] Sign(byte[] message);
-        
-        /**
          * Returns the hash algorithm.
          * @return  the hash algorithm (e.g. "SHA-1", "SHA-256,...")
          */
@@ -72,5 +63,14 @@ namespace iTextSharp.text.pdf.security {
          * @return the encryption algorithm ("RSA" or "DSA")
          */
         String GetEncryptionAlgorithm();
+
+        /**
+         * Signs it using the encryption algorithm in combination with
+         * the digest algorithm.
+         * @param message   the message you want to be hashed and signed
+         * @return  a signed message digest
+         * @throws GeneralSecurityException
+         */
+        byte[] Sign(byte[] message);
     }
 }

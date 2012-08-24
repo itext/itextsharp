@@ -248,7 +248,7 @@ namespace iTextSharp.text.pdf.security {
         }
         
         private static byte[] HashBytesSha1(byte[] b) {
-            return PdfEncryption.DigestComputeHash("SHA1", b);
+            return DigestAlgorithms.Digest("SHA1", b);
         }
 
         /**
