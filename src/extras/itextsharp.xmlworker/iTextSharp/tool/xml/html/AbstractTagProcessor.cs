@@ -260,7 +260,7 @@ namespace iTextSharp.tool.xml.html {
                 {
                     if (addNewLines)
                     {
-                        Paragraph p = new Paragraph(float.NaN);
+                        Paragraph p = CreateParagraph();
                         p.MultipliedLeading = 1.2f;
                         foreach (IElement e in currentContent) {
                             if (e is LineSeparator) {
@@ -322,5 +322,11 @@ namespace iTextSharp.tool.xml.html {
         {
             return cssAppliers;
         }
+
+        virtual protected Paragraph CreateParagraph()
+        {
+            return new Paragraph(float.NaN);
+        }
+
     }
 }
