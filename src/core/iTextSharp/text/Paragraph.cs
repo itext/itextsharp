@@ -186,7 +186,7 @@ namespace iTextSharp.text {
          * Creates a shallow clone of the Paragraph.
          * @return
          */
-        public Paragraph cloneShallow(bool spacingBefore) {
+        virtual public Paragraph cloneShallow(bool spacingBefore) {
             Paragraph copy = new Paragraph();
             copy.Font = Font;
             copy.Alignment = Alignment;
