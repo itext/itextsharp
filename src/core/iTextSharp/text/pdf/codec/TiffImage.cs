@@ -345,7 +345,7 @@ namespace iTextSharp.text.pdf.codec {
             if ((size == null || (size.Length == 1 && (size[0] == 0 || size[0] + offset[0] > s.Length))) && h == rowsStrip) { // some TIFF producers are really lousy, so...
                 size = new long[]{s.Length - (int)offset[0]};
             }
-            if (compression == TIFFConstants.COMPRESSION_LZW) {
+            if (compression == TIFFConstants.COMPRESSION_LZW || compression == TIFFConstants.COMPRESSION_DEFLATE || compression == TIFFConstants.COMPRESSION_ADOBE_DEFLATE) {
                 TIFFField predictorField = dir.GetField(TIFFConstants.TIFFTAG_PREDICTOR);
                 if (predictorField != null) {
                     predictor = predictorField.GetAsInt(0);
@@ -356,8 +356,9 @@ namespace iTextSharp.text.pdf.codec {
                         throw new Exception(MessageLocalization.GetComposedMessage("1.bit.samples.are.not.supported.for.horizontal.differencing.predictor", bitsPerSample));
                     }
                 }
-                lzwDecoder = new TIFFLZWDecoder(w, predictor, 
-                                                samplePerPixel); 
+            }
+            if (compression == TIFFConstants.COMPRESSION_LZW) {
+                lzwDecoder = new TIFFLZWDecoder(w, predictor, samplePerPixel); 
             }
             int rowsLeft = h;
             MemoryStream stream = null;
@@ -451,6 +452,7 @@ namespace iTextSharp.text.pdf.codec {
                         case TIFFConstants.COMPRESSION_DEFLATE:
                         case TIFFConstants.COMPRESSION_ADOBE_DEFLATE:
                             Inflate(im, outBuf);
+                            ApplyPredictor(outBuf, predictor, w, height, samplePerPixel);
                             break;
                         case TIFFConstants.COMPRESSION_NONE:
                             outBuf = im;
@@ -618,6 +620,19 @@ namespace iTextSharp.text.pdf.codec {
         public static void Inflate(byte[] deflated, byte[] inflated) {
             byte[] outp = PdfReader.FlateDecode(deflated);
             System.Array.Copy(outp, 0, inflated, 0, Math.Min(outp.Length, inflated.Length));
+        }
+
+        public static void ApplyPredictor(byte[] uncompData, int predictor, int w, int h, int samplesPerPixel) {
+            if (predictor != 2)
+                return;
+            int count;
+            for (int j = 0; j < h; j++) {
+                count = samplesPerPixel * (j * w + 1);
+                for (int i = samplesPerPixel; i < w * samplesPerPixel; i++) {
+                    uncompData[count] += uncompData[count - samplesPerPixel];
+                    count++;
+                }
+            }    
         }
     }
 }
