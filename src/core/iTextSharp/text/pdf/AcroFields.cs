@@ -2180,11 +2180,8 @@ namespace iTextSharp.text.pdf {
                     cert = v.GetAsArray(PdfName.CERT).GetAsString(0);
                 pk = new PdfPKCS7(contents.GetOriginalBytes(), cert.GetBytes());
             }
-            else if (sub.Equals(PdfName.ETSI_RFC3161)) {
-                pk = new PdfPKCS7(contents.GetOriginalBytes(), true);
-            }
             else
-                pk = new PdfPKCS7(contents.GetOriginalBytes());
+                pk = new PdfPKCS7(contents.GetOriginalBytes(), sub);
             UpdateByteRange(pk, v);
             PdfString str = v.GetAsString(PdfName.M);
             if (str != null)

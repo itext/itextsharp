@@ -13,6 +13,7 @@ using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Tsp;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Asn1.Ess;
 using Org.BouncyCastle.Ocsp;
 using Org.BouncyCastle.Asn1.Pkcs;
 using Org.BouncyCastle.Asn1.Tsp;
@@ -155,20 +156,13 @@ namespace iTextSharp.text.pdf.security {
          * Use this constructor if you want to verify a signature using
          * the sub-filter adbe.pkcs7.detached or adbe.pkcs7.sha1.
          * @param contentsKey the /Contents key
-         * @param provider the provider or <code>null</code> for the default provider
-         */
-        public PdfPKCS7(byte[] contentsKey) : this(contentsKey, false){
-        }
-
-        /**
-         * Use this constructor if you want to verify a signature using
-         * the sub-filter adbe.pkcs7.detached or adbe.pkcs7.sha1.
-         * @param contentsKey the /Contents key
          * @param tsp set to true if there's a PAdES LTV time stamp.
          * @param provider the provider or <code>null</code> for the default provider
          */
-        public PdfPKCS7(byte[] contentsKey, bool tsp) {
-            isTsp = tsp;
+        public PdfPKCS7(byte[] contentsKey, PdfName filterSubtype) {
+            this.filterSubtype = filterSubtype;
+            isTsp = PdfName.ETSI_RFC3161.Equals(filterSubtype);
+            isCades = PdfName.ETSI_CADES_DETACHED.Equals(filterSubtype);
             Asn1InputStream din = new Asn1InputStream(new MemoryStream(contentsKey));
             
             //
@@ -257,6 +251,7 @@ namespace iTextSharp.text.pdf.security {
             CalcSignCertificateChain();
             digestAlgorithmOid = ((DerObjectIdentifier)((Asn1Sequence)signerInfo[2])[0]).Id;
             next = 3;
+            bool foundCades = false;
             if (signerInfo[next] is Asn1TaggedObject) {
                 Asn1TaggedObject tagsig = (Asn1TaggedObject)signerInfo[next];
                 Asn1Set sseq = Asn1Set.GetInstance(tagsig, false);
@@ -264,11 +259,12 @@ namespace iTextSharp.text.pdf.security {
                 
                 for (int k = 0; k < sseq.Count; ++k) {
                     Asn1Sequence seq2 = (Asn1Sequence)sseq[k];
-                    if (((DerObjectIdentifier)seq2[0]).Id.Equals(SecurityIDs.ID_MESSAGE_DIGEST)) {
+                    String idSeq2 = ((DerObjectIdentifier)seq2[0]).Id;
+                    if (idSeq2.Equals(SecurityIDs.ID_MESSAGE_DIGEST)) {
                         Asn1Set sset = (Asn1Set)seq2[1];
                         digestAttr = ((DerOctetString)sset[0]).GetOctets();
                     }
-                    else if (((DerObjectIdentifier)seq2[0]).Id.Equals(SecurityIDs.ID_ADBE_REVOCATION)) {
+                    else if (idSeq2.Equals(SecurityIDs.ID_ADBE_REVOCATION)) {
                         Asn1Set setout = (Asn1Set)seq2[1];
                         Asn1Sequence seqout = (Asn1Sequence)setout[0];
                         for (int j = 0; j < seqout.Count; ++j) {
@@ -282,6 +278,35 @@ namespace iTextSharp.text.pdf.security {
                                 FindCRL(seqin);
                             }
                         }
+                    }
+                    else if (isCades && idSeq2.Equals(SecurityIDs.ID_AA_SIGNING_CERTIFICATE_V1)) {
+                        Asn1Set setout = (Asn1Set)seq2[1];
+                        Asn1Sequence seqout = (Asn1Sequence)setout[0];
+                        SigningCertificate sv2 = Org.BouncyCastle.Asn1.Ess.SigningCertificate.GetInstance(seqout);
+                        EssCertID[] cerv2m = sv2.GetCerts();
+                        EssCertID cerv2 = cerv2m[0];
+                        byte[] enc2 = signCert.GetEncoded();
+                        IDigest m2 = DigestUtilities.GetDigest("SHA-1");
+                        byte[] signCertHash = DigestAlgorithms.Digest(m2, enc2);
+                        byte[] hs2 = cerv2.GetCertHash();
+                        if (!Arrays.AreEqual(signCertHash, hs2))
+                            throw new ArgumentException("Signing certificate doesn't match the ESS information.");
+                        foundCades = true;
+                    }
+                    else if (isCades && idSeq2.Equals(SecurityIDs.ID_AA_SIGNING_CERTIFICATE_V2)) {
+                        Asn1Set setout = (Asn1Set)seq2[1];
+                        Asn1Sequence seqout = (Asn1Sequence)setout[0];
+                        SigningCertificateV2 sv2 = SigningCertificateV2.GetInstance(seqout);
+                        EssCertIDv2[] cerv2m = sv2.GetCerts();
+                        EssCertIDv2 cerv2 = cerv2m[0];
+                        AlgorithmIdentifier ai2 = cerv2.HashAlgorithm;
+                        byte[] enc2 = signCert.GetEncoded();
+                        IDigest m2 = DigestUtilities.GetDigest(ai2.ObjectID.Id);
+                        byte[] signCertHash = DigestAlgorithms.Digest(m2, enc2);
+                        byte[] hs2 = cerv2.GetCertHash();
+                        if (!Arrays.AreEqual(signCertHash, hs2))
+                            throw new ArgumentException("Signing certificate doesn't match the ESS information.");
+                        foundCades = true;
                     }
                 }
                 if (digestAttr == null)
@@ -427,6 +452,8 @@ namespace iTextSharp.text.pdf.security {
 
         /** The digest attributes */
         private byte[] digestAttr;
+
+        private PdfName filterSubtype;
 
         /**
          * Getter for the ID of the digest algorithm, e.g. "2.16.840.1.101.3.4.2.1"
@@ -1129,6 +1156,8 @@ namespace iTextSharp.text.pdf.security {
         /** True if there's a PAdES LTV time stamp. */
         private bool isTsp;
         
+        private bool isCades;
+
         /** BouncyCastle TimeStampToken. */
         private TimeStampToken timeStampToken;
 

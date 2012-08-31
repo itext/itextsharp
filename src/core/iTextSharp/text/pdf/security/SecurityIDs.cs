@@ -59,6 +59,7 @@ namespace iTextSharp.text.pdf.security {
 	    public const String ID_ADBE_REVOCATION = "1.2.840.113583.1.1.8";
 	    public const String ID_TSA = "1.2.840.113583.1.1.9.1";
 	    public const String ID_OCSP = "1.3.6.1.5.5.7.48.1";
+        public const String ID_AA_SIGNING_CERTIFICATE_V1 = "1.2.840.113549.1.9.16.2.12";
 	    public const String ID_AA_SIGNING_CERTIFICATE_V2 = "1.2.840.113549.1.9.16.2.47";
 
     }
