@@ -57,14 +57,14 @@ namespace iTextSharp.text.pdf.parser {
      */
     public class TextRenderInfo {
         
-        private String text;
-        private Matrix textToUserSpaceTransformMatrix;
-        private GraphicsState gs;
+        protected String text;
+        protected Matrix textToUserSpaceTransformMatrix;
+        protected GraphicsState gs;
         /**
          * Array containing marked content info for the text.
          * @since 5.0.2
          */
-        private ICollection<MarkedContentInfo> markedContentInfos;
+        protected ICollection<MarkedContentInfo> markedContentInfos;
         
         /**
          * Creates a new TextRenderInfo object
@@ -73,7 +73,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param textMatrix the text matrix at the time of the render operation
          * @param markedContentInfo the marked content sequence, if available
          */
-        internal TextRenderInfo(String text, GraphicsState gs, Matrix textMatrix, ICollection markedContentInfo) {
+        public TextRenderInfo(String text, GraphicsState gs, Matrix textMatrix, ICollection markedContentInfo) {
             this.text = text;
             this.textToUserSpaceTransformMatrix = textMatrix.Multiply(gs.ctm);
             this.gs = gs;
@@ -109,7 +109,7 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @return the unscaled (i.e. in Text space) width of the text
          */
-        internal float GetUnscaledWidth(){ 
+        public float GetUnscaledWidth(){ 
             return GetStringWidth(text); 
         }
         

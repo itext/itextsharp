@@ -268,7 +268,7 @@ namespace iTextSharp.text.pdf {
             return null;
         }
         
-        internal override byte[] ConvertToBytes(String text) {
+        public override byte[] ConvertToBytes(String text) {
             char[] cc = text.ToCharArray();
             byte[] b = new byte[cc.Length];
             int p = 0;

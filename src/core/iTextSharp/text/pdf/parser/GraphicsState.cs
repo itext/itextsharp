@@ -54,16 +54,41 @@ namespace iTextSharp.text.pdf.parser {
         internal Matrix ctm;
         /** The current character spacing. */
         internal float characterSpacing;
+
+        public float CharacterSpacing {
+            get { return characterSpacing; }
+        }
+
         /** The current word spacing. */
         internal float wordSpacing;
+
+        public float WordSpacing { 
+			get { return wordSpacing; } 
+		}
+
         /** The current horizontal scaling */
         internal float horizontalScaling;
+
+        public float HorizontalScaling {
+            get { return horizontalScaling; }
+        }
+
         /** The current leading. */
         internal float leading;
         /** The active font. */
         internal CMapAwareDocumentFont font;
+
+        public CMapAwareDocumentFont Font {
+            get { return font; }
+        }
+
         /** The current font size. */
         internal float fontSize;
+
+        public float FontSize {
+            get { return fontSize; }
+        }
+
         /** The current render mode. */
         internal int renderMode;
         /** The current text rise */

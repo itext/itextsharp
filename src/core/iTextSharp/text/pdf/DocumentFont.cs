@@ -622,7 +622,7 @@ namespace iTextSharp.text.pdf {
                 return base.GetWidth(text);
         }
         
-        internal override byte[] ConvertToBytes(String text) {
+        public override byte[] ConvertToBytes(String text) {
             if (cjkMirror != null)
                 return cjkMirror.ConvertToBytes(text);
             else if (isType0) {

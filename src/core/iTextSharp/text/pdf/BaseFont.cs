@@ -1015,7 +1015,7 @@ namespace iTextSharp.text.pdf {
          * @param text the <CODE>string</CODE> to be converted
          * @return an array of <CODE>byte</CODE> representing the conversion according to the font's encoding
          */
-        internal virtual byte[] ConvertToBytes(string text) {
+        public virtual byte[] ConvertToBytes(string text) {
             if (directTextToByte)
                 return PdfEncodings.ConvertToBytes(text, null);
             if (specialMap != null) {
