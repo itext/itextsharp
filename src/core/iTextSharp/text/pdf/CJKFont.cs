@@ -684,7 +684,7 @@ namespace iTextSharp.text.pdf {
          * @param text the <CODE>String</CODE> to be converted
          * @return an array of <CODE>byte</CODE> representing the conversion according to the font's encoding
          */
-        internal override byte[] ConvertToBytes(String text) {
+        public override byte[] ConvertToBytes(String text) {
             if (cidDirect)
                 return base.ConvertToBytes(text);
             if (text.Length == 1)

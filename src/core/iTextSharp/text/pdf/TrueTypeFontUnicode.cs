@@ -341,7 +341,7 @@ namespace iTextSharp.text.pdf {
          * @param text the text
          * @return always <CODE>null</CODE>
          */    
-        internal override byte[] ConvertToBytes(string text) {
+        public override byte[] ConvertToBytes(string text) {
             return null;
         }
 
