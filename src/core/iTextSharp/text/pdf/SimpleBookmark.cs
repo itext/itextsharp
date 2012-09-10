@@ -312,7 +312,7 @@ namespace iTextSharp.text.pdf {
             for (ListIterator<Dictionary<String, Object>> it = new ListIterator<Dictionary<string,object>>(list); it.HasNext();) {
                 Dictionary<String, Object> map = it.Next();
                 bool hit = false;
-                if ("GoTo".Equals(map["Action"])) {
+                if (map.ContainsKey("Action") && "GoTo".Equals(map["Action"])) {
                     String page = null;
                     if (map.ContainsKey("Page"))
                         page = (String)map["Page"];
