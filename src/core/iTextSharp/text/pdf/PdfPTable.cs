@@ -4,6 +4,7 @@ using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
 using iTextSharp.text.api;
+using iTextSharp.text.log;
 using iTextSharp.text.pdf.events;
 
 /*
@@ -53,7 +54,7 @@ namespace iTextSharp.text.pdf {
     * be added to the document as the class <CODE>Table</CODE>.
     * In the last case when crossing pages the table always break at full rows; if a
     * row is bigger than the page it is dropped silently to avoid infinite loops.
-    * <P>
+    * <p/>
     * A PdfPTableEvent can be associated to the table to do custom drawing
     * when the table is rendered.
     * @author Paulo Soares
@@ -61,6 +62,8 @@ namespace iTextSharp.text.pdf {
 
     public class PdfPTable : ILargeElement, ISpaceable{
         
+        private readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(PdfPTable));
+
         /** The index of the original <CODE>PdfcontentByte</CODE>.
         */    
         public const int BASECANVAS = 0;
@@ -79,6 +82,7 @@ namespace iTextSharp.text.pdf {
         protected PdfPCell[] currentRow;
         /**
          * The current column index.
+         * 
          * @since 5.1.0 renamed from currentColIdx
          */
         protected int currentColIdx = 0;
@@ -102,6 +106,7 @@ namespace iTextSharp.text.pdf {
 
         /**
         * Holds value of property skipLastFooter.
+        * 
         * @since    2.1.6
         */
         private bool skipLastFooter = false;
@@ -149,7 +154,7 @@ namespace iTextSharp.text.pdf {
 
         /**
         * Indicates if the PdfPTable is complete once added to the document.
-        * @since	iText 2.0.8
+        * @since iText 2.0.8
         */
         protected bool complete = true;
         
@@ -157,6 +162,7 @@ namespace iTextSharp.text.pdf {
 
         /**
         * Keeps track of the completeness of the current row.
+        * 
         * @since    2.1.6
         */
         protected bool rowCompleted = true;
@@ -227,6 +233,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Copies the format of the sourceTable without copying the content. 
         * @param sourceTable
+        * @since 2.1.6 private is now protected
         */
         protected internal void CopyFormat(PdfPTable sourceTable) {
             relativeWidths = new float[sourceTable.NumberOfColumns];
@@ -261,8 +268,8 @@ namespace iTextSharp.text.pdf {
         /** Sets the relative widths of the table.
         * @param relativeWidths the relative widths of the table.
         * @throws DocumentException if the number of widths is different than the number
-        * of columns
-        */    
+        *                           of columns
+        */
         public void SetWidths(float[] relativeWidths) {
             if (relativeWidths.Length != NumberOfColumns)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("wrong.number.of.columns"));
@@ -277,8 +284,8 @@ namespace iTextSharp.text.pdf {
         /** Sets the relative widths of the table.
         * @param relativeWidths the relative widths of the table.
         * @throws DocumentException if the number of widths is different than the number
-        * of columns
-        */    
+        *                           of columns
+        */
         public void SetWidths(int[] relativeWidths) {
             float[] tb = new float[relativeWidths.Length];
             for (int k = 0; k < relativeWidths.Length; ++k)
@@ -286,6 +293,9 @@ namespace iTextSharp.text.pdf {
             SetWidths(tb);
         }
 
+        /**
+        * @since 2.1.6 private is now protected
+        */
         protected internal void CalculateWidths() {
             if (totalWidth <= 0)
                 return;
@@ -296,12 +306,12 @@ namespace iTextSharp.text.pdf {
             for (int k = 0; k < numCols; ++k)
                 absoluteWidths[k] = totalWidth * relativeWidths[k] / total;
         }
-        
+
         /** Sets the full width of the table from the absolute column width.
         * @param columnWidth the absolute width of each column
         * @throws DocumentException if the number of widths is different than the number
-        * of columns
-        */    
+        *                           of columns
+        */
         public void SetTotalWidth(float[] columnWidth) {
             if (columnWidth.Length != NumberOfColumns)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("wrong.number.of.columns"));
@@ -313,7 +323,7 @@ namespace iTextSharp.text.pdf {
 
         /** Sets the percentage width of the table from the absolute column width.
         * @param columnWidth the absolute width of each column
-        * @param pageSize the page size
+        * @param pageSize    the page size
         * @throws DocumentException
         */    
         public void SetWidthPercentage(float[] columnWidth, Rectangle pageSize) {
@@ -346,8 +356,8 @@ namespace iTextSharp.text.pdf {
         /**
          * Calculates the heights of the table.
          *
-         * @return  the total height of the table. Note that it will be 0 if you didn't
-         * specify the width of the table with setTotalWidth().
+         * @return the total height of the table. Note that it will be 0 if you didn't
+         * specify the width of the table with SetTotalWidth().
          * and made it public
          */
         public float CalculateHeights() { 
@@ -362,6 +372,7 @@ namespace iTextSharp.text.pdf {
         
         /**
          * Changes the number of columns. Any existing rows will be deleted.
+         * 
          * @param the new number of columns
          */
         public void ResetColumnCount(int newColCount) {
@@ -453,6 +464,7 @@ namespace iTextSharp.text.pdf {
         /**
         * When updating the row index, cells with rowspan should be taken into account.
         * This is what happens in this method.
+        * 
         * @since    2.1.6
         */
         private void SkipColsWithRowspanAbove() {
@@ -465,6 +477,10 @@ namespace iTextSharp.text.pdf {
 
         /**
         * Added by timmo3.  This will return the correct cell taking it's cellspan into account
+        *
+        * @param row the row index
+        * @param col the column index
+        * @return PdfPCell at the given row and position or null otherwise
         */
         internal PdfPCell CellAt(int row, int col) {
             PdfPCell[] cells = rows[row].GetCells();
@@ -498,7 +514,7 @@ namespace iTextSharp.text.pdf {
                 return false;
             PdfPCell aboveCell = CellAt(row, currCol);
             while (aboveCell == null && row > 0) {
-                aboveRow  = rows[--row];
+                aboveRow = rows[--row];
                 if (aboveRow == null)
                     return false;
                 aboveCell = CellAt(row, currCol);
@@ -537,7 +553,8 @@ namespace iTextSharp.text.pdf {
         
         /**
         * Adds an Image as Cell.
-        * @param image the <CODE>Image</CODE> to add to the table. This image will fit in the cell
+        * @param image the <CODE>Image</CODE> to add to the table.
+        *              This image will fit in the cell
         */    
         public void AddCell(Image image) {
             defaultCell.Image = image;
@@ -559,13 +576,13 @@ namespace iTextSharp.text.pdf {
         * Writes the selected rows to the document.
         * <P>
         * <CODE>canvases</CODE> is obtained from <CODE>beginWritingRows()</CODE>.
-        * @param rowStart the first row to be written, zero index
-        * @param rowEnd the last row to be written + 1. If it is -1 all the
-        * rows to the end are written
-        * @param xPos the x write coodinate
-        * @param yPos the y write coodinate
-        * @param canvases an array of 4 <CODE>PdfContentByte</CODE> obtained from
-        * <CODE>beginWrittingRows()</CODE>
+        * @param rowStart   the first row to be written, zero index
+        * @param rowEnd     the last row to be written + 1. If it is -1 all the
+        *                   rows to the end are written
+        * @param xPos       the x write coodinate
+        * @param yPos       the y write coodinate
+        * @param canvases   an array of 4 <CODE>PdfContentByte</CODE> obtained from
+        *                   <CODE>beginWrittingRows()</CODE>
         * @return the y coordinate position of the bottom of the last row
         * @see #beginWritingRows(com.lowagie.text.pdf.PdfContentByte)
         */    
@@ -580,16 +597,16 @@ namespace iTextSharp.text.pdf {
         * <CODE>canvases</CODE> is obtained from <CODE>beginWritingRows()</CODE>.
         * <P>
         * The table event is only fired for complete rows.
-        * @param colStart the first column to be written, zero index
-        * @param colEnd the last column to be written + 1. If it is -1 all the
-        * columns to the end are written
-        * @param rowStart the first row to be written, zero index
-        * @param rowEnd the last row to be written + 1. If it is -1 all the
-        * rows to the end are written
-        * @param xPos the x write coodinate
-        * @param yPos the y write coodinate
-        * @param canvases an array of 4 <CODE>PdfContentByte</CODE> obtained from
-        * <CODE>beginWrittingRows()</CODE>
+        * @param colStart   the first column to be written, zero index
+        * @param colEnd     the last column to be written + 1. If it is -1 all the
+        *                   columns to the end are written
+        * @param rowStart   the first row to be written, zero index
+        * @param rowEnd     the last row to be written + 1. If it is -1 all the
+        *                   rows to the end are written
+        * @param xPos       the x write coodinate
+        * @param yPos       the y write coodinate
+        * @param canvases   an array of 4 <CODE>PdfContentByte</CODE> obtained from
+        *                   <CODE>beginWrittingRows()</CODE>
         * @return the y coordinate position of the bottom of the last row
         * @see #beginWritingRows(com.lowagie.text.pdf.PdfContentByte)
         */    
@@ -604,16 +621,16 @@ namespace iTextSharp.text.pdf {
          * <CODE>canvases</CODE> is obtained from <CODE>beginWritingRows()</CODE>.
          * The table event is only fired for complete rows.
          *
-         * @param colStart the first column to be written, zero index
-         * @param colEnd the last column to be written + 1. If it is -1 all the
-         * columns to the end are written
-         * @param rowStart the first row to be written, zero index
-         * @param rowEnd the last row to be written + 1. If it is -1 all the
-         * rows to the end are written
-         * @param xPos the x write coordinate
-         * @param yPos the y write coordinate
-         * @param canvases an array of 4 <CODE>PdfContentByte</CODE> obtained from
-         * <CODE>beginWritingRows()</CODE>
+         * @param colStart  the first column to be written, zero index
+         * @param colEnd    the last column to be written + 1. If it is -1 all the
+         *                  columns to the end are written
+         * @param rowStart  the first row to be written, zero index
+         * @param rowEnd    the last row to be written + 1. If it is -1 all the
+         *                  rows to the end are written
+         * @param xPos      the x write coordinate
+         * @param yPos      the y write coordinate
+         * @param canvases  an array of 4 <CODE>PdfContentByte</CODE> obtained from
+         *                  <CODE>beginWritingRows()</CODE>
          * @param   reusable if set to false, the content in the cells is "consumed";
          * if true, you can reuse the cells, the row, the parent table as many times you want.
          * @return the y coordinate position of the bottom of the last row
@@ -642,6 +659,9 @@ namespace iTextSharp.text.pdf {
                 colEnd = totalCols;
             else
                 colEnd = Math.Min(colEnd, totalCols);
+
+            LOGGER.Info(String.Format("Writing row %s to %s; column %s to %s", rowStart, rowEnd, colStart, colEnd));
+
             float yPosStart = yPos;
             for (int k = rowStart; k < rowEnd; ++k) {
                 PdfPRow row = rows[k];
@@ -668,13 +688,13 @@ namespace iTextSharp.text.pdf {
         /**
         * Writes the selected rows to the document.
         * 
-        * @param rowStart the first row to be written, zero index
-        * @param rowEnd the last row to be written + 1. If it is -1 all the
-        * rows to the end are written
-        * @param xPos the x write coodinate
-        * @param yPos the y write coodinate
-        * @param canvas the <CODE>PdfContentByte</CODE> where the rows will
-        * be written to
+        * @param rowStart   the first row to be written, zero index
+        * @param rowEnd     the last row to be written + 1. If it is -1 all the
+        *                   rows to the end are written
+        * @param xPos       the x write coodinate
+        * @param yPos       the y write coodinate
+        * @param canvas     the <CODE>PdfContentByte</CODE> where the rows will
+        *                   be written to
         * @return the y coordinate position of the bottom of the last row
         */    
         public float WriteSelectedRows(int rowStart, int rowEnd, float xPos, float yPos, PdfContentByte canvas) {
@@ -688,15 +708,15 @@ namespace iTextSharp.text.pdf {
         * <P>
         * The table event is only fired for complete rows.
         * 
-        * @param colStart the first column to be written, zero index
-        * @param colEnd the last column to be written + 1. If it is -1 all the
-        * @param rowStart the first row to be written, zero index
-        * @param rowEnd the last row to be written + 1. If it is -1 all the
-        * rows to the end are written
-        * @param xPos the x write coodinate
-        * @param yPos the y write coodinate
-        * @param canvas the <CODE>PdfContentByte</CODE> where the rows will
-        * be written to
+        * @param colStart   the first column to be written, zero index
+        * @param colEnd     the last column to be written + 1. If it is -1 all the
+        * @param rowStart   the first row to be written, zero index
+        * @param rowEnd     the last row to be written + 1. If it is -1 all the
+        *                   rows to the end are written
+        * @param xPos       the x write coodinate
+        * @param yPos       the y write coodinate
+        * @param canvas     the <CODE>PdfContentByte</CODE> where the rows will
+        *                   be written to
         * @return the y coordinate position of the bottom of the last row
         */    
         public float WriteSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos, PdfContentByte canvas) {
@@ -710,19 +730,19 @@ namespace iTextSharp.text.pdf {
          * if there are columns with colspan at boundaries.
          * The table event is only fired for complete rows.
          *
-         * @param colStart the first column to be written, zero index
-         * @param colEnd the last column to be written + 1. If it is -1 all the
-         * columns to the end are written
-         * @param rowStart the first row to be written, zero index
-         * @param rowEnd the last row to be written + 1. If it is -1 all the
-         * rows to the end are written
-         * @param xPos the x write coordinate
-         * @param yPos the y write coordinate
-         * @param canvas the <CODE>PdfContentByte</CODE> where the rows will
-         * be written to     
+         * @param colStart  the first column to be written, zero index
+         * @param colEnd    the last column to be written + 1. If it is -1 all the
+         *                  columns to the end are written
+         * @param rowStart  the first row to be written, zero index
+         * @param rowEnd    the last row to be written + 1. If it is -1 all the
+         *                  rows to the end are written
+         * @param xPos      the x write coordinate
+         * @param yPos      the y write coordinate
+         * @param canvas    the <CODE>PdfContentByte</CODE> where the rows will
+         *                  be written to     
+         * @return the y coordinate position of the bottom of the last row
          * @param   reusable if set to false, the content in the cells is "consumed";
          * if true, you can reuse the cells, the row, the parent table as many times you want.
-         * @return the y coordinate position of the bottom of the last row
          * @since 5.1.0 added the reusable parameter
          */
         public float WriteSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos, PdfContentByte canvas, bool reusable) {
@@ -772,8 +792,8 @@ namespace iTextSharp.text.pdf {
         * will be over the table.
         * </ul><p>
         * The layers are placed in sequence on top of each other.
-        * @param canvas the <CODE>PdfContentByte</CODE> where the rows will
-        * be written to
+        * @param    canvas the <CODE>PdfContentByte</CODE> where the rows will
+        *           be written to
         * @return an array of 4 <CODE>PdfContentByte</CODE>
         * @see #writeSelectedRows(int, int, float, float, PdfContentByte[])
         */    
@@ -827,13 +847,14 @@ namespace iTextSharp.text.pdf {
         public float GetRowHeight(int idx) {
             return GetRowHeight(idx, false);
         }
+
         /**
         * Gets the height of a particular row.
         * 
-        * @param idx the row index (starts at 0)
+        * @param idx        the row index (starts at 0)
         * @param firsttime  is this the first time the row heigh is calculated?
         * @return the height of a particular row
-        * @since    3.0.0
+        * @since 5.0.0
         */    
         protected internal float GetRowHeight(int idx, bool firsttime) {
             if (totalWidth <= 0 || idx < 0 || idx >= rows.Count)
@@ -847,7 +868,7 @@ namespace iTextSharp.text.pdf {
             PdfPCell cell;
             PdfPRow tmprow;
             for (int i = 0; i < relativeWidths.Length; i++) {
-                if(!RowSpanAbove(idx, i))
+                if (!RowSpanAbove(idx, i))
                     continue;
                 int rs = 1;
                 while (RowSpanAbove(idx - rs, i)) {
@@ -874,8 +895,8 @@ namespace iTextSharp.text.pdf {
         * Gets the maximum height of a cell in a particular row (will only be different
         * from getRowHeight is one of the cells in the row has a rowspan > 1).
         * 
-        * @param    rowIndex    the row index
-        * @param    cellIndex   the cell index
+        * @param rowIndex    the row index
+        * @param cellIndex   the cell index
         * @return the height of a particular row including rowspan
         * @since    2.1.6
         */    
@@ -897,10 +918,15 @@ namespace iTextSharp.text.pdf {
 
         /**
          * Checks if a cell in a row has a rowspan greater than 1.
+         * 
          * @since 5.1.0
          */
         public bool HasRowspan(int rowIdx) {
             if (rowIdx < rows.Count && GetRow(rowIdx).HasRowspan()) {
+                return true;
+            }
+            if (rowIdx > 0 && GetRow(rowIdx - 1).HasRowspan())
+            {
                 return true;
             }
             for (int i = 0; i < NumberOfColumns; i++) {
@@ -912,6 +938,7 @@ namespace iTextSharp.text.pdf {
         
         /**
          * Makes sure the footers value is lower than the headers value.
+         * 
          * @since 5.0.1
          */
         public void NormalizeHeadersFooters() {
@@ -1031,7 +1058,7 @@ namespace iTextSharp.text.pdf {
 		/**
         * Gets all the chunks in this element.
         *
-        * @return    an <CODE>ArrayList</CODE>
+        * @return    an <CODE>List</CODE>
         */
         public IList<Chunk> Chunks {
             get {
@@ -1049,18 +1076,18 @@ namespace iTextSharp.text.pdf {
                 return Element.PTABLE;
             }
         }
-        
+
         /**
-        * @see com.lowagie.text.Element#isContent()
         * @since   iText 2.0.8
+        * @see com.lowagie.text.Element#isContent()
         */
         public bool IsContent() {
             return true;
         }
 
         /**
-        * @see com.lowagie.text.Element#isNestable()
         * @since   iText 2.0.8
+        * @see com.lowagie.text.Element#isNestable()
         */
         public bool IsNestable() {
             return true;
@@ -1076,8 +1103,7 @@ namespace iTextSharp.text.pdf {
         public bool Process(IElementListener listener) {
             try {
                 return listener.Add(this);
-            }
-            catch (DocumentException) {
+            } catch (DocumentException) {
                 return false;
             }
         }
@@ -1110,6 +1136,61 @@ namespace iTextSharp.text.pdf {
             return rows[idx];
         }
 
+            
+        /**
+         * Defines where the table may be broken (if necessary).
+         *
+         * @param breakPoints int[]
+         */
+        public void SetBreakPoints(int[] breakPoints) {
+            for ( int i = 0; i < rows.Count; i++ ) {
+                GetRow(i).MayNotBreak = true;
+            }
+
+            for ( int i = 0; i < breakPoints.Length; i++ ) {
+                GetRow(breakPoints[i]).MayNotBreak = false;
+            }
+        }
+
+        /**
+         * Defines which rows should not allow a page break (if possible).
+         *
+         * @param rows int[]
+         */
+        public void KeepRowsTogether(int[] rows) {
+            for (int i = 0; i < rows.Length; i++) {
+                GetRow(rows[i]).MayNotBreak = true;
+            }
+        }
+
+        /**
+         * Defines a range of rows that should not allow a page break (if possible).
+         *
+         * @param start int
+         * @param end int
+         */
+        public void KeepRowsTogether(int start, int end) {
+            if (start < end) {
+                while (start < end) {
+                    GetRow(start).MayNotBreak = true;
+                    start++;
+                }
+            }
+        }
+
+        /**
+         * Defines a range of rows (from the parameter to the last row) that should not allow a page break (if possible).
+         *
+         * @param start int
+         */
+        public void KeepRowsTogether(int start) {
+            if (start < rows.Count) {
+                for (int i = start; i < rows.Count; i++) {
+                    GetRow(i).MayNotBreak = true;
+                }
+            }
+        }
+
         /**
         * Gets an arraylist with all the rows in the table.
         * @return an arraylist
@@ -1124,7 +1205,7 @@ namespace iTextSharp.text.pdf {
         * Gets an arraylist with a selection of rows.
         * @param    start   the first row in the selection
         * @param    end     the first row that isn't part of the selection
-        * @return   a selection of rows
+        * @return a selection of rows
         * @since    2.1.6
         */
         public List<PdfPRow> GetRows(int start, int end) {
@@ -1162,6 +1243,11 @@ namespace iTextSharp.text.pdf {
             return row;
         }
 
+        /**
+         * Sets the table event for this table.
+         *
+         * @param event the table event for this table
+         */
         public IPdfPTableEvent TableEvent {
             get {
                 return tableEvent;
@@ -1188,7 +1274,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        internal float [][] GetEventWidths(float xPos, int firstRow, int lastRow, bool includeHeaders) {
+        internal float[][] GetEventWidths(float xPos, int firstRow, int lastRow, bool includeHeaders) {
             if (includeHeaders) {
                 firstRow = Math.Max(firstRow, headerRows);
                 lastRow = Math.Max(lastRow, headerRows);
@@ -1212,8 +1298,7 @@ namespace iTextSharp.text.pdf {
                         else
                             widths[n++] = row.GetEventWidth(xPos, absoluteWidths);
                 }
-            }
-            else {
+            } else {
                 int numCols = NumberOfColumns;
                 float[] width = new float[numCols + 1];
                 width[0] = xPos;
@@ -1239,7 +1324,7 @@ namespace iTextSharp.text.pdf {
         * (for instance if the footer says "continued on the next page")
         * 
         * @return Value of property skipLastFooter.
-        * @since   2.1.6
+        * @since 2.1.6
         */
         public bool SkipLastFooter {
             get {
@@ -1317,10 +1402,10 @@ namespace iTextSharp.text.pdf {
         /**
         * When set the last row on every page will be extended to fill
         * all the remaining space to the bottom boundary; except maybe the
-        * final row.
+        * row.
         * 
         * @param extendLastRows true to extend the last row on each page; false otherwise
-        * @param extendFinalRow false if you don't want to extend the final row of the complete table
+        * @param extendFinalRow false if you don't want to extend the row of the complete table
         * @since iText 5.0.0
         */
         public void SetExtendLastRow(bool extendLastRows, bool extendFinalRow) {
@@ -1330,9 +1415,10 @@ namespace iTextSharp.text.pdf {
         
         /**
         * Gets the value of the last row extension, taking into account
-        * if the final row is reached or not.
+        * if the row is reached or not.
         * 
-        * @return true if the last row will extend; false otherwise
+        * @return true if the last row will extend; 
+         *        false otherwise
         * @since iText 5.0.0
         */
         public bool IsExtendLastRow(bool newPageFollows) {

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.util.collections;
+using iTextSharp.text.log;
 using iTextSharp.text.pdf.draw;
 using iTextSharp.text.error_messages;
 
@@ -73,7 +74,10 @@ namespace iTextSharp.text.pdf {
  * @author Paulo Soares
  */
 
-public class ColumnText {
+    public class ColumnText{
+
+    private readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(PdfPTable));
+
     /** Eliminate the arabic vowels */    
     public int AR_NOVOWEL = ArabicLigaturizer.ar_novowel;
     /** Compose the tashkeel in the ligatures. */    
@@ -1433,10 +1437,25 @@ public class ColumnText {
                 // k will be the first row that doesn't fit
                 for (k = rowIdx; k < table.Size; ++k) {
                     float rowHeight = table.GetRowHeight(k);
+                    LOGGER.Info(String.Format("Row %s height %s: space left %s", k, rowHeight, yTemp - rowHeight - minY));
                     if (yTemp - rowHeight < minY)
                         break;
                     yTemp -= rowHeight;
                 }
+
+                LOGGER.Info("Want to split at row " + k);
+                int kTemp = k;
+                while (kTemp > rowIdx && kTemp < table.Size && table.GetRow(kTemp).MayNotBreak)
+                {
+                    LOGGER.Info("May not split at row " + kTemp);
+                    kTemp--;
+                }
+                if (kTemp > rowIdx && kTemp < k)
+                {
+                    yTemp = minY;
+                    k = kTemp;
+                }
+                LOGGER.Info("Will split at row " + k);
                 // only for incomplete tables:
                 if (!table.ElementComplete) {
                     yTemp += footerHeight;
@@ -1479,6 +1498,7 @@ public class ColumnText {
                     PdfPRow newRow = table.GetRow(k).SplitRow(table, k, h);
                     // if the row isn't null add it as an extra row
                     if (newRow == null) {
+                        LOGGER.Info("Didn't split row!");
                         splittedRow = -1;
                         if (rowIdx == k)
                             return NO_MORE_COLUMN;
@@ -1486,6 +1506,7 @@ public class ColumnText {
                     else {
                         yTemp = minY;
                         table.Rows.Insert(++k, newRow);
+                        LOGGER.Info("Inserting row at position " + k);
                     }
                 }
                 // We're no longer in the first pass
@@ -1571,11 +1592,18 @@ public class ColumnText {
                 else if (table.ExtendLastRow && minY > PdfPRow.BOTTOM_LIMIT) {
                     yTemp = minY;
                 }
+
                 yLine = yTemp;
                 descender = 0;
                 currentLeading = 0;
                 if (!(skipHeader || table.ElementComplete)) {
                     yLine += footerHeight;
+                }
+                 while (k < table.Size) {
+                	if (table.GetRowHeight(k) > 0 || table.HasRowspan(k)) {
+                		break;
+                	}
+                	k++;
                 }
                 if (k >= table.Size) {
                     // Use up space no more than left

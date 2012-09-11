@@ -790,6 +790,8 @@ namespace iTextSharp.text.pdf {
                 }
             }
             float height = Height;
+            if (height == EffectivePaddingTop + EffectivePaddingBottom)
+                height = 0;
             if (HasFixedHeight())
                 height = FixedHeight;
             else if (HasMinimumHeight() && height < MinimumHeight)
