@@ -157,6 +157,7 @@ public class CompareTool {
                     }
                     Array.Sort(imageFiles, new ImageNameComparator());
                     Array.Sort(cmpImageFiles, new ImageNameComparator());
+                    String differentPagesFail = null;
                     for (int i = 0; i < cnt; i++) {
                         Console.WriteLine("Comparing page " + (i + 1).ToString() + " (" + imageFiles[i].FullName + ")...");
                         FileStream is1 = new FileStream(imageFiles[i].FullName, FileMode.Open);
@@ -165,9 +166,8 @@ public class CompareTool {
                         is1.Close();
                         is2.Close();
                         if (!cmpResult) {
-                            String differentPagesFail = differentPages.Replace("<filename>", outPdf).Replace("<pagenumber>", (i + 1).ToString());
                             if (!string.IsNullOrEmpty(compareExec)) {
-                                String compareParams = this.compareParams.Replace("<image1>", imageFiles[i].FullName).Replace("<image2>", cmpImageFiles[i].FullName).Replace("<difference>", differenceImage);
+                                String compareParams = this.compareParams.Replace("<image1>", imageFiles[i].FullName).Replace("<image2>", cmpImageFiles[i].FullName).Replace("<difference>", differenceImage + (i + 1).ToString() + ".png");
                                 p = new Process();
                                 p.StartInfo.FileName = @compareExec;
                                 p.StartInfo.Arguments = @compareParams;
@@ -182,19 +182,33 @@ public class CompareTool {
                                 p.StandardError.Close();
                                 p.WaitForExit();
                                 if (p.ExitCode == 0) {
-                                    differentPagesFail += "\nPlease, examine " + differenceImage + " for more details.";
-                                } else {
-
+                                    if (differentPagesFail == null) {
+                                        differentPagesFail =
+                                            differentPages.Replace("<filename>", outPdf).Replace("<pagenumber>",
+                                                                                                 (i + 1).ToString());
+                                        differentPagesFail += "\nPlease, examine " + differenceImage + (i + 1).ToString() +
+                                                              ".png for more details.";
+                                    } else {
+                                        differentPagesFail =
+                                            "File " + outPdf + " differs.\nPlease, examine difference images for more details.";    
+                                    }
                                 }
                             } else {
+                                differentPagesFail =
+                                            differentPages.Replace("<filename>", outPdf).Replace("<pagenumber>",
+                                                                                                 (i + 1).ToString());
                                 differentPagesFail += "\nYou can optionally specify path to ImageMagick compare tool (e.g. -DcompareExec=\"C:/Program Files/ImageMagick-6.5.4-2/compare.exe\") to visualize differences.";
+                                break;
                             }
-                            if (bUnexpectedNumberOfPages)
-                                differentPagesFail = unexpectedNumberOfPages.Replace("<filename>", outPdf) + "\n" + differentPagesFail;
-                            return differentPagesFail;
                         } else {
                             Console.WriteLine("done.");
                         }
+                    }
+                    if (differentPagesFail != null) {
+                        return differentPagesFail;
+                    } else {
+                        if (bUnexpectedNumberOfPages)
+                            return unexpectedNumberOfPages.Replace("<filename>", outPdf) + "\n" + differentPagesFail;
                     }
                 } else {
                     return gsFailed.Replace("<filename>", outPdf);
