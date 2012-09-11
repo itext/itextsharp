@@ -1437,7 +1437,7 @@ namespace iTextSharp.text.pdf {
                 // k will be the first row that doesn't fit
                 for (k = rowIdx; k < table.Size; ++k) {
                     float rowHeight = table.GetRowHeight(k);
-                    LOGGER.Info(String.Format("Row %s height %s: space left %s", k, rowHeight, yTemp - rowHeight - minY));
+                    LOGGER.Info(String.Format("Row {0} height {1}: space left {2}", k, rowHeight, yTemp - rowHeight - minY));
                     if (yTemp - rowHeight < minY)
                         break;
                     yTemp -= rowHeight;

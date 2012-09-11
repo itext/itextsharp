@@ -660,7 +660,7 @@ namespace iTextSharp.text.pdf {
             else
                 colEnd = Math.Min(colEnd, totalCols);
 
-            LOGGER.Info(String.Format("Writing row %s to %s; column %s to %s", rowStart, rowEnd, colStart, colEnd));
+            LOGGER.Info(String.Format("Writing row {0} to {1}; column %s to {2}", rowStart, rowEnd, colStart, colEnd));
 
             float yPosStart = yPos;
             for (int k = rowStart; k < rowEnd; ++k) {
