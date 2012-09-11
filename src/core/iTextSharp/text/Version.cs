@@ -94,7 +94,7 @@ namespace iTextSharp.text {
 		    if (version == null) {
 			    version = new Version();
 			    try {
-                    Type type = Type.GetType("iTextSharp.license.LicenseKey, LicenseKey");
+                    Type type = Type.GetType("iTextSharp.license.LicenseKey, itextsharp.LicenseKey");
                     MethodInfo m = type.GetMethod("GetLicenseeInfo");
                     String[] info = (String[])m.Invoke(Activator.CreateInstance(type), null);
                     if (info[3] != null && info[3].Trim().Length > 0)
@@ -122,6 +122,21 @@ namespace iTextSharp.text {
                         version.iTextVersion += " (" + info[2];
                         if (!version.key.ToLower().StartsWith("trial"))
                         {
+                            version.iTextVersion += "; licensed version)";
+                        }
+                        else
+                        {
+                            version.iTextVersion += "; " + version.key + ")";
+                        }
+                    }
+                    // fall back to contact name, if company name is unavailable
+                    else if (info[0] != null && info[0].Trim().Length > 0)
+                    {
+                        version.iTextVersion += " (" + info[0];
+                        if (!version.key.ToLower().StartsWith("trial"))
+                        {
+                            // we shouldn't have a licensed version without company name,
+                            // but let's account for it anyway
                             version.iTextVersion += "; licensed version)";
                         }
                         else
