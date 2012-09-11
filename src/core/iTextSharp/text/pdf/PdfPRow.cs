@@ -1,5 +1,7 @@
 using System;
 using iTextSharp.text;
+using iTextSharp.text.log;
+
 /*
  * $Id$
  *
@@ -52,7 +54,10 @@ namespace iTextSharp.text.pdf {
     * @author Paulo Soares
     */
     public class PdfPRow {
-
+        private readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(PdfPTable));
+        
+        /** True if the table may not break after this row. */
+        public bool mayNotBreak = false;
         /** the bottom limit (bottom right y) */
         public const float BOTTOM_LIMIT = -(1 << 30);
         /**
@@ -95,6 +100,7 @@ namespace iTextSharp.text.pdf {
         * @param row
         */
         public PdfPRow(PdfPRow row) {
+            mayNotBreak = row.mayNotBreak;
             maxHeight = row.maxHeight;
             calculated = row.calculated;
             cells = new PdfPCell[row.cells.Length];
@@ -181,6 +187,12 @@ namespace iTextSharp.text.pdf {
                 }
             }
             calculated = true;
+        }
+
+        public bool MayNotBreak
+        {
+            get { return mayNotBreak; }
+            set { mayNotBreak = value; }
         }
 
         /**
@@ -381,7 +393,10 @@ namespace iTextSharp.text.pdf {
                         if (calcHeight > 0) {
                             if (cell.UseDescender)
                                 calcHeight -= ct.Descender;
-                            ct = ColumnText.Duplicate(cell.Column);
+                            if (reusable)
+                                ct = ColumnText.Duplicate(cell.Column);
+                            else
+                                ct = cell.Column;
                             ct.Canvases = canvases;
                             ct.SetSimpleColumn(-0.003f, -0.001f, netWidth + 0.003f, calcHeight);
                             float pivotX;
@@ -593,6 +608,7 @@ namespace iTextSharp.text.pdf {
         * an empty row would result
         */
         public PdfPRow SplitRow(PdfPTable table, int rowIndex, float new_height) {
+            LOGGER.Info("Splitting " + rowIndex + " " + new_height);
             // second part of the row
             PdfPCell[] newCells = new PdfPCell[cells.Length];
             float[] fixHs = new float[cells.Length];
