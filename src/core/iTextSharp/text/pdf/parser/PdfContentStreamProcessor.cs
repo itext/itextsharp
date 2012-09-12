@@ -66,11 +66,11 @@ namespace iTextSharp.text.pdf.parser {
         /** Stack keeping track of the graphics state. */
         private Stack<GraphicsState> gsStack = new Stack<GraphicsState>();
         /** Text matrix. */
-        protected Matrix textMatrix;
+        private Matrix textMatrix;
         /** Text line matrix. */
         private Matrix textLineMatrix;
         /** Listener that will be notified of render events */
-        protected IRenderListener renderListener;
+        private IRenderListener renderListener;
         /** A map with all supported XObject handlers */
         private IDictionary<PdfName, IXObjectDoHandler> xobjectDoHandlers;
         /**
@@ -83,7 +83,7 @@ namespace iTextSharp.text.pdf.parser {
          * A stack containing marked content info.
          * @since 5.0.2
          */
-        protected Stack<MarkedContentInfo> markedContentStack = new Stack<MarkedContentInfo>();
+        private Stack<MarkedContentInfo> markedContentStack = new Stack<MarkedContentInfo>();
 
         /**
          * Creates a new PDF Content Stream Processor that will send it's output to the
@@ -222,7 +222,7 @@ namespace iTextSharp.text.pdf.parser {
          * Returns the current graphics state.
          * @return  the graphics state
          */
-        protected GraphicsState Gs(){
+        private GraphicsState Gs(){
             return gsStack.Peek();
         }
 
@@ -265,7 +265,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return  the encoded String
          * @since 2.1.7
          */
-        protected String Decode(PdfString inp){
+        private String Decode(PdfString inp){
             byte[] bytes = inp.GetBytes();
             return Gs().font.Decode(bytes, 0, bytes.Length);
         }
@@ -288,7 +288,7 @@ namespace iTextSharp.text.pdf.parser {
          * Displays text.
          * @param string    the text to display
          */
-        protected virtual void DisplayPdfString(PdfString str){
+        private void DisplayPdfString(PdfString str){
 
             String unicode = Decode(str);
 
@@ -329,7 +329,7 @@ namespace iTextSharp.text.pdf.parser {
          * Adjusts the text matrix for the specified adjustment value (see TJ oper in the PDF spec for information)
          * @param tj the text adjustment
          */
-        protected void ApplyTextAdjust(float tj){
+        private void ApplyTextAdjust(float tj){
             float adjustBy = -tj/1000f * Gs().fontSize * Gs().horizontalScaling;
 
             textMatrix = new Matrix(adjustBy, 0).Multiply(textMatrix);
