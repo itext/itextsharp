@@ -69,8 +69,27 @@ namespace iTextSharp.text.pdf.intern{
                 return;
             switch (key) {
                 case PdfIsoKeys.PDFISOKEY_FONT:
-                    if (!((BaseFont)obj1).IsEmbedded())
-                        throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("all.the.fonts.must.be.embedded.this.one.isn.t.1", ((BaseFont) obj1).PostscriptFontName));
+                    BaseFont bf = (BaseFont)obj1;
+                    if (bf.FontType == BaseFont.FONT_TYPE_DOCUMENT) {
+                        PdfStream prs = null;
+                        PdfDictionary fontDictionary = ((DocumentFont)bf).FontDictionary;
+                        PdfDictionary fontDescriptor = fontDictionary.GetAsDict(PdfName.FONTDESCRIPTOR);
+                        if (fontDescriptor != null) {
+                            prs = fontDescriptor.GetAsStream(PdfName.FONTFILE);
+                            if (prs == null) {
+                                prs = fontDescriptor.GetAsStream(PdfName.FONTFILE2);
+                            }
+                            if (prs == null) {
+                                prs = fontDescriptor.GetAsStream(PdfName.FONTFILE3);
+                            }
+                        }
+                        if (prs == null) {
+                            throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("all.the.fonts.must.be.embedded.this.one.isn.t.1", ((BaseFont)obj1).PostscriptFontName));
+                        }
+                    } else {
+                        if (!bf.IsEmbedded())
+                            throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("all.the.fonts.must.be.embedded.this.one.isn.t.1", ((BaseFont)obj1).PostscriptFontName));
+                    }
                     break;
                 case PdfIsoKeys.PDFISOKEY_IMAGE:
                     PdfImage image = (PdfImage)obj1;
