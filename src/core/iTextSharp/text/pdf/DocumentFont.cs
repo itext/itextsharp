@@ -127,6 +127,10 @@ namespace iTextSharp.text.pdf {
                 }
             }
         }
+
+        public PdfDictionary FontDictionary {
+            get { return font; }        
+        }
         
         private void ProcessType0(PdfDictionary font) {
             PdfObject toUniObject = PdfReader.GetPdfObjectRelease(font.Get(PdfName.TOUNICODE));

@@ -2229,13 +2229,14 @@ namespace iTextSharp.text.pdf {
         * and position 1 is an <CODE>PdfIndirectReference</CODE>
         */
         internal FontDetails AddSimple(BaseFont bf) {
-            if (bf.FontType == BaseFont.FONT_TYPE_DOCUMENT) {
-                return new FontDetails(new PdfName("F" + (fontNumber++)), ((DocumentFont)bf).IndirectReference, bf);
-            }
             FontDetails ret;
             if (!documentFonts.TryGetValue(bf, out ret)) {
                 PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_FONT, bf);
-                ret = new FontDetails(new PdfName("F" + (fontNumber++)), body.PdfIndirectReference, bf);
+                if (bf.FontType == BaseFont.FONT_TYPE_DOCUMENT) {
+                    ret = new FontDetails(new PdfName("F" + fontNumber++), ((DocumentFont)bf).IndirectReference, bf);
+                } else {
+                    ret = new FontDetails(new PdfName("F" + fontNumber++), body.PdfIndirectReference, bf);
+                }
                 documentFonts[bf] = ret;
             }
             return ret;
