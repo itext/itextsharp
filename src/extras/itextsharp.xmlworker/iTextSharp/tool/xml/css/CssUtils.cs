@@ -182,7 +182,7 @@ namespace iTextSharp.tool.xml.css {
          */
         public IDictionary<String, String> ParseBorder(String border) {
             Dictionary<String, String> map = new Dictionary<String, String>(0);
-            String[] split = border.Split(whitespace);
+            String[] split = SplitComplexCssStyle(border);
             int length = split.Length;
             if (length == 1) {
                 if (borderwidth.ContainsKey(split[0]) || IsNumericValue(split[0]) || IsMetricValue(split[0])) {
@@ -248,7 +248,7 @@ namespace iTextSharp.tool.xml.css {
          */
         public IDictionary<String, String> ProcessBackground(String background) {
             IDictionary<String, String> rules = new Dictionary<String, String>();
-            String[] styles = background.Split(whitespace);
+            String[] styles = SplitComplexCssStyle(background);
             foreach (String style in styles) {
                 if (style.Contains("url(")) {
                     rules[CSS.Property.BACKGROUND_IMAGE] = style;
@@ -288,7 +288,7 @@ namespace iTextSharp.tool.xml.css {
          */
         public IDictionary<String, String> ProcessListStyle(String listStyle) {
             IDictionary<String, String> rules = new Dictionary<String, String>();
-            String[] styles = listStyle.Split(whitespace);
+            String[] styles = SplitComplexCssStyle(listStyle);
             foreach (String style in styles) {
                 if (Util.EqualsIgnoreCase(style, CSS.Value.DISC)
                         || Util.EqualsIgnoreCase(style, CSS.Value.SQUARE)
@@ -654,6 +654,11 @@ namespace iTextSharp.tool.xml.css {
                 s = s.Substring(1, s.Length - 2);
             }
             return s;
+        }
+
+        public String[] SplitComplexCssStyle(String s) {
+            s = Regex.Replace(s, "\\s*,\\s*", ",");
+            return Regex.Split(s, "\\s");
         }
     }
 }
