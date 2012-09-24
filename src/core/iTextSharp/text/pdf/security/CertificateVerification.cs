@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Org.BouncyCastle.Security.Certificates;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.Ocsp;
 using Org.BouncyCastle.Tsp;
@@ -62,6 +63,28 @@ namespace iTextSharp.text.pdf.security {
          * if no error
          */
         public static String VerifyCertificate(X509Certificate cert, ICollection<X509Crl> crls, DateTime calendar) {
+            foreach (String oid in cert.GetCriticalExtensionOids())
+            {
+                // KEY USAGE and DIGITAL SIGNING is ALLOWED
+                if ("2.5.29.15".Equals(oid) && cert.GetKeyUsage()[0])
+                {
+                    continue;
+                }
+                try
+                {
+                    // EXTENDED KEY USAGE and TIMESTAMPING is ALLOWED
+                    if ("2.5.29.37".Equals(oid) && cert.GetExtendedKeyUsage().Contains("1.3.6.1.5.5.7.3.8"))
+                    {
+                        continue;
+                    }
+                }
+                catch (CertificateParsingException e)
+                {
+                    // DO NOTHING;
+                }
+                return "Has unsupported critical extension";
+            }
+
             try {
                 if (!cert.IsValid(calendar))
                     return "The certificate has expired or is not yet valid";

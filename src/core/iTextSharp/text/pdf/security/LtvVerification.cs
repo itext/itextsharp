@@ -236,15 +236,7 @@ namespace iTextSharp.text.pdf.security {
                 bc = pkcs.GetEncoded();
             }
             bt = HashBytesSha1(bc);
-            return new PdfName(ConvertToHex(bt));
-        }
-
-        private static String ConvertToHex(byte[] bt) {
-            ByteBuffer buf = new ByteBuffer();
-            foreach (byte b in bt) {
-                buf.AppendHex(b);
-            }
-            return PdfEncodings.ConvertToString(buf.ToByteArray(), null).ToUpperInvariant();
+            return new PdfName(Utilities.ConvertToHex(bt));
         }
         
         private static byte[] HashBytesSha1(byte[] b) {

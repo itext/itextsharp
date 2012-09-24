@@ -81,10 +81,15 @@ namespace iTextSharp.text.pdf.security {
             }
             byte[] tsImprint = new byte[messageDigest.GetDigestSize()];
             messageDigest.DoFinal(tsImprint, 0);
-            byte[] tsToken = tsa.GetTimeStampToken(tsImprint);
-
+            byte[] tsToken;
+            try {
+        	    tsToken = tsa.GetTimeStampToken(tsImprint);
+            }
+            catch(Exception e) {
+        	    throw new GeneralSecurityException(e.Message);
+            }
             if (contentEstimated + 2 < tsToken.Length)
-                throw new Exception("Not enough space");
+                throw new IOException("Not enough space");
 
             byte[] paddedSig = new byte[contentEstimated];
             System.Array.Copy(tsToken, 0, paddedSig, 0, tsToken.Length);

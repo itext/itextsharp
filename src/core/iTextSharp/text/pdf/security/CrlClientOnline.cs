@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using Org.BouncyCastle.Security.Certificates;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.log;
 using iTextSharp.text.error_messages;
@@ -75,8 +76,7 @@ namespace iTextSharp.text.pdf.security {
          */
         public CrlClientOnline(params String[] crls) {
             foreach (String url in crls) {
-                urls.Add(url);
-                LOGGER.Info("Added CRL url: " + url);
+                AddUrl(url);
             }
         }
         
@@ -90,15 +90,32 @@ namespace iTextSharp.text.pdf.security {
                     LOGGER.Info("Checking certificate: " + cert.SubjectDN.ToString());
                     url = CertificateUtil.GetCRLURL(cert);
                     if (url != null) {
-                        urls.Add(url);
-                        LOGGER.Info("Added CRL url: " + url);
+                        AddUrl(url);
                     }
-                } catch {
-                    LOGGER.Info("Skipped CRL url: " + url);
+                }
+                catch (CertificateParsingException e)
+                {
+                    LOGGER.Info("Skipped CRL url: (certificate could not be parsed)");
                 }
             }
         }
-        
+
+        /**
+         * Adds an URL to the list of CRL URLs
+         * @param url	an URL in the form of a String
+         */
+        protected void AddUrl(String url)
+        {
+            if (urls.Contains(url))
+            {
+                LOGGER.Info("Skipped CRL url (duplicate): " + url);
+                return;
+            }
+
+            LOGGER.Info("Added CRL url: " + url);
+            urls.Add(url);
+        }
+
         /**
          * Fetches the CRL bytes from an URL.
          * If no url is passed as parameter, the url will be obtained from the certificate.
