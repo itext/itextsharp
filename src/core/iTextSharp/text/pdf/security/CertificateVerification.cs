@@ -78,7 +78,7 @@ namespace iTextSharp.text.pdf.security {
                         continue;
                     }
                 }
-                catch (CertificateParsingException e)
+                catch (CertificateParsingException)
                 {
                     // DO NOTHING;
                 }

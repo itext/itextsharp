@@ -250,7 +250,6 @@ namespace iTextSharp.text.pdf.security {
             CalcSignCertificateChain();
             digestAlgorithmOid = ((DerObjectIdentifier)((Asn1Sequence)signerInfo[2])[0]).Id;
             next = 3;
-            bool foundCades = false;
             if (signerInfo[next] is Asn1TaggedObject) {
                 Asn1TaggedObject tagsig = (Asn1TaggedObject)signerInfo[next];
                 Asn1Set sseq = Asn1Set.GetInstance(tagsig, false);
@@ -290,7 +289,6 @@ namespace iTextSharp.text.pdf.security {
                         byte[] hs2 = cerv2.GetCertHash();
                         if (!Arrays.AreEqual(signCertHash, hs2))
                             throw new ArgumentException("Signing certificate doesn't match the ESS information.");
-                        foundCades = true;
                     }
                     else if (isCades && idSeq2.Equals(SecurityIDs.ID_AA_SIGNING_CERTIFICATE_V2)) {
                         Asn1Set setout = (Asn1Set)seq2[1];
@@ -305,7 +303,6 @@ namespace iTextSharp.text.pdf.security {
                         byte[] hs2 = cerv2.GetCertHash();
                         if (!Arrays.AreEqual(signCertHash, hs2))
                             throw new ArgumentException("Signing certificate doesn't match the ESS information.");
-                        foundCades = true;
                     }
                 }
                 if (digestAttr == null)
