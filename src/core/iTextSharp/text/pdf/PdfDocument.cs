@@ -638,16 +638,6 @@ namespace iTextSharp.text.pdf {
                     NewLine();
                     break;
                 }
-                case Element.MULTI_COLUMN_TEXT: {
-                    EnsureNewLine();
-                    FlushLines();
-                    MultiColumnText multiText = (MultiColumnText) element;
-                    float height = multiText.Write(writer.DirectContent, this, IndentTop - currentHeight);
-                    currentHeight += height;
-                    text.MoveText(0, -1f* height);
-                    pageEmpty = false;
-                    break;
-                }
                 case Element.JPEG:
                 case Element.JPEG2000:
                 case Element.JBIG2:

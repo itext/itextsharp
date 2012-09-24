@@ -573,9 +573,6 @@
     <Compile Include="iTextSharp\text\pdf\LZWDecoder.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\pdf\MultiColumnText.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="iTextSharp\text\pdf\OutputStreamCounter.cs">
       <SubType>Code</SubType>
     </Compile>

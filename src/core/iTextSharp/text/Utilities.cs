@@ -270,5 +270,18 @@ namespace iTextSharp.text {
                 return sr.ReadToEnd();
             }
 	    }
+
+        /**
+         * Converts an array of bytes to a String of hexadecimal values
+         * @param bytes	a byte array
+         * @return	the same bytes expressed as hexadecimal values
+         */
+        public static String ConvertToHex(byte[] bytes) {
+	        ByteBuffer buf = new ByteBuffer();
+	        foreach (byte b in bytes) {
+	            buf.AppendHex(b);
+	        }
+	        return PdfEncodings.ConvertToString(buf.ToByteArray(), null).ToUpper();
+	    }
     }
 }

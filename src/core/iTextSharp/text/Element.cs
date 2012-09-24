@@ -162,9 +162,6 @@ namespace iTextSharp.text
          * @since	5.3.0
          */
         public const int DIV = 37;
-
-        /// <summary> This is a possible type of <CODE>Element</CODE>. </summary>
-        public const int MULTI_COLUMN_TEXT = 40;
 	
         /** This is a possible type of <CODE>Element</CODE>. */
         public const int MARKED = 50;

@@ -3083,7 +3083,7 @@ namespace iTextSharp.text.pdf {
                         PdfObject v = dic.Get(key);
                         if (v.IsIndirect()) {
                             int num = ((PRIndirectReference)v).Number;
-                            if (num >= xrefObj.Count || (!partial && xrefObj[num] == null)) {
+                            if (num < 0 || num >= xrefObj.Count || (!partial && xrefObj[num] == null)) {
                                 dic.Put(key, PdfNull.PDFNULL);
                                 continue;
                             }

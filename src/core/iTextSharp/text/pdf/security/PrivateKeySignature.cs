@@ -76,8 +76,11 @@ namespace iTextSharp.text.pdf.security {
                 encryptionAlgorithm = "RSA";
             else if (pk is DsaKeyParameters)
                 encryptionAlgorithm = "DSA";
+            else if (pk is ECKeyParameters)
+                encryptionAlgorithm = "ECDSA";
             else
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.key.algorithm.1", pk.ToString()));
+            
         }
         
         /**

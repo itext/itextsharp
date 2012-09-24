@@ -327,19 +327,19 @@ namespace iTextSharp.text {
                                     continue;
                                 }
                                 j+=4;
-                                int dx = (byteappd[j] << 8) + byteappd[j+1];
+                                int dx = (byteappd[j] << 8) + (byteappd[j+1] & 0xff);
                                 j+=2;
                                 // skip 2 unknown bytes
                                 j+=2;
-                                int unitsx = (byteappd[j] << 8) + byteappd[j+1];
+                                int unitsx = (byteappd[j] << 8) + (byteappd[j + 1] & 0xff);
                                 j+=2;
                                 // skip 2 unknown bytes
                                 j+=2;
-                                int dy = (byteappd[j] << 8) + byteappd[j+1];
+                                int dy = (byteappd[j] << 8) + (byteappd[j + 1] & 0xff);
                                 j+=2;
                                 // skip 2 unknown bytes
                                 j+=2;
-                                int unitsy = (byteappd[j] << 8) + byteappd[j+1];
+                                int unitsy = (byteappd[j] << 8) + (byteappd[j + 1] & 0xff);
                                 
                                 if (unitsx == 1 || unitsx == 2) {
                                     dx = (unitsx == 2 ? (int)(dx * 2.54f + 0.5f) : dx);

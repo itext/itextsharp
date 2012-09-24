@@ -623,11 +623,12 @@ namespace iTextSharp.text.pdf {
         
         /** Appearance compliant with the recommendations introduced in Acrobat 6? */
         private bool acro6Layers = true;
-        
+
         /**
          * Acrobat 6.0 and higher recommends that only layer n0 and n2 be present.
          * Use this method with value <code>false</code> if you want to ignore this recommendation.
          * @param acro6Layers if <code>true</code> only the layers n0 and n2 will be present
+         * @deprecated Adobe no longer supports Adobe Acrobat / Reader versions older than 9
          */
         public bool Acro6Layers {
             get {
@@ -1212,11 +1213,6 @@ namespace iTextSharp.text.pdf {
                 PdfDictionary widget = af.GetFieldItem(name).GetWidget(0);
                 writer.MarkUsed(widget);
                 fieldLock = widget.GetAsDict(PdfName.LOCK);
-                if (fieldLock != null) {
-                    if (!fieldLock.Contains(PdfName.FIELDS)) {
-                        fieldLock = null;
-                    }
-                }
                 widget.Put(PdfName.P, writer.GetPageReference(Page));
                 widget.Put(PdfName.V, refSig);
                 PdfObject obj = PdfReader.GetPdfObjectRelease(widget.Get(PdfName.F));
@@ -1370,7 +1366,9 @@ namespace iTextSharp.text.pdf {
             reference.Put(new PdfName("DigestLocation"), loc);
             reference.Put(new PdfName("DigestMethod"), new PdfName("MD5"));
             reference.Put(PdfName.DATA, writer.reader.Trailer.Get(PdfName.ROOT));
-            PdfArray types = new PdfArray();
+            PdfArray types = crypto.GetAsArray(PdfName.REFERENCE);
+            if (types == null)
+        	    types = new PdfArray();
             types.Add(reference);
             crypto.Put(PdfName.REFERENCE, types);
         }

@@ -153,8 +153,7 @@ namespace iTextSharp.text.pdf.security {
         }
 
         /**
-         * Use this constructor if you want to verify a signature using
-         * the sub-filter adbe.pkcs7.detached or adbe.pkcs7.sha1.
+         * Use this constructor if you want to verify a signature.
          * @param contentsKey the /Contents key
          * @param tsp set to true if there's a PAdES LTV time stamp.
          * @param provider the provider or <code>null</code> for the default provider
@@ -491,11 +490,7 @@ namespace iTextSharp.text.pdf.security {
          * @return the algorithm used to calculate the message digest
          */
         public String GetDigestAlgorithm() {
-            String dea = EncryptionAlgorithms.GetAlgorithm(digestEncryptionAlgorithmOid);
-            if (dea == null)
-                dea = digestEncryptionAlgorithmOid;
-            
-            return GetHashAlgorithm() + "with" + dea;
+            return GetHashAlgorithm() + "with" + GetEncryptionAlgorithm();
         }
 
         /*
@@ -527,6 +522,10 @@ namespace iTextSharp.text.pdf.security {
                 }
                 else if (digestEncryptionAlgorithm.Equals("DSA")) {
                     this.digestEncryptionAlgorithmOid = SecurityIDs.ID_DSA;
+                }
+                else if (digestEncryptionAlgorithm.Equals("ECDSA"))
+                {
+                    this.digestEncryptionAlgorithmOid = SecurityIDs.ID_ECDSA;
                 }
                 else
                     throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.key.algorithm.1", digestEncryptionAlgorithm));
@@ -1193,6 +1192,27 @@ namespace iTextSharp.text.pdf.security {
                     return DateTime.MaxValue;
                 return timeStampToken.TimeStampInfo.GenTime;
             }
+        }
+
+
+        /**
+         * Returns the filter subtype.
+         */
+        public PdfName GetFilterSubtype()
+        {
+            return filterSubtype;
+        }
+
+        /**
+         * Returns the encryption algorithm
+         * @return	the name of an encryption algorithm
+         */
+        public String GetEncryptionAlgorithm()
+        {
+            String encryptAlgo = EncryptionAlgorithms.GetAlgorithm(digestEncryptionAlgorithmOid);
+            if (encryptAlgo == null)
+                encryptAlgo = digestEncryptionAlgorithmOid;
+            return encryptAlgo;
         }
     }
 }

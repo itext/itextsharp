@@ -91,6 +91,52 @@ namespace iTextSharp.text.pdf.security {
             return gen.Generate();
         }
         
+        private OcspResp GetOcspResponse(X509Certificate checkCert, X509Certificate rootCert, String url) {
+            if (checkCert == null || rootCert == null)
+                return null;
+            if (url == null) {
+                url = CertificateUtil.GetOCSPURL(checkCert);
+            }
+            if (url == null)
+                return null;
+            LOGGER.Info("Getting OCSP from " + url);
+            OcspReq request = GenerateOCSPRequest(rootCert, checkCert.SerialNumber);
+            byte[] array = request.GetEncoded();
+            
+            HttpWebRequest con = (HttpWebRequest)WebRequest.Create(url);
+            con.ContentLength = array.Length;
+            con.ContentType = "application/ocsp-request";
+            con.Accept = "application/ocsp-response";
+            con.Method = "POST";
+            Stream outp = con.GetRequestStream();
+            outp.Write(array, 0, array.Length);
+            outp.Close();
+            HttpWebResponse response = (HttpWebResponse)con.GetResponse();
+            if (response.StatusCode != HttpStatusCode.OK)
+                throw new IOException(MessageLocalization.GetComposedMessage("invalid.http.response.1", (int)response.StatusCode));
+            Stream inp = response.GetResponseStream();
+            OcspResp ocspResponse = new OcspResp(inp);
+            inp.Close();
+            return new OcspResp(RandomAccessFileOrArray.InputStreamToArray(inp));
+        }
+        
+        public BasicOcspResp GetBasicOCSPResp(X509Certificate checkCert, X509Certificate rootCert, String url) {
+            try {
+                OcspResp ocspResponse = GetOcspResponse(checkCert, rootCert, url);
+                if (ocspResponse == null)
+            	    return null;
+                if (ocspResponse.Status != 0)
+                    return null;
+                return (BasicOcspResp) ocspResponse.GetResponseObject();
+            }
+            catch (Exception ex) {
+                if (LOGGER.IsLogging(Level.ERROR))
+                    LOGGER.Error(ex.Message);
+            }
+            return null;
+        }
+        
+
         /**
          * Gets an encoded byte array with OCSP validation. The method should not throw an exception.
          * @param checkCert to certificate to check
@@ -101,34 +147,7 @@ namespace iTextSharp.text.pdf.security {
          */
         public virtual byte[] GetEncoded(X509Certificate checkCert, X509Certificate rootCert, String url) {
             try {
-                if (checkCert == null || rootCert == null)
-                    return null;
-                if (url == null) {
-                    url = CertificateUtil.GetOCSPURL(checkCert);
-                }
-                if (url == null)
-                    return null;
-                OcspReq request = GenerateOCSPRequest(rootCert, checkCert.SerialNumber);
-                byte[] array = request.GetEncoded();
-                HttpWebRequest con = (HttpWebRequest)WebRequest.Create(url);
-                con.ContentLength = array.Length;
-                con.ContentType = "application/ocsp-request";
-                con.Accept = "application/ocsp-response";
-                con.Method = "POST";
-                Stream outp = con.GetRequestStream();
-                outp.Write(array, 0, array.Length);
-                outp.Close();
-                HttpWebResponse response = (HttpWebResponse)con.GetResponse();
-                if (response.StatusCode != HttpStatusCode.OK)
-                    throw new IOException(MessageLocalization.GetComposedMessage("invalid.http.response.1", (int)response.StatusCode));
-                Stream inp = response.GetResponseStream();
-                OcspResp ocspResponse = new OcspResp(inp);
-                inp.Close();
-                response.Close();
-
-                if (ocspResponse.Status != 0)
-                    throw new IOException(MessageLocalization.GetComposedMessage("invalid.status.1", ocspResponse.Status));
-                BasicOcspResp basicResponse = (BasicOcspResp) ocspResponse.GetResponseObject();
+                BasicOcspResp basicResponse = GetBasicOCSPResp(checkCert, rootCert, url);
                 if (basicResponse != null) {
                     SingleResp[] responses = basicResponse.Responses;
                     if (responses.Length == 1) {
@@ -148,7 +167,7 @@ namespace iTextSharp.text.pdf.security {
             }
             catch (Exception ex) {
                 if (LOGGER.IsLogging(Level.ERROR))
-                    LOGGER.Error("OcspClientBouncyCastle", ex);
+                    LOGGER.Error(ex.Message);
             }
             return null;
         }
