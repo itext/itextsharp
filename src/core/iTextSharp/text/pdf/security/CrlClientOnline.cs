@@ -93,7 +93,7 @@ namespace iTextSharp.text.pdf.security {
                         AddUrl(url);
                     }
                 }
-                catch (CertificateParsingException e)
+                catch (CertificateParsingException)
                 {
                     LOGGER.Info("Skipped CRL url: (certificate could not be parsed)");
                 }
