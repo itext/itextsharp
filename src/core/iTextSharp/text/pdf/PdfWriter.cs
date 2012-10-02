@@ -3205,9 +3205,8 @@ namespace iTextSharp.text.pdf {
 
          protected static void WriteKeyInfo(Stream os) {
     	    Version version = Version.GetInstance();
-    	    if (version.Key == null)
-    		    return;
-            byte[] tmp = GetISOBytes(String.Format("%%%s-%s\n", version.Key, version.Release));
+            String k = version.Key ?? "iText";
+            byte[] tmp = GetISOBytes(String.Format("%{0}-{1}\n", k, version.Release));
             os.Write(tmp, 0, tmp.Length);        	
         }
      
