@@ -337,7 +337,7 @@ namespace iTextSharp.tool.xml {
          */
         private bool RecursiveHasChild(Tag tag, String name, String ns, bool recursive) {
             foreach (Tag t in tag) {
-                if (t.CompareTag(new Tag(name, ns))) {
+                if (t.tag.Equals(name) && t.ns.Equals(ns)) {
                     return true;
                 } else if (recursive) {
                     if (RecursiveHasChild(t, name, ns, recursive)) {
@@ -357,7 +357,7 @@ namespace iTextSharp.tool.xml {
          */
         private Tag RecursiveGetChild(Tag tag, String name, String ns, bool recursive) {
             foreach (Tag t in tag) {
-                if (t.CompareTag(new Tag(name, ns))) {
+                if (t.tag.Equals(name) && t.ns.Equals(ns)) {
                     return t;
                 } else if (recursive) {
                     Tag rT = null;
