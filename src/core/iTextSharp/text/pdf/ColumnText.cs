@@ -318,7 +318,7 @@ namespace iTextSharp.text.pdf {
         splittedRow = org.splittedRow;
         if (org.composite) {
             compositeElements = new List<IElement>(org.compositeElements);
-            if (splittedRow != -1) {
+            if (splittedRow != -1 && compositeElements.Count > 0) {
                 PdfPTable table = (PdfPTable)compositeElements[0];
                 compositeElements[0] = new PdfPTable(table);
             }
