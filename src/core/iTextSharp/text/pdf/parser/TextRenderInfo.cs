@@ -92,7 +92,7 @@ namespace iTextSharp.text.pdf.parser {
          */
         private TextRenderInfo(TextRenderInfo parent, int charIndex, float horizontalOffset)
         {
-            this.text = parent.text.Substring(charIndex, charIndex + 1);
+            this.text = parent.text.Substring(charIndex, 1);
             this.textToUserSpaceTransformMatrix = new Matrix(horizontalOffset, 0).Multiply(parent.textToUserSpaceTransformMatrix);
             this.gs = parent.gs;
             this.markedContentInfos = parent.markedContentInfos;
