@@ -136,15 +136,20 @@ namespace iTextSharp.text.pdf.security {
          * @return  a TSA URL
          * @throws IOException
          */
-        public static String getTSAURL(X509Certificate certificate) {
-            byte[] der = certificate.GetExtensionValue(SecurityIDs.ID_TSA).GetOctets();
+        public static String GetTSAURL(X509Certificate certificate) {
+            Asn1OctetString octetString = certificate.GetExtensionValue(SecurityIDs.ID_TSA);
+            if (octetString == null)
+                return null;
+            byte[] der = octetString.GetOctets();
             if (der == null)
                 return null;
             Asn1Object asn1obj;
             try {
                 asn1obj = Asn1Object.FromByteArray(der);
-                DerOctetString octets = (DerOctetString)asn1obj;
-                asn1obj = Asn1Object.FromByteArray(octets.GetOctets());
+                if (asn1obj is DerOctetString) {
+                    DerOctetString octets = (DerOctetString) asn1obj;
+                    asn1obj = Asn1Object.FromByteArray(octets.GetOctets());
+                }
                 Asn1Sequence asn1seq = Asn1Sequence.GetInstance(asn1obj);
                 return GetStringFromGeneralName(asn1seq[1].ToAsn1Object());
             } catch (IOException) {
