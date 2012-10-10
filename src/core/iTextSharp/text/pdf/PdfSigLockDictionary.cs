@@ -106,8 +106,8 @@ namespace iTextSharp.text.pdf {
          * Creates a signature lock for all fields in the document,
          * setting specific permissions.
          */
-        public PdfSigLockDictionary(LockPermissions p) : base() {
-            this.Put(PdfName.P, p.Value);
+        public PdfSigLockDictionary(LockPermissions p) : this() {
+           this.Put(PdfName.P, p.Value);
         }
         
         /**
