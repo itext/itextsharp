@@ -117,7 +117,8 @@ namespace iTextSharp.text.pdf.security {
             Stream inp = response.GetResponseStream();
             OcspResp ocspResponse = new OcspResp(inp);
             inp.Close();
-            return new OcspResp(RandomAccessFileOrArray.InputStreamToArray(inp));
+            response.Close();
+            return ocspResponse;
         }
         
         public BasicOcspResp GetBasicOCSPResp(X509Certificate checkCert, X509Certificate rootCert, String url) {
