@@ -84,7 +84,7 @@ namespace iTextSharp.text.pdf {
         protected internal Dictionary<RefKey, IndirectReferences> indirects;
         protected Dictionary<PdfReader,Dictionary<RefKey, IndirectReferences>>  indirectMap;
         protected Dictionary<PdfObject, PdfObject> parentObjects;
-        protected HashSet<PdfObject> disableIndirects;
+        protected Dictionary<PdfObject, PdfObject> disableIndirects;
         protected PdfReader reader;
         protected PdfIndirectReference acroForm;
         protected int[] namePtr = {0};
@@ -136,7 +136,7 @@ namespace iTextSharp.text.pdf {
             pdf.AddWriter(this);
             indirectMap = new Dictionary<PdfReader,Dictionary<RefKey,IndirectReferences>>();
             parentObjects = new Dictionary<PdfObject, PdfObject>();
-            disableIndirects = new HashSet<PdfObject>();
+            disableIndirects = new Dictionary<PdfObject, PdfObject>();
         }
 
         /**
@@ -259,7 +259,7 @@ namespace iTextSharp.text.pdf {
             obj = CopyObject(obj);
             parentObjects.Add(obj, inp);
             PdfObject res = CopyObject(obj, keepStructure, directRootKids);
-            if (disableIndirects.Contains(obj))
+            if (disableIndirects.ContainsKey(obj))
                 iRef.Copied = false;
             if ((res != null) && !(res is PdfNull))
             {
@@ -297,10 +297,10 @@ namespace iTextSharp.text.pdf {
                 if ((directRootKids) && (inp.Contains(PdfName.PG)))
                 {
                     PdfObject curr = inp;
-                    disableIndirects.Add(curr);
-                    while (parentObjects.ContainsKey(curr) && !(disableIndirects.Contains(curr))) {
+                    disableIndirects.Add(curr, null);
+                    while (parentObjects.ContainsKey(curr) && !(disableIndirects.ContainsKey(curr))) {
                         curr = parentObjects[curr];
-                        disableIndirects.Add(curr);
+                        disableIndirects.Add(curr, null);
                     }
                     return null;
                 }
