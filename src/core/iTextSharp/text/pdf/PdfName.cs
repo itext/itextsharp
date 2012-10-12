@@ -322,6 +322,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName CIRCLE = new PdfName("Circle");
         /**
          * A name.
+         * @since 5.3.2
+         */
+        public static readonly PdfName CLASSMAP = new PdfName("ClassMap");
+        /**
+         * A name.
          * @since 5.1.0
          */
         public static readonly PdfName CLOUD = new PdfName("Cloud");

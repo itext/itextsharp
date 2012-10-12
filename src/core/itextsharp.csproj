@@ -4096,6 +4096,7 @@
     <Compile Include="iTextSharp\text\pdf\PdfDiv.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfIsoConformanceException.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfSigLockDictionary.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfStructTreeController.cs" />
     <Compile Include="iTextSharp\text\pdf\security\CertificateInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\security\CertificateUtil.cs" />
     <Compile Include="iTextSharp\text\pdf\security\CertificateVerification.cs" />
