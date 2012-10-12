@@ -54,6 +54,8 @@ namespace iTextSharp.text.pdf {
         
         private Dictionary<int, PdfObject> parentTree = new Dictionary<int,PdfObject>();
         private PdfIndirectReference reference;
+        private PdfDictionary classMap;
+        private Dictionary<PdfName, PdfObject> classes;
 
         /**
         * Holds value of property writer.
@@ -81,6 +83,21 @@ namespace iTextSharp.text.pdf {
             rm.Put(used, standard);
         }
         
+        public void MapClass(PdfName name, PdfObject obj) {
+            if (classMap == null) {
+                classMap = new PdfDictionary();
+                classes = new Dictionary<PdfName, PdfObject>();
+            }
+            classes.Add(name,obj);
+        }
+
+        public PdfObject GetMappedClass(PdfName name) {
+            if (classes == null)
+                return null;
+            return classes[name];
+        }
+
+
         /**
         * Gets the writer.
         * @return the writer
@@ -112,12 +129,34 @@ namespace iTextSharp.text.pdf {
             ar.Add(struc);
         }
         
+        internal void AddPageMark(int newPage, PdfIndirectReference struc) {
+            int integer = newPage;
+            PdfArray oldAr = (PdfArray)parentTree[integer];
+            if (oldAr == null) {
+                oldAr = new PdfArray();
+                parentTree.Add(integer, oldAr);
+                oldAr.Add(struc);
+                return;
+            }
+            for (int i = 0; i < oldAr.Size; ++i) {
+                PdfIndirectReference refer = (PdfIndirectReference)oldAr[i];
+                if (refer.Number == struc.Number)
+                    return;
+            }
+            oldAr.Add(struc);
+        }
+
         private void NodeProcess(PdfDictionary struc, PdfIndirectReference reference) {
             PdfObject obj = struc.Get(PdfName.K);
             if (obj != null && obj.IsArray() && !((PdfArray)obj)[0].IsNumber()) {
                 PdfArray ar = (PdfArray)obj;
                 for (int k = 0; k < ar.Size; ++k) {
-                    PdfStructureElement e = (PdfStructureElement)ar[k];
+                    PdfDictionary dictionary = ar.GetAsDict(k);
+                    if (dictionary == null)
+                        continue;
+                    if (!PdfName.STRUCTELEM.Equals(dictionary.Get(PdfName.TYPE)))
+                        continue;
+                    PdfStructureElement e = (PdfStructureElement)dictionary;
                     ar[k] = e.Reference;
                     NodeProcess(e, e.Reference);
                 }
@@ -135,7 +174,23 @@ namespace iTextSharp.text.pdf {
             PdfDictionary dicTree = PdfNumberTree.WriteTree(numTree, writer);
             if (dicTree != null)
                 Put(PdfName.PARENTTREE, writer.AddToBody(dicTree).IndirectReference);
-            
+            if (classMap != null) {
+                foreach (KeyValuePair<PdfName,PdfObject> entry in classes) {
+                    PdfObject value = entry.Value;
+                    if (value.IsDictionary())
+                        classMap.Put(entry.Key, writer.AddToBody(value).IndirectReference);
+                    else if (value.IsArray()) {
+                        PdfArray newArray = new PdfArray();
+                        PdfArray array = (PdfArray)value;
+                        for (int i = 0; i < array.Size; ++i) {
+                            if (array[i].IsDictionary())
+                                newArray.Add(writer.AddToBody(array.GetAsDict(i)).IndirectReference);
+                        }
+                        classMap.Put(entry.Key,newArray);
+                    }
+                }
+                Put(PdfName.CLASSMAP, writer.AddToBody(classMap).IndirectReference);
+            }
             NodeProcess(this, reference);
         }
     }

@@ -71,6 +71,9 @@ namespace iTextSharp.text.pdf {
                 get {
                     return hasCopied; 
                 }
+                set {
+                    hasCopied = value;
+                }
             }
             internal PdfIndirectReference Ref {
                 get {
@@ -78,16 +81,19 @@ namespace iTextSharp.text.pdf {
                 }
             }
         };
-        protected Dictionary<RefKey, IndirectReferences> indirects;
+        protected internal Dictionary<RefKey, IndirectReferences> indirects;
         protected Dictionary<PdfReader,Dictionary<RefKey, IndirectReferences>>  indirectMap;
-        protected int currentObjectNum = 1;
+        protected Dictionary<PdfObject, PdfObject> parentObjects;
+        protected HashSet<PdfObject> disableIndirects;
         protected PdfReader reader;
         protected PdfIndirectReference acroForm;
         protected int[] namePtr = {0};
         /** Holds value of property rotateContents. */
         private bool rotateContents = true;
         protected internal PdfArray fieldArray;
-        protected internal Dictionary<PdfTemplate,object> fieldTemplates;
+        protected internal Dictionary<PdfTemplate, object> fieldTemplates; 
+        private PdfStructTreeController structTreeController = null;
+        private int currentStructArrayNumber = 0;
 
         /**
         * A key to allow us to hash indirect references
@@ -129,6 +135,8 @@ namespace iTextSharp.text.pdf {
             document.AddDocListener(pdf);
             pdf.AddWriter(this);
             indirectMap = new Dictionary<PdfReader,Dictionary<RefKey,IndirectReferences>>();
+            parentObjects = new Dictionary<PdfObject, PdfObject>();
+            disableIndirects = new HashSet<PdfObject>();
         }
 
         /**
@@ -167,23 +175,45 @@ namespace iTextSharp.text.pdf {
         * @return the page
         */
         public override PdfImportedPage GetImportedPage(PdfReader reader, int pageNumber) {
-            if (currentPdfReaderInstance != null) {
-                if (currentPdfReaderInstance.Reader != reader) {
-                    try {
-                        currentPdfReaderInstance.Reader.Close();
-                        currentPdfReaderInstance.ReaderFile.Close();
+             if (structTreeController != null)
+                structTreeController.reader = null;
+            return GetImportedPageImpl(reader, pageNumber);
+        }
+
+        public PdfImportedPage GetImportedPage(PdfReader reader, int pageNumber, bool keepTaggedPdfStructure) {
+            if (!keepTaggedPdfStructure)
+                return GetImportedPage(reader, pageNumber);
+            else {
+                if (structTreeController != null) {
+                    if (reader != structTreeController.reader)
+                        structTreeController.SetReader(reader);
+                } else {
+                    structTreeController = new PdfStructTreeController(reader, this);
+                }
+                disableIndirects.Clear();
+                parentObjects.Clear();
+                return GetImportedPageImpl(reader, pageNumber);
+            }
+        }
+
+        protected PdfImportedPage GetImportedPageImpl(PdfReader reader, int pageNumber) {
+                if (currentPdfReaderInstance != null) {
+                    if (currentPdfReaderInstance.Reader != reader) {
+                        try {
+                            currentPdfReaderInstance.Reader.Close();
+                            currentPdfReaderInstance.ReaderFile.Close();
+                        }
+                        catch (IOException) {
+                            // empty on purpose
+                        }
+                        currentPdfReaderInstance = base.GetPdfReaderInstance(reader);
                     }
-                    catch (IOException) {
-                        // empty on purpose
-                    }
+                }
+                else {
                     currentPdfReaderInstance = base.GetPdfReaderInstance(reader);
                 }
+                return currentPdfReaderInstance.GetImportedPage(pageNumber);            
             }
-            else {
-                currentPdfReaderInstance = base.GetPdfReaderInstance(reader);
-            }
-            return currentPdfReaderInstance.GetImportedPage(pageNumber);            
-        }
         
         
         /**
@@ -195,11 +225,18 @@ namespace iTextSharp.text.pdf {
         * we do from their namespace to ours is *at best* heuristic, and guaranteed to
         * fail under some circumstances.
         */
-        protected virtual PdfIndirectReference CopyIndirect(PRIndirectReference inp) {
+        protected virtual PdfIndirectReference CopyIndirect(PRIndirectReference inp, bool keepStructure, bool directRootKids) {
             PdfIndirectReference theRef;
             RefKey key = new RefKey(inp);
             IndirectReferences iRef;
             indirects.TryGetValue(key, out iRef);
+            PdfObject obj = PdfReader.GetPdfObjectRelease(inp);
+            if ((keepStructure) && (directRootKids))
+                if (obj is PdfDictionary) {
+                    PdfDictionary dict = (PdfDictionary) obj;
+                    if (dict.Contains(PdfName.PG))
+                        return null;
+                }
             if (iRef != null) {
                 theRef = iRef.Ref;
                 if (iRef.Copied) {
@@ -211,7 +248,6 @@ namespace iTextSharp.text.pdf {
                 iRef = new IndirectReferences(theRef);
                 indirects[key] =  iRef;
             }
-            PdfObject obj = PdfReader.GetPdfObjectRelease(inp);
             if (obj != null && obj.IsDictionary()) {
                 PdfObject type = PdfReader.GetPdfObjectRelease(((PdfDictionary)obj).Get(PdfName.TYPE));
                 if (type != null && PdfName.PAGE.Equals(type)) {
@@ -219,31 +255,89 @@ namespace iTextSharp.text.pdf {
                 }
             }
             iRef.SetCopied();
+
             obj = CopyObject(obj);
-            AddToBody(obj, theRef);
-            return theRef;
+            parentObjects.Add(obj, inp);
+            PdfObject res = CopyObject(obj, keepStructure, directRootKids);
+            if (disableIndirects.Contains(obj))
+                iRef.Copied = false;
+            if ((res != null) && !(res is PdfNull))
+            {
+                AddToBody(res, theRef);
+                return theRef;
+            }
+            else {
+                indirects.Remove(key);
+                return null;
+            }
         }
-        
+         /**
+        * Translate a PRIndirectReference to a PdfIndirectReference
+        * In addition, translates the object numbers, and copies the
+        * referenced object to the output file.
+        * NB: PRIndirectReferences (and PRIndirectObjects) really need to know what
+        * file they came from, because each file has its own namespace. The translation
+        * we do from their namespace to ours is *at best* heuristic, and guaranteed to
+        * fail under some circumstances.
+        */
+        protected virtual PdfIndirectReference CopyIndirect(PRIndirectReference inp) {
+            return CopyIndirect(inp, false, false);
+        }
+
+        /**
+        * Translate a PRDictionary to a PdfDictionary. Also translate all of the
+        * objects contained in it.
+        */
+        protected PdfDictionary CopyDictionary(PdfDictionary inp, bool keepStruct, bool directRootKids) {
+            PdfDictionary outp = new PdfDictionary();
+            PdfObject type = PdfReader.GetPdfObjectRelease(inp.Get(PdfName.TYPE));
+            
+             if (keepStruct)
+            {
+                if ((directRootKids) && (inp.Contains(PdfName.PG)))
+                {
+                    PdfObject curr = inp;
+                    disableIndirects.Add(curr);
+                    while (parentObjects.ContainsKey(curr) && !(disableIndirects.Contains(curr))) {
+                        curr = parentObjects[curr];
+                        disableIndirects.Add(curr);
+                    }
+                    return null;
+                }
+                    
+                PdfName structType = inp.GetAsName(PdfName.S);
+                structTreeController.AddRole(structType);
+                structTreeController.AddClass(inp);
+            }
+
+            foreach (PdfName key in inp.Keys) {
+                PdfObject value = inp.Get(key);
+                if (structTreeController != null && structTreeController.reader != null && (key.Equals(PdfName.STRUCTPARENT) || key.Equals(PdfName.STRUCTPARENTS))) {
+                    outp.Put(key, new PdfNumber(currentStructArrayNumber));
+                    structTreeController.CopyStructTreeForPage((PdfNumber)value, currentStructArrayNumber++);
+                    continue;
+                }
+                if (type != null && PdfName.PAGE.Equals(type)) {
+                    if (!key.Equals(PdfName.B) && !key.Equals(PdfName.PARENT))
+                        outp.Put(key, CopyObject(value));
+                }
+                else {
+                    PdfObject res = CopyObject(value, keepStruct, directRootKids);
+                    if ((res != null) && !(res is PdfNull))
+                        outp.Put(key, res);
+                }
+            }
+            return outp;
+        }
+
         /**
         * Translate a PRDictionary to a PdfDictionary. Also translate all of the
         * objects contained in it.
         */
         protected PdfDictionary CopyDictionary(PdfDictionary inp) {
-            PdfDictionary outp = new PdfDictionary();
-            PdfObject type = PdfReader.GetPdfObjectRelease(inp.Get(PdfName.TYPE));
-            
-            foreach (PdfName key in inp.Keys) {
-                PdfObject value = inp.Get(key);
-                if (type != null && PdfName.PAGE.Equals(type)) {
-                    if (!key.Equals(PdfName.B) && !key.Equals(PdfName.PARENT))
-                        outp.Put(key, CopyObject(value));
-                }
-                else
-                    outp.Put(key, CopyObject(value));
-            }
-            return outp;
+            return CopyDictionary(inp, false, false);
         }
-        
+
         /**
         * Translate a PRStream to a PdfStream. The data part copies itself.
         */
@@ -252,7 +346,10 @@ namespace iTextSharp.text.pdf {
             
             foreach (PdfName key in inp.Keys) {
                 PdfObject value = inp.Get(key);
-                outp.Put(key, CopyObject(value));
+                parentObjects.Add(value, inp);
+                PdfObject res = CopyObject(value);
+                if ((res != null) && !(res is PdfNull))
+                    outp.Put(key, res);
             }
             
             return outp;
@@ -263,28 +360,39 @@ namespace iTextSharp.text.pdf {
         * Translate a PRArray to a PdfArray. Also translate all of the objects contained
         * in it
         */
-        protected PdfArray CopyArray(PdfArray inp) {
+        protected PdfArray CopyArray(PdfArray inp, bool keepStruct, bool directRootKids) {
             PdfArray outp = new PdfArray();
             
             foreach (PdfObject value in inp.ArrayList) {
-                outp.Add(CopyObject(value));
+                parentObjects.Add(value, inp);
+                PdfObject res = CopyObject(value, keepStruct, directRootKids);
+                if ((res != null) && !(res is PdfNull))
+                    outp.Add(res);
             }
             return outp;
         }
-        
+
+        /**
+        * Translate a PRArray to a PdfArray. Also translate all of the objects contained
+        * in it
+        */
+        protected PdfArray CopyArray(PdfArray inp) {
+            return CopyArray(inp, false, false);
+        }
+
         /**
         * Translate a PR-object to a Pdf-object
         */
-        protected PdfObject CopyObject(PdfObject inp) {
+        protected internal PdfObject CopyObject(PdfObject inp, bool keepStruct, bool directRootKidds) {
             if (inp == null)
                 return PdfNull.PDFNULL;
             switch (inp.Type) {
                 case PdfObject.DICTIONARY:
-                    return CopyDictionary((PdfDictionary)inp);
+                    return CopyDictionary((PdfDictionary)inp, keepStruct, directRootKidds);
                 case PdfObject.INDIRECT:
-                    return CopyIndirect((PRIndirectReference)inp);
+                    return CopyIndirect((PRIndirectReference)inp, keepStruct, directRootKidds);
                 case PdfObject.ARRAY:
-                    return CopyArray((PdfArray)inp);
+                    return CopyArray((PdfArray)inp, keepStruct, directRootKidds);
                 case PdfObject.NUMBER:
                 case PdfObject.NAME:
                 case PdfObject.STRING:
@@ -306,7 +414,14 @@ namespace iTextSharp.text.pdf {
                     return null;
             }
         }
-        
+
+         /**
+        * Translate a PR-object to a Pdf-object
+        */
+        protected internal PdfObject CopyObject(PdfObject inp) {
+            return CopyObject(inp, false, false);
+        }
+
         /**
         * convenience method. Given an importedpage, set our "globals"
         */
@@ -424,6 +539,7 @@ namespace iTextSharp.text.pdf {
         */
         protected override PdfDictionary GetCatalog(PdfIndirectReference rootObj) {
             PdfDictionary theCat = pdf.GetCatalog(rootObj);
+            BuildStructTreeRootForTagged(theCat);
             if (fieldArray == null) {
                 if (acroForm != null) theCat.Put(PdfName.ACROFORM, acroForm);
             }
@@ -521,19 +637,19 @@ namespace iTextSharp.text.pdf {
         * The general usage to stamp something in a page is:
         * <p>
         * <pre>
-        * PdfImportedPage page = copy.getImportedPage(reader, 1);
-        * PdfCopy.PageStamp ps = copy.createPageStamp(page);
-        * ps.addAnnotation(PdfAnnotation.createText(copy, new Rectangle(50, 180, 70, 200), "Hello", "No Thanks", true, "Comment"));
-        * PdfContentByte under = ps.getUnderContent();
-        * under.addImage(img);
-        * PdfContentByte over = ps.getOverContent();
-        * over.beginText();
-        * over.setFontAndSize(bf, 18);
-        * over.setTextMatrix(30, 30);
-        * over.showText("total page " + totalPage);
-        * over.endText();
-        * ps.alterContents();
-        * copy.addPage(page);
+        * PdfImportedPage page = copy.GetImportedPage(reader, 1);
+        * PdfCopy.PageStamp ps = copy.CreatePageStamp(page);
+        * ps.AddAnnotation(PdfAnnotation.CreateText(copy, new Rectangle(50, 180, 70, 200), "Hello", "No Thanks", true, "Comment"));
+        * PdfContentByte under = ps.GetUnderContent();
+        * under.AddImage(img);
+        * PdfContentByte over = ps.GetOverContent();
+        * over.BeginText();
+        * over.SetFontAndSize(bf, 18);
+        * over.SetTextMatrix(30, 30);
+        * over.ShowText("total page " + totalPage);
+        * over.EndText();
+        * ps.AlterContents();
+        * copy.AddPage(page);
         * </pre>
         * @param iPage an imported page
         * @return the <CODE>PageStamp</CODE>

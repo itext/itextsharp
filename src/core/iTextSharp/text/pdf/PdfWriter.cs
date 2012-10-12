@@ -877,7 +877,19 @@ namespace iTextSharp.text.pdf {
 
         protected virtual PdfDictionary GetCatalog(PdfIndirectReference rootObj) {
             PdfDictionary catalog = pdf.GetCatalog(rootObj);
-            // [F12] tagged PDF
+            // [F12] tagged PDF 
+            BuildStructTreeRootForTagged(catalog);
+            // [F13] OCG
+            if (documentOCG.Count > 0)
+            {
+                FillOCProperties(false);
+                catalog.Put(PdfName.OCPROPERTIES, OCProperties);
+            }
+            return catalog;
+        }
+
+        protected void BuildStructTreeRootForTagged(PdfDictionary catalog)
+        {
             if (tagged) {
                 this.StructureTreeRoot.BuildTree();
                 catalog.Put(PdfName.STRUCTTREEROOT, structureTreeRoot.Reference);
@@ -887,12 +899,6 @@ namespace iTextSharp.text.pdf {
                     mi.Put(PdfName.USERPROPERTIES, PdfBoolean.PDFTRUE);
                 catalog.Put(PdfName.MARKINFO, mi);
             }
-            // [F13] OCG
-            if (documentOCG.Count != 0) {
-                FillOCProperties(false);
-                catalog.Put(PdfName.OCPROPERTIES, vOCProperties);
-            }
-            return catalog;
         }
 
         /** Holds value of property extraCatalog. */
