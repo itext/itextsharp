@@ -783,5 +783,18 @@ namespace iTextSharp.text {
         public bool isWhitespace() {
             return attributes != null && attributes.ContainsKey(WHITESPACE);
         }
+
+        public const String TABSPACE = "TABSPACE";
+
+        public static Chunk createTabspace() {
+            return createTabspace(60);
+        }
+
+        public static Chunk createTabspace(float spacing)
+        {
+            Chunk tabspace = new Chunk(" ");
+            tabspace.SetAttribute(TABSPACE, spacing);
+            return tabspace;
+        }
     }
 }

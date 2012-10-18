@@ -91,6 +91,7 @@ namespace iTextSharp.text.pdf {
             keysAttributes.Add(Chunk.HSCALE, null);
             keysAttributes.Add(Chunk.SEPARATOR, null);
             keysAttributes.Add(Chunk.TAB, null);
+            keysAttributes.Add(Chunk.TABSPACE, null);
             keysAttributes.Add(Chunk.CHAR_SPACING, null);
             keysAttributes.Add(Chunk.LINEHEIGHT, null);
             keysNoStroke.Add(Chunk.SUBSUPSCRIPT, null);
@@ -568,6 +569,9 @@ namespace iTextSharp.text.pdf {
                 if (IsAttribute(Chunk.SEPARATOR)) {
                     return 0;
                 }
+                if (IsAttribute(Chunk.TABSPACE)) {
+                    return 0;
+                }
                 return font.Width(this.value);
             }
         }
@@ -719,6 +723,16 @@ namespace iTextSharp.text.pdf {
         */
         internal bool IsTab() {
             return IsAttribute(Chunk.TAB);
+        }
+
+        /**
+        * Checks if this <CODE>PdfChunk</CODE> is a tabspace Chunk.
+        * @return  true if this chunk is a separator.
+        * @since   2.1.2
+        */
+        internal bool IsTabSpace()
+        {
+            return IsAttribute(Chunk.TABSPACE);
         }
         
         /**
