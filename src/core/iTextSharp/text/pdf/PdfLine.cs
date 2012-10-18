@@ -162,7 +162,18 @@ namespace iTextSharp.text.pdf {
                 chunk.AdjustLeft(left);
                 AddToLine(chunk);
             }
-            // if the length of the chunk > 0 we add it to the line
+            else if (chunk.IsTabSpace()) {
+                if (line.Count != 0)
+                {
+                    float module = (float)chunk.GetAttribute(Chunk.TABSPACE);
+                    float decrement = module - ((originalWidth - width) % module);
+                    if (width < decrement)
+                        return chunk;
+                    width -= decrement;
+                    AddToLine(chunk);
+                }
+            }
+                // if the length of the chunk > 0 we add it to the line
             else if (chunk.Length > 0 || chunk.IsImage()) {
                 if (overflow != null)
                     chunk.TrimLastSpace();

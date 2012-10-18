@@ -383,7 +383,8 @@ namespace iTextSharp.text.pdf {
                     break;
                 if (splitChar)
                     lastSplit = currentChar;
-                width -= charWidth;
+                if (!ck.IsTabSpace())
+                    width -= charWidth;
                 lastValidChunk = ck;
                 if (ck.IsTab()) {
                     Object[] tab = (Object[])ck.GetAttribute(Chunk.TAB);
@@ -394,6 +395,17 @@ namespace iTextSharp.text.pdf {
                     }
                     detailChunks[currentChar].AdjustLeft(leftX);
                     width = originalWidth - tabPosition;
+                }
+                else if (ck.IsTabSpace())
+                {
+                    float module = (float)ck.GetAttribute(Chunk.TABSPACE);
+                    float decrement = module - ((originalWidth - width) % module);
+
+                    if (width < decrement) 
+                        return new PdfLine(0, originalWidth, width, alignment, true,
+                                           CreateArrayOfPdfChunks(oldCurrentChar, currentChar-1), isRTL);
+
+                    width -= decrement;
                 } 
                 else if (ck.IsSeparator()) {
                     Object[] sep = (Object[])ck.GetAttribute(Chunk.SEPARATOR);

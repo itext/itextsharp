@@ -1443,6 +1443,15 @@ namespace iTextSharp.text.pdf {
                     array.Add((tabPosition - xMarker) * 1000f / chunk.Font.Size / hScale);
                     text.ShowText(array);
                 }
+                else if (chunk.IsTabSpace())
+                {
+                    int module = (int) chunk.GetAttribute(Chunk.TABSPACE);
+                    float increment = module - ((xMarker - text.XTLM) % module);
+                    xMarker += increment;
+                    PdfTextArray array = new PdfTextArray();
+                    array.Add(-(increment * 1000f / chunk.Font.Size / hScale));
+                    text.ShowText(array);
+                }
                 // If it is a CJK chunk or Unicode TTF we will have to simulate the
                 // space adjustment.
                 else if (isJustified && numberOfSpaces > 0 && chunk.IsSpecialEncoding()) {
