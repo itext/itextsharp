@@ -796,5 +796,10 @@ namespace iTextSharp.text {
             tabspace.SetAttribute(TABSPACE, spacing);
             return tabspace;
         }
+
+        public bool isTabspace()
+        {
+            return attributes != null && attributes.ContainsKey(TABSPACE);
+        }
     }
 }

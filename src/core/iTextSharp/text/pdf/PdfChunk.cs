@@ -728,7 +728,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Checks if this <CODE>PdfChunk</CODE> is a tabspace Chunk.
         * @return  true if this chunk is a separator.
-        * @since   2.1.2
+        * @since   5.3.4
         */
         internal bool IsTabSpace()
         {
