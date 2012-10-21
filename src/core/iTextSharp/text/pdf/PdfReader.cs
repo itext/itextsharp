@@ -1469,7 +1469,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             thisStream *= 2;
-            if (thisStream < xref.Length)
+            if (thisStream + 1 < xref.Length && xref[thisStream] == 0 && xref[thisStream + 1] == 0)
                 xref[thisStream] = -1;
                 
             if (prev == -1)
