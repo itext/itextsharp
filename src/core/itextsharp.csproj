@@ -4115,6 +4115,7 @@
     <Compile Include="iTextSharp\text\pdf\security\PdfPKCS7.cs" />
     <Compile Include="iTextSharp\text\pdf\security\PrivateKeySignature.cs" />
     <Compile Include="iTextSharp\text\pdf\security\SecurityIDs.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\SignaturePermissions.cs" />
     <Compile Include="iTextSharp\text\pdf\security\TSAClientBouncyCastle.cs" />
     <Compile Include="iTextSharp\text\pdf\security\ITSAInfoBouncyCastle.cs" />
     <Compile Include="iTextSharp\text\pdf\security\X509Certificate2Signature.cs" />
