@@ -114,7 +114,6 @@ namespace iTextSharp.text.pdf {
 
             List<IElement> floatingElements = new List<IElement>();
             List<IElement> content = simulate ? new List<IElement>(this.content) : this.content;
-            ColumnText compositeColumn = simulate ? ColumnText.Duplicate(this.compositeColumn) : this.compositeColumn;
 
             while (content.Count > 0) {
                 if (content[0] is PdfDiv) {
@@ -201,6 +200,7 @@ namespace iTextSharp.text.pdf {
                     if (firstElement is ISpaceable) {
                         yLine -= ((ISpaceable)firstElement).SpacingBefore;
                     }
+                    compositeColumn = simulate ? ColumnText.Duplicate(this.compositeColumn) : this.compositeColumn;
                     compositeColumn.AddElement(firstElement);
                     floatingElements.RemoveAt(0);
                     if (yLine > minYLine)
@@ -248,9 +248,12 @@ namespace iTextSharp.text.pdf {
                     }
 
                     if ((status & ColumnText.NO_MORE_TEXT) == 0) {
-                        foreach (IElement element in compositeColumn.CompositeElements) {
-                            floatingElements.Insert(0, element);
+                        if (!simulate) {
+                            floatingElements.InsertRange(0, compositeColumn.CompositeElements);
+                        } else {
+                            floatingElements.Insert(0, firstElement);
                         }
+
                         compositeColumn.CompositeElements.Clear();
                         break;
                     } else {

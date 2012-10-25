@@ -92,7 +92,7 @@ namespace iTextSharp.tool.xml.html {
                 Paragraph p = null;
                 PdfDiv div = (PdfDiv)GetCssAppliers().Apply(new PdfDiv(), tag, GetHtmlPipelineContext(ctx));
 			    foreach (IElement e in currentContent) {
-				    if (e is Paragraph || e is PdfDiv) {
+				    if (e is Paragraph || e is PdfPTable || e is PdfDiv) {
 					    if (p != null) {
                             if (p.Trim()) {
 						        div.AddElement(p);

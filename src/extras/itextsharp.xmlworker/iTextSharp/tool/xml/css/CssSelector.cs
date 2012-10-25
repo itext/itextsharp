@@ -74,6 +74,97 @@ namespace iTextSharp.tool.xml.css {
             CssUtils.MapPutAll(set, CreateIdSelector(t));
             return set;
         }
+
+        public void CreateSelectors(Tag t, IDictionary<String, object> selectors) {
+            IDictionary<String, object> tagNameSet = new Dictionary<String, object>();
+            foreach (String selector in selectors.Keys) {
+                tagNameSet[t.Name + (selector.StartsWith(" ") ? "" : " ") + selector] = null;
+            }
+            IDictionary<String, object> tagClassSet = new Dictionary<String, object>();
+            String tagClasses;
+            String[] classSplit = null;
+            if (t.Attributes.TryGetValue(HTML.Attribute.CLASS, out tagClasses)) {
+                classSplit = utils.StripDoubleSpacesAndTrim(tagClasses).Split(' ');
+                foreach (String selector in selectors.Keys) {
+                    foreach (String tagClass in classSplit) {
+                        StringBuilder builder = new StringBuilder();
+                        builder.Append('.').Append(tagClass);
+                        if (selector.StartsWith("#") || selector.StartsWith(".") || selector.StartsWith(" ")) {
+                            tagClassSet[builder + selector] = null;
+                            if (!selector.StartsWith(" ")) {
+                                tagClassSet[builder + " " + selector] = null;
+                            }
+                            foreach (String tagSelector in tagNameSet.Keys) {
+                                builder = new StringBuilder(tagSelector);
+                                builder.Append('.').Append(tagClass);
+                                tagClassSet[builder.ToString()] = null;
+                            }
+                        } else {
+                            builder.Append(" " + selector);
+                            tagClassSet[builder.ToString()] = null;
+                        }
+                    }
+                }
+            }
+
+            String id = null;
+            IDictionary<String, Object> tagIdSet = new Dictionary<string, object>();
+            if (t.Attributes.TryGetValue(HTML.Attribute.ID, out id)) {
+                foreach (String selector in selectors.Keys) {
+                    StringBuilder builder = new StringBuilder();
+                    builder.Append('#').Append(id);
+                    if (selector.StartsWith("#") || selector.StartsWith(".") || selector.StartsWith(" ")) {
+                        tagClassSet[builder + selector] = null;
+                        if (!selector.StartsWith(" ")) {
+                            tagClassSet[builder.ToString() + " " + selector] = null;
+                        }
+                    } else {
+                        builder.Append(" " + selector);
+                        tagClassSet[builder.ToString()] = null;
+                    }
+                }
+            }
+
+            if (selectors.Count == 0) {
+                tagNameSet[t.Name] = null;
+                if (tagClasses != null) {
+                    foreach (String tagClass in classSplit) {
+                        StringBuilder builder = new StringBuilder();
+                        builder.Append('.').Append(tagClass);
+                        tagClassSet[builder.ToString()] = null;
+
+                        builder = new StringBuilder();
+                        builder.Append(" .").Append(tagClass);
+                        tagClassSet[builder.ToString()] = null;
+
+                        foreach (String tagSelector in tagNameSet.Keys) {
+                            builder = new StringBuilder(tagSelector);
+                            builder.Append('.').Append(tagClass);
+                            tagClassSet[builder.ToString()] = null;
+                        }
+                    }
+                }
+
+                if (id != null) {
+                    StringBuilder builder = new StringBuilder();
+                    builder.Append('#').Append(id);
+                    tagIdSet[builder.ToString()] = null;
+
+                    builder = new StringBuilder();
+                    builder.Append(" #").Append(id);
+                    tagIdSet[builder.ToString()] = null;
+                }
+            }
+
+            CssUtils.MapPutAll(selectors, tagNameSet);
+            CssUtils.MapPutAll(selectors, tagClassSet);
+            CssUtils.MapPutAll(selectors, tagIdSet);
+
+            if (t.Parent != null && selectors.Count < 30) {
+                CreateSelectors(t.Parent, selectors);
+            }
+        }
+
         /**
          * Creates selectors for a given tag.
          * @param t the tag to create selectors for.

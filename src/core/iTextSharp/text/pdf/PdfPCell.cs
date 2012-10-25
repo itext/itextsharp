@@ -236,6 +236,9 @@ namespace iTextSharp.text.pdf {
                 table = null;
                 column.SetText(null);
             }
+            if (element is PdfPTable) {
+                ((PdfPTable) element).SplitLate = false;
+            }
             column.AddElement(element);
         }
         
