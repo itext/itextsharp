@@ -2339,11 +2339,15 @@ namespace iTextSharp.text.pdf {
                 int loop = 0;
                 while (true) {
                     fl.SetSimpleColumn(IndentLeft, IndentBottom, IndentRight, IndentTop - currentHeight);
-                    int status = fl.layout(false);
-                    if ((status & ColumnText.NO_MORE_TEXT) != 0) {
-                        text.MoveText(0, fl.getYLine() - IndentTop + currentHeight);
-                        currentHeight = IndentTop - fl.getYLine();
-                        break;
+                    try {
+                        int status = fl.layout(false);
+                        if ((status & ColumnText.NO_MORE_TEXT) != 0) {
+                            text.MoveText(0, fl.getYLine() - IndentTop + currentHeight);
+                            currentHeight = IndentTop - fl.getYLine();
+                            break;
+                        }
+                    } catch(Exception) {
+                        return;
                     }
                     if (IndentTop - currentHeight == fl.getYLine() || PageEmpty)
                         ++loop;

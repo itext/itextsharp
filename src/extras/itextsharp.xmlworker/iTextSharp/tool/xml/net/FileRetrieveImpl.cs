@@ -139,7 +139,11 @@ namespace iTextSharp.tool.xml.net {
             Stream inp = null;
             if (null != url) {
                 WebRequest w = WebRequest.Create(url);
-                inp = w.GetResponse().GetResponseStream();
+                try {
+                    inp = w.GetResponse().GetResponseStream();
+                } catch (WebException) {
+                    throw new IOException(LocaleMessages.GetInstance().GetMessage("retrieve.file.from.nothing"));
+                }
             } else if (isfile) {
                 inp = new FileStream(f, FileMode.Open, FileAccess.Read, FileShare.Read);
             } else {

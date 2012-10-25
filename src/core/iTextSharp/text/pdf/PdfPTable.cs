@@ -1034,8 +1034,8 @@ namespace iTextSharp.text.pdf {
             {
                 return true;
             }
-            if (rowIdx > 0 && GetRow(rowIdx - 1).HasRowspan())
-            {
+            PdfPRow previousRow = rowIdx > 0 ? GetRow(rowIdx - 1) : null;
+    	    if (previousRow != null && previousRow.HasRowspan()) {
                 return true;
             }
             for (int i = 0; i < NumberOfColumns; i++)

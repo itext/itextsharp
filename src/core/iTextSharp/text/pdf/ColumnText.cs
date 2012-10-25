@@ -317,10 +317,13 @@ namespace iTextSharp.text.pdf {
         composite = org.composite;
         splittedRow = org.splittedRow;
         if (org.composite) {
-            compositeElements = new List<IElement>(org.compositeElements);
-            if (splittedRow != -1 && compositeElements.Count > 0) {
-                PdfPTable table = (PdfPTable)compositeElements[0];
-                compositeElements[0] = new PdfPTable(table);
+            compositeElements = new List<IElement>();
+            foreach (IElement compositeElement in org.compositeElements) {
+                if (compositeElement is PdfPTable) {
+                    compositeElements.Add(new PdfPTable((PdfPTable)compositeElement));
+                } else {
+                    compositeElements.Add(compositeElement);
+                }   
             }
             if (org.compositeColumn != null)
                 compositeColumn = Duplicate(org.compositeColumn);
@@ -441,6 +444,8 @@ namespace iTextSharp.text.pdf {
         }
         else if (element.Type == Element.PHRASE) {
             element = new Paragraph((Phrase)element);
+        } else if (element.Type == Element.PTABLE) {
+            element = new PdfPTable((PdfPTable)element);
         }
         if (element.Type != Element.PARAGRAPH && element.Type != Element.LIST && element.Type != Element.PTABLE && element.Type != Element.YMARK && element.Type != Element.DIV)
             throw new ArgumentException(MessageLocalization.GetComposedMessage("element.not.allowed"));
@@ -1448,7 +1453,7 @@ namespace iTextSharp.text.pdf {
                 {
                     kTemp--;
                 }
-                if ((kTemp > rowIdx && kTemp < k)|| (kTemp == 0 && table.LoopCheck)) 
+                if ((kTemp > rowIdx && kTemp < k) || (kTemp == 0 && table.GetRow(0).MayNotBreak && table.LoopCheck)) 
                 {
                     yTemp = minY;
                     k = kTemp;
@@ -1482,15 +1487,6 @@ namespace iTextSharp.text.pdf {
                 }
                 // SPLIT ROWS (IF WANTED AND NECESSARY)
                 else if (k < table.Size) {
-                    // if the row hasn't been split before, we duplicate (part of) the table
-                    if (k != splittedRow) {
-                        splittedRow = k + 1;
-                        table = new PdfPTable(table);
-                        compositeElements[0] = table;
-                        List<PdfPRow> rows = table.Rows;
-                        for (int i = headerRows; i < rowIdx; ++i)
-                            rows[i] = null;
-                    }
                     // we calculate the remaining vertical space
                     float h = yTemp - minY;
                     // we create a new row with the remaining content
@@ -1503,6 +1499,15 @@ namespace iTextSharp.text.pdf {
                             return NO_MORE_COLUMN;
                     }
                     else {
+                        // if the row hasn't been split before, we duplicate (part of) the table
+                        if (k != splittedRow) {
+                            splittedRow = k + 1;
+                            table = new PdfPTable(table);
+                            compositeElements[0] = table;
+                            List<PdfPRow> rows = table.Rows;
+                            for (int i = headerRows; i < rowIdx; ++i)
+                                rows[i] = null;
+                        }
                         yTemp = minY;
                         table.Rows.Insert(++k, newRow);
                         LOGGER.Info("Inserting row at position " + k);
