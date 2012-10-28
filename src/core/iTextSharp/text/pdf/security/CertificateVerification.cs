@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.Ocsp;
 using Org.BouncyCastle.Tsp;
+using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Security.Certificates;
 /*
  * $Id$
  *
@@ -62,8 +64,34 @@ namespace iTextSharp.text.pdf.security {
          * if no error
          */
         public static String VerifyCertificate(X509Certificate cert, ICollection<X509Crl> crls, DateTime calendar) {
+            foreach (String oid in cert.GetCriticalExtensionOids()) {
+                if (oid == X509Extensions.KeyUsage.Id
+                    || oid == X509Extensions.CertificatePolicies.Id
+                    || oid == X509Extensions.PolicyMappings.Id
+                    || oid == X509Extensions.InhibitAnyPolicy.Id
+                    || oid == X509Extensions.CrlDistributionPoints.Id
+                    || oid == X509Extensions.IssuingDistributionPoint.Id
+                    || oid == X509Extensions.DeltaCrlIndicator.Id
+                    || oid == X509Extensions.PolicyConstraints.Id
+                    || oid == X509Extensions.BasicConstraints.Id
+                    || oid == X509Extensions.SubjectAlternativeName.Id
+                    || oid == X509Extensions.NameConstraints.Id) {
+                    continue;
+                }
+                try {
+                    // EXTENDED KEY USAGE and TIMESTAMPING is ALLOWED
+                    if (oid == X509Extensions.ExtendedKeyUsage.Id && cert.GetExtendedKeyUsage().Contains("1.3.6.1.5.5.7.3.8")) {
+                        continue;
+                    }
+                }
+                catch (CertificateParsingException) {
+                    // DO NOTHING;
+                }
+                return "Has unsupported critical extension";
+            }
+
             try {
-                if (!cert.IsValid(calendar))
+                if (!cert.IsValid(calendar.ToUniversalTime()))
                     return "The certificate has expired or is not yet valid";
                 if (crls != null) {
                     foreach (X509Crl crl in crls) {
