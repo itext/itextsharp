@@ -127,14 +127,15 @@ namespace iTextSharp.text.pdf.security {
         public ICollection<byte[]> GetEncoded(X509Certificate checkCert, String url) {
             if (checkCert == null)
                 return null;
-            if (urls.Count == 0) {
+            List<String> urllist = new List<string>(urls);
+            if (urllist.Count == 0) {
                 LOGGER.Info("Looking for CRL for certificate " + checkCert.SubjectDN.ToString());
                 try {
                     if (url == null)
                         url = CertificateUtil.GetCRLURL(checkCert);
                     if (url == null)
                         throw new ArgumentNullException();
-                    urls.Add(url);
+                    urllist.Add(url);
                     LOGGER.Info("Found CRL url: " + url);
                 }
                 catch (Exception e) {
@@ -142,7 +143,7 @@ namespace iTextSharp.text.pdf.security {
                 }
             }
             List<byte[]> ar = new List<byte[]>();
-            foreach (string urlt in urls) {
+            foreach (string urlt in urllist) {
                 try {
                     LOGGER.Info("Checking CRL: " + urlt);
                     HttpWebRequest con = (HttpWebRequest)WebRequest.Create(urlt);
