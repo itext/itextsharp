@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Collections;
-using System.Text;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Ocsp;
 using Org.BouncyCastle.Utilities;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.log;
+
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -57,6 +57,8 @@ namespace iTextSharp.text.pdf.security {
      * @author psoares
      */
     public class LtvVerification {
+
+        private ILogger LOGGER = LoggerFactory.GetLogger(typeof (LtvVerification));
         private PdfStamper stp;
         private PdfWriter writer;
         private PdfReader reader;
@@ -142,17 +144,21 @@ namespace iTextSharp.text.pdf.security {
             if (used)
                 throw new InvalidOperationException(MessageLocalization.GetComposedMessage("verification.already.output"));
             PdfPKCS7 pk = acroFields.VerifySignature(signatureName);
+            LOGGER.Info("Adding verification for " + signatureName);
             X509Certificate[] xc = pk.SignCertificateChain;
             ValidationData vd = new ValidationData();
             for (int k = 0; k < xc.Length; ++k) {
+                Console.WriteLine("Certificate: " + xc[k].SubjectDN);
                 byte[] ocspEnc = null;
                 if (ocsp != null && level != Level.CRL && k < xc.Length - 1) {
                     ocspEnc = ocsp.GetEncoded(xc[k], xc[k + 1], null);
-                    if (ocspEnc != null)
+                    if (ocspEnc != null) {
                         vd.ocsps.Add(BuildOCSPResponse(ocspEnc));
+                        LOGGER.Info("OCSP added");
+                    }
                 }
                 if (crl != null && (level == Level.CRL || level == Level.OCSP_CRL || (level == Level.OCSP_OPTIONAL_CRL && ocspEnc == null))) {
-                    ICollection<byte[]> cims = crl.GetEncoded((X509Certificate)xc[k], null);
+                    ICollection<byte[]> cims = crl.GetEncoded(xc[k], null);
                     if (cims != null) {
                         foreach (byte[] cim in cims) {
                             bool dup = false;
@@ -162,8 +168,10 @@ namespace iTextSharp.text.pdf.security {
                                     break;
                                 }
                             }
-                            if (!dup)
+                            if (!dup) {
                                 vd.crls.Add(cim);
+                                LOGGER.Info("CRL added");
+                            }
                         }
                     }
                 }
