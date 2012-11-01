@@ -57,7 +57,7 @@ using iTextSharp.text.log;
 namespace iTextSharp.text.pdf.security {
 	public class OcspVerifier : RootStoreVerifier {
         /** The Logger instance */
-	    protected static ILogger LOGGER = LoggerFactory.GetLogger(typeof(OcspVerifier));
+        private static ILogger LOGGER = LoggerFactory.GetLogger(typeof(OcspVerifier));
     	
 	    /** The list of OCSP responses. */
 	    protected List<BasicOcspResp> ocsps;
@@ -135,7 +135,7 @@ namespace iTextSharp.text.pdf.security {
 					    LOGGER.Info("OCSP: Issuers doesn't match.");
 					    continue;
 				    }
-			    } catch (OcspException e) {
+			    } catch (OcspException) {
 				    continue;
 			    }
 			    // check if the OCSP response was valid at the time of signing
@@ -171,7 +171,7 @@ namespace iTextSharp.text.pdf.security {
 			    try {
 				    responderCert.Verify(issuerCert.GetPublicKey());
 			    }
-			    catch (GeneralSecurityException e) {
+			    catch (GeneralSecurityException) {
 				    if (base.Verify(responderCert, issuerCert, DateTime.MaxValue).Count == 0)
 					    throw new VerificationException(String.Format("{0} Responder certificate couldn't be verified", responderCert));
 			    }
@@ -202,10 +202,10 @@ namespace iTextSharp.text.pdf.security {
                     try {
                         if (IsSignatureValid(ocspResp, anchor))
 	                        return true;
-				    } catch (GeneralSecurityException e) {}
+				    } catch (GeneralSecurityException) {}
         	    }
 		    }
-            catch (GeneralSecurityException e) {
+            catch (GeneralSecurityException) {
         	    return false;
             }
 		    return false;
@@ -220,7 +220,7 @@ namespace iTextSharp.text.pdf.security {
         public bool IsSignatureValid(BasicOcspResp ocspResp, X509Certificate responderCert) {
 		    try {
 			    return ocspResp.Verify(responderCert.GetPublicKey());
-		    } catch (OcspException e) {
+		    } catch (OcspException) {
 			    return false;
 		    }
 	    }

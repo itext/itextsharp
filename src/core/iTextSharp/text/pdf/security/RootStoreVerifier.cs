@@ -55,7 +55,7 @@ using iTextSharp.text.log;
 namespace iTextSharp.text.pdf.security {
 	public class RootStoreVerifier : CertificateVerifier {
         /** The Logger instance */
-	    protected static ILogger LOGGER = LoggerFactory.GetLogger(typeof(RootStoreVerifier));
+	    private static ILogger LOGGER = LoggerFactory.GetLogger(typeof(RootStoreVerifier));
 
 	    /** A key store against which certificates can be verified. */
 	    protected List<X509Certificate> certificates  = null;
@@ -105,11 +105,11 @@ namespace iTextSharp.text.pdf.security {
 					    result.Add(new VerificationOK(signCert, this, "Certificate verified against root store."));
 					    result.AddRange(base.Verify(signCert, issuerCert, signDate));
 					    return result;
-				    } catch (GeneralSecurityException e) {}
+				    } catch (GeneralSecurityException) {}
 			    }
 			    result.AddRange(base.Verify(signCert, issuerCert, signDate));
 			    return result;
-		    } catch (GeneralSecurityException e) {
+		    } catch (GeneralSecurityException) {
 			    return base.Verify(signCert, issuerCert, signDate);
 		    }
 	    }

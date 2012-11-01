@@ -57,7 +57,7 @@ using iTextSharp.text.log;
 namespace iTextSharp.text.pdf.security {
 	public class LtvVerifier : RootStoreVerifier {
         /** The Logger instance */
-	    protected static ILogger LOGGER = LoggerFactory.GetLogger(typeof(LtvVerifier));
+	    private static ILogger LOGGER = LoggerFactory.GetLogger(typeof(LtvVerifier));
     	
 	    /** Do we need to check all certificate, or only the signing certificate? */
 	    protected LtvVerification.CertificateOption option = LtvVerification.CertificateOption.SIGNING_CERTIFICATE;
@@ -189,7 +189,7 @@ namespace iTextSharp.text.pdf.security {
 					    if (chain.Length > 1)
 						    list.Add(new VerificationOK(signCert, this, "Root certificate passed without checking"));
 				    }
-				    catch (GeneralSecurityException e) {
+				    catch (GeneralSecurityException) {
 					    throw new VerificationException("Couldn't verify with CRL or OCSP or trusted anchor");
 				    }
 			    }
