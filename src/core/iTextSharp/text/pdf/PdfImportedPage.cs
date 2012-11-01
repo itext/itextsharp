@@ -1,6 +1,4 @@
 using System;
-using System.Drawing;
-using System.Drawing.Drawing2D;
 using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
@@ -70,26 +68,8 @@ namespace iTextSharp.text.pdf {
             this.readerInstance = readerInstance;
             this.pageNumber = pageNumber;
             this.writer = writer;
-            bBox = readerInstance.Reader.GetPageSize(pageNumber); int rotationAngle = readerInstance.Reader.GetPageRotation(pageNumber);
-            rotationAngle = rotationAngle % 360;
-            if (rotationAngle != 0) {
-                PointF[] pts = new PointF[2];
-                pts[0]= new PointF(bBox.Left, bBox.Bottom);
-                pts[1] = new PointF(bBox.Right, bBox.Top);
-                Matrix rotation = new Matrix();
-                rotation.Rotate(-rotationAngle);
-                rotation.TransformPoints(pts);
-                Rectangle transformedRectangle = new Rectangle(pts[0].X, pts[0].Y, pts[1].X, pts[1].Y);
-                transformedRectangle.Normalize();
-                Matrix transformation = new Matrix(1, 0, 0, 1, -transformedRectangle.Left, -transformedRectangle.Bottom);
-                transformation.Multiply(rotation);
-                float[] transformationMatrix = transformation.Elements;
-                SetMatrix(transformationMatrix[0], transformationMatrix[1],
-                          transformationMatrix[2], transformationMatrix[3],
-                          transformationMatrix[4], transformationMatrix[5]);
-            } else {
-                SetMatrix(1, 0, 0, 1, -bBox.Left, -bBox.Bottom);
-            }
+            bBox = readerInstance.Reader.GetPageSize(pageNumber);
+            SetMatrix(1, 0, 0, 1, -bBox.Left, -bBox.Bottom);
             type = TYPE_IMPORTED;
         }
 
