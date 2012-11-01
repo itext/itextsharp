@@ -58,7 +58,7 @@ using iTextSharp.text.log;
 namespace iTextSharp.text.pdf.security {
 	public class CrlVerifier : RootStoreVerifier {
         /** The Logger instance */
-	    protected static ILogger LOGGER = LoggerFactory.GetLogger(typeof(CrlVerifier));
+	    private static ILogger LOGGER = LoggerFactory.GetLogger(typeof(CrlVerifier));
     	
 	    /** The list of CRLs to check for revocation date. */
         
@@ -155,10 +155,10 @@ namespace iTextSharp.text.pdf.security {
 		        Stream url = WebRequest.Create(crlurl).GetResponse().GetResponseStream();
 			    return crlParser.ReadCrl(url);
 		    }
-		    catch (IOException e) {
+		    catch (IOException) {
 			    return null;
 		    }
-		    catch (GeneralSecurityException e) {
+		    catch (GeneralSecurityException) {
 			    return null;
 		    }
 	    }
@@ -175,7 +175,7 @@ namespace iTextSharp.text.pdf.security {
 			    try {
 				    crl.Verify(crlIssuer.GetPublicKey());
 				    return true;
-			    } catch (GeneralSecurityException e) {
+			    } catch (GeneralSecurityException) {
 				    LOGGER.Warn("CRL not issued by the same authority as the certificate that is being checked");
 			    }
 		    }
@@ -188,10 +188,10 @@ namespace iTextSharp.text.pdf.security {
                     try {
                         crl.Verify(anchor.GetPublicKey());
 	                    return true;
-                    } catch (GeneralSecurityException e) {}
+                    } catch (GeneralSecurityException) {}
         	    }
 		    }
-            catch (GeneralSecurityException e) {
+            catch (GeneralSecurityException) {
         	    return false;
             }
 		    return false;
