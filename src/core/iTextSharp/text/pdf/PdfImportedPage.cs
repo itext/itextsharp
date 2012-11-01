@@ -58,6 +58,7 @@ namespace iTextSharp.text.pdf {
 
         internal PdfReaderInstance readerInstance;
         internal int pageNumber;
+        internal int rotation;
         /**
          * True if the imported page has been copied to a writer.
          * @since iText 5.0.4
@@ -67,6 +68,7 @@ namespace iTextSharp.text.pdf {
         internal PdfImportedPage(PdfReaderInstance readerInstance, PdfWriter writer, int pageNumber) {
             this.readerInstance = readerInstance;
             this.pageNumber = pageNumber;
+            this.rotation = readerInstance.Reader.GetPageRotation(pageNumber);
             this.writer = writer;
             bBox = readerInstance.Reader.GetPageSize(pageNumber);
             SetMatrix(1, 0, 0, 1, -bBox.Left, -bBox.Bottom);
@@ -88,6 +90,10 @@ namespace iTextSharp.text.pdf {
             get {
                 return pageNumber;
             }
+        }
+
+        public int Rotation {
+            get { return rotation; }
         }
 
         /** Always throws an error. This operation is not allowed.
