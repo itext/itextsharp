@@ -261,7 +261,27 @@ namespace iTextSharp.text.pdf {
 					currentFont = chunk.Font;
 					text.SetFontAndSize(currentFont.Font, currentFont.Size);
 				}
+                Object[] textRender = (Object[])chunk.GetAttribute(Chunk.TEXTRENDERMODE);
+                int tr = 0;
+                float strokeWidth = 1;
 				BaseColor color = chunk.Color;
+                BaseColor strokeColor = null;
+                if (textRender != null) {
+                    tr = (int)textRender[0] & 3;
+                    if (tr != PdfContentByte.TEXT_RENDER_MODE_FILL)
+                        text.SetTextRenderingMode(tr);
+                    if (tr == PdfContentByte.TEXT_RENDER_MODE_STROKE || tr == PdfContentByte.TEXT_RENDER_MODE_FILL_STROKE) {
+                        strokeWidth = (float)textRender[1];
+                        if (strokeWidth != 1)
+                            text.SetLineWidth(strokeWidth);
+                        strokeColor = (BaseColor)textRender[2];
+                        if (strokeColor == null)
+                            strokeColor = color;
+                        if (strokeColor != null)
+                            text.SetColorStroke(strokeColor);
+                    }
+                }
+
                 object charSpace = chunk.GetAttribute(Chunk.CHAR_SPACING);
                 // no char space setting means "leave it as is".
                 if (charSpace != null && !curCharSpace.Equals(charSpace)) {
@@ -273,6 +293,12 @@ namespace iTextSharp.text.pdf {
 				text.ShowText(chunk.ToString());
 				if (color != null)
 					text.ResetRGBColorFill();
+                if (tr != PdfContentByte.TEXT_RENDER_MODE_FILL)
+                    text.SetTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL);
+                if (strokeColor != null)
+                    text.ResetRGBColorStroke();
+                if (strokeWidth != 1)
+                    text.SetLineWidth(1);
 			}
 		}
     
