@@ -1689,7 +1689,7 @@ namespace iTextSharp.text.pdf {
             if (obj == null || !obj.IsNumber())
                 return inp;
             int predictor = ((PdfNumber)obj).IntValue;
-            if (predictor < 10)
+            if (predictor < 10 && predictor != 2)
                 return inp;
             int width = 1;
             obj = GetPdfObject(dic.Get(PdfName.COLUMNS));
@@ -1709,7 +1709,20 @@ namespace iTextSharp.text.pdf {
             int bytesPerRow = (colors*width*bpc + 7)/8;
             byte[] curr = new byte[bytesPerRow];
             byte[] prior = new byte[bytesPerRow];
-            
+
+            if (predictor == 2) {
+                if (bpc == 8) {
+                    int numRows = inp.Length/bytesPerRow;
+                    for (int row = 0; row < numRows; row++) {
+                        int rowStart = row*bytesPerRow;
+                        for (int col = 0 + bytesPerPixel; col < bytesPerRow; col++) {
+                            inp[rowStart + col] = (byte) (inp[rowStart + col] + inp[rowStart + col - bytesPerPixel]);
+                        }
+                    }
+                }
+                return inp;
+            }
+
             // Decode the (sub)image row-by-row
             while (true) {
                 // Read the filter type byte and a row of data

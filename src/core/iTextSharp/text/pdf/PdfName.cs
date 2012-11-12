@@ -342,6 +342,11 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.6
          */
         public static readonly PdfName CODE = new PdfName("Code");
+        /**
+         * A name
+         * @since 5.3.4
+         */
+        public static readonly PdfName COLOR = new PdfName("Color");
         /** A name */
         public static readonly PdfName COLORS = new PdfName("Colors");
         /** A name */
@@ -576,6 +581,16 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName ENCRYPT = new PdfName("Encrypt");
         /** A name */
         public static readonly PdfName ENCRYPTMETADATA = new PdfName("EncryptMetadata");
+        /**
+         * A name
+         * @since 5.3.4
+         */
+        public static readonly PdfName END = new PdfName("End");
+        /**
+         * A name
+         * @since 5.3.4
+         */
+        public static readonly PdfName ENDINDENT = new PdfName("EndIndent");
         /** A name */
         public static readonly PdfName ENDOFBLOCK = new PdfName("EndOfBlock");
         /** A name */
@@ -919,6 +934,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName JPXDECODE = new PdfName("JPXDecode");
         /** A name */
         public static readonly PdfName JS = new PdfName("JS");
+        /**
+         * A name
+         * @since 5.3.4
+         */
+        public static readonly PdfName JUSTIFY = new PdfName("Justify");
         /** A name */
         public static readonly PdfName K = new PdfName("K");
         /** A name */
@@ -1548,6 +1568,16 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.6
          */
         public static readonly PdfName SOUND = new PdfName("Sound");
+        /**
+         * A name
+         * @since 5.3.4
+         */
+        public static readonly PdfName SPACEAFTER = new PdfName("SpaceAfter");
+        /**
+         * A name
+         * @since 5.3.4
+         */
+        public static readonly PdfName SPACEBEFORE = new PdfName("SpaceBefore");
         /** A name */
         public static readonly PdfName SPAN = new PdfName("Span");
         /**
@@ -1575,6 +1605,16 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName STAMP = new PdfName("Stamp");
         /** A name */
         public static readonly PdfName STANDARD = new PdfName("Standard");
+        /**
+         * A name
+         * @since 5.3.4
+         */
+        public static readonly PdfName START = new PdfName("Start");
+        /**
+         * A name
+         * @since 5.3.4
+         */
+        public static readonly PdfName STARTINDENT = new PdfName("StartIndent");
         /** A name */
         public static readonly PdfName STATE = new PdfName("State");
         /** A name */
@@ -1642,6 +1682,16 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName TD = new PdfName("TD");
         /** A name */
         public static readonly PdfName TEXT = new PdfName("Text");
+        /**
+         * A name
+         * @since 5.3.4
+         */
+        public static readonly PdfName TEXTALIGN = new PdfName("TextAlign");
+        /**
+         * A name
+         * @since 5.3.4
+         */
+        public static readonly PdfName TEXTINDENT = new PdfName("TextIndent");
         /**
          * A name
          * @since 2.1.6

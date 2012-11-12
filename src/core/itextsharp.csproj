@@ -4084,6 +4084,7 @@
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapUniCid.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\ICidLocation.cs" />
     <Compile Include="iTextSharp\text\pdf\interfaces\IPdfIsoConformance.cs" />
+    <Compile Include="iTextSharp\text\pdf\interfaces\IPdfStructureElement.cs" />
     <Compile Include="iTextSharp\text\pdf\intern\PdfIsoKeys.cs" />
     <Compile Include="iTextSharp\text\pdf\LongHashtable.cs" />
     <Compile Include="iTextSharp\text\pdf\crypto\AESCipherCBCnoPad.cs" />
@@ -4123,6 +4124,7 @@
     <Compile Include="iTextSharp\text\pdf\security\SignaturePermissions.cs" />
     <Compile Include="iTextSharp\text\pdf\security\TSAClientBouncyCastle.cs" />
     <Compile Include="iTextSharp\text\pdf\security\ITSAInfoBouncyCastle.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\VerificationException.cs" />
     <Compile Include="iTextSharp\text\pdf\security\VerificationOK.cs" />
     <Compile Include="iTextSharp\text\pdf\security\X509Certificate2Signature.cs" />
     <Compile Include="iTextSharp\text\pdf\TtfUnicodeWriter.cs" />

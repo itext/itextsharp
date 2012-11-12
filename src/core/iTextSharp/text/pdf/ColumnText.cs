@@ -814,6 +814,10 @@ namespace iTextSharp.text.pdf {
      * @throws DocumentException on error
      */
     public int Go(bool simulate) {
+        return  Go(simulate, null);
+    }
+
+    protected int Go(bool simulate, IElement elementToGo) {
         if (composite)
             return GoComposite(simulate);
         AddWaitingPhrase();
@@ -838,7 +842,10 @@ namespace iTextSharp.text.pdf {
         if (canvas != null) {
             graphics = canvas;
             pdf = canvas.PdfDocument;
-            text = canvas.Duplicate;
+            if (pdf.UseSeparateCanvasesForTextAndGraphics)
+                text = canvas.Duplicate;
+            else
+                text = canvas;
         }
         else if (!simulate)
             throw new Exception(MessageLocalization.GetComposedMessage("columntext.go.with.simulate.eq.eq.false.and.text.eq.eq.null"));
@@ -859,6 +866,12 @@ namespace iTextSharp.text.pdf {
         PdfLine line;
         float x1;
         int status = 0;
+        if (!simulate && pdf.writer.IsTagged()) {
+            if (elementToGo is Paragraph) {
+                if (text != null)
+                    text.OpenMCBlock(elementToGo);
+            }
+        }
         while(true) {
             firstIndent = (lastWasNewline ? indent : followingIndent); //
             if (rectangularMode) {
@@ -940,7 +953,14 @@ namespace iTextSharp.text.pdf {
         }
         if (dirty) {
             text.EndText();
-            canvas.Add(text);
+            if (!simulate && pdf.writer.IsTagged()) {
+                if (elementToGo is Paragraph) {
+                    if (text != null && (status & NO_MORE_COLUMN) == 0)
+                        text.CloseMCBlock(elementToGo);
+                }
+            }
+            if (canvas != text)
+                canvas.Add(text);
         }
         return status;
     }
@@ -1236,7 +1256,7 @@ namespace iTextSharp.text.pdf {
                     compositeColumn.minY = minY;
                     compositeColumn.maxY = maxY;
                     bool keepCandidate = (para.KeepTogether && createHere && !(firstPass && adjustFirstLine));
-                    status = compositeColumn.Go(simulate || (keepCandidate && keep == 0));
+                    status = compositeColumn.Go(simulate || (keepCandidate && keep == 0), element);
                     lastX = compositeColumn.LastX;
                     UpdateFilledWidth(compositeColumn.filledWidth);
                     if ((status & NO_MORE_TEXT) == 0 && keepCandidate) {
@@ -1420,7 +1440,7 @@ namespace iTextSharp.text.pdf {
                 float footerHeight = table.FooterHeight;
 
                 // do we need to skip the header?
-                bool skipHeader = table.SkipFirstHeader && rowIdx <= realHeaderRows;
+                bool skipHeader = table.SkipFirstHeader && rowIdx <= realHeaderRows && (table.ElementComplete || rowIdx != realHeaderRows);
                 // if not, we wan't to be able to add more than just a header and a footer
                 if (!skipHeader) {
                     yTemp -= headerHeight;

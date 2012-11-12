@@ -64,8 +64,8 @@ namespace iTextSharp.text.pdf {
         */    
         protected PdfStamperImp stamper;
         private IDictionary<String, String> moreInfo;
-        private bool hasSignature;
-        private PdfSignatureAppearance sigApp;
+        internal protected bool hasSignature;
+        protected PdfSignatureAppearance sigApp;
         private LtvVerification verification;
         
         /** Starts the process of adding extra content to an existing PDF

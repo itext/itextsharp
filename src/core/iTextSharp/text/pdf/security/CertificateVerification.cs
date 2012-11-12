@@ -116,21 +116,22 @@ namespace iTextSharp.text.pdf.security {
          * <CODE>Object[]{cert,error}</CODE> where <CODE>cert</CODE> is the
          * failed certificate and <CODE>error</CODE> is the error message
          */
-        public static Object[] VerifyCertificates(ICollection<X509Certificate> certs, ICollection<X509Certificate> keystore, ICollection<X509Crl> crls, DateTime calendar) {
+        public static IList<VerificationException> VerifyCertificates(ICollection<X509Certificate> certs, ICollection<X509Certificate> keystore, ICollection<X509Crl> crls, DateTime calendar) {
+            IList<VerificationException> result = new List<VerificationException>();
             X509Certificate[] certArray = new X509Certificate[certs.Count];
             certs.CopyTo(certArray, 0);
             for (int k = 0; k < certArray.Length; ++k) {
                 X509Certificate cert = certArray[k];
                 String err = VerifyCertificate(cert, crls, calendar);
                 if (err != null)
-                    return new Object[]{cert, err};
+                    result.Add(new VerificationException(cert, err));
                 foreach (X509Certificate certStoreX509 in keystore) {
                     try {
                         if (VerifyCertificate(certStoreX509, crls, calendar) != null)
                             continue;
                         try {
                             cert.Verify(certStoreX509.GetPublicKey());
-                            return null;
+                            return result;
                         }
                         catch {
                             continue;
@@ -152,11 +153,27 @@ namespace iTextSharp.text.pdf.security {
                     }
                 }
                 if (j == certArray.Length)
-                    return new Object[]{cert, "Cannot be verified against the KeyStore or the certificate chain"};
+                    result.Add(new VerificationException(cert, "Cannot be verified against the KeyStore or the certificate chain"));
             }
-            return new Object[]{null, "Invalid state. Possible circular certificate chain"};
+            if (result.Count == 0)
+                result.Add(new VerificationException(null, "Invalid state. Possible circular certificate chain"));
+            return result;
         }
 
+        /**
+	     * Verifies a certificate chain against a KeyStore.
+	     * @param certs the certificate chain
+	     * @param keystore the <CODE>KeyStore</CODE>
+	     * @param calendar the date or <CODE>null</CODE> for the current date
+	     * @return <CODE>null</CODE> if the certificate chain could be validated or a
+	     * <CODE>Object[]{cert,error}</CODE> where <CODE>cert</CODE> is the
+	     * failed certificate and <CODE>error</CODE> is the error message
+	     */
+        public static IList<VerificationException> VerifyCertificates(ICollection<X509Certificate> certs, ICollection<X509Certificate> keystore, DateTime calendar) {
+
+	        return VerifyCertificates(certs, keystore, null, calendar);
+	    }
+    
         /**
          * Verifies an OCSP response against a KeyStore.
          * @param ocsp the OCSP response

@@ -1,7 +1,5 @@
-using System;
-
 /*
- * $Id: PdfA1Schema.java 270 2012-06-27 08:56:29Z chingarev $
+ * $Id: VerificationException.java 5465 2012-10-07 12:37:23Z blowagie $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -43,47 +41,26 @@ using System;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-namespace iTextSharp.text.xml.xmp
-{
 
-    /**
-     * An implementation of an XmpSchema.
-     */
-    public class PdfASchema : XmpSchema
-    {
+using System;
+using Org.BouncyCastle.Crypto.Tls;
+using Org.BouncyCastle.Security;
+using Org.BouncyCastle.X509;
 
-        /** default namespace identifier*/
-        public static String DEFAULT_XPATH_ID = "pdfaid";
-        /** default namespace uri*/
-        public static String DEFAULT_XPATH_URI = "http://www.aiim.org/pdfa/ns/id/";
+namespace iTextSharp.text.pdf.security {
 
-        /** Part, always 1. */
-        public static String PART = "pdfaid:part";
-        /** Conformance, A or B. */
-        public static String CONFORMANCE = "pdfaid:conformance";
+/**
+ * An exception that is thrown when something is wrong with a certificate.
+ */
 
-        public PdfASchema()
-            : base("xmlns:" + DEFAULT_XPATH_ID + "=\"" + DEFAULT_XPATH_URI + "\"")
-        {
-            AddPart("1");
-        }
+    public class VerificationException : GeneralSecurityException {
 
         /**
-         * Adds part.
-         * @param part
-         */
-        public void AddPart(String part)
-        {
-            base[PART] = part;
-        }
+	     * Creates a VerificationException
+	     */
 
-        /**
-         * Adds the conformance.
-         * @param conformance
-         */
-        public void AddConformance(String conformance)
-        {
-            base[CONFORMANCE] = conformance;
-        }
+        public VerificationException(X509Certificate cert, String message)
+            : base(String.Format("Certificate {0} failed: {1}",
+                                cert == null ? "Unknown" : cert.SubjectDN.ToString(), message)) {}
     }
 }

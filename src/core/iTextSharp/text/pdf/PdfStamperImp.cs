@@ -1447,7 +1447,7 @@ namespace iTextSharp.text.pdf {
             MarkUsed(pg);
         }
 
-        protected internal void MarkUsed(PdfObject obj) {
+        public void MarkUsed(PdfObject obj) {
             if (append && obj != null) {
                 PRIndirectReference ref_p = null;
                 if (obj.Type == PdfObject.INDIRECT)

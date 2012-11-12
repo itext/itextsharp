@@ -51,9 +51,6 @@ namespace iTextSharp.text.pdf
     public class PdfAConformanceException : PdfIsoConformanceException
     {
 
-        /** Serial version UID. */
-	    private static readonly long serialVersionUID = 194425427686830283L;
-
 	    /**
          * @see com.itextpdf.text.pdf.PdfIsoConformanceException#PdfIsoConformanceException()
          */

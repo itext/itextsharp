@@ -60,7 +60,7 @@ namespace iTextSharp.text.pdf {
          * Constructs a PdfSignatureAppearance object.
          * @param writer    the writer to which the signature will be written.
          */
-        internal PdfSignatureAppearance(PdfStamperImp writer) {
+        public PdfSignatureAppearance(PdfStamperImp writer) {
             this.writer = writer;
             signDate = DateTime.Now;
             fieldName = GetNewSigName();
@@ -1113,7 +1113,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        internal void SetStamper(PdfStamper stamper) {
+        public void SetStamper(PdfStamper stamper) {
             this.stamper = stamper;
         }
 
@@ -1126,7 +1126,7 @@ namespace iTextSharp.text.pdf {
         /**
          * Getter for the byte buffer.
          */
-        internal ByteBuffer Sigout {
+        public ByteBuffer Sigout {
             get {
                 return sigout;
             }
@@ -1138,7 +1138,7 @@ namespace iTextSharp.text.pdf {
         /** OutputStream for the bytes of the stamper. */
         private Stream originalout;
         
-        internal Stream Originalout {
+        public Stream Originalout {
             get {
                 return originalout;
             }
@@ -1160,7 +1160,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        internal void SetTempFile(string tempFile) {
+        public void SetTempFile(string tempFile) {
             this.tempFile = tempFile;
         }
 

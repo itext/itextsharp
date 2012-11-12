@@ -44,7 +44,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Security;
 using Org.BouncyCastle.Ocsp;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
@@ -173,12 +172,12 @@ namespace iTextSharp.text.pdf.security {
 			    }
 			    catch (GeneralSecurityException) {
 				    if (base.Verify(responderCert, issuerCert, DateTime.MaxValue).Count == 0)
-					    throw new VerificationException(String.Format("{0} Responder certificate couldn't be verified", responderCert));
+                        throw new VerificationException(responderCert, String.Format("{0} Responder certificate couldn't be verified", responderCert));
 			    }
 		    }
 		    // verify if the signature of the response is valid
 		    if (!VerifyResponse(ocspResp, responderCert))
-			    throw new VerificationException(String.Format("{0} OCSP response could not be verified", responderCert));
+                throw new VerificationException(responderCert, String.Format("{0} OCSP response could not be verified", responderCert));
 	    }
     	
 	    /**
