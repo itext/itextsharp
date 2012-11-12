@@ -45,7 +45,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Security;
 using Org.BouncyCastle.Ocsp;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
@@ -127,12 +126,12 @@ namespace iTextSharp.text.pdf.security {
 		    PdfPKCS7 pkcs7 = fields.VerifySignature(signatureName);
 		    if (fields.SignatureCoversWholeDocument(signatureName))
 			    LOGGER.Info("The timestamp covers whole document.");
-		    else throw new VerificationException("Signature doesn't cover whole document.");
+		    else throw new VerificationException(null, "Signature doesn't cover whole document.");
 		    if (pkcs7.Verify()) {
 			    LOGGER.Info("The signed document has not been modified.");
 			    return pkcs7;
 		    }
-		    throw new VerificationException("The document was altered after the signature was applied.");
+		    throw new VerificationException(null, "The document was altered after the signature was applied.");
 	    }
     	
 	    /**
@@ -190,7 +189,7 @@ namespace iTextSharp.text.pdf.security {
 						    list.Add(new VerificationOK(signCert, this, "Root certificate passed without checking"));
 				    }
 				    catch (GeneralSecurityException) {
-					    throw new VerificationException("Couldn't verify with CRL or OCSP or trusted anchor");
+					    throw new VerificationException(signCert, "Couldn't verify with CRL or OCSP or trusted anchor");
 				    }
 			    }
 			    result.AddRange(list);

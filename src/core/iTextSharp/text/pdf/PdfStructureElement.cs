@@ -1,5 +1,6 @@
 using System;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.pdf.interfaces;
 
 /*
  * $Id$
@@ -51,7 +52,7 @@ namespace iTextSharp.text.pdf {
     * other nodes.
     * @author Paulo Soares
     */
-    public class PdfStructureElement : PdfDictionary {
+    public class PdfStructureElement : PdfDictionary, IPdfStructureElement {
         
         /**
         * Holds value of property kids.
@@ -76,7 +77,22 @@ namespace iTextSharp.text.pdf {
             Put(PdfName.P, parent.reference);
             Put(PdfName.TYPE, PdfName.STRUCTELEM);
         }
-        
+
+        internal PdfStructureElement(PdfDictionary parent, PdfName structureType) {
+            if (parent is PdfStructureElement) {
+                top = ((PdfStructureElement) parent).top;
+                Init(parent, structureType);
+                this.parent = (PdfStructureElement) parent;
+                Put(PdfName.P, ((PdfStructureElement) parent).reference);
+                Put(PdfName.TYPE, PdfName.STRUCTELEM);
+            } else if (parent is PdfStructureTreeRoot) {
+                top = (PdfStructureTreeRoot) parent;
+                Init(parent, structureType);
+                Put(PdfName.P, ((PdfStructureTreeRoot) parent).Reference);
+                Put(PdfName.TYPE, PdfName.STRUCTELEM);
+            } else {}
+        }
+
         /**
         * Creates a new instance of PdfStructureElement.
         * @param parent the parent of this node
@@ -92,14 +108,16 @@ namespace iTextSharp.text.pdf {
         private void Init(PdfDictionary parent, PdfName structureType) {
             PdfObject kido = parent.Get(PdfName.K);
             PdfArray kids = null;
-            if (kido != null && !kido.IsArray())
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("the.parent.has.already.another.function"));
             if (kido == null) {
                 kids = new PdfArray();
                 parent.Put(PdfName.K, kids);
-            }
-            else
+            } else if (kido is PdfArray) {
                 kids = (PdfArray)kido;
+            } else {
+                kids = new PdfArray();
+                kids.Add(kido);
+                parent.Put(PdfName.K, kids);
+            }
             kids.Add(this);
             Put(PdfName.S, structureType);
             reference = top.Writer.PdfIndirectReference;
@@ -118,7 +136,8 @@ namespace iTextSharp.text.pdf {
         internal void SetPageMark(int page, int mark) {
             if (mark >= 0)
                 Put(PdfName.K, new PdfNumber(mark));
-            top.SetPageMark(page, reference);
+            if (parent == null)
+                top.SetPageMark(page, reference);
         }
         
         /**
@@ -129,6 +148,39 @@ namespace iTextSharp.text.pdf {
             get {
                 return this.reference;
             }
+        }
+
+        /**
+         * Gets the first entarance of attribute.
+         * @returns PdfObject
+         * @since 5.3.4
+         */
+        public PdfObject GetAttribute(PdfName name) {
+            PdfDictionary attr = GetAsDict(PdfName.A);
+            if (attr != null) {
+                if (attr.Contains(name))
+                    return attr.Get(name);
+            }
+            PdfDictionary parent = Parent;
+            if (parent is PdfStructureElement)
+                return ((PdfStructureElement) parent).GetAttribute(name);
+            if (parent is PdfStructureTreeRoot)
+                return ((PdfStructureTreeRoot) parent).GetAttribute(name);
+
+            return new PdfNull();
+        }
+
+        /**
+         * Sets the attribute value.
+         * @since 5.3.4
+         */
+        public void SetAttribute(PdfName name, PdfObject obj) {
+            PdfDictionary attr = GetAsDict(PdfName.A);
+            if (attr == null) {
+                attr = new PdfDictionary();
+                Put(PdfName.A, attr);
+            }
+            attr.Put(name, obj);
         }
     }
 }

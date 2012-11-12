@@ -4,6 +4,7 @@ using System.Text;
 using iTextSharp.text;
 using iTextSharp.text.exceptions;
 using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.intern;
 using iTextSharp.text.error_messages;
 
@@ -79,7 +80,15 @@ namespace iTextSharp.text.pdf {
             /** The x position of the text line matrix. */
             protected internal float xTLM = 0;
             /** The y position of the text line matrix. */
-            protected internal float yTLM = 0;        
+            protected internal float yTLM = 0;
+
+            internal float aTLM = 1;
+            internal float bTLM = 0;
+            internal float cTLM = 0;
+            internal float dTLM = 1;
+
+            internal float tx = 0;
+
             /** The current text leading. */
             protected internal float leading = 0;
 
@@ -101,6 +110,11 @@ namespace iTextSharp.text.pdf {
                 size = cp.size;
                 xTLM = cp.xTLM;
                 yTLM = cp.yTLM;
+                aTLM = cp.aTLM;
+                bTLM = cp.bTLM;
+                cTLM = cp.cTLM;
+                dTLM = cp.dTLM;
+                tx = cp.tx;
                 leading = cp.leading;
                 scale = cp.scale;
                 charSpace = cp.charSpace;
@@ -176,6 +190,18 @@ namespace iTextSharp.text.pdf {
         private int mcDepth = 0;
         private bool inText = false;
 
+        private IList<IElement> mcElements = new List<IElement>();
+
+        private PdfContentByte duplicatedFrom = null;
+
+        /**
+         * Indicates if to open/close text block automatically.
+         */
+        protected bool autoControlTextBlocks = false;
+
+        //for development needs only! to be removed once tagged pdf support is complete.
+        private bool allowTaggedImages = false;
+
         private static Dictionary<PdfName, String> abrev = new Dictionary<PdfName,string>();
         
         static PdfContentByte() {
@@ -203,6 +229,7 @@ namespace iTextSharp.text.pdf {
             if (wr != null) {
                 writer = wr;
                 pdf = writer.PdfDocument;
+                autoControlTextBlocks = !pdf.UseSeparateCanvasesForTextAndGraphics;
             }
         }
     
@@ -320,6 +347,9 @@ namespace iTextSharp.text.pdf {
         }
 
         public void SetLeading(float v) {
+            if (!inText && autoControlTextBlocks) {
+                BeginText(true);
+            }
             state.leading = v;
             content.Append(v).Append(" TL").Append_i(separator);
         }
@@ -477,6 +507,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void Clip() {
+            if (inText && autoControlTextBlocks) {
+                EndText();
+            }
             content.Append('W').Append_i(separator);
         }
     
@@ -486,6 +519,9 @@ namespace iTextSharp.text.pdf {
          */
     
         public void EoClip() {
+            if (inText && autoControlTextBlocks) {
+                EndText();
+            }
             content.Append("W*").Append_i(separator);
         }
     
@@ -704,7 +740,12 @@ namespace iTextSharp.text.pdf {
     
         public void MoveTo(float x, float y) {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append(x).Append(' ').Append(y).Append(" m").Append_i(separator);
         }
@@ -719,7 +760,12 @@ namespace iTextSharp.text.pdf {
     
         public void LineTo(float x, float y) {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append(x).Append(' ').Append(y).Append(" l").Append_i(separator);
         }
@@ -737,7 +783,12 @@ namespace iTextSharp.text.pdf {
     
         public void CurveTo(float x1, float y1, float x2, float y2, float x3, float y3) {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append(x1).Append(' ').Append(y1).Append(' ').Append(x2).Append(' ').Append(y2).Append(' ').Append(x3).Append(' ').Append(y3).Append(" c").Append_i(separator);
         }
@@ -753,7 +804,12 @@ namespace iTextSharp.text.pdf {
     
         public void CurveTo(float x2, float y2, float x3, float y3) {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append(x2).Append(' ').Append(y2).Append(' ').Append(x3).Append(' ').Append(y3).Append(" v").Append_i(separator);
         }
@@ -769,7 +825,12 @@ namespace iTextSharp.text.pdf {
     
         public void CurveFromTo(float x1, float y1, float x3, float y3) {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append(x1).Append(' ').Append(y1).Append(' ').Append(x3).Append(' ').Append(y3).Append(" y").Append_i(separator);
         }
@@ -802,7 +863,12 @@ namespace iTextSharp.text.pdf {
     
         public void Rectangle(float x, float y, float w, float h) {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append(x).Append(' ').Append(y).Append(' ').Append(w).Append(' ').Append(h).Append(" re").Append_i(separator);
         }
@@ -1038,7 +1104,12 @@ namespace iTextSharp.text.pdf {
     
         public void ClosePath() {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append('h').Append_i(separator);
         }
@@ -1049,7 +1120,12 @@ namespace iTextSharp.text.pdf {
     
         public void NewPath() {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append('n').Append_i(separator);
         }
@@ -1060,7 +1136,12 @@ namespace iTextSharp.text.pdf {
     
         public void Stroke() {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append('S').Append_i(separator);
         }
@@ -1071,7 +1152,12 @@ namespace iTextSharp.text.pdf {
     
         public void ClosePathStroke() {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append('s').Append_i(separator);
         }
@@ -1082,7 +1168,12 @@ namespace iTextSharp.text.pdf {
     
         public void Fill() {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append('f').Append_i(separator);
         }
@@ -1093,7 +1184,12 @@ namespace iTextSharp.text.pdf {
     
         public void EoFill() {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append("f*").Append_i(separator);
         }
@@ -1104,7 +1200,12 @@ namespace iTextSharp.text.pdf {
     
         public void FillStroke() {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append('B').Append_i(separator);
         }
@@ -1115,7 +1216,12 @@ namespace iTextSharp.text.pdf {
     
         public void ClosePathFillStroke() {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append('b').Append_i(separator);
         }
@@ -1126,7 +1232,12 @@ namespace iTextSharp.text.pdf {
     
         public void EoFillStroke() {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append("B*").Append_i(separator);
         }
@@ -1137,7 +1248,12 @@ namespace iTextSharp.text.pdf {
     
         public void ClosePathEoFillStroke() {
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
+                }
             }
             content.Append("b*").Append_i(separator);
         }
@@ -1221,6 +1337,11 @@ namespace iTextSharp.text.pdf {
                 AddTemplate(template, a / w, b / w, c / h, d / h, e, f);
             }
             else {
+                if (inText && autoControlTextBlocks) {
+                    EndText();
+                }
+                if (writer.IsTagged() && allowTaggedImages)
+                    BeginMarkedContentSequence(new PdfStructureElement(GetParentStructureElement(), PdfName.FIGURE));
                 content.Append("q ");
                 content.Append(a).Append(' ');
                 content.Append(b).Append(' ');
@@ -1283,6 +1404,8 @@ namespace iTextSharp.text.pdf {
                     name = prs.AddXObject(name, writer.GetImageReference(name));
                     content.Append(' ').Append(name.GetBytes()).Append(" Do Q").Append_i(separator);
                 }
+                if (writer.IsTagged() && allowTaggedImages)
+                    EndMarkedContentSequence();
             }
             if (image.HasBorders()) {
                 SaveState();
@@ -1340,18 +1463,37 @@ namespace iTextSharp.text.pdf {
             }
             state = new GraphicState();
         }
-    
+
+        /**
+         * Starts the writing of text.
+         * @param restoreTM indicates if to restore text matrix of the previous text block.
+         */
+        public void BeginText(bool restoreTM) {
+            if (inText) {
+                if (autoControlTextBlocks) {
+
+                } else {
+                    throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.begin.end.text.operators"));
+                }
+            } else {
+                inText = true;
+                content.Append("BT").Append_i(separator);
+                if (restoreTM) {
+                    float tx = state.xTLM;
+                    SetTextMatrix(state.aTLM, state.bTLM, state.cTLM, state.dTLM, state.tx, state.yTLM);
+                    state.xTLM = state.tx = tx;
+                } else {
+                    state.xTLM = 0;
+                    state.yTLM = 0;
+                }
+            }
+        }
+
         /**
          * Starts the writing of text.
          */
         public void BeginText() {
-            if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.begin.end.text.operators"));
-            }
-            inText = true;
-            state.xTLM = 0;
-            state.yTLM = 0;
-            content.Append("BT").Append_i(separator);
+            BeginText(false);
         }
     
         /**
@@ -1359,10 +1501,16 @@ namespace iTextSharp.text.pdf {
          */
         public void EndText() {
             if (!inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.begin.end.text.operators"));
+                if (autoControlTextBlocks) {
+
+                } else {
+                    throw new IllegalPdfSyntaxException(
+                        MessageLocalization.GetComposedMessage("unbalanced.begin.end.text.operators"));
+                }
+            } else {
+                inText = false;
+                content.Append("ET").Append_i(separator);
             }
-            inText = false;
-            content.Append("ET").Append_i(separator);
         }
     
         /**
@@ -1370,6 +1518,9 @@ namespace iTextSharp.text.pdf {
          * <CODE>restoreState</CODE> must be balanced.
          */
         public void SaveState() {
+            if (inText && autoControlTextBlocks) {
+                EndText();
+            }
             content.Append('q').Append_i(separator);
             stateList.Add(new GraphicState(state));
         }
@@ -1393,6 +1544,9 @@ namespace iTextSharp.text.pdf {
          * @param       charSpace           a parameter
          */
         public void SetCharacterSpacing(float value) {
+            if (!inText && autoControlTextBlocks) {
+                BeginText(true);
+            }
             state.charSpace = value;
             content.Append(value).Append(" Tc").Append_i(separator);
         }
@@ -1403,6 +1557,9 @@ namespace iTextSharp.text.pdf {
          * @param       wordSpace           a parameter
          */
         public void SetWordSpacing(float value) {
+            if (!inText && autoControlTextBlocks) {
+                BeginText(true);
+            }
             state.wordSpace = value;
             content.Append(value).Append(" Tw").Append_i(separator);
         }
@@ -1413,6 +1570,9 @@ namespace iTextSharp.text.pdf {
          * @param       scale               a parameter
          */
         public void SetHorizontalScaling(float value) {
+            if (!inText && autoControlTextBlocks) {
+                BeginText(true);
+            }
             state.scale = value;
             content.Append(value).Append(" Tz").Append_i(separator);
         }
@@ -1424,6 +1584,9 @@ namespace iTextSharp.text.pdf {
          * @param size the font size in points
          */
         public virtual void SetFontAndSize(BaseFont bf, float size) {
+            if (!inText && autoControlTextBlocks) {
+                BeginText(true);
+            }
             CheckWriter();
             if (size < 0.0001f && size > -0.0001f)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("font.size.too.small.1", size));
@@ -1441,7 +1604,10 @@ namespace iTextSharp.text.pdf {
          * @param       rendering               a parameter
          */
         public void SetTextRenderingMode(int value) {
-                content.Append(value).Append(" Tr").Append_i(separator);
+            if (!inText && autoControlTextBlocks) {
+                BeginText(true);
+            }
+            content.Append(value).Append(" Tr").Append_i(separator);
         }
     
         /**
@@ -1452,6 +1618,9 @@ namespace iTextSharp.text.pdf {
          * @param       rise                a parameter
          */
         public void SetTextRise(float value) {
+            if (!inText && autoControlTextBlocks) {
+                BeginText(true);
+            }
             content.Append(value).Append(" Ts").Append_i(separator);
         }
     
@@ -1474,8 +1643,16 @@ namespace iTextSharp.text.pdf {
          * @param text the text to write
          */
         public void ShowText(string text) {
+            if (!inText && autoControlTextBlocks) {
+                BeginText(true);
+            }
+            if (writer.IsTagged())
+                BeginMarkedContentSequence(new PdfStructureElement(GetParentStructureElement(), PdfName.SPAN));
             ShowText2(text);
+            UpdateTx(text, 0);
             content.Append("Tj").Append_i(separator);
+            if (writer.IsTagged())
+                EndMarkedContentSequence();
         }
         
         /**
@@ -1529,9 +1706,18 @@ namespace iTextSharp.text.pdf {
          * @param text the text to write
          */
         public void NewlineShowText(string text) {
+            if (!inText && autoControlTextBlocks) {
+                BeginText(true);
+            }
+            if (writer.IsTagged())
+                BeginMarkedContentSequence(new PdfStructureElement(GetParentStructureElement(), PdfName.SPAN));
             state.yTLM -= state.leading;
             ShowText2(text);
             content.Append('\'').Append_i(separator);
+            if (writer.IsTagged())
+                EndMarkedContentSequence();
+            state.tx = state.xTLM;
+            UpdateTx(text, 0);
         }
         
         /**
@@ -1542,8 +1728,15 @@ namespace iTextSharp.text.pdf {
          * @param text the text to write
          */
         public void NewlineShowText(float wordSpacing, float charSpacing, string text) {
+            if (!inText && autoControlTextBlocks) {
+                BeginText(true);
+            }
+            if (writer.IsTagged())
+                BeginMarkedContentSequence(new PdfStructureElement(GetParentStructureElement(), PdfName.SPAN));
             state.yTLM -= state.leading;
             content.Append(wordSpacing).Append(' ').Append(charSpacing);
+            if (writer.IsTagged())
+                EndMarkedContentSequence();
             ShowText2(text);
             content.Append("\"").Append_i(separator);
         
@@ -1551,6 +1744,8 @@ namespace iTextSharp.text.pdf {
             // (cfr PDF reference v1.6, table 5.6)
             state.charSpace = charSpacing;
             state.wordSpace = wordSpacing;
+            state.tx = state.xTLM;
+            UpdateTx(text, 0);
         }
     
         /**
@@ -1566,8 +1761,16 @@ namespace iTextSharp.text.pdf {
          * @param       y           operand 3,2 in the matrix
          */
         public void SetTextMatrix(float a, float b, float c, float d, float x, float y) {
+            if (!inText && autoControlTextBlocks) {
+                BeginText(true);
+            }
             state.xTLM = x;
             state.yTLM = y;
+            state.aTLM = a;
+            state.bTLM = b;
+            state.cTLM = c;
+            state.dTLM = d;
+            state.tx = state.xTLM;
             content.Append(a).Append(' ').Append(b).Append_i(' ')
                 .Append(c).Append_i(' ').Append(d).Append_i(' ')
                 .Append(x).Append_i(' ').Append(y).Append(" Tm").Append_i(separator);
@@ -1603,9 +1806,16 @@ namespace iTextSharp.text.pdf {
          * @param       y           y-coordinate of the new current point
          */
         public void MoveText(float x, float y) {
+            if (!inText && autoControlTextBlocks) {
+                BeginText(true);
+            }
             state.xTLM += x;
             state.yTLM += y;
-            content.Append(x).Append(' ').Append(y).Append(" Td").Append_i(separator);
+            if (autoControlTextBlocks && state.xTLM != state.tx) {
+                SetTextMatrix(state.aTLM, state.bTLM, state.cTLM, state.dTLM, state.xTLM, state.yTLM);
+            } else {
+                content.Append(x).Append(' ').Append(y).Append(" Td").Append_i(separator);
+            }
         }
     
         /**
@@ -1617,16 +1827,29 @@ namespace iTextSharp.text.pdf {
          * @param       y           y-coordinate of the new current point
          */
         public void MoveTextWithLeading(float x, float y) {
+            if (!inText && autoControlTextBlocks) {
+                BeginText(true);
+            }
             state.xTLM += x;
             state.yTLM += y;
             state.leading = -y;
-            content.Append(x).Append(' ').Append(y).Append(" TD").Append_i(separator);
+            if (autoControlTextBlocks && state.xTLM != state.tx) {
+                SetTextMatrix(state.aTLM, state.bTLM, state.cTLM, state.dTLM, state.xTLM, state.yTLM);
+            } else {
+                content.Append(x).Append(' ').Append(y).Append(" TD").Append_i(separator);
+            }
         }
     
         /**
          * Moves to the start of the next line.
          */
         public void NewlineText() {
+            if (!inText && autoControlTextBlocks) {
+                BeginText(true);
+            }
+            if (autoControlTextBlocks && state.xTLM != state.tx) {
+                SetTextMatrix(state.aTLM, state.bTLM, state.cTLM, state.dTLM, state.xTLM, state.yTLM);
+            }
             state.yTLM -= state.leading;
             content.Append("T*").Append_i(separator);
         }
@@ -1830,6 +2053,9 @@ namespace iTextSharp.text.pdf {
          * @param f an element of the transformation matrix
          **/
         public void ConcatCTM(float a, float b, float c, float d, float e, float f) {
+            if (inText && autoControlTextBlocks) {
+                EndText();
+            }
             content.Append(a).Append(' ').Append(b).Append(' ').Append(c).Append(' ');
             content.Append(d).Append(' ').Append(e).Append(' ').Append(f).Append(" cm").Append_i(separator);
         }
@@ -2088,6 +2314,9 @@ namespace iTextSharp.text.pdf {
         * @param psobject the object
         */
         public void AddPSXObject(PdfPSXObject psobject) {
+            if (inText && autoControlTextBlocks) {
+                EndText();
+            }
             CheckWriter();
             PdfName name = writer.AddDirectTemplateSimple(psobject, null);
             PageResources prs = PageResources;
@@ -2107,6 +2336,11 @@ namespace iTextSharp.text.pdf {
          * @param f an element of the transformation matrix
          */
         public virtual void AddTemplate(PdfTemplate template, float a, float b, float c, float d, float e, float f) {
+            if (inText && autoControlTextBlocks) {
+                EndText();
+            }
+            if (writer.IsTagged() && allowTaggedImages)
+                BeginMarkedContentSequence(new PdfStructureElement(GetParentStructureElement(), PdfName.FIGURE));
             CheckWriter();
             CheckNoPattern(template);
             PdfName name = writer.AddDirectTemplateSimple(template, null);
@@ -2120,6 +2354,8 @@ namespace iTextSharp.text.pdf {
             content.Append(e).Append(' ');
             content.Append(f).Append(" cm ");
             content.Append(name.GetBytes()).Append(" Do Q").Append_i(separator);
+            if (writer.IsTagged() && allowTaggedImages)
+                EndMarkedContentSequence();
         }
     
         /**
@@ -2135,6 +2371,9 @@ namespace iTextSharp.text.pdf {
         }
 
         internal void AddTemplateReference(PdfIndirectReference template, PdfName name, float a, float b, float c, float d, float e, float f) {
+            if (inText && autoControlTextBlocks) {
+                EndText();
+            }
             CheckWriter();
             PageResources prs = PageResources;
             name = prs.AddXObject(name, template);
@@ -2549,14 +2788,20 @@ namespace iTextSharp.text.pdf {
          * @param text array of text
          */
         public void ShowText(PdfTextArray text) {
+            if (!inText && autoControlTextBlocks) {
+                BeginText(true);
+            }
             if (state.fontDetails == null)
                 throw new ArgumentNullException(MessageLocalization.GetComposedMessage("font.and.size.must.be.set.before.writing.any.text"));
+            if (writer.IsTagged())
+                BeginMarkedContentSequence(new PdfStructureElement(GetParentStructureElement(), PdfName.SPAN));
             content.Append('[');
             List<Object> arrayList = text.ArrayList;
             bool lastWasNumber = false;
             foreach (Object obj in arrayList) {
                 if (obj is string) {
                     ShowText2((string)obj);
+                    UpdateTx((String) obj, 0);
                     lastWasNumber = false;
                 }
                 else {
@@ -2565,9 +2810,12 @@ namespace iTextSharp.text.pdf {
                     else
                         lastWasNumber = true;
                     content.Append(((float)obj));
+                    UpdateTx("", (float)obj);
                 }
             }
             content.Append("]TJ").Append_i(separator);
+            if (writer.IsTagged())
+                EndMarkedContentSequence();
         }
     
         /**
@@ -2624,7 +2872,9 @@ namespace iTextSharp.text.pdf {
          */
         public virtual PdfContentByte Duplicate {
             get {
-                return new PdfContentByte(writer);
+                PdfContentByte cb = new PdfContentByte(writer);
+                cb.duplicatedFrom = this;
+                return cb;
             }
         }
     
@@ -2938,6 +3188,9 @@ namespace iTextSharp.text.pdf {
         }
 
         public void Transform(System.Drawing.Drawing2D.Matrix tx) {
+            if (inText && autoControlTextBlocks) {
+                EndText();
+            }
             float[] c = tx.Elements;
             ConcatCTM(c[0], c[1], c[2], c[3], c[4], c[5]);
         }
@@ -2976,7 +3229,7 @@ namespace iTextSharp.text.pdf {
                 struc.Put(PdfName.PG, writer.CurrentPage);
             }
             pdf.IncMarkPoint();
-            mcDepth++;
+            SetMcDepth(GetMcDepth() + 1);
             content.Append(struc.Get(PdfName.S).GetBytes()).Append(" <</MCID ").Append(mark).Append(">> BDC").Append_i(separator);
         }
         
@@ -2984,10 +3237,10 @@ namespace iTextSharp.text.pdf {
         * Ends a marked content sequence
         */    
         public void EndMarkedContentSequence() {
-            if (mcDepth == 0) {
+            if (GetMcDepth() == 0) {
                 throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.begin.end.marked.content.operators"));
             }
-            --mcDepth;
+            SetMcDepth(GetMcDepth() - 1); ;
             content.Append("EMC").Append_i(separator);
         }
         
@@ -3002,7 +3255,7 @@ namespace iTextSharp.text.pdf {
         public void BeginMarkedContentSequence(PdfName tag, PdfDictionary property, bool inline) {
             if (property == null) {
                 content.Append(tag.GetBytes()).Append(" BMC").Append_i(separator);
-                ++mcDepth;
+                SetMcDepth(GetMcDepth() + 1);
                 return;
             }
             content.Append(tag.GetBytes()).Append(' ');
@@ -3020,7 +3273,7 @@ namespace iTextSharp.text.pdf {
                 content.Append(name.GetBytes());
             }
             content.Append(" BDC").Append_i(separator);
-            ++mcDepth;
+            SetMcDepth(GetMcDepth() + 1);
         }
         
         /**
@@ -3043,11 +3296,15 @@ namespace iTextSharp.text.pdf {
         * @throws IllegalPdfSyntaxException (a runtime exception)
         */
         public void SanityCheck() {
-            if (mcDepth != 0) {
+            if (GetMcDepth() != 0) {
                 throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.marked.content.operators"));
             }
             if (inText) {
-                throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.begin.end.text.operators"));
+                if (autoControlTextBlocks) {
+                    EndText();
+                } else {
+                    throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.begin.end.text.operators"));
+                }
             }
             if (layerDepth != null && layerDepth.Count > 0) {
                 throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.layer.operators"));
@@ -3055,6 +3312,186 @@ namespace iTextSharp.text.pdf {
             if (stateList.Count > 0) {
                 throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.save.restore.state.operators"));
             }
+        }
+
+        internal void OpenMCBlock(IElement element) {
+            if (writer.IsTagged()) {
+                if (!GetMcElements().Contains(element)) {
+                    PdfStructureElement structureElement = OpenMCBlockInt(element);
+                    GetMcElements().Add(element);
+                    pdf.structElements[element] = structureElement;
+                }
+            }
+        }
+
+        private PdfDictionary GetParentStructureElement() {
+            PdfStructureElement parent = null;
+            if (GetMcElements().Count > 0 && 
+                pdf.structElements.TryGetValue(GetMcElements()[GetMcElements().Count - 1], out  parent)) {
+                return parent;
+            }
+            return writer.StructureTreeRoot;
+        }
+
+        private IPdfStructureElement GetParentStructureInterface() {
+            PdfStructureElement parent = null;
+            if (GetMcElements().Count > 0
+                && pdf.structElements.TryGetValue(GetMcElements()[GetMcElements().Count - 1], out parent))
+                return parent;
+            return writer.StructureTreeRoot;
+        }
+
+        private PdfStructureElement OpenMCBlockInt(IElement element) {
+            PdfStructureElement structureElement = null;
+            if (writer.IsTagged()) {
+                if (element is Paragraph) {
+                    if (!pdf.structElements.TryGetValue(element, out structureElement)) {
+                        structureElement = new PdfStructureElement(GetParentStructureElement(), PdfName.P);
+                        Paragraph p = (Paragraph) element;
+
+                        // Setting non-inheritable attributes
+                        if ((p.Font != null) && (p.Font.Color != null)) {
+                            BaseColor c = p.Font.Color;
+                            float[] colors = new float[] {c.R / 255f, c.G / 255f, c.B / 255f};
+                            structureElement.Put(PdfName.COLOR, new PdfArray(colors));
+                        }
+                        float epsilon = 0.0001f;
+                        if (Math.Abs(p.SpacingBefore) > epsilon)
+                            structureElement.SetAttribute(PdfName.SPACEBEFORE, new PdfNumber(p.SpacingBefore));
+                        if (Math.Abs(p.SpacingAfter) > epsilon)
+                            structureElement.SetAttribute(PdfName.SPACEAFTER, new PdfNumber(p.SpacingAfter));
+                        if (Math.Abs(p.FirstLineIndent) > epsilon)
+                            structureElement.SetAttribute(PdfName.TEXTINDENT, new PdfNumber(p.FirstLineIndent));
+
+                        // Setting inheritable attributes
+                        IPdfStructureElement parent = GetParentStructureInterface();
+                        PdfObject obj = parent.GetAttribute(PdfName.STARTINDENT);
+                        if (obj is PdfNumber) {
+                            float startIndent = ((PdfNumber) obj).FloatValue;
+                            if (Math.Abs(startIndent - p.IndentationLeft) > epsilon)
+                                structureElement.SetAttribute(PdfName.STARTINDENT, new PdfNumber(p.IndentationLeft));
+                        } else {
+                            if (Math.Abs(p.IndentationLeft) > epsilon)
+                                structureElement.SetAttribute(PdfName.STARTINDENT, new PdfNumber(p.IndentationLeft));
+                        }
+
+                        obj = parent.GetAttribute(PdfName.ENDINDENT);
+                        if (obj is PdfNumber) {
+                            float endIndent = ((PdfNumber)obj).FloatValue;
+                            if (Math.Abs(endIndent - p.IndentationRight) > epsilon)
+                                structureElement.SetAttribute(PdfName.ENDINDENT, new PdfNumber(p.IndentationRight));
+                        } else {
+                            if (Math.Abs(p.IndentationRight) > epsilon)
+                                structureElement.SetAttribute(PdfName.ENDINDENT, new PdfNumber(p.IndentationRight));
+                        }
+
+                        PdfName align = null;
+                        switch (p.Alignment) {
+                            case Element.ALIGN_LEFT:
+                                align = PdfName.START;
+                                break;
+                            case Element.ALIGN_CENTER:
+                                align = PdfName.CENTER;
+                                break;
+                            case Element.ALIGN_RIGHT:
+                                align = PdfName.END;
+                                break;
+                            case Element.ALIGN_JUSTIFIED:
+                                align = PdfName.JUSTIFY;
+                                break;
+                        }
+                        obj = parent.GetAttribute(PdfName.TEXTALIGN);
+                        if (obj
+                        is PdfName) {
+                            PdfName textAlign = ((PdfName)obj);
+                            if (align != null && !textAlign.Equals(align))
+                                structureElement.SetAttribute(PdfName.TEXTALIGN, align);
+                        } else {
+                            if (align != null && !PdfName.START.Equals(align))
+                                structureElement.SetAttribute(PdfName.TEXTALIGN, align);
+                        }
+
+                    }
+                    if (inText && autoControlTextBlocks) {
+                        EndText();
+                    }
+                    BeginMarkedContentSequence(structureElement);
+                }
+            }
+            return structureElement;
+        }
+
+        internal void CloseMCBlock(IElement element) {
+            if (writer.IsTagged()) {
+                if (GetMcElements().Contains(element)) {
+                    CloseMCBlockInt(element);
+                    GetMcElements().Remove(element);
+                    pdf.structElements.Remove(element);
+                }
+            }
+        }
+
+        private void CloseMCBlockInt(IElement element) {
+            if (writer.IsTagged()) {
+                if (element is Paragraph) {
+                    if (inText && autoControlTextBlocks)
+                        EndText();
+                    EndMarkedContentSequence();
+                }
+            }
+        }
+
+        internal IList<IElement> SaveMCBlocks() {
+            IList<IElement> mc = new List<IElement>();
+            if (writer.IsTagged()) {
+                mc = GetMcElements();
+                for (int i = 0; i < mc.Count; i++) {
+                    CloseMCBlockInt(mc[i]);
+                }
+                SetMcElements(new List<IElement>());
+            }
+            return mc;
+        }
+
+        internal void RestoreMCBlocks(IList<IElement> mcElements) {
+            if (writer.IsTagged() && mcElements != null) {
+                SetMcElements(mcElements);
+                for (int i = 0; i < this.GetMcElements().Count; i++) {
+                    OpenMCBlockInt(this.GetMcElements()[i]);
+                }
+            }
+        }
+
+        internal int GetMcDepth() {
+            if (duplicatedFrom != null)
+                return duplicatedFrom.GetMcDepth();
+            else
+                return mcDepth;
+        }
+
+        internal void SetMcDepth(int value) {
+            if (duplicatedFrom != null)
+                duplicatedFrom.SetMcDepth(value);
+            else
+                mcDepth = value;
+        }
+
+        internal IList<IElement> GetMcElements() {
+            if (duplicatedFrom != null)
+                return duplicatedFrom.GetMcElements();
+            else
+                return mcElements;
+        }
+
+        internal void SetMcElements(IList<IElement> value) {
+            if (duplicatedFrom != null)
+                duplicatedFrom.SetMcElements(value);
+            else
+                mcElements = value;
+        }
+
+        internal void UpdateTx(String text, float Tj) {
+            state.tx = state.tx + GetEffectiveStringWidth(text, false) + (-Tj / 1000f * state.size + state.charSpace + state.wordSpace) * state.scale / 100;
         }
     }
 }

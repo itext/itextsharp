@@ -46,7 +46,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Security;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.log;
@@ -129,7 +128,7 @@ namespace iTextSharp.text.pdf.security {
 			    && signDate.CompareTo(crl.ThisUpdate) > 0 && signDate.CompareTo(crl.NextUpdate.Value) < 0) {
 			    // the signing certificate may not be revoked
 			    if (IsSignatureValid(crl, issuerCert) && crl.IsRevoked(signCert)) {
-				    throw new VerificationException(String.Format("{0} The certificate has been revoked.", signCert));
+				    throw new VerificationException(signCert, String.Format("{0} The certificate has been revoked.", signCert));
 			    }
 			    return true;
 		    }

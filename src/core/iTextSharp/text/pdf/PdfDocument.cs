@@ -282,6 +282,12 @@ namespace iTextSharp.text.pdf {
         
         /** The <CODE>PdfWriter</CODE>. */
         protected internal PdfWriter writer;
+
+        internal IDictionary<IElement, PdfStructureElement> structElements = new Dictionary<IElement, PdfStructureElement>();
+
+        //for development needs only! to be removed once tagged pdf support is complete.
+        internal bool UseSeparateCanvasesForTextAndGraphics = true;
+
         
         /**
         * Adds a <CODE>PdfWriter</CODE> to the <CODE>PdfDocument</CODE>.
@@ -454,6 +460,7 @@ namespace iTextSharp.text.pdf {
                     break;
                 }
                 case Element.PARAGRAPH: {
+                    text.OpenMCBlock(element);
                     leadingCount++;
                     // we cast the element to a paragraph
                     Paragraph paragraph = (Paragraph) element;
@@ -510,6 +517,9 @@ namespace iTextSharp.text.pdf {
                     indentation.indentRight -= paragraph.IndentationRight;
                     CarriageReturn();
                     leadingCount--;
+                    if (writer.IsTagged())
+                        FlushLines();
+                    text.CloseMCBlock(element);
                     break;
                 }
                 case Element.SECTION:
@@ -837,14 +847,31 @@ namespace iTextSharp.text.pdf {
             // [F12] we add tag info
             if (writer.IsTagged())
                  page.Put(PdfName.STRUCTPARENTS, new PdfNumber(writer.CurrentPageNumber - 1));
-            
-            if (text.Size > textEmptySize)
+
+             if (text.Size > textEmptySize || !UseSeparateCanvasesForTextAndGraphics)
                 text.EndText();
             else
                 text = null;
-            writer.Add(page, new PdfContents(writer.DirectContentUnder, graphics, text, writer.DirectContent, pageSize));
+            IList<IList<IElement>> mcBlocks = new List<IList<IElement>>();
+            mcBlocks.Add(null);
+            mcBlocks.Add(null);
+            mcBlocks.Add(null);
+            mcBlocks.Add(null);
+            mcBlocks[0] = writer.DirectContentUnder.SaveMCBlocks();
+            if (graphics != null)
+                mcBlocks[1] = graphics.SaveMCBlocks();
+            if (UseSeparateCanvasesForTextAndGraphics && text != null)
+                mcBlocks[2] = text.SaveMCBlocks();
+            mcBlocks[3] = writer.DirectContent.SaveMCBlocks();
+        	writer.Add(page, new PdfContents(writer.DirectContentUnder, graphics, UseSeparateCanvasesForTextAndGraphics ? text : null, writer.DirectContent, pageSize));
             // we initialize the new page
             InitPage();
+            writer.DirectContentUnder.RestoreMCBlocks(mcBlocks[0]);
+            if (graphics != null)
+                graphics.RestoreMCBlocks(mcBlocks[1]);
+            if (UseSeparateCanvasesForTextAndGraphics && text != null)
+                text.RestoreMCBlocks(mcBlocks[2]);
+            writer.DirectContent.RestoreMCBlocks(mcBlocks[3]);
             return true;
         }
 
@@ -2089,10 +2116,15 @@ namespace iTextSharp.text.pdf {
                 marginTop = nextMarginTop;
                 marginBottom = nextMarginBottom;
             }
-            text = new PdfContentByte(writer);
-            text.Reset();
+            if (UseSeparateCanvasesForTextAndGraphics) {
+                text = new PdfContentByte(writer);
+                text.Reset();
+            } else {
+                text = graphics;
+            }
             text.BeginText();
-            textEmptySize = text.Size;
+            if (!UseSeparateCanvasesForTextAndGraphics)
+                textEmptySize = text.Size;
             // we move to the left/top position of the page
             text.MoveText(Left, Top);
         }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using iTextSharp.text.pdf.interfaces;
 
 /*
  * $Id$
@@ -50,7 +51,7 @@ namespace iTextSharp.text.pdf {
     * The structure tree root corresponds to the highest hierarchy level in a tagged PDF.
     * @author Paulo Soares
     */
-    public class PdfStructureTreeRoot : PdfDictionary {
+    public class PdfStructureTreeRoot : PdfDictionary, IPdfStructureElement {
         
         private Dictionary<int, PdfObject> parentTree = new Dictionary<int,PdfObject>();
         private PdfIndirectReference reference;
@@ -192,6 +193,34 @@ namespace iTextSharp.text.pdf {
                 Put(PdfName.CLASSMAP, writer.AddToBody(classMap).IndirectReference);
             }
             NodeProcess(this, reference);
+        }
+
+
+        /**
+         * Gets the first entarance of attribute.
+         * @returns PdfObject
+         * @since 5.3.4
+         */
+        public PdfObject GetAttribute(PdfName name) {
+            PdfDictionary attr = GetAsDict(PdfName.A);
+            if (attr != null) {
+                if (attr.Contains(name))
+                    return attr.Get(name);
+            }
+            return null;
+        }
+
+        /**
+         * Sets the attribute value.
+         * @since 5.3.4
+         */
+        public void SetAttribute(PdfName name, PdfObject obj) {
+            PdfDictionary attr = GetAsDict(PdfName.A);
+            if (attr == null) {
+                attr = new PdfDictionary();
+                Put(PdfName.A, attr);
+            }
+            attr.Put(name, obj);
         }
     }
 }
