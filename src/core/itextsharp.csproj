@@ -4109,6 +4109,7 @@
     <Compile Include="iTextSharp\text\pdf\security\EncryptionAlgorithms.cs" />
     <Compile Include="iTextSharp\text\pdf\security\ICrlClient.cs" />
     <Compile Include="iTextSharp\text\pdf\security\IExternalSignature.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\IExternalSignatureContainer.cs" />
     <Compile Include="iTextSharp\text\pdf\security\IOcspClient.cs" />
     <Compile Include="iTextSharp\text\pdf\security\ITSAClient.cs" />
     <Compile Include="iTextSharp\text\pdf\security\LtvTimestamp.cs" />

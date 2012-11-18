@@ -126,7 +126,7 @@ namespace iTextSharp.text.pdf.security {
 
             byte[] encodedSig = sgn.GetEncodedPKCS7(hash, cal, tsaClient, ocsp, crlBytes, sigtype);
 
-            if (estimatedSize + 2 < encodedSig.Length)
+            if (estimatedSize < encodedSig.Length)
                 throw new IOException("Not enough space");
 
             byte[] paddedSig = new byte[estimatedSize];
@@ -160,6 +160,43 @@ namespace iTextSharp.text.pdf.security {
                 return null;
             else
                 return crlBytes;
+        }
+
+        /**
+         * Sign the document using an external container, usually a PKCS7. The signature is fully composed
+         * externally, iText will just put the container inside the document.
+         * @param sap the PdfSignatureAppearance
+         * @param externalSignatureContainer the interface providing the actual signing
+         * @param estimatedSize the reserved size for the signature
+         * @throws GeneralSecurityException
+         * @throws IOException
+         * @throws DocumentException 
+         */
+        public static void SignExtenalContainer(PdfSignatureAppearance sap, IExternalSignatureContainer externalSignatureContainer, int estimatedSize) {
+            PdfSignature dic = new PdfSignature(null, null);
+            dic.Reason = sap.Reason;
+            dic.Location = sap.Location;
+            dic.Contact = sap.Contact;
+            dic.Date = new PdfDate(sap.SignDate); // time-stamp will over-rule this
+            externalSignatureContainer.ModifySigningDictionary(dic);
+            sap.CryptoDictionary = dic;
+
+            Dictionary<PdfName, int> exc = new Dictionary<PdfName, int>();
+            exc[PdfName.CONTENTS] = estimatedSize * 2 + 2;
+            sap.PreClose(exc);
+
+            Stream data = sap.GetRangeStream();
+            byte[] encodedSig = externalSignatureContainer.Sign(data);
+
+            if (estimatedSize < encodedSig.Length)
+                throw new IOException("Not enough space");
+
+            byte[] paddedSig = new byte[estimatedSize];
+            System.Array.Copy(encodedSig, 0, paddedSig, 0, encodedSig.Length);
+
+            PdfDictionary dic2 = new PdfDictionary();
+            dic2.Put(PdfName.CONTENTS, new PdfString(paddedSig).SetHexWriting(true));
+            sap.Close(dic2);
         }
     }
 }
