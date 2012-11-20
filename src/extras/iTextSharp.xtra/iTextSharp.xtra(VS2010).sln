@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "iTextSharp.xtra(VS2010)", "iTextSharp.xtra(VS2010).csproj", "{BE1934CF-90A9-43D3-A794-7E540874EDBB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itextsharp(VS2010)", "..\..\core\itextsharp(VS2010).csproj", "{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE1934CF-90A9-43D3-A794-7E540874EDBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE1934CF-90A9-43D3-A794-7E540874EDBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE1934CF-90A9-43D3-A794-7E540874EDBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE1934CF-90A9-43D3-A794-7E540874EDBB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
