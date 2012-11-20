@@ -1,0 +1,72 @@
+WALT DISNEY SCRIPT v4.1; January 14, 2002
+Windows TrueType font, free for personal use
+http://go.to/disneyfonts
+
+Please include this text file with any redistribution.
+
+
+INSTALLATION
+------------
+To install any TrueType font, simply copy it to your Windows\Fonts folder.
+
+
+UPDATE 4.1
+----------
+Slight upsizing to lowercase letters; updates to some characters based on recent logos; additional symbols; miscellaneous tweaking.
+
+
+SPACING NOTES
+-------------
+The lowercase "i" and "j" have presented a spacing challenge due to their extraordinarily large dots. They have been spaced so that they fit in well with other lowercase characters. The problem with this narrow spacing is that the dot may overlap a preceding capital. While this overlap has been compensated for with kerning pairs, not all applications support kerning. So, I've provided a couple of solutions for situations in which overlap is undesired but kerning is not an option.
+
+The left brace key "{" will produce a dotless "i" and the right brace "}" a dotless "j." The less-than sign "<" has an optional small dot that it can be typed directly after the dotless characters to position the dot squarely on top. 
+
+Additionally, the greater-than sign ">" will produce a "hairspace" which can be used to add a tiny bit of space before an "i" or "j" or any other character.
+
+Note that not every capital requires pairing with these alternate versions -- for instance, the pair "Di" looks fine without any modification or kerning.
+
+The braces and greater/less than signs have been added to the font at new locations. See the ADDITIONAL CHARACTERS section below.
+
+
+KERNING NOTES
+-------------
+Some programs (like Microsoft Word) may require that you enable kerning before it will properly space kerning pairs. Kerning is highly recommended for this font! (In MS Word: Format>Font>Character Spacing>Kerning for fonts...)
+ 
+Also, many publishing programs allow you to manually adjust the tracking and leading, so you can tweak the spacing between letters and lines to suit your specific needs. 
+
+
+TO TYPE THE WALT DISNEY LOGO
+----------------------------
+To accurately recreate the "Walt Disney" logo using text, enable kerning and type "WaltDisney" with no space between the words. To type the logo as a dingbat, hold down the Alt key while typing 0172 on the numeric keypad.
+
+
+ADDITIONAL CHARACTERS
+---------------------
+The following glyphs can be found at these locations:
+
+Alt+0134 - {
+Alt+0135 - }
+Atl+0176 - <
+Alt+0177 - >
+Alt+0181 - alternate 'r'
+Alt+0172 - Walt Disney logo
+Alt+0170 - Mickey Mouse logo
+Alt+0186 - Hand drawn Mickey Mouse logo
+
+
+THANKS TO
+---------
+Robert Johnson
+
+Bill Shelly, Disneynut.com (www.disneynut.com)  
+
+Joshua Jones, Disneytrips Radio (www.disneytrips.com/radio)
+
+John Yaglenski, Intercot (www.intercot.com)
+
+ParrotHead, WDW Blues (www.wdwblues.com)
+
+
+CONTACT
+-------
+Comments, questions, love notes, legal threats - please send them to jcmagic@yahoo.com.

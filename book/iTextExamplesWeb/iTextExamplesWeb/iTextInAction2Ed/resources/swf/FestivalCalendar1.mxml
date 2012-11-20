@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute"
+	applicationComplete="stage.scaleMode = StageScaleMode.EXACT_FIT;initList(Application.application.parameters.day);">
+	<mx:Script>
+		<![CDATA[
+			private function initList(day:Object):void {
+				days.selectedItem = day;
+				getDateInfo(days.selectedItem);
+			}
+			private function getDateInfo(day:Object):void {
+				screeningsService.url='http://flex.itextpdf.org/fff/day_' + day + '.xml';
+				screeningsService.send();
+				screeningsDataGrid.invalidateList();
+			}
+		]]>
+	</mx:Script>
+	<mx:HTTPService id="screeningsService"
+		resultFormat="e4x" />
+	<mx:Grid id="formgrid">
+		<mx:GridRow id="row1">
+			<mx:GridItem>
+				<mx:ComboBox id="days" dataProvider="{[ '2011-10-12',
+				'2011-10-13', '2011-10-14', '2011-10-15', '2011-10-16',
+				'2011-10-17', '2011-10-18', '2011-10-19' ]}" />
+			</mx:GridItem>
+			<mx:GridItem>
+				<mx:Button id="date" label="Select day" click="getDateInfo(days.selectedItem);" />
+			</mx:GridItem>
+		</mx:GridRow>
+		<mx:GridRow id="row2">
+		    <mx:GridItem colSpan="2">
+				<mx:DataGrid id="screeningsDataGrid" dataProvider="{screeningsService.lastResult.screening}">
+					<mx:columns>
+						<mx:DataGridColumn headerText="Time" dataField="time"/>
+						<mx:DataGridColumn headerText="Location" dataField="location"/>
+						<mx:DataGridColumn headerText="Duration" dataField="duration"/>
+						<mx:DataGridColumn headerText="Title" dataField="title"/>
+						<mx:DataGridColumn headerText="Year" dataField="year"/>
+					</mx:columns>
+				</mx:DataGrid>
+		    </mx:GridItem>
+		</mx:GridRow>
+	</mx:Grid>
+</mx:Application>

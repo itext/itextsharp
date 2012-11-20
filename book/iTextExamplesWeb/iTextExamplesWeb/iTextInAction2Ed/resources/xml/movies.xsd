@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  <xs:element name="movies">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="movie"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="movie">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element ref="title"/>
+        <xs:element minOccurs="0" ref="original"/>
+        <xs:element ref="directors"/>
+        <xs:element ref="countries"/>
+      </xs:sequence>
+      <xs:attribute name="duration" use="required" type="xs:string"/>
+      <xs:attribute name="imdb" use="required" type="xs:string"/>
+      <xs:attribute name="year" use="required" type="xs:string"/>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="title" type="xs:string"/>
+  <xs:element name="original" type="xs:string"/>
+  <xs:element name="directors">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="director"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="director" type="xs:string"/>
+  <xs:element name="countries">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element maxOccurs="unbounded" ref="country"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+  <xs:element name="country" type="xs:string"/>
+</xs:schema>

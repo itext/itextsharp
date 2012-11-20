@@ -1,0 +1,414 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<xdp:xdp xmlns:xdp="http://ns.adobe.com/xdp/" timeStamp="2009-11-27T14:45:55Z" uuid="4b17205b-6000-412f-a1f9-248558575bf0">
+<config xmlns="http://www.xfa.org/schema/xci/2.6/">
+<agent name="designer">
+<destination>pdf</destination>
+<pdf>
+<!--  [0..n]  -->
+<fontInfo/>
+</pdf>
+</agent>
+<present>
+<!--  [0..n]  -->
+<pdf>
+<!--  [0..n]  -->
+<version>1.7</version>
+<adobeExtensionLevel>1</adobeExtensionLevel>
+<creator>Adobe LiveCycle Designer ES 8.2</creator>
+<producer>Adobe LiveCycle Designer ES 8.2</producer>
+<scriptModel>XFA</scriptModel>
+<interactive>1</interactive>
+<tagged>1</tagged>
+<fontInfo>
+<embed>1</embed>
+</fontInfo>
+<compression>
+<level>6</level>
+<compressLogicalStructure>1</compressLogicalStructure>
+<compressObjectStream>1</compressObjectStream>
+</compression>
+<linearized>1</linearized>
+<silentPrint>
+<addSilentPrint>0</addSilentPrint>
+<printerName/>
+</silentPrint>
+<viewerPreferences>
+<addViewerPreferences>0</addViewerPreferences>
+<duplexOption>simplex</duplexOption>
+<numberOfCopies>0</numberOfCopies>
+</viewerPreferences>
+</pdf>
+<common>
+<data>
+<xsl>
+<uri/>
+</xsl>
+<outputXSL>
+<uri/>
+</outputXSL>
+</data>
+<log>
+<to>memory</to>
+<mode>overwrite</mode>
+</log>
+<template>
+<base>C:\itext-core\book\resources\pdfs\</base>
+</template>
+</common>
+<cache>
+<macroCache/>
+</cache>
+<script>
+<runScripts>server</runScripts>
+</script>
+<xdp>
+<packets>*</packets>
+</xdp>
+<destination>pdf</destination>
+<output>
+<to>uri</to>
+<uri>C:\itext-core\book\resources\pdfs\xfa_movie.pdf</uri>
+</output>
+</present>
+<?originalXFAVersion http://www.xfa.org/schema/xci/2.8/?>
+<acrobat>
+<acrobat7>
+<dynamicRender>forbidden</dynamicRender>
+</acrobat7>
+<common>
+<versionControl sourceBelow="maintain"/>
+<data>
+<xsl>
+<uri/>
+</xsl>
+<outputXSL>
+<uri/>
+</outputXSL>
+<adjustData/>
+</data>
+<template>
+<base>C:\itext-core\book\resources\pdfs\</base>
+<relevant/>
+<uri/>
+</template>
+</common>
+</acrobat>
+</config>
+<template xmlns="http://www.xfa.org/schema/xfa-template/2.6/">
+<?formServer defaultPDFRenderFormat acrobat8.1dynamic?>
+<?formServer allowRenderCaching 0?>
+<?formServer formModel both?>
+<subform layout="tb" locale="nl_BE" name="movies">
+<pageSet>
+<pageArea id="Page1" name="Page1">
+<contentArea h="284.3mm" w="197.3mm" x="0.25in" y="0.25in"/>
+<medium long="297mm" short="210mm" stock="a4"/>
+<?templateDesigner expand 1?>
+</pageArea>
+<?templateDesigner expand 1?>
+</pageSet>
+<subform name="movie" w="196.85mm">
+<margin bottomInset="1mm" leftInset="1mm" rightInset="1mm" topInset="1mm"/>
+<field h="9mm" name="duration" w="62mm" x="2.175mm" y="11.7mm">
+<ui>
+<textEdit>
+<border>
+<?templateDesigner StyleID aped3?>
+<edge stroke="lowered"/>
+</border>
+<margin/>
+</textEdit>
+</ui>
+<font typeface="Myriad Pro"/>
+<margin bottomInset="1mm" leftInset="1mm" rightInset="1mm" topInset="1mm"/>
+<para vAlign="middle"/>
+<caption reserve="25mm">
+<font typeface="Myriad Pro"/>
+<para vAlign="middle"/>
+<value>
+<text>Duration</text>
+</value>
+</caption>
+<bind match="dataRef" ref="$.duration"/>
+</field>
+<field h="9mm" name="imdb" w="62mm" x="65.675mm" y="11.7mm">
+<ui>
+<textEdit>
+<border>
+<?templateDesigner StyleID aped3?>
+<edge stroke="lowered"/>
+</border>
+<margin/>
+</textEdit>
+</ui>
+<font typeface="Myriad Pro"/>
+<margin bottomInset="1mm" leftInset="1mm" rightInset="1mm" topInset="1mm"/>
+<para vAlign="middle"/>
+<caption reserve="25mm">
+<font typeface="Myriad Pro"/>
+<para vAlign="middle"/>
+<value>
+<text>Imdb</text>
+</value>
+</caption>
+<bind match="dataRef" ref="$.imdb"/>
+</field>
+<field h="9mm" name="year" w="62mm" x="129.175mm" y="11.7mm">
+<ui>
+<textEdit>
+<border>
+<?templateDesigner StyleID aped3?>
+<edge stroke="lowered"/>
+</border>
+<margin/>
+</textEdit>
+</ui>
+<font typeface="Myriad Pro"/>
+<margin bottomInset="1mm" leftInset="1mm" rightInset="1mm" topInset="1mm"/>
+<para vAlign="middle"/>
+<caption reserve="25mm">
+<font typeface="Myriad Pro"/>
+<para vAlign="middle"/>
+<value>
+<text>Year</text>
+</value>
+</caption>
+<bind match="dataRef" ref="$.year"/>
+</field>
+<field h="9mm" name="title" w="190.5mm" x="2.175mm" y="2.175mm">
+<ui>
+<textEdit>
+<border>
+<?templateDesigner StyleID aped3?>
+<edge stroke="lowered"/>
+</border>
+<margin/>
+</textEdit>
+</ui>
+<font typeface="Myriad Pro"/>
+<margin bottomInset="1mm" leftInset="1mm" rightInset="1mm" topInset="1mm"/>
+<para vAlign="middle"/>
+<caption reserve="25mm">
+<font typeface="Myriad Pro"/>
+<para vAlign="middle"/>
+<value>
+<text>Title</text>
+</value>
+</caption>
+<bind match="dataRef" ref="$.title"/>
+</field>
+<field h="9mm" name="original" w="190.5mm" x="2.175mm" y="21.225mm">
+<ui>
+<textEdit>
+<border>
+<?templateDesigner StyleID aped3?>
+<edge stroke="lowered"/>
+</border>
+<margin/>
+</textEdit>
+</ui>
+<font typeface="Myriad Pro"/>
+<margin bottomInset="1mm" leftInset="1mm" rightInset="1mm" topInset="1mm"/>
+<para vAlign="middle"/>
+<caption reserve="25mm">
+<font typeface="Myriad Pro"/>
+<para vAlign="middle"/>
+<value>
+<text>Original</text>
+</value>
+</caption>
+<bind match="dataRef" ref="$.original"/>
+</field>
+<occur max="-1"/>
+<bind match="dataRef" ref="$.movie[*]"/>
+<?templateDesigner expand 1?>
+</subform>
+<proto/>
+<desc>
+<text name="version">8.2.1.4029.1.523496.503679</text>
+</desc>
+<?templateDesigner expand 1?>
+<?renderCache.subset "Myriad Pro" 0 0 ISO-8859-1 4 84 21 00240025002A00300035003A004200430044004500460048004A004D004E004F0050005300550056005ACDIOTYabcdegilmnortuy?>
+</subform>
+<?templateDesigner Grid show:1, snap:1, units:0, color:ff8080, origin:(0,0), interval:(125000,125000)?>
+<?templateDesigner DefaultLanguage FormCalc?>
+<?templateDesigner DefaultRunAt client?>
+<?acrobat JavaScript strictScoping?>
+<?PDFPrintOptions embedViewerPrefs 0?>
+<?PDFPrintOptions embedPrintOnFormOpen 0?>
+<?PDFPrintOptions duplexMode 0?>
+<?templateDesigner DefaultPreviewType print?>
+<?templateDesigner DefaultPreviewPagination simplex?>
+<?templateDesigner XDPPreviewFormat 19?>
+<?templateDesigner FormTargetVersion 26?>
+<?templateDesigner Zoom 64?>
+<?templateDesigner Rulers horizontal:1, vertical:1, guidelines:1, crosshairs:0?>
+<?templateDesigner SaveTaggedPDF 1?>
+<?templateDesigner SavePDFWithEmbeddedFonts 1?>
+</template>
+<connectionSet xmlns="http://www.xfa.org/schema/xfa-connection-set/2.4/">
+<xsdConnection dataDescription="movies" name="DataConnection">
+<uri>C:\itext-core\book\resources\xml\movies.xsd</uri>
+<rootElement>movies</rootElement>
+</xsdConnection>
+</connectionSet>
+<xfa:datasets xmlns:xfa="http://www.xfa.org/schema/xfa-data/1.0/">
+<xfa:data>
+<movies>
+<movie duration="108" imdb="1075110" year="2009">
+<title>The Misfortunates</title>
+<original>De helaasheid der dingen</original>
+</movie>
+</movies>
+</xfa:data>
+<dd:dataDescription xmlns:dd="http://ns.adobe.com/data-description/" dd:name="movies">
+<movies>
+<movie dd:maxOccur="-1" dd:reqAttrs="duration imdb year" duration="" imdb="" year="">
+<title/>
+<original dd:minOccur="0" dd:nullType="exclude"/>
+<directors>
+<director dd:maxOccur="-1"/>
+</directors>
+<countries>
+<country dd:maxOccur="-1"/>
+</countries>
+</movie>
+</movies>
+</dd:dataDescription>
+</xfa:datasets>
+<localeSet xmlns="http://www.xfa.org/schema/xfa-locale-set/2.7/">
+<locale desc="Dutch (Belgium)" name="nl_BE">
+<calendarSymbols name="gregorian">
+<monthNames>
+<month>januari</month>
+<month>februari</month>
+<month>maart</month>
+<month>april</month>
+<month>mei</month>
+<month>juni</month>
+<month>juli</month>
+<month>augustus</month>
+<month>september</month>
+<month>oktober</month>
+<month>november</month>
+<month>december</month>
+</monthNames>
+<monthNames abbr="1">
+<month>jan</month>
+<month>feb</month>
+<month>mrt</month>
+<month>apr</month>
+<month>mei</month>
+<month>jun</month>
+<month>jul</month>
+<month>aug</month>
+<month>sep</month>
+<month>okt</month>
+<month>nov</month>
+<month>dec</month>
+</monthNames>
+<dayNames>
+<day>zondag</day>
+<day>maandag</day>
+<day>dinsdag</day>
+<day>woensdag</day>
+<day>donderdag</day>
+<day>vrijdag</day>
+<day>zaterdag</day>
+</dayNames>
+<dayNames abbr="1">
+<day>zo</day>
+<day>ma</day>
+<day>di</day>
+<day>wo</day>
+<day>do</day>
+<day>vr</day>
+<day>za</day>
+</dayNames>
+<meridiemNames>
+<meridiem>AM</meridiem>
+<meridiem>PM</meridiem>
+</meridiemNames>
+<eraNames>
+<era>BC</era>
+<era>AD</era>
+</eraNames>
+</calendarSymbols>
+<datePatterns>
+<datePattern name="full">EEEE D MMMM YYYY</datePattern>
+<datePattern name="long">D MMMM YYYY</datePattern>
+<datePattern name="med">D-MMM-YY</datePattern>
+<datePattern name="short">D/MM/YY</datePattern>
+</datePatterns>
+<timePatterns>
+<timePattern name="full">HH.MM' u. 'Z</timePattern>
+<timePattern name="long">HH:MM:SS Z</timePattern>
+<timePattern name="med">HH:MM:SS</timePattern>
+<timePattern name="short">HH:MM</timePattern>
+</timePatterns>
+<dateTimeSymbols>GyMdkHmsSEDFwWahKzZ</dateTimeSymbols>
+<numberPatterns>
+<numberPattern name="numeric">z,zz9.zzz</numberPattern>
+<numberPattern name="currency">z,zz9.99 $</numberPattern>
+<numberPattern name="percent">z,zz9%</numberPattern>
+</numberPatterns>
+<numberSymbols>
+<numberSymbol name="decimal">,</numberSymbol>
+<numberSymbol name="grouping">.</numberSymbol>
+<numberSymbol name="percent">%</numberSymbol>
+<numberSymbol name="minus">-</numberSymbol>
+<numberSymbol name="zero">0</numberSymbol>
+</numberSymbols>
+<currencySymbols>
+<currencySymbol name="symbol">€</currencySymbol>
+<currencySymbol name="isoname">EUR</currencySymbol>
+<currencySymbol name="decimal">,</currencySymbol>
+</currencySymbols>
+<typefaces>
+<typeface name="Myriad Pro"/>
+<typeface name="Minion Pro"/>
+<typeface name="Courier Std"/>
+<typeface name="Adobe Pi Std"/>
+<typeface name="Adobe Hebrew"/>
+<typeface name="Adobe Arabic"/>
+<typeface name="Adobe Thai"/>
+<typeface name="Kozuka Gothic Pro-VI M"/>
+<typeface name="Kozuka Mincho Pro-VI R"/>
+<typeface name="Adobe Ming Std L"/>
+<typeface name="Adobe Song Std L"/>
+<typeface name="Adobe Myungjo Std M"/>
+</typefaces>
+</locale>
+<?originalXFAVersion http://www.xfa.org/schema/xfa-locale-set/2.6/?>
+</localeSet>
+<x:xmpmeta xmlns:x="adobe:ns:meta/" x:xmptk="Adobe XMP Core 4.2.1-c041 52.337767, 2008/04/13-15:41:00        ">
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <rdf:Description xmlns:xmp="http://ns.adobe.com/xap/1.0/" rdf:about="">
+         <xmp:MetadataDate>2009-11-27T14:45:55Z</xmp:MetadataDate>
+         <xmp:CreatorTool>Adobe LiveCycle Designer ES 8.2</xmp:CreatorTool>
+         <xmp:ModifyDate>2009-11-26T16:21:36+01:00</xmp:ModifyDate>
+         <xmp:CreateDate>2009-11-26T16:21:36+01:00</xmp:CreateDate>
+      </rdf:Description>
+      <rdf:Description xmlns:pdf="http://ns.adobe.com/pdf/1.3/" rdf:about="">
+         <pdf:Producer>Adobe LiveCycle Designer ES 8.2</pdf:Producer>
+      </rdf:Description>
+      <rdf:Description xmlns:xmpMM="http://ns.adobe.com/xap/1.0/mm/" rdf:about="">
+         <xmpMM:DocumentID>uuid:4b17205b-6000-412f-a1f9-248558575bf0</xmpMM:DocumentID>
+         <xmpMM:InstanceID>uuid:04c6f727-0fc6-4b0c-9081-210666f300c5</xmpMM:InstanceID>
+      </rdf:Description>
+      <rdf:Description xmlns:dc="http://purl.org/dc/elements/1.1/" rdf:about="">
+         <dc:format>application/pdf</dc:format>
+      </rdf:Description>
+      <rdf:Description xmlns:desc="http://ns.adobe.com/xfa/promoted-desc/" rdf:about="">
+         <desc:version rdf:parseType="Resource">
+            <rdf:value>8.2.1.4029.1.523496.503679</rdf:value>
+            <desc:ref>/template/subform[1]</desc:ref>
+         </desc:version>
+      </rdf:Description>
+   </rdf:RDF>
+</x:xmpmeta>
+<xfdf xmlns="http://ns.adobe.com/xfdf/" xml:space="preserve">
+<annots/>
+</xfdf>
+<form xmlns="http://www.xfa.org/schema/xfa-form/2.8/"/>
+</xdp:xdp>

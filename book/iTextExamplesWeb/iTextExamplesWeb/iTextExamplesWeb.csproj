@@ -1,0 +1,434 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>
+    </ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{17C351FF-9B9D-4B6A-91B0-EADCF58DBE1E}</ProjectGuid>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>iTextExamplesWeb</RootNamespace>
+    <AssemblyName>iTextExamplesWeb</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Ionic.Zip.Reduced, Version=1.9.1.8, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>__COMMAND_LINE__\Ionic.Zip.Reduced.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data.SQLite, Version=1.0.82.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=x86">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\System.Data.SQLite.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.EnterpriseServices" />
+    <Reference Include="System.Web.DynamicData" />
+    <Reference Include="System.Web.Entity" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Default.aspx" />
+    <Content Include="Global.asax" />
+    <Content Include="Web.config" />
+    <Content Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+    <Content Include="Web.Release.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Default.aspx.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Default.aspx.designer.cs">
+      <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="iTextInAction2Ed\Chapter01\HelloWorld.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter01\HelloWorldColumn.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter01\HelloWorldDirect.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter01\HelloWorldLandscape1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter01\HelloWorldLandscape2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter01\HelloWorldLetter.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter01\HelloWorldMaximum.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter01\HelloWorldMemory.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter01\HelloWorldMirroredMargins.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter01\HelloWorldMirroredMarginsTop.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter01\HelloWorldNarrow.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter01\HelloWorldVersion_1_7.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter01\HelloZip.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\CountryChunks.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\DatabaseTest.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\DirectorOverview1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\DirectorOverview2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\DirectorOverview3.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\DirectorPhrases1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\DirectorPhrases2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\MovieChain.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\MovieHistory.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\MovieLinks1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\MovieLinks2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\MovieLists1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\MovieLists2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\MovieLists3.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\MovieLists4.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\MovieParagraphs1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\MovieParagraphs2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\MoviePosters1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\MoviePosters2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\MoviePosters3.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\MovieTitles.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\PipeSplitCharacter.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\PositionedArrow.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\RiverPhoenix.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter02\StarSeparator.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\ColumnMovies1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\ColumnMovies2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\FestivalOpening.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\FoobarFilmFestival.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\GraphicsStateStack.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\ImageDirect.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\ImageInline.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\ImageSkew.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\MovieCalendar.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\MovieColumns1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\MovieColumns2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\MovieColumns3.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\MovieColumns4.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\MoviePosters.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\MovieTemplates.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\MovieTextInfo.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\MovieTimeBlocks.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter03\MovieTimeTable.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\CellHeights.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\ColumnTable.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\ColumnWidths.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\HeaderFooter1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\HeaderFooter2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\MemoryTests.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\MovieCompositeMode.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\MovieTextMode.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\MyFirstTable.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\NestedTable.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\NestedTables.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\PdfCalendar.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\RotationAndColors.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\Spacing.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\TableAlignment.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\TableHeight.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\XMen.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter04\Zhang.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter05\AlternatingBackground.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter05\Hero1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter05\Hero2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter05\Hero3.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter05\MovieCountries1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter05\MovieCountries2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter05\MovieHistory1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter05\MovieHistory2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter05\MovieSlideShow.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter05\MovieYears.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter05\NewPage.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter05\PdfCalendar.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter05\PressPreviews.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter05\RunLengthEvent.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\Burst.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\Concatenate.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\ConcatenateForms1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\ConcatenateForms2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\ConcatenateStamp.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\DataSheets1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\DataSheets2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\FillDataSheet.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\FormInformation.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\ImportingPages1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\ImportingPages2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\InsertPages.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\Layers.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\MemoryInfo.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\NUpTool.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\PageInformation.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\SelectPages.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\StampStationery.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\StampText.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\Stationery.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\Superimposing.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\TilingHero.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter06\TwoPasses.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\AddVersionChecker.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\Advertisement.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\BookmarkedTimeTable.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\ButtonsActions.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\Calculator.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\ConcatenateBookmarks.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\ConcatenateNamedDestinations.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\CreateOutlineTree.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\EventsAndActions.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\FindDirectors.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\GenericAnnotations.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\LaunchAction.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\LinkActions.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\MovieAnnotations1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\MovieAnnotations2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\MovieAnnotations3.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\MoviePosters1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\MoviePosters2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\NamedActions.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\PrintTimeTable.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\TimetableAnnotations1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\TimetableAnnotations2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\TimetableAnnotations3.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter07\TimetableDestinations.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter08\Buttons.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter08\ChildFieldEvent.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter08\ChoiceFields.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter08\MovieAds.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter08\RadioButtons.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter08\ReaderEnabledForm.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter08\ReplaceIcon.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter08\Subscribe.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter08\TextFieldActions.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter08\TextFieldFonts.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter08\TextFields.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter08\XfaMovie.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter08\XfaMovies.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter09\CreateFDF.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter09\FDFServlet.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter09\FormServlet.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter09\Hello.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter09\HtmlMovies1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter09\HtmlMovies2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter09\JSForm.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter09\MovieServlet.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter09\PdfServlet.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter09\ShowData.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter09\SubmitForm.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter09\XFDFServlet.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter09\XmlHandler.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\Barcodes.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\ClippingPath.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\CompressAwt.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\CompressImage.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\DeviceColor.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\ImageMask.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\ImageTypes.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\PagedImages.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\RawImage.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\SeparationColor.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\ShadingPatternColor.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\TemplateClip.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\TilingPatternColor.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\Transparency1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\Transparency2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\TransparentAwt.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\TransparentImage.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter10\TransparentOverlay.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\CJKExample.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\Diacritics1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\Diacritics2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\EncodingExample.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\EncodingNames.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\ExtraCharSpace.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\FontFactoryExample.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\FontFileAndSizes.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\FontSelectionExample.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\FontTypes.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\Ligatures1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\Ligatures2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\Monospace.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\Peace.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\RightToLeftExample.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\SayPeace.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\TTCExample.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\Type3Example.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\UnicodeExample.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\VerticalTextExample1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter11\VerticalTextExample2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter12\EncryptionPdf.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter12\HelloWorldCompression.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter12\MetadataPdf.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter12\MetadataXmp.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter13\AddJavaScriptToForm.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter13\AppendMode.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter13\Bookmarks2NamedDestinations.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter13\CropPages.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter13\FixBrokenForm.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter13\InspectForm.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter13\PageLabelExample.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter13\PageLayoutExample.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter13\PdfXPdfA.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter13\PrintPreferencesExample.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter13\RemoveLaunchActions.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter13\ReplaceURL.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter13\RotatePages.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter13\ViewerPreferencesExample.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\DirectorCharts.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\GetContentStream.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\Graphics2DFonts.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\GraphicsStateOperators.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\PathConstructionAndPainting.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\PearExample.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\PearToPdf.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\Text1ToPdf1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\Text1ToPdf2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\Text2ToPdf1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\Text2ToPdf2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\Text2ToPdf3.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\Text3ToPdf.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\Text4ToPdf.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\TextExample1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\TextExample2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\TextExample3.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\TextExample4.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\TextMethods.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\TextStateOperators.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\TransformationMatrix1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\TransformationMatrix2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter14\TransformationMatrix3.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\ContentParser.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\ExtractImages.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\ExtractPageContent.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\ExtractPageContentArea.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\ExtractPageContentSorted1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\ExtractPageContentSorted2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\InspectPageContent.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\LayerMembershipExample1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\LayerMembershipExample2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\MyImageRenderListener.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\MyTextRenderListener.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\ObjectData.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\OptionalContentActionExample.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\OptionalContentExample.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\ParseTaggedPdf.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\ParsingHelloWorld.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\PeekABoo.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\ReadOutLoud.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\ShowTextMargins.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\StructuredContent.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\StructureParser.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\SvgLayers.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter15\SvgToPdf.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\EmbedFontPostFacto.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\FestivalCalendar1.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\FestivalCalendar2.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\FileAttachmentEvent.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\KubrickBox.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\KubrickCollection.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\KubrickDocumentary.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\KubrickDvds.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\KubrickMovies.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\ListUsedFonts.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\LocalDestinationEvent.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\MovieAnnotation.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\Pdf3D.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\PdfActionEvent.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\ResizeImage.cs" />
+    <Compile Include="iTextInAction2Ed\Chapter16\SpecialId.cs" />
+    <Compile Include="iTextInAction2Ed\Chapters.cs" />
+    <Compile Include="iTextInAction2Ed\Intro_1_2\AdoDB.cs" />
+    <Compile Include="iTextInAction2Ed\Intro_1_2\Category.cs" />
+    <Compile Include="iTextInAction2Ed\Intro_1_2\Country.cs" />
+    <Compile Include="iTextInAction2Ed\Intro_1_2\Director.cs" />
+    <Compile Include="iTextInAction2Ed\Intro_1_2\Entry.cs" />
+    <Compile Include="iTextInAction2Ed\Intro_1_2\FilmFonts.cs" />
+    <Compile Include="iTextInAction2Ed\Intro_1_2\Movie.cs" />
+    <Compile Include="iTextInAction2Ed\Intro_1_2\PojoFactory.cs" />
+    <Compile Include="iTextInAction2Ed\Intro_1_2\PojoToElementFactory.cs" />
+    <Compile Include="iTextInAction2Ed\Intro_1_2\Screening.cs" />
+    <Compile Include="iTextInAction2Ed\IWriter.cs" />
+    <Compile Include="iTextInAction2Ed\Utility.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Site.Master.cs">
+      <DependentUpon>Site.Master</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Site.Master.designer.cs">
+      <DependentUpon>Site.Master</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Site.Master" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\src\core\itextsharp%28VS2010%29.csproj">
+      <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
+      <Name>itextsharp%28VS2010%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\extras\iTextAsian\iTextAsian%28VS2010%29.csproj">
+      <Project>{2F467830-A94B-4C44-B17B-0A81CBDB8CB2}</Project>
+      <Name>iTextAsian%28VS2010%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\extras\itextsharp.pdfa\itextsharp.pdfa%28VS2010%29.csproj">
+      <Project>{C892FA61-C495-4F30-8799-A198F89F23F4}</Project>
+      <Name>itextsharp.pdfa%28VS2010%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\src\extras\iTextSharp.xtra\iTextSharp.xtra%28VS2010%29.csproj">
+      <Project>{BE1934CF-90A9-43D3-A794-7E540874EDBB}</Project>
+      <Name>iTextSharp.xtra%28VS2010%29</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>55254</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>
+          </IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>False</UseCustomServer>
+          <CustomServerUrl>
+          </CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

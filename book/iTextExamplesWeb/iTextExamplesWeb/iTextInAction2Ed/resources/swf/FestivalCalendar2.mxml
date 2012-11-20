@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" layout="absolute" width="525" height="200"
+	applicationComplete="stage.scaleMode = StageScaleMode.EXACT_FIT;init();">
+	<mx:Script>
+		<![CDATA[
+			import flash.external.*;
+			private function init():void {
+				ExternalInterface.addCallback("getDateInfo", getDateInfo);
+			}
+			private function getDateInfo(day:Object):void {
+				screeningsService.url='http://flex.itextpdf.org/fff/day_' + day + '.xml';
+				screeningsService.send();
+				screeningsDataGrid.invalidateList();
+				ExternalInterface.call("showDate", day);
+			}
+		]]>
+	</mx:Script>
+	<mx:HTTPService id="screeningsService" resultFormat="e4x" />
+	<mx:DataGrid id="screeningsDataGrid" dataProvider="{screeningsService.lastResult.screening}" width="100%" height="100%">
+		<mx:columns>
+			<mx:DataGridColumn headerText="Time" dataField="time"/>
+			<mx:DataGridColumn headerText="Location" dataField="location"/>
+			<mx:DataGridColumn headerText="Duration" dataField="duration"/>
+			<mx:DataGridColumn headerText="Title" dataField="title"/>
+			<mx:DataGridColumn headerText="Year" dataField="year"/>
+		</mx:columns>
+	</mx:DataGrid>
+</mx:Application>
