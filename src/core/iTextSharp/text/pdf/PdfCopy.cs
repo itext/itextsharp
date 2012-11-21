@@ -255,21 +255,16 @@ namespace iTextSharp.text.pdf {
                 }
             }
             iRef.SetCopied();
-
-            obj = CopyObject(obj);
-            parentObjects.Add(obj, inp);
+            parentObjects[obj] = inp;
             PdfObject res = CopyObject(obj, keepStructure, directRootKids);
             if (disableIndirects.ContainsKey(obj))
                 iRef.Copied = false;
-            if ((res != null) && !(res is PdfNull))
-            {
+            if ((res != null) && !(res is PdfNull)) {
                 AddToBody(res, theRef);
                 return theRef;
             }
-            else {
-                indirects.Remove(key);
-                return null;
-            }
+            indirects.Remove(key);
+            return null;
         }
          /**
         * Translate a PRIndirectReference to a PdfIndirectReference
@@ -318,8 +313,12 @@ namespace iTextSharp.text.pdf {
                     continue;
                 }
                 if (type != null && PdfName.PAGE.Equals(type)) {
-                    if (!key.Equals(PdfName.B) && !key.Equals(PdfName.PARENT))
-                        outp.Put(key, CopyObject(value));
+                    if (!key.Equals(PdfName.B) && !key.Equals(PdfName.PARENT)) {
+                        parentObjects[value] = inp;
+                        PdfObject res = CopyObject(value, keepStruct, directRootKids);
+                        if ((res != null) && !(res is PdfNull))
+                            outp.Put(key, res);
+                    }
                 }
                 else {
                     PdfObject res = CopyObject(value, keepStruct, directRootKids);
@@ -346,7 +345,7 @@ namespace iTextSharp.text.pdf {
             
             foreach (PdfName key in inp.Keys) {
                 PdfObject value = inp.Get(key);
-                parentObjects.Add(value, inp);
+                parentObjects[value] = inp;
                 PdfObject res = CopyObject(value);
                 if ((res != null) && !(res is PdfNull))
                     outp.Put(key, res);
@@ -364,7 +363,7 @@ namespace iTextSharp.text.pdf {
             PdfArray outp = new PdfArray();
             
             foreach (PdfObject value in inp.ArrayList) {
-                parentObjects.Add(value, inp);
+                parentObjects[value] = inp;
                 PdfObject res = CopyObject(value, keepStruct, directRootKids);
                 if ((res != null) && !(res is PdfNull))
                     outp.Add(res);
