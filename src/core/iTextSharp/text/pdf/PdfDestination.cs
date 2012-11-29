@@ -200,7 +200,13 @@ namespace iTextSharp.text.pdf {
             for (int k = 1; k < ss.Length; ++k) {
                 if (ss[k].Length == 0)
                     continue;
-                Add(new PdfNumber(ss[k]));
+                PdfObject obj = null;
+                try {
+                    obj = new PdfNumber(ss[k]);
+                } catch (Exception) {
+                    obj = new PdfNull();
+                }
+                Add(obj);
             }
         }
 
