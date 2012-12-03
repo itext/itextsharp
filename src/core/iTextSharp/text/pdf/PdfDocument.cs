@@ -1339,13 +1339,23 @@ namespace iTextSharp.text.pdf {
                             }
                             graphics.SetLineWidth(1);
                         }
-                        if (chunk.IsAttribute(Chunk.ACTION)) {
+                        if (chunk.IsAttribute(Chunk.ACTION))
+                        {
                             float subtract = lastBaseFactor;
                             if (nextChunk != null && nextChunk.IsAttribute(Chunk.ACTION))
                                 subtract = 0;
                             if (nextChunk == null)
                                 subtract += hangingCorrection;
-                            text.AddAnnotation(new PdfAnnotation(writer, xMarker, yMarker + descender + chunk.TextRise, xMarker + width - subtract, yMarker + ascender + chunk.TextRise, (PdfAction)chunk.GetAttribute(Chunk.ACTION)));
+
+                            float bot = chunk.Image.GetBottom(0);
+                         if (chunk.IsImage()) {
+                        	text.AddAnnotation(new PdfAnnotation(writer, xMarker, yMarker + chunk.ImageOffsetY, xMarker + width - subtract, yMarker + chunk.Image.ScaledHeight + chunk.ImageOffsetY, (PdfAction)chunk.GetAttribute(Chunk.ACTION)));
+                         }
+                         else {
+                         	text.AddAnnotation(new PdfAnnotation(writer, xMarker, yMarker + descender + chunk.TextRise, xMarker + width - subtract, yMarker + ascender + chunk.TextRise, (PdfAction)chunk.GetAttribute(Chunk.ACTION)));
+                         }
+                            
+                                
                         }
                         if (chunk.IsAttribute(Chunk.REMOTEGOTO)) {
                             float subtract = lastBaseFactor;
