@@ -1346,8 +1346,6 @@ namespace iTextSharp.text.pdf {
                                 subtract = 0;
                             if (nextChunk == null)
                                 subtract += hangingCorrection;
-
-                            float bot = chunk.Image.GetBottom(0);
                          if (chunk.IsImage()) {
                         	text.AddAnnotation(new PdfAnnotation(writer, xMarker, yMarker + chunk.ImageOffsetY, xMarker + width - subtract, yMarker + chunk.Image.ScaledHeight + chunk.ImageOffsetY, (PdfAction)chunk.GetAttribute(Chunk.ACTION)));
                          }
