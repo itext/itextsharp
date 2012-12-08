@@ -4062,6 +4062,12 @@
     <Compile Include="iTextSharp\text\html\simpleparser\ILinkProcessor.cs" />
     <Compile Include="iTextSharp\text\html\simpleparser\ImageStore.cs" />
     <Compile Include="iTextSharp\text\html\simpleparser\TableWrapper.cs" />
+    <Compile Include="iTextSharp\text\io\ArrayRandomAccessSource.cs" />
+    <Compile Include="iTextSharp\text\io\GetBufferedRandomAccessSource.cs" />
+    <Compile Include="iTextSharp\text\io\GroupedRandomAccessSource.cs" />
+    <Compile Include="iTextSharp\text\io\IndependentRandomAccessSource.cs" />
+    <Compile Include="iTextSharp\text\io\IRandomAccessSource.cs" />
+    <Compile Include="iTextSharp\text\io\RAFRandomAccessSource.cs" />
     <Compile Include="iTextSharp\text\log\ILogger.cs" />
     <Compile Include="iTextSharp\text\log\Level.cs" />
     <Compile Include="iTextSharp\text\log\LoggerFactory.cs" />
