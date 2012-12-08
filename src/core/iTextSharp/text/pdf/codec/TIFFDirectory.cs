@@ -627,7 +627,7 @@ namespace iTextSharp.text.pdf.codec {
                     stream.Skip(12*entries);
                     offset = ReadUnsignedInt(stream, isBigEndian);
                 } catch (EndOfStreamException) {
-                    //numDirectories--;
+                    numDirectories--;
                     break;
                 }
             }
