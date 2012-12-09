@@ -1,6 +1,6 @@
 using System;
 /*
- * $Id: IndependentRandomAccessSource.java 5550 2012-11-21 13:26:06Z blowagie $
+ * $Id$
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT
@@ -43,59 +43,74 @@ using System;
 namespace iTextSharp.text.io {
 
     /**
+     * A RandomAccessSource that wraps another RandomAccessSouce and provides a window of it at a specific offset and over
+     * a specific length.  Position 0 becomes the offset position in the underlying source.
      * @since 5.3.5
      */
-    public class GetBufferedRandomAccessSource : IRandomAccessSource {
+    public class WindowRandomAccessSource : IRandomAccessSource {
         /**
          * The source
          */
         private readonly IRandomAccessSource source;
         
-        private readonly byte[] getBuffer;
-        private long getBufferStart = -1;
-        private long getBufferEnd = -1;
+        /**
+         * The amount to offset the source by
+         */
+        private readonly long offset;
         
         /**
-         * Constructs a new OffsetRandomAccessSource
-         * @param source the source
+         * The length
          */
-        public GetBufferedRandomAccessSource(IRandomAccessSource source) {
-            this.source = source;
-            
-            this.getBuffer = new byte[(int)Math.Min(source.Length/4, (long)4096)];
-            this.getBufferStart = -1;
-            this.getBufferEnd = -1;
-
+        private readonly long length;
+        
+        /**
+         * Constructs a new OffsetRandomAccessSource that extends to the end of the underlying source
+         * @param source the source
+         * @param offset the amount of the offset to use
+         */
+        public WindowRandomAccessSource(IRandomAccessSource source, long offset) : this(source, offset, source.Length - offset) {
         }
 
         /**
+         * Constructs a new OffsetRandomAccessSource with an explicit length
+         * @param source the source
+         * @param offset the amount of the offset to use
+         * @param length the number of bytes to be included in this RAS
+         */
+        public WindowRandomAccessSource(IRandomAccessSource source, long offset, long length) {
+            this.source = source;
+            this.offset = offset;
+            this.length = length;
+        }
+        
+        /**
          * {@inheritDoc}
+         * Note that the position will be adjusted to read from the corrected location in the underlying source
          */
         public virtual int Get(long position) {
-            if (position < getBufferStart || position > getBufferEnd){
-                int count = source.Get(position, getBuffer, 0, getBuffer.Length);
-                if (count == -1)
-                    return -1;
-                getBufferStart = position;
-                getBufferEnd = position + count - 1;
-            }
-            int bufPos = (int)(position-getBufferStart);
-            return 0xff & getBuffer[bufPos];
+            if (position >= length) return -1;
+            return source.Get(offset + position);
         }
 
         /**
          * {@inheritDoc}
+         * Note that the position will be adjusted to read from the corrected location in the underlying source
          */
         public virtual int Get(long position, byte[] bytes, int off, int len) {
-            return source.Get(position, bytes, off, len);
+            if (position >= length) 
+                return -1;
+            
+            long toRead = Math.Min(len, length - position);
+            return source.Get(offset + position, bytes, off, (int)toRead);
         }
 
         /**
          * {@inheritDoc}
+         * Note that the length will be adjusted to read from the corrected location in the underlying source
          */
         public virtual long Length {
             get {
-                return source.Length;
+                return length;
             }
         }
 
@@ -104,8 +119,6 @@ namespace iTextSharp.text.io {
          */
         public virtual void Close() {
             source.Close();
-            getBufferStart = -1;
-            getBufferEnd = -1;
         }
 
     }

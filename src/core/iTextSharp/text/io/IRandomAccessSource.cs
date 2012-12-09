@@ -40,7 +40,7 @@ using System;
  * For more information, please contact iText Software Corp. at this address:
  * sales@itextpdf.com
  */
-namespace iTextSharp.text.log {
+namespace iTextSharp.text.io {
 
     /**
      * Represents an abstract source that bytes can be read from.  This class forms the foundation for all byte input in iText. 

@@ -40,7 +40,7 @@ using System;
  * For more information, please contact iText Software Corp. at this address:
  * sales@itextpdf.com
  */
-namespace iTextSharp.text.log {
+namespace iTextSharp.text.io {
 
     /**
      * A RandomAccessSource that is wraps another RandomAccessSouce but does not propagate close().  This is useful when

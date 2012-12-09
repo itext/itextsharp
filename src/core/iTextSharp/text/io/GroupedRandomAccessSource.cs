@@ -41,7 +41,7 @@ using System.Collections.Generic;
  * For more information, please contact iText Software Corp. at this address:
  * sales@itextpdf.com
  */
-namespace iTextSharp.text.log {
+namespace iTextSharp.text.io {
 
     /**
      * A RandomAccessSource that is based on a set of underlying sources, treating the sources as if they were a contiguous block of data.
@@ -76,6 +76,7 @@ namespace iTextSharp.text.log {
             int i = 0;
             foreach (IRandomAccessSource ras in sources) {
                 this.sources[i] = new SourceEntry(i, ras, totalSize);
+                ++i;
                 totalSize += ras.Length;
             }
             size = totalSize;

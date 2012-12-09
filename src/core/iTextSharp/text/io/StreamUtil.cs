@@ -1,6 +1,7 @@
 using System;
+using System.IO;
 /*
- * $Id: IndependentRandomAccessSource.java 5550 2012-11-21 13:26:06Z blowagie $
+ * $Id$
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT
@@ -43,70 +44,44 @@ using System;
 namespace iTextSharp.text.io {
 
     /**
+     * Utility class with commonly used stream operations
      * @since 5.3.5
+     *
      */
-    public class GetBufferedRandomAccessSource : IRandomAccessSource {
-        /**
-         * The source
-         */
-        private readonly IRandomAccessSource source;
-        
-        private readonly byte[] getBuffer;
-        private long getBufferStart = -1;
-        private long getBufferEnd = -1;
-        
-        /**
-         * Constructs a new OffsetRandomAccessSource
-         * @param source the source
-         */
-        public GetBufferedRandomAccessSource(IRandomAccessSource source) {
-            this.source = source;
-            
-            this.getBuffer = new byte[(int)Math.Min(source.Length/4, (long)4096)];
-            this.getBufferStart = -1;
-            this.getBufferEnd = -1;
-
-        }
+    public static class StreamUtil {
 
         /**
-         * {@inheritDoc}
+         * Reads the full content of a stream and returns them in a byte array
+         * @param is the stream to read
+         * @return a byte array containing all of the bytes from the stream
+         * @throws IOException if there is a problem reading from the input stream
          */
-        public virtual int Get(long position) {
-            if (position < getBufferStart || position > getBufferEnd){
-                int count = source.Get(position, getBuffer, 0, getBuffer.Length);
-                if (count == -1)
-                    return -1;
-                getBufferStart = position;
-                getBufferEnd = position + count - 1;
+        public static byte[] InputStreamToArray(Stream inp) {
+            byte[] b = new byte[8192];
+            MemoryStream outp = new MemoryStream();
+            while (true) {
+                int read = inp.Read(b, 0, b.Length);
+                if (read < 1)
+                    break;
+                outp.Write(b, 0, read);
             }
-            int bufPos = (int)(position-getBufferStart);
-            return 0xff & getBuffer[bufPos];
+            outp.Close();
+            return outp.ToArray();
         }
-
-        /**
-         * {@inheritDoc}
-         */
-        public virtual int Get(long position, byte[] bytes, int off, int len) {
-            return source.Get(position, bytes, off, len);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public virtual long Length {
-            get {
-                return source.Length;
+        
+        public static void CopyBytes(IRandomAccessSource source, long start, long length, Stream outs) {
+            if (length <= 0)
+                return;
+            long idx = start;
+            byte[] buf = new byte[8192];
+            while (length > 0) {
+                long n = source.Get(idx, buf,0, (int)Math.Min((long)buf.Length, length));
+                if (n <= 0)
+                    throw new EndOfStreamException();
+                outs.Write(buf, 0, (int)n);
+                idx += n;
+                length -= n;
             }
         }
-
-        /**
-         * {@inheritDoc}
-         */
-        public virtual void Close() {
-            source.Close();
-            getBufferStart = -1;
-            getBufferEnd = -1;
-        }
-
     }
 }
