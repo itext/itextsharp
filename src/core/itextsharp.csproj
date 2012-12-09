@@ -4068,6 +4068,10 @@
     <Compile Include="iTextSharp\text\io\IndependentRandomAccessSource.cs" />
     <Compile Include="iTextSharp\text\io\IRandomAccessSource.cs" />
     <Compile Include="iTextSharp\text\io\RAFRandomAccessSource.cs" />
+    <Compile Include="iTextSharp\text\io\RandomAccessSourceFactory.cs" />
+    <Compile Include="iTextSharp\text\io\RASInputStream.cs" />
+    <Compile Include="iTextSharp\text\io\StreamUtil.cs" />
+    <Compile Include="iTextSharp\text\io\WindowRandomAccessSource.cs" />
     <Compile Include="iTextSharp\text\log\ILogger.cs" />
     <Compile Include="iTextSharp\text\log\Level.cs" />
     <Compile Include="iTextSharp\text\log\LoggerFactory.cs" />

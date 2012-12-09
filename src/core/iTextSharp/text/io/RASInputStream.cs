@@ -1,6 +1,7 @@
 using System;
+using System.IO;
 /*
- * $Id: IndependentRandomAccessSource.java 5550 2012-11-21 13:26:06Z blowagie $
+ * $Id$
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT
@@ -43,70 +44,91 @@ using System;
 namespace iTextSharp.text.io {
 
     /**
+     * An input stream that uses a RandomAccessSource as it's underlying source 
      * @since 5.3.5
      */
-    public class GetBufferedRandomAccessSource : IRandomAccessSource {
+    public class RASInputStream : Stream {
         /**
          * The source
          */
         private readonly IRandomAccessSource source;
-        
-        private readonly byte[] getBuffer;
-        private long getBufferStart = -1;
-        private long getBufferEnd = -1;
-        
         /**
-         * Constructs a new OffsetRandomAccessSource
+         * The current position in the source
+         */
+        private long position = 0;
+
+        /**
+         * Creates an input stream based on the source
          * @param source the source
          */
-        public GetBufferedRandomAccessSource(IRandomAccessSource source) {
+        public RASInputStream(IRandomAccessSource source) {
             this.source = source;
-            
-            this.getBuffer = new byte[(int)Math.Min(source.Length/4, (long)4096)];
-            this.getBufferStart = -1;
-            this.getBufferEnd = -1;
-
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        public virtual int Get(long position) {
-            if (position < getBufferStart || position > getBufferEnd){
-                int count = source.Get(position, getBuffer, 0, getBuffer.Length);
-                if (count == -1)
-                    return -1;
-                getBufferStart = position;
-                getBufferEnd = position + count - 1;
-            }
-            int bufPos = (int)(position-getBufferStart);
-            return 0xff & getBuffer[bufPos];
+        public override bool CanRead {
+            get { return true; }
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        public virtual int Get(long position, byte[] bytes, int off, int len) {
-            return source.Get(position, bytes, off, len);
+        public override bool CanSeek {
+            get { return true; }
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        public virtual long Length {
+        public override bool CanWrite {
+            get { return false; }
+        }
+
+        public override void Flush() {
+        }
+
+        public override long Length {
+            get { return source.Length; }
+        }
+
+        public override long Position {
             get {
-                return source.Length;
+                return position; ;
+            }
+            set {
+                position = value;
             }
         }
 
-        /**
-         * {@inheritDoc}
-         */
-        public virtual void Close() {
-            source.Close();
-            getBufferStart = -1;
-            getBufferEnd = -1;
+        public override int Read(byte[] buffer, int offset, int len) {
+            int count = source.Get(position, buffer, offset, len);
+            if (count == -1)
+                return 0;
+            position += count;
+            return count;
         }
 
+        public override int ReadByte() {
+            int c = source.Get(position);
+            if (c >= 0)
+                ++position;
+            return c;
+        }
+
+        public override long Seek(long offset, SeekOrigin origin) {
+            switch (origin) {
+                case SeekOrigin.Begin:
+                    position = offset;
+                    break;
+                case SeekOrigin.Current:
+                    position += offset;
+                    break;
+                default:
+                    position = offset + source.Length;
+                    break;
+            }
+            return position;
+        }
+
+        public override void SetLength(long value) {
+            throw new Exception("Not supported.");
+        }
+
+        public override void Write(byte[] buffer, int offset, int count) {
+            throw new Exception("Not supported.");
+        }
     }
 }
