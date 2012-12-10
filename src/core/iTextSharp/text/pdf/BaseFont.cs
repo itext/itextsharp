@@ -318,6 +318,8 @@ namespace iTextSharp.text.pdf {
 
         private static Random random = new Random();
 
+        protected bool vertical = false;
+
         static BaseFont() {
             BuiltinFonts14.Add(COURIER, PdfName.COURIER);
             BuiltinFonts14.Add(COURIER_BOLD, PdfName.COURIER_BOLD);
@@ -721,7 +723,16 @@ namespace iTextSharp.text.pdf {
         public static BaseFont CreateFont(PRIndirectReference fontRef) {
             return new DocumentFont(fontRef);
         }
-        
+
+        /**
+         * Indicates whether the font is used for verticl writing or not.
+         * @return <code>true</code> if the writing mode is vertical for the given font, <code>false</code> otherwise.
+         */
+        public virtual bool IsVertical()
+        {
+            return vertical;
+        }
+
         /**
          * Gets the name without the modifiers Bold, Italic or BoldItalic.
          * @param name the full name of the font

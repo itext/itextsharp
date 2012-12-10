@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.log;
+using iTextSharp.text.pdf.interfaces;
 
 /*
  * $Id$
@@ -53,7 +55,7 @@ namespace iTextSharp.text.pdf {
     * 
     * @author Paulo Soares
     */
-    public class PdfPRow {
+    public class PdfPRow : IAccessibleElement {
         private readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(PdfPTable));
         
         /** True if the table may not break after this row. */
@@ -81,6 +83,11 @@ namespace iTextSharp.text.pdf {
         protected bool calculated = false;
         
         private int[] canvasesPos;
+
+        protected PdfName role = PdfName.TR;
+        protected Dictionary<PdfName, PdfObject> accessibleProperties = null;
+        protected Guid id = Guid.NewGuid();
+    
         
         /**
         * Constructs a new PdfPRow with the cells in the array that was passed
@@ -88,7 +95,17 @@ namespace iTextSharp.text.pdf {
         * 
         * @param cells
         */
-        public PdfPRow(PdfPCell[] cells) {
+        public PdfPRow(PdfPCell[] cells) : this(cells, null)
+        {
+        }
+
+        public PdfPRow(PdfPCell[] cells, PdfPRow source) {
+            if (source != null) {
+                this.id = source.ID;
+                this.role = source.Role;
+                if (source.GetAccessibleProperties() != null)
+                    this.accessibleProperties = new Dictionary<PdfName, PdfObject>(source.GetAccessibleProperties());
+            }
             this.cells = cells;
             widths = new float[cells.Length];
             InitExtraHeights();
@@ -100,6 +117,10 @@ namespace iTextSharp.text.pdf {
         * @param row
         */
         public PdfPRow(PdfPRow row) {
+            this.id = row.ID;
+            this.role = row.Role;
+            if (row.GetAccessibleProperties() != null)
+                this.accessibleProperties = new Dictionary<PdfName, PdfObject>(row.GetAccessibleProperties());
             mayNotBreak = row.mayNotBreak;
             maxHeight = row.maxHeight;
             calculated = row.calculated;
@@ -312,11 +333,19 @@ namespace iTextSharp.text.pdf {
                 newStart = 0;
             if (cells[newStart] != null)
                 xPos -= cells[newStart].Left;
-            
+
+            if (IsTagged(canvases[PdfPTable.TEXTCANVAS]))
+            {
+                canvases[PdfPTable.TEXTCANVAS].OpenMCBlock(this);
+            }
             for (int k = newStart; k < colEnd; ++k) {
                 PdfPCell cell = cells[k];
                 if (cell == null)
                     continue;
+                if (IsTagged(canvases[PdfPTable.TEXTCANVAS]))
+                {
+                    canvases[PdfPTable.TEXTCANVAS].OpenMCBlock(cell);
+                }
                 float currentMaxHeight = maxHeight + extraHeights[k];
                 
                 WriteBorderAndBackground(xPos, yPos, currentMaxHeight, cell, canvases);
@@ -377,7 +406,15 @@ namespace iTextSharp.text.pdf {
                         tly = cell.Top + yPos - cell.EffectivePaddingTop;
                     }
                     img.SetAbsolutePosition(left, tly - img.ScaledHeight);
+                    if (IsTagged(canvases[PdfPTable.TEXTCANVAS]))
+                    {
+                        canvases[PdfPTable.TEXTCANVAS].OpenMCBlock(img);
+                    }
                     canvases[PdfPTable.TEXTCANVAS].AddImage(img);
+                    if (IsTagged(canvases[PdfPTable.TEXTCANVAS]))
+                    {
+                        canvases[PdfPTable.TEXTCANVAS].CloseMCBlock(img);
+                    }
                 } else {
                     // rotation sponsored by Connection GmbH
                     if (cell.Rotation == 90 || cell.Rotation == 270) {
@@ -507,6 +544,12 @@ namespace iTextSharp.text.pdf {
                             + yPos);
                     evt.CellLayout(cell, rect, canvases);
                 }
+                if (IsTagged(canvases[PdfPTable.TEXTCANVAS])) {
+                    canvases[PdfPTable.TEXTCANVAS].CloseMCBlock(cell);
+                }
+		    }
+            if (IsTagged(canvases[PdfPTable.TEXTCANVAS])) {
+                canvases[PdfPTable.TEXTCANVAS].CloseMCBlock(this);
             }
         }
         
@@ -693,7 +736,7 @@ namespace iTextSharp.text.pdf {
                 return null;
             }
             CalculateHeights();
-            PdfPRow split = new PdfPRow(newCells);
+            PdfPRow split = new PdfPRow(newCells, this);
             split.widths = (float[]) widths.Clone();
             return split;
         }
@@ -720,6 +763,50 @@ namespace iTextSharp.text.pdf {
                     return true;
             }
             return false;
+        }
+
+        public PdfObject GetAccessibleProperty(PdfName key)
+        {
+            if (accessibleProperties != null){
+                PdfObject value;
+                accessibleProperties.TryGetValue(key, out value);
+                return value;
+            }
+            else
+                return null;
+        }
+
+        public void SetAccessibleProperty(PdfName key, PdfObject value)
+        {
+            if (accessibleProperties == null)
+                accessibleProperties = new Dictionary<PdfName, PdfObject>();
+            accessibleProperties[key] = value;
+        }
+
+        public Dictionary<PdfName, PdfObject> GetAccessibleProperties()
+        {
+            return accessibleProperties;
+        }
+
+        public PdfName Role
+        {
+            get { return role; }
+            set { role = value; }
+        }
+
+        public void SetAccessibleProperties(Dictionary<PdfName, PdfObject> accessibleProperties)
+        {
+            this.accessibleProperties = accessibleProperties;
+        }
+
+        public Guid ID
+        {
+            get { return id; }
+        }
+        
+        static private bool IsTagged(PdfContentByte canvas)
+        {
+            return canvas != null && canvas.writer != null && canvas.writer.IsTagged();
         }
     }
 }

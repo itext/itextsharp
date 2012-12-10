@@ -149,7 +149,7 @@ namespace iTextSharp.text.pdf {
 
         private void NodeProcess(PdfDictionary struc, PdfIndirectReference reference) {
             PdfObject obj = struc.Get(PdfName.K);
-            if (obj != null && obj.IsArray() && !((PdfArray)obj)[0].IsNumber()) {
+            if (obj != null && obj.IsArray()/* && !((PdfArray)obj)[0].IsNumber()*/) {
                 PdfArray ar = (PdfArray)obj;
                 for (int k = 0; k < ar.Size; ++k) {
                     PdfDictionary dictionary = ar.GetAsDict(k);

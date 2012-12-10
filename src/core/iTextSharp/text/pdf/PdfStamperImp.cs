@@ -95,11 +95,13 @@ namespace iTextSharp.text.pdf {
             this.reader = reader;
             file = reader.SafeFile;
             this.append = append;
+            if (reader.IsEncrypted())
+            {
+                crypto = new PdfEncryption(reader.Decrypt);
+            }
             if (append) {
                 if (reader.IsRebuilt())
                     throw new DocumentException(MessageLocalization.GetComposedMessage("append.mode.requires.a.document.without.errors.even.if.recovery.was.possible"));
-                if (reader.IsEncrypted())
-                    crypto = new PdfEncryption(reader.Decrypt);
                 pdf_version.SetAppendmode(true);
                 file.ReOpen();
                 byte[] buf = new byte[8192];

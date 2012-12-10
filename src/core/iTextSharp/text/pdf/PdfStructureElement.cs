@@ -64,6 +64,8 @@ namespace iTextSharp.text.pdf {
         * Holds value of property reference.
         */
         private PdfIndirectReference reference;
+
+        private int pageMark;
         
         /**
         * Creates a new instance of PdfStructureElement.
@@ -75,6 +77,18 @@ namespace iTextSharp.text.pdf {
             Init(parent, structureType);
             this.parent = parent;
             Put(PdfName.P, parent.reference);
+            Put(PdfName.TYPE, PdfName.STRUCTELEM);
+        }
+
+        /**
+        * Creates a new instance of PdfStructureElement.
+        * @param parent the parent of this node
+        * @param structureType the type of structure. It may be a standard type or a user type mapped by the role map
+        */
+        public PdfStructureElement(PdfStructureTreeRoot parent, PdfName structureType) {
+            top = parent;
+            Init(parent, structureType);
+            Put(PdfName.P, parent.Reference);
             Put(PdfName.TYPE, PdfName.STRUCTELEM);
         }
 
@@ -91,18 +105,6 @@ namespace iTextSharp.text.pdf {
                 Put(PdfName.P, ((PdfStructureTreeRoot) parent).Reference);
                 Put(PdfName.TYPE, PdfName.STRUCTELEM);
             } else {}
-        }
-
-        /**
-        * Creates a new instance of PdfStructureElement.
-        * @param parent the parent of this node
-        * @param structureType the type of structure. It may be a standard type or a user type mapped by the role map
-        */    
-        public PdfStructureElement(PdfStructureTreeRoot parent, PdfName structureType) {
-            top = parent;
-            Init(parent, structureType);
-            Put(PdfName.P, parent.Reference);
-            Put(PdfName.TYPE, PdfName.STRUCTELEM);
         }
         
         private void Init(PdfDictionary parent, PdfName structureType) {
@@ -129,14 +131,21 @@ namespace iTextSharp.text.pdf {
         */    
         public PdfDictionary Parent {
             get {
-                return parent;
+                return GetParent(false);
             }
         }
-        
+
+        public PdfDictionary GetParent(bool includeStructTreeRoot) {
+            if (parent == null && includeStructTreeRoot)
+                return top;
+            else
+                return parent;
+        }
+
         internal void SetPageMark(int page, int mark) {
             if (mark >= 0)
                 Put(PdfName.K, new PdfNumber(mark));
-            if (parent == null)
+            //if (parent == null)
                 top.SetPageMark(page, reference);
         }
         
@@ -181,6 +190,77 @@ namespace iTextSharp.text.pdf {
                 Put(PdfName.A, attr);
             }
             attr.Put(name, obj);
+        }
+
+        
+        public void WriteAttributes(IAccessibleElement element) {
+            if (element is Paragraph) {
+                WriteAttributes((Paragraph) element);
+            }
+        }
+
+        private void WriteAttributes(Paragraph paragraph) {
+            if (paragraph != null) {
+                // Setting non-inheritable attributes
+                if ((paragraph.Font != null) && (paragraph.Font.Color != null)) {
+                    BaseColor c = paragraph.Font.Color;
+                    float[] colors = new float[]{(float)c.R / 255f, (float)c.G / 255f, (float)c.B / 255f};
+                    this.SetAttribute(PdfName.COLOR, new PdfArray(colors));
+                }
+                if (paragraph.SpacingBefore.CompareTo(0f) != 0)
+                    this.SetAttribute(PdfName.SPACEBEFORE, new PdfNumber(paragraph.SpacingBefore));
+                if (paragraph.SpacingAfter.CompareTo(0f) != 0)
+                    this.SetAttribute(PdfName.SPACEAFTER, new PdfNumber(paragraph.SpacingAfter));
+                if (paragraph.FirstLineIndent.CompareTo(0f) != 0)
+                    this.SetAttribute(PdfName.TEXTINDENT, new PdfNumber(paragraph.FirstLineIndent));
+
+                // Setting inheritable attributes
+                IPdfStructureElement parent = (IPdfStructureElement) this.GetParent(true);
+                PdfObject obj = parent.GetAttribute(PdfName.STARTINDENT);
+                if (obj is PdfNumber) {
+                    float startIndent = ((PdfNumber) obj).FloatValue;
+                    if (startIndent.CompareTo(paragraph.IndentationLeft) != 0)
+                        this.SetAttribute(PdfName.STARTINDENT, new PdfNumber(paragraph.IndentationLeft));
+                } else {
+                    if (Math.Abs(paragraph.IndentationLeft) > float.MinValue)
+                        this.SetAttribute(PdfName.STARTINDENT, new PdfNumber(paragraph.IndentationLeft));
+                }
+
+                obj = parent.GetAttribute(PdfName.ENDINDENT);
+                if (obj is PdfNumber) {
+                    float endIndent = ((PdfNumber) obj).FloatValue;
+                    if (endIndent.CompareTo(paragraph.IndentationRight) != 0)
+                        this.SetAttribute(PdfName.ENDINDENT, new PdfNumber(paragraph.IndentationRight));
+                } else {
+                    if (paragraph.IndentationRight.CompareTo(0) != 0)
+                        this.SetAttribute(PdfName.ENDINDENT, new PdfNumber(paragraph.IndentationRight));
+                }
+
+                PdfName align = null;
+                switch (paragraph.Alignment) {
+                    case Element.ALIGN_LEFT:
+                        align = PdfName.START;
+                        break;
+                    case Element.ALIGN_CENTER:
+                        align = PdfName.CENTER;
+                        break;
+                    case Element.ALIGN_RIGHT:
+                        align = PdfName.END;
+                        break;
+                    case Element.ALIGN_JUSTIFIED:
+                        align = PdfName.JUSTIFY;
+                        break;
+                }
+                obj = parent.GetAttribute(PdfName.TEXTALIGN);
+                if (obj is PdfName) {
+                    PdfName textAlign = ((PdfName) obj);
+                    if (align != null && !textAlign.Equals(align))
+                        this.SetAttribute(PdfName.TEXTALIGN, align);
+                } else {
+                    if (align != null && !PdfName.START.Equals(align))
+                        this.SetAttribute(PdfName.TEXTALIGN, align);
+                }
+            }
         }
     }
 }

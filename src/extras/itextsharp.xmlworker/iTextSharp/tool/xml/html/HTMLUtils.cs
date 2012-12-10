@@ -67,7 +67,7 @@ namespace iTextSharp.tool.xml.html {
 		    foreach (char c in str) {
 			    if (isWhitespace && !IsWhiteSpace(c)) {
                     if (builder.Length == 0) {
-                        chunkList.Add(Chunk.createWhitespace(builder.ToString(), preserveWhiteSpace));
+                        chunkList.Add(Chunk.CreateWhitespace(builder.ToString(), preserveWhiteSpace));
                     } else {
                         builder.Append(" ");
                     }
@@ -87,7 +87,7 @@ namespace iTextSharp.tool.xml.html {
             }
 
             if (whitespaceBuilder.Length > 0) {
-                chunkList.Add(Chunk.createWhitespace(whitespaceBuilder.ToString(), preserveWhiteSpace));
+                chunkList.Add(Chunk.CreateWhitespace(whitespaceBuilder.ToString(), preserveWhiteSpace));
             }
 
 		    return chunkList;

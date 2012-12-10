@@ -637,11 +637,13 @@ namespace iTextSharp.text.pdf {
         internal void Process(byte[] ttfAfm, bool preload) {
             tables = new Dictionary<string,int[]>();
         
-            try {
-                if (ttfAfm == null)
-                    rf = new RandomAccessFileOrArray(fileName, preload);
-                else
-                    rf = new RandomAccessFileOrArray(ttfAfm);
+            if (ttfAfm == null)
+                rf = new RandomAccessFileOrArray(fileName, preload);
+            else
+                rf = new RandomAccessFileOrArray(ttfAfm);
+
+            try
+            {
                 if (ttcIndex.Length > 0) {
                     int dirIdx = int.Parse(ttcIndex);
                     if (dirIdx < 0)
@@ -685,10 +687,10 @@ namespace iTextSharp.text.pdf {
                 }
             }
             finally {
-                if (rf != null) {
+                //TODO: For embedded fonts, the underlying data source for the font will be left open until this TrueTypeFont object is collected by the Garbage Collector.  That may not be optimal.
+                if (!embedded) {
                     rf.Close();
-                    if (!embedded)
-                        rf = null;
+                    rf = null;
                 }
             }
         }

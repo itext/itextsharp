@@ -76,10 +76,10 @@ namespace iTextSharp.text.pdf {
         protected internal float height;
     
         /** The listsymbol (if necessary). */
-        protected internal Chunk listSymbol = null;
+        //protected internal Chunk listSymbol = null;
     
         /** The listsymbol (if necessary). */
-        protected internal float symbolIndent;
+        //protected internal float symbolIndent;
     
         /** <CODE>true</CODE> if the chunk splitting was caused by a newline. */
         protected internal bool newlineSplit = false;
@@ -88,6 +88,8 @@ namespace iTextSharp.text.pdf {
         protected internal float originalWidth;
     
         protected internal bool isRTL = false;
+
+        protected ListItem listItem = null;
     
         // constructors
     
@@ -357,9 +359,11 @@ namespace iTextSharp.text.pdf {
     
         public ListItem ListItem {
             set {
-                this.listSymbol = value.ListSymbol;
-                this.symbolIndent = value.IndentationLeft;
+                this.listItem = value;
+                //this.listSymbol = value.ListSymbol;
+                //this.symbolIndent = value.IndentationLeft;
             }
+            get { return listItem; }
         }
     
         /**
@@ -370,7 +374,7 @@ namespace iTextSharp.text.pdf {
     
         public Chunk ListSymbol {
             get {
-                return listSymbol;
+                return listItem != null ? listItem.ListSymbol : null; ;
             }
         }
     
@@ -382,10 +386,10 @@ namespace iTextSharp.text.pdf {
     
         public float ListIndent {
             get {
-                return symbolIndent;
+                return listItem != null ? listItem.IndentationLeft : 0;
             }
         }
-    
+
         /**
          * Get the string representation of what is in this line.
          *
@@ -468,18 +472,17 @@ namespace iTextSharp.text.pdf {
             PdfChunk chunk;
             for (int k = 0; k < line.Count; ++k) {
                 chunk = line[k];
-                if (!chunk.IsImage()) {
-                    if (chunk.ChangeLeading)
-                        normal_leading = Math.Max(chunk.Leading, normal_leading);
-                    else
-                        normal_leading = Math.Max(fixedLeading + multipliedLeading * chunk.Font.Size, normal_leading);
-                }
-                else {
+                if (chunk.IsImage()) {
                     Image img = chunk.Image;
                     if (chunk.ChangeLeading) {
                         float height = img.ScaledHeight + chunk.ImageOffsetY + img.SpacingBefore;
                         image_leading = Math.Max(height, image_leading);
                     }
+                }else {
+                    if (chunk.ChangeLeading)
+                        normal_leading = Math.Max(chunk.Leading, normal_leading);
+                    else
+                        normal_leading = Math.Max(fixedLeading + multipliedLeading * chunk.Font.Size, normal_leading);
                 }
             }
             return new float[]{normal_leading > 0 ? normal_leading : fixedLeading, image_leading};

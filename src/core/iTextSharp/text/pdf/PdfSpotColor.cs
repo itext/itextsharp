@@ -108,5 +108,10 @@ namespace iTextSharp.text.pdf {
             array.Add(func.Reference);
             return array;
         }
+
+        
+        public bool Equals(Object obj) {
+            return obj is PdfSpotColor && ((PdfSpotColor)obj).name == this.name && ((PdfSpotColor)obj).altcs == this.altcs;
+        }
     }
 }

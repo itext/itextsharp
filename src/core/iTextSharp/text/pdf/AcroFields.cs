@@ -1279,7 +1279,7 @@ namespace iTextSharp.text.pdf {
             if (ffNum != null) {
                 flagVal = ffNum.IntValue;
             }
-            if ((flagVal | PdfFormField.FF_RICHTEXT) == 0) {
+            if ((flagVal & PdfFormField.FF_RICHTEXT) == 0) {
                 // text field doesn't support rich text: fail
                 return false;
             }

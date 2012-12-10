@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf.events;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.pdf.interfaces;
 
 /*
  * This file is part of the iText project.
@@ -51,7 +52,7 @@ namespace iTextSharp.text.pdf {
     /** A cell in a PdfPTable.
     */
 
-    public class PdfPCell : Rectangle{
+    public class PdfPCell : Rectangle, IAccessibleElement {
         
         private ColumnText column = new ColumnText(null);
         
@@ -112,6 +113,11 @@ namespace iTextSharp.text.pdf {
         * 0, 90, 180 and 270.
         */
         private new int rotation;
+
+        protected PdfName role = PdfName.TD;
+
+        protected Dictionary<PdfName, PdfObject> accessibleProperties = null;
+        protected internal Guid id = Guid.NewGuid();
 
         /** Constructs an empty <CODE>PdfPCell</CODE>.
         * The default padding is 2.
@@ -205,6 +211,7 @@ namespace iTextSharp.text.pdf {
         * @param cell the <CODE>PdfPCell</CODE> to duplicate
         */
         public PdfPCell(PdfPCell cell) : base(cell.llx, cell.lly, cell.urx, cell.ury) {
+            id = cell.ID;
             CloneNonPositionParameters(cell);
             verticalAlignment = cell.verticalAlignment;
             paddingLeft = cell.paddingLeft;
@@ -238,7 +245,13 @@ namespace iTextSharp.text.pdf {
             }
             if (element is PdfPTable) {
                 ((PdfPTable) element).SplitLate = false;
+            } else if (element is PdfDiv) {
+            foreach (IElement divChildElement in ((PdfDiv)element).Content) {
+                if (divChildElement is PdfPTable) {
+                    ((PdfPTable) divChildElement).SplitLate = false;
+                }
             }
+        }
             column.AddElement(element);
         }
         
@@ -800,6 +813,37 @@ namespace iTextSharp.text.pdf {
             else if (HasMinimumHeight() && height < MinimumHeight)
                 height = MinimumHeight;
             return height;
+        }
+
+        
+        public PdfObject GetAccessibleProperty( PdfName key) {
+            if (accessibleProperties != null)
+                return accessibleProperties[key];
+            else
+                return null;
+        }
+
+        public void SetAccessibleProperty(PdfName key, PdfObject value) {
+            if (accessibleProperties == null)
+                accessibleProperties = new Dictionary<PdfName, PdfObject>();
+            accessibleProperties[key] = value;
+        }
+
+        public Dictionary<PdfName, PdfObject> GetAccessibleProperties() {
+            return accessibleProperties;
+        }
+
+        public PdfName Role {
+            get { return role; }
+            set { role = value; }
+        }
+        
+        public void SetAccessibleProperties(Dictionary<PdfName, PdfObject> accessibleProperties) {
+            this.accessibleProperties = accessibleProperties;
+        }
+
+        public Guid ID {
+            get { return id; }
         }
     }
 }

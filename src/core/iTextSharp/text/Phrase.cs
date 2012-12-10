@@ -375,6 +375,8 @@ namespace iTextSharp.text {
             }
             Chunk newChunk = new Chunk(c, f);
             newChunk.Attributes = chunk.Attributes;
+            newChunk.Role = chunk.Role;
+            newChunk.SetAccessibleProperties(chunk.GetAccessibleProperties());
             if (hyphenation != null && newChunk.GetHyphenation() == null && !newChunk.IsEmpty()) {
                 newChunk.SetHyphenation(hyphenation);
             }
@@ -557,7 +559,7 @@ namespace iTextSharp.text {
         public bool Trim() {
             while (this.Count > 0) {
                 IElement firstChunk = this[0];
-                if (firstChunk is Chunk && ((Chunk)firstChunk).isWhitespace()) {
+                if (firstChunk is Chunk && ((Chunk)firstChunk).IsWhitespace()) {
                     this.Remove(firstChunk);
                 } else {
                     break;
@@ -565,7 +567,7 @@ namespace iTextSharp.text {
             }
             while (this.Count > 0) {
                 IElement lastChunk = this[this.Count - 1];
-                if (lastChunk is Chunk && ((Chunk)lastChunk).isWhitespace()) {
+                if (lastChunk is Chunk && ((Chunk)lastChunk).IsWhitespace()) {
                     this.Remove(lastChunk);
                 } else {
                     break;

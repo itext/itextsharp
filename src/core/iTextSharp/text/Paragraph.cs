@@ -4,6 +4,7 @@ using System.util;
 using iTextSharp.text.factories;
 using iTextSharp.text.api;
 using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.interfaces;
 
 /*
  * $Id$
@@ -71,7 +72,7 @@ namespace iTextSharp.text {
     /// <seealso cref="T:iTextSharp.text.Element"/>
     /// <seealso cref="T:iTextSharp.text.Phrase"/>
     /// <seealso cref="T:iTextSharp.text.ListItem"/>
-    public class Paragraph : Phrase, IIndentable, ISpaceable {
+    public class Paragraph : Phrase, IIndentable, ISpaceable, IAccessibleElement {
     
         // membervariables
     
@@ -106,7 +107,9 @@ namespace iTextSharp.text {
         
         ///<summary> Does the paragraph has to be kept together on 1 page. </summary>
         protected bool keeptogether = false;
-    
+        protected PdfName role = PdfName.P;
+        protected Guid id = Guid.NewGuid();
+
         // constructors
     
         /// <summary>
@@ -179,6 +182,8 @@ namespace iTextSharp.text {
                 IndentationRight = p.IndentationRight;
                 SpacingAfter = p.SpacingAfter;
                 SpacingBefore = p.SpacingBefore;
+                Role = p.Role;
+                id = p.ID;
             }
         }
 
@@ -198,6 +203,8 @@ namespace iTextSharp.text {
             if (spacingBefore)
                 copy.SpacingBefore = SpacingBefore;
             copy.ExtraParagraphSpace = ExtraParagraphSpace;
+            copy.Role = Role;
+            copy.id = ID;
             return copy;
         }
 
@@ -460,6 +467,27 @@ namespace iTextSharp.text {
             set {
                 this.extraParagraphSpace = value;
             }
+        }
+
+        public PdfObject GetAccessibleProperty(PdfName key) {
+            return null;
+        }
+
+        public void SetAccessibleProperty(PdfName key, PdfObject value) {
+
+        }
+
+        public Dictionary<PdfName, PdfObject> GetAccessibleProperties() {
+            return null;
+        }
+
+        public PdfName Role {
+            get { return role; }
+            set { this.role = value; }
+        }
+
+        public Guid ID {
+            get { return id; }
         }
     }
 }

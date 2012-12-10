@@ -193,6 +193,10 @@ public class CompareTool {
                                             "File " + outPdf + " differs.\nPlease, examine difference images for more details.";    
                                     }
                                 }
+                                else
+                                {
+                                    differentPagesFail = differentPages.Replace("<filename>", outPdf).Replace("<pagenumber>", (i + 1).ToString());
+                                }
                             } else {
                                 differentPagesFail =
                                             differentPages.Replace("<filename>", outPdf).Replace("<pagenumber>",

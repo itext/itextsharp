@@ -173,6 +173,25 @@ namespace iTextSharp.text.pdf {
         }
     
         /**
+         * Copies all of the mappings from the specified <CODE>PdfDictionary</CODE>
+         * to this <CODE>PdfDictionary</CODE>.
+         *
+         * These mappings will replace any mappings previously contained in this
+         * <CODE>PdfDictionary</CODE>.
+         *
+         * @param dic The <CODE>PdfDictionary</CODE> with the mappings to be
+         *   copied over
+         */
+        public void PutAll(PdfDictionary dic) {
+            foreach (KeyValuePair<PdfName, PdfObject> item in dic.hashMap) {
+                if (hashMap.ContainsKey(item.Key))
+                    hashMap[item.Key] = item.Value;
+                else
+                    hashMap.Add(item.Key, item.Value);
+            }
+        }
+
+        /**
          * Removes a <CODE>PdfObject</CODE> and its key from the <CODE>PdfDictionary</CODE>.
          *
          * @param        key        key of the entry (a <CODE>PdfName</CODE>)

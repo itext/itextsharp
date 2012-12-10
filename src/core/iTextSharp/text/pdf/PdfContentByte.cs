@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using iTextSharp.text;
 using iTextSharp.text.exceptions;
@@ -101,6 +102,11 @@ namespace iTextSharp.text.pdf {
             /** The current word spacing */
             protected internal float wordSpace = 0;
 
+            protected internal BaseColor textColorFill = new GrayColor(0);
+            protected internal BaseColor graphicsColorFill = new GrayColor(0);
+            protected internal BaseColor textColorStroke = new GrayColor(0);
+            protected internal BaseColor graphicsColorStroke = new GrayColor(0);
+
             internal GraphicState() {
             }
 
@@ -119,6 +125,10 @@ namespace iTextSharp.text.pdf {
                 scale = cp.scale;
                 charSpace = cp.charSpace;
                 wordSpace = cp.wordSpace;
+                textColorFill = cp.textColorFill;
+                graphicsColorFill = cp.graphicsColorFill;
+                textColorStroke = cp.textColorStroke;
+                graphicsColorStroke = cp.graphicsColorStroke;
             }
         }
     
@@ -169,10 +179,10 @@ namespace iTextSharp.text.pdf {
         protected ByteBuffer content = new ByteBuffer();
     
         /** This is the writer */
-        protected PdfWriter writer;
+        protected internal PdfWriter writer;
     
         /** This is the PdfDocument */
-        protected PdfDocument pdf;
+        protected internal PdfDocument pdf;
     
         /** This is the GraphicState in use */
         protected GraphicState state = new GraphicState();
@@ -190,18 +200,10 @@ namespace iTextSharp.text.pdf {
         private int mcDepth = 0;
         private bool inText = false;
 
-        private IList<IElement> mcElements = new List<IElement>();
+        private IList<IAccessibleElement> mcElements = new List<IAccessibleElement>();
 
         private PdfContentByte duplicatedFrom = null;
-
-        /**
-         * Indicates if to open/close text block automatically.
-         */
-        protected bool autoControlTextBlocks = false;
-
-        //for development needs only! to be removed once tagged pdf support is complete.
-        private bool allowTaggedImages = false;
-
+        
         private static Dictionary<PdfName, String> abrev = new Dictionary<PdfName,string>();
         
         static PdfContentByte() {
@@ -229,7 +231,6 @@ namespace iTextSharp.text.pdf {
             if (wr != null) {
                 writer = wr;
                 pdf = writer.PdfDocument;
-                autoControlTextBlocks = !pdf.UseSeparateCanvasesForTextAndGraphics;
             }
         }
     
@@ -347,7 +348,7 @@ namespace iTextSharp.text.pdf {
         }
 
         public void SetLeading(float v) {
-            if (!inText && autoControlTextBlocks) {
+            if (!inText && writer.IsTagged()) {
                 BeginText(true);
             }
             state.leading = v;
@@ -507,7 +508,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public void Clip() {
-            if (inText && autoControlTextBlocks) {
+            if (inText && writer.IsTagged()) {
                 EndText();
             }
             content.Append('W').Append_i(separator);
@@ -519,7 +520,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public void EoClip() {
-            if (inText && autoControlTextBlocks) {
+            if (inText && writer.IsTagged()) {
                 EndText();
             }
             content.Append("W*").Append_i(separator);
@@ -533,16 +534,18 @@ namespace iTextSharp.text.pdf {
          *
          * @param   gray    a value between 0 (black) and 1 (white)
          */
-    
+
         public virtual void SetGrayFill(float value) {
+            SaveColor(new GrayColor(value), true);
             content.Append(value).Append(" g").Append_i(separator);
         }
     
         /**
          * Changes the current gray tint for filling paths to black.
          */
-    
-        public virtual void ResetGrayFill() {
+
+        public virtual void ResetGrayFill() { 
+            SaveColor(new GrayColor(0), true);
             content.Append("0 g").Append_i(separator);
         }
     
@@ -554,16 +557,19 @@ namespace iTextSharp.text.pdf {
          *
          * @param   gray    a value between 0 (black) and 1 (white)
          */
-    
+
         public virtual void SetGrayStroke(float value) {
+            SaveColor(new GrayColor(value), false);
             content.Append(value).Append(" G").Append_i(separator);
         }
     
         /**
          * Changes the current gray tint for stroking paths to black.
          */
-    
-        public virtual void ResetGrayStroke() {
+
+        public virtual void ResetGrayStroke()
+        {
+            SaveColor(new GrayColor(0), false);
             content.Append("0 G").Append_i(separator);
         }
     
@@ -605,6 +611,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public virtual void SetRGBColorFillF(float red, float green, float blue) {
+            SaveColor(new BaseColor(red, green, blue), true);
             HelperRGB(red, green, blue);
             content.Append(" rg").Append_i(separator);
         }
@@ -614,7 +621,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public virtual void ResetRGBColorFill() {
-            content.Append("0 g").Append_i(separator);
+            ResetGrayFill();
         }
     
         /**
@@ -632,6 +639,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public virtual void SetRGBColorStrokeF(float red, float green, float blue) {
+            SaveColor(new BaseColor(red, green, blue), false);
             HelperRGB(red, green, blue);
             content.Append(" RG").Append_i(separator);
         }
@@ -642,7 +650,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public virtual void ResetRGBColorStroke() {
-            content.Append("0 G").Append_i(separator);
+            ResetGrayStroke();
         }
     
         /**
@@ -689,6 +697,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public virtual void SetCMYKColorFillF(float cyan, float magenta, float yellow, float black) {
+            SaveColor(new CMYKColor(cyan, magenta, yellow, black), true);
             HelperCMYK(cyan, magenta, yellow, black);
             content.Append(" k").Append_i(separator);
         }
@@ -697,8 +706,9 @@ namespace iTextSharp.text.pdf {
          * Changes the current color for filling paths to black.
          *
          */
-    
+
         public virtual void ResetCMYKColorFill() {
+            SaveColor(new CMYKColor(0, 0, 0, 1), true);
             content.Append("0 0 0 1 k").Append_i(separator);
         }
     
@@ -718,6 +728,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public virtual void SetCMYKColorStrokeF(float cyan, float magenta, float yellow, float black) {
+            SaveColor(new CMYKColor(cyan, magenta, yellow, black), false);
             HelperCMYK(cyan, magenta, yellow, black);
             content.Append(" K").Append_i(separator);
         }
@@ -728,6 +739,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public virtual void ResetCMYKColorStroke() {
+            SaveColor(new CMYKColor(0, 0, 0, 1), false);
             content.Append("0 0 0 1 K").Append_i(separator);
         }
     
@@ -740,7 +752,7 @@ namespace iTextSharp.text.pdf {
     
         public void MoveTo(float x, float y) {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged()) {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -760,7 +772,7 @@ namespace iTextSharp.text.pdf {
     
         public void LineTo(float x, float y) {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged()) {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -783,7 +795,7 @@ namespace iTextSharp.text.pdf {
     
         public void CurveTo(float x1, float y1, float x2, float y2, float x3, float y3) {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged()) {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -804,7 +816,7 @@ namespace iTextSharp.text.pdf {
     
         public void CurveTo(float x2, float y2, float x3, float y3) {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged()) {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -825,7 +837,7 @@ namespace iTextSharp.text.pdf {
     
         public void CurveFromTo(float x1, float y1, float x3, float y3) {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged()) {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -863,7 +875,7 @@ namespace iTextSharp.text.pdf {
     
         public void Rectangle(float x, float y, float w, float h) {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged()) {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -1104,7 +1116,7 @@ namespace iTextSharp.text.pdf {
     
         public void ClosePath() {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged()) {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -1120,7 +1132,7 @@ namespace iTextSharp.text.pdf {
     
         public void NewPath() {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged()) {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -1136,7 +1148,8 @@ namespace iTextSharp.text.pdf {
     
         public void Stroke() {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged())
+                {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -1152,7 +1165,8 @@ namespace iTextSharp.text.pdf {
     
         public void ClosePathStroke() {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged())
+                {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -1168,7 +1182,8 @@ namespace iTextSharp.text.pdf {
     
         public void Fill() {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged())
+                {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -1184,7 +1199,8 @@ namespace iTextSharp.text.pdf {
     
         public void EoFill() {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged())
+                {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -1200,7 +1216,8 @@ namespace iTextSharp.text.pdf {
     
         public void FillStroke() {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged())
+                {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -1216,7 +1233,8 @@ namespace iTextSharp.text.pdf {
     
         public void ClosePathFillStroke() {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged())
+                {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -1232,7 +1250,8 @@ namespace iTextSharp.text.pdf {
     
         public void EoFillStroke() {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged())
+                {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -1248,7 +1267,8 @@ namespace iTextSharp.text.pdf {
     
         public void ClosePathEoFillStroke() {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged())
+                {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -1329,6 +1349,9 @@ namespace iTextSharp.text.pdf {
         public virtual void AddImage(Image image, float a, float b, float c, float d, float e, float f, bool inlineImage) {
             if (image.Layer != null)
                 BeginLayer(image.Layer);
+            if (inText && writer.IsTagged()){
+                EndText();
+            }
             if (image.IsImgTemplate()) {
                 writer.AddDirectImageSimple(image);
                 PdfTemplate template = image.TemplateData;
@@ -1337,11 +1360,6 @@ namespace iTextSharp.text.pdf {
                 AddTemplate(template, a / w, b / w, c / h, d / h, e, f);
             }
             else {
-                if (inText && autoControlTextBlocks) {
-                    EndText();
-                }
-                if (writer.IsTagged() && allowTaggedImages)
-                    BeginMarkedContentSequence(new PdfStructureElement(GetParentStructureElement(), PdfName.FIGURE));
                 content.Append("q ");
                 content.Append(a).Append(' ');
                 content.Append(b).Append(' ');
@@ -1404,8 +1422,6 @@ namespace iTextSharp.text.pdf {
                     name = prs.AddXObject(name, writer.GetImageReference(name));
                     content.Append(' ').Append(name.GetBytes()).Append(" Do Q").Append_i(separator);
                 }
-                if (writer.IsTagged() && allowTaggedImages)
-                    EndMarkedContentSequence();
             }
             if (image.HasBorders()) {
                 SaveState();
@@ -1468,9 +1484,10 @@ namespace iTextSharp.text.pdf {
          * Starts the writing of text.
          * @param restoreTM indicates if to restore text matrix of the previous text block.
          */
-        public void BeginText(bool restoreTM) {
+        private void BeginText(bool restoreTM)
+        {
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged()) {
 
                 } else {
                     throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.begin.end.text.operators"));
@@ -1479,12 +1496,23 @@ namespace iTextSharp.text.pdf {
                 inText = true;
                 content.Append("BT").Append_i(separator);
                 if (restoreTM) {
-                    float tx = state.xTLM;
+                    float xTLM = state.xTLM;
+                    float tx = state.tx;
                     SetTextMatrix(state.aTLM, state.bTLM, state.cTLM, state.dTLM, state.tx, state.yTLM);
-                    state.xTLM = state.tx = tx;
+                    state.xTLM = xTLM;
+                    state.tx = tx;
                 } else {
                     state.xTLM = 0;
                     state.yTLM = 0;
+                    state.tx = 0;
+                }
+                if (writer.IsTagged()) {
+                    try {
+                        RestoreColor();
+                    }
+                    catch (IOException) {
+
+                    }
                 }
             }
         }
@@ -1501,7 +1529,7 @@ namespace iTextSharp.text.pdf {
          */
         public void EndText() {
             if (!inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged()) {
 
                 } else {
                     throw new IllegalPdfSyntaxException(
@@ -1510,6 +1538,15 @@ namespace iTextSharp.text.pdf {
             } else {
                 inText = false;
                 content.Append("ET").Append_i(separator);
+                if (writer.IsTagged()) {
+                    try {
+                        RestoreColor();
+                    }
+                    catch (IOException) {
+
+                    }
+
+                }
             }
         }
     
@@ -1518,7 +1555,7 @@ namespace iTextSharp.text.pdf {
          * <CODE>restoreState</CODE> must be balanced.
          */
         public void SaveState() {
-            if (inText && autoControlTextBlocks) {
+            if (inText && writer.IsTagged()) {
                 EndText();
             }
             content.Append('q').Append_i(separator);
@@ -1530,6 +1567,9 @@ namespace iTextSharp.text.pdf {
          * <CODE>restoreState</CODE> must be balanced.
          */
         public void RestoreState() {
+            if (inText && writer.IsTagged()) {
+                EndText();
+            }
             content.Append('Q').Append_i(separator);
             int idx = stateList.Count - 1;
             if (idx < 0)
@@ -1544,7 +1584,7 @@ namespace iTextSharp.text.pdf {
          * @param       charSpace           a parameter
          */
         public void SetCharacterSpacing(float value) {
-            if (!inText && autoControlTextBlocks) {
+            if (!inText && writer.IsTagged()) {
                 BeginText(true);
             }
             state.charSpace = value;
@@ -1557,7 +1597,7 @@ namespace iTextSharp.text.pdf {
          * @param       wordSpace           a parameter
          */
         public void SetWordSpacing(float value) {
-            if (!inText && autoControlTextBlocks) {
+            if (!inText && writer.IsTagged()) {
                 BeginText(true);
             }
             state.wordSpace = value;
@@ -1570,7 +1610,7 @@ namespace iTextSharp.text.pdf {
          * @param       scale               a parameter
          */
         public void SetHorizontalScaling(float value) {
-            if (!inText && autoControlTextBlocks) {
+            if (!inText && writer.IsTagged()) {
                 BeginText(true);
             }
             state.scale = value;
@@ -1584,7 +1624,7 @@ namespace iTextSharp.text.pdf {
          * @param size the font size in points
          */
         public virtual void SetFontAndSize(BaseFont bf, float size) {
-            if (!inText && autoControlTextBlocks) {
+            if (!inText && writer.IsTagged()) {
                 BeginText(true);
             }
             CheckWriter();
@@ -1604,7 +1644,7 @@ namespace iTextSharp.text.pdf {
          * @param       rendering               a parameter
          */
         public void SetTextRenderingMode(int value) {
-            if (!inText && autoControlTextBlocks) {
+            if (!inText && writer.IsTagged()) {
                 BeginText(true);
             }
             content.Append(value).Append(" Tr").Append_i(separator);
@@ -1618,7 +1658,7 @@ namespace iTextSharp.text.pdf {
          * @param       rise                a parameter
          */
         public void SetTextRise(float value) {
-            if (!inText && autoControlTextBlocks) {
+            if (!inText && writer.IsTagged()) {
                 BeginText(true);
             }
             content.Append(value).Append(" Ts").Append_i(separator);
@@ -1643,16 +1683,12 @@ namespace iTextSharp.text.pdf {
          * @param text the text to write
          */
         public void ShowText(string text) {
-            if (!inText && autoControlTextBlocks) {
+            if (!inText && writer.IsTagged()) {
                 BeginText(true);
             }
-            if (writer.IsTagged())
-                BeginMarkedContentSequence(new PdfStructureElement(GetParentStructureElement(), PdfName.SPAN));
             ShowText2(text);
             UpdateTx(text, 0);
             content.Append("Tj").Append_i(separator);
-            if (writer.IsTagged())
-                EndMarkedContentSequence();
         }
         
         /**
@@ -1706,16 +1742,12 @@ namespace iTextSharp.text.pdf {
          * @param text the text to write
          */
         public void NewlineShowText(string text) {
-            if (!inText && autoControlTextBlocks) {
+            if (!inText && writer.IsTagged()) {
                 BeginText(true);
             }
-            if (writer.IsTagged())
-                BeginMarkedContentSequence(new PdfStructureElement(GetParentStructureElement(), PdfName.SPAN));
             state.yTLM -= state.leading;
             ShowText2(text);
             content.Append('\'').Append_i(separator);
-            if (writer.IsTagged())
-                EndMarkedContentSequence();
             state.tx = state.xTLM;
             UpdateTx(text, 0);
         }
@@ -1728,15 +1760,11 @@ namespace iTextSharp.text.pdf {
          * @param text the text to write
          */
         public void NewlineShowText(float wordSpacing, float charSpacing, string text) {
-            if (!inText && autoControlTextBlocks) {
+            if (!inText && writer.IsTagged()) {
                 BeginText(true);
             }
-            if (writer.IsTagged())
-                BeginMarkedContentSequence(new PdfStructureElement(GetParentStructureElement(), PdfName.SPAN));
             state.yTLM -= state.leading;
             content.Append(wordSpacing).Append(' ').Append(charSpacing);
-            if (writer.IsTagged())
-                EndMarkedContentSequence();
             ShowText2(text);
             content.Append("\"").Append_i(separator);
         
@@ -1761,7 +1789,7 @@ namespace iTextSharp.text.pdf {
          * @param       y           operand 3,2 in the matrix
          */
         public void SetTextMatrix(float a, float b, float c, float d, float x, float y) {
-            if (!inText && autoControlTextBlocks) {
+            if (!inText && writer.IsTagged()) {
                 BeginText(true);
             }
             state.xTLM = x;
@@ -1806,12 +1834,12 @@ namespace iTextSharp.text.pdf {
          * @param       y           y-coordinate of the new current point
          */
         public void MoveText(float x, float y) {
-            if (!inText && autoControlTextBlocks) {
+            if (!inText && writer.IsTagged()) {
                 BeginText(true);
             }
             state.xTLM += x;
             state.yTLM += y;
-            if (autoControlTextBlocks && state.xTLM != state.tx) {
+            if (writer.IsTagged() && state.xTLM != state.tx) {
                 SetTextMatrix(state.aTLM, state.bTLM, state.cTLM, state.dTLM, state.xTLM, state.yTLM);
             } else {
                 content.Append(x).Append(' ').Append(y).Append(" Td").Append_i(separator);
@@ -1827,13 +1855,13 @@ namespace iTextSharp.text.pdf {
          * @param       y           y-coordinate of the new current point
          */
         public void MoveTextWithLeading(float x, float y) {
-            if (!inText && autoControlTextBlocks) {
+            if (!inText && writer.IsTagged()) {
                 BeginText(true);
             }
             state.xTLM += x;
             state.yTLM += y;
             state.leading = -y;
-            if (autoControlTextBlocks && state.xTLM != state.tx) {
+            if (writer.IsTagged() && state.xTLM != state.tx) {
                 SetTextMatrix(state.aTLM, state.bTLM, state.cTLM, state.dTLM, state.xTLM, state.yTLM);
             } else {
                 content.Append(x).Append(' ').Append(y).Append(" TD").Append_i(separator);
@@ -1844,10 +1872,10 @@ namespace iTextSharp.text.pdf {
          * Moves to the start of the next line.
          */
         public void NewlineText() {
-            if (!inText && autoControlTextBlocks) {
+            if (!inText && writer.IsTagged()) {
                 BeginText(true);
             }
-            if (autoControlTextBlocks && state.xTLM != state.tx) {
+            if (writer.IsTagged() && state.xTLM != state.tx) {
                 SetTextMatrix(state.aTLM, state.bTLM, state.cTLM, state.dTLM, state.xTLM, state.yTLM);
             }
             state.yTLM -= state.leading;
@@ -1960,9 +1988,8 @@ namespace iTextSharp.text.pdf {
             if (state.charSpace != 0.0f && text.Length > 1) {
                 w += state.charSpace * (text.Length -1);
             }
-            
-            int ft = bf.FontType;
-            if (state.wordSpace != 0.0f && (ft == BaseFont.FONT_TYPE_T1 || ft == BaseFont.FONT_TYPE_TT || ft == BaseFont.FONT_TYPE_T3)) {
+
+            if (state.wordSpace != 0.0f && !bf.IsVertical()) {
                 for (int i = 0; i < (text.Length -1); i++) {
                     if (text[i] == ' ')
                         w += state.wordSpace;
@@ -1975,6 +2002,39 @@ namespace iTextSharp.text.pdf {
             return w;
         }
         
+            /**
+         * Computes the width of the given string taking in account
+         * the current values of "Character spacing", "Word Spacing"
+         * and "Horizontal Scaling".
+         * The spacing for the last character is also computed.
+         * It also takes into account kerning that can be specified within TJ operator (e.g. [(Hello) 123 (World)] TJ)
+         * @param text the string to get width of
+         * @param kerned the kerning option
+         * @param kerning the kerning option from TJ array
+         * @return the width
+         */
+        private float GetEffectiveStringWidth(String text, bool kerned, float kerning) {
+            BaseFont bf = state.fontDetails.BaseFont;
+            float w;
+            if (kerned)
+                w = bf.GetWidthPointKerned(text, state.size);
+            else
+                w = bf.GetWidthPoint(text, state.size);
+            if (state.charSpace != 0.0f && text.Length > 0) {
+                w += state.charSpace * (text.Length);
+            }
+            if (state.wordSpace != 0.0f && !bf.IsVertical()) {
+                for (int i = 0; i < text.Length; i++) {
+                    if (text[i] == ' ')
+                        w += state.wordSpace;
+                }
+            }
+            w -= kerning / 1000f * state.size;
+            if (state.scale != 100.0)
+                w = w * state.scale / 100.0f;
+            return w;
+        }
+
         /**
         * Shows text right, left or center aligned with rotation.
         * @param alignment the alignment can be ALIGN_CENTER, ALIGN_RIGHT or ALIGN_LEFT
@@ -2053,7 +2113,7 @@ namespace iTextSharp.text.pdf {
          * @param f an element of the transformation matrix
          **/
         public void ConcatCTM(float a, float b, float c, float d, float e, float f) {
-            if (inText && autoControlTextBlocks) {
+            if (inText && writer.IsTagged()) {
                 EndText();
             }
             content.Append(a).Append(' ').Append(b).Append(' ').Append(c).Append(' ');
@@ -2314,7 +2374,7 @@ namespace iTextSharp.text.pdf {
         * @param psobject the object
         */
         public void AddPSXObject(PdfPSXObject psobject) {
-            if (inText && autoControlTextBlocks) {
+            if (inText && writer.IsTagged()) {
                 EndText();
             }
             CheckWriter();
@@ -2336,11 +2396,9 @@ namespace iTextSharp.text.pdf {
          * @param f an element of the transformation matrix
          */
         public virtual void AddTemplate(PdfTemplate template, float a, float b, float c, float d, float e, float f) {
-            if (inText && autoControlTextBlocks) {
+            if (inText && writer.IsTagged()) {
                 EndText();
             }
-            if (writer.IsTagged() && allowTaggedImages)
-                BeginMarkedContentSequence(new PdfStructureElement(GetParentStructureElement(), PdfName.FIGURE));
             CheckWriter();
             CheckNoPattern(template);
             PdfName name = writer.AddDirectTemplateSimple(template, null);
@@ -2354,8 +2412,6 @@ namespace iTextSharp.text.pdf {
             content.Append(e).Append(' ');
             content.Append(f).Append(" cm ");
             content.Append(name.GetBytes()).Append(" Do Q").Append_i(separator);
-            if (writer.IsTagged() && allowTaggedImages)
-                EndMarkedContentSequence();
         }
     
         /**
@@ -2371,7 +2427,7 @@ namespace iTextSharp.text.pdf {
         }
 
         internal void AddTemplateReference(PdfIndirectReference template, PdfName name, float a, float b, float c, float d, float e, float f) {
-            if (inText && autoControlTextBlocks) {
+            if (inText && writer.IsTagged()) {
                 EndText();
             }
             CheckWriter();
@@ -2417,6 +2473,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public virtual void SetCMYKColorFill(int cyan, int magenta, int yellow, int black) {
+            SaveColor(new CMYKColor(cyan, magenta, yellow, black), false);
             content.Append((float)(cyan & 0xFF) / 0xFF);
             content.Append(' ');
             content.Append((float)(magenta & 0xFF) / 0xFF);
@@ -2444,6 +2501,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public virtual void SetCMYKColorStroke(int cyan, int magenta, int yellow, int black) {
+            SaveColor(new CMYKColor(cyan, magenta, yellow, black), true);
             content.Append((float)(cyan & 0xFF) / 0xFF);
             content.Append(' ');
             content.Append((float)(magenta & 0xFF) / 0xFF);
@@ -2472,6 +2530,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public virtual void SetRGBColorFill(int red, int green, int blue) {
+            SaveColor(new BaseColor(red, green, blue), true);
             HelperRGB((float)(red & 0xFF) / 0xFF, (float)(green & 0xFF) / 0xFF, (float)(blue & 0xFF) / 0xFF);
             content.Append(" rg").Append_i(separator);
         }
@@ -2493,6 +2552,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public virtual void SetRGBColorStroke(int red, int green, int blue) {
+            SaveColor(new BaseColor(red, green, blue), true);
             HelperRGB((float)(red & 0xFF) / 0xFF, (float)(green & 0xFF) / 0xFF, (float)(blue & 0xFF) / 0xFF);
             content.Append(" RG").Append_i(separator);
         }
@@ -2584,6 +2644,7 @@ namespace iTextSharp.text.pdf {
             PageResources prs = PageResources;
             PdfName name = state.colorDetails.ColorName;
             name = prs.AddColor(name, state.colorDetails.IndirectReference);
+            SaveColor(new SpotColor(sp, tint), true);
             content.Append(name.GetBytes()).Append(" cs ").Append(tint).Append(" scn").Append_i(separator);
         }
     
@@ -2598,6 +2659,7 @@ namespace iTextSharp.text.pdf {
             PageResources prs = PageResources;
             PdfName name = state.colorDetails.ColorName;
             name = prs.AddColor(name, state.colorDetails.IndirectReference);
+            SaveColor(new SpotColor(sp, tint), false);
             content.Append(name.GetBytes()).Append(" CS ").Append(tint).Append(" SCN").Append_i(separator);
         }
     
@@ -2614,6 +2676,7 @@ namespace iTextSharp.text.pdf {
             PageResources prs = PageResources;
             PdfName name = writer.AddSimplePattern(p);
             name = prs.AddPattern(name, p.IndirectReference);
+            SaveColor(new PatternColor(p), true);
             content.Append(PdfName.PATTERN.GetBytes()).Append(" cs ").Append(name.GetBytes()).Append(" scn").Append_i(separator);
         }
     
@@ -2674,6 +2737,7 @@ namespace iTextSharp.text.pdf {
             name = prs.AddPattern(name, p.IndirectReference);
             ColorDetails csDetail = writer.AddSimplePatternColorspace(color);
             PdfName cName = prs.AddColor(csDetail.ColorName, csDetail.IndirectReference);
+            SaveColor(new UncoloredPattern(p, color, tint), true);
             content.Append(cName.GetBytes()).Append(" cs").Append_i(separator);
             OutputColorNumbers(color, tint);
             content.Append(' ').Append(name.GetBytes()).Append(" scn").Append_i(separator);
@@ -2704,6 +2768,7 @@ namespace iTextSharp.text.pdf {
             name = prs.AddPattern(name, p.IndirectReference);
             ColorDetails csDetail = writer.AddSimplePatternColorspace(color);
             PdfName cName = prs.AddColor(csDetail.ColorName, csDetail.IndirectReference);
+            SaveColor(new UncoloredPattern(p, color, tint), false);
             content.Append(cName.GetBytes()).Append(" CS").Append_i(separator);
             OutputColorNumbers(color, tint);
             content.Append(' ').Append(name.GetBytes()).Append(" SCN").Append_i(separator);
@@ -2722,6 +2787,7 @@ namespace iTextSharp.text.pdf {
             PageResources prs = PageResources;
             PdfName name = writer.AddSimplePattern(p);
             name = prs.AddPattern(name, p.IndirectReference);
+            SaveColor(new PatternColor(p), false);
             content.Append(PdfName.PATTERN.GetBytes()).Append(" CS ").Append(name.GetBytes()).Append(" SCN").Append_i(separator);
         }
     
@@ -2755,6 +2821,7 @@ namespace iTextSharp.text.pdf {
             writer.AddSimpleShadingPattern(shading);
             PageResources prs = PageResources;
             PdfName name = prs.AddPattern(shading.PatternName, shading.PatternReference);
+            SaveColor(new ShadingColor(shading), true);
             content.Append(PdfName.PATTERN.GetBytes()).Append(" cs ").Append(name.GetBytes()).Append(" scn").Append_i(separator);
             ColorDetails details = shading.ColorDetails;
             if (details != null)
@@ -2769,6 +2836,7 @@ namespace iTextSharp.text.pdf {
             writer.AddSimpleShadingPattern(shading);
             PageResources prs = PageResources;
             PdfName name = prs.AddPattern(shading.PatternName, shading.PatternReference);
+            SaveColor(new ShadingColor(shading), false);
             content.Append(PdfName.PATTERN.GetBytes()).Append(" CS ").Append(name.GetBytes()).Append(" SCN").Append_i(separator);
             ColorDetails details = shading.ColorDetails;
             if (details != null)
@@ -2788,13 +2856,11 @@ namespace iTextSharp.text.pdf {
          * @param text array of text
          */
         public void ShowText(PdfTextArray text) {
-            if (!inText && autoControlTextBlocks) {
+            if (!inText && writer.IsTagged()) {
                 BeginText(true);
             }
             if (state.fontDetails == null)
                 throw new ArgumentNullException(MessageLocalization.GetComposedMessage("font.and.size.must.be.set.before.writing.any.text"));
-            if (writer.IsTagged())
-                BeginMarkedContentSequence(new PdfStructureElement(GetParentStructureElement(), PdfName.SPAN));
             content.Append('[');
             List<Object> arrayList = text.ArrayList;
             bool lastWasNumber = false;
@@ -2814,8 +2880,6 @@ namespace iTextSharp.text.pdf {
                 }
             }
             content.Append("]TJ").Append_i(separator);
-            if (writer.IsTagged())
-                EndMarkedContentSequence();
         }
     
         /**
@@ -3188,7 +3252,7 @@ namespace iTextSharp.text.pdf {
         }
 
         public void Transform(System.Drawing.Drawing2D.Matrix tx) {
-            if (inText && autoControlTextBlocks) {
+            if (inText && writer.IsTagged()) {
                 EndText();
             }
             float[] c = tx.Elements;
@@ -3201,7 +3265,19 @@ namespace iTextSharp.text.pdf {
         * but is in a different location, like the same paragraph crossing to another page, for example.
         * @param struc the tagging structure
         */    
-        public void BeginMarkedContentSequence(PdfStructureElement struc) {
+        public void BeginMarkedContentSequence(PdfStructureElement struc) {        
+            BeginMarkedContentSequence(struc, null);
+        }
+
+        /**
+         * Begins a marked content sequence. This sequence will be tagged with the structure <CODE>struc</CODE>.
+         * The same structure can be used several times to connect text that belongs to the same logical segment
+         * but is in a different location, like the same paragraph crossing to another page, for example.
+         * @param struc the tagging structure
+         * @param accessibleProperties properties to be written into structure element (i.e. alternate text)
+         */
+        public void BeginMarkedContentSequence(PdfStructureElement struc, Dictionary<PdfName, PdfObject> accessibleProperties) {
+
             PdfObject obj = struc.Get(PdfName.K);
             int mark = pdf.GetMarkPoint();
             if (obj != null) {
@@ -3227,6 +3303,15 @@ namespace iTextSharp.text.pdf {
             else {
                 struc.SetPageMark(writer.PageNumber - 1, mark);
                 struc.Put(PdfName.PG, writer.CurrentPage);
+            }
+            if (accessibleProperties != null) {
+                foreach (PdfName key in accessibleProperties.Keys) {
+                    PdfObject value;
+                    accessibleProperties.TryGetValue(key, out value);
+                    if (value != null) {
+                        struc.Put(key, value);
+                    }
+                }
             }
             pdf.IncMarkPoint();
             SetMcDepth(GetMcDepth() + 1);
@@ -3300,7 +3385,7 @@ namespace iTextSharp.text.pdf {
                 throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.marked.content.operators"));
             }
             if (inText) {
-                if (autoControlTextBlocks) {
+                if (writer.IsTagged()) {
                     EndText();
                 } else {
                     throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.begin.end.text.operators"));
@@ -3314,12 +3399,13 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        internal void OpenMCBlock(IElement element) {
-            if (writer.IsTagged()) {
+        internal void OpenMCBlock(IAccessibleElement element) {
+            if (writer.IsTagged() && element != null && element.Role != null) {
                 if (!GetMcElements().Contains(element)) {
                     PdfStructureElement structureElement = OpenMCBlockInt(element);
                     GetMcElements().Add(element);
-                    pdf.structElements[element] = structureElement;
+                    if (structureElement != null)
+                        pdf.structElements[element.ID] = structureElement;
                 }
             }
         }
@@ -3327,133 +3413,70 @@ namespace iTextSharp.text.pdf {
         private PdfDictionary GetParentStructureElement() {
             PdfStructureElement parent = null;
             if (GetMcElements().Count > 0 && 
-                pdf.structElements.TryGetValue(GetMcElements()[GetMcElements().Count - 1], out  parent)) {
+                pdf.structElements.TryGetValue(GetMcElements()[GetMcElements().Count - 1].ID, out  parent)) {
                 return parent;
             }
             return writer.StructureTreeRoot;
         }
-
-        private IPdfStructureElement GetParentStructureInterface() {
-            PdfStructureElement parent = null;
-            if (GetMcElements().Count > 0
-                && pdf.structElements.TryGetValue(GetMcElements()[GetMcElements().Count - 1], out parent))
-                return parent;
-            return writer.StructureTreeRoot;
-        }
-
-        private PdfStructureElement OpenMCBlockInt(IElement element) {
+        
+        private PdfStructureElement OpenMCBlockInt(IAccessibleElement element) {
             PdfStructureElement structureElement = null;
             if (writer.IsTagged()) {
-                if (element is Paragraph) {
-                    if (!pdf.structElements.TryGetValue(element, out structureElement)) {
-                        structureElement = new PdfStructureElement(GetParentStructureElement(), PdfName.P);
-                        Paragraph p = (Paragraph) element;
-
-                        // Setting non-inheritable attributes
-                        if ((p.Font != null) && (p.Font.Color != null)) {
-                            BaseColor c = p.Font.Color;
-                            float[] colors = new float[] {c.R / 255f, c.G / 255f, c.B / 255f};
-                            structureElement.Put(PdfName.COLOR, new PdfArray(colors));
-                        }
-                        float epsilon = 0.0001f;
-                        if (Math.Abs(p.SpacingBefore) > epsilon)
-                            structureElement.SetAttribute(PdfName.SPACEBEFORE, new PdfNumber(p.SpacingBefore));
-                        if (Math.Abs(p.SpacingAfter) > epsilon)
-                            structureElement.SetAttribute(PdfName.SPACEAFTER, new PdfNumber(p.SpacingAfter));
-                        if (Math.Abs(p.FirstLineIndent) > epsilon)
-                            structureElement.SetAttribute(PdfName.TEXTINDENT, new PdfNumber(p.FirstLineIndent));
-
-                        // Setting inheritable attributes
-                        IPdfStructureElement parent = GetParentStructureInterface();
-                        PdfObject obj = parent.GetAttribute(PdfName.STARTINDENT);
-                        if (obj is PdfNumber) {
-                            float startIndent = ((PdfNumber) obj).FloatValue;
-                            if (Math.Abs(startIndent - p.IndentationLeft) > epsilon)
-                                structureElement.SetAttribute(PdfName.STARTINDENT, new PdfNumber(p.IndentationLeft));
-                        } else {
-                            if (Math.Abs(p.IndentationLeft) > epsilon)
-                                structureElement.SetAttribute(PdfName.STARTINDENT, new PdfNumber(p.IndentationLeft));
-                        }
-
-                        obj = parent.GetAttribute(PdfName.ENDINDENT);
-                        if (obj is PdfNumber) {
-                            float endIndent = ((PdfNumber)obj).FloatValue;
-                            if (Math.Abs(endIndent - p.IndentationRight) > epsilon)
-                                structureElement.SetAttribute(PdfName.ENDINDENT, new PdfNumber(p.IndentationRight));
-                        } else {
-                            if (Math.Abs(p.IndentationRight) > epsilon)
-                                structureElement.SetAttribute(PdfName.ENDINDENT, new PdfNumber(p.IndentationRight));
-                        }
-
-                        PdfName align = null;
-                        switch (p.Alignment) {
-                            case Element.ALIGN_LEFT:
-                                align = PdfName.START;
-                                break;
-                            case Element.ALIGN_CENTER:
-                                align = PdfName.CENTER;
-                                break;
-                            case Element.ALIGN_RIGHT:
-                                align = PdfName.END;
-                                break;
-                            case Element.ALIGN_JUSTIFIED:
-                                align = PdfName.JUSTIFY;
-                                break;
-                        }
-                        obj = parent.GetAttribute(PdfName.TEXTALIGN);
-                        if (obj
-                        is PdfName) {
-                            PdfName textAlign = ((PdfName)obj);
-                            if (align != null && !textAlign.Equals(align))
-                                structureElement.SetAttribute(PdfName.TEXTALIGN, align);
-                        } else {
-                            if (align != null && !PdfName.START.Equals(align))
-                                structureElement.SetAttribute(PdfName.TEXTALIGN, align);
-                        }
-
+                if (element is IAccessibleElement) {
+                    pdf.structElements.TryGetValue(element.ID, out structureElement);
+                    if (structureElement == null)
+                    {
+                        structureElement = new PdfStructureElement(GetParentStructureElement(), element.Role);
+                        structureElement.WriteAttributes(element);
                     }
-                    if (inText && autoControlTextBlocks) {
+                    if (inText && writer.IsTagged())
+                    {
                         EndText();
                     }
-                    BeginMarkedContentSequence(structureElement);
+                    BeginMarkedContentSequence(structureElement, element.GetAccessibleProperties());
                 }
             }
             return structureElement;
         }
 
-        internal void CloseMCBlock(IElement element) {
-            if (writer.IsTagged()) {
+        internal void CloseMCBlock(IAccessibleElement element)
+        {
+            if (writer.IsTagged() && element != null && element.Role != null)
+            {
                 if (GetMcElements().Contains(element)) {
                     CloseMCBlockInt(element);
                     GetMcElements().Remove(element);
-                    pdf.structElements.Remove(element);
                 }
             }
         }
 
-        private void CloseMCBlockInt(IElement element) {
+        private void CloseMCBlockInt(IAccessibleElement element)
+        {
             if (writer.IsTagged()) {
-                if (element is Paragraph) {
-                    if (inText && autoControlTextBlocks)
+                if (element is IAccessibleElement)
+                {
+                    if (inText && writer.IsTagged())
                         EndText();
                     EndMarkedContentSequence();
                 }
             }
         }
 
-        internal IList<IElement> SaveMCBlocks() {
-            IList<IElement> mc = new List<IElement>();
+        internal IList<IAccessibleElement> SaveMCBlocks()
+        {
+            IList<IAccessibleElement> mc = new List<IAccessibleElement>();
             if (writer.IsTagged()) {
                 mc = GetMcElements();
                 for (int i = 0; i < mc.Count; i++) {
                     CloseMCBlockInt(mc[i]);
                 }
-                SetMcElements(new List<IElement>());
+                SetMcElements(new List<IAccessibleElement>());
             }
             return mc;
         }
 
-        internal void RestoreMCBlocks(IList<IElement> mcElements) {
+        internal void RestoreMCBlocks(IList<IAccessibleElement> mcElements)
+        {
             if (writer.IsTagged() && mcElements != null) {
                 SetMcElements(mcElements);
                 for (int i = 0; i < this.GetMcElements().Count; i++) {
@@ -3476,14 +3499,16 @@ namespace iTextSharp.text.pdf {
                 mcDepth = value;
         }
 
-        internal IList<IElement> GetMcElements() {
+        internal IList<IAccessibleElement> GetMcElements()
+        {
             if (duplicatedFrom != null)
                 return duplicatedFrom.GetMcElements();
             else
                 return mcElements;
         }
 
-        internal void SetMcElements(IList<IElement> value) {
+        internal void SetMcElements(IList<IAccessibleElement> value)
+        {
             if (duplicatedFrom != null)
                 duplicatedFrom.SetMcElements(value);
             else
@@ -3491,7 +3516,77 @@ namespace iTextSharp.text.pdf {
         }
 
         internal void UpdateTx(String text, float Tj) {
-            state.tx = state.tx + GetEffectiveStringWidth(text, false) + (-Tj / 1000f * state.size + state.charSpace + state.wordSpace) * state.scale / 100;
+            state.tx += GetEffectiveStringWidth(text, false, Tj);
+        }
+
+        private void SaveColor(BaseColor color, bool fill) {
+            if (writer.IsTagged()) {
+                if (inText) {
+                    if (fill) {
+                        state.textColorFill = color;
+                    } else {
+                        state.textColorStroke = color;
+                    }
+                } else {
+                    if (fill) {
+                        state.graphicsColorFill = color;
+                    } else {
+                        state.graphicsColorStroke = color;
+                    }
+                }
+            }
+        }
+
+        private void RestoreColor(BaseColor color, bool fill) {
+            if (writer.IsTagged()) {
+                if (color is UncoloredPattern) {
+                    UncoloredPattern c = (UncoloredPattern)color;
+                    if (fill)
+                        SetPatternFill(c.Painter, c.color, c.tint);
+                    else
+                        SetPatternStroke(c.Painter, c.color, c.tint);
+                } else {
+                    if (fill)
+                        SetColorFill(color);
+                    else
+                        SetColorStroke(color);
+                }
+            }
+        }
+
+        private void RestoreColor(){
+            if (writer.IsTagged()) {
+                if (inText) {
+                    if (!state.textColorFill.Equals(state.graphicsColorFill)) {
+                        RestoreColor(state.textColorFill, true);
+                    }
+                    if (!state.textColorStroke.Equals(state.graphicsColorStroke)) {
+                        RestoreColor(state.textColorStroke, false);
+                    }
+                } else {
+                    if (!state.textColorFill.Equals(state.graphicsColorFill)) {
+                        RestoreColor(state.graphicsColorFill, true);
+                    }
+                    if (!state.textColorStroke.Equals(state.graphicsColorStroke)) {
+                        RestoreColor(state.graphicsColorStroke, false);
+                    }
+                }
+            }
+        }
+
+        class UncoloredPattern : PatternColor {
+            protected internal BaseColor color;
+            protected internal float tint;
+
+            protected internal UncoloredPattern(PdfPatternPainter p, BaseColor color, float tint) : base(p) {
+                this.color = color;
+                this.tint = tint;
+            }
+
+            public override bool Equals(Object obj) {
+                return obj is UncoloredPattern && (((UncoloredPattern)obj).Painter).Equals(this.Painter) && (((UncoloredPattern)obj).color).Equals(this.color) && ((UncoloredPattern)obj).tint == this.tint;
+            }
+
         }
     }
 }

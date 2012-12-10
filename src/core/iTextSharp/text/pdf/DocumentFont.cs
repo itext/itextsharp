@@ -715,6 +715,13 @@ namespace iTextSharp.text.pdf {
         public override int[] GetCharBBox(int c) {
             return null;
         }
+
+        public override bool IsVertical() {
+            if (cjkMirror != null)
+                return cjkMirror.IsVertical();
+            else
+                return base.IsVertical();
+        }
         
         protected override int[] GetRawCharBBox(int c, String name) {
             return null;

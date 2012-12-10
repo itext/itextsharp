@@ -113,10 +113,31 @@ namespace iTextSharp.text.pdf.parser {
          * @since 5.0.2
          */
         public bool HasMcid(int mcid) {
-            foreach (MarkedContentInfo info in markedContentInfos) {
-                if (info.HasMcid())
-                    if (info.GetMcid() == mcid)
-                        return true;
+            return HasMcid(mcid, false);
+	    }
+
+        /**
+	     * Checks if the text belongs to a marked content sequence
+	     * with a given mcid.
+         * @param mcid a marked content id
+         * @param checkTheTopmostLevelOnly indicates whether to check the topmost level of marked content stack only
+         * @return true if the text is marked with this id
+         * @since 5.3.5
+         */
+        public bool HasMcid(int mcid, bool checkTheTopmostLevelOnly) {
+            if (checkTheTopmostLevelOnly) {
+                if (markedContentInfos is IList) {
+                    IList<MarkedContentInfo> mci = (IList<MarkedContentInfo>)markedContentInfos;
+                    // Java and C# Stack classes have different numeration direction, so top element of the stack is 
+                    // at last postion in Java and at first position in C#
+                    return mci.Count > 0 && mci[0].GetMcid() == mcid;
+                }
+            } else {
+                foreach (MarkedContentInfo info in markedContentInfos) {
+                    if (info.HasMcid())
+                        if (info.GetMcid() == mcid)
+                            return true;
+                }
             }
             return false;
         }

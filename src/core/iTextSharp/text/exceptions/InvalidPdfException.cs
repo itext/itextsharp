@@ -53,11 +53,36 @@ namespace iTextSharp.text.exceptions {
      */
     public class InvalidPdfException : IOException {
 
+        private readonly Exception cause;
+
         /**
-         * Creates an instance of a NoPdfException.
+         * Creates an instance of  with a message and no cause
          * @param	message	the reason why the document isn't a PDF document according to iText.
          */
-        public InvalidPdfException(String message) : base(message) {
+        public InvalidPdfException(String message) : this(message, null) {
+        }
+
+        /**
+	     * Creates an exception with a message and a cause
+	     * @param message	the reason why the document isn't a PDF document according to iText. 
+	     * @param cause the cause of the exception, if any
+	     */
+        public InvalidPdfException(String message, Exception cause) : base(message)
+        {
+            this.cause = cause;
+        }
+
+        /**
+         * This method is included (instead of using super(message, cause) in the constructors) to support backwards compatabilty with
+         * JDK 1.5, which did not have cause constructors for Throwable
+         * @return the cause of this exception
+         */
+        public Exception Cause
+        {
+            get
+            {
+                return cause;
+            }
         }
     }
 }

@@ -402,7 +402,7 @@ namespace iTextSharp.text.pdf {
                     float decrement = module - ((originalWidth - width) % module);
 
                     if (width < decrement) 
-                        return new PdfLine(0, originalWidth, width, alignment, true,
+                        return new PdfLine(0, originalWidth, width, alignment, false,
                                            CreateArrayOfPdfChunks(oldCurrentChar, currentChar-1), isRTL);
 
                     width -= decrement;
@@ -479,7 +479,14 @@ namespace iTextSharp.text.pdf {
             float width = 0;
             for (; startIdx <= lastIdx; ++startIdx) {
                 bool surrogate = Utilities.IsSurrogatePair(text, startIdx);
-                if (surrogate) {
+                if (detailChunks[startIdx].IsTabSpace())
+                {
+                    float module = (float)detailChunks[startIdx].GetAttribute(Chunk.TABSPACE);
+                    float decrement = module - (width % module);
+                    width += decrement;
+                }
+                else if (surrogate)
+                {
                     width += detailChunks[startIdx].GetCharWidth(Utilities.ConvertToUtf32(text, startIdx));
                     ++startIdx;
                 }
@@ -979,6 +986,27 @@ namespace iTextSharp.text.pdf {
             mirrorChars[0xFF60] = 0xFF5F; // FULLWIDTH RIGHT WHITE PARENTHESIS
             mirrorChars[0xFF62] = 0xFF63; // [BEST FIT] HALFWIDTH LEFT CORNER BRACKET
             mirrorChars[0xFF63] = 0xFF62; // [BEST FIT] HALFWIDTH RIGHT CORNER BRACKET
+        }
+
+
+        /**
+         * Method that changes a String with Arabic characters into a String in which the ligatures are made.
+         * @param s	the original String
+         * @param runDirection
+         * @param arabicOptions
+         * @return the String with the ligaturesc
+         */
+        public static String ProcessLTR(String s, int runDirection, int arabicOptions) {
+    	    BidiLine bidi = new BidiLine();
+    	    bidi.AddChunk(new PdfChunk(new Chunk(s), null));
+    	    bidi.arabicOptions = arabicOptions;
+    	    bidi.GetParagraph(runDirection);
+    	    List<PdfChunk> arr = bidi.CreateArrayOfPdfChunks(0, bidi.totalTextLength - 1);
+    	    StringBuilder sb = new StringBuilder();
+    	    foreach (PdfChunk ck in arr) {
+    		    sb.Append(ck.ToString());
+    	    }
+    	    return sb.ToString();
         }
     }
 }

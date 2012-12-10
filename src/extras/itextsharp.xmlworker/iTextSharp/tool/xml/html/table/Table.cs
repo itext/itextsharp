@@ -137,6 +137,7 @@ namespace iTextSharp.tool.xml.html.table {
                 PdfPTable table = new PdfPTable(numberOfColumns);
                 table.HeaderRows = headerRows+footerRows;
                 table.FooterRows = footerRows;
+                table.HorizontalAlignment = Element.ALIGN_LEFT;
                 TableStyleValues styleValues = SetStyleValues(tag);
                 table.TableEvent = new TableBorderEvent(styleValues);
                 SetVerticalMargin(table, tag, styleValues, ctx);

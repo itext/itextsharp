@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Text;
@@ -11,6 +12,7 @@ using iTextSharp.text.api;
 using iTextSharp.text.pdf;
 using iTextSharp.text.factories;
 using iTextSharp.text.pdf.codec;
+using iTextSharp.text.pdf.interfaces;
 
 /*
  * $Id$
@@ -64,7 +66,7 @@ namespace iTextSharp.text {
     /// </summary>
     /// <seealso cref="T:iTextSharp.text.Element"/>
     /// <seealso cref="T:iTextSharp.text.Rectangle"/>
-    public abstract class Image : Rectangle, IIndentable, ISpaceable {
+    public abstract class Image : Rectangle, IIndentable, ISpaceable, IAccessibleElement {
     
         // static membervariables (concerning the presence of borders)
     
@@ -210,6 +212,12 @@ namespace iTextSharp.text {
     
         static object serialId = 0L;
 
+        protected PdfName role = PdfName.FIGURE;
+
+        protected Dictionary<PdfName, PdfObject> accessibleProperties = null;
+
+        protected Guid id = Guid.NewGuid();
+
         /// <summary> Holds value of property dpiX. </summary>
         protected int dpiX = 0;
     
@@ -323,6 +331,10 @@ namespace iTextSharp.text {
             this.layer = image.layer;
             this.initialRotation = image.initialRotation;
             this.directReference = image.directReference;
+            this.role = image.role;
+            if (image.accessibleProperties != null)
+                this.accessibleProperties = new Dictionary<PdfName, PdfObject>(image.accessibleProperties);
+            this.id = image.id;
         }
     
         /// <summary>
@@ -1559,5 +1571,40 @@ namespace iTextSharp.text {
                 return compressionLevel;
             }
         }
+
+        public PdfObject GetAccessibleProperty(PdfName key) {
+            if (accessibleProperties != null) {
+                PdfObject value;
+                accessibleProperties.TryGetValue(key, out value);
+                return value;
+            } else
+                return null;
+        }
+
+        public void SetAccessibleProperty(PdfName key, PdfObject value) {
+            if (accessibleProperties == null)
+                accessibleProperties = new Dictionary<PdfName, PdfObject>();
+            accessibleProperties[key] = value;
+        }
+
+       
+
+        public Dictionary<PdfName, PdfObject> GetAccessibleProperties() {
+            return accessibleProperties;
+        }
+
+        public PdfName Role {
+            get { return role; }
+            set { this.role = value; }
+        }
+
+        public void SetAccessibleProperties(Dictionary<PdfName, PdfObject> accessibleProperties) {
+            this.accessibleProperties = accessibleProperties;
+        }
+
+        public Guid ID {
+            get { return id; }
+        }
+
     }
 }

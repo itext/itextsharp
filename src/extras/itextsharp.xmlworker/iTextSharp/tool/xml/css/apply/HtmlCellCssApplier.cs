@@ -135,7 +135,7 @@ namespace iTextSharp.tool.xml.css.apply {
                 height = heightCalc.GetHeight(row, psc.PageSize.Height);
             }
             if (height != null) {
-                cell.FixedHeight = height.Value;
+                cell.MinimumHeight = height.Value;
             }
 
             String colspan;
