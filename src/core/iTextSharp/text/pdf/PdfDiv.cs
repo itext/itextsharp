@@ -45,6 +45,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Drawing.Drawing2D;
 using iTextSharp.text.api;
 
 namespace iTextSharp.text.pdf {
@@ -277,10 +278,13 @@ namespace iTextSharp.text.pdf {
         }
 
         public void AddElement(IElement element) {
+            if (element is PdfPTable) {
+                ((PdfPTable)element).SplitLate = false;
+            }
             content.Add(element);
         }
 
-        public int layout(ColumnText compositeColumn, bool simulate, float llx, float lly, float urx, float ury) {
+        public int Layout(PdfContentByte canvas, bool useAscender, bool simulate, float llx, float lly, float urx, float ury) {
 
             float leftX = Math.Min(llx, urx);
             float maxY = Math.Max(lly, ury);
@@ -333,8 +337,8 @@ namespace iTextSharp.text.pdf {
                 } else {
                     translationY = 0f;
                 }
-                compositeColumn.Canvas.SaveState();
-                compositeColumn.Canvas.Transform(new System.Drawing.Drawing2D.Matrix(1f, 0, 0, 1f, (float)translationX, (float)translationY));
+                canvas.SaveState();
+                canvas.Transform(new Matrix(1f, 0, 0, 1f, translationX.Value, translationY.Value));
             }
 
             if (!simulate) {
@@ -351,7 +355,7 @@ namespace iTextSharp.text.pdf {
                     if (backgroundWidth > 0 && backgroundHeight > 0) {
                         Rectangle background = new Rectangle(leftX, maxY - backgroundHeight, leftX + backgroundWidth, maxY);
                         background.BackgroundColor = backgroundColor;
-                        compositeColumn.Canvas.Rectangle(background);
+                        canvas.Rectangle(background);
                     }
                 }
             }
@@ -377,16 +381,16 @@ namespace iTextSharp.text.pdf {
                 if (this.floatLayout == null) {
                     List<IElement> floatingElements = new List<IElement>(content);
                     if (simulate){
-                        floatLay = new FloatLayout(compositeColumn, floatingElements);
+                        floatLay = new FloatLayout(floatingElements, useAscender);
                     }
                     else{
-                        floatLay = this.floatLayout = new FloatLayout(compositeColumn, floatingElements);
+                        floatLay = this.floatLayout = new FloatLayout(floatingElements, useAscender);
                     }
                 }
                 else{
                     if (simulate){
                         List<IElement> floatingElements = new List<IElement>(this.floatLayout.content);
-                        floatLay = new FloatLayout(this.floatLayout.compositeColumn, floatingElements);
+                        floatLay = new FloatLayout(floatingElements, useAscender);
                     }
                     else
                     {
@@ -395,16 +399,16 @@ namespace iTextSharp.text.pdf {
                 }
 
                 floatLay.SetSimpleColumn(leftX, minY, rightX, yLine);
-                status = floatLay.layout(simulate);
-                yLine = floatLay.getYLine();
-                if (percentageWidth == null && contentWidth < floatLay.getFilledWidth()) {
-                    contentWidth = floatLay.getFilledWidth();
+                status = floatLay.Layout(canvas, simulate);
+                yLine = floatLay.YLine;
+                if (percentageWidth == null && contentWidth < floatLay.FilledWidth) {
+                    contentWidth = floatLay.FilledWidth;
                 }
             }
 
 
             if (!simulate && position == PdfDiv.PositionType.RELATIVE) {
-                compositeColumn.Canvas.RestoreState();
+                canvas.RestoreState();
             }
 
             yLine -= paddingBottom;

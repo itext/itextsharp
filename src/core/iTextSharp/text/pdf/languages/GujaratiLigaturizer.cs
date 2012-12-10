@@ -1,10 +1,9 @@
-using System;
-/*
- * $Id$
+﻿/*
+ * $Id: GujaratiLigaturizer.java 5561 2012-11-22 16:22:14Z blowagie $
  *
- * This file is part of the iText project.
+ * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
- * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
+ * Authors: Ram Narayan, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -28,8 +27,8 @@ using System;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -42,33 +41,45 @@ using System;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-namespace iTextSharp.text.pdf.parser {
+namespace iTextSharp.text.pdf.languages
+{
 
     /**
-     * A text render listener that filters text operations before passing them on to a deleg
-     * @since 5.0.1
+     * Implementation of the IndicLigaturizer for Gujarati.
      */
 
-    public class FilteredTextRenderListener : FilteredRenderListener, ITextExtractionStrategy {
+    public class GujaratiLigaturizer : IndicLigaturizer {
 
-        /** The deleg that will receive the text render operation if the filters all pass */
-        private ITextExtractionStrategy deleg;
+        // Gujrati constants
+        public static char GUJR_MATRA_AA = '\u0ABE';
+        public static char GUJR_MATRA_I = '\u0ABF';
+        public static char GUJR_MATRA_E = '\u0AC7';
+        public static char GUJR_MATRA_AI = '\u0AC8';
+        public static char GUJR_MATRA_HLR = '\u0AE2';
+        public static char GUJR_MATRA_HLRR = '\u0AE3';
+        public static char GUJR_LETTER_A = '\u0A85';
+        public static char GUJR_LETTER_AU = '\u0A94';
+        public static char GUJR_LETTER_KA = '\u0A95';
+        public static char GUJR_LETTER_HA = '\u0AB9';
+        public static char GUJR_HALANTA = '\u0ACD';
 
         /**
-         * Construction
-         * @param deleg the deleg {@link RenderListener} that will receive filtered text operations
-         * @param filters the Filter(s) to apply
+         * Constructor for the IndicLigaturizer for Gujarati.
          */
-        public FilteredTextRenderListener(ITextExtractionStrategy deleg, params RenderFilter[] filters) : base(deleg, filters) {
-            this.deleg = deleg;
-        }
 
-        /**
-         * This class delegates this call
-         * @see com.itextpdf.text.pdf.parser.TextExtractionStrategy#getResultantText()
-         */
-        public virtual String GetResultantText() {
-            return deleg.GetResultantText();
+        public GujaratiLigaturizer() {
+            langTable = new char[11];
+            langTable[MATRA_AA] = GUJR_MATRA_AA;
+            langTable[MATRA_I] = GUJR_MATRA_I;
+            langTable[MATRA_E] = GUJR_MATRA_E;
+            langTable[MATRA_AI] = GUJR_MATRA_AI;
+            langTable[MATRA_HLR] = GUJR_MATRA_HLR;
+            langTable[MATRA_HLRR] = GUJR_MATRA_HLRR;
+            langTable[LETTER_A] = GUJR_LETTER_A;
+            langTable[LETTER_AU] = GUJR_LETTER_AU;
+            langTable[LETTER_KA] = GUJR_LETTER_KA;
+            langTable[LETTER_HA] = GUJR_LETTER_HA;
+            langTable[HALANTA] = GUJR_HALANTA;
         }
     }
 }

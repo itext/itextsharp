@@ -61,7 +61,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param deleg the deleg {@link RenderListener} that will receive filtered text operations
          * @param filters the Filter(s) to apply
          */
-        public FilteredRenderListener(IRenderListener deleg, RenderFilter[] filters) {
+        public FilteredRenderListener(IRenderListener deleg, params RenderFilter[] filters) {
             this.deleg = deleg;
             this.filters = filters;
         }

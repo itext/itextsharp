@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections;
+using System.Text;
 using System.util;
 
 /*
@@ -287,7 +288,16 @@ namespace iTextSharp.text.pdf {
         }
 
         public override string ToString() {
-            return arrayList.ToString();
+            /*return arrayList.ToString();*/
+            StringBuilder sb = new StringBuilder();
+            sb.Append('[');
+            foreach (var pdfObject in arrayList)
+            {
+                sb.Append(pdfObject.ToString() + ", ");
+            }
+            sb.Remove(sb.Length - 2, 2);
+            sb.Append(']');
+            return sb.ToString();
         }
 
     //    public PdfObject GetPdfObject( int idx ) {

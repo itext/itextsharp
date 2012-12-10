@@ -78,7 +78,7 @@ namespace iTextSharp.text.pdf {
         }
 
         public override bool Equals(Object obj) {
-            return this == obj;
+            return obj is SpotColor && (((SpotColor)obj).spot).Equals(this.spot) && ((SpotColor)obj).tint == this.tint;
         }
         
         public override int GetHashCode() {

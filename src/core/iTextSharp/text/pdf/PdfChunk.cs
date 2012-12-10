@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.util;
 
 using iTextSharp.text;
+using iTextSharp.text.pdf.interfaces;
 
 /*
  * $Id$
@@ -148,6 +149,8 @@ namespace iTextSharp.text.pdf {
 
         /** The leading that can overrule the existing leading. */
         protected float leading = 0;
+        internal IAccessibleElement accessibleElement = null;
+
 
         // constructors
     
@@ -185,6 +188,7 @@ namespace iTextSharp.text.pdf {
                 splitCharacter = (ISplitCharacter)noStroke[Chunk.SPLITCHARACTER];
             else
                 splitCharacter = DefaultSplitCharacter.DEFAULT;
+            accessibleElement = other.accessibleElement;
         }
     
         /**
@@ -286,6 +290,7 @@ namespace iTextSharp.text.pdf {
                 splitCharacter = (ISplitCharacter)noStroke[Chunk.SPLITCHARACTER];
             else
                 splitCharacter = DefaultSplitCharacter.DEFAULT;
+            accessibleElement = chunk;
         }
     
         // methods

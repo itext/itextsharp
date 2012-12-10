@@ -276,7 +276,7 @@
     <Compile Include="iTextSharp\text\pdf\AcroFields.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\pdf\ArabicLigaturizer.cs">
+    <Compile Include="iTextSharp\text\pdf\languages\ArabicLigaturizer.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\BadPasswordException.cs">
@@ -539,6 +539,7 @@
     <Compile Include="iTextSharp\text\pdf\IHyphenationEvent.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\interfaces\IAccessibleElement.cs" />
     <Compile Include="iTextSharp\text\pdf\interfaces\IPdfAnnotations.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -590,6 +591,11 @@
     <Compile Include="iTextSharp\text\pdf\IPdfPTableEvent.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\languages\DevanagariLigaturizer.cs" />
+    <Compile Include="iTextSharp\text\pdf\languages\GujaratiLigaturizer.cs" />
+    <Compile Include="iTextSharp\text\pdf\languages\HebrewProcessor.cs" />
+    <Compile Include="iTextSharp\text\pdf\languages\ILanguageProcessor.cs" />
+    <Compile Include="iTextSharp\text\pdf\languages\IndicLigaturizer.cs" />
     <Compile Include="iTextSharp\text\pdf\LZWDecoder.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -782,6 +788,8 @@
     <Compile Include="iTextSharp\text\pdf\PdfLine.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\PdfListBody.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfListLabel.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfLiteral.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -966,6 +974,7 @@
     <Compile Include="iTextSharp\text\pdf\RandomAccessFileOrArray.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\security\ExternalBlankSignatureContainer.cs" />
     <Compile Include="iTextSharp\text\pdf\security\IExternalSignatureContainer.cs" />
     <Compile Include="iTextSharp\text\pdf\SequenceList.cs">
       <SubType>Code</SubType>
@@ -988,6 +997,7 @@
     <Compile Include="iTextSharp\text\pdf\StandardDecryption.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\TaggedPdfContext.cs" />
     <Compile Include="iTextSharp\text\pdf\TextField.cs">
       <SubType>Code</SubType>
     </Compile>

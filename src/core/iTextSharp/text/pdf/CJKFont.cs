@@ -93,7 +93,6 @@ namespace iTextSharp.text.pdf {
         private IntHashtable vMetrics;
         private IntHashtable hMetrics;
         private Dictionary<String, Object> fontDesc;
-        private bool vertical = false;
         
         private static void LoadProperties() {
             if (propertiesLoaded)

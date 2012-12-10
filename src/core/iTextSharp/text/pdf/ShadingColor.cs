@@ -63,7 +63,7 @@ namespace iTextSharp.text.pdf {
         }
 
         public override bool Equals(Object obj) {
-            return this == obj;
+            return obj is ShadingColor && (((ShadingColor)obj).shadingPattern).Equals(this.shadingPattern);
         }
         
         public override int GetHashCode() {

@@ -67,28 +67,32 @@ namespace iTextSharp.text.pdf {
         internal protected bool hasSignature;
         protected PdfSignatureAppearance sigApp;
         private LtvVerification verification;
-        
+
         /** Starts the process of adding extra content to an existing PDF
         * document.
+        * <p>
+        * The reader will be closed when this PdfStamper is closed
         * @param reader the original document. It cannot be reused
         * @param os the output stream
         * @throws DocumentException on error
         * @throws IOException on error
-        */    
+        */
         public PdfStamper(PdfReader reader, Stream os) {
             stamper = new PdfStamperImp(reader, os, '\0', false);
         }
-        
+
         /**
         * Starts the process of adding extra content to an existing PDF
         * document.
+        * <p>
+        * The reader will be closed when this PdfStamper is closed
         * @param reader the original document. It cannot be reused
         * @param os the output stream
         * @param pdfVersion the new pdf version or '\0' to keep the same version as the original
         * document
         * @throws DocumentException on error
         * @throws IOException on error
-        */    
+        */
         public PdfStamper(PdfReader reader, Stream os, char pdfVersion) {
             stamper = new PdfStamperImp(reader, os, pdfVersion, false);
         }
@@ -96,6 +100,8 @@ namespace iTextSharp.text.pdf {
         /**
         * Starts the process of adding extra content to an existing PDF
         * document, possibly as a new revision.
+        * The reader passed into the constructor will also be closed.
+        * <p>
         * @param reader the original document. It cannot be reused
         * @param os the output stream
         * @param pdfVersion the new pdf version or '\0' to keep the same version as the original

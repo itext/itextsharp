@@ -1,10 +1,9 @@
-using System;
-/*
- * $Id$
+﻿/*
+ * $Id:  $
  *
- * This file is part of the iText project.
+ * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
- * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
+ * Authors: Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -28,8 +27,8 @@ using System;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -42,33 +41,32 @@ using System;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-namespace iTextSharp.text.pdf.parser {
+
+using System;
+
+namespace iTextSharp.text.pdf.languages
+{
 
     /**
-     * A text render listener that filters text operations before passing them on to a deleg
-     * @since 5.0.1
+     * Interface that needs to be implemented by classes that process bytes
+     * representing text in specific languages. Processing involves changing
+     * order to Right to Left and/or applying ligatures.
      */
 
-    public class FilteredTextRenderListener : FilteredRenderListener, ITextExtractionStrategy {
-
-        /** The deleg that will receive the text render operation if the filters all pass */
-        private ITextExtractionStrategy deleg;
+    public interface ILanguageProcessor
+    {
 
         /**
-         * Construction
-         * @param deleg the deleg {@link RenderListener} that will receive filtered text operations
-         * @param filters the Filter(s) to apply
+         * Processes a String
+         * @param s	the original String
+         * @return the processed String
          */
-        public FilteredTextRenderListener(ITextExtractionStrategy deleg, params RenderFilter[] filters) : base(deleg, filters) {
-            this.deleg = deleg;
-        }
+        String Process(String s);
 
         /**
-         * This class delegates this call
-         * @see com.itextpdf.text.pdf.parser.TextExtractionStrategy#getResultantText()
+         * Indicates if the rundirection is right-to-left.
+         * @return true if text needs to be rendered from right to left.
          */
-        public virtual String GetResultantText() {
-            return deleg.GetResultantText();
-        }
+        bool IsRTL();
     }
 }

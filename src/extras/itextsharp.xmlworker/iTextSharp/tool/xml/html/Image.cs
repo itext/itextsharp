@@ -102,13 +102,17 @@ namespace iTextSharp.tool.xml.html {
                     throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
                 }
                 if (null != img) {
-                    img.ScaleToFitLineWhenOverflow = true;
                     String width;
                     attributes.TryGetValue(HTML.Attribute.WIDTH, out width);
                     float widthInPoints = utils.ParsePxInCmMmPcToPt(width);
                     String height;
                     attributes.TryGetValue(HTML.Attribute.HEIGHT, out height);
                     float heightInPoints = utils.ParsePxInCmMmPcToPt(height);
+                    if (width == null || height == null) {
+                        img.ScaleToFitLineWhenOverflow = true;
+                    } else {
+                        img.ScaleToFitLineWhenOverflow = false;
+                    }
                     if (widthInPoints > 0 && heightInPoints > 0) {
                         img.ScaleAbsolute(widthInPoints, heightInPoints);
                     } else if (widthInPoints > 0) {

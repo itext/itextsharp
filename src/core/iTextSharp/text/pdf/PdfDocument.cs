@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.util.collections;
+using com.itextpdf.text.pdf;
 using iTextSharp.text;
 using iTextSharp.text.api;
+using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.draw;
 using iTextSharp.text.pdf.collection;
@@ -283,11 +285,10 @@ namespace iTextSharp.text.pdf {
         /** The <CODE>PdfWriter</CODE>. */
         protected internal PdfWriter writer;
 
-        internal IDictionary<IElement, PdfStructureElement> structElements = new Dictionary<IElement, PdfStructureElement>();
 
-        //for development needs only! to be removed once tagged pdf support is complete.
-        internal bool UseSeparateCanvasesForTextAndGraphics = true;
-
+        internal Dictionary<Guid, PdfStructureElement> structElements = new Dictionary<Guid, PdfStructureElement>();
+        internal List<IAccessibleElement> elementsToOpen = new List<IAccessibleElement>();
+        internal TaggedPdfContext taggedPdfContext = new TaggedPdfContext();
         
         /**
         * Adds a <CODE>PdfWriter</CODE> to the <CODE>PdfDocument</CODE>.
@@ -460,11 +461,13 @@ namespace iTextSharp.text.pdf {
                     break;
                 }
                 case Element.PARAGRAPH: {
-                    text.OpenMCBlock(element);
                     leadingCount++;
                     // we cast the element to a paragraph
                     Paragraph paragraph = (Paragraph) element;
-                    
+                    if (IsTagged(writer))
+                    {
+                        text.OpenMCBlock(paragraph);
+                    }
                     AddSpacing(paragraph.SpacingBefore, leading, paragraph.Font);
                     
                     // we adjust the parameters of the document
@@ -517,9 +520,11 @@ namespace iTextSharp.text.pdf {
                     indentation.indentRight -= paragraph.IndentationRight;
                     CarriageReturn();
                     leadingCount--;
-                    if (writer.IsTagged())
+                    if (IsTagged(writer))
+                    {
                         FlushLines();
-                    text.CloseMCBlock(element);
+                        text.CloseMCBlock(paragraph);
+                    }
                     break;
                 }
                 case Element.SECTION:
@@ -583,6 +588,10 @@ namespace iTextSharp.text.pdf {
                 case Element.LIST: {
                     // we cast the element to a List
                     List list = (List) element;
+                    if (IsTagged(writer))
+                    {
+                        text.OpenMCBlock(list);
+                    }
                     if (list.Alignindent) {
                         list.NormalizeIndentation();
                     }
@@ -595,13 +604,24 @@ namespace iTextSharp.text.pdf {
                     indentation.listIndentLeft -= list.IndentationLeft;
                     indentation.indentRight -= list.IndentationRight;
                     CarriageReturn();
+                    if (IsTagged(writer))
+                    {
+                        FlushLines();
+                        text.CloseMCBlock(list);
+                    }
                     break;
                 }
                 case Element.LISTITEM: {
                     leadingCount++;
                     // we cast the element to a ListItem
                     ListItem listItem = (ListItem) element;
-                    
+                    PdfListBody lBody = null;
+                    if (IsTagged(writer))
+                    {
+                        lBody = new PdfListBody(listItem);
+                        text.OpenMCBlock(listItem);
+                        taggedPdfContext.lBodies[listItem] = lBody;
+                    }
                     AddSpacing(listItem.SpacingBefore, leading, listItem.Font);
                     
                     // we adjust the document
@@ -626,6 +646,12 @@ namespace iTextSharp.text.pdf {
                     indentation.listIndentLeft -= listItem.IndentationLeft;
                     indentation.indentRight -= listItem.IndentationRight;
                     leadingCount--;
+                    if (IsTagged(writer))
+                    {
+                        FlushLines();
+                        text.CloseMCBlock(lBody);
+                        text.CloseMCBlock(listItem);
+                    }
                     break;
                 }
                 case Element.RECTANGLE: {
@@ -845,14 +871,14 @@ namespace iTextSharp.text.pdf {
             }
             
             // [F12] we add tag info
-            if (writer.IsTagged())
+            if (IsTagged(writer))
                  page.Put(PdfName.STRUCTPARENTS, new PdfNumber(writer.CurrentPageNumber - 1));
 
-             if (text.Size > textEmptySize || !UseSeparateCanvasesForTextAndGraphics)
+             if (text.Size > textEmptySize || IsTagged(writer))
                 text.EndText();
             else
                 text = null;
-            IList<IList<IElement>> mcBlocks = new List<IList<IElement>>();
+            IList<IList<IAccessibleElement>> mcBlocks = new List<IList<IAccessibleElement>>();
             mcBlocks.Add(null);
             mcBlocks.Add(null);
             mcBlocks.Add(null);
@@ -860,16 +886,16 @@ namespace iTextSharp.text.pdf {
             mcBlocks[0] = writer.DirectContentUnder.SaveMCBlocks();
             if (graphics != null)
                 mcBlocks[1] = graphics.SaveMCBlocks();
-            if (UseSeparateCanvasesForTextAndGraphics && text != null)
+            if (!IsTagged(writer) && text != null)
                 mcBlocks[2] = text.SaveMCBlocks();
             mcBlocks[3] = writer.DirectContent.SaveMCBlocks();
-        	writer.Add(page, new PdfContents(writer.DirectContentUnder, graphics, UseSeparateCanvasesForTextAndGraphics ? text : null, writer.DirectContent, pageSize));
+            writer.Add(page, new PdfContents(writer.DirectContentUnder, graphics, !IsTagged(writer) ? text : null, writer.DirectContent, pageSize));
             // we initialize the new page
             InitPage();
             writer.DirectContentUnder.RestoreMCBlocks(mcBlocks[0]);
             if (graphics != null)
                 graphics.RestoreMCBlocks(mcBlocks[1]);
-            if (UseSeparateCanvasesForTextAndGraphics && text != null)
+            if (!IsTagged(writer) && text != null)
                 text.RestoreMCBlocks(mcBlocks[2]);
             writer.DirectContent.RestoreMCBlocks(mcBlocks[3]);
             return true;
@@ -1159,11 +1185,31 @@ namespace iTextSharp.text.pdf {
                 text.MoveText(moveTextX, -l.Height);
                 // is the line preceeded by a symbol?
                 if (l.ListSymbol != null) {
+                    PdfListLabel lbl = null;
+                    if (IsTagged(writer))
+                    {
+                        lbl = new PdfListLabel();
+                        graphics.OpenMCBlock(lbl);
+                    }
                     ColumnText.ShowTextAligned(graphics, Element.ALIGN_LEFT, new Phrase(l.ListSymbol), text.XTLM - l.ListIndent, text.YTLM, 0);
+                    if (lbl != null)
+                    {
+                        graphics.CloseMCBlock(lbl);
+                    }
                 }
                 
                 currentValues[0] = currentFont;
-                
+
+                if (IsTagged(writer) && l.ListItem != null)
+                {
+                    PdfListBody lBody;
+                    taggedPdfContext.lBodies.TryGetValue(l.ListItem, out lBody);
+                    if (lBody != null)
+                    {
+                        text.OpenMCBlock(lBody);
+                    }
+                }
+
                 WriteLineToContent(l, text, graphics, currentValues, writer.SpaceCharRatio);
                 
                 currentFont = (PdfFont)currentValues[0];
@@ -1253,6 +1299,9 @@ namespace iTextSharp.text.pdf {
             
             // looping over all the chunks in 1 line
             foreach (PdfChunk chunk in line) {
+                if (IsTagged(writer) && chunk.accessibleElement != null) {
+                    text.OpenMCBlock(chunk.accessibleElement);
+                }
                 BaseColor color = chunk.Color;
                 float fontSize = chunk.Font.Size;
                 float ascender = chunk.Font.Font.GetFontDescriptor(BaseFont.ASCENT, fontSize);
@@ -1430,7 +1479,8 @@ namespace iTextSharp.text.pdf {
                             text.MoveText(xMarker + lastBaseFactor + image.ScaledWidth - text.XTLM, 0);
                         }
                     }
-                    xMarker += width;
+                    if (!chunk.IsTabSpace())
+                        xMarker += width;
                     ++chunkStrokeIdx;
                 }
 
@@ -1524,7 +1574,7 @@ namespace iTextSharp.text.pdf {
                 
                 if (rise != 0)
                     text.SetTextRise(0);
-                if (color != null)
+                if (color != null && !IsTagged(writer))
                     text.ResetRGBColorFill();
                 if (tr != PdfContentByte.TEXT_RENDER_MODE_FILL)
                     text.SetTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL);
@@ -1538,6 +1588,9 @@ namespace iTextSharp.text.pdf {
                 }
                 if (chunk.IsAttribute(Chunk.CHAR_SPACING)) {
 				    text.SetCharacterSpacing(baseCharacterSpacing);
+                }
+                if (IsTagged(writer) && chunk.accessibleElement != null) {
+                    text.CloseMCBlock(chunk.accessibleElement);
                 }
             }
             if (isJustified) {
@@ -2124,14 +2177,14 @@ namespace iTextSharp.text.pdf {
                 marginTop = nextMarginTop;
                 marginBottom = nextMarginBottom;
             }
-            if (UseSeparateCanvasesForTextAndGraphics) {
+            if (!IsTagged(writer)) {
                 text = new PdfContentByte(writer);
                 text.Reset();
             } else {
                 text = graphics;
             }
             text.BeginText();
-            if (!UseSeparateCanvasesForTextAndGraphics)
+            if (IsTagged(writer))
                 textEmptySize = text.Size;
             // we move to the left/top position of the page
             text.MoveText(Left, Top);
@@ -2375,21 +2428,21 @@ namespace iTextSharp.text.pdf {
             if (floatingElements != null && floatingElements.Count > 0) {
                 List<IElement> cashedFloatingElements = floatingElements;
                 floatingElements = null;
-                FloatLayout fl = new FloatLayout(writer.DirectContent, cashedFloatingElements);
+                FloatLayout fl = new FloatLayout(cashedFloatingElements, false);
                 int loop = 0;
                 while (true) {
                     fl.SetSimpleColumn(IndentLeft, IndentBottom, IndentRight, IndentTop - currentHeight);
                     try {
-                        int status = fl.layout(false);
+                        int status = fl.Layout(writer.DirectContent, false);
                         if ((status & ColumnText.NO_MORE_TEXT) != 0) {
-                            text.MoveText(0, fl.getYLine() - IndentTop + currentHeight);
-                            currentHeight = IndentTop - fl.getYLine();
+                            text.MoveText(0, fl.YLine - IndentTop + currentHeight);
+                            currentHeight = IndentTop - fl.YLine;
                             break;
                         }
                     } catch(Exception) {
                         return;
                     }
-                    if (IndentTop - currentHeight == fl.getYLine() || PageEmpty)
+                    if (IndentTop - currentHeight == fl.YLine || PageEmpty)
                         ++loop;
                     else {
                         loop = 0;
@@ -2414,6 +2467,20 @@ namespace iTextSharp.text.pdf {
                 <= IndentTop - currentHeight - IndentBottom - margin;
         } 
        
+        private static bool IsTagged(PdfWriter writer) {
+            return (writer != null) && writer.IsTagged();
+        }
+
+        private PdfLine GetLastLine() {
+            if (lines.Count > 0)
+                return lines[lines.Count - 1];
+            else
+                return null;
+        }
+
+        /**
+         * @since 5.0.1
+         */
         public class Destination {
             public PdfAction action;
             public PdfIndirectReference reference;

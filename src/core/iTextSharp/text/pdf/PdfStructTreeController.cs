@@ -15,8 +15,8 @@ public class PdfStructTreeController {
     private PdfDictionary roleMap = null;
     private PdfDictionary sourceRoleMap = null;
     private PdfDictionary sourceClassMap = null;
-    private Dictionary<String, Boolean> openedDocuments = new Dictionary<String, Boolean>();
-    public enum returnType {BELOW,FOUND,ABOVE,NOTFOUND};
+    private Dictionary<int, object> openedDocuments = new Dictionary<int, object>();
+    public enum returnType {BELOW, FOUND, ABOVE, NOTFOUND};
     public static PdfName [] standardTypes = {PdfName.P, PdfName.H, PdfName.H1, PdfName.H2, PdfName.H3, PdfName.H4,
             PdfName.H5, PdfName.H6, PdfName.L, PdfName.LBL, PdfName.LI, PdfName.LBODY, PdfName.TABLE, PdfName.TABLEROW,
             PdfName.TH, PdfName.TD, PdfName.THEAD, PdfName.TBODY, PdfName.TFOOT, PdfName.SPAN, PdfName.QUOTE, PdfName.NOTE,
@@ -33,10 +33,6 @@ public class PdfStructTreeController {
 
     protected internal void SetReader(PdfReader reader){
         this.reader = reader;
-        fileName = reader.SafeFile.filename;
-        if (!openedDocuments.ContainsKey(fileName)) {
-            openedDocuments.Add(fileName, false);
-        }
         PdfObject obj = reader.Catalog.Get(PdfName.STRUCTTREEROOT);
         obj = GetDirectObject(obj);
         if ((obj == null) || (!obj.IsDictionary()))
@@ -59,14 +55,11 @@ public class PdfStructTreeController {
     }
 
     public void CopyStructTreeForPage(PdfNumber sourceArrayNumber, int newArrayNumber) {
-        if (!openedDocuments[fileName])
+        int documentHash = GetDocumentHash(reader);
+        if (!openedDocuments.ContainsKey(documentHash))
         {
-            PdfObject res = writer.CopyObject(writer.CopyObject(structTreeRoot.Get(PdfName.K), true, true));
-            if (!(res is PdfIndirectReference))
-                res = writer.AddToBody(res).IndirectReference;
-            structureTreeRoot.AddPageMark(newArrayNumber, (PdfIndirectReference)res);
-            AddKid(structureTreeRoot, res);
-            openedDocuments.Add(fileName, true);
+            openedDocuments.Add(documentHash, null);
+            AddKid(structureTreeRoot, writer.CopyObject(structTreeRoot.Get(PdfName.K), true, true));
         }
         if (CopyPageMarks(parentTree, sourceArrayNumber, newArrayNumber) == returnType.NOTFOUND) {
             throw new BadPdfFormatException(MessageLocalization.GetComposedMessage("structparent.not.found"));
@@ -193,26 +186,22 @@ public class PdfStructTreeController {
                 return ((PdfBoolean)value1).BooleanValue == ((PdfBoolean)value2).BooleanValue;
             }
             return false;
-        }
-        else if (value1.IsName()) {
+        } else if (value1.IsName()) {
             return value1.Equals(value2);
-        }
-        else if (value1.IsNumber()){
+        } else if (value1.IsNumber()){
             if (value1 == value2)
                 return true;
             if (value2 is PdfNumber) {
                 return ((PdfNumber)value1).DoubleValue == ((PdfNumber)value2).DoubleValue;
             }
             return false;
-        }
-        else if (value1.IsNull()){
+        } else if (value1.IsNull()){
             if (value1 == value2)
                 return true;
             if (value2 is PdfNull)
                 return true;
             return false;
-        }
-        else if (value1.IsString()){
+        } else if (value1.IsString()){
             if (value1 == value2)
                 return true;
             if (value2 is PdfString) {
@@ -333,6 +322,27 @@ public class PdfStructTreeController {
         }
         kids.Add(kid);
         parent.Put(PdfName.K, kids);
+    }
+
+    private int GetDocumentHash(PdfReader reader) {
+        PdfDictionary trailer = reader.trailer;
+        int hash = trailer.Size;
+        Dictionary<String, String> info = reader.Info;
+        PdfArray id = trailer.GetAsArray(PdfName.ID);
+        if (id != null) {
+            foreach (PdfObject idPart in id) {
+                if (idPart is PdfString) {
+                    hash = hash ^ ((PdfString)idPart).ToUnicodeString().GetHashCode();
+                }
+            }
+        }
+        foreach (String key in info.Keys) {
+            String value = info[key];
+            if (value != null) {
+                hash = hash ^ key.GetHashCode() ^ value.GetHashCode();
+            }
+        }
+        return hash;
     }
 
 }

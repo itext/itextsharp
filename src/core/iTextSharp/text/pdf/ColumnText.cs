@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.util.collections;
+using com.itextpdf.text.pdf;
 using iTextSharp.text.log;
 using iTextSharp.text.pdf.draw;
 using iTextSharp.text.error_messages;
@@ -444,8 +445,6 @@ namespace iTextSharp.text.pdf {
         }
         else if (element.Type == Element.PHRASE) {
             element = new Paragraph((Phrase)element);
-        } else if (element.Type == Element.PTABLE) {
-            element = new PdfPTable((PdfPTable)element);
         }
         if (element.Type != Element.PARAGRAPH && element.Type != Element.LIST && element.Type != Element.PTABLE && element.Type != Element.YMARK && element.Type != Element.DIV)
             throw new ArgumentException(MessageLocalization.GetComposedMessage("element.not.allowed"));
@@ -817,9 +816,15 @@ namespace iTextSharp.text.pdf {
         return  Go(simulate, null);
     }
 
-    protected int Go(bool simulate, IElement elementToGo) {
+    public int Go(bool simulate, IElement elementToGo) {
         if (composite)
             return GoComposite(simulate);
+        
+        PdfListBody lBody = null;
+        if (IsTagged(canvas) && elementToGo is ListItem) {
+            GetTaggedPdfContext(canvas).lBodies.TryGetValue((ListItem)elementToGo, out lBody);
+        }
+
         AddWaitingPhrase();
         if (bidiLine == null)
             return NO_MORE_TEXT;
@@ -842,7 +847,7 @@ namespace iTextSharp.text.pdf {
         if (canvas != null) {
             graphics = canvas;
             pdf = canvas.PdfDocument;
-            if (pdf.UseSeparateCanvasesForTextAndGraphics)
+            if (!IsTagged(canvas))
                 text = canvas.Duplicate;
             else
                 text = canvas;
@@ -866,27 +871,27 @@ namespace iTextSharp.text.pdf {
         PdfLine line;
         float x1;
         int status = 0;
-        if (!simulate && pdf.writer.IsTagged()) {
-            if (elementToGo is Paragraph) {
-                if (text != null)
-                    text.OpenMCBlock(elementToGo);
-            }
-        }
-        while(true) {
+        while (true)
+        {
             firstIndent = (lastWasNewline ? indent : followingIndent); //
-            if (rectangularMode) {
-                if (rectangularWidth <= firstIndent + rightIndent) {
+            if (rectangularMode)
+            {
+                if (rectangularWidth <= firstIndent + rightIndent)
+                {
                     status = NO_MORE_COLUMN;
                     if (bidiLine.IsEmpty())
                         status |= NO_MORE_TEXT;
                     break;
                 }
-                if (bidiLine.IsEmpty()) {
+                if (bidiLine.IsEmpty())
+                {
                     status = NO_MORE_TEXT;
                     break;
                 }
-                line = bidiLine.ProcessLine(leftX, rectangularWidth - firstIndent - rightIndent, alignment, localRunDirection, arabicOptions, minY, yLine, descender);
-                if (line == null) {
+                line = bidiLine.ProcessLine(leftX, rectangularWidth - firstIndent - rightIndent, alignment,
+                                            localRunDirection, arabicOptions, minY, yLine, descender);
+                if (line == null)
+                {
                     status = NO_MORE_TEXT;
                     break;
                 }
@@ -895,13 +900,15 @@ namespace iTextSharp.text.pdf {
                     currentLeading = line.Ascender;
                 else
                     currentLeading = Math.Max(maxSize[0], maxSize[1] - descender);
-                if (yLine > maxY || yLine - currentLeading < minY ) {
+                if (yLine > maxY || yLine - currentLeading < minY)
+                {
                     status = NO_MORE_COLUMN;
                     bidiLine.Restore();
                     break;
                 }
                 yLine -= currentLeading;
-                if (!simulate && !dirty) {
+                if (!simulate && !dirty)
+                {
                     text.BeginText();
                     dirty = true;
                 }
@@ -910,17 +917,20 @@ namespace iTextSharp.text.pdf {
                 UpdateFilledWidth(rectangularWidth - line.WidthLeft);
                 x1 = leftX;
             }
-            else {
+            else
+            {
                 float yTemp = yLine - currentLeading;
                 float[] xx = FindLimitsTwoLines();
-                if (xx == null) {
+                if (xx == null)
+                {
                     status = NO_MORE_COLUMN;
                     if (bidiLine.IsEmpty())
                         status |= NO_MORE_TEXT;
                     yLine = yTemp;
                     break;
                 }
-                if (bidiLine.IsEmpty()) {
+                if (bidiLine.IsEmpty())
+                {
                     status = NO_MORE_TEXT;
                     yLine = yTemp;
                     break;
@@ -929,36 +939,57 @@ namespace iTextSharp.text.pdf {
                 float x2 = Math.Min(xx[1], xx[3]);
                 if (x2 - x1 <= firstIndent + rightIndent)
                     continue;
-                if (!simulate && !dirty) {
+                if (!simulate && !dirty)
+                {
                     text.BeginText();
                     dirty = true;
                 }
-                line = bidiLine.ProcessLine(x1, x2 - x1 - firstIndent - rightIndent, alignment, localRunDirection, arabicOptions, minY, yLine, descender);
-                if (line == null) {
+                line = bidiLine.ProcessLine(x1, x2 - x1 - firstIndent - rightIndent, alignment, localRunDirection,
+                                            arabicOptions, minY, yLine, descender);
+                if (line == null)
+                {
                     status = NO_MORE_TEXT;
                     yLine = yTemp;
                     break;
                 }
             }
-            if (!simulate) {
+            if (IsTagged(canvas) && elementToGo is ListItem)
+            {
+                if (!float.IsNaN(firstLineY) && !firstLineYDone)
+                {
+                    if (!simulate)
+                    {
+                        PdfListLabel lbl = new PdfListLabel();
+                        canvas.OpenMCBlock(lbl);
+                        ColumnText.ShowTextAligned(canvas, Element.ALIGN_LEFT,
+                                                   new Phrase(((ListItem) elementToGo).ListSymbol),
+                                                   leftX + (lBody != null ? lBody.indentation : 0), firstLineY, 0);
+                        canvas.CloseMCBlock(lbl);
+                    }
+                    firstLineYDone = true;
+                }
+            }
+            if (!simulate)
+            {
+                if (lBody != null)
+                {
+                    canvas.OpenMCBlock(lBody);
+                    lBody = null;
+                }
                 currentValues[0] = currentFont;
                 text.SetTextMatrix(x1 + (line.RTL ? rightIndent : firstIndent) + line.IndentLeft, yLine);
                 lastX = pdf.WriteLineToContent(line, text, graphics, currentValues, ratio);
-                currentFont = (PdfFont)currentValues[0];
+                currentFont = (PdfFont) currentValues[0];
             }
             lastWasNewline = repeatFirstLineIndent && line.NewlineSplit;
             yLine -= line.NewlineSplit ? extraParagraphSpace : 0;
             ++linesWritten;
             descender = line.Descender;
         }
+
         if (dirty) {
             text.EndText();
-            if (!simulate && pdf.writer.IsTagged()) {
-                if (elementToGo is Paragraph) {
-                    if (text != null && (status & NO_MORE_COLUMN) == 0)
-                        text.CloseMCBlock(elementToGo);
-                }
-            }
+            
             if (canvas != text)
                 canvas.Add(text);
         }
@@ -1214,6 +1245,9 @@ namespace iTextSharp.text.pdf {
 	}
 
     protected int GoComposite(bool simulate) {
+        PdfDocument pdf = null;
+        if (canvas != null)
+            pdf = canvas.pdf;
         if (!rectangularMode)
             throw new DocumentException(MessageLocalization.GetComposedMessage("irregular.columns.are.not.supported.in.composite.mode"));
         linesWritten = 0;
@@ -1256,7 +1290,16 @@ namespace iTextSharp.text.pdf {
                     compositeColumn.minY = minY;
                     compositeColumn.maxY = maxY;
                     bool keepCandidate = (para.KeepTogether && createHere && !(firstPass && adjustFirstLine));
-                    status = compositeColumn.Go(simulate || (keepCandidate && keep == 0), element);
+                    bool s = simulate || keepCandidate && keep == 0;
+                    if (IsTagged(canvas) && !s)
+                    {
+                        canvas.OpenMCBlock(para);
+                    }
+                    status = compositeColumn.Go(s);
+                    if (IsTagged(canvas) && !s)
+                    {
+                        canvas.CloseMCBlock(para);
+                    }
                     lastX = compositeColumn.LastX;
                     UpdateFilledWidth(compositeColumn.filledWidth);
                     if ((status & NO_MORE_TEXT) == 0 && keepCandidate) {
@@ -1357,7 +1400,28 @@ namespace iTextSharp.text.pdf {
                     compositeColumn.minY = minY;
                     compositeColumn.maxY = maxY;
                     bool keepCandidate = (item.KeepTogether && createHere && !(firstPass && adjustFirstLine));
-                    status = compositeColumn.Go(simulate || (keepCandidate && keep == 0));
+                    PdfListBody lBody = null;
+                    bool s = simulate || keepCandidate && keep == 0;
+                    if (IsTagged(canvas) && !s)
+                    {
+                        GetTaggedPdfContext(canvas).lBodies.TryGetValue(item, out lBody);
+                        if (lBody == null)
+                        {
+                            lBody = new PdfListBody(item, listIndentation);
+                            GetTaggedPdfContext(canvas).lBodies.Add(item, lBody);
+                        }
+                        if (list.GetFirstItem() == item || (compositeColumn != null && compositeColumn.bidiLine != null))
+                            canvas.OpenMCBlock(list);
+                        canvas.OpenMCBlock(item);
+                    }
+                    status = compositeColumn.Go(simulate || keepCandidate && keep == 0, item);
+                    if (IsTagged(canvas) && !s)
+                    {
+                        canvas.CloseMCBlock(lBody);
+                        canvas.CloseMCBlock(item);
+                        if ((list.GetLastItem() == item && (status & NO_MORE_TEXT) != 0) || (status & NO_MORE_COLUMN) != 0)
+                            canvas.CloseMCBlock(list);
+                    }
                     lastX = compositeColumn.LastX;
                     UpdateFilledWidth(compositeColumn.filledWidth);
                     if ((status & NO_MORE_TEXT) == 0 && keepCandidate) {
@@ -1377,10 +1441,14 @@ namespace iTextSharp.text.pdf {
                 linesWritten += compositeColumn.linesWritten;
                 descender = compositeColumn.descender;
                 currentLeading = compositeColumn.currentLeading;
-                if (!float.IsNaN(compositeColumn.firstLineY) && !compositeColumn.firstLineYDone) {
-                    if (!simulate)
-                        ShowTextAligned(canvas, Element.ALIGN_LEFT, new Phrase(item.ListSymbol), compositeColumn.leftX + listIndentation, compositeColumn.firstLineY, 0);
-                    compositeColumn.firstLineYDone = true;
+                if (!IsTagged(canvas)) {
+                    if (!float.IsNaN(compositeColumn.firstLineY) && !compositeColumn.firstLineYDone) {
+                        if (!simulate) {
+                            ShowTextAligned(canvas, Element.ALIGN_LEFT, new Phrase(item.ListSymbol),
+                                            compositeColumn.leftX + listIndentation, compositeColumn.firstLineY, 0);
+                        }
+                        compositeColumn.firstLineYDone = true;
+                    }
                 }
                 if ((status & NO_MORE_TEXT) != 0) {
                     compositeColumn = null;
@@ -1598,9 +1666,30 @@ namespace iTextSharp.text.pdf {
                     
                     // now we render the rows of the new table
                     if (canvases != null)
+                    {
+                        if (IsTagged(canvases[PdfPTable.TEXTCANVAS]))
+                        {
+                            canvases[PdfPTable.TEXTCANVAS].OpenMCBlock(table);
+                        }
                         nt.WriteSelectedRows(0, -1, 0, -1, x1, yLineWrite, canvases, false);
+                        if (IsTagged(canvases[PdfPTable.TEXTCANVAS]))
+                        {
+                            canvases[PdfPTable.TEXTCANVAS].CloseMCBlock(table);
+                        }
+                    }
                     else
+                    {
+                        if (IsTagged(canvas))
+                        {
+                            canvas.OpenMCBlock(table);
+                        }
                         nt.WriteSelectedRows(0, -1, 0, -1, x1, yLineWrite, canvas, false);
+                        if (IsTagged(canvas))
+                        {
+                            canvas.CloseMCBlock(table);
+                        }
+                    }
+
                     // if the row was split, we copy the content of the last row
                     // that was consumed into the first row shown on the next page
                     if (splittedRow == k && k < table.Size) {
@@ -1665,23 +1754,13 @@ namespace iTextSharp.text.pdf {
                     element = compositeElements.Count > 0 ? compositeElements[0] : null;
                 } while (element != null && element.Type == Element.DIV);
 
-                compositeColumn = new ColumnText(canvas);
-                compositeColumn.UseAscender = (firstPass || descender == 0) && adjustFirstLine ? useAscender : false;
-                //compositeColumn.setAlignment(div.getTextAlignment());
-                //compositeColumn.setIndent(para.getIndentationLeft() + para.getFirstLineIndent());
-                compositeColumn.RunDirection = runDirection;
-                compositeColumn.ArabicOptions = arabicOptions;
-                compositeColumn.SpaceCharRatio = spaceCharRatio;
-
-
-                FloatLayout fl = new FloatLayout(compositeColumn, floatingElements);
+                FloatLayout fl = new FloatLayout(floatingElements, useAscender);
                 fl.SetSimpleColumn(leftX, minY, rightX, yLine);
-                int status = fl.layout(simulate);
+                int status = fl.Layout(canvas, simulate);
 
                 //firstPass = false;
-                yLine = fl.getYLine();
+                yLine = fl.YLine;
                 descender = 0;
-                compositeColumn = null;
                 if ((status & NO_MORE_TEXT) == 0) {
                     foreach (IElement floatingElement in floatingElements) {
                         compositeElements.Add(floatingElement);
@@ -1803,6 +1882,18 @@ namespace iTextSharp.text.pdf {
         get {
             return adjustFirstLine;
         }
+    }
+
+        
+    private static bool IsTagged(PdfContentByte canvas) {
+        return (canvas != null) && (canvas.pdf != null) && (canvas.writer != null) && canvas.writer.IsTagged();
+    }
+
+    protected TaggedPdfContext GetTaggedPdfContext(PdfContentByte canvas) {
+        if (canvas != null && canvas.pdf != null)
+            return canvas.pdf.taggedPdfContext;
+        else
+            return null;
     }
 }
 }

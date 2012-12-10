@@ -1,10 +1,9 @@
-using System;
-/*
- * $Id$
+﻿/*
+ * $Id: DevanagariLigaturizer.java 5561 2012-11-22 16:22:14Z blowagie $
  *
- * This file is part of the iText project.
+ * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
- * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
+ * Authors: Ram Narayan, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -28,8 +27,8 @@ using System;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -42,33 +41,49 @@ using System;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-namespace iTextSharp.text.pdf.parser {
 
-    /**
-     * A text render listener that filters text operations before passing them on to a deleg
-     * @since 5.0.1
-     */
+using iTextSharp.text.pdf.languages;
 
-    public class FilteredTextRenderListener : FilteredRenderListener, ITextExtractionStrategy {
+namespace com.itextpdf.text.pdf.languages
+{
 
-        /** The deleg that will receive the text render operation if the filters all pass */
-        private ITextExtractionStrategy deleg;
+/**
+ * Implementation of the IndicLigaturizer for Devanagari.
+ */
+
+    public class DevanagariLigaturizer : IndicLigaturizer
+    {
+
+        // Devanagari characters
+        public const char DEVA_MATRA_AA = '\u093E';
+        public const char DEVA_MATRA_I = '\u093F';
+        public const char DEVA_MATRA_E = '\u0947';
+        public const char DEVA_MATRA_AI = '\u0948';
+        public const char DEVA_MATRA_HLR = '\u0962';
+        public const char DEVA_MATRA_HLRR = '\u0963';
+        public const char DEVA_LETTER_A = '\u0905';
+        public const char DEVA_LETTER_AU = '\u0914';
+        public const char DEVA_LETTER_KA = '\u0915';
+        public const char DEVA_LETTER_HA = '\u0939';
+        public const char DEVA_HALANTA = '\u094D';
 
         /**
-         * Construction
-         * @param deleg the deleg {@link RenderListener} that will receive filtered text operations
-         * @param filters the Filter(s) to apply
-         */
-        public FilteredTextRenderListener(ITextExtractionStrategy deleg, params RenderFilter[] filters) : base(deleg, filters) {
-            this.deleg = deleg;
-        }
+        * Constructor for the IndicLigaturizer for Devanagari.
+        */
 
-        /**
-         * This class delegates this call
-         * @see com.itextpdf.text.pdf.parser.TextExtractionStrategy#getResultantText()
-         */
-        public virtual String GetResultantText() {
-            return deleg.GetResultantText();
+        public DevanagariLigaturizer() {
+            langTable = new char[11];
+            langTable[MATRA_AA] = DEVA_MATRA_AA;
+            langTable[MATRA_I] = DEVA_MATRA_I;
+            langTable[MATRA_E] = DEVA_MATRA_E;
+            langTable[MATRA_AI] = DEVA_MATRA_AI;
+            langTable[MATRA_HLR] = DEVA_MATRA_HLR;
+            langTable[MATRA_HLRR] = DEVA_MATRA_HLRR;
+            langTable[LETTER_A] = DEVA_LETTER_A;
+            langTable[LETTER_AU] = DEVA_LETTER_AU;
+            langTable[LETTER_KA] = DEVA_LETTER_KA;
+            langTable[LETTER_HA] = DEVA_LETTER_HA;
+            langTable[HALANTA] = DEVA_HALANTA;
         }
     }
 }

@@ -1680,6 +1680,11 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.6
          */
         public static readonly PdfName TD = new PdfName("TD");
+        /**
+         * A name
+         * @since 5.3.5
+         */
+        public static PdfName TR = new PdfName("TR");
         /** A name */
         public static readonly PdfName TEXT = new PdfName("Text");
         /**

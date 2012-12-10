@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using iTextSharp.text.pdf;
@@ -58,9 +59,9 @@ namespace iTextSharp.text.pdf.parser {
     public class TaggedPdfReaderTool {
 
         /** The reader obj from which the content streams are read. */
-        PdfReader reader;
+        internal protected PdfReader reader;
         /** The writer obj to which the XML will be written */
-        StreamWriter outp;
+        internal protected StreamWriter outp;
 
         /**
          * Parses a string with structured content.
@@ -131,6 +132,17 @@ namespace iTextSharp.text.pdf.parser {
             }
         }
 
+            /**
+         * If the child of a structured element is a dictionary, we inspect the
+         * child; we may also draw a tag.
+         *
+         * @param k
+         *            the child dictionary to inspect
+         */
+        public virtual void InspectChildDictionary(PdfDictionary k){
+            InspectChildDictionary(k, false);
+        }
+
         /**
          * If the child of a structured element is a dictionary, we inspect the
          * child; we may also draw a tag.
@@ -138,7 +150,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param k
          *            the child dictionary to inspect
          */
-        public void InspectChildDictionary(PdfDictionary k) {
+        public void InspectChildDictionary(PdfDictionary k, bool inspectAttributes) {
             if (k == null)
                 return;
             PdfName s = k.GetAsName(PdfName.S);
@@ -147,6 +159,21 @@ namespace iTextSharp.text.pdf.parser {
 			    String tag = FixTagName(tagN);
                 outp.Write("<");
                 outp.Write(tag);
+                if (inspectAttributes) {
+                    PdfDictionary a = k.GetAsDict(PdfName.A);
+                    if (a != null) {
+                        Dictionary<PdfName, PdfObject>.KeyCollection keys = a.Keys;
+                        foreach (PdfName key in keys) {
+                            outp.Write(' ');
+                            PdfObject value = a.Get(key);
+                            value = PdfReader.GetPdfObject(value);
+                            outp.Write(XmlName(key));
+                            outp.Write("=\"");
+                            outp.Write(value.ToString());
+                            outp.Write("\"");
+                        }
+                    }
+                }
                 outp.Write(">");
                 PdfDictionary dict = k.GetAsDict(PdfName.PG);
                 if (dict != null)
@@ -158,6 +185,16 @@ namespace iTextSharp.text.pdf.parser {
             } else
                 InspectChild(k.GetDirectObject(PdfName.K));
         }
+
+        protected String XmlName(PdfName name)
+        {
+            String oldName = name.ToString();
+            String xmlName = oldName.Remove(oldName.IndexOf("/"), 1);
+            xmlName = (xmlName.ToLower()[0])
+                       + xmlName.Substring(1);
+            return xmlName;
+        }
+
 
         private static String FixTagName(String tag) {
             StringBuilder sb = new StringBuilder();
@@ -211,7 +248,7 @@ namespace iTextSharp.text.pdf.parser {
          *            a page dictionary
          * @throws IOException
          */
-        public void ParseTag(String tag, PdfObject obj, PdfDictionary page) {
+        public virtual void ParseTag(String tag, PdfObject obj, PdfDictionary page) {
             // if the identifier is a number, we can extract the content right away
             if (obj is PdfNumber) {
                 PdfNumber mcid = (PdfNumber) obj;

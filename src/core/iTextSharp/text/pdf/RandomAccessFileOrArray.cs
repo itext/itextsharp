@@ -49,10 +49,16 @@ using iTextSharp.text.error_messages;
  */
 
 namespace iTextSharp.text.pdf {
-    /** An implementation of a RandomAccessFile for input only
-    * that accepts a file or a byte array as data source.
-    *
-    * @author Paulo Soares
+    /** Intended to be layered on top of a low level RandomAccessSource object.  Provides
+    * functionality useful during parsing:
+    * <ul>
+    * 	<li>tracks current position in the file</li>
+    * 	<li>allows single byte pushback</li>
+    * 	<li>allows reading of multi-byte data structures (int, long, String) for both Big and Little Endian representations</li>
+    * 	<li>allows creation of independent 'views' of the underlying data source</li>
+    * </ul> 
+    * 
+    * @author Paulo Soares, Kevin Day
     */
     public class RandomAccessFileOrArray {
         

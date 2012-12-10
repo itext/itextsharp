@@ -1,10 +1,9 @@
-using System;
-/*
- * $Id$
+﻿/*
+ * $Id:  $
  *
- * This file is part of the iText project.
+ * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
- * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
+ * Authors: Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -28,8 +27,8 @@ using System;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -42,33 +41,36 @@ using System;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-namespace iTextSharp.text.pdf.parser {
 
-    /**
-     * A text render listener that filters text operations before passing them on to a deleg
-     * @since 5.0.1
-     */
+using System;
+using iTextSharp.text.pdf;
 
-    public class FilteredTextRenderListener : FilteredRenderListener, ITextExtractionStrategy {
+namespace iTextSharp.text.pdf.languages {
 
-        /** The deleg that will receive the text render operation if the filters all pass */
-        private ITextExtractionStrategy deleg;
+    public class HebrewProcessor : ILanguageProcessor {
 
-        /**
-         * Construction
-         * @param deleg the deleg {@link RenderListener} that will receive filtered text operations
-         * @param filters the Filter(s) to apply
-         */
-        public FilteredTextRenderListener(ITextExtractionStrategy deleg, params RenderFilter[] filters) : base(deleg, filters) {
-            this.deleg = deleg;
+        protected int runDirection = PdfWriter.RUN_DIRECTION_RTL;
+
+        public HebrewProcessor() {
+        }
+
+        public HebrewProcessor(int runDirection) {
+            this.runDirection = runDirection;
+        }
+
+        public String Process(String s) {
+            return BidiLine.ProcessLTR(s, runDirection, 0);
         }
 
         /**
-         * This class delegates this call
-         * @see com.itextpdf.text.pdf.parser.TextExtractionStrategy#getResultantText()
+         * Hebrew is written from right to left.
+         * @return true
+         * @see com.itextpdf.text.pdf.languages.LanguageProcessor#isRTL()
          */
-        public virtual String GetResultantText() {
-            return deleg.GetResultantText();
+
+        public bool IsRTL() {
+            return true;
         }
+
     }
 }

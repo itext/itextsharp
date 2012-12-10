@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.util;
 using iTextSharp.text.api;
 using iTextSharp.text.factories;
+using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.interfaces;
 
 /*
  * $Id$
@@ -94,7 +96,7 @@ namespace iTextSharp.text {
     /// </example>
     /// <seealso cref="T:iTextSharp.text.Element"/>
     /// <seealso cref="T:iTextSharp.text.ListItem"/>
-    public class List : ITextElementArray, IIndentable {
+    public class List : ITextElementArray, IIndentable, IAccessibleElement {
     
         // membervariables
         /** a possible value for the numbered parameter */
@@ -149,11 +151,14 @@ namespace iTextSharp.text {
         /// <summary> The indentation of the listitems. </summary>
         protected float symbolIndent = 0;
 
+        protected PdfName role = PdfName.L;
+        protected Guid id = Guid.NewGuid();
+
         // constructors
-    
-    /**
-    * Constructs a <CODE>List</CODE>.
-    */
+        
+        /**
+        * Constructs a <CODE>List</CODE>.
+        */
         public List() : this(false, false) {
         }
         
@@ -166,20 +171,20 @@ namespace iTextSharp.text {
             this.symbolIndent = symbolIndent;
         }
 
-    /**
-    * Constructs a <CODE>List</CODE>.
-    *
-    * @param    numbered        a bool
-    */
+        /**
+        * Constructs a <CODE>List</CODE>.
+        *
+        * @param    numbered        a bool
+        */
         public List(bool numbered) : this(numbered, false) {
         }
             
-    /**
-    * Constructs a <CODE>List</CODE>.
-    *
-    * @param    numbered        a bool
-    * @param lettered has the list to be 'numbered' with letters
-    */
+        /**
+        * Constructs a <CODE>List</CODE>.
+        *
+        * @param    numbered        a bool
+        * @param lettered has the list to be 'numbered' with letters
+        */
         public List(bool numbered, bool lettered) {
             this.numbered = numbered;
             this.lettered = lettered;
@@ -587,5 +592,27 @@ namespace iTextSharp.text {
             }
             return null;
         }
+        
+        public PdfObject GetAccessibleProperty(PdfName key) {
+            return null;
+        }
+
+        public void SetAccessibleProperty(PdfName key, PdfObject value) {
+        }
+
+        public Dictionary<PdfName, PdfObject> GetAccessibleProperties() {
+            return null;
+        }
+
+        public PdfName Role
+        {
+            get { return role; }
+            set { this.role = value; }
+        }
+
+        public Guid ID {
+            get { return id; }
+        }
+
     }
 }

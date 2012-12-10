@@ -8,6 +8,7 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.html;
 using iTextSharp.text.factories;
 using iTextSharp.text.pdf.draw;
+using iTextSharp.text.pdf.interfaces;
 
 /*
  * $Id$
@@ -70,7 +71,7 @@ namespace iTextSharp.text {
     /// document.Add(chunk);
     /// </code>
     /// </example>
-    public class Chunk : IElement {
+    public class Chunk : IElement, IAccessibleElement {
 
         // public static membervariables
 
@@ -98,6 +99,11 @@ namespace iTextSharp.text {
         ///<summary> Contains some of the attributes for this Chunk. </summary>
         protected Dictionary<string,object> attributes = null;
 
+        protected PdfName role = null;
+
+        protected Dictionary<PdfName, PdfObject> accessibleProperties = null;
+        protected Guid id = Guid.NewGuid();
+
         // constructors
 
         /// <summary>
@@ -108,7 +114,8 @@ namespace iTextSharp.text {
         /// </overloads>
 	    public Chunk() {
 		    this.content = new StringBuilder();
-		    this.font = new Font();
+            this.font = new Font();
+            this.role = PdfName.SPAN;
 	    }
 
         /**
@@ -125,6 +132,12 @@ namespace iTextSharp.text {
             if (ck.attributes != null) {
                 attributes = new Dictionary<String,object>(ck.attributes);
             }
+            role = ck.role;
+            if (ck.accessibleProperties != null)
+            {
+                accessibleProperties = new Dictionary<PdfName, PdfObject>(ck.accessibleProperties);
+            }
+            id = ck.id;
         }
         
         /// <summary>
@@ -135,6 +148,7 @@ namespace iTextSharp.text {
         public Chunk(string content, Font font) {
             this.content = new StringBuilder(content);
             this.font = font;
+            this.role = PdfName.SPAN;
         }
 
         /// <summary>
@@ -153,6 +167,7 @@ namespace iTextSharp.text {
             this.content = new StringBuilder();
             this.content.Append(c);
             this.font = font;
+            this.role = PdfName.SPAN;
         }
             
         /**
@@ -173,6 +188,7 @@ namespace iTextSharp.text {
             Image copyImage = Image.GetInstance(image);
             copyImage.SetAbsolutePosition(float.NaN, float.NaN);
             SetAttribute(IMAGE, new Object[]{copyImage, offsetX, offsetY, false});
+            this.role = null;
         }
 
         /**
@@ -199,6 +215,7 @@ namespace iTextSharp.text {
         */
         public Chunk(IDrawInterface separator, bool vertical) : this(OBJECT_REPLACEMENT_CHARACTER, new Font()) {
             SetAttribute(SEPARATOR, new Object[] {separator, vertical});
+            this.role = null;
         }
 
         /**
@@ -229,7 +246,8 @@ namespace iTextSharp.text {
             if (tabPosition < 0) {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("a.tab.position.may.not.be.lower.than.0.yours.is.1", tabPosition));
             }
-            SetAttribute(TAB, new Object[] {separator, tabPosition, newline, 0});
+            SetAttribute(TAB, new Object[] { separator, tabPosition, newline, 0 });
+            this.role = null;
         }
 
         /// <summary>
@@ -241,6 +259,7 @@ namespace iTextSharp.text {
         /// <param name="changeLeading">true if the leading has to be adapted to the image</param>
         public Chunk(Image image, float offsetX, float offsetY, bool changeLeading) : this(OBJECT_REPLACEMENT_CHARACTER, new Font()) {
             SetAttribute(IMAGE, new Object[]{image, offsetX, offsetY, changeLeading});
+            this.role = null;
         }
 
         // implementation of the Element-methods
@@ -764,11 +783,11 @@ namespace iTextSharp.text {
         
         public const String WHITESPACE = "WHITESPACE";
 
-        public static Chunk createWhitespace(String content) {
-            return createWhitespace(content, false);
+        public static Chunk CreateWhitespace(String content) {
+            return CreateWhitespace(content, false);
         }
 
-        public static Chunk createWhitespace(String content, bool preserve) {
+        public static Chunk CreateWhitespace(String content, bool preserve) {
             Chunk whitespace = null;
             if (!preserve) {
                 whitespace = new Chunk(' ');
@@ -780,26 +799,84 @@ namespace iTextSharp.text {
             return whitespace;
         }
 
-        public bool isWhitespace() {
+        public bool IsWhitespace() {
             return attributes != null && attributes.ContainsKey(WHITESPACE);
         }
 
         public const String TABSPACE = "TABSPACE";
 
-        public static Chunk createTabspace() {
-            return createTabspace(60);
+        public static Chunk CreateTabspace() {
+            return CreateTabspace(60);
         }
 
-        public static Chunk createTabspace(float spacing)
+        public static Chunk CreateTabspace(float spacing)
         {
             Chunk tabspace = new Chunk(" ");
             tabspace.SetAttribute(TABSPACE, spacing);
             return tabspace;
         }
 
-        public bool isTabspace()
+        public bool IsTabspace()
         {
             return attributes != null && attributes.ContainsKey(TABSPACE);
         }
+        
+        public PdfObject GetAccessibleProperty(PdfName key) {
+            if (GetImage() != null) {
+                return GetImage().GetAccessibleProperty(key);
+            } else if (accessibleProperties != null) {
+                PdfObject value;
+                accessibleProperties.TryGetValue(key, out value);
+                return value;
+            }
+            else
+                return null;
+        }
+
+        public void SetAccessibleProperty(PdfName key, PdfObject value) {
+            if (GetImage() != null) {
+                GetImage().SetAccessibleProperty(key, value);
+            } else {
+                if (accessibleProperties == null)
+                    accessibleProperties = new Dictionary<PdfName, PdfObject>();
+                accessibleProperties[key] = value;
+            }
+        }
+
+        public Dictionary<PdfName, PdfObject> GetAccessibleProperties() {
+            if (GetImage() != null)
+                return GetImage().GetAccessibleProperties();
+            else
+                return accessibleProperties;
+        }
+
+        public PdfName Role{
+            get
+            {
+                if (GetImage() != null)
+                    return GetImage().Role;
+                else
+                    return role;
+            }
+            set
+            {
+                if (GetImage() != null)
+                    GetImage().Role = value;
+                else
+                    role = value;
+            }
+        }
+
+        public void SetAccessibleProperties(Dictionary<PdfName, PdfObject> accessibleProperties) {
+            if (GetImage() != null)
+                GetImage().SetAccessibleProperties(accessibleProperties);
+            else
+                this.accessibleProperties = accessibleProperties;
+        }
+
+        public Guid ID{
+            get { return id; }
+        }
+
     }
 }

@@ -6,6 +6,7 @@ using iTextSharp.text;
 using iTextSharp.text.api;
 using iTextSharp.text.log;
 using iTextSharp.text.pdf.events;
+using iTextSharp.text.pdf.interfaces;
 
 /*
  * This file is part of the iText project.
@@ -60,7 +61,7 @@ namespace iTextSharp.text.pdf {
     * @author Paulo Soares
     */
 
-    public class PdfPTable : ILargeElement, ISpaceable
+    public class PdfPTable : ILargeElement, ISpaceable, IAccessibleElement
     {
 
         private readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof (PdfPTable));
@@ -170,6 +171,10 @@ namespace iTextSharp.text.pdf {
 
         protected bool loopCheck = true;
 
+        protected PdfName role = PdfName.TABLE;
+        protected Dictionary<PdfName, PdfObject> accessibleProperties = null;
+        protected Guid id = Guid.NewGuid();
+
         protected PdfPTable()
         {
         }
@@ -257,6 +262,10 @@ namespace iTextSharp.text.pdf {
 
         protected internal void CopyFormat(PdfPTable sourceTable)
         {
+            id = sourceTable.ID;
+            role = sourceTable.Role;
+            if (sourceTable.GetAccessibleProperties() != null)
+                accessibleProperties = new Dictionary<PdfName, PdfObject>(sourceTable.GetAccessibleProperties());
             relativeWidths = new float[sourceTable.NumberOfColumns];
             absoluteWidths = new float[sourceTable.NumberOfColumns];
             System.Array.Copy(sourceTable.relativeWidths, 0, relativeWidths, 0, NumberOfColumns);
@@ -444,7 +453,7 @@ namespace iTextSharp.text.pdf {
         * @param cell the cell element
         */
 
-        public void AddCell(PdfPCell cell)
+        public PdfPCell AddCell(PdfPCell cell)
         {
             rowCompleted = false;
             PdfPCell ncell = new PdfPCell(cell);
@@ -507,6 +516,7 @@ namespace iTextSharp.text.pdf {
                 currentRow[currentColIdx] = ncell;
                 currentColIdx += colspan;
             }
+            return ncell;
         }
 
         /**
@@ -610,7 +620,8 @@ namespace iTextSharp.text.pdf {
         public void AddCell(PdfPTable table)
         {
             defaultCell.Table = table;
-            AddCell(defaultCell);
+            PdfPCell newCell = AddCell(defaultCell);
+            newCell.id = Guid.NewGuid();
             defaultCell.Table = null;
         }
 
@@ -623,7 +634,8 @@ namespace iTextSharp.text.pdf {
         public void AddCell(Image image)
         {
             defaultCell.Image = image;
-            AddCell(defaultCell);
+            PdfPCell newCell = AddCell(defaultCell);
+            newCell.id = Guid.NewGuid();
             defaultCell.Image = null;
         }
 
@@ -635,7 +647,8 @@ namespace iTextSharp.text.pdf {
         public void AddCell(Phrase phrase)
         {
             defaultCell.Phrase = phrase;
-            AddCell(defaultCell);
+            PdfPCell newCell = AddCell(defaultCell);
+            newCell.id = Guid.NewGuid();
             defaultCell.Phrase = null;
         }
 
@@ -1662,6 +1675,47 @@ namespace iTextSharp.text.pdf {
         {
             get { return loopCheck; }
             set { this.loopCheck = value; }
+        }
+
+        public PdfObject GetAccessibleProperty(PdfName key)
+        {
+            if (accessibleProperties != null)
+                return accessibleProperties[key];
+            else
+                return null;
+        }
+
+        public void SetAccessibleProperty(PdfName key, PdfObject value)
+        {
+            if (accessibleProperties == null)
+                accessibleProperties = new Dictionary<PdfName, PdfObject>();
+            accessibleProperties.Add(key, value);
+        }
+
+        public Dictionary<PdfName, PdfObject> GetAccessibleProperties()
+        {
+            return accessibleProperties;
+        }
+
+        public PdfName Role
+        {
+            get { return role; }
+            set { role = value; }
+        }
+
+        public void SetAccessibleProperties(Dictionary<PdfName, PdfObject> accessibleProperties)
+        {
+            this.accessibleProperties = accessibleProperties;
+        }
+
+        public Guid ID
+        {
+            get { return id; }
+        }
+
+        static private bool IsTagged(PdfContentByte canvas)
+        {
+            return canvas != null && canvas.writer != null && canvas.writer.IsTagged();
         }
     }
 }
