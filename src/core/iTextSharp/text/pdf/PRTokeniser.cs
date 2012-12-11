@@ -71,28 +71,21 @@ namespace iTextSharp.text.pdf {
         internal const string EMPTY = "";
 
     
-        private readonly RandomAccessFileOrArray file;
+        protected RandomAccessFileOrArray file;
         protected TokType type;
         protected string stringValue;
         protected int reference;
         protected int generation;
         protected bool hexString;
-
-        // TODO: get rid of this - it shouldn't be necessary    
+        
         public PRTokeniser(string filename) {
-           file = new RandomAccessFileOrArray(filename);
+            file = new RandomAccessFileOrArray(filename);
         }
 
         public PRTokeniser(byte[] pdfIn) {
             file = new RandomAccessFileOrArray(pdfIn);
         }
-
-        /**
-        * Creates a PRTokeniser for the specified {@link RandomAccessSource}.
-        * The beginning of the file is read to determine the location of the header, and the data source is adjusted
-        * as necessary to account for any junk that occurs in the byte source before the header
-        * @param byteSource the source
-        */
+    
         public PRTokeniser(RandomAccessFileOrArray file) {
             this.file = file;
         }
@@ -133,12 +126,11 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        //TODO: is this really necessary?  Seems like exposing this detail opens us up to all sorts of potential problems
         public string ReadString(int size) {
             StringBuilder buf = new StringBuilder();
             int ch;
             while ((size--) > 0) {
-                ch = Read();
+                ch = file.Read();
                 if (ch == -1)
                     break;
                 buf.Append((char)ch);
@@ -186,34 +178,24 @@ namespace iTextSharp.text.pdf {
         public void ThrowError(string error) {
 			throw new InvalidPdfException (MessageLocalization.GetComposedMessage ("1.at.file.pointer.2", error, file.FilePointer));
         }
-
-        public int GetHeaderOffset() {
-            String str = ReadString(1024);
-            int idx = str.IndexOf("%PDF-");
-            if (idx < 0) { 
-                idx = str.IndexOf("%FDF-");
-                if (idx < 0)
-                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage("pdf.header.not.found"));
-            }
-            return idx;
-        }
-
-        public char CheckPdfHeader() {
-            file.Seek(0);
-            String str = ReadString(1024);
-            int idx = str.IndexOf("%PDF-");
-            if (idx != 0)
-                throw new InvalidPdfException(MessageLocalization.GetComposedMessage("pdf.header.not.found"));
-            return str[7];
-        }
     
+        public char CheckPdfHeader() {
+            file.StartOffset = 0;
+            String str = ReadString(1024);
+            int idx = str.IndexOf("%PDF-");
+            if (idx < 0)
+                throw new InvalidPdfException(MessageLocalization.GetComposedMessage("pdf.header.not.found"));
+            file.StartOffset = idx;
+            return str[idx + 7];
+        }
         
         public void CheckFdfHeader() {
-            file.Seek(0);
+            file.StartOffset = 0;
             String str = ReadString(1024);
             int idx = str.IndexOf("%FDF-");
-            if (idx != 0)
+            if (idx < 0)
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("fdf.header.not.found"));
+            file.StartOffset = idx;
         }
 
         public long GetStartxref() {
@@ -282,9 +264,6 @@ namespace iTextSharp.text.pdf {
                         return;
                     }
                 }
-            }
-            if (level == 1) { // if the level 1 check returns EOF, then we are still looking at a number - set the type back to NUMBER
-                type =  TokType.NUMBER;
             }
             // if we hit here, the file is either corrupt (stream ended unexpectedly),
             // or the last token ended exactly at the end of a stream.  This last
@@ -498,8 +477,7 @@ namespace iTextSharp.text.pdf {
                             ch = file.Read();
                         } while (ch != -1 && !IsDelimiter(ch) && !IsWhitespace(ch));
                     }
-                    if (ch != -1)
-                        BackOnePosition(ch);
+                    BackOnePosition(ch);
                     break;
                 }
             }
