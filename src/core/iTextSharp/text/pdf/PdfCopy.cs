@@ -199,14 +199,13 @@ namespace iTextSharp.text.pdf {
         protected PdfImportedPage GetImportedPageImpl(PdfReader reader, int pageNumber) {
                 if (currentPdfReaderInstance != null) {
                     if (currentPdfReaderInstance.Reader != reader) {
-                        // TODO: Removed - the user should be responsible for closing all PdfReaders.  But, this could cause a lot of memory leaks in code out there that hasn't been properly closing things - maybe add a finalizer to PdfReader that calls PdfReader#close() ??            	
-                        //try {
-                        //    currentPdfReaderInstance.Reader.Close();
-                        //    currentPdfReaderInstance.ReaderFile.Close();
-                        //}
-                        //catch (IOException) {
-                        //    // empty on purpose
-                        //}
+                        try {
+                            currentPdfReaderInstance.Reader.Close();
+                            currentPdfReaderInstance.ReaderFile.Close();
+                        }
+                        catch (IOException) {
+                            // empty on purpose
+                        }
                         currentPdfReaderInstance = base.GetPdfReaderInstance(reader);
                     }
                 }
@@ -599,16 +598,15 @@ namespace iTextSharp.text.pdf {
                 PdfReaderInstance ri = currentPdfReaderInstance;
                 pdf.Close();
                 base.Close();
-                // Users are responsible for closing PdfReaderw            
-                //if (ri != null) {
-                //     try {
-                //        ri.Reader.Close();
-                //        ri.ReaderFile.Close();
-                //    }
-                //    catch (IOException) {
-                //        // empty on purpose
-                //    }
-                //}
+                if (ri != null) {
+                    try {
+                        ri.Reader.Close();
+                        ri.ReaderFile.Close();
+            		}
+                    catch (IOException) {
+                        // empty on purpose
+        			}
+                }
             }
         }
 
@@ -617,19 +615,18 @@ namespace iTextSharp.text.pdf {
 
         public override void FreeReader(PdfReader reader) {
             indirectMap.Remove(reader);
-            // TODO: Removed - the user should be responsible for closing all PdfReaders.  But, this could cause a lot of memory leaks in code out there that hasn't been properly closing things - maybe add a finalizer to PdfReader that calls PdfReader#close() ??            	
-            //if (currentPdfReaderInstance != null) {
-            //    if (currentPdfReaderInstance.Reader == reader) {
-            //        try {
-            //            currentPdfReaderInstance.Reader.Close();
-            //            currentPdfReaderInstance.ReaderFile.Close();
-            //        }
-            //        catch (IOException) {
-            //            // empty on purpose
-            //        }
-            //        currentPdfReaderInstance = null;
-            //    }
-            //}
+            if (currentPdfReaderInstance != null) {
+                if (currentPdfReaderInstance.Reader == reader) {
+                    try {
+                        currentPdfReaderInstance.Reader.Close();
+                        currentPdfReaderInstance.ReaderFile.Close();
+                    }
+                    catch (IOException) {
+                        // empty on purpose
+                    }
+                    currentPdfReaderInstance = null;
+                }
+            }
             base.FreeReader(reader);
         }
 
