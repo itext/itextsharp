@@ -61,7 +61,7 @@ namespace iTextSharp.text {
 	     * iText is a registered trademark by 1T3XT.
 	     * Please don't change this constant.
 	     */
-	    static private String iText = "iText\u00ae";
+	    static private String iText = "iTextSharp\u2122";
     	
 	    /**
 	     * This String contains the version number of this iText release.
