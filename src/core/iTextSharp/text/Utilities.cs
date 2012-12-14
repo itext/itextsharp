@@ -283,5 +283,16 @@ namespace iTextSharp.text {
 	        }
 	        return PdfEncodings.ConvertToString(buf.ToByteArray(), null).ToUpper();
 	    }
+
+        public static float ComputeTabSpace(float lx, float rx, float tab) {
+            return ComputeTabSpace(rx - lx, tab);
+        }
+
+        public static float ComputeTabSpace(float width, float tab) {
+            width = (float)Math.Round(width, 3);
+            tab = (float)Math.Round(tab, 3);
+
+            return tab - width % tab;
+        }
     }
 }

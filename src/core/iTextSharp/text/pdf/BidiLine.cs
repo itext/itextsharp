@@ -396,10 +396,9 @@ namespace iTextSharp.text.pdf {
                     detailChunks[currentChar].AdjustLeft(leftX);
                     width = originalWidth - tabPosition;
                 }
-                else if (ck.IsTabSpace())
-                {
+                else if (ck.IsTabSpace()) {
                     float module = (float)ck.GetAttribute(Chunk.TABSPACE);
-                    float decrement = module - ((originalWidth - width) % module);
+                    float decrement = Utilities.ComputeTabSpace(width, originalWidth, module);
 
                     if (width < decrement) 
                         return new PdfLine(0, originalWidth, width, alignment, false,
@@ -482,7 +481,7 @@ namespace iTextSharp.text.pdf {
                 if (detailChunks[startIdx].IsTabSpace())
                 {
                     float module = (float)detailChunks[startIdx].GetAttribute(Chunk.TABSPACE);
-                    float decrement = module - (width % module);
+                    float decrement = Utilities.ComputeTabSpace(width, module);
                     width += decrement;
                 }
                 else if (surrogate)
