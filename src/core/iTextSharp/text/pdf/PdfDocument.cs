@@ -1531,7 +1531,7 @@ namespace iTextSharp.text.pdf {
                 else if (chunk.IsTabSpace())
                 {
                     float module = (float)chunk.GetAttribute(Chunk.TABSPACE);
-                    float increment = module - ((xMarker - text.XTLM) % module);
+                    float increment = Utilities.ComputeTabSpace(text.XTLM, xMarker, module);
                     xMarker += increment;
                     PdfTextArray array = new PdfTextArray();
                     array.Add(-(increment * 1000f / chunk.Font.Size / hScale));

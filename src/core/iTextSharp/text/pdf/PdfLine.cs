@@ -163,19 +163,17 @@ namespace iTextSharp.text.pdf {
                 width = originalWidth - tabPosition;
                 chunk.AdjustLeft(left);
                 AddToLine(chunk);
-            }
-            else if (chunk.IsTabSpace()) {
+            } else if (chunk.IsTabSpace()) {
                 if (line.Count != 0)
                 {
                     float module = (float)chunk.GetAttribute(Chunk.TABSPACE);
-                    float decrement = module - ((originalWidth - width) % module);
+                    float decrement = Utilities.ComputeTabSpace(width, originalWidth, module);
                     if (width < decrement)
                         return chunk;
                     width -= decrement;
                     AddToLine(chunk);
                 }
-            }
-                // if the length of the chunk > 0 we add it to the line
+            }   // if the length of the chunk > 0 we add it to the line 
             else if (chunk.Length > 0 || chunk.IsImage()) {
                 if (overflow != null)
                     chunk.TrimLastSpace();
