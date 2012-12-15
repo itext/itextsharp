@@ -3,74 +3,77 @@ using System.Collections;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
-	public class PskTlsClient
+	public abstract class PskTlsClient
 		:TlsClient
 	{
 		protected TlsCipherFactory cipherFactory;
 		protected TlsPskIdentity pskIdentity;
 
-		protected TlsClientContext context;
+        protected TlsClientContext context;
 
-		protected CompressionMethod selectedCompressionMethod;
+        protected CompressionMethod selectedCompressionMethod;
 		protected CipherSuite selectedCipherSuite;
 
-		public PskTlsClient(TlsPskIdentity pskIdentity)
+        public PskTlsClient(TlsPskIdentity pskIdentity)
 			: this(new DefaultTlsCipherFactory(), pskIdentity)
 		{
 		}
 
-		public PskTlsClient(TlsCipherFactory cipherFactory, TlsPskIdentity pskIdentity)
+        public PskTlsClient(TlsCipherFactory cipherFactory, TlsPskIdentity pskIdentity)
 		{
 			this.cipherFactory = cipherFactory;
 			this.pskIdentity = pskIdentity;
 		}
 
-		public virtual void Init(TlsClientContext context)
+        public virtual void Init(TlsClientContext context)
 		{
 			this.context = context;
 		}
 
-		public virtual CipherSuite[] GetCipherSuites()
+        public virtual CipherSuite[] GetCipherSuites()
 		{
 			return new CipherSuite[] {
 				CipherSuite.TLS_DHE_PSK_WITH_AES_256_CBC_SHA,
 				CipherSuite.TLS_DHE_PSK_WITH_AES_128_CBC_SHA,
 				CipherSuite.TLS_DHE_PSK_WITH_3DES_EDE_CBC_SHA,
+				CipherSuite.TLS_DHE_PSK_WITH_RC4_128_SHA,
 				CipherSuite.TLS_RSA_PSK_WITH_AES_256_CBC_SHA,
 				CipherSuite.TLS_RSA_PSK_WITH_AES_128_CBC_SHA,
 				CipherSuite.TLS_RSA_PSK_WITH_3DES_EDE_CBC_SHA,
+				CipherSuite.TLS_RSA_PSK_WITH_RC4_128_SHA,
 				CipherSuite.TLS_PSK_WITH_AES_256_CBC_SHA,
 				CipherSuite.TLS_PSK_WITH_AES_128_CBC_SHA,
 				CipherSuite.TLS_PSK_WITH_3DES_EDE_CBC_SHA,
+				CipherSuite.TLS_PSK_WITH_RC4_128_SHA,
 			};
 		}
 
-		public virtual IDictionary GetClientExtensions()
+        public virtual IDictionary GetClientExtensions()
 		{
 			return null;
 		}
 
-		public virtual CompressionMethod[] GetCompressionMethods()
+        public virtual CompressionMethod[] GetCompressionMethods()
 		{
 			return new CompressionMethod[] { CompressionMethod.NULL };
 		}
 
-		public virtual void NotifySessionID(byte[] sessionID)
+        public virtual void NotifySessionID(byte[] sessionID)
 		{
 			// Currently ignored 
 		}
 
-		public virtual void NotifySelectedCipherSuite(CipherSuite selectedCipherSuite)
+        public virtual void NotifySelectedCipherSuite(CipherSuite selectedCipherSuite)
 		{
 			this.selectedCipherSuite = selectedCipherSuite;
 		}
 
-		public virtual void NotifySelectedCompressionMethod(CompressionMethod selectedCompressionMethod)
+        public virtual void NotifySelectedCompressionMethod(CompressionMethod selectedCompressionMethod)
 		{
 			this.selectedCompressionMethod = selectedCompressionMethod;
 		}
 
-		public virtual void NotifySecureRenegotiation(bool secureRenegotiation)
+        public virtual void NotifySecureRenegotiation(bool secureRenegotiation)
 		{
 			if (!secureRenegotiation)
 			{
@@ -84,30 +87,33 @@ namespace Org.BouncyCastle.Crypto.Tls
 			}
 		}
 
-		public virtual void ProcessServerExtensions(IDictionary serverExtensions)
+        public virtual void ProcessServerExtensions(IDictionary serverExtensions)
 		{
 		}
 
-		public virtual TlsKeyExchange GetKeyExchange()
+        public virtual TlsKeyExchange GetKeyExchange()
 		{
 			switch (selectedCipherSuite)
 			{
 				case CipherSuite.TLS_PSK_WITH_3DES_EDE_CBC_SHA:
 				case CipherSuite.TLS_PSK_WITH_AES_128_CBC_SHA:
 				case CipherSuite.TLS_PSK_WITH_AES_256_CBC_SHA:
+                case CipherSuite.TLS_PSK_WITH_RC4_128_SHA:
 					return CreatePskKeyExchange(KeyExchangeAlgorithm.PSK);
 
-				case CipherSuite.TLS_RSA_PSK_WITH_3DES_EDE_CBC_SHA:
+                case CipherSuite.TLS_RSA_PSK_WITH_3DES_EDE_CBC_SHA:
 				case CipherSuite.TLS_RSA_PSK_WITH_AES_128_CBC_SHA:
 				case CipherSuite.TLS_RSA_PSK_WITH_AES_256_CBC_SHA:
-					return CreatePskKeyExchange(KeyExchangeAlgorithm.RSA_PSK);
+                case CipherSuite.TLS_RSA_PSK_WITH_RC4_128_SHA:
+                    return CreatePskKeyExchange(KeyExchangeAlgorithm.RSA_PSK);
 
-				case CipherSuite.TLS_DHE_PSK_WITH_3DES_EDE_CBC_SHA:
+                case CipherSuite.TLS_DHE_PSK_WITH_3DES_EDE_CBC_SHA:
 				case CipherSuite.TLS_DHE_PSK_WITH_AES_128_CBC_SHA:
 				case CipherSuite.TLS_DHE_PSK_WITH_AES_256_CBC_SHA:
-					return CreatePskKeyExchange(KeyExchangeAlgorithm.DHE_PSK);
+                case CipherSuite.TLS_DHE_PSK_WITH_RC4_128_SHA:
+                    return CreatePskKeyExchange(KeyExchangeAlgorithm.DHE_PSK);
 
-				default:
+                default:
 					/*
 					 * Note: internal error here; the TlsProtocolHandler verifies that the
 					 * server-selected cipher suite was in the list of client-offered cipher
@@ -118,19 +124,16 @@ namespace Org.BouncyCastle.Crypto.Tls
 			}
 		}
 
-		public virtual TlsAuthentication GetAuthentication()
-		{
-			return null;
-		}
+        public abstract TlsAuthentication GetAuthentication();
 
-		public virtual TlsCompression GetCompression()
+        public virtual TlsCompression GetCompression()
 		{
 			switch (selectedCompressionMethod)
 			{
 				case CompressionMethod.NULL:
 					return new TlsNullCompression();
 
-				default:
+                default:
 					/*
 					 * Note: internal error here; the TlsProtocolHandler verifies that the
 					 * server-selected compression method was in the list of client-offered compression
@@ -141,7 +144,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			}
 		}
 
-		public virtual TlsCipher GetCipher()
+        public virtual TlsCipher GetCipher()
 		{
 			switch (selectedCipherSuite)
 			{
@@ -150,20 +153,26 @@ namespace Org.BouncyCastle.Crypto.Tls
 				case CipherSuite.TLS_DHE_PSK_WITH_3DES_EDE_CBC_SHA:
 					return cipherFactory.CreateCipher(context, EncryptionAlgorithm.cls_3DES_EDE_CBC,
 						DigestAlgorithm.SHA);
-				
-				case CipherSuite.TLS_PSK_WITH_AES_128_CBC_SHA:
+
+                case CipherSuite.TLS_PSK_WITH_AES_128_CBC_SHA:
 				case CipherSuite.TLS_RSA_PSK_WITH_AES_128_CBC_SHA:
 				case CipherSuite.TLS_DHE_PSK_WITH_AES_128_CBC_SHA:
 					return cipherFactory.CreateCipher(context, EncryptionAlgorithm.AES_128_CBC,
 						DigestAlgorithm.SHA);
 
-				case CipherSuite.TLS_PSK_WITH_AES_256_CBC_SHA:
+                case CipherSuite.TLS_PSK_WITH_AES_256_CBC_SHA:
 				case CipherSuite.TLS_RSA_PSK_WITH_AES_256_CBC_SHA:
 				case CipherSuite.TLS_DHE_PSK_WITH_AES_256_CBC_SHA:
 					return cipherFactory.CreateCipher(context, EncryptionAlgorithm.AES_256_CBC,
 						DigestAlgorithm.SHA);
 
-				default:
+                case CipherSuite.TLS_PSK_WITH_RC4_128_SHA:
+                case CipherSuite.TLS_RSA_PSK_WITH_RC4_128_SHA:
+                case CipherSuite.TLS_DHE_PSK_WITH_RC4_128_SHA:
+                    return cipherFactory.CreateCipher(context, EncryptionAlgorithm.RC4_128,
+                        DigestAlgorithm.SHA);
+
+                default:
 					/*
 					 * Note: internal error here; the TlsProtocolHandler verifies that the
 					 * server-selected cipher suite was in the list of client-offered cipher
@@ -174,7 +183,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			}
 		}
 
-		protected virtual TlsKeyExchange CreatePskKeyExchange(KeyExchangeAlgorithm keyExchange)
+        protected virtual TlsKeyExchange CreatePskKeyExchange(KeyExchangeAlgorithm keyExchange)
 		{
 			return new TlsPskKeyExchange(context, keyExchange, pskIdentity);
 		}

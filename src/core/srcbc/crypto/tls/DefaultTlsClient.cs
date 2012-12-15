@@ -48,10 +48,11 @@ namespace Org.BouncyCastle.Crypto.Tls
 				CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA,
 				CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA,
 				CipherSuite.TLS_RSA_WITH_3DES_EDE_CBC_SHA,
+                CipherSuite.TLS_RSA_WITH_RC4_128_SHA,
 			};
 		}
 
-		public virtual CompressionMethod[] GetCompressionMethods()
+        public virtual CompressionMethod[] GetCompressionMethods()
         {
 			/*
 			 * To offer DEFLATE compression, override this method:
@@ -107,6 +108,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 				case CipherSuite.TLS_RSA_WITH_3DES_EDE_CBC_SHA:
 				case CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA:
 				case CipherSuite.TLS_RSA_WITH_AES_256_CBC_SHA:
+                case CipherSuite.TLS_RSA_WITH_RC4_128_SHA:
 					return CreateRsaKeyExchange();
 
 				case CipherSuite.TLS_DH_DSS_WITH_3DES_EDE_CBC_SHA:
@@ -132,21 +134,25 @@ namespace Org.BouncyCastle.Crypto.Tls
                 case CipherSuite.TLS_ECDH_ECDSA_WITH_3DES_EDE_CBC_SHA:
                 case CipherSuite.TLS_ECDH_ECDSA_WITH_AES_128_CBC_SHA:
                 case CipherSuite.TLS_ECDH_ECDSA_WITH_AES_256_CBC_SHA:
+                case CipherSuite.TLS_ECDH_ECDSA_WITH_RC4_128_SHA:
                     return CreateECDHKeyExchange(KeyExchangeAlgorithm.ECDH_ECDSA);
 
                 case CipherSuite.TLS_ECDHE_ECDSA_WITH_3DES_EDE_CBC_SHA:
                 case CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA:
                 case CipherSuite.TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA:
+                case CipherSuite.TLS_ECDHE_ECDSA_WITH_RC4_128_SHA:
                     return CreateECDheKeyExchange(KeyExchangeAlgorithm.ECDHE_ECDSA);
 
                 case CipherSuite.TLS_ECDH_RSA_WITH_3DES_EDE_CBC_SHA:
                 case CipherSuite.TLS_ECDH_RSA_WITH_AES_128_CBC_SHA:
                 case CipherSuite.TLS_ECDH_RSA_WITH_AES_256_CBC_SHA:
+                case CipherSuite.TLS_ECDH_RSA_WITH_RC4_128_SHA:
                     return CreateECDHKeyExchange(KeyExchangeAlgorithm.ECDH_RSA);
 
                 case CipherSuite.TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA:
                 case CipherSuite.TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA:
                 case CipherSuite.TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA:
+                case CipherSuite.TLS_ECDHE_RSA_WITH_RC4_128_SHA:
                     return CreateECDheKeyExchange(KeyExchangeAlgorithm.ECDHE_RSA);
 
 				default:
@@ -198,7 +204,14 @@ namespace Org.BouncyCastle.Crypto.Tls
                 case CipherSuite.TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA:
 					return cipherFactory.CreateCipher(context, EncryptionAlgorithm.cls_3DES_EDE_CBC, DigestAlgorithm.SHA);
 
-				case CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA:
+                case CipherSuite.TLS_RSA_WITH_RC4_128_SHA:
+                case CipherSuite.TLS_ECDH_ECDSA_WITH_RC4_128_SHA:
+                case CipherSuite.TLS_ECDHE_ECDSA_WITH_RC4_128_SHA:
+                case CipherSuite.TLS_ECDH_RSA_WITH_RC4_128_SHA:
+                case CipherSuite.TLS_ECDHE_RSA_WITH_RC4_128_SHA:
+                    return cipherFactory.CreateCipher(context, EncryptionAlgorithm.RC4_128, DigestAlgorithm.SHA);
+
+                case CipherSuite.TLS_RSA_WITH_AES_128_CBC_SHA:
 				case CipherSuite.TLS_DH_DSS_WITH_AES_128_CBC_SHA:
 				case CipherSuite.TLS_DH_RSA_WITH_AES_128_CBC_SHA:
 				case CipherSuite.TLS_DHE_DSS_WITH_AES_128_CBC_SHA:
