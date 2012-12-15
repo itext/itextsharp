@@ -92,5 +92,8 @@ namespace iTextSharp.text.io {
             // do not close the source
         }
 
+        public void Dispose() {
+            Close();
+        }
     }
 }

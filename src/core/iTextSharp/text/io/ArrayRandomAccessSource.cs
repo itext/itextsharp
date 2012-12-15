@@ -84,5 +84,9 @@ namespace iTextSharp.text.io {
         public virtual void Close() {
             array = null;
         }
+
+        public void Dispose() {
+            Close();
+        }
     }
 }

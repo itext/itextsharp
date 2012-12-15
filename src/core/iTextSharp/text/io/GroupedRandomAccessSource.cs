@@ -216,6 +216,10 @@ namespace iTextSharp.text.io {
             }
         }
 
+        public void Dispose() {
+            Close();
+        }
+
         /**
          * Used to track each source, along with useful meta data 
          */

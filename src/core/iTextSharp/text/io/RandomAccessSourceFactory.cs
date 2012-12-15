@@ -147,7 +147,7 @@ namespace iTextSharp.text.io {
             }
                 
             if (forceRead){
-                return CreateByReadingToMemory(filename);
+                return CreateByReadingToMemory(new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read));
             }
             return new RAFRandomAccessSource(new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read));
         }
@@ -171,6 +171,16 @@ namespace iTextSharp.text.io {
             Stream inp = BaseFont.GetResourceStream(filename);
             if (inp == null)
                 throw new IOException(MessageLocalization.GetComposedMessage("1.not.found.as.file.or.resource", filename));
+            return CreateByReadingToMemory(inp);
+        }
+        
+        /**
+         * Creates a new {@link RandomAccessSource} by reading the specified file/resource into memory
+         * @param filename the name of the resource to read
+         * @return the newly created {@link RandomAccessSource}
+         * @throws IOException if reading the underling file or stream fails
+         */
+        private IRandomAccessSource CreateByReadingToMemory(Stream inp) {
             try {
                 return new ArrayRandomAccessSource(StreamUtil.InputStreamToArray(inp));
             }
