@@ -291,7 +291,7 @@ namespace iTextSharp.text.pdf {
             /*return arrayList.ToString();*/
             StringBuilder sb = new StringBuilder();
             sb.Append('[');
-            foreach (var pdfObject in arrayList)
+            foreach (PdfObject pdfObject in arrayList)
             {
                 sb.Append(pdfObject.ToString() + ", ");
             }
