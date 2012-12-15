@@ -48,7 +48,7 @@ namespace iTextSharp.text.io {
      * should be handled in classes that use RandomAccessSource internally (via composition).
      * @since 5.3.5
      */
-    public interface IRandomAccessSource {
+    public interface IRandomAccessSource : IDisposable {
         /**
          * Gets a byte at the specified position
          * @param position
