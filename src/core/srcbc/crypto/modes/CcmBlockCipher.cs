@@ -24,10 +24,11 @@ namespace Org.BouncyCastle.Crypto.Modes
         private readonly byte[]			macBlock;
         private bool					forEncryption;
 		private byte[]					nonce;
-		private byte[]					associatedText;
+		private byte[]					initialAssociatedText;
 		private int						macSize;
 		private ICipherParameters		keyParam;
-		private readonly MemoryStream	data = new MemoryStream();
+        private readonly MemoryStream   associatedText = new MemoryStream();
+        private readonly MemoryStream   data = new MemoryStream();
 
         /**
         * Basic constructor.
@@ -65,7 +66,7 @@ namespace Org.BouncyCastle.Crypto.Modes
 				AeadParameters param = (AeadParameters) parameters;
 
 				nonce = param.GetNonce();
-				associatedText = param.GetAssociatedText();
+                initialAssociatedText = param.GetAssociatedText();
 				macSize = param.MacSize / 8;
 				keyParam = param.Key;
 			}
@@ -74,7 +75,7 @@ namespace Org.BouncyCastle.Crypto.Modes
 				ParametersWithIV param = (ParametersWithIV) parameters;
 
 				nonce = param.GetIV();
-				associatedText = null;
+                initialAssociatedText = null;
 				macSize = macBlock.Length / 2;
 				keyParam = param.Parameters;
 			}
@@ -94,7 +95,18 @@ namespace Org.BouncyCastle.Crypto.Modes
 			return cipher.GetBlockSize();
 		}
 
-		public virtual int ProcessByte(
+        public virtual void ProcessAadByte(byte input)
+        {
+            associatedText.WriteByte(input);
+        }
+
+        public virtual void ProcessAadBytes(byte[] inBytes, int inOff, int len)
+        {
+            // TODO: Process AAD online
+            associatedText.Write(inBytes, inOff, len);
+        }
+
+        public virtual int ProcessByte(
 			byte	input,
 			byte[]	outBytes,
 			int		outOff)
@@ -122,6 +134,7 @@ namespace Org.BouncyCastle.Crypto.Modes
 		{
 			byte[] text = data.ToArray();
 			byte[] enc = ProcessPacket(text, 0, text.Length);
+            //byte[] enc = ProcessPacket(data.GetBuffer(), 0, (int)data.Length);
 
 			Array.Copy(enc, 0, outBytes, outOff, enc.Length);
 
@@ -133,10 +146,11 @@ namespace Org.BouncyCastle.Crypto.Modes
 		public virtual void Reset()
 		{
 			cipher.Reset();
+            associatedText.SetLength(0);
 			data.SetLength(0);
 		}
 
-		/**
+        /**
         * Returns a byte array containing the mac calculated as part of the
         * last encrypt or decrypt operation.
         *
@@ -160,19 +174,23 @@ namespace Org.BouncyCastle.Crypto.Modes
 		public int GetOutputSize(
 			int len)
 		{
-			if (forEncryption)
-			{
-				return (int) data.Length + len + macSize;
-			}
+            int totalData = (int)data.Length + len;
 
-			return (int) data.Length + len - macSize;
+            if (forEncryption)
+            {
+                return totalData + macSize;
+            }
+
+            return totalData < macSize ? 0 : totalData - macSize;
 		}
 
-		public byte[] ProcessPacket(
+        public byte[] ProcessPacket(
 			byte[]	input,
 			int		inOff,
 			int		inLen)
         {
+            // TODO: handle null keyParam (e.g. via RepeatedKeySpec)
+            // Need to keep the CTR and CBC Mac parts around and reset
             if (keyParam == null)
                 throw new InvalidOperationException("CCM cipher unitialized.");
 
@@ -269,7 +287,7 @@ namespace Org.BouncyCastle.Crypto.Modes
             //
             byte[] b0 = new byte[16];
 
-			if (hasAssociatedText())
+			if (HasAssociatedText())
             {
                 b0[0] |= 0x40;
             }
@@ -294,14 +312,15 @@ namespace Org.BouncyCastle.Crypto.Modes
             //
             // process associated text
             //
-			if (hasAssociatedText())
+			if (HasAssociatedText())
             {
                 int extra;
 
-                if (associatedText.Length < ((1 << 16) - (1 << 8)))
+                int textLength = GetAssociatedTextLength();
+                if (textLength < ((1 << 16) - (1 << 8)))
                 {
-                    cMac.Update((byte)(associatedText.Length >> 8));
-                    cMac.Update((byte)associatedText.Length);
+                    cMac.Update((byte)(textLength >> 8));
+                    cMac.Update((byte)textLength);
 
                     extra = 2;
                 }
@@ -309,17 +328,26 @@ namespace Org.BouncyCastle.Crypto.Modes
                 {
                     cMac.Update((byte)0xff);
                     cMac.Update((byte)0xfe);
-                    cMac.Update((byte)(associatedText.Length >> 24));
-                    cMac.Update((byte)(associatedText.Length >> 16));
-                    cMac.Update((byte)(associatedText.Length >> 8));
-                    cMac.Update((byte)associatedText.Length);
+                    cMac.Update((byte)(textLength >> 24));
+                    cMac.Update((byte)(textLength >> 16));
+                    cMac.Update((byte)(textLength >> 8));
+                    cMac.Update((byte)textLength);
 
                     extra = 6;
                 }
 
-                cMac.BlockUpdate(associatedText, 0, associatedText.Length);
+                if (initialAssociatedText != null)
+                {
+                    cMac.BlockUpdate(initialAssociatedText, 0, initialAssociatedText.Length);
+                }
+                if (associatedText.Length > 0)
+                {
+                    byte[] tmp = associatedText.ToArray();
+                    cMac.BlockUpdate(tmp, 0, tmp.Length);
+                    //cMac.BlockUpdate(associatedText.GetBuffer(), 0, (int)associatedText.Length);
+                }
 
-                extra = (extra + associatedText.Length) % 16;
+                extra = (extra + textLength) % 16;
                 if (extra != 0)
                 {
                     for (int i = 0; i != 16 - extra; i++)
@@ -337,9 +365,14 @@ namespace Org.BouncyCastle.Crypto.Modes
             return cMac.DoFinal(macBlock, 0);
         }
 
-		private bool hasAssociatedText()
-		{
-			return associatedText != null && associatedText.Length != 0;
-		}
+        private int GetAssociatedTextLength()
+        {
+            return (int)associatedText.Length + ((initialAssociatedText == null) ? 0 : initialAssociatedText.Length);
+        }
+
+        private bool HasAssociatedText()
+        {
+            return GetAssociatedTextLength() > 0;
+        }
     }
 }

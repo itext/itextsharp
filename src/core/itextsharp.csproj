@@ -4276,6 +4276,7 @@
     <Compile Include="srcbc\crypto\tls\TlsRsaUtilities.cs" />
     <Compile Include="srcbc\crypto\tls\TlsSignerCredentials.cs" />
     <Compile Include="srcbc\crypto\tls\TlsStream.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsStreamCipher.cs" />
     <Compile Include="srcbc\openssl\MiscPemGenerator.cs" />
     <Compile Include="srcbc\openssl\Pkcs8Generator.cs" />
     <Compile Include="srcbc\pkix\PkixCrlUtilities.cs" />

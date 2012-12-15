@@ -52,8 +52,13 @@ namespace Org.BouncyCastle.Crypto.Modes
 				byte[] iv = ivParam.GetIV();
 				Array.Copy(iv, 0, IV, 0, IV.Length);
 
-				Reset();
-				cipher.Init(true, ivParam.Parameters);
+                Reset();
+
+                // if null it's an IV changed only.
+                if (ivParam.Parameters != null)
+                {
+                    cipher.Init(true, ivParam.Parameters);
+                }
 			}
 	        else
 	        {

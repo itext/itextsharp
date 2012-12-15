@@ -104,7 +104,7 @@ namespace Org.BouncyCastle.Crypto.Macs
 			get { return cipher.AlgorithmName; }
 		}
 
-		private byte[] doubleLu(
+		private static byte[] doubleLu(
 			byte[] inBytes)
 		{
 			int FirstBit = (inBytes[0] & 0xFF) >> 7;
@@ -124,20 +124,21 @@ namespace Org.BouncyCastle.Crypto.Macs
 		public void Init(
 			ICipherParameters parameters)
 		{
-			Reset();
+            if (parameters != null)
+            {
+                cipher.Init(true, parameters);
 
-			cipher.Init(true, parameters);
+                //initializes the L, Lu, Lu2 numbers
+                L = new byte[ZEROES.Length];
+                cipher.ProcessBlock(ZEROES, 0, L, 0);
+                Lu = doubleLu(L);
+                Lu2 = doubleLu(Lu);
+            }
 
-			//initializes the L, Lu, Lu2 numbers
-			L = new byte[ZEROES.Length];
-			cipher.ProcessBlock(ZEROES, 0, L, 0);
-			Lu = doubleLu(L);
-			Lu2 = doubleLu(Lu);
-
-			cipher.Init(true, parameters);
+            Reset();
 		}
 
-		public int GetMacSize()
+        public int GetMacSize()
 		{
 			return macSize;
 		}

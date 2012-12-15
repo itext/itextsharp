@@ -34,7 +34,23 @@ namespace Org.BouncyCastle.Crypto.Prng
 				int		numBytes,
 				bool	fast)
 			{
-				this.counter = 0;
+                ThreadPriority originalPriority = Thread.CurrentThread.Priority;
+                try
+                {
+                    Thread.CurrentThread.Priority = ThreadPriority.Normal;
+                    return DoGenerateSeed(numBytes, fast);
+                }
+                finally
+                {
+                    Thread.CurrentThread.Priority = originalPriority;
+                }
+            }
+
+            private byte[] DoGenerateSeed(
+				int		numBytes,
+				bool	fast)
+            {
+                this.counter = 0;
 				this.stop = false;
 
 				byte[] result = new byte[numBytes];

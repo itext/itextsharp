@@ -21,10 +21,18 @@ namespace Org.BouncyCastle.Crypto.Tls
 					return CreateAesCipher(context, 16, digestAlgorithm);
 				case EncryptionAlgorithm.AES_256_CBC:
 					return CreateAesCipher(context, 32, digestAlgorithm);
+                case EncryptionAlgorithm.RC4_128:
+                    return CreateRC4Cipher(context, 16, digestAlgorithm);
 				default:
 					throw new TlsFatalAlert(AlertDescription.internal_error);
 			}
 		}
+
+        /// <exception cref="IOException"></exception>
+        protected virtual TlsCipher CreateRC4Cipher(TlsClientContext context, int cipherKeySize, DigestAlgorithm digestAlgorithm)
+        {
+            return new TlsStreamCipher(context, CreateRC4StreamCipher(), CreateRC4StreamCipher(), CreateDigest(digestAlgorithm), CreateDigest(digestAlgorithm), cipherKeySize);
+        }
 
 		/// <exception cref="IOException"></exception>
 		protected virtual TlsCipher CreateAesCipher(TlsClientContext context, int cipherKeySize,
@@ -41,6 +49,11 @@ namespace Org.BouncyCastle.Crypto.Tls
 			return new TlsBlockCipher(context, CreateDesEdeBlockCipher(), CreateDesEdeBlockCipher(),
 				CreateDigest(digestAlgorithm), CreateDigest(digestAlgorithm), cipherKeySize);
 		}
+
+        protected virtual IStreamCipher CreateRC4StreamCipher()
+        {
+            return new RC4Engine();
+        }
 
 		protected virtual IBlockCipher CreateAesBlockCipher()
 		{

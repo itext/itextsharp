@@ -18,7 +18,9 @@ namespace Org.BouncyCastle.Asn1
 	{
 		private readonly int limit;
 
-		internal static int FindLimit(Stream input)
+        private readonly byte[][] tmpBuffers;
+
+        internal static int FindLimit(Stream input)
 		{
 			if (input is LimitedInputStream)
 			{
@@ -51,7 +53,8 @@ namespace Org.BouncyCastle.Asn1
 			: base(inputStream)
 		{
 			this.limit = limit;
-		}
+            this.tmpBuffers = new byte[16][];
+        }
 
 		/**
 		 * Create an ASN1InputStream based on the input byte array. The length of DER objects in
@@ -108,10 +111,10 @@ namespace Org.BouncyCastle.Asn1
 				}
 			}
 
-			return CreatePrimitiveDerObject(tagNo, defIn.ToArray());
+            return CreatePrimitiveDerObject(tagNo, defIn, tmpBuffers);
 		}
 
-		internal Asn1EncodableVector BuildEncodableVector()
+        internal Asn1EncodableVector BuildEncodableVector()
 		{
 			Asn1EncodableVector v = new Asn1EncodableVector();
 
@@ -289,20 +292,48 @@ namespace Org.BouncyCastle.Asn1
 			return length;
 		}
 
+        internal static byte[] GetBuffer(DefiniteLengthInputStream defIn, byte[][] tmpBuffers)
+        {
+            int len = defIn.GetRemaining();
+            if (len >= tmpBuffers.Length)
+            {
+                return defIn.ToArray();
+            }
+
+            byte[] buf = tmpBuffers[len];
+            if (buf == null)
+            {
+                buf = tmpBuffers[len] = new byte[len];
+            }
+
+            defIn.ReadAllIntoByteArray(buf);
+
+            return buf;
+        }
+
 		internal static Asn1Object CreatePrimitiveDerObject(
-			int		tagNo,
-			byte[]	bytes)
+			int                         tagNo,
+			DefiniteLengthInputStream   defIn,
+            byte[][]                    tmpBuffers)
 		{
-			switch (tagNo)
+            switch (tagNo)
+            {
+                case Asn1Tags.Boolean:
+                    return new DerBoolean(GetBuffer(defIn, tmpBuffers));
+                case Asn1Tags.Enumerated:
+                    return new DerEnumerated(GetBuffer(defIn, tmpBuffers));
+                case Asn1Tags.ObjectIdentifier:
+                    return DerObjectIdentifier.FromOctetString(GetBuffer(defIn, tmpBuffers));
+            }
+
+            byte[] bytes = defIn.ToArray();
+
+            switch (tagNo)
 			{
 				case Asn1Tags.BitString:
 					return DerBitString.FromAsn1Octets(bytes);
 				case Asn1Tags.BmpString:
 					return new DerBmpString(bytes);
-				case Asn1Tags.Boolean:
-					return new DerBoolean(bytes);
-				case Asn1Tags.Enumerated:
-					return new DerEnumerated(bytes);
 				case Asn1Tags.GeneralizedTime:
 					return new DerGeneralizedTime(bytes);
 				case Asn1Tags.GeneralString:
@@ -315,8 +346,6 @@ namespace Org.BouncyCastle.Asn1
 					return DerNull.Instance;   // actual content is ignored (enforce 0 length?)
 				case Asn1Tags.NumericString:
 					return new DerNumericString(bytes);
-				case Asn1Tags.ObjectIdentifier:
-					return new DerObjectIdentifier(bytes);
 				case Asn1Tags.OctetString:
 					return new DerOctetString(bytes);
 				case Asn1Tags.PrintableString:

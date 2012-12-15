@@ -13,30 +13,34 @@ namespace Org.BouncyCastle.Math
 #endif
 	public class BigInteger
 	{
-		// The primes b/w 2 and ~2^10
-		/*
-				3   5   7   11  13  17  19  23  29
-			31  37  41  43  47  53  59  61  67  71
-			73  79  83  89  97  101 103 107 109 113
-			127 131 137 139 149 151 157 163 167 173
-			179 181 191 193 197 199 211 223 227 229
-			233 239 241 251 257 263 269 271 277 281
-			283 293 307 311 313 317 331 337 347 349
-			353 359 367 373 379 383 389 397 401 409
-			419 421 431 433 439 443 449 457 461 463
-			467 479 487 491 499 503 509 521 523 541
-			547 557 563 569 571 577 587 593 599 601
-			607 613 617 619 631 641 643 647 653 659
-			661 673 677 683 691 701 709 719 727 733
-			739 743 751 757 761 769 773 787 797 809
-			811 821 823 827 829 839 853 857 859 863
-			877 881 883 887 907 911 919 929 937 941
-			947 953 967 971 977 983 991 997
-			1009 1013 1019 1021 1031
-		*/
+		// The first few odd primes
+        /*
+                3   5   7   11  13  17  19  23  29
+            31  37  41  43  47  53  59  61  67  71
+            73  79  83  89  97  101 103 107 109 113
+            127 131 137 139 149 151 157 163 167 173
+            179 181 191 193 197 199 211 223 227 229
+            233 239 241 251 257 263 269 271 277 281
+            283 293 307 311 313 317 331 337 347 349
+            353 359 367 373 379 383 389 397 401 409
+            419 421 431 433 439 443 449 457 461 463
+            467 479 487 491 499 503 509 521 523 541
+            547 557 563 569 571 577 587 593 599 601
+            607 613 617 619 631 641 643 647 653 659
+            661 673 677 683 691 701 709 719 727 733
+            739 743 751 757 761 769 773 787 797 809
+            811 821 823 827 829 839 853 857 859 863
+            877 881 883 887 907 911 919 929 937 941
+            947 953 967 971 977 983 991 997 1009
+            1013 1019 1021 1031 1033 1039 1049 1051
+            1061 1063 1069 1087 1091 1093 1097 1103
+            1109 1117 1123 1129 1151 1153 1163 1171
+            1181 1187 1193 1201 1213 1217 1223 1229
+            1231 1237 1249 1259 1277 1279 1283 1289
+        */
 
-		// Each list has a product < 2^31
-		private static readonly int[][] primeLists = new int[][]
+        // Each list has a product < 2^31
+		internal static readonly int[][] primeLists = new int[][]
 		{
 			new int[]{ 3, 5, 7, 11, 13, 17, 19, 23 },
 			new int[]{ 29, 31, 37, 41, 43 },
@@ -98,11 +102,25 @@ namespace Org.BouncyCastle.Math
 			new int[]{ 953, 967, 971 },
 			new int[]{ 977, 983, 991 },
 
-			new int[]{ 997, 1009, 1013 },
-			new int[]{ 1019, 1021, 1031 },
-		};
+            new int[]{ 997, 1009, 1013 },
+            new int[]{ 1019, 1021, 1031 },
+            new int[]{ 1033, 1039, 1049 },
+            new int[]{ 1051, 1061, 1063 },
+            new int[]{ 1069, 1087, 1091 },
 
-		private static readonly int[] primeProducts;
+            new int[]{ 1093, 1097, 1103 },
+            new int[]{ 1109, 1117, 1123 },
+            new int[]{ 1129, 1151, 1153 },
+            new int[]{ 1163, 1171, 1181 },
+            new int[]{ 1187, 1193, 1201 },
+
+            new int[]{ 1213, 1217, 1223 },
+            new int[]{ 1229, 1231, 1237 },
+            new int[]{ 1249, 1259, 1277 },
+            new int[]{ 1279, 1283, 1289 },
+        };
+
+        internal static readonly int[] primeProducts;
 
 		private const long IMASK = 0xffffffffL;
 		private static readonly ulong UIMASK = (ulong)IMASK;
@@ -110,25 +128,18 @@ namespace Org.BouncyCastle.Math
 		private static readonly int[] ZeroMagnitude = new int[0];
 		private static readonly byte[] ZeroEncoding = new byte[0];
 
-		public static readonly BigInteger Zero = new BigInteger(0, ZeroMagnitude, false);
-		public static readonly BigInteger One = createUValueOf(1);
-		public static readonly BigInteger Two = createUValueOf(2);
-		public static readonly BigInteger Three = createUValueOf(3);
-		public static readonly BigInteger Ten = createUValueOf(10);
+        private static readonly BigInteger[] SMALL_CONSTANTS = new BigInteger[17];
+		public static readonly BigInteger Zero;
+		public static readonly BigInteger One;
+        public static readonly BigInteger Two;
+        public static readonly BigInteger Three;
+        public static readonly BigInteger Ten;
 
-		private static readonly int chunk2 = 1; // TODO Parse 64 bits at a time
-		private static readonly BigInteger radix2 = ValueOf(2);
-		private static readonly BigInteger radix2E = radix2.Pow(chunk2);
+        // TODO Parse radix-2 64 bits at a time and radix-8 63 bits at a time
+        private static readonly int chunk2 = 1, chunk8 = 1, chunk10 = 19, chunk16 = 16;
+		private static readonly BigInteger radix2, radix2E, radix8, radix8E, radix10, radix10E, radix16, radix16E;
 
-		private static readonly int chunk10 = 19;
-		private static readonly BigInteger radix10 = ValueOf(10);
-		private static readonly BigInteger radix10E = radix10.Pow(chunk10);
-
-		private static readonly int chunk16 = 16;
-		private static readonly BigInteger radix16 = ValueOf(16);
-		private static readonly BigInteger radix16E = radix16.Pow(chunk16);
-
-		private static readonly Random RandomSource = new Random();
+        private static readonly Random RandomSource = new Random();
 
 		private const int BitsPerByte = 8;
 		private const int BitsPerInt = 32;
@@ -136,7 +147,33 @@ namespace Org.BouncyCastle.Math
 
 		static BigInteger()
 		{
-			primeProducts = new int[primeLists.Length];
+            Zero = new BigInteger(0, ZeroMagnitude, false);
+            Zero.nBits = 0; Zero.nBitLength = 0;
+
+            SMALL_CONSTANTS[0] = Zero;
+            for (uint i = 1; i < SMALL_CONSTANTS.Length; ++i)
+            {
+                SMALL_CONSTANTS[i] = createUValueOf(i);
+            }
+
+            One = SMALL_CONSTANTS[1];
+            Two = SMALL_CONSTANTS[2];
+            Three = SMALL_CONSTANTS[3];
+            Ten = SMALL_CONSTANTS[10];
+
+            radix2 = ValueOf(2);
+            radix2E = radix2.Pow(chunk2);
+
+            radix8 = ValueOf(8);
+            radix8E = radix8.Pow(chunk8);
+
+            radix10 = ValueOf(10);
+		    radix10E = radix10.Pow(chunk10);
+
+            radix16 = ValueOf(16);
+            radix16E = radix16.Pow(chunk16);
+
+            primeProducts = new int[primeLists.Length];
 
 			for (int i = 0; i < primeLists.Length; ++i)
 			{
@@ -154,9 +191,9 @@ namespace Org.BouncyCastle.Math
 		private int[] magnitude; // array of ints with [0] being the most significant
 		private int nBits = -1; // cache BitCount() value
 		private int nBitLength = -1; // cache calcBitLength() value
-		private long mQuote = -1L; // -m^(-1) mod b, b = 2^32 (see Montgomery mult.)
+        private int mQuote = 0; // -m^(-1) mod b, b = 2^32 (see Montgomery mult.), 0 when uninitialised
 
-		private static int GetByteLength(
+        private static int GetByteLength(
 			int nBits)
 		{
 			return (nBits + BitsPerByte - 1) / BitsPerByte;
@@ -230,7 +267,14 @@ namespace Org.BouncyCastle.Math
 					r = radix2;
 					rE = radix2E;
 					break;
-				case 10:
+                case 8:
+                    // Is there anyway to restrict to octal digits?
+                    style = NumberStyles.Integer;
+                    chunk = chunk8;
+                    r = radix8;
+                    rE = radix8E;
+                    break;
+                case 10:
 					// This style seems to handle spaces and minus sign already (our processing redundant?)
 					style = NumberStyles.Integer;
 					chunk = chunk10;
@@ -245,7 +289,7 @@ namespace Org.BouncyCastle.Math
 					rE = radix16E;
 					break;
 				default:
-					throw new FormatException("Only bases 2, 10, or 16 allowed");
+					throw new FormatException("Only bases 2, 8, 10, or 16 allowed");
 			}
 
 
@@ -298,13 +342,21 @@ namespace Org.BouncyCastle.Math
 					{
 						case 2:
 							// TODO Need this because we are parsing in radix 10 above
-							if (i > 1)
+							if (i >= 2)
 								throw new FormatException("Bad character in radix 2 string: " + s);
 
 							// TODO Parse 64 bits at a time
 							b = b.ShiftLeft(1);
 							break;
-						case 16:
+                        case 8:
+                            // TODO Need this because we are parsing in radix 10 above
+                            if (i >= 8)
+                                throw new FormatException("Bad character in radix 8 string: " + s);
+
+                            // TODO Parse 63 bits at a time
+                            b = b.ShiftLeft(3);
+                            break;
+                        case 16:
 							b = b.ShiftLeft(64);
 							break;
 						default:
@@ -336,7 +388,15 @@ namespace Org.BouncyCastle.Math
 						// TODO Parse all bits at once
 //						b = b.ShiftLeft(s.Length);
 					}
-					else if (radix == 16)
+                    else if (radix == 8)
+                    {
+                        // NB: Can't reach here since we are parsing one char at a time
+                        Debug.Assert(false);
+
+                        // TODO Parse all bits at once
+//						b = b.ShiftLeft(s.Length * 3);
+                    }
+                    else if (radix == 16)
 					{
 						b = b.ShiftLeft(s.Length << 2);
 					}
@@ -353,16 +413,16 @@ namespace Org.BouncyCastle.Math
 				}
 			}
 
-			// Note: This is the previous (slower) algorithm
-			//			while (index < value.Length)
-			//            {
-			//				char c = value[index];
-			//				string s = c.ToString();
-			//				int i = Int32.Parse(s, style);
-			//
-			//                b = b.Multiply(r).Add(ValueOf(i));
-			//                index++;
-			//            }
+            // Note: This is the previous (slower) algorithm
+//			while (index < value.Length)
+//            {
+//				char c = value[index];
+//				string s = c.ToString();
+//				int i = Int32.Parse(s, style);
+//
+//                b = b.Multiply(r).Add(ValueOf(i));
+//                index++;
+//            }
 
 			magnitude = b.magnitude;
 		}
@@ -537,15 +597,14 @@ namespace Org.BouncyCastle.Math
 			random.NextBytes(b);
 
 			// strip off any excess bits in the MSB
-			b[0] &= rndMask[BitsPerByte * nBytes - sizeInBits];
+            int xBits = BitsPerByte * nBytes - sizeInBits;
+            b[0] &= (byte)(255U >> xBits);
 
-			this.magnitude = MakeMagnitude(b, 0, b.Length);
+            this.magnitude = MakeMagnitude(b, 0, b.Length);
 			this.sign = this.magnitude.Length < 1 ? 0 : 1;
 		}
 
-		private static readonly byte[] rndMask = { 255, 127, 63, 31, 15, 7, 3, 1 };
-
-		public BigInteger(
+        public BigInteger(
 			int		bitLength,
 			int		certainty,
 			Random	random)
@@ -563,14 +622,14 @@ namespace Org.BouncyCastle.Math
 					:	Three.magnitude;
 				return;
 			}
-
+             
 			int nBytes = GetByteLength(bitLength);
 			byte[] b = new byte[nBytes];
 
 			int xBits = BitsPerByte * nBytes - bitLength;
-			byte mask = rndMask[xBits];
+            byte mask = (byte)(255U >> xBits);
 
-			for (;;)
+            for (;;)
 			{
 				random.NextBytes(b);
 
@@ -585,7 +644,7 @@ namespace Org.BouncyCastle.Math
 
 				this.magnitude = MakeMagnitude(b, 0, b.Length);
 				this.nBits = -1;
-				this.mQuote = -1L;
+				this.mQuote = 0;
 
 				if (certainty < 1)
 					break;
@@ -600,7 +659,7 @@ namespace Org.BouncyCastle.Math
 						int n = 33 + random.Next(bitLength - 2);
 						this.magnitude[this.magnitude.Length - (n >> 5)] ^= (1 << (n & 31));
 						this.magnitude[this.magnitude.Length - 1] ^= ((random.Next() + 1) << 1);
-						this.mQuote = -1L;
+						this.mQuote = 0;
 
 						if (CheckProbablePrime(certainty, random))
 							return;
@@ -1312,7 +1371,7 @@ namespace Org.BouncyCastle.Math
 //			return rbTest;
 		}
 
-		internal bool RabinMillerTest(
+		public bool RabinMillerTest(
 			int		certainty,
 			Random	random)
 		{
@@ -1541,8 +1600,14 @@ namespace Org.BouncyCastle.Math
 //				}
 //			}
 
+            if (m.QuickPow2Check())
+            {
+                return ModInversePow2(m);
+            }
+
+            BigInteger d = this.Remainder(m);
             BigInteger x;
-            BigInteger gcd = ExtEuclid(this.Mod(m), m, out x);
+            BigInteger gcd = ExtEuclid(d, m, out x);
 
 			if (!gcd.Equals(One))
 				throw new ArithmeticException("Numbers not relatively prime.");
@@ -1554,6 +1619,74 @@ namespace Org.BouncyCastle.Math
 
 			return x;
 		}
+
+        private BigInteger ModInversePow2(BigInteger m)
+        {
+            Debug.Assert(m.SignValue > 0);
+            Debug.Assert(m.BitCount == 1);
+
+            if (!TestBit(0))
+            {
+                throw new ArithmeticException("Numbers not relatively prime.");
+            }
+
+            int pow = m.BitLength - 1;
+
+            if (pow <= 64)
+            {
+                long inv = ModInverse64(LongValue);
+                if (pow < 64)
+                {
+                    inv &= (m.LongValue - 1);
+                }
+                return BigInteger.ValueOf(inv);
+            }
+
+            BigInteger d = this.Remainder(m);
+            BigInteger x = d;
+            int bitsCorrect = 3;
+
+            while (bitsCorrect < pow)
+            {
+                BigInteger t = x.Multiply(d).Remainder(m);
+                x = x.Multiply(Two.Subtract(t)).Remainder(m);
+                bitsCorrect <<= 1;
+            }
+
+            if (x.sign < 0)
+            {
+                x = x.Add(m);
+            }
+
+            return x;
+        }
+
+        private int ModInverse32(int d)
+        {
+            Debug.Assert((d & 1) != 0);
+            // Newton-Raphson division (roughly)
+            int x = d;        // d.x == 1 mod 2**3
+            x *= 2 - d * x;   // d.x == 1 mod 2**6
+            x *= 2 - d * x;   // d.x == 1 mod 2**12
+            x *= 2 - d * x;   // d.x == 1 mod 2**24
+            x *= 2 - d * x;   // d.x == 1 mod 2**48
+            Debug.Assert(d * x == 1);
+            return x;
+        }
+
+        private long ModInverse64(long d)
+        {
+            // Newton-Raphson division (roughly)
+            Debug.Assert((d & 1L) != 0);
+            long x = d;       // d.x == 1 mod 2**3
+            x *= 2 - d * x;   // d.x == 1 mod 2**6
+            x *= 2 - d * x;   // d.x == 1 mod 2**12
+            x *= 2 - d * x;   // d.x == 1 mod 2**24
+            x *= 2 - d * x;   // d.x == 1 mod 2**48
+            x *= 2 - d * x;   // d.x == 1 mod 2**96
+            Debug.Assert(d * x == 1L);
+            return x;
+        }
 
 		/**
 		 * Calculate the numbers u1, u2, and u3 such that:
@@ -1647,7 +1780,7 @@ namespace Org.BouncyCastle.Math
 			long mQ = 0;
 			if (useMonty)
 			{
-				mQ = m.GetMQuote();
+				mQ = m.GetMQuote() & IMASK;
 
 				// tmp = this * R mod m
 				BigInteger tmp = ShiftLeft(32 * m.magnitude.Length).Mod(m);
@@ -1908,85 +2041,26 @@ namespace Org.BouncyCastle.Math
 			return x;
 		}
 
-		private static long FastExtEuclid(
-			long	a,
-			long	b,
-			long[]	uOut)
-		{
-			long u1 = 1;
-			long u3 = a;
-			long v1 = 0;
-			long v3 = b;
-
-			while (v3 > 0)
-			{
-				long q, tn;
-
-				q = u3 / v3;
-
-				tn = u1 - (v1 * q);
-				u1 = v1;
-				v1 = tn;
-
-				tn = u3 - (v3 * q);
-				u3 = v3;
-				v3 = tn;
-			}
-
-			uOut[0] = u1;
-			uOut[1] = (u3 - (u1 * a)) / b;
-
-			return u3;
-		}
-
-		private static long FastModInverse(
-			long	v,
-			long	m)
-		{
-			if (m < 1)
-				throw new ArithmeticException("Modulus must be positive");
-
-			long[] x = new long[2];
-			long gcd = FastExtEuclid(v, m, x);
-
-			if (gcd != 1)
-				throw new ArithmeticException("Numbers not relatively prime.");
-
-			if (x[0] < 0)
-			{
-				x[0] += m;
-			}
-
-			return x[0];
-		}
-
-//		private static BigInteger MQuoteB = One.ShiftLeft(32);
-//		private static BigInteger MQuoteBSub1 = MQuoteB.Subtract(One);
-
-		/**
+        /**
 		 * Calculate mQuote = -m^(-1) mod b with b = 2^32 (32 = word size)
 		 */
-		private long GetMQuote()
+		private int GetMQuote()
 		{
-			Debug.Assert(this.sign > 0);
-
-			if (mQuote != -1)
+			if (mQuote != 0)
 			{
 				return mQuote; // already calculated
 			}
 
-			if (magnitude.Length == 0 || (magnitude[magnitude.Length - 1] & 1) == 0)
-			{
-				return -1; // not for even numbers
-			}
+            Debug.Assert(this.sign > 0);
 
-			long v = (((~this.magnitude[this.magnitude.Length - 1]) | 1) & 0xffffffffL);
-			mQuote = FastModInverse(v, 0x100000000L);
+            int d = -magnitude[magnitude.Length - 1];
 
-			return mQuote;
+            Debug.Assert((d & 1) != 0);
+
+            return mQuote = ModInverse32(d);
 		}
 
-		/**
+        /**
 		 * Montgomery multiplication: a = x * y * R^(-1) mod m
 		 * <br/>
 		 * Based algorithm 14.36 of Handbook of Applied Cryptography.
@@ -2144,22 +2218,30 @@ namespace Org.BouncyCastle.Math
 
 		public BigInteger Pow(int exp)
 		{
-			if (exp < 0)
+			if (exp <= 0)
 			{
-				throw new ArithmeticException("Negative exponent");
+                if (exp < 0)
+    				throw new ArithmeticException("Negative exponent");
+
+                return One;
 			}
 
-			if (exp == 0)
-			{
-				return One;
-			}
-
-			if (sign == 0 || Equals(One))
+            if (sign == 0)
 			{
 				return this;
 			}
 
-			BigInteger y = One;
+            if (QuickPow2Check())
+            {
+                long powOf2 = (long)exp * (BitLength - 1);
+                if (powOf2 > Int32.MaxValue)
+                {
+                    throw new ArithmeticException("Result too large");
+                }
+                return One.ShiftLeft((int)powOf2); 
+            }
+
+            BigInteger y = One;
 			BigInteger z = this;
 
 			for (;;)
@@ -2367,13 +2449,13 @@ namespace Org.BouncyCastle.Math
 
 			Array.Copy(this.magnitude, this.magnitude.Length - numWords, result, 0, numWords);
 
-			int hiBits = n % 32;
-			if (hiBits != 0)
-			{
-				result[0] &= ~(-1 << hiBits);
-			}
+            int excessBits = (numWords << 5) - n;
+            if (excessBits > 0)
+            {
+                result[0] &= (int)(UInt32.MaxValue >> excessBits);
+            }
 
-			return result;
+            return result;
 		}
 
 		/**
@@ -2742,109 +2824,149 @@ namespace Org.BouncyCastle.Math
 			return ToString(10);
 		}
 
-		public string ToString(
-			int radix)
-		{
-			// TODO Make this method work for other radices (ideally 2 <= radix <= 16)
+        public string ToString(int radix)
+        {
+            // TODO Make this method work for other radices (ideally 2 <= radix <= 36 as in Java)
 
-			switch (radix)
-			{
-				case 2:
-				case 10:
-				case 16:
-					break;
-				default:
-					throw new FormatException("Only bases 2, 10, 16 are allowed");
-			}
+            switch (radix)
+            {
+                case 2:
+                case 8:
+                case 10:
+                case 16:
+                    break;
+                default:
+                    throw new FormatException("Only bases 2, 8, 10, 16 are allowed");
+            }
 
-			// NB: Can only happen to internally managed instances
-			if (magnitude == null)
-				return "null";
+            // NB: Can only happen to internally managed instances
+            if (magnitude == null)
+                return "null";
 
-			if (sign == 0)
-				return "0";
+            if (sign == 0)
+                return "0";
 
-			Debug.Assert(magnitude.Length > 0);
 
-			StringBuilder sb = new StringBuilder();
+            // NOTE: This *should* be unnecessary, since the magnitude *should* never have leading zero digits
+            int firstNonZero = 0;
+            while (firstNonZero < magnitude.Length)
+            {
+                if (magnitude[firstNonZero] != 0)
+                {
+                    break;
+                }
+                ++firstNonZero;
+            }
 
-			if (radix == 16)
-			{
-				sb.Append(magnitude[0].ToString("x"));
+            if (firstNonZero == magnitude.Length)
+            {
+                return "0";
+            }
 
-				for (int i = 1; i < magnitude.Length; i++)
-				{
-					sb.Append(magnitude[i].ToString("x8"));
-				}
-			}
-			else if (radix == 2)
-			{
-				sb.Append('1');
 
-				for (int i = BitLength - 2; i >= 0; --i)
-				{
-					sb.Append(TestBit(i) ? '1' : '0');
-				}
-			}
-			else
-			{
-				// This is algorithm 1a from chapter 4.4 in Seminumerical Algorithms, slow but it works
-				IList S = Platform.CreateArrayList();
-				BigInteger bs = ValueOf(radix);
+            StringBuilder sb = new StringBuilder();
+            if (sign == -1)
+            {
+                sb.Append('-');
+            }
 
-				// The sign is handled separatly.
-				// Notice however that for this to work, radix 16 _MUST_ be a special case,
-				// unless we want to enter a recursion well. In their infinite wisdom, why did not
-				// the Sun engineers made a c'tor for BigIntegers taking a BigInteger as parameter?
-				// (Answer: Becuase Sun's BigIntger is clonable, something bouncycastle's isn't.)
-//				BigInteger u = new BigInteger(Abs().ToString(16), 16);
-				BigInteger u = this.Abs();
-				BigInteger b;
-
-				while (u.sign != 0)
-				{
-					b = u.Mod(bs);
-					if (b.sign == 0)
-					{
-						S.Add("0");
-					}
-					else
-					{
-						// see how to interact with different bases
-						S.Add(b.magnitude[0].ToString("d"));
-					}
-					u = u.Divide(bs);
-				}
-
-				// Then pop the stack
+            switch (radix)
+            {
+            case 2:
+            {
+                int pos = firstNonZero;
+                sb.Append(Convert.ToString(magnitude[pos], 2));
+                while (++pos < magnitude.Length)
+                {
+                    AppendZeroExtendedString(sb, Convert.ToString(magnitude[pos], 2), 32);
+                }
+                break;
+            }
+            case 8:
+            {
+                int mask = (1 << 30) - 1;
+                BigInteger u = this.Abs();
+                int bits = u.BitLength;
+                IList S = Platform.CreateArrayList();
+                while (bits > 30)
+                {
+                    S.Add(Convert.ToString(u.IntValue & mask, 8));
+                    u = u.ShiftRight(30);
+                    bits -= 30;
+                }
+                sb.Append(Convert.ToString(u.IntValue, 8));
                 for (int i = S.Count - 1; i >= 0; --i)
                 {
-                    sb.Append((string)S[i]);
+                    AppendZeroExtendedString(sb, (string)S[i], 10);
                 }
-			}
+                break;
+            }
+            case 16:
+            {
+                int pos = firstNonZero;
+                sb.Append(Convert.ToString(magnitude[pos], 16));
+                while (++pos < magnitude.Length)
+                {
+                    AppendZeroExtendedString(sb, Convert.ToString(magnitude[pos], 16), 8);
+                }
+                break;
+            }
+            // TODO This could work for other radices if there is an alternative to Convert.ToString method
+            //default:
+            case 10:
+            {
+                BigInteger q = this.Abs();
+                if (q.BitLength < 64)
+                {
+                    sb.Append(Convert.ToString(q.LongValue, radix));
+                    break;
+                }
 
-			string s = sb.ToString();
+                // Based on algorithm 1a from chapter 4.4 in Seminumerical Algorithms (Knuth)
 
-			Debug.Assert(s.Length > 0);
+                // Work out the largest power of 'rdx' that is a positive 64-bit integer
+                // TODO possibly cache power/exponent against radix?
+                long limit = Int64.MaxValue / radix;
+                long power = radix;
+                int exponent = 1;
+                while (power <= limit)
+                {
+                    power *= radix;
+                    ++exponent;
+                }
 
-			// Strip leading zeros. (We know this number is not all zeroes though)
-			if (s[0] == '0')
-			{
-				int nonZeroPos = 0;
-				while (s[++nonZeroPos] == '0') {}
+                BigInteger bigPower = BigInteger.ValueOf(power);
 
-				s = s.Substring(nonZeroPos);
-			}
+                IList S = Platform.CreateArrayList();
+                while (q.CompareTo(bigPower) >= 0)
+                {
+                    BigInteger[] qr = q.DivideAndRemainder(bigPower);
+                    S.Add(Convert.ToString(qr[1].LongValue, radix));
+                    q = qr[0];
+                }
 
-			if (sign == -1)
-			{
-				s = "-" + s;
-			}
+                sb.Append(Convert.ToString(q.LongValue, radix));
+                for (int i = S.Count - 1; i >= 0; --i)
+                {
+                    AppendZeroExtendedString(sb, (string)S[i], exponent);
+                }
+                break;
+            }
+            }
 
-			return s;
-		}
+            return sb.ToString();
+        }
 
-		private static BigInteger createUValueOf(
+        private static void AppendZeroExtendedString(StringBuilder sb, string s, int minLength)
+        {
+            for (int len = s.Length; len < minLength; ++len)
+            {
+                sb.Append('0');
+            }
+            sb.Append(s);
+        }
+
+        private static BigInteger createUValueOf(
 			ulong value)
 		{
 			int msw = (int)(value >> 32);
@@ -2879,36 +3001,17 @@ namespace Org.BouncyCastle.Math
 			}
 
 			return createUValueOf((ulong)value);
-
-//			// store value into a byte array
-//			byte[] b = new byte[8];
-//			for (int i = 0; i < 8; i++)
-//			{
-//				b[7 - i] = (byte)value;
-//				value >>= 8;
-//			}
-//
-//			return new BigInteger(b);
 		}
 
-		public static BigInteger ValueOf(
+        public static BigInteger ValueOf(
 			long value)
 		{
-			switch (value)
-			{
-				case 0:
-					return Zero;
-				case 1:
-					return One;
-				case 2:
-					return Two;
-				case 3:
-					return Three;
-				case 10:
-					return Ten;
-			}
+            if (value >= 0 && value < SMALL_CONSTANTS.Length)
+            {
+                return SMALL_CONSTANTS[value];
+            }
 
-			return createValueOf(value);
+            return createValueOf(value);
 		}
 
 		public int GetLowestSetBit()
