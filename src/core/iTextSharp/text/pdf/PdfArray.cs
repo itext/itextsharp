@@ -380,5 +380,18 @@ namespace iTextSharp.text.pdf {
         IEnumerator IEnumerable.GetEnumerator() {
             return arrayList.GetEnumerator();
         }
+
+        /**
+         * 
+         * @return this PdfArray's values as a long[] 
+         * @since 5.3.5
+         */
+        public long[] AsLongArray(){
+            long[] rslt = new long[Size];
+            for (int k = 0; k < rslt.Length; ++k) {
+                rslt[k] = GetAsNumber(k).LongValue;
+            }
+            return rslt;
+        }
     }
 }

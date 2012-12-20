@@ -135,7 +135,7 @@ namespace iTextSharp.text.io {
          * @param filename the name of the file or resource to create the {@link RandomAccessSource} for
          * @return the newly created {@link RandomAccessSource}
          */
-        public IRandomAccessSource createBestSource(String filename) {
+        public IRandomAccessSource CreateBestSource(String filename) {
             if (!File.Exists(filename)) {
                 if (filename.StartsWith("file:/")
                         || filename.StartsWith("http://") 

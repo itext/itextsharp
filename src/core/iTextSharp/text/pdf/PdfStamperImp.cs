@@ -95,20 +95,17 @@ namespace iTextSharp.text.pdf {
             this.reader = reader;
             file = reader.SafeFile;
             this.append = append;
-            if (reader.IsEncrypted())
-            {
+            if (reader.IsEncrypted() && (append || PdfReader.unethicalreading)) {
                 crypto = new PdfEncryption(reader.Decrypt);
             }
             if (append) {
                 if (reader.IsRebuilt())
                     throw new DocumentException(MessageLocalization.GetComposedMessage("append.mode.requires.a.document.without.errors.even.if.recovery.was.possible"));
                 pdf_version.SetAppendmode(true);
-                file.ReOpen();
                 byte[] buf = new byte[8192];
                 int n;
                 while ((n = file.Read(buf)) > 0)
                     this.os.Write(buf, 0, n);
-                file.Close();
                 prevxref = reader.LastXref;
                 reader.Appendable = true;
             }
@@ -307,38 +304,29 @@ namespace iTextSharp.text.pdf {
         }
 
         virtual protected void Close(PdfIndirectReference info, int skipInfo) {
-            try {
-                file.ReOpen();
-                AlterContents();
-                int rootN = ((PRIndirectReference)reader.trailer.Get(PdfName.ROOT)).Number;
-                if (append) {
-                    int[] keys = marked.GetKeys();
-                    for (int k = 0; k < keys.Length; ++k) {
-                        int j = keys[k];
-                        PdfObject obj = reader.GetPdfObjectRelease(j);
-                        if (obj != null && skipInfo != j && j < initialXrefSize) {
-                            AddToBody(obj, j, j != rootN);
-                        }
-                    }
-                    for (int k = initialXrefSize; k < reader.XrefSize; ++k) {
-                        PdfObject obj = reader.GetPdfObject(k);
-                        if (obj != null) {
-                            AddToBody(obj, GetNewObjectNumber(reader, k, 0));
-                        }
-                    }
-                } else {
-                    for (int k = 1; k < reader.XrefSize; ++k) {
-                        PdfObject obj = reader.GetPdfObjectRelease(k);
-                        if (obj != null && skipInfo != k) {
-                            AddToBody(obj, GetNewObjectNumber(reader, k, 0), k != rootN);
-                        }
+            AlterContents();
+            int rootN = ((PRIndirectReference)reader.trailer.Get(PdfName.ROOT)).Number;
+            if (append) {
+                int[] keys = marked.GetKeys();
+                for (int k = 0; k < keys.Length; ++k) {
+                    int j = keys[k];
+                    PdfObject obj = reader.GetPdfObjectRelease(j);
+                    if (obj != null && skipInfo != j && j < initialXrefSize) {
+                        AddToBody(obj, j, j != rootN);
                     }
                 }
-            } finally {
-                try {
-                    file.Close();
-                } catch {
-                    // empty on purpose
+                for (int k = initialXrefSize; k < reader.XrefSize; ++k) {
+                    PdfObject obj = reader.GetPdfObject(k);
+                    if (obj != null) {
+                        AddToBody(obj, GetNewObjectNumber(reader, k, 0));
+                    }
+                }
+            } else {
+                for (int k = 1; k < reader.XrefSize; ++k) {
+                    PdfObject obj = reader.GetPdfObjectRelease(k);
+                    if (obj != null && skipInfo != k) {
+                        AddToBody(obj, GetNewObjectNumber(reader, k, 0), k != rootN);
+                    }
                 }
             }
             PdfIndirectReference encryption = null;
@@ -377,7 +365,6 @@ namespace iTextSharp.text.pdf {
             os.Flush();
             if (CloseStream)
                 os.Close();
-            reader.Close();
         }
 
         internal void ApplyRotation(PdfDictionary pageN, ByteBuffer out_p) {

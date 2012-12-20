@@ -4123,6 +4123,7 @@
     <Compile Include="iTextSharp\text\pdf\security\CrlVerifier.cs" />
     <Compile Include="iTextSharp\text\pdf\security\DigestAlgorithms.cs" />
     <Compile Include="iTextSharp\text\pdf\security\EncryptionAlgorithms.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\ExternalBlankSignatureContainer.cs" />
     <Compile Include="iTextSharp\text\pdf\security\ICrlClient.cs" />
     <Compile Include="iTextSharp\text\pdf\security\IExternalSignature.cs" />
     <Compile Include="iTextSharp\text\pdf\security\IExternalSignatureContainer.cs" />

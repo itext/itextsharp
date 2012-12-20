@@ -8,6 +8,7 @@ using System.util.collections;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf.security;
 using iTextSharp.text.xml;
+using iTextSharp.text.io;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -463,7 +464,7 @@ namespace iTextSharp.text.pdf {
         }
         
         public static Object[] SplitDAelements(String da) {
-            PRTokeniser tk = new PRTokeniser(PdfEncodings.ConvertToBytes(da, null));
+            PRTokeniser tk = new PRTokeniser(new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource(PdfEncodings.ConvertToBytes(da, null))));
             List<String> stack = new List<string>();
             Object[] ret = new Object[3];
             while (tk.NextToken()) {
@@ -2205,24 +2206,16 @@ namespace iTextSharp.text.pdf {
         private void UpdateByteRange(PdfPKCS7 pkcs7, PdfDictionary v) {
             PdfArray b = v.GetAsArray(PdfName.BYTERANGE);
             RandomAccessFileOrArray rf = reader.SafeFile;
+            Stream rg = null;
             try {
-                rf.ReOpen();
+                rg = new RASInputStream(new RandomAccessSourceFactory().CreateRanged(rf.CreateSourceView(), b.AsLongArray()));
                 byte[] buf = new byte[8192];
-                for (int k = 0; k < b.Size; ++k) {
-                    int start = b.GetAsNumber(k).IntValue;
-                    int length = b.GetAsNumber(++k).IntValue;
-                    rf.Seek(start);
-                    while (length > 0) {
-                        int rd = rf.Read(buf, 0, Math.Min(length, buf.Length));
-                        if (rd <= 0)
-                            break;
-                        length -= rd;
-                        pkcs7.Update(buf, 0, rd);
-                    }
+                int rd;
+                while ((rd = rg.Read(buf, 0, buf.Length)) > 0) {
+                    pkcs7.Update(buf, 0, rd);
                 }
-            }
-            finally {
-                try{rf.Close();}catch{}
+            } finally {
+                if (rg != null) rg.Close();
             }
         }
 
@@ -2266,7 +2259,7 @@ namespace iTextSharp.text.pdf {
             RandomAccessFileOrArray raf = reader.SafeFile;
             raf.ReOpen();
             raf.Seek(0);
-            return new RevisionStream(raf, length);
+            return new RASInputStream(new WindowRandomAccessSource(raf.CreateSourceView(), 0, length));
         }
 
         /**
@@ -2362,97 +2355,6 @@ namespace iTextSharp.text.pdf {
             stdFieldFontNames["STSo"] = new String[]{"STSong-Light", "UniGB-UCS2-H"};
         }
 
-        public class RevisionStream : Stream {
-            private byte[] b = new byte[1];
-            private RandomAccessFileOrArray raf;
-            private int length;
-            private int rangePosition = 0;
-            private bool closed;
-            
-            internal RevisionStream(RandomAccessFileOrArray raf, int length) {
-                this.raf = raf;
-                this.length = length;
-            }
-            
-            public override int ReadByte() {
-                int n = Read(b, 0, 1);
-                if (n != 1)
-                    return -1;
-                return b[0] & 0xff;
-            }
-            
-            public override int Read(byte[] b, int off, int len) {
-                if (b == null) {
-                    throw new ArgumentNullException();
-                } else if ((off < 0) || (off > b.Length) || (len < 0) ||
-                ((off + len) > b.Length) || ((off + len) < 0)) {
-                    throw new ArgumentOutOfRangeException();
-                } else if (len == 0) {
-                    return 0;
-                }
-                if (rangePosition >= length) {
-                    Close();
-                    return -1;
-                }
-                int elen = Math.Min(len, length - rangePosition);
-                raf.ReadFully(b, off, elen);
-                rangePosition += elen;
-                return elen;
-            }
-            
-            public override void Close() {
-                if (!closed) {
-                    raf.Close();
-                    closed = true;
-                }
-            }
-        
-            public override bool CanRead {
-                get {
-                    return true;
-                }
-            }
-        
-            public override bool CanSeek {
-                get {
-                    return false;
-                }
-            }
-        
-            public override bool CanWrite {
-                get {
-                    return false;
-                }
-            }
-        
-            public override long Length {
-                get {
-                    return 0;
-                }
-            }
-        
-            public override long Position {
-                get {
-                    return 0;
-                }
-                set {
-                }
-            }
-        
-            public override void Flush() {
-            }
-        
-            public override long Seek(long offset, SeekOrigin origin) {
-                return 0;
-            }
-        
-            public override void SetLength(long value) {
-            }
-        
-            public override void Write(byte[] buffer, int offset, int count) {
-            }
-        }
-        
         private class ISorterComparator : IComparer<Object[]> {        
             public int Compare(Object[] o1, Object[] o2) {
                 int n1 = ((int[])o1[1])[0];

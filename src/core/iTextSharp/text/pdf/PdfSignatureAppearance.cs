@@ -5,6 +5,7 @@ using iTextSharp.text.error_messages;
 using System.Text;
 using System.Collections.Generic;
 using iTextSharp.text.pdf.security;
+using iTextSharp.text.io;
 /*
  * $Id$
  *
@@ -183,128 +184,18 @@ namespace iTextSharp.text.pdf {
          * @return the document bytes that are hashable
          */
         public Stream GetRangeStream() {
-            return new PdfSignatureAppearance.FRangeStream(raf, bout, range);
+            RandomAccessSourceFactory fac = new RandomAccessSourceFactory();
+            return new RASInputStream(fac.CreateRanged(GetUnderlyingSource(), range));
         }
-        
-        /**
-         * An InputStream that allows you to read that part of a PDF
-         * document that needs to be hashed.
-         */
-        public class FRangeStream : Stream {
-            private byte[] b = new byte[1];
-            private FileStream raf;
-            private byte[] bout;
-            private long[] range;
-            private long rangePosition = 0;
-            
-            internal FRangeStream(FileStream raf, byte[] bout, long[] range) {
-                this.raf = raf;
-                this.bout = bout;
-                this.range = range;
-            }
-            
-            /**
-            * @see java.io.Stream#read()
-            */
-            public override int ReadByte() {
-                int n = Read(b, 0, 1);
-                if (n != 1)
-                    return -1;
-                return b[0] & 0xff;
-            }
-            
-            /**
-            * @see java.io.Stream#read(byte[], int, int)
-            */
-            public override int Read(byte[] b, int off, int len) {
-                if (b == null) {
-                    throw new ArgumentNullException();
-                } else if ((off < 0) || (off > b.Length) || (len < 0) ||
-                ((off + len) > b.Length) || ((off + len) < 0)) {
-                    throw new ArgumentOutOfRangeException();
-                } else if (len == 0) {
-                    return 0;
-                }
-                if (rangePosition >= range[range.Length - 2] + range[range.Length - 1]) {
-                    return 0;
-                }
-                for (int k = 0; k < range.Length; k += 2) {
-                    long start = range[k];
-                    long end = start + range[k + 1];
-                    if (rangePosition < start)
-                        rangePosition = start;
-                    if (rangePosition >= start && rangePosition < end) {
-                        int lenf = (int)Math.Min((long)len, end - rangePosition);
-                        if (raf == null)
-                            Array.Copy(bout, rangePosition, b, off, lenf);
-                        else {
-                            raf.Seek(rangePosition, SeekOrigin.Begin);
-                            ReadFully(b, off, lenf);
-                        }
-                        rangePosition += lenf;
-                        return lenf;
-                    }
-                }
-                return 0;
-            }
-        
-            private void ReadFully(byte[] b, int offset, int count) {
-                while (count > 0) {
-                    int n = raf.Read(b, offset, count);
-                    if (n <= 0)
-                        throw new IOException(MessageLocalization.GetComposedMessage("insufficient.data"));
-                    count -= n;
-                    offset += n;
-                }
-            }
 
-            public override bool CanRead {
-                get {
-                    return true;
-                }
-            }
-        
-            public override bool CanSeek {
-                get {
-                    return false;
-                }
-            }
-        
-            public override bool CanWrite {
-                get {
-                    return false;
-                }
-            }
-        
-            public override long Length {
-                get {
-                    return 0;
-                }
-            }
-        
-            public override long Position {
-                get {
-                    return 0;
-                }
-                set {
-                }
-            }
-        
-            public override void Flush() {
-            }
-        
-            public override long Seek(long offset, SeekOrigin origin) {
-                return 0;
-            }
-        
-            public override void SetLength(long value) {
-            }
-        
-            public override void Write(byte[] buffer, int offset, int count) {
-            }
-        
-            public override void WriteByte(byte value) {
-            }
+        /**
+         * @return the underlying source
+         * @throws IOException
+         */
+        private IRandomAccessSource GetUnderlyingSource() {
+            //TODO: get rid of separate byte[] and RandomAccessFile objects and just store a RandomAccessSource
+            RandomAccessSourceFactory fac = new RandomAccessSourceFactory();
+            return raf == null ? fac.CreateSource(bout) : fac.CreateSource(raf);
         }
         
         /** The signing certificate */

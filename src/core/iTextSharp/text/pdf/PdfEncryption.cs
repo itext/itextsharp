@@ -468,6 +468,10 @@ public class PdfEncryption {
         SetupUserKey();
     }
 
+	public void SetKey(byte[] key) {
+        this.key = key;
+    }
+    
     public void SetupByEncryptionKey(byte[] key, int keylength) {
         mkey = new byte[keylength/8];
         System.Array.Copy(key, 0, mkey, 0, mkey.Length);
@@ -530,8 +534,14 @@ public class PdfEncryption {
                 dic.Put(PdfName.RECIPIENTS, recipients);
             }
             else {               
-                dic.Put(PdfName.R, new PdfNumber(AES_128));
-                dic.Put(PdfName.V, new PdfNumber(4));
+                if (revision == AES_256) {
+                    dic.Put(PdfName.R, new PdfNumber(AES_256));
+                    dic.Put(PdfName.V, new PdfNumber(5));
+                }
+                else {
+                    dic.Put(PdfName.R, new PdfNumber(AES_128));
+                    dic.Put(PdfName.V, new PdfNumber(4));
+                }
                 dic.Put(PdfName.SUBFILTER, PdfName.ADBE_PKCS7_S5);
                                 
                 PdfDictionary stdcf = new PdfDictionary();
@@ -539,8 +549,14 @@ public class PdfEncryption {
                 if (!encryptMetadata)
                     stdcf.Put(PdfName.ENCRYPTMETADATA, PdfBoolean.PDFFALSE);
                 
-                if (revision == AES_128)
+                if (revision == AES_128) {
                     stdcf.Put(PdfName.CFM, PdfName.AESV2);
+                    stdcf.Put(PdfName.LENGTH, new PdfNumber(128));
+                }
+                else if (revision == AES_256) {
+                    stdcf.Put(PdfName.CFM, PdfName.AESV3);
+                    stdcf.Put(PdfName.LENGTH, new PdfNumber(256));
+                }
                 else
                     stdcf.Put(PdfName.CFM, PdfName.V2);                  
                 PdfDictionary cf = new PdfDictionary();
@@ -557,7 +573,11 @@ public class PdfEncryption {
                 }
             }
             
-            IDigest sh = DigestUtilities.GetDigest("SHA1");
+            IDigest sh;
+            if (revision == AES_256)
+			    sh = DigestUtilities.GetDigest("SHA-256");
+            else
+                sh = DigestUtilities.GetDigest("SHA-1");
             byte[] encodedRecipient = null;
             byte[] seed = publicKeyHandler.GetSeed();
             sh.BlockUpdate(seed, 0, seed.Length);
@@ -570,7 +590,10 @@ public class PdfEncryption {
                 sh.BlockUpdate(metadataPad, 0, metadataPad.Length);
             byte[] mdResult = new byte[sh.GetDigestSize()];
             sh.DoFinal(mdResult, 0);            
-            SetupByEncryptionKey(mdResult, keyLength);              
+            if (revision == AES_256)
+                key = mdResult;
+            else
+                SetupByEncryptionKey(mdResult, keyLength);              
         } else {
             dic.Put(PdfName.FILTER, PdfName.STANDARD);
             dic.Put(PdfName.O, new PdfLiteral(PdfContentByte.EscapeString(ownerKey)));

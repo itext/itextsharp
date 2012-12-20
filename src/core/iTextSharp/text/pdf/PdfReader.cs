@@ -15,6 +15,7 @@ using Org.BouncyCastle.Cms;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf.codec;
+using iTextSharp.text.io;
 /*
  * $Id$
  *
@@ -64,7 +65,7 @@ namespace iTextSharp.text.pdf {
     * @author Paulo Soares
     * @author Kazuya Ujihara
     */
-    public class PdfReader : IPdfViewerPreferences {
+    public class PdfReader : IPdfViewerPreferences, IDisposable {
         
         /**
          * The iText developers are not responsible if you decide to change the
@@ -131,6 +132,24 @@ namespace iTextSharp.text.pdf {
         protected internal PdfReader() {
         }
         
+        /**
+         * Constructs a new PdfReader.  This is the master constructor.
+         */
+        private PdfReader(IRandomAccessSource byteSource, bool partialRead, byte[] ownerPassword, X509Certificate certificate, ICipherParameters certificateKey) {
+            this.certificate = certificate;
+            this.certificateKey = certificateKey;
+            this.password = ownerPassword;
+            this.partial = partialRead;
+            
+            tokens = GetOffsetTokeniser(byteSource);
+            
+            if (partialRead){
+                ReadPdfPartial();
+            } else {
+                ReadPdf();
+            }
+        }
+
         /** Reads and parses a PDF document.
         * @param filename the file name of the document
         * @throws IOException on error
@@ -143,10 +162,14 @@ namespace iTextSharp.text.pdf {
         * @param ownerPassword the password to read the document
         * @throws IOException on error
         */    
-        public PdfReader(String filename, byte[] ownerPassword) {
-            password = ownerPassword;
-            tokens = new PRTokeniser(filename);
-            ReadPdf();
+        public PdfReader(String filename, byte[] ownerPassword) : this(
+            new RandomAccessSourceFactory()
+            .SetForceRead(false)
+            .CreateBestSource(filename),                
+            false,
+            ownerPassword,
+            null,
+            null) {
         }
         
         /** Reads and parses a PDF document.
@@ -161,10 +184,12 @@ namespace iTextSharp.text.pdf {
         * @param ownerPassword the password to read the document
         * @throws IOException on error
         */
-        public PdfReader(byte[] pdfIn, byte[] ownerPassword) {
-            password = ownerPassword;
-            tokens = new PRTokeniser(pdfIn);
-            ReadPdf();
+        public PdfReader(byte[] pdfIn, byte[] ownerPassword) : this(
+            new RandomAccessSourceFactory().CreateSource(pdfIn),
+            false,
+            ownerPassword,
+            null,
+            null) {
         }
         
         /** Reads and parses a PDF document.
@@ -174,11 +199,14 @@ namespace iTextSharp.text.pdf {
         * @param certificateKeyProvider the security provider for certificateKey
         * @throws IOException on error
         */
-        public PdfReader(String filename, X509Certificate certificate, ICipherParameters certificateKey) {
-            this.certificate = certificate;
-            this.certificateKey = certificateKey;
-            tokens = new PRTokeniser(filename);
-            ReadPdf();
+        public PdfReader(String filename, X509Certificate certificate, ICipherParameters certificateKey) : this(
+            new RandomAccessSourceFactory()
+            .SetForceRead(false)
+            .CreateBestSource(filename),
+            false,
+            null,
+            certificate,
+            certificateKey){
         }        
 
     /** Reads and parses a PDF document.
@@ -193,10 +221,12 @@ namespace iTextSharp.text.pdf {
         * @param ownerPassword the password to read the document
         * @throws IOException on error
         */
-        public PdfReader(Uri url, byte[] ownerPassword) {
-            password = ownerPassword;
-            tokens = new PRTokeniser(new RandomAccessFileOrArray(url));
-            ReadPdf();
+        public PdfReader(Uri url, byte[] ownerPassword) : this(
+            new RandomAccessSourceFactory().CreateSource(url),
+            false,
+            ownerPassword,
+            null,
+            null) {
         }
         
         /**
@@ -206,10 +236,12 @@ namespace iTextSharp.text.pdf {
         * @param ownerPassword the password to read the document
         * @throws IOException on error
         */
-        public PdfReader(Stream isp, byte[] ownerPassword) {
-            password = ownerPassword;
-            tokens = new PRTokeniser(new RandomAccessFileOrArray(isp));
-            ReadPdf();
+        public PdfReader(Stream isp, byte[] ownerPassword) : this(
+            new RandomAccessSourceFactory().CreateSource(isp),
+            false,
+            ownerPassword,
+            null,
+            null) {
         }
         
         /**
@@ -224,17 +256,17 @@ namespace iTextSharp.text.pdf {
         /**
         * Reads and parses a pdf document. Contrary to the other constructors only the xref is read
         * into memory. The reader is said to be working in "partial" mode as only parts of the pdf
-        * are read as needed. The pdf is left open but may be closed at any time with
-        * <CODE>PdfReader.Close()</CODE>, reopen is automatic.
+        * are read as needed.
         * @param raf the document location
         * @param ownerPassword the password or <CODE>null</CODE> for no password
         * @throws IOException on error
         */    
-        public PdfReader(RandomAccessFileOrArray raf, byte[] ownerPassword) {
-            password = ownerPassword;
-            partial = true;
-            tokens = new PRTokeniser(raf);
-            ReadPdfPartial();
+        public PdfReader(RandomAccessFileOrArray raf, byte[] ownerPassword) : this(
+            raf.GetByteSource(),
+            true,
+            ownerPassword,
+            null,
+            null) {
         }
         
         /** Creates an independent duplicate.
@@ -275,6 +307,23 @@ namespace iTextSharp.text.pdf {
             this.ownerPasswordUsed = reader.ownerPasswordUsed;
         }
                                                                                       
+        /**
+         * Utility method that checks the provided byte source to see if it has junk bytes at the beginning.  If junk bytes
+         * are found, construct a tokeniser that ignores the junk.  Otherwise, construct a tokeniser for the byte source as it is
+         * @param byteSource the source to check
+         * @return a tokeniser that is guaranteed to start at the PDF header
+         * @throws IOException if there is a problem reading the byte source
+         */
+        private static PRTokeniser GetOffsetTokeniser(IRandomAccessSource byteSource) {
+            PRTokeniser tok = new PRTokeniser(new RandomAccessFileOrArray(byteSource));
+            int offset = tok.GetHeaderOffset();
+            if (offset != 0){
+                IRandomAccessSource offsetSource = new WindowRandomAccessSource(byteSource, offset);
+                tok = new PRTokeniser(new RandomAccessFileOrArray(offsetSource));
+            }
+            return tok;
+        }
+        
         /** Gets a new file instance of the original PDF
         * document.
         * @return a new file instance of the original PDF document
@@ -474,55 +523,48 @@ namespace iTextSharp.text.pdf {
             Math.Max(llx, urx), Math.Max(lly, ury));
         }
         
+        /**
+         * Parses the entire PDF
+         */
         protected internal virtual void ReadPdf() {
+            fileLength = tokens.File.Length;
+            pdfVersion = tokens.CheckPdfHeader();
             try {
-                fileLength = tokens.File.Length;
-                pdfVersion = tokens.CheckPdfHeader();
+                ReadXref();
+            }
+            catch (Exception e) {
                 try {
-                    ReadXref();
-                }
-                catch (Exception e) {
-                    try {
-                        rebuilt = true;
-                        RebuildXref();
-                        lastXref = -1;
-                    }
-                    catch (Exception ne) {
-                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("rebuild.failed.1.original.message.2", ne.Message, e.Message));
-                    }
-                }
-                try {
-                    ReadDocObj();
+                    rebuilt = true;
+                    RebuildXref();
+                    lastXref = -1;
                 }
                 catch (Exception ne) {
-                    if (ne is BadPasswordException)
-                        throw new BadPasswordException(ne.Message);
-                    if (rebuilt || encryptionError)
-                        throw new InvalidPdfException(ne.Message);
-                    rebuilt = true;
-                    encrypted = false;
-                    try {
-                        RebuildXref();
-                        lastXref = -1;
-                        ReadDocObj();
-                    } catch (Exception ne2){
-                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("rebuild.failed.1.original.message.2", ne2.Message, ne.Message));
-                    }
+                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage("rebuild.failed.1.original.message.2", ne.Message, e.Message));
                 }
-                
-                strings.Clear();
-                ReadPages();
-                EliminateSharedStreams();
-                RemoveUnusedObjects();
             }
-            finally {
+            try {
+                ReadDocObj();
+            }
+            catch (Exception ne) {
+                if (ne is BadPasswordException)
+                    throw new BadPasswordException(ne.Message);
+                if (rebuilt || encryptionError)
+                    throw new InvalidPdfException(ne.Message);
+                rebuilt = true;
+                encrypted = false;
                 try {
-                    tokens.Close();
-                }
-                catch {
-                    // empty on purpose
+                    RebuildXref();
+                    lastXref = -1;
+                    ReadDocObj();
+                } catch (Exception ne2){
+                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage("rebuild.failed.1.original.message.2", ne2.Message, ne.Message));
                 }
             }
+            
+            strings.Clear();
+            ReadPages();
+            EliminateSharedStreams();
+            RemoveUnusedObjects();
         }
         
         protected internal void ReadPdfPartial() {
@@ -539,7 +581,7 @@ namespace iTextSharp.text.pdf {
                         lastXref = -1;
                     }
                     catch (Exception ne) {
-                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("rebuild.failed.1.original.message.2", ne.Message, e.Message));
+                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("rebuild.failed.1.original.message.2", ne.Message, e.Message), ne);
                     }
                 }
                 ReadDocObjPartial();
@@ -701,6 +743,10 @@ namespace iTextSharp.text.pdf {
                         cryptoMode = PdfWriter.ENCRYPTION_AES_128;
                         lengthValue = 128;
                     }
+                    else if (PdfName.AESV3.Equals(dic.Get(PdfName.CFM))) {
+                        cryptoMode = PdfWriter.ENCRYPTION_AES_256;
+                        lengthValue = 256;
+                    }
                     else
                         throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("no.compatible.encryption.found"));
                     PdfObject em = dic.Get(PdfName.ENCRYPTMETADATA);
@@ -712,7 +758,6 @@ namespace iTextSharp.text.pdf {
                 default:
                     throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("unknown.encryption.type.v.eq.1", rValue));
                 }
-
                 for (int i = 0; i<recipients.Size; i++)
                 {
                     PdfObject recipient = recipients[i];
@@ -724,9 +769,8 @@ namespace iTextSharp.text.pdf {
                 
                     foreach (RecipientInformation recipientInfo in data.GetRecipientInfos().GetRecipients()) {
                         if (recipientInfo.RecipientID.Match(certificate) && !foundRecipient) {
-    
-                        envelopedData = recipientInfo.GetContent(certificateKey);
-                        foundRecipient = true;                         
+                            envelopedData = recipientInfo.GetContent(certificateKey);
+                            foundRecipient = true;                         
                         }
                     }                        
                 }
@@ -736,8 +780,11 @@ namespace iTextSharp.text.pdf {
                     throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("bad.certificate.and.key"));
                 }            
 
-                IDigest sh = DigestUtilities.GetDigest("SHA1");
-
+                IDigest sh;
+                if ((cryptoMode & PdfWriter.ENCRYPTION_MASK) == PdfWriter.ENCRYPTION_AES_256)
+                    sh = DigestUtilities.GetDigest("SHA-256");
+                else
+                    sh = DigestUtilities.GetDigest("SHA-1");
                 sh.BlockUpdate(envelopedData, 0, 20);
                 for (int i=0; i<recipients.Size; i++) {
                     byte[] encodedRecipient = recipients[i].GetBytes();  
@@ -770,7 +817,10 @@ namespace iTextSharp.text.pdf {
                         ownerPasswordUsed = true;
                 }
             } else if (filter.Equals(PdfName.PUBSEC)) {   
-                decrypt.SetupByEncryptionKey(encryptionKey, lengthValue); 
+                if ((cryptoMode & PdfWriter.ENCRYPTION_MASK) == PdfWriter.ENCRYPTION_AES_256)
+                    decrypt.SetKey(encryptionKey);
+                else
+                    decrypt.SetupByEncryptionKey(encryptionKey, lengthValue); 
                 ownerPasswordUsed = true;
             }
             for (int k = 0; k < strings.Count; ++k) {
@@ -1024,7 +1074,7 @@ namespace iTextSharp.text.pdf {
             int first = stream.GetAsNumber(PdfName.FIRST).IntValue;
             byte[] b = GetStreamBytes(stream, tokens.File);
             PRTokeniser saveTokens = tokens;
-            tokens = new PRTokeniser(b);
+            tokens = new PRTokeniser(new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource(b)));
             try {
 				int address = 0;
                 bool ok = true;
@@ -1179,7 +1229,7 @@ namespace iTextSharp.text.pdf {
             int n = stream.GetAsNumber(PdfName.N).IntValue;
             byte[] b = GetStreamBytes(stream, tokens.File);
             PRTokeniser saveTokens = tokens;
-            tokens = new PRTokeniser(b);
+            tokens = new PRTokeniser(new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource(b)));
             try {
                 int[] address = new int[n];
                 int[] objNumber = new int[n];
@@ -3014,11 +3064,9 @@ namespace iTextSharp.text.pdf {
         }
         
         /**
-        * Closes the reader
+        * Closes the reader, and any underlying stream or data source used to create the reader
         */
         public void Close() {
-            if (!partial)
-                return;
             tokens.Close();
         }
         
@@ -3702,6 +3750,10 @@ namespace iTextSharp.text.pdf {
         public byte[] ComputeUserPassword() {
     	    if (!encrypted || !ownerPasswordUsed) return null;
     	    return decrypt.ComputeUserPassword(password);
+        }
+
+        public void Dispose() {
+            Close();
         }
     }
 }

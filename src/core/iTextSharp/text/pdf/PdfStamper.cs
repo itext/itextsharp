@@ -187,7 +187,6 @@ namespace iTextSharp.text.pdf {
             if (!hasSignature) {
                 MergeVerification();
                 stamper.Close(moreInfo);
-                return;
             }
             else {
                 throw new DocumentException("Signature defined. Must be closed in PdfSignatureAppearance.");
@@ -754,7 +753,7 @@ namespace iTextSharp.text.pdf {
             return stamper.GetPdfLayers();
         }
 
-        public virtual void Dispose() {
+        public void Dispose() {
             Close();
         }
 

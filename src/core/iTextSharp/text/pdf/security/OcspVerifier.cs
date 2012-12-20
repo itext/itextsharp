@@ -128,9 +128,9 @@ namespace iTextSharp.text.pdf.security {
 			    if (!signCert.SerialNumber.Equals(resp[i].GetCertID().SerialNumber))
 				    continue;
 			    // check if the issuer matches
-                
 			    try {
-				    if (!resp[i].GetCertID().MatchesIssuer(issuerCert)) {
+                    if (issuerCert == null) issuerCert = signCert;
+                    if (!resp[i].GetCertID().MatchesIssuer(issuerCert)) {
 					    LOGGER.Info("OCSP: Issuers doesn't match.");
 					    continue;
 				    }

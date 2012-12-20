@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using iTextSharp.text.exceptions;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.io;
 
 /*
  * This file is part of the iText project.
@@ -71,21 +72,19 @@ namespace iTextSharp.text.pdf {
         internal const string EMPTY = "";
 
     
-        protected RandomAccessFileOrArray file;
+        private readonly RandomAccessFileOrArray file;
         protected TokType type;
         protected string stringValue;
         protected int reference;
         protected int generation;
         protected bool hexString;
         
-        public PRTokeniser(string filename) {
-            file = new RandomAccessFileOrArray(filename);
-        }
-
-        public PRTokeniser(byte[] pdfIn) {
-            file = new RandomAccessFileOrArray(pdfIn);
-        }
-    
+        /**
+         * Creates a PRTokeniser for the specified {@link RandomAccessSource}.
+         * The beginning of the file is read to determine the location of the header, and the data source is adjusted
+         * as necessary to account for any junk that occurs in the byte source before the header
+         * @param byteSource the source
+         */
         public PRTokeniser(RandomAccessFileOrArray file) {
             this.file = file;
         }
@@ -130,7 +129,7 @@ namespace iTextSharp.text.pdf {
             StringBuilder buf = new StringBuilder();
             int ch;
             while ((size--) > 0) {
-                ch = file.Read();
+                ch = Read();
                 if (ch == -1)
                     break;
                 buf.Append((char)ch);
@@ -179,23 +178,32 @@ namespace iTextSharp.text.pdf {
 			throw new InvalidPdfException (MessageLocalization.GetComposedMessage ("1.at.file.pointer.2", error, file.FilePointer));
         }
     
-        public char CheckPdfHeader() {
-            file.StartOffset = 0;
+        public int GetHeaderOffset() {
             String str = ReadString(1024);
             int idx = str.IndexOf("%PDF-");
-            if (idx < 0)
+            if (idx < 0){
+                idx = str.IndexOf("%FDF-");
+                if (idx < 0)
+                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage("pdf.header.not.found"));
+            }
+            return idx;
+        }
+
+        public char CheckPdfHeader() {
+            file.Seek(0);
+            String str = ReadString(1024);
+            int idx = str.IndexOf("%PDF-");
+            if (idx != 0)
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("pdf.header.not.found"));
-            file.StartOffset = idx;
-            return str[idx + 7];
+            return str[7];
         }
         
         public void CheckFdfHeader() {
-            file.StartOffset = 0;
+            file.Seek(0);
             String str = ReadString(1024);
             int idx = str.IndexOf("%FDF-");
-            if (idx < 0)
+            if (idx != 0)
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("fdf.header.not.found"));
-            file.StartOffset = idx;
         }
 
         public long GetStartxref() {
@@ -265,6 +273,9 @@ namespace iTextSharp.text.pdf {
                     }
                 }
             }
+            if (level == 1) { // if the level 1 check returns EOF, then we are still looking at a number - set the type back to NUMBER
+                type = TokType.NUMBER;
+            }
             // if we hit here, the file is either corrupt (stream ended unexpectedly),
             // or the last token ended exactly at the end of a stream.  This last
             // case can occur inside an Object Stream.
@@ -282,7 +293,7 @@ namespace iTextSharp.text.pdf {
             // Note:  We have to initialize stringValue here, after we've looked for the end of the stream,
             // to ensure that we don't lose the value of a token that might end exactly at the end
             // of the stream
-            StringBuilder outBuf = null;
+            StringBuilder outBuf = new StringBuilder();
             stringValue = EMPTY;
             switch (ch) {
                 case '[':
@@ -292,7 +303,7 @@ namespace iTextSharp.text.pdf {
                     type = TokType.END_ARRAY;
                     break;
                 case '/': {
-                    outBuf = new StringBuilder();
+                    outBuf.Length = 0;
                     type = TokType.NAME;
                     while (true) {
                         ch = file.Read();
@@ -318,7 +329,7 @@ namespace iTextSharp.text.pdf {
                         type = TokType.START_DIC;
                         break;
                     }
-                    outBuf = new StringBuilder();
+                    outBuf.Length = 0;
                     type = TokType.STRING;
                     hexString = true;
                     int v2 = 0;
@@ -356,7 +367,7 @@ namespace iTextSharp.text.pdf {
                     } while (ch != -1 && ch != '\r' && ch != '\n');
                     break;
                 case '(': {
-                    outBuf = new StringBuilder();
+                    outBuf.Length = 0;
                     type = TokType.STRING;
                     hexString = false;
                     int nesting = 0;
@@ -448,7 +459,7 @@ namespace iTextSharp.text.pdf {
                     break;
                 }
                 default: {
-                    outBuf = new StringBuilder();
+                    outBuf.Length = 0;
                     if (ch == '-' || ch == '+' || ch == '.' || (ch >= '0' && ch <= '9')) {
                         type = TokType.NUMBER;
                         if (ch == '-') {
@@ -477,7 +488,8 @@ namespace iTextSharp.text.pdf {
                             ch = file.Read();
                         } while (ch != -1 && !IsDelimiter(ch) && !IsWhitespace(ch));
                     }
-                    BackOnePosition(ch);
+                    if (ch != -1)
+                        BackOnePosition(ch);
                     break;
                 }
             }
@@ -564,7 +576,7 @@ namespace iTextSharp.text.pdf {
         
 		public static long[] CheckObjectStart (byte[] line) {
             try {
-                PRTokeniser tk = new PRTokeniser(line);
+                PRTokeniser tk = new PRTokeniser(new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource(line)));
                 int num = 0;
                 int gen = 0;
                 if (!tk.NextToken() || tk.TokenType != TokType.NUMBER)

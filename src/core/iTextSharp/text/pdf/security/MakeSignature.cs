@@ -5,6 +5,7 @@ using System.IO;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Crypto;
 using iTextSharp.text.log;
+using iTextSharp.text.io;
 /*
  * $Id: MakeSignature.java 5199 2012-06-18 20:14:38Z psoares33 $
  *
@@ -172,7 +173,7 @@ namespace iTextSharp.text.pdf.security {
          * @throws IOException
          * @throws DocumentException 
          */
-        public static void SignExtenalContainer(PdfSignatureAppearance sap, IExternalSignatureContainer externalSignatureContainer, int estimatedSize) {
+        public static void SignExternalContainer(PdfSignatureAppearance sap, IExternalSignatureContainer externalSignatureContainer, int estimatedSize) {
             PdfSignature dic = new PdfSignature(null, null);
             dic.Reason = sap.Reason;
             dic.Location = sap.Location;
@@ -197,6 +198,50 @@ namespace iTextSharp.text.pdf.security {
             PdfDictionary dic2 = new PdfDictionary();
             dic2.Put(PdfName.CONTENTS, new PdfString(paddedSig).SetHexWriting(true));
             sap.Close(dic2);
+        }
+        
+        /**
+         * Signs a PDF where space was already reserved.
+         * @param reader the original PDF
+         * @param fieldName the field to sign. It must be the last field
+         * @param outs the output PDF
+         * @param externalSignatureContainer the signature container doing the actual signing. Only the 
+         * method ExternalSignatureContainer.sign is used
+         * @throws DocumentException
+         * @throws IOException
+         * @throws GeneralSecurityException 
+         */
+        public static void SignDeferred(PdfReader reader, String fieldName, Stream outs, IExternalSignatureContainer externalSignatureContainer) {
+            AcroFields af = reader.AcroFields;
+            PdfDictionary v = af.GetSignatureDictionary(fieldName);
+            if (v == null)
+                throw new DocumentException("No field");
+            if (!af.SignatureCoversWholeDocument(fieldName))
+                throw new DocumentException("Not the last signature");
+            PdfArray b = v.GetAsArray(PdfName.BYTERANGE);
+            long[] gaps = b.AsLongArray();
+            if (b.Size != 4 || gaps[0] != 0)
+                throw new DocumentException("Single exclusion space supported");
+            IRandomAccessSource readerSource = reader.SafeFile.CreateSourceView();
+            Stream rg = new RASInputStream(new RandomAccessSourceFactory().CreateRanged(readerSource, gaps));
+            byte[] signedContent = externalSignatureContainer.Sign(rg);
+            int spaceAvailable = (int)(gaps[2] - gaps[1]) - 2;
+            if ((spaceAvailable & 1) != 0)
+                throw new DocumentException("Gap is not a multiple of 2");
+            spaceAvailable /= 2;
+            if (spaceAvailable < signedContent.Length)
+                throw new DocumentException("Not enough space");
+            StreamUtil.CopyBytes(readerSource, 0, gaps[1] + 1, outs);
+            ByteBuffer bb = new ByteBuffer(spaceAvailable * 2);
+            foreach (byte bi in signedContent) {
+                bb.AppendHex(bi);
+            }
+            int remain = (spaceAvailable - signedContent.Length) * 2;
+            for (int k = 0; k < remain; ++k) {
+                bb.Append((byte)48);
+            }
+            bb.WriteTo(outs);
+            StreamUtil.CopyBytes(readerSource, gaps[2] - 1, gaps[3] + 1, outs);
         }
     }
 }
