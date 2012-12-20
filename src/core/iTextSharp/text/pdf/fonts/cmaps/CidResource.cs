@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf;
+using iTextSharp.text.io;
 /*
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -56,7 +57,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             Stream inp = BaseFont.GetResourceStream(fullName);
             if (inp == null)
                 throw new IOException(MessageLocalization.GetComposedMessage("the.cmap.1.was.not.found", fullName));
-            return new PRTokeniser(new RandomAccessFileOrArray(inp));
+            return new PRTokeniser(new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource(inp)));
         }
     }
 }

@@ -1027,10 +1027,11 @@ namespace iTextSharp.text.pdf.security {
                 X509Certificate v = cc[cc.Count - 1];
                 found = false;
                 for (int k = 0; k < oc.Count; ++k) {
+                    X509Certificate issuer = (X509Certificate)oc[k];
                     try {
-                        v.Verify(oc[k].GetPublicKey());
+                        v.Verify(issuer.GetPublicKey());
                         found = true;
-                        cc.Add(oc[k]);
+                        cc.Add(issuer);
                         oc.RemoveAt(k);
                         break;
                     }

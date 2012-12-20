@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.io;
 /*
  * $Id$
  *
@@ -343,7 +344,7 @@ namespace iTextSharp.text.pdf.parser {
          */
         public void ProcessContent(byte[] contentBytes, PdfDictionary resources){
             this.resources.Push(resources);
-            PRTokeniser tokeniser = new PRTokeniser(contentBytes);
+            PRTokeniser tokeniser = new PRTokeniser(new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource(contentBytes)));
             PdfContentParser ps = new PdfContentParser(tokeniser);
             List<PdfObject> operands = new List<PdfObject>();
             while (ps.Parse(operands).Count > 0){

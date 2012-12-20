@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using iTextSharp.text.pdf.fonts.cmaps;
+using iTextSharp.text.io;
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -180,7 +181,7 @@ namespace iTextSharp.text.pdf {
         }
         
         private void FillMetrics(byte[] touni, IntHashtable widths, int dw) {
-            PdfContentParser ps = new PdfContentParser(new PRTokeniser(touni));
+            PdfContentParser ps = new PdfContentParser(new PRTokeniser(new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource(touni))));
             PdfObject ob = null;
             bool notFound = true;
             int nestLevel = 0;

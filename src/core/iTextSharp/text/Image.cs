@@ -13,6 +13,7 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.factories;
 using iTextSharp.text.pdf.codec;
 using iTextSharp.text.pdf.interfaces;
+using iTextSharp.text.io;
 
 /*
  * $Id$
@@ -443,8 +444,7 @@ namespace iTextSharp.text {
         }
 
         public static Image GetInstance(Stream s) {
-            byte[] a = RandomAccessFileOrArray.InputStreamToArray(s);
-            s.Close();
+            byte[] a = StreamUtil.InputStreamToArray(s);
             return GetInstance(a);
         }
 

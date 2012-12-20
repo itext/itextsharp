@@ -145,10 +145,14 @@ namespace iTextSharp.text.pdf.security {
                 throw new InvalidOperationException(MessageLocalization.GetComposedMessage("verification.already.output"));
             PdfPKCS7 pk = acroFields.VerifySignature(signatureName);
             LOGGER.Info("Adding verification for " + signatureName);
-            X509Certificate[] xc = pk.SignCertificateChain;
+            X509Certificate[] xc = pk.Certificates;
+            X509Certificate signingCert = pk.SigningCertificate;
             ValidationData vd = new ValidationData();
             for (int k = 0; k < xc.Length; ++k) {
-                Console.WriteLine("Certificate: " + xc[k].SubjectDN);
+                if (certOption == CertificateOption.SIGNING_CERTIFICATE
+                    && !xc[k].Equals(signingCert)) {
+                    continue;
+                }
                 byte[] ocspEnc = null;
                 if (ocsp != null && level != Level.CRL && k < xc.Length - 1) {
                     ocspEnc = ocsp.GetEncoded(xc[k], xc[k + 1], null);
@@ -175,16 +179,12 @@ namespace iTextSharp.text.pdf.security {
                         }
                     }
                 }
-                if (certOption == CertificateOption.SIGNING_CERTIFICATE)
-                    break;
+                if (certInclude == CertificateInclusion.YES) {
+                    vd.certs.Add(xc[k].GetEncoded());
+                }
             }
             if (vd.crls.Count == 0 && vd.ocsps.Count == 0)
                 return false;
-            if (certInclude == CertificateInclusion.YES) {
-                foreach (X509Certificate c in xc) {
-                    vd.certs.Add(c.GetEncoded());
-                }
-            }
             validated[GetSignatureHashKey(signatureName)] = vd;
             return true;
         }

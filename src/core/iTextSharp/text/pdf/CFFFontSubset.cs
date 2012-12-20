@@ -1531,7 +1531,8 @@ namespace iTextSharp.text.pdf {
                 if (fdSubrs[i]!= null && fonts[Font].PrivateSubrsOffset[i] >= 0)
                 {                
                     OutputList.Add(new SubrMarkerItem(fdSubrs[i],fdPrivateBase[i]));
-                    OutputList.Add(new RangeItem(new RandomAccessFileOrArray(NewLSubrsIndex[i]),0,NewLSubrsIndex[i].Length));
+                    if(NewLSubrsIndex[i]!=null)
+                        OutputList.Add(new RangeItem(new RandomAccessFileOrArray(NewLSubrsIndex[i]),0,NewLSubrsIndex[i].Length));
                 }
             }
         }

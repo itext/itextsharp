@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Net;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.io;
 /*
  * $Id$
  * 
@@ -62,146 +63,152 @@ namespace iTextSharp.text.pdf {
     */
     public class RandomAccessFileOrArray {
         
-        internal FileStream rf;
-        internal String filename;
-        internal byte[] arrayIn;
-        internal long arrayInPtr;
-        internal byte back;
-        internal bool isBack = false;
+        /**
+         * The source that backs this object
+         */
+        private readonly IRandomAccessSource byteSource;
         
-        /** Holds value of property startOffset. */
-        private long startOffset = 0;
+        /**
+         * The physical location in the underlying byte source.
+         */
+        private long byteSourcePosition;
         
-        public RandomAccessFileOrArray(String filename) : this(filename, false) {
+        /**
+         * the pushed  back byte, if any
+         */
+        private byte back;
+        /**
+         * Whether there is a pushed back byte
+         */
+        private bool isBack = false;
+
+        /**
+         * @deprecated use {@link RandomAccessFileOrArray#RandomAccessFileOrArray(RandomAccessSource)} instead
+         * @param filename
+         * @throws IOException
+         */
+        public RandomAccessFileOrArray(String filename) : this(new RandomAccessSourceFactory()
+            .SetForceRead(false)
+            .CreateBestSource(filename)) {
         }
         
-        public RandomAccessFileOrArray(String filename, bool forceRead) {
-            if (!File.Exists(filename)) {
-                if (filename.StartsWith("file:/") || filename.StartsWith("http://") || filename.StartsWith("https://")) {
-                    WebRequest wr = WebRequest.Create(new Uri(filename));
-                    wr.Credentials = CredentialCache.DefaultCredentials;
-                    Stream isp = wr.GetResponse().GetResponseStream();
-                    try {
-                        this.arrayIn = InputStreamToArray(isp);
-                        return;
-                    }
-                    finally {
-                        try {isp.Close();}catch{}
-                    }
-                }
-                else {
-                    Stream isp = BaseFont.GetResourceStream(filename);
-                    if (isp == null)
-                        throw new IOException(MessageLocalization.GetComposedMessage("1.not.found.as.file.or.resource", filename));
-                    try {
-                        this.arrayIn = InputStreamToArray(isp);
-                        return;
-                    }
-                    finally {
-                        try {isp.Close();}catch{}
-                    }
-                }
-            }
-            else if (forceRead) {
-                Stream s = null;
-                try {
-                    s = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    this.arrayIn = InputStreamToArray(s);
-                }
-                finally {
-                    try{if (s != null) s.Close();}catch{}
-                }
-                return;
-            }
-            this.filename = filename;
-            rf = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
+        /**
+         * Creates an independent view of the specified source.  Closing the new object will not close the source.
+         * Closing the source will have adverse effect on the behavior of the new view.
+         * @deprecated use {@link RandomAccessFileOrArray#createView()} instead
+         * @param source the source for the new independent view
+         */
+        public RandomAccessFileOrArray(RandomAccessFileOrArray source) : this(new IndependentRandomAccessSource(source.byteSource)) {
         }
 
-        public RandomAccessFileOrArray(Uri url) {
-            WebRequest wr = WebRequest.Create(url);
-            wr.Credentials = CredentialCache.DefaultCredentials;
-            Stream isp = wr.GetResponse().GetResponseStream();
-            try {
-                this.arrayIn = InputStreamToArray(isp);
-            }
-            finally {
-                try {isp.Close();}catch{}
-            }
+        /**
+         * Creates an independent view of this object (with it's own file pointer and pushback queue).  Closing the new object will not close this object.
+         * Closing this object will have adverse effect on the view.
+         * @return the new view
+         */
+        public RandomAccessFileOrArray CreateView(){
+            return new RandomAccessFileOrArray(new IndependentRandomAccessSource(byteSource));
+        }
+        
+        public IRandomAccessSource CreateSourceView() {
+            return new IndependentRandomAccessSource(byteSource);
+        }
+        
+        /**
+         * Creates a RandomAccessFileOrArray that wraps the specified byte source.  The byte source will be closed when
+         * this RandomAccessFileOrArray is closed.
+         * @param byteSource the byte source to wrap
+         */
+        public RandomAccessFileOrArray(IRandomAccessSource byteSource){
+            this.byteSource = byteSource;
+        }
+        
+        /**
+         * Constructs a new RandomAccessFileOrArrayObject
+         * @param filename the file to open (can be a file system file or one of the following url strings: file://, http://, https://, jar:, wsjar:, vfszip:
+         * @param forceRead if true, the entire file will be read into memory
+         * @param plainRandomAccess if true, a regular RandomAccessFile is used to access the file contents.  If false, a memory mapped file will be used, unless the file cannot be mapped into memory, in which case regular RandomAccessFile will be used
+         * @throws IOException if there is a failure opening or reading the file
+         * @deprecated use {@link RandomAccessSourceFactory#createBestSource(String)} and {@link RandomAccessFileOrArray#RandomAccessFileOrArray(RandomAccessSource)} instead
+         */
+        public RandomAccessFileOrArray(String filename, bool forceRead) : this(new RandomAccessSourceFactory()
+                .SetForceRead(forceRead)
+                .CreateBestSource(filename)) {
         }
 
-        public RandomAccessFileOrArray(Stream isp) {
-            this.arrayIn = InputStreamToArray(isp);
-        }
-        
-        public static byte[] InputStreamToArray(Stream isp) {
-            byte[] b = new byte[8192];
-            MemoryStream outp = new MemoryStream();
-            while (true) {
-                int read = isp.Read(b, 0, b.Length);
-                if (read < 1)
-                    break;
-                outp.Write(b, 0, read);
-            }
-            return outp.ToArray();
+        /**
+         * @param url
+         * @throws IOException
+         * @deprecated use {@link RandomAccessSourceFactory#createSource(URL)} and {@link RandomAccessFileOrArray#RandomAccessFileOrArray(RandomAccessSource)} instead
+         */
+        public RandomAccessFileOrArray(Uri url) : this(new RandomAccessSourceFactory().CreateSource(url)) {
         }
 
-        public RandomAccessFileOrArray(byte[] arrayIn) {
-            this.arrayIn = arrayIn;
+        /**
+         * @param is
+         * @throws IOException
+         * @deprecated use {@link RandomAccessSourceFactory#createSource(InputStream)} and {@link RandomAccessFileOrArray#RandomAccessFileOrArray(RandomAccessSource)} instead
+         */
+        public RandomAccessFileOrArray(Stream inp) : this (new RandomAccessSourceFactory().CreateSource(inp)) {
         }
         
-        public RandomAccessFileOrArray(RandomAccessFileOrArray file) {
-            filename = file.filename;
-            arrayIn = file.arrayIn;
-            startOffset = file.startOffset;
+
+        /**
+         * @param url
+         * @throws IOException
+         * @deprecated use {@link RandomAccessSourceFactory#createSource(byte[])} and {@link RandomAccessFileOrArray#RandomAccessFileOrArray(RandomAccessSource)} instead
+         */
+        public RandomAccessFileOrArray(byte[] arrayIn) : this (new RandomAccessSourceFactory().CreateSource(arrayIn)) {
         }
         
+        //TODO: I'm only putting this in here for backwards compatability with PdfReader(RAFOA, byte[]).  Once we get rid of the
+        //PdfReader constructor, we can get rid of this method as well
+        protected internal IRandomAccessSource GetByteSource(){
+            return byteSource;
+        }
+        
+        /**
+         * Pushes a byte back.  The next get() will return this byte instead of the value from the underlying data source
+         * @param b the byte to push
+         */
         public void PushBack(byte b) {
             back = b;
             isBack = true;
         }
         
+        /**
+         * Reads a single byte
+         * @return the byte, or -1 if EOF is reached
+         * @throws IOException
+         */
         public int Read() {
             if (isBack) {
                 isBack = false;
                 return back & 0xff;
             }
-            if (arrayIn == null)
-                return rf.ReadByte();
-            else {
-                if (arrayInPtr >= arrayIn.Length)
-                    return -1;
-                return arrayIn[arrayInPtr++] & 0xff;
-            }
+            return byteSource.Get(byteSourcePosition++);
         }
         
         public int Read(byte[] b, int off, int len) {
             if (len == 0)
                 return 0;
-            int n = 0;
-            if (isBack) {
+            int count = 0;
+            if (isBack && len > 0) {
                 isBack = false;
-                if (len == 1) {
-                    b[off] = back;
-                    return 1;
+                b[off++] = back;
+                --len;
+                count++;
+            }
+            if (len > 0){
+                int byteSourceCount = byteSource.Get(byteSourcePosition, b, off, len);
+                if (byteSourceCount > 0) {
+                    count += byteSourceCount;
+                    byteSourcePosition += byteSourceCount;
                 }
-                else {
-                    n = 1;
-                    b[off++] = back;
-                    --len;
-                }
             }
-            if (arrayIn == null) {
-                return rf.Read(b, off, len) + n;
-            }
-            else {
-                if (arrayInPtr >= arrayIn.Length)
-                    return -1;
-                if (arrayInPtr + len > arrayIn.Length)
-                    len = (int)(arrayIn.Length - arrayInPtr);
-                Array.Copy(arrayIn, arrayInPtr, b, off, len);
-                arrayInPtr += len;
-                return len + n;
-            }
+            if (count == 0)
+                return -1;
+            return count;
         }
         
         public int Read(byte[] b) {
@@ -260,49 +267,30 @@ namespace iTextSharp.text.pdf {
         }
         
         public void ReOpen() {
-            if (filename != null && rf == null)
-                rf = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
             Seek(0);
         }
         
         protected void InsureOpen() {
-            if (filename != null && rf == null) {
-                ReOpen();
-            }
         }
         
         public bool IsOpen() {
-            return (filename == null || rf != null);
+            return true;
         }
         
         public void Close() {
             isBack = false;
-            if (rf != null) {
-                rf.Close();
-                rf = null;
-            }
+            byteSource.Close();
         }
         
         public long Length {
             get {
-                if (arrayIn == null) {
-                    InsureOpen();
-                    return (rf.Length - startOffset);
-                }
-                else
-                    return (arrayIn.Length - startOffset);
+                return byteSource.Length;
             }
         }
         
         public void Seek(long pos) {
-            pos += startOffset;
+            byteSourcePosition = pos;
             isBack = false;
-            if (arrayIn == null) {
-                InsureOpen();
-                rf.Position = pos;
-            }
-            else
-                arrayInPtr = pos;
         }
         
         public void Seek(int pos) {
@@ -311,13 +299,7 @@ namespace iTextSharp.text.pdf {
         
         public long FilePointer {
             get {
-                InsureOpen();
-                int n = isBack ? 1 : 0;
-                if (arrayIn == null) {
-                    return rf.Position - n - startOffset;
-                }
-                else
-                    return arrayInPtr - n - startOffset;
+                return byteSourcePosition - (isBack ? 1 : 0);            
             }
         }
         
@@ -571,7 +553,7 @@ namespace iTextSharp.text.pdf {
             return b[0];
         }
 
-    public String ReadLine() {
+        public String ReadLine() {
             StringBuilder input = new StringBuilder();
             int c = -1;
             bool eol = false;
@@ -599,15 +581,6 @@ namespace iTextSharp.text.pdf {
                 return null;
             }
             return input.ToString();
-        }
-        
-        public long StartOffset {
-            get {
-                return startOffset;
-            }
-            set {
-                startOffset = value;
-            }
         }
     }
 }
