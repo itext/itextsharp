@@ -59,10 +59,6 @@ namespace iTextSharp.text.pdf {
      */
     public class TrueTypeFontUnicode : TrueTypeFont, IComparer<int[]> {
     
-        /** <CODE>true</CODE> if the encoding is vertical.
-         */    
-        bool vertical = false;
-
         /** Creates a new TrueType font addressed by Unicode characters. The font
          * will always be embedded.
          * @param ttFile the location of the font on file. The file must end in '.ttf'.

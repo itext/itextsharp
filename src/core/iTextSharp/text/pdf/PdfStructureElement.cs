@@ -65,8 +65,6 @@ namespace iTextSharp.text.pdf {
         */
         private PdfIndirectReference reference;
 
-        private int pageMark;
-        
         /**
         * Creates a new instance of PdfStructureElement.
         * @param parent the parent of this node
