@@ -3587,6 +3587,10 @@ namespace iTextSharp.text.pdf {
                 return obj is UncoloredPattern && (((UncoloredPattern)obj).Painter).Equals(this.Painter) && (((UncoloredPattern)obj).color).Equals(this.color) && ((UncoloredPattern)obj).tint == this.tint;
             }
 
+            public override int GetHashCode() {
+                return base.GetHashCode();
+            }
+
         }
     }
 }

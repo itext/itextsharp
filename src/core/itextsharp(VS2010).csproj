@@ -3298,6 +3298,7 @@
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsSigner.cs" />
     <Compile Include="srcbc\crypto\tls\TlsSrpKeyExchange.cs" />
+    <Compile Include="srcbc\crypto\tls\TlsStreamCipher.cs" />
     <Compile Include="srcbc\crypto\tls\TlsUtilities.cs">
       <SubType>Code</SubType>
     </Compile>

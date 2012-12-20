@@ -110,8 +110,12 @@ namespace iTextSharp.text.pdf {
         }
 
         
-        public bool Equals(Object obj) {
+        override public bool Equals(Object obj) {
             return obj is PdfSpotColor && ((PdfSpotColor)obj).name == this.name && ((PdfSpotColor)obj).altcs == this.altcs;
+        }
+
+        public override int GetHashCode() {
+            return base.GetHashCode();
         }
     }
 }
