@@ -1891,11 +1891,11 @@ namespace iTextSharp.text.pdf {
          *
          * @return the size of the content
          */
-        internal int Size() {
-            return Size(true);
+        internal int Size {
+            get { return GetSize(true); }
         }
 
-        internal int Size(bool includeMarkedContentSize) {
+        internal int GetSize(bool includeMarkedContentSize) {
             if (includeMarkedContentSize)
                 return content.Size;
             else

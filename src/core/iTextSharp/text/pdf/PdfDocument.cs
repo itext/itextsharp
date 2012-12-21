@@ -886,7 +886,7 @@ namespace iTextSharp.text.pdf {
             if (IsTagged(writer))
                  page.Put(PdfName.STRUCTPARENTS, new PdfNumber(writer.CurrentPageNumber - 1));
 
-             if (text.Size() > textEmptySize || IsTagged(writer))
+             if (text.Size > textEmptySize || IsTagged(writer))
                 text.EndText();
             else
                 text = null;
@@ -2234,7 +2234,7 @@ namespace iTextSharp.text.pdf {
             }
             text.BeginText();
             if (IsTagged(writer))
-                textEmptySize = text.Size();
+                textEmptySize = text.Size;
             // we move to the left/top position of the page
             text.MoveText(Left, Top);
         }
@@ -2260,7 +2260,7 @@ namespace iTextSharp.text.pdf {
                 this.pageEmpty = value;
             }
             get {
-                return writer == null || (writer.DirectContent.Size(!IsTagged(writer)) == 0 && writer.DirectContentUnder.Size(!IsTagged(writer)) == 0 && (pageEmpty || writer.IsPaused()));
+                return writer == null || (writer.DirectContent.GetSize(!IsTagged(writer)) == 0 && writer.DirectContentUnder.GetSize(!IsTagged(writer)) == 0 && (pageEmpty || writer.IsPaused()));
             }
         }
 
