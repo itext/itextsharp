@@ -215,7 +215,7 @@ namespace iTextSharp.text {
 
         protected PdfName role = PdfName.FIGURE;
 
-        protected Dictionary<PdfName, PdfObject> accessibleProperties = null;
+        protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
 
         protected Guid id = Guid.NewGuid();
 
@@ -333,8 +333,8 @@ namespace iTextSharp.text {
             this.initialRotation = image.initialRotation;
             this.directReference = image.directReference;
             this.role = image.role;
-            if (image.accessibleProperties != null)
-                this.accessibleProperties = new Dictionary<PdfName, PdfObject>(image.accessibleProperties);
+            if (image.accessibleAttributes != null)
+                this.accessibleAttributes = new Dictionary<PdfName, PdfObject>(image.accessibleAttributes);
             this.id = image.id;
         }
     
@@ -915,7 +915,9 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="r">rotation in radians</param>
         public new float Rotation {
-            set {
+            set
+            {
+                base.Rotation = (int)value;
                 double d=Math.PI;                  //__IDS__
                 rotationRadians = (float) ((value + initialRotation) % (2.0 * d)); //__IDS__
                 if (rotationRadians < 0) {
@@ -926,7 +928,7 @@ namespace iTextSharp.text {
                 scaledHeight = matrix[DY] - matrix[CY];
             }
         }
-    
+
         /// <summary>
         /// Sets the rotation of the image in degrees.
         /// </summary>
@@ -1572,38 +1574,35 @@ namespace iTextSharp.text {
             }
         }
 
-        public PdfObject GetAccessibleProperty(PdfName key) {
-            if (accessibleProperties != null) {
+        public PdfObject GetAccessibleAttribute(PdfName key) {
+            if (accessibleAttributes != null) {
                 PdfObject value;
-                accessibleProperties.TryGetValue(key, out value);
+                accessibleAttributes.TryGetValue(key, out value);
                 return value;
             } else
                 return null;
         }
 
-        public void SetAccessibleProperty(PdfName key, PdfObject value) {
-            if (accessibleProperties == null)
-                accessibleProperties = new Dictionary<PdfName, PdfObject>();
-            accessibleProperties[key] = value;
+        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+            if (accessibleAttributes == null)
+                accessibleAttributes = new Dictionary<PdfName, PdfObject>();
+            accessibleAttributes[key] = value;
         }
 
        
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleProperties() {
-            return accessibleProperties;
+        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+            return accessibleAttributes;
         }
 
         public PdfName Role {
             get { return role; }
             set { this.role = value; }
         }
-
-        public void SetAccessibleProperties(Dictionary<PdfName, PdfObject> accessibleProperties) {
-            this.accessibleProperties = accessibleProperties;
-        }
-
+        
         public Guid ID {
             get { return id; }
+            set { id = value; }
         }
 
     }

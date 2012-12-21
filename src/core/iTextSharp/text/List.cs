@@ -152,6 +152,7 @@ namespace iTextSharp.text {
         protected float symbolIndent = 0;
 
         protected PdfName role = PdfName.L;
+        protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
         protected Guid id = Guid.NewGuid();
 
         // constructors
@@ -592,16 +593,26 @@ namespace iTextSharp.text {
             }
             return null;
         }
-        
-        public PdfObject GetAccessibleProperty(PdfName key) {
-            return null;
+
+        public PdfObject GetAccessibleAttribute(PdfName key) {
+            if (accessibleAttributes != null)
+            {
+                PdfObject obj;
+                accessibleAttributes.TryGetValue(key, out obj);
+                return obj;
+            }
+            else
+                return null;
         }
 
-        public void SetAccessibleProperty(PdfName key, PdfObject value) {
+        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+            if (accessibleAttributes == null)
+                accessibleAttributes = new Dictionary<PdfName, PdfObject>();
+            accessibleAttributes[key] = value;
         }
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleProperties() {
-            return null;
+        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+            return accessibleAttributes;
         }
 
         public PdfName Role
@@ -612,6 +623,7 @@ namespace iTextSharp.text {
 
         public Guid ID {
             get { return id; }
+            set { id = value; }
         }
 
     }

@@ -116,7 +116,7 @@ namespace iTextSharp.text.pdf {
 
         protected PdfName role = PdfName.TD;
 
-        protected Dictionary<PdfName, PdfObject> accessibleProperties = null;
+        protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
         protected internal Guid id = Guid.NewGuid();
 
         /** Constructs an empty <CODE>PdfPCell</CODE>.
@@ -211,7 +211,6 @@ namespace iTextSharp.text.pdf {
         * @param cell the <CODE>PdfPCell</CODE> to duplicate
         */
         public PdfPCell(PdfPCell cell) : base(cell.llx, cell.lly, cell.urx, cell.ury) {
-            id = cell.ID;
             CloneNonPositionParameters(cell);
             verticalAlignment = cell.verticalAlignment;
             paddingLeft = cell.paddingLeft;
@@ -232,6 +231,10 @@ namespace iTextSharp.text.pdf {
             column = ColumnText.Duplicate(cell.column);
             useBorderPadding = cell.useBorderPadding;
             rotation = cell.rotation;
+            id = cell.id;
+            role = cell.role;
+            if (cell.accessibleAttributes != null)
+                accessibleAttributes = new Dictionary<PdfName, PdfObject>(cell.accessibleAttributes);
         }
         
         /**
@@ -815,35 +818,36 @@ namespace iTextSharp.text.pdf {
             return height;
         }
 
-        
-        public PdfObject GetAccessibleProperty( PdfName key) {
-            if (accessibleProperties != null)
-                return accessibleProperties[key];
-            else
+
+        public PdfObject GetAccessibleAttribute(PdfName key) {
+            if (accessibleAttributes != null) {
+                PdfObject value;
+                accessibleAttributes.TryGetValue(key, out value);
+                return value;
+            } else
                 return null;
         }
 
-        public void SetAccessibleProperty(PdfName key, PdfObject value) {
-            if (accessibleProperties == null)
-                accessibleProperties = new Dictionary<PdfName, PdfObject>();
-            accessibleProperties[key] = value;
+        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+            if (accessibleAttributes == null)
+                accessibleAttributes = new Dictionary<PdfName, PdfObject>();
+            accessibleAttributes[key] = value;
         }
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleProperties() {
-            return accessibleProperties;
+
+
+        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+            return accessibleAttributes;
         }
 
         public PdfName Role {
             get { return role; }
-            set { role = value; }
-        }
-        
-        public void SetAccessibleProperties(Dictionary<PdfName, PdfObject> accessibleProperties) {
-            this.accessibleProperties = accessibleProperties;
+            set { this.role = value; }
         }
 
         public Guid ID {
             get { return id; }
+            set { id = value; }
         }
     }
 }

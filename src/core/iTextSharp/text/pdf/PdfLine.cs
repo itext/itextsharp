@@ -89,7 +89,7 @@ namespace iTextSharp.text.pdf {
     
         protected internal bool isRTL = false;
 
-        protected ListItem listItem = null;
+        protected internal ListItem listItem = null;
     
         // constructors
     

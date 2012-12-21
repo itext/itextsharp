@@ -85,6 +85,7 @@ namespace iTextSharp.text {
         public static readonly Chunk NEXTPAGE = new Chunk("");
         static Chunk() {
             NEXTPAGE.SetNewPage();
+            NEWLINE.Role = PdfName.P;
         }
 
 
@@ -99,9 +100,8 @@ namespace iTextSharp.text {
         ///<summary> Contains some of the attributes for this Chunk. </summary>
         protected Dictionary<string,object> attributes = null;
 
-        protected PdfName role = null;
-
-        protected Dictionary<PdfName, PdfObject> accessibleProperties = null;
+        protected internal PdfName role = null;
+        protected internal Dictionary<PdfName, PdfObject> accessibleAttributes = null;
         protected Guid id = Guid.NewGuid();
 
         // constructors
@@ -133,9 +133,9 @@ namespace iTextSharp.text {
                 attributes = new Dictionary<String,object>(ck.attributes);
             }
             role = ck.role;
-            if (ck.accessibleProperties != null)
+            if (ck.accessibleAttributes != null)
             {
-                accessibleProperties = new Dictionary<PdfName, PdfObject>(ck.accessibleProperties);
+                accessibleAttributes = new Dictionary<PdfName, PdfObject>(ck.accessibleAttributes);
             }
             id = ck.id;
         }
@@ -674,6 +674,7 @@ namespace iTextSharp.text {
         /// <param name="action">the action</param>
         /// <returns>this Chunk</returns>
         public Chunk SetAction(PdfAction action) {
+            Role = PdfName.LINK;
             return SetAttribute(ACTION, action);
         }
 
@@ -683,6 +684,7 @@ namespace iTextSharp.text {
         /// <param name="url">the Uri to link to</param>
         /// <returns>this Chunk</returns>
         public Chunk SetAnchor(Uri url) {
+            Role = PdfName.LINK;
             return SetAttribute(ACTION, new PdfAction(url));
         }
 
@@ -692,6 +694,7 @@ namespace iTextSharp.text {
         /// <param name="url">the url to link to</param>
         /// <returns>this Chunk</returns>
         public Chunk SetAnchor(string url) {
+            Role = PdfName.LINK;
             return SetAttribute(ACTION, new PdfAction(url));
         }
 
@@ -820,34 +823,34 @@ namespace iTextSharp.text {
         {
             return attributes != null && attributes.ContainsKey(TABSPACE);
         }
-        
-        public PdfObject GetAccessibleProperty(PdfName key) {
+
+        public PdfObject GetAccessibleAttribute(PdfName key) {
             if (GetImage() != null) {
-                return GetImage().GetAccessibleProperty(key);
-            } else if (accessibleProperties != null) {
+                return GetImage().GetAccessibleAttribute(key);
+            } else if (accessibleAttributes != null) {
                 PdfObject value;
-                accessibleProperties.TryGetValue(key, out value);
+                accessibleAttributes.TryGetValue(key, out value);
                 return value;
             }
             else
                 return null;
         }
 
-        public void SetAccessibleProperty(PdfName key, PdfObject value) {
+        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
             if (GetImage() != null) {
-                GetImage().SetAccessibleProperty(key, value);
+                GetImage().SetAccessibleAttribute(key, value);
             } else {
-                if (accessibleProperties == null)
-                    accessibleProperties = new Dictionary<PdfName, PdfObject>();
-                accessibleProperties[key] = value;
+                if (accessibleAttributes == null)
+                    accessibleAttributes = new Dictionary<PdfName, PdfObject>();
+                accessibleAttributes[key] = value;
             }
         }
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleProperties() {
+        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             if (GetImage() != null)
-                return GetImage().GetAccessibleProperties();
+                return GetImage().GetAccessibleAttributes();
             else
-                return accessibleProperties;
+                return accessibleAttributes;
         }
 
         public PdfName Role{
@@ -867,15 +870,9 @@ namespace iTextSharp.text {
             }
         }
 
-        public void SetAccessibleProperties(Dictionary<PdfName, PdfObject> accessibleProperties) {
-            if (GetImage() != null)
-                GetImage().SetAccessibleProperties(accessibleProperties);
-            else
-                this.accessibleProperties = accessibleProperties;
-        }
-
         public Guid ID{
             get { return id; }
+            set { id = value; }
         }
 
     }

@@ -97,7 +97,9 @@ namespace iTextSharp.text
     
         /// <summary> This is a possible type of Element. </summary>
         public const int CREATOR = 7;
-    
+
+        /// <summary> This is a possible type of Element. </summary>
+        public const int LANGUAGE = 8;
         // static membervariables (content)
     
         /// <summary> This is a possible type of Element. </summary>

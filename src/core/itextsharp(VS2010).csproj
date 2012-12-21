@@ -237,6 +237,16 @@
     <Compile Include="iTextSharp\text\ImgWMF.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\io\ArrayRandomAccessSource.cs" />
+    <Compile Include="iTextSharp\text\io\GetBufferedRandomAccessSource.cs" />
+    <Compile Include="iTextSharp\text\io\GroupedRandomAccessSource.cs" />
+    <Compile Include="iTextSharp\text\io\IndependentRandomAccessSource.cs" />
+    <Compile Include="iTextSharp\text\io\IRandomAccessSource.cs" />
+    <Compile Include="iTextSharp\text\io\RAFRandomAccessSource.cs" />
+    <Compile Include="iTextSharp\text\io\RandomAccessSourceFactory.cs" />
+    <Compile Include="iTextSharp\text\io\RASInputStream.cs" />
+    <Compile Include="iTextSharp\text\io\StreamUtil.cs" />
+    <Compile Include="iTextSharp\text\io\WindowRandomAccessSource.cs" />
     <Compile Include="iTextSharp\text\IRtfElementInterface.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -255,9 +265,11 @@
     <Compile Include="iTextSharp\text\List.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\ListBody.cs" />
     <Compile Include="iTextSharp\text\ListItem.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\ListLabel.cs" />
     <Compile Include="iTextSharp\text\MarkedObject.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -788,8 +800,6 @@
     <Compile Include="iTextSharp\text\pdf\PdfLine.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\pdf\PdfListBody.cs" />
-    <Compile Include="iTextSharp\text\pdf\PdfListLabel.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfLiteral.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -850,6 +860,9 @@
     <Compile Include="iTextSharp\text\pdf\PdfPTable.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\PdfPTableBody.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfPTableFooter.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfPTableHeader.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfPublicKeyRecipient.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -997,7 +1010,6 @@
     <Compile Include="iTextSharp\text\pdf\StandardDecryption.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\pdf\TaggedPdfContext.cs" />
     <Compile Include="iTextSharp\text\pdf\TextField.cs">
       <SubType>Code</SubType>
     </Compile>

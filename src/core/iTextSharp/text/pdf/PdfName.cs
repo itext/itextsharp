@@ -190,6 +190,11 @@ namespace iTextSharp.text.pdf {
          * @since	2.1.6
          */
         public static readonly PdfName BACKGROUND = new PdfName("Background");
+        /**
+         * A name
+         * @since	5.3.5
+         */
+        public static readonly PdfName BACKGROUNDCOLOR = new PdfName("BackgroundColor");
         /** A name */
         public static readonly PdfName BASEENCODING = new PdfName("BaseEncoding");
         /** A name */
@@ -994,6 +999,11 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.6
          */
         public static readonly PdfName LINEAR = new PdfName("Linear");
+        /**
+         * A name.
+         * @since 5.3.5
+         */
+        public static readonly PdfName LINEHEIGHT = new PdfName("LineHeight");
         /** A name */
         public static readonly PdfName LINK = new PdfName("Link");
         /** A name */
@@ -1692,6 +1702,22 @@ namespace iTextSharp.text.pdf {
          * @since 5.3.4
          */
         public static readonly PdfName TEXTALIGN = new PdfName("TextAlign");
+        /**
+         * A name
+         * @since 5.3.5
+         */
+        public static readonly PdfName TEXTDECORATIONCOLOR = new PdfName("TextDecorationColor");
+        /**
+         * A name
+         * @since 5.3.5
+         */
+        public static readonly PdfName TEXTDECORATIONTHICKNESS = new PdfName("TextDecorationThickness");
+        /**
+         * A name
+         * @since 5.3.5
+         */
+        public static readonly PdfName TEXTDECORATIONTYPE = new PdfName("TextDecorationType");
+
         /**
          * A name
          * @since 5.3.4

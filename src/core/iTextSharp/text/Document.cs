@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.interfaces;
 
 /*
  * $Id$
@@ -93,7 +95,7 @@ namespace iTextSharp.text {
     /// <strong>document.Close();</strong>
     /// </code>
     /// </example>
-    public class Document : IDocListener {
+    public class Document : IDocListener, IAccessibleElement {
 
         ///<summary> Allows the pdf documents to be produced without compression for debugging purposes. </summary>
         public static bool Compress = true;
@@ -151,7 +153,9 @@ namespace iTextSharp.text {
 
         /** This is a chapter number in case ChapterAutoNumber is used. */
         protected int chapternumber = 0;
-
+        protected PdfName role = PdfName.DOCUMENT;
+        protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
+        protected Guid id = Guid.NewGuid();
         // constructor
 
         /// <summary>
@@ -192,6 +196,15 @@ namespace iTextSharp.text {
         /// <param name="listener">the new IDocListener</param>
         public void AddDocListener(IDocListener listener) {
             listeners.Add(listener);
+            if (listener is IAccessibleElement) {
+                IAccessibleElement ae = (IAccessibleElement)listener;
+                ae.Role = this.role;
+                ae.ID = this.id;
+                if (this.accessibleAttributes != null) {
+                    foreach (PdfName key in this.accessibleAttributes.Keys)
+                        ae.SetAccessibleAttribute(key, this.accessibleAttributes[key]);
+                }
+            }
         }
 
         /// <summary>
@@ -436,6 +449,19 @@ namespace iTextSharp.text {
             return Add(new Meta(Element.PRODUCER, Version.GetInstance().GetVersion));
         }
 
+        /**
+         * Adds a language to th document. Required for PDF/UA compatible documents.
+         * @param language
+         * @return <code>true</code> if successfull, <code>false</code> otherwise
+        */ 
+        public bool AddLanguage(String language) {
+            try {
+                return Add(new Meta(Element.LANGUAGE, language));
+            } catch (DocumentException de) {
+                throw de;
+            }
+        }
+
         /// <summary>
         /// Adds the current date and time to a Document.
         /// </summary>
@@ -670,6 +696,39 @@ namespace iTextSharp.text {
             if (IsOpen()) {
                 Close();
             }
+        }
+
+        public PdfObject GetAccessibleAttribute(PdfName key) {
+            if (accessibleAttributes != null) {
+                PdfObject value;
+                accessibleAttributes.TryGetValue(key, out value);
+                return value;
+            } else
+                return null;
+        }
+
+        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+            if (accessibleAttributes == null)
+                accessibleAttributes = new Dictionary<PdfName, PdfObject>();
+            accessibleAttributes[key] = value;
+        }
+
+        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+            return accessibleAttributes;
+        }
+
+        public PdfName Role {
+            get {
+                return role;
+            }
+            set {
+                role = value;
+            }
+        }
+        
+        public Guid ID {
+            get { return id; }
+            set { id = value; }
         }
     }
 }
