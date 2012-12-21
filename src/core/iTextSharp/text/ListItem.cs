@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.util;
+using com.itextpdf.text.pdf;
 using iTextSharp.text.factories;
 using iTextSharp.text.pdf;
 
@@ -102,7 +103,10 @@ namespace iTextSharp.text {
     
         /// <summary> this is the symbol that wil proceed the listitem. </summary>
         protected Chunk symbol;
-    
+
+        private ListBody listBody = null;
+        private ListLabel listLabel = null;
+
         // constructors
     
         /// <summary>
@@ -269,6 +273,24 @@ namespace iTextSharp.text {
             System.Collections.Generic.IList<Chunk> cks = Chunks;
             if (cks.Count != 0 && symbol != null)
                 symbol.Font = cks[0].Font;
+        }
+
+        public ListBody ListBody {
+            get
+            {
+                if (listBody == null)
+                    listBody = new ListBody(this);
+                return listBody;
+            }
+        }
+
+        public ListLabel ListLabel {
+            get
+            {
+                if (listLabel == null)
+                    listLabel = new ListLabel(this);
+                return listLabel;
+            }
         }
     }
 }

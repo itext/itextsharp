@@ -177,7 +177,9 @@ namespace iTextSharp.text.pdf {
     
         /** This is the actual content */
         protected ByteBuffer content = new ByteBuffer();
-    
+
+        protected int markedContentSize = 0;
+
         /** This is the writer */
         protected internal PdfWriter writer;
     
@@ -202,7 +204,7 @@ namespace iTextSharp.text.pdf {
 
         private IList<IAccessibleElement> mcElements = new List<IAccessibleElement>();
 
-        private PdfContentByte duplicatedFrom = null;
+        protected internal PdfContentByte duplicatedFrom = null;
         
         private static Dictionary<PdfName, String> abrev = new Dictionary<PdfName,string>();
         
@@ -279,6 +281,7 @@ namespace iTextSharp.text.pdf {
             if (other.writer != null && writer != other.writer)
                 throw new Exception(MessageLocalization.GetComposedMessage("inconsistent.writers.are.you.mixing.two.documents"));
             content.Append(other.content);
+            markedContentSize += other.markedContentSize;
         }
     
         /**
@@ -1474,6 +1477,7 @@ namespace iTextSharp.text.pdf {
         */
         public void Reset( bool validateContent ) {
             content.Reset();
+            markedContentSize = 0;
             if (validateContent) {
                 SanityCheck();
             }
@@ -1484,7 +1488,7 @@ namespace iTextSharp.text.pdf {
          * Starts the writing of text.
          * @param restoreTM indicates if to restore text matrix of the previous text block.
          */
-        private void BeginText(bool restoreTM)
+        protected internal void BeginText(bool restoreTM)
         {
             if (inText) {
                 if (writer.IsTagged()) {
@@ -1887,10 +1891,15 @@ namespace iTextSharp.text.pdf {
          *
          * @return the size of the content
          */
-        internal int Size {
-            get {
+        internal int Size() {
+            return Size(true);
+        }
+
+        internal int Size(bool includeMarkedContentSize) {
+            if (includeMarkedContentSize)
                 return content.Size;
-            }
+            else
+                return content.Size - markedContentSize;
         }
     
         /**
@@ -3266,18 +3275,6 @@ namespace iTextSharp.text.pdf {
         * @param struc the tagging structure
         */    
         public void BeginMarkedContentSequence(PdfStructureElement struc) {        
-            BeginMarkedContentSequence(struc, null);
-        }
-
-        /**
-         * Begins a marked content sequence. This sequence will be tagged with the structure <CODE>struc</CODE>.
-         * The same structure can be used several times to connect text that belongs to the same logical segment
-         * but is in a different location, like the same paragraph crossing to another page, for example.
-         * @param struc the tagging structure
-         * @param accessibleProperties properties to be written into structure element (i.e. alternate text)
-         */
-        public void BeginMarkedContentSequence(PdfStructureElement struc, Dictionary<PdfName, PdfObject> accessibleProperties) {
-
             PdfObject obj = struc.Get(PdfName.K);
             int mark = pdf.GetMarkPoint();
             if (obj != null) {
@@ -3289,33 +3286,27 @@ namespace iTextSharp.text.pdf {
                 }
                 else if (obj.IsArray()) {
                     ar = (PdfArray)obj;
-                    if (!ar[0].IsNumber())
-                        throw new ArgumentException(MessageLocalization.GetComposedMessage("the.structure.has.kids"));
                 }
                 else
                     throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.object.at.k.1", obj.GetType().ToString()));
-                PdfDictionary dic = new PdfDictionary(PdfName.MCR);
-                dic.Put(PdfName.PG, writer.CurrentPage);
-                dic.Put(PdfName.MCID, new PdfNumber(mark));
-                ar.Add(dic);
+                if (ar.GetAsNumber(0) != null)
+                {
+                    PdfDictionary dic = new PdfDictionary(PdfName.MCR);
+                    dic.Put(PdfName.PG, writer.CurrentPage);
+                    dic.Put(PdfName.MCID, new PdfNumber(mark));
+                    ar.Add(dic);
+                }
                 struc.SetPageMark(writer.PageNumber - 1, -1);
             }
             else {
                 struc.SetPageMark(writer.PageNumber - 1, mark);
                 struc.Put(PdfName.PG, writer.CurrentPage);
             }
-            if (accessibleProperties != null) {
-                foreach (PdfName key in accessibleProperties.Keys) {
-                    PdfObject value;
-                    accessibleProperties.TryGetValue(key, out value);
-                    if (value != null) {
-                        struc.Put(key, value);
-                    }
-                }
-            }
             pdf.IncMarkPoint();
             SetMcDepth(GetMcDepth() + 1);
+            int contentSize = content.Size;
             content.Append(struc.Get(PdfName.S).GetBytes()).Append(" <</MCID ").Append(mark).Append(">> BDC").Append_i(separator);
+            markedContentSize += content.Size - contentSize;
         }
         
         /**
@@ -3325,8 +3316,10 @@ namespace iTextSharp.text.pdf {
             if (GetMcDepth() == 0) {
                 throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.begin.end.marked.content.operators"));
             }
+            int contentSize = content.Size;
             SetMcDepth(GetMcDepth() - 1); ;
             content.Append("EMC").Append_i(separator);
+            markedContentSize += content.Size - contentSize;
         }
         
         /**
@@ -3338,27 +3331,29 @@ namespace iTextSharp.text.pdf {
         * to include the property in the resource dictionary with the possibility of reusing
         */    
         public void BeginMarkedContentSequence(PdfName tag, PdfDictionary property, bool inline) {
+            int contentSize = content.Size;
             if (property == null) {
                 content.Append(tag.GetBytes()).Append(" BMC").Append_i(separator);
                 SetMcDepth(GetMcDepth() + 1);
-                return;
-            }
-            content.Append(tag.GetBytes()).Append(' ');
-            if (inline)
-                property.ToPdf(writer, content);
-            else {
-                PdfObject[] objs;
-                if (writer.PropertyExists(property))
-                    objs = writer.AddSimpleProperty(property, null);
-                else
-                    objs = writer.AddSimpleProperty(property, writer.PdfIndirectReference);
-                PdfName name = (PdfName)objs[0];
-                PageResources prs = PageResources;
-                name = prs.AddProperty(name, (PdfIndirectReference)objs[1]);
-                content.Append(name.GetBytes());
-            }
-            content.Append(" BDC").Append_i(separator);
-            SetMcDepth(GetMcDepth() + 1);
+            } else {
+                content.Append(tag.GetBytes()).Append(' ');
+                if (inline)
+                    property.ToPdf(writer, content);
+                else {
+                    PdfObject[] objs;
+                    if (writer.PropertyExists(property))
+                        objs = writer.AddSimpleProperty(property, null);
+                    else
+                        objs = writer.AddSimpleProperty(property, writer.PdfIndirectReference);
+                    PdfName name = (PdfName)objs[0];
+                    PageResources prs = PageResources;
+                    name = prs.AddProperty(name, (PdfIndirectReference)objs[1]);
+                    content.Append(name.GetBytes());
+                }
+                content.Append(" BDC").Append_i(separator);
+                SetMcDepth(GetMcDepth() + 1);
+            } 
+            markedContentSize += content.Size - contentSize;
         }
         
         /**
@@ -3400,7 +3395,7 @@ namespace iTextSharp.text.pdf {
         }
 
         internal void OpenMCBlock(IAccessibleElement element) {
-            if (writer.IsTagged() && element != null && element.Role != null) {
+            if (writer.IsTagged() && element != null/* && element.Role != null*/) {
                 if (!GetMcElements().Contains(element)) {
                     PdfStructureElement structureElement = OpenMCBlockInt(element);
                     GetMcElements().Add(element);
@@ -3422,18 +3417,24 @@ namespace iTextSharp.text.pdf {
         private PdfStructureElement OpenMCBlockInt(IAccessibleElement element) {
             PdfStructureElement structureElement = null;
             if (writer.IsTagged()) {
-                if (element is IAccessibleElement) {
+                IAccessibleElement parent = null;
+                if (GetMcElements().Count > 0)
+                    parent = GetMcElements()[GetMcElements().Count - 1];
+                if (parent != null && parent.Role == null)
+                    element.Role = null;
+                if (element.Role != null) {
                     pdf.structElements.TryGetValue(element.ID, out structureElement);
                     if (structureElement == null)
                     {
                         structureElement = new PdfStructureElement(GetParentStructureElement(), element.Role);
                         structureElement.WriteAttributes(element);
                     }
-                    if (inText && writer.IsTagged())
-                    {
+                    bool inTextLocal = inText;
+                    if (inText)
                         EndText();
-                    }
-                    BeginMarkedContentSequence(structureElement, element.GetAccessibleProperties());
+                    BeginMarkedContentSequence(structureElement);
+                    if (inTextLocal)
+                        BeginText(true);
                 }
             }
             return structureElement;
@@ -3441,7 +3442,7 @@ namespace iTextSharp.text.pdf {
 
         internal void CloseMCBlock(IAccessibleElement element)
         {
-            if (writer.IsTagged() && element != null && element.Role != null)
+            if (writer.IsTagged() && element != null /*&& element.Role != null*/)
             {
                 if (GetMcElements().Contains(element)) {
                     CloseMCBlockInt(element);
@@ -3452,12 +3453,15 @@ namespace iTextSharp.text.pdf {
 
         private void CloseMCBlockInt(IAccessibleElement element)
         {
-            if (writer.IsTagged()) {
-                if (element is IAccessibleElement)
+            if (writer.IsTagged() && element.Role != null) {
+                bool inTextLocal = inText;
+                if (inText)
                 {
                     if (inText && writer.IsTagged())
                         EndText();
                     EndMarkedContentSequence();
+                    if (inTextLocal)
+                        BeginText(true);
                 }
             }
         }
@@ -3591,6 +3595,10 @@ namespace iTextSharp.text.pdf {
                 return base.GetHashCode();
             }
 
+        }
+
+        protected internal bool InText {
+            get {return inText;}
         }
     }
 }

@@ -172,8 +172,11 @@ namespace iTextSharp.text.pdf {
         protected bool loopCheck = true;
 
         protected PdfName role = PdfName.TABLE;
-        protected Dictionary<PdfName, PdfObject> accessibleProperties = null;
+        protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
         protected Guid id = Guid.NewGuid();
+        private PdfPTableHeader header = null;
+        private PdfPTableBody body = null;
+        private PdfPTableFooter footer = null;
 
         protected PdfPTable()
         {
@@ -262,10 +265,6 @@ namespace iTextSharp.text.pdf {
 
         protected internal void CopyFormat(PdfPTable sourceTable)
         {
-            id = sourceTable.ID;
-            role = sourceTable.Role;
-            if (sourceTable.GetAccessibleProperties() != null)
-                accessibleProperties = new Dictionary<PdfName, PdfObject>(sourceTable.GetAccessibleProperties());
             relativeWidths = new float[sourceTable.NumberOfColumns];
             absoluteWidths = new float[sourceTable.NumberOfColumns];
             System.Array.Copy(sourceTable.relativeWidths, 0, relativeWidths, 0, NumberOfColumns);
@@ -294,6 +293,13 @@ namespace iTextSharp.text.pdf {
             keepTogether = sourceTable.keepTogether;
             complete = sourceTable.complete;
             loopCheck = sourceTable.loopCheck;
+            id = sourceTable.ID;
+            role = sourceTable.Role;
+            if (sourceTable.accessibleAttributes != null)
+                accessibleAttributes = new Dictionary<PdfName, PdfObject>(sourceTable.accessibleAttributes);
+            header = sourceTable.GetHeader();
+            body = sourceTable.GetBody();
+            footer = sourceTable.GetFooter();
         }
 
         /** Sets the relative widths of the table.
@@ -752,13 +758,29 @@ namespace iTextSharp.text.pdf {
             LOGGER.Info(String.Format("Writing row {0} to {1}; column %s to {2}", rowStart, rowEnd, colStart, colEnd));
 
             float yPosStart = yPos;
+
+            PdfPTableBody currentBlock = null;
             for (int k = rowStart; k < rowEnd; ++k)
             {
                 PdfPRow row = rows[k];
+                if (GetHeader().rows != null && GetHeader().rows.Contains(row) && currentBlock == null) {
+                    currentBlock = OpenTableBlock(GetHeader(), canvases[TEXTCANVAS]);
+                } else if (GetBody().rows != null && GetBody().rows.Contains(row) && currentBlock == null) {
+                    currentBlock = OpenTableBlock(GetBody(), canvases[TEXTCANVAS]);
+                } else if (GetFooter().rows != null && GetFooter().rows.Contains(row) && currentBlock == null) {
+                    currentBlock = OpenTableBlock(GetFooter(), canvases[TEXTCANVAS]);
+                }
                 if (row != null)
                 {
                     row.WriteCells(colStart, colEnd, xPos, yPos, canvases, reusable);
                     yPos -= row.MaxHeights;
+                }
+                if (GetHeader().rows != null && GetHeader().rows.Contains(row) && (k == rowEnd - 1 || !GetHeader().rows.Contains(rows[k + 1]))) {
+                    currentBlock = CloseTableBlock(GetHeader(), canvases[TEXTCANVAS]);
+                } else if (GetBody().rows != null && GetBody().rows.Contains(row) && (k == rowEnd - 1 || !GetBody().rows.Contains(rows[k + 1]))) {
+                    currentBlock = CloseTableBlock(GetBody(), canvases[TEXTCANVAS]);
+                } else if (GetFooter().rows != null && GetFooter().rows.Contains(row) && (k == rowEnd - 1 || !GetFooter().rows.Contains(rows[k + 1]))) {
+                    currentBlock = CloseTableBlock(GetFooter(), canvases[TEXTCANVAS]);
                 }
             }
             if (tableEvent != null && colStart == 0 && colEnd == totalCols)
@@ -777,6 +799,16 @@ namespace iTextSharp.text.pdf {
                                        headersInEvent ? headerRows : 0, rowStart, canvases);
             }
             return yPos;
+        }
+
+        private PdfPTableBody OpenTableBlock(PdfPTableBody block, PdfContentByte canvas) {
+            canvas.OpenMCBlock(block);
+            return block;
+        }
+
+        private PdfPTableBody CloseTableBlock(PdfPTableBody block, PdfContentByte canvas) {
+            canvas.CloseMCBlock(block);
+            return null;
         }
 
         /**
@@ -1677,45 +1709,53 @@ namespace iTextSharp.text.pdf {
             set { this.loopCheck = value; }
         }
 
-        public PdfObject GetAccessibleProperty(PdfName key)
-        {
-            if (accessibleProperties != null)
-                return accessibleProperties[key];
-            else
+        public PdfObject GetAccessibleAttribute(PdfName key) {
+            if (accessibleAttributes != null) {
+                PdfObject value;
+                accessibleAttributes.TryGetValue(key, out value);
+                return value;
+            } else
                 return null;
         }
 
-        public void SetAccessibleProperty(PdfName key, PdfObject value)
-        {
-            if (accessibleProperties == null)
-                accessibleProperties = new Dictionary<PdfName, PdfObject>();
-            accessibleProperties.Add(key, value);
+        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+            if (accessibleAttributes == null)
+                accessibleAttributes = new Dictionary<PdfName, PdfObject>();
+            accessibleAttributes[key] = value;
         }
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleProperties()
-        {
-            return accessibleProperties;
+
+
+        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+            return accessibleAttributes;
         }
 
-        public PdfName Role
-        {
+        public PdfName Role {
             get { return role; }
-            set { role = value; }
+            set { this.role = value; }
         }
 
-        public void SetAccessibleProperties(Dictionary<PdfName, PdfObject> accessibleProperties)
-        {
-            this.accessibleProperties = accessibleProperties;
-        }
-
-        public Guid ID
-        {
+        public Guid ID {
             get { return id; }
+            set { id = value; }
         }
 
-        static private bool IsTagged(PdfContentByte canvas)
-        {
-            return canvas != null && canvas.writer != null && canvas.writer.IsTagged();
+        public PdfPTableHeader GetHeader() {
+            if (header == null)
+                header = new PdfPTableHeader();
+            return header;
+        }
+
+        public PdfPTableBody GetBody() {
+            if (body == null)
+                body = new PdfPTableBody();
+            return body;
+        }
+
+        public PdfPTableFooter GetFooter() {
+            if (footer == null)
+                footer = new PdfPTableFooter();
+            return footer;
         }
     }
 }

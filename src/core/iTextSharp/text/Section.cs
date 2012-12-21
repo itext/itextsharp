@@ -5,6 +5,8 @@ using System.util;
 using iTextSharp.text.api;
 using iTextSharp.text.factories;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.interfaces;
 
 /*
  * $Id$
@@ -78,7 +80,7 @@ namespace iTextSharp.text {
     /// section11.Add(someSectionText);</strong>strong>
     /// </code>
     /// </example>
-    public class Section : List<IElement>, ITextElementArray, ILargeElement, IIndentable {
+    public class Section : List<IElement>, ITextElementArray, ILargeElement, IIndentable, IAccessibleElement {
         
         // constant
         /**
@@ -159,6 +161,7 @@ namespace iTextSharp.text {
         protected internal Section() {
             title = new Paragraph();
             numberDepth = 1;
+            title.Role = new PdfName("H" + numberDepth);
         }
     
         /// <summary>
@@ -169,6 +172,7 @@ namespace iTextSharp.text {
         protected internal Section(Paragraph title, int numberDepth) {
             this.numberDepth = numberDepth;
             this.title = title;
+            title.Role = new PdfName("H" + numberDepth);
         }
     
         // private methods
@@ -710,6 +714,28 @@ namespace iTextSharp.text {
         */
         public void NewPage() {
             this.Add(Chunk.NEXTPAGE);
+        }
+
+        public PdfObject GetAccessibleAttribute(PdfName key) {
+            return title.GetAccessibleAttribute(key);
+        }
+
+        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+            title.SetAccessibleAttribute(key, value);
+        }
+
+        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+            return title.GetAccessibleAttributes();
+        }
+
+        public PdfName Role {
+            get { return title.Role; }
+            set { title.Role = value; }
+        }
+
+        public Guid ID {
+            get { return title.ID; }
+            set { title.ID = value; }
         }
     }
 }

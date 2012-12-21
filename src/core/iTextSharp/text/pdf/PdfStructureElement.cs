@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using com.itextpdf.text.pdf;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf.interfaces;
 
@@ -118,6 +120,16 @@ namespace iTextSharp.text.pdf {
                 kids.Add(kido);
                 parent.Put(PdfName.K, kids);
             }
+            if (kids.Size > 0) {
+                if (kids.GetAsNumber(0) != null)
+                    kids.Remove(0);
+                if (kids.Size > 0) {
+                    PdfDictionary mcr = kids.GetAsDict(0);
+                    if (mcr != null && PdfName.MCR.Equals(mcr.GetAsName(PdfName.TYPE))) {
+                        kids.Remove(0);
+                    }
+                }
+            }
             kids.Add(this);
             Put(PdfName.S, structureType);
             reference = top.Writer.PdfIndirectReference;
@@ -143,8 +155,7 @@ namespace iTextSharp.text.pdf {
         internal void SetPageMark(int page, int mark) {
             if (mark >= 0)
                 Put(PdfName.K, new PdfNumber(mark));
-            //if (parent == null)
-                top.SetPageMark(page, reference);
+            top.SetPageMark(page, reference);
         }
         
         /**
@@ -194,27 +205,154 @@ namespace iTextSharp.text.pdf {
         public void WriteAttributes(IAccessibleElement element) {
             if (element is Paragraph) {
                 WriteAttributes((Paragraph) element);
+            } else if (element is Chunk) {
+                WriteAttributes((Chunk)element);
+            } else if (element is Image) {
+                WriteAttributes((Image)element);
+            } else if (element is List) {
+                WriteAttributes((List)element);
+            } else if (element is ListItem) {
+                WriteAttributes((ListItem)element);
+            } else if (element is ListLabel) {
+                WriteAttributes((ListLabel)element);
+            } else if (element is ListBody) {
+                WriteAttributes((ListBody)element);
+            } else if (element is PdfPTable) {
+                WriteAttributes((PdfPTable)element);
+            } else if (element is PdfPRow) {
+                WriteAttributes((PdfPRow)element);
+            } else if (element is PdfPCell) {
+                WriteAttributes((PdfPCell)element);
+            } else if (element is PdfPTableHeader) {
+                WriteAttributes((PdfPTableHeader)element);
+            } else if (element is PdfPTableFooter) {
+                WriteAttributes((PdfPTableFooter)element);
+            } else if (element is PdfPTableBody) {
+                WriteAttributes((PdfPTableBody)element);
+            }
+            if (element.GetAccessibleAttributes() != null) {
+                foreach (PdfName key in element.GetAccessibleAttributes().Keys) {
+                    if (key.Equals(PdfName.LANG) || key.Equals(PdfName.ALT) || key.Equals(PdfName.ACTUALTEXT) || key.Equals(PdfName.E)) {
+                        Put(key, element.GetAccessibleAttribute(key));
+                    } else {
+                        SetAttribute(key, element.GetAccessibleAttribute(key));
+                    }
+                }
+            }
+        }
+
+        private void WriteAttributes(Chunk chunk) {
+            if (chunk != null) {
+                if (chunk.GetImage() != null) {
+                    WriteAttributes(chunk.GetImage());
+                } else {
+                    Dictionary<String, Object> attr = chunk.Attributes;
+                    if (attr != null){
+                        // Setting non-inheritable attributes
+                        if (attr.ContainsKey(Chunk.UNDERLINE)){
+                            this.SetAttribute(PdfName.TEXTDECORATIONTYPE, PdfName.UNDERLINE);
+                        }
+                        if (attr.ContainsKey(Chunk.BACKGROUND)){
+                            Object[] back = (Object[])attr[Chunk.BACKGROUND];
+                            BaseColor color = (BaseColor)back[0];
+                            this.SetAttribute(PdfName.BACKGROUNDCOLOR, new PdfArray(new float[] {color.R/255f, color.G/255f, color.B/255f}) );
+                        }
+
+                        // Setting inheritable attributes
+                        IPdfStructureElement parent = (IPdfStructureElement) this.GetParent(true);
+                        PdfObject obj = parent.GetAttribute(PdfName.COLOR);
+                        if ((chunk.Font != null) && (chunk.Font.Color != null)) {
+                            BaseColor c = chunk.Font.Color;
+                            SetColorAttribute(c, obj, PdfName.COLOR);
+                        }
+                        PdfObject decorThickness  = parent.GetAttribute(PdfName.TEXTDECORATIONTHICKNESS);
+                        PdfObject decorColor  = parent.GetAttribute(PdfName.TEXTDECORATIONCOLOR);
+                        if (attr.ContainsKey(Chunk.UNDERLINE)){
+                            Object[][] unders = (Object[][])attr[Chunk.UNDERLINE];
+                            Object[] arr = unders[unders.Length-1];
+                            BaseColor color = (BaseColor)arr[0];
+                            float [] floats = (float[]) arr[1];
+                            float thickness = floats[0];
+                            // Setting thickness
+                            if (decorThickness is PdfNumber){
+                                float t = ((PdfNumber) decorThickness).FloatValue;
+                                if (thickness.CompareTo(t) != 0){
+                                    this.SetAttribute(PdfName.TEXTDECORATIONTHICKNESS, new PdfNumber(thickness));
+                                }
+                            }
+                            else
+                                this.SetAttribute(PdfName.TEXTDECORATIONTHICKNESS, new PdfNumber(thickness));
+
+                            // Setting decoration color
+                            if (color != null){
+                                SetColorAttribute(color, decorColor, PdfName.TEXTDECORATIONCOLOR);
+                            }
+                        }
+                    
+                        if (attr.ContainsKey(Chunk.LINEHEIGHT)){
+                            float height = (float)attr[Chunk.LINEHEIGHT];
+                            PdfObject parentLH = parent.GetAttribute(PdfName.LINEHEIGHT);
+                            if (parentLH is PdfNumber){
+                                float pLH = ((PdfNumber)parentLH).FloatValue;
+                                if (pLH.CompareTo(height) != 0){
+                                    this.SetAttribute(PdfName.LINEHEIGHT, new PdfNumber(height));
+                                }
+                            }
+                            else
+                                this.SetAttribute(PdfName.LINEHEIGHT, new PdfNumber(height));
+                        }
+                    }
+                }
+            }
+        }
+
+        private void WriteAttributes(Image image) {
+            if (image != null) {
+                if (image.Width > 0){
+                    this.SetAttribute(PdfName.WIDTH, new PdfNumber(image.Width));
+                }
+                if (image.Height > 0){
+                    this.SetAttribute(PdfName.HEIGHT, new PdfNumber(image.Height));
+                }
+                image.Rotation = 10;
+                image.Rotation = 10f;
+                PdfRectangle rect = new PdfRectangle(image, ((Rectangle)image).Rotation);
+                if (rect != null){
+                    this.SetAttribute(PdfName.BBOX, rect);
+                }
+                if (image.Alt != null){
+                    Put(PdfName.ALT, new PdfString(image.Alt));
+                }
+
             }
         }
 
         private void WriteAttributes(Paragraph paragraph) {
             if (paragraph != null) {
                 // Setting non-inheritable attributes
-                if ((paragraph.Font != null) && (paragraph.Font.Color != null)) {
-                    BaseColor c = paragraph.Font.Color;
-                    float[] colors = new float[]{(float)c.R / 255f, (float)c.G / 255f, (float)c.B / 255f};
-                    this.SetAttribute(PdfName.COLOR, new PdfArray(colors));
-                }
                 if (paragraph.SpacingBefore.CompareTo(0f) != 0)
                     this.SetAttribute(PdfName.SPACEBEFORE, new PdfNumber(paragraph.SpacingBefore));
                 if (paragraph.SpacingAfter.CompareTo(0f) != 0)
                     this.SetAttribute(PdfName.SPACEAFTER, new PdfNumber(paragraph.SpacingAfter));
-                if (paragraph.FirstLineIndent.CompareTo(0f) != 0)
-                    this.SetAttribute(PdfName.TEXTINDENT, new PdfNumber(paragraph.FirstLineIndent));
-
+                
                 // Setting inheritable attributes
                 IPdfStructureElement parent = (IPdfStructureElement) this.GetParent(true);
-                PdfObject obj = parent.GetAttribute(PdfName.STARTINDENT);
+                PdfObject obj = parent.GetAttribute(PdfName.COLOR);
+                if ((paragraph.Font != null) && (paragraph.Font.Color != null)) {
+                    BaseColor c = paragraph.Font.Color;
+                    SetColorAttribute(c, obj, PdfName.COLOR);
+                }
+                obj = parent.GetAttribute(PdfName.TEXTINDENT);
+                if (paragraph.FirstLineIndent.CompareTo(0f) != 0) {
+                    bool writeIndent = true;
+                    if (obj is PdfNumber){
+                        if (((PdfNumber)obj).FloatValue.CompareTo(paragraph.FirstLineIndent) == 0)
+                            writeIndent = false;
+                    }
+                    if (writeIndent)
+                        this.SetAttribute(PdfName.TEXTINDENT, new PdfNumber(paragraph.FirstLineIndent));
+                }
+                obj = parent.GetAttribute(PdfName.STARTINDENT);
                 if (obj is PdfNumber) {
                     float startIndent = ((PdfNumber) obj).FloatValue;
                     if (startIndent.CompareTo(paragraph.IndentationLeft) != 0)
@@ -259,6 +397,94 @@ namespace iTextSharp.text.pdf {
                         this.SetAttribute(PdfName.TEXTALIGN, align);
                 }
             }
+        }
+
+        private void WriteAttributes(List list) {
+            if (list != null) {
+
+            }
+        }
+
+        private void WriteAttributes(ListItem listItem) {
+            if (listItem != null) {
+
+            }
+        }
+
+        private void WriteAttributes(ListBody listBody) {
+            if (listBody != null) {
+
+            }
+        }
+
+        private void WriteAttributes(ListLabel listLabel) {
+            if (listLabel != null) {
+
+            }
+        }
+
+        private void WriteAttributes(PdfPTable table) {
+            if (table != null) {
+
+            }
+        }
+
+        private void WriteAttributes(PdfPRow row) {
+            if (row != null) {
+
+            }
+        }
+
+        private void WriteAttributes(PdfPCell cell) {
+            if (cell != null) {
+
+            }
+        }
+
+        private void WriteAttributes(PdfPTableHeader header) {
+            if (header != null) {
+
+            }
+        }
+
+        private void WriteAttributes(PdfPTableBody body) {
+            if (body != null) {
+
+            }
+        }
+
+        private void WriteAttributes(PdfPTableFooter footer) {
+            if (footer != null) {
+
+            }
+        }
+    
+        private bool ColorsEqual(PdfArray parentColor, float [] color){
+            if (color[0].CompareTo(parentColor.GetAsNumber(0).FloatValue) != 0) {
+                return false;
+            }
+            if (color[1].CompareTo(parentColor.GetAsNumber(1).FloatValue) != 0) {
+                return false;
+            }
+            if (color[2].CompareTo(parentColor.GetAsNumber(2).FloatValue) != 0) {
+                return false;
+            }
+            return true;
+        }
+
+        private void SetColorAttribute(BaseColor newColor, PdfObject oldColor, PdfName attributeName){
+            float [] colorArr = new float[]{newColor.R/255f, newColor.G/255f, newColor.B/255f};
+            if (oldColor is PdfArray){
+                PdfArray oldC = (PdfArray)oldColor;
+                if (ColorsEqual(oldC, colorArr))
+                {
+                    this.SetAttribute(attributeName, new PdfArray(colorArr));
+                }
+                else
+                    this.SetAttribute(attributeName, new PdfArray(colorArr));
+            }
+            else
+                this.SetAttribute(attributeName, new PdfArray(colorArr));
         }
     }
 }

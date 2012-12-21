@@ -584,8 +584,8 @@ namespace iTextSharp.text.pdf {
             pdfIsoConformance = GetPdfIsoConformance();
             root = new PdfPages(this);
             pdf = document;
-            directContent = new PdfContentByte(this);
             directContentUnder = new PdfContentByte(this);
+            directContent = directContentUnder.Duplicate;
         }
 
         // get an instance of the PdfWriter
@@ -1759,6 +1759,10 @@ namespace iTextSharp.text.pdf {
             set {
                 pdf.SigFlags = value;
             }
+        }
+
+        public void SetLanguage(string language) {
+            pdf.SetLanguage(language);
         }
 
     //  [C9] Metadata

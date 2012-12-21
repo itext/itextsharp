@@ -819,10 +819,10 @@ namespace iTextSharp.text.pdf {
     public int Go(bool simulate, IElement elementToGo) {
         if (composite)
             return GoComposite(simulate);
-        
-        PdfListBody lBody = null;
+
+        ListBody lBody = null;
         if (IsTagged(canvas) && elementToGo is ListItem) {
-            GetTaggedPdfContext(canvas).lBodies.TryGetValue((ListItem)elementToGo, out lBody);
+            lBody = ((ListItem)elementToGo).ListBody;
         }
 
         AddWaitingPhrase();
@@ -959,11 +959,13 @@ namespace iTextSharp.text.pdf {
                 {
                     if (!simulate)
                     {
-                        PdfListLabel lbl = new PdfListLabel();
+                        ListLabel lbl = ((ListItem)elementToGo).ListLabel;
                         canvas.OpenMCBlock(lbl);
-                        ColumnText.ShowTextAligned(canvas, Element.ALIGN_LEFT,
-                                                   new Phrase(((ListItem) elementToGo).ListSymbol),
-                                                   leftX + (lBody != null ? lBody.indentation : 0), firstLineY, 0);
+                        Chunk symbol = new Chunk(((ListItem)elementToGo).ListSymbol);
+                        if (!lbl.TagLabelContent) {
+                            symbol.Role = null;
+                        }
+                        ColumnText.ShowTextAligned(canvas, Element.ALIGN_LEFT, new Phrase(symbol), leftX + lbl.Indentation, firstLineY, 0);
                         canvas.CloseMCBlock(lbl);
                     }
                     firstLineYDone = true;
@@ -1400,16 +1402,10 @@ namespace iTextSharp.text.pdf {
                     compositeColumn.minY = minY;
                     compositeColumn.maxY = maxY;
                     bool keepCandidate = (item.KeepTogether && createHere && !(firstPass && adjustFirstLine));
-                    PdfListBody lBody = null;
                     bool s = simulate || keepCandidate && keep == 0;
                     if (IsTagged(canvas) && !s)
                     {
-                        GetTaggedPdfContext(canvas).lBodies.TryGetValue(item, out lBody);
-                        if (lBody == null)
-                        {
-                            lBody = new PdfListBody(item, listIndentation);
-                            GetTaggedPdfContext(canvas).lBodies.Add(item, lBody);
-                        }
+                        item.ListLabel.Indentation = listIndentation;
                         if (list.GetFirstItem() == item || (compositeColumn != null && compositeColumn.bidiLine != null))
                             canvas.OpenMCBlock(list);
                         canvas.OpenMCBlock(item);
@@ -1417,7 +1413,7 @@ namespace iTextSharp.text.pdf {
                     status = compositeColumn.Go(simulate || keepCandidate && keep == 0, item);
                     if (IsTagged(canvas) && !s)
                     {
-                        canvas.CloseMCBlock(lBody);
+                        canvas.CloseMCBlock(item.ListBody);
                         canvas.CloseMCBlock(item);
                         if ((list.GetLastItem() == item && (status & NO_MORE_TEXT) != 0) || (status & NO_MORE_COLUMN) != 0)
                             canvas.CloseMCBlock(list);
@@ -1623,13 +1619,22 @@ namespace iTextSharp.text.pdf {
                     
                     // first we add the real header rows (if necessary)
                     if (!skipHeader && realHeaderRows > 0) {
-                        sub.AddRange(table.GetRows(0, realHeaderRows));
+                        List<PdfPRow> rows = table.GetRows(0, realHeaderRows);
+                        if (IsTagged(canvas))
+                            nt.GetHeader().rows = rows;
+                        sub.AddRange(rows);
                     }
                     else {
                         nt.HeaderRows = footerRows;
                     }
                     // then we add the real content
-                    sub.AddRange(table.GetRows(rowIdx, k));
+                    {
+                        List<PdfPRow> rows = table.GetRows(rowIdx, k);
+                        if (IsTagged(canvas)) {
+                            nt.GetBody().rows = rows;
+                        }
+                        sub.AddRange(rows);
+                    }
                     // do we need to show a footer?
                     bool showFooter = !table.SkipLastFooter;
                     bool newPageFollows = false;
@@ -1640,7 +1645,11 @@ namespace iTextSharp.text.pdf {
                     }
                     // we add the footer rows if necessary (not for incomplete tables)
                     if (footerRows > 0 && nt.ElementComplete && showFooter) {
-                    	sub.AddRange(table.GetRows(realHeaderRows, realHeaderRows + footerRows));
+                        List<PdfPRow> rows = table.GetRows(realHeaderRows, realHeaderRows + footerRows);
+                        if (IsTagged(canvas)) {
+                            nt.GetFooter().rows = rows;
+                        }
+                        sub.AddRange(rows);
                     }
                     else {
                     	footerRows = 0;
@@ -1887,13 +1896,6 @@ namespace iTextSharp.text.pdf {
         
     private static bool IsTagged(PdfContentByte canvas) {
         return (canvas != null) && (canvas.pdf != null) && (canvas.writer != null) && canvas.writer.IsTagged();
-    }
-
-    protected TaggedPdfContext GetTaggedPdfContext(PdfContentByte canvas) {
-        if (canvas != null && canvas.pdf != null)
-            return canvas.pdf.taggedPdfContext;
-        else
-            return null;
     }
 }
 }

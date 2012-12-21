@@ -156,11 +156,12 @@ namespace iTextSharp.text.pdf.intern {
                     array.Add(dic.IndirectReference);
                     if (!dic.IsUsed()) {
                         PdfArray tmp = dic.GetAsArray(PdfName.RECT);
-                        PdfRectangle rect = new PdfRectangle(tmp.GetAsNumber(0).FloatValue, tmp.GetAsNumber(1).FloatValue);
+                        PdfRectangle rect;
                         if (tmp.Size == 4)
                         {
-                            rect.Add(tmp.GetAsNumber(2));
-                            rect.Add(tmp.GetAsNumber(3));
+                            rect = new PdfRectangle(tmp.GetAsNumber(0).FloatValue, tmp.GetAsNumber(1).FloatValue, tmp.GetAsNumber(2).FloatValue, tmp.GetAsNumber(3).FloatValue);
+                        } else {
+                            rect = new PdfRectangle(tmp.GetAsNumber(0).FloatValue, tmp.GetAsNumber(1).FloatValue);
                         }
                         if (rect != null) {
                             switch (rotation) {

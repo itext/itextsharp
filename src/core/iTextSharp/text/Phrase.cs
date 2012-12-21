@@ -375,8 +375,8 @@ namespace iTextSharp.text {
             }
             Chunk newChunk = new Chunk(c, f);
             newChunk.Attributes = chunk.Attributes;
-            newChunk.Role = chunk.Role;
-            newChunk.SetAccessibleProperties(chunk.GetAccessibleProperties());
+            newChunk.role = chunk.Role;
+            newChunk.accessibleAttributes = chunk.GetAccessibleAttributes();
             if (hyphenation != null && newChunk.GetHyphenation() == null && !newChunk.IsEmpty()) {
                 newChunk.SetHyphenation(hyphenation);
             }

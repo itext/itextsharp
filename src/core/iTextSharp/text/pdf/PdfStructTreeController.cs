@@ -10,7 +10,6 @@ public class PdfStructTreeController {
     private PdfCopy writer;
     private PdfStructureTreeRoot structureTreeRoot;
     private PdfDictionary parentTree;
-    private String fileName;
     protected internal PdfReader reader;
     private PdfDictionary roleMap = null;
     private PdfDictionary sourceRoleMap = null;

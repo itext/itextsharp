@@ -85,7 +85,7 @@ namespace iTextSharp.text.pdf {
         private int[] canvasesPos;
 
         protected PdfName role = PdfName.TR;
-        protected Dictionary<PdfName, PdfObject> accessibleProperties = null;
+        protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
         protected Guid id = Guid.NewGuid();
     
         
@@ -100,15 +100,15 @@ namespace iTextSharp.text.pdf {
         }
 
         public PdfPRow(PdfPCell[] cells, PdfPRow source) {
-            if (source != null) {
-                this.id = source.ID;
-                this.role = source.Role;
-                if (source.GetAccessibleProperties() != null)
-                    this.accessibleProperties = new Dictionary<PdfName, PdfObject>(source.GetAccessibleProperties());
-            }
             this.cells = cells;
             widths = new float[cells.Length];
             InitExtraHeights();
+            if (source != null) {
+                this.id = source.ID;
+                this.role = source.Role;
+                if (source.accessibleAttributes != null)
+                    this.accessibleAttributes = new Dictionary<PdfName, PdfObject>(source.GetAccessibleAttributes());
+            }
         }
 
         /**
@@ -117,10 +117,6 @@ namespace iTextSharp.text.pdf {
         * @param row
         */
         public PdfPRow(PdfPRow row) {
-            this.id = row.ID;
-            this.role = row.Role;
-            if (row.GetAccessibleProperties() != null)
-                this.accessibleProperties = new Dictionary<PdfName, PdfObject>(row.GetAccessibleProperties());
             mayNotBreak = row.mayNotBreak;
             maxHeight = row.maxHeight;
             calculated = row.calculated;
@@ -132,6 +128,10 @@ namespace iTextSharp.text.pdf {
             widths = new float[cells.Length];
             System.Array.Copy(row.widths, 0, widths, 0, cells.Length);
             InitExtraHeights();
+            this.id = row.ID;
+            this.role = row.Role;
+            if (row.accessibleAttributes != null)
+                this.accessibleAttributes = new Dictionary<PdfName, PdfObject>(row.GetAccessibleAttributes());
         }
 
         /**
@@ -765,47 +765,38 @@ namespace iTextSharp.text.pdf {
             return false;
         }
 
-        public PdfObject GetAccessibleProperty(PdfName key)
-        {
-            if (accessibleProperties != null){
+        public PdfObject GetAccessibleAttribute(PdfName key) {
+            if (accessibleAttributes != null) {
                 PdfObject value;
-                accessibleProperties.TryGetValue(key, out value);
+                accessibleAttributes.TryGetValue(key, out value);
                 return value;
-            }
-            else
+            } else
                 return null;
         }
 
-        public void SetAccessibleProperty(PdfName key, PdfObject value)
-        {
-            if (accessibleProperties == null)
-                accessibleProperties = new Dictionary<PdfName, PdfObject>();
-            accessibleProperties[key] = value;
+        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+            if (accessibleAttributes == null)
+                accessibleAttributes = new Dictionary<PdfName, PdfObject>();
+            accessibleAttributes[key] = value;
         }
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleProperties()
-        {
-            return accessibleProperties;
+
+
+        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+            return accessibleAttributes;
         }
 
-        public PdfName Role
-        {
+        public PdfName Role {
             get { return role; }
-            set { role = value; }
+            set { this.role = value; }
         }
 
-        public void SetAccessibleProperties(Dictionary<PdfName, PdfObject> accessibleProperties)
-        {
-            this.accessibleProperties = accessibleProperties;
-        }
-
-        public Guid ID
-        {
+        public Guid ID {
             get { return id; }
+            set { id = value; }
         }
-        
-        static private bool IsTagged(PdfContentByte canvas)
-        {
+
+        static private bool IsTagged(PdfContentByte canvas) {
             return canvas != null && canvas.writer != null && canvas.writer.IsTagged();
         }
     }
