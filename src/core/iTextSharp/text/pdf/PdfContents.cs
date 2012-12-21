@@ -119,12 +119,12 @@ namespace iTextSharp.text.pdf {
                     ostr.Write(ROTATEFINAL, 0, ROTATEFINAL.Length);
                     break;
             }
-            if (under.Size() > 0) {
+            if (under.Size > 0) {
                 ostr.Write(SAVESTATE, 0, SAVESTATE.Length);
                 under.InternalBuffer.WriteTo(ostr);
                 ostr.Write(RESTORESTATE, 0, RESTORESTATE.Length);
             }
-            if (content.Size() > 0) {
+            if (content.Size > 0) {
                 ostr.Write(SAVESTATE, 0, SAVESTATE.Length);
                 content.InternalBuffer.WriteTo(ostr);
                 ostr.Write(RESTORESTATE, 0, RESTORESTATE.Length);
@@ -134,7 +134,7 @@ namespace iTextSharp.text.pdf {
                 text.InternalBuffer.WriteTo(ostr);
                 ostr.Write(RESTORESTATE, 0, RESTORESTATE.Length);
             }
-            if (secondContent.Size() > 0) {
+            if (secondContent.Size > 0) {
                 secondContent.InternalBuffer.WriteTo(ostr);
             }
 
