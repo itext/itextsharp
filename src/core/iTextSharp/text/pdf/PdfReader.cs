@@ -729,6 +729,7 @@ namespace iTextSharp.text.pdf {
                     recipients = (PdfArray)enc.Get(PdfName.RECIPIENTS);
                     break;
                 case 4:
+                case 5:
                     PdfDictionary dic = (PdfDictionary)enc.Get(PdfName.CF);
                     if (dic == null)
                         throw new InvalidPdfException(MessageLocalization.GetComposedMessage("cf.not.found.encryption"));
@@ -756,7 +757,7 @@ namespace iTextSharp.text.pdf {
                     recipients = (PdfArray)dic.Get(PdfName.RECIPIENTS);
                     break;
                 default:
-                    throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("unknown.encryption.type.v.eq.1", rValue));
+                    throw new UnsupportedPdfException(MessageLocalization.GetComposedMessage("unknown.encryption.type.v.eq.1", vValue));
                 }
                 for (int i = 0; i<recipients.Size; i++)
                 {
