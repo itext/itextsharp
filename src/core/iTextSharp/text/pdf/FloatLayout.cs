@@ -150,9 +150,7 @@ namespace iTextSharp.text.pdf {
                 status = FloatingLayout(floatingElements, simulate);
             }
 
-            foreach (IElement floatingElement in floatingElements) {
-                content.Insert(0, floatingElement);    
-            }
+            content.InsertRange(0, floatingElements);
 
             return status;
         }
