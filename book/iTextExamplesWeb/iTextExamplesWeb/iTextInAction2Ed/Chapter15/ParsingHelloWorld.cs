@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Text;
 using Ionic.Zip;
 using iTextSharp.text;
+using iTextSharp.text.io;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.parser;
 using kuujinbo.iTextInAction2Ed.Chapter01;
@@ -88,7 +89,7 @@ namespace kuujinbo.iTextInAction2Ed.Chapter15 {
       // we can inspect the syntax of the imported page
       byte[] streamBytes = reader.GetPageContent(1);
       StringBuilder sb = new StringBuilder();
-      PRTokeniser tokenizer = new PRTokeniser(streamBytes);
+      PRTokeniser tokenizer = new PRTokeniser(new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource(streamBytes)));
       while (tokenizer.NextToken()) {
         if (tokenizer.TokenType == PRTokeniser.TokType.STRING) {
           sb.AppendLine(tokenizer.StringValue);
