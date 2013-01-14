@@ -237,9 +237,8 @@ namespace kuujinbo.iTextInAction2Ed {
           {"ColumnTable", OutputType.pdf},
           {"ColumnWidths", OutputType.pdf},
           {"HeaderFooter1", OutputType.pdf},
-          {"HeaderFooter2", OutputType.pdf},
-// change if implemented later          
-          {"MemoryTests", OutputType.not_implemented},
+          {"HeaderFooter2", OutputType.pdf},  
+          {"MemoryTests", OutputType.zip},
           {"MovieCompositeMode", OutputType.pdf},
           {"MovieTextMode", OutputType.pdf},
           {"MyFirstTable", OutputType.pdf},
@@ -286,9 +285,8 @@ namespace kuujinbo.iTextInAction2Ed {
           {"ImportingPages1", OutputType.zip},
           {"ImportingPages2", OutputType.zip},
           {"InsertPages", OutputType.zip},
-          {"Layers", OutputType.zip},
-// change if implemented later                    
-          {"MemoryInfo", OutputType.not_implemented},
+          {"Layers", OutputType.zip},            
+          {"MemoryInfo", OutputType.zip},
           {"NUpTool", OutputType.zip},
           {"PageInformation", OutputType.zip},
           {"SelectPages", OutputType.zip},

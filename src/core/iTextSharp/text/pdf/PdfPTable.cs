@@ -160,6 +160,11 @@ namespace iTextSharp.text.pdf {
         */
         protected bool complete = true;
 
+        public bool Complete {
+            get { return complete; }
+            set { complete = value; }
+        }
+
         private int footerRows;
 
         /**
