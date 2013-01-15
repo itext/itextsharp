@@ -1100,7 +1100,7 @@ namespace iTextSharp.text.pdf.security {
                 CertificateID cid = sr.GetCertID();
                 X509Certificate sigcer = SigningCertificate;
                 X509Certificate isscer = cs[1];
-                CertificateID tis = new CertificateID(CertificateID.HashSha1, isscer, sigcer.SerialNumber);
+                CertificateID tis = new CertificateID(cid.HashAlgOid, isscer, sigcer.SerialNumber);
                 return tis.Equals(cid);
             }
             catch {
