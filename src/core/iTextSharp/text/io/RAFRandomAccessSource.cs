@@ -75,11 +75,12 @@ namespace iTextSharp.text.io {
 	     */
 	    // TODO: test to make sure we are handling the length properly (i.e. is raf.length() the last byte in the file, or one past the last byte?)
 	    public virtual int Get(long position) {
-		    if (position > raf.Length)
+		    if (position > length)
 			    return -1;
     		
 		    // Not thread safe!
-		    raf.Seek(position, SeekOrigin.Begin);
+            if(raf.Position != position)
+		        raf.Seek(position, SeekOrigin.Begin);
     		
 		    return raf.ReadByte();
 	    }
@@ -92,7 +93,8 @@ namespace iTextSharp.text.io {
 			    return -1;
     		
 		    // Not thread safe!
-		    raf.Seek(position, SeekOrigin.Begin);
+            if (raf.Position != position)
+		        raf.Seek(position, SeekOrigin.Begin);
 
 		    int n = raf.Read(bytes, off, len);
             return n == 0 ? -1 : n; //in .NET Streams return 0 on EOF, not -1
