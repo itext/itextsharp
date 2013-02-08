@@ -291,11 +291,13 @@ namespace iTextSharp.text.pdf {
             /*return arrayList.ToString();*/
             StringBuilder sb = new StringBuilder();
             sb.Append('[');
-            foreach (PdfObject pdfObject in arrayList)
-            {
-                sb.Append(pdfObject.ToString() + ", ");
+            for (int i = 0; i < arrayList.Count; i++) {
+                PdfObject o = arrayList[i];
+                if (o != null)
+                    sb.Append(o.ToString());
+                if (i < arrayList.Count - 1)
+                    sb.Append(", ");
             }
-            sb.Remove(sb.Length - 2, 2);
             sb.Append(']');
             return sb.ToString();
         }
