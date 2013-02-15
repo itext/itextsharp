@@ -330,7 +330,7 @@ namespace iTextSharp.text.pdf {
                     List<PdfChunk> ar = new List<PdfChunk>();
                     PdfChunk ckx = new PdfChunk("", detailChunks[0]);
                     ar.Add(ckx);
-                    return new PdfLine(0, 0, 0, alignment, true, ar, isRTL);
+                    return new PdfLine(0, 0, width, alignment, true, ar, isRTL);
                 }
             }
             float originalWidth = width;
