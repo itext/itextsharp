@@ -273,7 +273,7 @@ namespace iTextSharp.text.pdf {
                     else {
                         MemoryStream baos = new MemoryStream();
                         try {
-                            XmpWriter xmpw = new XmpWriter(baos, newInfo, PDFXConformance);
+                            XmpWriter xmpw = GetXmpWriter(baos, newInfo);
                             xmpw.Close();
                         }
                         catch (IOException) {
