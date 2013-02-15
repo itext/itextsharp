@@ -3230,7 +3230,7 @@ namespace iTextSharp.text.pdf {
 
         protected XmpWriter xmpWriter = null;
 
-        internal protected virtual XmpWriter GetXmpWriter(MemoryStream baos, PdfDocument.PdfInfo info) {
+        internal protected virtual XmpWriter GetXmpWriter(MemoryStream baos, PdfDictionary info) {
             if (xmpWriter == null)
                 xmpWriter = new XmpWriter(baos, info);
             return xmpWriter;

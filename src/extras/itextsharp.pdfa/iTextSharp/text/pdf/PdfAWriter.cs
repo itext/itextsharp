@@ -139,7 +139,7 @@ public class PdfAWriter : PdfWriter {
     /**
      * @see PdfWriter#getXmpWriter(java.io.MemoryStream, com.itextpdf.text.pdf.PdfDocument.PdfInfo)
      */
-    override protected XmpWriter GetXmpWriter(MemoryStream baos, PdfDocument.PdfInfo info)
+    override protected XmpWriter GetXmpWriter(MemoryStream baos, PdfDictionary info)
     {
         if (xmpWriter == null)
             xmpWriter = new PdfAXmpWriter(baos, info, ((IPdfAConformance)pdfIsoConformance).GetConformanceLevel());
