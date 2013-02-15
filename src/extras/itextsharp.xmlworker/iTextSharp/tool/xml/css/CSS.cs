@@ -113,6 +113,7 @@ namespace iTextSharp.tool.xml.css {
             public const String VERTICAL_ALIGN = "vertical-align";
             public const String LINE_HEIGHT = "line-height";
             public const String TEXT_ALIGN = "text-align";
+            public const String TEXT_VALIGN = "text-valign";
             public const String TEXT_INDENT = "text-indent";
             public const String POSITION = "position";
             public const String EMPTY_CELLS = "empty-cells";

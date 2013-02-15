@@ -292,7 +292,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public bool HasToBeJustified() {
-            return ((alignment == Element.ALIGN_JUSTIFIED || alignment == Element.ALIGN_JUSTIFIED_ALL) && width != 0);
+            return (((alignment == Element.ALIGN_JUSTIFIED && !newlineSplit) || alignment == Element.ALIGN_JUSTIFIED_ALL) && width != 0);
         }
     
         /**
