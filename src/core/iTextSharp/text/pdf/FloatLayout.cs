@@ -127,7 +127,9 @@ namespace iTextSharp.text.pdf {
                         status = floatingElement.Layout(canvas, useAscender, true, floatLeftX, minY, floatRightX, yLine);
 
                         if (!simulate) {
+                            canvas.OpenMCBlock(floatingElement);
                             status = floatingElement.Layout(canvas, useAscender, simulate, floatLeftX, minY, floatRightX, yLine);
+                            canvas.CloseMCBlock(floatingElement);
                         }
 
                         yLine -= floatingElement.getActualHeight();

@@ -851,6 +851,7 @@
     <Compile Include="iTextSharp\text\pdf\PdfPCell.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\PdfPHeaderCell.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfPRow.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -4018,6 +4019,7 @@
     <Compile Include="srcbc\x509\X509V3CertificateGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="System\util\collections\HashSet.cs" />
     <Compile Include="System\util\collections\OrderedTree.cs">
       <SubType>Code</SubType>
     </Compile>

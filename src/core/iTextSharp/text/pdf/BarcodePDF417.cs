@@ -1,5 +1,4 @@
 using System;
-using iTextSharp.text;
 using iTextSharp.text.pdf.codec;
 using System.Collections.Generic;
 using System.Text;
@@ -744,7 +743,7 @@ namespace iTextSharp.text.pdf {
                     if (c[j] == '\r')
                         c[j] = '\n';
                 }
-                Console.WriteLine("" + v.type + new String(c));
+                Console.Out.WriteLine("" + v.type + new String(c));
             }
         }
 

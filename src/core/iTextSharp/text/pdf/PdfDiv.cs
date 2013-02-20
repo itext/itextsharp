@@ -47,13 +47,26 @@ using System;
 using System.Collections.Generic;
 using System.Drawing.Drawing2D;
 using iTextSharp.text.api;
+using iTextSharp.text.pdf.interfaces;
 
 namespace iTextSharp.text.pdf {
 
-    public class PdfDiv : IElement, ISpaceable {
-        public enum FloatType {NONE, LEFT, RIGHT};
+    public class PdfDiv : IElement, ISpaceable, IAccessibleElement
+    {
+        public enum FloatType
+        {
+            NONE,
+            LEFT,
+            RIGHT
+        };
 
-        public enum PositionType {STATIC, ABSOLUTE, FIXED, RELATIVE};
+        public enum PositionType
+        {
+            STATIC,
+            ABSOLUTE,
+            FIXED,
+            RELATIVE
+        };
 
         private List<IElement> content;
 
@@ -89,7 +102,7 @@ namespace iTextSharp.text.pdf {
 
         private BaseColor backgroundColor = null;
 
-         /**
+        /**
          * The spacing before the table.
          */
         protected float spacingBefore;
@@ -105,110 +118,139 @@ namespace iTextSharp.text.pdf {
 
         private FloatLayout floatLayout = null;
 
-        public float? Left {
+        protected PdfName role = PdfName.DIV;
+
+        protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
+
+        protected Guid id = Guid.NewGuid();
+
+
+        public float? Left
+        {
             get { return left; }
             set { left = value; }
         }
 
-        public float? Top {
+        public float? Top
+        {
             get { return top; }
             set { top = value; }
         }
 
-        public float? Right {
+        public float? Right
+        {
             get { return right; }
             set { right = value; }
         }
 
-        public float? Bottom {
+        public float? Bottom
+        {
             get { return bottom; }
             set { bottom = value; }
         }
 
-        public float? Width {
+        public float? Width
+        {
             get { return width; }
             set { width = value; }
         }
 
-        public float? Height {
+        public float? Height
+        {
             get { return height; }
             set { height = value; }
         }
 
-        public float? PercentageHeight {
+        public float? PercentageHeight
+        {
             get { return percentageHeight; }
             set { percentageHeight = value; }
         }
 
-        public float? PercentageWidth {
+        public float? PercentageWidth
+        {
             get { return percentageWidth; }
             set { percentageWidth = value; }
         }
 
-        public float ContentWidth {
+        public float ContentWidth
+        {
             get { return contentWidth; }
             set { contentWidth = value; }
         }
 
-        public float ContentHeight {
+        public float ContentHeight
+        {
             get { return contentHeight; }
             set { contentHeight = value; }
         }
 
-        public float getActualHeight() {
-            return height != null && height >= contentHeight ? (float)height : contentHeight;
+        public float getActualHeight()
+        {
+            return height != null && height >= contentHeight ? (float) height : contentHeight;
         }
 
-        public float getActualWidth() {
-            return width != null && width >= contentWidth ? (float)width : contentWidth;
+        public float getActualWidth()
+        {
+            return width != null && width >= contentWidth ? (float) width : contentWidth;
         }
 
-        public int TextAlignment {
+        public int TextAlignment
+        {
             get { return textAlignment; }
             set { textAlignment = value; }
         }
 
-        public float PaddingLeft {
+        public float PaddingLeft
+        {
             get { return paddingLeft; }
             set { paddingLeft = value; }
         }
 
-        public float PaddingRight {
+        public float PaddingRight
+        {
             get { return paddingRight; }
             set { paddingRight = value; }
         }
 
-        public float PaddingTop {
+        public float PaddingTop
+        {
             get { return paddingTop; }
             set { paddingTop = value; }
         }
 
-        public float PaddingBottom {
+        public float PaddingBottom
+        {
             get { return paddingBottom; }
             set { paddingBottom = value; }
         }
 
-        public FloatType Float {
+        public FloatType Float
+        {
             get { return floatType; }
             set { floatType = value; }
         }
 
-        public PositionType Position {
+        public PositionType Position
+        {
             get { return position; }
             set { position = value; }
         }
 
-        public FloatLayout FloatLayout {
+        public FloatLayout FloatLayout
+        {
             get { return floatLayout; }
             set { floatLayout = value; }
         }
 
-        public BaseColor BackgroundColor {
+        public BaseColor BackgroundColor
+        {
             get { return backgroundColor; }
             set { backgroundColor = value; }
         }
 
-        public float SpacingBefore {
+        public float SpacingBefore
+        {
             get { return spacingBefore; }
             set { spacingBefore = value; }
         }
@@ -219,11 +261,13 @@ namespace iTextSharp.text.pdf {
             set { spacingAfter = value; }
         }
 
-        public List<IElement> Content {
+        public List<IElement> Content
+        {
             get { return content; }
         }
 
-        public PdfDiv() {
+        public PdfDiv()
+        {
             content = new List<IElement>();
         }
 
@@ -232,7 +276,9 @@ namespace iTextSharp.text.pdf {
          *
          * @return	an <CODE>ArrayList</CODE>
          */
-        public IList<Chunk> Chunks {
+
+        public IList<Chunk> Chunks
+        {
             get { return new List<Chunk>(); }
         }
 
@@ -241,25 +287,29 @@ namespace iTextSharp.text.pdf {
          *
          * @return	a type
          */
-        public int Type {
+
+        public int Type
+        {
             get { return Element.DIV; }
         }
 
-	    /**
-	     * @see com.itextpdf.text.Element#isContent()
-	     * @since	iText 2.0.8
-	     */
-	    public bool IsContent() {
-		    return true;
-	    }
+        /**
+         * @see com.itextpdf.text.Element#isContent()
+         * @since	iText 2.0.8
+         */
+        public bool IsContent()
+        {
+            return true;
+        }
 
-	    /**
-	     * @see com.itextpdf.text.Element#isNestable()
-	     * @since	iText 2.0.8
-	     */
-	    public bool IsNestable() {
-		    return true;
-	    }
+        /**
+         * @see com.itextpdf.text.Element#isNestable()
+         * @since	iText 2.0.8
+         */
+        public bool IsNestable()
+        {
+            return true;
+        }
 
         /**
          * Processes the element by adding it (or the different parts) to an
@@ -268,24 +318,29 @@ namespace iTextSharp.text.pdf {
          * @param	listener	an <CODE>ElementListener</CODE>
          * @return	<CODE>true</CODE> if the element was processed successfully
          */
-        public bool Process(IElementListener listener) {
-            try {
+        public bool Process(IElementListener listener)
+        {
+            try
+            {
                 return listener.Add(this);
             }
-            catch(DocumentException) {
+            catch (DocumentException)
+            {
                 return false;
             }
         }
 
-        public void AddElement(IElement element) {
-            if (element is PdfPTable) {
-                ((PdfPTable)element).SplitLate = false;
+        public void AddElement(IElement element)
+        {
+            if (element is PdfPTable)
+            {
+                ((PdfPTable) element).SplitLate = false;
             }
             content.Add(element);
         }
 
-        public int Layout(PdfContentByte canvas, bool useAscender, bool simulate, float llx, float lly, float urx, float ury) {
-
+        public int Layout(PdfContentByte canvas, bool useAscender, bool simulate, float llx, float lly, float urx, float ury)
+        {
             float leftX = Math.Min(llx, urx);
             float maxY = Math.Max(lly, ury);
             float minY = Math.Min(lly, ury);
@@ -293,66 +348,72 @@ namespace iTextSharp.text.pdf {
             float yLine = maxY;
             bool contentCutByFixedHeight = false;
 
-            if (width != null && width > 0) {
-                if (width < rightX - leftX) {
-                    rightX = leftX + (float)width;
-                } else if (width > rightX - leftX) {
+            if (width != null && width > 0)
+            {
+                if (width < rightX - leftX)
+                    rightX = leftX + (float) width;
+                else if (width > rightX - leftX)
                     return ColumnText.NO_MORE_COLUMN;
-                }
-            } else if (percentageWidth != null) {
-                contentWidth = (rightX - leftX) * (float)percentageWidth;
+            }
+            else if (percentageWidth != null)
+            {
+                contentWidth = (rightX - leftX)*(float) percentageWidth;
                 rightX = leftX + contentWidth;
             }
 
-            if (height != null && height > 0) {
-                if (height < maxY - minY) {
+            if (height != null && height > 0)
+            {
+                if (height < maxY - minY)
+                {
                     contentCutByFixedHeight = true;
-                    minY = maxY - (float)height;
-                } else if (height > maxY - minY) {
+                    minY = maxY - (float) height;
+                }
+                else if (height > maxY - minY)
+                {
                     return ColumnText.NO_MORE_COLUMN;
                 }
-            } else if (percentageHeight != null) {
-                if (percentageHeight < 1.0) {
+            }
+            else if (percentageHeight != null)
+            {
+                if (percentageHeight < 1.0)
                     contentCutByFixedHeight = true;
-                }
-                contentHeight = (maxY - minY) * (float)percentageHeight;
+                contentHeight = (maxY - minY)*(float) percentageHeight;
                 minY = maxY - contentHeight;
             }
 
-            if (!simulate && position == PdfDiv.PositionType.RELATIVE) {
+            if (!simulate && position == PdfDiv.PositionType.RELATIVE)
+            {
                 float? translationX = null;
-                if (left != null) {
+                if (left != null)
                     translationX = left;
-                } else if (right != null) {
+                else if (right != null)
                     translationX = -right;
-                } else {
+                else
                     translationX = 0f;
-                }
 
                 float? translationY = null;
-                if (top != null) {
+                if (top != null)
                     translationY = -top;
-                } else if (bottom != null) {
+                else if (bottom != null)
                     translationY = bottom;
-                } else {
+                else
                     translationY = 0f;
-                }
                 canvas.SaveState();
                 canvas.Transform(new Matrix(1f, 0, 0, 1f, translationX.Value, translationY.Value));
             }
 
-            if (!simulate) {
-                if (backgroundColor != null && getActualWidth() > 0  && getActualHeight() > 0) {
+            if (!simulate)
+            {
+                if (backgroundColor != null && getActualWidth() > 0 && getActualHeight() > 0)
+                {
                     float backgroundWidth = getActualWidth();
                     float backgroundHeight = getActualHeight();
-                    if (width != null) {
-                        backgroundWidth = width > 0 ? (float)width : 0;
-                    }
-
-                    if (height != null) {
-                        backgroundHeight = height > 0 ? (float)height : 0;
-                    }
-                    if (backgroundWidth > 0 && backgroundHeight > 0) {
+                    if (width != null)
+                        backgroundWidth = width > 0 ? (float) width : 0;
+                    if (height != null)
+                        backgroundHeight = height > 0 ? (float) height : 0;
+                    if (backgroundWidth > 0 && backgroundHeight > 0)
+                    {
                         Rectangle background = new Rectangle(leftX, maxY - backgroundHeight, leftX + backgroundWidth, maxY);
                         background.BackgroundColor = backgroundColor;
                         canvas.Rectangle(background);
@@ -360,12 +421,10 @@ namespace iTextSharp.text.pdf {
                 }
             }
 
-            if (percentageWidth == null) {
+            if (percentageWidth == null)
                 contentWidth = 0;
-            }
-            if (percentageHeight == null) {
+            if (percentageHeight == null)
                 contentHeight = 0;
-            }
 
             minY += paddingBottom;
             leftX += paddingLeft;
@@ -378,17 +437,18 @@ namespace iTextSharp.text.pdf {
             if (content.Count > 0)
             {
                 FloatLayout floatLay = null;
-                if (this.floatLayout == null) {
+                if (this.floatLayout == null)
+                {
                     List<IElement> floatingElements = new List<IElement>(content);
-                    if (simulate){
+                    if (simulate)
                         floatLay = new FloatLayout(floatingElements, useAscender);
-                    }
-                    else{
+                    else
                         floatLay = this.floatLayout = new FloatLayout(floatingElements, useAscender);
-                    }
                 }
-                else{
-                    if (simulate){
+                else
+                {
+                    if (simulate)
+                    {
                         List<IElement> floatingElements = new List<IElement>(this.floatLayout.content);
                         floatLay = new FloatLayout(floatingElements, useAscender);
                     }
@@ -401,26 +461,55 @@ namespace iTextSharp.text.pdf {
                 floatLay.SetSimpleColumn(leftX, minY, rightX, yLine);
                 status = floatLay.Layout(canvas, simulate);
                 yLine = floatLay.YLine;
-                if (percentageWidth == null && contentWidth < floatLay.FilledWidth) {
+                if (percentageWidth == null && contentWidth < floatLay.FilledWidth)
                     contentWidth = floatLay.FilledWidth;
-                }
             }
 
 
-            if (!simulate && position == PdfDiv.PositionType.RELATIVE) {
+            if (!simulate && position == PdfDiv.PositionType.RELATIVE)
                 canvas.RestoreState();
-            }
 
             yLine -= paddingBottom;
-            if (percentageHeight == null) {
+            if (percentageHeight == null)
                 contentHeight = maxY - yLine;
-            }
 
-            if (percentageWidth == null) {
+            if (percentageWidth == null)
                 contentWidth += paddingLeft + paddingRight;
-            }
 
             return contentCutByFixedHeight ? ColumnText.NO_MORE_TEXT : status;
+        }
+
+        public PdfObject GetAccessibleAttribute(PdfName key)
+        {
+            PdfObject result;
+            if (accessibleAttributes != null && accessibleAttributes.TryGetValue(key, out result))
+                return result;
+            else
+                return null;
+        }
+
+        public void SetAccessibleAttribute(PdfName key, PdfObject value)
+        {
+            if (accessibleAttributes == null)
+                accessibleAttributes = new Dictionary<PdfName, PdfObject>();
+            accessibleAttributes[key] = value;
+        }
+
+        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes()
+        {
+            return accessibleAttributes;
+        }
+
+        public PdfName Role
+        {
+            get { return role; }
+            set { role = value; }
+        }
+
+        public Guid ID
+        {
+            get { return id; }
+            set { id = value; }
         }
     }
 }

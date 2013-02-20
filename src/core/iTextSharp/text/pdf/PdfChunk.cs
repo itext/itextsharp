@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.util;
-
-using iTextSharp.text;
 using iTextSharp.text.pdf.interfaces;
 
 /*
@@ -137,6 +134,7 @@ namespace iTextSharp.text.pdf {
     
         /** The image in this <CODE>PdfChunk</CODE>, if it has one */
         protected Image image;
+        protected float imageScalePercentage = 1.0f;
     
         /** The offset in the x direction for the image */
         protected float offsetX;
@@ -207,7 +205,7 @@ namespace iTextSharp.text.pdf {
             if (size == iTextSharp.text.Font.UNDEFINED)
                 size = 12;
             baseFont = f.BaseFont;
-            BaseFont bf = f.BaseFont;
+            //BaseFont bf = f.BaseFont;
             int style = f.Style;
             if (style == iTextSharp.text.Font.UNDEFINED) {
                 style = iTextSharp.text.Font.NORMAL;
@@ -467,8 +465,9 @@ namespace iTextSharp.text.pdf {
                 if (image.ScaledWidth > width) {
                     // Image does not fit the line, resize if requested
                     if (image.ScaleToFitLineWhenOverflow) {
-                        float scalePercent = width / image.Width * 100;
-                        image.ScalePercent(scalePercent);
+                        //float scalePercent = width / image.Width * 100;
+                        //image.ScalePercent(scalePercent);
+                        this.ImageScalePercentage = width / image.Width;
                         return null;
                     }
                     PdfChunk pc = new PdfChunk("", this);
@@ -771,7 +770,28 @@ namespace iTextSharp.text.pdf {
                 return image;
             }
         }
-    
+
+        internal float ImageHeight
+        {
+            get { return image.ScaledHeight*imageScalePercentage; }
+            
+        }
+
+        internal float ImageWidth
+        {
+            get { return image.ScaledWidth* imageScalePercentage; }
+        }
+
+        /**
+         * Returns a scalePercentage in case the image needs to be scaled.
+         * Sets a scale percentage in case the image needs to be scaled.
+         */
+        public float ImageScalePercentage
+        {
+            get { return imageScalePercentage; }
+            set { imageScalePercentage = value; }
+        }
+
         /**
          * Gets the image offset in the x direction
          * @return the image offset in the x direction

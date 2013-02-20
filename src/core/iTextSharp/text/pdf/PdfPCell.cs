@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using iTextSharp.text;
 using iTextSharp.text.pdf.events;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf.interfaces;
@@ -118,6 +117,7 @@ namespace iTextSharp.text.pdf {
 
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
         protected internal Guid id = Guid.NewGuid();
+        protected List<PdfPHeaderCell> headers = null;
 
         /** Constructs an empty <CODE>PdfPCell</CODE>.
         * The default padding is 2.
@@ -235,6 +235,7 @@ namespace iTextSharp.text.pdf {
             role = cell.role;
             if (cell.accessibleAttributes != null)
                 accessibleAttributes = new Dictionary<PdfName, PdfObject>(cell.accessibleAttributes);
+            headers = cell.headers;
         }
         
         /**
@@ -840,7 +841,7 @@ namespace iTextSharp.text.pdf {
             return accessibleAttributes;
         }
 
-        public PdfName Role {
+        public virtual PdfName Role {
             get { return role; }
             set { this.role = value; }
         }
@@ -848,6 +849,18 @@ namespace iTextSharp.text.pdf {
         public Guid ID {
             get { return id; }
             set { id = value; }
+        }
+
+        public List<PdfPHeaderCell> Headers
+        {
+            get { return headers; }
+        }
+
+        public void AddHeader(PdfPHeaderCell header)
+        {
+            if (headers == null)
+                headers = new List<PdfPHeaderCell>();
+            headers.Add(header);
         }
     }
 }

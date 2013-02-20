@@ -2,8 +2,6 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 
-using iTextSharp.text;
-
 /*
  * $Id$
  * 
@@ -199,7 +197,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             else {
-                width += ((PdfChunk)(line[line.Count - 1])).TrimLastSpace();
+                width += line[line.Count - 1].TrimLastSpace();
             }
             return overflow;
         }
@@ -209,7 +207,7 @@ namespace iTextSharp.text.pdf {
                 float f;
                 if (chunk.IsImage()) {
                     Image img = chunk.Image;
-                    f = img.ScaledHeight + chunk.ImageOffsetY
+                    f = chunk.ImageHeight + chunk.ImageOffsetY
                             + img.BorderWidthTop + img.SpacingBefore;
                 } else {
                     f = chunk.Leading;
@@ -292,7 +290,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public bool HasToBeJustified() {
-            return (((alignment == Element.ALIGN_JUSTIFIED && !newlineSplit) || alignment == Element.ALIGN_JUSTIFIED_ALL) && width != 0);
+            return ((alignment == Element.ALIGN_JUSTIFIED && !newlineSplit) || alignment == Element.ALIGN_JUSTIFIED_ALL) && width != 0;
         }
     
         /**
@@ -473,7 +471,7 @@ namespace iTextSharp.text.pdf {
                 if (chunk.IsImage()) {
                     Image img = chunk.Image;
                     if (chunk.ChangeLeading) {
-                        float height = img.ScaledHeight + chunk.ImageOffsetY + img.SpacingBefore;
+                        float height = chunk.ImageHeight + chunk.ImageOffsetY + img.SpacingBefore;
                         image_leading = Math.Max(height, image_leading);
                     }
                 }else {
@@ -530,7 +528,7 @@ namespace iTextSharp.text.pdf {
                 float ascender = 0;
                 foreach (PdfChunk ck in line) {
                     if (ck.IsImage())
-                        ascender = Math.Max(ascender, ck.Image.ScaledHeight + ck.ImageOffsetY);
+                        ascender = Math.Max(ascender, ck.ImageHeight + ck.ImageOffsetY);
                     else {
                         PdfFont font = ck.Font;
                         float textRise = ck.TextRise;

@@ -1,15 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.util.collections;
 using com.itextpdf.text.pdf;
-using iTextSharp.text;
 using iTextSharp.text.api;
 using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.draw;
 using iTextSharp.text.pdf.collection;
-using System.util;
 using iTextSharp.text.error_messages;
 /*
  * 
@@ -287,6 +283,8 @@ namespace iTextSharp.text.pdf {
 
 
         internal Dictionary<Guid, PdfStructureElement> structElements = new Dictionary<Guid, PdfStructureElement>();
+
+        protected internal bool openMCDocument = false;
 
         /**
         * Adds a <CODE>PdfWriter</CODE> to the <CODE>PdfDocument</CODE>.
@@ -736,9 +734,8 @@ namespace iTextSharp.text.pdf {
                 currentOutline = rootOutline;
             }
             InitPage();
-            if (IsTagged(writer)) {
-                writer.DirectContentUnder.OpenMCBlock(this);
-            }
+            if (IsTagged(writer))
+                openMCDocument = true;
         }
         
     //  [L2] DocListener interface
@@ -757,6 +754,7 @@ namespace iTextSharp.text.pdf {
                 FlushFloatingElements();
                 FlushLines();
                 writer.DirectContent.CloseMCBlock(this);
+                writer.FlushTaggedObjects();
             }
             bool wasImage = (imageWait != null);
             NewPage();
@@ -1112,6 +1110,8 @@ namespace iTextSharp.text.pdf {
                     line = null;
                     NewPage();
                     line = overflowLine;
+                    //update left indent because of mirror margins.
+                    overflowLine.left = IndentLeft;
                 }
                 currentHeight += line.Height;
                 lines.Add(line);
@@ -1417,7 +1417,7 @@ namespace iTextSharp.text.pdf {
                                 subtract += hangingCorrection;
                             PdfAnnotation annot = null;
                             if (chunk.IsImage()) {
-                                annot = new PdfAnnotation(writer, xMarker, yMarker + chunk.ImageOffsetY, xMarker + width - subtract, yMarker + chunk.Image.ScaledHeight + chunk.ImageOffsetY, (PdfAction)chunk.GetAttribute(Chunk.ACTION));
+                                annot = new PdfAnnotation(writer, xMarker, yMarker + chunk.ImageOffsetY, xMarker + width - subtract, yMarker + chunk.ImageHeight + chunk.ImageOffsetY, (PdfAction)chunk.GetAttribute(Chunk.ACTION));
                             }
                             else {
                         	    annot = new PdfAnnotation(writer, xMarker, yMarker + descender + chunk.TextRise, xMarker + width - subtract, yMarker + ascender + chunk.TextRise, (PdfAction)chunk.GetAttribute(Chunk.ACTION));
@@ -1512,11 +1512,11 @@ namespace iTextSharp.text.pdf {
 					    }
                         if (chunk.IsImage()) {
                             Image image = chunk.Image;
-                            float[] matrix = image.Matrix;
+                            float[] matrix = image.GetMatrix(chunk.ImageScalePercentage);
                             matrix[Image.CX] = xMarker + chunk.ImageOffsetX - matrix[Image.CX];
                             matrix[Image.CY] = yMarker + chunk.ImageOffsetY - matrix[Image.CY];
                             graphics.AddImage(image, matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
-                            text.MoveText(xMarker + lastBaseFactor + image.ScaledWidth - text.XTLM, 0);
+                            text.MoveText(xMarker + lastBaseFactor + chunk.ImageWidth - text.XTLM, 0);
                         }
                     }
                     if (!chunk.IsTabSpace())
@@ -1900,11 +1900,11 @@ namespace iTextSharp.text.pdf {
                     kids[k].Put(PdfName.NEXT, kids[k + 1].IndirectReference);
             }
             if (size > 0) {
-                outline.Put(PdfName.FIRST, ((PdfOutline)kids[0]).IndirectReference);
-                outline.Put(PdfName.LAST, ((PdfOutline)kids[size - 1]).IndirectReference);
+                outline.Put(PdfName.FIRST, kids[0].IndirectReference);
+                outline.Put(PdfName.LAST, kids[size - 1].IndirectReference);
             }
             for (int k = 0; k < size; ++k) {
-                PdfOutline kid = (PdfOutline)kids[k];
+                PdfOutline kid = kids[k];
                 writer.AddToBody(kid, kid.IndirectReference);
             }
         }
@@ -2233,10 +2233,10 @@ namespace iTextSharp.text.pdf {
                 text = graphics;
             }
             text.BeginText();
-            if (IsTagged(writer))
-                textEmptySize = text.Size;
             // we move to the left/top position of the page
             text.MoveText(Left, Top);
+            if (IsTagged(writer))
+                textEmptySize = text.Size;
         }
 
         /**
@@ -2260,7 +2260,11 @@ namespace iTextSharp.text.pdf {
                 this.pageEmpty = value;
             }
             get {
-                return writer == null || (writer.DirectContent.GetSize(!IsTagged(writer)) == 0 && writer.DirectContentUnder.GetSize(!IsTagged(writer)) == 0 && (pageEmpty || writer.IsPaused()));
+                if (IsTagged(writer))
+                    return writer == null || writer.DirectContent.GetSize(false) == 0 && writer.DirectContentUnder.GetSize(false) == 0 && text.GetSize(false) - textEmptySize == 0 && (pageEmpty || writer.IsPaused());
+                else
+                    return writer == null || writer.DirectContent.Size == 0 && writer.DirectContentUnder.Size == 0 && (pageEmpty || writer.IsPaused());
+
             }
         }
 
@@ -2385,14 +2389,14 @@ namespace iTextSharp.text.pdf {
             if (image == imageWait)
                 imageWait = null;
             bool textwrap = (image.Alignment & Image.TEXTWRAP) == Image.TEXTWRAP
-            && !((image.Alignment & Image.MIDDLE_ALIGN) == Image.MIDDLE_ALIGN);
+            && (image.Alignment & Image.MIDDLE_ALIGN) != Image.MIDDLE_ALIGN;
             bool underlying = (image.Alignment & Image.UNDERLYING) == Image.UNDERLYING;
             float diff = leading / 2;
             if (textwrap) {
                 diff += leading;
             }
             float lowerleft = IndentTop - currentHeight - image.ScaledHeight - diff;
-            float[] mt = image.Matrix;
+            float[] mt = image.GetMatrix();
             float startPosition = IndentLeft - mt[4];
             if ((image.Alignment & Image.RIGHT_ALIGN) == Image.RIGHT_ALIGN) startPosition = IndentRight - image.ScaledWidth - mt[4];
             if ((image.Alignment & Image.MIDDLE_ALIGN) == Image.MIDDLE_ALIGN) startPosition = IndentLeft + ((IndentRight - IndentLeft - image.ScaledWidth) / 2) - mt[4];
@@ -2448,7 +2452,11 @@ namespace iTextSharp.text.pdf {
                 ct.SetSimpleColumn(IndentLeft, IndentBottom, IndentRight, IndentTop - currentHeight);
                 int status = ct.Go();
                 if ((status & ColumnText.NO_MORE_TEXT) != 0) {
-                    text.MoveText(0, ct.YLine - IndentTop + currentHeight);
+                    if (IsTagged(writer))
+                        text.SetTextMatrix(IndentLeft, ct.YLine);
+                    else
+                        text.MoveText(0, ct.YLine - IndentTop + currentHeight);
+
                     currentHeight = IndentTop - ct.YLine;
                     break;
                 }
@@ -2460,6 +2468,8 @@ namespace iTextSharp.text.pdf {
                     throw new DocumentException(MessageLocalization.GetComposedMessage("infinite.table.loop"));
                 }
                 NewPage();
+                if (IsTagged(writer))
+                    ct.Canvas = text;
             }
             ptable.HeadersInEvent = he;
         }
@@ -2482,9 +2492,14 @@ namespace iTextSharp.text.pdf {
                 while (true) {
                     fl.SetSimpleColumn(IndentLeft, IndentBottom, IndentRight, IndentTop - currentHeight);
                     try {
-                        int status = fl.Layout(writer.DirectContent, false);
-                        if ((status & ColumnText.NO_MORE_TEXT) != 0) {
-                            text.MoveText(0, fl.YLine - IndentTop + currentHeight);
+                        int status = fl.Layout(IsTagged(writer) ? text : writer.DirectContent, false);
+                        if ((status & ColumnText.NO_MORE_TEXT) != 0)
+                        {
+                            if (IsTagged(writer))
+                                text.SetTextMatrix(IndentLeft, fl.YLine);
+                            else
+                                text.MoveText(0, fl.YLine - IndentTop + currentHeight);
+
                             currentHeight = IndentTop - fl.YLine;
                             break;
                         }

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.util;
-using iTextSharp.text.factories;
 using iTextSharp.text.api;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.interfaces;

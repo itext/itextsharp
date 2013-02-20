@@ -250,6 +250,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName BM = new PdfName("BM");
         /** A name */
         public static readonly PdfName BORDER = new PdfName("Border");
+        /**
+         * A name
+         * @since 5.4.0
+         */
+        public static readonly PdfName BOTH = new PdfName("Both");
         /** A name */
         public static readonly PdfName BOUNDS = new PdfName("Bounds");
         /** A name */
@@ -368,6 +373,16 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName COLLECTIONSORT = new PdfName("CollectionSort");
         /** A name */
         public static readonly PdfName COLLECTIONSUBITEM = new PdfName("CollectionSubitem");
+        /**
+         * A name.
+         * @since 5.4.0
+         */
+        public static readonly PdfName COLSPAN = new PdfName("Colspan");
+        /**
+         * A name.
+         * @since 5.4.0
+        */
+        public static readonly PdfName COLUMN = new PdfName("Column");
         /** A name */
         public static readonly PdfName COLUMNS = new PdfName("Columns");
         /**
@@ -447,6 +462,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName DCS = new PdfName("DCS");
         /** A name */
         public static readonly PdfName DCTDECODE = new PdfName("DCTDecode");
+        /**
+         * A name.
+         * @since 5.4.0
+         */
+        public static readonly PdfName DECIMAL = new PdfName("Decimal");
         /**
          * A name.
          * @since 2.1.6
@@ -830,12 +850,16 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.6
          */
         public static readonly PdfName H6 = new PdfName("H6");
-
         /**
          * A name.
          * @since 2.1.6
          */
         public static readonly PdfName HALIGN = new PdfName("HAlign");
+        /**
+         * A name.
+         * @since 5.4.0
+         */
+        public static readonly PdfName HEADERS = new PdfName("Headers");
         /** A name of an attribute. */
         public static readonly PdfName HEIGHT = new PdfName("Height");
         /** A name */
@@ -1006,8 +1030,19 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName LINEHEIGHT = new PdfName("LineHeight");
         /** A name */
         public static readonly PdfName LINK = new PdfName("Link");
+        /**
+         * A name
+         * @since 5.4.0
+         */
+        public static readonly PdfName LIST = new PdfName("List");
+
         /** A name */
         public static readonly PdfName LISTMODE = new PdfName("ListMode");
+        /**
+         * A name
+         * @since 5.4.0
+         */
+        public static readonly PdfName LISTNUMBERING = new PdfName("ListNumbering");
         /** A name */
         public static readonly PdfName LOCATION = new PdfName("Location");
         /** A name */
@@ -1017,6 +1052,17 @@ namespace iTextSharp.text.pdf {
          * @since	2.1.2
          */
         public static readonly PdfName LOCKED = new PdfName("Locked");
+        /**
+         * A name
+         * @since 5.4.0
+         */        
+        public static readonly PdfName LOWERALPHA = new PdfName("LowerAlpha");
+        /**
+         * A name
+         * @since 5.4.0
+         */
+        public static readonly PdfName LOWERROMAN = new PdfName("LowerRoman");
+
         /**
          * A name of an attribute.
          * @since 5.1.0
@@ -1509,8 +1555,18 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName ROOT = new PdfName("Root");
         /** A name */
         public static readonly PdfName ROTATE = new PdfName("Rotate");
+        /**
+         * A name
+         * @since 5.4.0
+         */
+        public static readonly PdfName ROW = new PdfName("Row");
         /** A name */
         public static readonly PdfName ROWS = new PdfName("Rows");
+        /**
+         * A name
+         * @since 5.4.0
+         */
+        public static readonly PdfName ROWSPAN = new PdfName("RowSpan");
         /**
          * A name
          * @since 5.1.0
@@ -1531,6 +1587,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName SATURATION = new PdfName("Saturation");
         /** A name */
         public static readonly PdfName SCHEMA = new PdfName("Schema");
+        /**
+         * A name.
+         * @since 5.4.0
+         */
+        public static readonly PdfName SCOPE = new PdfName("Scope");
         /** A name */
         public static readonly PdfName SCREEN = new PdfName("Screen");
         /**
@@ -1847,6 +1908,16 @@ namespace iTextSharp.text.pdf {
          * @since 5.2.1
          */
         public static readonly PdfName UNIX = new PdfName("Unix");
+        /**
+         * A name.
+         * @since 5.4.0
+         */
+        public static readonly PdfName UPPERALPHA = new PdfName("UpperAlpha");
+        /**
+         * A name.
+         * @since 5.4.0
+         */
+        public static readonly PdfName UPPERROMAN = new PdfName("UpperRoman");
         /** A name */
         public static readonly PdfName UR = new PdfName("UR");
         /** A name */
@@ -1873,6 +1944,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName USERUNIT = new PdfName("UserUnit");
         /** A name */
         public static readonly PdfName USETHUMBS = new PdfName("UseThumbs");
+        /**
+         * A name.
+         * @since 5.4.0
+         */        
+        public static readonly PdfName UTF_8 = new PdfName("utf_8");
         /** A name */
         public static readonly PdfName V = new PdfName("V");
         /** A name */
@@ -2148,7 +2224,8 @@ namespace iTextSharp.text.pdf {
         * @return the encoded name
         * @since	2.1.5
         */
-        public static byte[] EncodeName(String name) {
+        public static byte[] EncodeName(String name)
+        {
             int length = name.Length;
             // every special character has to be substituted
             ByteBuffer pdfName = new ByteBuffer(length + 20);

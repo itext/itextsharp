@@ -213,14 +213,14 @@ namespace iTextSharp.text.pdf.parser {
         public static void Main(String[] args) {
             try{
                 if (args.Length < 1 || args.Length > 3){
-                    Console.WriteLine("Usage:  PdfContentReaderTool <pdf file> [<output file>|stdout] [<page num>]");
+                    Console.Out.WriteLine("Usage:  PdfContentReaderTool <pdf file> [<output file>|stdout] [<page num>]");
                     return;
                 }
 
                 TextWriter writer = Console.Out;
                 if (args.Length >= 2){
                     if (!Util.EqualsIgnoreCase(args[1], "stdout")) {
-                        Console.WriteLine("Writing PDF content to " + args[1]);
+                        Console.Out.WriteLine("Writing PDF content to " + args[1]);
                         writer = new StreamWriter(args[1]);
                     }
                 }
@@ -239,10 +239,10 @@ namespace iTextSharp.text.pdf.parser {
 
                 if (args.Length >= 2){
                     writer.Close();
-                    Console.WriteLine("Finished writing content to " + args[1]);
+                    Console.Out.WriteLine("Finished writing content to " + args[1]);
                 }
             } catch (Exception e){
-                Console.WriteLine(e.ToString());
+                Console.Out.WriteLine(e.ToString());
             }
         }
     }

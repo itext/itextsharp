@@ -123,7 +123,12 @@ namespace iTextSharp.text.pdf {
             cells = new PdfPCell[row.cells.Length];
             for (int k = 0; k < cells.Length; ++k) {
                 if (row.cells[k] != null)
-                    cells[k] = new PdfPCell(row.cells[k]);
+                {
+                    if (row.cells[k] is PdfPHeaderCell)
+                        cells[k] = new PdfPHeaderCell((PdfPHeaderCell)row.cells[k]);
+                    else
+                        cells[k] = new PdfPCell(row.cells[k]);
+                }
             }
             widths = new float[cells.Length];
             System.Array.Copy(row.widths, 0, widths, 0, cells.Length);

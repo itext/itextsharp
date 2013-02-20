@@ -1,10 +1,7 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
-using System.util;
-using iTextSharp.text.html;
 using iTextSharp.text.pdf;
-using iTextSharp.text.factories;
 using iTextSharp.text.error_messages;
 
 /*
@@ -165,7 +162,7 @@ namespace iTextSharp.text {
             this.leading = leading;
             this.font = font;
             /* bugfix by August Detlefsen */
-            if (str != null && str.Length != 0) {
+            if (!string.IsNullOrEmpty(str)) {
                 base.Add(new Chunk(str, font));
             }
         }
@@ -472,10 +469,6 @@ namespace iTextSharp.text {
             }
         }
 
-        public override string ToString() {
-            return base.ToString();
-        }
-
         /**
         * Setter/getter for the hyphenation.
         * @param   hyphenation a HyphenationEvent instance
@@ -550,7 +543,7 @@ namespace iTextSharp.text {
                     p.Add(new Chunk(buf.ToString(), symbol));
                 }
             }
-            if (str != null && str.Length != 0) {
+            if (!string.IsNullOrEmpty(str)) {
         	    p.Add(new Chunk(str, font));
             }
     	    return p;

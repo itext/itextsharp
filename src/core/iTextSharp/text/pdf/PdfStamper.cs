@@ -362,7 +362,7 @@ namespace iTextSharp.text.pdf {
         */    
         public AcroFields AcroFields {
             get {
-                return stamper.AcroFields;
+                return stamper.GetAcroFields();
             }
         }
         

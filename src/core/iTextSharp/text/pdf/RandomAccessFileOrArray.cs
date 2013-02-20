@@ -1,8 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Net;
-using iTextSharp.text.error_messages;
+using iTextSharp.text.exceptions;
 using iTextSharp.text.io;
 /*
  * $Id$
@@ -61,18 +60,20 @@ namespace iTextSharp.text.pdf {
     * 
     * @author Paulo Soares, Kevin Day
     */
-    public class RandomAccessFileOrArray {
-        
+
+    public class RandomAccessFileOrArray
+    {
+
         /**
          * The source that backs this object
          */
         private readonly IRandomAccessSource byteSource;
-        
+
         /**
          * The physical location in the underlying byte source.
          */
         private long byteSourcePosition;
-        
+
         /**
          * the pushed  back byte, if any
          */
@@ -87,18 +88,24 @@ namespace iTextSharp.text.pdf {
          * @param filename
          * @throws IOException
          */
-        public RandomAccessFileOrArray(String filename) : this(new RandomAccessSourceFactory()
-            .SetForceRead(false)
-            .CreateBestSource(filename)) {
+
+        public RandomAccessFileOrArray(String filename)
+            : this(new RandomAccessSourceFactory()
+                       .SetForceRead(false)
+                       .CreateBestSource(filename))
+        {
         }
-        
+
         /**
          * Creates an independent view of the specified source.  Closing the new object will not close the source.
          * Closing the source will have adverse effect on the behavior of the new view.
          * @deprecated use {@link RandomAccessFileOrArray#createView()} instead
          * @param source the source for the new independent view
          */
-        public RandomAccessFileOrArray(RandomAccessFileOrArray source) : this(new IndependentRandomAccessSource(source.byteSource)) {
+
+        public RandomAccessFileOrArray(RandomAccessFileOrArray source)
+            : this(new IndependentRandomAccessSource(source.byteSource))
+        {
         }
 
         /**
@@ -106,23 +113,28 @@ namespace iTextSharp.text.pdf {
          * Closing this object will have adverse effect on the view.
          * @return the new view
          */
-        public RandomAccessFileOrArray CreateView(){
+
+        public RandomAccessFileOrArray CreateView()
+        {
             return new RandomAccessFileOrArray(new IndependentRandomAccessSource(byteSource));
         }
-        
-        public IRandomAccessSource CreateSourceView() {
+
+        public IRandomAccessSource CreateSourceView()
+        {
             return new IndependentRandomAccessSource(byteSource);
         }
-        
+
         /**
          * Creates a RandomAccessFileOrArray that wraps the specified byte source.  The byte source will be closed when
          * this RandomAccessFileOrArray is closed.
          * @param byteSource the byte source to wrap
          */
-        public RandomAccessFileOrArray(IRandomAccessSource byteSource){
+
+        public RandomAccessFileOrArray(IRandomAccessSource byteSource)
+        {
             this.byteSource = byteSource;
         }
-        
+
         /**
          * Constructs a new RandomAccessFileOrArrayObject
          * @param filename the file to open (can be a file system file or one of the following url strings: file://, http://, https://, jar:, wsjar:, vfszip:
@@ -131,9 +143,12 @@ namespace iTextSharp.text.pdf {
          * @throws IOException if there is a failure opening or reading the file
          * @deprecated use {@link RandomAccessSourceFactory#createBestSource(String)} and {@link RandomAccessFileOrArray#RandomAccessFileOrArray(RandomAccessSource)} instead
          */
-        public RandomAccessFileOrArray(String filename, bool forceRead) : this(new RandomAccessSourceFactory()
-                .SetForceRead(forceRead)
-                .CreateBestSource(filename)) {
+
+        public RandomAccessFileOrArray(String filename, bool forceRead)
+            : this(new RandomAccessSourceFactory()
+                       .SetForceRead(forceRead)
+                       .CreateBestSource(filename))
+        {
         }
 
         /**
@@ -141,7 +156,10 @@ namespace iTextSharp.text.pdf {
          * @throws IOException
          * @deprecated use {@link RandomAccessSourceFactory#createSource(URL)} and {@link RandomAccessFileOrArray#RandomAccessFileOrArray(RandomAccessSource)} instead
          */
-        public RandomAccessFileOrArray(Uri url) : this(new RandomAccessSourceFactory().CreateSource(url)) {
+
+        public RandomAccessFileOrArray(Uri url)
+            : this(new RandomAccessSourceFactory().CreateSource(url))
+        {
         }
 
         /**
@@ -149,59 +167,75 @@ namespace iTextSharp.text.pdf {
          * @throws IOException
          * @deprecated use {@link RandomAccessSourceFactory#createSource(InputStream)} and {@link RandomAccessFileOrArray#RandomAccessFileOrArray(RandomAccessSource)} instead
          */
-        public RandomAccessFileOrArray(Stream inp) : this (new RandomAccessSourceFactory().CreateSource(inp)) {
+
+        public RandomAccessFileOrArray(Stream inp)
+            : this(new RandomAccessSourceFactory().CreateSource(inp))
+        {
         }
-        
+
 
         /**
          * @param url
          * @throws IOException
          * @deprecated use {@link RandomAccessSourceFactory#createSource(byte[])} and {@link RandomAccessFileOrArray#RandomAccessFileOrArray(RandomAccessSource)} instead
          */
-        public RandomAccessFileOrArray(byte[] arrayIn) : this (new RandomAccessSourceFactory().CreateSource(arrayIn)) {
+
+        public RandomAccessFileOrArray(byte[] arrayIn)
+            : this(new RandomAccessSourceFactory().CreateSource(arrayIn))
+        {
         }
-        
+
         //TODO: I'm only putting this in here for backwards compatability with PdfReader(RAFOA, byte[]).  Once we get rid of the
         //PdfReader constructor, we can get rid of this method as well
-        protected internal IRandomAccessSource GetByteSource(){
+        protected internal IRandomAccessSource GetByteSource()
+        {
             return byteSource;
         }
-        
+
         /**
          * Pushes a byte back.  The next get() will return this byte instead of the value from the underlying data source
          * @param b the byte to push
          */
-        public void PushBack(byte b) {
+
+        public void PushBack(byte b)
+        {
             back = b;
             isBack = true;
         }
-        
+
         /**
          * Reads a single byte
          * @return the byte, or -1 if EOF is reached
          * @throws IOException
          */
-        public int Read() {
-            if (isBack) {
+
+        public int Read()
+        {
+            if (isBack)
+            {
                 isBack = false;
                 return back & 0xff;
             }
             return byteSource.Get(byteSourcePosition++);
         }
-        
-        public int Read(byte[] b, int off, int len) {
+
+        public int Read(byte[] b, int off, int len)
+        {
             if (len == 0)
                 return 0;
             int count = 0;
-            if (isBack && len > 0) {
+            if (isBack && len > 0)
+            {
                 isBack = false;
                 b[off++] = back;
                 --len;
                 count++;
             }
-            if (len > 0){
+            if (len > 0)
+            {
                 int byteSourceCount = byteSource.Get(byteSourcePosition, b, off, len);
-                if (byteSourceCount > 0) {
+                if (byteSourceCount > 0)
+                {
                     count += byteSourceCount;
                     byteSourcePosition += byteSourceCount;
                 }
@@ -210,42 +244,52 @@ namespace iTextSharp.text.pdf {
                 return -1;
             return count;
         }
-        
-        public int Read(byte[] b) {
+
+        public int Read(byte[] b)
+        {
             return Read(b, 0, b.Length);
         }
-        
-        public void ReadFully(byte[] b) {
+
+        public void ReadFully(byte[] b)
+        {
             ReadFully(b, 0, b.Length);
         }
-        
-        public void ReadFully(byte[] b, int off, int len) {
+
+        public void ReadFully(byte[] b, int off, int len)
+        {
             if (len == 0)
                 return;
             int n = 0;
-            do {
+            do
+            {
                 int count = Read(b, off + n, len - n);
                 if (count <= 0)
                     throw new EndOfStreamException();
                 n += count;
             } while (n < len);
         }
-        
-        public long Skip(long n) {
+
+        public long Skip(long n)
+        {
             return SkipBytes(n);
         }
-        
-        public long SkipBytes(long n) {
-            if (n <= 0) {
+
+        public long SkipBytes(long n)
+        {
+            if (n <= 0)
+            {
                 return 0;
             }
             int adj = 0;
-            if (isBack) {
+            if (isBack)
+            {
                 isBack = false;
-                if (n == 1) {
+                if (n == 1)
+                {
                     return 1;
                 }
-                else {
+                else
+                {
                     --n;
                     adj = 1;
                 }
@@ -253,85 +297,94 @@ namespace iTextSharp.text.pdf {
             long pos;
             long len;
             long newpos;
-            
-			pos = FilePointer;
+
+            pos = FilePointer;
             len = Length;
             newpos = pos + n;
-            if (newpos > len) {
+            if (newpos > len)
+            {
                 newpos = len;
             }
             Seek(newpos);
-            
+
             /* return the actual number of bytes skipped */
             return newpos - pos + adj;
         }
-        
-        public void ReOpen() {
+
+        public void ReOpen()
+        {
             Seek(0);
         }
-        
-        protected void InsureOpen() {
+
+        protected void InsureOpen()
+        {
         }
-        
-        public bool IsOpen() {
+
+        public bool IsOpen()
+        {
             return true;
         }
-        
-        public void Close() {
+
+        public void Close()
+        {
             isBack = false;
             byteSource.Close();
         }
-        
-        public long Length {
-            get {
-                return byteSource.Length;
-            }
+
+        public long Length
+        {
+            get { return byteSource.Length; }
         }
-        
-        public void Seek(long pos) {
+
+        public void Seek(long pos)
+        {
             byteSourcePosition = pos;
             isBack = false;
         }
-        
-        public void Seek(int pos) {
-            Seek((long)pos);
+
+        public void Seek(int pos)
+        {
+            Seek((long) pos);
         }
-        
-        public long FilePointer {
-            get {
-                return byteSourcePosition - (isBack ? 1 : 0);            
-            }
+
+        public long FilePointer
+        {
+            get { return byteSourcePosition - (isBack ? 1 : 0); }
         }
-        
-        public bool ReadBoolean() {
+
+        public bool ReadBoolean()
+        {
             int ch = this.Read();
             if (ch < 0)
                 throw new EndOfStreamException();
             return (ch != 0);
         }
-        
-        public byte ReadByte() {
+
+        public byte ReadByte()
+        {
             int ch = this.Read();
             if (ch < 0)
                 throw new EndOfStreamException();
-            return (byte)(ch);
+            return (byte) (ch);
         }
-        
-        public int ReadUnsignedByte() {
+
+        public int ReadUnsignedByte()
+        {
             int ch = this.Read();
             if (ch < 0)
                 throw new EndOfStreamException();
             return ch;
         }
-        
-        public short ReadShort() {
+
+        public short ReadShort()
+        {
             int ch1 = this.Read();
             int ch2 = this.Read();
             if ((ch1 | ch2) < 0)
                 throw new EndOfStreamException();
-            return (short)((ch1 << 8) + ch2);
+            return (short) ((ch1 << 8) + ch2);
         }
-        
+
         /**
         * Reads a signed 16-bit number from this stream in little-endian order.
         * The method reads two
@@ -353,22 +406,25 @@ namespace iTextSharp.text.pdf {
         *               two bytes.
         * @exception  IOException   if an I/O error occurs.
         */
-        public short ReadShortLE() {
+
+        public short ReadShortLE()
+        {
             int ch1 = this.Read();
             int ch2 = this.Read();
             if ((ch1 | ch2) < 0)
                 throw new EndOfStreamException();
-            return (short)((ch2 << 8) + (ch1 << 0));
+            return (short) ((ch2 << 8) + (ch1 << 0));
         }
-        
-        public int ReadUnsignedShort() {
+
+        public int ReadUnsignedShort()
+        {
             int ch1 = this.Read();
             int ch2 = this.Read();
             if ((ch1 | ch2) < 0)
                 throw new EndOfStreamException();
             return (ch1 << 8) + ch2;
         }
-        
+
         /**
         * Reads an unsigned 16-bit number from this stream in little-endian order.
         * This method reads
@@ -390,22 +446,25 @@ namespace iTextSharp.text.pdf {
         *               two bytes.
         * @exception  IOException   if an I/O error occurs.
         */
-        public int ReadUnsignedShortLE() {
+
+        public int ReadUnsignedShortLE()
+        {
             int ch1 = this.Read();
             int ch2 = this.Read();
             if ((ch1 | ch2) < 0)
                 throw new EndOfStreamException();
             return (ch2 << 8) + (ch1 << 0);
         }
-        
-        public char ReadChar() {
+
+        public char ReadChar()
+        {
             int ch1 = this.Read();
             int ch2 = this.Read();
             if ((ch1 | ch2) < 0)
                 throw new EndOfStreamException();
-            return (char)((ch1 << 8) + ch2);
+            return (char) ((ch1 << 8) + ch2);
         }
-        
+
         /**
         * Reads a Unicode character from this stream in little-endian order.
         * This method reads two
@@ -426,15 +485,18 @@ namespace iTextSharp.text.pdf {
         *               two bytes.
         * @exception  IOException   if an I/O error occurs.
         */
-        public char ReadCharLE() {
+
+        public char ReadCharLE()
+        {
             int ch1 = this.Read();
             int ch2 = this.Read();
             if ((ch1 | ch2) < 0)
                 throw new EndOfStreamException();
-            return (char)((ch2 << 8) + (ch1 << 0));
+            return (char) ((ch2 << 8) + (ch1 << 0));
         }
-        
-        public int ReadInt() {
+
+        public int ReadInt()
+        {
             int ch1 = this.Read();
             int ch2 = this.Read();
             int ch3 = this.Read();
@@ -443,7 +505,7 @@ namespace iTextSharp.text.pdf {
                 throw new EndOfStreamException();
             return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + ch4);
         }
-        
+
         /**
         * Reads a signed 32-bit integer from this stream in little-endian order.
         * This method reads 4
@@ -465,7 +527,9 @@ namespace iTextSharp.text.pdf {
         *               four bytes.
         * @exception  IOException   if an I/O error occurs.
         */
-        public int ReadIntLE() {
+
+        public int ReadIntLE()
+        {
             int ch1 = this.Read();
             int ch2 = this.Read();
             int ch3 = this.Read();
@@ -474,7 +538,7 @@ namespace iTextSharp.text.pdf {
                 throw new EndOfStreamException();
             return ((ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1 << 0));
         }
-        
+
         /**
         * Reads an unsigned 32-bit integer from this stream. This method reads 4
         * bytes from the stream, starting at the current stream pointer.
@@ -495,7 +559,9 @@ namespace iTextSharp.text.pdf {
         *               four bytes.
         * @exception  IOException   if an I/O error occurs.
         */
-        public long ReadUnsignedInt() {
+
+        public long ReadUnsignedInt()
+        {
             long ch1 = this.Read();
             long ch2 = this.Read();
             long ch3 = this.Read();
@@ -504,8 +570,9 @@ namespace iTextSharp.text.pdf {
                 throw new EndOfStreamException();
             return ((ch1 << 24) + (ch2 << 16) + (ch3 << 8) + (ch4 << 0));
         }
-        
-        public long ReadUnsignedIntLE() {
+
+        public long ReadUnsignedIntLE()
+        {
             long ch1 = this.Read();
             long ch2 = this.Read();
             long ch3 = this.Read();
@@ -514,73 +581,91 @@ namespace iTextSharp.text.pdf {
                 throw new EndOfStreamException();
             return ((ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1 << 0));
         }
-        
-        public long ReadLong() {
-            return ((long)(ReadInt()) << 32) + (ReadInt() & 0xFFFFFFFFL);
+
+        public long ReadLong()
+        {
+            return ((long) (ReadInt()) << 32) + (ReadInt() & 0xFFFFFFFFL);
         }
-        
-        public long ReadLongLE() {
+
+        public long ReadLongLE()
+        {
             int i1 = ReadIntLE();
             int i2 = ReadIntLE();
-            return ((long)i2 << 32) + (i1 & 0xFFFFFFFFL);
+            return ((long) i2 << 32) + (i1 & 0xFFFFFFFFL);
         }
-        
-        public float ReadFloat() {
+
+        public float ReadFloat()
+        {
             int[] a = {ReadInt()};
             float[] b = {0};
             Buffer.BlockCopy(a, 0, b, 0, 4);
             return b[0];
         }
-        
-        public float ReadFloatLE() {
+
+        public float ReadFloatLE()
+        {
             int[] a = {ReadIntLE()};
             float[] b = {0};
             Buffer.BlockCopy(a, 0, b, 0, 4);
             return b[0];
         }
-        
-        public double ReadDouble() {
+
+        public double ReadDouble()
+        {
             long[] a = {ReadLong()};
             double[] b = {0};
             Buffer.BlockCopy(a, 0, b, 0, 8);
             return b[0];
         }
-        
-        public double ReadDoubleLE() {
+
+        public double ReadDoubleLE()
+        {
             long[] a = {ReadLongLE()};
             double[] b = {0};
             Buffer.BlockCopy(a, 0, b, 0, 8);
             return b[0];
         }
 
-        public String ReadLine() {
+        public String ReadLine()
+        {
             StringBuilder input = new StringBuilder();
             int c = -1;
             bool eol = false;
-            
-            while (!eol) {
-                switch (c = Read()) {
+
+            while (!eol)
+            {
+                switch (c = Read())
+                {
                     case -1:
                     case '\n':
                         eol = true;
                         break;
                     case '\r':
                         eol = true;
-						long cur = FilePointer;
-                        if ((Read()) != '\n') {
+                        long cur = FilePointer;
+                        if ((Read()) != '\n')
+                        {
                             Seek(cur);
                         }
                         break;
                     default:
-                        input.Append((char)c);
+                        input.Append((char) c);
                         break;
                 }
             }
-            
-            if ((c == -1) && (input.Length == 0)) {
+
+            if ((c == -1) && (input.Length == 0))
                 return null;
-            }
             return input.ToString();
+        }
+
+
+        public String ReadString(int length, String encoding)
+        {
+            byte[] buf = new byte[length];
+            ReadFully(buf);
+            Encoding enc = Encoding.GetEncoding(encoding);
+            return enc.GetString(buf);
         }
     }
 }

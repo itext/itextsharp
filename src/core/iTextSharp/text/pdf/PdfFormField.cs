@@ -1,8 +1,5 @@
 using System;
-using System.Drawing;
 using System.Collections.Generic;
-
-using iTextSharp.text;
 
 /*
  * This file is part of the iText project.

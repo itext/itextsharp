@@ -128,6 +128,7 @@ namespace iTextSharp.text.pdf {
             PdfDictionary top = (PdfDictionary)PdfReader.GetPdfObjectRelease(reader.Catalog.Get(PdfName.ACROFORM));
             if (top == null)
                 return;
+            top.Remove(PdfName.NEEDAPPEARANCES);
             PdfArray arrfds = (PdfArray)PdfReader.GetPdfObjectRelease(top.Get(PdfName.FIELDS));
             if (arrfds == null || arrfds.Size == 0)
                 return;
@@ -919,7 +920,13 @@ namespace iTextSharp.text.pdf {
                         merged = item.GetMerged( k );
                         da = merged.GetAsString(PdfName.DA);
                         PdfDictionary dr = merged.GetAsDict(PdfName.DR);
-                        if (da != null && dr != null) {
+                        if (da != null)
+                        {
+                            if (dr == null)
+                            {
+                                dr = new PdfDictionary();
+                                merged.Put(PdfName.DR, dr);
+                            }
                             Object[] dao = SplitDAelements(da.ToUnicodeString());
                             PdfAppearance cb = new PdfAppearance();
                             if (dao[DA_FONT] != null) {

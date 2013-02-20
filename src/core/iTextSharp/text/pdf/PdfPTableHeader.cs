@@ -1,16 +1,13 @@
-﻿using iTextSharp.text.pdf;
-
-namespace iTextSharp.text.pdf {
+﻿namespace iTextSharp.text.pdf {
 
     public class PdfPTableHeader : PdfPTableBody {
 
-        protected new PdfName role = PdfName.THEAD;
-
         public PdfPTableHeader()
             : base() {
+                role = PdfName.THEAD;
         }
 
-        public new PdfName Role {
+        public override PdfName Role {
             get { return role; }
             set { this.role = value; }
         }

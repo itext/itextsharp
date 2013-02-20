@@ -287,7 +287,7 @@ namespace iTextSharp.text.pdf {
          * @return a new signature field name
          */
         public String GetNewSigName() {
-            AcroFields af = writer.AcroFields;
+            AcroFields af = writer.GetAcroFields();
             String name = "Signature";
             int step = 0;
             bool found = false;
@@ -384,7 +384,7 @@ namespace iTextSharp.text.pdf {
             if (fieldName != null) {
                 if (fieldName.IndexOf('.') >= 0)
                     throw new ArgumentException(MessageLocalization.GetComposedMessage("field.names.cannot.contain.a.dot"));
-                AcroFields af = writer.AcroFields;
+                AcroFields af = writer.GetAcroFields();
                 AcroFields.Item item = af.GetFieldItem(fieldName);
                 if (item != null)
                     throw new ArgumentException(MessageLocalization.GetComposedMessage("the.field.1.already.exists", fieldName));
@@ -404,7 +404,7 @@ namespace iTextSharp.text.pdf {
          * @param fieldName the existing empty signature field name
          */
         public void SetVisibleSignature(String fieldName) {
-            AcroFields af = writer.AcroFields;
+            AcroFields af = writer.GetAcroFields();
             AcroFields.Item item = af.GetFieldItem(fieldName);
             if (item == null)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("the.field.1.does.not.exist", fieldName));
@@ -1094,7 +1094,7 @@ namespace iTextSharp.text.pdf {
                 throw new DocumentException(MessageLocalization.GetComposedMessage("document.already.pre.closed"));
             stamper.MergeVerification();
             preClosed = true;
-            AcroFields af = writer.AcroFields;
+            AcroFields af = writer.GetAcroFields();
             String name = FieldName;
             bool fieldExists = !(IsInvisible() || IsNewField());
             PdfIndirectReference refSig = writer.PdfIndirectReference;

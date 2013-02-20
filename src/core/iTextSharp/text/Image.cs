@@ -2,15 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Text;
-using System.Runtime.CompilerServices;
-using System.util;
 using System.Reflection;
-using iTextSharp.text.error_messages;
 
+using iTextSharp.text.error_messages;
 using iTextSharp.text.api;
 using iTextSharp.text.pdf;
-using iTextSharp.text.factories;
 using iTextSharp.text.pdf.codec;
 using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.io;
@@ -545,7 +541,6 @@ namespace iTextSharp.text {
                 byte[] pixelsByte = new byte[byteWidth * h];
             
                 int index = 0;
-                int size = h * w;
                 int transColor = 1;
                 if (color != null) {
                     transColor = (color.R + color.G + color.B < 384) ? 0 : 1;
@@ -609,7 +604,6 @@ namespace iTextSharp.text {
                 byte[] smask = null;
             
                 int index = 0;
-                int size = h * w;
                 int red = 255;
                 int green = 255;
                 int blue = 255;
@@ -833,7 +827,7 @@ namespace iTextSharp.text {
         public void ScaleAbsolute(float newWidth, float newHeight) {
             plainWidth = newWidth;
             plainHeight = newHeight;
-            float[] matrix = this.Matrix;
+            float[] matrix = this.GetMatrix();
             scaledWidth = matrix[DX] - matrix[CX];
             scaledHeight = matrix[DY] - matrix[CY];
             WidthPercentage = 0;
@@ -845,7 +839,7 @@ namespace iTextSharp.text {
         /// <param name="newWidth">the new width</param>
         public void ScaleAbsoluteWidth(float newWidth) {
             plainWidth = newWidth;
-            float[] matrix = this.Matrix;
+            float[] matrix = this.GetMatrix();
             scaledWidth = matrix[DX] - matrix[CX];
             scaledHeight = matrix[DY] - matrix[CY];
             WidthPercentage = 0;
@@ -857,7 +851,7 @@ namespace iTextSharp.text {
         /// <param name="newHeight">the new height</param>
         public void ScaleAbsoluteHeight(float newHeight) {
             plainHeight = newHeight;
-            float[] matrix = Matrix;
+            float[] matrix = GetMatrix();
             scaledWidth = matrix[DX] - matrix[CX];
             scaledHeight = matrix[DY] - matrix[CY];
             WidthPercentage = 0;
@@ -879,7 +873,7 @@ namespace iTextSharp.text {
         public void ScalePercent(float percentX, float percentY) {
             plainWidth = (this.Width * percentX) / 100f;
             plainHeight = (this.Height * percentY) / 100f;
-            float[] matrix = Matrix;
+            float[] matrix = GetMatrix();
             scaledWidth = matrix[DX] - matrix[CX];
             scaledHeight = matrix[DY] - matrix[CY];
             WidthPercentage = 0;
@@ -923,7 +917,7 @@ namespace iTextSharp.text {
                 if (rotationRadians < 0) {
                     rotationRadians += (float)(2.0 * d);           //__IDS__
                 }
-                float[] matrix = Matrix;
+                float[] matrix = GetMatrix();
                 scaledWidth = matrix[DX] - matrix[CX];
                 scaledHeight = matrix[DY] - matrix[CY];
             }
@@ -1149,48 +1143,61 @@ namespace iTextSharp.text {
                 return colorspace;
             }
         }
-    
+
         /// <summary>
         /// Returns the transformation matrix of the image.
         /// </summary>
         /// <value>an array [AX, AY, BX, BY, CX, CY, DX, DY]</value>
-        public float[] Matrix {
-            get {
-                float[] matrix = new float[8];
-                float cosX = (float)Math.Cos(rotationRadians);
-                float sinX = (float)Math.Sin(rotationRadians);
-                matrix[AX] = plainWidth * cosX;
-                matrix[AY] = plainWidth * sinX;
-                matrix[BX] = (- plainHeight) * sinX;
-                matrix[BY] = plainHeight * cosX;
-                if (rotationRadians < Math.PI / 2f) {
-                    matrix[CX] = matrix[BX];
-                    matrix[CY] = 0;
-                    matrix[DX] = matrix[AX];
-                    matrix[DY] = matrix[AY] + matrix[BY];
-                }
-                else if (rotationRadians < Math.PI) {
-                    matrix[CX] = matrix[AX] + matrix[BX];
-                    matrix[CY] = matrix[BY];
-                    matrix[DX] = 0;
-                    matrix[DY] = matrix[AY];
-                }
-                else if (rotationRadians < Math.PI * 1.5f) {
-                    matrix[CX] = matrix[AX];
-                    matrix[CY] = matrix[AY] + matrix[BY];
-                    matrix[DX] = matrix[BX];
-                    matrix[DY] = 0;
-                }
-                else {
-                    matrix[CX] = 0;
-                    matrix[CY] = matrix[AY];
-                    matrix[DX] = matrix[AX] + matrix[BX];
-                    matrix[DY] = matrix[BY];
-                }
-                return matrix;
-            }
+        public float[] GetMatrix()
+        {
+            return GetMatrix(1);
         }
-    
+
+        /**
+    	 * Returns the transformation matrix of the image.
+    	 *
+    	 * @return an array [AX, AY, BX, BY, CX, CY, DX, DY]
+    	 */
+        public float[] GetMatrix(float scalePercentage)
+        {
+            float[] matrix = new float[8];
+            float cosX = (float)Math.Cos(rotationRadians);
+            float sinX = (float)Math.Sin(rotationRadians);
+            matrix[AX] = plainWidth * cosX * scalePercentage;
+            matrix[AY] = plainWidth * sinX * scalePercentage;
+            matrix[BX] = (-plainHeight) * sinX * scalePercentage;
+            matrix[BY] = plainHeight * cosX * scalePercentage;
+            if (rotationRadians < Math.PI / 2f)
+            {
+                matrix[CX] = matrix[BX];
+                matrix[CY] = 0;
+                matrix[DX] = matrix[AX];
+                matrix[DY] = matrix[AY] + matrix[BY];
+            }
+            else if (rotationRadians < Math.PI)
+            {
+                matrix[CX] = matrix[AX] + matrix[BX];
+                matrix[CY] = matrix[BY];
+                matrix[DX] = 0;
+                matrix[DY] = matrix[AY];
+            }
+            else if (rotationRadians < Math.PI * 1.5f)
+            {
+                matrix[CX] = matrix[AX];
+                matrix[CY] = matrix[AY] + matrix[BY];
+                matrix[DX] = matrix[BX];
+                matrix[DY] = 0;
+            }
+            else
+            {
+                matrix[CX] = 0;
+                matrix[CY] = matrix[AY];
+                matrix[DX] = matrix[AX] + matrix[BX];
+                matrix[DY] = matrix[BY];
+            }
+            return matrix;
+        }
+
         /// <summary>
         /// Returns the transparency.
         /// </summary>
@@ -1530,7 +1537,7 @@ namespace iTextSharp.text {
                     }
                 }
             }
-            additional.Put(PdfName.COLORSPACE, value);
+            additional.Put(PdfName.COLORSPACE, newValue);
         }
         
         /**

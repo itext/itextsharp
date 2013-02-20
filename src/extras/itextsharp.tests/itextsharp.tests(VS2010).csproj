@@ -1,0 +1,113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D533E5BC-52BF-43DE-8C8E-1FB41C0CB78E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>itextsharp.tests</RootNamespace>
+    <AssemblyName>itextsharp.tests</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="XmlDiffPatch, Version=1.0.8.28, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="iTextSharp\text\pdf\TaggedPdfCopyTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\TaggedPdfTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lib\XmlDiffPatch.dll">
+    </None>
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test0.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test1.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test10.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test2.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test3.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test4.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test5.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test6.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test7.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test8.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test9.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\img\dog.bmp" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\img\fox.bmp" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test1.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test10.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test11.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test12.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test13.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test15.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test16.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test17.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test18.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test2.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test3.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test4.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test5.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test6.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test7.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test8.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test9.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source10.pdf" />
+    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source11.pdf" />
+    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source12.pdf" />
+    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source16.pdf" />
+    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source17.pdf" />
+    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source22.pdf" />
+    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source32.pdf" />
+    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source4.pdf" />
+    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source42.pdf" />
+    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source51.pdf" />
+    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source52.pdf" />
+    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source53.pdf" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\itextsharp.csproj">
+      <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
+      <Name>itextsharp</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

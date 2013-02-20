@@ -126,7 +126,7 @@ namespace iTextSharp.text.pdf {
          * Hash code of the PdfObject instance. 
          * Unfortunately, default C# behavior does not generate unique hash code.
          */
-        private int hashCode = IncrementObjCounter();
+        private readonly int hashCode = IncrementObjCounter();
         
         /**
          * Used for generating hash code.

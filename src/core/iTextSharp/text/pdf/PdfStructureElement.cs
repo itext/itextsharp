@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using com.itextpdf.text.pdf;
-using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf.interfaces;
 
 /*
@@ -48,20 +47,23 @@ using iTextSharp.text.pdf.interfaces;
  * address: sales@itextpdf.com
  */
 
-namespace iTextSharp.text.pdf {
+namespace iTextSharp.text.pdf
+{
     /**
     * This is a node in a document logical structure. It may contain a mark point or it may contain
     * other nodes.
     * @author Paulo Soares
     */
-    public class PdfStructureElement : PdfDictionary, IPdfStructureElement {
-        
+
+    public class PdfStructureElement : PdfDictionary, IPdfStructureElement
+    {
+
         /**
         * Holds value of property kids.
         */
         private PdfStructureElement parent;
         private PdfStructureTreeRoot top;
-        
+
         /**
         * Holds value of property reference.
         */
@@ -72,7 +74,9 @@ namespace iTextSharp.text.pdf {
         * @param parent the parent of this node
         * @param structureType the type of structure. It may be a standard type or a user type mapped by the role map
         */
-        public PdfStructureElement(PdfStructureElement parent, PdfName structureType) {
+
+        public PdfStructureElement(PdfStructureElement parent, PdfName structureType)
+        {
             top = parent.top;
             Init(parent, structureType);
             this.parent = parent;
@@ -85,87 +89,105 @@ namespace iTextSharp.text.pdf {
         * @param parent the parent of this node
         * @param structureType the type of structure. It may be a standard type or a user type mapped by the role map
         */
-        public PdfStructureElement(PdfStructureTreeRoot parent, PdfName structureType) {
+
+        public PdfStructureElement(PdfStructureTreeRoot parent, PdfName structureType)
+        {
             top = parent;
             Init(parent, structureType);
             Put(PdfName.P, parent.Reference);
             Put(PdfName.TYPE, PdfName.STRUCTELEM);
         }
 
-        internal PdfStructureElement(PdfDictionary parent, PdfName structureType) {
-            if (parent is PdfStructureElement) {
+        internal PdfStructureElement(PdfDictionary parent, PdfName structureType)
+        {
+            if (parent is PdfStructureElement)
+            {
                 top = ((PdfStructureElement) parent).top;
                 Init(parent, structureType);
                 this.parent = (PdfStructureElement) parent;
                 Put(PdfName.P, ((PdfStructureElement) parent).reference);
                 Put(PdfName.TYPE, PdfName.STRUCTELEM);
-            } else if (parent is PdfStructureTreeRoot) {
+            }
+            else if (parent is PdfStructureTreeRoot)
+            {
                 top = (PdfStructureTreeRoot) parent;
                 Init(parent, structureType);
                 Put(PdfName.P, ((PdfStructureTreeRoot) parent).Reference);
                 Put(PdfName.TYPE, PdfName.STRUCTELEM);
-            } else {}
+            }
+            else
+            {
+            }
         }
-        
-        private void Init(PdfDictionary parent, PdfName structureType) {
+
+        private void Init(PdfDictionary parent, PdfName structureType)
+        {
             PdfObject kido = parent.Get(PdfName.K);
             PdfArray kids = null;
-            if (kido == null) {
+            if (kido == null)
+            {
                 kids = new PdfArray();
                 parent.Put(PdfName.K, kids);
-            } else if (kido is PdfArray) {
-                kids = (PdfArray)kido;
-            } else {
+            }
+            else if (kido is PdfArray)
+            {
+                kids = (PdfArray) kido;
+            }
+            else
+            {
                 kids = new PdfArray();
                 kids.Add(kido);
                 parent.Put(PdfName.K, kids);
             }
-            if (kids.Size > 0) {
+            if (kids.Size > 0)
+            {
                 if (kids.GetAsNumber(0) != null)
                     kids.Remove(0);
-                if (kids.Size > 0) {
+                if (kids.Size > 0)
+                {
                     PdfDictionary mcr = kids.GetAsDict(0);
-                    if (mcr != null && PdfName.MCR.Equals(mcr.GetAsName(PdfName.TYPE))) {
+                    if (mcr != null && PdfName.MCR.Equals(mcr.GetAsName(PdfName.TYPE)))
                         kids.Remove(0);
-                    }
                 }
             }
             kids.Add(this);
             Put(PdfName.S, structureType);
             reference = top.Writer.PdfIndirectReference;
         }
-        
+
         /**
         * Gets the parent of this node.
         * @return the parent of this node
-        */    
-        public PdfDictionary Parent {
-            get {
-                return GetParent(false);
-            }
+        */
+
+        public PdfDictionary Parent
+        {
+            get { return GetParent(false); }
         }
 
-        public PdfDictionary GetParent(bool includeStructTreeRoot) {
+        public PdfDictionary GetParent(bool includeStructTreeRoot)
+        {
             if (parent == null && includeStructTreeRoot)
                 return top;
             else
                 return parent;
         }
 
-        internal void SetPageMark(int page, int mark) {
+        internal void SetPageMark(int page, int mark)
+        {
             if (mark >= 0)
                 Put(PdfName.K, new PdfNumber(mark));
             top.SetPageMark(page, reference);
         }
-        
+
         /**
         * Gets the reference this object will be written to.
         * @return the reference this object will be written to
-        */    
-        public PdfIndirectReference Reference {
-            get {
-                return this.reference;
-            }
+        */
+
+        public PdfIndirectReference Reference
+        {
+            get { return this.reference; }
         }
 
         /**
@@ -173,12 +195,12 @@ namespace iTextSharp.text.pdf {
          * @returns PdfObject
          * @since 5.3.4
          */
-        public PdfObject GetAttribute(PdfName name) {
+
+        public PdfObject GetAttribute(PdfName name)
+        {
             PdfDictionary attr = GetAsDict(PdfName.A);
-            if (attr != null) {
-                if (attr.Contains(name))
-                    return attr.Get(name);
-            }
+            if (attr != null && attr.Contains(name))
+                return attr.Get(name);
             PdfDictionary parent = Parent;
             if (parent is PdfStructureElement)
                 return ((PdfStructureElement) parent).GetAttribute(name);
@@ -192,111 +214,128 @@ namespace iTextSharp.text.pdf {
          * Sets the attribute value.
          * @since 5.3.4
          */
-        public void SetAttribute(PdfName name, PdfObject obj) {
+
+        public void SetAttribute(PdfName name, PdfObject obj)
+        {
             PdfDictionary attr = GetAsDict(PdfName.A);
-            if (attr == null) {
+            if (attr == null)
+            {
                 attr = new PdfDictionary();
                 Put(PdfName.A, attr);
             }
             attr.Put(name, obj);
         }
 
-        
-        public void WriteAttributes(IAccessibleElement element) {
-            if (element is Paragraph) {
+
+        public void WriteAttributes(IAccessibleElement element)
+        {
+            if (element is ListItem)
+                WriteAttributes((ListItem) element);
+            else if (element is Paragraph)
                 WriteAttributes((Paragraph) element);
-            } else if (element is Chunk) {
-                WriteAttributes((Chunk)element);
-            } else if (element is Image) {
-                WriteAttributes((Image)element);
-            } else if (element is List) {
-                WriteAttributes((List)element);
-            } else if (element is ListItem) {
-                WriteAttributes((ListItem)element);
-            } else if (element is ListLabel) {
-                WriteAttributes((ListLabel)element);
-            } else if (element is ListBody) {
-                WriteAttributes((ListBody)element);
-            } else if (element is PdfPTable) {
-                WriteAttributes((PdfPTable)element);
-            } else if (element is PdfPRow) {
-                WriteAttributes((PdfPRow)element);
-            } else if (element is PdfPCell) {
-                WriteAttributes((PdfPCell)element);
-            } else if (element is PdfPTableHeader) {
-                WriteAttributes((PdfPTableHeader)element);
-            } else if (element is PdfPTableFooter) {
-                WriteAttributes((PdfPTableFooter)element);
-            } else if (element is PdfPTableBody) {
-                WriteAttributes((PdfPTableBody)element);
-            }
-            if (element.GetAccessibleAttributes() != null) {
-                foreach (PdfName key in element.GetAccessibleAttributes().Keys) {
-                    if (key.Equals(PdfName.LANG) || key.Equals(PdfName.ALT) || key.Equals(PdfName.ACTUALTEXT) || key.Equals(PdfName.E)) {
+            else if (element is Chunk)
+                WriteAttributes((Chunk) element);
+            else if (element is Image)
+                WriteAttributes((Image) element);
+            else if (element is List)
+                WriteAttributes((List) element);
+            else if (element is ListLabel)
+                WriteAttributes((ListLabel) element);
+            else if (element is ListBody)
+                WriteAttributes((ListBody) element);
+            else if (element is PdfPTable)
+                WriteAttributes((PdfPTable) element);
+            else if (element is PdfPRow)
+                WriteAttributes((PdfPRow) element);
+            else if (element is PdfPHeaderCell)
+                WriteAttributes((PdfPHeaderCell) element);
+            else if (element is PdfPCell)
+                WriteAttributes((PdfPCell) element);
+            else if (element is PdfPTableHeader)
+                WriteAttributes((PdfPTableHeader) element);
+            else if (element is PdfPTableFooter)
+                WriteAttributes((PdfPTableFooter) element);
+            else if (element is PdfPTableBody)
+                WriteAttributes((PdfPTableBody) element);
+            else if (element is PdfDiv)
+                WriteAttributes((PdfDiv) element);
+            else if (element is Document)
+                WriteAttributes((Document) element);
+
+            if (element.GetAccessibleAttributes() != null)
+                foreach (PdfName key in element.GetAccessibleAttributes().Keys)
+                {
+                    if (key.Equals(PdfName.LANG) || key.Equals(PdfName.ALT) || key.Equals(PdfName.ACTUALTEXT) ||
+                        key.Equals(PdfName.E))
                         Put(key, element.GetAccessibleAttribute(key));
-                    } else {
+                    else
                         SetAttribute(key, element.GetAccessibleAttribute(key));
-                    }
                 }
-            }
         }
 
-        private void WriteAttributes(Chunk chunk) {
-            if (chunk != null) {
-                if (chunk.GetImage() != null) {
+        private void WriteAttributes(Chunk chunk)
+        {
+            if (chunk != null)
+            {
+                if (chunk.GetImage() != null)
                     WriteAttributes(chunk.GetImage());
-                } else {
+                else
+                {
                     Dictionary<String, Object> attr = chunk.Attributes;
-                    if (attr != null){
+                    if (attr != null)
+                    {
                         // Setting non-inheritable attributes
-                        if (attr.ContainsKey(Chunk.UNDERLINE)){
+                        if (attr.ContainsKey(Chunk.UNDERLINE))
                             this.SetAttribute(PdfName.TEXTDECORATIONTYPE, PdfName.UNDERLINE);
-                        }
-                        if (attr.ContainsKey(Chunk.BACKGROUND)){
-                            Object[] back = (Object[])attr[Chunk.BACKGROUND];
-                            BaseColor color = (BaseColor)back[0];
-                            this.SetAttribute(PdfName.BACKGROUNDCOLOR, new PdfArray(new float[] {color.R/255f, color.G/255f, color.B/255f}) );
+                        if (attr.ContainsKey(Chunk.BACKGROUND))
+                        {
+                            Object[] back = (Object[]) attr[Chunk.BACKGROUND];
+                            BaseColor color = (BaseColor) back[0];
+                            this.SetAttribute(PdfName.BACKGROUNDCOLOR,
+                                              new PdfArray(new float[] {color.R/255f, color.G/255f, color.B/255f}));
                         }
 
                         // Setting inheritable attributes
                         IPdfStructureElement parent = (IPdfStructureElement) this.GetParent(true);
                         PdfObject obj = parent.GetAttribute(PdfName.COLOR);
-                        if ((chunk.Font != null) && (chunk.Font.Color != null)) {
+                        if ((chunk.Font != null) && (chunk.Font.Color != null))
+                        {
                             BaseColor c = chunk.Font.Color;
                             SetColorAttribute(c, obj, PdfName.COLOR);
                         }
-                        PdfObject decorThickness  = parent.GetAttribute(PdfName.TEXTDECORATIONTHICKNESS);
-                        PdfObject decorColor  = parent.GetAttribute(PdfName.TEXTDECORATIONCOLOR);
-                        if (attr.ContainsKey(Chunk.UNDERLINE)){
-                            Object[][] unders = (Object[][])attr[Chunk.UNDERLINE];
-                            Object[] arr = unders[unders.Length-1];
-                            BaseColor color = (BaseColor)arr[0];
-                            float [] floats = (float[]) arr[1];
+                        PdfObject decorThickness = parent.GetAttribute(PdfName.TEXTDECORATIONTHICKNESS);
+                        PdfObject decorColor = parent.GetAttribute(PdfName.TEXTDECORATIONCOLOR);
+                        if (attr.ContainsKey(Chunk.UNDERLINE))
+                        {
+                            Object[][] unders = (Object[][]) attr[Chunk.UNDERLINE];
+                            Object[] arr = unders[unders.Length - 1];
+                            BaseColor color = (BaseColor) arr[0];
+                            float[] floats = (float[]) arr[1];
                             float thickness = floats[0];
                             // Setting thickness
-                            if (decorThickness is PdfNumber){
+                            if (decorThickness is PdfNumber)
+                            {
                                 float t = ((PdfNumber) decorThickness).FloatValue;
-                                if (thickness.CompareTo(t) != 0){
+                                if (thickness.CompareTo(t) != 0)
                                     this.SetAttribute(PdfName.TEXTDECORATIONTHICKNESS, new PdfNumber(thickness));
-                                }
                             }
                             else
                                 this.SetAttribute(PdfName.TEXTDECORATIONTHICKNESS, new PdfNumber(thickness));
 
                             // Setting decoration color
-                            if (color != null){
+                            if (color != null)
                                 SetColorAttribute(color, decorColor, PdfName.TEXTDECORATIONCOLOR);
-                            }
                         }
-                    
-                        if (attr.ContainsKey(Chunk.LINEHEIGHT)){
-                            float height = (float)attr[Chunk.LINEHEIGHT];
+
+                        if (attr.ContainsKey(Chunk.LINEHEIGHT))
+                        {
+                            float height = (float) attr[Chunk.LINEHEIGHT];
                             PdfObject parentLH = parent.GetAttribute(PdfName.LINEHEIGHT);
-                            if (parentLH is PdfNumber){
-                                float pLH = ((PdfNumber)parentLH).FloatValue;
-                                if (pLH.CompareTo(height) != 0){
+                            if (parentLH is PdfNumber)
+                            {
+                                float pLH = ((PdfNumber) parentLH).FloatValue;
+                                if (pLH.CompareTo(height) != 0)
                                     this.SetAttribute(PdfName.LINEHEIGHT, new PdfNumber(height));
-                                }
                             }
                             else
                                 this.SetAttribute(PdfName.LINEHEIGHT, new PdfNumber(height));
@@ -306,185 +345,331 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        private void WriteAttributes(Image image) {
-            if (image != null) {
-                if (image.Width > 0){
+        private void WriteAttributes(Image image)
+        {
+            if (image != null)
+            {
+                if (image.Width > 0)
                     this.SetAttribute(PdfName.WIDTH, new PdfNumber(image.Width));
-                }
-                if (image.Height > 0){
+                if (image.Height > 0)
                     this.SetAttribute(PdfName.HEIGHT, new PdfNumber(image.Height));
-                }
                 image.Rotation = 10;
                 image.Rotation = 10f;
-                PdfRectangle rect = new PdfRectangle(image, ((Rectangle)image).Rotation);
-                if (rect != null){
-                    this.SetAttribute(PdfName.BBOX, rect);
-                }
-                if (image.Alt != null){
+                PdfRectangle rect = new PdfRectangle(image, ((Rectangle) image).Rotation);
+                this.SetAttribute(PdfName.BBOX, rect);
+                if (image.Alt != null)
                     Put(PdfName.ALT, new PdfString(image.Alt));
-                }
-
             }
         }
 
-        private void WriteAttributes(Paragraph paragraph) {
-            if (paragraph != null) {
+        private void WriteAttributes(Paragraph paragraph)
+        {
+            if (paragraph != null)
+            {
                 // Setting non-inheritable attributes
                 if (paragraph.SpacingBefore.CompareTo(0f) != 0)
                     this.SetAttribute(PdfName.SPACEBEFORE, new PdfNumber(paragraph.SpacingBefore));
                 if (paragraph.SpacingAfter.CompareTo(0f) != 0)
                     this.SetAttribute(PdfName.SPACEAFTER, new PdfNumber(paragraph.SpacingAfter));
-                
+
                 // Setting inheritable attributes
                 IPdfStructureElement parent = (IPdfStructureElement) this.GetParent(true);
                 PdfObject obj = parent.GetAttribute(PdfName.COLOR);
-                if ((paragraph.Font != null) && (paragraph.Font.Color != null)) {
+                if ((paragraph.Font != null) && (paragraph.Font.Color != null))
+                {
                     BaseColor c = paragraph.Font.Color;
                     SetColorAttribute(c, obj, PdfName.COLOR);
                 }
                 obj = parent.GetAttribute(PdfName.TEXTINDENT);
-                if (paragraph.FirstLineIndent.CompareTo(0f) != 0) {
+                if (paragraph.FirstLineIndent.CompareTo(0f) != 0)
+                {
                     bool writeIndent = true;
-                    if (obj is PdfNumber){
-                        if (((PdfNumber)obj).FloatValue.CompareTo(paragraph.FirstLineIndent) == 0)
+                    if (obj is PdfNumber)
+                    {
+                        if (((PdfNumber) obj).FloatValue.CompareTo(paragraph.FirstLineIndent) == 0)
                             writeIndent = false;
                     }
                     if (writeIndent)
                         this.SetAttribute(PdfName.TEXTINDENT, new PdfNumber(paragraph.FirstLineIndent));
                 }
                 obj = parent.GetAttribute(PdfName.STARTINDENT);
-                if (obj is PdfNumber) {
+                if (obj is PdfNumber)
+                {
                     float startIndent = ((PdfNumber) obj).FloatValue;
                     if (startIndent.CompareTo(paragraph.IndentationLeft) != 0)
                         this.SetAttribute(PdfName.STARTINDENT, new PdfNumber(paragraph.IndentationLeft));
-                } else {
-                    if (Math.Abs(paragraph.IndentationLeft) > float.MinValue)
+                }
+                else
+                {
+                    if (Math.Abs(paragraph.IndentationLeft) > float.Epsilon)
                         this.SetAttribute(PdfName.STARTINDENT, new PdfNumber(paragraph.IndentationLeft));
                 }
 
                 obj = parent.GetAttribute(PdfName.ENDINDENT);
-                if (obj is PdfNumber) {
+                if (obj is PdfNumber)
+                {
                     float endIndent = ((PdfNumber) obj).FloatValue;
                     if (endIndent.CompareTo(paragraph.IndentationRight) != 0)
                         this.SetAttribute(PdfName.ENDINDENT, new PdfNumber(paragraph.IndentationRight));
-                } else {
+                }
+                else
+                {
                     if (paragraph.IndentationRight.CompareTo(0) != 0)
                         this.SetAttribute(PdfName.ENDINDENT, new PdfNumber(paragraph.IndentationRight));
                 }
 
-                PdfName align = null;
-                switch (paragraph.Alignment) {
-                    case Element.ALIGN_LEFT:
-                        align = PdfName.START;
-                        break;
-                    case Element.ALIGN_CENTER:
-                        align = PdfName.CENTER;
-                        break;
-                    case Element.ALIGN_RIGHT:
-                        align = PdfName.END;
-                        break;
-                    case Element.ALIGN_JUSTIFIED:
-                        align = PdfName.JUSTIFY;
-                        break;
+                SetTextAlignAttribute(paragraph.Alignment);
+            }
+        }
+
+        private void WriteAttributes(List list)
+        {
+            if (list != null)
+            {
+                this.SetAttribute(PdfName.O, PdfName.LIST);
+                if (list.Autoindent)
+                {
+                    if (list.Numbered)
+                    {
+                        if (list.Lettered)
+                        {
+                            if (list.IsLowercase)
+                                this.SetAttribute(PdfName.LISTNUMBERING, PdfName.LOWERROMAN);
+                            else
+                                this.SetAttribute(PdfName.LISTNUMBERING, PdfName.UPPERROMAN);
+                        }
+                        else
+                        {
+                            this.SetAttribute(PdfName.LISTNUMBERING, PdfName.DECIMAL);
+                        }
+                    }
+                    else if (list.Lettered)
+                    {
+                        if (list.IsLowercase)
+                            this.SetAttribute(PdfName.LISTNUMBERING, PdfName.LOWERALPHA);
+                        else
+                            this.SetAttribute(PdfName.LISTNUMBERING, PdfName.UPPERALPHA);
+                    }
                 }
-                obj = parent.GetAttribute(PdfName.TEXTALIGN);
-                if (obj is PdfName) {
-                    PdfName textAlign = ((PdfName) obj);
-                    if (align != null && !textAlign.Equals(align))
-                        this.SetAttribute(PdfName.TEXTALIGN, align);
-                } else {
-                    if (align != null && !PdfName.START.Equals(align))
-                        this.SetAttribute(PdfName.TEXTALIGN, align);
+            }
+        }
+
+        private void WriteAttributes(ListItem listItem)
+        {
+            if (listItem != null)
+            {
+                PdfObject obj = parent.GetAttribute(PdfName.STARTINDENT);
+                if (obj is PdfNumber)
+                {
+                    float startIndent = ((PdfNumber)obj).FloatValue;
+                    if (startIndent.CompareTo(listItem.IndentationLeft) != 0)
+                        this.SetAttribute(PdfName.STARTINDENT, new PdfNumber(listItem.IndentationLeft));
+                }
+                else
+                {
+                    if (Math.Abs(listItem.IndentationLeft) > float.Epsilon)
+                        this.SetAttribute(PdfName.STARTINDENT, new PdfNumber(listItem.IndentationLeft));
+                }
+
+                obj = parent.GetAttribute(PdfName.ENDINDENT);
+                if (obj is PdfNumber)
+                {
+                    float endIndent = ((PdfNumber)obj).FloatValue;
+                    if (endIndent.CompareTo(listItem.IndentationRight) != 0)
+                        this.SetAttribute(PdfName.ENDINDENT, new PdfNumber(listItem.IndentationRight));
+                }
+                else
+                {
+                    if (listItem.IndentationRight.CompareTo(0) != 0)
+                        this.SetAttribute(PdfName.ENDINDENT, new PdfNumber(listItem.IndentationRight));
+                }
+
+            }
+        }
+
+        private void WriteAttributes(ListBody listBody)
+        {
+            if (listBody != null)
+            {
+
+            }
+        }
+
+        private void WriteAttributes(ListLabel listLabel)
+        {
+            if (listLabel != null)
+            {
+
+            }
+        }
+
+        private void WriteAttributes(PdfPTable table)
+        {
+            if (table != null)
+            {
+                if (table.TotalHeight > 0)
+                    this.SetAttribute(PdfName.HEIGHT, new PdfNumber(table.TotalWidth));
+                if (table.TotalWidth > 0)
+                    this.SetAttribute(PdfName.WIDTH, new PdfNumber(table.TotalWidth));
+            }
+        }
+
+        private void WriteAttributes(PdfPRow row)
+        {
+            if (row != null)
+                this.SetAttribute(PdfName.O, PdfName.TABLE);
+        }
+
+        private void WriteAttributes(PdfPCell cell)
+        {
+            if (cell != null)
+            {
+                this.SetAttribute(PdfName.O, PdfName.TABLE);
+                if (cell.Colspan != 1)
+                    this.SetAttribute(PdfName.COLSPAN, new PdfNumber(cell.Colspan));
+                if (cell.Rowspan != 1)
+                    this.SetAttribute(PdfName.ROWSPAN, new PdfNumber(cell.Rowspan));
+                if (cell.Headers != null)
+                {
+                    PdfArray headers = new PdfArray();
+                    List<PdfPHeaderCell> list = cell.Headers;
+                    foreach (PdfPHeaderCell header in list)
+                        if (header.Name != null)
+                            headers.Add(new PdfString(header.Name));
+                    if (!headers.IsEmpty())
+                        this.SetAttribute(PdfName.HEADERS, headers);
                 }
             }
         }
 
-        private void WriteAttributes(List list) {
-            if (list != null) {
+        private void WriteAttributes(PdfPHeaderCell headerCell)
+        {
+            if (headerCell != null)
+            {
+                if (headerCell.Scope != PdfPHeaderCell.NONE)
+                {
+                    switch (headerCell.Scope)
+                    {
+                        case PdfPHeaderCell.ROW:
+                            this.SetAttribute(PdfName.SCOPE, PdfName.ROW);
+                            break;
+                        case PdfPHeaderCell.COLUMN:
+                            this.SetAttribute(PdfName.SCOPE, PdfName.COLUMN);
+                            break;
+                        case PdfPHeaderCell.BOTH:
+                            this.SetAttribute(PdfName.SCOPE, PdfName.BOTH);
+                            break;
+                    }
+                }
+                if (headerCell.Name != null)
+                    this.SetAttribute(PdfName.NAME, new PdfName(headerCell.Name));
+                WriteAttributes((PdfPCell)headerCell);
+            }
+        }
+
+        private void WriteAttributes(PdfPTableHeader header)
+        {
+            if (header != null)
+            {
+                this.SetAttribute(PdfName.O, PdfName.TABLE);
+            }
+        }
+
+        private void WriteAttributes(PdfPTableBody body)
+        {
+            if (body != null)
+            {
 
             }
         }
 
-        private void WriteAttributes(ListItem listItem) {
-            if (listItem != null) {
+        private void WriteAttributes(PdfPTableFooter footer)
+        {
+            if (footer != null)
+            {
 
             }
         }
 
-        private void WriteAttributes(ListBody listBody) {
-            if (listBody != null) {
+        private void WriteAttributes(PdfDiv div)
+        {
+            if (div != null)
+            {
+                // Setting non-inheritable attributes
+                if (div.BackgroundColor != null)
+                    SetColorAttribute(div.BackgroundColor, null, PdfName.BACKGROUNDCOLOR);
+
+                // Setting inheritable attributes
+                SetTextAlignAttribute(div.TextAlignment);
+            }
+        }
+
+        private void WriteAttributes(Document document)
+        {
+            if (document != null)
+            {
 
             }
         }
 
-        private void WriteAttributes(ListLabel listLabel) {
-            if (listLabel != null) {
 
-            }
-        }
-
-        private void WriteAttributes(PdfPTable table) {
-            if (table != null) {
-
-            }
-        }
-
-        private void WriteAttributes(PdfPRow row) {
-            if (row != null) {
-
-            }
-        }
-
-        private void WriteAttributes(PdfPCell cell) {
-            if (cell != null) {
-
-            }
-        }
-
-        private void WriteAttributes(PdfPTableHeader header) {
-            if (header != null) {
-
-            }
-        }
-
-        private void WriteAttributes(PdfPTableBody body) {
-            if (body != null) {
-
-            }
-        }
-
-        private void WriteAttributes(PdfPTableFooter footer) {
-            if (footer != null) {
-
-            }
-        }
-    
-        private bool ColorsEqual(PdfArray parentColor, float [] color){
-            if (color[0].CompareTo(parentColor.GetAsNumber(0).FloatValue) != 0) {
+        private bool ColorsEqual(PdfArray parentColor, float[] color)
+        {
+            if (color[0].CompareTo(parentColor.GetAsNumber(0).FloatValue) != 0)
                 return false;
-            }
-            if (color[1].CompareTo(parentColor.GetAsNumber(1).FloatValue) != 0) {
+            if (color[1].CompareTo(parentColor.GetAsNumber(1).FloatValue) != 0)
                 return false;
-            }
-            if (color[2].CompareTo(parentColor.GetAsNumber(2).FloatValue) != 0) {
+            if (color[2].CompareTo(parentColor.GetAsNumber(2).FloatValue) != 0)
                 return false;
-            }
             return true;
         }
 
-        private void SetColorAttribute(BaseColor newColor, PdfObject oldColor, PdfName attributeName){
-            float [] colorArr = new float[]{newColor.R/255f, newColor.G/255f, newColor.B/255f};
-            if (oldColor is PdfArray){
-                PdfArray oldC = (PdfArray)oldColor;
+        private void SetColorAttribute(BaseColor newColor, PdfObject oldColor, PdfName attributeName)
+        {
+            float[] colorArr = new float[] {newColor.R/255f, newColor.G/255f, newColor.B/255f};
+            if ((oldColor != null) && (oldColor is PdfArray))
+            {
+                PdfArray oldC = (PdfArray) oldColor;
                 if (ColorsEqual(oldC, colorArr))
-                {
                     this.SetAttribute(attributeName, new PdfArray(colorArr));
-                }
                 else
                     this.SetAttribute(attributeName, new PdfArray(colorArr));
             }
             else
                 this.SetAttribute(attributeName, new PdfArray(colorArr));
         }
+
+        private void SetTextAlignAttribute(int elementAlign)
+        {
+            PdfName align = null;
+            switch (elementAlign)
+            {
+                case Element.ALIGN_LEFT:
+                    align = PdfName.START;
+                    break;
+                case Element.ALIGN_CENTER:
+                    align = PdfName.CENTER;
+                    break;
+                case Element.ALIGN_RIGHT:
+                    align = PdfName.END;
+                    break;
+                case Element.ALIGN_JUSTIFIED:
+                    align = PdfName.JUSTIFY;
+                    break;
+            }
+            PdfObject obj = parent.GetAttribute(PdfName.TEXTALIGN);
+            if (obj is PdfName)
+            {
+                PdfName textAlign = ((PdfName) obj);
+                if (align != null && !textAlign.Equals(align))
+                    this.SetAttribute(PdfName.TEXTALIGN, align);
+            }
+            else
+            {
+                if (align != null && !PdfName.START.Equals(align))
+                    this.SetAttribute(PdfName.TEXTALIGN, align);
+            }
+        }
+
     }
 }

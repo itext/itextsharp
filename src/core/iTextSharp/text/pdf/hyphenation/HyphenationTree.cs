@@ -445,7 +445,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         }
 
         public override void PrintStats() {
-            Console.WriteLine("Value space size = " + vspace.Length);
+            Console.Out.WriteLine("Value space size = " + vspace.Length);
             base.PrintStats();
         }
     }

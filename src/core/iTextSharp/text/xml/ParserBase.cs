@@ -97,7 +97,7 @@ namespace iTextSharp.text.xml
                     }
                 }
             } catch (XmlException e) {
-                Console.WriteLine(e.Message);
+                Console.Out.WriteLine(e.Message);
             } finally {
                 if (reader != null) {
                     reader.Close();

@@ -156,7 +156,7 @@ namespace iTextSharp.text.pdf.parser {
                 
                 location.PrintDiagnostics();
                 
-                Console.WriteLine();
+                Console.Out.WriteLine();
             }
             
         }
@@ -226,10 +226,10 @@ namespace iTextSharp.text.pdf.parser {
             }
 
             public void PrintDiagnostics(){
-                Console.WriteLine("Text (@" + startLocation + " -> " + endLocation + "): " + text);
-                Console.WriteLine("orientationMagnitude: " + orientationMagnitude);
-                Console.WriteLine("distPerpendicular: " + distPerpendicular);
-                Console.WriteLine("distParallel: " + distParallelStart);
+                Console.Out.WriteLine("Text (@" + startLocation + " -> " + endLocation + "): " + text);
+                Console.Out.WriteLine("orientationMagnitude: " + orientationMagnitude);
+                Console.Out.WriteLine("distPerpendicular: " + distPerpendicular);
+                Console.Out.WriteLine("distParallel: " + distParallelStart);
             }
             
             /**

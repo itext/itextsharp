@@ -78,7 +78,7 @@ public class CompareTool {
     }
 
     public String Compare(String outPath, String differenceImage) {
-        if (gsExec == null || gsExec.Length == 0) {
+        if (!File.Exists(gsExec)) {
             return undefinedGsPath;
         }
 
@@ -118,11 +118,11 @@ public class CompareTool {
 
             String line;
             while ((line = p.StandardOutput.ReadLine()) != null) {
-                Console.WriteLine(line);
+                Console.Out.WriteLine(line);
             }
             p.StandardOutput.Close();;
             while ((line = p.StandardError.ReadLine()) != null) {
-                Console.WriteLine(line);
+                Console.Out.WriteLine(line);
             }
             p.StandardError.Close();
             p.WaitForExit();
@@ -137,11 +137,11 @@ public class CompareTool {
                 p.StartInfo.CreateNoWindow = true;
                 p.Start();
                 while ((line = p.StandardOutput.ReadLine()) != null) {
-                    Console.WriteLine(line);
+                    Console.Out.WriteLine(line);
                 }
                 p.StandardOutput.Close();;
                 while ((line = p.StandardError.ReadLine()) != null) {
-                    Console.WriteLine(line);
+                    Console.Out.WriteLine(line);
                 }
                 p.StandardError.Close();
                 p.WaitForExit();
@@ -159,14 +159,14 @@ public class CompareTool {
                     Array.Sort(cmpImageFiles, new ImageNameComparator());
                     String differentPagesFail = null;
                     for (int i = 0; i < cnt; i++) {
-                        Console.WriteLine("Comparing page " + (i + 1).ToString() + " (" + imageFiles[i].FullName + ")...");
+                        Console.Out.WriteLine("Comparing page " + (i + 1).ToString() + " (" + imageFiles[i].FullName + ")...");
                         FileStream is1 = new FileStream(imageFiles[i].FullName, FileMode.Open);
                         FileStream is2 = new FileStream(cmpImageFiles[i].FullName, FileMode.Open);
                         bool cmpResult = CompareStreams(is1, is2);
                         is1.Close();
                         is2.Close();
                         if (!cmpResult) {
-                            if (!string.IsNullOrEmpty(compareExec)) {
+                            if (File.Exists(compareExec)) {
                                 String compareParams = this.compareParams.Replace("<image1>", imageFiles[i].FullName).Replace("<image2>", cmpImageFiles[i].FullName).Replace("<difference>", differenceImage + (i + 1).ToString() + ".png");
                                 p = new Process();
                                 p.StartInfo.FileName = @compareExec;
@@ -177,7 +177,7 @@ public class CompareTool {
                                 p.Start();
 
                                 while ((line = p.StandardError.ReadLine()) != null) {
-                                    Console.WriteLine(line);
+                                    Console.Out.WriteLine(line);
                                 }
                                 p.StandardError.Close();
                                 p.WaitForExit();
@@ -196,6 +196,7 @@ public class CompareTool {
                                 else
                                 {
                                     differentPagesFail = differentPages.Replace("<filename>", outPdf).Replace("<pagenumber>", (i + 1).ToString());
+                                    Console.Out.WriteLine("Invalid compareExec variable.");
                                 }
                             } else {
                                 differentPagesFail =
@@ -205,7 +206,7 @@ public class CompareTool {
                                 break;
                             }
                         } else {
-                            Console.WriteLine("done.");
+                            Console.Out.WriteLine("done.");
                         }
                     }
                     if (differentPagesFail != null) {
@@ -237,8 +238,9 @@ public class CompareTool {
         this.cmpPdf = cmpPdf;
         outPdfName = Path.GetFileNameWithoutExtension(outPdf);
         cmpPdfName = Path.GetFileNameWithoutExtension(cmpPdf);
+        //template for GhostScript and ImageMagic
         outImage = outPdfName + "-%03d.png";
-        cmpImage = cmpPdfName + "-%03d.png";
+        cmpImage = "cmp_" + cmpPdfName + "-%03d.png";
     }
 
     private bool CompareStreams(FileStream is1, FileStream is2) {
