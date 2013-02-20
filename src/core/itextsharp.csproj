@@ -4050,6 +4050,7 @@
     <Compile Include="iTextSharp\text\api\ISpaceable.cs" />
     <Compile Include="iTextSharp\text\api\IWriterOperation.cs" />
     <Compile Include="iTextSharp\text\error_messages\LocalizedResource.cs" />
+    <Compile Include="iTextSharp\text\exceptions\ExceptionConverter.cs" />
     <Compile Include="iTextSharp\text\html\HtmlUtilities.cs" />
     <Compile Include="iTextSharp\text\html\simpleparser\CellWrapper.cs" />
     <Compile Include="iTextSharp\text\html\simpleparser\ElementFactory.cs" />
@@ -4112,6 +4113,7 @@
     <Compile Include="iTextSharp\text\pdf\PdfConcatenate.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfDiv.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfIsoConformanceException.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfPHeaderCell.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfPTableBody.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfPTableFooter.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfPTableHeader.cs" />
@@ -4302,6 +4304,7 @@
     <Compile Include="srcbc\util\io\TeeOutputStream.cs" />
     <Compile Include="srcbc\util\zlib\ZInputStream.cs" />
     <Compile Include="srcbc\util\zlib\ZOutputStream.cs" />
+    <Compile Include="System\util\collections\HashSet.cs" />
     <Compile Include="System\util\collections\LinkedDictionary.cs" />
     <Compile Include="System\util\collections\ReadOnlyDictionary.cs" />
     <Compile Include="System\util\zlib\ZInputStream.cs" />

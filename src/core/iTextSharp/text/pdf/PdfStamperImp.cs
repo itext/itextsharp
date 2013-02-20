@@ -3,7 +3,6 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using System.util;
-using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.collection;
 using iTextSharp.text.xml.xmp;
@@ -762,14 +761,29 @@ namespace iTextSharp.text.pdf {
                 return body.Size > 1;
             }
         }
-        
-        internal AcroFields AcroFields {
-            get {
-                if (acroFields == null) {
-                    acroFields = new AcroFields(reader, this);
+
+        internal AcroFields GetAcroFields()
+        {
+            if (acroFields == null)
+            {
+                acroFields = new AcroFields(reader, this);
+                try
+                {
+                    foreach (String key in acroFields.Fields.Keys)
+                    {
+                        if (AcroFields.FIELD_TYPE_TEXT != acroFields.GetFieldType(key))
+                            continue;
+                        String value = acroFields.GetField(key).Trim();
+                        if (value.Length > 0)
+                        {
+                            acroFields.SetField(key, value, value);
+                        }
+                    }
                 }
-                return acroFields;
+                catch (DocumentException) { }
+                catch (IOException) { }
             }
+            return acroFields;
         }
 
         internal bool FormFlattening {
@@ -785,7 +799,7 @@ namespace iTextSharp.text.pdf {
         }
         
         internal bool PartialFormFlattening(String name) {
-            AcroFields af = AcroFields;
+            GetAcroFields();
             if (acroFields.Xfa.XfaPresent)
                 throw new InvalidOperationException(MessageLocalization.GetComposedMessage("partial.form.flattening.is.not.supported.with.xfa.forms"));
             if (!acroFields.Fields.ContainsKey(name))
@@ -797,7 +811,7 @@ namespace iTextSharp.text.pdf {
         internal protected void FlatFields() {
             if (append)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("field.flattening.is.not.supported.in.append.mode"));
-            AcroFields af = AcroFields;
+            GetAcroFields();
             IDictionary<string,AcroFields.Item> fields = acroFields.Fields;
             if (fieldsAdded && partialFlattening.Count == 0) {
                 foreach (string obf in fields.Keys) {
@@ -982,7 +996,7 @@ namespace iTextSharp.text.pdf {
                         continue;
                     
                     PdfDictionary annDic = (PdfDictionary)annoto;
-                    if (!((PdfName)annDic.Get(PdfName.SUBTYPE)).Equals(PdfName.FREETEXT)) 
+                    if (!(annDic.Get(PdfName.SUBTYPE)). Equals(PdfName.FREETEXT)) 
                         continue;
                     PdfNumber ff = annDic.GetAsNumber(PdfName.F);
                     int flags = (ff != null) ? ff.IntValue : 0;
@@ -1137,7 +1151,7 @@ namespace iTextSharp.text.pdf {
             List<PdfFormField> kids = field.Kids;
             if (kids != null) {
                 for (int k = 0; k < kids.Count; ++k) {
-                    ExpandFields((PdfFormField)kids[k], allAnnots);
+                    ExpandFields(kids[k], allAnnots);
                 }
             }
         }
@@ -1146,7 +1160,7 @@ namespace iTextSharp.text.pdf {
             List<PdfAnnotation> allAnnots = new List<PdfAnnotation>();
             if (annot.IsForm()) {
                 fieldsAdded = true;
-                AcroFields afdummy = AcroFields;
+                GetAcroFields();
                 PdfFormField field = (PdfFormField)annot;
                 if (field.Parent != null)
                     return;
@@ -1155,7 +1169,7 @@ namespace iTextSharp.text.pdf {
             else
                 allAnnots.Add(annot);
             for (int k = 0; k < allAnnots.Count; ++k) {
-                annot = (PdfAnnotation)allAnnots[k];
+                annot = allAnnots[k];
                 if (annot.PlaceInPage > 0)
                     pageN = reader.GetPageN(annot.PlaceInPage);
                 if (annot.IsForm()) {

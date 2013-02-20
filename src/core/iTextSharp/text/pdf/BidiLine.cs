@@ -349,8 +349,10 @@ namespace iTextSharp.text.pdf {
                 if (ck.IsImage() && minY < yLine) {
                     Image img = ck.Image;
                     if (img.ScaleToFitLineWhenOverflow && yLine + 2 * descender - img.ScaledHeight - ck.ImageOffsetY - img.SpacingBefore < minY) {
-                        float scalePercent = (yLine + 2 * descender - ck.ImageOffsetY - img.SpacingBefore - minY) / img.Height * 100;
-                        img.ScalePercent(scalePercent);
+                        //float scalePercent = (yLine + 2 * descender - ck.ImageOffsetY - img.SpacingBefore - minY) / img.Height * 100;
+                        //img.ScalePercent(scalePercent);
+                        float scalePercent = (yLine + 2 * descender - ck.ImageOffsetY - img.SpacingBefore - minY) / img.Height;
+                        ck.ImageScalePercentage = scalePercent;
                     }
                 }
                 surrogate = Utilities.IsSurrogatePair(text, currentChar);
@@ -363,7 +365,12 @@ namespace iTextSharp.text.pdf {
                 if (surrogate)
                     charWidth = ck.GetCharWidth(uniC);
                 else
-                    charWidth = ck.GetCharWidth(text[currentChar]);
+                {
+                    if (ck.IsImage())
+                        charWidth = ck.ImageWidth;
+                    else
+                        charWidth = ck.GetCharWidth(text[currentChar]);
+                }
                 splitChar = ck.IsExtSplitCharacter(oldCurrentChar, currentChar, totalTextLength, text, detailChunks);
                 if (splitChar && Char.IsWhiteSpace((char)uniC))
                     lastSplit = currentChar;
@@ -373,8 +380,10 @@ namespace iTextSharp.text.pdf {
                     if (lastValidChunk == null && ck.IsImage()) {
                         Image img = ck.Image;
                         if (img.ScaleToFitLineWhenOverflow) {
-                            float scalePercent = width / img.Width * 100;
-                            img.ScalePercent(scalePercent);
+                            //float scalePercent = width / img.Width * 100;
+                            //img.ScalePercent(scalePercent);
+                            float scalePercent = width / img.Width;
+                            ck.ImageScalePercentage = scalePercent;
                             charWidth = width;
                         }
                     }
@@ -401,7 +410,7 @@ namespace iTextSharp.text.pdf {
                     float decrement = Utilities.ComputeTabSpace(width, originalWidth, module);
 
                     if (width < decrement) 
-                        return new PdfLine(0, originalWidth, width, alignment, false,
+                        return new PdfLine(0, originalWidth, width, alignment, true,
                                            CreateArrayOfPdfChunks(oldCurrentChar, currentChar-1), isRTL);
 
                     width -= decrement;

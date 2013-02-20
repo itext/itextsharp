@@ -74,7 +74,7 @@ namespace iTextSharp.text.pdf.parser {
          *            the charset to encode the data
          * @since 5.0.5
          */
-        public void ConvertToXml(PdfReader reader, Stream os, Encoding encoding) {
+        public virtual void ConvertToXml(PdfReader reader, Stream os, Encoding encoding) {
             this.reader = reader;
             outp = new StreamWriter(os, encoding);
             // get the StructTreeRoot from the root obj

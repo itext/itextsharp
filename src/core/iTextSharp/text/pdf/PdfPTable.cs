@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 
-using iTextSharp.text;
 using iTextSharp.text.api;
 using iTextSharp.text.log;
 using iTextSharp.text.pdf.events;
@@ -279,7 +278,10 @@ namespace iTextSharp.text.pdf {
             currentColIdx = 0;
             tableEvent = sourceTable.tableEvent;
             runDirection = sourceTable.runDirection;
-            defaultCell = new PdfPCell(sourceTable.defaultCell);
+            if (sourceTable.defaultCell is PdfPHeaderCell)
+                defaultCell = new PdfPHeaderCell((PdfPHeaderCell)sourceTable.defaultCell);
+            else
+                defaultCell = new PdfPCell(sourceTable.defaultCell);
             currentRow = new PdfPCell[sourceTable.currentRow.Length];
             isColspan = sourceTable.isColspan;
             splitRows = sourceTable.splitRows;
@@ -467,7 +469,11 @@ namespace iTextSharp.text.pdf {
         public PdfPCell AddCell(PdfPCell cell)
         {
             rowCompleted = false;
-            PdfPCell ncell = new PdfPCell(cell);
+            PdfPCell ncell;
+            if (cell is PdfPHeaderCell)
+                ncell = new PdfPHeaderCell((PdfPHeaderCell)cell);
+            else
+                ncell = new PdfPCell(cell);
 
             int colspan = ncell.Colspan;
             colspan = Math.Max(colspan, 1);
@@ -760,7 +766,7 @@ namespace iTextSharp.text.pdf {
             else
                 colEnd = Math.Min(colEnd, totalCols);
 
-            LOGGER.Info(String.Format("Writing row {0} to {1}; column %s to {2}", rowStart, rowEnd, colStart, colEnd));
+            LOGGER.Info(String.Format("Writing row {0} to {1}; column {2} to {3}", rowStart, rowEnd, colStart, colEnd));
 
             float yPosStart = yPos;
 
@@ -945,7 +951,7 @@ namespace iTextSharp.text.pdf {
                            canvas,
                            canvas.Duplicate,
                            canvas.Duplicate,
-                           canvas.Duplicate,
+                           canvas.Duplicate
                        };
         }
 

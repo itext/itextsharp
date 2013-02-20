@@ -1,10 +1,8 @@
 using System;
 using System.IO;
-using System.Text;
 using System.Collections.Generic;
 using System.util.collections;
 using System.util;
-using iTextSharp.text;
 using iTextSharp.text.pdf.events;
 using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.intern;
@@ -221,7 +219,7 @@ namespace iTextSharp.text.pdf {
             private const int OBJSINSTREAM = 200;
             
             /** array containing the cross-reference table of the normal objects. */
-            protected OrderedTree xrefs;
+            protected internal OrderedTree xrefs;
             protected int refnum;
             /** the current byteposition in the body. */
             protected long position;
@@ -368,15 +366,20 @@ namespace iTextSharp.text.pdf {
                 }
                 else {
                     PdfIndirectObject indirect = new PdfIndirectObject(refNumber, objecta, writer);
-                    PdfCrossReference pxref = new PdfCrossReference(refNumber, position);
-                    xrefs.Remove(pxref);
-                    xrefs[pxref] = null;
-                    indirect.WriteTo(writer.Os);
-					position = writer.Os.Counter;
+                    Write(indirect, refNumber);
                     return indirect;
                 }
             }
-            
+
+            protected internal void Write(PdfIndirectObject indirect, int refNumber)
+            {
+                PdfCrossReference pxref = new PdfCrossReference(refNumber, position);
+                xrefs.Remove(pxref);
+                xrefs[pxref] = null;
+                indirect.WriteTo(writer.Os);
+                position = writer.Os.Counter;
+            }
+
             /**
             * Returns the offset of the Cross-Reference table.
             *
@@ -771,7 +774,7 @@ namespace iTextSharp.text.pdf {
         * @return a PdfIndirectObject
         * @throws IOException
         */
-        public PdfIndirectObject AddToBody(PdfObject objecta) {
+        public virtual PdfIndirectObject AddToBody(PdfObject objecta) {
             PdfIndirectObject iobj = body.Add(objecta);
             return iobj;
         }
@@ -795,7 +798,7 @@ namespace iTextSharp.text.pdf {
         * @return a PdfIndirectObject
         * @throws IOException
         */
-        public PdfIndirectObject AddToBody(PdfObject objecta, PdfIndirectReference refa) {
+        public virtual PdfIndirectObject AddToBody(PdfObject objecta, PdfIndirectReference refa) {
             PdfIndirectObject iobj = body.Add(objecta, refa);
             return iobj;
         }
@@ -2519,6 +2522,13 @@ namespace iTextSharp.text.pdf {
         public bool IsTagged() {
             return tagged;
         }
+
+        /**
+         * Fix structure of tagged document: remove unused objects, remove unused items from class map,
+         * fix xref table due to removed objects.
+         */
+        internal virtual void FlushTaggedObjects() {}
+
         
         /**
         * Gets the structure tree root. If the document is not marked for tagging it will return <CODE>null</CODE>.

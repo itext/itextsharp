@@ -1,7 +1,6 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
-using System.Net;
 using System.IO;
 
 /*
@@ -214,6 +213,8 @@ namespace iTextSharp.text.pdf {
                         return Encoding.GetEncoding(936).GetString(b);
                     else if (encoding.Equals(PdfName.BIGFIVE))
                         return Encoding.GetEncoding(950).GetString(b);
+                    else if (encoding.Equals(PdfName.UTF_8))
+                        return Encoding.UTF8.GetString(b);
                 }
                 catch  {
                 }

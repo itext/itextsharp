@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using iTextSharp.text.pdf.interfaces;
 
@@ -56,7 +55,8 @@ namespace iTextSharp.text.pdf {
         private Dictionary<int, PdfObject> parentTree = new Dictionary<int,PdfObject>();
         private PdfIndirectReference reference;
         private PdfDictionary classMap;
-        private Dictionary<PdfName, PdfObject> classes;
+        internal Dictionary<PdfName, PdfObject> classes;
+        private Dictionary<int, PdfIndirectReference> numTree = null;
 
         /**
         * Holds value of property writer.
@@ -68,7 +68,19 @@ namespace iTextSharp.text.pdf {
             this.writer = writer;
             reference = writer.PdfIndirectReference;
         }
-        
+
+        private void CreateNumTree()
+        {
+            if (numTree != null)
+                return;
+            numTree = new Dictionary<int, PdfIndirectReference>();
+            foreach (int i in parentTree.Keys)
+            {
+                PdfArray ar = (PdfArray) parentTree[i];
+                numTree[i] = writer.AddToBody(ar).IndirectReference;
+            }
+        }
+
         /**
         * Maps the user tags to the standard tags. The mapping will allow a standard application to make some sense of the tagged
         * document whatever the user tags may be.
@@ -95,9 +107,10 @@ namespace iTextSharp.text.pdf {
         public PdfObject GetMappedClass(PdfName name) {
             if (classes == null)
                 return null;
-            return classes[name];
+            PdfObject result;
+            classes.TryGetValue(name, out result);
+            return result;
         }
-
 
         /**
         * Gets the writer.
@@ -106,6 +119,16 @@ namespace iTextSharp.text.pdf {
         public PdfWriter Writer {
             get {
                 return this.writer;
+            }
+        }
+
+        public Dictionary<int, PdfIndirectReference> NumTree
+        {
+            get
+            {
+                if (numTree == null)
+                    CreateNumTree();
+                return numTree;
             }
         }
 
@@ -118,7 +141,7 @@ namespace iTextSharp.text.pdf {
                 return this.reference;
             }
         }
-        
+
         internal void SetPageMark(int page, PdfIndirectReference struc) {
             PdfArray ar;
             if (!parentTree.ContainsKey(page)) {
@@ -130,23 +153,6 @@ namespace iTextSharp.text.pdf {
             ar.Add(struc);
         }
         
-        internal void AddPageMark(int newPage, PdfIndirectReference struc) {
-            int integer = newPage;
-            PdfArray oldAr = (PdfArray)parentTree[integer];
-            if (oldAr == null) {
-                oldAr = new PdfArray();
-                parentTree.Add(integer, oldAr);
-                oldAr.Add(struc);
-                return;
-            }
-            for (int i = 0; i < oldAr.Size; ++i) {
-                PdfIndirectReference refer = (PdfIndirectReference)oldAr[i];
-                if (refer.Number == struc.Number)
-                    return;
-            }
-            oldAr.Add(struc);
-        }
-
         private void NodeProcess(PdfDictionary struc, PdfIndirectReference reference) {
             PdfObject obj = struc.Get(PdfName.K);
             if (obj != null && obj.IsArray()/* && !((PdfArray)obj)[0].IsNumber()*/) {
@@ -167,15 +173,11 @@ namespace iTextSharp.text.pdf {
         }
         
         internal void BuildTree() {
-            Dictionary<int, PdfIndirectReference> numTree = new Dictionary<int,PdfIndirectReference>();
-            foreach (int i in parentTree.Keys) {
-                PdfArray ar = (PdfArray)parentTree[i];
-                numTree[i] = writer.AddToBody(ar).IndirectReference;
-            }
+            CreateNumTree();
             PdfDictionary dicTree = PdfNumberTree.WriteTree(numTree, writer);
             if (dicTree != null)
                 Put(PdfName.PARENTTREE, writer.AddToBody(dicTree).IndirectReference);
-            if (classMap != null) {
+            if (classMap != null && classes.Count > 0) {
                 foreach (KeyValuePair<PdfName,PdfObject> entry in classes) {
                     PdfObject value = entry.Value;
                     if (value.IsDictionary())

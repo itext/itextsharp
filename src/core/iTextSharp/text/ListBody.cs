@@ -43,7 +43,7 @@ namespace com.itextpdf.text.pdf{
             return accessibleAttributes;
         }
 
-        public PdfName Role {
+        public virtual PdfName Role {
             get { return role; }
             set { this.role = value; }
         }

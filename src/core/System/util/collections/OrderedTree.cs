@@ -1,6 +1,4 @@
 using System.Collections;
-using System.Text;
-using System;
 
 /*
  * $Id$
@@ -83,7 +81,7 @@ namespace System.util.collections {
             }
             set {
                 if(key == null)
-                    throw new ArgumentNullException("Key is null");
+                    throw new ArgumentNullException("key");
                 
                 // traverse tree - find where node belongs
                 int result = 0;
@@ -139,7 +137,7 @@ namespace System.util.collections {
         ///</summary>
         public void Add(IComparable key, object data) {
             if(key == null)
-                throw(new ArgumentNullException("Key is null"));
+                throw(new ArgumentNullException("key"));
             
             // traverse tree - find where node belongs
             int result = 0;
@@ -344,7 +342,7 @@ namespace System.util.collections {
         ///<summary>
         public object GetData(IComparable key) {
             if(key == null)
-                throw new ArgumentNullException("Key is null");
+                throw new ArgumentNullException("key");
             int result;
             
             OrderedTreeNode treeNode = rbTree; // begin at root
@@ -471,7 +469,7 @@ namespace System.util.collections {
         ///<summary>
         public void Remove(IComparable key) {
             if(key == null)
-                throw new ArgumentNullException("Key is null");
+                throw new ArgumentNullException("key");
         
             // find node
             int result;
@@ -750,7 +748,7 @@ namespace System.util.collections {
             get {
                 if (pre)
                     throw new InvalidOperationException("Current");
-                return keys == true ? Key : Value;
+                return keys ? Key : Value;
             }
         }
 
@@ -816,7 +814,7 @@ namespace System.util.collections {
             Value = node.Data;
             // ******** testing only ********
 
-            return keys == true ? node.Key : node.Data;         
+            return keys ? node.Key : node.Data;         
         }
         ///<summary>
         /// MoveNext

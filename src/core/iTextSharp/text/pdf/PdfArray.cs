@@ -136,10 +136,12 @@ namespace iTextSharp.text.pdf {
             os.WriteByte((byte)'[');
             bool first = true;
             PdfObject obj = null;
+            int type = 0;
             foreach (PdfObject obja in arrayList) {
-                obj = (obja == null) ? PdfNull.PDFNULL : obja;
+                obj = obja ?? PdfNull.PDFNULL;
                 type = obj.Type;
-                if (!first && type != PdfObject.ARRAY && type != PdfObject.DICTIONARY && type != PdfObject.NAME && type != PdfObject.STRING)
+                if (!first && type != PdfObject.ARRAY && type != PdfObject.DICTIONARY
+                        && type != PdfObject.NAME && type != PdfObject.STRING)
                     os.WriteByte((byte)' ');
                 first = false;
                 obj.ToPdf(writer, os);

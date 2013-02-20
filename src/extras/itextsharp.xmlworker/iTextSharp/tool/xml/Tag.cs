@@ -52,7 +52,7 @@ namespace iTextSharp.tool.xml {
      * @author redlab_b
      *
      */
-    public class Tag : IEnumerable<Tag>, IEnumerable {
+    public class Tag : IEnumerable<Tag> {
 
         private Tag parent;
         private String tag;
@@ -90,7 +90,7 @@ namespace iTextSharp.tool.xml {
             this.css = css;
             this.children = new List<Tag>(0);
             if (ns == null) {
-                throw new ArgumentNullException("NS cannot be null");
+                throw new ArgumentNullException("ns");
             }
             this.ns = ns;
         }

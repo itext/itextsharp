@@ -91,7 +91,7 @@ namespace iTextSharp.text.log {
         }
 
         public void Warn(String message) {
-            Console.Out.WriteLine(String.Format("{0} WARN  {1}", Shorten(name), message));
+            Console.Out.WriteLine("{0} WARN  {1}", Shorten(name), message);
         }
 
         /**
@@ -117,23 +117,23 @@ namespace iTextSharp.text.log {
         }
 
         public void Trace(String message) {
-            Console.Out.WriteLine(String.Format("{0} TRACE {1}", Shorten(name), message));
+            Console.Out.WriteLine("{0} TRACE {1}", Shorten(name), message);
         }
 
         public void Debug(String message) {
-            Console.Out.WriteLine(String.Format("{0} DEBUG {1}", Shorten(name), message));
+            Console.Out.WriteLine("{0} DEBUG {1}", Shorten(name), message);
         }
 
         public void Info(String message) {
-            Console.Out.WriteLine(String.Format("{0} INFO  {1}", Shorten(name), message));
+            Console.Out.WriteLine("{0} INFO  {1}", Shorten(name), message);
         }
 
         public void Error(String message) {
-            Console.Out.WriteLine(String.Format("{0} ERROR {1}", name, message));
+            Console.Out.WriteLine("{0} ERROR {1}", name, message);
         }
 
         public void Error(String message, Exception e) {
-            Console.Out.WriteLine(String.Format("{0} ERROR {1}", name, message));
+            Console.Out.WriteLine("{0} ERROR {1}", name, message);
             Console.Out.WriteLine(e.StackTrace);
         }
     }

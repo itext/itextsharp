@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using iTextSharp.text;
+using System.util.collections;
 /*
  * $Id$
  * 
@@ -80,27 +80,46 @@ namespace iTextSharp.text.pdf {
                     return theRef; 
                 }
             }
-        };
+
+            public override String ToString() {
+                String ext = "";
+                if (hasCopied)
+                    ext += " Copied";
+                return Ref + ext;
+            }
+        }
         protected internal Dictionary<RefKey, IndirectReferences> indirects;
         protected Dictionary<PdfReader,Dictionary<RefKey, IndirectReferences>>  indirectMap;
         protected Dictionary<PdfObject, PdfObject> parentObjects;
-        protected Dictionary<PdfObject, PdfObject> disableIndirects;
+        protected HashSet<PdfObject> disableIndirects;
         protected PdfReader reader;
         protected PdfIndirectReference acroForm;
         protected int[] namePtr = {0};
         /** Holds value of property rotateContents. */
         private bool rotateContents = true;
         protected internal PdfArray fieldArray;
-        protected internal Dictionary<PdfTemplate, object> fieldTemplates; 
+        protected internal HashSet<PdfTemplate> fieldTemplates; 
         private PdfStructTreeController structTreeController = null;
         private int currentStructArrayNumber = 0;
+        //remember to avoid coping
+        protected PRIndirectReference structTreeRootReference;
+        //to remove unused objects
+        protected Dictionary<RefKey, PdfIndirectObject> indirectObjects;
+        //PdfIndirectObjects, that generate PdfWriter.addToBody(PdfObject) method, already saved to PdfBody
+        protected List<PdfIndirectObject> savedObjects;
+        //imported pages from getImportedPage(PdfReader, int, boolean)
+        protected List<ImportedPage> importedPages;
+        //for correct cleaning of indirects in getImportedPage(), to avoid cleaning of streams
+        protected HashSet<RefKey> streams;
+        //for correct update of kids in StructTreeRootController
+        internal bool updateRootKids = false;
 
         /**
         * A key to allow us to hash indirect references
         */
         public class RefKey {
-            internal int num;
-            internal int gen;
+            internal readonly int num;
+            internal readonly int gen;
             internal RefKey(int num, int gen) {
                 this.num = num;
                 this.gen = gen;
@@ -114,7 +133,7 @@ namespace iTextSharp.text.pdf {
                 gen = refi.Generation;
             }
             public override int GetHashCode() {
-                return (gen<<16)+num;
+                return (gen<<16) + num;
             }
             public override bool Equals(Object o) {
                 if (!(o is RefKey)) return false;
@@ -125,6 +144,27 @@ namespace iTextSharp.text.pdf {
                 return "" + num + " " + gen;
             }
         }
+
+        protected class ImportedPage {
+            internal readonly int pageNumber;
+            internal readonly PdfReader reader;
+            internal ImportedPage(PdfReader reader, int pageNumber) {
+                this.pageNumber = pageNumber;
+                this.reader = reader;
+            }
+
+            public override bool Equals(Object o) {
+                if (!(o is ImportedPage))
+                    return false;
+                ImportedPage other = (ImportedPage)o;
+                return this.pageNumber == other.pageNumber && this.reader.Equals(reader);
+            }
+
+            public override String ToString() {
+                return pageNumber.ToString();
+            }
+        }
+
         
         /**
         * Constructor
@@ -136,7 +176,12 @@ namespace iTextSharp.text.pdf {
             pdf.AddWriter(this);
             indirectMap = new Dictionary<PdfReader,Dictionary<RefKey,IndirectReferences>>();
             parentObjects = new Dictionary<PdfObject, PdfObject>();
-            disableIndirects = new Dictionary<PdfObject, PdfObject>();
+            disableIndirects = new HashSet<PdfObject>();
+
+            indirectObjects = new Dictionary<RefKey, PdfIndirectObject>();
+            savedObjects = new List<PdfIndirectObject>();
+            importedPages = new List<ImportedPage>();
+            streams = new HashSet<RefKey>();
         }
 
         /**
@@ -181,6 +226,7 @@ namespace iTextSharp.text.pdf {
         }
 
         public PdfImportedPage GetImportedPage(PdfReader reader, int pageNumber, bool keepTaggedPdfStructure) {
+            updateRootKids = false;
             if (!keepTaggedPdfStructure)
                 return GetImportedPage(reader, pageNumber);
             else {
@@ -190,10 +236,101 @@ namespace iTextSharp.text.pdf {
                 } else {
                     structTreeController = new PdfStructTreeController(reader, this);
                 }
+
+                ImportedPage newPage = new ImportedPage(reader, pageNumber);
+                switch (CheckStructureTreeRootKids(newPage)) {
+                    case -1: //-1 - clear , update
+                        ClearIndirects(reader);
+                        updateRootKids = true;
+                        break;
+                    case 0: //0 - not clear, not update
+                        updateRootKids = false;
+                        break;
+                    case 1: //1 - not clear, update
+                        updateRootKids = true;
+                        break;
+                }
+                importedPages.Add(newPage);
                 disableIndirects.Clear();
                 parentObjects.Clear();
                 return GetImportedPageImpl(reader, pageNumber);
             }
+        }
+
+        private void ClearIndirects(PdfReader reader)
+        {
+            Dictionary<RefKey, IndirectReferences> currIndirects = indirectMap[reader];
+            List<RefKey> forDelete = new List<RefKey>();
+            foreach (KeyValuePair<RefKey, IndirectReferences> entry in currIndirects)
+            {
+                PdfIndirectReference iRef = entry.Value.Ref;
+                RefKey key = new RefKey(iRef);
+                PdfIndirectObject iobj;
+                if (!indirectObjects.TryGetValue(key, out iobj))
+                {
+                    if (!streams.Contains(key))
+                        forDelete.Add(entry.Key);
+                }
+                else if (iobj.objecti.IsArray() || iobj.objecti.IsDictionary())
+                {
+                    forDelete.Add(entry.Key);
+                }
+            }
+
+            foreach (RefKey key in forDelete)
+                currIndirects.Remove(key);
+        }
+
+        //0 - not clear, not update
+        //-1 - clear, update
+        //1 - not clear, update
+        private int CheckStructureTreeRootKids(ImportedPage newPage)
+        {
+            //start of document;
+            if (importedPages.Count == 0)
+                return 1;
+            bool readerExist = false;
+            foreach (ImportedPage page in importedPages)
+                if (page.reader.Equals(newPage.reader))
+                {
+                    readerExist = true;
+                    break;
+                }
+
+            //add new reader;
+            if (!readerExist)
+                return 1;
+
+            ImportedPage lastPage = importedPages[importedPages.Count - 1];
+            bool equalReader = lastPage.reader.Equals(newPage.reader);
+            //reader exist, correct order;
+            if (equalReader && newPage.pageNumber > lastPage.pageNumber)
+                return 0;
+            //reader exist, incorrect order;
+            return -1;
+        }
+
+        internal void FixStructureTreeRoot(HashSet<RefKey> activeKeys, HashSet<PdfName> activeClassMaps)
+        {
+            Dictionary<PdfName, PdfObject> newClassMap = new Dictionary<PdfName, PdfObject>(activeClassMaps.Count);
+            foreach (PdfName key in activeClassMaps)
+            {
+                PdfObject cm = structureTreeRoot.classes[key];
+                if (cm != null)
+                    newClassMap[key] = cm;
+            }
+
+            structureTreeRoot.classes = newClassMap;
+
+            PdfArray kids = structureTreeRoot.GetAsArray(PdfName.K);
+            if (kids != null)
+                for (int i = 0; i < kids.Size; ++i)
+                {
+                    PdfIndirectReference iref = (PdfIndirectReference) kids[i];
+                    RefKey key = new RefKey(iref);
+                    if (!activeKeys.Contains(key))
+                        kids.Remove(i--);
+                }
         }
 
         protected PdfImportedPage GetImportedPageImpl(PdfReader reader, int pageNumber) {
@@ -226,11 +363,11 @@ namespace iTextSharp.text.pdf {
         * we do from their namespace to ours is *at best* heuristic, and guaranteed to
         * fail under some circumstances.
         */
-        protected virtual PdfIndirectReference CopyIndirect(PRIndirectReference inp, bool keepStructure, bool directRootKids) {
+        protected internal virtual PdfIndirectReference CopyIndirect(PRIndirectReference inp, bool keepStructure, bool directRootKids) {
             PdfIndirectReference theRef;
             RefKey key = new RefKey(inp);
-            IndirectReferences iRef;
-            indirects.TryGetValue(key, out iRef);
+            IndirectReferences iref;
+            indirects.TryGetValue(key, out iref);
             PdfObject obj = PdfReader.GetPdfObjectRelease(inp);
             if ((keepStructure) && (directRootKids))
                 if (obj is PdfDictionary) {
@@ -238,16 +375,16 @@ namespace iTextSharp.text.pdf {
                     if (dict.Contains(PdfName.PG))
                         return null;
                 }
-            if (iRef != null) {
-                theRef = iRef.Ref;
-                if (iRef.Copied) {
+            if (iref != null) {
+                theRef = iref.Ref;
+                if (iref.Copied) {
                     return theRef;
                 }
             }
             else {
                 theRef = body.PdfIndirectReference;
-                iRef = new IndirectReferences(theRef);
-                indirects[key] =  iRef;
+                iref = new IndirectReferences(theRef);
+                indirects[key] =  iref;
             }
             if (obj != null && obj.IsDictionary()) {
                 PdfObject type = PdfReader.GetPdfObjectRelease(((PdfDictionary)obj).Get(PdfName.TYPE));
@@ -255,11 +392,11 @@ namespace iTextSharp.text.pdf {
                     return theRef;
                 }
             }
-            iRef.SetCopied();
+            iref.SetCopied();
             parentObjects[obj] = inp;
             PdfObject res = CopyObject(obj, keepStructure, directRootKids);
-            if (disableIndirects.ContainsKey(obj))
-                iRef.Copied = false;
+            if (disableIndirects.Contains(obj))
+                iref.Copied = false;
             if ((res != null) && !(res is PdfNull)) {
                 AddToBody(res, theRef);
                 return theRef;
@@ -293,10 +430,10 @@ namespace iTextSharp.text.pdf {
                 if ((directRootKids) && (inp.Contains(PdfName.PG)))
                 {
                     PdfObject curr = inp;
-                    disableIndirects.Add(curr, null);
-                    while (parentObjects.ContainsKey(curr) && !(disableIndirects.ContainsKey(curr))) {
+                    disableIndirects.Add(curr);
+                    while (parentObjects.ContainsKey(curr) && !(disableIndirects.Contains(curr))) {
                         curr = parentObjects[curr];
-                        disableIndirects.Add(curr, null);
+                        disableIndirects.Add(curr);
                     }
                     return null;
                 }
@@ -308,21 +445,28 @@ namespace iTextSharp.text.pdf {
 
             foreach (PdfName key in inp.Keys) {
                 PdfObject value = inp.Get(key);
-                if (structTreeController != null && structTreeController.reader != null && (key.Equals(PdfName.STRUCTPARENT) || key.Equals(PdfName.STRUCTPARENTS))) {
+                if (structTreeController != null && structTreeController.reader != null && key.Equals(PdfName.STRUCTPARENTS)) {
                     outp.Put(key, new PdfNumber(currentStructArrayNumber));
                     structTreeController.CopyStructTreeForPage((PdfNumber)value, currentStructArrayNumber++);
                     continue;
                 }
-                if (type != null && PdfName.PAGE.Equals(type)) {
-                    if (!key.Equals(PdfName.B) && !key.Equals(PdfName.PARENT)) {
+                if (type != null && PdfName.PAGE.Equals(type))
+                {
+                    if (!key.Equals(PdfName.B) && !key.Equals(PdfName.PARENT))
+                    {
                         parentObjects[value] = inp;
                         PdfObject res = CopyObject(value, keepStruct, directRootKids);
                         if ((res != null) && !(res is PdfNull))
                             outp.Put(key, res);
                     }
                 }
-                else {
-                    PdfObject res = CopyObject(value, keepStruct, directRootKids);
+                else
+                {
+                    PdfObject res;
+                    if (tagged && value.IsIndirect() && IsStructTreeRootReference((PRIndirectReference) value))
+                        res = structureTreeRoot.Reference;
+                    else
+                        res = CopyObject(value, keepStruct, directRootKids);
                     if ((res != null) && !(res is PdfNull))
                         outp.Put(key, res);
                 }
@@ -383,26 +527,26 @@ namespace iTextSharp.text.pdf {
         /**
         * Translate a PR-object to a Pdf-object
         */
-        protected internal PdfObject CopyObject(PdfObject inp, bool keepStruct, bool directRootKidds) {
+        protected internal PdfObject CopyObject(PdfObject inp, bool keepStruct, bool directRootKids) {
             if (inp == null)
                 return PdfNull.PDFNULL;
             switch (inp.Type) {
                 case PdfObject.DICTIONARY:
-                    return CopyDictionary((PdfDictionary)inp, keepStruct, directRootKidds);
+                    return CopyDictionary((PdfDictionary)inp, keepStruct, directRootKids);
                 case PdfObject.INDIRECT:
-                    if (!keepStruct && !directRootKidds)
+                    if (!keepStruct && !directRootKids)
                         // fix for PdfSmartCopy
                         return CopyIndirect((PRIndirectReference)inp);
                     else
-                        return CopyIndirect((PRIndirectReference)inp, keepStruct, directRootKidds);
+                        return CopyIndirect((PRIndirectReference)inp, keepStruct, directRootKids);
                 case PdfObject.ARRAY:
-                    return CopyArray((PdfArray)inp, keepStruct, directRootKidds);
+                    return CopyArray((PdfArray)inp, keepStruct, directRootKids);
                 case PdfObject.NUMBER:
                 case PdfObject.NAME:
                 case PdfObject.STRING:
                 case PdfObject.NULL:
                 case PdfObject.BOOLEAN:
-                case 0:
+                case 0://PdfIndirectReference
                     return inp;
                 case PdfObject.STREAM:
                     return CopyStream((PRStream)inp);
@@ -442,8 +586,9 @@ namespace iTextSharp.text.pdf {
         */
         protected void SetFromReader(PdfReader reader) {
             this.reader = reader;
-            indirectMap.TryGetValue(reader, out indirects);
-            if (indirects == null) {
+            
+            if (!indirectMap.TryGetValue(reader, out indirects))
+            {
                 indirects = new Dictionary<RefKey,IndirectReferences>();
                 indirectMap[reader] = indirects;
                 PdfDictionary catalog = reader.Catalog;
@@ -470,8 +615,8 @@ namespace iTextSharp.text.pdf {
             RefKey key = new RefKey(origRef);
             PdfIndirectReference pageRef;
             IndirectReferences iRef;
-            indirects.TryGetValue(key, out iRef);
-            if (iRef != null && !iRef.Copied) {
+            if (indirects.TryGetValue(key, out iRef) && !iRef.Copied)
+            {
                 pageReferences.Add(iRef.Ref);
                 iRef.SetCopied();
             }
@@ -481,10 +626,13 @@ namespace iTextSharp.text.pdf {
                 indirects[key] = iRef;
             }
             iRef.SetCopied();
+            if (tagged)
+                structTreeRootReference = (PRIndirectReference)reader.Catalog.Get(PdfName.STRUCTTREEROOT);
             PdfDictionary newPage = CopyDictionary(thePage);
             root.AddPage(newPage);
             iPage.SetCopied();
             ++currentPageNumber;
+            structTreeRootReference = null;
         }
 
         /**
@@ -501,6 +649,307 @@ namespace iTextSharp.text.pdf {
             page.Put(PdfName.TABS, Tabs);
             root.AddPage(page);
             ++currentPageNumber;
+        }
+
+    public override PdfIndirectObject AddToBody(PdfObject objecta, PdfIndirectReference refa)
+    {
+        if (tagged && indirectObjects != null && (objecta.IsArray() || objecta.IsDictionary())) {
+            RefKey key = new RefKey(refa);
+            PdfIndirectObject obj;
+            if (!indirectObjects.TryGetValue(key, out obj)) {
+                obj = new PdfIndirectObject(refa, objecta, this);
+                indirectObjects[key] = obj;
+            }
+            return obj;
+        } else {
+            if (tagged && objecta.IsStream())
+                streams.Add(new RefKey(refa));
+            return base.AddToBody(objecta, refa);
+        }
+    }
+
+    public override PdfIndirectObject AddToBody(PdfObject objecta)
+    {
+        PdfIndirectObject iobj = base.AddToBody(objecta);
+        if (tagged && indirectObjects != null) {
+            savedObjects.Add(iobj);
+            RefKey key = new RefKey(iobj.Number, iobj.Generation);
+            if (!indirectObjects.ContainsKey(key))
+                indirectObjects[key] = iobj;
+        }
+        return iobj;
+    }
+
+    internal override void FlushTaggedObjects(){
+        try
+        {
+            FixTaggedStructure();
+        }
+        catch (InvalidCastException)
+        { }
+        finally
+        {
+            FlushIndirectObjects();
+        }
+    }
+
+    protected void FixTaggedStructure()
+    {
+        Dictionary<int, PdfIndirectReference> numTree = structureTreeRoot.NumTree;
+        HashSet<PdfCopy.RefKey> activeKeys = new HashSet<PdfCopy.RefKey>();
+        List<PdfIndirectReference> actives = new List<PdfIndirectReference>();
+        if (pageReferences.Count == numTree.Count) {
+            //from end, because some objects can appear on several pages because of MCR (out16.pdf)
+            for (int i = numTree.Count - 1; i >= 0; --i) {
+                PdfIndirectReference currNum = numTree[i];
+                PdfCopy.RefKey numKey = new PdfCopy.RefKey(currNum);
+                activeKeys.Add(numKey);
+                actives.Add(currNum);
+                PdfObject obj = indirectObjects[numKey].objecti;
+                PdfArray currNums = (PdfArray)obj;
+                PdfIndirectReference currPage = pageReferences[i];
+                actives.Add(currPage);
+                activeKeys.Add(new RefKey(currPage));
+                PdfIndirectReference prevKid = null;
+                for (int j = 0; j < currNums.Size; j++) {
+                    PdfIndirectReference currKid = (PdfIndirectReference)currNums.GetDirectObject(j);
+                    if (currKid.Equals(prevKid))
+                        continue;
+                    PdfCopy.RefKey kidKey = new PdfCopy.RefKey(currKid);
+                    activeKeys.Add(kidKey);
+                    actives.Add(currKid);
+
+                    PdfIndirectObject iobj = indirectObjects[kidKey];
+                    if (iobj.objecti.IsDictionary()) {
+                        PdfDictionary dict = (PdfDictionary)iobj.objecti;
+                        PdfIndirectReference pg = (PdfIndirectReference)dict.Get(PdfName.PG);
+                        //if pg is real page - do nothing, else set correct pg and remove first MCID if exists
+                        if (!pageReferences.Contains(pg) && !pg.Equals(currPage)){
+                            dict.Put(PdfName.PG, currPage);
+                            PdfArray kids = dict.GetAsArray(PdfName.K);
+                            if (kids != null) {
+                                PdfObject firstKid = kids.GetDirectObject(0);
+                                if (firstKid.IsNumber()) kids.Remove(0);
+                            }
+                        }
+                    }
+                    prevKid = currKid;
+                }
+            }
+        } else return;//invalid tagged document -> flush all objects
+
+        HashSet<PdfName> activeClassMaps = new HashSet<PdfName>();
+        //collect all active objects from current active set (include kids, classmap, attributes)
+        FindActives(actives, activeKeys, activeClassMaps);
+        //find parents of active objects
+        List<PdfIndirectReference> newRefs = FindActiveParents(activeKeys);
+        //find new objects with incorrect Pg; if find, set Pg from first correct kid. This correct kid must be.
+        FixPgKey(newRefs, activeKeys);
+        //remove unused kids of StructTreeRoot and remove unused objects from class map
+        FixStructureTreeRoot(activeKeys, activeClassMaps);
+        List<RefKey> inactiveKeys = new List<RefKey>();
+        foreach(KeyValuePair<RefKey, PdfIndirectObject> entry in indirectObjects) {
+            if (!activeKeys.Contains(entry.Key)) {
+                inactiveKeys.Add(entry.Key);
+            }
+            else {
+                if (entry.Value.objecti.IsArray()) {
+                    RemoveInactiveReferences((PdfArray)entry.Value.objecti, activeKeys);
+                } else if (entry.Value.objecti.IsDictionary()) {
+                    PdfObject kids = ((PdfDictionary)entry.Value.objecti).Get(PdfName.K);
+                    if (kids != null && kids.IsArray())
+                        RemoveInactiveReferences((PdfArray)kids, activeKeys);
+                }
+            }
+        }
+
+        //because of cîncurêent modification detected by CLR
+        foreach (RefKey key in inactiveKeys)
+            indirectObjects[key] = null;
+    }
+
+    private void RemoveInactiveReferences(PdfArray array, HashSet<PdfCopy.RefKey> activeKeys) {
+        for (int i = 0; i < array.Size; ++i) {
+            PdfObject obj = array[i];
+            if ((obj.Type == 0 && !activeKeys.Contains(new PdfCopy.RefKey((PdfIndirectReference)obj))) ||
+                    (obj.IsDictionary() && ContainsInactivePg((PdfDictionary)obj, activeKeys)))
+                array.Remove(i--);
+        }
+    }
+
+    private bool ContainsInactivePg(PdfDictionary dict, HashSet<PdfCopy.RefKey> activeKeys) {
+        PdfObject pg = dict.Get(PdfName.PG);
+        if (pg != null && !activeKeys.Contains(new PdfCopy.RefKey((PdfIndirectReference)pg)))
+            return true;
+        return false;
+    }
+
+    //return new found objects
+    private List<PdfIndirectReference> FindActiveParents(HashSet<RefKey> activeKeys){
+        List<PdfIndirectReference> newRefs = new List<PdfIndirectReference>();
+        List<PdfCopy.RefKey> tmpActiveKeys = new List<PdfCopy.RefKey>(activeKeys);
+        for (int i = 0; i < tmpActiveKeys.Count; ++i) {
+            PdfIndirectObject iobj;
+            if (!indirectObjects.TryGetValue(tmpActiveKeys[i], out iobj)
+                || !iobj.objecti.IsDictionary())
+                continue;
+            PdfObject parent = ((PdfDictionary)iobj.objecti).Get(PdfName.P);
+            if (parent != null && parent.Type == 0) {
+                PdfCopy.RefKey key = new PdfCopy.RefKey((PdfIndirectReference)parent);
+                if (!activeKeys.Contains(key)) {
+                    activeKeys.Add(key);
+                    tmpActiveKeys.Add(key);
+                    newRefs.Add((PdfIndirectReference) parent);
+                }
+            }
+        }
+        return newRefs;
+    }
+
+    private void FixPgKey(List<PdfIndirectReference> newRefs, HashSet<RefKey> activeKeys){
+        foreach (PdfIndirectReference iref in newRefs) {
+            PdfIndirectObject iobj;
+            if (!indirectObjects.TryGetValue(new RefKey(iref), out iobj)
+                || !iobj.objecti.IsDictionary())
+                continue;
+            PdfDictionary dict = (PdfDictionary)iobj.objecti;
+            PdfObject pg = dict.Get(PdfName.PG);
+            if (pg == null || activeKeys.Contains(new RefKey((PdfIndirectReference)pg))) continue;
+            PdfArray kids = dict.GetAsArray(PdfName.K);
+            if (kids == null) continue;
+            for (int i = 0; i < kids.Size; ++i) {
+                PdfObject obj = kids[i];
+                if (obj.Type != 0) {
+                    kids.Remove(i--);
+                } else {
+                    PdfIndirectObject kid;
+                    if (indirectObjects.TryGetValue(new RefKey((PdfIndirectReference)obj), out kid)
+                        && kid.objecti.IsDictionary())
+                    {
+                        PdfObject kidPg = ((PdfDictionary)kid.objecti).Get(PdfName.PG);
+                        if (kidPg != null && activeKeys.Contains(new RefKey((PdfIndirectReference)kidPg))) {
+                            dict.Put(PdfName.PG, kidPg);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void FindActives(List<PdfIndirectReference> actives, HashSet<RefKey> activeKeys, HashSet<PdfName> activeClassMaps){
+        //collect all active objects from current active set (include kids, classmap, attributes)
+        for (int i = 0; i < actives.Count; ++i) {
+            PdfCopy.RefKey key = new PdfCopy.RefKey(actives[i]);
+            PdfIndirectObject iobj;
+            if (!indirectObjects.TryGetValue(key, out iobj) || iobj.objecti == null)
+                continue;
+            switch (iobj.objecti.Type){
+                case 0://PdfIndirectReference
+                    FindActivesFromReference((PdfIndirectReference)iobj.objecti, actives, activeKeys);
+                    break;
+                case PdfObject.ARRAY:
+                    FindActivesFromArray((PdfArray)iobj.objecti, actives, activeKeys, activeClassMaps);
+                    break;
+                case PdfObject.DICTIONARY:
+                    FindActivesFromDict((PdfDictionary)iobj.objecti, actives, activeKeys, activeClassMaps);
+                    break;
+            }
+        }
+    }
+
+    private void FindActivesFromReference(PdfIndirectReference iref, List<PdfIndirectReference> actives, HashSet<PdfCopy.RefKey> activeKeys) {
+        PdfCopy.RefKey key = new PdfCopy.RefKey(iref);
+        PdfIndirectObject iobj;
+        if (indirectObjects.TryGetValue(key, out iobj)
+            && iobj.objecti.IsDictionary() && ContainsInactivePg((PdfDictionary) iobj.objecti, activeKeys))
+            return;
+
+        if(!activeKeys.Contains(key)) {
+            activeKeys.Add(key);
+            actives.Add(iref);
+        }
+    }
+
+    private void FindActivesFromArray(PdfArray array, List<PdfIndirectReference> actives, HashSet<PdfCopy.RefKey> activeKeys, HashSet<PdfName> activeClassMaps) {
+        foreach (PdfObject obj in array) {
+            switch (obj.Type) {
+                case 0://PdfIndirectReference
+                    FindActivesFromReference((PdfIndirectReference)obj, actives, activeKeys);
+                    break;
+                case PdfObject.ARRAY:
+                    FindActivesFromArray((PdfArray)obj, actives, activeKeys, activeClassMaps);
+                    break;
+                case PdfObject.DICTIONARY:
+                    FindActivesFromDict((PdfDictionary)obj, actives, activeKeys, activeClassMaps);
+                    break;
+            }
+        }
+    }
+
+    private void FindActivesFromDict(PdfDictionary dict, List<PdfIndirectReference> actives, HashSet<PdfCopy.RefKey> activeKeys,  HashSet<PdfName> activeClassMaps) {
+        if (ContainsInactivePg(dict, activeKeys))
+            return;
+        foreach (PdfName key in dict.Keys) {
+            PdfObject obj = dict.Get(key);
+            if (key.Equals(PdfName.P))
+                continue;
+            else if (key.Equals(PdfName.C)) { //classmap
+                if (obj.IsArray()) {
+                    foreach (PdfObject cm in (PdfArray)obj) {
+                        if (cm.IsName())
+                            activeClassMaps.Add((PdfName)cm);
+                    }
+                }
+                else if (obj.IsName()) activeClassMaps.Add((PdfName)obj);
+                continue;
+            }
+            switch (obj.Type) {
+                case 0://PdfIndirectReference
+                    FindActivesFromReference((PdfIndirectReference)obj, actives, activeKeys);
+                    break;
+                case PdfObject.ARRAY:
+                    FindActivesFromArray((PdfArray)obj, actives, activeKeys, activeClassMaps);
+                    break;
+                case PdfObject.DICTIONARY:
+                    FindActivesFromDict((PdfDictionary)obj, actives, activeKeys, activeClassMaps);
+                    break;
+            }
+        }
+    }
+
+        protected void FlushIndirectObjects()
+        {
+            foreach (PdfIndirectObject iobj in savedObjects)
+                indirectObjects.Remove(new PdfCopy.RefKey(iobj.Number, iobj.Generation));
+            HashSet<RefKey> inactives = new HashSet<RefKey>();
+            foreach (KeyValuePair<RefKey, PdfIndirectObject> entry in indirectObjects)
+            {
+                if (entry.Value != null)
+                    body.Write(entry.Value, entry.Value.Number);
+                else inactives.Add(entry.Key);
+            }
+            List<PdfBody.PdfCrossReference> xrefs = new List<PdfBody.PdfCrossReference>();
+            foreach (PdfBody.PdfCrossReference xref in body.xrefs.Values)
+                xrefs.Add(xref);
+            foreach (PdfBody.PdfCrossReference cr in xrefs)
+            {
+                if (cr == null)
+                    continue;
+                RefKey key = new RefKey(cr.Refnum, 0);
+                if (inactives.Contains(key))
+                    body.xrefs.Remove(cr);
+            }
+            indirectObjects = null;
+        }
+
+
+        protected bool IsStructTreeRootReference(PdfIndirectReference prRef)
+        {
+            if (prRef == null || structTreeRootReference == null)
+                return false;
+            return prRef.Number == structTreeRootReference.Number &&
+                   prRef.Generation == structTreeRootReference.Generation;
         }
 
         /**
@@ -521,8 +970,7 @@ namespace iTextSharp.text.pdf {
             RefKey key = new RefKey(hisRef);
             PdfIndirectReference myRef;
             IndirectReferences iRef;
-            indirects.TryGetValue(key, out iRef);
-            if (iRef != null) {
+            if (indirects.TryGetValue(key, out iRef)) {
                 acroForm = myRef = iRef.Ref;
             }
             else {
@@ -551,7 +999,7 @@ namespace iTextSharp.text.pdf {
                 AddFieldResources(theCat);
             return theCat;
         }
-        
+
         private void AddFieldResources(PdfDictionary catalog) {
             if (fieldArray == null)
                 return;
@@ -563,7 +1011,7 @@ namespace iTextSharp.text.pdf {
                 return;
             PdfDictionary dr = new PdfDictionary();
             acroForm.Put(PdfName.DR, dr);
-            foreach (PdfTemplate template in fieldTemplates.Keys) {
+            foreach (PdfTemplate template in fieldTemplates) {
                 PdfFormField.MergeResources(dr, (PdfDictionary)template.Resources);
             }
             PdfDictionary fonts = dr.GetAsDict(PdfName.FONT);
@@ -805,7 +1253,7 @@ namespace iTextSharp.text.pdf {
                         return;
                     ExpandFields(field, allAnnots);
                     if (cstp.fieldTemplates == null)
-                        cstp.fieldTemplates = new Dictionary<PdfTemplate,object>();
+                        cstp.fieldTemplates = new HashSet<PdfTemplate>();
                 }
                 else
                     allAnnots.Add(annot);
@@ -816,7 +1264,7 @@ namespace iTextSharp.text.pdf {
                             Dictionary<PdfTemplate,object> templates = annot.Templates;
                             if (templates != null) {
                                 foreach (PdfTemplate tpl in templates.Keys) {
-                                    cstp.fieldTemplates[tpl] = null;
+                                    cstp.fieldTemplates.Add(tpl);
                                 }
                             }
                         }

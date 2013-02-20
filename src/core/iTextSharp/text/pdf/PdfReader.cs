@@ -563,7 +563,7 @@ namespace iTextSharp.text.pdf {
             
             strings.Clear();
             ReadPages();
-            EliminateSharedStreams();
+            //EliminateSharedStreams();
             RemoveUnusedObjects();
         }
         

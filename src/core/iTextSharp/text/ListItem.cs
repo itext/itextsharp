@@ -1,8 +1,4 @@
-using System;
-using System.Collections;
-using System.util;
 using com.itextpdf.text.pdf;
-using iTextSharp.text.factories;
 using iTextSharp.text.pdf;
 
 /*

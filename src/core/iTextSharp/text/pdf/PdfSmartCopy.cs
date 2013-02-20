@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Collections;
+using System.util.collections;
 using iTextSharp.text.pdf.security;
 /*
  * $Id$
@@ -133,7 +134,7 @@ namespace iTextSharp.text.pdf {
         internal class ByteStore {
             private byte[] b;
             private int hash;
-            private Hashtable serialized = new Hashtable();
+            private HashSet<PdfObject> serialized = new HashSet<PdfObject>();
             
             private void SerObject(PdfObject obj, int level, ByteBuffer bb) {
                 if (level <= 0)
@@ -146,7 +147,7 @@ namespace iTextSharp.text.pdf {
                     if (serialized.Contains(obj))
                         return;
                     else
-                        serialized.Add(obj, null);
+                        serialized.Add(obj);
                 }
                 obj = PdfReader.GetPdfObject(obj);
                 if (obj.IsStream()) {

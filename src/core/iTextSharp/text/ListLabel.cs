@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using iTextSharp.text.pdf.interfaces;
 
 namespace com.itextpdf.text.pdf
 {
     public class ListLabel : ListBody
     {
 
-        protected new PdfName role = PdfName.LBL;
-        protected new float indentation = 0;
         protected bool tagLabelContent = true;
 
         protected internal ListLabel(ListItem parentItem) : base(parentItem)
-        {}
+        {
+            role = PdfName.LBL;
+            indentation = 0;
+        }
 
         public PdfObject GetAccessibleProperty(PdfName key)
         {
@@ -31,7 +30,7 @@ namespace com.itextpdf.text.pdf
             return null;
         }
 
-        public new PdfName Role
+        public override PdfName Role
         {
             get { return role; }
             set { role = value; }
