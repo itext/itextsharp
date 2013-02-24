@@ -10,7 +10,7 @@ namespace Org.BouncyCastle.Crypto.Modes.Gcm
 	{
         // A lookup table of the power-of-two powers of 'x'
         // - lookupPowX2[i] = x^(2^i)
-        private ArrayList lookupPowX2;
+        private IList lookupPowX2;
 
         public void Init(byte[] x)
 		{
@@ -19,7 +19,7 @@ namespace Org.BouncyCastle.Crypto.Modes.Gcm
                 return;
             }
 
-            lookupPowX2 = new ArrayList(8);
+            lookupPowX2 = Platform.CreateArrayList(8);
             lookupPowX2.Add(Arrays.Clone(x));
 		}
 

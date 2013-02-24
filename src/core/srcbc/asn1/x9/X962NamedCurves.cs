@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Math.EC;
@@ -681,7 +680,7 @@ namespace Org.BouncyCastle.Asn1.X9
 		public static X9ECParameters GetByName(
 			string name)
 		{
-			DerObjectIdentifier oid = (DerObjectIdentifier) objIds[name.ToLower(CultureInfo.InvariantCulture)];
+            DerObjectIdentifier oid = (DerObjectIdentifier)objIds[Platform.ToLowerInvariant(name)];
 
 			return oid == null ? null : GetByOid(oid);
 		}
@@ -709,7 +708,7 @@ namespace Org.BouncyCastle.Asn1.X9
 		public static DerObjectIdentifier GetOid(
 			string name)
 		{
-			return (DerObjectIdentifier) objIds[name.ToLower(CultureInfo.InvariantCulture)];
+            return (DerObjectIdentifier)objIds[Platform.ToLowerInvariant(name)];
 		}
 
 		/**

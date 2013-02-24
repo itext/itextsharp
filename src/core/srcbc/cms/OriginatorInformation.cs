@@ -4,6 +4,7 @@ using System.Collections;
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Cms;
 using Org.BouncyCastle.Asn1.X509;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.X509.Store;
 
@@ -29,7 +30,7 @@ namespace Org.BouncyCastle.Cms
 
 			if (certSet != null)
 			{
-				IList certList = new ArrayList(certSet.Count);
+				IList certList = Platform.CreateArrayList(certSet.Count);
 
 				foreach (Asn1Encodable enc in certSet)
 				{
@@ -47,7 +48,7 @@ namespace Org.BouncyCastle.Cms
 
 			return X509StoreFactory.Create(
 				"Certificate/Collection",
-				new X509CollectionStoreParameters(new ArrayList()));
+				new X509CollectionStoreParameters(Platform.CreateArrayList()));
 		}
 
 		/**
@@ -61,7 +62,7 @@ namespace Org.BouncyCastle.Cms
 
 			if (crlSet != null)
 			{
-				IList crlList = new ArrayList(crlSet.Count);
+                IList crlList = Platform.CreateArrayList(crlSet.Count);
 
 				foreach (Asn1Encodable enc in crlSet)
 				{
@@ -79,7 +80,7 @@ namespace Org.BouncyCastle.Cms
 
 			return X509StoreFactory.Create(
 				"CRL/Collection",
-				new X509CollectionStoreParameters(new ArrayList()));
+                new X509CollectionStoreParameters(Platform.CreateArrayList()));
 		}
 
 		/**

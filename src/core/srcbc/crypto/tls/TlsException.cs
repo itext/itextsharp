@@ -2,7 +2,10 @@ using System;
 
 namespace Org.BouncyCastle.Crypto.Tls
 {
-	public class TlsException : Exception
+#if !(NETCF_1_0 || NETCF_2_0 || SILVERLIGHT)
+    [Serializable]
+#endif
+    public class TlsException : Exception
 	{
 		public TlsException() : base() { }
 		public TlsException(string message) : base(message) { }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Sec;
@@ -47,9 +46,10 @@ namespace Org.BouncyCastle.Asn1.Nist
 		public static X9ECParameters GetByName(
 			string name)
 		{
-			DerObjectIdentifier oid = (DerObjectIdentifier) objIds[name.ToUpper(CultureInfo.InvariantCulture)];
+			DerObjectIdentifier oid = (DerObjectIdentifier) objIds[
+                Platform.ToUpperInvariant(name)];
 
-			if (oid != null)
+            if (oid != null)
 			{
 				return GetByOid(oid);
 			}
@@ -78,7 +78,8 @@ namespace Org.BouncyCastle.Asn1.Nist
 		public static DerObjectIdentifier GetOid(
 			string name)
 		{
-			return (DerObjectIdentifier) objIds[name.ToUpper(CultureInfo.InvariantCulture)];
+			return (DerObjectIdentifier) objIds[
+                Platform.ToUpperInvariant(name)];
 		}
 
 		/**

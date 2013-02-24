@@ -12,27 +12,27 @@ namespace Org.BouncyCastle.Utilities.Encoders
 			(byte)'8', (byte)'9', (byte)'a', (byte)'b', (byte)'c', (byte)'d', (byte)'e', (byte)'f'
 		};
 
-		/*
-		* set up the decoding table.
-		*/
-		internal static readonly byte[] decodingTable = new byte[128];
+        private static readonly byte[] decodingTable = ConstructDecodingTable(encodingTable);
 
-		static HexEncoder()
+        private static byte[] ConstructDecodingTable(byte[] et)
 		{
-			for (int i = 0; i < encodingTable.Length; i++)
+            byte[] dt = new byte[128];
+			for (int i = 0; i < et.Length; i++)
 			{
-				decodingTable[encodingTable[i]] = (byte)i;
+				dt[et[i]] = (byte)i;
 			}
 
-			decodingTable['A'] = decodingTable['a'];
-			decodingTable['B'] = decodingTable['b'];
-			decodingTable['C'] = decodingTable['c'];
-			decodingTable['D'] = decodingTable['d'];
-			decodingTable['E'] = decodingTable['e'];
-			decodingTable['F'] = decodingTable['f'];
+			dt['A'] = dt['a'];
+			dt['B'] = dt['b'];
+			dt['C'] = dt['c'];
+			dt['D'] = dt['d'];
+			dt['E'] = dt['e'];
+			dt['F'] = dt['f'];
+
+            return dt;
 		}
 
-		/**
+        /**
 		* encode the input data producing a Hex output stream.
 		*
 		* @return the number of bytes produced.
@@ -54,13 +54,12 @@ namespace Org.BouncyCastle.Utilities.Encoders
 			return length * 2;
 		}
 
-		private bool ignore(
-			char c)
-		{
-			return (c == '\n' || c =='\r' || c == '\t' || c == ' ');
-		}
+        private static bool Ignore(char c)
+        {
+            return c == '\n' || c =='\r' || c == '\t' || c == ' ';
+        }
 
-		/**
+        /**
 		* decode the Hex encoded byte data writing it to the given output stream,
 		* whitespace characters will be ignored.
 		*
@@ -78,7 +77,7 @@ namespace Org.BouncyCastle.Utilities.Encoders
 
 			while (end > off)
 			{
-				if (!ignore((char)data[end - 1]))
+				if (!Ignore((char)data[end - 1]))
 				{
 					break;
 				}
@@ -89,14 +88,14 @@ namespace Org.BouncyCastle.Utilities.Encoders
 			int i = off;
 			while (i < end)
 			{
-				while (i < end && ignore((char)data[i]))
+				while (i < end && Ignore((char)data[i]))
 				{
 					i++;
 				}
 
 				b1 = decodingTable[data[i++]];
 
-				while (i < end && ignore((char)data[i]))
+				while (i < end && Ignore((char)data[i]))
 				{
 					i++;
 				}
@@ -128,7 +127,7 @@ namespace Org.BouncyCastle.Utilities.Encoders
 
 			while (end > 0)
 			{
-				if (!ignore(data[end - 1]))
+				if (!Ignore(data[end - 1]))
 				{
 					break;
 				}
@@ -139,14 +138,14 @@ namespace Org.BouncyCastle.Utilities.Encoders
 			int i = 0;
 			while (i < end)
 			{
-				while (i < end && ignore(data[i]))
+				while (i < end && Ignore(data[i]))
 				{
 					i++;
 				}
 
 				b1 = decodingTable[data[i++]];
 
-				while (i < end && ignore(data[i]))
+				while (i < end && Ignore(data[i]))
 				{
 					i++;
 				}

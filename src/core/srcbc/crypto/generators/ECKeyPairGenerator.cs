@@ -1,5 +1,4 @@
 using System;
-using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Nist;
@@ -11,6 +10,7 @@ using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Math;
 using Org.BouncyCastle.Math.EC;
 using Org.BouncyCastle.Security;
+using Org.BouncyCastle.Utilities;
 
 namespace Org.BouncyCastle.Crypto.Generators
 {
@@ -115,9 +115,9 @@ namespace Org.BouncyCastle.Crypto.Generators
 		private string VerifyAlgorithmName(
 			string algorithm)
 		{
-			string upper = algorithm.ToUpper(CultureInfo.InvariantCulture);
+			string upper = Platform.ToUpperInvariant(algorithm);
 
-			switch (upper)
+            switch (upper)
 			{
 				case "EC":
 				case "ECDSA":

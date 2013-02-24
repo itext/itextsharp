@@ -39,11 +39,9 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 		private void WriteHeader(
             BcpgOutputStream	outStr,
             char				format,
-            string				name,
+            byte[]				encName,
             long				modificationTime)
         {
-			byte[] encName = Strings.ToUtf8ByteArray(name);
-
 			outStr.Write(
 				(byte) format,
 				(byte) encName.Length);
@@ -89,15 +87,17 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			// Do this first, since it might throw an exception
 			long unixMs = DateTimeUtilities.DateTimeToUnixMs(modificationTime);
 
-			pkOut = new BcpgOutputStream(outStr, PacketTag.LiteralData,
-				length + 2 + name.Length + 4, oldFormat);
+            byte[] encName = Strings.ToUtf8ByteArray(name);
 
-			WriteHeader(pkOut, format, name, unixMs);
+            pkOut = new BcpgOutputStream(outStr, PacketTag.LiteralData,
+				length + 2 + encName.Length + 4, oldFormat);
+
+			WriteHeader(pkOut, format, encName, unixMs);
 
 			return new WrappedGeneratorStream(this, pkOut);
         }
 
-		/// <summary>
+        /// <summary>
 		/// <p>
 		/// Open a literal data packet, returning a stream to store the data inside the packet,
 		/// as an indefinite length stream. The stream is written out as a series of partial
@@ -132,9 +132,11 @@ namespace Org.BouncyCastle.Bcpg.OpenPgp
 			// Do this first, since it might throw an exception
 			long unixMs = DateTimeUtilities.DateTimeToUnixMs(modificationTime);
 
+            byte[] encName = Strings.ToUtf8ByteArray(name);
+
 			pkOut = new BcpgOutputStream(outStr, PacketTag.LiteralData, buffer);
 
-			WriteHeader(pkOut, format, name, unixMs);
+            WriteHeader(pkOut, format, encName, unixMs);
 
 			return new WrappedGeneratorStream(this, pkOut);
 		}

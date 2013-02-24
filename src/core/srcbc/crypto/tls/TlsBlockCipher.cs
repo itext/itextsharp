@@ -2,6 +2,7 @@ using System;
 using System.IO;
 
 using Org.BouncyCastle.Crypto;
+using Org.BouncyCastle.Crypto.Digests;
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Utilities;
@@ -15,6 +16,7 @@ namespace Org.BouncyCastle.Crypto.Tls
         : TlsCipher
 	{
 		protected TlsClientContext context;
+        protected byte[] randomData;
 
         protected IBlockCipher encryptCipher;
         protected IBlockCipher decryptCipher;
@@ -22,7 +24,7 @@ namespace Org.BouncyCastle.Crypto.Tls
         protected TlsMac wMac;
         protected TlsMac rMac;
 
-		public virtual TlsMac WriteMac
+        public virtual TlsMac WriteMac
 		{
             get { return wMac; }
 		}
@@ -36,7 +38,11 @@ namespace Org.BouncyCastle.Crypto.Tls
 			IBlockCipher decryptCipher, IDigest writeDigest, IDigest readDigest, int cipherKeySize)
 		{
 			this.context = context;
-			this.encryptCipher = encryptCipher;
+
+            this.randomData = new byte[256];
+            context.SecureRandom.NextBytes(randomData);
+
+            this.encryptCipher = encryptCipher;
 			this.decryptCipher = decryptCipher;
 
 			int prfSize = (2 * cipherKeySize) + writeDigest.GetDigestSize()
@@ -99,22 +105,28 @@ namespace Org.BouncyCastle.Crypto.Tls
 		public virtual byte[] EncodePlaintext(ContentType type, byte[] plaintext, int offset, int len)
 		{
 			int blocksize = encryptCipher.GetBlockSize();
+            int padding_length = blocksize - 1 - ((len + wMac.Size) % blocksize);
 
-			// Add a random number of extra blocks worth of padding
-            int minPaddingSize = blocksize - ((len + wMac.Size + 1) % blocksize);
-			int maxExtraPadBlocks = (255 - minPaddingSize) / blocksize;
-			int actualExtraPadBlocks = ChooseExtraPadBlocks(context.SecureRandom, maxExtraPadBlocks);
-			int paddingsize = minPaddingSize + (actualExtraPadBlocks * blocksize);
+            //bool isTls = context.ServerVersion.FullVersion >= ProtocolVersion.TLSv10.FullVersion;
+            bool isTls = true;
 
-            int totalsize = len + wMac.Size + paddingsize + 1;
+            if (isTls)
+            {
+                // Add a random number of extra blocks worth of padding
+                int maxExtraPadBlocks = (255 - padding_length) / blocksize;
+                int actualExtraPadBlocks = ChooseExtraPadBlocks(context.SecureRandom, maxExtraPadBlocks);
+                padding_length += actualExtraPadBlocks * blocksize;
+            }
+
+            int totalsize = len + wMac.Size + padding_length + 1;
 			byte[] outbuf = new byte[totalsize];
 			Array.Copy(plaintext, offset, outbuf, 0, len);
             byte[] mac = wMac.CalculateMac(type, plaintext, offset, len);
 			Array.Copy(mac, 0, outbuf, len, mac.Length);
 			int paddoffset = len + mac.Length;
-			for (int i = 0; i <= paddingsize; i++)
+            for (int i = 0; i <= padding_length; i++)
 			{
-				outbuf[i + paddoffset] = (byte)paddingsize;
+                outbuf[i + paddoffset] = (byte)padding_length;
 			}
 			for (int i = 0; i < totalsize; i += blocksize)
 			{
@@ -125,102 +137,93 @@ namespace Org.BouncyCastle.Crypto.Tls
 
         public virtual byte[] DecodeCiphertext(ContentType type, byte[] ciphertext, int offset, int len)
 		{
-			// TODO TLS 1.1 (RFC 4346) introduces an explicit IV
+            int blockSize = decryptCipher.GetBlockSize();
+            int macSize = rMac.Size;
 
-            int minLength = rMac.Size + 1;
-			int blocksize = decryptCipher.GetBlockSize();
-			bool decrypterror = false;
+            /*
+             *  TODO[TLS 1.1] Explicit IV implies minLen = blockSize + max(blockSize, macSize + 1),
+             *  and will need further changes to offset and plen variables below.
+             */
 
-			/*
-			* ciphertext must be at least (macsize + 1) bytes long
-			*/
-			if (len < minLength)
-			{
-				throw new TlsFatalAlert(AlertDescription.decode_error);
-			}
+            int minLen = System.Math.Max(blockSize, macSize + 1);
+            if (len < minLen)
+                throw new TlsFatalAlert(AlertDescription.decode_error);
 
-			/*
-			* ciphertext must be a multiple of blocksize
-			*/
-			if (len % blocksize != 0)
-			{
-				throw new TlsFatalAlert(AlertDescription.decryption_failed);
-			}
+            if (len % blockSize != 0)
+                throw new TlsFatalAlert(AlertDescription.decryption_failed);
 
-			/*
-			* Decrypt all the ciphertext using the blockcipher
-			*/
-			for (int i = 0; i < len; i += blocksize)
-			{
-				decryptCipher.ProcessBlock(ciphertext, i + offset, ciphertext, i + offset);
-			}
+            for (int i = 0; i < len; i += blockSize)
+            {
+                decryptCipher.ProcessBlock(ciphertext, offset + i, ciphertext, offset + i);
+            }
 
-			/*
-			* Check if padding is correct
-			*/
-			int lastByteOffset = offset + len - 1;
+            int plen = len;
 
-			byte paddingsizebyte = ciphertext[lastByteOffset];
+            // If there's anything wrong with the padding, this will return zero
+            int totalPad = CheckPaddingConstantTime(ciphertext, offset, plen, blockSize, macSize);
 
-			int paddingsize = paddingsizebyte;
+            int macInputLen = plen - totalPad - macSize;
 
-			int maxPaddingSize = len - minLength;
-			if (paddingsize > maxPaddingSize)
-			{
-				decrypterror = true;
-				paddingsize = 0;
-			}
-			else
-			{
-				/*
-				* Now, check all the padding-bytes (constant-time comparison).
-				*/
-				byte diff = 0;
-				for (int i = lastByteOffset - paddingsize; i < lastByteOffset; ++i)
-				{
-					diff |= (byte)(ciphertext[i] ^ paddingsizebyte);
-				}
-				if (diff != 0)
-				{
-					/* Wrong padding */
-					decrypterror = true;
-					paddingsize = 0;
-				}
-			}
+            byte[] decryptedMac = Arrays.Copy(ciphertext, offset + macInputLen, macSize);
+            byte[] calculatedMac = rMac.CalculateMacConstantTime(type, ciphertext, offset, macInputLen, plen - macSize, randomData);
 
-			/*
-			* We now don't care if padding verification has failed or not, we will calculate
-			* the mac to give an attacker no kind of timing profile he can use to find out if
-			* mac verification failed or padding verification failed.
-			*/
-			int plaintextlength = len - minLength - paddingsize;
-            byte[] calculatedMac = rMac.CalculateMac(type, ciphertext, offset, plaintextlength);
+            bool badMac = !Arrays.ConstantTimeAreEqual(calculatedMac, decryptedMac);
 
-			/*
-			* Check all bytes in the mac (constant-time comparison).
-			*/
-			byte[] decryptedMac = new byte[calculatedMac.Length];
-			Array.Copy(ciphertext, offset + plaintextlength, decryptedMac, 0, calculatedMac.Length);
+            if (badMac || totalPad == 0)
+                throw new TlsFatalAlert(AlertDescription.bad_record_mac);
 
-			if (!Arrays.ConstantTimeAreEqual(calculatedMac, decryptedMac))
-			{
-				decrypterror = true;
-			}
-
-			/*
-			* Now, it is safe to fail.
-			*/
-			if (decrypterror)
-			{
-				throw new TlsFatalAlert(AlertDescription.bad_record_mac);
-			}
-
-			byte[] plaintext = new byte[plaintextlength];
-			Array.Copy(ciphertext, offset, plaintext, 0, plaintextlength);
-			return plaintext;
+            return Arrays.Copy(ciphertext, offset, macInputLen);
 		}
 
-		protected virtual int ChooseExtraPadBlocks(SecureRandom r, int max)
+        protected virtual int CheckPaddingConstantTime(byte[] buf, int off, int len, int blockSize, int macSize)
+        {
+            int end = off + len;
+            byte lastByte = buf[end - 1];
+            int padlen = lastByte & 0xff;
+            int totalPad = padlen + 1;
+
+            int dummyIndex = 0;
+            byte padDiff = 0;
+
+            //bool isTls = context.ServerVersion.FullVersion >= ProtocolVersion.TLSv10.FullVersion;
+            bool isTls = true;
+
+            if ((!isTls && totalPad > blockSize) || (macSize + totalPad > len))
+            {
+                totalPad = 0;
+            }
+            else
+            {
+                int padPos = end - totalPad;
+                do
+                {
+                    padDiff |= (byte)(buf[padPos++] ^ lastByte);
+                }
+                while (padPos < end);
+
+                dummyIndex = totalPad;
+
+                if (padDiff != 0)
+                {
+                    totalPad = 0;
+                }
+            }
+
+            // Run some extra dummy checks so the number of checks is always constant
+            {
+                byte[] dummyPad = randomData;
+                while (dummyIndex < 256)
+                {
+                    padDiff |= (byte)(dummyPad[dummyIndex++] ^ lastByte);
+                }
+                // Ensure the above loop is not eliminated
+                dummyPad[0] ^= padDiff;
+            }
+
+            return totalPad;
+        }
+
+        protected virtual int ChooseExtraPadBlocks(SecureRandom r, int max)
 		{
 //			return r.NextInt(max + 1);
 

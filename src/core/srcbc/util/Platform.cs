@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -165,6 +166,16 @@ namespace Org.BouncyCastle.Utilities
             return new Hashtable(dictionary);
         }
 #endif
+
+        internal static string ToLowerInvariant(string s)
+        {
+            return s.ToLower(CultureInfo.InvariantCulture);
+        }
+
+        internal static string ToUpperInvariant(string s)
+        {
+            return s.ToUpper(CultureInfo.InvariantCulture);
+        }
 
         internal static readonly string NewLine = GetNewLine();
 	}

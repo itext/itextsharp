@@ -122,10 +122,10 @@ namespace Org.BouncyCastle.Math
 
         internal static readonly int[] primeProducts;
 
-		private const long IMASK = 0xffffffffL;
-		private static readonly ulong UIMASK = (ulong)IMASK;
+		private const long IMASK = 0xFFFFFFFFL;
+        private const ulong UIMASK = 0xFFFFFFFFUL;
 
-		private static readonly int[] ZeroMagnitude = new int[0];
+        private static readonly int[] ZeroMagnitude = new int[0];
 		private static readonly byte[] ZeroEncoding = new byte[0];
 
         private static readonly BigInteger[] SMALL_CONSTANTS = new BigInteger[17];
@@ -135,13 +135,60 @@ namespace Org.BouncyCastle.Math
         public static readonly BigInteger Three;
         public static readonly BigInteger Ten;
 
+        //private readonly static byte[] BitCountTable =
+        //{
+        //    0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4,
+        //    1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
+        //    1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
+        //    2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6,
+        //    1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
+        //    2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6,
+        //    2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6,
+        //    3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7,
+        //    1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5,
+        //    2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6,
+        //    2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6,
+        //    3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7,
+        //    2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6,
+        //    3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7,
+        //    3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7,
+        //    4, 5, 5, 6, 5, 6, 6, 7, 5, 6, 6, 7, 6, 7, 7, 8
+        //};
+
+        private readonly static byte[] BitLengthTable =
+		{
+			0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4,
+            5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
+            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+            6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
+            8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8
+		};
+
         // TODO Parse radix-2 64 bits at a time and radix-8 63 bits at a time
-        private static readonly int chunk2 = 1, chunk8 = 1, chunk10 = 19, chunk16 = 16;
+        private const int chunk2 = 1, chunk8 = 1, chunk10 = 19, chunk16 = 16;
 		private static readonly BigInteger radix2, radix2E, radix8, radix8E, radix10, radix10E, radix16, radix16E;
 
         private static readonly Random RandomSource = new Random();
 
-		private const int BitsPerByte = 8;
+        /*
+         * These are the threshold bit-lengths (of an exponent) where we increase the window size.
+         * They are calculated according to the expected savings in multiplications.
+         * Some squares will also be saved on average, but we offset these against the extra storage costs.
+         */
+        private static readonly int[] ExpWindowThresholds = { 7, 25, 81, 241, 673, 1793, 4609, Int32.MaxValue };
+
+        private const int BitsPerByte = 8;
 		private const int BitsPerInt = 32;
 		private const int BytesPerInt = 4;
 
@@ -153,7 +200,7 @@ namespace Org.BouncyCastle.Math
             SMALL_CONSTANTS[0] = Zero;
             for (uint i = 1; i < SMALL_CONSTANTS.Length; ++i)
             {
-                SMALL_CONSTANTS[i] = createUValueOf(i);
+                SMALL_CONSTANTS[i] = CreateUValueOf(i);
             }
 
             One = SMALL_CONSTANTS[1];
@@ -187,10 +234,10 @@ namespace Org.BouncyCastle.Math
 			}
 		}
 
-		private int sign; // -1 means -ve; +1 means +ve; 0 means 0;
 		private int[] magnitude; // array of ints with [0] being the most significant
+        private int sign; // -1 means -ve; +1 means +ve; 0 means 0;
 		private int nBits = -1; // cache BitCount() value
-		private int nBitLength = -1; // cache calcBitLength() value
+		private int nBitLength = -1; // cache BitLength() value
         private int mQuote = 0; // -m^(-1) mod b, b = 2^32 (see Montgomery mult.), 0 when uninitialised
 
         private static int GetByteLength(
@@ -336,7 +383,7 @@ namespace Org.BouncyCastle.Math
 				{
 					string s = str.Substring(index, chunk);
 					ulong i = ulong.Parse(s, style);
-					BigInteger bi = createUValueOf(i);
+					BigInteger bi = CreateUValueOf(i);
 
 					switch (radix)
 					{
@@ -376,7 +423,7 @@ namespace Org.BouncyCastle.Math
 			{
 				string s = str.Substring(index);
 				ulong i = ulong.Parse(s, style);
-				BigInteger bi = createUValueOf(i);
+				BigInteger bi = CreateUValueOf(i);
 
 				if (b.sign > 0)
 				{
@@ -836,12 +883,9 @@ namespace Org.BouncyCastle.Math
 					else
 					{
 						int sum = 0;
-						for (int i = 0; i < magnitude.Length; i++)
+						for (int i = 0; i < magnitude.Length; ++i)
 						{
-							sum += bitCounts[(byte) magnitude[i]];
-							sum += bitCounts[(byte)(magnitude[i] >> 8)];
-							sum += bitCounts[(byte)(magnitude[i] >> 16)];
-							sum += bitCounts[(byte)(magnitude[i] >> 24)];
+                            sum += BitCnt(magnitude[i]);
 						}
 						nBits = sum;
 					}
@@ -851,30 +895,26 @@ namespace Org.BouncyCastle.Math
 			}
 		}
 
-		private readonly static byte[] bitCounts =
-		{
-			0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4, 1,
-			2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3, 4, 3, 4,
-			4, 5, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 1, 2, 2, 3, 2, 3, 3, 4, 2, 3, 3,
-			4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 2, 3, 3, 4, 3, 4, 4, 5,
-			3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 1, 2, 2, 3, 2,
-			3, 3, 4, 2, 3, 3, 4, 3, 4, 4, 5, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 2, 3,
-			3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6,
-			7, 2, 3, 3, 4, 3, 4, 4, 5, 3, 4, 4, 5, 4, 5, 5, 6, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6,
-			5, 6, 6, 7, 3, 4, 4, 5, 4, 5, 5, 6, 4, 5, 5, 6, 5, 6, 6, 7, 4, 5, 5, 6, 5, 6, 6, 7, 5,
-			6, 6, 7, 6, 7, 7, 8
-		};
+        public static int BitCnt(int i)
+        {
+            uint u = (uint)i;
+            u = u - ((u >> 1) & 0x55555555);
+            u = (u & 0x33333333) + ((u >> 2) & 0x33333333);
+            u = (u + (u >> 4)) & 0x0f0f0f0f;
+            u += (u >> 8);
+            u += (u >> 16);
+            u &= 0x3f;
+            return (int)u;
+        }
 
-		private int calcBitLength(
-			int		indx,
-			int[]	mag)
+        private static int CalcBitLength(int sign, int indx, int[]	mag)
 		{
 			for (;;)
 			{
 				if (indx >= mag.Length)
 					return 0;
 
-				if (mag[indx] != 0)
+                if (mag[indx] != 0)
 					break;
 
 				++indx;
@@ -912,7 +952,7 @@ namespace Org.BouncyCastle.Math
 				{
 					nBitLength = sign == 0
 						? 0
-						: calcBitLength(0, magnitude);
+						: CalcBitLength(sign, 0, magnitude);
 				}
 
 				return nBitLength;
@@ -922,40 +962,22 @@ namespace Org.BouncyCastle.Math
 		//
 		// BitLen(value) is the number of bits in value.
 		//
-		private static int BitLen(
-			int w)
+		private static int BitLen(int w)
 		{
-			// Binary search - decision tree (5 tests, rarely 6)
-			return (w < 1 << 15 ? (w < 1 << 7
-				? (w < 1 << 3 ? (w < 1 << 1
-				? (w < 1 << 0 ? (w < 0 ? 32 : 0) : 1)
-				: (w < 1 << 2 ? 2 : 3)) : (w < 1 << 5
-				? (w < 1 << 4 ? 4 : 5)
-				: (w < 1 << 6 ? 6 : 7)))
-				: (w < 1 << 11
-				? (w < 1 << 9 ? (w < 1 << 8 ? 8 : 9) : (w < 1 << 10 ? 10 : 11))
-				: (w < 1 << 13 ? (w < 1 << 12 ? 12 : 13) : (w < 1 << 14 ? 14 : 15)))) : (w < 1 << 23 ? (w < 1 << 19
-				? (w < 1 << 17 ? (w < 1 << 16 ? 16 : 17) : (w < 1 << 18 ? 18 : 19))
-				: (w < 1 << 21 ? (w < 1 << 20 ? 20 : 21) : (w < 1 << 22 ? 22 : 23))) : (w < 1 << 27
-				? (w < 1 << 25 ? (w < 1 << 24 ? 24 : 25) : (w < 1 << 26 ? 26 : 27))
-				: (w < 1 << 29 ? (w < 1 << 28 ? 28 : 29) : (w < 1 << 30 ? 30 : 31)))));
+            uint v = (uint)w;
+            uint t = v >> 24;
+            if (t != 0)
+                return 24 + BitLengthTable[t];
+            t = v >> 16;
+            if (t != 0)
+                return 16 + BitLengthTable[t];
+            t = v >> 8;
+            if (t != 0)
+                return 8 + BitLengthTable[t];
+            return BitLengthTable[v];
 		}
 
-//		private readonly static byte[] bitLengths =
-//		{
-//			0, 1, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4, 4, 4, 4,
-//			5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6,
-//			6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-//			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
-//			7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 8, 8, 8, 8,
-//			8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-//			8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-//			8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-//			8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8, 8,
-//			8, 8, 8, 8, 8, 8, 8, 8
-//		};
-
-		private bool QuickPow2Check()
+        private bool QuickPow2Check()
 		{
 			return sign > 0 && nBits == 1;
 		}
@@ -1052,8 +1074,8 @@ namespace Org.BouncyCastle.Math
 
 			if (xyCmp > 0)
 			{
-				int yBitLength = calcBitLength(yStart, y);
-				int xBitLength = calcBitLength(xStart, x);
+				int yBitLength = CalcBitLength(1, yStart, y);
+				int xBitLength = CalcBitLength(1, xStart, x);
 				int shift = xBitLength - yBitLength;
 
 				int[] iCount;
@@ -1096,7 +1118,7 @@ namespace Org.BouncyCastle.Math
 								return count;
 						}
 
-						//xBitLength = calcBitLength(xStart, x);
+						//xBitLength = CalcBitLength(xStart, x);
 						xBitLength = 32 * (x.Length - xStart - 1) + BitLen(x[xStart]);
 
 						if (xBitLength <= yBitLength)
@@ -1225,21 +1247,23 @@ namespace Org.BouncyCastle.Math
 			if (biggie == null)
 				return false;
 
-			if (biggie.sign != sign || biggie.magnitude.Length != magnitude.Length)
-				return false;
-
-			for (int i = 0; i < magnitude.Length; i++)
-			{
-				if (biggie.magnitude[i] != magnitude[i])
-				{
-					return false;
-				}
-			}
-
-			return true;
+            return sign == biggie.sign && IsEqualMagnitude(biggie);
 		}
 
-		public BigInteger Gcd(
+        private bool IsEqualMagnitude(BigInteger x)
+        {
+            int[] xMag = x.magnitude;
+            if (magnitude.Length != x.magnitude.Length)
+                return false;
+            for (int i = 0; i < magnitude.Length; i++)
+            {
+                if (magnitude[i] != x.magnitude[i])
+                    return false;
+            }
+            return true;
+        }
+
+        public BigInteger Gcd(
 			BigInteger value)
 		{
 			if (value.sign == 0)
@@ -1292,15 +1316,20 @@ namespace Org.BouncyCastle.Math
 
 		public int IntValue
 		{
-			get
-			{
-				return sign == 0 ? 0
-					: sign > 0 ? magnitude[magnitude.Length - 1]
-					: -magnitude[magnitude.Length - 1];
-			}
+            get
+            {
+                if (sign == 0)
+                    return 0;
+
+                int n = magnitude.Length;
+
+                int v = magnitude[n - 1];
+
+                return sign < 0 ? -v : v;
+            }
 		}
 
-		/**
+        /**
 		 * return whether or not a BigInteger is probably prime with a
 		 * probability of 1 - (1/2)**certainty.
 		 * <p>From Knuth Vol 2, pg 395.</p>
@@ -1371,46 +1400,46 @@ namespace Org.BouncyCastle.Math
 //			return rbTest;
 		}
 
-		public bool RabinMillerTest(
-			int		certainty,
-			Random	random)
+		public bool RabinMillerTest(int certainty, Random random)
 		{
 			Debug.Assert(certainty > 0);
 			Debug.Assert(BitLength > 2);
 			Debug.Assert(TestBit(0));
 
 			// let n = 1 + d . 2^s
-			BigInteger n = this;
-			BigInteger nMinusOne = n.Subtract(One);
-			int s = nMinusOne.GetLowestSetBit();
-			BigInteger r = nMinusOne.ShiftRight(s);
+            BigInteger n = this;
+            int s = n.GetLowestSetBitMaskFirst(-1 << 1);
+            Debug.Assert(s >= 1);
+            BigInteger r = n.ShiftRight(s);
 
-			Debug.Assert(s >= 1);
+            // NOTE: Avoid conversion to/from Montgomery form and check for R/-R as result instead
 
-			do
+            BigInteger montRadix = One.ShiftLeft(32 * n.magnitude.Length).Remainder(n);
+            BigInteger minusMontRadix = n.Subtract(montRadix);
+
+            do
 			{
-				// TODO Make a method for random BigIntegers in range 0 < x < n)
-				// - Method can be optimized by only replacing examined bits at each trial
 				BigInteger a;
-				do
-				{
-					a = new BigInteger(n.BitLength, random);
-				}
-				while (a.CompareTo(One) <= 0 || a.CompareTo(nMinusOne) >= 0);
+                do
+                {
+                    a = new BigInteger(n.BitLength, random);
+                }
+                while (a.sign == 0 || a.CompareTo(n) >= 0
+                    || a.IsEqualMagnitude(montRadix) || a.IsEqualMagnitude(minusMontRadix));
 
-				BigInteger y = a.ModPow(r, n);
+				BigInteger y = ModPowMonty(a, r, n, false);
 
-				if (!y.Equals(One))
-				{
-					int j = 0;
-					while (!y.Equals(nMinusOne))
+                if (!y.Equals(montRadix))
+                {
+                    int j = 0;
+                    while (!y.Equals(minusMontRadix))
 					{
 						if (++j == s)
 							return false;
 
-						y = y.ModPow(Two, n);
+						y = ModPowMonty(y, Two, n, false);
 
-						if (y.Equals(One))
+                        if (y.Equals(montRadix))
 							return false;
 					}
 				}
@@ -1513,27 +1542,24 @@ namespace Org.BouncyCastle.Math
 
 		public long LongValue
 		{
-			get
-			{
-				if (sign == 0)
-					return 0;
+            get
+            {
+                if (sign == 0)
+                    return 0;
 
-				long v;
-				if (magnitude.Length > 1)
-				{
-					v = ((long)magnitude[magnitude.Length - 2] << 32)
-						| (magnitude[magnitude.Length - 1] & IMASK);
-				}
-				else
-				{
-					v = (magnitude[magnitude.Length - 1] & IMASK);
-				}
+                int n = magnitude.Length;
 
-				return sign < 0 ? -v : v;
-			}
-		}
+                long v = magnitude[n - 1] & IMASK;
+                if (n > 1)
+                {
+                    v |= (magnitude[n - 2] & IMASK) << 32;
+                }
 
-		public BigInteger Max(
+                return sign < 0 ? -v : v;
+            }
+        }
+
+        public BigInteger Max(
 			BigInteger value)
 		{
 			return CompareTo(value) > 0 ? this : value;
@@ -1661,7 +1687,7 @@ namespace Org.BouncyCastle.Math
             return x;
         }
 
-        private int ModInverse32(int d)
+        private static int ModInverse32(int d)
         {
             Debug.Assert((d & 1) != 0);
             // Newton-Raphson division (roughly)
@@ -1674,7 +1700,7 @@ namespace Org.BouncyCastle.Math
             return x;
         }
 
-        private long ModInverse64(long d)
+        private static long ModInverse64(long d)
         {
             // Newton-Raphson division (roughly)
             Debug.Assert((d & 1L) != 0);
@@ -1754,252 +1780,376 @@ namespace Org.BouncyCastle.Math
 			Array.Clear(x, 0, x.Length);
 		}
 
-		public BigInteger ModPow(
-			BigInteger exponent,
-			BigInteger m)
-		{
-			if (m.sign < 1)
-				throw new ArithmeticException("Modulus must be positive");
+        public BigInteger ModPow(BigInteger e, BigInteger m)
+        {
+            if (m.sign < 1)
+                throw new ArithmeticException("Modulus must be positive");
 
-			if (m.Equals(One))
-				return Zero;
+            if (m.Equals(One))
+                return Zero;
 
-			if (exponent.sign == 0)
-				return One;
+            if (e.sign == 0)
+                return One;
 
-			if (sign == 0)
-				return Zero;
+            if (sign == 0)
+                return Zero;
 
-			int[] zVal = null;
-			int[] yAccum = null;
-			int[] yVal;
+            bool negExp = e.sign < 0;
+            if (negExp)
+                e = e.Negate();
 
-			// Montgomery exponentiation is only possible if the modulus is odd,
-			// but AFAIK, this is always the case for crypto algo's
-			bool useMonty = ((m.magnitude[m.magnitude.Length - 1] & 1) == 1);
-			long mQ = 0;
-			if (useMonty)
-			{
-				mQ = m.GetMQuote() & IMASK;
+            BigInteger result = this.Mod(m);
+            if (!e.Equals(One))
+            {
+                if ((m.magnitude[m.magnitude.Length - 1] & 1) == 0)
+                {
+                    result = ModPowBarrett(result, e, m);
+                }
+                else
+                {
+                    result = ModPowMonty(result, e, m, true);
+                }
+            }
 
-				// tmp = this * R mod m
-				BigInteger tmp = ShiftLeft(32 * m.magnitude.Length).Mod(m);
-				zVal = tmp.magnitude;
+            if (negExp)
+                result = result.ModInverse(m);
 
-				useMonty = (zVal.Length <= m.magnitude.Length);
+            return result;
+        }
 
-				if (useMonty)
-				{
-					yAccum = new int[m.magnitude.Length + 1];
-					if (zVal.Length < m.magnitude.Length)
-					{
-						int[] longZ = new int[m.magnitude.Length];
-						zVal.CopyTo(longZ, longZ.Length - zVal.Length);
-						zVal = longZ;
-					}
-				}
-			}
+        private static BigInteger ModPowBarrett(BigInteger b, BigInteger e, BigInteger m)
+        {
+            int k = m.magnitude.Length;
+            BigInteger mr = One.ShiftLeft((k + 1) << 5);
+            BigInteger yu = One.ShiftLeft(k << 6).Divide(m);
 
-			if (!useMonty)
-			{
-				if (magnitude.Length <= m.magnitude.Length)
-				{
-					//zAccum = new int[m.magnitude.Length * 2];
-					zVal = new int[m.magnitude.Length];
-					magnitude.CopyTo(zVal, zVal.Length - magnitude.Length);
-				}
-				else
-				{
-					//
-					// in normal practice we'll never see this...
-					//
-					BigInteger tmp = Remainder(m);
+            // Sliding window from MSW to LSW
+            int extraBits = 0, expLength = e.BitLength;
+            while (expLength > ExpWindowThresholds[extraBits])
+            {
+                ++extraBits;
+            }
 
-					//zAccum = new int[m.magnitude.Length * 2];
-					zVal = new int[m.magnitude.Length];
-					tmp.magnitude.CopyTo(zVal, zVal.Length - tmp.magnitude.Length);
-				}
+            int numPowers = 1 << extraBits;
+            BigInteger[] oddPowers = new BigInteger[numPowers];
+            oddPowers[0] = b;
 
-				yAccum = new int[m.magnitude.Length * 2];
-			}
+            BigInteger b2 = ReduceBarrett(b.Square(), m, mr, yu);
 
-			yVal = new int[m.magnitude.Length];
+            for (int i = 1; i < numPowers; ++i)
+            {
+                oddPowers[i] = ReduceBarrett(oddPowers[i - 1].Multiply(b2), m, mr, yu);
+            }
 
-			//
-			// from LSW to MSW
-			//
-			for (int i = 0; i < exponent.magnitude.Length; i++)
-			{
-				int v = exponent.magnitude[i];
-				int bits = 0;
+            int[] windowList = GetWindowList(e.magnitude, extraBits);
+            Debug.Assert(windowList.Length > 0);
 
-				if (i == 0)
-				{
-					while (v > 0)
-					{
-						v <<= 1;
-						bits++;
-					}
+            int window = windowList[0];
+            int mult = window & 0xFF, lastZeroes = window >> 8;
 
-					//
-					// first time in initialise y
-					//
-					zVal.CopyTo(yVal, 0);
+            BigInteger y;
+            if (mult == 1)
+            {
+                y = b2;
+                --lastZeroes;
+            }
+            else
+            {
+                y = oddPowers[mult >> 1];
+            }
 
-					v <<= 1;
-					bits++;
-				}
+            int windowPos = 1;
+            while ((window = windowList[windowPos++]) != -1)
+            {
+                mult = window & 0xFF;
 
-				while (v != 0)
-				{
-					if (useMonty)
-					{
-						// Montgomery square algo doesn't exist, and a normal
-						// square followed by a Montgomery reduction proved to
-						// be almost as heavy as a Montgomery mulitply.
-						MultiplyMonty(yAccum, yVal, yVal, m.magnitude, mQ);
-					}
-					else
-					{
-						Square(yAccum, yVal);
-						Remainder(yAccum, m.magnitude);
-						Array.Copy(yAccum, yAccum.Length - yVal.Length, yVal, 0, yVal.Length);
-						ZeroOut(yAccum);
-					}
-					bits++;
+                int bits = lastZeroes + BitLengthTable[mult];
+                for (int j = 0; j < bits; ++j)
+                {
+                    y = ReduceBarrett(y.Square(), m, mr, yu);
+                }
 
-					if (v < 0)
-					{
-						if (useMonty)
-						{
-							MultiplyMonty(yAccum, yVal, zVal, m.magnitude, mQ);
-						}
-						else
-						{
-							Multiply(yAccum, yVal, zVal);
-							Remainder(yAccum, m.magnitude);
-							Array.Copy(yAccum, yAccum.Length - yVal.Length, yVal, 0,
-								yVal.Length);
-							ZeroOut(yAccum);
-						}
-					}
+                y = ReduceBarrett(y.Multiply(oddPowers[mult >> 1]), m, mr, yu);
 
-					v <<= 1;
-				}
+                lastZeroes = window >> 8;
+            }
 
-				while (bits < 32)
-				{
-					if (useMonty)
-					{
-						MultiplyMonty(yAccum, yVal, yVal, m.magnitude, mQ);
-					}
-					else
-					{
-						Square(yAccum, yVal);
-						Remainder(yAccum, m.magnitude);
-						Array.Copy(yAccum, yAccum.Length - yVal.Length, yVal, 0, yVal.Length);
-						ZeroOut(yAccum);
-					}
-					bits++;
-				}
-			}
+            for (int i = 0; i < lastZeroes; ++i)
+            {
+                y = ReduceBarrett(y.Square(), m, mr, yu);
+            }
 
-			if (useMonty)
-			{
-				// Return y * R^(-1) mod m by doing y * 1 * R^(-1) mod m
-				ZeroOut(zVal);
-				zVal[zVal.Length - 1] = 1;
-				MultiplyMonty(yAccum, yVal, zVal, m.magnitude, mQ);
-			}
+            return y;
+        }
 
-			BigInteger result = new BigInteger(1, yVal, true);
+        private static BigInteger ReduceBarrett(BigInteger x, BigInteger m, BigInteger mr, BigInteger yu)
+        {
+            int xLen = x.BitLength, mLen = m.BitLength;
+            if (xLen < mLen)
+                return x;
 
-			return exponent.sign > 0
-				?	result
-				:	result.ModInverse(m);
-		}
+            if (xLen - mLen > 1)
+            {
+                int k = m.magnitude.Length;
 
-		/**
+                BigInteger q1 = x.DivideWords(k - 1);
+                BigInteger q2 = q1.Multiply(yu); // TODO Only need partial multiplication here
+                BigInteger q3 = q2.DivideWords(k + 1);
+
+                BigInteger r1 = x.RemainderWords(k + 1);
+                BigInteger r2 = q3.Multiply(m); // TODO Only need partial multiplication here
+                BigInteger r3 = r2.RemainderWords(k + 1);
+
+                x = r1.Subtract(r3);
+                if (x.sign < 0)
+                {
+                    x = x.Add(mr);
+                }
+            }
+
+            while (x.CompareTo(m) >= 0)
+            {
+                x = x.Subtract(m);
+            }
+
+            return x;
+        }
+
+        private static BigInteger ModPowMonty(BigInteger b, BigInteger e, BigInteger m, bool convert)
+        {
+            int n = m.magnitude.Length;
+            int powR = 32 * n;
+            bool smallMontyModulus = m.BitLength + 2 <= powR;
+            uint mDash = (uint)m.GetMQuote();
+
+            // tmp = this * R mod m
+            if (convert)
+            {
+                b = b.ShiftLeft(powR).Remainder(m);
+            }
+
+            int[] yAccum = new int[n + 1];
+
+            int[] zVal = b.magnitude;
+            Debug.Assert(zVal.Length <= n);
+            if (zVal.Length < n)
+            {
+                int[] tmp = new int[n];
+                zVal.CopyTo(tmp, n - zVal.Length);
+                zVal = tmp;
+            }
+
+            // Sliding window from MSW to LSW
+
+            int extraBits = 0;
+
+            // Filter the common case of small RSA exponents with few bits set
+            if (e.magnitude.Length > 1 || e.BitCount > 2)
+            {
+                int expLength = e.BitLength;
+                while (expLength > ExpWindowThresholds[extraBits])
+                {
+                    ++extraBits;
+                }
+            }
+
+            int numPowers = 1 << extraBits;
+            int[][] oddPowers = new int[numPowers][];
+            oddPowers[0] = zVal;
+
+            int[] zSquared = Arrays.Clone(zVal);
+            SquareMonty(yAccum, zSquared, m.magnitude, mDash, smallMontyModulus);
+
+            for (int i = 1; i < numPowers; ++i)
+            {
+                oddPowers[i] = Arrays.Clone(oddPowers[i - 1]);
+                MultiplyMonty(yAccum, oddPowers[i], zSquared, m.magnitude, mDash, smallMontyModulus);
+            }
+
+            int[] windowList = GetWindowList(e.magnitude, extraBits);
+            Debug.Assert(windowList.Length > 1);
+
+            int window = windowList[0];
+            int mult = window & 0xFF, lastZeroes = window >> 8;
+
+            int[] yVal;
+            if (mult == 1)
+            {
+                yVal = zSquared;
+                --lastZeroes;
+            }
+            else
+            {
+                yVal = Arrays.Clone(oddPowers[mult >> 1]);
+            }
+
+            int windowPos = 1;
+            while ((window = windowList[windowPos++]) != -1)
+            {
+                mult = window & 0xFF;
+
+                int bits = lastZeroes + BitLengthTable[mult];
+                for (int j = 0; j < bits; ++j)
+                {
+                    SquareMonty(yAccum, yVal, m.magnitude, mDash, smallMontyModulus);
+                }
+
+                MultiplyMonty(yAccum, yVal, oddPowers[mult >> 1], m.magnitude, mDash, smallMontyModulus);
+
+                lastZeroes = window >> 8;
+            }
+
+            for (int i = 0; i < lastZeroes; ++i)
+            {
+                SquareMonty(yAccum, yVal, m.magnitude, mDash, smallMontyModulus);
+            }
+
+            if (convert)
+            {
+                // Return y * R^(-1) mod m
+                MontgomeryReduce(yVal, m.magnitude, mDash);
+            }
+            else if (smallMontyModulus && CompareTo(0, yVal, 0, m.magnitude) >= 0)
+            {
+                Subtract(0, yVal, 0, m.magnitude);
+            }
+
+            return new BigInteger(1, yVal, true);
+        }
+
+        private static int[] GetWindowList(int[] mag, int extraBits)
+        {
+            int v = mag[0];
+            Debug.Assert(v != 0);
+
+            int leadingBits = BitLen(v);
+
+            int resultSize = (((mag.Length - 1) << 5) + leadingBits) / (1 + extraBits) + 2;
+            int[] result = new int[resultSize];
+            int resultPos = 0;
+
+            int bitPos = 33 - leadingBits;
+            v <<= bitPos;
+
+            int mult = 1, multLimit = 1 << extraBits;
+            int zeroes = 0;
+
+            int i = 0;
+            for (; ; )
+            {
+                for (; bitPos < 32; ++bitPos)
+                {
+                    if (mult < multLimit)
+                    {
+                        mult = (mult << 1) | (int)((uint)v >> 31);
+                    }
+                    else if (v < 0)
+                    {
+                        result[resultPos++] = CreateWindowEntry(mult, zeroes);
+                        mult = 1;
+                        zeroes = 0;
+                    }
+                    else
+                    {
+                        ++zeroes;
+                    }
+
+                    v <<= 1;
+                }
+
+                if (++i == mag.Length)
+                {
+                    result[resultPos++] = CreateWindowEntry(mult, zeroes);
+                    break;
+                }
+
+                v = mag[i];
+                bitPos = 0;
+            }
+
+            result[resultPos] = -1;
+            return result;
+        }
+
+        private static int CreateWindowEntry(int mult, int zeroes)
+        {
+            while ((mult & 1) == 0)
+            {
+                mult >>= 1;
+                ++zeroes;
+            }
+
+            return mult | (zeroes << 8);
+        }
+
+        /**
 		 * return w with w = x * x - w is assumed to have enough space.
 		 */
 		private static int[] Square(
 			int[]	w,
 			int[]	x)
 		{
-			// Note: this method allows w to be only (2 * x.Length - 1) words if result will fit
+            // Note: this method allows w to be only (2 * x.Length - 1) words if result will fit
 //			if (w.Length != 2 * x.Length)
 //				throw new ArgumentException("no I don't think so...");
 
-			ulong u1, u2, c;
+            ulong c;
 
-			int wBase = w.Length - 1;
+            int wBase = w.Length - 1;
 
-			for (int i = x.Length - 1; i != 0; i--)
-			{
-				ulong v = (ulong)(uint) x[i];
+            for (int i = x.Length - 1; i > 0; --i)
+            {
+                ulong v = (uint)x[i];
 
-				u1 = v * v;
-				u2 = u1 >> 32;
-				u1 = (uint) u1;
+                c = v * v + (uint)w[wBase];
+                w[wBase] = (int)c;
+                c >>= 32;
 
-				u1 += (ulong)(uint) w[wBase];
+                for (int j = i - 1; j >= 0; --j)
+                {
+                    ulong prod = v * (uint)x[j];
 
-				w[wBase] = (int)(uint) u1;
-				c = u2 + (u1 >> 32);
+                    c += ((uint)w[--wBase] & UIMASK) + ((uint)prod << 1);
+                    w[wBase] = (int)c;
+                    c = (c >> 32) + (prod >> 31);
+                }
 
-				for (int j = i - 1; j >= 0; j--)
-				{
-					--wBase;
-					u1 = v * (ulong)(uint) x[j];
-					u2 = u1 >> 31; // multiply by 2!
-					u1 = (uint)(u1 << 1); // multiply by 2!
-					u1 += c + (ulong)(uint) w[wBase];
+                c += (uint)w[--wBase];
+                w[wBase] = (int)c;
 
-					w[wBase] = (int)(uint) u1;
-					c = u2 + (u1 >> 32);
-				}
+                if (--wBase >= 0)
+                {
+                    w[wBase] = (int)(c >> 32);
+                }
+                else
+                {
+                    Debug.Assert((c >> 32) == 0);
+                }
 
-				c += (ulong)(uint) w[--wBase];
-				w[wBase] = (int)(uint) c;
+                wBase += i;
+            }
 
-				if (--wBase >= 0)
-				{
-					w[wBase] = (int)(uint)(c >> 32);
-				}
-				else
-				{
-					Debug.Assert((uint)(c >> 32) == 0);
-				}
-				wBase += i;
-			}
+            c = (uint)x[0];
 
-			u1 = (ulong)(uint) x[0];
-			u1 = u1 * u1;
-			u2 = u1 >> 32;
-			u1 = u1 & IMASK;
+            c = c * c + (uint)w[wBase];
+            w[wBase] = (int)c;
 
-			u1 += (ulong)(uint) w[wBase];
+            if (--wBase >= 0)
+            {
+                w[wBase] += (int)(c >> 32);
+            }
+            else
+            {
+                Debug.Assert((c >> 32) == 0);
+            }
 
-			w[wBase] = (int)(uint) u1;
-			if (--wBase >= 0)
-			{
-				w[wBase] = (int)(uint)(u2 + (u1 >> 32) + (ulong)(uint) w[wBase]);
-			}
-			else
-			{
-				Debug.Assert((uint)(u2 + (u1 >> 32)) == 0);
-			}
-
-			return w;
+            return w;
 		}
 
-		/**
+        /**
 		 * return x with x = y * z - x is assumed to have enough space.
 		 */
-		private static int[] Multiply(
-			int[]	x,
-			int[]	y,
-			int[]	z)
+		private static int[] Multiply(int[]	x, int[] y, int[] z)
 		{
 			int i = z.Length;
 
@@ -2044,7 +2194,7 @@ namespace Org.BouncyCastle.Math
         /**
 		 * Calculate mQuote = -m^(-1) mod b with b = 2^32 (32 = word size)
 		 */
-		private int GetMQuote()
+        private int GetMQuote()
 		{
 			if (mQuote != 0)
 			{
@@ -2060,6 +2210,39 @@ namespace Org.BouncyCastle.Math
             return mQuote = ModInverse32(d);
 		}
 
+        private static void MontgomeryReduce(int[] x, int[] m, uint mDash) // mDash = -m^(-1) mod b
+        {
+            // NOTE: Not a general purpose reduction (which would allow x up to twice the bitlength of m)
+            Debug.Assert(x.Length == m.Length);
+
+            int n = m.Length;
+
+            for (int i = n - 1; i >= 0; --i)
+            {
+                uint x0 = (uint)x[n - 1];
+                ulong t = x0 * mDash;
+
+                ulong carry = t * (uint)m[n - 1] + x0;
+                Debug.Assert((uint)carry == 0);
+                carry >>= 32;
+
+                for (int j = n - 2; j >= 0; --j)
+                {
+                    carry += t * (uint)m[j] + (uint)x[j];
+                    x[j + 1] = (int)carry;
+                    carry >>= 32;
+                }
+
+                x[0] = (int)carry;
+                Debug.Assert(carry >> 32 == 0);
+            }
+
+            if (CompareTo(0, x, 0, m) >= 0)
+            {
+                Subtract(0, x, 0, m);
+            }
+        }
+
         /**
 		 * Montgomery multiplication: a = x * y * R^(-1) mod m
 		 * <br/>
@@ -2073,92 +2256,195 @@ namespace Org.BouncyCastle.Math
 		 * <br/>
 		 * NOTE: the indices of x, y, m, a different in HAC and in Java
 		 */
-		private static void MultiplyMonty(
-			int[]	a,
-			int[]	x,
-			int[]	y,
-			int[]	m,
-			long	mQuote)
-			// mQuote = -m^(-1) mod b
+		private static void MultiplyMonty(int[]	a, int[] x, int[] y, int[] m, uint mDash, bool smallMontyModulus)
+			// mDash = -m^(-1) mod b
 		{
-			if (m.Length == 1)
-			{
-				x[0] = (int)MultiplyMontyNIsOne((uint)x[0], (uint)y[0], (uint)m[0], (ulong)mQuote);
-				return;
-			}
+            int n = m.Length;
 
-			int n = m.Length;
-			int nMinus1 = n - 1;
-			long y_0 = y[nMinus1] & IMASK;
+            if (n == 1)
+            {
+                x[0] = (int)MultiplyMontyNIsOne((uint)x[0], (uint)y[0], (uint)m[0], mDash);
+                return;
+            }
 
-			// 1. a = 0 (Notation: a = (a_{n} a_{n-1} ... a_{0})_{b} )
-			Array.Clear(a, 0, n + 1);
+            uint y0 = (uint)y[n - 1];
 
-			// 2. for i from 0 to (n - 1) do the following:
-			for (int i = n; i > 0; i--)
-			{
-				long x_i = x[i - 1] & IMASK;
+            {
+                ulong xi = (uint)x[n - 1];
 
-				// 2.1 u = ((a[0] + (x[i] * y[0]) * mQuote) mod b
-				long u = ((((a[n] & IMASK) + ((x_i * y_0) & IMASK)) & IMASK) * mQuote) & IMASK;
+                ulong carry = xi * y0;
+                ulong t = (uint)carry * mDash;
 
-				// 2.2 a = (a + x_i * y + u * m) / b
-				long prod1 = x_i * y_0;
-				long prod2 = u * (m[nMinus1] & IMASK);
-				long tmp = (a[n] & IMASK) + (prod1 & IMASK) + (prod2 & IMASK);
-				long carry = (long)((ulong)prod1 >> 32) + (long)((ulong)prod2 >> 32) + (long)((ulong)tmp >> 32);
-				for (int j = nMinus1; j > 0; j--)
-				{
-					prod1 = x_i * (y[j - 1] & IMASK);
-					prod2 = u * (m[j - 1] & IMASK);
-					tmp = (a[j] & IMASK) + (prod1 & IMASK) + (prod2 & IMASK) + (carry & IMASK);
-					carry = (long)((ulong)carry >> 32) + (long)((ulong)prod1 >> 32) +
-						(long)((ulong)prod2 >> 32) + (long)((ulong)tmp >> 32);
-					a[j + 1] = (int)tmp; // division by b
-				}
-				carry += (a[0] & IMASK);
-				a[1] = (int)carry;
-				a[0] = (int)((ulong)carry >> 32); // OJO!!!!!
-			}
+                ulong prod2 = t * (uint)m[n - 1];
+                carry += (uint)prod2;
+                Debug.Assert((uint)carry == 0);
+                carry = (carry >> 32) + (prod2 >> 32);
 
-			// 3. if x >= m the x = x - m
-			if (CompareTo(0, a, 0, m) >= 0)
-			{
-				Subtract(0, a, 0, m);
-			}
+                for (int j = n - 2; j >= 0; --j)
+                {
+                    ulong prod1 = xi * (uint)y[j];
+                    prod2 = t * (uint)m[j];
 
-			// put the result in x
-			Array.Copy(a, 1, x, 0, n);
+                    carry += (prod1 & UIMASK) + (uint)prod2;
+                    a[j + 2] = (int)carry;
+                    carry = (carry >> 32) + (prod1 >> 32) + (prod2 >> 32);
+                }
+
+                a[1] = (int)carry;
+                a[0] = (int)(carry >> 32);
+            }
+
+            for (int i = n - 2; i >= 0; --i)
+            {
+                uint a0 = (uint)a[n];
+                ulong xi = (uint)x[i];
+
+                ulong prod1 = xi * y0;
+                ulong carry = (prod1 & UIMASK) + a0;
+                ulong t = (uint)carry * mDash;
+
+                ulong prod2 = t * (uint)m[n - 1];
+                carry += (uint)prod2;
+                Debug.Assert((uint)carry == 0);
+                carry = (carry >> 32) + (prod1 >> 32) + (prod2 >> 32);
+
+                for (int j = n - 2; j >= 0; --j)
+                {
+                    prod1 = xi * (uint)y[j];
+                    prod2 = t * (uint)m[j];
+
+                    carry += (prod1 & UIMASK) + (uint)prod2 + (uint)a[j + 1];
+                    a[j + 2] = (int)carry;
+                    carry = (carry >> 32) + (prod1 >> 32) + (prod2 >> 32);
+                }
+
+                carry += (uint)a[0];
+                a[1] = (int)carry;
+                a[0] = (int)(carry >> 32);
+            }
+
+            if (!smallMontyModulus && CompareTo(0, a, 0, m) >= 0)
+            {
+                Subtract(0, a, 0, m);
+            }
+
+            Array.Copy(a, 1, x, 0, n);
+        }
+
+        private static void SquareMonty(int[] a, int[] x, int[] m, uint mDash, bool smallMontyModulus)
+            // mDash = -m^(-1) mod b
+        {
+            int n = m.Length;
+
+            if (n == 1)
+            {
+                uint xVal = (uint)x[0];
+                x[0] = (int)MultiplyMontyNIsOne(xVal, xVal, (uint)m[0], mDash);
+                return;
+            }
+
+            ulong x0 = (uint)x[n - 1];
+
+            {
+                ulong carry = x0 * x0;
+                ulong t = (uint)carry * mDash;
+
+                ulong prod2 = t * (uint)m[n - 1];
+                carry += (uint)prod2;
+                Debug.Assert((uint)carry == 0);
+                carry = (carry >> 32) + (prod2 >> 32);
+
+                for (int j = n - 2; j >= 0; --j)
+                {
+                    ulong prod1 = x0 * (uint)x[j];
+                    prod2 = t * (uint)m[j];
+
+                    carry += (prod2 & UIMASK) + ((uint)prod1 << 1);
+                    a[j + 2] = (int)carry;
+                    carry = (carry >> 32) + (prod1 >> 31) + (prod2 >> 32);
+                }
+
+                a[1] = (int)carry;
+                a[0] = (int)(carry >> 32);
+            }
+
+            for (int i = n - 2; i >= 0; --i)
+            {
+                uint a0 = (uint)a[n];
+                ulong t = a0 * mDash;
+
+                ulong carry = t * (uint)m[n - 1] + a0;
+                Debug.Assert((uint)carry == 0);
+                carry >>= 32;
+
+                for (int j = n - 2; j > i; --j)
+                {
+                    carry += t * (uint)m[j] + (uint)a[j + 1];
+                    a[j + 2] = (int)carry;
+                    carry >>= 32;
+                }
+
+                ulong xi = (uint)x[i];
+
+                {
+                    ulong prod1 = xi * xi;
+                    ulong prod2 = t * (uint)m[i];
+
+                    carry += (prod1 & UIMASK) + (uint)prod2 + (uint)a[i + 1];
+                    a[i + 2] = (int)carry;
+                    carry = (carry >> 32) + (prod1 >> 32) + (prod2 >> 32);
+                }
+
+                for (int j = i - 1; j >= 0; --j)
+                {
+                    ulong prod1 = xi * (uint)x[j];
+                    ulong prod2 = t * (uint)m[j];
+
+                    carry += (prod2 & UIMASK) + ((uint)prod1 << 1) + (uint)a[j + 1];
+                    a[j + 2] = (int)carry;
+                    carry = (carry >> 32) + (prod1 >> 31) + (prod2 >> 32);
+                }
+
+                carry += (uint)a[0];
+                a[1] = (int)carry;
+                a[0] = (int)(carry >> 32);
+            }
+
+            if (!smallMontyModulus && CompareTo(0, a, 0, m) >= 0)
+            {
+                Subtract(0, a, 0, m);
+            }
+
+            Array.Copy(a, 1, x, 0, n);
+        }
+
+        private static uint MultiplyMontyNIsOne(uint x, uint y, uint m, uint mDash)
+		{
+            ulong carry = (ulong)x * y;
+            uint t = (uint)carry * mDash;
+            ulong um = m;
+            ulong prod2 = um * t;
+            carry += (uint)prod2;
+            Debug.Assert((uint)carry == 0);
+            carry = (carry >> 32) + (prod2 >> 32);
+            if (carry > um)
+            {
+                carry -= um;
+            }
+            Debug.Assert(carry < um);
+            return (uint)carry;
 		}
 
-		private static uint MultiplyMontyNIsOne(
-			uint	x,
-			uint	y,
-			uint	m,
-			ulong	mQuote)
-		{
-			ulong um = m;
-			ulong prod1 = (ulong)x * (ulong)y;
-			ulong u = (prod1 * mQuote) & UIMASK;
-			ulong prod2 = u * um;
-			ulong tmp = (prod1 & UIMASK) + (prod2 & UIMASK);
-			ulong carry = (prod1 >> 32) + (prod2 >> 32) + (tmp >> 32);
-
-			if (carry > um)
-			{
-				carry -= um;
-			}
-
-			return (uint)(carry & UIMASK);
-		}
-
-		public BigInteger Multiply(
+        public BigInteger Multiply(
 			BigInteger val)
 		{
-			if (sign == 0 || val.sign == 0)
+            if (val == this)
+                return Square();
+
+            if ((sign & val.sign) == 0)
 				return Zero;
 
-			if (val.QuickPow2Check()) // val is power of two
+            if (val.QuickPow2Check()) // val is power of two
 			{
 				BigInteger result = this.ShiftLeft(val.Abs().BitLength - 1);
 				return val.sign > 0 ? result : result.Negate();
@@ -2170,22 +2456,30 @@ namespace Org.BouncyCastle.Math
 				return this.sign > 0 ? result : result.Negate();
 			}
 
-			int resLength = (this.BitLength + val.BitLength) / BitsPerInt + 1;
-			int[] res = new int[resLength];
+            int resLength = magnitude.Length + val.magnitude.Length;
+            int[] res = new int[resLength];
 
-			if (val == this)
-			{
-				Square(res, this.magnitude);
-			}
-			else
-			{
-				Multiply(res, this.magnitude, val.magnitude);
-			}
+            Multiply(res, this.magnitude, val.magnitude);
 
-			return new BigInteger(sign * val.sign, res, true);
+            int resSign = sign ^ val.sign ^ 1;
+            return new BigInteger(resSign, res, true);
 		}
 
-		public BigInteger Negate()
+        public BigInteger Square()
+        {
+            if (sign == 0)
+                return Zero;
+            if (this.QuickPow2Check())
+                return ShiftLeft(Abs().BitLength - 1);
+            int resLength = magnitude.Length << 1;
+            if ((uint)magnitude[0] >> 16 == 0)
+                --resLength;
+            int[] res = new int[resLength];
+            Square(res, magnitude);
+            return new BigInteger(1, res, false);
+        }
+
+        public BigInteger Negate()
 		{
 			if (sign == 0)
 				return this;
@@ -2283,7 +2577,7 @@ namespace Org.BouncyCastle.Math
 		/**
 		 * return x = x % y - done in place (y value preserved)
 		 */
-		private int[] Remainder(
+		private static int[] Remainder(
 			int[] x,
 			int[] y)
 		{
@@ -2305,8 +2599,8 @@ namespace Org.BouncyCastle.Math
 
 			if (xyCmp > 0)
 			{
-				int yBitLength = calcBitLength(yStart, y);
-				int xBitLength = calcBitLength(xStart, x);
+				int yBitLength = CalcBitLength(1, yStart, y);
+				int xBitLength = CalcBitLength(1, xStart, x);
 				int shift = xBitLength - yBitLength;
 
 				int[] c;
@@ -2338,7 +2632,7 @@ namespace Org.BouncyCastle.Math
 								return x;
 						}
 
-						//xBitLength = calcBitLength(xStart, x);
+						//xBitLength = CalcBitLength(xStart, x);
 						xBitLength = 32 * (x.Length - xStart - 1) + BitLen(x[xStart]);
 
 						if (xBitLength <= yBitLength)
@@ -2458,7 +2752,29 @@ namespace Org.BouncyCastle.Math
             return result;
 		}
 
-		/**
+        private BigInteger DivideWords(int w)
+        {
+            Debug.Assert(w >= 0);
+            int n = magnitude.Length;
+            if (w >= n)
+                return Zero;
+            int[] mag = new int[n - w];
+            Array.Copy(magnitude, 0, mag, 0, n - w);
+            return new BigInteger(sign, mag, false);
+        }
+
+        private BigInteger RemainderWords(int w)
+        {
+            Debug.Assert(w >= 0);
+            int n = magnitude.Length;
+            if (w >= n)
+                return this;
+            int[] mag = new int[w];
+            Array.Copy(magnitude, n - w, mag, 0, w);
+            return new BigInteger(sign, mag, false);
+        }
+
+        /**
 		 * do a left shift - this returns a new array.
 		 */
 		private static int[] ShiftLeft(
@@ -2505,6 +2821,19 @@ namespace Org.BouncyCastle.Math
 
 			return newMag;
 		}
+
+        private static int ShiftLeftOneInPlace(int[] x, int carry)
+        {
+            Debug.Assert(carry == 0 || carry == 1);
+            int pos = x.Length;
+            while (--pos >= 0)
+            {
+                uint val = (uint)x[pos];
+                x[pos] = (int)(val << 1) | carry;
+                carry = (int)(val >> 31);
+            }
+            return carry;
+        }
 
 		public BigInteger ShiftLeft(
 			int n)
@@ -2647,7 +2976,7 @@ namespace Org.BouncyCastle.Math
 			return new BigInteger(this.sign, res, false);
 		}
 
-		public int SignValue
+        public int SignValue
 		{
 			get { return sign; }
 		}
@@ -2966,7 +3295,7 @@ namespace Org.BouncyCastle.Math
             sb.Append(s);
         }
 
-        private static BigInteger createUValueOf(
+        private static BigInteger CreateUValueOf(
 			ulong value)
 		{
 			int msw = (int)(value >> 32);
@@ -2989,18 +3318,18 @@ namespace Org.BouncyCastle.Math
 			return Zero;
 		}
 
-		private static BigInteger createValueOf(
+		private static BigInteger CreateValueOf(
 			long value)
 		{
 			if (value < 0)
 			{
 				if (value == long.MinValue)
-					return createValueOf(~value).Not();
+					return CreateValueOf(~value).Not();
 
-				return createValueOf(-value).Negate();
+				return CreateValueOf(-value).Negate();
 			}
 
-			return createUValueOf((ulong)value);
+			return CreateUValueOf((ulong)value);
 		}
 
         public static BigInteger ValueOf(
@@ -3011,45 +3340,46 @@ namespace Org.BouncyCastle.Math
                 return SMALL_CONSTANTS[value];
             }
 
-            return createValueOf(value);
+            return CreateValueOf(value);
 		}
 
-		public int GetLowestSetBit()
+        public int GetLowestSetBit()
 		{
 			if (this.sign == 0)
 				return -1;
 
-			int w = magnitude.Length;
-
-			while (--w > 0)
-			{
-				if (magnitude[w] != 0)
-					break;
-			}
-
-			int word = (int) magnitude[w];
-			Debug.Assert(word != 0);
-
-			int b = (word & 0x0000FFFF) == 0
-				?	(word & 0x00FF0000) == 0
-					?	7
-					:	15
-				:	(word & 0x000000FF) == 0
-					?	23
-					:	31;
-
-			while (b > 0)
-			{
-				if ((word << b) == int.MinValue)
-					break;
-
-				b--;
-			}
-
-			return ((magnitude.Length - w) * 32 - (b + 1));
+            return GetLowestSetBitMaskFirst(-1);
 		}
 
-		public bool TestBit(
+        private int GetLowestSetBitMaskFirst(int firstWordMask)
+        {
+            int w = magnitude.Length, offset = 0;
+
+            uint word = (uint)(magnitude[--w] & firstWordMask);
+            Debug.Assert(magnitude[0] != 0);
+
+            while (word == 0)
+            {
+                word = (uint)magnitude[--w];
+                offset += 32;
+            }
+
+            while ((word & 0xFF) == 0)
+            {
+                word >>= 8;
+                offset += 8;
+            }
+
+            while ((word & 1) == 0)
+            {
+                word >>= 1;
+                ++offset;
+            }
+
+            return offset;
+        }
+
+        public bool TestBit(
 			int n)
 		{
 			if (n < 0)

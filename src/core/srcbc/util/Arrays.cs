@@ -222,5 +222,12 @@ namespace Org.BouncyCastle.Utilities
 				buf[--i] = b;
 			}
 		}
+
+        public static byte[] Copy(byte[] data, int off, int len)
+        {
+            byte[] result = new byte[len];
+            Array.Copy(data, off, result, 0, len);
+            return result;
+        }
 	}
 }

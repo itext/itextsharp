@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.CryptoPro;
@@ -25,6 +24,7 @@ namespace Org.BouncyCastle.Security
 			MD2, MD4, MD5,
 			RIPEMD128, RIPEMD160, RIPEMD256, RIPEMD320,
 			SHA_1, SHA_224, SHA_256, SHA_384, SHA_512,
+            SHA3_224, SHA3_256, SHA3_384, SHA3_512,
 			TIGER,
 			WHIRLPOOL,
 		};
@@ -95,7 +95,7 @@ namespace Org.BouncyCastle.Security
 			if (mechanism == null)
 				throw new System.ArgumentNullException("mechanism");
 
-			mechanism = mechanism.ToUpper(CultureInfo.InvariantCulture);
+			mechanism = Platform.ToUpperInvariant(mechanism);
 			string aliased = (string) algorithms[mechanism];
 
 			if (aliased != null)
@@ -118,7 +118,7 @@ namespace Org.BouncyCastle.Security
         public static IDigest GetDigest(
 			string algorithm)
         {
-			string upper = algorithm.ToUpper(CultureInfo.InvariantCulture);
+			string upper = Platform.ToUpperInvariant(algorithm);
             string mechanism = (string) algorithms[upper];
 
 			if (mechanism == null)
@@ -146,8 +146,12 @@ namespace Org.BouncyCastle.Security
 					case DigestAlgorithm.SHA_256:	return new Sha256Digest();
 					case DigestAlgorithm.SHA_384:	return new Sha384Digest();
 					case DigestAlgorithm.SHA_512:	return new Sha512Digest();
-					case DigestAlgorithm.TIGER:		return new TigerDigest();
-					case DigestAlgorithm.WHIRLPOOL:	return new WhirlpoolDigest();
+                    case DigestAlgorithm.SHA3_224:  return new Sha3Digest(224);
+                    case DigestAlgorithm.SHA3_256:  return new Sha3Digest(256);
+                    case DigestAlgorithm.SHA3_384:  return new Sha3Digest(384);
+                    case DigestAlgorithm.SHA3_512:  return new Sha3Digest(512);
+                    case DigestAlgorithm.TIGER:     return new TigerDigest();
+					case DigestAlgorithm.WHIRLPOOL: return new WhirlpoolDigest();
 				}
 			}
 			catch (ArgumentException)

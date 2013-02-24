@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Kisa;
@@ -57,8 +56,8 @@ namespace Org.BouncyCastle.Security
 		public static IWrapper GetWrapper(
 			string algorithm)
 		{
-			string upper = algorithm.ToUpper(CultureInfo.InvariantCulture);
-			string mechanism = (string) algorithms[upper];
+			string upper = Platform.ToUpperInvariant(algorithm);
+            string mechanism = (string)algorithms[upper];
 
 			if (mechanism == null)
 			{

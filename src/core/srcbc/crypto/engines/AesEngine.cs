@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 using Org.BouncyCastle.Crypto.Parameters;
 using Org.BouncyCastle.Crypto.Utilities;
@@ -226,9 +227,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 			0x4257b8d0
 		};
 
-		private uint Shift(
-			uint	r,
-			int		shift)
+		private static uint Shift(uint r, int shift)
 		{
 			return (r >> shift) | (r << (32 - shift));
 		}
@@ -239,8 +238,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 		private const uint m2 = 0x7f7f7f7f;
 		private const uint m3 = 0x0000001b;
 
-		private uint FFmulX(
-			uint x)
+		private static uint FFmulX(uint x)
 		{
 			return ((x & m2) << 1) ^ (((x & m1) >> 7) * m3);
 		}
@@ -255,8 +253,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 
 		*/
 
-		private uint Inv_Mcol(
-			uint x)
+		private static uint Inv_Mcol(uint x)
 		{
 			uint f2 = FFmulX(x);
 			uint f4 = FFmulX(f2);
@@ -266,8 +263,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 			return f2 ^ f4 ^ f8 ^ Shift(f2 ^ f9, 8) ^ Shift(f4 ^ f9, 16) ^ Shift(f9, 24);
 		}
 
-		private uint SubWord(
-			uint x)
+		private static uint SubWord(uint x)
 		{
 			return (uint)S[x&255]
 				| (((uint)S[(x>>8)&255]) << 8)
@@ -281,7 +277,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 		* AES specified a fixed block size of 128 bits and key sizes 128/192/256 bits
 		* This code is written assuming those are the only possible values
 		*/
-		private uint[,] GenerateWorkingKey(
+		private uint[][] GenerateWorkingKey(
 			byte[]	key,
 			bool	forEncryption)
 		{
@@ -292,7 +288,12 @@ namespace Org.BouncyCastle.Crypto.Engines
 				throw new ArgumentException("Key length not 128/192/256 bits.");
 
 			ROUNDS = KC + 6;  // This is not always true for the generalized Rijndael that allows larger block sizes
-			uint[,] W = new uint[ROUNDS+1, 4];   // 4 words in a block
+
+            uint[][] W = new uint[ROUNDS + 1][]; // 4 words in a block
+            for (int i = 0; i <= ROUNDS; ++i)
+            {
+                W[i] = new uint[4];
+            }
 
 			//
 			// copy the key into the round key array
@@ -301,7 +302,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 			t = 0;
 			for (int i = 0; i < key.Length; t++)
 			{
-				W[t >> 2, t & 3] = Pack.LE_To_UInt32(key, i);
+				W[t >> 2][t & 3] = Pack.LE_To_UInt32(key, i);
 				i+=4;
 			}
 
@@ -312,7 +313,7 @@ namespace Org.BouncyCastle.Crypto.Engines
 			int k = (ROUNDS + 1) << 2;
 			for (int i = KC; (i < k); i++)
 			{
-				uint temp = W[(i-1)>>2, (i-1)&3];
+				uint temp = W[(i-1)>>2][(i-1)&3];
 				if ((i % KC) == 0) 
 				{
 					temp = SubWord(Shift(temp, 8)) ^ rcon[(i / KC)-1];
@@ -322,27 +323,28 @@ namespace Org.BouncyCastle.Crypto.Engines
 					temp = SubWord(temp);
 				}
 
-				W[i>>2, i&3] = W[(i - KC)>>2, (i-KC)&3] ^ temp;
+				W[i>>2][i&3] = W[(i - KC)>>2][(i-KC)&3] ^ temp;
 			}
 
 			if (!forEncryption)
 			{
 				for (int j = 1; j < ROUNDS; j++)
 				{
-					for (int i = 0; i < 4; i++)
-					{
-						W[j, i] = Inv_Mcol(W[j, i]);
-					}
-				}
+                    uint[] w = W[j];
+                    for (int i = 0; i < 4; i++)
+                    {
+                        w[i] = Inv_Mcol(w[i]);
+                    }
+                }
 			}
 
 			return W;
 		}
 
-		private int		ROUNDS;
-		private uint[,]	WorkingKey;
-		private uint	C0, C1, C2, C3;
-		private bool	forEncryption;
+		private int ROUNDS;
+		private uint[][] WorkingKey;
+		private uint C0, C1, C2, C3;
+		private bool forEncryption;
 
 		private const int BLOCK_SIZE = 16;
 
@@ -415,11 +417,11 @@ namespace Org.BouncyCastle.Crypto.Engines
 
 			if (forEncryption)
 			{
-				EncryptBlock(WorkingKey);
+				EncryptBlock();
 			}
 			else
 			{
-				DecryptBlock(WorkingKey);
+				DecryptBlock();
 			}
 
 			PackBlock(output, outOff);
@@ -451,75 +453,94 @@ namespace Org.BouncyCastle.Crypto.Engines
 			Pack.UInt32_To_LE(C3, bytes, off + 12);
 		}
 
-		private void EncryptBlock(
-			uint[,] KW)
+		private void EncryptBlock()
 		{
-			uint r, r0, r1, r2, r3;
+            uint[][] KW = WorkingKey;
 
-			C0 ^= KW[0, 0];
-			C1 ^= KW[0, 1];
-			C2 ^= KW[0, 2];
-			C3 ^= KW[0, 3];
+            int r = 0;
+            uint[] kw = KW[r];
 
-			for (r = 1; r < ROUNDS - 1;)
+            C0 ^= kw[0];
+            C1 ^= kw[1];
+            C2 ^= kw[2];
+            C3 ^= kw[3];
+
+            uint r0, r1, r2, r3;
+
+            while (r < (ROUNDS - 2))
 			{
-				r0 = T0[C0&255] ^ Shift(T0[(C1>>8)&255], 24) ^ Shift(T0[(C2>>16)&255],16) ^ Shift(T0[(C3>>24)&255],8) ^ KW[r,0];
-				r1 = T0[C1&255] ^ Shift(T0[(C2>>8)&255], 24) ^ Shift(T0[(C3>>16)&255], 16) ^ Shift(T0[(C0>>24)&255], 8) ^ KW[r,1];
-				r2 = T0[C2&255] ^ Shift(T0[(C3>>8)&255], 24) ^ Shift(T0[(C0>>16)&255], 16) ^ Shift(T0[(C1>>24)&255], 8) ^ KW[r,2];
-				r3 = T0[C3&255] ^ Shift(T0[(C0>>8)&255], 24) ^ Shift(T0[(C1>>16)&255], 16) ^ Shift(T0[(C2>>24)&255], 8) ^ KW[r++,3];
-				C0 = T0[r0&255] ^ Shift(T0[(r1>>8)&255], 24) ^ Shift(T0[(r2>>16)&255], 16) ^ Shift(T0[(r3>>24)&255], 8) ^ KW[r,0];
-				C1 = T0[r1&255] ^ Shift(T0[(r2>>8)&255], 24) ^ Shift(T0[(r3>>16)&255], 16) ^ Shift(T0[(r0>>24)&255], 8) ^ KW[r,1];
-				C2 = T0[r2&255] ^ Shift(T0[(r3>>8)&255], 24) ^ Shift(T0[(r0>>16)&255], 16) ^ Shift(T0[(r1>>24)&255], 8) ^ KW[r,2];
-				C3 = T0[r3&255] ^ Shift(T0[(r0>>8)&255], 24) ^ Shift(T0[(r1>>16)&255], 16) ^ Shift(T0[(r2>>24)&255], 8) ^ KW[r++,3];
+                kw = KW[++r];
+                r0 = T0[C0 & 255] ^ Shift(T0[(C1 >> 8) & 255], 24) ^ Shift(T0[(C2 >> 16) & 255], 16) ^ Shift(T0[(C3 >> 24) & 255], 8) ^ kw[0];
+                r1 = T0[C1 & 255] ^ Shift(T0[(C2 >> 8) & 255], 24) ^ Shift(T0[(C3 >> 16) & 255], 16) ^ Shift(T0[(C0 >> 24) & 255], 8) ^ kw[1];
+                r2 = T0[C2 & 255] ^ Shift(T0[(C3 >> 8) & 255], 24) ^ Shift(T0[(C0 >> 16) & 255], 16) ^ Shift(T0[(C1 >> 24) & 255], 8) ^ kw[2];
+                r3 = T0[C3 & 255] ^ Shift(T0[(C0 >> 8) & 255], 24) ^ Shift(T0[(C1 >> 16) & 255], 16) ^ Shift(T0[(C2 >> 24) & 255], 8) ^ kw[3];
+                kw = KW[++r];
+                C0 = T0[r0 & 255] ^ Shift(T0[(r1 >> 8) & 255], 24) ^ Shift(T0[(r2 >> 16) & 255], 16) ^ Shift(T0[(r3 >> 24) & 255], 8) ^ kw[0];
+                C1 = T0[r1 & 255] ^ Shift(T0[(r2 >> 8) & 255], 24) ^ Shift(T0[(r3 >> 16) & 255], 16) ^ Shift(T0[(r0 >> 24) & 255], 8) ^ kw[1];
+                C2 = T0[r2 & 255] ^ Shift(T0[(r3 >> 8) & 255], 24) ^ Shift(T0[(r0 >> 16) & 255], 16) ^ Shift(T0[(r1 >> 24) & 255], 8) ^ kw[2];
+                C3 = T0[r3 & 255] ^ Shift(T0[(r0 >> 8) & 255], 24) ^ Shift(T0[(r1 >> 16) & 255], 16) ^ Shift(T0[(r2 >> 24) & 255], 8) ^ kw[3];
 			}
 
-			r0 = T0[C0&255] ^ Shift(T0[(C1>>8)&255], 24) ^ Shift(T0[(C2>>16)&255], 16) ^ Shift(T0[(C3>>24)&255], 8) ^ KW[r,0];
-			r1 = T0[C1&255] ^ Shift(T0[(C2>>8)&255], 24) ^ Shift(T0[(C3>>16)&255], 16) ^ Shift(T0[(C0>>24)&255], 8) ^ KW[r,1];
-			r2 = T0[C2&255] ^ Shift(T0[(C3>>8)&255], 24) ^ Shift(T0[(C0>>16)&255], 16) ^ Shift(T0[(C1>>24)&255], 8) ^ KW[r,2];
-			r3 = T0[C3&255] ^ Shift(T0[(C0>>8)&255], 24) ^ Shift(T0[(C1>>16)&255], 16) ^ Shift(T0[(C2>>24)&255], 8) ^ KW[r++,3];
+            kw = KW[++r];
+            r0 = T0[C0 & 255] ^ Shift(T0[(C1 >> 8) & 255], 24) ^ Shift(T0[(C2 >> 16) & 255], 16) ^ Shift(T0[(C3 >> 24) & 255], 8) ^ kw[0];
+            r1 = T0[C1 & 255] ^ Shift(T0[(C2 >> 8) & 255], 24) ^ Shift(T0[(C3 >> 16) & 255], 16) ^ Shift(T0[(C0 >> 24) & 255], 8) ^ kw[1];
+            r2 = T0[C2 & 255] ^ Shift(T0[(C3 >> 8) & 255], 24) ^ Shift(T0[(C0 >> 16) & 255], 16) ^ Shift(T0[(C1 >> 24) & 255], 8) ^ kw[2];
+            r3 = T0[C3 & 255] ^ Shift(T0[(C0 >> 8) & 255], 24) ^ Shift(T0[(C1 >> 16) & 255], 16) ^ Shift(T0[(C2 >> 24) & 255], 8) ^ kw[3];
 
 			// the final round's table is a simple function of S so we don't use a whole other four tables for it
 
-			C0 = (uint)S[r0&255] ^ (((uint)S[(r1>>8)&255])<<8) ^ (((uint)S[(r2>>16)&255])<<16) ^ (((uint)S[(r3>>24)&255])<<24) ^ KW[r,0];
-			C1 = (uint)S[r1&255] ^ (((uint)S[(r2>>8)&255])<<8) ^ (((uint)S[(r3>>16)&255])<<16) ^ (((uint)S[(r0>>24)&255])<<24) ^ KW[r,1];
-			C2 = (uint)S[r2&255] ^ (((uint)S[(r3>>8)&255])<<8) ^ (((uint)S[(r0>>16)&255])<<16) ^ (((uint)S[(r1>>24)&255])<<24) ^ KW[r,2];
-			C3 = (uint)S[r3&255] ^ (((uint)S[(r0>>8)&255])<<8) ^ (((uint)S[(r1>>16)&255])<<16) ^ (((uint)S[(r2>>24)&255])<<24) ^ KW[r,3];
-		}
+            kw = KW[++r];
+            C0 = (uint)S[r0 & 255] ^ (((uint)S[(r1 >> 8) & 255]) << 8) ^ (((uint)S[(r2 >> 16) & 255]) << 16) ^ (((uint)S[(r3 >> 24) & 255]) << 24) ^ kw[0];
+            C1 = (uint)S[r1 & 255] ^ (((uint)S[(r2 >> 8) & 255]) << 8) ^ (((uint)S[(r3 >> 16) & 255]) << 16) ^ (((uint)S[(r0 >> 24) & 255]) << 24) ^ kw[1];
+            C2 = (uint)S[r2 & 255] ^ (((uint)S[(r3 >> 8) & 255]) << 8) ^ (((uint)S[(r0 >> 16) & 255]) << 16) ^ (((uint)S[(r1 >> 24) & 255]) << 24) ^ kw[2];
+            C3 = (uint)S[r3 & 255] ^ (((uint)S[(r0 >> 8) & 255]) << 8) ^ (((uint)S[(r1 >> 16) & 255]) << 16) ^ (((uint)S[(r2 >> 24) & 255]) << 24) ^ kw[3];
 
-		private void DecryptBlock(
-			uint[,] KW)
+            Debug.Assert(r == ROUNDS);
+        }
+
+		private void DecryptBlock()
 		{
-			int r;
-			uint r0, r1, r2, r3;
+            uint[][] KW = WorkingKey;
 
-			C0 ^= KW[ROUNDS,0];
-			C1 ^= KW[ROUNDS,1];
-			C2 ^= KW[ROUNDS,2];
-			C3 ^= KW[ROUNDS,3];
+            int r = ROUNDS;
+            uint[] kw = KW[r];
 
-			for (r = ROUNDS-1; r>1;)
+            C0 ^= kw[0];
+            C1 ^= kw[1];
+            C2 ^= kw[2];
+            C3 ^= kw[3];
+
+            uint r0, r1, r2, r3;
+
+            while (r > 2)
 			{
-				r0 = Tinv0[C0&255] ^ Shift(Tinv0[(C3>>8)&255], 24) ^ Shift(Tinv0[(C2>>16)&255], 16) ^ Shift(Tinv0[(C1>>24)&255], 8) ^ KW[r,0];
-				r1 = Tinv0[C1&255] ^ Shift(Tinv0[(C0>>8)&255], 24) ^ Shift(Tinv0[(C3>>16)&255], 16) ^ Shift(Tinv0[(C2>>24)&255], 8) ^ KW[r,1];
-				r2 = Tinv0[C2&255] ^ Shift(Tinv0[(C1>>8)&255], 24) ^ Shift(Tinv0[(C0>>16)&255], 16) ^ Shift(Tinv0[(C3>>24)&255], 8) ^ KW[r,2];
-				r3 = Tinv0[C3&255] ^ Shift(Tinv0[(C2>>8)&255], 24) ^ Shift(Tinv0[(C1>>16)&255], 16) ^ Shift(Tinv0[(C0>>24)&255], 8) ^ KW[r--,3];
-				C0 = Tinv0[r0&255] ^ Shift(Tinv0[(r3>>8)&255], 24) ^ Shift(Tinv0[(r2>>16)&255], 16) ^ Shift(Tinv0[(r1>>24)&255], 8) ^ KW[r,0];
-				C1 = Tinv0[r1&255] ^ Shift(Tinv0[(r0>>8)&255], 24) ^ Shift(Tinv0[(r3>>16)&255], 16) ^ Shift(Tinv0[(r2>>24)&255], 8) ^ KW[r,1];
-				C2 = Tinv0[r2&255] ^ Shift(Tinv0[(r1>>8)&255], 24) ^ Shift(Tinv0[(r0>>16)&255], 16) ^ Shift(Tinv0[(r3>>24)&255], 8) ^ KW[r,2];
-				C3 = Tinv0[r3&255] ^ Shift(Tinv0[(r2>>8)&255], 24) ^ Shift(Tinv0[(r1>>16)&255], 16) ^ Shift(Tinv0[(r0>>24)&255], 8) ^ KW[r--,3];
+                kw = KW[--r];
+                r0 = Tinv0[C0 & 255] ^ Shift(Tinv0[(C3 >> 8) & 255], 24) ^ Shift(Tinv0[(C2 >> 16) & 255], 16) ^ Shift(Tinv0[(C1 >> 24) & 255], 8) ^ kw[0];
+                r1 = Tinv0[C1 & 255] ^ Shift(Tinv0[(C0 >> 8) & 255], 24) ^ Shift(Tinv0[(C3 >> 16) & 255], 16) ^ Shift(Tinv0[(C2 >> 24) & 255], 8) ^ kw[1];
+                r2 = Tinv0[C2 & 255] ^ Shift(Tinv0[(C1 >> 8) & 255], 24) ^ Shift(Tinv0[(C0 >> 16) & 255], 16) ^ Shift(Tinv0[(C3 >> 24) & 255], 8) ^ kw[2];
+                r3 = Tinv0[C3 & 255] ^ Shift(Tinv0[(C2 >> 8) & 255], 24) ^ Shift(Tinv0[(C1 >> 16) & 255], 16) ^ Shift(Tinv0[(C0 >> 24) & 255], 8) ^ kw[3];
+                kw = KW[--r];
+                C0 = Tinv0[r0 & 255] ^ Shift(Tinv0[(r3 >> 8) & 255], 24) ^ Shift(Tinv0[(r2 >> 16) & 255], 16) ^ Shift(Tinv0[(r1 >> 24) & 255], 8) ^ kw[0];
+                C1 = Tinv0[r1 & 255] ^ Shift(Tinv0[(r0 >> 8) & 255], 24) ^ Shift(Tinv0[(r3 >> 16) & 255], 16) ^ Shift(Tinv0[(r2 >> 24) & 255], 8) ^ kw[1];
+                C2 = Tinv0[r2 & 255] ^ Shift(Tinv0[(r1 >> 8) & 255], 24) ^ Shift(Tinv0[(r0 >> 16) & 255], 16) ^ Shift(Tinv0[(r3 >> 24) & 255], 8) ^ kw[2];
+                C3 = Tinv0[r3 & 255] ^ Shift(Tinv0[(r2 >> 8) & 255], 24) ^ Shift(Tinv0[(r1 >> 16) & 255], 16) ^ Shift(Tinv0[(r0 >> 24) & 255], 8) ^ kw[3];
 			}
 
-			r0 = Tinv0[C0&255] ^ Shift(Tinv0[(C3>>8)&255], 24) ^ Shift(Tinv0[(C2>>16)&255], 16) ^ Shift(Tinv0[(C1>>24)&255], 8) ^ KW[r,0];
-			r1 = Tinv0[C1&255] ^ Shift(Tinv0[(C0>>8)&255], 24) ^ Shift(Tinv0[(C3>>16)&255], 16) ^ Shift(Tinv0[(C2>>24)&255], 8) ^ KW[r,1];
-			r2 = Tinv0[C2&255] ^ Shift(Tinv0[(C1>>8)&255], 24) ^ Shift(Tinv0[(C0>>16)&255], 16) ^ Shift(Tinv0[(C3>>24)&255], 8) ^ KW[r,2];
-			r3 = Tinv0[C3&255] ^ Shift(Tinv0[(C2>>8)&255], 24) ^ Shift(Tinv0[(C1>>16)&255], 16) ^ Shift(Tinv0[(C0>>24)&255], 8) ^ KW[r,3];
+            kw = KW[--r];
+            r0 = Tinv0[C0 & 255] ^ Shift(Tinv0[(C3 >> 8) & 255], 24) ^ Shift(Tinv0[(C2 >> 16) & 255], 16) ^ Shift(Tinv0[(C1 >> 24) & 255], 8) ^ kw[0];
+            r1 = Tinv0[C1 & 255] ^ Shift(Tinv0[(C0 >> 8) & 255], 24) ^ Shift(Tinv0[(C3 >> 16) & 255], 16) ^ Shift(Tinv0[(C2 >> 24) & 255], 8) ^ kw[1];
+            r2 = Tinv0[C2 & 255] ^ Shift(Tinv0[(C1 >> 8) & 255], 24) ^ Shift(Tinv0[(C0 >> 16) & 255], 16) ^ Shift(Tinv0[(C3 >> 24) & 255], 8) ^ kw[2];
+            r3 = Tinv0[C3 & 255] ^ Shift(Tinv0[(C2 >> 8) & 255], 24) ^ Shift(Tinv0[(C1 >> 16) & 255], 16) ^ Shift(Tinv0[(C0 >> 24) & 255], 8) ^ kw[3];
 
 			// the final round's table is a simple function of Si so we don't use a whole other four tables for it
 
-			C0 = (uint)Si[r0&255] ^ (((uint)Si[(r3>>8)&255])<<8) ^ (((uint)Si[(r2>>16)&255])<<16) ^ (((uint)Si[(r1>>24)&255])<<24) ^ KW[0,0];
-			C1 = (uint)Si[r1&255] ^ (((uint)Si[(r0>>8)&255])<<8) ^ (((uint)Si[(r3>>16)&255])<<16) ^ (((uint)Si[(r2>>24)&255])<<24) ^ KW[0,1];
-			C2 = (uint)Si[r2&255] ^ (((uint)Si[(r1>>8)&255])<<8) ^ (((uint)Si[(r0>>16)&255])<<16) ^ (((uint)Si[(r3>>24)&255])<<24) ^ KW[0,2];
-			C3 = (uint)Si[r3&255] ^ (((uint)Si[(r2>>8)&255])<<8) ^ (((uint)Si[(r1>>16)&255])<<16) ^ (((uint)Si[(r0>>24)&255])<<24) ^ KW[0,3];
-		}
+            kw = KW[--r];
+            C0 = (uint)Si[r0 & 255] ^ (((uint)Si[(r3 >> 8) & 255]) << 8) ^ (((uint)Si[(r2 >> 16) & 255]) << 16) ^ (((uint)Si[(r1 >> 24) & 255]) << 24) ^ kw[0];
+            C1 = (uint)Si[r1 & 255] ^ (((uint)Si[(r0 >> 8) & 255]) << 8) ^ (((uint)Si[(r3 >> 16) & 255]) << 16) ^ (((uint)Si[(r2 >> 24) & 255]) << 24) ^ kw[1];
+            C2 = (uint)Si[r2 & 255] ^ (((uint)Si[(r1 >> 8) & 255]) << 8) ^ (((uint)Si[(r0 >> 16) & 255]) << 16) ^ (((uint)Si[(r3 >> 24) & 255]) << 24) ^ kw[2];
+            C3 = (uint)Si[r3 & 255] ^ (((uint)Si[(r2 >> 8) & 255]) << 8) ^ (((uint)Si[(r1 >> 16) & 255]) << 16) ^ (((uint)Si[(r0 >> 24) & 255]) << 24) ^ kw[3];
+
+            Debug.Assert(r == 0);
+        }
 	}
 }

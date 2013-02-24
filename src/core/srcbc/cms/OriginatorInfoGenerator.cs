@@ -3,6 +3,7 @@ using System.Collections;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Cms;
+using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.X509.Store;
 
@@ -15,7 +16,7 @@ namespace Org.BouncyCastle.Cms
 
         public OriginatorInfoGenerator(X509Certificate origCert)
         {
-            this.origCerts = new ArrayList(1);
+            this.origCerts = Platform.CreateArrayList(1);
             this.origCrls = null;
             origCerts.Add(origCert.CertificateStructure);
         }

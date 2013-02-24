@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.CryptoPro;
@@ -132,7 +131,11 @@ namespace Org.BouncyCastle.Security
 				PkcsObjectIdentifiers.IdHmacWithSha384);
 			AddHMacKeyGenerator("SHA512",
 				PkcsObjectIdentifiers.IdHmacWithSha512);
-			AddHMacKeyGenerator("RIPEMD128");
+            AddHMacKeyGenerator("SHA3-224");
+            AddHMacKeyGenerator("SHA3-256");
+            AddHMacKeyGenerator("SHA3-384");
+            AddHMacKeyGenerator("SHA3-512");
+            AddHMacKeyGenerator("RIPEMD128");
 			AddHMacKeyGenerator("RIPEMD160",
 				IanaObjectIdentifiers.HmacRipeMD160);
 			AddHMacKeyGenerator("TIGER",
@@ -232,14 +235,14 @@ namespace Org.BouncyCastle.Security
 		internal static string GetCanonicalKeyGeneratorAlgorithm(
 			string algorithm)
 		{
-			return (string) kgAlgorithms[algorithm.ToUpper(CultureInfo.InvariantCulture)];
+			return (string) kgAlgorithms[Platform.ToUpperInvariant(algorithm)];
 		}
 
 		// TODO Consider making this public
 		internal static string GetCanonicalKeyPairGeneratorAlgorithm(
 			string algorithm)
 		{
-			return (string) kpgAlgorithms[algorithm.ToUpper(CultureInfo.InvariantCulture)];
+            return (string)kpgAlgorithms[Platform.ToUpperInvariant(algorithm)];
 		}
 
 		public static CipherKeyGenerator GetKeyGenerator(
