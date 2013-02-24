@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.CryptoPro;
@@ -143,7 +142,7 @@ namespace Org.BouncyCastle.Security
 		public static string GetCanonicalAlgorithmName(
 			string algorithm)
 		{
-			return (string) algorithms[algorithm.ToUpper(CultureInfo.InvariantCulture)];
+			return (string) algorithms[Platform.ToUpperInvariant(algorithm)];
 		}
 
 		public static KeyParameter CreateKeyParameter(

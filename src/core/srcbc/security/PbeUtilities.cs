@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.BC;
@@ -245,7 +244,7 @@ namespace Org.BouncyCastle.Security
 		public static DerObjectIdentifier GetObjectIdentifier(
 			string mechanism)
 		{
-			mechanism = (string) algorithms[mechanism.ToUpper(CultureInfo.InvariantCulture)];
+			mechanism = (string) algorithms[Platform.ToUpperInvariant(mechanism)];
 			if (mechanism != null)
 			{
 				return (DerObjectIdentifier)oids[mechanism];
@@ -261,7 +260,7 @@ namespace Org.BouncyCastle.Security
 		public static bool IsPkcs12(
 			string algorithm)
 		{
-			string mechanism = (string) algorithms[algorithm.ToUpper(CultureInfo.InvariantCulture)];
+            string mechanism = (string)algorithms[Platform.ToUpperInvariant(algorithm)];
 
 			return mechanism != null && Pkcs12.Equals(algorithmType[mechanism]);
 		}
@@ -269,7 +268,7 @@ namespace Org.BouncyCastle.Security
 		public static bool IsPkcs5Scheme1(
 			string algorithm)
 		{
-			string mechanism = (string)algorithms[algorithm.ToUpper(CultureInfo.InvariantCulture)];
+            string mechanism = (string)algorithms[Platform.ToUpperInvariant(algorithm)];
 
 			return mechanism != null && Pkcs5S1.Equals(algorithmType[mechanism]);
 		}
@@ -277,7 +276,7 @@ namespace Org.BouncyCastle.Security
 		public static bool IsPkcs5Scheme2(
 			string algorithm)
 		{
-			string mechanism = (string)algorithms[algorithm.ToUpper(CultureInfo.InvariantCulture)];
+            string mechanism = (string)algorithms[Platform.ToUpperInvariant(algorithm)];
 
 			return mechanism != null && Pkcs5S2.Equals(algorithmType[mechanism]);
 		}
@@ -285,7 +284,7 @@ namespace Org.BouncyCastle.Security
 		public static bool IsOpenSsl(
 			string algorithm)
 		{
-			string mechanism = (string)algorithms[algorithm.ToUpper(CultureInfo.InvariantCulture)];
+            string mechanism = (string)algorithms[Platform.ToUpperInvariant(algorithm)];
 
 			return mechanism != null && OpenSsl.Equals(algorithmType[mechanism]);
 		}
@@ -293,7 +292,7 @@ namespace Org.BouncyCastle.Security
 		public static bool IsPbeAlgorithm(
 			string algorithm)
 		{
-			string mechanism = (string)algorithms[algorithm.ToUpper(CultureInfo.InvariantCulture)];
+            string mechanism = (string)algorithms[Platform.ToUpperInvariant(algorithm)];
 
 			return mechanism != null && algorithmType[mechanism] != null;
 		}
@@ -371,7 +370,7 @@ namespace Org.BouncyCastle.Security
 			bool			wrongPkcs12Zero,
 			Asn1Encodable   pbeParameters)
 		{
-			string	mechanism = (string) algorithms[algorithm.ToUpper(CultureInfo.InvariantCulture)];
+            string mechanism = (string)algorithms[Platform.ToUpperInvariant(algorithm)];
 
 			byte[] keyBytes = null;
 			byte[] salt = null;
@@ -593,7 +592,7 @@ namespace Org.BouncyCastle.Security
 		public static object CreateEngine(
 			string algorithm)
 		{
-			string mechanism = (string)algorithms[algorithm.ToUpper(CultureInfo.InvariantCulture)];
+            string mechanism = (string)algorithms[Platform.ToUpperInvariant(algorithm)];
 
 			if (mechanism.StartsWith("PBEwithHmac"))
 			{

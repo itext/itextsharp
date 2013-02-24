@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Iana;
@@ -79,7 +78,7 @@ namespace Org.BouncyCastle.Security
 //		public static DerObjectIdentifier GetObjectIdentifier(
 //			string mechanism)
 //		{
-//			mechanism = (string) algorithms[mechanism.ToUpper(CultureInfo.InvariantCulture)];
+//			mechanism = (string) algorithms[Platform.ToUpperInvariant(mechanism)];
 //
 //			if (mechanism != null)
 //			{
@@ -103,9 +102,9 @@ namespace Org.BouncyCastle.Security
 		public static IMac GetMac(
 			string algorithm)
 		{
-			string upper = algorithm.ToUpper(CultureInfo.InvariantCulture);
+			string upper = Platform.ToUpperInvariant(algorithm);
 
-			string mechanism = (string) algorithms[upper];
+            string mechanism = (string) algorithms[upper];
 
 			if (mechanism == null)
 			{

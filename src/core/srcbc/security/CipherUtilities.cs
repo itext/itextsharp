@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.CryptoPro;
@@ -220,7 +219,7 @@ namespace Org.BouncyCastle.Security
 			if (mechanism == null)
 				throw new ArgumentNullException("mechanism");
 
-			mechanism = mechanism.ToUpper(CultureInfo.InvariantCulture);
+            mechanism = Platform.ToUpperInvariant(mechanism);
 			string aliased = (string) algorithms[mechanism];
 
 			if (aliased != null)
@@ -246,7 +245,7 @@ namespace Org.BouncyCastle.Security
 			if (algorithm == null)
 				throw new ArgumentNullException("algorithm");
 
-			algorithm = algorithm.ToUpper(CultureInfo.InvariantCulture);
+            algorithm = Platform.ToUpperInvariant(algorithm);
 
 			string aliased = (string) algorithms[algorithm];
 

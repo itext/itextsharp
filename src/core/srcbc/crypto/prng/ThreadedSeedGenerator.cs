@@ -34,6 +34,9 @@ namespace Org.BouncyCastle.Crypto.Prng
 				int		numBytes,
 				bool	fast)
 			{
+#if SILVERLIGHT
+                return DoGenerateSeed(numBytes, fast);
+#else
                 ThreadPriority originalPriority = Thread.CurrentThread.Priority;
                 try
                 {
@@ -44,6 +47,7 @@ namespace Org.BouncyCastle.Crypto.Prng
                 {
                     Thread.CurrentThread.Priority = originalPriority;
                 }
+#endif
             }
 
             private byte[] DoGenerateSeed(

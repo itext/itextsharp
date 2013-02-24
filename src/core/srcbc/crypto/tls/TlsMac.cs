@@ -86,21 +86,57 @@ namespace Org.BouncyCastle.Crypto.Tls
 		* @param len     The length of the message.
 		* @return A new byte-buffer containing the mac value.
 		*/
-		public virtual byte[] CalculateMac(
-			ContentType	type,
-			byte[]		message,
-			int			offset,
-			int			len)
+		public virtual byte[] CalculateMac(ContentType type, byte[] message, int offset, int len)
 		{
-			byte[] macHeader = new byte[13];
+            //bool isTls = context.ServerVersion.FullVersion >= ProtocolVersion.TLSv10.FullVersion;
+            bool isTls = true;
+
+            byte[] macHeader = new byte[isTls ? 13 : 11];
 			TlsUtilities.WriteUint64(seqNo++, macHeader, 0);
 			TlsUtilities.WriteUint8((byte)type, macHeader, 8);
-			TlsUtilities.WriteVersion(macHeader, 9);
+            if (isTls)
+            {
+                TlsUtilities.WriteVersion(macHeader, 9);
+            }
 			TlsUtilities.WriteUint16(len, macHeader, 11);
 
-			mac.BlockUpdate(macHeader, 0, macHeader.Length);
+            mac.BlockUpdate(macHeader, 0, macHeader.Length);
 			mac.BlockUpdate(message, offset, len);
 			return MacUtilities.DoFinal(mac);
 		}
+
+        public virtual byte[] CalculateMacConstantTime(ContentType type, byte[] message, int offset, int len,
+            int fullLength, byte[] dummyData)
+        {
+            // Actual MAC only calculated on 'len' bytes
+            byte[] result = CalculateMac(type, message, offset, len);
+
+            //bool isTls = context.ServerVersion.FullVersion >= ProtocolVersion.TLSv10.FullVersion;
+            bool isTls = true;
+
+            // ...but ensure a constant number of complete digest blocks are processed (per 'fullLength')
+            if (isTls)
+            {
+                // TODO Currently all TLS digests use a block size of 64, a suffix (length field) of 8, and padding (1+)
+                int db = 64, ds = 8;
+
+                int L1 = 13 + fullLength;
+                int L2 = 13 + len;
+
+                // How many extra full blocks do we need to calculate?
+                int extra = ((L1 + ds) / db) - ((L2 + ds) / db);
+
+                while (--extra >= 0)
+                {
+                    mac.BlockUpdate(dummyData, 0, db);
+                }
+
+                // One more byte in case the implementation is "lazy" about processing blocks
+                mac.Update(dummyData[0]);
+                mac.Reset();
+            }
+
+            return result;
+        }
 	}
 }

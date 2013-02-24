@@ -22,6 +22,8 @@ namespace Org.BouncyCastle.Crypto.Modes.Gcm
                 return;
             }
 
+            this.H = Arrays.Clone(H);
+
             M[0] = new uint[256][];
             M[0][0] = new uint[4];
             M[0][128] = GcmUtilities.AsUints(H);

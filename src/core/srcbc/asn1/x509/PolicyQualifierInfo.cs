@@ -78,7 +78,17 @@ namespace Org.BouncyCastle.Asn1.X509
 			throw new ArgumentException("unknown object in GetInstance: " + obj.GetType().FullName, "obj");
 		}
 
-		/**
+        public virtual DerObjectIdentifier PolicyQualifierId
+        {
+            get { return policyQualifierId; }
+        }
+
+        public virtual Asn1Encodable Qualifier
+        {
+            get { return qualifier; }
+        }
+
+        /**
 		 * Returns a Der-encodable representation of this instance.
 		 *
 		 * @return a <code>Asn1Object</code> value

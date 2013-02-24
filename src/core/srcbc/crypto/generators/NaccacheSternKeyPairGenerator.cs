@@ -290,7 +290,7 @@ namespace Org.BouncyCastle.Crypto.Generators
 		 *            the ArrayList to be permuted
 		 * @param rand
 		 *            the source of Randomness for permutation
-		 * @return a new ArrayList with the permuted elements.
+		 * @return a new IList with the permuted elements.
 		 */
 		private static IList permuteList(
 			IList           arr,

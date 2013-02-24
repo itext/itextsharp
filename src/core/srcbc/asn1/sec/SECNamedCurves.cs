@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.X9;
@@ -1140,7 +1139,7 @@ namespace Org.BouncyCastle.Asn1.Sec
 			string name)
 		{
 			DerObjectIdentifier oid = (DerObjectIdentifier)
-				objIds[name.ToLower(CultureInfo.InvariantCulture)];
+				objIds[Platform.ToLowerInvariant(name)];
 
 			return oid == null ? null : GetByOid(oid);
 		}
@@ -1168,7 +1167,7 @@ namespace Org.BouncyCastle.Asn1.Sec
 		public static DerObjectIdentifier GetOid(
 			string name)
 		{
-			return (DerObjectIdentifier) objIds[name.ToLower(CultureInfo.InvariantCulture)];
+            return (DerObjectIdentifier)objIds[Platform.ToLowerInvariant(name)];
 		}
 
 		/**

@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.IO;
-using System.Globalization;
 
 using Org.BouncyCastle.Asn1;
 using Org.BouncyCastle.Asn1.Cms;
@@ -190,9 +189,9 @@ namespace Org.BouncyCastle.OpenSsl
 			}
 
 
-			string dekAlgName = algorithm.ToUpper(CultureInfo.InvariantCulture);
+			string dekAlgName = Platform.ToUpperInvariant(algorithm);
 
-			// Note: For backward compatibility
+            // Note: For backward compatibility
 			if (dekAlgName == "DESEDE")
 			{
 				dekAlgName = "DES-EDE3-CBC";

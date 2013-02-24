@@ -1,5 +1,4 @@
 using System.Collections;
-using System.Globalization;
 
 using Org.BouncyCastle.Asn1.X9;
 using Org.BouncyCastle.Math;
@@ -368,7 +367,7 @@ namespace Org.BouncyCastle.Asn1.TeleTrust
 			string name)
 		{
 			DerObjectIdentifier oid = (DerObjectIdentifier)
-				objIds[name.ToLower(CultureInfo.InvariantCulture)];
+                objIds[Platform.ToLowerInvariant(name)];
 
 			return oid == null ? null : GetByOid(oid);
 		}
@@ -396,7 +395,7 @@ namespace Org.BouncyCastle.Asn1.TeleTrust
 		public static DerObjectIdentifier GetOid(
 			string name)
 		{
-			return (DerObjectIdentifier) objIds[name.ToLower(CultureInfo.InvariantCulture)];
+            return (DerObjectIdentifier)objIds[Platform.ToLowerInvariant(name)];
 		}
 
 		/**

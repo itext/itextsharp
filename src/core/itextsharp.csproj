@@ -4232,6 +4232,7 @@
     <Compile Include="srcbc\cms\DefaultAuthenticatedAttributeTableGenerator.cs" />
     <Compile Include="srcbc\cms\OriginatorInfoGenerator.cs" />
     <Compile Include="srcbc\cms\OriginatorInformation.cs" />
+    <Compile Include="srcbc\crypto\digests\SHA3Digest.cs" />
     <Compile Include="srcbc\crypto\generators\SCrypt.cs" />
     <Compile Include="srcbc\crypto\modes\gcm\BasicGcmExponentiator.cs" />
     <Compile Include="srcbc\crypto\modes\gcm\IGcmExponentiator.cs" />

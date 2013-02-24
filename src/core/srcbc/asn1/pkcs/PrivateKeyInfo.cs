@@ -52,10 +52,10 @@ namespace Org.BouncyCastle.Asn1.Pkcs
             BigInteger version = ((DerInteger) e.Current).Value;
             if (version.IntValue != 0)
             {
-                throw new ArgumentException("wrong version for private key info");
+                throw new ArgumentException("wrong version for private key info: " + version.IntValue);
             }
 
-			e.MoveNext();
+            e.MoveNext();
             algID = AlgorithmIdentifier.GetInstance(e.Current);
 
 			try

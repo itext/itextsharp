@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -1183,7 +1182,7 @@ namespace Org.BouncyCastle.Pkcs
 			public object Remove(
 				string alias)
 			{
-				string lower = alias.ToLower(CultureInfo.InvariantCulture);
+                string lower = Platform.ToLowerInvariant(alias);
 				string k = (string) keys[lower];
 
 				if (k == null)
@@ -1201,8 +1200,8 @@ namespace Org.BouncyCastle.Pkcs
 			{
 				get
 				{
-					string lower = alias.ToLower(CultureInfo.InvariantCulture);
-					string k = (string) keys[lower];
+                    string lower = Platform.ToLowerInvariant(alias);
+                    string k = (string)keys[lower];
 
 					if (k == null)
 						return null;
@@ -1211,8 +1210,8 @@ namespace Org.BouncyCastle.Pkcs
 				}
 				set
 				{
-					string lower = alias.ToLower(CultureInfo.InvariantCulture);
-					string k = (string) keys[lower];
+                    string lower = Platform.ToLowerInvariant(alias);
+                    string k = (string)keys[lower];
 					if (k != null)
 					{
 						orig.Remove(k);

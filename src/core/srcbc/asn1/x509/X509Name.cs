@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using System.Globalization;
 using System.IO;
 using System.Text;
 
@@ -635,7 +634,7 @@ namespace Org.BouncyCastle.Asn1.X509
             string		name,
             IDictionary lookUp)
         {
-            if (name.ToUpper(CultureInfo.InvariantCulture).StartsWith("OID."))
+            if (Platform.ToUpperInvariant(name).StartsWith("OID."))
             {
                 return new DerObjectIdentifier(name.Substring(4));
             }
@@ -644,7 +643,7 @@ namespace Org.BouncyCastle.Asn1.X509
                 return new DerObjectIdentifier(name);
             }
 
-			DerObjectIdentifier oid = (DerObjectIdentifier)lookUp[name.ToLower(CultureInfo.InvariantCulture)];
+			DerObjectIdentifier oid = (DerObjectIdentifier)lookUp[Platform.ToLowerInvariant(name)];
             if (oid == null)
             {
                 throw new ArgumentException("Unknown object id - " + name + " - passed to distinguished name");
@@ -1005,15 +1004,15 @@ namespace Org.BouncyCastle.Asn1.X509
 		private static string canonicalize(
 			string s)
 		{
-			string v = s.ToLower(CultureInfo.InvariantCulture).Trim();
+            string v = Platform.ToLowerInvariant(s).Trim();
 
-			if (v.StartsWith("#"))
+            if (v.StartsWith("#"))
 			{
 				Asn1Object obj = decodeObject(v);
 
 				if (obj is IAsn1String)
 				{
-					v = ((IAsn1String)obj).GetString().ToLower(CultureInfo.InvariantCulture).Trim();
+					v = Platform.ToLowerInvariant(((IAsn1String)obj).GetString()).Trim();
 				}
 			}
 
