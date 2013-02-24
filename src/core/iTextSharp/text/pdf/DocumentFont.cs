@@ -54,6 +54,7 @@ namespace iTextSharp.text.pdf {
         private PRIndirectReference refFont;
         private PdfDictionary font;
         private IntHashtable uni2byte = new IntHashtable();
+        private IntHashtable byte2uni = new IntHashtable();
         private IntHashtable diffmap;
         private float Ascender = 800;
         private float CapHeight = 700;
@@ -273,6 +274,7 @@ namespace iTextSharp.text.pdf {
                     IDictionary<int, int> rm = toUnicode.CreateReverseMapping();
                     foreach (KeyValuePair<int,int> kv in rm) {
                         uni2byte[kv.Key] = kv.Value;
+                        byte2uni[kv.Value] = kv.Key;
                     }
                 }
             }
@@ -298,6 +300,7 @@ namespace iTextSharp.text.pdf {
                                 int[] c = GlyphList.NameToUnicode(PdfName.DecodeName(((PdfName)obj).ToString()));
                                 if (c != null && c.Length > 0) {
                                     uni2byte[c[0]] = currentNumber;
+                                    byte2uni[currentNumber] = c[0];
                                     diffmap[c[0]] = currentNumber;
                                 }
                                 else {
@@ -310,6 +313,7 @@ namespace iTextSharp.text.pdf {
                                     string unicode = toUnicode.Lookup(new byte[]{(byte) currentNumber}, 0, 1);
                                     if ((unicode != null) && (unicode.Length == 1)) {
                                         this.uni2byte[unicode[0]] = currentNumber;
+                                        this.byte2uni[currentNumber] = unicode[0];
                                         this.diffmap[unicode[0]] = currentNumber;
                                     }
                                 }
@@ -323,8 +327,7 @@ namespace iTextSharp.text.pdf {
             PdfNumber first = font.GetAsNumber(PdfName.FIRSTCHAR);
             PdfNumber last = font.GetAsNumber(PdfName.LASTCHAR);
             if (BuiltinFonts14.ContainsKey(fontName)) {
-                BaseFont bf;
-                    bf = BaseFont.CreateFont(fontName, WINANSI, false);
+                BaseFont bf = BaseFont.CreateFont(fontName, WINANSI, false);
                 int[] e = uni2byte.ToOrderedKeys();
                 for (int k = 0; k < e.Length; ++k) {
                     int n = uni2byte[e[k]];
@@ -433,11 +436,13 @@ namespace iTextSharp.text.pdf {
                 char[] arr = cv.ToCharArray();
                 for (int k = 0; k < 256; ++k) {
                     uni2byte[arr[k]] = k;
+                    byte2uni[k] = arr[k];
                 }
             }
             else {
                 for (int k = 0; k < 256; ++k) {
                     uni2byte[stdEnc[k]] = k;
+                    byte2uni[k] = stdEnc[k];
                 }
             }
         }
@@ -736,6 +741,17 @@ namespace iTextSharp.text.pdf {
         internal IntHashtable Uni2Byte {
             get {
                 return uni2byte;
+            }
+        }
+
+        /**
+         * Exposes the CID - > unicode map that is constructed from the font's encoding
+         * @return the CID to unicode map
+         * @since 5.4.0
+         */
+        internal IntHashtable Byte2Uni {
+            get {
+                return byte2uni;
             }
         }
 

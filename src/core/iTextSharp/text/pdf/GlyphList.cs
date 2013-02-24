@@ -109,9 +109,16 @@ namespace iTextSharp.text.pdf {
         }
     
         public static int[] NameToUnicode(string name) {
-            int[] a;
-            names2unicode.TryGetValue(name, out a);
-            return a;
+            int[] v;
+            names2unicode.TryGetValue(name, out v);
+            if (v == null && name.Length == 7 && name.ToLowerInvariant().StartsWith("uni")) {
+                try {
+                    return new int[]{int.Parse(name.Substring(3), NumberStyles.HexNumber)};
+                }
+                catch {
+                }
+            }
+            return v;
         }
     
         public static string UnicodeToName(int num) {

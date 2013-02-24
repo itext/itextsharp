@@ -178,7 +178,7 @@ namespace iTextSharp.text.pdf {
         /** The width of the glyphs. This is essentially the content of table
          * 'hmtx' normalized to 1000 units.
          */
-        protected int[] GlyphWidths;
+        protected int[] glyphWidthsByIndex;
 
         protected int[][] bboxes;
 
@@ -682,7 +682,6 @@ namespace iTextSharp.text.pdf {
                     ReadCMaps();
                     ReadKerning();
                     ReadBbox();
-                    GlyphWidths = null;
                 }
             }
             finally {
@@ -701,9 +700,7 @@ namespace iTextSharp.text.pdf {
          * @throws IOException the font file could not be read
          */
         protected string ReadStandardString(int length) {
-            byte[] buf = new byte[length];
-            rf.ReadFully(buf);
-            return System.Text.Encoding.GetEncoding(1252).GetString(buf);
+            return rf.ReadString(length, WINANSI);
         }
     
         /** Reads a Unicode <CODE>string</CODE> from the font file. Each character is
@@ -733,10 +730,10 @@ namespace iTextSharp.text.pdf {
             if (table_location == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "hmtx", fileName + style));
             rf.Seek(table_location[0]);
-            GlyphWidths = new int[hhea.numberOfHMetrics];
+            glyphWidthsByIndex = new int[hhea.numberOfHMetrics];
             for (int k = 0; k < hhea.numberOfHMetrics; ++k) {
-                GlyphWidths[k] = (rf.ReadUnsignedShort() * 1000) / head.unitsPerEm;
-                rf.ReadUnsignedShort();
+                glyphWidthsByIndex[k] = (rf.ReadUnsignedShort() * 1000) / head.unitsPerEm;
+                int leftSideBearing = rf.ReadShort() * 1000 / head.unitsPerEm;
             }
         }
     
@@ -745,9 +742,9 @@ namespace iTextSharp.text.pdf {
          * @return the width of the glyph in normalized 1000 units
          */
         protected int GetGlyphWidth(int glyph) {
-            if (glyph >= GlyphWidths.Length)
-                glyph = GlyphWidths.Length - 1;
-            return GlyphWidths[glyph];
+            if (glyph >= glyphWidthsByIndex.Length)
+                glyph = glyphWidthsByIndex.Length - 1;
+            return glyphWidthsByIndex[glyph];
         }
     
         private void ReadBbox() {
@@ -1179,6 +1176,12 @@ namespace iTextSharp.text.pdf {
             }
         }
         
+        protected internal byte[] GetSubSet(Dictionary<int, int[]> glyphs, bool subsetp)  {
+            lock (head) {
+                TrueTypeFontSubSet sb = new TrueTypeFontSubSet(fileName, new RandomAccessFileOrArray(rf), glyphs, directoryOffset, true, !subsetp);
+                return sb.Process();
+            }
+        }
         protected static int[] CompactRanges(List<int[]> ranges) {
             List<int[]> simp = new List<int[]>();
             for (int k = 0; k < ranges.Count; ++k) {
@@ -1292,8 +1295,7 @@ namespace iTextSharp.text.pdf {
                     AddRangeUni(glyphs, false, subsetp);
                     byte[] b = null;
                     if (subsetp || directoryOffset != 0 || subsetRanges != null) {
-                        TrueTypeFontSubSet sb = new TrueTypeFontSubSet(fileName, new RandomAccessFileOrArray(rf), glyphs, directoryOffset, true, !subsetp);
-                        b = sb.Process();
+                        b = GetSubSet(glyphs, subsetp);
                     }
                     else {
                         b = GetFullFont();
