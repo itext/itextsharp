@@ -43,8 +43,7 @@ namespace iTextSharp.text.pdf{
                 byte[] b;
                 if (font.Subset || font.DirectoryOffset != 0)
                 {
-                    TrueTypeFontSubSet sb = new TrueTypeFontSubSet(font.FileName, new RandomAccessFileOrArray(font.Rf), longTag, font.DirectoryOffset, false, false);
-                    b = sb.Process();
+                    b = font.GetSubSet(longTag, true);
                 }
                 else
                 {

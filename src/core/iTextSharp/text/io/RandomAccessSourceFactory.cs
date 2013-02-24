@@ -66,6 +66,11 @@ namespace iTextSharp.text.io {
         private bool usePlainRandomAccess = false;
         
         /**
+         * Whether the underlying file should have a RW lock on it or just an R lock
+         */
+        private bool exclusivelyLockFile = false;
+
+        /**
          * Creates a factory that will give preference to accessing the underling data source using memory mapped files
          */
         public RandomAccessSourceFactory() {
@@ -81,6 +86,11 @@ namespace iTextSharp.text.io {
             return this;
         }
         
+        public RandomAccessSourceFactory SetExclusivelyLockFile(bool exclusivelyLockFile){
+            this.exclusivelyLockFile = exclusivelyLockFile;
+            return this;
+        }
+
         /**
          * Creates a {@link RandomAccessSource} based on a byte array
          * @param data the byte array
@@ -149,7 +159,7 @@ namespace iTextSharp.text.io {
             if (forceRead){
                 return CreateByReadingToMemory(new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read));
             }
-            return new RAFRandomAccessSource(new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read));
+            return new RAFRandomAccessSource(new FileStream(filename, FileMode.Open, FileAccess.Read, exclusivelyLockFile ? FileShare.None : FileShare.Read));
         }
         
         public IRandomAccessSource CreateRanged(IRandomAccessSource source, IList<long> ranges) {

@@ -132,23 +132,16 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.7
          */
         private void ProcessUni2Byte(){
-            IntHashtable uni2byte = Uni2Byte;
-            int[] e = uni2byte.ToOrderedKeys();
+    	    IntHashtable byte2uni = Byte2Uni;
+    	    int[] e = byte2uni.ToOrderedKeys();
             if (e.Length == 0)
                 return;
             cidbyte2uni = new char[256];
-            if (toUnicodeCmap == null) {
-                for (int k = 0; k < e.Length; ++k) {
-                    int n = uni2byte[e[k]];
-                    
-                    // this is messy, messy - an encoding can have multiple unicode values mapping to the same cid - we are going to arbitrarily choose the first one
-                    // what we really need to do is to parse the encoding, and handle the differences info ourselves.  This is a huge duplication of code of what is already
-                    // being done in DocumentFont, so I really hate to go down that path without seriously thinking about a change in the organization of the Font class hierarchy
-                    if (n < 256 && cidbyte2uni[n] == 0)
-                        cidbyte2uni[n] = (char)e[k];
-                }
+            for (int k = 0; k < e.Length; ++k) {
+                int key = e[k];
+                cidbyte2uni[key] = (char)byte2uni[key];
             }
-            else {
+            if (toUnicodeCmap != null) {
                 IDictionary<int,int> dm = toUnicodeCmap.CreateDirectMapping();
                 foreach (KeyValuePair<int,int> kv in dm) {
                     if (kv.Key < 256)
