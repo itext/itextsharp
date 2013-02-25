@@ -6,6 +6,7 @@ using System.Text;
 using System.Collections.Generic;
 using iTextSharp.text.pdf.security;
 using iTextSharp.text.io;
+using iTextSharp.text.pdf.security;
 /*
  * $Id$
  *
@@ -768,9 +769,13 @@ namespace iTextSharp.text.pdf {
                 if (layer2Text == null) {
                     StringBuilder buf = new StringBuilder();
                     buf.Append("Digitally signed by ");
-                    String name = CertificateInfo.GetSubjectFields(signCertificate).GetField("CN");
-                    if (name == null)
-                        name = CertificateInfo.GetSubjectFields(signCertificate).GetField("E");
+                    String name = null;
+                    CertificateInfo.X509Name x500name = CertificateInfo.GetSubjectFields((X509Certificate)signCertificate);
+                    if (x500name != null) {
+                        name = x500name.GetField("CN");
+                        if (name == null)
+                            name = x500name.GetField("E");
+                    }
                     if (name == null)
                         name = "";
                     buf.Append(name).Append('\n');
