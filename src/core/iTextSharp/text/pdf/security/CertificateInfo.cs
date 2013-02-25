@@ -358,7 +358,9 @@ namespace iTextSharp.text.pdf.security {
         * @return an X509Name
         */
         public static X509Name GetSubjectFields(X509Certificate cert) {
-            return new X509Name((Asn1Sequence)GetSubject(cert.GetTbsCertificate()));
+            if (cert != null)
+                return new X509Name((Asn1Sequence)GetSubject(cert.GetTbsCertificate()));
+            return null;
         }
 
         /**

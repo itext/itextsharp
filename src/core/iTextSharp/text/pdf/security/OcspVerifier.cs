@@ -48,6 +48,7 @@ using Org.BouncyCastle.Ocsp;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.log;
+using Org.BouncyCastle.Utilities.Date;
 
 /**
  * Class that allows you to verify a certificate against
@@ -138,10 +139,18 @@ namespace iTextSharp.text.pdf.security {
 				    continue;
 			    }
 			    // check if the OCSP response was valid at the time of signing
-			    if (signDate.CompareTo(resp[i].NextUpdate.Value) > 0) {
-				    LOGGER.Info(String.Format("OCSP no longer valid: {0} after {1}", signDate, resp[i].NextUpdate));
-				    continue;
-			    }
+                DateTimeObject nextUpdate = resp[i].NextUpdate;
+                DateTime nextUpdateDate;
+                if (nextUpdate == null) {
+                    nextUpdateDate = resp[i].ThisUpdate.AddSeconds(180);
+                    LOGGER.Info("No 'next update' for OCSP Response; assuming " + nextUpdateDate);
+                }
+                else
+                    nextUpdateDate = nextUpdate.Value;
+                if (signDate > nextUpdateDate) {
+                    LOGGER.Info(String.Format("OCSP no longer valid: {0} after {1}", signDate, nextUpdateDate));
+                    continue;
+                }
 			    // check the status of the certificate
 			    Object status = resp[i].GetCertStatus();
 			    if (status == CertificateStatus.Good) {

@@ -146,16 +146,19 @@ namespace iTextSharp.text.pdf.security {
             PdfPKCS7 pk = acroFields.VerifySignature(signatureName);
             LOGGER.Info("Adding verification for " + signatureName);
             X509Certificate[] xc = pk.Certificates;
+            X509Certificate cert;
             X509Certificate signingCert = pk.SigningCertificate;
             ValidationData vd = new ValidationData();
             for (int k = 0; k < xc.Length; ++k) {
+                cert = xc[k];
+                LOGGER.Info("Certificate: " + cert.SubjectDN);
                 if (certOption == CertificateOption.SIGNING_CERTIFICATE
-                    && !xc[k].Equals(signingCert)) {
+                    && !cert.Equals(signingCert)) {
                     continue;
                 }
                 byte[] ocspEnc = null;
-                if (ocsp != null && level != Level.CRL && k < xc.Length - 1) {
-                    ocspEnc = ocsp.GetEncoded(xc[k], xc[k + 1], null);
+                if (ocsp != null && level != Level.CRL) {
+                    ocspEnc = ocsp.GetEncoded(cert, GetParent(cert, xc), null);
                     if (ocspEnc != null) {
                         vd.ocsps.Add(BuildOCSPResponse(ocspEnc));
                         LOGGER.Info("OCSP added");
@@ -187,6 +190,28 @@ namespace iTextSharp.text.pdf.security {
                 return false;
             validated[GetSignatureHashKey(signatureName)] = vd;
             return true;
+        }
+
+        /**
+         * Returns the issuing certificate for a child certificate.
+         * @param cert  the certificate for which we search the parent
+         * @param certs an array with certificates that contains the parent
+         * @return  the partent certificate
+         */
+        private X509Certificate GetParent(X509Certificate cert, X509Certificate[] certs) {
+            X509Certificate parent;
+            for (int i = 0; i < certs.Length; i++) {
+                parent = certs[i];
+                if (!cert.IssuerDN.Equals(parent.SubjectDN))
+                    continue;
+                try {
+                    cert.Verify(parent.GetPublicKey());
+                    return parent;
+                } catch (Exception e) {
+                    // do nothing
+                }
+            }
+            return null;
         }
 
         /**

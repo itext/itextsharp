@@ -66,6 +66,7 @@ namespace iTextSharp.text.pdf.security {
             algorithmNames["1.2.840.10040.4.3"] = "DSA";
             algorithmNames["2.16.840.1.101.3.4.3.1"] = "DSA";
             algorithmNames["2.16.840.1.101.3.4.3.2"] = "DSA";
+            algorithmNames["1.3.14.3.2.29"] = "RSA";
             algorithmNames["1.3.36.3.3.1.2"] = "RSA";
             algorithmNames["1.3.36.3.3.1.3"] = "RSA";
             algorithmNames["1.3.36.3.3.1.4"] = "RSA";
