@@ -129,17 +129,6 @@ namespace iTextSharp.text.pdf
             PdfAConformanceImp.CheckPdfAConformance(this, key, obj1);
         }
 
-        /**
-         * @see com.itextpdf.text.pdf.PdfStamperImp#getPdfIsoConformance()
-         */
-        public IPdfIsoConformance PdfIsoConformance
-        {
-            get
-            {
-                return new PdfAConformanceImp();
-            }
-        }
-
         override public IPdfIsoConformance GetPdfIsoConformance() {
             return new PdfAConformanceImp();
         }

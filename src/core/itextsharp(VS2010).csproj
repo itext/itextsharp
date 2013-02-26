@@ -2655,6 +2655,7 @@
     <Compile Include="srcbc\crypto\digests\SHA384Digest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\crypto\digests\SHA3Digest.cs" />
     <Compile Include="srcbc\crypto\digests\SHA512Digest.cs">
       <SubType>Code</SubType>
     </Compile>
