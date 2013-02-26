@@ -700,7 +700,7 @@ namespace iTextSharp.text.pdf {
          * @throws IOException the font file could not be read
          */
         protected string ReadStandardString(int length) {
-            return rf.ReadString(length, WINANSI);
+            return rf.ReadString(length, "windows-1252");
         }
     
         /** Reads a Unicode <CODE>string</CODE> from the font file. Each character is
