@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("1T3XT BVBA")]
 [assembly: AssemblyProduct("itextsharp.xmlworker")]
-[assembly: AssemblyCopyright("Copyright (C) 2012 by Bruno Lowagie and Paulo Soares. All Rights Reserved.")]
+[assembly: AssemblyCopyright("Copyright (C) 2013 by Bruno Lowagie and Paulo Soares. All Rights Reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
