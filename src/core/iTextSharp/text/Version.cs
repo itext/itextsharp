@@ -67,7 +67,7 @@ namespace iTextSharp.text {
 	     * This String contains the version number of this iText release.
 	     * For debugging purposes, we request you NOT to change this constant.
 	     */
-	    static private String release = "5.3.5";
+	    static private String release = "5.4.0";
 
         /**
          * The license key.
