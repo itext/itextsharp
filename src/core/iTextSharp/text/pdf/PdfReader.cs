@@ -3675,6 +3675,19 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
+         * Checks if this PDF has usage rights enabled.
+         *
+         * @return <code>true</code> if usage rights are present; <code>false</code> otherwise
+         */
+        public bool HasUsageRights()
+        {
+            PdfDictionary perms = catalog.GetAsDict(PdfName.PERMS);
+            if (perms == null)
+                return false;
+            return perms.Contains(PdfName.UR) || perms.Contains(PdfName.UR3);
+        }
+
+        /**
         * Removes any usage rights that this PDF may have. Only Adobe can grant usage rights
         * and any PDF modification with iText will invalidate them. Invalidated usage rights may
         * confuse Acrobat and it's advisabe to remove them altogether.
