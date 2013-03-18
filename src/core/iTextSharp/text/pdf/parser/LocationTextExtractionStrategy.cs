@@ -295,7 +295,7 @@ namespace iTextSharp.text.pdf.parser {
          * @see com.itextpdf.text.pdf.parser.RenderListener#renderImage(com.itextpdf.text.pdf.parser.ImageRenderInfo)
          * @since 5.0.1
          */
-        public void RenderImage(ImageRenderInfo renderInfo) {
+        public virtual void RenderImage(ImageRenderInfo renderInfo) {
             // do nothing
         }
     }
