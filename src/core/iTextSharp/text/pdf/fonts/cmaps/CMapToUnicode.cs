@@ -46,6 +46,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
 
         private IDictionary<int, String> singleByteMappings = new Dictionary<int, String>();
         private IDictionary<int, String> doubleByteMappings = new Dictionary<int, String>();
+        private Encoding enc = new UnicodeEncoding(true, false);
 
         /**
          * Creates a new instance of CMap.
@@ -153,7 +154,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             if (bytes.Length == 1) {
                 retval = new String((char)(bytes[0] & 0xff), 1);
             } else {
-                retval = new String((char)((bytes[0]&0xff)*256 + (bytes[1]&0xff)), 1);
+                retval = enc.GetString(bytes);
             }
             return retval;
         }
