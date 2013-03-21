@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Collections;
 using System.util.collections;
 using iTextSharp.text.pdf.security;
 /*
@@ -63,6 +62,7 @@ namespace iTextSharp.text.pdf {
 
         /** the cache with the streams and references. */
         private Dictionary<ByteStore, PdfIndirectReference> streamMap = null;
+        private readonly HashSet<PdfObject> serialized = new HashSet<PdfObject>();
 
         /** Creates a PdfSmartCopy instance. */
         public PdfSmartCopy(Document document, Stream os) : base(document, os) {
@@ -85,14 +85,14 @@ namespace iTextSharp.text.pdf {
             ByteStore streamKey = null;
             bool validStream = false;
             if (srcObj.IsStream()) {
-                streamKey = new ByteStore((PRStream)srcObj);
+                streamKey = new ByteStore((PRStream)srcObj, serialized);
                 validStream = true;
                 PdfIndirectReference streamRef;
                 if (streamMap.TryGetValue(streamKey, out streamRef)) {
                     return streamRef;
                 }
             } else if (srcObj.IsDictionary()) {
-                streamKey = new ByteStore((PdfDictionary)srcObj);
+                streamKey = new ByteStore((PdfDictionary)srcObj, serialized);
                 validStream = true;
                 PdfIndirectReference streamRef = null;
                 if (streamMap.TryGetValue(streamKey, out streamRef)) {
@@ -132,17 +132,17 @@ namespace iTextSharp.text.pdf {
         }
 
         internal class ByteStore {
-            private byte[] b;
-            private int hash;
-            private HashSet<PdfObject> serialized = new HashSet<PdfObject>();
-            
-            private void SerObject(PdfObject obj, int level, ByteBuffer bb) {
+            private readonly byte[] b;
+            private readonly int hash;
+            private void SerObject(PdfObject obj, int level, ByteBuffer bb, HashSet<PdfObject> serialized)
+            {
                 if (level <= 0)
                     return;
                 if (obj == null) {
                     bb.Append("$Lnull");
                     return;
                 }
+
                 if (obj.IsIndirect()) {
                     if (serialized.Contains(obj))
                         return;
@@ -152,16 +152,16 @@ namespace iTextSharp.text.pdf {
                 obj = PdfReader.GetPdfObject(obj);
                 if (obj.IsStream()) {
                     bb.Append("$B");
-                    SerDic((PdfDictionary)obj, level - 1, bb);
+                    SerDic((PdfDictionary)obj, level - 1, bb, serialized);
                     if (level > 0) {
                         bb.Append(DigestAlgorithms.Digest("MD5", PdfReader.GetStreamBytesRaw((PRStream)obj)));
                     }
                 }
                 else if (obj.IsDictionary()) {
-                    SerDic((PdfDictionary)obj, level - 1, bb);
+                    SerDic((PdfDictionary)obj, level - 1, bb,serialized);
                 }
                 else if (obj.IsArray()) {
-                    SerArray((PdfArray)obj, level - 1, bb);
+                    SerArray((PdfArray)obj, level - 1, bb,serialized);
                 }
                 else if (obj.IsString()) {
                     bb.Append("$S").Append(obj.ToString());
@@ -172,8 +172,9 @@ namespace iTextSharp.text.pdf {
                 else
                     bb.Append("$L").Append(obj.ToString());
             }
-            
-            private void SerDic(PdfDictionary dic, int level, ByteBuffer bb) {
+
+            private void SerDic(PdfDictionary dic, int level, ByteBuffer bb, HashSet<PdfObject> serialized)
+            {
                 bb.Append("$D");
                 if (level <= 0)
                     return;
@@ -181,32 +182,46 @@ namespace iTextSharp.text.pdf {
                 dic.Keys.CopyTo(keys, 0);
                 Array.Sort<PdfName>(keys);
                 for (int k = 0; k < keys.Length; ++k) {
-                    SerObject(keys[k], level, bb);
-                    SerObject(dic.Get(keys[k]), level, bb);
+                    SerObject(keys[k], level, bb, serialized);
+                    SerObject(dic.Get(keys[k]), level, bb, serialized);
                 }
             }
-            
-            private void SerArray(PdfArray array, int level, ByteBuffer bb) {
+
+            private void SerArray(PdfArray array, int level, ByteBuffer bb, HashSet<PdfObject> serialized)
+            {
                 bb.Append("$A");
                 if (level <= 0)
                     return;
                 for (int k = 0; k < array.Size; ++k) {
-                    SerObject(array[k], level, bb);
+                    SerObject(array[k], level, bb, serialized);
                 }
             }
-            
-            internal ByteStore(PRStream str) {
+
+            internal ByteStore(PRStream str, HashSet<PdfObject> serialized)
+            {
                 ByteBuffer bb = new ByteBuffer();
                 int level = 100;
-                SerObject(str, level, bb);
+                SerObject(str, level, bb, serialized);
                 this.b = bb.ToByteArray();
+                hash = CalculateHash(this.b);
             }
 
-            internal ByteStore(PdfDictionary dict) {
+            internal ByteStore(PdfDictionary dict, HashSet<PdfObject> serialized)
+            {
                 ByteBuffer bb = new ByteBuffer();
                 int level = 100;
-                SerObject(dict, level, bb);
+                SerObject(dict, level, bb, serialized);
                 this.b = bb.ToByteArray();
+                hash = CalculateHash(this.b);
+            }
+
+            private static int CalculateHash(Byte[] b)
+            {
+                int hash = 0;
+                int len = b.Length;
+                for(int k = 0; k < len; ++k)
+                    hash = hash * 31 + b[k];
+                return hash;
             }
 
             public override bool Equals(Object obj) {
@@ -226,12 +241,6 @@ namespace iTextSharp.text.pdf {
             }
 
             public override int GetHashCode() {
-                if (hash == 0) {
-                    int len = b.Length;
-                    for (int k = 0; k < len; ++k) {
-                        hash = hash * 31 + b[k];
-                    }
-                }
                 return hash;
             }
         }
