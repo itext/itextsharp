@@ -57,7 +57,7 @@ namespace iTextSharp.text.pdf {
  * Reference Manual version 1.3' Chapter 4 (pages 37-54).
  *
  * @see        PdfNull
-     * @see        Pdfbool
+ * @see        Pdfbool
  * @see        PdfNumber
  * @see        PdfString
  * @see        PdfName
@@ -391,12 +391,18 @@ namespace iTextSharp.text.pdf {
             }
         }
 
+        public int CompareTo(PdfObject obj) {
+            return this.GetHashCode().CompareTo(obj.GetHashCode());
+        }
+
         public override int GetHashCode() {
             return hashCode;
         }
 
-        public int CompareTo(PdfObject obj) {
-            return this.GetHashCode().CompareTo(obj.GetHashCode());
+        public override bool Equals(object obj) {
+            PdfObject pdfObject = obj as PdfObject;
+            if (pdfObject == null) return false;
+            return CompareTo(pdfObject) == 0;
         }
 
         static private int IncrementObjCounter() {
