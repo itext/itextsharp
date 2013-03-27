@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
+using System.util.collections;
 using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
@@ -1176,7 +1177,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected internal byte[] GetSubSet(Dictionary<int, int[]> glyphs, bool subsetp)  {
+        protected internal byte[] GetSubSet(HashSet<int> glyphs, bool subsetp)  {
             lock (head) {
                 TrueTypeFontSubSet sb = new TrueTypeFontSubSet(fileName, new RandomAccessFileOrArray(rf), glyphs, directoryOffset, true, !subsetp);
                 return sb.Process();
@@ -1295,7 +1296,7 @@ namespace iTextSharp.text.pdf {
                     AddRangeUni(glyphs, false, subsetp);
                     byte[] b = null;
                     if (subsetp || directoryOffset != 0 || subsetRanges != null) {
-                        b = GetSubSet(glyphs, subsetp);
+                        b = GetSubSet(new HashSet<int>(glyphs.Keys), subsetp);
                     }
                     else {
                         b = GetFullFont();
