@@ -1,7 +1,5 @@
 using System;
-using System.IO;
 using System.Collections.Generic;
-using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.io;
 /*
@@ -181,7 +179,7 @@ namespace iTextSharp.text.pdf.parser {
             RegisterContentOperator("T*", tstarOperator);
 
             ShowText tjOperator = new ShowText();
-            RegisterContentOperator("Tj", new ShowText());
+            RegisterContentOperator("Tj", tjOperator);
             MoveNextLineAndShowText tickOperator = new MoveNextLineAndShowText(tstarOperator, tjOperator);
             RegisterContentOperator("'", tickOperator);
             RegisterContentOperator("\"", new MoveNextLineAndShowTextWithSpacing(twOperator, tcOperator, tickOperator));
@@ -352,23 +350,32 @@ namespace iTextSharp.text.pdf.parser {
                 if ("BI".Equals(oper.ToString())){
                     // we don't call invokeOperator for embedded images - this is one area of the PDF spec that is particularly nasty and inconsistent
                     PdfDictionary colorSpaceDic = resources != null ? resources.GetAsDict(PdfName.COLORSPACE) : null;
-                    ImageRenderInfo renderInfo = ImageRenderInfo.CreateForEmbeddedImage(Gs().ctm, InlineImageUtils.ParseInlineImage(ps, colorSpaceDic), colorSpaceDic);
-                    renderListener.RenderImage(renderInfo);
+                    HandleInlineImage(InlineImageUtils.ParseInlineImage(ps, colorSpaceDic), colorSpaceDic);
                 } else {
                     InvokeOperator(oper, operands);
                 }
             }
             this.resources.Pop();
         }
-        
+
+        /**
+         * Callback when an inline image is found.  This requires special handling because inline images don't follow the standard operator syntax
+         * @param info the inline image
+         * @param colorSpaceDic the color space for the inline immage
+         */
+        protected void HandleInlineImage(InlineImageInfo info, PdfDictionary colorSpaceDic)
+        {
+            ImageRenderInfo renderInfo = ImageRenderInfo.CreateForEmbeddedImage(Gs().ctm, info, colorSpaceDic);
+            renderListener.RenderImage(renderInfo);
+        }
+
+
         /**
          * A resource dictionary that allows stack-like behavior to support resource dictionary inheritance
          */
         private class ResourceDictionary : PdfDictionary {
             private IList<PdfDictionary> resourcesStack = new List<PdfDictionary>();
-            public ResourceDictionary() {
-            }
-
+            
             public void Push(PdfDictionary resources){
                 resourcesStack.Add(resources);
             }

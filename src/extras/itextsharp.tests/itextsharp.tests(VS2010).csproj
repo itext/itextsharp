@@ -46,6 +46,7 @@
     <Reference Include="XmlDiffPatch, Version=1.0.8.28, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="iTextSharp\text\ChunkTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfCopyTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfTest.cs" />

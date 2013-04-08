@@ -1,13 +1,9 @@
 using System;
-using System.IO;
 using System.Collections.Generic;
 using System.util;
-using System.Globalization;
-using iTextSharp.text.error_messages;
 
-using iTextSharp.text.html;
+using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf;
-using iTextSharp.text;
 
 /*
  * $Id$
@@ -109,10 +105,10 @@ namespace iTextSharp.text {
         private static FontFactoryImp fontImp = new FontFactoryImp();
 
         /// <summary> This is the default encoding to use. </summary>
-        private static string defaultEncoding = BaseFont.WINANSI;
+        private const string defaultEncoding = BaseFont.WINANSI;
     
         /// <summary> This is the default value of the <VAR>embedded</VAR> variable. </summary>
-        private static bool defaultEmbedding = BaseFont.NOT_EMBEDDED;
+        private const bool defaultEmbedding = BaseFont.NOT_EMBEDDED;
     
         /// <summary> Creates new FontFactory </summary>
         private FontFactory() {

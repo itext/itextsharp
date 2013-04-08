@@ -85,7 +85,14 @@ namespace iTextSharp.text {
         * @since   2.1.2
         */
         protected IHyphenationEvent hyphenation = null;
-        
+
+        /**
+         * Predefined tab position and properties(alignment, leader and etc.);
+         * @since	5.4.1
+         */
+        protected TabSettings tabSettings = null;
+
+
         // constructors
     
         /// <summary>
@@ -103,6 +110,7 @@ namespace iTextSharp.text {
             this.AddAll(phrase);
             leading = phrase.Leading;
             font = phrase.Font;
+            tabSettings = phrase.TabSettings;
             hyphenation = phrase.hyphenation;
         }
 
@@ -482,7 +490,18 @@ namespace iTextSharp.text {
                 return hyphenation;
             }
         }
-        
+
+        /**
+        * Setter/getter for the tabSettings.
+        * @param   tabSettings a TabSettings instance
+        * @since   5.4.1
+        */
+
+        public TabSettings TabSettings
+        {
+            get { return tabSettings; }
+            set { tabSettings = value; }
+        }
 
         // kept for historical reasons; people should use FontSelector
         // eligable for deprecation, but the methods are mentioned in the book p277.

@@ -62,7 +62,7 @@ namespace iTextSharp.text.io {
         public GetBufferedRandomAccessSource(IRandomAccessSource source) {
             this.source = source;
             
-            this.getBuffer = new byte[(int)Math.Min(source.Length/4, (long)4096)];
+            this.getBuffer = new byte[(int)Math.Min(Math.Max(source.Length/4, 1), (long)4096)];
             this.getBufferStart = -1;
             this.getBufferEnd = -1;
 

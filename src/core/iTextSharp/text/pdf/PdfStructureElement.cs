@@ -359,6 +359,11 @@ namespace iTextSharp.text.pdf
                 this.SetAttribute(PdfName.BBOX, rect);
                 if (image.Alt != null)
                     Put(PdfName.ALT, new PdfString(image.Alt));
+                if (image.BackgroundColor != null)
+                {
+                    BaseColor color = image.BackgroundColor;
+                    this.SetAttribute(PdfName.BACKGROUNDCOLOR, new PdfArray(new float[] { color.R / 255f, color.G / 255f, color.B / 255f }));
+                }
             }
         }
 
@@ -451,6 +456,31 @@ namespace iTextSharp.text.pdf
                             this.SetAttribute(PdfName.LISTNUMBERING, PdfName.UPPERALPHA);
                     }
                 }
+                PdfObject obj = parent.GetAttribute(PdfName.STARTINDENT);
+                if (obj is PdfNumber)
+                {
+                    float startIndent = ((PdfNumber) obj).FloatValue;
+                    if (startIndent != list.IndentationLeft)
+                        this.SetAttribute(PdfName.STARTINDENT, new PdfNumber(list.IndentationLeft));
+                }
+                else
+                {
+                    if (Math.Abs(list.IndentationLeft) > float.Epsilon)
+                        this.SetAttribute(PdfName.STARTINDENT, new PdfNumber(list.IndentationLeft));
+                }
+
+                obj = parent.GetAttribute(PdfName.ENDINDENT);
+                if (obj is PdfNumber)
+                {
+                    float endIndent = ((PdfNumber) obj).FloatValue;
+                    if (endIndent != list.IndentationRight)
+                        this.SetAttribute(PdfName.ENDINDENT, new PdfNumber(list.IndentationRight));
+                }
+                else
+                {
+                    if (list.IndentationRight > float.Epsilon)
+                        this.SetAttribute(PdfName.ENDINDENT, new PdfNumber(list.IndentationRight));
+                }
             }
         }
 
@@ -480,7 +510,7 @@ namespace iTextSharp.text.pdf
                 }
                 else
                 {
-                    if (listItem.IndentationRight.CompareTo(0) != 0)
+                    if (Math.Abs(listItem.IndentationRight) > float.Epsilon)
                         this.SetAttribute(PdfName.ENDINDENT, new PdfNumber(listItem.IndentationRight));
                 }
 
@@ -499,6 +529,18 @@ namespace iTextSharp.text.pdf
         {
             if (listLabel != null)
             {
+                PdfObject obj = parent.GetAttribute(PdfName.STARTINDENT);
+                if (obj is PdfNumber)
+                {
+                    float startIndent = ((PdfNumber) obj).FloatValue;
+                    if (startIndent != listLabel.Indentation)
+                        this.SetAttribute(PdfName.STARTINDENT, new PdfNumber(listLabel.Indentation));
+                }
+                else
+                {
+                    if (Math.Abs(listLabel.Indentation) > float.Epsilon)
+                        this.SetAttribute(PdfName.STARTINDENT, new PdfNumber(listLabel.Indentation));
+                }
 
             }
         }
@@ -507,8 +549,16 @@ namespace iTextSharp.text.pdf
         {
             if (table != null)
             {
+                // Setting non-inheritable attributes
+                if (table.SpacingBefore > float.Epsilon)
+                    this.SetAttribute(PdfName.SPACEBEFORE, new PdfNumber(table.SpacingBefore));
+
+                if (table.SpacingAfter > float.Epsilon)
+                    this.SetAttribute(PdfName.SPACEAFTER, new PdfNumber(table.SpacingAfter));
+
+
                 if (table.TotalHeight > 0)
-                    this.SetAttribute(PdfName.HEIGHT, new PdfNumber(table.TotalWidth));
+                    this.SetAttribute(PdfName.HEIGHT, new PdfNumber(table.TotalHeight));
                 if (table.TotalWidth > 0)
                     this.SetAttribute(PdfName.WIDTH, new PdfNumber(table.TotalWidth));
             }
@@ -538,6 +588,18 @@ namespace iTextSharp.text.pdf
                             headers.Add(new PdfString(header.Name));
                     if (!headers.IsEmpty())
                         this.SetAttribute(PdfName.HEADERS, headers);
+                }
+
+                if (cell.FixedHeight > 0)
+                    this.SetAttribute(PdfName.HEIGHT, new PdfNumber(cell.FixedHeight));
+
+                if (cell.Width > 0)
+                    this.SetAttribute(PdfName.WIDTH, new PdfNumber(cell.Width));
+
+                if (cell.BackgroundColor != null)
+                {
+                    BaseColor color = cell.BackgroundColor;
+                    this.SetAttribute(PdfName.BACKGROUNDCOLOR, new PdfArray(new float[] { color.R / 255f, color.G / 255f, color.B / 255f }));
                 }
             }
         }

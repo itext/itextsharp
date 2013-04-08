@@ -108,9 +108,20 @@ namespace iTextSharp.text.pdf.codec {
             fromUrl = url;
             Stream isp = null;
             try {
-                WebRequest wr = WebRequest.Create(url);
-                wr.Credentials = CredentialCache.DefaultCredentials;
-                isp = wr.GetResponse().GetResponseStream();
+                WebRequest req = WebRequest.Create(url);
+                req.Credentials = CredentialCache.DefaultCredentials;
+                using (WebResponse res = req.GetResponse())
+                    using (Stream rs = res.GetResponseStream())
+                    {
+                        isp = new MemoryStream();
+                        byte[] buffer = new byte[1024];
+
+                        int read;
+                        while ((read = rs.Read(buffer, 0, buffer.Length)) > 0)
+                            isp.Write(buffer, 0, read);
+                        isp.Position = 0;
+                    }
+
                 Process(isp);
             }
             finally {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.util.collections;
 using iTextSharp.text.pdf;
 
 /*
@@ -100,7 +101,7 @@ internal class PdfATtfUnicodeWriter : TtfUnicodeWriter {
         } else {
             byte[] b;
             if (font.Subset || font.DirectoryOffset != 0) {
-                TrueTypeFontSubSet sb = new TrueTypeFontSubSet(font.FileName, new RandomAccessFileOrArray(font.Rf), longTag, font.DirectoryOffset, false, false);
+                TrueTypeFontSubSet sb = new TrueTypeFontSubSet(font.FileName, new RandomAccessFileOrArray(font.Rf), new HashSet2<int>(longTag.Keys), font.DirectoryOffset, false, false);
                 b = sb.Process();
             }
             else {

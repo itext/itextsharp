@@ -1,12 +1,9 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
-using System.util;
 using iTextSharp.text.error_messages;
 
 using iTextSharp.text.pdf;
-using iTextSharp.text.html;
-using iTextSharp.text.factories;
 using iTextSharp.text.pdf.draw;
 using iTextSharp.text.pdf.interfaces;
 
@@ -88,6 +85,10 @@ namespace iTextSharp.text {
             NEWLINE.Role = PdfName.P;
         }
 
+            
+        public static readonly Chunk TABBING = new Chunk(float.NaN, false);
+
+        public static readonly Chunk SPACETABBING = new Chunk(float.NaN, true);
 
         // member variables
 
@@ -102,7 +103,7 @@ namespace iTextSharp.text {
 
         protected internal PdfName role = null;
         protected internal Dictionary<PdfName, PdfObject> accessibleAttributes = null;
-        protected Guid id = Guid.NewGuid();
+        protected Guid id = Guid.Empty;
 
         // constructors
 
@@ -137,7 +138,7 @@ namespace iTextSharp.text {
             {
                 accessibleAttributes = new Dictionary<PdfName, PdfObject>(ck.accessibleAttributes);
             }
-            id = ck.id;
+            id = ck.ID;
         }
         
         /// <summary>
@@ -195,7 +196,7 @@ namespace iTextSharp.text {
         * Key for drawInterface of the Separator.
         * @since   2.1.2
         */
-        public const String SEPARATOR = "SEPARATOR";
+        public const string SEPARATOR = "SEPARATOR";
         
         /**
         * Creates a separator Chunk.
@@ -222,8 +223,14 @@ namespace iTextSharp.text {
         * Key for drawInterface of the tab.
         * @since   2.1.2
         */
-        public const String TAB = "TAB";
-        
+        public const string TAB = "TAB";
+        /**
+         * Key for tab stops of the tab.
+         * @since	5.4.1
+         */
+        public const string TABSETTINGS = "TABSETTINGS";
+        private string contentWithNoTabs = null;
+
         /**
         * Creates a tab Chunk.
         * Note that separator chunks can't be used in combination with tab chunks!
@@ -231,6 +238,7 @@ namespace iTextSharp.text {
         * @param   tabPosition an X coordinate that will be used as start position for the next Chunk.
         * @since   2.1.2
         */
+        [Obsolete]
         public Chunk(IDrawInterface separator, float tabPosition) : this(separator, tabPosition, false) {
         }
         
@@ -242,6 +250,7 @@ namespace iTextSharp.text {
         * @param   newline     if true, a newline will be added if the tabPosition has already been reached.
         * @since   2.1.2
         */
+        [Obsolete]
         public Chunk(IDrawInterface separator, float tabPosition, bool newline) : this(OBJECT_REPLACEMENT_CHARACTER, new Font()) {
             if (tabPosition < 0) {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("a.tab.position.may.not.be.lower.than.0.yours.is.1", tabPosition));
@@ -249,6 +258,25 @@ namespace iTextSharp.text {
             SetAttribute(TAB, new Object[] { separator, tabPosition, newline, 0 });
             this.role = null;
         }
+
+        /**
+         * Creates a tab Chunk.
+         *
+         * @param   tabInterval     an interval that will be used if tab stops are omitted.
+         * @param   isWhitespace    if true, the current tab is treated as white space.
+         * @since 5.4.1
+         */
+        private Chunk(float tabInterval, bool isWhitespace) : this(OBJECT_REPLACEMENT_CHARACTER, new Font())
+        {
+            if (tabInterval < 0)
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("a.tab.position.may.not.be.lower.than.0.yours.is.1", tabInterval));
+            SetAttribute(TAB, new Object[] {tabInterval, isWhitespace});
+            SetAttribute(SPLITCHARACTER, TabSplitCharacter.TAB);
+
+            SetAttribute(TABSETTINGS, null);
+            this.role = null;
+        }
+
 
         /// <summary>
         /// Constructs a chunk containing an Image.
@@ -335,7 +363,9 @@ namespace iTextSharp.text {
         /// <value>a string</value>
         public virtual string Content {
             get {
-                return content.ToString().Replace("\t", "");
+                if (contentWithNoTabs == null)
+                    contentWithNoTabs = content.ToString().Replace("\t", "");
+                return contentWithNoTabs;
             }
         }
 
@@ -639,7 +669,7 @@ namespace iTextSharp.text {
         }
 
         /** Key for line-height (alternative for leading in Phrase). */
-	    public static String LINEHEIGHT = "LINEHEIGHT";
+	    public const string LINEHEIGHT = "LINEHEIGHT";
 
 	    /**
 	     * Sets a line height tag.
@@ -760,7 +790,7 @@ namespace iTextSharp.text {
 	    /**
 	    * Key for character spacing.
 	    */
-	    public const String CHAR_SPACING = "CHAR_SPACING";
+	    public const string CHAR_SPACING = "CHAR_SPACING";
 
 	    /**
 	    * Sets the character spacing.
@@ -784,7 +814,37 @@ namespace iTextSharp.text {
 		        return 0f;
 	    }
         
-        public const String WHITESPACE = "WHITESPACE";
+      	/**
+	     *  Key for word spacing.
+	     */
+	    public const string WORD_SPACING = "WORD_SPACING";
+
+	    /**
+	     * Sets the word spacing.
+	     *
+	     * @param wordSpace the word spacing value
+	     * @return this <CODE>Chunk</CODE>
+	     */	
+	    public Chunk SetWordSpacing(float wordSpace) {
+		    return SetAttribute(WORD_SPACING, wordSpace);
+	    }
+	
+	    /**
+	     * Gets the word spacing.
+	     *
+	     * @return a value in float
+	     */	
+	    public float GetWordSpacing() {
+		    if (attributes != null && attributes.ContainsKey(WORD_SPACING)) {
+			    float f = (float)attributes[WORD_SPACING];
+			    return f;
+		    }
+		    return 0.0f;		
+	    }
+
+
+
+        public const string WHITESPACE = "WHITESPACE";
 
         public static Chunk CreateWhitespace(String content) {
             return CreateWhitespace(content, false);
@@ -806,22 +866,22 @@ namespace iTextSharp.text {
             return attributes != null && attributes.ContainsKey(WHITESPACE);
         }
 
-        public const String TABSPACE = "TABSPACE";
-
+        [Obsolete]
         public static Chunk CreateTabspace() {
             return CreateTabspace(60);
         }
 
+        [Obsolete]
         public static Chunk CreateTabspace(float spacing)
         {
-            Chunk tabspace = new Chunk(" ");
-            tabspace.SetAttribute(TABSPACE, spacing);
+            Chunk tabspace = new Chunk(spacing, true);
             return tabspace;
         }
 
+        [Obsolete]
         public bool IsTabspace()
         {
-            return attributes != null && attributes.ContainsKey(TABSPACE);
+            return attributes != null && attributes.ContainsKey(TAB);
         }
 
         public PdfObject GetAccessibleAttribute(PdfName key) {
@@ -871,7 +931,12 @@ namespace iTextSharp.text {
         }
 
         public Guid ID{
-            get { return id; }
+            get
+            {
+                if (id == Guid.Empty)
+                    id = Guid.NewGuid();
+                return id;
+            }
             set { id = value; }
         }
 

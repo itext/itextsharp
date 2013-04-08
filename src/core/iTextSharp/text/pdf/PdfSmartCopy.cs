@@ -62,7 +62,7 @@ namespace iTextSharp.text.pdf {
 
         /** the cache with the streams and references. */
         private Dictionary<ByteStore, PdfIndirectReference> streamMap = null;
-        private readonly HashSet<PdfObject> serialized = new HashSet<PdfObject>();
+        private readonly HashSet2<PdfObject> serialized = new HashSet2<PdfObject>();
 
         /** Creates a PdfSmartCopy instance. */
         public PdfSmartCopy(Document document, Stream os) : base(document, os) {
@@ -134,7 +134,7 @@ namespace iTextSharp.text.pdf {
         internal class ByteStore {
             private readonly byte[] b;
             private readonly int hash;
-            private void SerObject(PdfObject obj, int level, ByteBuffer bb, HashSet<PdfObject> serialized)
+            private void SerObject(PdfObject obj, int level, ByteBuffer bb, HashSet2<PdfObject> serialized)
             {
                 if (level <= 0)
                     return;
@@ -173,7 +173,7 @@ namespace iTextSharp.text.pdf {
                     bb.Append("$L").Append(obj.ToString());
             }
 
-            private void SerDic(PdfDictionary dic, int level, ByteBuffer bb, HashSet<PdfObject> serialized)
+            private void SerDic(PdfDictionary dic, int level, ByteBuffer bb, HashSet2<PdfObject> serialized)
             {
                 bb.Append("$D");
                 if (level <= 0)
@@ -187,7 +187,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
 
-            private void SerArray(PdfArray array, int level, ByteBuffer bb, HashSet<PdfObject> serialized)
+            private void SerArray(PdfArray array, int level, ByteBuffer bb, HashSet2<PdfObject> serialized)
             {
                 bb.Append("$A");
                 if (level <= 0)
@@ -197,7 +197,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
 
-            internal ByteStore(PRStream str, HashSet<PdfObject> serialized)
+            internal ByteStore(PRStream str, HashSet2<PdfObject> serialized)
             {
                 ByteBuffer bb = new ByteBuffer();
                 int level = 100;
@@ -206,7 +206,7 @@ namespace iTextSharp.text.pdf {
                 hash = CalculateHash(this.b);
             }
 
-            internal ByteStore(PdfDictionary dict, HashSet<PdfObject> serialized)
+            internal ByteStore(PdfDictionary dict, HashSet2<PdfObject> serialized)
             {
                 ByteBuffer bb = new ByteBuffer();
                 int level = 100;

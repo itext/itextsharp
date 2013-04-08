@@ -337,12 +337,15 @@ namespace iTextSharp.text.pdf {
             int lastSplit = -1;
             if (currentChar != 0)
                 currentChar = TrimLeftEx(currentChar, totalTextLength - 1);
+            
             int oldCurrentChar = currentChar;
             int uniC = 0;
             PdfChunk ck = null;
             float charWidth = 0;
             PdfChunk lastValidChunk = null;
-            bool splitChar = false;
+            TabStop tabStop = null;
+            float tabStopAnchorPosition = float.NaN;
+            float tabPosition = float.NaN;
             bool surrogate = false;
             for (; currentChar < totalTextLength; ++currentChar) {
                 ck = detailChunks[currentChar];
@@ -371,9 +374,6 @@ namespace iTextSharp.text.pdf {
                     else
                         charWidth = ck.GetCharWidth(text[currentChar]);
                 }
-                splitChar = ck.IsExtSplitCharacter(oldCurrentChar, currentChar, totalTextLength, text, detailChunks);
-                if (splitChar && Char.IsWhiteSpace((char)uniC))
-                    lastSplit = currentChar;
                 if (width - charWidth < 0) {
                     // If the chunk is an image and it is the first one in line, check if resize requested
                     // If so, resize to fit the current line width
@@ -388,45 +388,89 @@ namespace iTextSharp.text.pdf {
                         }
                     }
                 }
-                if (width - charWidth < 0)
-                    break;
-                if (splitChar)
-                    lastSplit = currentChar;
-                if (!ck.IsTabSpace())
-                    width -= charWidth;
-                lastValidChunk = ck;
                 if (ck.IsTab()) {
-                    Object[] tab = (Object[])ck.GetAttribute(Chunk.TAB);
-                    float tabPosition = (float)tab[1];
-                    bool newLine = (bool)tab[2];
-                    if (newLine && tabPosition < originalWidth - width) {
-                        return new PdfLine(0, originalWidth, width, alignment, true, CreateArrayOfPdfChunks(oldCurrentChar, currentChar - 1), isRTL);
+                    if (ck.IsAttribute(Chunk.TABSETTINGS))
+                    {
+                        lastSplit = currentChar;
+                        if (tabStop != null)
+                        {
+                            float tabStopPosition = tabStop.GetPosition(tabPosition, originalWidth - width, tabStopAnchorPosition);
+                            width = originalWidth - (tabStopPosition + (originalWidth - width - tabPosition));
+                            if (width < 0)
+                            {
+                                tabStopPosition += width;
+                                width = 0;
+                            }
+                            tabStop.Position = tabStopPosition;
+                        }
+
+                        tabStop = PdfChunk.GetTabStop(ck, originalWidth - width);
+                        if (tabStop.Position > originalWidth)
+                        {
+                            tabStop = null;
+                            break;
+                        }
+                        ck.TabStop = tabStop;
+                        if (tabStop.Align == TabStop.Alignment.LEFT)
+                        {
+                            width = originalWidth - tabStop.Position;
+                            tabStop = null;
+                            tabPosition = float.NaN;
+                            tabStopAnchorPosition = float.NaN;
+                        }
+                        else
+                        {
+                            tabPosition = originalWidth - width;
+                            tabStopAnchorPosition = float.NaN;
+                        }
                     }
-                    detailChunks[currentChar].AdjustLeft(leftX);
-                    width = originalWidth - tabPosition;
+                    else
+                    {
+                        Object[] tab = (Object[])ck.GetAttribute(Chunk.TAB);
+                        //Keep deprecated tab logic for backward compatibility...
+                        float tabStopPosition = (float)tab[1];
+                        bool newLine = (bool)tab[2];
+                        if (newLine && tabStopPosition < originalWidth - width)
+                        {
+                            return new PdfLine(0, originalWidth, width, alignment, true, CreateArrayOfPdfChunks(oldCurrentChar, currentChar - 1), isRTL);
+                        }
+                        detailChunks[currentChar].AdjustLeft(leftX);
+                        width = originalWidth - tabStopPosition;
+                    }
                 }
-                else if (ck.IsTabSpace()) {
-                    float module = (float)ck.GetAttribute(Chunk.TABSPACE);
-                    float decrement = Utilities.ComputeTabSpace(width, originalWidth, module);
-
-                    if (width < decrement) 
-                        return new PdfLine(0, originalWidth, width, alignment, true,
-                                           CreateArrayOfPdfChunks(oldCurrentChar, currentChar-1), isRTL);
-
-                    width -= decrement;
-                } 
-                else if (ck.IsSeparator()) {
-                    Object[] sep = (Object[])ck.GetAttribute(Chunk.SEPARATOR);
-                    IDrawInterface di = (IDrawInterface)sep[0];
-                    bool vertical = (bool)sep[1];
-                    if (vertical && di is LineSeparator) {
-                        float separatorWidth = originalWidth * ((LineSeparator) di).Percentage / 100f;
+                else if (ck.IsSeparator())
+                {
+                    Object[] sep = (Object[]) ck.GetAttribute(Chunk.SEPARATOR);
+                    IDrawInterface di = (IDrawInterface) sep[0];
+                    bool vertical = (bool) sep[1];
+                    if (vertical && di is LineSeparator)
+                    {
+                        float separatorWidth = originalWidth*((LineSeparator) di).Percentage/100f;
                         width -= separatorWidth;
-                        if (width < 0) {
+                        if (width < 0)
+                        {
                             width = 0;
                         }
                     }
                 }
+                else
+                {
+                    bool splitChar = ck.IsExtSplitCharacter(oldCurrentChar, currentChar, totalTextLength, text,
+                                                               detailChunks);
+                    if (splitChar && char.IsWhiteSpace((char) uniC))
+                        lastSplit = currentChar;
+                    if (width - charWidth < 0)
+                        break;
+                    if (tabStop != null && tabStop.Align == TabStop.Alignment.ANCHOR &&
+                        float.IsNaN(tabStopAnchorPosition) && tabStop.AnchorChar == (char) uniC)
+                    {
+                        tabStopAnchorPosition = originalWidth - width;
+                    }
+                    width -= charWidth;
+                    if (splitChar)
+                        lastSplit = currentChar;
+                }
+                lastValidChunk = ck;
                 if (surrogate)
                     ++currentChar;
             }
@@ -437,6 +481,19 @@ namespace iTextSharp.text.pdf {
                     ++currentChar;
                 return new PdfLine(0, originalWidth, 0, alignment, false, CreateArrayOfPdfChunks(currentChar - 1, currentChar - 1), isRTL);
             }
+
+            if (tabStop != null)
+            {
+                float tabStopPosition = tabStop.GetPosition(tabPosition, originalWidth - width, tabStopAnchorPosition);
+                width = originalWidth - (tabStopPosition + (originalWidth - width - tabPosition));
+                if (width < 0)
+                {
+                    tabStopPosition += width;
+                    width = 0;
+                }
+                tabStop.Position = tabStopPosition;
+            }
+
             if (currentChar >= totalTextLength) {
                 // there was more line than text
                 return new PdfLine(0, originalWidth, width, alignment, true, CreateArrayOfPdfChunks(oldCurrentChar, totalTextLength - 1), isRTL);
@@ -457,7 +514,7 @@ namespace iTextSharp.text.pdf {
                         if (pre.Length > 0) {
                             PdfChunk extra = new PdfChunk(pre, lastValidChunk);
                             currentChar = word[1] - post.Length;
-                            return new PdfLine(0, originalWidth, testWidth - lastValidChunk.Font.Width(pre), alignment, false, CreateArrayOfPdfChunks(oldCurrentChar, word[0] - 1, extra), isRTL);
+                            return new PdfLine(0, originalWidth, testWidth - lastValidChunk.Width(pre), alignment, false, CreateArrayOfPdfChunks(oldCurrentChar, word[0] - 1, extra), isRTL);
                         }
                     }
                 }
@@ -485,13 +542,36 @@ namespace iTextSharp.text.pdf {
             char c = (char)0;
             PdfChunk ck = null;
             float width = 0;
+            TabStop tabStop = null;
+            float tabStopAnchorPosition = float.NaN;
+            float tabPosition = float.NaN;
+
             for (; startIdx <= lastIdx; ++startIdx) {
                 bool surrogate = Utilities.IsSurrogatePair(text, startIdx);
-                if (detailChunks[startIdx].IsTabSpace())
+                if (detailChunks[startIdx].IsTab()
+                    //Keep deprecated tab logic for backward compatibility...
+                   && detailChunks[startIdx].IsAttribute(Chunk.TABSETTINGS))
                 {
-                    float module = (float)detailChunks[startIdx].GetAttribute(Chunk.TABSPACE);
-                    float decrement = Utilities.ComputeTabSpace(width, module);
-                    width += decrement;
+                    if (tabStop != null)
+                    {
+                        float tabStopPosition = tabStop.GetPosition(tabPosition, width, tabStopAnchorPosition);
+                        width = tabStopPosition + (width - tabPosition);
+                        tabStop.Position = tabStopPosition;
+                    }
+                    tabStop = detailChunks[startIdx].TabStop;
+                    if (tabStop == null)
+                    {
+                        tabStop = PdfChunk.GetTabStop(detailChunks[startIdx], width);
+                        tabPosition = width;
+                        tabStopAnchorPosition = float.NaN;
+                    }
+                    else
+                    {
+                        width = tabStop.Position;
+                        tabStop = null;
+                        tabPosition = float.NaN;
+                        tabStopAnchorPosition = float.NaN;
+                    }
                 }
                 else if (surrogate)
                 {
@@ -503,8 +583,17 @@ namespace iTextSharp.text.pdf {
                     ck = detailChunks[startIdx];
                     if (PdfChunk.NoPrint(ck.GetUnicodeEquivalent(c)))
                         continue;
+                    if (tabStop != null && tabStop.Align != TabStop.Alignment.ANCHOR &&
+                        float.IsNaN(tabStopAnchorPosition) && tabStop.AnchorChar == (char) ck.GetUnicodeEquivalent(c))
+                        tabStopAnchorPosition = width;
                     width += detailChunks[startIdx].GetCharWidth(c);
                 }
+            }
+            if (tabStop != null)
+            {
+                float tabStopPosition = tabStop.GetPosition(tabPosition, width, tabStopAnchorPosition);
+                width = tabStopPosition + (width - tabPosition);
+                tabStop.Position = tabStopPosition;
             }
             return width;
         }
@@ -604,7 +693,18 @@ namespace iTextSharp.text.pdf {
             for (; idx >= startIdx; --idx) {
                 c = (char)detailChunks[idx].GetUnicodeEquivalent(text[idx]);
                 if (!IsWS(c) && !PdfChunk.NoPrint(c))
+                {
+                    if (detailChunks[idx].IsTab()
+                        //Keep deprecated tab logic for backward compatibility...
+                            && detailChunks[idx].IsAttribute(Chunk.TABSETTINGS))
+                    {
+                        Object[] tab = (Object[])detailChunks[idx].GetAttribute(Chunk.TAB);
+                        bool isWhitespace = (bool)tab[1];
+                        if (isWhitespace)
+                            continue;
+                    }
                     break;
+                }
             }
             return idx;
         }
@@ -615,7 +715,18 @@ namespace iTextSharp.text.pdf {
             for (; idx <= endIdx; ++idx) {
                 c = (char)detailChunks[idx].GetUnicodeEquivalent(text[idx]);
                 if (!IsWS(c) && !PdfChunk.NoPrint(c))
+                {
+                    if (detailChunks[idx].IsTab()
+                        //Keep deprecated tab logic for backward compatibility...
+                            && detailChunks[idx].IsAttribute(Chunk.TABSETTINGS))
+                    {
+                        Object[] tab = (Object[])detailChunks[idx].GetAttribute(Chunk.TAB);
+                        bool isWhitespace = (bool)tab[1];
+                        if (isWhitespace)
+                            continue;
+                    }
                     break;
+                }
             }
             return idx;
         }

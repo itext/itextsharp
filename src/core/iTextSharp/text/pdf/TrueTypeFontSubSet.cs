@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.util.collections;
 using iTextSharp.text.error_messages;
 
 using iTextSharp.text;
@@ -93,7 +94,7 @@ namespace iTextSharp.text.pdf {
         protected bool includeExtras;
         protected bool locaShortTable;
         protected int[] locaTable;
-        protected Dictionary<int,int[]> glyphsUsed;
+        protected HashSet2<int> glyphsUsed;
         protected List<int> glyphsInList;
         protected int tableGlyphOffset;
         protected int[] newLocaTable;
@@ -111,14 +112,14 @@ namespace iTextSharp.text.pdf {
          * @param glyphsUsed the glyphs used
          * @param includeCmap <CODE>true</CODE> if the table cmap is to be included in the generated font
          */
-        public TrueTypeFontSubSet(string fileName, RandomAccessFileOrArray rf, Dictionary<int,int[]> glyphsUsed, int directoryOffset, bool includeCmap, bool includeExtras) {
+        public TrueTypeFontSubSet(string fileName, RandomAccessFileOrArray rf, HashSet2<int> glyphsUsed, int directoryOffset, bool includeCmap, bool includeExtras) {
             this.fileName = fileName;
             this.rf = rf;
             this.glyphsUsed = glyphsUsed;
             this.includeCmap = includeCmap;
             this.includeExtras = includeExtras;
             this.directoryOffset = directoryOffset;
-            glyphsInList = new List<int>(glyphsUsed.Keys);
+            glyphsInList = new List<int>(glyphsUsed);
         }
     
         /** Does the actual work of subsetting the font.
@@ -326,8 +327,8 @@ namespace iTextSharp.text.pdf {
             if (tableLocation == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("table.1.does.not.exist.in.2", "glyf", fileName));
             int glyph0 = 0;
-            if (!glyphsUsed.ContainsKey(glyph0)) {
-                glyphsUsed[glyph0] = null;
+            if (!glyphsUsed.Contains(glyph0)) {
+                glyphsUsed.Add(glyph0);
                 glyphsInList.Add(glyph0);
             }
             tableGlyphOffset = tableLocation[TABLE_OFFSET];
@@ -349,8 +350,8 @@ namespace iTextSharp.text.pdf {
             for(;;) {
                 int flags = rf.ReadUnsignedShort();
                 int cGlyph = rf.ReadUnsignedShort();
-                if (!glyphsUsed.ContainsKey(cGlyph)) {
-                    glyphsUsed[cGlyph] = null;
+                if (!glyphsUsed.Contains(cGlyph)) {
+                    glyphsUsed.Add(cGlyph);
                     glyphsInList.Add(cGlyph);
                 }
                 if ((flags & MORE_COMPONENTS) == 0)

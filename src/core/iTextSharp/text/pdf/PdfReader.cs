@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Net;
 using System.Text;
 using System.IO;
-using iTextSharp.text;
 using iTextSharp.text.exceptions;
 using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.interfaces;
@@ -14,7 +12,6 @@ using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Cms;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
-using iTextSharp.text.pdf.codec;
 using iTextSharp.text.io;
 /*
  * $Id$
@@ -131,22 +128,39 @@ namespace iTextSharp.text.pdf {
         
         protected internal PdfReader() {
         }
-        
+
         /**
          * Constructs a new PdfReader.  This is the master constructor.
+         * @param the source of bytes for the reader
+         * @param partialRead if true, the reader is opened in partial mode (PDF is parsed on demand), if false, the entire PDF is parsed into memory as the reader opens
+         * @param ownerPassword the password or null if no password is required
+         * @param certificate the certificate or null if no certificate is required
+         * @param certificateKey the key or null if no certificate key is required
+         * @param certificateKeyProvider the name of the key provider, or null if no key is required
+         * @param closeSourceOnConstructorError if true, the byteSource will be closed if there is an error during construction of this reader
          */
-        private PdfReader(IRandomAccessSource byteSource, bool partialRead, byte[] ownerPassword, X509Certificate certificate, ICipherParameters certificateKey) {
+        private PdfReader(IRandomAccessSource byteSource, bool partialRead, byte[] ownerPassword, X509Certificate certificate, ICipherParameters certificateKey, bool closeSourceOnConstructorError)
+        {
             this.certificate = certificate;
             this.certificateKey = certificateKey;
             this.password = ownerPassword;
             this.partial = partialRead;
-            
-            tokens = GetOffsetTokeniser(byteSource);
-            
-            if (partialRead){
-                ReadPdfPartial();
-            } else {
-                ReadPdf();
+
+            try
+            {
+
+                tokens = GetOffsetTokeniser(byteSource);
+
+                if (partialRead)
+                    ReadPdfPartial();
+                else
+                    ReadPdf();
+            }
+            catch (IOException e)
+            {
+                if (closeSourceOnConstructorError)
+                    byteSource.Close();
+                throw e;
             }
         }
 
@@ -169,7 +183,8 @@ namespace iTextSharp.text.pdf {
             false,
             ownerPassword,
             null,
-            null) {
+            null,
+            true) {
         }
         
         /** Reads and parses a PDF document.
@@ -189,7 +204,8 @@ namespace iTextSharp.text.pdf {
             false,
             ownerPassword,
             null,
-            null) {
+            null,
+            true) {
         }
         
         /** Reads and parses a PDF document.
@@ -206,7 +222,8 @@ namespace iTextSharp.text.pdf {
             false,
             null,
             certificate,
-            certificateKey){
+            certificateKey,
+            true){
         }        
 
     /** Reads and parses a PDF document.
@@ -226,7 +243,8 @@ namespace iTextSharp.text.pdf {
             false,
             ownerPassword,
             null,
-            null) {
+            null,
+            true) {
         }
         
         /**
@@ -241,7 +259,8 @@ namespace iTextSharp.text.pdf {
             false,
             ownerPassword,
             null,
-            null) {
+            null,
+            false) {
         }
         
         /**
@@ -266,7 +285,8 @@ namespace iTextSharp.text.pdf {
             true,
             ownerPassword,
             null,
-            null) {
+            null,
+            false) {
         }
         
         /** Creates an independent duplicate.
@@ -566,33 +586,33 @@ namespace iTextSharp.text.pdf {
             //EliminateSharedStreams();
             RemoveUnusedObjects();
         }
-        
-        protected internal void ReadPdfPartial() {
-            try {
-				fileLength = tokens.File.Length;
-                pdfVersion = tokens.CheckPdfHeader();
-                try {
-                    ReadXref();
-                }
-                catch (Exception e) {
-                    try {
-                        rebuilt = true;
-                        RebuildXref();
-                        lastXref = -1;
-                    }
-                    catch (Exception ne) {
-                        throw new InvalidPdfException(MessageLocalization.GetComposedMessage("rebuild.failed.1.original.message.2", ne.Message, e.Message), ne);
-                    }
-                }
-                ReadDocObjPartial();
-                ReadPages();
+
+        protected internal void ReadPdfPartial()
+        {
+            fileLength = tokens.File.Length;
+            pdfVersion = tokens.CheckPdfHeader();
+            try
+            {
+                ReadXref();
             }
-            catch (IOException e) {
-                try{tokens.Close();}catch{}
-                throw e;
+            catch (Exception e)
+            {
+                try
+                {
+                    rebuilt = true;
+                    RebuildXref();
+                    lastXref = -1;
+                }
+                catch (Exception ne)
+                {
+                    throw new InvalidPdfException(MessageLocalization.GetComposedMessage(
+                            "rebuild.failed.1.original.message.2", ne.Message, e.Message), ne);
+                }
             }
+            ReadDocObjPartial();
+            ReadPages();
         }
-        
+
         private bool EqualsArray(byte[] ar1, byte[] ar2, int size) {
             for (int k = 0; k < size; ++k) {
                 if (ar1[k] != ar2[k])

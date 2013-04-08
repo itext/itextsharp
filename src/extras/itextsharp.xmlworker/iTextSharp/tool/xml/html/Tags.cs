@@ -94,6 +94,7 @@ namespace iTextSharp.tool.xml.html {
             factory.AddProcessor(HTML.Tag.SUP, span);
             factory.AddProcessor(HTML.Tag.B, span);
             factory.AddProcessor(HTML.Tag.STRONG, span);
+            factory.AddProcessor(HTML.Tag.FONT, span);
             factory.AddProcessor(HTML.Tag.I, span);
             factory.AddProcessor(HTML.Tag.CITE, span);
             factory.AddProcessor(HTML.Tag.EM, span);

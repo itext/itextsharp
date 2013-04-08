@@ -70,9 +70,6 @@ namespace iTextSharp.text.pdf {
         /** the size. */
         private float size;
         
-        /** an image. */
-        protected Image image;
-        
         protected float hScale = 1;
         
         // constructors
@@ -92,8 +89,6 @@ namespace iTextSharp.text.pdf {
         */
         
         public int CompareTo(PdfFont pdfFont) {
-            if (image != null)
-                return 0;
             if (pdfFont == null) {
                 return -1;
             }
@@ -118,13 +113,7 @@ namespace iTextSharp.text.pdf {
         */
         
         internal float Size {
-            get {
-                if (image == null)
-                    return size;
-                else {
-                    return image.ScaledHeight;
-                }
-            }
+            get { return size; }
         }
         
         /**
@@ -145,28 +134,16 @@ namespace iTextSharp.text.pdf {
         */
         
         internal float Width(int character) {
-            if (image == null)
                 return font.GetWidthPoint(character, size) * hScale;
-            else
-                return image.ScaledWidth;
         }
         
         internal float Width(String s) {
-            if (image == null)
-                return font.GetWidthPoint(s, size) * hScale;
-            else
-                return image.ScaledWidth;
+            return font.GetWidthPoint(s, size) * hScale;
         }
         
         internal BaseFont Font {
             get { 
                 return font;
-            }
-        }
-        
-        internal Image Image {
-            set {
-                this.image = value;
             }
         }
         

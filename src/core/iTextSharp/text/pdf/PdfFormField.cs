@@ -71,7 +71,7 @@ namespace iTextSharp.text.pdf {
          * Allows text fields to support rich text.
          * @since 5.0.6
          */
-        public const int FF_RICHTEXT = 1 << 26;
+        public const int FF_RICHTEXT = 1 << 25;
         public const int Q_LEFT = 0;
         public const int Q_CENTER = 1;
         public const int Q_RIGHT = 2;

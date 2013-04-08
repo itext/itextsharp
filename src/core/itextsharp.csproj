@@ -4150,6 +4150,9 @@
     <Compile Include="iTextSharp\text\pdf\security\VerificationOK.cs" />
     <Compile Include="iTextSharp\text\pdf\security\X509Certificate2Signature.cs" />
     <Compile Include="iTextSharp\text\pdf\TtfUnicodeWriter.cs" />
+    <Compile Include="iTextSharp\text\TabSettings.cs" />
+    <Compile Include="iTextSharp\text\TabSplitCharacter.cs" />
+    <Compile Include="iTextSharp\text\TabStop.cs" />
     <Compile Include="iTextSharp\text\Version.cs" />
     <Compile Include="iTextSharp\text\WritableDirectElement.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\handler\HTMLNewLineHandler.cs" />
@@ -4304,7 +4307,7 @@
     <Compile Include="srcbc\util\io\TeeOutputStream.cs" />
     <Compile Include="srcbc\util\zlib\ZInputStream.cs" />
     <Compile Include="srcbc\util\zlib\ZOutputStream.cs" />
-    <Compile Include="System\util\collections\HashSet.cs" />
+    <Compile Include="System\util\collections\HashSet2.cs" />
     <Compile Include="System\util\collections\LinkedDictionary.cs" />
     <Compile Include="System\util\collections\ReadOnlyDictionary.cs" />
     <Compile Include="System\util\zlib\ZInputStream.cs" />

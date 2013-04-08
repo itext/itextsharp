@@ -1,10 +1,12 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using System.Text;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
+using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.html;
 using iTextSharp.tool.xml.parser;
 using iTextSharp.tool.xml.pipeline.css;
@@ -29,8 +31,8 @@ namespace html2pdf {
             if (font.BaseFont != null) {
                 float ascent = Math.Max(font.BaseFont.GetFontDescriptor(BaseFont.ASCENT, 1000f), font.BaseFont.GetFontDescriptor(BaseFont.BBOXURY, 1000f));
                 float descent = Math.Min(font.BaseFont.GetFontDescriptor(BaseFont.DESCENT, 1000f), font.BaseFont.GetFontDescriptor(BaseFont.BBOXLLY, 1000f));
-                font.BaseFont.SetFontDescriptor(BaseFont.ASCENT, ascent);
-                font.BaseFont.SetFontDescriptor(BaseFont.DESCENT, descent);
+                //font.BaseFont.SetFontDescriptor(BaseFont.ASCENT, ascent);
+                //font.BaseFont.SetFontDescriptor(BaseFont.DESCENT, descent);
             }
             return font;
         }
@@ -74,36 +76,47 @@ namespace html2pdf {
                 return;    
             }
 
-            foreach (FileStream fileStream in fileList)
-            {
-                Document doc = new Document(PageSize.LETTER);
-                doc.SetMargins(doc.LeftMargin, doc.RightMargin, 35, 0);
+            foreach (FileStream fileStream in fileList) {
                 String path = Path.GetDirectoryName(Path.GetFullPath(fileStream.Name)) + Path.DirectorySeparatorChar +
-                              Path.GetFileNameWithoutExtension(fileStream.Name) + ".pdf";
-                PdfWriter pdfWriter = PdfWriter.GetInstance(doc, new FileStream(path, FileMode.Create));
-
-                doc.Open();
-                Dictionary<String, String> substFonts = new Dictionary<String, String>();
-                substFonts["Arial Unicode MS"] = "Helvetica";
+                Path.GetFileNameWithoutExtension(fileStream.Name) + ".pdf";
+                Document doc = null;
                 CssFilesImpl cssFiles = new CssFilesImpl();
-                cssFiles.Add(XMLWorkerHelper.GetCSS(new FileStream(args[1], FileMode.Open)));
-                StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
-                HtmlPipelineContext hpc = new HtmlPipelineContext(new CssAppliersImpl(new UnembedFontProvider(XMLWorkerFontProvider.DONTLOOKFORFONTS, substFonts)));
-                hpc.SetImageProvider(new ImageProvider(args[0]));
-                hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(Tags.GetHtmlTagProcessorFactory());
-                HtmlPipeline htmlPipeline = new HtmlPipeline(hpc, new PdfWriterPipeline(doc, pdfWriter));
-                IPipeline pipeline = new CssResolverPipeline(cssResolver, htmlPipeline);
-                XMLWorker worker = new XMLWorker(pipeline, true);
-                XMLParser xmlParse = new XMLParser(true, worker, null);
-		        xmlParse.Parse(fileStream);
-                doc.Close();
+                if (fileStream.Name.Contains("statmentHTML")) {
+                    TransformHtml2Pdf(fileStream, new FileStream(path, FileMode.Create));
+                } else {
+                    if (!fileStream.Name.Contains("divPagination") && !fileStream.Name.Contains("divIn")) {
+                        doc = new Document(PageSize.LETTER);
+                        doc.SetMargins(doc.LeftMargin, doc.RightMargin, 35, 0);
+                        cssFiles.Add(XMLWorkerHelper.GetCSS(new FileStream(args[1], FileMode.Open)));
+                    } else {
+                        doc = new Document(PageSize.A4);
+                        cssFiles.Add(XMLWorkerHelper.GetInstance().GetDefaultCSS());
+                    }
+
+                    PdfWriter pdfWriter = PdfWriter.GetInstance(doc, new FileStream(path, FileMode.Create));
+
+                    doc.Open();
+                    Dictionary<String, String> substFonts = new Dictionary<String, String>();
+                    //substFonts["Arial Unicode MS"] = "Helvetica";
+                    StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
+                    HtmlPipelineContext hpc =
+                        new HtmlPipelineContext(
+                            new CssAppliersImpl(new UnembedFontProvider(XMLWorkerFontProvider.DONTLOOKFORFONTS,
+                                                                        substFonts)));
+                    hpc.SetImageProvider(new ImageProvider(args[0]));
+                    hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(Tags.GetHtmlTagProcessorFactory());
+                    HtmlPipeline htmlPipeline = new HtmlPipeline(hpc, new PdfWriterPipeline(doc, pdfWriter));
+                    IPipeline pipeline = new CssResolverPipeline(cssResolver, htmlPipeline);
+                    XMLWorker worker = new XMLWorker(pipeline, true);
+                    XMLParser xmlParse = new XMLParser(true, worker, null);
+                    xmlParse.Parse(fileStream);
+                    doc.Close();
+                }
 
                 String cmpPath = Path.GetDirectoryName(Path.GetFullPath(fileStream.Name)) + Path.DirectorySeparatorChar +
                                  "cmp_" + Path.GetFileNameWithoutExtension(fileStream.Name) + ".pdf";
                 if (File.Exists(cmpPath)) {
                     CompareTool ct = new CompareTool(path, cmpPath);
-                    String outImage = "<testName>-%03d.png".Replace("<testName>", Path.GetFileNameWithoutExtension(fileStream.Name) );
-                    String cmpImage = "cmp_<testName>-%03d.png".Replace("<testName>", Path.GetFileNameWithoutExtension(fileStream.Name) );
                     String diffPath = Path.GetDirectoryName(Path.GetFullPath(fileStream.Name)) +
                                       Path.DirectorySeparatorChar + "diff_" + Path.GetFileNameWithoutExtension(fileStream.Name);
                     String errorMessage = ct.Compare(Path.GetDirectoryName(Path.GetFullPath(fileStream.Name)) + Path.DirectorySeparatorChar + "compare" + Path.DirectorySeparatorChar, diffPath);
@@ -125,6 +138,47 @@ namespace html2pdf {
                     }
                 }
             } catch {}
+        }
+
+        static protected void TransformHtml2Pdf(FileStream inputHtml, FileStream outputPdf) {
+            Document doc = new Document(new Rectangle(1008f, 620f));
+            PdfWriter pdfWriter = PdfWriter.GetInstance(doc, outputPdf);
+            doc.Open();
+            TransformHtml2Pdf(inputHtml, doc, pdfWriter);
+            doc.Close();
+        }
+
+        static protected void TransformHtml2Pdf(FileStream inputHtml, Document doc, PdfWriter pdfWriter) {
+            CssFilesImpl cssFiles = new CssFilesImpl();
+            cssFiles.Add(XMLWorkerHelper.GetInstance().GetDefaultCSS());
+            StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
+
+            String Css1 =
+                "https://specialtyonlinestg.cardinalhealth.com/CardinalHealthSpecialty/themes/html/SS_SPDCardinalHealth/css/globalStyles.css?version=RI_20121023";
+            String Css2 =
+                "https://specialtyonlinestg.cardinalhealth.com/CardinalHealthSpecialty/themes/html/SS_SPDCardinalHealth/css/SPDCSS/CAHPHReconciliationPortletView.css?version=AC_20120717";
+
+            try {
+                cssResolver.AddCssFile(Css1, true);
+                cssResolver.AddCssFile(Css2, true);
+            }
+            catch (CssResolverException e) {
+                // TODO Auto-generated catch block
+            }
+
+            HtmlPipelineContext htmlContext = new HtmlPipelineContext(new CssAppliersImpl(new XMLWorkerFontProvider()));
+            htmlContext.SetTagFactory(Tags.GetHtmlTagProcessorFactory());
+            htmlContext.SetPageSize(new Rectangle(doc.Left, doc.Bottom, doc.Right, doc.Top));
+
+            // Pipelines
+            PdfWriterPipeline pdf = new PdfWriterPipeline(doc, pdfWriter);
+            HtmlPipeline html = new HtmlPipeline(htmlContext, pdf);
+            CssResolverPipeline css = new CssResolverPipeline(cssResolver, html);
+
+
+            XMLWorker worker = new XMLWorker(css, true);
+            XMLParser parser = new XMLParser(worker, Encoding.UTF8);
+            parser.Parse(inputHtml, Encoding.UTF8);
         }
     }
 }

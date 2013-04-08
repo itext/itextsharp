@@ -107,7 +107,7 @@ namespace iTextSharp.text {
         protected bool keeptogether = false;
         protected PdfName role = PdfName.P;
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
-        protected Guid id = Guid.NewGuid();
+        protected Guid id = Guid.Empty;
 
         // constructors
     
@@ -182,7 +182,7 @@ namespace iTextSharp.text {
                 SpacingAfter = p.SpacingAfter;
                 SpacingBefore = p.SpacingBefore;
                 Role = p.role;
-                id = p.id;
+                id = p.ID;
                 if (p.accessibleAttributes != null)
                     accessibleAttributes = new Dictionary<PdfName, PdfObject>(p.accessibleAttributes);
             }
@@ -206,6 +206,9 @@ namespace iTextSharp.text {
             copy.ExtraParagraphSpace = ExtraParagraphSpace;
             copy.Role = Role;
             copy.id = ID;
+            if (accessibleAttributes != null)
+                copy.accessibleAttributes = new Dictionary<PdfName, PdfObject>(copy.accessibleAttributes);
+            copy.TabSettings = this.TabSettings;
             return copy;
         }
 
@@ -236,8 +239,6 @@ namespace iTextSharp.text {
                                 if (firstItem != null) {
                                     firstItem.SpacingBefore = SpacingBefore;
                                 }
-                                break;
-                            default:
                                 break;
                         }
                     }
@@ -497,7 +498,12 @@ namespace iTextSharp.text {
         }
 
         public Guid ID {
-            get { return id; }
+            get
+            {
+                if (id == Guid.Empty)
+                    id = Guid.NewGuid();
+                return id;
+            }
             set { id = value; }
         }
     }

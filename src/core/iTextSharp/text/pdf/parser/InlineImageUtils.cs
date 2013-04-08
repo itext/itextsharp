@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using iTextSharp.text.pdf;
 //using System.util;
 /*
  * $Id$
@@ -339,7 +338,22 @@ namespace iTextSharp.text.pdf.parser {
                     found++;
                     accumulated.WriteByte((byte)ch);
                 } else if (found == 3 && PRTokeniser.IsWhitespace(ch)){
-                    return baos.ToArray();
+                    try
+                    {
+                        byte[] tmp = baos.ToArray();
+                        new PdfImageObject(imageDictionary, tmp, colorSpaceDic);
+                        return tmp;
+                    }
+                    catch (Exception)
+                    {
+                        byte[] tmp = accumulated.ToArray();
+                        baos.Write(tmp, 0, tmp.Length);
+                        accumulated.SetLength(0);
+
+                        baos.WriteByte((byte)ch);
+                        found = 0;
+                    }
+
                 } else {
                     baos.Write(ff = accumulated.ToArray(), 0, ff.Length);
                     accumulated.SetLength(0);

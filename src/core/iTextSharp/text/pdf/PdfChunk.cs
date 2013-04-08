@@ -73,6 +73,7 @@ namespace iTextSharp.text.pdf {
     
         /** The allowed attributes in variable <CODE>noStroke</CODE>. */
         private static Dictionary<string,object> keysNoStroke = new Dictionary<string,object>();
+        private const String TABSTOP = "TABSTOP";
     
         static PdfChunk() {
             keysAttributes.Add(Chunk.ACTION, null);
@@ -89,8 +90,9 @@ namespace iTextSharp.text.pdf {
             keysAttributes.Add(Chunk.HSCALE, null);
             keysAttributes.Add(Chunk.SEPARATOR, null);
             keysAttributes.Add(Chunk.TAB, null);
-            keysAttributes.Add(Chunk.TABSPACE, null);
+            keysAttributes.Add(Chunk.TABSETTINGS, null);
             keysAttributes.Add(Chunk.CHAR_SPACING, null);
+            keysAttributes.Add(Chunk.WORD_SPACING, null);
             keysAttributes.Add(Chunk.LINEHEIGHT, null);
             keysNoStroke.Add(Chunk.SUBSUPSCRIPT, null);
             keysNoStroke.Add(Chunk.SPLITCHARACTER, null);
@@ -278,10 +280,8 @@ namespace iTextSharp.text.pdf {
                 offsetY = ((float)obj2[2]);
                 changeLeading = (bool)obj2[3];
             }
-            font.Image = image;
             object hs;
-            attributes.TryGetValue(Chunk.HSCALE, out hs);
-            if (hs != null)
+            if (attributes.TryGetValue(Chunk.HSCALE, out hs))
                 font.HorizontalScaling = (float)hs;
             encoding = font.Font.Encoding;
             if (noStroke.ContainsKey(Chunk.SPLITCHARACTER))
@@ -290,7 +290,24 @@ namespace iTextSharp.text.pdf {
                 splitCharacter = DefaultSplitCharacter.DEFAULT;
             accessibleElement = chunk;
         }
-    
+
+        /**
+         * Constructs a <CODE>PdfChunk</CODE>-object.
+         *
+         * @param chunk     the original <CODE>Chunk</CODE>-object
+         * @param action    the <CODE>PdfAction</CODE> if the <CODE>Chunk</CODE> comes from an <CODE>Anchor</CODE>
+         * @param tabSettings  the Phrase tab settings
+         */
+        internal PdfChunk(Chunk chunk, PdfAction action, TabSettings tabSettings)
+            : this(chunk, action) {
+            if (tabSettings != null) {
+                if (!attributes.ContainsKey(Chunk.TABSETTINGS)
+                    || attributes[Chunk.TABSETTINGS] == null)
+                attributes[Chunk.TABSETTINGS] = tabSettings;
+            }
+        }
+
+
         // methods
     
         /** Gets the Unicode equivalent to a CID.
@@ -563,23 +580,43 @@ namespace iTextSharp.text.pdf {
          *
          * @return  a width
          */
-    
-        internal float Width {
-            get {
-                if (IsAttribute(Chunk.CHAR_SPACING)) {
-        	        float cs = (float) GetAttribute(Chunk.CHAR_SPACING);
-                    return font.Width(value) + value.Length * cs;
-		        }
-                if (IsAttribute(Chunk.SEPARATOR)) {
-                    return 0;
-                }
-                if (IsAttribute(Chunk.TABSPACE)) {
-                    return 0;
-                }
-                return font.Width(this.value);
-            }
+
+        internal float Width()
+        {
+            return Width(value);
         }
-    
+
+        internal float Width(string str) {
+            if (IsAttribute(Chunk.SEPARATOR))
+                return 0;
+            if (IsImage())
+                return ImageWidth;
+
+            float width = font.Width(str);
+
+            if (IsAttribute(Chunk.CHAR_SPACING))
+            {
+                float cs = (float)GetAttribute(Chunk.CHAR_SPACING);
+                width += str.Length * cs;
+            }
+            if (IsAttribute(Chunk.WORD_SPACING))
+            {
+                int numberOfSpaces = 0;
+                int idx = -1;
+                while ((idx = str.IndexOf(' ', idx + 1)) >= 0)
+                    ++numberOfSpaces;
+                float ws = (float)GetAttribute(Chunk.WORD_SPACING);
+                width += numberOfSpaces * ws;
+            }
+            return width;
+        }
+
+        internal float Height()
+        {
+            return IsImage() ? ImageHeight : font.Size;
+        }
+
+
         /**
          * Checks if the <CODE>PdfChunk</CODE> split was caused by a newline.
          * @return <CODE>true</CODE> if the <CODE>PdfChunk</CODE> split was caused by a newline.
@@ -605,7 +642,7 @@ namespace iTextSharp.text.pdf {
             int idx = -1;
             while ((idx = value.IndexOf(' ', idx + 1)) >= 0)
                 ++numberOfSpaces;
-            return Width + (value.Length * charSpacing + numberOfSpaces * wordSpacing);
+            return font.Width(value) + value.Length * charSpacing + numberOfSpaces * wordSpacing;
         }
         
         /**
@@ -730,26 +767,49 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
-        * Checks if this <CODE>PdfChunk</CODE> is a tabspace Chunk.
-        * @return  true if this chunk is a separator.
-        * @since   5.3.4
-        */
-        internal bool IsTabSpace()
-        {
-            return IsAttribute(Chunk.TABSPACE);
-        }
-        
-        /**
         * Correction for the tab position based on the left starting position.
         * @param   newValue    the new value for the left X.
         * @since   2.1.2
         */
+        [Obsolete]
         internal void AdjustLeft(float newValue) {
             if (attributes.ContainsKey(Chunk.TAB)) {
                 Object[] o = (Object[])attributes[Chunk.TAB];
                 attributes[Chunk.TAB] = new Object[]{o[0], o[1], o[2], newValue};
             }
         }
+
+        internal static TabStop GetTabStop(PdfChunk tab, float tabPosition)
+        {
+            TabStop tabStop = null;
+            object o;
+            if (tab.attributes.TryGetValue(Chunk.TAB, out o))
+            {
+                float tabInterval = (float)((object[])o)[0];
+                if (float.IsNaN(tabInterval))
+                {
+                    object obj;
+                    tab.attributes.TryGetValue(Chunk.TABSETTINGS, out obj);
+                    tabStop = TabSettings.getTabStopNewInstance(tabPosition, (TabSettings)obj);
+                }
+                else
+                    tabStop = TabStop.NewInstance(tabPosition, tabInterval);
+            }
+            return tabStop;
+        }
+
+        internal TabStop TabStop
+        {
+            get
+            {
+                object obj;
+                if (attributes.TryGetValue(TABSTOP, out obj))
+                    return (TabStop) obj;
+                return null;
+            } 
+            set { attributes[TABSTOP] = value; }
+        }
+
 
         /**
          * Checks if there is an image in the <CODE>PdfChunk</CODE>.
@@ -922,6 +982,8 @@ namespace iTextSharp.text.pdf {
         	    float cs = (float) GetAttribute(Chunk.CHAR_SPACING);
 			    return font.Width(c) + cs * font.HorizontalScaling;
 		    }
+            if (IsImage())
+                return ImageWidth;
             return font.Width(c);
         }
     

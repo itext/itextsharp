@@ -213,7 +213,7 @@ namespace iTextSharp.text {
 
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
 
-        protected Guid id = Guid.NewGuid();
+        protected Guid id = Guid.Empty;
 
         /// <summary> Holds value of property dpiX. </summary>
         protected int dpiX = 0;
@@ -331,7 +331,7 @@ namespace iTextSharp.text {
             this.role = image.role;
             if (image.accessibleAttributes != null)
                 this.accessibleAttributes = new Dictionary<PdfName, PdfObject>(image.accessibleAttributes);
-            this.id = image.id;
+            ID = image.ID;
         }
     
         /// <summary>
@@ -1502,7 +1502,7 @@ namespace iTextSharp.text {
 
         private PdfObject SimplifyColorspace(PdfArray obj) {
             if (obj == null)
-                return obj;
+                return null;
             PdfObject first = obj.GetAsName(0);
             if (PdfName.CALGRAY.Equals(first))
                 return PdfName.DEVICEGRAY;
@@ -1608,9 +1608,13 @@ namespace iTextSharp.text {
         }
         
         public Guid ID {
-            get { return id; }
+            get
+            {
+                if (id == Guid.Empty)
+                    id = Guid.NewGuid();
+                return id;
+            }
             set { id = value; }
         }
-
     }
 }

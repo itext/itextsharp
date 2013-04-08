@@ -348,7 +348,23 @@ namespace iTextSharp.text.pdf {
         
         /** The current active <CODE>PdfAction</CODE> when processing an <CODE>Anchor</CODE>. */
         protected internal PdfAction anchorAction = null;
-        
+
+        /**
+         * The current tab settings.
+         * @return	the current
+         * @since 5.4.0
+         */
+        protected TabSettings tabSettings;
+
+        /**
+         * Getter and setter for the current tab stops.
+         * @since	5.4.0
+         */
+        public TabSettings TabSettings {
+            get { return tabSettings; }
+            set { tabSettings = value; }
+        }
+
         /**
         * Signals that an <CODE>Element</CODE> was added to the <CODE>Document</CODE>.
         *
@@ -404,7 +420,7 @@ namespace iTextSharp.text.pdf {
                     }
                     
                     // we cast the element to a chunk
-                    PdfChunk chunk = new PdfChunk((Chunk) element, anchorAction);
+                    PdfChunk chunk = new PdfChunk((Chunk) element, anchorAction, tabSettings);
                     // we try to add the chunk to the line, until we succeed
                     {
                         PdfChunk overflow;
@@ -452,15 +468,24 @@ namespace iTextSharp.text.pdf {
                 }
                 case Element.PHRASE: {
                     leadingCount++;
+                    TabSettings backupTabSettings = tabSettings;
+                    if (((Phrase)element).TabSettings != null)
+                        tabSettings = ((Phrase)element).TabSettings;
+
                     // we cast the element to a phrase and set the leading of the document
                     leading = ((Phrase) element).GetTotalLeading();
                     // we process the element
                     element.Process(this);
+                    tabSettings = backupTabSettings;
                     leadingCount--;
                     break;
                 }
                 case Element.PARAGRAPH: {
                     leadingCount++;
+                    TabSettings backupTabSettings = tabSettings;
+                    if (((Phrase)element).TabSettings != null)
+                        tabSettings = ((Phrase)element).TabSettings;
+
                     // we cast the element to a paragraph
                     Paragraph paragraph = (Paragraph) element;
                     if (IsTagged(writer))
@@ -493,6 +518,7 @@ namespace iTextSharp.text.pdf {
                     if (paragraph.KeepTogether) {
                         CarriageReturn();
                         PdfPTable table = new PdfPTable(1);
+                        table.KeepTogether = paragraph.KeepTogether;
                         table.WidthPercentage = 100f;
                         PdfPCell cell = new PdfPCell();
                         cell.AddElement(paragraph);
@@ -519,6 +545,7 @@ namespace iTextSharp.text.pdf {
                     indentation.indentLeft -= paragraph.IndentationLeft;
                     indentation.indentRight -= paragraph.IndentationRight;
                     CarriageReturn();
+                    tabSettings = backupTabSettings;
                     leadingCount--;
                     if (IsTagged(writer))
                     {
@@ -1191,6 +1218,8 @@ namespace iTextSharp.text.pdf {
                 float moveTextX = l.IndentLeft - IndentLeft + indentation.indentLeft + indentation.listIndentLeft + indentation.sectionIndentLeft;
                 text.MoveText(moveTextX, -l.Height);
                 // is the line preceeded by a symbol?
+                l.Flush();
+
                 if (l.ListSymbol != null) {
                     ListLabel lbl = null;
                     Chunk symbol = l.ListSymbol;
@@ -1212,9 +1241,7 @@ namespace iTextSharp.text.pdf {
                 currentValues[0] = currentFont;
 
                 if (IsTagged(writer) && l.ListItem != null)
-                {
                     text.OpenMCBlock(l.listItem.ListBody);
-                }
 
                 WriteLineToContent(l, text, graphics, currentValues, writer.SpaceCharRatio);
                 
@@ -1310,8 +1337,18 @@ namespace iTextSharp.text.pdf {
                 }
                 BaseColor color = chunk.Color;
                 float fontSize = chunk.Font.Size;
-                float ascender = chunk.Font.Font.GetFontDescriptor(BaseFont.ASCENT, fontSize);
-                float descender = chunk.Font.Font.GetFontDescriptor(BaseFont.DESCENT, fontSize);
+                float ascender;
+                float descender;
+                if (chunk.IsImage())
+                {
+                    ascender = chunk.Height();
+                    descender = 0;
+                }
+                else
+                {
+                    ascender = chunk.Font.Font.GetFontDescriptor(BaseFont.ASCENT, fontSize);
+                    descender = chunk.Font.Font.GetFontDescriptor(BaseFont.DESCENT, fontSize);
+                }
                 hScale = 1;
                 
                 if (chunkStrokeIdx <= lastChunkStroke) {
@@ -1320,7 +1357,7 @@ namespace iTextSharp.text.pdf {
                         width = chunk.GetWidthCorrected(baseCharacterSpacing, baseWordSpacing);
                     }
                     else {
-                        width = chunk.Width;
+                        width = chunk.Width();
                     }
                     if (chunk.IsStroked()) {
                         PdfChunk nextChunk = line.GetChunk(chunkStrokeIdx + 1);
@@ -1337,11 +1374,24 @@ namespace iTextSharp.text.pdf {
                             }
                         }
                         if (chunk.IsTab()) {
-                            Object[] tab = (Object[])chunk.GetAttribute(Chunk.TAB);
-                            IDrawInterface di = (IDrawInterface)tab[0];
-                            tabPosition = (float)tab[1] + (float)tab[3];
-                            if (tabPosition > xMarker) {
-                                di.Draw(graphics, xMarker, yMarker + descender, tabPosition, ascender - descender, yMarker);
+                            if (chunk.IsAttribute(Chunk.TABSETTINGS))
+                            {
+                                TabStop tabStop = chunk.TabStop;
+                                if (tabStop != null) {
+                                    tabPosition = tabStop.Position + baseXMarker;
+                                    if (tabStop.Leader != null)
+                                        tabStop.Leader.Draw(graphics, xMarker, yMarker + descender, tabPosition, ascender - descender, yMarker);
+                                }
+                                else {
+                                    tabPosition = xMarker;
+                                }
+                            } else {
+                                //Keep deprecated tab logic for backward compatibility...
+                                Object[] tab = (Object[])chunk.GetAttribute(Chunk.TAB);
+                                IDrawInterface di = (IDrawInterface)tab[0];
+                                tabPosition = (float)tab[1] + (float)tab[3];
+                                if (tabPosition > xMarker)
+                                    di.Draw(graphics, xMarker, yMarker + descender, tabPosition, ascender - descender, yMarker);
                             }
                             float tmp = xMarker;
                             xMarker = tabPosition;
@@ -1506,12 +1556,22 @@ namespace iTextSharp.text.pdf {
                                 hScale = (float)hs;
                             text.SetTextMatrix(hScale, b, c, 1, xMarker, yMarker);
                         }
+                        if (!isJustified)
+                        {
+                            if (chunk.IsAttribute(Chunk.WORD_SPACING))
+                            {
+                                float ws = (float)chunk.GetAttribute(Chunk.WORD_SPACING);
+                                text.SetWordSpacing(ws);
+                            }
+                        }
+
                         if (chunk.IsAttribute(Chunk.CHAR_SPACING)) {
                     	    float cs = (float) chunk.GetAttribute(Chunk.CHAR_SPACING);
 						    text.SetCharacterSpacing(cs);
 					    }
                         if (chunk.IsImage()) {
                             Image image = chunk.Image;
+                            width = chunk.ImageWidth;
                             float[] matrix = image.GetMatrix(chunk.ImageScalePercentage);
                             matrix[Image.CX] = xMarker + chunk.ImageOffsetX - matrix[Image.CX];
                             matrix[Image.CY] = yMarker + chunk.ImageOffsetY - matrix[Image.CY];
@@ -1519,12 +1579,12 @@ namespace iTextSharp.text.pdf {
                             text.MoveText(xMarker + lastBaseFactor + chunk.ImageWidth - text.XTLM, 0);
                         }
                     }
-                    if (!chunk.IsTabSpace())
-                        xMarker += width;
+
+                    xMarker += width;
                     ++chunkStrokeIdx;
                 }
 
-                if (chunk.Font.CompareTo(currentFont) != 0) {
+                if (!chunk.IsImage() && chunk.Font.CompareTo(currentFont) != 0) {
                     currentFont = chunk.Font;
                     text.SetFontAndSize(currentFont.Font, currentFont.Size);
                 }
@@ -1563,20 +1623,13 @@ namespace iTextSharp.text.pdf {
                     array.Add(-glueWidth * 1000f / chunk.Font.Size / hScale);
                     text.ShowText(array);
                 }
-                else if (chunk.IsTab()) {
+                else if (chunk.IsTab() && tabPosition != xMarker)
+                {
                     PdfTextArray array = new PdfTextArray();
                     array.Add((tabPosition - xMarker) * 1000f / chunk.Font.Size / hScale);
                     text.ShowText(array);
                 }
-                else if (chunk.IsTabSpace())
-                {
-                    float module = (float)chunk.GetAttribute(Chunk.TABSPACE);
-                    float increment = Utilities.ComputeTabSpace(text.XTLM, xMarker, module);
-                    xMarker += increment;
-                    PdfTextArray array = new PdfTextArray();
-                    array.Add(-(increment * 1000f / chunk.Font.Size / hScale));
-                    text.ShowText(array);
-                }
+                
                 // If it is a CJK chunk or Unicode TTF we will have to simulate the
                 // space adjustment.
                 else if (isJustified && numberOfSpaces > 0 && chunk.IsSpecialEncoding()) {
@@ -1628,6 +1681,9 @@ namespace iTextSharp.text.pdf {
                 }
                 if (chunk.IsAttribute(Chunk.CHAR_SPACING)) {
 				    text.SetCharacterSpacing(baseCharacterSpacing);
+                }
+                if (chunk.IsAttribute(Chunk.WORD_SPACING)) {
+                    text.SetWordSpacing(baseWordSpacing);
                 }
                 if (IsTagged(writer) && chunk.accessibleElement != null) {
                     text.CloseMCBlock(chunk.accessibleElement);

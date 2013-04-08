@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using iTextSharp.text;
 using System.util;
 /*
  * $Id: Markup.java 4672 2011-01-30 10:38:33Z blowagie $
