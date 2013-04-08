@@ -1059,6 +1059,9 @@
     <Compile Include="iTextSharp\text\SpecialSymbol.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\TabSettings.cs" />
+    <Compile Include="iTextSharp\text\TabSplitCharacter.cs" />
+    <Compile Include="iTextSharp\text\TabStop.cs" />
     <Compile Include="iTextSharp\text\Utilities.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -4020,7 +4023,7 @@
     <Compile Include="srcbc\x509\X509V3CertificateGenerator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="System\util\collections\HashSet.cs" />
+    <Compile Include="System\util\collections\HashSet2.cs" />
     <Compile Include="System\util\collections\OrderedTree.cs">
       <SubType>Code</SubType>
     </Compile>

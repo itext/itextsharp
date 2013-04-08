@@ -1177,7 +1177,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected internal byte[] GetSubSet(HashSet<int> glyphs, bool subsetp)  {
+        protected internal byte[] GetSubSet(HashSet2<int> glyphs, bool subsetp)  {
             lock (head) {
                 TrueTypeFontSubSet sb = new TrueTypeFontSubSet(fileName, new RandomAccessFileOrArray(rf), glyphs, directoryOffset, true, !subsetp);
                 return sb.Process();
@@ -1293,10 +1293,10 @@ namespace iTextSharp.text.pdf {
                                 glyphs[metrics[0]] = null;
                         }
                     }
-                    AddRangeUni(glyphs, false, subsetp);
+                    AddRangeUni(new Dictionary<int, int[]>(glyphs), false, subsetp);
                     byte[] b = null;
                     if (subsetp || directoryOffset != 0 || subsetRanges != null) {
-                        b = GetSubSet(new HashSet<int>(glyphs.Keys), subsetp);
+                        b = GetSubSet(new HashSet2<int>(glyphs.Keys), subsetp);
                     }
                     else {
                         b = GetFullFont();

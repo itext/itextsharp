@@ -100,6 +100,7 @@ namespace iTextSharp.tool.xml.html {
             public const String FIGCAPTION = "figcaption";
             public const String FIGURE = "figure";
             public const String FOOTER = "footer";
+            public const String FONT = "font";
             public const String FORM = "form";
             public const String HEADER = "header";
             public const String HGROUP = "hgroup";
@@ -225,7 +226,7 @@ namespace iTextSharp.tool.xml.html {
                     Tag.H3, Tag.H4, Tag.H5, Tag.H6, Tag.HEADER, Tag.HGROUP, Tag.HR, Tag.I, Tag.IFRAME, Tag.IMG, Tag.INPUT,
                     Tag.INS, Tag.KBD, Tag.KEYGEN, Tag.LABEL, Tag.MAP, Tag.MARK, Tag.MATH, Tag.MENU, Tag.METER, Tag.NAV,
                     Tag.NOSCRIPT, Tag.OBJECT, Tag.OL, Tag.OUTPUT, Tag.P, Tag.PRE, Tag.PROGRESS, Tag.Q, Tag.RUBY, Tag.SAMP,
-                    Tag.SCRIPT, Tag.SECTION, Tag.SELECT, Tag.SMALL, Tag.SPAN, Tag.STRONG, Tag.SUB, Tag.SUP, Tag.SVG,
+                    Tag.SCRIPT, Tag.SECTION, Tag.SELECT, Tag.SMALL, Tag.SPAN, Tag.FONT, Tag.STRONG, Tag.SUB, Tag.SUP, Tag.SVG,
                     Tag.TABLE, Tag.TEXTAREA, Tag.TIME, Tag.UL, Tag.VAR, Tag.VIDEO, Tag.WBR });
             /**
              * HTML5<br />
@@ -271,7 +272,7 @@ namespace iTextSharp.tool.xml.html {
                     Tag.ABBR, Tag.AUDIO, Tag.B, Tag.BDO, Tag.BR, Tag.BUTTON, Tag.CANVAS, Tag.CITE, Tag.CODE, Tag.COMMAND,
                     Tag.DATALIST, Tag.DFN, Tag.EM, Tag.EMBED, Tag.I, Tag.IFRAME, Tag.IMG, Tag.INPUT, Tag.KBD, Tag.KEYGEN,
                     Tag.LABEL, Tag.MARK, Tag.MATH, Tag.METER, Tag.NOSCRIPT, Tag.OBJECT, Tag.OUTPUT, Tag.PROGRESS, Tag.Q,
-                    Tag.RUBY, Tag.SAMP, Tag.SCRIPT, Tag.SELECT, Tag.SMALL, Tag.SPAN, Tag.STRONG, Tag.SUB, Tag.SUP, Tag.SVG,
+                    Tag.RUBY, Tag.SAMP, Tag.SCRIPT, Tag.SELECT, Tag.SMALL, Tag.SPAN, Tag.FONT, Tag.STRONG, Tag.SUB, Tag.SUP, Tag.SVG,
                     Tag.TEXTAREA, Tag.TIME, Tag.VAR, Tag.VIDEO, Tag.WBR
             });
             /**
@@ -314,6 +315,9 @@ namespace iTextSharp.tool.xml.html {
             public const String ROWSPAN = "rowspan";
             public const String VALIGN  = "valign";
             public const String ALIGN  = "align";
+            public const String FACE  = "face";
+            public const String SIZE  = "size";
+            public const String COLOR  = "color";
 
             /**
              * Possible attribute values.

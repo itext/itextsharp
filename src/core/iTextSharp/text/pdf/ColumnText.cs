@@ -345,7 +345,7 @@ namespace iTextSharp.text.pdf {
         if (bidiLine == null && waitPhrase != null) {
             bidiLine = new BidiLine();
             foreach (Chunk ck in waitPhrase.Chunks) {
-                bidiLine.AddChunk(new PdfChunk(ck, null));
+                bidiLine.AddChunk(new PdfChunk(ck, null, waitPhrase.TabSettings));
             }
             waitPhrase = null;
         }
@@ -364,7 +364,7 @@ namespace iTextSharp.text.pdf {
             return;
         }
         foreach (Chunk c in phrase.Chunks) {
-            bidiLine.AddChunk(new PdfChunk(c, null));
+            bidiLine.AddChunk(new PdfChunk(c, null, phrase.TabSettings));
         }
     }
     
@@ -863,7 +863,7 @@ namespace iTextSharp.text.pdf {
         if (!rectangularMode) {
             float max = 0;
             foreach (PdfChunk c in bidiLine.chunks) {
-                max = Math.Max(max, c.Font.Size);
+                max = Math.Max(max, c.Height());
             }
             currentLeading = fixedLeading + max * multipliedLeading;
         }

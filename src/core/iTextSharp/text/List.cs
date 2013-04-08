@@ -153,7 +153,7 @@ namespace iTextSharp.text {
 
         protected PdfName role = PdfName.L;
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
-        protected Guid id = Guid.NewGuid();
+        protected Guid id = Guid.Empty;
 
         // constructors
         
@@ -622,7 +622,12 @@ namespace iTextSharp.text {
         }
 
         public Guid ID {
-            get { return id; }
+            get
+            {
+                if (id == Guid.Empty)
+                    id = Guid.NewGuid();
+                return id;
+            }
             set { id = value; }
         }
 

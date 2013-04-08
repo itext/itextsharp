@@ -4,16 +4,16 @@ using System.Collections.Generic;
 
 namespace System.util.collections
 {
-    public class HashSet<T>: ICollection<T>
+    public class HashSet2<T>: ICollection<T>
     {
         private Dictionary<T, object> set;
 
-        public HashSet()
+        public HashSet2()
         {
             set = new Dictionary<T, object>();
         }
 
-        public HashSet(IEnumerable<T> set)
+        public HashSet2(IEnumerable<T> set) : this()
         {
             foreach (T item in set)
                 Add(item);

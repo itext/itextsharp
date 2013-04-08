@@ -88,6 +88,12 @@ namespace iTextSharp.text.pdf {
         protected internal bool isRTL = false;
 
         protected internal ListItem listItem = null;
+
+        protected TabStop tabStop = null;
+
+        protected float tabStopAnchorPosition = float.NaN;
+
+        protected float tabPosition = float.NaN;
     
         // constructors
     
@@ -153,29 +159,52 @@ namespace iTextSharp.text.pdf {
             //            alignment = Element.ALIGN_LEFT;
             if (chunk.IsTab()) {
                 Object[] tab = (Object[])chunk.GetAttribute(Chunk.TAB);
-                float tabPosition = (float)tab[1];
-                bool newline = (bool)tab[2];
-                if (newline && tabPosition < originalWidth - width) {
-                    return chunk;
-                }
-                width = originalWidth - tabPosition;
-                chunk.AdjustLeft(left);
-                AddToLine(chunk);
-            } else if (chunk.IsTabSpace()) {
-                if (line.Count != 0)
+                if (chunk.IsAttribute(Chunk.TABSETTINGS))
                 {
-                    float module = (float)chunk.GetAttribute(Chunk.TABSPACE);
-                    float decrement = Utilities.ComputeTabSpace(width, originalWidth, module);
-                    if (width < decrement)
-                        return chunk;
-                    width -= decrement;
-                    AddToLine(chunk);
+                    bool isWhiteSpace = (bool)tab[1];
+                    if (!isWhiteSpace || line.Count > 0)
+                    {
+                        Flush();
+                        tabStopAnchorPosition = float.NaN;
+                        tabStop = PdfChunk.GetTabStop(chunk, originalWidth - width);
+                        if (tabStop.Position > originalWidth)
+                        {
+                            width = 0;
+                            if (isWhiteSpace)
+                                return null;
+                            else
+                                return chunk;
+                        }
+                        tabStop.Position = tabStop.Position;
+                        chunk.TabStop = tabStop;
+                        if (tabStop.Align == TabStop.Alignment.LEFT)
+                        {
+                            width = originalWidth - tabStop.Position;
+                            tabStop = null;
+                            tabPosition = float.NaN;
+                        }
+                        else
+                            tabPosition = originalWidth - width;
+                    }
+                    else
+                        return null;
                 }
+                else
+                {
+                    //Keep deprecated tab logic for backward compatibility...
+                    float tabStopPosition = (float)tab[1];
+                    bool newline = (bool)tab[2];
+                    if (newline && tabPosition < originalWidth - width)
+                        return chunk;
+                    chunk.AdjustLeft(left);
+                    width = originalWidth - tabStopPosition;
+                }
+                AddToLine(chunk);
             }   // if the length of the chunk > 0 we add it to the line 
             else if (chunk.Length > 0 || chunk.IsImage()) {
                 if (overflow != null)
                     chunk.TrimLastSpace();
-                width -= chunk.Width;
+                width -= chunk.Width();
                 AddToLine(chunk);
             }
         
@@ -184,7 +213,7 @@ namespace iTextSharp.text.pdf {
             else if (line.Count < 1) {
                 chunk = overflow;
                 overflow = chunk.Truncate(width);
-                width -= chunk.Width;
+                width -= chunk.Width();
                 if (chunk.Length > 0) {
                     AddToLine(chunk);
                     return overflow;
@@ -213,6 +242,16 @@ namespace iTextSharp.text.pdf {
                     f = chunk.Leading;
                 }
                 if (f > height) height = f;
+            }
+            if (tabStop != null && tabStop.Align == TabStop.Alignment.ANCHOR && float.IsNaN(tabStopAnchorPosition))
+            {
+                String value = chunk.ToString();
+                int anchorIndex = value.IndexOf(tabStop.AnchorChar);
+                if (anchorIndex != -1)
+                {
+                    float subWidth = chunk.Width(value.Substring(anchorIndex));
+                    tabStopAnchorPosition = originalWidth - width - subWidth;
+                }
             }
             line.Add(chunk);
         }
@@ -332,13 +371,19 @@ namespace iTextSharp.text.pdf {
          */
     
         internal int NumberOfSpaces {
-            get {
-                string str = ToString();
-                int length = str.Length;
+            get
+            {
                 int numberOfSpaces = 0;
-                for (int i = 0; i < length; i++) {
-                    if (str[i] == ' ') {
-                        numberOfSpaces++;
+                foreach (PdfChunk pdfChunk in line)
+                {
+                    String tmp = pdfChunk.ToString();
+                    int length = tmp.Length;
+                    for (int i = 0; i < length; i++)
+                    {
+                        if (tmp[i] == ' ')
+                        {
+                            numberOfSpaces++;
+                        }
                     }
                 }
                 return numberOfSpaces;
@@ -370,7 +415,7 @@ namespace iTextSharp.text.pdf {
     
         public Chunk ListSymbol {
             get {
-                return listItem != null ? listItem.ListSymbol : null; ;
+                return listItem != null ? listItem.ListSymbol : null;
             }
         }
     
@@ -500,6 +545,9 @@ namespace iTextSharp.text.pdf {
             int s = 0;
             foreach (PdfChunk ck in line) {
                 if (ck.IsTab()) {
+                    if (ck.IsAttribute(Chunk.TABSETTINGS))
+                        continue;
+                    //It seems justification was forbidden in the deprecated tab logic!!!
                     return -1;
                 }
                 if (ck.IsHorizontalSeparator()) {
@@ -557,6 +605,21 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 return descender;
+            }
+        }
+
+        public void Flush()
+        {
+            if (tabStop != null)
+            {
+                float textWidth = originalWidth - width - tabPosition;
+                float tabStopPosition = tabStop.GetPosition(tabPosition, originalWidth - width, tabStopAnchorPosition);
+                width = originalWidth - tabStopPosition - textWidth;
+                if (width < 0)
+                    tabStopPosition += width;
+                tabStop.Position = tabStopPosition;
+                tabStop = null;
+                tabPosition = float.NaN;
             }
         }
     }

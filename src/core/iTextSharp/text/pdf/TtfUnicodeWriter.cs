@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.util.collections;
-using iTextSharp.text;
 
 namespace iTextSharp.text.pdf{
 
@@ -44,7 +43,7 @@ namespace iTextSharp.text.pdf{
                 byte[] b;
                 if (font.Subset || font.DirectoryOffset != 0)
                 {
-                    b = font.GetSubSet(new HashSet<int>(longTag.Keys), true);
+                    b = font.GetSubSet(new HashSet2<int>(longTag.Keys), true);
                 }
                 else
                 {

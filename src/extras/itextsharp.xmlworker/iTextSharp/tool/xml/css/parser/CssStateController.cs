@@ -80,7 +80,7 @@ namespace iTextSharp.tool.xml.css.parser {
             if (currentSelector.Contains(",")) {
                 String[] selectors = currentSelector.Split(',');
                 foreach (String selector in selectors) {
-                    css.Add(utils.StripDoubleSpacesAndTrim(selector), map);
+                    css.Add(utils.StripDoubleSpacesAndTrim(selector), new Dictionary<string, string>(map));
                 }
             } else {
                 css.Add(utils.StripDoubleSpacesAndTrim(currentSelector), map);

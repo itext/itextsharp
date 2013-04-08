@@ -302,7 +302,7 @@ namespace iTextSharp.text.pdf {
             Close(info, skipInfo);
         }
 
-        virtual protected void Close(PdfIndirectReference info, int skipInfo) {
+        protected virtual void Close(PdfIndirectReference info, int skipInfo) {
             AlterContents();
             int rootN = ((PRIndirectReference)reader.trailer.Get(PdfName.ROOT)).Number;
             if (append) {

@@ -9,6 +9,7 @@ using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf.security;
 using iTextSharp.text.xml;
 using iTextSharp.text.io;
+
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -223,31 +224,48 @@ namespace iTextSharp.text.pdf {
                 item.AddTabOrder(-1);
             }
         }
-        
+
         /** Gets the list of appearance names. Use it to get the names allowed
-        * with radio and checkbox fields. If the /Opt key exists the values will
-        * also be included. The name 'Off' may also be valid
-        * even if not returned in the list.
-        * @param fieldName the fully qualified field name
-        * @return the list of names or <CODE>null</CODE> if the field does not exist
-        */    
+         * with radio and checkbox fields. If the /Opt key exists the values will
+         * also be included. The name 'Off' may also be valid
+         * even if not returned in the list.
+         *  
+         * For Comboboxes it will return an array of display values. To extract the
+         * export values of a Combobox, please refer to {@link AcroFields#getListOptionExport(String)}
+         *
+         * @param fieldName the fully qualified field name
+         * @return the list of names or <CODE>null</CODE> if the field does not exist
+         */
         public String[] GetAppearanceStates(String fieldName) {
             if (!fields.ContainsKey(fieldName))
                 return null;
             Item fd = fields[fieldName];
-            Dictionary<string,object> names = new Dictionary<string,object>();
+            HashSet2<string> names = new HashSet2<string>();
             PdfDictionary vals = fd.GetValue(0);
             PdfString stringOpt = vals.GetAsString( PdfName.OPT );
+
+            // should not happen according to specs
             if (stringOpt != null) {
-                names[stringOpt.ToUnicodeString()] = null;
+                names.Add(stringOpt.ToUnicodeString());
             }
             else {
                 PdfArray arrayOpt = vals.GetAsArray(PdfName.OPT);
                 if (arrayOpt != null) {
                     for (int k = 0; k < arrayOpt.Size; ++k) {
-                        PdfString valStr = arrayOpt.GetAsString( k );
+                        PdfObject pdfObject = arrayOpt.GetDirectObject(k);
+                        PdfString valStr = null;
+
+                        switch (pdfObject.Type)
+                        {
+                            case PdfObject.ARRAY:
+                                valStr = ((PdfArray)pdfObject).GetAsString(1);
+                                break;
+                            case PdfObject.STRING:
+                                valStr = (PdfString)pdfObject;
+                                break;
+                        }
                         if (valStr != null)
-                            names[valStr.ToUnicodeString()] = null;
+                            names.Add(valStr.ToUnicodeString());
                     }
                 }
             }
@@ -261,11 +279,11 @@ namespace iTextSharp.text.pdf {
                     continue;
             foreach (PdfName pname in dic.Keys) {
                     String name = PdfName.DecodeName(pname.ToString());
-                    names[name] = null;
+                    names.Add(name);
                 }
             }
             string[] outs = new string[names.Count];
-            names.Keys.CopyTo(outs, 0);
+            names.CopyTo(outs, 0);
             return outs;
         }
         

@@ -9,7 +9,7 @@ namespace com.itextpdf.text.pdf{
     public class ListBody : IAccessibleElement {
 
         protected PdfName role = PdfName.LBODY;
-        protected Guid id = Guid.NewGuid();
+        protected Guid id = Guid.Empty;
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
         protected internal ListItem parentItem = null;
         protected internal float indentation = 0;
@@ -49,7 +49,12 @@ namespace com.itextpdf.text.pdf{
         }
 
         public Guid ID {
-            get { return id; }
+            get
+            {
+                if (id == Guid.Empty)
+                    id = Guid.NewGuid();
+                return id;
+            }
             set { id = value; }
         }
 

@@ -5,13 +5,10 @@ using iTextSharp.text;
 using iTextSharp.text.log;
 using iTextSharp.text.pdf;
 using iTextSharp.text.html;
-using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
 using iTextSharp.tool.xml.css.apply;
 using iTextSharp.tool.xml.exceptions;
-using iTextSharp.tool.xml.html;
 using iTextSharp.tool.xml.html.pdfelement;
-using iTextSharp.tool.xml.html.table;
 using iTextSharp.tool.xml.pipeline.html;
 /*
  * $Id: Table.java 170 2011-06-08 10:06:43Z emielackermann $
@@ -64,17 +61,11 @@ namespace iTextSharp.tool.xml.html.table {
      */
     public class Table : AbstractTagProcessor {
 
-        public static float DEFAULT_CELL_BORDER_WIDTH = 0.75f;
+        public const float DEFAULT_CELL_BORDER_WIDTH = 0.75f;
 
         private static ILogger LOG = LoggerFactory.GetLogger(typeof(Table));
         private static CssUtils utils = CssUtils.GetInstance();
         private static FontSizeTranslator fst = FontSizeTranslator.GetInstance();
-
-        /**
-         * Default constructor.
-         */
-        public Table() {
-        }
 
         /*
          * (non-Javadoc)
@@ -355,14 +346,17 @@ namespace iTextSharp.tool.xml.html.table {
                     throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
                 }
                 float? tableHeight = new HeightCalculator().GetHeight(tag, GetHtmlPipelineContext(ctx).PageSize.Height);
+                float? tableRowHeight = null;
+                if (tableHeight != null && tableHeight > 0)
+                    tableRowHeight = tableHeight / tableRows.Count;
                 int rowNumber = 0;
                 foreach (TableRowElement row in tableRows) {
                     int columnNumber = -1;
                     float? computedRowHeight = null;
-                    if ( tableHeight != null &&  tableRows.IndexOf(row) == tableRows.Count - 1) {
+                    /*if ( tableHeight != null &&  tableRows.IndexOf(row) == tableRows.Count - 1) {
                         float computedTableHeigt = table.CalculateHeights();
                         computedRowHeight = tableHeight - computedTableHeigt;
-                    }
+                    }*/
                     foreach (HtmlCell cell in row.Content) {
                         IList<IElement> compositeElements = cell.CompositeElements;
                         if (compositeElements != null) {
@@ -389,10 +383,17 @@ namespace iTextSharp.tool.xml.html.table {
                         table.AddCell(cell);
                     }
                     table.CompleteRow();
+                    if ((computedRowHeight == null || computedRowHeight <= 0) && tableRowHeight != null)
+                        computedRowHeight = tableRowHeight;
                     if (computedRowHeight != null && computedRowHeight > 0) {
                         float rowHeight = table.GetRow(rowNumber).MaxHeights;
                         if (rowHeight < computedRowHeight) {
                             table.GetRow(rowNumber).MaxHeights = computedRowHeight.Value;
+                        }
+                        else if (tableRowHeight != null && tableRowHeight < rowHeight)
+                        {
+                            tableRowHeight = (tableHeight - rowHeight - rowNumber * tableRowHeight)
+                                    / (tableRows.Count - rowNumber - 1);
                         }
                     }
                     rowNumber++;

@@ -94,7 +94,7 @@ namespace iTextSharp.text.pdf {
         protected bool includeExtras;
         protected bool locaShortTable;
         protected int[] locaTable;
-        protected HashSet<int> glyphsUsed;
+        protected HashSet2<int> glyphsUsed;
         protected List<int> glyphsInList;
         protected int tableGlyphOffset;
         protected int[] newLocaTable;
@@ -112,7 +112,7 @@ namespace iTextSharp.text.pdf {
          * @param glyphsUsed the glyphs used
          * @param includeCmap <CODE>true</CODE> if the table cmap is to be included in the generated font
          */
-        public TrueTypeFontSubSet(string fileName, RandomAccessFileOrArray rf, HashSet<int> glyphsUsed, int directoryOffset, bool includeCmap, bool includeExtras) {
+        public TrueTypeFontSubSet(string fileName, RandomAccessFileOrArray rf, HashSet2<int> glyphsUsed, int directoryOffset, bool includeCmap, bool includeExtras) {
             this.fileName = fileName;
             this.rf = rf;
             this.glyphsUsed = glyphsUsed;

@@ -69,11 +69,11 @@ namespace iTextSharp.text.pdf.parser {
             {
                 case PdfObject.INDIRECT:
                     PRIndirectReference refi = (PRIndirectReference) contentObject;
-                    PdfObject directObject = PdfReader.GetPdfObject(refi);
+                    PdfObject directObject = PdfReader.GetPdfObjectRelease(refi);
                     result = GetContentBytesFromContentObject(directObject);
                     break;
                 case PdfObject.STREAM:
-                    PRStream stream = (PRStream) PdfReader.GetPdfObject(contentObject);
+                    PRStream stream = (PRStream) PdfReader.GetPdfObjectRelease(contentObject);
                     result = PdfReader.GetStreamBytes(stream);
                     break;
                 case PdfObject.ARRAY:

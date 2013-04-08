@@ -257,7 +257,7 @@ namespace iTextSharp.text.pdf {
         internal void WriteLine(PdfLine line, PdfContentByte text, PdfContentByte graphics)  {
 			PdfFont currentFont = null;
 			foreach(PdfChunk chunk in line) {
-				if (chunk.Font.CompareTo(currentFont) != 0) {
+				if (!chunk.IsImage() && chunk.Font.CompareTo(currentFont) != 0) {
 					currentFont = chunk.Font;
 					text.SetFontAndSize(currentFont.Font, currentFont.Size);
 				}

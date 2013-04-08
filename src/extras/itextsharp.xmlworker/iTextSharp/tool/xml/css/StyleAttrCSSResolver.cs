@@ -186,6 +186,66 @@ namespace iTextSharp.tool.xml.css {
                     CssUtils.MapPutAll(css, t.Parent.CSS);
                 }
             }
+
+            if (t.Name != null)
+            {
+                if (t.Name.Equals(HTML.Tag.I) || t.Name.Equals(HTML.Tag.CITE)
+                        || t.Name.Equals(HTML.Tag.EM) || t.Name.Equals(HTML.Tag.VAR)
+                        || t.Name.Equals(HTML.Tag.DFN) || t.Name.Equals(HTML.Tag.ADDRESS))
+                {
+                    css[CSS.Property.FONT_STYLE] = CSS.Value.ITALIC;
+                }
+                else if (t.Name.Equals(HTML.Tag.B) || t.Name.Equals(HTML.Tag.STRONG))
+                {
+                    css[CSS.Property.FONT_WEIGHT] = CSS.Value.BOLD;
+                }
+                else if (t.Name.Equals(HTML.Tag.U) || t.Name.Equals(HTML.Tag.INS))
+                {
+                    css[CSS.Property.TEXT_DECORATION] = CSS.Value.UNDERLINE;
+                }
+                else if (t.Name.Equals(HTML.Tag.S) || t.Name.Equals(HTML.Tag.STRIKE)
+                        || t.Name.Equals(HTML.Tag.DEL))
+                {
+                    css[CSS.Property.TEXT_DECORATION] = CSS.Value.LINE_THROUGH;
+                }
+                else if (t.Name.Equals(HTML.Tag.BIG))
+                {
+                    css[CSS.Property.FONT_SIZE] = CSS.Value.LARGER;
+                }
+                else if (t.Name.Equals(HTML.Tag.SMALL))
+                {
+                    css[CSS.Property.FONT_SIZE] = CSS.Value.SMALLER;
+                }
+                else if (t.Name.Equals(HTML.Tag.FONT))
+                {
+                    String font_family;
+                    if (t.Attributes.TryGetValue(HTML.Attribute.FACE, out font_family))
+                        css[CSS.Property.FONT_FAMILY] = font_family;
+                    String color;
+                    if (t.Attributes.TryGetValue(HTML.Attribute.COLOR, out color))
+                        css[CSS.Property.COLOR] = color;
+                    String size;
+                    if (t.Attributes.TryGetValue(HTML.Attribute.SIZE, out size))
+                    {
+                        if (size.Equals("1")) css[CSS.Property.FONT_SIZE] = CSS.Value.XX_SMALL;
+                        else if (size.Equals("2")) css[CSS.Property.FONT_SIZE] = CSS.Value.X_SMALL;
+                        else if (size.Equals("3")) css[CSS.Property.FONT_SIZE] = CSS.Value.SMALL;
+                        else if (size.Equals("4")) css[CSS.Property.FONT_SIZE] = CSS.Value.MEDIUM;
+                        else if (size.Equals("5")) css[CSS.Property.FONT_SIZE] = CSS.Value.LARGE;
+                        else if (size.Equals("6")) css[CSS.Property.FONT_SIZE] = CSS.Value.X_LARGE;
+                        else if (size.Equals("7")) css[CSS.Property.FONT_SIZE] = CSS.Value.XX_LARGE;
+
+                    }
+                }
+                else if (t.Name.Equals(HTML.Tag.A))
+                {
+                    css[CSS.Property.TEXT_DECORATION] = CSS.Value.UNDERLINE;
+                    css[CSS.Property.COLOR] = "blue";
+                }
+
+            }
+
+
             // overwrite properties (if value != inherit)
             foreach (KeyValuePair<String, String> e in tagCss) {
                 if (!Util.EqualsIgnoreCase(CSS.Value.INHERIT, e.Value)) {

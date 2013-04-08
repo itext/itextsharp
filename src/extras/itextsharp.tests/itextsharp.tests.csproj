@@ -39,6 +39,7 @@
     <Reference Include="XmlDiffPatch, Version=1.0.8.28, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="iTextSharp\text\ChunkTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfCopyTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfTest.cs" />
@@ -97,6 +98,9 @@
       <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
       <Name>itextsharp</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="resources\text\ChunkTest\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
