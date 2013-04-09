@@ -309,15 +309,7 @@ namespace iTextSharp.text {
                 return true;
             }
             else if (o is Paragraph) {
-                base.Add(o);
-                IList<Chunk> chunks = this.Chunks;
-                if (chunks.Count > 0) {
-                    Chunk tmp = chunks[chunks.Count - 1];
-                    base.Add(new Chunk("\n", tmp.Font));
-                }
-                else {
-                    base.Add(Chunk.NEWLINE);
-                }
+                base.AddSpecial(o);
                 return true;
             }
             base.Add(o);
