@@ -90,6 +90,7 @@ namespace iTextSharp.text.pdf {
                 copy.AddPage(copy.GetImportedPage(reader, i));
             }
             copy.FreeReader(reader);
+            reader.Close();
             return n;
         }
         
