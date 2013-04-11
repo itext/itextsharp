@@ -6,7 +6,6 @@ using System.Text;
 using System.Collections.Generic;
 using iTextSharp.text.pdf.security;
 using iTextSharp.text.io;
-using iTextSharp.text.pdf.security;
 /*
  * $Id$
  *
@@ -1322,6 +1321,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             finally {
+                writer.reader.Close();
                 if (tempFile != null) {
                     try{raf.Close();}catch{}
                     if (originalout != null)
