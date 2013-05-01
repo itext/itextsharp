@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 /*
  * This file is part of the iText project.
@@ -53,6 +54,8 @@ namespace iTextSharp.text.pdf {
     * @author Paulo Soares
     */
     public class ArabicLigaturizer {
+
+        private static Dictionary<char,char[]> maptable = new Dictionary<char,char[]>();
         
         static bool IsVowel(char s) {
             return ((s >= '\u064B') && (s <= '\u0655')) || (s == '\u0670');
@@ -61,22 +64,11 @@ namespace iTextSharp.text.pdf {
         static char Charshape(char s, int which)
         /* which 0=isolated 1=final 2=initial 3=medial */
         {
-            int l, r, m;
             if ((s >= '\u0621') && (s <= '\u06D3')) {
-                l = 0;
-                r = chartable.Length - 1;
-                while (l <= r) {
-                    m = (l + r) / 2;
-                    if (s == chartable[m][0]) {
-                        return chartable[m][which + 1];
-                    }
-                    else if (s < chartable[m][0]) {
-                        r = m - 1;
-                    }
-                    else {
-                        l = m + 1;
-                    }
-                }
+                char[] c;
+                maptable.TryGetValue(s, out c);
+                if (c != null)
+                    return c[which + 1];
             }
             else if (s >= '\ufef5' && s <= '\ufefb')
                 return (char)(s + which);
@@ -84,22 +76,11 @@ namespace iTextSharp.text.pdf {
         }
 
         static int Shapecount(char s) {
-            int l, r, m;
             if ((s >= '\u0621') && (s <= '\u06D3') && !IsVowel(s)) {
-                l = 0;
-                r = chartable.Length - 1;
-                while (l <= r) {
-                    m = (l + r) / 2;
-                    if (s == chartable[m][0]) {
-                        return chartable[m].Length - 1;
-                    }
-                    else if (s < chartable[m][0]) {
-                        r = m - 1;
-                    }
-                    else {
-                        l = m + 1;
-                    }
-                }
+                char[] c;
+                maptable.TryGetValue(s, out c);
+                if (c != null)
+                    return c.Length - 1;
             }
             else if (s == ZWJ) {
                 return 4;
@@ -695,73 +676,77 @@ namespace iTextSharp.text.pdf {
             new char[]{'\u06D3', '\uFBB0', '\uFBB1'} /* YEH BARREE WITH HAMZA ABOVE */
             };
 
-            public const int ar_nothing  = 0x0;
-            public const int ar_novowel = 0x1;
-            public const int ar_composedtashkeel = 0x4;
-            public const int ar_lig = 0x8;
-            /**
-            * Digit shaping option: Replace European digits (U+0030...U+0039) by Arabic-Indic digits.
-            */
-            public const int DIGITS_EN2AN = 0x20;
-            
-            /**
-            * Digit shaping option: Replace Arabic-Indic digits by European digits (U+0030...U+0039).
-            */
-            public const int DIGITS_AN2EN = 0x40;
-            
-            /**
-            * Digit shaping option:
-            * Replace European digits (U+0030...U+0039) by Arabic-Indic digits
-            * if the most recent strongly directional character
-            * is an Arabic letter (its Bidi direction value is RIGHT_TO_LEFT_ARABIC).
-            * The initial state at the start of the text is assumed to be not an Arabic,
-            * letter, so European digits at the start of the text will not change.
-            * Compare to DIGITS_ALEN2AN_INIT_AL.
-            */
-            public const int DIGITS_EN2AN_INIT_LR = 0x60;
-            
-            /**
-            * Digit shaping option:
-            * Replace European digits (U+0030...U+0039) by Arabic-Indic digits
-            * if the most recent strongly directional character
-            * is an Arabic letter (its Bidi direction value is RIGHT_TO_LEFT_ARABIC).
-            * The initial state at the start of the text is assumed to be an Arabic,
-            * letter, so European digits at the start of the text will change.
-            * Compare to DIGITS_ALEN2AN_INT_LR.
-            */
-            public const int DIGITS_EN2AN_INIT_AL = 0x80;
-            
-            /** Not a valid option value. */
-            private const int DIGITS_RESERVED = 0xa0;
-            
-            /**
-            * Bit mask for digit shaping options.
-            */
-            public const int DIGITS_MASK = 0xe0;
-            
-            /**
-            * Digit type option: Use Arabic-Indic digits (U+0660...U+0669).
-            */
-            public const int DIGIT_TYPE_AN = 0;
-            
-            /**
-            * Digit type option: Use Eastern (Extended) Arabic-Indic digits (U+06f0...U+06f9).
-            */
-            public const int DIGIT_TYPE_AN_EXTENDED = 0x100;
+        public const int ar_nothing  = 0x0;
+        public const int ar_novowel = 0x1;
+        public const int ar_composedtashkeel = 0x4;
+        public const int ar_lig = 0x8;
+        /**
+        * Digit shaping option: Replace European digits (U+0030...U+0039) by Arabic-Indic digits.
+        */
+        public const int DIGITS_EN2AN = 0x20;
+        
+        /**
+        * Digit shaping option: Replace Arabic-Indic digits by European digits (U+0030...U+0039).
+        */
+        public const int DIGITS_AN2EN = 0x40;
+        
+        /**
+        * Digit shaping option:
+        * Replace European digits (U+0030...U+0039) by Arabic-Indic digits
+        * if the most recent strongly directional character
+        * is an Arabic letter (its Bidi direction value is RIGHT_TO_LEFT_ARABIC).
+        * The initial state at the start of the text is assumed to be not an Arabic,
+        * letter, so European digits at the start of the text will not change.
+        * Compare to DIGITS_ALEN2AN_INIT_AL.
+        */
+        public const int DIGITS_EN2AN_INIT_LR = 0x60;
+        
+        /**
+        * Digit shaping option:
+        * Replace European digits (U+0030...U+0039) by Arabic-Indic digits
+        * if the most recent strongly directional character
+        * is an Arabic letter (its Bidi direction value is RIGHT_TO_LEFT_ARABIC).
+        * The initial state at the start of the text is assumed to be an Arabic,
+        * letter, so European digits at the start of the text will change.
+        * Compare to DIGITS_ALEN2AN_INT_LR.
+        */
+        public const int DIGITS_EN2AN_INIT_AL = 0x80;
+        
+        /** Not a valid option value. */
+        private const int DIGITS_RESERVED = 0xa0;
+        
+        /**
+        * Bit mask for digit shaping options.
+        */
+        public const int DIGITS_MASK = 0xe0;
+        
+        /**
+        * Digit type option: Use Arabic-Indic digits (U+0660...U+0669).
+        */
+        public const int DIGIT_TYPE_AN = 0;
+        
+        /**
+        * Digit type option: Use Eastern (Extended) Arabic-Indic digits (U+06f0...U+06f9).
+        */
+        public const int DIGIT_TYPE_AN_EXTENDED = 0x100;
 
-            /**
-            * Bit mask for digit type options.
-            */
-            public const int DIGIT_TYPE_MASK = '\u0100'; // '\u3f00'?
+        /**
+        * Bit mask for digit type options.
+        */
+        public const int DIGIT_TYPE_MASK = '\u0100'; // '\u3f00'?
 
-            private class Charstruct {
-                internal char basechar;
-                internal char mark1;               /* has to be initialized to zero */
-                internal char vowel;
-                internal int lignum;           /* is a ligature with lignum aditional characters */
-                internal int numshapes = 1;
-            };
+        private class Charstruct {
+            internal char basechar;
+            internal char mark1;               /* has to be initialized to zero */
+            internal char vowel;
+            internal int lignum;           /* is a ligature with lignum aditional characters */
+            internal int numshapes = 1;
+        };
 
-
+        static ArabicLigaturizer() {
+            foreach (char[] c in chartable) {
+                maptable[c[0]] = c;
+            }
+        }
     }
 }
