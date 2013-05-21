@@ -172,7 +172,7 @@ namespace iTextSharp.text.pdf {
                 n = n.NextSibling;
             }
             if (n != null) {
-                XmlElement e = n.OwnerDocument.CreateElement("xfa:datasets");
+                XmlElement e = n.OwnerDocument.CreateElement("xfa", "datasets", XFA_DATA_SCHEMA);
                 e.SetAttribute("xmlns:xfa", XFA_DATA_SCHEMA);
                 datasetsNode = e;
                 n.AppendChild(datasetsNode);
