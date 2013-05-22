@@ -56,7 +56,7 @@ namespace iTextSharp.text.pdf.spatial {
          * Gets the subtype.
          * In this case RL for a rectalinear coordinate system.
          */
-        internal PdfName GetSubType() {
+        internal override PdfName GetSubType() {
             return PdfName.GEO;
         }
 
