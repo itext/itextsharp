@@ -110,7 +110,7 @@ namespace iTextSharp.text.pdf.spatial.objects {
          */
         public NumberFormatArray(IList<NumberFormatDictionary> formats) : base() {
             foreach (NumberFormatDictionary dict in formats) {
-                add(dict);
+                Add(dict);
             }
         }
     }

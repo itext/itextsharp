@@ -61,17 +61,17 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="iTextSharp\text\pdf\spatial\CoordinateSystem.cs" />
-    <Content Include="iTextSharp\text\pdf\spatial\GeographicCoordinateSystem.cs" />
-    <Content Include="iTextSharp\text\pdf\spatial\Measure.cs" />
-    <Content Include="iTextSharp\text\pdf\spatial\MeasureGeospatial.cs" />
-    <Content Include="iTextSharp\text\pdf\spatial\MeasureRectilinear.cs" />
-    <Content Include="iTextSharp\text\pdf\spatial\objects\NumberFormatArray.cs" />
-    <Content Include="iTextSharp\text\pdf\spatial\objects\NumberFormatDictionary.cs" />
-    <Content Include="iTextSharp\text\pdf\spatial\objects\XYArray.cs" />
-    <Content Include="iTextSharp\text\pdf\spatial\PointData.cs" />
-    <Content Include="iTextSharp\text\pdf\spatial\ProjectedCoordinateSystem.cs" />
-    <Content Include="iTextSharp\text\pdf\spatial\Viewport.cs" />
+    <Compile Include="iTextSharp\text\pdf\spatial\CoordinateSystem.cs" />
+    <Compile Include="iTextSharp\text\pdf\spatial\GeographicCoordinateSystem.cs" />
+    <Compile Include="iTextSharp\text\pdf\spatial\Measure.cs" />
+    <Compile Include="iTextSharp\text\pdf\spatial\MeasureGeospatial.cs" />
+    <Compile Include="iTextSharp\text\pdf\spatial\MeasureRectilinear.cs" />
+    <Compile Include="iTextSharp\text\pdf\spatial\objects\NumberFormatArray.cs" />
+    <Compile Include="iTextSharp\text\pdf\spatial\objects\NumberFormatDictionary.cs" />
+    <Compile Include="iTextSharp\text\pdf\spatial\objects\XYArray.cs" />
+    <Compile Include="iTextSharp\text\pdf\spatial\PointData.cs" />
+    <Compile Include="iTextSharp\text\pdf\spatial\ProjectedCoordinateSystem.cs" />
+    <Compile Include="iTextSharp\text\pdf\spatial\Viewport.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="itextsharp.snk" />
