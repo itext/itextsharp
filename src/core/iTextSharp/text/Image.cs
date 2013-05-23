@@ -536,10 +536,19 @@ namespace iTextSharp.text {
             int w = bm.Width;
             int h = bm.Height;
             int pxv = 0;
+
+            // Retrieve pixel data from image, contribution by Petro Protsyk
+            byte[] pixels = new byte[w * h * 4]; // 32bits per pixel
+            var bitmapData = bm.LockBits(
+                new System.Drawing.Rectangle(0, 0, w, h),
+                System.Drawing.Imaging.ImageLockMode.ReadOnly,
+                System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            System.Runtime.InteropServices.Marshal.Copy(bitmapData.Scan0, pixels, 0, pixels.Length);
+            bm.UnlockBits(bitmapData);
+
             if (forceBW) {
                 int byteWidth = (w / 8) + ((w & 7) != 0 ? 1 : 0);
-                byte[] pixelsByte = new byte[byteWidth * h];
-            
+                int size = h * w;
                 int index = 0;
                 int transColor = 1;
                 if (color != null) {
@@ -552,18 +561,19 @@ namespace iTextSharp.text {
                 if (color != null) {
                     for (int j = 0; j < h; j++) {
                         for (int i = 0; i < w; i++) {
-                            int alpha = bm.GetPixel(i, j).A;
+                            pxv = BitConverter.ToInt32(pixels, (i + j * w) << 2);
+                            int alpha = (pxv >> 24) & 0xff;
                             if (alpha < 250) {
                                 if (transColor == 1)
                                     currByte |= cbyte;
                             }
                             else {
-                                if ((bm.GetPixel(i, j).ToArgb() & 0x888) != 0)
+                                if ((pxv & 0x888) != 0)
                                     currByte |= cbyte;
                             }
                             cbyte >>= 1;
                             if (cbyte == 0 || wMarker + 1 >= w) {
-                                pixelsByte[index++] = (byte)currByte;
+                                pixels[index++] = (byte)currByte;
                                 cbyte = 0x80;
                                 currByte = 0;
                             }
@@ -577,17 +587,18 @@ namespace iTextSharp.text {
                     for (int j = 0; j < h; j++) {
                         for (int i = 0; i < w; i++) {
                             if (transparency == null) {
-                                int alpha = bm.GetPixel(i, j).A;
+                                pxv = BitConverter.ToInt32(pixels, (i + j * w) << 2);
+                                int alpha = (pxv >> 24) & 0xff;
                                 if (alpha == 0) {
                                     transparency = new int[2];
-                                    transparency[0] = transparency[1] = ((bm.GetPixel(i, j).ToArgb() & 0x888) != 0) ? 1 : 0;
+                                    transparency[0] = transparency[1] = ((pxv & 0x888) != 0) ? 1 : 0;
                                 }
                             }
-                            if ((bm.GetPixel(i, j).ToArgb() & 0x888) != 0)
+                            if ((pxv & 0x888) != 0)
                                 currByte |= cbyte;
                             cbyte >>= 1;
                             if (cbyte == 0 || wMarker + 1 >= w) {
-                                pixelsByte[index++] = (byte)currByte;
+                                pixels[index++] = (byte)currByte;
                                 cbyte = 0x80;
                                 currByte = 0;
                             }
@@ -597,10 +608,9 @@ namespace iTextSharp.text {
                         }
                     }
                 }
-                return Image.GetInstance(w, h, 1, 1, pixelsByte, transparency);
+                return Image.GetInstance(w, h, 1, 1, pixels, transparency);
             }
             else {
-                byte[] pixelsByte = new byte[w * h * 3];
                 byte[] smask = null;
             
                 int index = 0;
@@ -616,17 +626,17 @@ namespace iTextSharp.text {
                 if (color != null) {
                     for (int j = 0; j < h; j++) {
                         for (int i = 0; i < w; i++) {
-                            int alpha = (bm.GetPixel(i, j).ToArgb() >> 24) & 0xff;
+                            pxv = BitConverter.ToInt32(pixels, (i + j * w) << 2);
+                            int alpha = (pxv >> 24) & 0xff;
                             if (alpha < 250) {
-                                pixelsByte[index++] = (byte) red;
-                                pixelsByte[index++] = (byte) green;
-                                pixelsByte[index++] = (byte) blue;
+                                pixels[index++] = (byte) red;
+                                pixels[index++] = (byte)green;
+                                pixels[index++] = (byte)blue;
                             }
                             else {
-                                pxv = bm.GetPixel(i, j).ToArgb();
-                                pixelsByte[index++] = (byte) ((pxv >> 16) & 0xff);
-                                pixelsByte[index++] = (byte) ((pxv >> 8) & 0xff);
-                                pixelsByte[index++] = (byte) ((pxv) & 0xff);
+                                pixels[index++] = (byte)((pxv >> 16) & 0xff);
+                                pixels[index++] = (byte)((pxv >> 8) & 0xff);
+                                pixels[index++] = (byte)((pxv) & 0xff);
                             }
                         }
                     }
@@ -638,7 +648,7 @@ namespace iTextSharp.text {
                     int smaskPtr = 0;
                     for (int j = 0; j < h; j++) {
                         for (int i = 0; i < w; i++) {
-                            pxv = bm.GetPixel(i, j).ToArgb();
+                            pxv = BitConverter.ToInt32(pixels, (i + j * w) << 2);
                             byte alpha = smask[smaskPtr++] = (byte) ((pxv >> 24) & 0xff);
                             /* bugfix by Chris Nokleberg */
                             if (!shades) {
@@ -656,9 +666,9 @@ namespace iTextSharp.text {
                                     shades = true;
                                 }
                             }
-                            pixelsByte[index++] = (byte) ((pxv >> 16) & 0xff);
-                            pixelsByte[index++] = (byte) ((pxv >> 8) & 0xff);
-                            pixelsByte[index++] = (byte) (pxv & 0xff);
+                            pixels[index++] = (byte) ((pxv >> 16) & 0xff);
+                            pixels[index++] = (byte) ((pxv >> 8) & 0xff);
+                            pixels[index++] = (byte) (pxv & 0xff);
                         }
                     }
                     if (shades)
@@ -666,7 +676,7 @@ namespace iTextSharp.text {
                     else
                         smask = null;
                 }
-                Image img = Image.GetInstance(w, h, 3, 8, pixelsByte, transparency);
+                Image img = Image.GetInstance(w, h, 3, 8, pixels, transparency);
                 if (smask != null) {
                     Image sm = Image.GetInstance(w, h, 1, 8, smask);
                     sm.MakeMask();
