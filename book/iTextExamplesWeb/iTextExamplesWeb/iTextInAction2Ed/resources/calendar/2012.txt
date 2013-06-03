@@ -1,5 +1,0 @@
-0101	New Year
-0408	Easter
-0409	Easter Monday
-0704	4th of July
-1225	Christmas
