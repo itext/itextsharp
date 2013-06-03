@@ -2,6 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.util.collections;
+using iTextSharp.text.log;
+
 /*
  * $Id$
  * 
@@ -87,6 +89,11 @@ namespace iTextSharp.text.pdf {
                     ext += " Copied";
                 return Ref + ext;
             }
+        }
+
+        protected static ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfCopy));
+        protected ICounter getCounter() {
+    	    return COUNTER;
         }
         protected internal Dictionary<RefKey, IndirectReferences> indirects;
         protected Dictionary<PdfReader,Dictionary<RefKey, IndirectReferences>>  indirectMap;

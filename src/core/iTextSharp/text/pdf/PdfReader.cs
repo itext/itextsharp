@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using iTextSharp.text.exceptions;
+using iTextSharp.text.log;
 using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.interfaces;
 using System.util;
@@ -125,6 +126,11 @@ namespace iTextSharp.text.pdf {
         * Holds value of property appendable.
         */
         private bool appendable;
+
+       	protected static ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfReader));
+	    protected ICounter GetCounter() {
+		    return COUNTER;
+	    }
         
         protected internal PdfReader() {
         }
@@ -162,6 +168,7 @@ namespace iTextSharp.text.pdf {
                     byteSource.Close();
                 throw e;
             }
+            GetCounter().Read(fileLength);
         }
 
         /** Reads and parses a PDF document.

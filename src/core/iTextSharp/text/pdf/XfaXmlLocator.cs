@@ -1,11 +1,11 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Xml;
+using iTextSharp.text.pdf.security;
 /*
- * $Id: InvalidImageException.java 5830 2013-05-31 09:29:15Z blowagie $
+ * $Id: XfaXmlLocator.java 5830 2013-05-31 09:29:15Z blowagie $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
- * Authors: Michael Demey, Bruno Lowagie, et al.
+ * Authors: Pavel Alay, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -43,24 +43,44 @@ using System.Runtime.Serialization;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-
-namespace iTextSharp.text.exceptions
+namespace iTextSharp.text.pdf
 {
     /**
-     * RuntimeException to indicate that the provided Image is invalid/corrupted.
-     * Should only be thrown/not caught when ignoring invalid images.
-     * @since 5.4.2
+     * Helps to locate xml stream inside PDF document with Xfa form.
      */
-    public class InvalidImageException : Exception
+    public class XfaXmlLocator : IXmlLocator
     {
-        public InvalidImageException() { }
+        public XfaXmlLocator(PdfStamper stamper) {
+            this.stamper = stamper;
+            CreateXfaForm();
+        }
 
-        public InvalidImageException(string message) : base(message) { }
+        private PdfStamper stamper;
+        private XfaForm xfaForm;
 
-        public InvalidImageException(string message, Exception innerException)
-            : base(message, innerException) { }
+        protected void CreateXfaForm() {
+            xfaForm = new XfaForm(stamper.Reader);
+        }
 
-        protected InvalidImageException(SerializationInfo info, StreamingContext context)
-            : base(info, context) { }
+        /**
+         * Gets Document to sign
+         */
+        public XmlDocument GetDocument() {
+            return xfaForm.DomDocument;
+        }
+
+        /**
+         * Save document as single XML stream in AcroForm.
+         * @param document signed document
+         * @throws IOException
+         * @throws DocumentException
+         */
+        public void SetDocument(XmlDocument document) {
+            byte[] outerXml = System.Text.Encoding.UTF8.GetBytes(document.OuterXml);
+            //Create PdfStream
+            PdfIndirectReference iref = stamper.Writer.
+                    AddToBody(new PdfStream(outerXml)).IndirectReference;
+            stamper.Reader.AcroForm.Put(PdfName.XFA, iref);
+        }
     }
 }

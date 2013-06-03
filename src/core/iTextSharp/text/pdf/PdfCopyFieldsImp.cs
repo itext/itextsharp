@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.util;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.log;
+
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -72,6 +74,11 @@ namespace iTextSharp.text.pdf {
         private List<Object> calculationOrderRefs;
         private bool hasSignature;
         
+        protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfCopyFields));
+        protected ICounter getCounter() {
+    	    return COUNTER;
+        }
+
         internal PdfCopyFieldsImp(Stream os) : this(os, '\0') {
         }
         

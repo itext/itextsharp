@@ -66,6 +66,7 @@ namespace iTextSharp.text.pdf {
         private IDictionary<String, String> moreInfo;
         internal protected bool hasSignature;
         protected PdfSignatureAppearance sigApp;
+        protected XmlSignatureAppearance sigXmlApp;
         private LtvVerification verification;
 
         /** Starts the process of adding extra content to an existing PDF
@@ -741,6 +742,16 @@ namespace iTextSharp.text.pdf {
         */
         public static PdfStamper CreateSignature(PdfReader reader, Stream os, char pdfVersion, string tempFile) {
             return CreateSignature(reader, os, pdfVersion, tempFile, false);
+        }
+
+        public static PdfStamper createXmlSignature(PdfReader reader, Stream os) {
+            PdfStamper stp = new PdfStamper(reader, os);
+            stp.sigXmlApp = new XmlSignatureAppearance(stp.stamper);
+            //stp.sigApp.setSigout(bout);
+            //stp.sigApp.setOriginalout(os);
+            stp.sigXmlApp.SetStamper(stp);
+
+            return stp;
         }
 
         /**

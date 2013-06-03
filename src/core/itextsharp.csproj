@@ -80,6 +80,7 @@
     <Reference Include="System.Drawing">
       <Name>System.Drawing</Name>
     </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Windows.Forms">
       <Name>System.Windows.Forms</Name>
     </Reference>
@@ -4072,10 +4073,14 @@
     <Compile Include="iTextSharp\text\io\WindowRandomAccessSource.cs" />
     <Compile Include="iTextSharp\text\ListBody.cs" />
     <Compile Include="iTextSharp\text\ListLabel.cs" />
+    <Compile Include="iTextSharp\text\log\CounterFactory.cs" />
+    <Compile Include="iTextSharp\text\log\ICounter.cs" />
     <Compile Include="iTextSharp\text\log\ILogger.cs" />
     <Compile Include="iTextSharp\text\log\Level.cs" />
     <Compile Include="iTextSharp\text\log\LoggerFactory.cs" />
+    <Compile Include="iTextSharp\text\log\NoOpCounter.cs" />
     <Compile Include="iTextSharp\text\log\NoOpLogger.cs" />
+    <Compile Include="iTextSharp\text\log\SysoCounter.cs" />
     <Compile Include="iTextSharp\text\log\SysoLogger.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWCompressor.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWStringTable.cs" />
@@ -4136,10 +4141,13 @@
     <Compile Include="iTextSharp\text\pdf\security\IExternalSignatureContainer.cs" />
     <Compile Include="iTextSharp\text\pdf\security\IOcspClient.cs" />
     <Compile Include="iTextSharp\text\pdf\security\ITSAClient.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\IXmlLocator.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\IXpathConstructor.cs" />
     <Compile Include="iTextSharp\text\pdf\security\LtvTimestamp.cs" />
     <Compile Include="iTextSharp\text\pdf\security\LtvVerification.cs" />
     <Compile Include="iTextSharp\text\pdf\security\LtvVerifier.cs" />
     <Compile Include="iTextSharp\text\pdf\security\MakeSignature.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\MakeXmlSignature.cs" />
     <Compile Include="iTextSharp\text\pdf\security\OcspClientBouncyCastle.cs" />
     <Compile Include="iTextSharp\text\pdf\security\OcspVerifier.cs" />
     <Compile Include="iTextSharp\text\pdf\security\PdfPKCS7.cs" />
@@ -4153,6 +4161,9 @@
     <Compile Include="iTextSharp\text\pdf\security\VerificationOK.cs" />
     <Compile Include="iTextSharp\text\pdf\security\X509Certificate2Signature.cs" />
     <Compile Include="iTextSharp\text\pdf\TtfUnicodeWriter.cs" />
+    <Compile Include="iTextSharp\text\pdf\XfaXmlLocator.cs" />
+    <Compile Include="iTextSharp\text\pdf\XfaXpathConstructor.cs" />
+    <Compile Include="iTextSharp\text\pdf\XmlSignatureAppearance.cs" />
     <Compile Include="iTextSharp\text\TabSettings.cs" />
     <Compile Include="iTextSharp\text\TabSplitCharacter.cs" />
     <Compile Include="iTextSharp\text\TabStop.cs" />

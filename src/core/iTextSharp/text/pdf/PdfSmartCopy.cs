@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.util.collections;
+using iTextSharp.text.log;
 using iTextSharp.text.pdf.security;
 /*
  * $Id$
@@ -63,6 +64,11 @@ namespace iTextSharp.text.pdf {
         /** the cache with the streams and references. */
         private Dictionary<ByteStore, PdfIndirectReference> streamMap = null;
         private readonly HashSet2<PdfObject> serialized = new HashSet2<PdfObject>();
+
+        protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfSmartCopy));
+        protected ICounter GetCounter() {
+    	    return COUNTER;
+        }
 
         /** Creates a PdfSmartCopy instance. */
         public PdfSmartCopy(Document document, Stream os) : base(document, os) {

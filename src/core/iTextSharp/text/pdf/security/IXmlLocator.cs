@@ -1,11 +1,10 @@
-﻿using System;
-using System.Runtime.Serialization;
+﻿using System.Xml;
 /*
- * $Id: InvalidImageException.java 5830 2013-05-31 09:29:15Z blowagie $
+ * $Id: XmlLocator.java 5830 2013-05-31 09:29:15Z blowagie $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
- * Authors: Michael Demey, Bruno Lowagie, et al.
+ * Authors: Pavel Alay, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
@@ -43,24 +42,15 @@ using System.Runtime.Serialization;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-
-namespace iTextSharp.text.exceptions
+namespace iTextSharp.text.pdf.security
 {
     /**
-     * RuntimeException to indicate that the provided Image is invalid/corrupted.
-     * Should only be thrown/not caught when ignoring invalid images.
-     * @since 5.4.2
+     * Helps to locate xml stream
      */
-    public class InvalidImageException : Exception
+    public interface IXmlLocator
     {
-        public InvalidImageException() { }
+        XmlDocument GetDocument();
 
-        public InvalidImageException(string message) : base(message) { }
-
-        public InvalidImageException(string message, Exception innerException)
-            : base(message, innerException) { }
-
-        protected InvalidImageException(SerializationInfo info, StreamingContext context)
-            : base(info, context) { }
+        void SetDocument(XmlDocument document); 
     }
 }
