@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using System.util;
+using iTextSharp.text.log;
 using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.collection;
 using iTextSharp.text.xml.xmp;
@@ -76,6 +77,11 @@ namespace iTextSharp.text.pdf {
         protected int initialXrefSize;
         protected PdfAction openAction;
         
+        protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfStamper));
+        protected ICounter GetCounter() {
+    	    return COUNTER;
+        }
+
         /** Creates new PdfStamperImp.
         * @param reader the read PDF
         * @param os the output destination
@@ -373,6 +379,7 @@ namespace iTextSharp.text.pdf {
             os.Flush();
             if (CloseStream)
                 os.Close();
+            GetCounter().Written(os.Counter);
         }
 
         internal void ApplyRotation(PdfDictionary pageN, ByteBuffer out_p) {

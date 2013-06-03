@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.log;
 using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.xml.xmp;
 using iTextSharp.text.pdf.intern;
@@ -56,6 +57,11 @@ namespace iTextSharp.text.pdf
      */
     public class PdfAStamperImp : PdfStamperImp {
 
+        protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfAStamper));
+        protected ICounter GetCounter() {
+            return COUNTER;
+        }
+        
         /**
          * Creates new PdfStamperImp.
          * @param reader reads the PDF

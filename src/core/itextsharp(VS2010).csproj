@@ -100,6 +100,7 @@
     <Reference Include="System.Drawing">
       <Name>System.Drawing</Name>
     </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Windows.Forms">
       <Name>System.Windows.Forms</Name>
     </Reference>
@@ -241,34 +242,34 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\io\ArrayRandomAccessSource.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\io\GetBufferedRandomAccessSource.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\io\GroupedRandomAccessSource.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\io\IndependentRandomAccessSource.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\io\IRandomAccessSource.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\io\RAFRandomAccessSource.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\io\RandomAccessSourceFactory.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\io\RASInputStream.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\io\StreamUtil.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\io\WindowRandomAccessSource.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\IRtfElementInterface.cs">
       <SubType>Code</SubType>
@@ -289,14 +290,18 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\ListBody.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\ListItem.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\ListLabel.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\log\CounterFactory.cs" />
+    <Compile Include="iTextSharp\text\log\ICounter.cs" />
+    <Compile Include="iTextSharp\text\log\NoOpCounter.cs" />
+    <Compile Include="iTextSharp\text\log\SysoCounter.cs" />
     <Compile Include="iTextSharp\text\MarkedObject.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -316,7 +321,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\IdentityToUnicode.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\languages\ArabicLigaturizer.cs">
       <SubType>Code</SubType>
@@ -358,7 +363,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\BarcodeQRCode.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\BaseField.cs">
       <SubType>Code</SubType>
@@ -391,7 +396,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\codec\BitFile.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\codec\BmpImage.cs">
       <SubType>Code</SubType>
@@ -412,7 +417,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\codec\PngWriter.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\codec\TIFFConstants.cs">
       <SubType>Code</SubType>
@@ -424,7 +429,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\codec\TIFFFaxDecompressor.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\codec\TIFFField.cs">
       <SubType>Code</SubType>
@@ -436,7 +441,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\codec\TiffWriter.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\codec\wmf\InputMeta.cs">
       <SubType>Code</SubType>
@@ -592,7 +597,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\interfaces\IAccessibleElement.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\interfaces\IPdfAnnotations.cs">
       <SubType>Code</SubType>
@@ -646,19 +651,19 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\languages\DevanagariLigaturizer.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\languages\GujaratiLigaturizer.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\languages\HebrewProcessor.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\languages\ILanguageProcessor.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\languages\IndicLigaturizer.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\LZWDecoder.cs">
       <SubType>Code</SubType>
@@ -698,53 +703,53 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\LocationTextExtractionStrategy.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\MarkedContentInfo.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\MarkedContentRenderFilter.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\Matrix.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\PdfContentReaderTool.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\PdfContentStreamProcessor.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\PdfImageObject.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\PdfReaderContentParser.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\PdfTextExtractor.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\RegionTextRenderFilter.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\RenderFilter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\SimpleTextExtractionStrategy.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\TaggedPdfReaderTool.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\TextMarginFinder.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\TextRenderInfo.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\Vector.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\IXObjectDoHandler.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\PatternColor.cs">
       <SubType>Code</SubType>
@@ -765,7 +770,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfArtifact.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfBoolean.cs">
       <SubType>Code</SubType>
@@ -933,7 +938,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfPHeaderCell.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfPRow.cs">
       <SubType>Code</SubType>
@@ -945,13 +950,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfPTableBody.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfPTableFooter.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfPTableHeader.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfPublicKeyRecipient.cs">
       <SubType>Code</SubType>
@@ -1023,7 +1028,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfVisibilityExpression.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfWriter.cs">
       <SubType>Code</SubType>
@@ -1050,70 +1055,70 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\BitArray.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\BitMatrix.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\BitVector.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\BlockPair.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\ByteArray.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\ByteMatrix.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\CharacterSetECI.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\EncodeHintType.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\Encoder.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\ErrorCorrectionLevel.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\FormatInformation.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\GF256.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\GF256Poly.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\MaskUtil.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\MatrixUtil.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\Mode.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\QRCode.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\QRCodeWriter.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\ReedSolomonEncoder.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\ReedSolomonException.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\Version.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\qrcode\WriterException.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\RadioCheckField.cs">
       <SubType>Code</SubType>
@@ -1122,11 +1127,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\security\ExternalBlankSignatureContainer.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\security\IExternalSignatureContainer.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\security\IXmlLocator.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\IXpathConstructor.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\MakeXmlSignature.cs" />
     <Compile Include="iTextSharp\text\pdf\SequenceList.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1175,9 +1183,12 @@
     <Compile Include="iTextSharp\text\pdf\XfaForm.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\XfaXmlLocator.cs" />
+    <Compile Include="iTextSharp\text\pdf\XfaXpathConstructor.cs" />
     <Compile Include="iTextSharp\text\pdf\XfdfReader.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\XmlSignatureAppearance.cs" />
     <Compile Include="iTextSharp\text\Phrase.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1197,13 +1208,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\TabSettings.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\TabSplitCharacter.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\TabStop.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\Utilities.cs">
       <SubType>Code</SubType>
@@ -1317,7 +1328,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\bc\BCObjectIdentifiers.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\BerApplicationSpecific.cs">
       <SubType>Code</SubType>
@@ -2280,13 +2291,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\x9\DHDomainParameters.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\x9\DHPublicKey.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\x9\DHValidationParms.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\asn1\x9\KeySpecificInfo.cs">
       <SubType>Code</SubType>
@@ -2589,13 +2600,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\cms\CMSProcessableInputStream.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\cms\CMSReadable.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\cms\CMSSecureReadable.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\cms\CMSSignedData.cs">
       <SubType>Code</SubType>
@@ -2631,7 +2642,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\cms\DigOutputStream.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\cms\IDigestCalculator.cs">
       <SubType>Code</SubType>
@@ -2655,10 +2666,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\cms\MacOutputStream.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\cms\NullOutputStream.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\cms\OriginatorId.cs">
       <SubType>Code</SubType>
@@ -2691,7 +2702,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\cms\SignerInfoGenerator.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\cms\SignerInformation.cs">
       <SubType>Code</SubType>
@@ -2700,7 +2711,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\cms\SigOutputStream.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\cms\SimpleAttributeTableGenerator.cs">
       <SubType>Code</SubType>
@@ -2826,7 +2837,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\digests\SHA3Digest.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\digests\SHA512Digest.cs">
       <SubType>Code</SubType>
@@ -3460,19 +3471,19 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\SecurityParameters.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsBlockCipher.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsCipher.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsClient.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsDHKeyExchange.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsDssSigner.cs">
       <SubType>Code</SubType>
@@ -3481,31 +3492,31 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsKeyExchange.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsMac.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsNullCipher.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsProtocolHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsRsaKeyExchange.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsRsaSigner.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsSigner.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsSrpKeyExchange.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsStreamCipher.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\crypto\tls\TlsUtilities.cs">
       <SubType>Code</SubType>
@@ -3776,7 +3787,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\pkcs\Pkcs12Utilities.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="srcbc\pkcs\PrivateKeyInfoFactory.cs">
       <SubType>Code</SubType>
@@ -4217,13 +4228,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="System\util\collections\HashSet2.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="System\util\collections\OrderedTree.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="System\util\FilterStream.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="System\util\ListIterator.cs">
       <SubType>Code</SubType>
@@ -4232,10 +4243,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="System\util\PushbackStream.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="System\util\RectangleJ.cs">
-	  <SubType>Code</SubType>
+      <SubType>Code</SubType>
     </Compile>
     <Compile Include="System\util\StringTokenizer.cs">
       <SubType>Code</SubType>

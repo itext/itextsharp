@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.util.collections;
 using System.util;
+using iTextSharp.text.log;
 using iTextSharp.text.pdf.events;
 using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.intern;
@@ -576,7 +577,11 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-    //  ESSENTIALS 
+        //	ESSENTIALS
+        protected static ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfWriter));
+        protected ICounter GetCounter() {
+    	    return COUNTER;
+        } 
         
     //  Construct a PdfWriter instance
         
@@ -1279,6 +1284,7 @@ namespace iTextSharp.text.pdf {
                 }
                 base.Close();
             }
+            GetCounter().Written(os.Counter);
         }
 
         virtual protected void AddXFormsToBody() {

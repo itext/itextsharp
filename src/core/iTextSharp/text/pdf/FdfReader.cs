@@ -2,6 +2,7 @@ using System;
 using System.Text;
 using System.Collections.Generic;
 using System.IO;
+using iTextSharp.text.log;
 
 /*
  * This file is part of the iText project.
@@ -83,6 +84,11 @@ namespace iTextSharp.text.pdf {
         public FdfReader(Stream isp) : base(isp) {
         }
         
+        protected static ICounter COUNTER = CounterFactory.GetCounter(typeof(FdfReader));
+	    protected ICounter getCounter() {
+		    return COUNTER;
+    	}
+
         protected internal override void ReadPdf() {
             fields = new Dictionary<string,PdfDictionary>();
             try {

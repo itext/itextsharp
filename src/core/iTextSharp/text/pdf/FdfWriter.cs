@@ -2,6 +2,7 @@ using System;
 using System.util;
 using System.IO;
 using System.Collections.Generic;
+using iTextSharp.text.log;
 
 /*
  * This file is part of the iText project.
@@ -341,5 +342,10 @@ namespace iTextSharp.text.pdf {
                 return ar;
             }
         }
+
+       	protected ICounter COUNTER = CounterFactory.GetCounter(typeof(FdfWriter));
+	    protected ICounter getCounter() {
+		    return COUNTER;
+	    }
     }
 }
