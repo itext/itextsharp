@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
-
+using iTextSharp.text.io;
 using iTextSharp.text.pdf;
 
 /*
@@ -147,13 +147,13 @@ namespace iTextSharp.text.error_messages {
                     file = language + "_" + country + ".lng";
                 else
                     file = language + ".lng";
-                isp = BaseFont.GetResourceStream(BASE_PATH + file);
+                isp = StreamUtil.GetResourceStream(BASE_PATH + file);
                 if (isp != null)
                     return ReadLanguageStream(isp);
                 if (country == null)
                     return null;
                 file = language + ".lng";
-                isp = BaseFont.GetResourceStream(BASE_PATH + file);
+                isp = StreamUtil.GetResourceStream(BASE_PATH + file);
                 if (isp != null)
                     return ReadLanguageStream(isp);
                 else

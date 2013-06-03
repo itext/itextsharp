@@ -186,6 +186,7 @@ namespace iTextSharp.text.pdf {
                     ddict.Put(PdfName.OFF, OCProperties.GetAsDict(PdfName.D).Get(PdfName.OFF));
                     ddict.Put(PdfName.AS, OCProperties.GetAsDict(PdfName.D).Get(PdfName.AS));
                 }
+                PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_LAYER, OCProperties);
             }
             // metadata
             int skipInfo = -1;
@@ -311,7 +312,7 @@ namespace iTextSharp.text.pdf {
                     int j = keys[k];
                     PdfObject obj = reader.GetPdfObjectRelease(j);
                     if (obj != null && skipInfo != j && j < initialXrefSize) {
-                        AddToBody(obj, j, j != rootN);
+                        AddToBody(obj, obj.IndRef, j != rootN);
                     }
                 }
                 for (int k = initialXrefSize; k < reader.XrefSize; ++k) {
@@ -338,8 +339,16 @@ namespace iTextSharp.text.pdf {
                     encryption = encryptionObject.IndirectReference;
                 }
                 fileID = crypto.FileID;
-            } else
-                fileID = PdfEncryption.CreateInfoId(PdfEncryption.CreateDocumentId());
+            }
+            else {
+                PdfArray IDs = reader.trailer.GetAsArray(PdfName.ID);
+                if(IDs != null && IDs.GetAsString(0) != null) {
+                    fileID = PdfEncryption.CreateInfoId(IDs.GetAsString(0).GetBytes());
+                }
+                else {
+                    fileID = PdfEncryption.CreateInfoId(PdfEncryption.CreateDocumentId());
+                }
+            }
             PRIndirectReference iRoot = (PRIndirectReference)reader.trailer.Get(PdfName.ROOT);
             PdfIndirectReference root = new PdfIndirectReference(0, GetNewObjectNumber(reader, iRoot.Number, 0));
             // write the cross-reference table of the body

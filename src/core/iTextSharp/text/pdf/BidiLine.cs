@@ -351,7 +351,7 @@ namespace iTextSharp.text.pdf {
                 ck = detailChunks[currentChar];
                 if (ck.IsImage() && minY < yLine) {
                     Image img = ck.Image;
-                    if (img.ScaleToFitLineWhenOverflow && yLine + 2 * descender - img.ScaledHeight - ck.ImageOffsetY - img.SpacingBefore < minY) {
+                    if (img.ScaleToFitHeight && yLine + 2 * descender - img.ScaledHeight - ck.ImageOffsetY - img.SpacingBefore < minY) {
                         //float scalePercent = (yLine + 2 * descender - ck.ImageOffsetY - img.SpacingBefore - minY) / img.Height * 100;
                         //img.ScalePercent(scalePercent);
                         float scalePercent = (yLine + 2 * descender - ck.ImageOffsetY - img.SpacingBefore - minY) / img.Height;
@@ -423,47 +423,37 @@ namespace iTextSharp.text.pdf {
                             tabPosition = originalWidth - width;
                             tabStopAnchorPosition = float.NaN;
                         }
-                    }
-                    else
-                    {
+                    } else {
                         Object[] tab = (Object[])ck.GetAttribute(Chunk.TAB);
                         //Keep deprecated tab logic for backward compatibility...
                         float tabStopPosition = (float)tab[1];
                         bool newLine = (bool)tab[2];
-                        if (newLine && tabStopPosition < originalWidth - width)
-                        {
+                        if (newLine && tabStopPosition < originalWidth - width) {
                             return new PdfLine(0, originalWidth, width, alignment, true, CreateArrayOfPdfChunks(oldCurrentChar, currentChar - 1), isRTL);
                         }
                         detailChunks[currentChar].AdjustLeft(leftX);
                         width = originalWidth - tabStopPosition;
                     }
                 }
-                else if (ck.IsSeparator())
-                {
+                else if (ck.IsSeparator()) {
                     Object[] sep = (Object[]) ck.GetAttribute(Chunk.SEPARATOR);
                     IDrawInterface di = (IDrawInterface) sep[0];
                     bool vertical = (bool) sep[1];
-                    if (vertical && di is LineSeparator)
-                    {
+                    if (vertical && di is LineSeparator) {
                         float separatorWidth = originalWidth*((LineSeparator) di).Percentage/100f;
                         width -= separatorWidth;
                         if (width < 0)
-                        {
                             width = 0;
-                        }
                     }
-                }
-                else
-                {
+                } else {
                     bool splitChar = ck.IsExtSplitCharacter(oldCurrentChar, currentChar, totalTextLength, text,
                                                                detailChunks);
                     if (splitChar && char.IsWhiteSpace((char) uniC))
                         lastSplit = currentChar;
                     if (width - charWidth < 0)
                         break;
-                    if (tabStop != null && tabStop.Align == TabStop.Alignment.ANCHOR &&
-                        float.IsNaN(tabStopAnchorPosition) && tabStop.AnchorChar == (char) uniC)
-                    {
+                    if (tabStop != null && tabStop.Align == TabStop.Alignment.ANCHOR
+                        && float.IsNaN(tabStopAnchorPosition) && tabStop.AnchorChar == (char) uniC) {
                         tabStopAnchorPosition = originalWidth - width;
                     }
                     width -= charWidth;
@@ -482,12 +472,10 @@ namespace iTextSharp.text.pdf {
                 return new PdfLine(0, originalWidth, 0, alignment, false, CreateArrayOfPdfChunks(currentChar - 1, currentChar - 1), isRTL);
             }
 
-            if (tabStop != null)
-            {
+            if (tabStop != null) {
                 float tabStopPosition = tabStop.GetPosition(tabPosition, originalWidth - width, tabStopAnchorPosition);
                 width = originalWidth - (tabStopPosition + (originalWidth - width - tabPosition));
-                if (width < 0)
-                {
+                if (width < 0) {
                     tabStopPosition += width;
                     width = 0;
                 }

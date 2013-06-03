@@ -93,6 +93,20 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
+         * Used to actually append text to the text results.  Subclasses can use this to insert
+         * text that wouldn't normally be included in text parsing (e.g. result of OCR performed against
+         * image content)
+         * @param text the text to append to the text results accumulated so far
+         */
+        protected void AppendTextChunk(string text){
+    	    result.Append(text);
+        }
+
+        protected void AppendTextChunk(char text) {
+            result.Append(text);
+        }
+
+        /**
          * Captures text using a simplified algorithm for inserting hard returns and spaces
          * @param   renderInfo  render info
          */
@@ -122,12 +136,12 @@ namespace iTextSharp.text.pdf.parser {
             
             if (hardReturn){
                 //System.out.Println("<< Hard Return >>");
-                result.Append('\n');
+                AppendTextChunk('\n');
             } else if (!firstRender){ 
                 if (result[result.Length-1] != ' ' && renderInfo.GetText().Length > 0 && renderInfo.GetText()[0] != ' '){ // we only insert a blank space if the trailing character of the previous string wasn't a space, and the leading character of the current string isn't a space
                     float spacing = lastEnd.Subtract(start).Length;
                     if (spacing > renderInfo.GetSingleSpaceWidth()/2f){
-                        result.Append(' ');
+                        AppendTextChunk(' ');
                         //System.out.Println("Inserting implied space before '" + renderInfo.GetText() + "'");
                     }
                 }
@@ -136,7 +150,7 @@ namespace iTextSharp.text.pdf.parser {
             }
             
             //System.out.Println("[" + renderInfo.GetStartPoint() + "]->[" + renderInfo.GetEndPoint() + "] " + renderInfo.GetText());
-            result.Append(renderInfo.GetText());
+            AppendTextChunk(renderInfo.GetText());
 
             lastStart = start;
             lastEnd = end;            

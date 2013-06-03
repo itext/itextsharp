@@ -110,7 +110,7 @@ namespace iTextSharp.text.pdf {
          */
         private void ProcessToUnicode(){
             PdfObject toUni = PdfReader.GetPdfObjectRelease(fontDic.Get(PdfName.TOUNICODE));
-            if (toUni is PRStream){
+            if (toUni is PRStream) {
                 try {
                     byte[] touni = PdfReader.GetStreamBytes((PRStream)toUni);
                     CidLocationFromByte lb = new CidLocationFromByte(touni);
@@ -122,6 +122,33 @@ namespace iTextSharp.text.pdf {
                     uni2cid = null;
                     // technically, we should log this or provide some sort of feedback... but sometimes the cmap will be junk, but it's still possible to get text, so we don't want to throw an exception
                     //throw new IllegalStateException("Unable to process ToUnicode map - " + e.GetMessage(), e);
+                }
+            }
+            else if(isType0) {
+                // fake a ToUnicode for CJK Identity-H fonts
+                try {
+                    PdfName encodingName = fontDic.GetAsName(PdfName.ENCODING);
+                    if(encodingName == null)
+                        return;
+                    String enc = PdfName.DecodeName(encodingName.ToString());
+                    if(!enc.Equals("Identity-H"))
+                        return;
+                    PdfArray df = (PdfArray)PdfReader.GetPdfObjectRelease(fontDic.Get(PdfName.DESCENDANTFONTS));
+                    PdfDictionary cidft = (PdfDictionary)PdfReader.GetPdfObjectRelease(df[0]);
+                    PdfDictionary cidinfo = cidft.GetAsDict(PdfName.CIDSYSTEMINFO);
+                    if(cidinfo == null)
+                        return;
+                    PdfString ordering = cidinfo.GetAsString(PdfName.ORDERING);
+                    if(ordering == null)
+                        return;
+                    CMapToUnicode touni = IdentityToUnicode.GetMapFromOrdering(ordering.ToUnicodeString());
+                    if(touni == null)
+                        return;
+                    toUnicodeCmap = touni;
+                    uni2cid = toUnicodeCmap.CreateReverseMapping();
+                } catch(IOException e) {
+                    toUnicodeCmap = null;
+                    uni2cid = null;
                 }
             }
         }

@@ -337,6 +337,7 @@ namespace iTextSharp.text {
         /// <param name="str">a string</param>
         /// <returns>a StringBuilder</returns>
         public StringBuilder Append(string str) {
+            contentWithNoTabs = null;
             return content.Append(str);
         }
 

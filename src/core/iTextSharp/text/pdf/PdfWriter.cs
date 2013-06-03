@@ -306,7 +306,7 @@ namespace iTextSharp.text.pdf {
             }
             
             internal PdfIndirectObject Add(PdfObject objecta, bool inObjStm) {
-                return Add(objecta, IndirectReferenceNumber, inObjStm);
+                return Add(objecta, IndirectReferenceNumber, 0, inObjStm);
             }
             
             /**
@@ -345,18 +345,18 @@ namespace iTextSharp.text.pdf {
             */
             
             internal PdfIndirectObject Add(PdfObject objecta, PdfIndirectReference refa) {
-                return Add(objecta, refa.Number);
+                return Add(objecta, refa, true);
             }
             
             internal PdfIndirectObject Add(PdfObject objecta, PdfIndirectReference refa, bool inObjStm) {
-                return Add(objecta, refa.Number, inObjStm);
+                return Add(objecta, refa.Number,refa.Generation, inObjStm);
             }
             
             internal PdfIndirectObject Add(PdfObject objecta, int refNumber) {
-                return Add(objecta, refNumber, true); // to false
+                return Add(objecta, refNumber, 0, true); // to false
             }
             
-            virtual internal protected PdfIndirectObject Add(PdfObject objecta, int refNumber, bool inObjStm) {
+            virtual internal protected PdfIndirectObject Add(PdfObject objecta, int refNumber, int generation, bool inObjStm) {
                 if (inObjStm && objecta.CanBeInObjStm() && writer.FullCompression) {
                     PdfCrossReference pxref = AddToObjStm(objecta, refNumber);
                     PdfIndirectObject indirect = new PdfIndirectObject(refNumber, objecta, writer);
@@ -365,10 +365,25 @@ namespace iTextSharp.text.pdf {
                     return indirect;
                 }
                 else {
-                    PdfIndirectObject indirect = new PdfIndirectObject(refNumber, objecta, writer);
-                    Write(indirect, refNumber);
+                    PdfIndirectObject indirect;
+                    if (writer.FullCompression) {
+                	    indirect = new PdfIndirectObject(refNumber, objecta, writer);
+                	    Write(indirect, refNumber);
+                    }
+                    else {
+                	    indirect = new PdfIndirectObject(refNumber, generation, objecta, writer);
+                	    Write(indirect, refNumber, generation);
+                    }
                     return indirect;
                 }
+            }
+
+            protected internal void Write(PdfIndirectObject indirect, int refNumber, int generation) {
+                PdfCrossReference pxref = new PdfCrossReference(refNumber, position, generation);
+                xrefs.Remove(pxref);
+                xrefs[pxref] = null;
+                indirect.WriteTo(writer.Os);
+                position = writer.Os.Counter;
             }
 
             protected internal void Write(PdfIndirectObject indirect, int refNumber)
@@ -837,7 +852,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException
         */
         public PdfIndirectObject AddToBody(PdfObject objecta, int refNumber, bool inObjStm) {
-            PdfIndirectObject iobj = body.Add(objecta, refNumber, inObjStm);
+            PdfIndirectObject iobj = body.Add(objecta, refNumber, 0, inObjStm);
             return iobj;
         }
 
@@ -931,7 +946,7 @@ namespace iTextSharp.text.pdf {
         /** The root of the page tree. */
         protected PdfPages root;
         /** The PdfIndirectReference to the pages. */
-        protected List<PdfIndirectReference> pageReferences = new List<PdfIndirectReference>();
+        internal List<PdfIndirectReference> pageReferences = new List<PdfIndirectReference>();
         /** The current page number. */
         protected int currentPageNumber = 1;
         /**
@@ -1194,6 +1209,9 @@ namespace iTextSharp.text.pdf {
                 PdfIndirectReference rootRef = root.WritePageTree();
                 // make the catalog-object and add it to the body
                 PdfDictionary catalog = GetCatalog(rootRef);
+                if(documentOCG.Count > 0)
+                    PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_LAYER, OCProperties);
+
                 // [C9] if there is XMP data to add: add it
                 if (xmpMetadata != null) {
                     PdfStream xmp = new PdfStream(xmpMetadata);
@@ -1831,7 +1849,7 @@ namespace iTextSharp.text.pdf {
 
         public virtual IPdfIsoConformance GetPdfIsoConformance()
         {
-            return ((IPdfIsoConformance)(new PdfXConformanceImp()));
+            return new PdfXConformanceImp(this);
         }
         /**
         * Sets the PDFX conformance level. Allowed values are PDFX1A2001 and PDFX32002. It
@@ -2491,7 +2509,7 @@ namespace iTextSharp.text.pdf {
         internal PdfObject[] AddSimpleProperty(Object prop, PdfIndirectReference refi) {
             if (!documentProperties.ContainsKey(prop)) {
                 if (prop is IPdfOCG)
-                    PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_LAYER, null);
+                    PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_LAYER, prop);
                 documentProperties[prop] = new PdfObject[]{new PdfName("Pr" + (documentProperties.Count + 1)), refi};
             }
             return documentProperties[prop];
@@ -2663,6 +2681,13 @@ namespace iTextSharp.text.pdf {
             PdfDictionary d = new PdfDictionary();
             vOCProperties.Put(PdfName.D, d);
             d.Put(PdfName.ORDER, order);
+            if (docOrder.Count > 0 && (docOrder[0] is PdfLayer)) {
+                PdfLayer l = (PdfLayer)docOrder[0];
+                PdfString name = l.GetAsString(PdfName.NAME);
+                if (name != null) {
+                    d.Put(PdfName.NAME, name);
+                }
+            }
             PdfArray grx = new PdfArray();
             foreach (PdfLayer layer in documentOCG.Keys) {
                 if (!layer.On)
@@ -2682,7 +2707,7 @@ namespace iTextSharp.text.pdf {
         }
         
         internal void RegisterLayer(IPdfOCG layer) {
-            PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_LAYER, null);
+            PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_LAYER, layer);
             if (layer is PdfLayer) {
                 PdfLayer la = (PdfLayer)layer;
                 if (la.Title == null) {
@@ -3251,8 +3276,8 @@ namespace iTextSharp.text.pdf {
                 writer.CheckPdfIsoConformance(key, obj1);
         }
 
-        protected internal virtual void CheckPdfIsoConformance(int key, Object obj1) {
-            PdfXConformanceImp.CheckPDFXConformance(this, key, obj1);
+        public virtual void CheckPdfIsoConformance(int key, Object obj1) {
+            pdfIsoConformance.CheckPdfIsoConformance(key, obj1);
         }
 
         private void CompleteInfoDictionary(PdfDictionary info) {

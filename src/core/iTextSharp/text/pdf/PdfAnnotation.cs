@@ -704,6 +704,23 @@ namespace iTextSharp.text.pdf {
             }
         }
 
+
+        public void ApplyCTM(System.Drawing.Drawing2D.Matrix ctm) {
+            PdfArray origRect = GetAsArray(PdfName.RECT);
+            if(origRect != null) {
+                PdfRectangle rect;
+                if(origRect.Size == 4) {
+                    rect = new PdfRectangle(origRect.GetAsNumber(0).FloatValue, origRect.GetAsNumber(1).FloatValue, origRect.GetAsNumber(2).FloatValue, origRect.GetAsNumber(3).FloatValue);
+                }
+                else {
+                    rect = new PdfRectangle(origRect.GetAsNumber(0).FloatValue, origRect.GetAsNumber(1).FloatValue);
+                }
+                Put(PdfName.RECT, rect.Transform(ctm));
+            }
+        }
+
+
+
         /**
         * This class processes links from imported pages so that they may be active. The following example code reads a group
         * of files and places them all on the output PDF, four pages in a single page, keeping the links active.

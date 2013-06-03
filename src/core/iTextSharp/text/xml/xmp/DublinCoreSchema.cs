@@ -103,7 +103,17 @@ namespace iTextSharp.text.xml.xmp {
             array.Add(title);
             SetProperty(TITLE, array);
         }
-        
+
+        /**
+         * Adds a title.
+         * @param title
+         */
+        public void AddTitle(LangAlt title) {
+            SetProperty(TITLE, title);
+        }
+
+
+
         /**
         * Adds a description.
         * @param desc
@@ -113,6 +123,15 @@ namespace iTextSharp.text.xml.xmp {
             array.Add(desc);
             SetProperty(DESCRIPTION, array);
         }
+
+        /**
+         * Adds a description.
+         * @param desc
+         */
+        public void AddDescription(LangAlt desc) {
+            SetProperty(DESCRIPTION, desc);
+        }
+
 
         /**
         * Adds a subject.
@@ -129,7 +148,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds a subject.
         * @param subject array of subjects
         */
-        public void addSubject(String[] subject) {
+        public void AddSubject(String[] subject) {
             XmpArray array = new XmpArray(XmpArray.UNORDERED);
             for (int i = 0; i < subject.Length; i++) {
                 array.Add(subject[i]);

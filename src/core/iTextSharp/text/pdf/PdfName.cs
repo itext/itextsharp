@@ -161,6 +161,12 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName ART = new PdfName("Art");
         /** A name */
         public static readonly PdfName ARTBOX = new PdfName("ArtBox");
+        /**
+         * A name
+         * @since 5.4.2
+         */
+        public static readonly PdfName ARTIFACT = new PdfName("Artifact");
+
         /** A name */
         public static readonly PdfName ASCENT = new PdfName("Ascent");
         /** A name */
@@ -179,6 +185,12 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.6
          */
         public static readonly PdfName ASSETS = new PdfName("Assets");
+        /**
+         * A name
+         * @since 5.4.2
+         */
+        public static PdfName ATTACHED = new PdfName("Attached");
+
         /** A name */
         public static readonly PdfName AUTHEVENT = new PdfName("AuthEvent");
         /** A name */
@@ -390,6 +402,12 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.6
          */
         public static readonly PdfName CONDITION = new PdfName("Condition");
+        /**
+         * A name.
+         * @since 5.4.2
+         */
+        public static readonly PdfName CONFIGS = new PdfName("Configs");
+
         /**
          * A name.
          * @since 2.1.6
@@ -1210,7 +1228,7 @@ namespace iTextSharp.text.pdf {
          */
         public static readonly PdfName OBJ = new PdfName("Obj");
         /**
-         * a name used with Doucment Structure
+         * a name used with Document Structure
          * @since 2.1.5
          */
         public static readonly PdfName OBJR = new PdfName("OBJR");

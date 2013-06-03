@@ -36,6 +36,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="iTextSharp\text\pdf\interfaces\IPdfAConformance.cs" />
+    <Compile Include="iTextSharp\text\pdf\intern\PdfA1Checker.cs" />
+    <Compile Include="iTextSharp\text\pdf\intern\PdfA2Checker.cs" />
+    <Compile Include="iTextSharp\text\pdf\intern\PdfA3Checker.cs" />
+    <Compile Include="iTextSharp\text\pdf\intern\PdfAChecker.cs" />
     <Compile Include="iTextSharp\text\pdf\intern\PdfAConformanceImp.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfAConformanceException.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfAConformanceLevel.cs" />

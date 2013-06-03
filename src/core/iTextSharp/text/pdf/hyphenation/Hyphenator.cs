@@ -3,6 +3,7 @@ using System.IO;
 using System.Text;
 using System.Collections;
 using System.util;
+using iTextSharp.text.io;
 using iTextSharp.text.pdf;
 /*
  * Copyright 1999-2004 The Apache Software Foundation.
@@ -86,9 +87,9 @@ namespace iTextSharp.text.pdf.hyphenation {
         */
         public static HyphenationTree GetResourceHyphenationTree(String key) {
             try {
-                Stream stream = BaseFont.GetResourceStream(defaultHyphLocation + key + ".xml");
+                Stream stream = StreamUtil.GetResourceStream(defaultHyphLocation + key + ".xml");
                 if (stream == null && key.Length > 2)
-                    stream = BaseFont.GetResourceStream(defaultHyphLocation + key.Substring(0, 2) + ".xml");
+                    stream = StreamUtil.GetResourceStream(defaultHyphLocation + key.Substring(0, 2) + ".xml");
                 if (stream == null)
                     return null;
                 HyphenationTree hTree = new HyphenationTree();

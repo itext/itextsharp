@@ -782,6 +782,13 @@ namespace iTextSharp.text.pdf {
                 FlushLines();
                 writer.DirectContent.CloseMCBlock(this);
                 writer.FlushTaggedObjects();
+                if(PageEmpty) {
+                    int pageReferenceCount = writer.pageReferences.Count;
+                    if(pageReferenceCount > 0 && writer.CurrentPageNumber == pageReferenceCount) {
+                        writer.pageReferences.RemoveAt(pageReferenceCount - 1);
+                    }
+                }
+
             }
             bool wasImage = (imageWait != null);
             NewPage();
@@ -1472,7 +1479,7 @@ namespace iTextSharp.text.pdf {
                             else {
                         	    annot = new PdfAnnotation(writer, xMarker, yMarker + descender + chunk.TextRise, xMarker + width - subtract, yMarker + ascender + chunk.TextRise, (PdfAction)chunk.GetAttribute(Chunk.ACTION));
                             }
-                            text.AddAnnotation(annot);
+                            text.AddAnnotation(annot, true);
                             if (IsTagged(writer) && chunk.accessibleElement != null) {
                                 PdfStructureElement strucElem;
                                 structElements.TryGetValue(chunk.accessibleElement.ID, out strucElem);
@@ -1542,7 +1549,7 @@ namespace iTextSharp.text.pdf {
                                 subtract += hangingCorrection;
                             PdfAnnotation annot = PdfFormField.ShallowDuplicate((PdfAnnotation)chunk.GetAttribute(Chunk.PDFANNOTATION));
                             annot.Put(PdfName.RECT, new PdfRectangle(xMarker, yMarker + descender, xMarker + width - subtract, yMarker + ascender));
-                            text.AddAnnotation(annot);
+                            text.AddAnnotation(annot, true);
                         }
                         float[] paramsx = (float[])chunk.GetAttribute(Chunk.SKEW);
                         object hs = chunk.GetAttribute(Chunk.HSCALE);

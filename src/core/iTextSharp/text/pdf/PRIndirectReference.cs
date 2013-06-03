@@ -84,7 +84,7 @@ namespace iTextSharp.text.pdf {
     
         public override void ToPdf(PdfWriter writer, Stream os) {
             int n = writer.GetNewObjectNumber(reader, number, generation);
-            byte[] b = PdfEncodings.ConvertToBytes(new StringBuilder().Append(n).Append(" 0 R").ToString(), null);
+            byte[] b = PdfEncodings.ConvertToBytes(new StringBuilder().Append(n).Append(" ").Append(reader.Appendable ? generation : 0).Append(" R").ToString(), null);
             os.Write(b, 0, b.Length);
         }
 

@@ -147,19 +147,11 @@ public class PdfAWriter : PdfWriter {
     }
 
     /**
-     * @see PdfWriter#checkPdfIsoConformance(int, Object)
-     */
-    override protected void CheckPdfIsoConformance(int key, Object obj1)
-    {
-        PdfAConformanceImp.CheckPdfAConformance(this, key, obj1);
-    }
-
-    /**
      * @see com.itextpdf.text.pdf.PdfWriter#getPdfIsoConformance()
      */
     override public IPdfIsoConformance GetPdfIsoConformance()
     {
-        return new PdfAConformanceImp();
+        return new PdfAConformanceImp(this);
     }
 }
 

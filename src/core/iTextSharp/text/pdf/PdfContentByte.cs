@@ -104,11 +104,16 @@ namespace iTextSharp.text.pdf {
             protected internal BaseColor graphicsColorFill = new GrayColor(0);
             protected internal BaseColor textColorStroke = new GrayColor(0);
             protected internal BaseColor graphicsColorStroke = new GrayColor(0);
+            internal System.Drawing.Drawing2D.Matrix CTM = new System.Drawing.Drawing2D.Matrix();
 
             internal GraphicState() {
             }
 
             internal GraphicState(GraphicState cp) {
+                CopyParameters(cp);
+            }
+
+            internal void CopyParameters(GraphicState cp) {
                 fontDetails = cp.fontDetails;
                 colorDetails = cp.colorDetails;
                 size = cp.size;
@@ -127,6 +132,10 @@ namespace iTextSharp.text.pdf {
                 graphicsColorFill = cp.graphicsColorFill;
                 textColorStroke = cp.textColorStroke;
                 graphicsColorStroke = cp.graphicsColorStroke;
+            }
+
+            internal void Restore(GraphicState restore) {
+                CopyParameters(restore);
             }
         }
     
@@ -1489,6 +1498,7 @@ namespace iTextSharp.text.pdf {
                 SanityCheck();
             }
             state = new GraphicState();
+            stateList = new List<GraphicState>();
         }
 
         /**
@@ -1585,7 +1595,7 @@ namespace iTextSharp.text.pdf {
             int idx = stateList.Count - 1;
             if (idx < 0)
                 throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.save.restore.state.operators"));
-            state = stateList[idx];
+            state.Restore(stateList[idx]);
             stateList.RemoveAt(idx);
         }
     
@@ -2147,6 +2157,7 @@ namespace iTextSharp.text.pdf {
             if (inText && IsTagged()) {
                 EndText();
             }
+            state.CTM.Multiply(new System.Drawing.Drawing2D.Matrix(a, b, c, d, e, f));
             content.Append(a).Append(' ').Append(b).Append(' ').Append(c).Append(' ');
             content.Append(d).Append(' ').Append(e).Append(' ').Append(f).Append(" cm").Append_i(separator);
         }
@@ -2373,6 +2384,10 @@ namespace iTextSharp.text.pdf {
         internal PdfTemplate CreateTemplate(float width, float height, PdfName forcedName) {
             CheckWriter();
             PdfTemplate template = new PdfTemplate(writer);
+            IList<IAccessibleElement> allMcElements = GetMcElements();
+            if(allMcElements != null && allMcElements.Count > 0)
+                template.GetMcElements().Add(allMcElements[allMcElements.Count - 1]);
+
             template.Width = width;
             template.Height = height;
             writer.AddDirectTemplateSimple(template, forcedName);
@@ -2972,7 +2987,18 @@ namespace iTextSharp.text.pdf {
                 return cb;
             }
         }
-    
+
+        public PdfContentByte GetDuplicate(bool inheritGraphicState) {
+            PdfContentByte cb = this.Duplicate;
+            if(inheritGraphicState) {
+                cb.state = state;
+                cb.stateList = stateList;
+            }
+            return cb;
+        }
+
+
+
         /**
          * Implements a link to another document.
          * @param filename the filename for the remote document
@@ -3270,7 +3296,17 @@ namespace iTextSharp.text.pdf {
         internal virtual void AddAnnotation(PdfAnnotation annot) {
             writer.AddAnnotation(annot);
         }
-        
+
+        internal void AddAnnotation(PdfAnnotation annot, bool applyCTM)
+        {
+            if (applyCTM && !state.CTM.IsIdentity) {
+                annot.ApplyCTM(state.CTM);
+            }
+            AddAnnotation(annot);
+        }
+
+
+
         /**
         * Sets the default colorspace.
         * @param name the name of the colorspace. It can be <CODE>PdfName.DEFAULTGRAY</CODE>, <CODE>PdfName.DEFAULTRGB</CODE>
@@ -3416,7 +3452,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        internal void OpenMCBlock(IAccessibleElement element)
+        public void OpenMCBlock(IAccessibleElement element)
         {
             if (IsTagged())
             {
@@ -3453,19 +3489,35 @@ namespace iTextSharp.text.pdf {
                 IAccessibleElement parent = null;
                 if (GetMcElements().Count > 0)
                     parent = GetMcElements()[GetMcElements().Count - 1];
-                if (parent != null && parent.Role == null)
+                if(parent != null && (parent.Role == null || PdfName.ARTIFACT.Equals(parent.Role)))
                     element.Role = null;
                 if (element.Role != null) {
-                    pdf.structElements.TryGetValue(element.ID, out structureElement);
-                    if (structureElement == null)
-                    {
-                        structureElement = new PdfStructureElement(GetParentStructureElement(), element.Role);
-                        structureElement.WriteAttributes(element);
+                    if(!PdfName.ARTIFACT.Equals(element.Role)) {
+                        if(!pdf.structElements.TryGetValue(element.ID, out structureElement)) {
+                            structureElement = new PdfStructureElement(GetParentStructureElement(), element.Role);
+                            structureElement.WriteAttributes(element);
+                        }
                     }
                     bool inTextLocal = inText;
                     if (inText)
                         EndText();
-                    BeginMarkedContentSequence(structureElement);
+                    if (PdfName.ARTIFACT.Equals(element.Role)) {
+                        Dictionary<PdfName, PdfObject> properties = element.GetAccessibleAttributes();
+                        PdfDictionary propertiesDict = null;
+                        if (properties == null || properties.Count == 0) {
+                        }
+                        else {
+                            propertiesDict = new PdfDictionary();
+                            foreach (KeyValuePair<PdfName, PdfObject> entry in properties) {
+                                propertiesDict.Put(entry.Key, entry.Value);
+                            }
+                        }
+                        BeginMarkedContentSequence(element.Role, propertiesDict, true);
+                    }
+                    else {
+                        BeginMarkedContentSequence(structureElement);
+                    }
+
                     if (inTextLocal)
                         BeginText(true);
                 }
@@ -3473,7 +3525,7 @@ namespace iTextSharp.text.pdf {
             return structureElement;
         }
 
-        internal void CloseMCBlock(IAccessibleElement element)
+        public void CloseMCBlock(IAccessibleElement element)
         {
             if (IsTagged() && element != null /*&& element.Role != null*/)
             {

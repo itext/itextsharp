@@ -1,5 +1,7 @@
 using System;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.exceptions;
+
 /*
  * Copyright 2003-2008 by Paulo Soares.
  * 
@@ -69,6 +71,8 @@ namespace iTextSharp.text.pdf.codec {
         private int uncompressedMode = 0;
         private int fillBits = 0;
         private int oneD;
+
+        private bool handleIncorrectImage;
         
         static int[] table1 = {
             0x00, // 0 bits are left in first byte - SHOULD NOT HAPPEN
@@ -1036,7 +1040,7 @@ namespace iTextSharp.text.pdf.codec {
                         UpdatePointer(7 - bits);
                     } else if (code == 11) {
                         if (NextLesserThan8Bits(3) != 7) {
-                            throw new Exception(MessageLocalization.GetComposedMessage("invalid.code.encountered.while.decoding.2d.group.4.compressed.data"));
+                            throw new InvalidImageException(MessageLocalization.GetComposedMessage("invalid.code.encountered.while.decoding.2d.group.4.compressed.data"));
                         }
                         
                         int zeros = 0;
@@ -1155,7 +1159,12 @@ namespace iTextSharp.text.pdf.codec {
             // Fill in remaining bits
             while (bitNum < lastBit) {
                 byteNum = bitNum >> 3;
-                buffer[byteNum] |= (byte)(1 << (7 - (bitNum & 0x7)));
+                if(handleIncorrectImage && !(byteNum < buffer.Length)) {
+                    // do nothing
+                }
+                else {
+                    buffer[byteNum] |= (byte)(1 << (7 - (bitNum & 0x7)));
+                }
                 ++bitNum;
             }
         }
@@ -1185,7 +1194,7 @@ namespace iTextSharp.text.pdf.codec {
                     runLength += code;
                     UpdatePointer(4 - bits);
                 } else if (bits == 0) {     // ERROR
-                    throw new Exception(MessageLocalization.GetComposedMessage("invalid.code.encountered"));
+                    throw new InvalidImageException(MessageLocalization.GetComposedMessage("invalid.code.encountered"));
                 } else if (bits == 15) {    // EOL
                     throw new Exception(MessageLocalization.GetComposedMessage("eol.code.word.encountered.in.white.run"));
                 } else {
@@ -1432,7 +1441,7 @@ namespace iTextSharp.text.pdf.codec {
         }
         
         private int NextLesserThan8Bits(int bitsToGet) {
-            byte b, next;
+            byte b = 0, next = 0;
             int l = data.Length - 1;
             int bp = this.bytePointer;
             
@@ -1444,12 +1453,19 @@ namespace iTextSharp.text.pdf.codec {
                     next = data[bp + 1];
                 }
             } else if (fillOrder == 2) {
-                b = flipTable[data[bp] & 0xff];
-                if (bp == l) {
-                    next = 0x00;
-                } else {
-                    next = flipTable[data[bp + 1] & 0xff];
+                if(handleIncorrectImage && !(bp < data.Length)) {
+                    // do nothing
                 }
+                else {
+                    b = flipTable[data[bp] & 0xff];
+                    if(bp == l) {
+                        next = 0x00;
+                    }
+                    else {
+                        next = flipTable[data[bp + 1] & 0xff];
+                    }
+                }
+
             } else {
                 throw new Exception(MessageLocalization.GetComposedMessage("tiff.fill.order.tag.must.be.either.1.or.2"));
             }
@@ -1498,6 +1514,10 @@ namespace iTextSharp.text.pdf.codec {
             }
             
             return true;
+        }
+
+        public bool HandleIncorrectImage {
+            set { handleIncorrectImage = value; }
         }
     }
 }

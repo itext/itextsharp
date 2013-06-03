@@ -62,5 +62,30 @@ namespace System.util.collections
         {
             get { return false; }
         }
+
+        public bool RetainAll(ICollection<T> collection) {
+	        bool modified = false;
+            List<T> toRemove = new List<T>();
+            foreach (T item in this)
+                if (!collection.Contains(item))
+                    toRemove.Add(item);
+
+            foreach (T item in toRemove) {
+                Remove(item);
+                modified = true;
+            }
+	        return modified;
+        }
+//        public boolean retainAll(Collection<?> c) {
+//	        boolean modified = false;
+//	        Iterator<E> e = iterator();
+//	        while (e.hasNext()) {
+//	            if (!c.contains(e.next())) {
+//		        e.remove();
+//		        modified = true;
+//	            }
+//	        }
+//	        return modified;
+//        }
     }
 }

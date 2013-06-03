@@ -61,6 +61,8 @@ namespace iTextSharp.text.pdf {
         
         /** This is the <CODE>PdfName</CODE> of the image. */
         protected PdfName name = null;
+
+        protected Image image = null;
         
         // constructor
         
@@ -72,7 +74,8 @@ namespace iTextSharp.text.pdf {
         * @throws BadPdfFormatException on error
         */
         
-        public PdfImage(Image image, String name, PdfIndirectReference maskRef) {
+        public PdfImage(Image image, String name, PdfIndirectReference maskRef) : base() {
+            this.image = image;
             if (name == null) 
         	    GenerateImgResName(image);
             else
@@ -269,7 +272,12 @@ namespace iTextSharp.text.pdf {
                 return name;
             }
         }
-        
+
+        public Image Image
+        {
+            get { return image; }
+        }
+
         internal static void TransferBytes(Stream inp, Stream outp, int len) {
             byte[] buffer = new byte[TRANSFERSIZE];
             if (len < 0)

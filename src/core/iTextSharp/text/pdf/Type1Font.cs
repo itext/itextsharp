@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.util;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.io;
 
 /*
  * $Id$
@@ -173,7 +174,7 @@ namespace iTextSharp.text.pdf {
                 builtinFont = true;
                 byte[] buf = new byte[1024];
                 try {
-                    istr = GetResourceStream(RESOURCE_PATH + afmFile + ".afm");
+                    istr = StreamUtil.GetResourceStream(RESOURCE_PATH + afmFile + ".afm");
                     if (istr == null) {
                         string msg = MessageLocalization.GetComposedMessage("1.not.found.as.resource", afmFile);
                         Console.Error.WriteLine(msg);

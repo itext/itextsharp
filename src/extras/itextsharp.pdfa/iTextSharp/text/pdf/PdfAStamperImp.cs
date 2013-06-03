@@ -121,16 +121,8 @@ namespace iTextSharp.text.pdf
             return xmpWriter;
         }
 
-        /**
-         * @see PdfStamperImp#checkPdfIsoConformance(int, Object)
-         */
-        override protected void CheckPdfIsoConformance(int key, Object obj1)
-        {
-            PdfAConformanceImp.CheckPdfAConformance(this, key, obj1);
-        }
-
         override public IPdfIsoConformance GetPdfIsoConformance() {
-            return new PdfAConformanceImp();
+            return new PdfAConformanceImp(this);
         }
 
     }
