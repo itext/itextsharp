@@ -157,7 +157,7 @@ namespace iTextSharp.text.pdf {
                 if (!(o is ImportedPage))
                     return false;
                 ImportedPage other = (ImportedPage)o;
-                return this.pageNumber == other.pageNumber && this.reader.Equals(reader);
+                return this.pageNumber == other.pageNumber && this.reader.Equals(other.reader);
             }
 
             public override String ToString() {
@@ -928,7 +928,7 @@ namespace iTextSharp.text.pdf {
             foreach (KeyValuePair<RefKey, PdfIndirectObject> entry in indirectObjects)
             {
                 if (entry.Value != null)
-                    body.Write(entry.Value, entry.Value.Number);
+                    body.Write(entry.Value, entry.Value.Number, entry.Value.Generation);
                 else inactives.Add(entry.Key);
             }
             List<PdfBody.PdfCrossReference> xrefs = new List<PdfBody.PdfCrossReference>();

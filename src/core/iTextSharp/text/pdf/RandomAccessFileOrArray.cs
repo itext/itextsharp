@@ -167,7 +167,6 @@ namespace iTextSharp.text.pdf {
          * @throws IOException
          * @deprecated use {@link RandomAccessSourceFactory#createSource(InputStream)} and {@link RandomAccessFileOrArray#RandomAccessFileOrArray(RandomAccessSource)} instead
          */
-
         public RandomAccessFileOrArray(Stream inp)
             : this(new RandomAccessSourceFactory().CreateSource(inp))
         {
@@ -175,11 +174,10 @@ namespace iTextSharp.text.pdf {
 
 
         /**
-         * @param url
+         * @param arrayIn
          * @throws IOException
          * @deprecated use {@link RandomAccessSourceFactory#createSource(byte[])} and {@link RandomAccessFileOrArray#RandomAccessFileOrArray(RandomAccessSource)} instead
          */
-
         public RandomAccessFileOrArray(byte[] arrayIn)
             : this(new RandomAccessSourceFactory().CreateSource(arrayIn))
         {
@@ -314,15 +312,6 @@ namespace iTextSharp.text.pdf {
         public void ReOpen()
         {
             Seek(0);
-        }
-
-        protected void InsureOpen()
-        {
-        }
-
-        public bool IsOpen()
-        {
-            return true;
         }
 
         public void Close()

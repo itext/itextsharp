@@ -111,6 +111,24 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
+         * Determines if a space character should be inserted between a previous chunk and the current chunk.
+         * This method is exposed as a callback so subclasses can fine time the algorithm for determining whether a space should be inserted or not.
+         * By default, this method will insert a space if the there is a gap of more than half the font space character width between the end of the
+         * previous chunk and the beginning of the current chunk.  It will also indicate that a space is needed if the starting point of the new chunk 
+         * appears *before* the end of the previous chunk (i.e. overlapping text).
+         * @param chunk the new chunk being evaluated
+         * @param previousChunk the chunk that appeared immediately before the current chunk
+         * @return true if the two chunks represent different words (i.e. should have a space between them).  False otherwise.
+         */
+        protected bool IsChunkAtWordBoundary(TextChunk chunk, TextChunk previousChunk) {
+            float dist = chunk.DistanceFromEndOf(previousChunk);
+            if(dist < -chunk.CharSpaceWidth || dist > chunk.CharSpaceWidth / 2.0f)
+                return true;
+
+            return false;
+        }
+
+        /**
          * Returns the result so far.
          * @return  a String with the resulting text.
          */
@@ -128,13 +146,8 @@ namespace iTextSharp.text.pdf.parser {
                     sb.Append(chunk.text);
                 } else {
                     if (chunk.SameLine(lastChunk)){
-                        float dist = chunk.DistanceFromEndOf(lastChunk);
-                        
-                        if (dist < -chunk.charSpaceWidth)
-                            sb.Append(' ');
-
                         // we only insert a blank space if the trailing character of the previous string wasn't a space, and the leading character of the current string isn't a space
-                        else if (dist > chunk.charSpaceWidth/2.0f && !StartsWithSpace(chunk.text) && !EndsWithSpace(lastChunk.text))
+                        if(IsChunkAtWordBoundary(chunk, lastChunk) && !StartsWithSpace(chunk.text) && !EndsWithSpace(lastChunk.text))
                             sb.Append(' ');
 
                         sb.Append(chunk.text);
@@ -181,7 +194,7 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * Represents a chunk of text, it's orientation, and location relative to the orientation vector
          */
-        private class TextChunk : IComparable<TextChunk>{
+        protected class TextChunk : IComparable<TextChunk>{
             /** the text of the chunk */
             internal String text;
             /** the starting location of the chunk */
@@ -224,6 +237,22 @@ namespace iTextSharp.text.pdf.parser {
                 distParallelStart = orientationVector.Dot(startLocation);
                 distParallelEnd = orientationVector.Dot(endLocation);
             }
+
+
+            /**
+             * @return the text captured by this chunk
+             */
+            public String Text {
+                get { return text; }
+            }
+
+            /**
+             * @return the width of a single space character as rendered by this chunk
+             */
+            public float CharSpaceWidth {
+                get { return charSpaceWidth; }
+            }
+
 
             public void PrintDiagnostics(){
                 Console.Out.WriteLine("Text (@" + startLocation + " -> " + endLocation + "): " + text);

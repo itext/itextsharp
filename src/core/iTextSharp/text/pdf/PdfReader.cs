@@ -542,7 +542,18 @@ namespace iTextSharp.text.pdf {
             return new Rectangle(Math.Min(llx, urx), Math.Min(lly, ury),
             Math.Max(llx, urx), Math.Max(lly, ury));
         }
-        
+
+
+        /**
+         * Checks if the PDF is a tagged PDF.
+         */
+        public bool IsTagged() {
+            PdfDictionary markInfo = catalog.GetAsDict(PdfName.MARKINFO);
+            if(markInfo == null)
+                return false;
+            return PdfBoolean.PDFTRUE.Equals(markInfo.GetAsBoolean(PdfName.MARKED));
+        }
+
         /**
          * Parses the entire PDF
          */

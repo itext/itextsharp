@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Net;
+using iTextSharp.text.io;
 using iTextSharp.text.pdf.collection;
 using iTextSharp.text.error_messages;
 /*
@@ -178,7 +179,7 @@ namespace iTextSharp.text.pdf {
                             inp = wr.GetResponse().GetResponseStream();
                         }
                         else {
-                            inp = BaseFont.GetResourceStream(filePath);
+                            inp = StreamUtil.GetResourceStream(filePath);
                             if (inp == null)
                                 throw new IOException(MessageLocalization.GetComposedMessage("1.not.found.as.file.or.resource", filePath));
                         }

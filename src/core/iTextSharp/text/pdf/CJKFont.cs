@@ -4,6 +4,7 @@ using System.Text;
 using System.Collections.Generic;
 using System.util;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.io;
 using iTextSharp.text.pdf.fonts.cmaps;
 
 /*
@@ -114,7 +115,7 @@ namespace iTextSharp.text.pdf {
 
         private static readonly char[] cspace = {' '};
         private static void LoadRegistry() {
-            Stream isp = GetResourceStream(RESOURCE_PATH_CMAP + "cjk_registry.properties");
+            Stream isp = StreamUtil.GetResourceStream(RESOURCE_PATH_CMAP + "cjk_registry.properties");
             Properties p = new Properties();
             p.Load(isp);
             isp.Close();
@@ -620,7 +621,7 @@ namespace iTextSharp.text.pdf {
         
         internal static Dictionary<String, Object> ReadFontProperties(String name) {
             name += ".properties";
-            Stream isp = GetResourceStream(RESOURCE_PATH_CMAP + name);
+            Stream isp = StreamUtil.GetResourceStream(RESOURCE_PATH_CMAP + name);
             Properties p = new Properties();
             p.Load(isp);
             isp.Close();

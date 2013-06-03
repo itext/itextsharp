@@ -54,7 +54,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
 
         public virtual PRTokeniser GetLocation(String location) {
             String fullName = BaseFont.RESOURCE_PATH + "cmaps." + location;
-            Stream inp = BaseFont.GetResourceStream(fullName);
+            Stream inp = StreamUtil.GetResourceStream(fullName);
             if (inp == null)
                 throw new IOException(MessageLocalization.GetComposedMessage("the.cmap.1.was.not.found", fullName));
             return new PRTokeniser(new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource(inp)));

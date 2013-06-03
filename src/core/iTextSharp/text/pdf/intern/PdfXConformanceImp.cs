@@ -57,6 +57,13 @@ namespace iTextSharp.text.pdf.intern {
         * The value indicating if the PDF has to be in conformance with PDF/X.
         */
         protected internal int pdfxConformance = PdfWriter.PDFXNONE;
+
+        protected PdfWriter writer;
+
+        public PdfXConformanceImp(PdfWriter writer) {
+            this.writer = writer;
+        }
+
         
         /**
         * @see com.lowagie.text.pdf.interfaces.PdfXConformance#setPDFXConformance(int)
@@ -106,7 +113,7 @@ namespace iTextSharp.text.pdf.intern {
         * @param key       the type of PDF ISO conformance that has to be checked
         * @param obj1      the object that is checked for conformance
         */
-        public static void CheckPDFXConformance(PdfWriter writer, int key, Object obj1) {
+        public void CheckPdfIsoConformance(int key, Object obj1) {
             if (writer == null || !writer.IsPdfX())
                 return;
             int conf = writer.PDFXConformance;
@@ -124,15 +131,15 @@ namespace iTextSharp.text.pdf.intern {
                                         throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("colorspace.rgb.is.not.allowed"));
                                     case ExtendedColor.TYPE_SEPARATION:
                                         SpotColor sc = (SpotColor)ec;
-                                        CheckPDFXConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, sc.PdfSpotColor.AlternativeCS);
+                                        CheckPdfIsoConformance(PdfIsoKeys.PDFISOKEY_COLOR, sc.PdfSpotColor.AlternativeCS);
                                         break;
                                     case ExtendedColor.TYPE_SHADING:
                                         ShadingColor xc = (ShadingColor)ec;
-                                        CheckPDFXConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, xc.PdfShadingPattern.Shading.ColorSpace);
+                                        CheckPdfIsoConformance(PdfIsoKeys.PDFISOKEY_COLOR, xc.PdfShadingPattern.Shading.ColorSpace);
                                         break;
                                     case ExtendedColor.TYPE_PATTERN:
                                         PatternColor pc = (PatternColor)ec;
-                                        CheckPDFXConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, pc.Painter.DefaultColor);
+                                        CheckPdfIsoConformance(PdfIsoKeys.PDFISOKEY_COLOR, pc.Painter.DefaultColor);
                                         break;
                                 }
                             }

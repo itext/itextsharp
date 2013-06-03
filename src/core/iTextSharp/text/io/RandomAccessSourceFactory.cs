@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 /*
  * $Id$
@@ -178,7 +177,7 @@ namespace iTextSharp.text.io {
          */
         private IRandomAccessSource CreateByReadingToMemory(String filename) {
             //TODO: seems odd that we are using BaseFont here...
-            Stream inp = BaseFont.GetResourceStream(filename);
+            Stream inp = StreamUtil.GetResourceStream(filename);
             if (inp == null)
                 throw new IOException(MessageLocalization.GetComposedMessage("1.not.found.as.file.or.resource", filename));
             return CreateByReadingToMemory(inp);

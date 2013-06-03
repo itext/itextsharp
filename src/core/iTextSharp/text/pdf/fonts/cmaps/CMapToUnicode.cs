@@ -134,6 +134,10 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             return value;
         }
 
+        internal void AddChar(int cid, String uni) {
+            doubleByteMappings[cid] = uni;
+        }
+
         internal override void AddChar(PdfString mark, PdfObject code) {
             byte[] src = mark.GetBytes();
             String dest = CreateStringFromBytes(code.GetBytes());

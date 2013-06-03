@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Text;
 using iTextSharp.text.exceptions;
 using iTextSharp.text.error_messages;
@@ -83,7 +82,7 @@ namespace iTextSharp.text.pdf {
          * Creates a PRTokeniser for the specified {@link RandomAccessSource}.
          * The beginning of the file is read to determine the location of the header, and the data source is adjusted
          * as necessary to account for any junk that occurs in the byte source before the header
-         * @param byteSource the source
+         * @param file the source
          */
         public PRTokeniser(RandomAccessFileOrArray file) {
             this.file = file;

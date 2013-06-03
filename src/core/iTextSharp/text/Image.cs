@@ -290,6 +290,9 @@ namespace iTextSharp.text {
         public Image(Image image) : base(image) {
             this.type = image.type;
             this.url = image.url;
+            this.rawData = image.rawData;
+            this.bpc = image.bpc;
+            this.template = image.template;
             this.alignment = image.alignment;
             this.alt = image.alt;
             this.absoluteX = image.absoluteX;
@@ -298,36 +301,38 @@ namespace iTextSharp.text {
             this.plainHeight = image.plainHeight;
             this.scaledWidth = image.scaledWidth;
             this.scaledHeight = image.scaledHeight;
+            this.mySerialId = image.mySerialId;
+
+            this.directReference = image.directReference;
+
             this.rotationRadians = image.rotationRadians;
+            this.initialRotation = image.initialRotation;
             this.indentationLeft = image.indentationLeft;
             this.indentationRight = image.indentationRight;
-            this.colorspace = image.colorspace;
-            this.rawData = image.rawData;
-            this.template = image.template;
-            this.bpc = image.bpc;
-            this.transparency = image.transparency;
-            this.mySerialId = image.mySerialId;
-            this.invert = image.invert;
+            this.spacingBefore = image.spacingBefore;
+            this.spacingAfter = image.spacingAfter;
+
+            this.widthPercentage = image.widthPercentage;
+            this.scaleToFitLineWhenOverflow = image.scaleToFitLineWhenOverflow;
+            this.scaleToFitHeight = image.scaleToFitHeight;
+            this.annotation = image.annotation;
+            this.layer = image.layer;
+            this.interpolation = image.interpolation;
+            this.originalType = image.originalType;
+            this.originalData = image.originalData;
+            this.deflated = image.deflated;
             this.dpiX = image.dpiX;
             this.dpiY = image.dpiY;
+            this.XYRatio = image.XYRatio;
+
+            this.colorspace = image.colorspace;
+            this.invert = image.invert;
+            this.profile = image.profile;
+            this.additional = image.additional;
             this.mask = image.mask;
             this.imageMask = image.imageMask;
-            this.interpolation = image.interpolation;
-            this.annotation = image.annotation;
-            this.profile = image.profile;
-            this.deflated = image.deflated;
-            this.additional = image.additional;
             this.smask = image.smask;
-            this.XYRatio = image.XYRatio;
-            this.originalData = image.originalData;
-            this.originalType = image.originalType;
-            this.spacingAfter = image.spacingAfter;
-            this.spacingBefore = image.spacingBefore;
-            this.scaleToFitLineWhenOverflow = image.scaleToFitLineWhenOverflow;
-            this.widthPercentage = image.widthPercentage;
-            this.layer = image.layer;
-            this.initialRotation = image.initialRotation;
-            this.directReference = image.directReference;
+            this.transparency = image.transparency;
             this.role = image.role;
             if (image.accessibleAttributes != null)
                 this.accessibleAttributes = new Dictionary<PdfName, PdfObject>(image.accessibleAttributes);
@@ -351,6 +356,15 @@ namespace iTextSharp.text {
         /// <param name="url">an URL</param>
         /// <returns>an object of type Gif, Jpeg or Png</returns>
         public static Image GetInstance(Uri url) {
+            return GetInstance(url, false);
+        }
+
+        /// <summary>
+        /// Gets an instance of an Image.
+        /// </summary>
+        /// <param name="url">an URL</param>
+        /// <returns>an object of type Gif, Jpeg or Png</returns>
+        public static Image GetInstance(Uri url, bool handleIncorrectImage) {
             Stream istr = null;
             try {
                 WebRequest w = WebRequest.Create(url);
@@ -404,7 +418,7 @@ namespace iTextSharp.text {
                             ra = new RandomAccessFileOrArray(file);
                         } else
                             ra = new RandomAccessFileOrArray(url);
-                        Image img = TiffImage.GetTiffImage(ra, 1);
+                        Image img = TiffImage.GetTiffImage(ra, handleIncorrectImage, 1);
                         img.url = url;
                         return img;
                     } finally {
@@ -430,8 +444,7 @@ namespace iTextSharp.text {
                             ra.Close();
                     }
                 }
-                throw new IOException(url.ToString()
-                        + " is not a recognized imageformat.");
+                throw new IOException(MessageLocalization.GetComposedMessage("unknown.image.format", url.ToString()));
             } finally {
                 if (istr != null) {
                     istr.Close();
@@ -443,6 +456,18 @@ namespace iTextSharp.text {
             byte[] a = StreamUtil.InputStreamToArray(s);
             return GetInstance(a);
         }
+
+            
+    public static Image GetInstance(String filename, bool handleIncorrectImage) {
+        return GetInstance(Utilities.ToURL(filename), handleIncorrectImage);
+    }
+
+
+    public static Image GetInstance(byte[] imgb) {
+        return GetInstance(imgb, false);
+    }
+
+
 
         /**
         * Creates a JBIG2 Image.
@@ -462,7 +487,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="img">a byte array</param>
         /// <returns>an object of type Gif, Jpeg or Png</returns>
-        public static Image GetInstance(byte[] imgb) {
+        public static Image GetInstance(byte[] imgb, bool handleIncorrectImage) {
             int c1 = imgb[0];
             int c2 = imgb[1];
             int c3 = imgb[2];
@@ -496,7 +521,7 @@ namespace iTextSharp.text {
                 RandomAccessFileOrArray ra = null;
                 try {
                     ra = new RandomAccessFileOrArray(imgb);
-                    Image img = TiffImage.GetTiffImage(ra, 1);
+                    Image img = TiffImage.GetTiffImage(ra, handleIncorrectImage, 1);
                     if (img.OriginalData == null)
                         img.OriginalData = imgb;
 
@@ -820,6 +845,14 @@ namespace iTextSharp.text {
         }
     
         /// <summary>
+        /// Scale the image to the dimensions of the rectangle
+        /// </summary>
+        /// <param name="rectangle">dimensions to scale the Image</param>
+        public void ScaleAbsolute(Rectangle rectangle) {
+            ScaleAbsolute(rectangle.Width, rectangle.Height);
+        }
+
+        /// <summary>
         /// Scale the image to an absolute width and an absolute height.
         /// </summary>
         /// <param name="newWidth">the new width</param>
@@ -879,6 +912,14 @@ namespace iTextSharp.text {
             WidthPercentage = 0;
         }
     
+        /// <summary>
+        /// Scales the images to the dimensions of the rectangle.
+        /// </summary>
+        /// <param name="rectangle">the dimensions to fit</param>
+        public void ScaleToFit(Rectangle rectangle) {
+            ScaleToFit(rectangle.Width, rectangle.Height);
+        }
+
         /// <summary>
         /// Scales the image so that it fits a certain width and height.
         /// </summary>
@@ -1484,12 +1525,31 @@ namespace iTextSharp.text {
          * when the image exceeds the available width.
          * @since iText 5.0.6
          */
-        protected internal bool scaleToFitLineWhenOverflow = true;
+        protected internal bool scaleToFitLineWhenOverflow;
 
         public bool ScaleToFitLineWhenOverflow {
             get { return scaleToFitLineWhenOverflow; }
             set { scaleToFitLineWhenOverflow = value; }
         }
+
+	    // scaling the image to the available height (or not)
+
+	    /**
+	     * Indicates if the image should be scaled to fit
+	     * when the image exceeds the available height.
+	     * @since iText 5.4.2
+	     */
+	    protected bool scaleToFitHeight = true;
+
+	    /**
+	     * Gets and sets the value of scaleToFitHeight.
+	     * @return true if the image size has to scale to the available height
+	     * @since iText 5.4.2
+	     */
+	    public bool ScaleToFitHeight {
+            get { return scaleToFitHeight; }
+            set { scaleToFitHeight = value; }
+	    }
 
         public IPdfOCG Layer {
             get {

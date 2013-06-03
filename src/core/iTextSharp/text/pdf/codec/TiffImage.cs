@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using iTextSharp.text;
+using iTextSharp.text.exceptions;
 using iTextSharp.text.pdf;
 using System.util.zlib;
 using iTextSharp.text.error_messages;
@@ -78,15 +79,6 @@ namespace iTextSharp.text.pdf.codec {
             return dpi;
         }
         
-        /** Reads a page from a TIFF image. Direct mode is not used.
-        * @param s the file source
-        * @param page the page to get. The first page is 1
-        * @return the <CODE>Image</CODE>
-        */    
-        public static Image GetTiffImage(RandomAccessFileOrArray s, int page) {
-            return GetTiffImage(s, page, false);
-        }
-        
         /** Reads a page from a TIFF image.
         * @param s the file source
         * @param page the page to get. The first page is 1
@@ -95,7 +87,7 @@ namespace iTextSharp.text.pdf.codec {
         * every time
         * @return the <CODE>Image</CODE>
         */    
-        public static Image GetTiffImage(RandomAccessFileOrArray s, int page, bool direct) {
+        public static Image GetTiffImage(RandomAccessFileOrArray s, bool handleIncorrectImage, int page, bool direct) {
             if (page < 1)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("the.page.number.must.be.gt.eq.1"));
             TIFFDirectory dir = new TIFFDirectory(s, page - 1);
@@ -205,6 +197,7 @@ namespace iTextSharp.text.pdf.codec {
                     s.ReadFully(im);
                     int height = Math.Min(rowsStrip, rowsLeft);
                     TIFFFaxDecoder decoder = new TIFFFaxDecoder(fillOrder, w, height);
+                    decoder.HandleIncorrectImage = handleIncorrectImage;
                     byte[] outBuf = new byte[(w + 7) / 8 * height];
                     switch (compression) {
                         case TIFFConstants.COMPRESSION_CCITTRLEW:
@@ -229,7 +222,13 @@ namespace iTextSharp.text.pdf.codec {
                             g4.Fax4Encode(outBuf, height);
                             break;
                         case TIFFConstants.COMPRESSION_CCITTFAX4:
-                            decoder.DecodeT6(outBuf, im, 0, height, tiffT6Options);
+                            try {
+                                decoder.DecodeT6(outBuf, im, 0, height, tiffT6Options);
+                            }
+                            catch (InvalidImageException e) {
+                                if (!handleIncorrectImage)
+                                    throw e;
+                            }
                             g4.Fax4Encode(outBuf, height);
                             break;
                     }
@@ -256,7 +255,32 @@ namespace iTextSharp.text.pdf.codec {
                 img.InitialRotation = rotation;
             return img;
         }
-        
+
+        public static Image GetTiffImage(RandomAccessFileOrArray s, bool handleIncorrectImage, int page) {
+            return GetTiffImage(s, handleIncorrectImage, page, false);
+        }
+
+        /** Reads a page from a TIFF image. Direct mode is not used.
+         * @param s the file source
+         * @param page the page to get. The first page is 1
+         * @return the <CODE>Image</CODE>
+         */
+        public static Image GetTiffImage(RandomAccessFileOrArray s, int page) {
+            return GetTiffImage(s, page, false);
+        }
+
+        /** Reads a page from a TIFF image.
+         * @param s the file source
+         * @param page the page to get. The first page is 1
+         * @param direct for single strip, CCITT images, generate the image
+         * by direct byte copying. It's faster but may not work
+         * every time
+         * @return the <CODE>Image</CODE>
+         */
+        public static Image GetTiffImage(RandomAccessFileOrArray s, int page, bool direct) {
+            return GetTiffImage(s, false, page, direct);
+        }
+
         protected static Image GetTiffImageColor(TIFFDirectory dir, RandomAccessFileOrArray s) {
             int predictor = 1;
             TIFFLZWDecoder lzwDecoder = null;

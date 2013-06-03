@@ -54,8 +54,7 @@ namespace iTextSharp.text.pdf {
     * @author Paulo Soares
     */
     public class ArabicLigaturizer {
-
-        private static Dictionary<char,char[]> maptable = new Dictionary<char,char[]>();
+        private static Dictionary<char, char[]> maptable = new Dictionary<char, char[]>();
         
         static bool IsVowel(char s) {
             return ((s >= '\u064B') && (s <= '\u0655')) || (s == '\u0670');
@@ -66,8 +65,7 @@ namespace iTextSharp.text.pdf {
         {
             if ((s >= '\u0621') && (s <= '\u06D3')) {
                 char[] c;
-                maptable.TryGetValue(s, out c);
-                if (c != null)
+                if(maptable.TryGetValue(s, out c))
                     return c[which + 1];
             }
             else if (s >= '\ufef5' && s <= '\ufefb')
@@ -78,8 +76,7 @@ namespace iTextSharp.text.pdf {
         static int Shapecount(char s) {
             if ((s >= '\u0621') && (s <= '\u06D3') && !IsVowel(s)) {
                 char[] c;
-                maptable.TryGetValue(s, out c);
-                if (c != null)
+                if(maptable.TryGetValue(s, out c))
                     return c.Length - 1;
             }
             else if (s == ZWJ) {
@@ -674,7 +671,7 @@ namespace iTextSharp.text.pdf {
             new char[]{'\u06D0', '\uFBE4', '\uFBE5', '\uFBE6', '\uFBE7'}, /* E */
             new char[]{'\u06D2', '\uFBAE', '\uFBAF'}, /* YEH BARREE */
             new char[]{'\u06D3', '\uFBB0', '\uFBB1'} /* YEH BARREE WITH HAMZA ABOVE */
-            };
+        };
 
         public const int ar_nothing  = 0x0;
         public const int ar_novowel = 0x1;
@@ -684,12 +681,12 @@ namespace iTextSharp.text.pdf {
         * Digit shaping option: Replace European digits (U+0030...U+0039) by Arabic-Indic digits.
         */
         public const int DIGITS_EN2AN = 0x20;
-        
+            
         /**
         * Digit shaping option: Replace Arabic-Indic digits by European digits (U+0030...U+0039).
         */
         public const int DIGITS_AN2EN = 0x40;
-        
+            
         /**
         * Digit shaping option:
         * Replace European digits (U+0030...U+0039) by Arabic-Indic digits
@@ -700,7 +697,7 @@ namespace iTextSharp.text.pdf {
         * Compare to DIGITS_ALEN2AN_INIT_AL.
         */
         public const int DIGITS_EN2AN_INIT_LR = 0x60;
-        
+            
         /**
         * Digit shaping option:
         * Replace European digits (U+0030...U+0039) by Arabic-Indic digits
@@ -711,20 +708,20 @@ namespace iTextSharp.text.pdf {
         * Compare to DIGITS_ALEN2AN_INT_LR.
         */
         public const int DIGITS_EN2AN_INIT_AL = 0x80;
-        
+            
         /** Not a valid option value. */
         private const int DIGITS_RESERVED = 0xa0;
-        
+            
         /**
         * Bit mask for digit shaping options.
         */
         public const int DIGITS_MASK = 0xe0;
-        
+            
         /**
         * Digit type option: Use Arabic-Indic digits (U+0660...U+0669).
         */
         public const int DIGIT_TYPE_AN = 0;
-        
+            
         /**
         * Digit type option: Use Eastern (Extended) Arabic-Indic digits (U+06f0...U+06f9).
         */
@@ -743,10 +740,34 @@ namespace iTextSharp.text.pdf {
             internal int numshapes = 1;
         };
 
+        protected int options = 0;
+        protected int runDirection = PdfWriter.RUN_DIRECTION_RTL;
+
         static ArabicLigaturizer() {
             foreach (char[] c in chartable) {
                 maptable[c[0]] = c;
             }
+        }
+
+        public ArabicLigaturizer() {
+        }
+
+        public ArabicLigaturizer(int runDirection, int options) {
+            this.runDirection = runDirection;
+            this.options = options;
+        }
+
+        public String Process(String s) {
+            return BidiLine.ProcessLTR(s, runDirection, options);
+        }
+
+        /**
+            * Arabic is written from right to left.
+            * @return true
+            * @see com.itextpdf.text.pdf.languages.LanguageProcessor#isRTL()
+            */
+        public bool IsRTL() {
+            return true;
         }
     }
 }

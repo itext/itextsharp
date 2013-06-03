@@ -65,7 +65,7 @@ namespace iTextSharp.text.pdf {
         private float lly = -200;
         private float urx = 100;
         private float ury = 900;
-        private bool isType0 = false;
+        protected bool isType0 = false;
         protected internal String cjkEncoding;
         protected internal String uniMap;
         

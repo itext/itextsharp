@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
 using System.util;
+using iTextSharp.text.io;
 
 /*
  * $Id$
@@ -58,7 +59,7 @@ namespace iTextSharp.text.pdf {
         static GlyphList() {
             Stream istr = null;
             try {
-                istr = BaseFont.GetResourceStream(BaseFont.RESOURCE_PATH + "glyphlist.txt");
+                istr = StreamUtil.GetResourceStream(BaseFont.RESOURCE_PATH + "glyphlist.txt");
                 if (istr == null) {
                     String msg = "glyphlist.txt not found as resource.";
                     throw new Exception(msg);

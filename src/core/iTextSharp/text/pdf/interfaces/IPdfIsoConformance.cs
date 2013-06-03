@@ -41,6 +41,9 @@
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+
+using System;
+
 namespace iTextSharp.text.pdf.interfaces
 {
 
@@ -52,5 +55,7 @@ namespace iTextSharp.text.pdf.interfaces
          * @return <code>true</code> if the PDF has to be in conformance with any of the PDF ISO specifications
          */
         bool IsPdfIso();
+
+        void CheckPdfIsoConformance(int key, Object obj1);
     }
 }

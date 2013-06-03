@@ -1,7 +1,4 @@
 using System;
-using iTextSharp.text.error_messages;
-using iTextSharp.text.pdf;
-using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.interfaces;
 
 /*
@@ -55,67 +52,22 @@ namespace iTextSharp.text.pdf.intern{
      */
     public class PdfAConformanceImp : IPdfAConformance {
 
-        /** The PDF conformance level, e.g. PDF/A1 Level A, PDF/A3 Level U,... */
-        private PdfAConformanceLevel conformanceLevel;
-
         /**
-         *
-         * @param writer
-         * @param key
-         * @param obj1
+         * The PDF conformance level, e.g. PDF/A1 Level A, PDF/A3 Level U,...
          */
-        static public void CheckPdfAConformance(PdfWriter writer, int key, Object obj1) {
-            if (writer == null || !writer.IsPdfIso())
-                return;
-            switch (key) {
-                case PdfIsoKeys.PDFISOKEY_FONT:
-                    BaseFont bf = (BaseFont)obj1;
-                    if (bf.FontType == BaseFont.FONT_TYPE_DOCUMENT) {
-                        PdfStream prs = null;
-                        PdfDictionary fontDictionary = ((DocumentFont)bf).FontDictionary;
-                        PdfDictionary fontDescriptor = fontDictionary.GetAsDict(PdfName.FONTDESCRIPTOR);
-                        if (fontDescriptor != null) {
-                            prs = fontDescriptor.GetAsStream(PdfName.FONTFILE);
-                            if (prs == null) {
-                                prs = fontDescriptor.GetAsStream(PdfName.FONTFILE2);
-                            }
-                            if (prs == null) {
-                                prs = fontDescriptor.GetAsStream(PdfName.FONTFILE3);
-                            }
-                        }
-                        if (prs == null) {
-                            throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("all.the.fonts.must.be.embedded.this.one.isn.t.1", ((BaseFont)obj1).PostscriptFontName));
-                        }
-                    } else {
-                        if (!bf.IsEmbedded())
-                            throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("all.the.fonts.must.be.embedded.this.one.isn.t.1", ((BaseFont)obj1).PostscriptFontName));
-                    }
-                    break;
-                case PdfIsoKeys.PDFISOKEY_IMAGE:
-                    PdfImage image = (PdfImage)obj1;
-                    if (image.Get(PdfName.SMASK) != null)
-                        throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("the.smask.key.is.not.allowed.in.images"));
-                    break;
-                case PdfIsoKeys.PDFISOKEY_GSTATE:
-                    PdfDictionary gs = (PdfDictionary)obj1;
-                    PdfObject obj = gs.Get(PdfName.BM);
-                    if (obj != null && !PdfGState.BM_NORMAL.Equals(obj) && !PdfGState.BM_COMPATIBLE.Equals(obj))
-                        throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("blend.mode.1.not.allowed", obj.ToString()));
-                    obj = gs.Get(PdfName.CA);
-                    double v = 0.0;
-                    if (obj != null && (v = ((PdfNumber)obj).DoubleValue) != 1.0)
-                        throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("transparency.is.not.allowed.ca.eq.1", v));
-                    obj = gs.Get(PdfName.ca_);
-                    v = 0.0;
-                    if (obj != null && (v = ((PdfNumber)obj).DoubleValue) != 1.0)
-                        throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("transparency.is.not.allowed.ca.eq.1", v));
-                    break;
-                case PdfIsoKeys.PDFISOKEY_LAYER:
-                    throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("layers.are.not.allowed"));
-                default:
-                    break;
-            }
+        protected PdfAConformanceLevel conformanceLevel;
+        protected PdfAChecker pdfAChecker;
+        protected PdfWriter writer;
+
+        public PdfAConformanceImp(PdfWriter writer) {
+            this.writer = writer;
         }
+
+        public void CheckPdfIsoConformance(int key, Object obj1) {
+            pdfAChecker.CheckPdfAConformance(writer, key, obj1);
+        }
+
+
 
         /**
          * @see com.itextpdf.text.pdf.interfaces.PdfAConformance#getConformanceLevel()
@@ -129,6 +81,25 @@ namespace iTextSharp.text.pdf.intern{
          */
         public void SetConformanceLevel(PdfAConformanceLevel conformanceLevel) {
             this.conformanceLevel = conformanceLevel;
+            switch(this.conformanceLevel) {
+                case PdfAConformanceLevel.PDF_A_1A:
+                case PdfAConformanceLevel.PDF_A_1B:
+                    pdfAChecker = new PdfA1Checker();
+                    break;
+                case PdfAConformanceLevel.PDF_A_2A:
+                case PdfAConformanceLevel.PDF_A_2B:
+                case PdfAConformanceLevel.PDF_A_2U:
+                    pdfAChecker = new PdfA2Checker();
+                    break;
+                case PdfAConformanceLevel.PDF_A_3A:
+                case PdfAConformanceLevel.PDF_A_3B:
+                case PdfAConformanceLevel.PDF_A_3U:
+                    pdfAChecker = new PdfA3Checker();
+                    break;
+                default:
+                    pdfAChecker = new PdfA1Checker();
+                    break;
+            }
         }
 
         /**

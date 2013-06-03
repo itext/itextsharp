@@ -160,6 +160,7 @@ namespace iTextSharp.text.pdf {
                 Padding = borderWidth / 2;
             }
             else {
+                image.ScaleToFitLineWhenOverflow = false;
                 column.AddText(this.phrase = new Phrase(new Chunk(image, 0, 0, true)));
                 Padding = 0;
             }

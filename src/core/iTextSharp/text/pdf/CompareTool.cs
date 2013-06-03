@@ -78,7 +78,7 @@ public class CompareTool {
     }
 
     public String Compare(String outPath, String differenceImage) {
-        if (!File.Exists(gsExec)) {
+        if (gsExec == null || !File.Exists(gsExec)) {
             return undefinedGsPath;
         }
 

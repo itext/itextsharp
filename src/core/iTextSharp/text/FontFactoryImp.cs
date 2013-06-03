@@ -155,24 +155,26 @@ namespace iTextSharp.text {
             string lowercasefontname = fontname.ToLower(CultureInfo.InvariantCulture);
             List<string> tmp;
             fontFamilies.TryGetValue(lowercasefontname, out tmp);
-            if (tmp != null) {
-                // some bugs were fixed here by Daniel Marczisovszky
-                int fs = Font.NORMAL;
-                bool found = false;
-                int s = style == Font.UNDEFINED ? Font.NORMAL : style;
-                foreach (string f in tmp) {
-                    string lcf = f.ToLower(CultureInfo.InvariantCulture);
-                    fs = Font.NORMAL;
-                    if (lcf.ToLower(CultureInfo.InvariantCulture).IndexOf("bold") != -1) fs |= Font.BOLD;
-                    if (lcf.ToLower(CultureInfo.InvariantCulture).IndexOf("italic") != -1 || lcf.ToLower(CultureInfo.InvariantCulture).IndexOf("oblique") != -1) fs |= Font.ITALIC;
-                    if ((s & Font.BOLDITALIC) == fs) {
-                        fontname = f;
-                        found = true;
-                        break;
+            if(tmp != null) {
+                lock (tmp) {
+                    // some bugs were fixed here by Daniel Marczisovszky
+                    int s = style == Font.UNDEFINED ? Font.NORMAL : style;
+                    int fs = Font.NORMAL;
+                    bool found = false;
+                    foreach (string f in tmp) {
+                        string lcf = f.ToLower(CultureInfo.InvariantCulture);
+                        fs = Font.NORMAL;
+                        if (lcf.IndexOf("bold") != -1) fs |= Font.BOLD;
+                        if (lcf.IndexOf("italic") != -1 || lcf.IndexOf("oblique") != -1) fs |= Font.ITALIC;
+                        if ((s & Font.BOLDITALIC) == fs) {
+                            fontname = f;
+                            found = true;
+                            break;
+                        }
                     }
-                }
-                if (style != Font.UNDEFINED && found) {
-                    style &= ~fs;
+                    if(style != Font.UNDEFINED && found) {
+                        style &= ~fs;
+                    }
                 }
             }
             BaseFont basefont = null;
@@ -352,24 +354,28 @@ namespace iTextSharp.text {
             if (path != null)
                 trueTypeFonts[fullName] = path;
             List<string> tmp;
-            fontFamilies.TryGetValue(familyName, out tmp);
-            if (tmp == null) {
-                tmp = new List<string>();
-                tmp.Add(fullName);
-                fontFamilies[familyName] = tmp;
-            }
-            else {
-                int fullNameLength = fullName.Length;
-                bool inserted = false;
-                for (int j = 0; j < tmp.Count; ++j) {
-                    if (tmp[j].Length >= fullNameLength) {
-                        tmp.Insert(j, fullName);
-                        inserted = true;
-                        break;
-                    }
-                }
-                if (!inserted)
+            lock (fontFamilies) {
+                fontFamilies.TryGetValue(familyName, out tmp);
+                if (tmp == null) {
+                    tmp = new List<string>();
                     tmp.Add(fullName);
+                    fontFamilies[familyName] = tmp;
+                }
+            }
+            lock (tmp) {
+                if (!tmp.Contains(fullName)) {
+                    int fullNameLength = fullName.Length;
+                    bool inserted = false;
+                    for (int j = 0; j < tmp.Count; ++j) {
+                        if (tmp[j].Length >= fullNameLength) {
+                            tmp.Insert(j, fullName);
+                            inserted = true;
+                            break;
+                        }
+                    }
+                    if (!inserted)
+                        tmp.Add(fullName);
+                }
             }
         }
 

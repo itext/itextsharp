@@ -1,5 +1,5 @@
 using System;
-
+using System.Drawing;
 using iTextSharp.text;
 
 /*
@@ -311,6 +311,21 @@ namespace iTextSharp.text.pdf {
             get {
                 return new PdfRectangle(lly, llx, ury, urx, 0);
             }
+        }
+
+        public PdfRectangle Transform(System.Drawing.Drawing2D.Matrix transform) {
+            System.Drawing.PointF[] points = {new PointF(llx, lly), new PointF(urx, ury)};
+            float[] pts = { points[0].X, points[0].Y, points[1].X, points[1].Y };
+            transform.TransformPoints(points);
+            if(pts[0] > pts[2]) {
+                points[0].X = pts[2];
+                points[1].X = pts[0];
+            }
+            if(pts[1] > pts[3]) {
+                points[0].Y = pts[3];
+                points[1].Y = pts[1];
+            }
+            return new PdfRectangle(points[0].X, points[0].Y, points[1].X, points[1].Y);
         }
     }
 }

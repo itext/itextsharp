@@ -205,14 +205,14 @@ namespace iTextSharp.text.xml.xmp {
                         continue;
                     value = ((PdfString)obj).ToUnicodeString();
                     if (PdfName.TITLE.Equals(key)) {
-                        dc.AddTitle(value);
+                        dc.AddTitle(new LangAlt(value));
                     }
                     if (PdfName.AUTHOR.Equals(key)) {
                         dc.AddAuthor(value);
                     }
                     if (PdfName.SUBJECT.Equals(key)) {
                         dc.AddSubject(value);
-                        dc.AddDescription(value);
+                        dc.AddDescription(new LangAlt(value));
                     }
                     if (PdfName.KEYWORDS.Equals(key)) {
                         p.AddKeywords(value);

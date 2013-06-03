@@ -65,6 +65,15 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
         
         public int Lookup(int character) {
             return map[character];
-        }    
+        }
+
+        public CMapToUnicode ExportToUnicode() {
+            CMapToUnicode uni = new CMapToUnicode();
+            int[] keys = map.GetKeys();
+            foreach (int key in keys) {
+                uni.AddChar(map[key], Utilities.ConvertFromUtf32(key));
+            }
+            return uni;
+        }
     }
 }

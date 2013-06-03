@@ -275,10 +275,8 @@ namespace iTextSharp.text.html {
                 return new BaseColor(c[0], c[1], c[2], c[3]);
             }
             name = name.ToLower(CultureInfo.InvariantCulture);
-            if (!NAMES.ContainsKey(name))
-                // TODO localize this error message.
-                throw new ArgumentException("Color '" + name + "' not found.");
-            c = NAMES[name];
+            if(!NAMES.ContainsKey(name))
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("color.not.found", new String[] { name })); c = NAMES[name];
             return new BaseColor(c[0], c[1], c[2], c[3]);
         }
     }

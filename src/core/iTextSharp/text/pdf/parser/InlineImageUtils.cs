@@ -218,6 +218,12 @@ namespace iTextSharp.text.pdf.parser {
                         return 1;
                     }
                 }
+                else {
+                    PdfName tempName = colorSpaceDic.GetAsName(colorSpaceName);
+                    if(tempName != null) {
+                        return GetComponentsPerPixel(tempName, colorSpaceDic);
+                    }
+                }
             }
 
             throw new ArgumentException("Unexpected color space " + colorSpaceName);
