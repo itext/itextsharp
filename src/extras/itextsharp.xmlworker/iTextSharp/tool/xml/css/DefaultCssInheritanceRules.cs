@@ -84,7 +84,10 @@ namespace iTextSharp.tool.xml.css {
             CSS.Property.POSITION });
         private static readonly IList<String> PARENT_TO_TABLE = new List<string>(new String[] {"line-height", "font-size",
             "font-style", "font-weight",
-            "text-indent" });
+            "text-indent",
+            CSS.Property.CELLPADDING, CSS.Property.CELLPADDING_LEFT, CSS.Property.CELLPADDING_TOP,
+            CSS.Property.CELLPADDING_RIGHT, CSS.Property.CELLPADDING_BOTTOM});
+
         private static readonly IList<String> TABLE_IN_ROW = new List<string>(new String[] { "background-color" });
         // styles that should not be applied on the content of a td-tag.
         private static readonly IList<String> TD_TO_CONTENT = new List<string>(new String[] { "vertical-align" });

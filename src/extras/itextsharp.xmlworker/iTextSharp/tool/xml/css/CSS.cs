@@ -118,6 +118,12 @@ namespace iTextSharp.tool.xml.css {
             public const String POSITION = "position";
             public const String EMPTY_CELLS = "empty-cells";
             public const String CELLPADDING = "cellpadding";
+            //deprecated
+            public const String CELLPADDING_LEFT = "cellpadding-left";
+            public const String CELLPADDING_TOP = "cellpadding-top";
+            public const String CELLPADDING_RIGHT = "cellpadding-right";
+            public const String CELLPADDING_BOTTOM = "cellpadding-bottom";
+            
             public const String CAPTION_SIDE = "caption-side";
             public const String TAB_STOPS = "tab-stops";
             public const String XFA_TAB_STOPS = "xfa-tab-stops";

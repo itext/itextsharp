@@ -79,7 +79,7 @@ namespace iTextSharp.tool.xml.css.apply {
         while(table != null && !table.Name.Equals(HTML.Tag.TABLE)){
 		    table = table.Parent;
         }
-        TableStyleValues values = Table.setBorderAttributeForCell(table);
+        TableStyleValues values = Table.SetBorderAttributeForCell(table);
 
         IDictionary<String, String> css = t.CSS;
         String emptyCells;
