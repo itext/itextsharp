@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.util;
+using iTextSharp.text.pdf.events;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.html;
@@ -132,92 +133,115 @@ namespace iTextSharp.tool.xml.css {
          *
          * @see com.itextpdf.tool.xml.pipeline.css.CSSResolver#resolveStyles(com.itextpdf.tool.xml.Tag)
          */
-        public void ResolveStyles(Tag t) {
+
+        public void ResolveStyles(Tag t)
+        {
             // get css for this tag from resolver
             IDictionary<String, String> tagCss = new Dictionary<String, String>();
             IDictionary<String, String> listCss = null;
-            if (null != cssFiles && cssFiles.HasFiles()) {
+            if (null != cssFiles && cssFiles.HasFiles())
+            {
                 tagCss = cssFiles.GetCSS(t);
-                if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.P) || Util.EqualsIgnoreCase(t.Name, HTML.Tag.TD)) {
+                if (Util.EqualsIgnoreCase(t.Name, HTML.Tag.P) || Util.EqualsIgnoreCase(t.Name, HTML.Tag.TD))
+                {
                     listCss = cssFiles.GetCSS(new Tag(HTML.Tag.UL));
                 }
             }
             // get css from style attr
-            if (null != t.Attributes && t.Attributes.Count != 0) {
-                if (t.Attributes.ContainsKey(HTML.Attribute.CELLPADDING)) {
-                    CssUtils.MapPutAll(tagCss, utils.ParseBoxValues(t.Attributes[HTML.Attribute.CELLPADDING], "cellpadding-", ""));
+            if (null != t.Attributes && t.Attributes.Count != 0)
+            {
+                if (t.Attributes.ContainsKey(HTML.Attribute.CELLPADDING))
+                {
+                    CssUtils.MapPutAll(tagCss,
+                                       utils.ParseBoxValues(t.Attributes[HTML.Attribute.CELLPADDING], "cellpadding-", ""));
                 }
-                if (t.Attributes.ContainsKey(HTML.Attribute.CELLSPACING)) {
-                    CssUtils.MapPutAll(tagCss, utils.ParseBoxValues(t.Attributes[HTML.Attribute.CELLSPACING], "cellspacing-", ""));
+                if (t.Attributes.ContainsKey(HTML.Attribute.CELLSPACING))
+                {
+                    CssUtils.MapPutAll(tagCss,
+                                       utils.ParseBoxValues(t.Attributes[HTML.Attribute.CELLSPACING], "cellspacing-", ""));
                 }
                 String styleAtt;
                 t.Attributes.TryGetValue(HTML.Attribute.STYLE, out styleAtt);
-                if (!string.IsNullOrEmpty(styleAtt)) {
+                if (!string.IsNullOrEmpty(styleAtt))
+                {
                     Dictionary<String, String> tagAttrCss = new Dictionary<string, string>();
                     String[] styles = styleAtt.Split(';');
-                    foreach (String s in styles) {
-                        String[] part = s.Split(splitColon,2);
-                        if (part.Length == 2) {
+                    foreach (String s in styles)
+                    {
+                        String[] part = s.Split(splitColon, 2);
+                        if (part.Length == 2)
+                        {
                             String key = utils.StripDoubleSpacesTrimAndToLowerCase(part[0]);
                             String value = utils.StripDoubleSpacesAndTrim(part[1]);
                             SplitRules(tagAttrCss, key, value);
                         }
                     }
-                    foreach (KeyValuePair<String, String> e in tagAttrCss) {
+                    foreach (KeyValuePair<String, String> e in tagAttrCss)
+                    {
                         tagCss[e.Key] = e.Value;
                     }
                 }
             }
             // inherit css from parent tags, as defined in provided CssInheritanceRules or if property = inherit
             IDictionary<String, String> css = t.CSS;
-            if (listCss != null && listCss.ContainsKey(CSS.Property.LIST_STYLE_TYPE)) {
-                css[CSS.Property.LIST_STYLE_TYPE] = listCss[CSS.Property.LIST_STYLE_TYPE];
-            }
-            if (MustInherit(t.Name) && null != t.Parent && null != t.Parent.CSS) {
-                if (null != this.inherit) {
-                    foreach (KeyValuePair<String, String> entry in t.Parent.CSS) {
-                        String key = entry.Key;
-                        if ((tagCss.ContainsKey(key) && CSS.Value.INHERIT.Equals(tagCss[key]) ) || CanInherite(t, key)) {
-                            //splitRules(css, key, entry.GetValue());
-                            css[key] = entry.Value;
-                        }
-                    }
-                } else {
-                    CssUtils.MapPutAll(css, t.Parent.CSS);
-                }
-            }
-
             if (t.Name != null)
             {
                 if (t.Name.Equals(HTML.Tag.I) || t.Name.Equals(HTML.Tag.CITE)
-                        || t.Name.Equals(HTML.Tag.EM) || t.Name.Equals(HTML.Tag.VAR)
-                        || t.Name.Equals(HTML.Tag.DFN) || t.Name.Equals(HTML.Tag.ADDRESS))
-                {
+                    || t.Name.Equals(HTML.Tag.EM) || t.Name.Equals(HTML.Tag.VAR)
+                    || t.Name.Equals(HTML.Tag.DFN) || t.Name.Equals(HTML.Tag.ADDRESS)) {
                     css[CSS.Property.FONT_STYLE] = CSS.Value.ITALIC;
                 }
-                else if (t.Name.Equals(HTML.Tag.B) || t.Name.Equals(HTML.Tag.STRONG))
-                {
+                else if (t.Name.Equals(HTML.Tag.B) || t.Name.Equals(HTML.Tag.STRONG)) {
                     css[CSS.Property.FONT_WEIGHT] = CSS.Value.BOLD;
                 }
-                else if (t.Name.Equals(HTML.Tag.U) || t.Name.Equals(HTML.Tag.INS))
-                {
+                else if (t.Name.Equals(HTML.Tag.U) || t.Name.Equals(HTML.Tag.INS)) {
                     css[CSS.Property.TEXT_DECORATION] = CSS.Value.UNDERLINE;
                 }
-                else if (t.Name.Equals(HTML.Tag.S) || t.Name.Equals(HTML.Tag.STRIKE)
-                        || t.Name.Equals(HTML.Tag.DEL))
-                {
+                else if (t.Name.Equals(HTML.Tag.S) || t.Name.Equals(HTML.Tag.STRIKE) 
+                         || t.Name.Equals(HTML.Tag.DEL)) {
                     css[CSS.Property.TEXT_DECORATION] = CSS.Value.LINE_THROUGH;
                 }
-                else if (t.Name.Equals(HTML.Tag.BIG))
-                {
+                else if (t.Name.Equals(HTML.Tag.BIG)) {
                     css[CSS.Property.FONT_SIZE] = CSS.Value.LARGER;
                 }
-                else if (t.Name.Equals(HTML.Tag.SMALL))
-                {
+                else if (t.Name.Equals(HTML.Tag.SMALL)) {
                     css[CSS.Property.FONT_SIZE] = CSS.Value.SMALLER;
                 }
-                else if (t.Name.Equals(HTML.Tag.FONT))
-                {
+            }
+
+
+            if (listCss != null && listCss.ContainsKey(CSS.Property.LIST_STYLE_TYPE)) {
+                    css[CSS.Property.LIST_STYLE_TYPE] = listCss[CSS.Property.LIST_STYLE_TYPE];
+            }
+
+		    if (MustInherit(t.Name) && null != t.Parent && null != t.Parent.CSS) {
+			    if (null != this.inherit) {
+				    foreach (KeyValuePair<String, String> entry in t.Parent.CSS) {
+					    String key = entry.Key;
+					    if ((tagCss.ContainsKey(key) && CSS.Value.INHERIT.Equals(tagCss[key]) ) || CanInherite(t, key)) {
+                            if (key.Contains(CSS.Property.CELLPADDING)
+                                    && (HTML.Tag.TD.Equals(t.Name) || HTML.Tag.TH.Equals(t.Name))) {
+                                String paddingKey = key.Replace(CSS.Property.CELLPADDING, CSS.Property.PADDING);
+                                //if (!tagCss.containsKey(paddingKey)) {
+                                tagCss[paddingKey] =  entry.Value;
+                                //continue;
+                                //}
+                            }
+                            else {
+						        //splitRules(css, key, entry.getValue());
+                                css[key] = entry.Value;
+                            }
+					    }
+				    }
+			    }
+                else {
+                    foreach(KeyValuePair<string, string> entry in t.Parent.CSS)
+                        css.Add(entry);
+			    }
+		    }
+
+            if(t.Name != null) {
+                if (t.Name.Equals(HTML.Tag.FONT)) {
                     String font_family;
                     if (t.Attributes.TryGetValue(HTML.Attribute.FACE, out font_family))
                         css[CSS.Property.FONT_FAMILY] = font_family;
@@ -225,8 +249,7 @@ namespace iTextSharp.tool.xml.css {
                     if (t.Attributes.TryGetValue(HTML.Attribute.COLOR, out color))
                         css[CSS.Property.COLOR] = color;
                     String size;
-                    if (t.Attributes.TryGetValue(HTML.Attribute.SIZE, out size))
-                    {
+                    if (t.Attributes.TryGetValue(HTML.Attribute.SIZE, out size)) {
                         if (size.Equals("1")) css[CSS.Property.FONT_SIZE] = CSS.Value.XX_SMALL;
                         else if (size.Equals("2")) css[CSS.Property.FONT_SIZE] = CSS.Value.X_SMALL;
                         else if (size.Equals("3")) css[CSS.Property.FONT_SIZE] = CSS.Value.SMALL;
@@ -237,12 +260,10 @@ namespace iTextSharp.tool.xml.css {
 
                     }
                 }
-                else if (t.Name.Equals(HTML.Tag.A))
-                {
+                else if (t.Name.Equals(HTML.Tag.A)) {
                     css[CSS.Property.TEXT_DECORATION] = CSS.Value.UNDERLINE;
                     css[CSS.Property.COLOR] = "blue";
                 }
-
             }
 
 

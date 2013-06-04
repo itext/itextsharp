@@ -569,7 +569,7 @@ namespace iTextSharp.tool.xml.html.table {
             return styleValues;
         }
 
-        public static TableStyleValues setBorderAttributeForCell(Tag tag) {
+        public static TableStyleValues SetBorderAttributeForCell(Tag tag) {
             TableStyleValues styleValues = new TableStyleValues();
 
             IDictionary<String, String> attributes = tag.Attributes;
@@ -650,40 +650,41 @@ namespace iTextSharp.tool.xml.html.table {
             IList<float> rulesWidth = new List<float>();
             float widestWordOfCell = 0f;
             float startWidth = GetCellStartWidth(cell);
-            float cellWidth = startWidth;
+            float cellWidth;
+            float widthDeviation = 0.001f;
             IList<IElement> compositeElements = cell.CompositeElements;
             if (compositeElements != null) {
-                foreach (IElement baseLevel in compositeElements){
+                foreach (IElement baseLevel in compositeElements) {
+                    cellWidth = float.NaN;
                     if (baseLevel is Phrase) {
-                        for(int i=0; i < ((Phrase)baseLevel).Count ; i++) {
+                        for(int i = 0; i < ((Phrase)baseLevel).Count; i++) {
                             IElement inner = ((Phrase)baseLevel)[i];
                             if (inner is Chunk) {
+                                if(float.IsNaN(cellWidth))
+                                    cellWidth = startWidth + widthDeviation;
                                 cellWidth += ((Chunk)inner).GetWidthPoint();
-                                float widestWord = startWidth + new ChunkCssApplier().GetWidestWord((Chunk) inner);
+                                float widestWord = startWidth + widthDeviation + GetCssAppliers().ChunkCssAplier.GetWidestWord((Chunk)inner);
                                 if(widestWord > widestWordOfCell) {
                                     widestWordOfCell = widestWord;
                                 }
                             }
                         }
-                        rulesWidth.Add(cellWidth);
-                        cellWidth = startWidth;
+                        if(!float.IsNaN(cellWidth))
+                            rulesWidth.Add(cellWidth);
                     } else if (baseLevel is List) {
                         foreach (IElement li in ((List)baseLevel).Items) {
-                            rulesWidth.Add(cellWidth);
-                            cellWidth = startWidth + ((ListItem)li).IndentationLeft;
-                            foreach (Chunk c in((ListItem)li).Chunks) {
+                            cellWidth = startWidth + widthDeviation + ((ListItem)li).IndentationLeft;
+                            foreach (Chunk c in li.Chunks) {
                                 cellWidth += c.GetWidthPoint();
                                 float widestWord = new ChunkCssApplier().GetWidestWord(c);
-                                if(startWidth + widestWord > widestWordOfCell) {
-                                    widestWordOfCell = startWidth + widestWord;
+                                if(startWidth + widthDeviation + widestWord > widestWordOfCell) {
+                                    widestWordOfCell = startWidth + widthDeviation + widestWord;
                                 }
                             }
+                            rulesWidth.Add(cellWidth);
                         }
-                        rulesWidth.Add(cellWidth);
-                        cellWidth = startWidth;
                     } else if (baseLevel is PdfPTable) {
-                        rulesWidth.Add(cellWidth);
-                        cellWidth = startWidth + ((PdfPTable)baseLevel).TotalWidth;
+                        cellWidth = startWidth + widthDeviation + ((PdfPTable)baseLevel).TotalWidth;
                         foreach (PdfPRow innerRow in ((PdfPTable)baseLevel).Rows) {
                             int size = innerRow.GetCells().Length;
                             TableBorderEvent evente = (TableBorderEvent) ((PdfPTable)baseLevel).TableEvent;
@@ -702,10 +703,14 @@ namespace iTextSharp.tool.xml.html.table {
                             }
                         }
                         rulesWidth.Add(cellWidth);
-                        cellWidth = startWidth;
+				    }
+                    else if (baseLevel is PdfDiv) {
+                        cellWidth = startWidth + widthDeviation + ((PdfDiv) baseLevel).getActualWidth();
+                        rulesWidth.Add(cellWidth);
                     }
                 }
             }
+            cellWidth = startWidth;
             foreach (float width in rulesWidth) {
                 if(width > cellWidth) {
                     cellWidth = width;
@@ -772,7 +777,7 @@ namespace iTextSharp.tool.xml.html.table {
             // colspan - 1, because one horBorderSpacing has been added to paddingLeft for all cells.
             int spacingMultiplier = cell.Colspan - 1;
             float spacing = spacingMultiplier*cellStyleValues.HorBorderSpacing;
-            return spacing + cell.PaddingLeft+cell.PaddingRight+1;
+            return spacing + cell.PaddingLeft + cell.PaddingRight;
         }
 
         /**
