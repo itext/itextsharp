@@ -207,7 +207,7 @@ namespace iTextSharp.text.pdf.security {
                 try {
                     cert.Verify(parent.GetPublicKey());
                     return parent;
-                } catch (Exception e) {
+                } catch {
                     // do nothing
                 }
             }
