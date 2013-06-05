@@ -132,6 +132,7 @@ namespace iTextSharp.text.pdf {
                 graphicsColorFill = cp.graphicsColorFill;
                 textColorStroke = cp.textColorStroke;
                 graphicsColorStroke = cp.graphicsColorStroke;
+                CTM = cp.CTM.Clone();
             }
 
             internal void Restore(GraphicState restore) {
@@ -2519,7 +2520,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public virtual void SetCMYKColorFill(int cyan, int magenta, int yellow, int black) {
-            SaveColor(new CMYKColor(cyan, magenta, yellow, black), false);
+            SaveColor(new CMYKColor(cyan, magenta, yellow, black), true);
             content.Append((float)(cyan & 0xFF) / 0xFF);
             content.Append(' ');
             content.Append((float)(magenta & 0xFF) / 0xFF);
@@ -2547,7 +2548,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public virtual void SetCMYKColorStroke(int cyan, int magenta, int yellow, int black) {
-            SaveColor(new CMYKColor(cyan, magenta, yellow, black), true);
+            SaveColor(new CMYKColor(cyan, magenta, yellow, black), false);
             content.Append((float)(cyan & 0xFF) / 0xFF);
             content.Append(' ');
             content.Append((float)(magenta & 0xFF) / 0xFF);
@@ -2598,7 +2599,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public virtual void SetRGBColorStroke(int red, int green, int blue) {
-            SaveColor(new BaseColor(red, green, blue), true);
+            SaveColor(new BaseColor(red, green, blue), false);
             HelperRGB((float)(red & 0xFF) / 0xFF, (float)(green & 0xFF) / 0xFF, (float)(blue & 0xFF) / 0xFF);
             content.Append(" RG").Append_i(separator);
         }

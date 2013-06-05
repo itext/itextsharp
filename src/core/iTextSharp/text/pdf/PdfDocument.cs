@@ -1674,7 +1674,7 @@ namespace iTextSharp.text.pdf {
                 
                 if (rise != 0)
                     text.SetTextRise(0);
-                if (color != null && !IsTagged(writer))
+                if (color != null)
                     text.ResetRGBColorFill();
                 if (tr != PdfContentByte.TEXT_RENDER_MODE_FILL)
                     text.SetTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL);

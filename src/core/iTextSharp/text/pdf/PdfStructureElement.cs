@@ -353,8 +353,6 @@ namespace iTextSharp.text.pdf
                     this.SetAttribute(PdfName.WIDTH, new PdfNumber(image.Width));
                 if (image.Height > 0)
                     this.SetAttribute(PdfName.HEIGHT, new PdfNumber(image.Height));
-                image.Rotation = 10;
-                image.Rotation = 10f;
                 PdfRectangle rect = new PdfRectangle(image, ((Rectangle) image).Rotation);
                 this.SetAttribute(PdfName.BBOX, rect);
                 if (image.Alt != null)
