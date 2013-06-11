@@ -56,12 +56,8 @@
   <ItemGroup>
     <None Include="lib\XmlDiffPatch.dll">
     </None>
-    <None Include="resources\text\pdfa\jpeg2000\cpyrght.htm">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="resources\text\pdfa\jpeg2000\cpyrght_files\d13c15.gif">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Content Include="resources\text\pdfa\jpeg2000\cpyrght.htm" />
+    <Content Include="resources\text\pdfa\jpeg2000\cpyrght_files\d13c15.gif" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test0.xml" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test1.xml" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test10.xml" />
@@ -84,6 +80,7 @@
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test16.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test17.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test18.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test19.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test2.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test3.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test4.xml" />
@@ -94,48 +91,20 @@
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test9.xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="resources\text\pdfa\FreeMonoBold.ttf">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="resources\text\pdfa\jpeg2000\file1.jp2">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="resources\text\pdfa\jpeg2000\file2.jp2">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="resources\text\pdfa\jpeg2000\file3.jp2">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="resources\text\pdfa\jpeg2000\file4.jp2">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="resources\text\pdfa\jpeg2000\file5.jp2">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="resources\text\pdfa\jpeg2000\file6.jp2">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="resources\text\pdfa\jpeg2000\file7.jp2">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="resources\text\pdfa\jpeg2000\file8.jp2">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="resources\text\pdfa\jpeg2000\file9.jp2">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="resources\text\pdfa\jpeg2000\p0_01.j2k">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="resources\text\pdfa\jpeg2000\p0_02.j2k">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="resources\text\pdfa\jpeg2000\p1_01.j2k">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="resources\text\pdfa\jpeg2000\p1_02.j2k">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <Content Include="resources\text\pdfa\FreeMonoBold.ttf" />
+    <Content Include="resources\text\pdfa\jpeg2000\file1.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file2.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file3.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file4.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file5.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file6.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file7.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file8.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file9.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\p0_01.j2k" />
+    <Content Include="resources\text\pdfa\jpeg2000\p0_02.j2k" />
+    <Content Include="resources\text\pdfa\jpeg2000\p1_01.j2k" />
+    <Content Include="resources\text\pdfa\jpeg2000\p1_02.j2k" />
     <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source10.pdf" />
     <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source11.pdf" />
     <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source12.pdf" />
