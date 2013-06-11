@@ -893,6 +893,30 @@ namespace itextsharp.tests.text.pdf
             CompareResults("18");
         }
 
+        
+    [Test]
+    public void CreateTaggedPdf19()
+    {
+        InitializeDocument("19");
+
+        PdfDiv div = new PdfDiv();
+        writer.DirectContent.OpenMCBlock(div);
+
+        PdfArtifact artifact = new PdfArtifact();
+        artifact.Type = new PdfString("Rectangle");
+        writer.DirectContent.OpenMCBlock(artifact);
+        writer.DirectContent.SetColorFill(BaseColor.RED);
+        writer.DirectContent.Rectangle(100, 100, 400, 400);
+        writer.DirectContent.Fill();
+        writer.DirectContent.CloseMCBlock(artifact);
+
+        writer.DirectContent.CloseMCBlock(div);
+
+        document.Close();
+        CompareResults("19");
+    }
+
+
         private void CheckNums(int[] nums)
         {
             PdfReader reader = new PdfReader(output);
