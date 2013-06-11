@@ -47,12 +47,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="iTextSharp\text\ChunkTest.cs" />
+    <Compile Include="iTextSharp\text\pdfa\PdfA2CheckerTest.cs" />
+    <Compile Include="iTextSharp\text\pdfa\PdfAFileStructureTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfCopyTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="lib\XmlDiffPatch.dll">
+    </None>
+    <None Include="resources\text\pdfa\jpeg2000\cpyrght.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\text\pdfa\jpeg2000\cpyrght_files\d13c15.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test0.xml" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test1.xml" />
@@ -86,6 +94,48 @@
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test9.xml" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="resources\text\pdfa\FreeMonoBold.ttf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\text\pdfa\jpeg2000\file1.jp2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\text\pdfa\jpeg2000\file2.jp2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\text\pdfa\jpeg2000\file3.jp2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\text\pdfa\jpeg2000\file4.jp2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\text\pdfa\jpeg2000\file5.jp2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\text\pdfa\jpeg2000\file6.jp2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\text\pdfa\jpeg2000\file7.jp2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\text\pdfa\jpeg2000\file8.jp2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\text\pdfa\jpeg2000\file9.jp2">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\text\pdfa\jpeg2000\p0_01.j2k">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\text\pdfa\jpeg2000\p0_02.j2k">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\text\pdfa\jpeg2000\p1_01.j2k">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="resources\text\pdfa\jpeg2000\p1_02.j2k">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source10.pdf" />
     <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source11.pdf" />
     <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source12.pdf" />
@@ -103,6 +153,10 @@
     <ProjectReference Include="..\..\core\itextsharp.csproj">
       <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
       <Name>itextsharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\itextsharp.pdfa\itextsharp.pdfa%28VS2010%29.csproj">
+      <Project>{C892FA61-C495-4F30-8799-A198F89F23F4}</Project>
+      <Name>itextsharp.pdfa%28VS2010%29</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
