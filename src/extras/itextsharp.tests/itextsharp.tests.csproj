@@ -35,11 +35,17 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Security" />
     <Reference Include="System.Xml" />
     <Reference Include="XmlDiffPatch, Version=1.0.8.28, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="iTextSharp\text\ChunkTest.cs" />
+    <Compile Include="iTextSharp\text\pdfa\PdfA2CheckerTest.cs" />
+    <Compile Include="iTextSharp\text\pdfa\PdfAFileStructureTest.cs" />
+    <Compile Include="iTextSharp\text\signature\XmlDSigKSTest.cs" />
+    <Compile Include="iTextSharp\text\signature\XmlDSigRsaTest.cs" />
+    <Compile Include="iTextSharp\text\signature\XmlDSigTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfCopyTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfTest.cs" />
@@ -47,6 +53,15 @@
   <ItemGroup>
     <None Include="lib\XmlDiffPatch.dll">
     </None>
+    <Content Include="resources\text\pdfa\jpeg2000\cpyrght.htm" />
+    <Content Include="resources\text\pdfa\jpeg2000\cpyrght_files\d13c15.gif" />
+    <Content Include="resources\text\pdf\signature\rsa-ks\xfa.signed.package.xml" />
+    <Content Include="resources\text\pdf\signature\rsa-ks\xfa.signed.xml" />
+    <Content Include="resources\text\pdf\signature\rsa\xfa.signed.ki.package.xml" />
+    <Content Include="resources\text\pdf\signature\rsa\xfa.signed.ki.xml" />
+    <Content Include="resources\text\pdf\signature\rsa\xfa.signed.pk.package.xml" />
+    <Content Include="resources\text\pdf\signature\rsa\xfa.signed.pk.xml" />
+    <Content Include="resources\text\pdf\signature\rsa\xfa.signed.xml" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test0.xml" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test1.xml" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test10.xml" />
@@ -80,23 +95,45 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="itextsharp.snk" />
-    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source10.pdf" />
-    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source11.pdf" />
-    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source12.pdf" />
-    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source16.pdf" />
-    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source17.pdf" />
-    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source22.pdf" />
-    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source32.pdf" />
-    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source4.pdf" />
-    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source42.pdf" />
-    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source51.pdf" />
-    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source52.pdf" />
-    <None Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source53.pdf" />
+    <Content Include="resources\text\pdfa\FreeMonoBold.ttf" />
+    <Content Include="resources\text\pdfa\jpeg2000\file1.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file2.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file3.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file4.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file5.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file6.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file7.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file8.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\file9.jp2" />
+    <Content Include="resources\text\pdfa\jpeg2000\p0_01.j2k" />
+    <Content Include="resources\text\pdfa\jpeg2000\p0_02.j2k" />
+    <Content Include="resources\text\pdfa\jpeg2000\p1_01.j2k" />
+    <Content Include="resources\text\pdfa\jpeg2000\p1_02.j2k" />
+    <Content Include="resources\text\pdf\signature\rsa-ks\pkcs12" />
+    <Content Include="resources\text\pdf\signature\rsa\key" />
+    <Content Include="resources\text\pdf\signature\xfa.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test19.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source10.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source11.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source12.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source16.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source17.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source22.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source32.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source4.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source42.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source51.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source52.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source53.pdf" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\itextsharp.csproj">
       <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
       <Name>itextsharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\itextsharp.pdfa\itextsharp.pdfa.csproj">
+      <Project>{C892FA61-C495-4F30-8799-A198F89F23F4}</Project>
+      <Name>itextsharp.pdfa</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
