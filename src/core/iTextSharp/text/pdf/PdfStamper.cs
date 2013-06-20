@@ -174,6 +174,16 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
+         * Gets the xml signing instance. The appearances and other parameters can the be set.
+         * @return the signing instance
+         */
+        public XmlSignatureAppearance XmlSignatureAppearance {
+            get {
+                return sigXmlApp;
+            }
+        }
+
+        /**
         * Closes the document. No more content can be written after the
         * document is closed.
         * <p>

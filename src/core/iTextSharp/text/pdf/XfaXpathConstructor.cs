@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Xml;
 using iTextSharp.text.pdf.security;
 /*
  * $Id: XfaXpathConstructor.java 5830 2013-05-31 09:29:15Z blowagie $
@@ -88,7 +89,7 @@ namespace iTextSharp.text.pdf
         }
 
         /**
-         * Construct for Xpath2 expression. Depends from selected xdp package.
+         * Construct for Xpath expression. Depends from selected xdp package.
          * @param xdpPackage
          */
         public XfaXpathConstructor(XdpPackage xdpPackage) {
@@ -136,15 +137,22 @@ namespace iTextSharp.text.pdf
             builder.Append(strPackage);
             builder.Append("']");
             xpathExpression = builder.ToString();
+            namespaceManager = new XmlNamespaceManager(new NameTable());
+            namespaceManager.AddNamespace("xdp", "http://ns.adobe.com/xdp/");
         }
 
         private String xpathExpression;
+        private XmlNamespaceManager namespaceManager;
 
         /**
-         * Get XPath2 expression
+         * Get XPath expression
          */
         public String GetXpathExpression() {
             return xpathExpression;
+        }
+
+        public XmlNamespaceManager GetNamespaceManager() {
+            return namespaceManager;
         }
     }
 }

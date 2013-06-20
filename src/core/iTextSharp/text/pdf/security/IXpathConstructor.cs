@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Xml;
+
 /*
  * $Id: XpathConstructor.java 5830 2013-05-31 09:29:15Z blowagie $
  *
@@ -52,6 +54,11 @@ namespace iTextSharp.text.pdf.security
         /**
          * Get XPath2 expression
          */
-        String GetXpathExpression(); 
+        String GetXpathExpression();
+
+        /**
+         * Get XmlNamespaceManager to resolve namespace conflicts
+         */
+        XmlNamespaceManager GetNamespaceManager();
     }
 }
