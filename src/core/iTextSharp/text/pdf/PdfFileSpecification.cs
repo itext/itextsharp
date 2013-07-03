@@ -162,6 +162,7 @@ namespace iTextSharp.text.pdf {
             PdfFileSpecification fs = new PdfFileSpecification();
             fs.writer = writer;
             fs.Put(PdfName.F, new PdfString(fileDisplay));
+            fs.SetUnicodeFileName(fileDisplay, false);
             PdfEFStream stream;
             Stream inp = null;
             PdfIndirectReference refi;
@@ -219,6 +220,7 @@ namespace iTextSharp.text.pdf {
             }
             PdfDictionary f = new PdfDictionary();
             f.Put(PdfName.F, refi);
+            f.Put(PdfName.UF, refi);
             fs.Put(PdfName.EF, f);
             return fs;
         }
