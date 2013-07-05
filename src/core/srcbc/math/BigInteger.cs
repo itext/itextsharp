@@ -1658,30 +1658,31 @@ namespace Org.BouncyCastle.Math
 
             int pow = m.BitLength - 1;
 
-            if (pow <= 64)
+            long inv64 = ModInverse64(LongValue);
+            if (pow < 64)
             {
-                long inv = ModInverse64(LongValue);
-                if (pow < 64)
+                inv64 &= ((1L << pow) - 1);
+            }
+
+            BigInteger x = BigInteger.ValueOf(inv64);
+
+            if (pow > 64)
+            {
+                BigInteger d = this.Remainder(m);
+                int bitsCorrect = 64;
+
+                do
                 {
-                    inv &= (m.LongValue - 1);
+                    BigInteger t = x.Multiply(d).Remainder(m);
+                    x = x.Multiply(Two.Subtract(t)).Remainder(m);
+                    bitsCorrect <<= 1;
                 }
-                return BigInteger.ValueOf(inv);
-            }
+                while (bitsCorrect < pow);
 
-            BigInteger d = this.Remainder(m);
-            BigInteger x = d;
-            int bitsCorrect = 3;
-
-            while (bitsCorrect < pow)
-            {
-                BigInteger t = x.Multiply(d).Remainder(m);
-                x = x.Multiply(Two.Subtract(t)).Remainder(m);
-                bitsCorrect <<= 1;
-            }
-
-            if (x.sign < 0)
-            {
-                x = x.Add(m);
+                if (x.sign < 0)
+                {
+                    x = x.Add(m);
+                }
             }
 
             return x;
@@ -1689,27 +1690,27 @@ namespace Org.BouncyCastle.Math
 
         private static int ModInverse32(int d)
         {
+            // Newton's method with initial estimate "correct to 4 bits"
             Debug.Assert((d & 1) != 0);
-            // Newton-Raphson division (roughly)
-            int x = d;        // d.x == 1 mod 2**3
-            x *= 2 - d * x;   // d.x == 1 mod 2**6
-            x *= 2 - d * x;   // d.x == 1 mod 2**12
-            x *= 2 - d * x;   // d.x == 1 mod 2**24
-            x *= 2 - d * x;   // d.x == 1 mod 2**48
+            int x = d + (((d + 1) & 4) << 1);   // d.x == 1 mod 2**4
+            Debug.Assert(((d * x) & 15) == 1);
+            x *= 2 - d * x;                     // d.x == 1 mod 2**8
+            x *= 2 - d * x;                     // d.x == 1 mod 2**16
+            x *= 2 - d * x;                     // d.x == 1 mod 2**32
             Debug.Assert(d * x == 1);
             return x;
         }
 
         private static long ModInverse64(long d)
         {
-            // Newton-Raphson division (roughly)
+            // Newton's method with initial estimate "correct to 4 bits"
             Debug.Assert((d & 1L) != 0);
-            long x = d;       // d.x == 1 mod 2**3
-            x *= 2 - d * x;   // d.x == 1 mod 2**6
-            x *= 2 - d * x;   // d.x == 1 mod 2**12
-            x *= 2 - d * x;   // d.x == 1 mod 2**24
-            x *= 2 - d * x;   // d.x == 1 mod 2**48
-            x *= 2 - d * x;   // d.x == 1 mod 2**96
+            long x = d + (((d + 1L) & 4L) << 1);    // d.x == 1 mod 2**4
+            Debug.Assert(((d * x) & 15L) == 1L);
+            x *= 2 - d * x;                         // d.x == 1 mod 2**8
+            x *= 2 - d * x;                         // d.x == 1 mod 2**16
+            x *= 2 - d * x;                         // d.x == 1 mod 2**32
+            x *= 2 - d * x;                         // d.x == 1 mod 2**64
             Debug.Assert(d * x == 1L);
             return x;
         }

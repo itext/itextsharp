@@ -27,22 +27,27 @@ namespace Org.BouncyCastle.Crypto.Agreement
      * BasicAgreement!).</p>
      */
     public class ECDHCBasicAgreement
-		: IBasicAgreement
+        : IBasicAgreement
     {
         private ECPrivateKeyParameters key;
 
-        public void Init(
+        public virtual void Init(
             ICipherParameters parameters)
         {
-			if (parameters is ParametersWithRandom)
-			{
-				parameters = ((ParametersWithRandom) parameters).Parameters;
-			}
+            if (parameters is ParametersWithRandom)
+            {
+                parameters = ((ParametersWithRandom) parameters).Parameters;
+            }
 
-			this.key = (ECPrivateKeyParameters)parameters;
+            this.key = (ECPrivateKeyParameters)parameters;
         }
 
-        public BigInteger CalculateAgreement(
+        public virtual int GetFieldSize()
+        {
+            return (key.Parameters.Curve.FieldSize + 7) / 8;
+        }
+
+        public virtual BigInteger CalculateAgreement(
             ICipherParameters pubKey)
         {
             ECPublicKeyParameters pub = (ECPublicKeyParameters) pubKey;
@@ -54,5 +59,4 @@ namespace Org.BouncyCastle.Crypto.Agreement
             return P.X.ToBigInteger();
         }
     }
-
 }
