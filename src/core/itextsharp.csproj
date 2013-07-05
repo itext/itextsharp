@@ -4214,6 +4214,8 @@
     <Compile Include="srcbc\asn1\cms\Attributes.cs" />
     <Compile Include="srcbc\asn1\cms\Evidence.cs" />
     <Compile Include="srcbc\asn1\cms\MetaData.cs" />
+    <Compile Include="srcbc\asn1\cms\OtherRevocationInfoFormat.cs" />
+    <Compile Include="srcbc\asn1\cms\SCVPReqRes.cs" />
     <Compile Include="srcbc\asn1\cms\TimeStampAndCRL.cs" />
     <Compile Include="srcbc\asn1\cms\TimeStampedData.cs" />
     <Compile Include="srcbc\asn1\cms\TimeStampedDataParser.cs" />
@@ -4242,6 +4244,7 @@
     <Compile Include="srcbc\asn1\crmf\SubsequentMessage.cs" />
     <Compile Include="srcbc\asn1\icao\CscaMasterList.cs" />
     <Compile Include="srcbc\asn1\icao\LDSVersionInfo.cs" />
+    <Compile Include="srcbc\asn1\x509\CertificatePolicies.cs" />
     <Compile Include="srcbc\bcpg\sig\RevocationKey.cs" />
     <Compile Include="srcbc\bcpg\sig\RevocationKeyTags.cs" />
     <Compile Include="srcbc\bcpg\sig\RevocationReason.cs" />
@@ -4250,10 +4253,14 @@
     <Compile Include="srcbc\cms\OriginatorInfoGenerator.cs" />
     <Compile Include="srcbc\cms\OriginatorInformation.cs" />
     <Compile Include="srcbc\crypto\digests\SHA3Digest.cs" />
+    <Compile Include="srcbc\crypto\digests\Sha512tDigest.cs" />
     <Compile Include="srcbc\crypto\generators\SCrypt.cs" />
+    <Compile Include="srcbc\crypto\macs\SipHash.cs" />
     <Compile Include="srcbc\crypto\modes\gcm\BasicGcmExponentiator.cs" />
     <Compile Include="srcbc\crypto\modes\gcm\IGcmExponentiator.cs" />
     <Compile Include="srcbc\crypto\modes\gcm\Tables1kGcmExponentiator.cs" />
+    <Compile Include="srcbc\crypto\modes\OCBBlockCipher.cs" />
+    <Compile Include="srcbc\crypto\parameters\DSAParameterGenerationParameters.cs" />
     <Compile Include="srcbc\crypto\tls\AlertDescription.cs" />
     <Compile Include="srcbc\crypto\tls\AlertLevel.cs" />
     <Compile Include="srcbc\crypto\tls\CertificateRequest.cs" />

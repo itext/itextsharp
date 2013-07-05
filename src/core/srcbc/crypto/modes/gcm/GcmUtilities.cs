@@ -204,7 +204,7 @@ namespace Org.BouncyCastle.Crypto.Modes.Gcm
 
         internal static void Xor(byte[] block, byte[] val, int off, int len)
         {
-            while (len-- > 0)
+            while (--len >= 0)
             {
                 block[len] ^= val[off + len];
             }

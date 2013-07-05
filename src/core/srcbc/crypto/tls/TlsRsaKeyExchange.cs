@@ -139,7 +139,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 //
 //	            if (!signer.VerifySignature(sigByte))
 //	            {
-//	                handler.FailWithError(AlertLevel.fatal, AlertDescription.bad_certificate);
+//	                handler.FailWithError(AlertLevel.fatal, AlertDescription.decrypt_error);
 //	            }
 //	        }
 //

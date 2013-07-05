@@ -34,6 +34,13 @@ namespace Org.BouncyCastle.Crypto.Utilities
             return (ushort)n;
         }
 
+        internal static byte[] UInt32_To_BE(uint n)
+        {
+            byte[] bs = new byte[4];
+            UInt32_To_BE(n, bs, 0);
+            return bs;
+        }
+
         internal static void UInt32_To_BE(uint n, byte[] bs)
         {
             bs[0] = (byte)(n >> 24);
@@ -48,6 +55,13 @@ namespace Org.BouncyCastle.Crypto.Utilities
             bs[off + 1] = (byte)(n >> 16);
             bs[off + 2] = (byte)(n >> 8);
             bs[off + 3] = (byte)(n);
+        }
+
+        internal static byte[] UInt32_To_BE(uint[] ns)
+        {
+            byte[] bs = new byte[4 * ns.Length];
+            UInt32_To_BE(ns, bs, 0);
+            return bs;
         }
 
         internal static void UInt32_To_BE(uint[] ns, byte[] bs, int off)
@@ -84,18 +98,11 @@ namespace Org.BouncyCastle.Crypto.Utilities
             }
         }
 
-        internal static ulong BE_To_UInt64(byte[] bs)
+        internal static byte[] UInt64_To_BE(ulong n)
         {
-            uint hi = BE_To_UInt32(bs);
-            uint lo = BE_To_UInt32(bs, 4);
-            return ((ulong)hi << 32) | (ulong)lo;
-        }
-
-        internal static ulong BE_To_UInt64(byte[] bs, int off)
-        {
-            uint hi = BE_To_UInt32(bs, off);
-            uint lo = BE_To_UInt32(bs, off + 4);
-            return ((ulong)hi << 32) | (ulong)lo;
+            byte[] bs = new byte[8];
+            UInt64_To_BE(n, bs, 0);
+            return bs;
         }
 
         internal static void UInt64_To_BE(ulong n, byte[] bs)
@@ -108,6 +115,20 @@ namespace Org.BouncyCastle.Crypto.Utilities
         {
             UInt32_To_BE((uint)(n >> 32), bs, off);
             UInt32_To_BE((uint)(n), bs, off + 4);
+        }
+
+        internal static ulong BE_To_UInt64(byte[] bs)
+        {
+            uint hi = BE_To_UInt32(bs);
+            uint lo = BE_To_UInt32(bs, 4);
+            return ((ulong)hi << 32) | (ulong)lo;
+        }
+
+        internal static ulong BE_To_UInt64(byte[] bs, int off)
+        {
+            uint hi = BE_To_UInt32(bs, off);
+            uint lo = BE_To_UInt32(bs, off + 4);
+            return ((ulong)hi << 32) | (ulong)lo;
         }
 
         internal static void UInt16_To_LE(ushort n, byte[] bs)
@@ -136,6 +157,13 @@ namespace Org.BouncyCastle.Crypto.Utilities
             return (ushort)n;
         }
 
+        internal static byte[] UInt32_To_LE(uint n)
+        {
+            byte[] bs = new byte[4];
+            UInt32_To_LE(n, bs, 0);
+            return bs;
+        }
+
         internal static void UInt32_To_LE(uint n, byte[] bs)
         {
             bs[0] = (byte)(n);
@@ -150,6 +178,13 @@ namespace Org.BouncyCastle.Crypto.Utilities
             bs[off + 1] = (byte)(n >> 8);
             bs[off + 2] = (byte)(n >> 16);
             bs[off + 3] = (byte)(n >> 24);
+        }
+
+        internal static byte[] UInt32_To_LE(uint[] ns)
+        {
+            byte[] bs = new byte[4 * ns.Length];
+            UInt32_To_LE(ns, bs, 0);
+            return bs;
         }
 
         internal static void UInt32_To_LE(uint[] ns, byte[] bs, int off)
@@ -186,18 +221,11 @@ namespace Org.BouncyCastle.Crypto.Utilities
             }
         }
 
-        internal static ulong LE_To_UInt64(byte[] bs)
+        internal static byte[] UInt64_To_LE(ulong n)
         {
-            uint lo = LE_To_UInt32(bs);
-            uint hi = LE_To_UInt32(bs, 4);
-            return ((ulong)hi << 32) | (ulong)lo;
-        }
-
-        internal static ulong LE_To_UInt64(byte[] bs, int off)
-        {
-            uint lo = LE_To_UInt32(bs, off);
-            uint hi = LE_To_UInt32(bs, off + 4);
-            return ((ulong)hi << 32) | (ulong)lo;
+            byte[] bs = new byte[8];
+            UInt64_To_LE(n, bs, 0);
+            return bs;
         }
 
         internal static void UInt64_To_LE(ulong n, byte[] bs)
@@ -210,6 +238,20 @@ namespace Org.BouncyCastle.Crypto.Utilities
         {
             UInt32_To_LE((uint)(n), bs, off);
             UInt32_To_LE((uint)(n >> 32), bs, off + 4);
+        }
+
+        internal static ulong LE_To_UInt64(byte[] bs)
+        {
+            uint lo = LE_To_UInt32(bs);
+            uint hi = LE_To_UInt32(bs, 4);
+            return ((ulong)hi << 32) | (ulong)lo;
+        }
+
+        internal static ulong LE_To_UInt64(byte[] bs, int off)
+        {
+            uint lo = LE_To_UInt32(bs, off);
+            uint hi = LE_To_UInt32(bs, off + 4);
+            return ((ulong)hi << 32) | (ulong)lo;
         }
     }
 }

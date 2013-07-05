@@ -34,7 +34,7 @@ namespace Org.BouncyCastle.Crypto.Tls
 			byte[] sigByte = TlsUtilities.ReadOpaque16(input);
 			if (!signer.VerifySignature(sigByte))
 			{
-				throw new TlsFatalAlert(AlertDescription.bad_certificate);
+                throw new TlsFatalAlert(AlertDescription.decrypt_error);
 			}
 
 			BigInteger p = new BigInteger(1, pBytes);

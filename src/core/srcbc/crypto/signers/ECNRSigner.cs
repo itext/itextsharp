@@ -177,6 +177,9 @@ namespace Org.BouncyCastle.Crypto.Signers
 			// calculate P using Bouncy math
 			ECPoint P = ECAlgorithms.SumOfTwoMultiplies(G, s, W, r);
 
+            if (P.IsInfinity)
+                return false;
+
 			BigInteger x = P.X.ToBigInteger();
 			BigInteger t = r.Subtract(x).Mod(n);
 

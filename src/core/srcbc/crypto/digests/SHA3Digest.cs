@@ -20,40 +20,34 @@ namespace Org.BouncyCastle.Crypto.Digests
         private static ulong[] KeccakInitializeRoundConstants()
         {
             ulong[] keccakRoundConstants = new ulong[24];
-            byte[] LFSRstate = new byte[1];
+            byte LFSRState = 0x01;
 
-            LFSRstate[0] = 0x01;
-            int i, j, bitPosition;
-
-            for (i = 0; i < 24; i++)
+            for (int i = 0; i < 24; i++)
             {
                 keccakRoundConstants[i] = 0;
-                for (j = 0; j < 7; j++)
+                for (int j = 0; j < 7; j++)
                 {
-                    bitPosition = (1 << j) - 1;
-                    if (LFSR86540(LFSRstate))
+                    int bitPosition = (1 << j) - 1;
+
+                    // LFSR86540
+
+                    bool loBit = (LFSRState & 0x01) != 0;
+                    if (loBit)
                     {
                         keccakRoundConstants[i] ^= 1UL << bitPosition;
                     }
+
+                    bool hiBit = (LFSRState & 0x80) != 0;
+                    LFSRState <<= 1;
+                    if (hiBit)
+                    {
+                        LFSRState ^= 0x71;
+                    }
+
                 }
             }
 
             return keccakRoundConstants;
-        }
-
-        private static bool LFSR86540(byte[] LFSR)
-        {
-            bool result = (((LFSR[0]) & 0x01) != 0);
-            if (((LFSR[0]) & 0x80) != 0)
-            {
-                LFSR[0] = (byte)(((LFSR[0]) << 1) ^ 0x71);
-            }
-            else
-            {
-                LFSR[0] <<= 1;
-            }
-
-            return result;
         }
 
         private static int[] KeccakInitializeRhoOffsets()
@@ -61,12 +55,15 @@ namespace Org.BouncyCastle.Crypto.Digests
             int[] keccakRhoOffsets = new int[25];
             int x, y, t, newX, newY;
 
-            keccakRhoOffsets[(((0) % 5) + 5 * ((0) % 5))] = 0;
+            int rhoOffset = 0;
+            keccakRhoOffsets[(((0) % 5) + 5 * ((0) % 5))] = rhoOffset;
             x = 1;
             y = 0;
-            for (t = 0; t < 24; t++)
+            for (t = 1; t < 25; t++)
             {
-                keccakRhoOffsets[(((x) % 5) + 5 * ((y) % 5))] = ((t + 1) * (t + 2) / 2) % 64;
+                //rhoOffset = ((t + 1) * (t + 2) / 2) % 64;
+                rhoOffset = (rhoOffset + t) & 63;
+                keccakRhoOffsets[(((x) % 5) + 5 * ((y) % 5))] = rhoOffset;
                 newX = (0 * x + 1 * y) % 5;
                 newY = (2 * x + 3 * y) % 5;
                 x = newX;
@@ -192,16 +189,16 @@ namespace Org.BouncyCastle.Crypto.Digests
         {
             if ((databitlen % 8) == 0)
             {
-                absorb(data, off, databitlen);
+                Absorb(data, off, databitlen);
             }
             else
             {
-                absorb(data, off, databitlen - (databitlen % 8));
+                Absorb(data, off, databitlen - (databitlen % 8));
 
                 byte[] lastByte = new byte[1];
 
                 lastByte[0] = (byte)(data[off + (int)(databitlen / 8)] >> (int)(8 - (databitlen % 8)));
-                absorb(lastByte, off, databitlen % 8);
+                Absorb(lastByte, off, databitlen % 8);
             }
         }
 
@@ -237,7 +234,7 @@ namespace Org.BouncyCastle.Crypto.Digests
             bitsInQueue = 0;
         }
 
-        private void absorb(byte[] data, int off, long databitlen)
+        private void Absorb(byte[] data, int off, long databitlen)
         {
             long i, j, wholeBlocks;
 
@@ -320,13 +317,12 @@ namespace Org.BouncyCastle.Crypto.Digests
                 bitsAvailableForSqueezing = 1024;
             }
             else
-
             {
                 KeccakExtract(state, dataQueue, rate / 64);
                 bitsAvailableForSqueezing = rate;
             }
 
-    //            displayIntermediateValues.displayBytes(1, "Block available for squeezing", dataQueue, bitsAvailableForSqueezing / 8);
+            //displayIntermediateValues.displayBytes(1, "Block available for squeezing", dataQueue, bitsAvailableForSqueezing / 8);
 
             squeezing = true;
         }
@@ -364,7 +360,7 @@ namespace Org.BouncyCastle.Crypto.Digests
                         bitsAvailableForSqueezing = rate;
                     }
 
-    //                    displayIntermediateValues.displayBytes(1, "Block available for squeezing", dataQueue, bitsAvailableForSqueezing / 8);
+                    //displayIntermediateValues.displayBytes(1, "Block available for squeezing", dataQueue, bitsAvailableForSqueezing / 8);
 
                 }
                 partialBlock = bitsAvailableForSqueezing;
@@ -410,20 +406,18 @@ namespace Org.BouncyCastle.Crypto.Digests
 
             FromBytesToWords(longState, state);
 
-    //        displayIntermediateValues.displayStateAsBytes(1, "Input of permutation", longState);
+            //displayIntermediateValues.displayStateAsBytes(1, "Input of permutation", longState);
 
             KeccakPermutationOnWords(longState);
 
-    //        displayIntermediateValues.displayStateAsBytes(1, "State after permutation", longState);
+            //displayIntermediateValues.displayStateAsBytes(1, "State after permutation", longState);
 
             FromWordsToBytes(state, longState);
         }
 
         private void KeccakPermutationAfterXor(byte[] state, byte[] data, int dataLengthInBytes)
         {
-            int i;
-
-            for (i = 0; i < dataLengthInBytes; i++)
+            for (int i = 0; i < dataLengthInBytes; i++)
             {
                 state[i] ^= data[i];
             }
@@ -435,26 +429,26 @@ namespace Org.BouncyCastle.Crypto.Digests
         {
             int i;
 
-    //        displayIntermediateValues.displayStateAs64bitWords(3, "Same, with lanes as 64-bit words", state);
+            //displayIntermediateValues.displayStateAs64bitWords(3, "Same, with lanes as 64-bit words", state);
 
             for (i = 0; i < 24; i++)
             {
-    //            displayIntermediateValues.displayRoundNumber(3, i);
+                //displayIntermediateValues.displayRoundNumber(3, i);
 
                 Theta(state);
-    //            displayIntermediateValues.displayStateAs64bitWords(3, "After theta", state);
+                //displayIntermediateValues.displayStateAs64bitWords(3, "After theta", state);
 
                 Rho(state);
-    //            displayIntermediateValues.displayStateAs64bitWords(3, "After rho", state);
+                //displayIntermediateValues.displayStateAs64bitWords(3, "After rho", state);
 
                 Pi(state);
-    //            displayIntermediateValues.displayStateAs64bitWords(3, "After pi", state);
+                //displayIntermediateValues.displayStateAs64bitWords(3, "After pi", state);
 
                 Chi(state);
-    //            displayIntermediateValues.displayStateAs64bitWords(3, "After chi", state);
+                //displayIntermediateValues.displayStateAs64bitWords(3, "After chi", state);
 
                 Iota(state, i);
-    //            displayIntermediateValues.displayStateAs64bitWords(3, "After iota", state);
+                //displayIntermediateValues.displayStateAs64bitWords(3, "After iota", state);
             }
         }
 
@@ -534,12 +528,10 @@ namespace Org.BouncyCastle.Crypto.Digests
             KeccakPermutationAfterXor(byteState, data, dataInBytes);
         }
 
-
         private void KeccakExtract1024bits(byte[] byteState, byte[] data)
         {
             Array.Copy(byteState, 0, data, 0, 128);
         }
-
 
         private void KeccakExtract(byte[] byteState, byte[] data, int laneCount)
         {
