@@ -147,7 +147,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @return if this pipelines tag processing accept unknown tags: true. False otherwise
          */
 
-        public bool AcceptUnknown()
+        virtual public bool AcceptUnknown()
         {
             return this.acceptUnknown;
         }
@@ -185,7 +185,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @return true if auto-bookmarks should be enabled. False otherwise.
          */
 
-        public bool AutoBookmark()
+        virtual public bool AutoBookmark()
         {
             return autoBookmark;
         }
@@ -194,7 +194,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @return the memory
          */
 
-        public IDictionary<String, Object> GetMemory()
+        virtual public IDictionary<String, Object> GetMemory()
         {
             return memory;
         }
@@ -205,7 +205,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          *
          */
 
-        public IImageProvider GetImageProvider()
+        virtual public IImageProvider GetImageProvider()
         {
             if (null == this.imageProvider)
             {
@@ -221,7 +221,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @return this <code>HtmlPipelineContext</code>
          */
 
-        public HtmlPipelineContext CharSet(Encoding cSet)
+        virtual public HtmlPipelineContext CharSet(Encoding cSet)
         {
             this.charset = cSet;
             return this;
@@ -231,7 +231,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @return the {@link Charset} to use, or null if none configured.
          */
 
-        public Encoding CharSet()
+        virtual public Encoding CharSet()
         {
             return charset;
         }
@@ -242,7 +242,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          *         &lt;div&gt;
          */
 
-        public IList<String> GetRootTags()
+        virtual public IList<String> GetRootTags()
         {
             return roottags;
         }
@@ -254,7 +254,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @return the ILinkProvider if any.
          */
 
-        public ILinkProvider GetLinkProvider()
+        virtual public ILinkProvider GetLinkProvider()
         {
             return linkprovider;
         }
@@ -265,7 +265,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @return this <code>HtmlPipelineContext</code>
          */
 
-        public HtmlPipelineContext SetPageSize(Rectangle pageSize)
+        virtual public HtmlPipelineContext SetPageSize(Rectangle pageSize)
         {
             this.pageSize = pageSize;
             return this;
@@ -282,7 +282,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * copied.
          */
 
-        public object Clone()
+        virtual public object Clone()
         {
             CssAppliers cloneCssApliers = this.cssAppliers.Clone();
             HtmlPipelineContext newCtx = new HtmlPipelineContext(cloneCssApliers);
@@ -320,7 +320,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @param acceptUnknown true or false
          * @return this <code>HtmlPipelineContext</code>
          */
-        public HtmlPipelineContext SetAcceptUnknown(bool acceptUnknown) {
+        virtual public HtmlPipelineContext SetAcceptUnknown(bool acceptUnknown) {
             this.acceptUnknown = acceptUnknown;
             return this;
         }
@@ -329,7 +329,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @param tagFactory the {@link TagProcessorFactory} that should be used
          * @return this <code>HtmlPipelineContext</code>
          */
-        public HtmlPipelineContext SetTagFactory(ITagProcessorFactory tagFactory) {
+        virtual public HtmlPipelineContext SetTagFactory(ITagProcessorFactory tagFactory) {
             this.tagFactory = tagFactory;
             return this;
         }
@@ -341,7 +341,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @param autoBookmark true or false
          * @return this <code>HtmlPipelineContext</code>
          */
-        public HtmlPipelineContext AutoBookmark(bool autoBookmark) {
+        virtual public HtmlPipelineContext AutoBookmark(bool autoBookmark) {
             this.autoBookmark = autoBookmark;
             return this;
         }
@@ -353,7 +353,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @param roottags the root tags
          * @return this <code>HtmlPipelineContext</code>
          */
-        public HtmlPipelineContext SetRootTags(IList<String> roottags) {
+        virtual public HtmlPipelineContext SetRootTags(IList<String> roottags) {
             this.roottags = roottags;
             return this;
         }
@@ -365,7 +365,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @param imageProvider the {@link IImageProvide} to use.
          * @return this <code>HtmlPipelineContext</code>
          */
-        public HtmlPipelineContext SetImageProvider(IImageProvider imageProvider) {
+        virtual public HtmlPipelineContext SetImageProvider(IImageProvider imageProvider) {
             this.imageProvider = imageProvider;
             return this;
         }
@@ -377,12 +377,12 @@ namespace iTextSharp.tool.xml.pipeline.html {
          *            {@link HtmlPipelineContext#getLinkProvider()}
          * @return this <code>HtmlPipelineContext</code>
          */
-        public HtmlPipelineContext SetLinkProvider(ILinkProvider linkprovider) {
+        virtual public HtmlPipelineContext SetLinkProvider(ILinkProvider linkprovider) {
             this.linkprovider = linkprovider;
             return this;
         }
 
-        public float LastMarginBottom {
+        virtual public float LastMarginBottom {
             get {
                 IDictionary<String, Object> memory = GetMemory();
                 Object o;
@@ -398,10 +398,13 @@ namespace iTextSharp.tool.xml.pipeline.html {
             }
         }
 
-        public Rectangle PageSize {
+        virtual public Rectangle PageSize {
             get {
                 return this.pageSize;
             }
         }
-        public CssAppliers GetCssAppliers() {            return cssAppliers;        }        public void SetCssAppliers(CssAppliers cssAppliers) {            this.cssAppliers = cssAppliers;        }    }
+
+        virtual public CssAppliers GetCssAppliers() {            return cssAppliers;        }        
+        
+        virtual public void SetCssAppliers(CssAppliers cssAppliers) {            this.cssAppliers = cssAppliers;        }    }
 }
