@@ -1276,6 +1276,54 @@
     <Compile Include="iTextSharp\text\ZapfDingbatsNumberList.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\xmp\impl\Base64.cs" />
+    <Compile Include="iTextSharp\xmp\impl\ByteBuffer.cs" />
+    <Compile Include="iTextSharp\xmp\impl\CountOutputStream.cs" />
+    <Compile Include="iTextSharp\xmp\impl\FilterReader.cs" />
+    <Compile Include="iTextSharp\xmp\impl\FixAsciiControlsReader.cs" />
+    <Compile Include="iTextSharp\xmp\impl\Iso8601Converter.cs" />
+    <Compile Include="iTextSharp\xmp\impl\Latin1Converter.cs" />
+    <Compile Include="iTextSharp\xmp\impl\ParameterAsserts.cs" />
+    <Compile Include="iTextSharp\xmp\impl\ParseRdf.cs" />
+    <Compile Include="iTextSharp\xmp\impl\PushbackReader.cs" />
+    <Compile Include="iTextSharp\xmp\impl\QName.cs" />
+    <Compile Include="iTextSharp\xmp\impl\Utils.cs" />
+    <Compile Include="iTextSharp\xmp\impl\XmpDateTimeImpl.cs" />
+    <Compile Include="iTextSharp\xmp\impl\XmpIteratorImpl.cs" />
+    <Compile Include="iTextSharp\xmp\impl\XmpMetaImpl.cs" />
+    <Compile Include="iTextSharp\xmp\impl\XmpMetaParser.cs" />
+    <Compile Include="iTextSharp\xmp\impl\XmpNode.cs" />
+    <Compile Include="iTextSharp\xmp\impl\XmpNodeUtils.cs" />
+    <Compile Include="iTextSharp\xmp\impl\XmpNormalizer.cs" />
+    <Compile Include="iTextSharp\xmp\impl\XmpSchemaRegistryImpl.cs" />
+    <Compile Include="iTextSharp\xmp\impl\XmpSerializerHelper.cs" />
+    <Compile Include="iTextSharp\xmp\impl\XmpSerializerRdf.cs" />
+    <Compile Include="iTextSharp\xmp\impl\XmpUtilsImpl.cs" />
+    <Compile Include="iTextSharp\xmp\impl\xpath\XmpPath.cs" />
+    <Compile Include="iTextSharp\xmp\impl\xpath\XmpPathParser.cs" />
+    <Compile Include="iTextSharp\xmp\impl\xpath\XmpPathSegment.cs" />
+    <Compile Include="iTextSharp\xmp\IXmpDateTime.cs" />
+    <Compile Include="iTextSharp\xmp\IXmpIterator.cs" />
+    <Compile Include="iTextSharp\xmp\IXmpMeta.cs" />
+    <Compile Include="iTextSharp\xmp\IXmpSchemaRegistry.cs" />
+    <Compile Include="iTextSharp\xmp\IXmpVersionInfo.cs" />
+    <Compile Include="iTextSharp\xmp\options\AliasOptions.cs" />
+    <Compile Include="iTextSharp\xmp\options\IteratorOptions.cs" />
+    <Compile Include="iTextSharp\xmp\options\ParseOptions.cs" />
+    <Compile Include="iTextSharp\xmp\options\PropertyOptions.cs" />
+    <Compile Include="iTextSharp\xmp\options\SerializeOptions.cs" />
+    <Compile Include="iTextSharp\xmp\options\XmpOptions.cs" />
+    <Compile Include="iTextSharp\xmp\properties\IXmpAliasInfo.cs" />
+    <Compile Include="iTextSharp\xmp\properties\IXmpProperty.cs" />
+    <Compile Include="iTextSharp\xmp\properties\IXmpPropertyInfo.cs" />
+    <Compile Include="iTextSharp\xmp\XmpCalendar.cs" />
+    <Compile Include="iTextSharp\xmp\XmpConst.cs" />
+    <Compile Include="iTextSharp\xmp\XmpDateTimeFactory.cs" />
+    <Compile Include="iTextSharp\xmp\XmpError.cs" />
+    <Compile Include="iTextSharp\xmp\XmpException.cs" />
+    <Compile Include="iTextSharp\xmp\XmpMetaFactory.cs" />
+    <Compile Include="iTextSharp\xmp\XmpPathFactory.cs" />
+    <Compile Include="iTextSharp\xmp\XmpUtils.cs" />
     <Compile Include="srcbc\asn1\ASN1Encodable.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -4563,6 +4611,13 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="iTextSharp\xmp\impl\package.html" />
+    <Content Include="iTextSharp\xmp\impl\xpath\package.html" />
+    <Content Include="iTextSharp\xmp\options\package.html" />
+    <Content Include="iTextSharp\xmp\package.html" />
+    <Content Include="iTextSharp\xmp\properties\package.html" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
