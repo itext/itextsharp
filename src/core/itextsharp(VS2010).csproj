@@ -1525,6 +1525,7 @@
     <Compile Include="srcbc\asn1\cms\OtherRecipientInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\asn1\cms\OtherRevocationInfoFormat.cs" />
     <Compile Include="srcbc\asn1\cms\PasswordRecipientInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1540,6 +1541,7 @@
     <Compile Include="srcbc\asn1\cms\RecipientKeyIdentifier.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\asn1\cms\SCVPReqRes.cs" />
     <Compile Include="srcbc\asn1\cms\SignedData.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -2140,6 +2142,7 @@
     <Compile Include="srcbc\asn1\x509\CertificatePair.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\asn1\x509\CertificatePolicies.cs" />
     <Compile Include="srcbc\asn1\x509\CertPolicyId.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -2890,6 +2893,7 @@
     <Compile Include="srcbc\crypto\digests\SHA512Digest.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\crypto\digests\Sha512tDigest.cs" />
     <Compile Include="srcbc\crypto\digests\ShortenedDigest.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -3202,6 +3206,7 @@
     <Compile Include="srcbc\crypto\macs\ISO9797Alg3Mac.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\crypto\macs\SipHash.cs" />
     <Compile Include="srcbc\crypto\macs\VMPCMac.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -3247,6 +3252,7 @@
     <Compile Include="srcbc\crypto\modes\IAeadBlockCipher.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\crypto\modes\OCBBlockCipher.cs" />
     <Compile Include="srcbc\crypto\modes\OFBBlockCipher.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -3316,6 +3322,7 @@
     <Compile Include="srcbc\crypto\parameters\DSAKeyParameters.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="srcbc\crypto\parameters\DSAParameterGenerationParameters.cs" />
     <Compile Include="srcbc\crypto\parameters\DSAParameters.cs">
       <SubType>Code</SubType>
     </Compile>
