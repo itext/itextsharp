@@ -745,7 +745,58 @@ namespace iTextSharp.text.pdf {
             split.widths = (float[]) widths.Clone();
             return split;
         }
-        
+
+
+        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+        public float GetMaxRowHeightsWithoutCalculating() {
+            return maxHeight;
+        }
+
+        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+        public void SetFinalMaxHeights(float maxHeight) {
+            MaxHeights = maxHeight;
+            calculated = true; // otherwise maxHeight would be recalculated in getter
+        }
+
+        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+        /**
+         * Split rowspan of cells with rowspan on next page by inserting copies with the remaining rowspan
+         * and reducing the previous rowspan appropriately, i.e. if a cell with rowspan 7 gets split after 3 rows
+         * of that rowspan have been laid out, its column on the next page should start with an empty cell
+         * having the same attributes and rowspan 7 - 3 = 4.
+         * 
+         * @since iText 5.4.3
+         */
+        public void SplitRowspans(PdfPTable original, int originalIdx, PdfPTable part, int partIdx) {
+            if(original == null || part == null) {
+                return;
+            }
+            int i = 0;
+            while(i < cells.Length) {
+                if(cells[i] == null) {
+                    int splittedRowIdx = original.GetCellStartRowIndex(originalIdx, i);
+                    int copyRowIdx = part.GetCellStartRowIndex(partIdx, i);
+                    PdfPCell splitted = original.GetRow(splittedRowIdx)
+                            .GetCells()[i]; // need this to reduce its rowspan
+                    PdfPCell copy = part.GetRow(copyRowIdx)
+                            .GetCells()[i]; // need this for (partially) consumed ColumnText
+                    if(splitted != null) {
+                        System.Diagnostics.Debug.Assert(copy != null); // both null or none
+                        cells[i] = new PdfPCell(copy);
+                        int rowspanOnPreviousPage = partIdx - copyRowIdx + 1;
+                        cells[i].Rowspan = copy.Rowspan - rowspanOnPreviousPage;
+                        splitted.Rowspan = rowspanOnPreviousPage;
+                        this.calculated = false;
+                    }
+                    ++i;
+                }
+                else {
+                    i += cells[i].Colspan;
+                }
+            }
+        }
+
+
         /**
         * Returns the array of cells in the row.
         * Please be extremely careful with this method.

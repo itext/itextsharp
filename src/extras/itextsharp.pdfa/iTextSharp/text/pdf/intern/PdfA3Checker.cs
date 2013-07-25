@@ -45,6 +45,8 @@
 namespace iTextSharp.text.pdf.intern
 {
     public class PdfA3Checker : PdfA2Checker {
-         
+        internal PdfA3Checker(PdfAConformanceLevel conformanceLevel)
+            :base(conformanceLevel) {
+        }
     }
 }

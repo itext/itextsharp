@@ -63,6 +63,7 @@ namespace iTextSharp.text.pdf.security {
          */
         public static void Timestamp(PdfSignatureAppearance sap, ITSAClient tsa, String signatureName) {
             int contentEstimated = tsa.GetTokenSizeEstimate();
+            sap.AddDeveloperExtension(PdfDeveloperExtension.ESIC_1_7_EXTENSIONLEVEL5);
             sap.SetVisibleSignature(new Rectangle(0,0,0,0), 1, signatureName);
 
             PdfSignature dic = new PdfSignature(PdfName.ADOBE_PPKLITE, PdfName.ETSI_RFC3161);

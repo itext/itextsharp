@@ -153,7 +153,7 @@ namespace iTextSharp.text.pdf
             this.fieldName = fieldName;
         }
         
-        protected BaseFont RealFont {
+        protected virtual BaseFont RealFont {
             get {
                 if (font == null)
                     return BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.WINANSI, false);

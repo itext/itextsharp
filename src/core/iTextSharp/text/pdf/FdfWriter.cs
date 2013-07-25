@@ -344,7 +344,7 @@ namespace iTextSharp.text.pdf {
         }
 
        	protected ICounter COUNTER = CounterFactory.GetCounter(typeof(FdfWriter));
-	    protected ICounter getCounter() {
+	    protected ICounter GetCounter() {
 		    return COUNTER;
 	    }
     }

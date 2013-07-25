@@ -67,6 +67,7 @@
     <Compile Include="iTextSharp\text\pdf\intern\PdfAConformanceImp.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfAConformanceException.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfAConformanceLevel.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfARadioCheckField.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfAStamper.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfAStamperImp.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfATtfUnicodeWriter.cs" />

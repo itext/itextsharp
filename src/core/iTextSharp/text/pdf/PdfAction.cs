@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.util;
 using iTextSharp.text.pdf.collection;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.pdf.intern;
 
 /*
  * $Id$
@@ -517,6 +519,11 @@ namespace iTextSharp.text.pdf {
             if (!preserveRB)
                 action.Put(PdfName.PRESERVERB, PdfBoolean.PDFFALSE);
             return action;
+        }
+
+        public override void ToPdf(PdfWriter writer, Stream os) {
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_ACTION, this);
+            base.ToPdf(writer, os);
         }
     }
 }

@@ -1768,5 +1768,154 @@ namespace iTextSharp.text.pdf {
                 footer = new PdfPTableFooter();
             return footer;
         }
+
+    
+        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+        /**
+         * Gets row index where cell overlapping (rowIdx, colIdx) starts
+         * @param rowIdx
+         * @param colIdx
+         * @return row index
+         * @since iText 5.4.3
+         */
+        public int GetCellStartRowIndex(int rowIdx, int colIdx) {
+            int lastRow = rowIdx;
+            while (GetRow(lastRow).GetCells()[colIdx] == null && lastRow > 0) {
+                --lastRow;
+            }
+            return lastRow;
+        }
+
+        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+        /**
+         * 
+         * @since iText 5.4.3
+         */
+        public class FittingRows
+        {
+            public readonly int firstRow;
+            public readonly int lastRow;
+
+            public readonly float height, completedRowsHeight;
+
+            private readonly Dictionary<int, float> correctedHeightsForLastRow;
+
+            public FittingRows(int firstRow, int lastRow, float height, float completedRowsHeight,
+                    Dictionary<int, float> correctedHeightsForLastRow) {
+                this.firstRow = firstRow;
+                this.lastRow = lastRow;
+                this.height = height;
+                this.completedRowsHeight = completedRowsHeight;
+                this.correctedHeightsForLastRow = correctedHeightsForLastRow;
+            }
+
+            /**
+             *  Correct chosen last fitting row so that the content of all cells with open rowspans will fit on the page,
+             *  i.e. the cell content won't be split.
+             * (Only to be used with splitLate == true)
+             */
+            public void CorrectLastRowChosen(PdfPTable table, int k) {
+                PdfPRow row = table.GetRow(k);
+                float value = correctedHeightsForLastRow[k];
+                if (value != null) {
+                    row.SetFinalMaxHeights(value);
+                    //System.out.printf("corrected chosen last fitting row: %6.0f\n\n", row.getMaxHeights());
+                }
+            }
+        }
+
+        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+        /**
+         * 
+         * @since iText 5.4.3
+         */
+        public class ColumnMeasurementState {
+            public float height = 0;
+
+            public int rowspan = 1, colspan = 1;
+
+            public void BeginCell(PdfPCell cell, float completedRowsHeight, float rowHeight) {
+                rowspan = cell.Rowspan;
+                colspan = cell.Colspan;
+                height = completedRowsHeight + Math.Max(cell.GetMaxHeight(), rowHeight);
+            }
+
+            public void ConsumeRowspan(float completedRowsHeight, float rowHeight) {
+        	    --rowspan;
+            }
+
+            public bool CellEnds() {
+                return rowspan == 1;
+            }
+        }
+
+        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+        /**
+         * Determine which rows fit on the page, respecting isSplitLate().
+         * Note: sets max heights of the inspected rows as a side effect,
+         * just like PdfPTable.getRowHeight(int, boolean) does.
+         * Respect row.getMaxHeights() if it has been previously set (which might be independent of the height of
+         * individual cells).
+         * The last row written on the page will be chosen by the caller who might choose not
+         * the calculated one but an earlier one (due to mayNotBreak settings on the rows).
+         * The height of the chosen last row has to be corrected if splitLate == true
+         * by calling FittingRows.correctLastRowChosen() by the caller to avoid splitting the content of
+         * cells with open rowspans.
+         * 
+         * @since iText 5.4.3
+         */
+        public FittingRows GetFittingRows(float availableHeight, int startIdx) {
+            System.Diagnostics.Debug.Assert (GetRow(startIdx).GetCells()[0] != null); // top left cell of current page may not be null
+            int cols = NumberOfColumns;
+            ColumnMeasurementState[] states = new ColumnMeasurementState[cols];
+            for (int i = 0; i < cols; ++i) {
+                states[i] = new ColumnMeasurementState();
+            }
+            float completedRowsHeight = 0; // total height of all rows up to k only counting completed cells (with no open
+                                           // rowspans)
+            float totalHeight = 0; // total height needed to display all rows up to k, respecting rowspans
+            Dictionary<int, float> correctedHeightsForLastRow = new Dictionary<int, float>();
+            int k;
+            for (k = startIdx; k < Size; ++k) {
+                PdfPRow row = GetRow(k);
+                float rowHeight = row.GetMaxRowHeightsWithoutCalculating();
+                float maxCompletedRowsHeight = 0;
+                int i = 0;
+                while (i < cols) {
+                    PdfPCell cell = row.GetCells()[i];
+                    ColumnMeasurementState state = states[i];
+                    if (cell == null) {
+                        state.ConsumeRowspan(completedRowsHeight, rowHeight);
+                    } else {
+                        state.BeginCell(cell, completedRowsHeight, rowHeight);
+                    }
+                    if (state.CellEnds() && state.height > maxCompletedRowsHeight) {
+                        maxCompletedRowsHeight = state.height;
+                    }
+                    for (int j = 1; j < state.colspan; ++j) {
+                        states[i + j].height = state.height;
+                    }
+                    i += state.colspan;
+                    //System.out.printf("%6.0f", state.height);
+                }
+                float maxTotalHeight = 0;
+                foreach (ColumnMeasurementState state in states) {
+                    if (state.height > maxTotalHeight) {
+                        maxTotalHeight = state.height;
+                    }
+                }
+                row.SetFinalMaxHeights(maxCompletedRowsHeight - completedRowsHeight);
+                //System.out.printf(" | %6.0f | %6.0f %6.0f | row: %6.0f\n", rowHeight, maxCompletedRowsHeight, maxTotalHeight, row.getMaxHeights());
+                float remainingHeight = availableHeight - (SplitLate ? maxTotalHeight : maxCompletedRowsHeight);
+                if (remainingHeight < 0) {
+                    break;
+                }
+                correctedHeightsForLastRow[k] =  maxTotalHeight - completedRowsHeight;
+                completedRowsHeight = maxCompletedRowsHeight;
+                totalHeight = maxTotalHeight;
+            }
+
+            return new FittingRows(startIdx, k - 1, totalHeight, completedRowsHeight, correctedHeightsForLastRow);
+        }
     }
 }

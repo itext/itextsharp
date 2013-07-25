@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using com.itextpdf.text.pdf;
+using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf.interfaces;
+using iTextSharp.text.pdf.intern;
 
 /*
  * $Id$
@@ -69,6 +72,8 @@ namespace iTextSharp.text.pdf
         */
         private PdfIndirectReference reference;
 
+        private PdfName structureType;
+
         /**
         * Creates a new instance of PdfStructureElement.
         * @param parent the parent of this node
@@ -120,8 +125,23 @@ namespace iTextSharp.text.pdf
             }
         }
 
+        public PdfName StructureType
+        {
+            get { return structureType; }
+        }
+
         private void Init(PdfDictionary parent, PdfName structureType)
         {
+            if(!top.Writer.GetStandardStructElems().Contains(structureType)) {
+                PdfDictionary roleMap = top.GetAsDict(PdfName.ROLEMAP);
+                if(roleMap == null || !roleMap.Contains(structureType))
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("unknown.structure.element.role.1", structureType.ToString()));
+                else
+                    this.structureType = roleMap.GetAsName(structureType);
+            }
+            else {
+                this.structureType = structureType;
+            }
             PdfObject kido = parent.Get(PdfName.K);
             PdfArray kids = null;
             if (kido == null)
@@ -229,6 +249,8 @@ namespace iTextSharp.text.pdf
 
         public void WriteAttributes(IAccessibleElement element)
         {
+            if(top.Writer.GetPdfVersion().Version < PdfWriter.VERSION_1_7)
+                return;
             if (element is ListItem)
                 WriteAttributes((ListItem) element);
             else if (element is Paragraph)
@@ -345,20 +367,15 @@ namespace iTextSharp.text.pdf
             }
         }
 
-        private void WriteAttributes(Image image)
-        {
-            if (image != null)
-            {
+        private void WriteAttributes(Image image) {
+            if (image != null) {
                 if (image.Width > 0)
                     this.SetAttribute(PdfName.WIDTH, new PdfNumber(image.Width));
                 if (image.Height > 0)
                     this.SetAttribute(PdfName.HEIGHT, new PdfNumber(image.Height));
                 PdfRectangle rect = new PdfRectangle(image, ((Rectangle) image).Rotation);
                 this.SetAttribute(PdfName.BBOX, rect);
-                if (image.Alt != null)
-                    Put(PdfName.ALT, new PdfString(image.Alt));
-                if (image.BackgroundColor != null)
-                {
+                if (image.BackgroundColor != null) {
                     BaseColor color = image.BackgroundColor;
                     this.SetAttribute(PdfName.BACKGROUNDCOLOR, new PdfArray(new float[] { color.R / 255f, color.G / 255f, color.B / 255f }));
                 }
@@ -731,5 +748,9 @@ namespace iTextSharp.text.pdf
             }
         }
 
+        public override void ToPdf(PdfWriter writer, Stream os) {
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_STRUCTELEM, this);
+            base.ToPdf(writer, os);
+        }
     }
 }

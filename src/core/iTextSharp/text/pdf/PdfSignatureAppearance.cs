@@ -104,6 +104,13 @@ namespace iTextSharp.text.pdf {
         
         // signature info
 
+        /** The caption for the reason for signing. */
+        private String reasonCaption = "Reason: ";
+
+        /** The caption for the location of signing. */
+        private String locationCaption = "Location: ";
+
+
         /** The reason for signing. */
         private String reason;
 
@@ -114,7 +121,7 @@ namespace iTextSharp.text.pdf {
         private DateTime signDate;
         
         /**
-         * Gets the signing reason.
+         * Gets and setsthe signing reason.
          * @return the signing reason
          */
         public string Reason {
@@ -127,7 +134,17 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
-         * Gets the signing location.
+         * Sets the caption for signing reason.
+         * @param reasonCaption the signing reason caption
+         */
+
+        public string ReasonCaption
+        {
+            set { reasonCaption = value; }
+        }
+
+        /**
+         * Gets and sets the signing location.
          * @return the signing location
          */
         public string Location {
@@ -137,6 +154,16 @@ namespace iTextSharp.text.pdf {
             set {
                 location = value;
             }
+        }
+
+        /**
+         * Sets the caption for the signing location.
+         * @param locationCaption the signing location caption
+         */
+
+        public string LocationCaption
+        {
+            set { locationCaption = value; }
         }
 
         /** The contact name of the signer. */
@@ -201,7 +228,16 @@ namespace iTextSharp.text.pdf {
         /** The signing certificate */
         private X509Certificate signCertificate;
 
+        // Developer extenstion
+    
+        /**
+         * Adds the appropriate developer extension.
+         */
+	    public void AddDeveloperExtension(PdfDeveloperExtension de) {
+		    writer.AddDeveloperExtension(de);
+	    }
         
+
         // Crypto dictionary
         
         /** The crypto dictionary */
@@ -554,6 +590,18 @@ namespace iTextSharp.text.pdf {
             return t;
         }
 
+
+        /** Indicates if we need to reuse the existing appearance as layer 0. */
+        private bool reuseAppearance = false;
+
+        /**
+         * Indicates that the existing appearances needs to be reused as layer 0.
+         */
+        public bool ReuseAppearance
+        {
+            set { reuseAppearance = value; }
+        }
+
         // layer 1
         
         /** An appearance that can be used for layer 1 (if acro6Layers is false). */
@@ -751,12 +799,8 @@ namespace iTextSharp.text.pdf {
                 writer.AddDirectTemplateSimple(t, null);
                 return t;
             }
-            if (app[0] == null) {
-                PdfTemplate t = app[0] = new PdfTemplate(writer);
-                t.BoundingBox = new Rectangle(100, 100);
-                writer.AddDirectTemplateSimple(t, new PdfName("n0"));
-                t.SetLiteral("% DSBlank\n");
-            }
+            if (app[0] == null && !reuseAppearance)
+                CreateBlankN0();            
             if (app[1] == null && !acro6Layers) {
                 PdfTemplate t = app[1] = new PdfTemplate(writer);
                 t.BoundingBox = new Rectangle(100, 100);
@@ -780,9 +824,9 @@ namespace iTextSharp.text.pdf {
                     buf.Append(name).Append('\n');
                     buf.Append("Date: ").Append(signDate.ToString("yyyy.MM.dd HH:mm:ss zzz"));
                     if (reason != null)
-                        buf.Append('\n').Append("Reason: ").Append(reason);
+                        buf.Append('\n').Append(reasonCaption).Append(reason);
                     if (location != null)
-                        buf.Append('\n').Append("Location: ").Append(location);
+                        buf.Append('\n').Append(locationCaption).Append(location);
                     text = buf.ToString();
                 }
                 else
@@ -975,7 +1019,22 @@ namespace iTextSharp.text.pdf {
                     frm.ConcatCTM(-1, 0, 0, -1, rect.Width, rect.Height);
                 else if (rotation == 270)
                     frm.ConcatCTM(0, -1, 1, 0, 0, rect.Width);
-                frm.AddTemplate(app[0], 0, 0);
+                if (reuseAppearance) {
+                    AcroFields af = writer.GetAcroFields();
+                    PdfIndirectReference refe = af.GetNormalAppearance(FieldName);
+                    if (refe != null) {
+                	    frm.AddTemplateReference(refe, new PdfName("n0"), 1, 0, 0, 1, 0, 0);
+                    }
+                    else {
+                	    reuseAppearance = false;
+                        if (app[0] == null) {
+                            CreateBlankN0();
+                        }
+                    }
+                }
+                if (!reuseAppearance) {
+            	    frm.AddTemplate(app[0], 0, 0);
+                }
                 if (!acro6Layers)
                     frm.AddTemplate(app[1], scale, 0, 0, scale, x, y);
                 frm.AddTemplate(app[2], 0, 0);
@@ -989,6 +1048,13 @@ namespace iTextSharp.text.pdf {
             writer.AddDirectTemplateSimple(napp, null);
             napp.AddTemplate(frm, 0, 0);
             return napp;
+        }
+
+        private void CreateBlankN0() {
+            PdfTemplate t = app[0] = new PdfTemplate(writer);
+            t.BoundingBox = new Rectangle(100, 100);
+            writer.AddDirectTemplateSimple(t, new PdfName("n0"));
+            t.SetLiteral("% DSBlank\n");
         }
 
         /*
@@ -1007,7 +1073,11 @@ namespace iTextSharp.text.pdf {
                 return stamper;
             }
         }
-        
+
+        /**
+         * Sets the PdfStamper
+         * @param stamper PdfStamper
+         */        
         public void SetStamper(PdfStamper stamper) {
             this.stamper = stamper;
         }

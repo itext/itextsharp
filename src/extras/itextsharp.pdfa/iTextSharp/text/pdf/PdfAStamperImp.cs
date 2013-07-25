@@ -5,9 +5,11 @@ using iTextSharp.text.log;
 using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.xml.xmp;
 using iTextSharp.text.pdf.intern;
-
+using iTextSharp.xmp;
+using iTextSharp.xmp.impl;
+using iTextSharp.xmp.properties;
 /*
- * $Id: PdfAStamperImp.java 322 2012-07-23 09:58:41Z bruno $
+ * $Id: PdfAStamperImp.java 5870 2013-06-25 12:34:21Z achingarev $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -49,8 +51,7 @@ using iTextSharp.text.pdf.intern;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-namespace iTextSharp.text.pdf
-{
+namespace iTextSharp.text.pdf {
     /**
      * Extension to PdfStamperImp that will attempt to keep a file
      * in conformance with the PDF/A standard.
@@ -58,10 +59,10 @@ namespace iTextSharp.text.pdf
     public class PdfAStamperImp : PdfStamperImp {
 
         protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfAStamper));
-        protected ICounter GetCounter() {
+        protected override ICounter GetCounter() {
             return COUNTER;
         }
-        
+
         /**
          * Creates new PdfStamperImp.
          * @param reader reads the PDF
@@ -73,10 +74,10 @@ namespace iTextSharp.text.pdf
          * @throws IOException
          */
         internal PdfAStamperImp(PdfReader reader, Stream os, char pdfVersion, bool append, PdfAConformanceLevel conformanceLevel)
-            : base(reader, os, pdfVersion, append)
-        {
+            : base(reader, os, pdfVersion, append) {
             ((IPdfAConformance)pdfIsoConformance).SetConformanceLevel(conformanceLevel);
             PdfAWriter.SetPdfVersion(this, conformanceLevel);
+            ReadPdfAInfo();
         }
 
         /**
@@ -85,11 +86,10 @@ namespace iTextSharp.text.pdf
         override public void SetOutputIntents(String outputConditionIdentifier, String outputCondition, String registryName, String info, ICC_Profile colorProfile) {
             base.SetOutputIntents(outputConditionIdentifier, outputCondition, registryName, info, colorProfile);
             PdfArray a = extraCatalog.GetAsArray(PdfName.OUTPUTINTENTS);
-            if (a != null) {
+            if(a != null) {
                 PdfDictionary d = a.GetAsDict(0);
-                if (d != null) {
+                if(d != null)
                     d.Put(PdfName.S, PdfName.GTS_PDFA1);
-                }
             }
         }
 
@@ -109,28 +109,64 @@ namespace iTextSharp.text.pdf
         }
 
         /**
-         * @see com.itextpdf.text.pdf.PdfStamperImp#getTtfUnicodeWriter()
+         * @see com.itextpdf.text.pdf.PdfStamperImp#GetTtfUnicodeWriter()
          */
-        override protected TtfUnicodeWriter GetTtfUnicodeWriter() {
-            if (ttfUnicodeWriter == null)
+
+        internal protected override TtfUnicodeWriter GetTtfUnicodeWriter() {
+            if(ttfUnicodeWriter == null)
                 ttfUnicodeWriter = new PdfATtfUnicodeWriter(this);
             return ttfUnicodeWriter;
         }
 
         /**
-         * @see PdfStamperImp#getXmpWriter(java.io.MemoryStream, com.itextpdf.text.pdf.PdfDocument.PdfInfo)
+         * @see PdfStamperImp#GetXmpWriter(java.io.MemoryStream, com.itextpdf.text.pdf.PdfDocument.PdfInfo)
          */
-        override protected XmpWriter GetXmpWriter(MemoryStream baos, PdfDictionary info)
-        {
-            if (xmpWriter == null)
-                xmpWriter = new PdfAXmpWriter(baos, info, ((IPdfAConformance)pdfIsoConformance).GetConformanceLevel());
-            return xmpWriter;
+        internal protected override XmpWriter GetXmpWriter(MemoryStream baos, PdfDictionary info) {
+            return new PdfAXmpWriter(baos, info, ((IPdfAConformance)pdfIsoConformance).GetConformanceLevel());
         }
 
         override public IPdfIsoConformance GetPdfIsoConformance() {
             return new PdfAConformanceImp(this);
         }
 
+        private void ReadPdfAInfo() {
+            byte[] metadata = null;
+            IXmpMeta xmpMeta = null;
+            IXmpProperty pdfaidConformance = null;
+            IXmpProperty pdfaidPart = null;
+            try {
+                metadata = reader.Metadata;
+                xmpMeta = XmpMetaParser.Parse(metadata, null);
+                pdfaidConformance = xmpMeta.GetProperty(XmpConst.NS_PDFA_ID, "pdfaid:conformance");
+                pdfaidPart = xmpMeta.GetProperty(XmpConst.NS_PDFA_ID, "pdfaid:part");
+            } catch(Exception e) {
+                throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("only.pdfa.documents.can.be.opened.in.PdfAStamper"));
+            }
+            if(pdfaidConformance == null || pdfaidPart == null) {
+                throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("only.pdfa.documents.can.be.opened.in.PdfAStamper"));
+            }
+            switch(((IPdfAConformance)pdfIsoConformance).GetConformanceLevel()) {
+                case PdfAConformanceLevel.PDF_A_1A:
+                case PdfAConformanceLevel.PDF_A_1B:
+                    if(!"1".Equals(pdfaidPart.Value)) {
+                        throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("only.pdfa.1.documents.can.be.opened.in.PdfAStamper", "1"));
+                    }
+                    break;
+                case PdfAConformanceLevel.PDF_A_2A:
+                case PdfAConformanceLevel.PDF_A_2B:
+                case PdfAConformanceLevel.PDF_A_2U:
+                    if(!"2".Equals(pdfaidPart.Value)) {
+                        throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("only.pdfa.1.documents.can.be.opened.in.PdfAStamper", "2"));
+                    }
+                    break;
+                case PdfAConformanceLevel.PDF_A_3A:
+                case PdfAConformanceLevel.PDF_A_3B:
+                case PdfAConformanceLevel.PDF_A_3U:
+                    if(!"3".Equals(pdfaidPart.Value)) {
+                        throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("only.pdfa.1.documents.can.be.opened.in.PdfAStamper", "3"));
+                    }
+                    break;
+            }
+        }
     }
-
 }

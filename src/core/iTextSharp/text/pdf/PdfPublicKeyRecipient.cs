@@ -1,4 +1,3 @@
-using System;
 using Org.BouncyCastle.X509;
 
 /*

@@ -286,6 +286,10 @@ namespace iTextSharp.text.pdf {
 
         protected internal bool openMCDocument = false;
 
+        protected Dictionary<Object, int[]> structParentIndices = new Dictionary<Object, int[]>();
+
+        protected Dictionary<Object, int> markPoints = new Dictionary<Object, int>();
+
         /**
         * Adds a <CODE>PdfWriter</CODE> to the <CODE>PdfDocument</CODE>.
         *
@@ -916,7 +920,7 @@ namespace iTextSharp.text.pdf {
             
             // [F12] we add tag info
             if (IsTagged(writer))
-                 page.Put(PdfName.STRUCTPARENTS, new PdfNumber(writer.CurrentPageNumber - 1));
+                page.Put(PdfName.STRUCTPARENTS, new PdfNumber(GetStructParentIndex(writer.CurrentPage)));
 
              if (text.Size > textEmptySize || IsTagged(writer))
                 text.EndText();
@@ -1062,7 +1066,6 @@ namespace iTextSharp.text.pdf {
                 graphics = new PdfContentByte(writer);
             }
 
-            markPoint = 0;
             SetNewPageSizeAndMargins();
             imageEnd = -1;
             indentation.imageIndentRight = 0;
@@ -1481,6 +1484,8 @@ namespace iTextSharp.text.pdf {
                             }
                             text.AddAnnotation(annot, true);
                             if (IsTagged(writer) && chunk.accessibleElement != null) {
+                                int structParent = GetStructParentIndex(annot);
+                                annot.Put(PdfName.STRUCTPARENT, new PdfNumber(structParent));
                                 PdfStructureElement strucElem;
                                 structElements.TryGetValue(chunk.accessibleElement.ID, out strucElem);
                                 if (strucElem != null) {
@@ -1497,8 +1502,8 @@ namespace iTextSharp.text.pdf {
                                     dict.Put(PdfName.TYPE, PdfName.OBJR);
                                     dict.Put(PdfName.OBJ, annot.IndirectReference);
                                     kArray.Add(dict);
+                                    writer.StructureTreeRoot.SetPageMark(structParent, strucElem.Reference);
                                 }
-
                             }
                         }
                         if (chunk.IsAttribute(Chunk.REMOTEGOTO)) {
@@ -2235,17 +2240,6 @@ namespace iTextSharp.text.pdf {
         }
 
     //	[F12] tagged PDF
-
-        protected int markPoint;
-
-        internal int GetMarkPoint() {
-            return markPoint;
-        }
-        
-        internal void IncMarkPoint() {
-            ++markPoint;
-        }
-
     //	[U1] page sizes
 
         /** This is the size of the next page. */
@@ -2417,7 +2411,42 @@ namespace iTextSharp.text.pdf {
                 currentHeight += tmpHeight;
             }
         }
-        
+
+        public int GetStructParentIndex(Object obj) {
+            int[] i;
+            structParentIndices.TryGetValue(obj, out i);
+            if(i == null) {
+                i = new int[] { structParentIndices.Count, 0 };
+                structParentIndices[obj] = i;
+            }
+            return i[0];
+        }
+
+        public int GetNextMarkPoint(Object obj) {
+            int[] i;
+            structParentIndices.TryGetValue(obj, out i);
+            if(i == null) {
+                i = new int[] { structParentIndices.Count, 0 };
+                structParentIndices[obj] = i;
+            }
+            int markPoint = i[1];
+            i[1]++;
+            return markPoint;
+        }
+
+        public int[] GetStructParentIndexAndNextMarkPoint(Object obj) {
+            int[] i;
+            structParentIndices.TryGetValue(obj, out i);
+            if(i == null) {
+                i = new int[] { structParentIndices.Count, 0 };
+                structParentIndices[obj] = i;
+            }
+            int markPoint = i[1];
+            i[1]++;
+            return new int[] {i[0], markPoint};
+        }
+
+
         /** This is the image that could not be shown on a previous page. */
         protected internal Image imageWait = null;
         

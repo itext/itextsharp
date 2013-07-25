@@ -39,14 +39,16 @@
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+using System;
+using System.Collections.Generic;
+using iTextSharp.text.pdf.interfaces;
 
 namespace iTextSharp.text.pdf {
 
     /**
     * Implements the form XObject.
     */
-
-    public class PdfTemplate : PdfContentByte {
+    public class PdfTemplate : PdfContentByte, IAccessibleElement {
         public const int TYPE_TEMPLATE = 1;
         public const int TYPE_IMPORTED = 2;
         public const int TYPE_PATTERN = 3;
@@ -66,16 +68,23 @@ namespace iTextSharp.text.pdf {
         
         protected IPdfOCG layer;
 
+        protected PdfIndirectReference pageReference;
+
+        protected bool contentTagged = false;
+
         /**
          * A dictionary with additional information
          * @since 5.1.0
          */
         private PdfDictionary additional = null;
+
+        protected PdfName role = PdfName.FIGURE;
+        protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
+        private Guid id;
         
         /**
         *Creates a <CODE>PdfTemplate</CODE>.
         */
-        
         protected PdfTemplate() : base(null) {
             type = TYPE_TEMPLATE;
         }
@@ -85,7 +94,6 @@ namespace iTextSharp.text.pdf {
         *
         * @param wr the <CODE>PdfWriter</CODE>
         */
-        
         internal PdfTemplate(PdfWriter wr) : base(wr) {
             type = TYPE_TEMPLATE;
             pageResources = new PageResources();
@@ -115,6 +123,10 @@ namespace iTextSharp.text.pdf {
             template.Height = height;
             writer.AddDirectTemplateSimple(template, forcedName);
             return template;
+        }
+
+        public override bool IsTagged() {
+            return base.IsTagged() && contentTagged;
         }
 
         /**
@@ -295,6 +307,57 @@ namespace iTextSharp.text.pdf {
             get {
                 return additional;
             }
+        }
+
+        protected override PdfIndirectReference CurrentPage {
+            get { return pageReference ?? writer.CurrentPage; }
+        }
+
+        public PdfIndirectReference PageReference
+        {
+            get { return pageReference; }
+            set { pageReference = value; }
+        }
+
+        public bool ContentTagged
+        {
+            get { return contentTagged; }
+            set { contentTagged = value; }
+        }
+
+        public PdfObject GetAccessibleAttribute(PdfName key) {
+            if (accessibleAttributes != null)
+            {
+                PdfObject obj;
+                accessibleAttributes.TryGetValue(key, out obj);
+                return obj;
+            }
+            else
+                return null;
+        }
+
+        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+            if (accessibleAttributes == null)
+                accessibleAttributes = new Dictionary<PdfName, PdfObject>();
+            accessibleAttributes[key] = value;
+        }
+
+        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+            return accessibleAttributes;
+        }
+
+        public PdfName Role {
+            get { return role; }
+            set { role = value; }
+        }
+
+        public Guid ID {
+            get {
+                if (id == Guid.Empty)
+                    id = Guid.NewGuid();
+                return id;
+            }
+            set { id = value; }
         }
     }
 }

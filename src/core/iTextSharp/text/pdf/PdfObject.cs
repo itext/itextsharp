@@ -45,6 +45,7 @@
 
 using System;
 using System.IO;
+using iTextSharp.text.pdf.intern;
 
 namespace iTextSharp.text.pdf {
     /**
@@ -185,8 +186,10 @@ namespace iTextSharp.text.pdf {
          */
     
         public virtual void ToPdf(PdfWriter writer, Stream os) {
-            if (bytes != null)
+            if (bytes != null) {
+                PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_OBJECT, this);
                 os.Write(bytes, 0, bytes.Length);
+            }
         }
     
         /**

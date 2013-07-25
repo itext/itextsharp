@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using iTextSharp.text.pdf.intern;
 
 /*
  * $Id$
@@ -128,6 +129,7 @@ namespace iTextSharp.text.pdf {
          */
     
         public override void ToPdf(PdfWriter writer, Stream os) {
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_OBJECT, this);
             byte[] b = GetBytes();
             PdfEncryption crypto = null;
             if (writer != null)

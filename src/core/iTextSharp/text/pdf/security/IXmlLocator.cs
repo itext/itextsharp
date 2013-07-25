@@ -51,6 +51,8 @@ namespace iTextSharp.text.pdf.security
     {
         XmlDocument GetDocument();
 
-        void SetDocument(XmlDocument document); 
+        void SetDocument(XmlDocument document);
+
+        string GetEncoding();
     }
 }

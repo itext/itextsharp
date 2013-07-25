@@ -298,10 +298,18 @@
     <Compile Include="iTextSharp\text\ListLabel.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\log\CounterFactory.cs" />
-    <Compile Include="iTextSharp\text\log\ICounter.cs" />
-    <Compile Include="iTextSharp\text\log\NoOpCounter.cs" />
-    <Compile Include="iTextSharp\text\log\SysoCounter.cs" />
+    <Compile Include="iTextSharp\text\log\CounterFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\log\ICounter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\log\NoOpCounter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\log\SysoCounter.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="iTextSharp\text\MarkedObject.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -321,6 +329,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\IdentityToUnicode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\interfaces\IAlternateDescription.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\languages\ArabicLigaturizer.cs">
@@ -692,7 +703,9 @@
     <Compile Include="iTextSharp\text\pdf\parser\IContentOperator.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\pdf\parser\ImageRenderInfo.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\ImageRenderInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\IRenderListener.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -720,7 +733,9 @@
     <Compile Include="iTextSharp\text\pdf\parser\PdfContentStreamProcessor.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\pdf\parser\PdfImageObject.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\PdfImageObject.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\PdfReaderContentParser.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -952,6 +967,9 @@
     <Compile Include="iTextSharp\text\pdf\PdfPTableBody.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\PdfPTableEventAfterSplit.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="iTextSharp\text\pdf\PdfPTableFooter.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1132,9 +1150,15 @@
     <Compile Include="iTextSharp\text\pdf\security\IExternalSignatureContainer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\pdf\security\IXmlLocator.cs" />
-    <Compile Include="iTextSharp\text\pdf\security\IXpathConstructor.cs" />
-    <Compile Include="iTextSharp\text\pdf\security\MakeXmlSignature.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\IXmlLocator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\security\IXpathConstructor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\security\MakeXmlSignature.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="iTextSharp\text\pdf\SequenceList.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1183,12 +1207,18 @@
     <Compile Include="iTextSharp\text\pdf\XfaForm.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\pdf\XfaXmlLocator.cs" />
-    <Compile Include="iTextSharp\text\pdf\XfaXpathConstructor.cs" />
+    <Compile Include="iTextSharp\text\pdf\XfaXmlLocator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\pdf\XfaXpathConstructor.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="iTextSharp\text\pdf\XfdfReader.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\pdf\XmlSignatureAppearance.cs" />
+    <Compile Include="iTextSharp\text\pdf\XmlSignatureAppearance.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="iTextSharp\text\Phrase.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1276,54 +1306,150 @@
     <Compile Include="iTextSharp\text\ZapfDingbatsNumberList.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\xmp\impl\Base64.cs" />
-    <Compile Include="iTextSharp\xmp\impl\ByteBuffer.cs" />
-    <Compile Include="iTextSharp\xmp\impl\CountOutputStream.cs" />
-    <Compile Include="iTextSharp\xmp\impl\FilterReader.cs" />
-    <Compile Include="iTextSharp\xmp\impl\FixAsciiControlsReader.cs" />
-    <Compile Include="iTextSharp\xmp\impl\Iso8601Converter.cs" />
-    <Compile Include="iTextSharp\xmp\impl\Latin1Converter.cs" />
-    <Compile Include="iTextSharp\xmp\impl\ParameterAsserts.cs" />
-    <Compile Include="iTextSharp\xmp\impl\ParseRdf.cs" />
-    <Compile Include="iTextSharp\xmp\impl\PushbackReader.cs" />
-    <Compile Include="iTextSharp\xmp\impl\QName.cs" />
-    <Compile Include="iTextSharp\xmp\impl\Utils.cs" />
-    <Compile Include="iTextSharp\xmp\impl\XmpDateTimeImpl.cs" />
-    <Compile Include="iTextSharp\xmp\impl\XmpIteratorImpl.cs" />
-    <Compile Include="iTextSharp\xmp\impl\XmpMetaImpl.cs" />
-    <Compile Include="iTextSharp\xmp\impl\XmpMetaParser.cs" />
-    <Compile Include="iTextSharp\xmp\impl\XmpNode.cs" />
-    <Compile Include="iTextSharp\xmp\impl\XmpNodeUtils.cs" />
-    <Compile Include="iTextSharp\xmp\impl\XmpNormalizer.cs" />
-    <Compile Include="iTextSharp\xmp\impl\XmpSchemaRegistryImpl.cs" />
-    <Compile Include="iTextSharp\xmp\impl\XmpSerializerHelper.cs" />
-    <Compile Include="iTextSharp\xmp\impl\XmpSerializerRdf.cs" />
-    <Compile Include="iTextSharp\xmp\impl\XmpUtilsImpl.cs" />
-    <Compile Include="iTextSharp\xmp\impl\xpath\XmpPath.cs" />
-    <Compile Include="iTextSharp\xmp\impl\xpath\XmpPathParser.cs" />
-    <Compile Include="iTextSharp\xmp\impl\xpath\XmpPathSegment.cs" />
-    <Compile Include="iTextSharp\xmp\IXmpDateTime.cs" />
-    <Compile Include="iTextSharp\xmp\IXmpIterator.cs" />
-    <Compile Include="iTextSharp\xmp\IXmpMeta.cs" />
-    <Compile Include="iTextSharp\xmp\IXmpSchemaRegistry.cs" />
-    <Compile Include="iTextSharp\xmp\IXmpVersionInfo.cs" />
-    <Compile Include="iTextSharp\xmp\options\AliasOptions.cs" />
-    <Compile Include="iTextSharp\xmp\options\IteratorOptions.cs" />
-    <Compile Include="iTextSharp\xmp\options\ParseOptions.cs" />
-    <Compile Include="iTextSharp\xmp\options\PropertyOptions.cs" />
-    <Compile Include="iTextSharp\xmp\options\SerializeOptions.cs" />
-    <Compile Include="iTextSharp\xmp\options\XmpOptions.cs" />
-    <Compile Include="iTextSharp\xmp\properties\IXmpAliasInfo.cs" />
-    <Compile Include="iTextSharp\xmp\properties\IXmpProperty.cs" />
-    <Compile Include="iTextSharp\xmp\properties\IXmpPropertyInfo.cs" />
-    <Compile Include="iTextSharp\xmp\XmpCalendar.cs" />
-    <Compile Include="iTextSharp\xmp\XmpConst.cs" />
-    <Compile Include="iTextSharp\xmp\XmpDateTimeFactory.cs" />
-    <Compile Include="iTextSharp\xmp\XmpError.cs" />
-    <Compile Include="iTextSharp\xmp\XmpException.cs" />
-    <Compile Include="iTextSharp\xmp\XmpMetaFactory.cs" />
-    <Compile Include="iTextSharp\xmp\XmpPathFactory.cs" />
-    <Compile Include="iTextSharp\xmp\XmpUtils.cs" />
+    <Compile Include="iTextSharp\xmp\impl\Base64.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\ByteBuffer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\CountOutputStream.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\FilterReader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\FixAsciiControlsReader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\Iso8601Converter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\Latin1Converter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\ParameterAsserts.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\ParseRdf.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\PushbackReader.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\QName.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\Utils.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\XmpDateTimeImpl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\XmpIteratorImpl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\XmpMetaImpl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\XmpMetaParser.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\XmpNode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\XmpNodeUtils.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\XmpNormalizer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\XmpSchemaRegistryImpl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\XmpSerializerHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\XmpSerializerRdf.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\XmpUtilsImpl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\xpath\XmpPath.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\xpath\XmpPathParser.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\impl\xpath\XmpPathSegment.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\IXmpDateTime.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\IXmpIterator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\IXmpMeta.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\IXmpSchemaRegistry.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\IXmpVersionInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\options\AliasOptions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\options\IteratorOptions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\options\ParseOptions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\options\PropertyOptions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\options\SerializeOptions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\options\XmpOptions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\properties\IXmpAliasInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\properties\IXmpProperty.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\properties\IXmpPropertyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\XmpCalendar.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\XmpConst.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\XmpDateTimeFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\XmpError.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\XmpException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\XmpMetaFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\XmpPathFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\xmp\XmpUtils.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="srcbc\asn1\ASN1Encodable.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1525,7 +1651,9 @@
     <Compile Include="srcbc\asn1\cms\OtherRecipientInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\cms\OtherRevocationInfoFormat.cs" />
+    <Compile Include="srcbc\asn1\cms\OtherRevocationInfoFormat.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="srcbc\asn1\cms\PasswordRecipientInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -1541,7 +1669,9 @@
     <Compile Include="srcbc\asn1\cms\RecipientKeyIdentifier.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\cms\SCVPReqRes.cs" />
+    <Compile Include="srcbc\asn1\cms\SCVPReqRes.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="srcbc\asn1\cms\SignedData.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -2142,7 +2272,9 @@
     <Compile Include="srcbc\asn1\x509\CertificatePair.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\asn1\x509\CertificatePolicies.cs" />
+    <Compile Include="srcbc\asn1\x509\CertificatePolicies.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="srcbc\asn1\x509\CertPolicyId.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -2893,7 +3025,9 @@
     <Compile Include="srcbc\crypto\digests\SHA512Digest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\digests\Sha512tDigest.cs" />
+    <Compile Include="srcbc\crypto\digests\Sha512tDigest.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="srcbc\crypto\digests\ShortenedDigest.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -3206,7 +3340,9 @@
     <Compile Include="srcbc\crypto\macs\ISO9797Alg3Mac.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\macs\SipHash.cs" />
+    <Compile Include="srcbc\crypto\macs\SipHash.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="srcbc\crypto\macs\VMPCMac.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -3252,7 +3388,9 @@
     <Compile Include="srcbc\crypto\modes\IAeadBlockCipher.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\modes\OCBBlockCipher.cs" />
+    <Compile Include="srcbc\crypto\modes\OCBBlockCipher.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="srcbc\crypto\modes\OFBBlockCipher.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -3322,7 +3460,9 @@
     <Compile Include="srcbc\crypto\parameters\DSAKeyParameters.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\parameters\DSAParameterGenerationParameters.cs" />
+    <Compile Include="srcbc\crypto\parameters\DSAParameterGenerationParameters.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="srcbc\crypto\parameters\DSAParameters.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -3518,7 +3658,9 @@
     <Compile Include="srcbc\crypto\tls\CombinedHash.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\crypto\tls\DefaultTlsClient.cs" />
+    <Compile Include="srcbc\crypto\tls\DefaultTlsClient.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="srcbc\crypto\tls\ICertificateVerifyer.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -3831,7 +3973,9 @@
     <Compile Include="srcbc\pkcs\PKCS10CertificationRequest.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="srcbc\pkcs\Pkcs10CertificationRequestDelaySigned.cs" />
+    <Compile Include="srcbc\pkcs\Pkcs10CertificationRequestDelaySigned.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="srcbc\pkcs\PKCS12Entry.cs">
       <SubType>Code</SubType>
     </Compile>

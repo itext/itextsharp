@@ -4,6 +4,8 @@ using System.Net;
 using iTextSharp.text.io;
 using iTextSharp.text.pdf.collection;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.pdf.intern;
+
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -303,5 +305,11 @@ namespace iTextSharp.text.pdf {
         public void AddCollectionItem(PdfCollectionItem ci) {
             Put(PdfName.CI, ci);
         }
+
+        public override void ToPdf(PdfWriter writer, Stream os) {
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_FILESPEC, this);
+            base.ToPdf(writer, os);
+        }
+
     }
 }

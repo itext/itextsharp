@@ -1,6 +1,4 @@
-using System;
 using System.Collections.Generic;
-using iTextSharp.text.pdf;
 /*
  * $Id$
  * 
@@ -55,7 +53,7 @@ namespace iTextSharp.text.pdf.events {
     * the PdfWriter.
     */
 
-    public class PdfPTableEventForwarder : IPdfPTableEventSplit {
+    public class PdfPTableEventForwarder : IPdfPTableEventAfterSplit {
 
         /** ArrayList containing all the PageEvents that have to be executed. */
         protected List<IPdfPTableEvent> events = new List<IPdfPTableEvent>();
@@ -82,5 +80,16 @@ namespace iTextSharp.text.pdf.events {
                     ((IPdfPTableEventSplit)eventa).SplitTable(table);
 		    }
         }
+        /**
+         * @see com.itextpdf.text.pdf.PdfPTableEventAfterSplit#afterSplitTable(com.itextpdf.text.pdf.PdfPTable, com.itextpdf.text.pdf.PdfPRow, int)
+         * @since iText 5.4.3
+         */
+        public void AfterSplitTable(PdfPTable table, PdfPRow startRow, int startIdx) {
+            foreach (IPdfPTableEvent evente in events) {
+                if (evente is IPdfPTableEventAfterSplit)
+                    ((IPdfPTableEventAfterSplit)evente).AfterSplitTable(table, startRow, startIdx);
+            }
+        }
+
     }
 }

@@ -217,18 +217,21 @@ namespace iTextSharp.text {
 	 * This is the letter format
 	 * @since iText 5.0.6
 	 */
+        [Obsolete]
         public static readonly Rectangle LETTER_LANDSCAPE = new RectangleReadOnly(612, 792, 90);
     
     /**
      * This is the legal format
      * @since iText 5.0.6
      */
+        [Obsolete]
         public static readonly Rectangle LEGAL_LANDSCAPE = new RectangleReadOnly(612, 1008, 90);
     
     /**
      * This is the a4 format
      * @since iText 5.0.6
      */
+        [Obsolete]
         public static readonly Rectangle A4_LANDSCAPE = new RectangleReadOnly(595, 842, 90);
     
         /**

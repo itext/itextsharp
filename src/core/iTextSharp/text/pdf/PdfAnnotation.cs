@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.pdf.intern;
+
 /*
  * $Id$
  * 
@@ -874,6 +877,11 @@ namespace iTextSharp.text.pdf {
                 buf.Append(parameters);
                 return buf.ToString();
             }
+        }
+
+        public override void ToPdf(PdfWriter writer, Stream os) {
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_ANNOTATION, this);
+            base.ToPdf(writer, os);
         }
     }
 }

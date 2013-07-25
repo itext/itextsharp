@@ -351,6 +351,7 @@ namespace iTextSharp.text.pdf.security {
         }
         
         private void OutputDss(PdfDictionary dss, PdfDictionary vrim, PdfArray ocsps, PdfArray crls, PdfArray certs) {
+            writer.AddDeveloperExtension(PdfDeveloperExtension.ESIC_1_7_EXTENSIONLEVEL5);
             PdfDictionary catalog = reader.Catalog;
             stp.MarkUsed(catalog);
             foreach (PdfName vkey in validated.Keys) {

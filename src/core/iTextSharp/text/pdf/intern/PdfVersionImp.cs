@@ -70,6 +70,9 @@ namespace iTextSharp.text.pdf.intern {
         protected char header_version = PdfWriter.VERSION_1_4;
         /** The version that will be written to the catalog. */
         protected PdfName catalog_version = null;
+        /** The version that user can use to get the actual version of PDF document **/
+        protected char version = PdfWriter.VERSION_1_4;
+
         /**
          * The extensions dictionary.
          * @since	2.1.6
@@ -81,6 +84,7 @@ namespace iTextSharp.text.pdf.intern {
         */
         public char PdfVersion {
             set {
+          		this.version = value;
                 if (headerWasWritten || appendmode) {
                     SetPdfVersion(GetVersionAsName(value));
                 }
@@ -192,6 +196,11 @@ namespace iTextSharp.text.pdf.intern {
                 }
             }
             extensions.Put(de.Prefix, de.GetDeveloperExtensions());
+        }
+
+        public char Version
+        {
+            get { return version; }
         }
     }
 }

@@ -151,6 +151,18 @@ namespace iTextSharp.text.pdf.parser {
             
             RegisterContentOperator("q", new PushGraphicsState());
             RegisterContentOperator("Q", new PopGraphicsState());
+            RegisterContentOperator("g", new SetGrayFill());
+            RegisterContentOperator("G", new SetGrayStroke());
+            RegisterContentOperator("rg", new SetRGBFill());
+            RegisterContentOperator("RG", new SetRGBStroke());
+            RegisterContentOperator("k", new SetCMYKFill());
+            RegisterContentOperator("K", new SetCMYKStroke());
+            RegisterContentOperator("cs", new SetColorSpaceFill());
+            RegisterContentOperator("CS", new SetColorSpaceStroke());
+            RegisterContentOperator("sc", new SetColorFill());
+            RegisterContentOperator("SC", new SetColorStroke());
+            RegisterContentOperator("scn", new SetColorFill());
+            RegisterContentOperator("SCN", new SetColorStroke());
             RegisterContentOperator("cm", new ModifyCurrentTransformationMatrix());
             RegisterContentOperator("gs", new ProcessGraphicsStateResource());
 
@@ -412,7 +424,7 @@ namespace iTextSharp.text.pdf.parser {
             public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 PdfArray array = (PdfArray)operands[0];
                 float tj = 0;
-                foreach (PdfObject entryObj in array.ArrayList) {
+                foreach (PdfObject entryObj in array) {
                     if (entryObj is PdfString){
                         processor.DisplayPdfString((PdfString)entryObj);
                         tj = 0;
@@ -688,6 +700,132 @@ namespace iTextSharp.text.pdf.parser {
                 Matrix matrix = new Matrix(a, b, c, d, e, f);
                 GraphicsState gs = processor.gsStack.Peek();
                 gs.ctm = matrix.Multiply(gs.ctm);
+            }
+        }
+
+            
+        /**
+         * Gets a color based on a list of operands.
+         */
+        private static BaseColor GetColor(PdfName colorSpace, List<PdfObject> operands) {
+    	    if (PdfName.DEVICEGRAY.Equals(colorSpace)) {
+    		    return GetColor(1, operands);
+    	    }
+    	    if (PdfName.DEVICERGB.Equals(colorSpace)) {
+    		    return GetColor(3, operands);
+    	    }
+    	    if (PdfName.DEVICECMYK.Equals(colorSpace)) {
+    		    return GetColor(4, operands);
+    	    }
+    	    return null;
+        }
+    
+        /**
+         * Gets a color based on a list of operands.
+         */
+        private static BaseColor GetColor(int nOperands, List<PdfObject> operands) {
+    	    float[] c = new float[nOperands];
+    	    for (int i = 0; i < nOperands; i++) {
+    		    c[i] = ((PdfNumber)operands[0]).FloatValue;
+    	    }
+    	    switch (nOperands) {
+    	    case 1:
+    		    return new GrayColor(c[0]);
+    	    case 3:
+    		    return new BaseColor(c[0], c[1], c[2]);
+    	    case 4:
+    		    return new CMYKColor(c[0], c[1], c[2], c[3]);
+    	    }
+    	    return null;
+        }
+    
+        /**
+         * A content operator implementation (g).
+         */
+        private class SetGrayFill : IContentOperator{
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                processor.Gs().fillColor = GetColor(1, operands);
+            }
+        }
+    
+        /**
+         * A content operator implementation (G).
+         */
+        private class SetGrayStroke : IContentOperator{
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                processor.Gs().strokeColor = GetColor(1, operands);
+            }
+        }
+    
+        /**
+         * A content operator implementation (rg).
+         */
+        private class SetRGBFill : IContentOperator{
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                processor.Gs().fillColor = GetColor(3, operands);
+            }
+        }
+    
+        /**
+         * A content operator implementation (RG).
+         */
+        private class SetRGBStroke : IContentOperator{
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                processor.Gs().strokeColor = GetColor(3, operands);
+            }
+        }
+    
+        /**
+         * A content operator implementation (rg).
+         */
+        private class SetCMYKFill : IContentOperator{
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                processor.Gs().fillColor = GetColor(4, operands);
+            }
+        }
+    
+        /**
+         * A content operator implementation (RG).
+         */
+        private class SetCMYKStroke : IContentOperator{
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                processor.Gs().strokeColor = GetColor(4, operands);
+            }
+        }
+
+        /**
+         * A content operator implementation (CS).
+         */
+        private class SetColorSpaceFill : IContentOperator{
+		    public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+			    processor.Gs().colorSpaceFill = (PdfName)operands[0];		
+		    }
+        }
+
+        /**
+         * A content operator implementation (cs).
+         */
+        private class SetColorSpaceStroke : IContentOperator{
+		    public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+			    processor.Gs().colorSpaceStroke = (PdfName)operands[0];		
+		    }
+        }
+    
+        /**
+         * A content operator implementation (sc / scn).
+         */
+        private class SetColorFill : IContentOperator{
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                processor.Gs().fillColor = GetColor(processor.Gs().colorSpaceFill, operands);
+            }
+        }
+    
+        /**
+         * A content operator implementation (SC / SCN).
+         */
+        private class SetColorStroke : IContentOperator{
+            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+                processor.Gs().strokeColor = GetColor(processor.Gs().colorSpaceStroke, operands);
             }
         }
 

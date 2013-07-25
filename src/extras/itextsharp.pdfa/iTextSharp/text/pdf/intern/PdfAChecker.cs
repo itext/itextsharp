@@ -46,6 +46,13 @@
 namespace iTextSharp.text.pdf.intern
 {
     public abstract class PdfAChecker {
+
+        protected PdfAConformanceLevel conformanceLevel;
+
+        internal PdfAChecker(PdfAConformanceLevel conformanceLevel) {
+            this.conformanceLevel = conformanceLevel;
+        }
+        
         protected abstract void CheckFont(PdfWriter writer, int key, Object obj1);
 
         protected abstract void CheckImage(PdfWriter writer, int key, Object obj1);
@@ -53,6 +60,27 @@ namespace iTextSharp.text.pdf.intern
         protected abstract void CheckGState(PdfWriter writer, int key, Object obj1);
 
         protected abstract void CheckLayer(PdfWriter writer, int key, Object obj1);
+
+        protected abstract void CheckTrailer(PdfWriter writer, int key, Object obj1);
+
+        protected abstract void CheckStream(PdfWriter writer, int key, Object obj1);
+
+        protected abstract void CheckFileSpec(PdfWriter writer, int key, Object obj1);
+
+        protected abstract void CheckPdfObject(PdfWriter writer, int key, Object obj1);
+
+        protected abstract void CheckCanvas(PdfWriter writer, int key, Object obj1);
+
+        protected abstract void CheckColor(PdfWriter writer, int key, Object obj1);
+
+        protected abstract void CheckAnnotation(PdfWriter writer, int key, Object obj1);
+
+        protected abstract void CheckAction(PdfWriter writer, int key, Object obj1);
+
+        protected abstract void CheckForm(PdfWriter writer, int key, Object obj1);
+
+        protected abstract void CheckStructElem(PdfWriter writer, int key, Object obj1);
+
 
         internal void CheckPdfAConformance(PdfWriter writer, int key, Object obj1) {
             if(writer == null || !writer.IsPdfIso())
@@ -70,9 +98,48 @@ namespace iTextSharp.text.pdf.intern
                 case PdfIsoKeys.PDFISOKEY_LAYER:
                     CheckLayer(writer, key, obj1);
                     break;
+                case PdfIsoKeys.PDFISOKEY_TRAILER:
+                    CheckTrailer(writer, key, obj1);
+                    break;
+                case PdfIsoKeys.PDFISOKEY_STREAM:
+                    CheckStream(writer, key, obj1);
+                    break;
+                case PdfIsoKeys.PDFISOKEY_FILESPEC:
+                    CheckFileSpec(writer, key, obj1);
+                    break;
+                case PdfIsoKeys.PDFISOKEY_OBJECT:
+                    CheckPdfObject(writer, key, obj1);
+                    break;
+                case PdfIsoKeys.PDFISOKEY_CANVAS:
+                    CheckCanvas(writer, key, obj1);
+                    break;
+                case PdfIsoKeys.PDFISOKEY_COLOR:
+                case PdfIsoKeys.PDFISOKEY_CMYK:
+                case PdfIsoKeys.PDFISOKEY_RGB:
+                    CheckColor(writer, key, obj1);
+                    break;
+                case PdfIsoKeys.PDFISOKEY_ANNOTATION:
+                    CheckAnnotation(writer, key, obj1);
+                    break;
+                case PdfIsoKeys.PDFISOKEY_ACTION:
+                    CheckAction(writer, key, obj1);
+                    break;
+                case PdfIsoKeys.PDFISOKEY_FORM:
+                    CheckForm(writer, key, obj1);
+                    break;
+                case PdfIsoKeys.PDFISOKEY_STRUCTELEM:
+                    if(CheckStructure(conformanceLevel))
+                        CheckStructElem(writer, key, obj1);
+                    break;
                 default:
                     break;
             }
+        }
+
+        public static bool CheckStructure(PdfAConformanceLevel conformanceLevel) {
+            return conformanceLevel == PdfAConformanceLevel.PDF_A_1A
+                || conformanceLevel == PdfAConformanceLevel.PDF_A_2A
+                || conformanceLevel == PdfAConformanceLevel.PDF_A_3A;
         }
     }
 }

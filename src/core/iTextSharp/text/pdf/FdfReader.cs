@@ -85,7 +85,7 @@ namespace iTextSharp.text.pdf {
         }
         
         protected static ICounter COUNTER = CounterFactory.GetCounter(typeof(FdfReader));
-	    protected ICounter getCounter() {
+	    protected override ICounter GetCounter() {
 		    return COUNTER;
     	}
 

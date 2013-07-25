@@ -95,6 +95,14 @@ namespace iTextSharp.text.pdf.parser {
         internal float rise;
         /** The current knockout value. */
         internal bool knockout;
+        /** The current color space for stroke. */
+        internal PdfName colorSpaceFill;
+        /** The current color space for stroke. */
+        internal PdfName colorSpaceStroke;
+        /** The current fill color. */
+        internal BaseColor fillColor;
+        /** The current stroke color. */
+        internal BaseColor strokeColor;
         
         /**
          * Constructs a new Graphics State object with the default values.
@@ -110,6 +118,10 @@ namespace iTextSharp.text.pdf.parser {
             renderMode = 0;
             rise = 0;
             knockout = true;
+            colorSpaceFill = null;
+            colorSpaceStroke = null;
+            fillColor = null;
+            strokeColor = null;
         }
         
         /**
@@ -129,6 +141,10 @@ namespace iTextSharp.text.pdf.parser {
             renderMode = source.renderMode;
             rise = source.rise;
             knockout = source.knockout;
+            colorSpaceFill = source.colorSpaceFill;
+            colorSpaceStroke = source.colorSpaceStroke;
+            fillColor = source.fillColor;
+            strokeColor = source.strokeColor;
         }
 
         /**
@@ -219,6 +235,40 @@ namespace iTextSharp.text.pdf.parser {
          */
         public bool IsKnockout() {
             return knockout;
+        }
+
+        /**
+         * Gets the current color space for fill operations
+         */
+        public PdfName ColorSpaceFill
+        {
+            get { return colorSpaceFill; }
+        }
+
+        /**
+         * Gets the current color space for stroke operations
+         */
+        public PdfName ColorSpaceStroke
+        {
+            get { return colorSpaceStroke; }
+        }
+
+        /**
+         * Gets the current fill color
+         * @return a BaseColor
+         */
+        public BaseColor FillColor
+        {
+            get { return fillColor; }
+        }
+
+        /**
+         * Gets the current stroke color
+         * @return a BaseColor
+         */
+        public BaseColor StrokeColor
+        {
+            get { return strokeColor; }
         }
     }
 }
