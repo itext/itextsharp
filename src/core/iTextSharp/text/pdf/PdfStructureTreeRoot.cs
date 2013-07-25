@@ -77,7 +77,11 @@ namespace iTextSharp.text.pdf {
             foreach (int i in parentTree.Keys)
             {
                 PdfArray ar = (PdfArray) parentTree[i];
-                numTree[i] = writer.AddToBody(ar).IndirectReference;
+                if(ar.Size == 1)
+                    numTree[i] = ar.GetAsIndirectObject(0);
+                else
+                    numTree[i] = writer.AddToBody(ar).IndirectReference;
+
             }
         }
 

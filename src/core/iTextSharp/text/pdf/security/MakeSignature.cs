@@ -100,6 +100,8 @@ namespace iTextSharp.text.pdf.security {
                     estimatedSize += 4192;
             }
             sap.Certificate = certa[0];
+            if(sigtype == CryptoStandard.CADES)
+                sap.AddDeveloperExtension(PdfDeveloperExtension.ESIC_1_7_EXTENSIONLEVEL2);
             PdfSignature dic = new PdfSignature(PdfName.ADOBE_PPKLITE, sigtype == CryptoStandard.CADES ? PdfName.ETSI_CADES_DETACHED : PdfName.ADBE_PKCS7_DETACHED);
             dic.Reason = sap.Reason;
             dic.Location = sap.Location;

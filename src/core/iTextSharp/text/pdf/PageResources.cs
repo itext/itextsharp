@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 /*
@@ -164,7 +163,6 @@ namespace iTextSharp.text.pdf {
                 PdfResources resources = new PdfResources();
                 if (originalResources != null)
                     resources.Merge(originalResources);
-                resources.Put(PdfName.PROCSET, new PdfLiteral("[/PDF /Text /ImageB /ImageC /ImageI]"));
                 resources.Add(PdfName.FONT, fontDictionary);
                 resources.Add(PdfName.XOBJECT, xObjectDictionary);
                 resources.Add(PdfName.COLORSPACE, colorDictionary);

@@ -128,7 +128,7 @@ namespace iTextSharp.text.pdf {
         private bool appendable;
 
        	protected static ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfReader));
-	    protected ICounter GetCounter() {
+	    protected virtual ICounter GetCounter() {
 		    return COUNTER;
 	    }
         
@@ -179,15 +179,24 @@ namespace iTextSharp.text.pdf {
         }
         
         /** Reads and parses a PDF document.
-        * @param filename the file name of the document
-        * @param ownerPassword the password to read the document
-        * @throws IOException on error
-        */    
-        public PdfReader(String filename, byte[] ownerPassword) : this(
+         * @param filename the file name of the document
+         * @param ownerPassword the password to read the document
+         * @throws IOException on error
+         */
+        public PdfReader(String filename, byte[] ownerPassword):
+            this(filename, ownerPassword, false)
+        { }
+
+        /** Reads and parses a PDF document.
+         * @param filename the file name of the document
+         * @param ownerPassword the password to read the document
+         * @throws IOException on error
+         */    
+        public PdfReader(String filename, byte[] ownerPassword, bool partial) : this(
             new RandomAccessSourceFactory()
             .SetForceRead(false)
             .CreateBestSource(filename),                
-            false,
+            partial,
             ownerPassword,
             null,
             null,
@@ -286,7 +295,8 @@ namespace iTextSharp.text.pdf {
         * @param raf the document location
         * @param ownerPassword the password or <CODE>null</CODE> for no password
         * @throws IOException on error
-        */    
+        */
+        [Obsolete("Use the constructor that takes a RandomAccessFileOrArray")]
         public PdfReader(RandomAccessFileOrArray raf, byte[] ownerPassword) : this(
             raf.GetByteSource(),
             true,

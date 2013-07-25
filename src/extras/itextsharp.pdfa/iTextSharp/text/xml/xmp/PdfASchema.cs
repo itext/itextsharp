@@ -1,5 +1,4 @@
 using System;
-
 /*
  * $Id: PdfA1Schema.java 270 2012-06-27 08:56:29Z chingarev $
  *

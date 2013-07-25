@@ -1,4 +1,5 @@
-using System;
+using iTextSharp.text.pdf.intern;
+
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -170,6 +171,11 @@ namespace iTextSharp.text.pdf {
             set {
                 Put(PdfName.RI, value);
             }
+        }
+
+        public override void ToPdf(PdfWriter writer, System.IO.Stream os) {
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_GSTATE, this);
+            base.ToPdf(writer, os);
         }
     }
 }

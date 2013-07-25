@@ -260,7 +260,7 @@ namespace iTextSharp.text.pdf {
          * Checks if the content needs to be tagged.
          * @return false if no tags need to be added
          */
-        public bool IsTagged()
+        public virtual bool IsTagged()
         {
             return writer != null && writer.IsTagged();
         }
@@ -1577,6 +1577,7 @@ namespace iTextSharp.text.pdf {
          * <CODE>restoreState</CODE> must be balanced.
          */
         public void SaveState() {
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_CANVAS, "q");
             if (inText && IsTagged()) {
                 EndText();
             }
@@ -1589,6 +1590,7 @@ namespace iTextSharp.text.pdf {
          * <CODE>restoreState</CODE> must be balanced.
          */
         public void RestoreState() {
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_CANVAS, "Q");
             if (inText && IsTagged()) {
                 EndText();
             }
@@ -2385,10 +2387,6 @@ namespace iTextSharp.text.pdf {
         internal PdfTemplate CreateTemplate(float width, float height, PdfName forcedName) {
             CheckWriter();
             PdfTemplate template = new PdfTemplate(writer);
-            IList<IAccessibleElement> allMcElements = GetMcElements();
-            if(allMcElements != null && allMcElements.Count > 0)
-                template.GetMcElements().Add(allMcElements[allMcElements.Count - 1]);
-
             template.Width = width;
             template.Height = height;
             writer.AddDirectTemplateSimple(template, forcedName);
@@ -2443,14 +2441,47 @@ namespace iTextSharp.text.pdf {
          * @param f an element of the transformation matrix
          */
         public virtual void AddTemplate(PdfTemplate template, float a, float b, float c, float d, float e, float f) {
-            if (inText && IsTagged()) {
-                EndText();
-            }
+            AddTemplate(template, a, b, c, d, e, f, false);
+        }
+    
+         /**
+         * Adds a template to this content.
+         *
+         * @param template the template
+         * @param a an element of the transformation matrix
+         * @param b an element of the transformation matrix
+         * @param c an element of the transformation matrix
+         * @param d an element of the transformation matrix
+         * @param e an element of the transformation matrix
+         * @param f an element of the transformation matrix
+         * @param tagContent <code>true</code> - template content will be tagged(all that will be added after), <code>false</code> - only a Do operator will be tagged.
+         *                   taken into account only if <code>isTagged()</code> - <code>true</code>.
+         */
+        public void AddTemplate(PdfTemplate template, float a, float b, float c, float d, float e, float f, bool tagContent) {
             CheckWriter();
             CheckNoPattern(template);
             PdfName name = writer.AddDirectTemplateSimple(template, null);
             PageResources prs = PageResources;
             name = prs.AddXObject(name, template.IndirectReference);
+            if (IsTagged()) {
+                if (inText)
+                    EndText();
+                if (template.ContentTagged || (template.PageReference != null && tagContent)) {
+                    throw new InvalidOperationException(MessageLocalization.GetComposedMessage("template.with.tagged.could.not.be.used.more.than.once"));
+                }
+
+                template.PageReference = writer.CurrentPage;
+
+                if (tagContent) {
+                    template.ContentTagged = true;
+                    IList<IAccessibleElement> allMcElements = GetMcElements();
+                    if (allMcElements != null && allMcElements.Count > 0)
+                        template.GetMcElements().Add(allMcElements[allMcElements.Count - 1]);
+                } else {
+                    OpenMCBlock(template);
+                }
+            }
+
             content.Append("q ");
             content.Append(a).Append(' ');
             content.Append(b).Append(' ');
@@ -2459,8 +2490,26 @@ namespace iTextSharp.text.pdf {
             content.Append(e).Append(' ');
             content.Append(f).Append(" cm ");
             content.Append(name.GetBytes()).Append(" Do Q").Append_i(separator);
+
+            if (IsTagged() && !tagContent) {
+                CloseMCBlock(template);
+                template.ID = Guid.Empty;
+            }
         }
-    
+
+        /**
+         * adds a template with the given matrix.
+         * @param template template to add
+         * @param transform transform to apply to the template prior to adding it.
+         * @param tagContent <code>true</code> - template content will be tagged(all that will be added after), <code>false</code> - only a Do operator will be tagged.
+         *                   taken into account only if <code>isTagged()</code> - <code>true</code>.
+         */
+        public void AddTemplate(PdfTemplate template, System.Drawing.Drawing2D.Matrix transform, bool tagContent) {
+            float[] matrix = transform.Elements;
+            AddTemplate(template, matrix[0], matrix[1], matrix[2],
+                      matrix[3], matrix[4], matrix[5], tagContent);
+        }
+
         /**
          * adds a template with the given matrix.
          * @param template template to add
@@ -2468,9 +2517,7 @@ namespace iTextSharp.text.pdf {
          * @since 5.0.1
          */
         public void AddTemplate(PdfTemplate template, System.Drawing.Drawing2D.Matrix transform) {
-            float[] matrix = transform.Elements;
-            AddTemplate(template, matrix[0], matrix[1], matrix[2], 
-                      matrix[3], matrix[4],matrix[5]);
+            AddTemplate(template, transform, false);
         }
 
         internal void AddTemplateReference(PdfIndirectReference template, PdfName name, float a, float b, float c, float d, float e, float f) {
@@ -2500,7 +2547,11 @@ namespace iTextSharp.text.pdf {
         public void AddTemplate(PdfTemplate template, float x, float y) {
             AddTemplate(template, 1, 0, 0, 1, x, y);
         }
-    
+
+        public void AddTemplate(PdfTemplate template, float x, float y, bool tagContent) {
+            AddTemplate(template, 1, 0, 0, 1, x, y, tagContent);
+        }
+
         /**
          * Changes the current color for filling paths (device dependent colors!).
          * <P>
@@ -3010,7 +3061,7 @@ namespace iTextSharp.text.pdf {
          * @param ury the upper right y corner of the activation area
          */
         public void RemoteGoto(string filename, string name, float llx, float lly, float urx, float ury) {
-            RemoteGoto(filename, name, llx, lly, urx, ury);
+            pdf.RemoteGoto(filename, name, llx, lly, urx, ury);
         }
     
         /**
@@ -3335,7 +3386,9 @@ namespace iTextSharp.text.pdf {
         */    
         public void BeginMarkedContentSequence(PdfStructureElement struc) {        
             PdfObject obj = struc.Get(PdfName.K);
-            int mark = pdf.GetMarkPoint();
+            int[] structParentMarkPoint = pdf.GetStructParentIndexAndNextMarkPoint(CurrentPage);
+            int structParent = structParentMarkPoint[0];
+            int mark = structParentMarkPoint[1];
             if (obj != null) {
                 PdfArray ar = null;
                 if (obj.IsNumber()) {
@@ -3351,21 +3404,24 @@ namespace iTextSharp.text.pdf {
                 if (ar.GetAsNumber(0) != null)
                 {
                     PdfDictionary dic = new PdfDictionary(PdfName.MCR);
-                    dic.Put(PdfName.PG, writer.CurrentPage);
+                    dic.Put(PdfName.PG, CurrentPage);
                     dic.Put(PdfName.MCID, new PdfNumber(mark));
                     ar.Add(dic);
                 }
-                struc.SetPageMark(writer.PageNumber - 1, -1);
+                struc.SetPageMark(pdf.GetStructParentIndex(CurrentPage), -1);
             }
             else {
-                struc.SetPageMark(writer.PageNumber - 1, mark);
-                struc.Put(PdfName.PG, writer.CurrentPage);
+                struc.SetPageMark(structParent, mark);
+                struc.Put(PdfName.PG, CurrentPage);
             }
-            pdf.IncMarkPoint();
             SetMcDepth(GetMcDepth() + 1);
             int contentSize = content.Size;
             content.Append(struc.Get(PdfName.S).GetBytes()).Append(" <</MCID ").Append(mark).Append(">> BDC").Append_i(separator);
             markedContentSize += content.Size - contentSize;
+        }
+
+        protected virtual PdfIndirectReference CurrentPage {
+            get { return writer.CurrentPage; }
         }
         
         /**
@@ -3376,7 +3432,7 @@ namespace iTextSharp.text.pdf {
                 throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.begin.end.marked.content.operators"));
             }
             int contentSize = content.Size;
-            SetMcDepth(GetMcDepth() - 1); ;
+            SetMcDepth(GetMcDepth() - 1);
             content.Append("EMC").Append_i(separator);
             markedContentSize += content.Size - contentSize;
         }

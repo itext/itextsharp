@@ -51,6 +51,12 @@ namespace iTextSharp.text.pdf.intern
 public class PdfA2Checker : PdfA1Checker {
 
     private static readonly HashSet2<PdfName> allowedBlendModes;
+
+    internal PdfA2Checker(PdfAConformanceLevel conformanceLevel)
+        :base(conformanceLevel) {
+    }
+
+
     static PdfA2Checker() {
         allowedBlendModes = new HashSet2<PdfName>();
         allowedBlendModes.Add(PdfGState.BM_NORMAL);

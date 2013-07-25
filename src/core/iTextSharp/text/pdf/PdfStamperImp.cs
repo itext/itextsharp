@@ -49,13 +49,12 @@ using iTextSharp.text.error_messages;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-
 namespace iTextSharp.text.pdf {
     public class PdfStamperImp : PdfWriter {
         internal Dictionary<PdfReader, IntHashtable> readers2intrefs = new Dictionary<PdfReader,IntHashtable>();
         internal Dictionary<PdfReader, RandomAccessFileOrArray> readers2file = new Dictionary<PdfReader,RandomAccessFileOrArray>();
         internal protected RandomAccessFileOrArray file;
-        internal PdfReader reader;
+        internal protected PdfReader reader;
         internal IntHashtable myXref = new IntHashtable();
         /** Integer(page number) -> PageStamp */
         internal Dictionary<PdfDictionary, PageStamp> pagesToContent = new Dictionary<PdfDictionary,PageStamp>();
@@ -78,7 +77,7 @@ namespace iTextSharp.text.pdf {
         protected PdfAction openAction;
         
         protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfStamper));
-        protected ICounter GetCounter() {
+        protected override ICounter GetCounter() {
     	    return COUNTER;
         }
 
@@ -150,6 +149,7 @@ namespace iTextSharp.text.pdf {
                 FlatFreeTextFields();
             AddFieldResources();
             PdfDictionary catalog = reader.Catalog;
+            GetPdfVersion().AddToCatalog(catalog);
             PdfDictionary acroForm = (PdfDictionary)PdfReader.GetPdfObject(catalog.Get(PdfName.ACROFORM), reader.Catalog);
             if (acroFields != null && acroFields.Xfa.Changed) {
                 MarkUsed(acroForm);
@@ -705,15 +705,7 @@ namespace iTextSharp.text.pdf {
             Rectangle media = new Rectangle(mediabox);
             int rotation = media.Rotation % 360;
             PdfDictionary page = new PdfDictionary(PdfName.PAGE);
-            PdfDictionary resources = new PdfDictionary();
-            PdfArray procset = new PdfArray();
-            procset.Add(PdfName.PDF);
-            procset.Add(PdfName.TEXT);
-            procset.Add(PdfName.IMAGEB);
-            procset.Add(PdfName.IMAGEC);
-            procset.Add(PdfName.IMAGEI);
-            resources.Put(PdfName.PROCSET, procset);
-            page.Put(PdfName.RESOURCES, resources);
+            page.Put(PdfName.RESOURCES, new PdfDictionary());
             page.Put(PdfName.ROTATE, new PdfNumber(rotation));
             page.Put(PdfName.MEDIABOX, new PdfRectangle(media, rotation));
             PRIndirectReference pref = reader.AddPdfObject(page);

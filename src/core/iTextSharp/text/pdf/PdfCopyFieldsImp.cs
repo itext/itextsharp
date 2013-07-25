@@ -75,7 +75,7 @@ namespace iTextSharp.text.pdf {
         private bool hasSignature;
         
         protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfCopyFields));
-        protected ICounter getCounter() {
+        protected override ICounter GetCounter() {
     	    return COUNTER;
         }
 

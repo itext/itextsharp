@@ -63,10 +63,10 @@ namespace iTextSharp.text.pdf {
 
         /** the cache with the streams and references. */
         private Dictionary<ByteStore, PdfIndirectReference> streamMap = null;
-        private readonly HashSet2<PdfObject> serialized = new HashSet2<PdfObject>();
+        private readonly Dictionary<RefKey, int> serialized = new Dictionary<RefKey, int>();
 
         protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfSmartCopy));
-        protected ICounter GetCounter() {
+        protected override ICounter GetCounter() {
     	    return COUNTER;
         }
 
@@ -137,10 +137,21 @@ namespace iTextSharp.text.pdf {
             return theRef;
         }
 
+        public override void FreeReader(PdfReader reader) {
+            serialized.Clear();
+            base.FreeReader(reader);
+        }
+
+        public override void AddPage(PdfImportedPage iPage)  {
+            if (currentPdfReaderInstance.Reader != reader)
+                serialized.Clear();
+            base.AddPage(iPage);
+        }
+        
         internal class ByteStore {
             private readonly byte[] b;
             private readonly int hash;
-            private void SerObject(PdfObject obj, int level, ByteBuffer bb, HashSet2<PdfObject> serialized)
+            private void SerObject(PdfObject obj, int level, ByteBuffer bb, Dictionary<RefKey, int> serialized)
             {
                 if (level <= 0)
                     return;
@@ -149,11 +160,20 @@ namespace iTextSharp.text.pdf {
                     return;
                 }
 
+                PdfIndirectReference refe = null;
+                ByteBuffer savedBb = null;
+
                 if (obj.IsIndirect()) {
-                    if (serialized.Contains(obj))
+                    refe = (PdfIndirectReference)obj;
+                    RefKey key = new RefKey(refe);
+                    if (serialized.ContainsKey(key)) {
+                        bb.Append(serialized[key]);
                         return;
-                    else
-                        serialized.Add(obj);
+                    }
+                    else {
+                        savedBb = bb;
+                        bb = new ByteBuffer();
+                    }
                 }
                 obj = PdfReader.GetPdfObject(obj);
                 if (obj.IsStream()) {
@@ -177,9 +197,16 @@ namespace iTextSharp.text.pdf {
                 }
                 else
                     bb.Append("$L").Append(obj.ToString());
+
+                if (savedBb != null) {
+                    RefKey key = new RefKey(refe);
+                    if (!serialized.ContainsKey(key))
+                        serialized[key] = CalculateHash(bb.Buffer);
+                    savedBb.Append(bb);
+                }
             }
 
-            private void SerDic(PdfDictionary dic, int level, ByteBuffer bb, HashSet2<PdfObject> serialized)
+            private void SerDic(PdfDictionary dic, int level, ByteBuffer bb, Dictionary<RefKey, int> serialized)
             {
                 bb.Append("$D");
                 if (level <= 0)
@@ -193,7 +220,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
 
-            private void SerArray(PdfArray array, int level, ByteBuffer bb, HashSet2<PdfObject> serialized)
+            private void SerArray(PdfArray array, int level, ByteBuffer bb, Dictionary<RefKey, int> serialized)
             {
                 bb.Append("$A");
                 if (level <= 0)
@@ -203,7 +230,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
 
-            internal ByteStore(PRStream str, HashSet2<PdfObject> serialized)
+            internal ByteStore(PRStream str, Dictionary<RefKey, int> serialized)
             {
                 ByteBuffer bb = new ByteBuffer();
                 int level = 100;
@@ -212,7 +239,7 @@ namespace iTextSharp.text.pdf {
                 hash = CalculateHash(this.b);
             }
 
-            internal ByteStore(PdfDictionary dict, HashSet2<PdfObject> serialized)
+            internal ByteStore(PdfDictionary dict, Dictionary<RefKey, int> serialized)
             {
                 ByteBuffer bb = new ByteBuffer();
                 int level = 100;

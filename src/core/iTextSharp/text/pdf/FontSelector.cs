@@ -57,6 +57,7 @@ namespace iTextSharp.text.pdf {
     public class FontSelector {
         
         protected List<Font> fonts = new List<Font>();
+        protected Font currentFont = null;
 
         /**
         * Adds a <CODE>Font</CODE> to be searched for valid characters.
@@ -77,35 +78,47 @@ namespace iTextSharp.text.pdf {
         * if needed.
         * @param text the text
         * @return a <CODE>Phrase</CODE> with one or more chunks
-        */    
+        */
         public Phrase Process(String text) {
-            int fsize = fonts.Count;
-            if (fsize == 0)
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("no.font.is.defined"));
+            if (fonts.Count == 0)
+                throw new ArgumentOutOfRangeException(MessageLocalization.GetComposedMessage("no.font.is.defined"));
             char[] cc = text.ToCharArray();
             int len = cc.Length;
             StringBuilder sb = new StringBuilder();
-            Font font = null;
-            int lastidx = -1;
             Phrase ret = new Phrase();
+            currentFont = null;
             for (int k = 0; k < len; ++k) {
-                char c = cc[k];
-                if (c == '\n' || c == '\r') {
-                    sb.Append(c);
-                    continue;
+                Chunk newChunk = ProcessChar(cc, k, sb);
+                if (newChunk != null) {
+                    ret.Add(newChunk);
                 }
-                if (Utilities.IsSurrogatePair(cc, k)) {
+            }
+            if (sb.Length > 0) {
+                Chunk ck = new Chunk(sb.ToString(), currentFont ?? fonts[0]);
+                ret.Add(ck);
+            }
+            return ret;
+        }
+
+        protected Chunk ProcessChar(char[] cc, int k, StringBuilder sb) {
+            Chunk newChunk = null;
+            char c = cc[k];
+            if(c == '\n' || c == '\r') {
+                sb.Append(c);
+            }
+            else {
+                Font font = null;
+                if(Utilities.IsSurrogatePair(cc, k)) {
                     int u = Utilities.ConvertToUtf32(cc, k);
-                    for (int f = 0; f < fsize; ++f) {
+                    for(int f = 0; f < fonts.Count; ++f) {
                         font = fonts[f];
-                        if (font.BaseFont.CharExists(u)) {
-                            if (lastidx != f) {
-                                if (sb.Length > 0 && lastidx != -1) {
-                                    Chunk ck = new Chunk(sb.ToString(), fonts[lastidx]);
-                                    ret.Add(ck);
+                        if(font.BaseFont.CharExists(u)) {
+                            if(currentFont != font) {
+                                if(sb.Length > 0 && currentFont != null) {
+                                    newChunk = new Chunk(sb.ToString(), currentFont);
                                     sb.Length = 0;
                                 }
-                                lastidx = f;
+                                currentFont = font;
                             }
                             sb.Append(c);
                             sb.Append(cc[++k]);
@@ -114,16 +127,15 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 else {
-                    for (int f = 0; f < fsize; ++f) {
+                    for(int f = 0; f < fonts.Count; ++f) {
                         font = fonts[f];
-                        if (font.BaseFont.CharExists(c)) {
-                            if (lastidx != f) {
-                                if (sb.Length > 0 && lastidx != -1) {
-                                    Chunk ck = new Chunk(sb.ToString(), fonts[lastidx]);
-                                    ret.Add(ck);
+                        if(font.BaseFont.CharExists(c)) {
+                            if(currentFont != font) {
+                                if(sb.Length > 0 && currentFont != null) {
+                                    newChunk = new Chunk(sb.ToString(), currentFont);
                                     sb.Length = 0;
                                 }
-                                lastidx = f;
+                                currentFont = font;
                             }
                             sb.Append(c);
                             break;
@@ -131,11 +143,7 @@ namespace iTextSharp.text.pdf {
                     }
                 }
             }
-            if (sb.Length > 0) {
-                Chunk ck = new Chunk(sb.ToString(), fonts[lastidx == -1 ? 0 : lastidx]);
-                ret.Add(ck);
-            }
-            return ret;
+            return newChunk;
         }
     }
 }

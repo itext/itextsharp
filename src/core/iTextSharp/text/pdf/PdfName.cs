@@ -137,6 +137,12 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName ALT = new PdfName("Alt");
         /** A name */
         public static readonly PdfName ALTERNATE = new PdfName("Alternate");
+        /**
+         * A name.
+         * @since 5.4.3
+         */
+        public static readonly PdfName ALTERNATES = new PdfName("Alternates");
+
 
         public static readonly PdfName AND = new PdfName("And");
         /**
@@ -644,6 +650,11 @@ namespace iTextSharp.text.pdf {
          */
         public static readonly PdfName EPSG = new PdfName("EPSG");
 
+        /**
+         * A name
+         * @since 5.4.3
+         */
+        public static readonly PdfName ESIC = new PdfName("ESIC");
         public static readonly PdfName ETSI_CADES_DETACHED = new PdfName("ETSI.CAdES.detached");
         public static readonly PdfName ETSI_RFC3161 = new PdfName("ETSI.RFC3161");
         /** A name */
@@ -910,6 +921,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName HOFFSET = new PdfName("HOffset");
         /** A name */
         public static readonly PdfName I = new PdfName("I");
+        /**
+         * A name.
+         * @since 5.4.3
+         */
+        public static readonly PdfName IC = new PdfName("IC");
         /** A name */
         public static readonly PdfName ICCBASED = new PdfName("ICCBased");
         /** A name */
@@ -1153,6 +1169,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName MMTYPE1 = new PdfName("MMType1");
         /** A name */
         public static readonly PdfName MODDATE = new PdfName("ModDate");
+        /**
+         * A name
+         * @since	5.4.3
+         */
+        public static readonly PdfName MOVIE = new PdfName("Movie");
         /** A name */
         public static readonly PdfName N = new PdfName("N");
         /** A name */
@@ -1264,6 +1285,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName OP = new PdfName("OP");
         /** A name */
         public static readonly PdfName op_ = new PdfName("op");
+        /**
+         * A name
+         * @since 5.4.3
+         */
+        public static readonly PdfName OPI = new PdfName("OPI");
         /** A name */
         public static readonly PdfName OPM = new PdfName("OPM");
         /** A name */
@@ -1407,6 +1433,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName PRINTAREA = new PdfName("PrintArea");
         /** A name */
         public static readonly PdfName PRINTCLIP = new PdfName("PrintClip");
+        /**
+         * A name
+         * @since 5.4.3
+         */
+        public static readonly PdfName PRINTERMARK = new PdfName("PrinterMark");
         /** A name */
         public static readonly PdfName PRINTPAGERANGE = new PdfName("PrintPageRange");
         /** A name */
@@ -1458,6 +1489,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName R2L = new PdfName("R2L");
         /** A name */
         public static readonly PdfName RANGE = new PdfName("Range");
+        /**
+         * A name
+         * @since 5.4.3
+         */
+        public static readonly PdfName RB = new PdfName("RB");
         /** A name */
         public static readonly PdfName RBGROUPS = new PdfName("RBGroups");
         /** A name */
@@ -1585,6 +1621,11 @@ namespace iTextSharp.text.pdf {
          * @since 5.4.0
          */
         public static readonly PdfName ROWSPAN = new PdfName("RowSpan");
+        /**
+         * A name
+         * @since 5.4.3
+         */
+        public static readonly PdfName RP = new PdfName("RP");
         /**
          * A name
          * @since 5.1.0
@@ -1773,7 +1814,12 @@ namespace iTextSharp.text.pdf {
          * A name
          * @since 5.3.5
          */
-        public static PdfName TR = new PdfName("TR");
+        public static readonly PdfName TR = new PdfName("TR");
+        /**
+         * A name
+         * @since 5.4.3
+         */
+        public static readonly PdfName TR2 = new PdfName("TR2");
         /** A name */
         public static readonly PdfName TEXT = new PdfName("Text");
         /**
@@ -1883,6 +1929,11 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.6
          */
         public static readonly PdfName TRANSPARENT = new PdfName("Transparent");
+        /**
+         * A name
+         * @since 5.4.3
+         */
+        public static readonly PdfName TRAPNET = new PdfName("TrapNet");
         /** A name */
         public static readonly PdfName TRAPPED = new PdfName("Trapped");
         /** A name */
@@ -2068,6 +2119,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName WP = new PdfName("WP");
         /** A name of an encoding */
         public static readonly PdfName WS = new PdfName("WS");
+        /**
+         * A name
+         * @since 5.4.3
+         */
+        public static readonly PdfName WT = new PdfName("WT");
         /** A name */
         public static readonly PdfName X = new PdfName("X");
         /**

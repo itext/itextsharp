@@ -3,6 +3,7 @@ using System.IO;
 using iTextSharp.text.error_messages;
 
 using System.util.zlib;
+using iTextSharp.text.pdf.intern;
 
 /*
  * $Id$
@@ -284,6 +285,7 @@ namespace iTextSharp.text.pdf {
             }
             else
                 SuperToPdf(writer, os);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_STREAM, this);
             os.Write(STARTSTREAM, 0, STARTSTREAM.Length);
             if (inputStream != null) {
                 rawLength = 0;

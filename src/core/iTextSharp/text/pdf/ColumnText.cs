@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.util.collections;
 using com.itextpdf.text.pdf;
 using iTextSharp.text.log;
 using iTextSharp.text.pdf.draw;
@@ -1538,26 +1537,30 @@ namespace iTextSharp.text.pdf {
                         yTemp -= footerHeight;
                     }
                     // k will be the first row that doesn't fit
-                    for (k = rowIdx; k < table.Size; ++k) {
-                        float rowHeight = table.GetRowHeight(k);
-                        if (yTemp - rowHeight < minY)
-                            break;
-                        yTemp -= rowHeight;
-                    }
+                    // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+                    PdfPTable.FittingRows fittingRows = table.GetFittingRows(yTemp - minY, rowIdx);
+                    k = fittingRows.lastRow + 1;
+                    yTemp -= fittingRows.height;
+                    // splitting row spans
 
                     LOGGER.Info("Want to split at row " + k);
                     int kTemp = k;
-                    while ((kTemp > rowIdx && kTemp < table.Size && table.GetRow(kTemp).MayNotBreak))
-                    {
+                    while ((kTemp > rowIdx && kTemp < table.Size && table.GetRow(kTemp).MayNotBreak)) {
                         kTemp--;
                     }
-                    if ((kTemp > rowIdx && kTemp < k) || (kTemp == 0 && table.GetRow(0).MayNotBreak && table.LoopCheck)) 
-                    {
+                    if ((kTemp > rowIdx && kTemp < k) || (kTemp == 0 && table.GetRow(0).MayNotBreak && table.LoopCheck)) {
                         yTemp = minY;
                         k = kTemp;
                 	    table.LoopCheck = false;
                     }
                     LOGGER.Info("Will split at row " + k);
+
+                    // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+                    if(table.SplitLate) {
+                        fittingRows.CorrectLastRowChosen(table, k - 1);
+                    }
+                    // splitting row spans
+
                     // only for incomplete tables:
                     if (!table.ElementComplete) {
                         yTemp += footerHeight;
@@ -1580,12 +1583,18 @@ namespace iTextSharp.text.pdf {
                         }
                     }
                     // IF ROWS SHOULD NOT BE SPLIT
-                    else if (table.SplitLate && !table.HasRowspan(k) && rowIdx < k) {
+                    // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+                    //else if (table.isSplitLate() && !table.hasRowspan(k) && rowIdx < k) {
+                    else if(table.SplitLate && rowIdx < k) {
                         splittedRow = -1;
                     }
                     // SPLIT ROWS (IF WANTED AND NECESSARY)
                     else if (k < table.Size) {
                         // we calculate the remaining vertical space
+                        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+                        // correct yTemp to only take completed rows into account
+                        yTemp -= fittingRows.completedRowsHeight - fittingRows.height;
+                        // splitting row spans
                         float h = yTemp - minY;
                         // we create a new row with the remaining content
                         PdfPRow newRow = table.GetRow(k).SplitRow(table, k, h);
@@ -1719,9 +1728,28 @@ namespace iTextSharp.text.pdf {
                             PdfPRow splitted = table.Rows[k];
                             splitted.CopyRowContent(nt, lastIdx);
                         }
+                        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
+                        else if(k > 0 && k < table.Size) {
+                            // continue rowspans on next page
+                            // (as the row was not split there is no content to copy)
+                            PdfPRow row = table.GetRow(k);
+                            row.SplitRowspans(table, k - 1, nt, lastIdx);
+                        }
+                        // splitting row spans
+
                         // reset the row height of the last row
                         if (table.IsExtendLastRow(newPageFollows)) {
                             last.MaxHeights = rowHeight;
+                        }
+
+                        // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz)
+                        // newPageFollows indicates that this table is being split
+                        if (newPageFollows) {
+                            IPdfPTableEvent tableEvent = table.TableEvent;
+                            if (tableEvent is IPdfPTableEventAfterSplit) {
+                                PdfPRow row = table.GetRow(k);
+                                ((IPdfPTableEventAfterSplit)tableEvent).AfterSplitTable(table, row, k);
+                            }
                         }
                     }
                     // in simulation mode, we need to take extendLastRow into account

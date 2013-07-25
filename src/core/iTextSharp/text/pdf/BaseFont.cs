@@ -244,6 +244,15 @@ namespace iTextSharp.text.pdf {
         /** The fake CID code that represents a newline. */    
         public const char CID_NEWLINE = '\u7fff';
 
+       	/**
+         * Unicode Character 'PARAGRAPH SEPARATOR' (U+2029)
+	     * Treated as a line feed character in XFA rich and plain text.
+         * @since 5.4.3
+         */
+        public const char PARAGRAPH_SEPARATOR = '\u2029';
+
+
+
         protected List<int[]> subsetRanges;
 
         public List<int[]> SubsetRanges { get { return subsetRanges; } }

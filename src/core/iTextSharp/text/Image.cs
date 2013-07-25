@@ -63,7 +63,7 @@ namespace iTextSharp.text {
     /// </summary>
     /// <seealso cref="T:iTextSharp.text.Element"/>
     /// <seealso cref="T:iTextSharp.text.Rectangle"/>
-    public abstract class Image : Rectangle, IIndentable, ISpaceable, IAccessibleElement {
+    public abstract class Image : Rectangle, IIndentable, ISpaceable, IAccessibleElement, IAlternateDescription {
     
         // static membervariables (concerning the presence of borders)
     
@@ -1149,6 +1149,7 @@ namespace iTextSharp.text {
 
             set {
                 this.alt = value;
+                SetAccessibleAttribute(PdfName.ALT, new PdfString(alt));
             }
         }
     

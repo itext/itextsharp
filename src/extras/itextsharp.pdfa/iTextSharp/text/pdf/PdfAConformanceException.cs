@@ -1,5 +1,4 @@
 using System;
-using iTextSharp.text.pdf;
 /*
  * $Id: PdfAConformanceException.java 322 2012-07-23 09:58:41Z bruno $
  *
@@ -50,20 +49,24 @@ namespace iTextSharp.text.pdf
      */
     public class PdfAConformanceException : PdfIsoConformanceException
     {
-
+        protected Object obj = null;
 	    /**
          * @see com.itextpdf.text.pdf.PdfIsoConformanceException#PdfIsoConformanceException()
          */
-        public PdfAConformanceException()
-        {
+        public PdfAConformanceException(Object obj, String message)
+            : base(message) {
+            this.obj = obj;
         }
 
         /**
          * @see PdfIsoConformanceException#PdfIsoConformanceException(String)
          */
-        public PdfAConformanceException(String s) : base(s)
-        {
+        public PdfAConformanceException(String message)
+            :base(message) {
         }
 
+        public Object GetObject() {
+            return obj;
+        }
     }
 }

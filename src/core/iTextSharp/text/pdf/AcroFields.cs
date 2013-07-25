@@ -2151,7 +2151,31 @@ namespace iTextSharp.text.pdf {
             PdfDictionary merged = item.GetMerged(0);
             return merged.GetAsDict(PdfName.V);
         }
-        
+
+
+        /**
+         * Gets a reference to the normal appearance of a field.
+         *
+         * @param name the field name
+         * @return a reference to the /N entry of the /AP dictionary or <CODE>null</CODE> if the field is not found
+         */
+        public PdfIndirectReference GetNormalAppearance(String name) {
+            GetSignatureNames();
+            name = GetTranslatedFieldName(name);
+            Item item = fields[name];
+            if (item == null)
+        	    return null;
+            PdfDictionary merged = item.GetMerged(0);
+            PdfDictionary ap = merged.GetAsDict(PdfName.AP);
+            if (ap == null)
+        	    return null;
+            PdfIndirectReference refa = ap.GetAsIndirectObject(PdfName.N);
+            if (refa == null)
+        	    return null;
+            return refa;
+        }
+
+
         /**
         * Checks is the signature covers the entire document or just part of it.
         * @param name the signature field name
@@ -2544,6 +2568,8 @@ namespace iTextSharp.text.pdf {
                 else
                     widgets.Put(key, button.Get(key));
                 merged.Put(key, button.Get(key));
+                MarkUsed(values);
+                MarkUsed(widgets);
             }
             return true;
         }

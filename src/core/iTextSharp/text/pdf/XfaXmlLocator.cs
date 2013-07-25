@@ -57,6 +57,7 @@ namespace iTextSharp.text.pdf
 
         private PdfStamper stamper;
         private XfaForm xfaForm;
+        private string encoding;
 
         protected void CreateXfaForm() {
             xfaForm = new XfaForm(stamper.Reader);
@@ -81,6 +82,14 @@ namespace iTextSharp.text.pdf
             PdfIndirectReference iref = stamper.Writer.
                     AddToBody(new PdfStream(outerXml)).IndirectReference;
             stamper.Reader.AcroForm.Put(PdfName.XFA, iref);
+        }
+
+        public string GetEncoding() {
+            return encoding;
+        }
+
+        public void SetEncoding(string encoding) {
+            this.encoding = encoding;
         }
     }
 }

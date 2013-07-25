@@ -1,4 +1,6 @@
 using System;
+using iTextSharp.text.error_messages;
+
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -100,12 +102,12 @@ namespace iTextSharp.text.pdf {
         /** A field with the symbol star */
         public const int TYPE_STAR = 6;
         
-        private static String[] typeChars = {"4", "l", "8", "u", "n", "H"};
+        protected static String[] typeChars = {"4", "l", "8", "u", "n", "H"};
         
         /**
         * Holds value of property checkType.
         */
-        private int checkType;
+        protected int checkType;
         
         /**
         * Holds value of property onValue.
@@ -139,7 +141,7 @@ namespace iTextSharp.text.pdf {
         * <CODE>TYPE_STAR</CODE>.
         * @param checkType the checked symbol
         */
-        public int CheckType {
+        public virtual int CheckType {
             get {
                 return checkType;
             }
@@ -188,7 +190,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         * @return the appearance
         */    
-        public PdfAppearance GetAppearance(bool isRadio, bool on) {
+        public virtual PdfAppearance GetAppearance(bool isRadio, bool on) {
             if (isRadio && checkType == TYPE_CIRCLE)
                 return GetAppearanceRadioCircle(on);
             PdfAppearance app = GetBorderAppearance();
@@ -341,7 +343,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         * @return the field
         */    
-        protected PdfFormField GetField(bool isRadio) {
+        protected virtual PdfFormField GetField(bool isRadio) {
             PdfFormField field = null;
             if (isRadio)
                 field = PdfFormField.CreateEmpty(writer);
@@ -349,13 +351,15 @@ namespace iTextSharp.text.pdf {
                 field = PdfFormField.CreateCheckBox(writer);
             field.SetWidget(box, PdfAnnotation.HIGHLIGHT_INVERT);
             if (!isRadio) {
+                if(!"Yes".Equals(onValue))
+                    throw new DocumentException(MessageLocalization.GetComposedMessage("1.is.not.a.valid.name.for.checkbox.appearance", onValue));
                 field.FieldName = fieldName;
                 if ((options & READ_ONLY) != 0)
                     field.SetFieldFlags(PdfFormField.FF_READ_ONLY);
                 if ((options & REQUIRED) != 0)
                     field.SetFieldFlags(PdfFormField.FF_REQUIRED);
                 field.ValueAsName = vchecked ? onValue : "Off";
-                CheckType = TYPE_CHECK;
+                CheckType = checkType;
             }
             if (text != null)
                 field.MKNormalCaption = text;
@@ -368,7 +372,9 @@ namespace iTextSharp.text.pdf {
             field.SetAppearance(PdfAnnotation.APPEARANCE_NORMAL, "Off", tpoff);
             field.AppearanceState = vchecked ? onValue : "Off";
             PdfAppearance da = (PdfAppearance)tpon.Duplicate;
-            da.SetFontAndSize(RealFont, fontSize);
+            BaseFont realFont = RealFont;
+            if(realFont != null)
+                da.SetFontAndSize(realFont, fontSize);
             if (textColor == null)
                 da.SetGrayFill(0);
             else

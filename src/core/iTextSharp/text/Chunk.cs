@@ -941,5 +941,20 @@ namespace iTextSharp.text {
             set { id = value; }
         }
 
+        public String GetTextExpansion() {
+            PdfObject o = GetAccessibleAttribute(PdfName.E);
+            if (o is PdfString)
+                return ((PdfString)o).ToUnicodeString();
+            return null;
+        }
+
+        /**
+         * Sets the textual expansion of the abbreviation or acronym.
+         * It is highly recommend to set textuual expansion when generating PDF/UA documents.
+         * @param value
+         */
+        public void SetTextExpansion(String value) {
+            SetAccessibleAttribute(PdfName.E, new PdfString(value));
+        }
     }
 }

@@ -210,7 +210,8 @@ namespace iTextSharp.text.pdf {
             AlgorithmIdentifier algorithmidentifier = new AlgorithmIdentifier(derob, seq);
             EncryptedContentInfo encryptedcontentinfo = 
                 new EncryptedContentInfo(PkcsObjectIdentifiers.Data, algorithmidentifier, deroctetstring);
-            EnvelopedData env = new EnvelopedData(null, derset, encryptedcontentinfo, (Asn1Set)null);
+            Asn1Set set = null;
+            EnvelopedData env = new EnvelopedData(null, derset, encryptedcontentinfo, set);
             Org.BouncyCastle.Asn1.Cms.ContentInfo contentinfo = 
                 new Org.BouncyCastle.Asn1.Cms.ContentInfo(PkcsObjectIdentifiers.EnvelopedData, env);
             return contentinfo.ToAsn1Object();        

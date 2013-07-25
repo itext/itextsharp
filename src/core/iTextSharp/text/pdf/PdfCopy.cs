@@ -92,7 +92,7 @@ namespace iTextSharp.text.pdf {
         }
 
         protected static ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfCopy));
-        protected ICounter getCounter() {
+        protected override ICounter GetCounter() {
     	    return COUNTER;
         }
         protected internal Dictionary<RefKey, IndirectReferences> indirects;
@@ -615,7 +615,7 @@ namespace iTextSharp.text.pdf {
         * @param iPage an imported page
         * @throws IOException, BadPdfFormatException
         */
-        public void AddPage(PdfImportedPage iPage) {
+        public virtual void AddPage(PdfImportedPage iPage) {
             int pageNum = SetFromIPage(iPage);
             
             PdfDictionary thePage = reader.GetPageN(pageNum);

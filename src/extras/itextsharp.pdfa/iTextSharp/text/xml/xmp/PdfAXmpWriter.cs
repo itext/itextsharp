@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using iTextSharp.text.pdf;
-using iTextSharp.text.pdf.interfaces;
-
 /*
  * $Id: PdfAXmpWriter.java 322 2012-07-23 09:58:41Z bruno $
  *

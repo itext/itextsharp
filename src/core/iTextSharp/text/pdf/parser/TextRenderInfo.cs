@@ -130,7 +130,8 @@ namespace iTextSharp.text.pdf.parser {
                     IList<MarkedContentInfo> mci = (IList<MarkedContentInfo>)markedContentInfos;
                     // Java and C# Stack classes have different numeration direction, so top element of the stack is 
                     // at last postion in Java and at first position in C#
-                    return mci.Count > 0 && mci[0].GetMcid() == mcid;
+                    MarkedContentInfo info = mci.Count > 0 ? mci[0] : null;
+                    return (info != null && info.HasMcid()) ? info.GetMcid() == mcid : false;
                 }
             } else {
                 foreach (MarkedContentInfo info in markedContentInfos) {
@@ -281,6 +282,22 @@ namespace iTextSharp.text.pdf.parser {
          */
         public int GetTextRenderMode(){
             return gs.renderMode;
+        }
+
+        /**
+         * Returns the current fill color.
+         * @param a BaseColor
+         */
+        public BaseColor GetFillColor() {
+            return gs.fillColor;
+        }
+
+        /**
+         * Returns the current stroke color.
+         * @param a BaseColor
+         */
+        public BaseColor GetStrokeColor() {
+            return gs.strokeColor;
         }
         
         /**

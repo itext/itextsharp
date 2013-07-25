@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
+using iTextSharp.text.pdf.intern;
 
 /*
  * $Id$
@@ -100,7 +101,6 @@ namespace iTextSharp.text.pdf {
         /**
          * Constructs an empty <CODE>PdfDictionary</CODE>-object.
          */
-    
         public PdfDictionary() : base(DICTIONARY) {
             hashMap = new Dictionary<PdfName,PdfObject>();
         }
@@ -110,7 +110,6 @@ namespace iTextSharp.text.pdf {
          *
          * @param        type    a <CODE>PdfName</CODE>
          */
-    
         public PdfDictionary(PdfName type) : this() {
             dictionaryType = type;
             Put(PdfName.TYPE, dictionaryType);
@@ -124,6 +123,7 @@ namespace iTextSharp.text.pdf {
          * @return        an array of <CODE>byte</CODE>
          */
         public override void ToPdf(PdfWriter writer, Stream os) {
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_OBJECT, this);
             os.WriteByte((byte)'<');
             os.WriteByte((byte)'<');
 
@@ -151,7 +151,6 @@ namespace iTextSharp.text.pdf {
          * @param        key        key of the entry (a <CODE>PdfName</CODE>)
          * @param        value    value of the entry (a <CODE>PdfObject</CODE>)
          */
-    
         public void Put(PdfName key, PdfObject value) {
             if (value == null || value.IsNull())
                 hashMap.Remove(key);
@@ -196,7 +195,6 @@ namespace iTextSharp.text.pdf {
          *
          * @param        key        key of the entry (a <CODE>PdfName</CODE>)
          */
-    
         public void Remove(PdfName key) {
             hashMap.Remove(key);
         }
@@ -216,7 +214,6 @@ namespace iTextSharp.text.pdf {
          * @param        key        key of the entry (a <CODE>PdfName</CODE>)
          * @return        the previous </CODE>PdfObject</CODE> corresponding with the <VAR>key</VAR>
          */
-    
         public PdfObject Get(PdfName key) {
             PdfObject obj;
             if (hashMap.TryGetValue(key, out obj))
@@ -232,9 +229,8 @@ namespace iTextSharp.text.pdf {
          *
          * @return        <CODE>true</CODE> if it is, <CODE>false</CODE> if it isn't.
          */
-    
         public bool IsFont() {
-            return FONT.Equals(dictionaryType);
+            return CheckType(FONT);
         }
     
         /**
@@ -242,9 +238,8 @@ namespace iTextSharp.text.pdf {
          *
          * @return        <CODE>true</CODE> if it is, <CODE>false</CODE> if it isn't.
          */
-    
         public bool IsPage() {
-            return PAGE.Equals(dictionaryType);
+            return CheckType(PAGE);
         }
     
         /**
@@ -252,9 +247,8 @@ namespace iTextSharp.text.pdf {
          *
          * @return        <CODE>true</CODE> if it is, <CODE>false</CODE> if it isn't.
          */
-    
         public bool IsPages() {
-            return PAGES.Equals(dictionaryType);
+            return CheckType(PAGES);
         }
     
         /**
@@ -262,9 +256,8 @@ namespace iTextSharp.text.pdf {
          *
          * @return        <CODE>true</CODE> if it is, <CODE>false</CODE> if it isn't.
          */
-    
         public bool IsCatalog() {
-            return CATALOG.Equals(dictionaryType);
+            return CheckType(CATALOG);
         }
     
         /**
@@ -272,11 +265,24 @@ namespace iTextSharp.text.pdf {
          *
          * @return        <CODE>true</CODE> if it is, <CODE>false</CODE> if it isn't.
          */
-    
         public bool IsOutlineTree() {
-            return OUTLINES.Equals(dictionaryType);
+            return CheckType(OUTLINES);
         }
-    
+
+        /**
+         * Checks the type of the dictionary.
+         * @param type the type you're looking for
+         * @return true if the type of the dictionary corresponds with the type you're looking for
+         */
+        public bool CheckType(PdfName type) {
+            if(type == null)
+                return false;
+            if(dictionaryType == null)
+                dictionaryType = GetAsName(PdfName.TYPE);
+            return type.Equals(dictionaryType);
+        }
+
+
         public void Merge(PdfDictionary other) {
             foreach (PdfName key in other.hashMap.Keys) {
                 hashMap[key] = other.hashMap[key];

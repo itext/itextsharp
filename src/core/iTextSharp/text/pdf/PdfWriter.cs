@@ -106,14 +106,14 @@ namespace iTextSharp.text.pdf {
             public class PdfCrossReference : IComparable {
                 
                 // membervariables
-                private int type;
+                private readonly int type;
                 
                 /** Byte offset in the PDF file. */
-                private long offset;
+                private readonly long offset;
                 
-                private int refnum;
+                private readonly int refnum;
                 /** generation of the object. */
-                private int generation;
+                private readonly int generation;
                 
                 // constructors
                 /**
@@ -161,7 +161,6 @@ namespace iTextSharp.text.pdf {
                 * @param os
                 * @throws IOException
                 */
-                
                 public void ToPdf(Stream os) {
                     String s1 = offset.ToString().PadLeft(10, '0');
                     String s2 = generation.ToString().PadLeft(5, '0');
@@ -563,6 +562,7 @@ namespace iTextSharp.text.pdf {
             * @throws IOException
             */
             public override void ToPdf(PdfWriter writer, Stream os) {
+                PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_TRAILER, this);
                 byte[] tmp = GetISOBytes("trailer\n");
                 os.Write(tmp, 0, tmp.Length);
                 base.ToPdf(null, os);
@@ -579,7 +579,7 @@ namespace iTextSharp.text.pdf {
 
         //	ESSENTIALS
         protected static ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfWriter));
-        protected ICounter GetCounter() {
+        protected virtual ICounter GetCounter() {
     	    return COUNTER;
         } 
         
@@ -1109,8 +1109,7 @@ namespace iTextSharp.text.pdf {
             if (!open) {
                 throw new PdfException(MessageLocalization.GetComposedMessage("the.document.is.not.open"));
             }
-            PdfIndirectObject objecta;
-            objecta = AddToBody(contents);
+            PdfIndirectObject objecta = AddToBody(contents);
             page.Add(objecta.IndirectReference);
             if (group != null) {
                 page.Put(PdfName.GROUP, group);
@@ -1969,7 +1968,6 @@ namespace iTextSharp.text.pdf {
             PdfArray outs = catalog.GetAsArray(PdfName.OUTPUTINTENTS);
             if (outs == null)
                 return false;
-            List<PdfObject> arr = outs.ArrayList;
             if (outs.Size == 0)
                 return false;
             PdfDictionary outa = outs.GetAsDict(0);
@@ -2501,10 +2499,8 @@ namespace iTextSharp.text.pdf {
         protected Dictionary<PdfDictionary, PdfObject[]> documentExtGState = new Dictionary<PdfDictionary,PdfObject[]>();
 
         internal PdfObject[] AddSimpleExtGState(PdfDictionary gstate) {
-            if (!documentExtGState.ContainsKey(gstate)) {
-                PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_GSTATE, gstate);
+            if (!documentExtGState.ContainsKey(gstate))
                 documentExtGState[gstate] = new PdfObject[]{new PdfName("GS" + (documentExtGState.Count + 1)), PdfIndirectReference};
-            }
             return documentExtGState[gstate];
         }
 
@@ -3178,11 +3174,10 @@ namespace iTextSharp.text.pdf {
         }
         
         protected virtual PdfIndirectReference Add(PdfICCBased icc) {
-            PdfIndirectObject objecta;
-            objecta = AddToBody(icc);
+            PdfIndirectObject objecta = AddToBody(icc);
             return objecta.IndirectReference;
         }
-        
+
         /**
         * A Hashtable with Stream objects containing JBIG2 Globals
         * @since 2.1.5
@@ -3269,12 +3264,8 @@ namespace iTextSharp.text.pdf {
             return ttfUnicodeWriter;
         }
 
-        protected XmpWriter xmpWriter = null;
-
         internal protected virtual XmpWriter GetXmpWriter(MemoryStream baos, PdfDictionary info) {
-            if (xmpWriter == null)
-                xmpWriter = new XmpWriter(baos, info);
-            return xmpWriter;
+            return new XmpWriter(baos, info);
         }
 
         public static void CheckPdfIsoConformance(PdfWriter writer, int key, Object obj1) {
@@ -3319,6 +3310,33 @@ namespace iTextSharp.text.pdf {
                     outD.Put(PdfName.S, PdfName.GTS_PDFX);
                     extraCatalog.Put(PdfName.OUTPUTINTENTS, new PdfArray(outD));
                 }
+            }
+        }
+
+        private static readonly List<PdfName> standardStructElems_1_4 = new List<PdfName>(new PdfName[]{PdfName.DOCUMENT, PdfName.PART, PdfName.ART,
+                PdfName.SECT, PdfName.DIV, PdfName.BLOCKQUOTE, PdfName.CAPTION, PdfName.TOC, PdfName.TOCI, PdfName.INDEX,
+                PdfName.NONSTRUCT, PdfName.PRIVATE, PdfName.P, PdfName.H, PdfName.H1, PdfName.H2, PdfName.H3, PdfName.H4,
+                PdfName.H5, PdfName.H6, PdfName.L, PdfName.LBL, PdfName.LI, PdfName.LBODY, PdfName.TABLE, PdfName.TR,
+                PdfName.TH, PdfName.TD, PdfName.SPAN, PdfName.QUOTE, PdfName.NOTE, PdfName.REFERENCE, PdfName.BIBENTRY,
+                PdfName.CODE, PdfName.LINK, PdfName.FIGURE, PdfName.FORMULA, PdfName.FORM});
+
+        private static readonly List<PdfName> standardStructElems_1_7 = new List<PdfName>(new PdfName[]{PdfName.DOCUMENT, PdfName.PART, PdfName.ART,
+                PdfName.SECT, PdfName.DIV, PdfName.BLOCKQUOTE, PdfName.CAPTION, PdfName.TOC, PdfName.TOCI, PdfName.INDEX,
+                PdfName.NONSTRUCT, PdfName.PRIVATE, PdfName.P, PdfName.H, PdfName.H1, PdfName.H2, PdfName.H3, PdfName.H4,
+                PdfName.H5, PdfName.H6, PdfName.L, PdfName.LBL, PdfName.LI, PdfName.LBODY, PdfName.TABLE, PdfName.TR,
+                PdfName.TH, PdfName.TD, PdfName.THEAD, PdfName.TBODY, PdfName.TFOOT, PdfName.SPAN, PdfName.QUOTE, PdfName.NOTE,
+                PdfName.REFERENCE, PdfName.BIBENTRY, PdfName.CODE, PdfName.LINK, PdfName.ANNOT, PdfName.RUBY, PdfName.RB, PdfName.RT,
+                PdfName.RP, PdfName.WARICHU, PdfName.WT, PdfName.WP, PdfName.FIGURE, PdfName.FORMULA, PdfName.FORM});
+
+        /**
+         * Gets the list of the standard structure element names (roles).
+         * @return
+         */
+        public List<PdfName> GetStandardStructElems() {
+            if (pdf_version.Version < VERSION_1_7) {
+                return standardStructElems_1_4;
+            } else {
+                return standardStructElems_1_7;
             }
         }
     }
