@@ -100,7 +100,7 @@ namespace iTextSharp.text.pdf {
             return ret;
         }
 
-        protected Chunk ProcessChar(char[] cc, int k, StringBuilder sb) {
+        protected virtual Chunk ProcessChar(char[] cc, int k, StringBuilder sb) {
             Chunk newChunk = null;
             char c = cc[k];
             if(c == '\n' || c == '\r') {
