@@ -1816,8 +1816,8 @@ namespace iTextSharp.text.pdf {
              */
             public void CorrectLastRowChosen(PdfPTable table, int k) {
                 PdfPRow row = table.GetRow(k);
-                float value = correctedHeightsForLastRow[k];
-                if (value != null) {
+                float value;
+                if (correctedHeightsForLastRow.TryGetValue(k, out value)) {
                     row.SetFinalMaxHeights(value);
                     //System.out.printf("corrected chosen last fitting row: %6.0f\n\n", row.getMaxHeights());
                 }

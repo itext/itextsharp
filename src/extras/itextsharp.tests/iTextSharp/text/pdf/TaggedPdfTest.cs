@@ -9,17 +9,8 @@ using iTextSharp.text.pdf.parser;
 using iTextSharp.text.xml;
 using List = iTextSharp.text.List;
 
-namespace itextsharp.tests.text.pdf
-{
-
-    public class TaggedPdfTest
-    {
-        private Document document;
-        private PdfWriter writer;
-        private Paragraph h1;
-        private string output;
-
-
+namespace itextsharp.tests.text.pdf {
+    public class TaggedPdfTest {
         public const String NO_PARENT_TREE = "the.document.does.not.contain.parenttree";
         public const String NO_STRUCT_TREE_ROOT = "no.StructTreeRoot.found";
 
@@ -59,21 +50,24 @@ namespace itextsharp.tests.text.pdf
         public const String RESOURCES = @"..\..\resources\text\pdf\TaggedPdfTest\";
         public const String TARGET = "TaggedPdfTest\\";
         public const String OUT = TARGET + "pdf\\out";
-        
+        private Document document;
+        private Paragraph h1;
+        private string output;
+        private PdfWriter writer;
+
 
         [SetUp]
-        public void Initialize()
-        {
+        public void Initialize() {
             Directory.CreateDirectory(TARGET + "pdf");
             Directory.CreateDirectory(TARGET + "xml");
             Document.Compress = false;
         }
 
-        private void InitializeDocument(String name)
-        {
+        private void InitializeDocument(String name) {
             output = OUT + name + ".pdf";
             document = new Document();
             writer = PdfWriter.GetInstance(document, new FileStream(output, FileMode.Create));
+            writer.PdfVersion = '7';
             writer.SetTagged();
             document.Open();
 
@@ -89,8 +83,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf0()
-        {
+        public void CreateTaggedPdf0() {
             InitializeDocument("0");
             Paragraph paragraph = new Paragraph();
             Chunk c = new Chunk(" Hello ");
@@ -139,13 +132,11 @@ namespace itextsharp.tests.text.pdf
             paragraph.Font = new Font(Font.FontFamily.HELVETICA, 8, Font.NORMAL, BaseColor.RED);
             document.Add(paragraph);
             document.Close();
-
         }
 
 
         [Test]
-        public void CreateTaggedPdf1()
-        {
+        public void CreateTaggedPdf1() {
             InitializeDocument("1");
             Paragraph paragraph = new Paragraph(text);
             paragraph.Font = new Font(Font.FontFamily.HELVETICA, 8, Font.NORMAL, BaseColor.RED);
@@ -163,8 +154,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf2()
-        {
+        public void CreateTaggedPdf2() {
             InitializeDocument("2");
             Paragraph paragraph = new Paragraph(text);
             ColumnText columnText = new ColumnText(writer.DirectContent);
@@ -183,8 +173,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf3()
-        {
+        public void CreateTaggedPdf3() {
             InitializeDocument("3");
             Paragraph paragraph = new Paragraph(text);
             document.Add(h1);
@@ -196,16 +185,14 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf4()
-        {
+        public void CreateTaggedPdf4() {
             InitializeDocument("4");
             Paragraph p = new Paragraph();
             PdfName nParagraph = new PdfName("Paragraph");
             p.Role = nParagraph;
             writer.StructureTreeRoot.MapRole(nParagraph, PdfName.P);
 
-            try
-            {
+            try {
                 Chunk c = new Chunk("Quick brown ");
                 PdfName nTextBlock = new PdfName("TextBlock");
                 c.Role = nTextBlock;
@@ -223,9 +210,9 @@ namespace itextsharp.tests.text.pdf
                 c = new Chunk(i, 0, 0);
                 c.SetAccessibleAttribute(PdfName.ALT, new PdfString("Dog image"));
                 p.Add(c);
-
             }
-            catch (Exception) { }
+            catch (Exception) {
+            }
             document.Add(h1);
             document.Add(p);
             document.Close();
@@ -235,12 +222,10 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf5()
-        {
+        public void CreateTaggedPdf5() {
             InitializeDocument("5");
             List list = new List(true);
-            try
-            {
+            try {
                 list = new List(true);
                 ListItem listItem =
                     new ListItem(
@@ -262,8 +247,7 @@ namespace itextsharp.tests.text.pdf
                 listItem.ListLabel.TagLabelContent = false;
                 list.Add(listItem);
             }
-            catch (Exception)
-            {
+            catch (Exception) {
             }
             document.Add(h1);
             document.Add(list);
@@ -275,15 +259,13 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf6()
-        {
+        public void CreateTaggedPdf6() {
             InitializeDocument("6");
 
             ColumnText columnText = new ColumnText(writer.DirectContent);
 
             List list = new List(true);
-            try
-            {
+            try {
                 list = new List(true);
                 ListItem listItem =
                     new ListItem(
@@ -303,7 +285,8 @@ namespace itextsharp.tests.text.pdf
                 listItem = new ListItem(c);
                 list.Add(listItem);
             }
-            catch (Exception) { }
+            catch (Exception) {
+            }
             columnText.SetSimpleColumn(36, 36, 400, 800);
             columnText.AddElement(h1);
             columnText.AddElement(list);
@@ -315,12 +298,10 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf7()
-        {
+        public void CreateTaggedPdf7() {
             InitializeDocument("7");
             List list = new List(true);
-            try
-            {
+            try {
                 list = new List(true);
                 ListItem listItem =
                     new ListItem(
@@ -342,7 +323,8 @@ namespace itextsharp.tests.text.pdf
                 listItem = new ListItem(new Paragraph(text));
                 list.Add(listItem);
             }
-            catch (Exception) { }
+            catch (Exception) {
+            }
             document.Add(h1);
             document.Add(list);
             document.Close();
@@ -353,15 +335,13 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf8()
-        {
+        public void CreateTaggedPdf8() {
             InitializeDocument("8");
 
             ColumnText columnText = new ColumnText(writer.DirectContent);
 
             List list = new List(true);
-            try
-            {
+            try {
                 list = new List(true);
                 ListItem listItem =
                     new ListItem(
@@ -383,7 +363,8 @@ namespace itextsharp.tests.text.pdf
                 listItem = new ListItem(new Paragraph(text));
                 list.Add(listItem);
             }
-            catch (Exception) { }
+            catch (Exception) {
+            }
             columnText.SetSimpleColumn(36, 36, 400, 800);
             columnText.AddElement(h1);
             columnText.AddElement(list);
@@ -399,12 +380,10 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf9()
-        {
+        public void CreateTaggedPdf9() {
             InitializeDocument("9");
             PdfPTable table = new PdfPTable(2);
-            try
-            {
+            try {
                 table.AddCell(
                     "Quick brown fox jumped over a lazy dog. A very long line appears here because we need new line.");
                 Image i = Image.GetInstance(RESOURCES + "img\\fox.bmp");
@@ -418,7 +397,8 @@ namespace itextsharp.tests.text.pdf
                 Paragraph p = new Paragraph(text);
                 table.AddCell(p);
             }
-            catch (Exception) { }
+            catch (Exception) {
+            }
             document.Add(h1);
             document.Add(table);
             document.Add(
@@ -431,12 +411,10 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf10()
-        {
+        public void CreateTaggedPdf10() {
             InitializeDocument("10");
             PdfPTable table = new PdfPTable(2);
-            try
-            {
+            try {
                 table.AddCell(
                     "Quick brown fox jumped over a lazy dog. A very long line appears here because we need new line.");
                 Image i = Image.GetInstance(RESOURCES + "img\\fox.bmp");
@@ -465,7 +443,8 @@ namespace itextsharp.tests.text.pdf
                 Paragraph p = new Paragraph(text);
                 table.AddCell(p);
             }
-            catch (Exception) { }
+            catch (Exception) {
+            }
             document.Add(h1);
             document.Add(table);
             document.Close();
@@ -476,8 +455,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf11()
-        {
+        public void CreateTaggedPdf11() {
             InitializeDocument("11");
 
             Chapter c =
@@ -683,8 +661,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf12()
-        {
+        public void CreateTaggedPdf12() {
             InitializeDocument("12");
 
             PdfPTable table = new PdfPTable(2);
@@ -702,15 +679,14 @@ namespace itextsharp.tests.text.pdf
             table.AddCell(cell);
             table.HeaderRows = 4;
             table.FooterRows = 2;
-            try
-            {
-                for (int i = 1; i <= 50; i++)
-                {
+            try {
+                for (int i = 1; i <= 50; i++) {
                     table.AddCell("row " + i + ", coumn 1");
                     table.AddCell("row " + i + ", coumn 2");
                 }
             }
-            catch (Exception) { }
+            catch (Exception) {
+            }
             document.Add(table);
             document.Close();
 
@@ -720,8 +696,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf13()
-        {
+        public void CreateTaggedPdf13() {
             InitializeDocument("13");
 
             Paragraph p = new Paragraph();
@@ -736,14 +711,13 @@ namespace itextsharp.tests.text.pdf
             p.Add(new Chunk(" for more details."));
             document.Add(p);
             document.Close();
-            int[] nums = new int[] {5};
-            CheckNums(nums);
+//            int[] nums = new int[] {5};
+//            CheckNums(nums);
             CompareResults("13");
         }
 
         [Test]
-        public void CreateTaggedPdf14()
-        {
+        public void CreateTaggedPdf14() {
             InitializeDocument("14");
             Paragraph paragraph = new Paragraph("Document MUST contain 1 page only!");
             document.NewPage();
@@ -761,8 +735,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf15()
-        {
+        public void CreateTaggedPdf15() {
             InitializeDocument("15");
 
             Paragraph p = new Paragraph();
@@ -780,14 +753,13 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf16()
-        {
+        public void CreateTaggedPdf16() {
             InitializeDocument("16");
 
             Paragraph p = new Paragraph();
             Chunk chunk = new Chunk("Hello tagged world!");
             chunk.SetBackground(new BaseColor(255, 0, 255));
-            chunk.Font =FontFactory.GetFont("TimesNewRoman", 20, BaseColor.ORANGE);
+            chunk.Font = FontFactory.GetFont("TimesNewRoman", 20, BaseColor.ORANGE);
             chunk.SetUnderline(BaseColor.PINK, 1.2f, 1, 1, 1, 0);
             p.Add(chunk);
             PdfDiv div = new PdfDiv();
@@ -808,8 +780,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf17()
-        {
+        public void CreateTaggedPdf17() {
             InitializeDocument("17");
 
             PdfPTable table = new PdfPTable(2);
@@ -828,14 +799,11 @@ namespace itextsharp.tests.text.pdf
             table.HeaderRows = 4;
             table.FooterRows = 2;
 
-            try
-            {
+            try {
                 PdfPHeaderCell headerCell = null, headerCell2 = null;
                 cell = null;
-                for (int i = 1; i <= 2; i++)
-                {
-                    if (i == 1)
-                    {
+                for (int i = 1; i <= 2; i++) {
+                    if (i == 1) {
                         headerCell = new PdfPHeaderCell();
                         headerCell.Scope = PdfPHeaderCell.ROW;
                         headerCell.Phrase = new Phrase("header1");
@@ -848,8 +816,7 @@ namespace itextsharp.tests.text.pdf
                         headerCell2.Name = "header2";
                         table.AddCell(headerCell2);
                     }
-                    else
-                    {
+                    else {
                         cell = new PdfPCell(new Phrase("row " + i + ", coumn 1"));
                         cell.AddHeader(headerCell);
                         table.AddCell(cell);
@@ -862,8 +829,7 @@ namespace itextsharp.tests.text.pdf
                     }
                 }
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 Trace.WriteLine(e.Message);
             }
             document.Add(table);
@@ -874,8 +840,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CreateTaggedPdf18()
-        {
+        public void CreateTaggedPdf18() {
             InitializeDocument("18");
 
             PdfDiv div = new PdfDiv();
@@ -893,32 +858,135 @@ namespace itextsharp.tests.text.pdf
             CompareResults("18");
         }
 
-        
-    [Test]
-    public void CreateTaggedPdf19()
-    {
-        InitializeDocument("19");
 
-        PdfDiv div = new PdfDiv();
-        writer.DirectContent.OpenMCBlock(div);
+        [Test]
+        public void CreateTaggedPdf19() {
+            InitializeDocument("19");
 
-        PdfArtifact artifact = new PdfArtifact();
-        artifact.Type = new PdfString("Rectangle");
-        writer.DirectContent.OpenMCBlock(artifact);
-        writer.DirectContent.SetColorFill(BaseColor.RED);
-        writer.DirectContent.Rectangle(100, 100, 400, 400);
-        writer.DirectContent.Fill();
-        writer.DirectContent.CloseMCBlock(artifact);
+            PdfDiv div = new PdfDiv();
+            writer.DirectContent.OpenMCBlock(div);
 
-        writer.DirectContent.CloseMCBlock(div);
+            PdfArtifact artifact = new PdfArtifact();
+            artifact.Type = new PdfString("Rectangle");
+            writer.DirectContent.OpenMCBlock(artifact);
+            writer.DirectContent.SetColorFill(BaseColor.RED);
+            writer.DirectContent.Rectangle(100, 100, 400, 400);
+            writer.DirectContent.Fill();
+            writer.DirectContent.CloseMCBlock(artifact);
 
-        document.Close();
-        CompareResults("19");
-    }
+            writer.DirectContent.CloseMCBlock(div);
 
+            document.Close();
+            CompareResults("19");
+        }
 
-        private void CheckNums(int[] nums)
-        {
+        [Test]
+        public void CreateTaggedPdf20() {
+            InitializeDocument("20");
+
+            Paragraph paragraph = new Paragraph();
+            paragraph.Font.Color = BaseColor.RED;
+            Chunk c = new Chunk("Hello ");
+            paragraph.Add(c);
+            c = new Chunk("  world\n\n");
+            paragraph.Add(c);
+
+            ColumnText columnText = new ColumnText(writer.DirectContent);
+            columnText.SetSimpleColumn(36, 36, 250, 800);
+            columnText.AddElement(paragraph);
+            columnText.Go();
+
+            PdfTemplate template = writer.DirectContent.CreateTemplate(PageSize.A4.Width, PageSize.A4.Height);
+            writer.DirectContent.AddTemplate(template, 0, 0, true);
+
+            columnText = new ColumnText(template);
+            columnText.SetSimpleColumn(36, 36, 250, 750);
+            columnText.AddText(new Phrase(new Chunk("Hello word \n")));
+            columnText.Go();
+
+            document.NewPage();
+
+            paragraph = new Paragraph();
+            paragraph.Font.Color = BaseColor.RED;
+            c = new Chunk("Hello ");
+            paragraph.Add(c);
+            c = new Chunk("  world\n");
+            paragraph.Add(c);
+
+            columnText = new ColumnText(template);
+            columnText.SetSimpleColumn(36, 36, 250, 700);
+            columnText.AddElement(paragraph);
+            columnText.Go();
+
+            template = writer.DirectContent.CreateTemplate(PageSize.A4.Width, PageSize.A4.Height);
+            writer.DirectContent.AddTemplate(template, 0, 0, true);
+
+            paragraph = new Paragraph();
+            paragraph.Font.Color = BaseColor.GREEN;
+            c = new Chunk("Hello ");
+            paragraph.Add(c);
+            c = new Chunk("  world\n");
+            paragraph.Add(c);
+
+            columnText = new ColumnText(template);
+            columnText.SetSimpleColumn(36, 36, 250, 800);
+            columnText.AddElement(paragraph);
+            columnText.Go();
+
+            paragraph = new Paragraph();
+            paragraph.Font.Color = BaseColor.BLUE;
+            c = new Chunk("Hello ");
+            paragraph.Add(c);
+            c = new Chunk("  world\n");
+            paragraph.Add(c);
+
+            template = writer.DirectContent.CreateTemplate(PageSize.A4.Width, PageSize.A4.Height);
+
+            columnText = new ColumnText(template);
+            columnText.SetSimpleColumn(36, 36, 250, 650);
+            columnText.AddElement(paragraph);
+            columnText.Go();
+
+            writer.DirectContent.AddTemplate(template, 0, 100);
+
+            writer.DirectContent.AddTemplate(template, 0, 50);
+
+            writer.DirectContent.AddTemplate(template, 0, 0);
+
+            document.Close();
+            CompareResults("20");
+        }
+
+        [Test]
+        public void CreateTaggedPdf21() {
+            try {
+                InitializeDocument("21");
+
+                PdfTemplate template = writer.DirectContent.CreateTemplate(PageSize.A4.Width, PageSize.A4.Height);
+
+                writer.DirectContent.AddTemplate(template, 0, 0, true);
+
+                ColumnText columnText = new ColumnText(template);
+                columnText.SetSimpleColumn(36, 36, 250, 750);
+                columnText.AddText(new Phrase("Hello word \n\n"));
+                columnText.Go();
+
+                document.NewPage();
+                writer.DirectContent.AddTemplate(template, 0, 0);
+
+                document.Close();
+            }
+            catch (Exception conformExc) {
+                Assert.AreEqual("Template with tagged content could not be used more than once.", conformExc.Message);
+                return;
+            }
+            finally {
+                document.Close();
+            }
+            Assert.Fail("Expected error: 'Template with tagged content could not be used more than once.");
+        }
+
+        private void CheckNums(int[] nums) {
             PdfReader reader = new PdfReader(output);
             PdfDictionary structTreeRoot =
                 VerifyIsDictionary(reader.Catalog.GetDirectObject(PdfName.STRUCTTREEROOT), NO_STRUCT_TREE_ROOT);
@@ -933,28 +1001,57 @@ namespace itextsharp.tests.text.pdf
             reader.Close();
         }
 
-        private PdfArray VerifyArraySize(PdfObject obj, int size, String message)
-        {
+        private PdfArray VerifyArraySize(PdfObject obj, int size, String message) {
             if (obj == null || !obj.IsArray()) Assert.Fail(message + " is not array");
             if (((PdfArray) obj).Size != size)
                 Assert.Fail(message + " has wrong size");
             return (PdfArray) obj;
         }
 
-        private PdfDictionary VerifyIsDictionary(PdfObject obj, String message)
-        {
+        private PdfDictionary VerifyIsDictionary(PdfObject obj, String message) {
             if (obj == null || !obj.IsDictionary())
                 Assert.Fail(message);
             return (PdfDictionary) obj;
         }
 
-        private class MyTaggedPdfReaderTool : TaggedPdfReaderTool
-        {
+        [TearDown]
+        public void Compress() {
+            Document.Compress = true;
+        }
 
-            public override void ParseTag(String tag, PdfObject obj, PdfDictionary page)
-            {
-                if (obj is PdfNumber)
-                {
+        private void CompareResults(String name) {
+            PdfReader reader = new PdfReader(OUT + name + ".pdf");
+            string orig = RESOURCES + "xml\\test" + name + ".xml";
+            string curr = TARGET + "xml\\test" + name + ".xml";
+            FileStream xmlOut = new FileStream(curr, FileMode.Create);
+            new MyTaggedPdfReaderTool().ConvertToXml(reader, xmlOut);
+            xmlOut.Close();
+            XmlDiff xmldiff = new XmlDiff(XmlDiffOptions.None);
+            Assert.True(xmldiff.Compare(orig, curr, false));
+        }
+
+        #region Nested type: MyMarkedContentRenderFilter
+
+        private class MyMarkedContentRenderFilter : MarkedContentRenderFilter {
+            private readonly int mcid;
+
+            public MyMarkedContentRenderFilter(int mcid)
+                : base(mcid) {
+                this.mcid = mcid;
+            }
+
+            public override bool AllowText(TextRenderInfo renderInfo) {
+                return renderInfo.HasMcid(mcid, true);
+            }
+        }
+
+        #endregion
+
+        #region Nested type: MyTaggedPdfReaderTool
+
+        private class MyTaggedPdfReaderTool : TaggedPdfReaderTool {
+            public override void ParseTag(String tag, PdfObject obj, PdfDictionary page) {
+                if (obj is PdfNumber) {
                     PdfNumber mcid = (PdfNumber) obj;
                     RenderFilter filter = new MyMarkedContentRenderFilter(mcid.IntValue);
                     ITextExtractionStrategy strategy = new SimpleTextExtractionStrategy();
@@ -966,53 +1063,16 @@ namespace itextsharp.tests.text.pdf
                                                                                  .GetAsDict(PdfName.RESOURCES));
                     outp.Write(XMLUtil.EscapeXML(listener.GetResultantText(), true));
                 }
-                else
-                {
+                else {
                     base.ParseTag(tag, obj, page);
                 }
             }
 
-            public override void InspectChildDictionary(PdfDictionary k)
-            {
+            public override void InspectChildDictionary(PdfDictionary k) {
                 InspectChildDictionary(k, true);
             }
-
-
         }
 
-        private class MyMarkedContentRenderFilter : MarkedContentRenderFilter
-        {
-            private int mcid;
-
-            public MyMarkedContentRenderFilter(int mcid)
-                : base(mcid)
-            {
-                this.mcid = mcid;
-            }
-
-            public override bool AllowText(TextRenderInfo renderInfo)
-            {
-                return renderInfo.HasMcid(mcid, true);
-            }
-
-        }
-
-        [TearDown]
-        public void Compress()
-        {
-            Document.Compress = true;
-        }
-
-        private void CompareResults(String name)
-        {
-            PdfReader reader = new PdfReader(OUT + name + ".pdf");
-            string orig = RESOURCES + "xml\\test" + name + ".xml";
-            string curr = TARGET + "xml\\test" + name + ".xml";
-            FileStream xmlOut = new FileStream(curr, FileMode.Create);
-            new MyTaggedPdfReaderTool().ConvertToXml(reader, xmlOut);
-            xmlOut.Close();
-            XmlDiff xmldiff = new XmlDiff(XmlDiffOptions.None);
-            Assert.True(xmldiff.Compare(orig, curr, false));
-        }
+        #endregion
     }
 }
