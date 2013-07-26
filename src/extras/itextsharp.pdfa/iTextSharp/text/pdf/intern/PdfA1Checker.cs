@@ -261,7 +261,7 @@ namespace iTextSharp.text.pdf.intern
                                 return;
                             case ExtendedColor.TYPE_RGB:
                                 CheckColor(writer, PdfIsoKeys.PDFISOKEY_RGB, obj1);
-                                goto case ExtendedColor.TYPE_SEPARATION;
+                                break;
                             case ExtendedColor.TYPE_SEPARATION:
                                 SpotColor sc = (SpotColor) ec;
                                 CheckColor(writer, PdfIsoKeys.PDFISOKEY_COLOR, sc.PdfSpotColor.AlternativeCS);
