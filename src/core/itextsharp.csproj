@@ -4100,6 +4100,7 @@
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\ICidLocation.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\IdentityToUnicode.cs" />
     <Compile Include="iTextSharp\text\pdf\interfaces\IAccessibleElement.cs" />
+    <Compile Include="iTextSharp\text\pdf\interfaces\IAlternateDescription.cs" />
     <Compile Include="iTextSharp\text\pdf\interfaces\IPdfIsoConformance.cs" />
     <Compile Include="iTextSharp\text\pdf\interfaces\IPdfStructureElement.cs" />
     <Compile Include="iTextSharp\text\pdf\intern\PdfIsoKeys.cs" />
@@ -4122,6 +4123,7 @@
     <Compile Include="iTextSharp\text\pdf\PdfIsoConformanceException.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfPHeaderCell.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfPTableBody.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfPTableEventAfterSplit.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfPTableFooter.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfPTableHeader.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfSigLockDictionary.cs" />
