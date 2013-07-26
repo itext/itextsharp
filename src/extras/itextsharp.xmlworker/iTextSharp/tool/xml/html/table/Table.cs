@@ -357,7 +357,10 @@ namespace iTextSharp.tool.xml.html.table {
                         float computedTableHeigt = table.CalculateHeights();
                         computedRowHeight = tableHeight - computedTableHeigt;
                     }*/
-                    foreach (HtmlCell cell in row.Content) {
+                    IList<HtmlCell> rowContent = row.Content;
+                    if(rowContent.Count < 1)
+                        continue;
+                    foreach (HtmlCell cell in rowContent) {
                         IList<IElement> compositeElements = cell.CompositeElements;
                         if (compositeElements != null) {
                             foreach (IElement baseLevel in compositeElements) {
@@ -485,6 +488,8 @@ namespace iTextSharp.tool.xml.html.table {
         private void WidenLastCell(IList<TableRowElement> tableRows, float horBorderSpacing) {
             foreach (TableRowElement row in tableRows) {
                 IList<HtmlCell> cells = row.Content;
+                if(cells.Count < 1)
+                    continue;
                 HtmlCell last = cells[cells.Count - 1];
                 last.CellValues.IsLastInRow = true;
                 last.PaddingRight = last.PaddingRight + horBorderSpacing;
