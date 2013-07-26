@@ -44,6 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="iTextSharp\text\pdf\ocg\OCGParser.cs" />
+    <Compile Include="iTextSharp\text\pdf\ocg\OCGRemover.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="iTextSharp\text\pdf\richmedia\CuePoint.cs" />
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaActivation.cs" />
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaAnimation.cs" />
