@@ -65,13 +65,13 @@
     <Content Include="resources\text\ChunkTest\logo.gif" />
     <Content Include="resources\text\pdfa\jpeg2000\cpyrght.htm" />
     <Content Include="resources\text\pdfa\jpeg2000\cpyrght_files\d13c15.gif" />
-    <Content Include="resources\text\pdf\signature\rsa-ks\xfa.signed.package.xml" />
-    <Content Include="resources\text\pdf\signature\rsa-ks\xfa.signed.xml" />
-    <Content Include="resources\text\pdf\signature\rsa\xfa.signed.ki.package.xml" />
-    <Content Include="resources\text\pdf\signature\rsa\xfa.signed.ki.xml" />
-    <Content Include="resources\text\pdf\signature\rsa\xfa.signed.pk.package.xml" />
-    <Content Include="resources\text\pdf\signature\rsa\xfa.signed.pk.xml" />
-    <Content Include="resources\text\pdf\signature\rsa\xfa.signed.xml" />
+    <Content Include="resources\text\pdf\signature\ds-ks\xfa.signed.package.xml" />
+    <Content Include="resources\text\pdf\signature\ds-ks\xfa.signed.xml" />
+    <Content Include="resources\text\pdf\signature\ds\xfa.signed.ki.package.xml" />
+    <Content Include="resources\text\pdf\signature\ds\xfa.signed.ki.xml" />
+    <Content Include="resources\text\pdf\signature\ds\xfa.signed.pk.package.xml" />
+    <Content Include="resources\text\pdf\signature\ds\xfa.signed.pk.xml" />
+    <Content Include="resources\text\pdf\signature\ds\xfa.signed.xml" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test0.xml" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test1.xml" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test10.xml" />
@@ -103,6 +103,8 @@
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test7.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test8.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test9.xml" />
+    <Content Include="resources\text\pdf\signature\ds-ks\pkcs12" />
+    <Content Include="resources\text\pdf\signature\ds\key" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="resources\text\pdfa\FreeMonoBold.ttf" />
@@ -124,8 +126,6 @@
     <Content Include="resources\text\ChunkTest\source13.pdf" />
     <Content Include="resources\text\ChunkTest\source14.pdf" />
     <Content Include="resources\text\ChunkTest\source15.pdf" />
-    <Content Include="resources\text\pdf\signature\rsa-ks\pkcs12" />
-    <Content Include="resources\text\pdf\signature\rsa\key" />
     <Content Include="resources\text\pdf\signature\xfa.pdf" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source10.pdf" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source11.pdf" />
