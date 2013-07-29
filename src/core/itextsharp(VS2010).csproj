@@ -1159,6 +1159,7 @@
     <Compile Include="iTextSharp\text\pdf\security\MakeXmlSignature.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\security\SecurityConstants.cs" />
     <Compile Include="iTextSharp\text\pdf\SequenceList.cs">
       <SubType>Code</SubType>
     </Compile>
