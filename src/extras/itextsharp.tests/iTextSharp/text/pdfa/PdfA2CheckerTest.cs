@@ -10,14 +10,25 @@ namespace iTextSharp.text.pdfa
     public class PdfA2CheckerTest
     {
         public const String RESOURCES = @"..\..\resources\text\pdfa\";
+        public const String TARGET = "PdfA2CheckerTest\\";
+        public const String OUT = TARGET + "pdf\\out";
+
+
+        [SetUp]
+        public void Initialize()
+        {
+            Directory.CreateDirectory(TARGET + "pdf");
+            Directory.CreateDirectory(TARGET + "xml");
+            Document.Compress = false;
+        }
 
         [Test]
         public void TransparencyCheckTest()
         {
-            string filename = Path.GetTempFileName().Replace(".tmp", ".pdf");
+            string filename = OUT + "TransparencyCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
-            PdfAWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2A);
+            PdfAWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2B);
             document.Open();
 
             PdfContentByte canvas = writer.DirectContent;
@@ -39,27 +50,19 @@ namespace iTextSharp.text.pdfa
             canvas.RestoreState();
 
             bool exception = false;
-            try
-            {
-                canvas.SaveState();
-                gs = new PdfGState();
-                gs.BlendMode = new PdfName("UnknownBM");
-                canvas.SetGState(gs);
-                canvas.Rectangle(300, 300, 100, 100);
-                canvas.Fill();
-                canvas.RestoreState();
+            canvas.SaveState();
+            gs = new PdfGState();
+            gs.BlendMode = new PdfName("UnknownBM");
+            canvas.SetGState(gs);
+            canvas.Rectangle(300, 300, 100, 100);
+            canvas.Fill();
+            canvas.RestoreState();
+            try {
+                document.Close();
             }
-            catch (PdfAConformanceException pdface)
-            {
+            catch (PdfAConformanceException e) {
                 exception = true;
             }
-
-            if (!exception)
-            {
-                document.Close();
-                File.Delete(filename);
-            }
-
             if (!exception)
                 Assert.Fail("PdfAConformance exception should be thrown on unknown blend mode.");
 
@@ -68,7 +71,7 @@ namespace iTextSharp.text.pdfa
         [Test, Ignore]
         public void ImageCheckTest1()
         {
-            string filename = Path.GetTempFileName().Replace(".tmp", ".pdf");
+            string filename = OUT + "ImageCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
             PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2A);
@@ -100,13 +103,12 @@ namespace iTextSharp.text.pdfa
             Assert.AreEqual(null, pdfaErrors[8]);
 
             document.Close();
-            File.Delete(filename);
         }
 
         [Test, Ignore]
         public void ImageCheckTest2()
         {
-            string filename = Path.GetTempFileName().Replace(".tmp", ".pdf");
+            string filename = OUT + "ImageCheckTest2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
             PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2A);
@@ -161,16 +163,15 @@ namespace iTextSharp.text.pdfa
             }
 
             document.Close();
-            File.Delete(filename);
         }
 
         [Test]
         public void LayerCheckTest1()
         {
-            string filename = Path.GetTempFileName().Replace(".tmp", ".pdf");
+            string filename = OUT + "LayerCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
-            PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2A);
+            PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2B);
             writer.ViewerPreferences = PdfWriter.PageModeUseOC;
             writer.PdfVersion = PdfWriter.VERSION_1_5;
             document.Open();
@@ -186,16 +187,15 @@ namespace iTextSharp.text.pdfa
             cb.EndLayer();
             cb.EndText();
             document.Close();
-            File.Delete(filename);
         }
 
         [Test]
         public void LayerCheckTest2()
         {
-            string filename = Path.GetTempFileName().Replace(".tmp", ".pdf");
+            string filename = OUT + "LayerCheckTest2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
-            PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2A);
+            PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2B);
             writer.ViewerPreferences = PdfWriter.PageModeUseOC;
             writer.PdfVersion = PdfWriter.VERSION_1_5;
             document.Open();
@@ -219,7 +219,6 @@ namespace iTextSharp.text.pdfa
             cb.EndLayer();
 
             document.Close();
-            File.Delete(filename);
         }
     }
 }

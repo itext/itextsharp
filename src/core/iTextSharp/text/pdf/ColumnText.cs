@@ -1556,7 +1556,7 @@ namespace iTextSharp.text.pdf {
                     LOGGER.Info("Will split at row " + k);
 
                     // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
-                    if(table.SplitLate) {
+                    if (table.SplitLate && k > 0) {
                         fittingRows.CorrectLastRowChosen(table, k - 1);
                     }
                     // splitting row spans

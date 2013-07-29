@@ -42,11 +42,18 @@
  * address: sales@itextpdf.com
  */
 
+using System;
+
 namespace iTextSharp.text.pdf.intern
 {
     public class PdfA3Checker : PdfA2Checker {
         internal PdfA3Checker(PdfAConformanceLevel conformanceLevel)
             :base(conformanceLevel) {
         }
+
+        protected override void CheckFileSpec(PdfWriter writer, int key, Object obj1) {
+        }
+
+
     }
 }
