@@ -13,11 +13,11 @@ namespace itextsharp.tests.resources.text.signature
     [TestFixture]
     public class XmlDSigKSTest : XmlDSigTest
     {
-        public const String KEYSTORE = @"..\..\resources\text\pdf\signature\rsa-ks\pkcs12";
+        public const String KEYSTORE = @"..\..\resources\text\pdf\signature\ds-ks\pkcs12";
         public const string PASSWORD = "password";
         public const String Src = @"..\..\resources\text\pdf\signature\xfa.pdf";
-        public const String CmpDir = @"..\..\resources\text\pdf\signature\rsa-ks\";
-        public const String DestDir = @"signatures\rsa-ks\";
+        public const String CmpDir = @"..\..\resources\text\pdf\signature\ds-ks\";
+        public const String DestDir = @"signatures\ds-ks\";
 
 
     [Test]
@@ -28,7 +28,14 @@ namespace itextsharp.tests.resources.text.signature
         String filename = "xfa.signed.pdf";
         String output = DestDir + filename;
 
-        Pkcs12Store store = new Pkcs12Store(new FileStream(KEYSTORE, FileMode.Open), PASSWORD.ToCharArray());
+        MemoryStream ks = new MemoryStream();
+        using(FileStream reader = new FileStream(KEYSTORE, FileMode.Open)) {
+            byte[] buffer = new byte[reader.Length];
+            reader.Read(buffer, 0, (int)reader.Length);
+            ks.Write(buffer, 0, buffer.Length);
+            ks.Position = 0;
+        }
+        Pkcs12Store store = new Pkcs12Store(ks, PASSWORD.ToCharArray());
         String alias = "";
         List<X509Certificate> chain = new List<X509Certificate>();
         // searching for private key
@@ -60,7 +67,14 @@ namespace itextsharp.tests.resources.text.signature
         String filename = "xfa.signed.package.pdf";
         String output = DestDir + filename;
 
-        Pkcs12Store store = new Pkcs12Store(new FileStream(KEYSTORE, FileMode.Open), PASSWORD.ToCharArray());
+        MemoryStream ks = new MemoryStream();
+        using(FileStream reader = new FileStream(KEYSTORE, FileMode.Open)) {
+            byte[] buffer = new byte[reader.Length];
+            reader.Read(buffer, 0, (int)reader.Length);
+            ks.Write(buffer, 0, buffer.Length);
+            ks.Position = 0;
+        }
+        Pkcs12Store store = new Pkcs12Store(ks, PASSWORD.ToCharArray());
         String alias = "";
         List<X509Certificate> chain = new List<X509Certificate>();
         // searching for private key

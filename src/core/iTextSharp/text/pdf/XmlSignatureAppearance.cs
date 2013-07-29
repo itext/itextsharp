@@ -1,4 +1,5 @@
-﻿using Org.BouncyCastle.Crypto.Tls;
+﻿using System;
+using Org.BouncyCastle.X509;
 using iTextSharp.text.pdf.security;
 /*
  * $Id: XmlSignatureAppearance.java 5830 2013-05-31 09:29:15Z blowagie $
@@ -57,9 +58,20 @@ namespace iTextSharp.text.pdf
 
         private PdfStamperImp writer;
         private PdfStamper stamper;
-        private Certificate signCertificate;
+        private X509Certificate signCertificate;
         private IXmlLocator xmlLocator;
         private IXpathConstructor xpathConstructor;
+        
+        /** Holds value of property xades:SigningTime. */
+        private DateTime signDate = DateTime.MinValue;
+
+        /** Holds value of property xades:Description. */
+        private String description;
+
+        /** Holds value of property xades:MimeType. */
+        private String mimeType = "text/xml";
+
+
 
         public PdfStamperImp GetWriter() {
             return writer;
@@ -78,12 +90,47 @@ namespace iTextSharp.text.pdf
          * This certificate doesn't take part in the actual signing process.
          * @param signCertificate the certificate
          */
-        public void SetCertificate(Certificate signCertificate) {
+        public void SetCertificate(X509Certificate signCertificate) {
             this.signCertificate = signCertificate;
         }
 
-        public Certificate GetCertificate() {
+        public X509Certificate GetCertificate() {
             return signCertificate;
+        }
+
+
+        public void SetDescription(String description) {
+            this.description = description;
+        }
+
+        public String GetDescription() {
+            return description;
+        }
+
+        public String GetMimeType() {
+            return mimeType;
+        }
+
+        public void SetMimeType(String mimeType) {
+            this.mimeType = mimeType;
+        }
+
+        /**
+         * Gets the signature date.
+         * @return the signature date
+         */
+        public DateTime GetSignDate() {
+            if(signDate == DateTime.MinValue)
+                signDate = DateTime.Now;
+            return signDate;
+        }
+
+        /**
+         * Sets the signature date.
+         * @param signDate the signature date
+         */
+        public void SetSignDate(DateTime signDate) {
+            this.signDate = signDate;
         }
 
         /**

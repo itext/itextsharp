@@ -27,6 +27,23 @@ namespace itextsharp.tests.resources.text.signature
             IExternalSignature pks = new PrivateKeySignature(pk, digestAlgorithm);
             MakeXmlSignature.SignXmlDSig(appearance, pks, chain);
         }
+
+        protected void SignBes(String src, String dest, ICipherParameters pk,
+            X509Certificate[] chain, String digestAlgorithm) {
+
+            // Creating the reader and the stamper
+            PdfReader reader = new PdfReader(src);
+            FileStream os = new FileStream(dest, FileMode.Create);
+            PdfStamper stamper = PdfStamper.createXmlSignature(reader, os);
+            // Creating the appearance
+            XmlSignatureAppearance appearance = stamper.XmlSignatureAppearance;
+            appearance.SetXmlLocator(new XfaXmlLocator(stamper));
+            appearance.SetDescription("Simple xfa form");
+            // Creating the signature
+
+            IExternalSignature pks = new PrivateKeySignature(pk, digestAlgorithm);
+            MakeXmlSignature.SignXadesBes(appearance, pks, chain);
+        }
         
         protected void SignWithKeyInfo(String src, String dest, ICipherParameters pk,
             AsymmetricAlgorithm publicKey, String digestAlgorithm) {
@@ -87,6 +104,26 @@ namespace itextsharp.tests.resources.text.signature
             IExternalSignature pks = new PrivateKeySignature(pk, digestAlgorithm);
 
             MakeXmlSignature.SignXmlDSig(appearance, pks, chain);
+        }
+
+        protected void SignBesPackage(String src, String dest, XfaXpathConstructor.XdpPackage xdpPackage,
+    ICipherParameters pk, X509Certificate[] chain, String digestAlgorithm) {
+
+            // Creating the reader and the stamper
+            PdfReader reader = new PdfReader(src);
+            FileStream os = new FileStream(dest, FileMode.Create);
+            PdfStamper stamper = PdfStamper.createXmlSignature(reader, os);
+            // Creating the appearance
+            XmlSignatureAppearance appearance = stamper.XmlSignatureAppearance;
+            //Set XfaXmlLocator to control getting and setting Document
+            appearance.SetXmlLocator(new XfaXmlLocator(stamper));
+            appearance.SetDescription("Simple xfa form");
+            // Set XpathConstructor, to construct xpath expression for signing an xdp package
+            appearance.SetXpathConstructor(new XfaXpathConstructor(xdpPackage));
+            // Creating the signature
+            IExternalSignature pks = new PrivateKeySignature(pk, digestAlgorithm);
+
+            MakeXmlSignature.SignXadesBes(appearance, pks, chain);
         }
 
         protected void SignPackageWithKeyInfo(String src, String dest, XfaXpathConstructor.XdpPackage xdpPackage,
