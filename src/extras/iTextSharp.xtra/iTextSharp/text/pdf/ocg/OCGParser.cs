@@ -258,6 +258,8 @@ namespace iTextSharp.text.pdf.ocg {
                 mc_balance++;
                 return;
             }
+            if (properties == null)
+                return;
             PdfDictionary ocdict = properties.GetAsDict(ocref);
             if (ocdict == null) {
                 return;

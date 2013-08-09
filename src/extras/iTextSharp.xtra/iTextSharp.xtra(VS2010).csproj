@@ -44,6 +44,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+	<Compile Include="iTextSharp\text\pdf\mc\MCFieldFlattener.cs" />
+    <Compile Include="iTextSharp\text\pdf\mc\MCParser.cs" />
+    <Compile Include="iTextSharp\text\pdf\mc\StructureItem.cs" />
+    <Compile Include="iTextSharp\text\pdf\mc\StructureItems.cs" />
     <Compile Include="iTextSharp\text\pdf\ocg\OCGParser.cs" />
     <Compile Include="iTextSharp\text\pdf\ocg\OCGRemover.cs" />
   </ItemGroup>
