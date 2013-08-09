@@ -44,6 +44,7 @@
     <Compile Include="iTextSharp\text\ChunkTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfA2CheckerTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfAFileStructureTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\mc\AcroFieldsFlattenTest.cs" />
     <Compile Include="iTextSharp\text\signature\XadesBesTest.cs" />
     <Compile Include="iTextSharp\text\signature\XmlDSigKSTest.cs" />
     <Compile Include="iTextSharp\text\signature\XmlDSigRsaTest.cs" />
@@ -90,6 +91,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="itextsharp.snk" />
+    <None Include="resources\text\pdf\mc\SF2809.pdf" />
+    <None Include="resources\text\pdf\mc\SF2809_alt.pdf" />
     <Content Include="resources\text\pdf\signature\ds-ks\pkcs12" />
     <Content Include="resources\text\pdf\signature\ds\key" />
     <Content Include="resources\text\pdfa\FreeMonoBold.ttf" />
@@ -136,6 +139,10 @@
     <ProjectReference Include="..\itextsharp.pdfa\itextsharp.pdfa.csproj">
       <Project>{C892FA61-C495-4F30-8799-A198F89F23F4}</Project>
       <Name>itextsharp.pdfa</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\itextsharp.xtra\itextsharp.xtra.csproj">
+      <Project>{BE1934CF-90A9-43D3-A794-7E540874EDBB}</Project>
+      <Name>itextsharp.xtra</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

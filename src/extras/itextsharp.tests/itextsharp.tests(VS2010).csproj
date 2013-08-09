@@ -51,6 +51,7 @@
     <Compile Include="iTextSharp\text\ChunkTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfA2CheckerTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfAFileStructureTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\mc\AcroFieldsFlattenTest.cs" />
     <Compile Include="iTextSharp\text\signature\XadesBesTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfCopyTest.cs" />
@@ -103,6 +104,8 @@
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test7.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test8.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test9.xml" />
+    <None Include="resources\text\pdf\mc\SF2809.pdf" />
+    <None Include="resources\text\pdf\mc\SF2809_alt.pdf" />
     <Content Include="resources\text\pdf\signature\ds-ks\pkcs12" />
     <Content Include="resources\text\pdf\signature\ds\key" />
   </ItemGroup>
@@ -141,13 +144,17 @@
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source53.pdf" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\itextsharp.csproj">
+    <ProjectReference Include="..\..\core\itextsharp%28VS2010%29.csproj">
       <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
-      <Name>itextsharp</Name>
+      <Name>itextsharp%28VS2010%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\itextsharp.pdfa\itextsharp.pdfa%28VS2010%29.csproj">
       <Project>{C892FA61-C495-4F30-8799-A198F89F23F4}</Project>
       <Name>itextsharp.pdfa%28VS2010%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\iTextSharp.xtra\iTextSharp.xtra%28VS2010%29.csproj">
+      <Project>{BE1934CF-90A9-43D3-A794-7E540874EDBB}</Project>
+      <Name>iTextSharp.xtra%28VS2010%29</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

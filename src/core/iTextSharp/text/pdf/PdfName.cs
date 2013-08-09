@@ -1438,6 +1438,11 @@ namespace iTextSharp.text.pdf {
          * @since 5.4.3
          */
         public static readonly PdfName PRINTERMARK = new PdfName("PrinterMark");
+        /**
+         * A name
+         * @since 5.4.4
+         */
+        public static readonly PdfName PRINTFIELD = new PdfName("PrintField");
         /** A name */
         public static readonly PdfName PRINTPAGERANGE = new PdfName("PrintPageRange");
         /** A name */
@@ -1603,6 +1608,11 @@ namespace iTextSharp.text.pdf {
          * @since 5.1.0
          */
         public static readonly PdfName RL = new PdfName("RL");
+        /**
+         * A name of an attribute.
+         * @since 5.4.4
+         */
+        public static readonly PdfName ROLE = new PdfName("Role");
         /** A name */
         public static readonly PdfName ROLEMAP = new PdfName("RoleMap");
         /** A name */
@@ -1944,6 +1954,10 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName TTL = new PdfName("Ttl");
         /** A name */
         public static readonly PdfName TU = new PdfName("TU");
+        /** A name 
+         * @since 5.4.4
+         */
+        public static readonly PdfName TV = new PdfName("tv");
         /** A name */
         public static readonly PdfName TWOCOLUMNLEFT = new PdfName("TwoColumnLeft");
         /** A name */

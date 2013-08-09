@@ -62,6 +62,8 @@ namespace iTextSharp.text.pdf.ocg
         public virtual void RemoveLayers(PdfReader reader, params string[] layers)
         {
             int n = reader.NumberOfPages;
+            for (int i = 1; i <= n; i++)
+                reader.SetPageContent(i, reader.GetPageContent(i));
             ICollection<string> ocgs = new HashSet2<string>();
             for (int i = 0; i < layers.Length; i++)
             {
@@ -78,16 +80,17 @@ namespace iTextSharp.text.pdf.ocg
             }
             PdfDictionary root = reader.Catalog;
             PdfDictionary ocproperties = root.GetAsDict(PdfName.OCPROPERTIES);
-            RemoveOCGsFromArray(ocproperties, PdfName.OCGS, ocgs);
-            PdfDictionary d = ocproperties.GetAsDict(PdfName.D);
-            if (d != null)
-            {
-                RemoveOCGsFromArray(d, PdfName.ON, ocgs);
-                RemoveOCGsFromArray(d, PdfName.OFF, ocgs);
-                RemoveOCGsFromArray(d, PdfName.LOCKED, ocgs);
-                RemoveOCGsFromArray(d, PdfName.RBGROUPS, ocgs);
-                RemoveOCGsFromArray(d, PdfName.ORDER, ocgs);
-                RemoveOCGsFromArray(d, PdfName.AS, ocgs);
+            if (ocproperties != null) {
+                RemoveOCGsFromArray(ocproperties, PdfName.OCGS, ocgs);
+                PdfDictionary d = ocproperties.GetAsDict(PdfName.D);
+                if (d != null) {
+                    RemoveOCGsFromArray(d, PdfName.ON, ocgs);
+                    RemoveOCGsFromArray(d, PdfName.OFF, ocgs);
+                    RemoveOCGsFromArray(d, PdfName.LOCKED, ocgs);
+                    RemoveOCGsFromArray(d, PdfName.RBGROUPS, ocgs);
+                    RemoveOCGsFromArray(d, PdfName.ORDER, ocgs);
+                    RemoveOCGsFromArray(d, PdfName.AS, ocgs);
+                }
             }
             reader.RemoveUnusedObjects();
         }
