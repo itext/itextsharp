@@ -282,24 +282,19 @@ namespace iTextSharp.text.pdf {
             }
             ImportedPage newPage = null;
             updateRootKids = false;
-            if (mergeFields && !keepTaggedPdfStructure)
-            {
-                newPage = new ImportedPage(reader, pageNumber, mergeFields);
-                importedPages.Add(newPage);
-                if (structTreeController != null)
-                    structTreeController.SetReader(reader);
+            if (!keepTaggedPdfStructure) {
+                if (mergeFields) {
+                    newPage = new ImportedPage(reader, pageNumber, mergeFields);
+                    importedPages.Add(newPage);
+                }
                 return GetImportedPageImpl(reader, pageNumber);
-
             }
-            if (!keepTaggedPdfStructure)
-                return GetImportedPage(reader, pageNumber);
             if (structTreeController != null) {
                 if (reader != structTreeController.reader)
                     structTreeController.SetReader(reader);
             } else {
                 structTreeController = new PdfStructTreeController(reader, this);
             }
-
             newPage = new ImportedPage(reader, pageNumber, mergeFields);
             switch (CheckStructureTreeRootKids(newPage)) {
                 case -1: //-1 - clear , update
@@ -845,6 +840,16 @@ namespace iTextSharp.text.pdf {
             HashSet2<PdfCopy.RefKey> activeKeys = new HashSet2<PdfCopy.RefKey>();
             List<PdfIndirectReference> actives = new List<PdfIndirectReference>();
             int pageRefIndex = 0;
+
+            if (mergeFields && acroForm != null) {
+                actives.Add(acroForm);
+                activeKeys.Add(new RefKey(acroForm));
+            }
+            foreach (PdfIndirectReference page in pageReferences) {
+                actives.Add(page);
+                activeKeys.Add(new RefKey(page));
+            }
+
             //from end, because some objects can appear on several pages because of MCR (out16.pdf)
             for (int i = numTree.Count - 1; i >= 0; --i) {
                 PdfIndirectReference currNum = numTree[i];
@@ -905,9 +910,6 @@ namespace iTextSharp.text.pdf {
                     }
                 }
             }
-
-            if (mergeFields)
-                actives.Add(acroForm);
 
             HashSet2<PdfName> activeClassMaps = new HashSet2<PdfName>();
             //collect all active objects from current active set (include kids, classmap, attributes)
