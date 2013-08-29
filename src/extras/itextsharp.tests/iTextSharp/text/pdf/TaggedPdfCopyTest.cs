@@ -30,7 +30,6 @@ namespace itextsharp.tests.text.pdf
         public const String SOURCE16 = RESOURCES + "pdf\\source16.pdf";
         public const String SOURCE17 = RESOURCES + "pdf\\source17.pdf";
         public const String SOURCE18 = RESOURCES + "pdf\\source18.pdf";
-        public const String SOURCE19 = RESOURCES + "pdf\\source19.pdf";
         public const String SOURCE22 = RESOURCES + "pdf\\source22.pdf";
         public const String SOURCE32 = RESOURCES + "pdf\\source32.pdf";
         public const String SOURCE42 = RESOURCES + "pdf\\source42.pdf";
@@ -149,11 +148,11 @@ namespace itextsharp.tests.text.pdf
             PdfReader reader1 = new PdfReader(SOURCE11);
             copy.AddPage(copy.GetImportedPage(reader1, 76, true));
             copy.AddPage(copy.GetImportedPage(reader1, 83, true));
+            reader1.Close();
             PdfReader reader2 = new PdfReader(SOURCE32);
             copy.AddPage(copy.GetImportedPage(reader2, 69, true));
             copy.AddPage(copy.GetImportedPage(reader2, 267, true));
             document.Close();
-            reader1.Close();
             reader2.Close();
             PdfReader reader = new PdfReader(output);
             PdfDictionary structTreeRoot =
@@ -688,8 +687,8 @@ namespace itextsharp.tests.text.pdf
 
             PdfReader reader1 = new PdfReader(SOURCE61);
             PdfReader reader2 = new PdfReader(SOURCE62);
-            copy.AddDocument(reader1);
-            copy.AddDocument(reader2);
+            copy.addDocument(reader1);
+            copy.addDocument(reader2);
             document.Close();
             reader1.Close();
             reader2.Close();
@@ -731,8 +730,8 @@ namespace itextsharp.tests.text.pdf
 
             PdfReader reader1 = new PdfReader(SOURCE63);
             PdfReader reader2 = new PdfReader(SOURCE64);
-            copy.AddDocument(reader1);
-            copy.AddDocument(reader2);
+            copy.addDocument(reader1);
+            copy.addDocument(reader2);
             document.Close();
             reader1.Close();
             reader2.Close();
@@ -749,45 +748,6 @@ namespace itextsharp.tests.text.pdf
             Assert.AreEqual(new PdfName("Courier"), fonts.GetAsDict(new PdfName("Cour")).GetAsName(PdfName.BASEFONT));
             Assert.AreEqual(new PdfName("Times-Bold"), fonts.GetAsDict(new PdfName("TiBo")).GetAsName(PdfName.BASEFONT));
             Assert.AreEqual(new PdfName("ZapfDingbats"), fonts.GetAsDict(new PdfName("ZaDb")).GetAsName(PdfName.BASEFONT));
-
-            reader.Close();
-        }
-
-        [Test]
-        public void CopyTaggedPdf17() {
-            InitializeDocument("17");
-
-            PdfReader reader1 = new PdfReader(SOURCE10);
-            PdfReader reader2 = new PdfReader(SOURCE19);
-            copy.AddPage(copy.GetImportedPage(reader1, 1, true));
-            copy.AddPage(copy.GetImportedPage(reader2, 1, false));
-
-            document.Close();
-            reader1.Close();
-            reader2.Close();
-
-            PdfReader reader = new PdfReader(output);
-            Assert.AreEqual(2, reader.NumberOfPages);
-            Assert.NotNull(reader.GetPageN(1));
-            Assert.NotNull(reader.GetPageN(2));
-            reader.Close();
-        }
-
-        [Test]
-        public void CopyTaggedPdf19() {
-            InitializeDocument("19");
-
-            PdfReader reader = new PdfReader(SOURCE18);
-            copy.AddPage(copy.GetImportedPage(reader, 1, true));
-
-            document.Close();
-            reader.Close();
-
-            reader = new PdfReader(output);
-
-            PdfDictionary page1 = reader.GetPageN(1);
-            PdfDictionary t1_0 = page1.GetAsDict(PdfName.RESOURCES).GetAsDict(PdfName.XOBJECT).GetAsStream(new PdfName("Fm0")).GetAsDict(PdfName.RESOURCES).GetAsDict(PdfName.FONT).GetAsDict(new PdfName("T1_0"));
-            Assert.NotNull(t1_0);
 
             reader.Close();
         }

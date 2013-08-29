@@ -117,6 +117,8 @@ namespace iTextSharp.text.pdf {
         protected List<PdfIndirectObject> savedObjects;
         //imported pages from getImportedPage(PdfReader, int, boolean)
         protected List<ImportedPage> importedPages;
+        //for correct cleaning of indirects in getImportedPage(), to avoid cleaning of streams
+        protected HashSet2<RefKey> streams;
         //for correct update of kids in StructTreeRootController
         internal bool updateRootKids = false;
 
@@ -209,6 +211,7 @@ namespace iTextSharp.text.pdf {
             indirectObjects = new Dictionary<RefKey, PdfIndirectObject>();
             savedObjects = new List<PdfIndirectObject>();
             importedPages = new List<ImportedPage>();
+            streams = new HashSet2<RefKey>();
         }
 
         /**
@@ -279,19 +282,24 @@ namespace iTextSharp.text.pdf {
             }
             ImportedPage newPage = null;
             updateRootKids = false;
-            if (!keepTaggedPdfStructure) {
-                if (mergeFields) {
-                    newPage = new ImportedPage(reader, pageNumber, mergeFields);
-                    importedPages.Add(newPage);
-                }
+            if (mergeFields && !keepTaggedPdfStructure)
+            {
+                newPage = new ImportedPage(reader, pageNumber, mergeFields);
+                importedPages.Add(newPage);
+                if (structTreeController != null)
+                    structTreeController.SetReader(reader);
                 return GetImportedPageImpl(reader, pageNumber);
+
             }
+            if (!keepTaggedPdfStructure)
+                return GetImportedPage(reader, pageNumber);
             if (structTreeController != null) {
                 if (reader != structTreeController.reader)
                     structTreeController.SetReader(reader);
             } else {
                 structTreeController = new PdfStructTreeController(reader, this);
             }
+
             newPage = new ImportedPage(reader, pageNumber, mergeFields);
             switch (CheckStructureTreeRootKids(newPage)) {
                 case -1: //-1 - clear , update
@@ -322,9 +330,10 @@ namespace iTextSharp.text.pdf {
                 PdfIndirectObject iobj;
                 if (!indirectObjects.TryGetValue(key, out iobj))
                 {
-                    forDelete.Add(entry.Key);
+                    if (!streams.Contains(key))
+                        forDelete.Add(entry.Key);
                 }
-                else if (iobj.objecti.IsArray() || iobj.objecti.IsDictionary() || iobj.objecti.IsStream())
+                else if (iobj.objecti.IsArray() || iobj.objecti.IsDictionary())
                 {
                     forDelete.Add(entry.Key);
                 }
@@ -710,15 +719,15 @@ namespace iTextSharp.text.pdf {
             ++currentPageNumber;
         }
 
-        public void AddDocument(PdfReader reader, List<int> pagesToKeep) {
+        public void addDocument(PdfReader reader, List<int> pagesToKeep) {
             if (indirectMap.ContainsKey(reader)) {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("document.1.has.already.been.added", reader.ToString()));
             }
             reader.SelectPages(pagesToKeep);
-            AddDocument(reader);
+            addDocument(reader);
         }
 
-        public void AddDocument(PdfReader reader) {
+        public void addDocument(PdfReader reader) {
             if (indirectMap.ContainsKey(reader)) {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("document.1.has.already.been.added", reader.ToString()));
             }
@@ -761,7 +770,7 @@ namespace iTextSharp.text.pdf {
                 UpdateReferences(objecta);
             }
             PdfIndirectObject indObj;
-            if ((tagged || mergeFields) && indirectObjects != null && (objecta.IsArray() || objecta.IsDictionary() || objecta.IsStream())) {
+            if ((tagged || mergeFields) && indirectObjects != null && (objecta.IsArray() || objecta.IsDictionary())) {
                 RefKey key = new RefKey(refa);
                 PdfIndirectObject obj;
                 if (!indirectObjects.TryGetValue(key, out obj)) {
@@ -770,6 +779,8 @@ namespace iTextSharp.text.pdf {
                 }
                 indObj =  obj;
             } else {
+                if ((tagged || mergeFields) && objecta.IsStream())
+                    streams.Add(new RefKey(refa));
                 indObj = base.AddToBody(objecta, refa);
             }
             if (mergeFields && objecta.IsDictionary()) {
@@ -834,16 +845,6 @@ namespace iTextSharp.text.pdf {
             HashSet2<PdfCopy.RefKey> activeKeys = new HashSet2<PdfCopy.RefKey>();
             List<PdfIndirectReference> actives = new List<PdfIndirectReference>();
             int pageRefIndex = 0;
-
-            if (mergeFields && acroForm != null) {
-                actives.Add(acroForm);
-                activeKeys.Add(new RefKey(acroForm));
-            }
-            foreach (PdfIndirectReference page in pageReferences) {
-                actives.Add(page);
-                activeKeys.Add(new RefKey(page));
-            }
-
             //from end, because some objects can appear on several pages because of MCR (out16.pdf)
             for (int i = numTree.Count - 1; i >= 0; --i) {
                 PdfIndirectReference currNum = numTree[i];
@@ -904,6 +905,9 @@ namespace iTextSharp.text.pdf {
                     }
                 }
             }
+
+            if (mergeFields)
+                actives.Add(acroForm);
 
             HashSet2<PdfName> activeClassMaps = new HashSet2<PdfName>();
             //collect all active objects from current active set (include kids, classmap, attributes)
@@ -1019,7 +1023,6 @@ namespace iTextSharp.text.pdf {
                         FindActivesFromArray((PdfArray)iobj.objecti, actives, activeKeys, activeClassMaps);
                         break;
                     case PdfObject.DICTIONARY:
-                    case PdfObject.STREAM:
                         FindActivesFromDict((PdfDictionary)iobj.objecti, actives, activeKeys, activeClassMaps);
                         break;
                 }
@@ -1049,7 +1052,6 @@ namespace iTextSharp.text.pdf {
                         FindActivesFromArray((PdfArray)obj, actives, activeKeys, activeClassMaps);
                         break;
                     case PdfObject.DICTIONARY:
-                    case PdfObject.STREAM:
                         FindActivesFromDict((PdfDictionary)obj, actives, activeKeys, activeClassMaps);
                         break;
                 }
@@ -1081,7 +1083,6 @@ namespace iTextSharp.text.pdf {
                         FindActivesFromArray((PdfArray)obj, actives, activeKeys, activeClassMaps);
                         break;
                     case PdfObject.DICTIONARY:
-                    case PdfObject.STREAM:
                         FindActivesFromDict((PdfDictionary)obj, actives, activeKeys, activeClassMaps);
                         break;
                 }
