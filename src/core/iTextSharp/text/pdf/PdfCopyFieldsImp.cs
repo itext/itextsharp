@@ -54,8 +54,8 @@ namespace iTextSharp.text.pdf {
     */
     internal class PdfCopyFieldsImp : PdfWriter {
 
-        private static readonly PdfName iTextTag = new PdfName("_iTextTag_");
-        private static int zero = 0;
+        internal static readonly PdfName iTextTag = new PdfName("_iTextTag_");
+        internal static int zero = 0;
         internal List<PdfReader> readers = new List<PdfReader>();
         internal Dictionary<PdfReader, IntHashtable> readers2intrefs = new Dictionary<PdfReader, IntHashtable>();
         internal Dictionary<PdfReader, IntHashtable> pages2intrefs = new Dictionary<PdfReader, IntHashtable>();
@@ -129,7 +129,7 @@ namespace iTextSharp.text.pdf {
             UpdateCalculationOrder(reader);
         }
         
-        private static String GetCOName(PdfReader reader, PRIndirectReference refi) {
+        internal static String GetCOName(PdfReader reader, PRIndirectReference refi) {
             String name = "";
             while (refi != null) {
                 PdfObject obj = PdfReader.GetPdfObject(refi);

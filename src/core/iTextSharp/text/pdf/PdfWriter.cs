@@ -2549,6 +2549,10 @@ namespace iTextSharp.text.pdf {
          */
         internal virtual void FlushTaggedObjects() {}
 
+        /**
+         * Flushes merged AcroFields to document (if any). 
+         */
+        internal virtual void FlushAcroFields() {}
         
         /**
         * Gets the structure tree root. If the document is not marked for tagging it will return <CODE>null</CODE>.

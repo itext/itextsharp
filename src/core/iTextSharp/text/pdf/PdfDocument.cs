@@ -785,15 +785,16 @@ namespace iTextSharp.text.pdf {
                 FlushFloatingElements();
                 FlushLines();
                 writer.DirectContent.CloseMCBlock(this);
+                writer.FlushAcroFields();
                 writer.FlushTaggedObjects();
-                if(PageEmpty) {
+                if (PageEmpty) {
                     int pageReferenceCount = writer.pageReferences.Count;
-                    if(pageReferenceCount > 0 && writer.CurrentPageNumber == pageReferenceCount) {
+                    if (pageReferenceCount > 0 && writer.CurrentPageNumber == pageReferenceCount) {
                         writer.pageReferences.RemoveAt(pageReferenceCount - 1);
                     }
                 }
-
-            }
+            } else
+                writer.FlushAcroFields();
             bool wasImage = (imageWait != null);
             NewPage();
             if (imageWait != null || wasImage) NewPage();
@@ -1502,7 +1503,7 @@ namespace iTextSharp.text.pdf {
                                     dict.Put(PdfName.TYPE, PdfName.OBJR);
                                     dict.Put(PdfName.OBJ, annot.IndirectReference);
                                     kArray.Add(dict);
-                                    writer.StructureTreeRoot.SetPageMark(structParent, strucElem.Reference);
+                                    writer.StructureTreeRoot.SetAnnotationMark(structParent, strucElem.Reference);
                                 }
                             }
                         }

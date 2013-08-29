@@ -13,6 +13,7 @@ namespace iTextSharp.text.pdf
         private PdfDictionary roleMap = null;
         private PdfDictionary sourceRoleMap = null;
         private PdfDictionary sourceClassMap = null;
+        private PdfIndirectReference nullReference = null;
         //private Dictionary<int, object> openedDocuments = new Dictionary<int, object>();
         public enum ReturnType {BELOW, FOUND, ABOVE, NOTFOUND};
         public static PdfName [] standardTypes = {PdfName.P, PdfName.H, PdfName.H1, PdfName.H2, PdfName.H3, PdfName.H4,
@@ -36,12 +37,26 @@ namespace iTextSharp.text.pdf
             if ((obj == null) || (!obj.IsDictionary()))
                 throw new BadPdfFormatException(MessageLocalization.GetComposedMessage("no.structtreeroot.found"));
             structTreeRoot = (PdfDictionary)obj;
-            obj = PdfStructTreeController.GetDirectObject(structTreeRoot.Get(PdfName.PARENTTREE));
+            obj = GetDirectObject(structTreeRoot.Get(PdfName.PARENTTREE));
             if (!obj.IsDictionary())
                 throw new BadPdfFormatException(MessageLocalization.GetComposedMessage("the.document.does.not.contain.parenttree"));
             parentTree = (PdfDictionary)obj;
             sourceRoleMap = null;
             sourceClassMap = null;
+            nullReference = null;
+        }
+
+        static public bool CheckTagged(PdfReader reader)
+        {
+            PdfObject obj = reader.Catalog.Get(PdfName.STRUCTTREEROOT);
+            obj = GetDirectObject(obj);
+            if ((obj == null) || (!obj.IsDictionary()))
+                return false;
+            PdfDictionary structTreeRoot = (PdfDictionary)obj;
+            obj = PdfStructTreeController.GetDirectObject(structTreeRoot.Get(PdfName.PARENTTREE));
+            if (!obj.IsDictionary())
+                return false;
+            return true;
         }
 
         public static PdfObject GetDirectObject(PdfObject obj) {
@@ -114,36 +129,58 @@ namespace iTextSharp.text.pdf
             while (true) {
                 curNumber = pages.GetAsNumber((begin + cur) * 2).IntValue;
                 if (curNumber == arrayNumber) {
-                    PdfObject obj = pages.GetDirectObject((begin + cur) * 2 + 1);
+                    PdfObject obj = pages[(begin + cur) * 2 + 1];
+                    PdfObject obj1 = obj;
                     while (obj.IsIndirect())
                         obj = PdfReader.GetPdfObjectRelease(obj);
                     //invalid Nums
-                    if (!obj.IsArray())
-                        return ReturnType.NOTFOUND;
-
-                    PdfObject firstNotNullKid = null;
-                    foreach (PdfObject numObj in (PdfArray)obj){
-                        if (numObj.IsNull())
-                            continue;
-                        PdfObject res = writer.CopyObject(numObj, true, false);
-                        if (firstNotNullKid == null)
-                            firstNotNullKid = res;
-                        structureTreeRoot.SetPageMark(newArrayNumber, (PdfIndirectReference) res);
-                    }
-                    //Add kid to structureTreeRoot from structTreeRoot
-                    PdfObject structKids = structTreeRoot.Get(PdfName.K);
-                    if (structKids == null || (!structKids.IsArray() && !structKids.IsIndirect())) {
-                        // incorrect syntax of tags
-                        AddKid(structureTreeRoot, firstNotNullKid);
-                    } else {
-                        if (structKids.IsIndirect()) {
-                            AddKid(structKids);
-                        } else { //structKids.isArray()
-                            foreach (PdfObject kid in (PdfArray)structKids)
-                                AddKid(kid);
+                    if (obj.IsArray()) {
+                        PdfObject firstNotNullKid = null;
+                        foreach (PdfObject numObj in (PdfArray)obj)
+                        {
+                            if (numObj.IsNull())
+                            {
+                                if (nullReference == null)
+                                    nullReference = writer.AddToBody(new PdfNull()).IndirectReference;
+                                structureTreeRoot.SetPageMark(newArrayNumber, nullReference);
+                            }
+                            else
+                            {
+                                PdfObject res = writer.CopyObject(numObj, true, false);
+                                if (firstNotNullKid == null)
+                                    firstNotNullKid = res;
+                                structureTreeRoot.SetPageMark(newArrayNumber, (PdfIndirectReference)res);
+                            }
                         }
+                        //Add kid to structureTreeRoot from structTreeRoot
+                        PdfObject structKids = structTreeRoot.Get(PdfName.K);
+                        if (structKids == null || (!structKids.IsArray() && !structKids.IsIndirect()))
+                        {
+                            // incorrect syntax of tags
+                            AddKid(structureTreeRoot, firstNotNullKid);
+                        }
+                        else
+                        {
+                            if (structKids.IsIndirect())
+                            {
+                                AddKid(structKids);
+                            }
+                            else
+                            { //structKids.isArray()
+                                foreach (PdfObject kid in (PdfArray)structKids)
+                                    AddKid(kid);
+                            }
+                        }
+                    } else if (obj.IsDictionary()) {
+                        PdfDictionary k = GetKDict((PdfDictionary)obj);
+                        if (k == null)
+                            return ReturnType.NOTFOUND;
+                        PdfObject res = writer.CopyObject(obj1, true, false);
+                        structureTreeRoot.SetAnnotationMark(newArrayNumber, (PdfIndirectReference)res);
                     }
-
+                    else {
+                        return ReturnType.NOTFOUND;
+                    }
                     return ReturnType.FOUND;
                 }
                 if (curNumber < arrayNumber) {
@@ -161,6 +198,28 @@ namespace iTextSharp.text.pdf
                     return ReturnType.NOTFOUND;
                 cur /= 2;
             }
+        }
+
+        internal static PdfDictionary GetKDict(PdfDictionary obj) {
+            PdfDictionary k = obj.GetAsDict(PdfName.K);
+            if (k != null) {
+                if (PdfName.OBJR.Equals(k.GetAsName(PdfName.TYPE))) {
+                    return k;
+                }
+            } else {
+                PdfArray k1 = obj.GetAsArray(PdfName.K);
+                if (k1 == null)
+                    return null;
+                for (int i = 0; i < k1.Size; i++) {
+                    k = k1.GetAsDict(i);
+                    if (k != null) {
+                        if (PdfName.OBJR.Equals(k.GetAsName(PdfName.TYPE))) {
+                            return k;
+                        }
+                    }
+                }
+            }
+            return null;
         }
 
         private void AddKid(PdfObject obj)
