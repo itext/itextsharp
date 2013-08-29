@@ -74,14 +74,14 @@ namespace iTextSharp.text.pdf {
             if (numTree != null)
                 return;
             numTree = new Dictionary<int, PdfIndirectReference>();
-            foreach (int i in parentTree.Keys)
-            {
-                PdfArray ar = (PdfArray) parentTree[i];
-                if(ar.Size == 1)
-                    numTree[i] = ar.GetAsIndirectObject(0);
-                else
+            foreach (int i in parentTree.Keys) {
+                PdfObject obj = parentTree[i];
+                if (obj.IsArray()) {
+                    PdfArray ar = (PdfArray)obj;
                     numTree[i] = writer.AddToBody(ar).IndirectReference;
-
+                } else if (obj is PdfIndirectReference) {
+                    numTree[i] = (PdfIndirectReference)obj;
+                }            
             }
         }
 
@@ -156,7 +156,11 @@ namespace iTextSharp.text.pdf {
                 ar = (PdfArray)parentTree[page];
             ar.Add(struc);
         }
-        
+
+        internal void SetAnnotationMark(int structParentIndex, PdfIndirectReference struc) { 
+            parentTree[structParentIndex] = struc;
+        }
+
         private void NodeProcess(PdfDictionary struc, PdfIndirectReference reference) {
             PdfObject obj = struc.Get(PdfName.K);
             if (obj != null && obj.IsArray()/* && !((PdfArray)obj)[0].IsNumber()*/) {

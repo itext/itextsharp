@@ -29,12 +29,17 @@ namespace itextsharp.tests.text.pdf
         public const String SOURCE12 = RESOURCES + "pdf\\source12.pdf";
         public const String SOURCE16 = RESOURCES + "pdf\\source16.pdf";
         public const String SOURCE17 = RESOURCES + "pdf\\source17.pdf";
+        public const String SOURCE18 = RESOURCES + "pdf\\source18.pdf";
         public const String SOURCE22 = RESOURCES + "pdf\\source22.pdf";
         public const String SOURCE32 = RESOURCES + "pdf\\source32.pdf";
         public const String SOURCE42 = RESOURCES + "pdf\\source42.pdf";
         public const String SOURCE51 = RESOURCES + "pdf\\source51.pdf";
         public const String SOURCE52 = RESOURCES + "pdf\\source52.pdf";
         public const String SOURCE53 = RESOURCES + "pdf\\source53.pdf";
+        public const String SOURCE61 = RESOURCES + "pdf\\source61.pdf";
+        public const String SOURCE62 = RESOURCES + "pdf\\source62.pdf";
+        public const String SOURCE63 = RESOURCES + "pdf\\source63.pdf";
+        public const String SOURCE64 = RESOURCES + "pdf\\source64.pdf";
 
         public const String OUT = TARGET + "pdf\\out";
         public const String TARGET = "TaggedPdfCopyTest\\";
@@ -139,7 +144,7 @@ namespace itextsharp.tests.text.pdf
 
             InitializeDocument("-merge");
 
-            int n = 4;
+            int n = 14;
             PdfReader reader1 = new PdfReader(SOURCE11);
             copy.AddPage(copy.GetImportedPage(reader1, 76, true));
             copy.AddPage(copy.GetImportedPage(reader1, 83, true));
@@ -157,10 +162,10 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
 
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
-            int[] nums = new int[] {30, 32, 39, 80};
+            int[] nums = new int[] { 44, 0, 65, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81 };
             for (int i = 0; i < n; ++i)
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
-                                "Nums of page " + (i + 1));
+                                "Nums of page " + (i + 1), true);
 
             PdfDictionary ClassMap =
                 VerifyIsDictionary(PdfStructTreeController.GetDirectObject(structTreeRoot.Get(PdfName.CLASSMAP)),
@@ -191,43 +196,10 @@ namespace itextsharp.tests.text.pdf
             document.Close();
             reader.Close();
 
+            Assert.AreEqual(GetCommonNumsCount(SOURCE11), GetCommonNumsCount(output));
+
             reader = new PdfReader(output);
-            PdfDictionary structTreeRoot =
-                VerifyIsDictionary(reader.Catalog.GetDirectObject(PdfName.STRUCTTREEROOT), NO_STRUCT_TREE_ROOT);
-            VerifyArraySize(structTreeRoot.Get(PdfName.K), 5, "Invalid count of kids in StructTreeRoot");
-            PdfObject obj = PdfStructTreeController.GetDirectObject(structTreeRoot.Get(PdfName.PARENTTREE));
-            VerifyIsDictionary(obj, NO_PARENT_TREE);
-            obj = ((PdfDictionary) obj).Get(PdfName.KIDS);
-            VerifyArraySize(obj, 3, "Invalid nums.");
-            PdfObject numsDict = PdfStructTreeController.GetDirectObject(((PdfArray) obj).GetDirectObject(0));
-            VerifyIsDictionary(numsDict, "nums1");
-            PdfArray[] arrays = new PdfArray[3];
-            arrays[0] = VerifyArraySize(((PdfDictionary) numsDict).Get(PdfName.NUMS), 128, "nums 1");
-            numsDict = PdfStructTreeController.GetDirectObject(((PdfArray) obj).GetDirectObject(1));
-            VerifyIsDictionary(numsDict, "nums2");
-            arrays[1] = VerifyArraySize(((PdfDictionary) numsDict).Get(PdfName.NUMS), 128, "nums 2");
-            numsDict = PdfStructTreeController.GetDirectObject(((PdfArray) obj).GetDirectObject(2));
-            VerifyIsDictionary(numsDict, "nums3");
-            arrays[2] = VerifyArraySize(((PdfDictionary) numsDict).Get(PdfName.NUMS), 4, "nums 3");
-            int[] nums = new int[]
-                {
-                    3, 91, 42, 19, 15, 15, 9, 13, 15, 17, 18, 5, 17, 37, 24, 19, 15, 23, 8, 11,
-                    17, 11, 13, 29, 18, 12, 11, 9, 14, 26, 17, 22, 30, 15, 21, 28, 22, 24, 22, 20, 21, 17, 24,
-                    25, 20, 14, 32, 25, 14, 15, 24, 20, 22, 24, 21, 22, 18, 12, 23, 29, 19, 22, 21, 27, 25, 19,
-                    6, 14, 18, 21, 25, 11, 26, 15, 15, 30, 23, 32, 17, 22, 18, 18, 32, 18, 16, 21, 28, 28, 10,
-                    18, 13, 23, 17, 19, 24, 29, 25, 34, 26, 24, 28, 27, 21, 23, 23, 23, 10, 10, 10, 9, 16, 20,
-                    16, 16, 22, 27, 14, 3, 11, 30, 11, 29, 6, 99, 117, 128, 92, 67, 132, 108
-                };
-
-            //OutputStreamWriter writer = new FileWriter(OUT0+".txt");
-            int k = 0;
-            for (int i = 0; i < arrays.Length; ++i)
-                for (int j = 0; j < arrays[i].Size/2; ++j)
-                    VerifyArraySize(PdfStructTreeController.GetDirectObject(arrays[i].GetDirectObject(j*2 + 1)), nums[k++],
-                                    "Nums of page " + (i + 1));
-            //writer.write(((PdfArray)(PdfStructTreeController.GetDirectObject(arrays[i].GetDirectObject(j*2+1)))).size()+", ");
-            //writer.Close();
-
+            PdfDictionary structTreeRoot = (PdfDictionary)reader.Catalog.GetDirectObject(PdfName.STRUCTTREEROOT);
             PdfDictionary ClassMap =
                 VerifyIsDictionary(PdfStructTreeController.GetDirectObject(structTreeRoot.Get(PdfName.CLASSMAP)),
                                    NO_CLASS_MAP);
@@ -277,8 +249,8 @@ namespace itextsharp.tests.text.pdf
             PdfObject obj = PdfStructTreeController.GetDirectObject(structTreeRoot.Get(PdfName.PARENTTREE));
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
-            VerifyArraySize(array, 2, "Nums");
-            VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(1)), 61, "Nums of page 1");
+            VerifyArraySize(array, 22, "Nums");
+            VerifyArraySize(PdfStructTreeController.GetDirectObject(array[1]), 61, "Nums of page 1");
             reader.Close();
             CompareResults("1");
         }
@@ -396,7 +368,7 @@ namespace itextsharp.tests.text.pdf
         {
             InitializeDocument("6");
             PdfReader reader = new PdfReader(SOURCE11);
-            int n = 8;
+            int n = 12;
             copy.AddPage(copy.GetImportedPage(reader, 1, true));
             copy.AddPage(copy.GetImportedPage(reader, 25, true));
             copy.AddPage(copy.GetImportedPage(reader, 7, true));
@@ -416,10 +388,10 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, n*2, "Nums");
-            int[] nums = new int[] {3, 18, 9, 25, 15, 91, 13, 18};
+            int[] nums = new int[] { 5, 0, 33, 12, 0, 48, 35, 182, 0, 0, 17, 37 };
             for (int i = 0; i < n; ++i)
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
-                                "Nums of page " + (i + 1));
+                                "Nums of page " + (i + 1), true);
 
             PdfDictionary ClassMap =
                 VerifyIsDictionary(PdfStructTreeController.GetDirectObject(structTreeRoot.Get(PdfName.CLASSMAP)),
@@ -497,7 +469,7 @@ namespace itextsharp.tests.text.pdf
                 copy.AddPage(copy.GetImportedPage(reader, i, true));
             for (int i = 1; i <= n; ++i)
                 copy.AddPage(copy.GetImportedPage(reader, i, true));
-            n *= 4;
+            n = 52;
             document.Close();
             reader.Close();
 
@@ -509,10 +481,10 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, n*2, "Nums");
-            int[] nums = new int[] {42, 42, 11, 11, 13, 13, 42, 11, 13, 42, 11, 13};
-            for (int i = 0; i < n; ++i)
-                VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
-                                "Nums of page " + (i + 1));
+//            int[] nums = new int[] {42, 42, 11, 11, 13, 13, 42, 11, 13, 42, 11, 13};
+//            for (int i = 0; i < n; ++i)
+//                VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
+//                                "Nums of page " + (i + 1));
 
             reader.Close();
             CompareResults("8");
@@ -525,7 +497,7 @@ namespace itextsharp.tests.text.pdf
             PdfReader reader4 = new PdfReader(SOURCE4);
             PdfReader reader10 = new PdfReader(SOURCE10);
             PdfReader reader32 = new PdfReader(SOURCE32);
-            int n = 20;
+            int n = 40;
             copy.AddPage(copy.GetImportedPage(reader4, 1, true));
             copy.AddPage(copy.GetImportedPage(reader10, 2, true));
             copy.AddPage(copy.GetImportedPage(reader10, 3, true));
@@ -560,11 +532,11 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, n*2, "Nums");
-            int[] nums = new int[] {7, 87, 128, 26, 135, 83, 7, 135, 83, 116, 26, 128, 74, 16, 11, 38, 51, 61, 7, 26};
+            int[] nums = new int[] { 7, 87, 128, 26, 135, 0, 0, 83, 7, 135, 0, 0, 0, 0, 0, 0, 83, 116, 26, 128, 74, 16, 12, 0, 0, 38, 54, 61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 26 }; 
             for (int i = 0; i < n; ++i)
                 //            nums[i] = ((PdfArray)PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2+1))).size();
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
-                                "Nums of page " + (i + 1));
+                                "Nums of page " + (i + 1), true);
 
             reader.Close();
             CompareResults("9");
@@ -688,16 +660,114 @@ namespace itextsharp.tests.text.pdf
                 Assert.Fail("BadPdfFormatException expected!");
         }
 
+        [Test]
+        public void CopyTaggedPdf14() {
+            InitializeDocument("14");
+            PdfReader reader = new PdfReader(SOURCE11);
+
+            copy.AddPage(copy.GetImportedPage(reader, 5, true));
+            document.Close();
+            reader.Close();
+
+            reader = new PdfReader(output);
+            PdfDictionary structTreeRoot = VerifyIsDictionary(reader.Catalog.GetDirectObject(PdfName.STRUCTTREEROOT), NO_STRUCT_TREE_ROOT);
+            VerifyArraySize(structTreeRoot.Get(PdfName.K), 1, "Invalid count of kids in StructTreeRoot");
+            PdfObject obj = PdfStructTreeController.GetDirectObject(structTreeRoot.Get(PdfName.PARENTTREE));
+            VerifyIsDictionary(obj, NO_PARENT_TREE);
+            PdfArray array = ((PdfDictionary)obj).GetAsArray(PdfName.NUMS);
+            VerifyArraySize(array, 8, "Nums");
+            VerifyArraySize(PdfStructTreeController.GetDirectObject(array[1]), 20, "Nums of page 1");
+            reader.Close();
+        }
+
+        [Test]
+        public void CopyTaggedPdf15() {
+            InitializeDocument("15");
+            copy.SetMergeFields();
+
+            PdfReader reader1 = new PdfReader(SOURCE61);
+            PdfReader reader2 = new PdfReader(SOURCE62);
+            copy.addDocument(reader1);
+            copy.addDocument(reader2);
+            document.Close();
+            reader1.Close();
+            reader2.Close();
+
+            PdfReader reader = new PdfReader(output);
+            PdfDictionary catalog = reader.Catalog;
+            PdfDictionary structTreeRoot = catalog.GetAsDict(PdfName.STRUCTTREEROOT);
+            PdfDictionary structParent = structTreeRoot.GetAsDict(PdfName.PARENTTREE);
+            PdfArray nums = structParent.GetAsArray(PdfName.NUMS);
+            PdfDictionary acroForm = catalog.GetAsDict(PdfName.ACROFORM);
+            PdfDictionary fonts = acroForm.GetAsDict(PdfName.DR).GetAsDict(PdfName.FONT);
+
+            Assert.AreEqual(new PdfName("Helvetica"), fonts.GetAsDict(new PdfName("Helv")).GetAsName(PdfName.BASEFONT));
+            Assert.AreEqual(new PdfName("ZapfDingbats"), fonts.GetAsDict(new PdfName("ZaDb")).GetAsName(PdfName.BASEFONT));
+            Assert.AreEqual(new PdfName("ArialMT"), fonts.GetAsDict(new PdfName("ArialMT")).GetAsName(PdfName.BASEFONT));
+            Assert.AreEqual(new PdfName("CourierStd"), fonts.GetAsDict(new PdfName("CourierStd")).GetAsName(PdfName.BASEFONT));
+
+            Assert.AreEqual(1, nums.GetAsNumber(2).IntValue);
+            Assert.AreEqual(4, nums.GetAsNumber(8).IntValue);
+
+            Assert.AreEqual(acroForm.GetAsArray(PdfName.FIELDS).GetAsIndirectObject(0).Number, nums.GetAsDict(5).GetAsDict(PdfName.K).GetAsIndirectObject(PdfName.OBJ).Number);
+            Assert.AreEqual(acroForm.GetAsArray(PdfName.FIELDS).GetAsIndirectObject(2).Number, nums.GetAsDict(11).GetAsDict(PdfName.K).GetAsIndirectObject(PdfName.OBJ).Number);
+            Assert.AreEqual(acroForm.GetAsArray(PdfName.FIELDS).GetAsDict(1).GetAsArray(PdfName.KIDS).GetAsIndirectObject(0).Number, nums.GetAsDict(3).GetAsDict(PdfName.K).GetAsIndirectObject(PdfName.OBJ).Number);
+            Assert.AreEqual(acroForm.GetAsArray(PdfName.FIELDS).GetAsDict(1).GetAsArray(PdfName.KIDS).GetAsIndirectObject(1).Number, nums.GetAsDict(9).GetAsDict(PdfName.K).GetAsIndirectObject(PdfName.OBJ).Number);
+
+            Assert.AreEqual(2, acroForm.GetAsArray(PdfName.FIELDS).GetAsDict(0).GetAsNumber(PdfName.STRUCTPARENT).IntValue);
+            Assert.AreEqual(1, acroForm.GetAsArray(PdfName.FIELDS).GetAsDict(1).GetAsArray(PdfName.KIDS).GetAsDict(0).GetAsNumber(PdfName.STRUCTPARENT).IntValue);
+            Assert.AreEqual(5, acroForm.GetAsArray(PdfName.FIELDS).GetAsDict(2).GetAsNumber(PdfName.STRUCTPARENT).IntValue);
+            Assert.AreEqual(4, acroForm.GetAsArray(PdfName.FIELDS).GetAsDict(1).GetAsArray(PdfName.KIDS).GetAsDict(1).GetAsNumber(PdfName.STRUCTPARENT).IntValue);
+
+            reader.Close();
+        }
+
+        [Test]
+        [Ignore]
+        public void CopyTaggedPdf16() {
+            InitializeDocument("16");
+            copy.SetMergeFields();
+
+            PdfReader reader1 = new PdfReader(SOURCE63);
+            PdfReader reader2 = new PdfReader(SOURCE64);
+            copy.addDocument(reader1);
+            copy.addDocument(reader2);
+            document.Close();
+            reader1.Close();
+            reader2.Close();
+
+            PdfReader reader = new PdfReader(output);
+            PdfDictionary catalog = reader.Catalog;
+            PdfDictionary structTreeRoot = catalog.GetAsDict(PdfName.STRUCTTREEROOT);
+            PdfDictionary structParent = structTreeRoot.GetAsDict(PdfName.PARENTTREE);
+            PdfArray nums = structParent.GetAsArray(PdfName.NUMS);
+            PdfDictionary acroForm = catalog.GetAsDict(PdfName.ACROFORM);
+            PdfDictionary fonts = acroForm.GetAsDict(PdfName.DR).GetAsDict(PdfName.FONT);
+
+            Assert.AreEqual(new PdfName("Helvetica"), fonts.GetAsDict(new PdfName("Helv")).GetAsName(PdfName.BASEFONT));
+            Assert.AreEqual(new PdfName("Courier"), fonts.GetAsDict(new PdfName("Cour")).GetAsName(PdfName.BASEFONT));
+            Assert.AreEqual(new PdfName("Times-Bold"), fonts.GetAsDict(new PdfName("TiBo")).GetAsName(PdfName.BASEFONT));
+            Assert.AreEqual(new PdfName("ZapfDingbats"), fonts.GetAsDict(new PdfName("ZaDb")).GetAsName(PdfName.BASEFONT));
+
+            reader.Close();
+        }
+
         [TearDown]
         public void Compress()
         {
             Document.Compress = true;
         }
 
-        private PdfArray VerifyArraySize(PdfObject obj, int size, String message)
-        {
-            if (obj == null || !obj.IsArray())
+        private PdfArray VerifyArraySize(PdfObject obj, int size, String message) {
+            return VerifyArraySize(obj, size, message, false);
+        }
+
+        private PdfArray VerifyArraySize(PdfObject obj, int size, String message, bool ignoreIfNotArray) {
+            if (!(obj is PdfArray)) {
+                if (ignoreIfNotArray)
+                    return null;
                 Assert.Fail(message + " is not array");
+            }
             if (((PdfArray) obj).Size != size)
                 Assert.Fail(message + " has wrong size");
             return (PdfArray) obj;
@@ -723,6 +793,18 @@ namespace itextsharp.tests.text.pdf
 
         }
 
+        private int GetCommonNumsCount(String filename) {
+            PdfReader reader = new PdfReader(filename);
+            PdfDictionary structTreeRoot = reader.Catalog.GetAsDict(PdfName.STRUCTTREEROOT);
+            PdfArray kids = ((PdfDictionary)PdfStructTreeController.GetDirectObject(structTreeRoot.Get(PdfName.PARENTTREE))).GetAsArray(PdfName.KIDS);
+            int cnt = 0;
+            for (int i = 0; i < kids.Size; i++) {
+                PdfArray nums = kids.GetAsDict(i).GetAsArray(PdfName.NUMS);
+                cnt += nums.Size;
+            }
+            reader.Close();
+            return cnt;
+        }
 
         private class MyTaggedPdfReaderTool : TaggedPdfReaderTool
         {
