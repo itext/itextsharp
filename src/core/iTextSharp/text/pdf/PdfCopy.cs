@@ -719,15 +719,15 @@ namespace iTextSharp.text.pdf {
             ++currentPageNumber;
         }
 
-        public void addDocument(PdfReader reader, List<int> pagesToKeep) {
+        public void AddDocument(PdfReader reader, List<int> pagesToKeep) {
             if (indirectMap.ContainsKey(reader)) {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("document.1.has.already.been.added", reader.ToString()));
             }
             reader.SelectPages(pagesToKeep);
-            addDocument(reader);
+            AddDocument(reader);
         }
 
-        public void addDocument(PdfReader reader) {
+        public void AddDocument(PdfReader reader) {
             if (indirectMap.ContainsKey(reader)) {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("document.1.has.already.been.added", reader.ToString()));
             }

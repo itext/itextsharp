@@ -687,8 +687,8 @@ namespace itextsharp.tests.text.pdf
 
             PdfReader reader1 = new PdfReader(SOURCE61);
             PdfReader reader2 = new PdfReader(SOURCE62);
-            copy.addDocument(reader1);
-            copy.addDocument(reader2);
+            copy.AddDocument(reader1);
+            copy.AddDocument(reader2);
             document.Close();
             reader1.Close();
             reader2.Close();
@@ -730,8 +730,8 @@ namespace itextsharp.tests.text.pdf
 
             PdfReader reader1 = new PdfReader(SOURCE63);
             PdfReader reader2 = new PdfReader(SOURCE64);
-            copy.addDocument(reader1);
-            copy.addDocument(reader2);
+            copy.AddDocument(reader1);
+            copy.AddDocument(reader2);
             document.Close();
             reader1.Close();
             reader2.Close();
