@@ -30,6 +30,7 @@ namespace itextsharp.tests.text.pdf
         public const String SOURCE16 = RESOURCES + "pdf\\source16.pdf";
         public const String SOURCE17 = RESOURCES + "pdf\\source17.pdf";
         public const String SOURCE18 = RESOURCES + "pdf\\source18.pdf";
+        public const String SOURCE19 = RESOURCES + "pdf\\source19.pdf";
         public const String SOURCE22 = RESOURCES + "pdf\\source22.pdf";
         public const String SOURCE32 = RESOURCES + "pdf\\source32.pdf";
         public const String SOURCE42 = RESOURCES + "pdf\\source42.pdf";
@@ -749,6 +750,26 @@ namespace itextsharp.tests.text.pdf
             Assert.AreEqual(new PdfName("Times-Bold"), fonts.GetAsDict(new PdfName("TiBo")).GetAsName(PdfName.BASEFONT));
             Assert.AreEqual(new PdfName("ZapfDingbats"), fonts.GetAsDict(new PdfName("ZaDb")).GetAsName(PdfName.BASEFONT));
 
+            reader.Close();
+        }
+
+        [Test]
+        public void CopyTaggedPdf17() {
+            InitializeDocument("17");
+
+            PdfReader reader1 = new PdfReader(SOURCE10);
+            PdfReader reader2 = new PdfReader(SOURCE19);
+            copy.AddPage(copy.GetImportedPage(reader1, 1, true));
+            copy.AddPage(copy.GetImportedPage(reader2, 1, false));
+
+            document.Close();
+            reader1.Close();
+            reader2.Close();
+
+            PdfReader reader = new PdfReader(output);
+            Assert.AreEqual(2, reader.NumberOfPages);
+            Assert.NotNull(reader.GetPageN(1));
+            Assert.NotNull(reader.GetPageN(2));
             reader.Close();
         }
 
