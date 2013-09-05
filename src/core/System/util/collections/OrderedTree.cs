@@ -475,8 +475,9 @@ namespace System.util.collections {
             int result;
             OrderedTreeNode node;
 
-            // see if node to be deleted was the last one found
-            result = key.CompareTo(lastNodeFound.Key);
+            // see if node to be deleted was the last one found,
+            //check for null to avoid null reference exception
+            result = lastNodeFound.Key == null ? -1 : key.CompareTo(lastNodeFound.Key);
             if(result == 0)
                 node = lastNodeFound;
             else {

@@ -1100,7 +1100,7 @@ namespace iTextSharp.text.pdf {
                 else inactives.Add(entry.Key);
             }
             List<PdfBody.PdfCrossReference> xrefs = new List<PdfBody.PdfCrossReference>();
-            foreach (PdfBody.PdfCrossReference xref in body.xrefs.Values)
+            foreach (PdfBody.PdfCrossReference xref in body.xrefs.Keys)
                 xrefs.Add(xref);
             foreach (PdfBody.PdfCrossReference cr in xrefs)
             {
