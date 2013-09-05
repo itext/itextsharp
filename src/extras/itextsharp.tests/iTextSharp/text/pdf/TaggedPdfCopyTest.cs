@@ -149,11 +149,11 @@ namespace itextsharp.tests.text.pdf
             PdfReader reader1 = new PdfReader(SOURCE11);
             copy.AddPage(copy.GetImportedPage(reader1, 76, true));
             copy.AddPage(copy.GetImportedPage(reader1, 83, true));
-            reader1.Close();
             PdfReader reader2 = new PdfReader(SOURCE32);
             copy.AddPage(copy.GetImportedPage(reader2, 69, true));
             copy.AddPage(copy.GetImportedPage(reader2, 267, true));
             document.Close();
+            reader1.Close();
             reader2.Close();
             PdfReader reader = new PdfReader(output);
             PdfDictionary structTreeRoot =
@@ -770,6 +770,25 @@ namespace itextsharp.tests.text.pdf
             Assert.AreEqual(2, reader.NumberOfPages);
             Assert.NotNull(reader.GetPageN(1));
             Assert.NotNull(reader.GetPageN(2));
+            reader.Close();
+        }
+
+        [Test]
+        public void CopyTaggedPdf19() {
+            InitializeDocument("19");
+
+            PdfReader reader = new PdfReader(SOURCE18);
+            copy.AddPage(copy.GetImportedPage(reader, 1, true));
+
+            document.Close();
+            reader.Close();
+
+            reader = new PdfReader(output);
+
+            PdfDictionary page1 = reader.GetPageN(1);
+            PdfDictionary t1_0 = page1.GetAsDict(PdfName.RESOURCES).GetAsDict(PdfName.XOBJECT).GetAsStream(new PdfName("Fm0")).GetAsDict(PdfName.RESOURCES).GetAsDict(PdfName.FONT).GetAsDict(new PdfName("T1_0"));
+            Assert.NotNull(t1_0);
+
             reader.Close();
         }
 
