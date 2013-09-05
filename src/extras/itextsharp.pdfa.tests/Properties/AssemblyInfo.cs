@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("iTextSharp XML Worker")]
-[assembly: AssemblyDescription("Parses XML to PDF, with CSS support, using iTextSharp")]
+[assembly: AssemblyTitle("itextsharp.pdfa.tests")]
+[assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("1T3XT BVBA")]
-[assembly: AssemblyProduct("itextsharp.xmlworker")]
-[assembly: AssemblyCopyright("Copyright (C) 2013 by Bruno Lowagie and Paulo Soares. All Rights Reserved.")]
+[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyProduct("itextsharp.pdfa.tests")]
+[assembly: AssemblyCopyright("Copyright © Microsoft 2013")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -20,7 +20,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("12ef9c6c-372c-4ba1-9104-89a92a97ff9a")]
+[assembly: Guid("ad182706-8617-4e07-ac63-2f1b88ebb671")]
 
 // Version information for an assembly consists of the following four values:
 //
@@ -31,4 +31,5 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("5.4.2")]
+[assembly: AssemblyVersion("1.0.0.0")]
+[assembly: AssemblyFileVersion("1.0.0.0")]

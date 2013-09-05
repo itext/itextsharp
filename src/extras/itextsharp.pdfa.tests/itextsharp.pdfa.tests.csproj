@@ -1,0 +1,85 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{67AA00E9-15AF-4592-8119-110C8CBD1E31}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>itextsharp.pdfa.tests</RootNamespace>
+    <AssemblyName>itextsharp.pdfa.tests</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>itextsharp.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="iTextSharp\text\pdfa\PdfA1CheckerTest.cs" />
+    <Compile Include="iTextSharp\text\pdfa\PdfA2CheckerTest.cs" />
+    <Compile Include="iTextSharp\text\pdfa\PdfAFileStructureTest.cs" />
+    <Compile Include="iTextSharp\text\pdfa\PdfAWriterTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\itextsharp.csproj">
+      <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
+      <Name>itextsharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\itextsharp.pdfa\itextsharp.pdfa.csproj">
+      <Project>{C892FA61-C495-4F30-8799-A198F89F23F4}</Project>
+      <Name>itextsharp.pdfa</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="itextsharp.snk" />
+    <None Include="resources\text\pdfa\FreeMonoBold.ttf" />
+    <None Include="resources\text\pdfa\jpeg2000\file1.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file2.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file3.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file4.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file5.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file6.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file7.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file8.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file9.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\p0_01.j2k" />
+    <None Include="resources\text\pdfa\jpeg2000\p0_02.j2k" />
+    <None Include="resources\text\pdfa\jpeg2000\p1_01.j2k" />
+    <None Include="resources\text\pdfa\jpeg2000\p1_02.j2k" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="resources\text\pdfa\jpeg2000\cpyrght.htm" />
+    <Content Include="resources\text\pdfa\jpeg2000\cpyrght_files\d13c15.gif" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

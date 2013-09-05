@@ -42,8 +42,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="iTextSharp\text\ChunkTest.cs" />
-    <Compile Include="iTextSharp\text\pdfa\PdfA2CheckerTest.cs" />
-    <Compile Include="iTextSharp\text\pdfa\PdfAFileStructureTest.cs" />
     <Compile Include="iTextSharp\text\pdf\mc\AcroFieldsFlattenTest.cs" />
     <Compile Include="iTextSharp\text\signature\XadesBesTest.cs" />
     <Compile Include="iTextSharp\text\signature\XmlDSigKSTest.cs" />
@@ -56,8 +54,6 @@
   <ItemGroup>
     <None Include="lib\XmlDiffPatch.dll">
     </None>
-    <Content Include="resources\text\pdfa\jpeg2000\cpyrght.htm" />
-    <Content Include="resources\text\pdfa\jpeg2000\cpyrght_files\d13c15.gif" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test0.xml" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test1.xml" />
     <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test10.xml" />
@@ -95,20 +91,6 @@
     <None Include="resources\text\pdf\mc\SF2809_alt.pdf" />
     <Content Include="resources\text\pdf\signature\ds-ks\pkcs12" />
     <Content Include="resources\text\pdf\signature\ds\key" />
-    <Content Include="resources\text\pdfa\FreeMonoBold.ttf" />
-    <Content Include="resources\text\pdfa\jpeg2000\file1.jp2" />
-    <Content Include="resources\text\pdfa\jpeg2000\file2.jp2" />
-    <Content Include="resources\text\pdfa\jpeg2000\file3.jp2" />
-    <Content Include="resources\text\pdfa\jpeg2000\file4.jp2" />
-    <Content Include="resources\text\pdfa\jpeg2000\file5.jp2" />
-    <Content Include="resources\text\pdfa\jpeg2000\file6.jp2" />
-    <Content Include="resources\text\pdfa\jpeg2000\file7.jp2" />
-    <Content Include="resources\text\pdfa\jpeg2000\file8.jp2" />
-    <Content Include="resources\text\pdfa\jpeg2000\file9.jp2" />
-    <Content Include="resources\text\pdfa\jpeg2000\p0_01.j2k" />
-    <Content Include="resources\text\pdfa\jpeg2000\p0_02.j2k" />
-    <Content Include="resources\text\pdfa\jpeg2000\p1_01.j2k" />
-    <Content Include="resources\text\pdfa\jpeg2000\p1_02.j2k" />
     <Content Include="resources\text\pdf\signature\ds-ks\xfa.signed.package.xml" />
     <Content Include="resources\text\pdf\signature\ds-ks\xfa.signed.xml" />
     <Content Include="resources\text\pdf\signature\ds\xfa.signed.ki.package.xml" />
