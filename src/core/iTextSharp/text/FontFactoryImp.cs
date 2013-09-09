@@ -527,6 +527,25 @@ namespace iTextSharp.text {
         * @return the number of fonts registered
         */    
         public virtual int RegisterDirectories() {
+            if (Environment.OSVersion.Platform == PlatformID.Unix || 
+                Environment.OSVersion.Platform == PlatformID.MacOSX)
+            {
+                // Use paths specific to Linux and MacOSX
+                int count = 0;
+
+                // Linux
+                count += RegisterDirectory("/usr/share/X11/fonts", true);
+                count += RegisterDirectory("/usr/X/lib/X11/fonts", true);
+                count += RegisterDirectory("/usr/openwin/lib/X11/fonts", true);
+                count += RegisterDirectory("/usr/share/fonts", true);
+                count += RegisterDirectory("/usr/X11R6/lib/X11/fonts", true);
+
+                // MacOSX
+                count += RegisterDirectory("/Library/Fonts");
+                count += RegisterDirectory("/System/Library/Fonts");
+                return count;
+            }
+
             string dir = Path.Combine(Path.GetDirectoryName(Environment.GetFolderPath(Environment.SpecialFolder.System)), "Fonts");
             return RegisterDirectory(dir);
         }
