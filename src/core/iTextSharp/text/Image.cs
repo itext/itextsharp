@@ -189,6 +189,8 @@ namespace iTextSharp.text {
     
         /// <summary> this is the colorspace of a jpeg-image. </summary>
         protected int colorspace = -1;
+
+        protected int colortransform = 1;
     
         /// <summary> this is the bits per component of the raw image. It also flags a CCITT image.</summary>
         protected int bpc = 1;
@@ -213,7 +215,7 @@ namespace iTextSharp.text {
 
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
 
-        protected Guid id = Guid.Empty;
+        protected AccessibleElementId id = new AccessibleElementId();
 
         /// <summary> Holds value of property dpiX. </summary>
         protected int dpiX = 0;
@@ -1186,6 +1188,12 @@ namespace iTextSharp.text {
             }
         }
 
+        public int ColorTransform
+        {
+            get { return colortransform; }
+            set { colortransform = value; }
+        }
+
         /// <summary>
         /// Returns the transformation matrix of the image.
         /// </summary>
@@ -1668,11 +1676,11 @@ namespace iTextSharp.text {
             set { this.role = value; }
         }
         
-        public Guid ID {
+        public AccessibleElementId ID {
             get
             {
-                if (id == Guid.Empty)
-                    id = Guid.NewGuid();
+                if (id == null)
+                    id = new AccessibleElementId();
                 return id;
             }
             set { id = value; }

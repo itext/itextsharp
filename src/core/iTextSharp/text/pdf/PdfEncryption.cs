@@ -501,6 +501,8 @@ public class PdfEncryption {
     public static PdfObject CreateInfoId(byte[] id) {
         ByteBuffer buf = new ByteBuffer(90);
         buf.Append('[').Append('<');
+        if(id.Length != 16)
+            id = CreateDocumentId();
         for (int k = 0; k < 16; ++k)
             buf.AppendHex(id[k]);
         buf.Append('>').Append('<');
@@ -508,6 +510,7 @@ public class PdfEncryption {
         for (int k = 0; k < 16; ++k)
             buf.AppendHex(id[k]);
         buf.Append('>').Append(']');
+        buf.Close();
         return new PdfLiteral(buf.ToByteArray());
     }
 

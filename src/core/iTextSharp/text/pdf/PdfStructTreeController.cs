@@ -38,7 +38,7 @@ namespace iTextSharp.text.pdf
                 throw new BadPdfFormatException(MessageLocalization.GetComposedMessage("no.structtreeroot.found"));
             structTreeRoot = (PdfDictionary)obj;
             obj = GetDirectObject(structTreeRoot.Get(PdfName.PARENTTREE));
-            if (!obj.IsDictionary())
+            if (obj == null || !obj.IsDictionary())
                 throw new BadPdfFormatException(MessageLocalization.GetComposedMessage("the.document.does.not.contain.parenttree"));
             parentTree = (PdfDictionary)obj;
             sourceRoleMap = null;

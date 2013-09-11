@@ -100,18 +100,19 @@ namespace iTextSharp.text.pdf {
                 Put(PdfName.INTERPOLATE, PdfBoolean.PDFTRUE);
             Stream isp = null;
             try {
+        	    // deal with transparency
+                int[] transparency = image.Transparency;
+                if(transparency != null && !image.IsMask() && maskRef == null) {
+                    StringBuilder s = new StringBuilder("[");
+                    for(int k = 0; k < transparency.Length; ++k)
+                        s.Append(transparency[k]).Append(' ');
+                    s.Append(']');
+                    Put(PdfName.MASK, new PdfLiteral(s.ToString()));
+                }
                 // Raw Image data
                 if (image.IsImgRaw()) {
                     // will also have the CCITT parameters
                     int colorspace = image.Colorspace;
-                    int[] transparency = image.Transparency;
-                    if (transparency != null && !image.IsMask() && maskRef == null) {
-                        StringBuilder s = new StringBuilder("[");
-                        for (int k = 0; k < transparency.Length; ++k)
-                            s.Append(transparency[k]).Append(' ');
-                        s.Append(']');
-                        Put(PdfName.MASK, new PdfLiteral(s.ToString()));
-                    }
                     bytes = image.RawData;
                     Put(PdfName.LENGTH, new PdfNumber(bytes.Length));
                     int bpc = image.Bpc;
@@ -185,6 +186,11 @@ namespace iTextSharp.text.pdf {
                 switch (image.Type) {
                     case Image.JPEG:
                         Put(PdfName.FILTER, PdfName.DCTDECODE);
+                        if(image.ColorTransform == 0) {
+                            PdfDictionary decodeparms = new PdfDictionary();
+                            decodeparms.Put(PdfName.COLORTRANSFORM, new PdfNumber(0));
+                            Put(PdfName.DECODEPARMS, decodeparms);
+                        }
                         switch (image.Colorspace) {
                             case 1:
                                 Put(PdfName.COLORSPACE, PdfName.DEVICEGRAY);

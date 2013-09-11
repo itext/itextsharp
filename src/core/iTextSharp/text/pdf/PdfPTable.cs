@@ -177,7 +177,7 @@ namespace iTextSharp.text.pdf {
 
         protected PdfName role = PdfName.TABLE;
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
-        protected Guid id = Guid.NewGuid();
+        protected AccessibleElementId id = new AccessibleElementId();
         private PdfPTableHeader header = null;
         private PdfPTableBody body = null;
         private PdfPTableFooter footer = null;
@@ -638,7 +638,7 @@ namespace iTextSharp.text.pdf {
         {
             defaultCell.Table = table;
             PdfPCell newCell = AddCell(defaultCell);
-            newCell.id = Guid.NewGuid();
+            newCell.id = new AccessibleElementId();
             defaultCell.Table = null;
         }
 
@@ -652,7 +652,7 @@ namespace iTextSharp.text.pdf {
         {
             defaultCell.Image = image;
             PdfPCell newCell = AddCell(defaultCell);
-            newCell.id = Guid.NewGuid();
+            newCell.id = new AccessibleElementId();
             defaultCell.Image = null;
         }
 
@@ -665,7 +665,7 @@ namespace iTextSharp.text.pdf {
         {
             defaultCell.Phrase = phrase;
             PdfPCell newCell = AddCell(defaultCell);
-            newCell.id = Guid.NewGuid();
+            newCell.id = new AccessibleElementId();
             defaultCell.Phrase = null;
         }
 
@@ -962,6 +962,8 @@ namespace iTextSharp.text.pdf {
         public static void EndWritingRows(PdfContentByte[] canvases)
         {
             PdfContentByte canvas = canvases[BASECANVAS];
+            PdfArtifact artifact = new PdfArtifact();
+            canvas.OpenMCBlock(artifact);
             canvas.SaveState();
             canvas.Add(canvases[BACKGROUNDCANVAS]);
             canvas.RestoreState();
@@ -970,6 +972,7 @@ namespace iTextSharp.text.pdf {
             canvas.ResetRGBColorStroke();
             canvas.Add(canvases[LINECANVAS]);
             canvas.RestoreState();
+            canvas.CloseMCBlock(artifact);
             canvas.Add(canvases[TEXTCANVAS]);
         }
 
@@ -1746,7 +1749,7 @@ namespace iTextSharp.text.pdf {
             set { this.role = value; }
         }
 
-        public Guid ID {
+        public AccessibleElementId ID {
             get { return id; }
             set { id = value; }
         }

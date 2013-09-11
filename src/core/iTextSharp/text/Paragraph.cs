@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using iTextSharp.text.api;
 using iTextSharp.text.pdf;
@@ -107,7 +106,7 @@ namespace iTextSharp.text {
         protected bool keeptogether = false;
         protected PdfName role = PdfName.P;
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
-        protected Guid id = Guid.Empty;
+        protected AccessibleElementId id = new AccessibleElementId();
 
         // constructors
     
@@ -268,8 +267,6 @@ namespace iTextSharp.text {
                         if (lastItem != null) {
                             lastItem.SpacingAfter = SpacingAfter;
                         }
-                        break;
-                    default:
                         break;
                 }
             }
@@ -489,11 +486,11 @@ namespace iTextSharp.text {
             set { this.role = value; }
         }
 
-        public Guid ID {
+        public AccessibleElementId ID {
             get
             {
-                if (id == Guid.Empty)
-                    id = Guid.NewGuid();
+                if (id == null)
+                    id = new AccessibleElementId();
                 return id;
             }
             set { id = value; }

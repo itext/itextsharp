@@ -282,7 +282,7 @@ namespace iTextSharp.text.pdf {
         protected internal PdfWriter writer;
 
 
-        internal Dictionary<Guid, PdfStructureElement> structElements = new Dictionary<Guid, PdfStructureElement>();
+        internal Dictionary<AccessibleElementId, PdfStructureElement> structElements = new Dictionary<AccessibleElementId, PdfStructureElement>();
 
         protected internal bool openMCDocument = false;
 
@@ -709,7 +709,15 @@ namespace iTextSharp.text.pdf {
                 case Element.IMGRAW:
                 case Element.IMGTEMPLATE: {
                     //carriageReturn(); suggestion by Marc Campforts
-                    Add((Image) element);
+                    if(IsTagged(writer)) {
+                        FlushLines();
+                        text.OpenMCBlock((Image)element);
+                    }
+                    Add((Image)element);
+                    if(IsTagged(writer)) {
+                        FlushLines();
+                        text.CloseMCBlock((Image)element);
+                    }
                     break;
                 }
                 case Element.YMARK: {

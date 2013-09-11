@@ -125,11 +125,15 @@ namespace iTextSharp.text.pdf {
         }
 
         internal void Fill() {
-            fields = new LinkedDictionary<string,Item>();
+            fields = new LinkedDictionary<string, Item>();
             PdfDictionary top = (PdfDictionary)PdfReader.GetPdfObjectRelease(reader.Catalog.Get(PdfName.ACROFORM));
             if (top == null)
                 return;
-            top.Remove(PdfName.NEEDAPPEARANCES);
+            PdfBoolean needappearances = top.GetAsBoolean(PdfName.NEEDAPPEARANCES);
+            if(needappearances == null || !needappearances.BooleanValue)
+                GenerateAppearances = true;
+            else
+                GenerateAppearances = false;
             PdfArray arrfds = (PdfArray)PdfReader.GetPdfObjectRelease(top.Get(PdfName.FIELDS));
             if (arrfds == null || arrfds.Size == 0)
                 return;

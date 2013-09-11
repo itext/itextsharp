@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using iTextSharp.text.pdf.fonts.cmaps;
 using iTextSharp.text.io;
 /*
@@ -66,6 +65,8 @@ namespace iTextSharp.text.pdf {
         private float urx = 100;
         private float ury = 900;
         protected bool isType0 = false;
+        protected int defaultWidth = 1000;
+        private IntHashtable hMetrics;
         protected internal String cjkEncoding;
         protected internal String uniMap;
         
@@ -122,9 +123,22 @@ namespace iTextSharp.text.pdf {
                         cjkEncoding = enc;
                         uniMap = ((CJKFont)cjkMirror).UniMap;
                     }
-                    if (PdfName.TYPE0.Equals(subType) && enc.Equals("Identity-H")) {
-                        ProcessType0(font);
+                    if(PdfName.TYPE0.Equals(subType)) {
                         isType0 = true;
+                        if(!enc.Equals("Identity-H") && cjkMirror != null) {
+                            PdfArray df = (PdfArray)PdfReader.GetPdfObjectRelease(font.Get(PdfName.DESCENDANTFONTS));
+                            PdfDictionary cidft = (PdfDictionary)PdfReader.GetPdfObjectRelease(df[0]);
+                            PdfNumber dwo = (PdfNumber)PdfReader.GetPdfObjectRelease(cidft.Get(PdfName.DW));
+                            if(dwo != null)
+                                defaultWidth = dwo.IntValue;
+                            hMetrics = ReadWidths((PdfArray)PdfReader.GetPdfObjectRelease(cidft.Get(PdfName.W)));
+
+                            PdfDictionary fontDesc = (PdfDictionary)PdfReader.GetPdfObjectRelease(cidft.Get(PdfName.FONTDESCRIPTOR));
+                            FillFontDesc(fontDesc);
+                        }
+                        else {
+                            ProcessType0(font);
+                        }
                     }
                 }
             }
@@ -599,37 +613,65 @@ namespace iTextSharp.text.pdf {
         * @return the width in normalized 1000 units
         */
         public override int GetWidth(int char1) {
-            if (cjkMirror != null)
-                return cjkMirror.GetWidth(char1);
-            else if (isType0) {
-                int[] ws;
-                metrics.TryGetValue((int)char1, out ws);
-                if (ws != null)
-                    return ws[1];
-                else
-                    return 0;
+            if(isType0) {
+                if(hMetrics != null && cjkMirror != null && !cjkMirror.IsVertical()) {
+                    int c = cjkMirror.GetCidCode(char1);
+                    int v = hMetrics[c];
+                    if(v > 0)
+                        return v;
+                    else
+                        return defaultWidth;
+                }
+                else {
+                    int[] ws = metrics[char1];
+                    if(ws != null)
+                        return ws[1];
+                    else
+                        return 0;
+                }
             }
-            else
-                return base.GetWidth(char1);
+            if(cjkMirror != null)
+                return cjkMirror.GetWidth(char1);
+            return base.GetWidth(char1);
         }
         
         public override int GetWidth(String text) {
-            if (cjkMirror != null)
-                return cjkMirror.GetWidth(text);
-            else if (isType0) {
-                char[] chars = text.ToCharArray();
-                int len = chars.Length;
+            if(isType0) {
                 int total = 0;
-                for (int k = 0; k < len; ++k) {
-                    int[] ws;
-                    metrics.TryGetValue((int)chars[k], out ws);
-                    if (ws != null)
-                        total += ws[1];
+                if(hMetrics != null && cjkMirror != null && !cjkMirror.IsVertical()) {
+                    if(((CJKFont)cjkMirror).IsIdentity()) {
+                        for(int k = 0; k < text.Length; ++k) {
+                            total += GetWidth(text[k]);
+                        }
+                    }
+                    else {
+                        for(int k = 0; k < text.Length; ++k) {
+                            int val;
+                            if(Utilities.IsSurrogatePair(text, k)) {
+                                val = Utilities.ConvertToUtf32(text, k);
+                                k++;
+                            }
+                            else {
+                                val = text[k];
+                            }
+                            total += GetWidth(val);
+                        }
+                    }
+                }
+                else {
+                    char[] chars = text.ToCharArray();
+                    int len = chars.Length;
+                    for(int k = 0; k < len; ++k) {
+                        int[] ws = metrics[chars[k]];
+                        if(ws != null)
+                            total += ws[1];
+                    }
                 }
                 return total;
             }
-            else 
-                return base.GetWidth(text);
+            if(cjkMirror != null)
+                return cjkMirror.GetWidth(text);
+            return base.GetWidth(text);
         }
         
         public override byte[] ConvertToBytes(String text) {

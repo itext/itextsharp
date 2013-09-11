@@ -116,7 +116,7 @@ namespace iTextSharp.text.pdf {
         protected PdfName role = PdfName.TD;
 
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
-        protected internal Guid id = Guid.NewGuid();
+        protected internal AccessibleElementId id = new AccessibleElementId();
         protected List<PdfPHeaderCell> headers = null;
 
         /** Constructs an empty <CODE>PdfPCell</CODE>.
@@ -847,7 +847,7 @@ namespace iTextSharp.text.pdf {
             set { this.role = value; }
         }
 
-        public Guid ID {
+        public AccessibleElementId ID {
             get { return id; }
             set { id = value; }
         }

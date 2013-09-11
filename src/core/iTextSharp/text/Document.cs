@@ -155,7 +155,7 @@ namespace iTextSharp.text {
         protected int chapternumber = 0;
         protected PdfName role = PdfName.DOCUMENT;
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
-        protected Guid id = Guid.NewGuid();
+        protected AccessibleElementId id = new AccessibleElementId();
         // constructor
 
         /// <summary>
@@ -726,7 +726,7 @@ namespace iTextSharp.text {
             }
         }
         
-        public Guid ID {
+        public AccessibleElementId ID {
             get { return id; }
             set { id = value; }
         }

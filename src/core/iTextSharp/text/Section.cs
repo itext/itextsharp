@@ -3,7 +3,6 @@ using System.Text;
 using System.Collections.Generic;
 using System.util;
 using iTextSharp.text.api;
-using iTextSharp.text.factories;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.interfaces;
@@ -733,7 +732,7 @@ namespace iTextSharp.text {
             set { title.Role = value; }
         }
 
-        public Guid ID {
+        public AccessibleElementId ID {
             get { return title.ID; }
             set { title.ID = value; }
         }

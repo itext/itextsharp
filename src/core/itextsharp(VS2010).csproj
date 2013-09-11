@@ -112,6 +112,7 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\AccessibleElementId.cs" />
     <Compile Include="iTextSharp\text\Anchor.cs">
       <SubType>Code</SubType>
     </Compile>

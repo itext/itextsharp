@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using iTextSharp.text;
 using iTextSharp.text.log;
 using iTextSharp.text.pdf.interfaces;
 
@@ -86,7 +85,7 @@ namespace iTextSharp.text.pdf {
 
         protected PdfName role = PdfName.TR;
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
-        protected Guid id = Guid.NewGuid();
+        protected AccessibleElementId id = new AccessibleElementId();
     
         
         /**
@@ -203,10 +202,7 @@ namespace iTextSharp.text.pdf {
             for (int k = 0; k < cells.Length; ++k) {
                 PdfPCell cell = cells[k];
                 float height = 0;
-                if (cell == null) {
-                    continue;
-                }
-                else {
+                if (cell != null) {
                     height = cell.GetMaxHeight();
                     if ((height > maxHeight) && (cell.Rowspan == 1))
                         maxHeight = height;
@@ -368,8 +364,6 @@ namespace iTextSharp.text.pdf {
                         tly = cell.Top + yPos + (cell.Height - currentMaxHeight) / 2
                                 - cell.EffectivePaddingTop;
                         break;
-                    default:
-                        break;
                     }
                 }
                 if (img != null) {
@@ -404,8 +398,6 @@ namespace iTextSharp.text.pdf {
                             left = xPos + cell.Right
                                     - cell.EffectivePaddingRight
                                     - img.ScaledWidth;
-                            break;
-                        default:
                             break;
                         }
                         tly = cell.Top + yPos - cell.EffectivePaddingTop;
@@ -710,8 +702,7 @@ namespace iTextSharp.text.pdf {
                             y = SetColumn(ct, left, bottom + 0.00001f, cell.NoWrap ? RIGHT_LIMIT : right, top);
                             break;
                     }
-                    int status;
-                    status = ct.Go(true);
+                    int status = ct.Go(true);
                     bool thisEmpty = (ct.YLine == y);
                     if (thisEmpty) {
                         newCell.Column = ColumnText.Duplicate(cell.Column);
@@ -847,7 +838,7 @@ namespace iTextSharp.text.pdf {
             set { this.role = value; }
         }
 
-        public Guid ID {
+        public AccessibleElementId ID {
             get { return id; }
             set { id = value; }
         }

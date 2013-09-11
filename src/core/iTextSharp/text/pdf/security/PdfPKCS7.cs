@@ -3,7 +3,6 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.Crypto.Parameters;
 using iTextSharp.text.error_messages;
-using iTextSharp.text.pdf.security;
 using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Asn1;
 using System.IO;
@@ -119,8 +118,7 @@ namespace iTextSharp.text.pdf.security {
             }
 
             if (privKey != null) {
-                sig = SignerUtilities.GetSigner(GetDigestAlgorithm());
-                sig.Init(true, privKey);
+                sig = InitSignature(privKey);
             }
         }
 
@@ -253,7 +251,9 @@ namespace iTextSharp.text.pdf.security {
             if (signerInfo[next] is Asn1TaggedObject) {
                 Asn1TaggedObject tagsig = (Asn1TaggedObject)signerInfo[next];
                 Asn1Set sseq = Asn1Set.GetInstance(tagsig, false);
-                sigAttr = sseq.GetEncoded(Asn1Encodable.Der);
+                sigAttr = sseq.GetEncoded();
+                // maybe not necessary, but we use the following line as fallback:
+                sigAttrDer = sseq.GetEncoded(Asn1Encodable.Der);
                 
                 for (int k = 0; k < sseq.Count; ++k) {
                     Asn1Sequence seq2 = (Asn1Sequence)sseq[k];
@@ -332,11 +332,15 @@ namespace iTextSharp.text.pdf.security {
             }
             else {
                 if (RSAdata != null || digestAttr != null) {
-                    messageDigest = GetHashClass();
+                    if (PdfName.ADBE_PKCS7_SHA1.Equals(GetFilterSubtype())) {
+                        messageDigest = DigestUtilities.GetDigest("SHA1");
+                    }
+                    else {
+                        messageDigest = GetHashClass();
+                    }
                     encContDigest = GetHashClass();
                 }
-                sig = SignerUtilities.GetSigner(GetDigestAlgorithm());
-                sig.Init(false, signCert.GetPublicKey());
+                sig = InitSignature(signCert.GetPublicKey());
             }
         }
         
@@ -542,6 +546,21 @@ namespace iTextSharp.text.pdf.security {
 
         // Signing functionality.
         
+        private ISigner InitSignature(ICipherParameters key) {
+            ISigner signature = SignerUtilities.GetSigner(GetDigestAlgorithm());
+            signature.Init(true, key);
+            return signature;
+        }
+    
+        private ISigner InitSignature(AsymmetricKeyParameter key) {
+            String digestAlgorithm = GetDigestAlgorithm();
+            if (PdfName.ADBE_X509_RSA_SHA1.Equals(GetFilterSubtype()))
+                digestAlgorithm = "SHA1withRSA";
+            ISigner signature = SignerUtilities.GetSigner(digestAlgorithm);
+            signature.Init(false, signCert.GetPublicKey());
+            return signature;
+        }
+    
         /**
          * Update the digest with the specified bytes.
          * This method is used both for signing and verifying
@@ -876,6 +895,8 @@ namespace iTextSharp.text.pdf.security {
         
         /** Signature attributes */
         private byte[] sigAttr;
+        /** Signature attributes (maybe not necessary, but we use it as fallback) */
+        private byte[] sigAttrDer;
         
         /** encrypted digest */
         private IDigest encContDigest; // Stefan Santesson
@@ -906,11 +927,10 @@ namespace iTextSharp.text.pdf.security {
                 verifyResult = Arrays.AreEqual(md, imphashed);
             }
             else {
-                if (sigAttr != null) {
+                if (sigAttr != null || sigAttrDer != null) {
                     byte[] msgDigestBytes = new byte[messageDigest.GetDigestSize()];
                     messageDigest.DoFinal(msgDigestBytes, 0);
                     bool verifyRSAdata = true;
-                    sig.BlockUpdate(sigAttr, 0, sigAttr.Length);
                     // Stefan Santesson fixed a bug, keeping the code backward compatible
                     bool encContDigestCompare = false;
                     if (RSAdata != null) {
@@ -922,7 +942,7 @@ namespace iTextSharp.text.pdf.security {
                     }
                     bool absentEncContDigestCompare = Arrays.AreEqual(msgDigestBytes, digestAttr);
                     bool concludingDigestCompare = absentEncContDigestCompare || encContDigestCompare;
-                    bool sigVerify = sig.VerifySignature(digest);
+                    bool sigVerify = VerifySigAttributes(sigAttr) || VerifySigAttributes(sigAttrDer);
                     verifyResult = concludingDigestCompare && sigVerify && verifyRSAdata;
                     //verifyResult = Arrays.AreEqual(msgDigestBytes, digestAttr) && sig.VerifySignature(digest) && verifyRSAdata;
                 }
@@ -937,6 +957,12 @@ namespace iTextSharp.text.pdf.security {
             }
             verified = true;
             return verifyResult;
+        }
+
+        private bool VerifySigAttributes(byte[] attr) {
+            ISigner signature = InitSignature(signCert.GetPublicKey());
+            signature.BlockUpdate(attr, 0, attr.Length);
+            return signature.VerifySignature(digest);
         }
 
         /**
@@ -1019,7 +1045,6 @@ namespace iTextSharp.text.pdf.security {
                 if (signCert.Equals(oc[k])) {
                     oc.RemoveAt(k);
                     --k;
-                    continue;
                 }
             }
             bool found = true;

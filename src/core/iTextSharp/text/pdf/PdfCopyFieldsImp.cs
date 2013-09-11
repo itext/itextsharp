@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf {
     *
     * @author  psoares
     */
+    [Obsolete]
     internal class PdfCopyFieldsImp : PdfWriter {
 
         internal static readonly PdfName iTextTag = new PdfName("_iTextTag_");
@@ -73,6 +74,7 @@ namespace iTextSharp.text.pdf {
         private List<String> calculationOrder = new List<String>();
         private List<Object> calculationOrderRefs;
         private bool hasSignature;
+        private bool needAppearances = false;
         
         protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfCopyFields));
         protected override ICounter GetCounter() {
@@ -125,7 +127,13 @@ namespace iTextSharp.text.pdf {
             }
             pages2intrefs[reader] =  refs;
             visited[reader] =  new IntHashtable();
-            fields.Add(reader.AcroFields);
+            AcroFields acro = reader.AcroFields;
+            // when a document with NeedAppearances is encountered, the flag is set
+            // in the resulting document.
+            bool needapp = !acro.GenerateAppearances;
+            if(needapp)
+                needAppearances = true;
+            fields.Add(acro);
             UpdateCalculationOrder(reader);
         }
         
@@ -320,6 +328,9 @@ namespace iTextSharp.text.pdf {
             form = new PdfDictionary();
             form.Put(PdfName.DR, resources);
             Propagate(resources, null, false);
+            if(needAppearances) {
+                form.Put(PdfName.NEEDAPPEARANCES, PdfBoolean.PDFTRUE);
+            }
             form.Put(PdfName.DA, new PdfString("/Helv 0 Tf 0 g "));
             tabOrder = new Dictionary<PdfArray,List<int>>();
             calculationOrderRefs = new List<object>();

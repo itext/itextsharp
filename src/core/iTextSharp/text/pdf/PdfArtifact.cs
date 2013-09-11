@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using iTextSharp.text.pdf.interfaces;
 /*
  * $Id: PdfArtifact.java 5830 2013-05-31 09:29:15Z blowagie $
@@ -51,7 +50,7 @@ namespace iTextSharp.text.pdf
 
         protected PdfName role = PdfName.ARTIFACT;
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
-        protected Guid id = Guid.NewGuid();
+        protected AccessibleElementId id = new AccessibleElementId();
 
         public PdfObject GetAccessibleAttribute(PdfName key) {
             if (accessibleAttributes != null)
@@ -76,7 +75,7 @@ namespace iTextSharp.text.pdf
             set { role = value; }
         }
 
-        public Guid ID
+        public AccessibleElementId ID
         {
             get { return id; }
             set { id = value; }

@@ -2,9 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
-using iTextSharp.text.xml.simpleparser;
 using iTextSharp.text.xml;
 /*
  * $Id$

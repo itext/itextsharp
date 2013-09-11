@@ -130,7 +130,7 @@ namespace iTextSharp.text.pdf {
                     if (tokeniser.TokenType == PRTokeniser.TokType.OTHER && "def".CompareTo(tokeniser.StringValue) == 0)
                         continue;
                     if (tokeniser.TokenType != PRTokeniser.TokType.NAME)
-                        throw new IOException(MessageLocalization.GetComposedMessage("dictionary.key.is.not.a.name"));
+                        throw new IOException(MessageLocalization.GetComposedMessage("dictionary.key.1.is.not.a.name", tokeniser.StringValue));
                     PdfName name = new PdfName(tokeniser.StringValue, false);
                     PdfObject obj = ReadPRObject();
                     int type = obj.Type;

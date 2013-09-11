@@ -2772,6 +2772,38 @@ namespace iTextSharp.text.pdf {
             return pdf.GetBoxSize(boxName);
         }
 
+        /**
+         * Returns the intersection between the crop, trim art or bleed box and the parameter intersectingRectangle.
+         * This method returns null when
+         * - there is no intersection
+         * - any of the above boxes are not defined
+         * - the parameter intersectingRectangle is null
+         *
+         * @param boxName crop, trim, art, bleed
+         * @param intersectingRectangle the rectangle that intersects the rectangle associated to the boxName
+         * @return the intersection of the two rectangles
+         */
+        public Rectangle GetBoxSize(String boxName, Rectangle intersectingRectangle) {
+            Rectangle pdfRectangle = pdf.GetBoxSize(boxName);
+
+            if ( pdfRectangle == null || intersectingRectangle == null ) { // no intersection
+                return null;
+            }
+            //com.itextpdf.awt.geom.Rectangle
+            RectangleJ boxRect = new RectangleJ(pdfRectangle);
+            RectangleJ intRect = new RectangleJ(intersectingRectangle);
+            RectangleJ outRect = boxRect.Intersection(intRect);
+
+            if (outRect.IsEmpty()) { // no intersection
+                return null;
+            }
+
+            Rectangle output = new Rectangle(outRect.X, outRect.Y, outRect.X + outRect.Width, outRect.Y + outRect.Height);
+            output.Normalize();
+            return output;
+        }
+
+
     //  [U2] take care of empty pages
         
         /**

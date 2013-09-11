@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.interfaces;
@@ -9,7 +8,7 @@ namespace com.itextpdf.text.pdf{
     public class ListBody : IAccessibleElement {
 
         protected PdfName role = PdfName.LBODY;
-        protected Guid id = Guid.Empty;
+        protected AccessibleElementId id = new AccessibleElementId();
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
         protected internal ListItem parentItem = null;
         protected internal float indentation = 0;
@@ -48,11 +47,11 @@ namespace com.itextpdf.text.pdf{
             set { this.role = value; }
         }
 
-        public Guid ID {
+        public AccessibleElementId ID {
             get
             {
-                if (id == Guid.Empty)
-                    id = Guid.NewGuid();
+                if (id == null)
+                    id = new AccessibleElementId();
                 return id;
             }
             set { id = value; }

@@ -39,7 +39,6 @@
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-using System;
 using System.Collections.Generic;
 using iTextSharp.text.pdf.interfaces;
 
@@ -80,7 +79,7 @@ namespace iTextSharp.text.pdf {
 
         protected PdfName role = PdfName.FIGURE;
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
-        private Guid id;
+        private AccessibleElementId id;
         
         /**
         *Creates a <CODE>PdfTemplate</CODE>.
@@ -351,10 +350,10 @@ namespace iTextSharp.text.pdf {
             set { role = value; }
         }
 
-        public Guid ID {
+        public AccessibleElementId ID {
             get {
-                if (id == Guid.Empty)
-                    id = Guid.NewGuid();
+                if (id == null)
+                    id = new AccessibleElementId();
                 return id;
             }
             set { id = value; }
