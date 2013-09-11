@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using System.IO;
 using iTextSharp.text.exceptions;
@@ -71,6 +72,8 @@ namespace iTextSharp.text.pdf {
          * @since 5.0.2
          */
         public static bool unethicalreading = false;
+
+        public static bool debugmode = false;
 
         static PdfName[] pageInhCandidates = {
             PdfName.MEDIABOX, PdfName.ROTATE, PdfName.RESOURCES, PdfName.CROPBOX
@@ -1056,7 +1059,12 @@ namespace iTextSharp.text.pdf {
         
         protected internal void ReadPages() {
             catalog = trailer.GetAsDict(PdfName.ROOT);
+            if(catalog == null)
+                throw new InvalidPdfException(MessageLocalization.GetComposedMessage("the.document.has.no.catalog.object"));
             rootPages = catalog.GetAsDict(PdfName.PAGES);
+            if(rootPages == null)
+                throw new InvalidPdfException(MessageLocalization.GetComposedMessage("the.document.has.no.page.root"));
+
             pageRefs = new PageRefs(this);
         }
         
@@ -1108,9 +1116,13 @@ namespace iTextSharp.text.pdf {
                 if (obj.IsStream()) {
                     CheckPRStreamLength((PRStream)obj);
                 }
-            }
-            catch {
-                obj = null;
+            } catch(IOException e) {
+                if(debugmode) {
+                    Trace.WriteLine(e.StackTrace);
+                    obj = null;
+                }
+                else
+                    throw e;
             }
             if (xref[k2 + 1] > 0) {
                 obj = ReadOneObjStm((PRStream)obj, (int)xref[k2]);
@@ -1204,14 +1216,18 @@ namespace iTextSharp.text.pdf {
                     if (obj.IsStream()) {
                         streams.Add((PRStream)obj);
                     }
-                }
-                catch {
-                    obj = null;
+                } catch(IOException e) {
+                    if(debugmode) {
+                        Trace.WriteLine(e.StackTrace);
+                        obj = null;
+                    }
+                    else
+                        throw e;
                 }
                 xrefObj[k / 2] = obj;
             }
             for (int k = 0; k < streams.Count; ++k) {
-                CheckPRStreamLength((PRStream)streams[k]);
+                CheckPRStreamLength(streams[k]);
             }
             ReadDecryptedDocObj();
             if (objStmMark != null) {
@@ -1251,8 +1267,9 @@ namespace iTextSharp.text.pdf {
             if (calc) {
                 byte[] tline = new byte[16];
                 tokens.Seek(start);
+                long pos;
                 while (true) {
-                    long pos = tokens.FilePointer;
+                    pos = tokens.FilePointer;
                     if (!tokens.ReadLineSegment(tline))
                         break;
                     if (Equalsn(tline, endstream)) {
@@ -1269,6 +1286,12 @@ namespace iTextSharp.text.pdf {
                         break;
                     }
                 }
+                tokens.Seek(pos - 2);
+                if(tokens.Read() == 13)
+                    streamLength--;
+                tokens.Seek(pos - 1);
+                if(tokens.Read() == 10)
+                    streamLength--;
             }
             stream.Length = (int)streamLength;
         }
@@ -1642,7 +1665,7 @@ namespace iTextSharp.text.pdf {
                 if (tokens.TokenType == PRTokeniser.TokType.END_DIC)
                     break;
                 if (tokens.TokenType != PRTokeniser.TokType.NAME)
-                    tokens.ThrowError(MessageLocalization.GetComposedMessage("dictionary.key.is.not.a.name"));
+                    tokens.ThrowError(MessageLocalization.GetComposedMessage("dictionary.key.1.is.not.a.name", tokens.StringValue));
                 PdfName name = new PdfName(tokens.StringValue, false);
                 PdfObject obj = ReadPRObject();
                 int type = obj.Type;

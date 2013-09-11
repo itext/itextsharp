@@ -460,6 +460,9 @@ namespace iTextSharp.text.pdf.codec {
                 s.Seek(offset[0]);
                 s.ReadFully(jpeg);
                 img = new Jpeg(jpeg);
+                if(photometric == TIFFConstants.PHOTOMETRIC_RGB) {
+                    img.ColorTransform = 0;
+                }
             } 
             else {
                 for (int k = 0; k < offset.Length; ++k) {

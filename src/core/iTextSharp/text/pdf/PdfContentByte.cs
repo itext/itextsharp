@@ -2493,7 +2493,7 @@ namespace iTextSharp.text.pdf {
 
             if (IsTagged() && !tagContent) {
                 CloseMCBlock(template);
-                template.ID = Guid.Empty;
+                template.ID = null;
             }
         }
 

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using iTextSharp.text.pdf.interfaces;
 
 namespace iTextSharp.text.pdf {
@@ -7,14 +6,13 @@ namespace iTextSharp.text.pdf {
     public class PdfPTableBody : IAccessibleElement
     {
 
-        protected Guid id = Guid.NewGuid();
+        protected AccessibleElementId id = new AccessibleElementId();
         protected internal List<PdfPRow> rows = null;
         protected PdfName role = PdfName.TBODY;
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
 
         public PdfPTableBody()
         {
-
         }
 
         public PdfObject GetAccessibleAttribute(PdfName key) {
@@ -43,7 +41,7 @@ namespace iTextSharp.text.pdf {
             set { this.role = value; }
         }
 
-        public Guid ID {
+        public AccessibleElementId ID {
             get { return id; }
             set { id = value; }
         }

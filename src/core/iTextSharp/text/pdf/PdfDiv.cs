@@ -122,7 +122,7 @@ namespace iTextSharp.text.pdf {
 
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
 
-        protected Guid id = Guid.NewGuid();
+        protected AccessibleElementId id = new AccessibleElementId();
 
 
         public float? Left
@@ -506,7 +506,7 @@ namespace iTextSharp.text.pdf {
             set { role = value; }
         }
 
-        public Guid ID
+        public AccessibleElementId ID
         {
             get { return id; }
             set { id = value; }

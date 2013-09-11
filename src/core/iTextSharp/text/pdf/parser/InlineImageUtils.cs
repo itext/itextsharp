@@ -170,7 +170,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return if value is an allowed abbreviation for the key, the expanded value for that abbreviation.  Otherwise, value is returned without modification 
          */
         private static PdfObject GetAlternateValue(PdfName key, PdfObject value){
-            if (key == PdfName.FILTER){
+            if (key.Equals(PdfName.FILTER)){
                 if (value is PdfName){
                     PdfName altValue;
                     inlineImageFilterAbbreviationMap.TryGetValue((PdfName)value, out altValue);
@@ -185,7 +185,7 @@ namespace iTextSharp.text.pdf.parser {
                     }
                     return altArray;
                 }
-            } else if (key == PdfName.COLORSPACE){
+            } else if (key.Equals(PdfName.COLORSPACE)){
                 if (value is PdfName){
                     PdfName altValue;
                     inlineImageColorSpaceAbbreviationMap.TryGetValue((PdfName)value, out altValue);
@@ -288,8 +288,13 @@ namespace iTextSharp.text.pdf.parser {
                 bytes[i] = (byte)ch;
             }
             PdfObject ei = ps.ReadPRObject();
-            if (!ei.ToString().Equals("EI"))
-                throw new InlineImageParseException("EI not found after end of image data");
+            if(!ei.ToString().Equals("EI")) {
+                // Some PDF producers seem to add another non-whitespace character after the image data.
+                // Let's try to handle that case here.
+                PdfObject ei2 = ps.ReadPRObject();
+                if(!ei2.ToString().Equals("EI"))
+                    throw new InlineImageParseException("EI not found after end of image data");
+            }
             
             return bytes;
         }

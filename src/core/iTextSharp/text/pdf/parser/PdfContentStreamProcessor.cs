@@ -726,7 +726,7 @@ namespace iTextSharp.text.pdf.parser {
         private static BaseColor GetColor(int nOperands, List<PdfObject> operands) {
     	    float[] c = new float[nOperands];
     	    for (int i = 0; i < nOperands; i++) {
-    		    c[i] = ((PdfNumber)operands[0]).FloatValue;
+    		    c[i] = ((PdfNumber)operands[i]).FloatValue;
     	    }
     	    switch (nOperands) {
     	    case 1:

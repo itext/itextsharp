@@ -31,6 +31,6 @@ namespace iTextSharp.text.pdf.interfaces
          */
         PdfName Role { get; set; }
 
-        Guid ID { get; set; }
+        AccessibleElementId ID { get; set; }
     }
 }

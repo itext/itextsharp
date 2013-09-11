@@ -197,6 +197,13 @@ namespace iTextSharp.text {
         }
 
         /**
+         * Constructs a <CODE>Rectangle</CODE>-object based on a <CODE>com.itextpdf.awt.geom.Rectangle</CODE> object
+         * @param rect com.itextpdf.awt.geom.Rectangle
+         */
+        public Rectangle(RectangleJ rect): this(rect.X, rect.Y, rect.X + rect.Width, rect.Y + rect.Height) {
+        }
+
+        /**
         * Copies all of the parameters from a <CODE>Rectangle</CODE> object
         * except the position.
         * 
@@ -766,5 +773,20 @@ namespace iTextSharp.text {
 		    buf.Append(" degrees)");
 		    return buf.ToString();
 	    }
+
+        public override bool Equals(Object obj)
+        {
+            if (obj is Rectangle) {
+                Rectangle other = (Rectangle) obj;
+                // should we normalize here?
+                // normalization changes the structure and coordinates of the rectangle, so I'm inclined not to call normalize()
+                // but it needs to be considered ~ Michael D.
+                return other.llx == this.llx && other.lly == this.lly && other.urx == this.urx && other.ury == this.ury &&
+                       other.rotation == this.rotation;
+            }
+            else {
+                return false;
+            }
+        }
     }
 }

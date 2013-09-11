@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.util;
 using iTextSharp.text.api;
 using iTextSharp.text.factories;
 using iTextSharp.text.pdf;
@@ -153,7 +152,7 @@ namespace iTextSharp.text {
 
         protected PdfName role = PdfName.L;
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
-        protected Guid id = Guid.Empty;
+        protected AccessibleElementId id = new AccessibleElementId();
 
         // constructors
         
@@ -621,11 +620,11 @@ namespace iTextSharp.text {
             set { this.role = value; }
         }
 
-        public Guid ID {
+        public AccessibleElementId ID {
             get
             {
-                if (id == Guid.Empty)
-                    id = Guid.NewGuid();
+                if (id == null)
+                    id = new AccessibleElementId();
                 return id;
             }
             set { id = value; }

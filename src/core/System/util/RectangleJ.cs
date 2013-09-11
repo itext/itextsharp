@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-
 namespace System.util {
     public class RectangleJ {
         public const int OUT_LEFT = 1;
@@ -106,7 +102,7 @@ namespace System.util {
                     return false;
                 }
                 if ((out1 & (OUT_LEFT | OUT_RIGHT)) != 0) {
-                    double x = X;
+                    float x = X;
                     if ((out1 & OUT_RIGHT) != 0) {
                         x += Width;
                     }
@@ -114,7 +110,7 @@ namespace System.util {
                     x1 = x;
                 }
                 else {
-                    double y = Y;
+                    float y = Y;
                     if ((out1 & OUT_BOTTOM) != 0) {
                         y += Height;
                     }
@@ -123,6 +119,18 @@ namespace System.util {
                 }
             }
             return true;
+        }
+
+        public RectangleJ Intersection(RectangleJ r) {
+            float x1 = Math.Max(x, r.x);
+            float y1 = Math.Max(y, r.y);
+            float x2 = Math.Min(x + width, r.x + r.width);
+            float y2 = Math.Min(y + height, r.y + r.height);
+            return new RectangleJ(x1, y1, x2 - x1, y2 - y1);
+        }
+
+        public bool IsEmpty() {
+            return width <= 0 || height <= 0;
         }
     }
 }

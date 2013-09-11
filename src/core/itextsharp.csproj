@@ -4047,6 +4047,7 @@
     <EmbeddedResource Include="iTextSharp\text\pdf\fonts\ZapfDingbats.afm" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="iTextSharp\text\AccessibleElementId.cs" />
     <Compile Include="iTextSharp\text\api\IIndentable.cs" />
     <Compile Include="iTextSharp\text\api\ISpaceable.cs" />
     <Compile Include="iTextSharp\text\api\IWriterOperation.cs" />

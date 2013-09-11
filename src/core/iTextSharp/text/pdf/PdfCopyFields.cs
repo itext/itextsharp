@@ -52,6 +52,7 @@ namespace iTextSharp.text.pdf {
     * PdfCopy.
     * @author  Paulo Soares
     */
+    [Obsolete]
     public class PdfCopyFields : IPdfViewerPreferences, IPdfEncryptionSettings {
         
         private PdfCopyFieldsImp fc;
