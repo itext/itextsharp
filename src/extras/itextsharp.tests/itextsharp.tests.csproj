@@ -41,12 +41,48 @@
     <Reference Include="XmlDiffPatch, Version=1.0.8.28, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="iTextSharp\testutils\TestResourceUtils.cs" />
     <Compile Include="iTextSharp\text\ChunkTest.cs" />
+    <Compile Include="iTextSharp\text\error_messages\ErrorMessageTest.cs" />
+    <Compile Include="iTextSharp\text\error_messages\MessageLocalizationTest.cs" />
+    <Compile Include="iTextSharp\text\io\ArrayRandomAccessSourceTest.cs" />
+    <Compile Include="iTextSharp\text\io\GetBufferedRandomAccessSourceTest.cs" />
+    <Compile Include="iTextSharp\text\io\GroupedRandomAccessSourceTest.cs" />
+    <Compile Include="iTextSharp\text\io\WindowRandomAccessSourceTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\AcroFieldsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\BookmarksTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\CMapAwareDocumentFontTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\DocumentFontTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\fonts.cmaps\CMapParserExTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\fonts.cmaps\CMapTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\IndicLigatures.cs" />
     <Compile Include="iTextSharp\text\pdf\mc\AcroFieldsFlattenTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\MetaDataTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\MultithreadedTtfTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\FilteredTextRenderListenerTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\LocationTextExtractionStrategyTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\MatrixTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\PdfContentStreamProcessorTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\PdfImageObjectTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\PdfTextExtractorEncodingsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\SimpleTextExtractionStrategyTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\TextMarginFinderTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\TextRenderInfoTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\VectorTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfCopyTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfReaderSelectPagesTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfReaderTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PRTokeniserTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\RandomAccessFileOrArrayTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\TestPdfCopyAndStamp.cs" />
+    <Compile Include="iTextSharp\text\pdf\ToUnicodeNonBreakableSpacesTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\UnbalancedOperatorsTest.cs" />
+    <Compile Include="iTextSharp\text\RemoteGifImageTest.cs" />
     <Compile Include="iTextSharp\text\signature\XadesBesTest.cs" />
     <Compile Include="iTextSharp\text\signature\XmlDSigKSTest.cs" />
     <Compile Include="iTextSharp\text\signature\XmlDSigRsaTest.cs" />
     <Compile Include="iTextSharp\text\signature\XmlDSigTest.cs" />
+    <Compile Include="iTextSharp\text\xml\simpleparser\SimpleXMLParserTest.cs" />
     <Compile Include="iTextSharp\text\xml\xmp\XmpWriterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfCopyTest.cs" />
@@ -88,13 +124,42 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="itextsharp.snk" />
+    <None Include="resources\text\ChunkTest\source11.pdf" />
+    <None Include="resources\text\ChunkTest\source12.pdf" />
+    <None Include="resources\text\ChunkTest\source13.pdf" />
+    <None Include="resources\text\ChunkTest\source14.pdf" />
+    <None Include="resources\text\ChunkTest\source15.pdf" />
+    <None Include="resources\text\pdf\AcroFieldsTest\choice_field_order.pdf" />
+    <None Include="resources\text\pdf\AcroFieldsTest\choice_field_order_export.pdf" />
+    <None Include="resources\text\pdf\AcroFieldsTest\list_register.xfdf" />
+    <None Include="resources\text\pdf\AcroFieldsTest\register.xfdf" />
+    <None Include="resources\text\pdf\AcroFieldsTest\SimpleRegistrationForm.pdf" />
+    <None Include="resources\text\pdf\CMapAwareDocumentFontTest\fontwithwidthissue.pdf" />
+    <None Include="resources\text\pdf\DocumentFontTest\type0FontWithoutToUnicodeMap.pdf" />
+    <None Include="resources\text\pdf\fonts\cmaps\CMapParserExTest\cmap_results_in_empty_map.cmap" />
     <None Include="resources\text\pdf\mc\SF2809.pdf" />
     <None Include="resources\text\pdf\mc\SF2809_alt.pdf" />
+    <None Include="resources\text\pdf\MultithreadedTtfTest\FreeSans.ttf" />
+    <None Include="resources\text\pdf\MultithreadedTtfTest\test.pdf" />
+    <None Include="resources\text\pdf\parser\PdfContentStreamProcessorTest\yaxiststar.pdf" />
+    <None Include="resources\text\pdf\parser\PdfImageObjectTest\ASCII85_RunLengthDecode.pdf" />
+    <None Include="resources\text\pdf\parser\PdfImageObjectTest\ccittfaxdecode.pdf" />
+    <None Include="resources\text\pdf\parser\PdfImageObjectTest\dctdecode.pdf" />
+    <None Include="resources\text\pdf\parser\PdfImageObjectTest\flatedecode_runlengthdecode.pdf" />
+    <None Include="resources\text\pdf\parser\PdfImageObjectTest\jbig2decode.pdf" />
+    <None Include="resources\text\pdf\parser\PdfImageObjectTest\multistagefilter1.pdf" />
+    <None Include="resources\text\pdf\PdfReaderSelectPagesTest\RomeoJuliet.pdf" />
+    <None Include="resources\text\pdf\PdfReaderTest\getLinkTest1.pdf" />
+    <None Include="resources\text\pdf\PdfReaderTest\getLinkTest2.pdf" />
+    <None Include="resources\text\pdf\PdfReaderTest\RomeoJuliet.pdf" />
+    <None Include="resources\text\pdf\ToUnicodeNonBreakableSpacesTest\fontWithToUnicode.pdf" />
     <None Include="resources\text\xml\xmp\pdf_metadata.pdf" />
     <None Include="resources\text\xml\xmp\xmp_metadata.pdf" />
     <None Include="resources\text\xml\xmp\xmp_metadata_added.pdf" />
     <None Include="resources\text\xml\xmp\xmp_metadata_added2.pdf" />
     <None Include="resources\text\xml\xmp\xmp_metadata_automatic.pdf" />
+    <Content Include="resources\text\ChunkTest\logo.gif" />
+    <Content Include="resources\text\pdf\fonts\cmaps\CMapParserExTest\cmap_with_def_dictionary_key.txt" />
     <Content Include="resources\text\pdf\signature\ds-ks\pkcs12" />
     <Content Include="resources\text\pdf\signature\ds\key" />
     <Content Include="resources\text\pdf\signature\ds-ks\xfa.signed.package.xml" />
@@ -132,9 +197,6 @@
       <Project>{BE1934CF-90A9-43D3-A794-7E540874EDBB}</Project>
       <Name>itextsharp.xtra</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="resources\text\ChunkTest\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

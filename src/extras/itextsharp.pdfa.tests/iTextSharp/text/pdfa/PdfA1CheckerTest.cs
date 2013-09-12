@@ -15,14 +15,23 @@ namespace iTextSharp.text.pdfa
         public const String TARGET = "PdfA1CheckerTest\\";
         public const String OUT = TARGET + "pdf\\out";
 
+        private bool initialByteBufferHightPrecisionState;
+
         [SetUp]
         public void Initialize()
         {
             Directory.CreateDirectory(TARGET + "pdf");
             Directory.CreateDirectory(TARGET + "xml");
             Document.Compress = false;
+
+            initialByteBufferHightPrecisionState = ByteBuffer.HIGH_PRECISION;
         }
 
+        [TearDown]
+        public void TearDown()
+        {
+            ByteBuffer.HIGH_PRECISION = initialByteBufferHightPrecisionState;
+        }
 
         [Test]
         public void TrailerCheckTest()
@@ -138,7 +147,6 @@ namespace iTextSharp.text.pdfa
             }
             if (!exceptionThrown)
                 Assert.Fail("PdfAConformanceException should be thrown.");
-
         }
 
         [Test]
