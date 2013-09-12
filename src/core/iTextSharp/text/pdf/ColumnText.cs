@@ -461,7 +461,7 @@ namespace iTextSharp.text.pdf {
             }
             if (element.Type == Element.PARAGRAPH) {
                 Paragraph p = (Paragraph)element;
-                IList<IElement> paragraphElements = p.breakUp();
+                IList<IElement> paragraphElements = p.BreakUp();
                 foreach (IElement paragraphElement in paragraphElements) {
                     compositeElements.Add(paragraphElement);    
                 }

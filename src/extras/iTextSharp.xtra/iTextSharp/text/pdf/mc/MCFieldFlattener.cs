@@ -51,18 +51,16 @@ namespace iTextSharp.text.pdf.mc {
      * structure tree. Use this class only if the form is properly
      * tagged.
      */
-
     public class MCFieldFlattener {
-
         /**
          * Processes a properly tagged PDF form.
          * @param reader the PdfReader instance holding the PDF
          * @throws IOException
          * @throws DocumentException 
          */
-
         public void Process(PdfReader reader, Stream os) {
             int n = reader.NumberOfPages;
+            // getting the root dictionary
             PdfDictionary catalog = reader.Catalog;
             catalog.Remove(PdfName.ACROFORM);
             StructureItems items = new StructureItems(reader);
