@@ -42,108 +42,169 @@
  * address: sales@itextpdf.com
  */
 
+using System;
 using System.Collections.Generic;
+using iTextSharp.text.error_messages;
+using iTextSharp.text.log;
 
-namespace iTextSharp.text.pdf.mc {
+namespace iTextSharp.text.pdf.mc
+{
 
     /**
-     * Creates a list of meaningful StructureItem objects extracted from the
+     * Creates a list of StructureItem objects extracted from the
      * Structure Tree of a PDF document.
      */
 
-    public class StructureItems : List<StructureItem> {
+    public class StructureItems : List<StructureItem>
+    {
+
+        /** The Logger instance */
+        protected static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof (StructureItems));
 
         /** The StructTreeRoot dictionary */
         protected PdfDictionary structTreeRoot;
 
-        /** The StructParents number tree. */
+        /** The StructParents number tree values. */
         protected Dictionary<int, PdfObject> parentTree;
 
         /**
-	 * Creates a list of StructuredItem objects.
-	 * @param reader the reader holding the PDF to examine
-	 */
-
-        public StructureItems(PdfReader reader)
-            : base() {
+	     * Creates a list of StructuredItem objects.
+	     * @param reader the reader holding the PDF to examine
+	     */
+        public StructureItems(PdfReader reader) {
             PdfDictionary catalog = reader.Catalog;
             structTreeRoot = catalog.GetAsDict(PdfName.STRUCTTREEROOT);
             if (structTreeRoot == null)
-                return;
+                throw new DocumentException(MessageLocalization.GetComposedMessage("can.t.read.document.structure"));
+            // Storing the parent tree
             parentTree = PdfNumberTree.ReadTree(structTreeRoot.GetAsDict(PdfName.PARENTTREE));
             structTreeRoot.Remove(PdfName.STRUCTPARENTS);
-            InspectKids(structTreeRoot);
+            // Examining the StructTreeRoot
+            PdfObject objecta = structTreeRoot.GetDirectObject(PdfName.K);
+            if (objecta == null)
+                return;
+            switch (objecta.Type)
+            {
+                case PdfObject.DICTIONARY:
+                    LOGGER.Info("StructTreeRoot refers to dictionary");
+                    ProcessStructElems((PdfDictionary) objecta, structTreeRoot.GetAsIndirectObject(PdfName.K));
+                    break;
+                case PdfObject.ARRAY:
+                    LOGGER.Info("StructTreeRoot refers to array");
+                    PdfArray array = (PdfArray) objecta;
+                    for (int i = 0; i < array.Size; i++)
+                    {
+                        ProcessStructElems(array.GetAsDict(i), array.GetAsIndirectObject(i));
+                    }
+                    break;
+            }
+        }
+
+
+        /**
+         * Looks at a StructElem dictionary, and processes it.
+         * @param dict	the StructElem dictionary that needs to be examined
+         * @param ref	the reference to the StructElem dictionary
+         * @throws DocumentException
+         */
+        protected void ProcessStructElems(PdfDictionary structElem, PdfIndirectReference refa) {
+            LOGGER.Info(String.Format("addStructureItems({0}, {1})", structElem, refa));
+            if (structElem == null)
+                return;
+            ProcessStructElemKids(structElem, refa, structElem.GetDirectObject(PdfName.K));
         }
 
         /**
-	 * Inspects the value of the K entry of a structure element
-	 * and stores all meaningful StructureItem objects that are encountered.
-	 * @param structElem a structure element
-	 */
-
-        protected void InspectKids(PdfDictionary structElem) {
-            if (structElem == null)
+         * Processes the kids object of a StructElem dictionary.
+         * This kids object can be a number (MCID), another StructElem dictionary,
+         * an MCR dictionary, an OBJR dictionary, or an array of the above.
+         * @param structElem	the StructElem dictionary
+         * @param ref			the reference to the StructElem dictionary
+         * @param object		the kids object
+         */
+        protected void ProcessStructElemKids(PdfDictionary structElem, PdfIndirectReference refa, PdfObject objecta) {
+            LOGGER.Info(String.Format("addStructureItem({0}, {1}, {2})", structElem, refa, objecta));
+            if (objecta == null)
                 return;
-            PdfObject obj = structElem.GetDirectObject(PdfName.K);
-            if (obj == null)
-                return;
-            switch (obj.Type) {
-                case PdfObject.DICTIONARY:
-                    AddStructureItem((PdfDictionary) obj, structElem.GetAsIndirectObject(PdfName.K));
+            StructureItem item;
+            switch (objecta.Type)
+            {
+                case PdfObject.NUMBER:
+                    item = new StructureMCID(structElem.GetAsIndirectObject(PdfName.PG), (PdfNumber) objecta);
+                    Add(item);
+                    LOGGER.Info("Added " + item);
                     break;
                 case PdfObject.ARRAY:
-                    PdfArray array = (PdfArray) obj;
-                    for (int i = 0; i < array.Size; i++) {
-                        AddStructureItem(array.GetAsDict(i), array.GetAsIndirectObject(i));
+                    PdfArray array = (PdfArray) objecta;
+                    for (int i = 0; i < array.Length; i++) {
+                        ProcessStructElemKids(structElem, array.GetAsIndirectObject(i), array.GetDirectObject(i));
+                    }
+                    break;
+                case PdfObject.DICTIONARY:
+                    PdfDictionary dict = (PdfDictionary) objecta;
+                    if (dict.CheckType(PdfName.MCR)) {
+                        item = new StructureMCID(dict);
+                        Add(item);
+                        LOGGER.Info("Added " + item);
+                    }
+                    else if (dict.CheckType(PdfName.OBJR)) {
+                        item = new StructureObject(structElem, refa, dict);
+                        Add(item);
+                        LOGGER.Info("Added " + item);
+                    }
+                    else {
+                        ProcessStructElems(dict, refa);
                     }
                     break;
             }
         }
 
         /**
-	 * Looks at a kid of a structure item, adds it as a
-	 * structure item (if necessary) and inspects its kids
-	 * (if any).
-	 * @param dict
-	 */
-
-        protected void AddStructureItem(PdfDictionary dict, PdfIndirectReference reference) {
-            if (dict == null)
-                return;
-            StructureItem item = new StructureItem(dict, reference);
-            InspectKids(dict);
-            if (item.IsRealContent())
-                Add(item);
-        }
-
-        /**
-	 * Removes a StructParent from the parent tree.
-	 * @param	PdfNumber	the number to remove
-	 */
+         * Removes a StructParent from the parent tree.
+         * @param	PdfNumber	the number to remove
+         */
 
         public void RemoveFromParentTree(PdfNumber structParent) {
             parentTree.Remove(structParent.IntValue);
         }
 
-        public int ProcessMCID(PdfNumber structParents, StructureItem item) {
-            PdfObject obj = parentTree[structParents.IntValue];
-            PdfArray array = (PdfArray) PdfReader.GetPdfObject(obj);
-            array.Add(item.GetRef());
-            return array.Size - 1;
+        /**
+         * Creates a new MCID in the parent tree of the page
+         * and returns that new MCID so that it can be used
+         * in the content stream
+         * @param structParents	the StructParents entry in the page dictionary
+         * @param item	the item for which we need a new MCID
+         * @return	a new MCID
+         * @throws DocumentException
+         */
+        public int ProcessMCID(PdfNumber structParents, PdfIndirectReference refa) {
+            if (refa == null)
+                throw new DocumentException(MessageLocalization.GetComposedMessage("can.t.read.document.structure"));
+            PdfObject objecta;
+            parentTree.TryGetValue(structParents.IntValue, out objecta);
+            PdfArray array = (PdfArray) PdfReader.GetPdfObject(objecta);
+            for (int i = 0; i < array.Length; i++) {
+                if (array.GetAsIndirectObject(i) == null) {
+                    array[i] = refa;
+                    return i;
+                }
+            }
+            array.Add(refa);
+            return array.Length - 1;
         }
 
         /**
-	 * Returns the number tree with the StructParents.
-	 * @param writer	The writer to which the StructParents have to be written
-	 * @throws IOException 
-	 */
-
+         * Writes the altered parent tree to a PdfWriter and updates the StructTreeRoot entry.
+         * @param writer	The writer to which the StructParents have to be written
+         * @throws IOException 
+         */
         public void WriteParentTree(PdfWriter writer) {
             if (structTreeRoot == null)
                 return;
-            List<int> numbers = new List<int>(parentTree.Keys);
-            numbers.Sort();
-            structTreeRoot.Put(PdfName.PARENTTREENEXTKEY, new PdfNumber(numbers[numbers.Count - 1] + 1));
+            int[] numbers = new int[parentTree.Count];
+            parentTree.Keys.CopyTo(numbers, 0);
+            Array.Sort(numbers);
+            structTreeRoot.Put(PdfName.PARENTTREENEXTKEY, new PdfNumber(numbers[numbers.Length - 1] + 1));
             structTreeRoot.Put(PdfName.PARENTTREE, PdfNumberTree.WriteTree(parentTree, writer));
         }
     }

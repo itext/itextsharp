@@ -41,160 +41,46 @@
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-
-using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Text;
-
 namespace iTextSharp.text.pdf.mc {
 
     /**
-     * Object that stores an item that is part of the document structure.
-     * It can refer to a Marked Content sequence in a page or an object
-     * reference.
+     * The abstract StructureItem class is extended by StructureMCID and StructureObject.
      */
+    public abstract class StructureItem {
 
-    public class StructureItem {
-        /** The structure element of which the properties are stored. */
-        private PdfDictionary structElem;
-        /** The reference of the structure element of which the properties are stored. */
-        private PdfIndirectReference reference;
-        /** MarkedContent IDs in case we're dealing with an MC sequence on a page. */
-        private IList<int> mcids = new List<int>();
-        /** Object reference in case we're dealing with an obj. */
-        private PdfDictionary objr;
+        /** The object number of the page to which this structure item belongs. */
+        protected int pageref = -1;
 
         /**
-         * Creates a structure item based on a dictionary.
-         * The dictionary can be of type StructElem, MCR or OBJR.
-         * @param dict	the dictionary that needs to be examined
+         * Returns the number of the page object to which the structure item belongs.
+         * @return a number of the reference of a page
          */
-
-        public StructureItem(PdfDictionary structElem, PdfIndirectReference reference) {
-            this.structElem = structElem;
-            this.reference = reference;
-            PdfObject obj = structElem.GetDirectObject(PdfName.K);
-            if (obj == null)
-                return;
-            InspectKids(obj);
+        public int GetPageref() {
+            return pageref;
         }
 
         /**
-         * Inspects the value of a K entry and stores all MCIDs
-         * or object references that are encountered.
-         * @param object the value of a K-entry
+         * Checks if an MCID corresponds with the MCID stored in the StructureItem.
+         * @param pageref	the page reference that needs to be checked
+         * @param mcid		the MCID that needs to be checked
+         * @return  0 in case there's no MCID (in case of a StructureObject),
+         * 		    1 in case the MCID matches,
+         * 		   -1 in case there's no match.
          */
-
-        protected void InspectKids(PdfObject obj) {
-            if (obj == null)
-                return;
-            switch (obj.Type) {
-                case PdfObject.NUMBER:
-                    mcids.Add(((PdfNumber) obj).IntValue);
-                    break;
-                case PdfObject.ARRAY:
-                    PdfArray array = (PdfArray) obj;
-                    for (int i = 0; i < array.Size; i++) {
-                        InspectKids(array.GetDirectObject(i));
-                    }
-                    break;
-                case PdfObject.DICTIONARY:
-                    PdfDictionary dict = (PdfDictionary) obj;
-                    if (dict.CheckType(PdfName.MCR)) {
-                        mcids.Add(dict.GetAsNumber(PdfName.MCID).IntValue);
-                    } else if (dict.CheckType(PdfName.OBJR)) {
-                        objr = dict;
-                    }
-                    break;
-            }
+        public virtual int CheckMCID(int pageref, int mcid) {
+            return 0;
         }
 
         /**
-         * Checks if we're dealing with real content.
-         * @return true if there's something to process
+         * Checks if a StructParent corresponds with the StructParent stored in the StructureItem.
+         * @param pageref	the page reference that needs to be checked
+         * @param structParent	the structParent that needs to be checked
+         * @return  0 in case there's no StructParent (in case of a StructureMCID)
+         *          1 in case the StructParent matches,
+         *         -1 in case there's no match.
          */
-
-        public bool IsRealContent() {
-            return (mcids.Count > 0 || objr != null);
-        }
-
-        /**
-         * Processes a MCID.
-         * @param mcid the MCID
-         * @return 0 in case there's an OBJR dictionary,
-         *         1 in case all MCIDs are now encountered
-         *         2 in case there are still MCIDs to process.
-         */
-
-        public int Process(int mcid) {
-            if (mcids.Contains(mcid)) {
-                mcids.Remove(mcid);
-                return mcids.Count > 0 ? 2 : 1;
-            }
-            if (objr != null)
-                return 0;
-            return -1;
-        }
-
-        /**
-         * Returns the structure element.
-         * @return a dictionary
-         */
-
-        public PdfDictionary GetStructElem() {
-            return structElem;
-        }
-
-        /**
-         * Returns the structure element's reference.
-         * @return a dictionary
-         */
-
-        public PdfIndirectReference GetRef() {
-            return reference;
-        }
-
-        /**
-         * Returns the OBJR dictionary (if present).
-         * @return a dictionary of type OBJR or null
-         */
-
-        public PdfDictionary GetObjr() {
-            return objr;
-        }
-
-        /**
-         * Returns the object referred to by the OBJR dictionary.
-         * Note that this method returns a dictionary which means
-         * that only the stream dictionary will be passed in case
-         * of an XObject.
-         * @return the object referred to by OBJR as a dictionary
-         */
-
-        public PdfDictionary GetObj() {
-            if (objr == null)
-                return null;
-            return objr.GetAsDict(PdfName.OBJ);
-        }
-
-        /**
-         * Creates a String representation of the object.
-         * @see java.lang.Object#toString()
-         */
-
-        public override String ToString() {
-            StringBuilder buf = new StringBuilder();
-            if (mcids.Count > 0) {
-                buf.Append("MCID: ");
-                foreach (int i in mcids) {
-                    buf.Append(i.ToString(CultureInfo.InvariantCulture) + " ");
-                }
-            }
-            if (objr != null) {
-                buf.Append(objr);
-            }
-            return buf.ToString();
+        public virtual int CheckStructParent(int pageref, int structParent) {
+            return 0;
         }
     }
 }

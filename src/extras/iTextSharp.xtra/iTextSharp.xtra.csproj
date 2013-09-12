@@ -39,6 +39,8 @@
     <Compile Include="iTextSharp\text\pdf\mc\MCParser.cs" />
     <Compile Include="iTextSharp\text\pdf\mc\StructureItem.cs" />
     <Compile Include="iTextSharp\text\pdf\mc\StructureItems.cs" />
+    <Compile Include="iTextSharp\text\pdf\mc\StructureMCID.cs" />
+    <Compile Include="iTextSharp\text\pdf\mc\StructureObject.cs" />
     <Compile Include="iTextSharp\text\pdf\ocg\OCGParser.cs" />
     <Compile Include="iTextSharp\text\pdf\ocg\OCGRemover.cs" />
     <Compile Include="iTextSharp\text\pdf\richmedia\CuePoint.cs" />
