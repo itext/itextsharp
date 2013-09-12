@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using iTextSharp.text.api;
 using iTextSharp.text.pdf;
@@ -191,7 +192,7 @@ namespace iTextSharp.text {
          * Creates a shallow clone of the Paragraph.
          * @return
          */
-        virtual public Paragraph cloneShallow(bool spacingBefore) {
+        public virtual Paragraph CloneShallow(bool spacingBefore) {
             Paragraph copy = new Paragraph();
             copy.Font = Font;
             copy.Alignment = Alignment;
@@ -206,16 +207,25 @@ namespace iTextSharp.text {
             copy.Role = Role;
             copy.id = ID;
             if (accessibleAttributes != null)
-                copy.accessibleAttributes = new Dictionary<PdfName, PdfObject>(copy.accessibleAttributes);
+                copy.accessibleAttributes = new Dictionary<PdfName, PdfObject>(accessibleAttributes);
             copy.TabSettings = this.TabSettings;
             return copy;
+        }
+
+        /**
+         * Creates a shallow clone of the Paragraph.
+         * @return
+         */
+        [Obsolete]
+        public virtual Paragraph cloneShallow(bool spacingBefore) {
+            return CloneShallow(spacingBefore);
         }
 
         /**
          * Breaks this Paragraph up in different parts, separating paragraphs, lists and tables from each other.
          * @return
          */
-        public IList<IElement> breakUp() {
+        public IList<IElement> BreakUp() {
             IList<IElement> list = new List<IElement>();
             Paragraph tmp = null;
             foreach (IElement e in this) {
@@ -223,7 +233,7 @@ namespace iTextSharp.text {
                     if (tmp != null && tmp.Count > 0) {
                         tmp.SpacingAfter = 0;
                         list.Add(tmp);
-                        tmp = cloneShallow(false);
+                        tmp = CloneShallow(false);
                     }
                     if (list.Count == 0) {
                         switch (e.Type) {
@@ -245,7 +255,7 @@ namespace iTextSharp.text {
                 }
                 else {
                     if (tmp == null) {
-                        tmp = cloneShallow(list.Count == 0);
+                        tmp = CloneShallow(list.Count == 0);
                     }
                     tmp.Add(e);
                 }
@@ -272,8 +282,17 @@ namespace iTextSharp.text {
             }
             return list;
         }
-    
-    
+
+        /**
+         * Breaks this Paragraph up in different parts, separating paragraphs, lists and tables from each other.
+         * @return
+         */
+        [Obsolete]
+        public IList<IElement> breakUp() {
+            return BreakUp();
+        }
+
+
         // implementation of the Element-methods
     
         /// <summary>
