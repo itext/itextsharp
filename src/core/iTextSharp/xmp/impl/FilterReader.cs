@@ -1,5 +1,4 @@
 using System.IO;
-using System.Text;
 
 namespace iTextSharp.xmp.impl {
     /// <summary>
@@ -13,41 +12,82 @@ namespace iTextSharp.xmp.impl {
     /// @author      Mark Reinhold
     /// @since       JDK1.1
     /// </summary>
-    public abstract class FilterReader : StreamReader {
-        protected object Locker;
+    public abstract class FilterReader : TextReader {
+        protected TextReader inp;
 
-        protected FilterReader(Stream inp, Encoding enc)
-            : base(inp, enc) {
-            Locker = this;
+        protected FilterReader(TextReader inp) {
+            this.inp = Synchronized(inp);
         }
 
-        protected FilterReader(Stream inp, string enc)
-            : this(inp, Encoding.GetEncoding(enc)) {
+        /**
+         * Reads a single character.
+         *
+         * @exception  IOException  If an I/O error occurs
+         */
+
+        public override int Read() {
+            return inp.Read();
         }
 
-        /// <summary>
-        /// Creates a new filtered reader.
-        /// </summary>
-        /// <param name="in">  a Reader object providing the underlying stream. </param>
-        protected FilterReader(Stream inp)
-            : this(inp, Encoding.Default) {
+        /**
+         * Reads characters into a portion of an array.
+         *
+         * @exception  IOException  If an I/O error occurs
+         */
+        override public int Read(char[] cbuf, int off, int len) {
+            return inp.Read(cbuf, off, len);
         }
 
-        /// <summary>
-        /// Skips characters.
-        /// </summary>
-        /// <exception cref="IOException">  If an I/O error occurs </exception>
-        public virtual long Skip(long n) {
-            char[] buf = new char[n];
-            return Read(buf, 0, (int) n);
-        }
+        ///**
+        // * Skips characters.
+        // *
+        // * @exception  IOException  If an I/O error occurs
+        // */
 
-        /// <summary>
-        /// Tells whether this stream is ready to be read.
-        /// </summary>
-        /// <exception cref="IOException">  If an I/O error occurs </exception>
-        public virtual bool Ready() {
-            return BaseStream != null;
+        //public long Skip(long n) {
+        //    return inp.Skip(n);
+        //}
+
+        ///**
+        // * Tells whether this stream is ready to be read.
+        // *
+        // * @exception  IOException  If an I/O error occurs
+        // */
+
+        //public bool Ready() {
+        //    return inp.Ready();
+        //}
+
+        ///**
+        // * Tells whether this stream supports the Mark() operation.
+        // */
+
+        //public bool MarkSupported() {
+        //    return inp.MarkSupported();
+        //}
+
+        ///**
+        // * Marks the present position inp the stream.
+        // *
+        // * @exception  IOException  If an I/O error occurs
+        // */
+
+        //public void Mark(int readAheadLimit) {
+        //    inp.Mark(readAheadLimit);
+        //}
+
+        ///**
+        // * Resets the stream.
+        // *
+        // * @exception  IOException  If an I/O error occurs
+        // */
+
+        //public void Reset() {
+        //    inp.Reset();
+        //}
+
+        override public void Close() {
+            inp.Close();
         }
     }
 }

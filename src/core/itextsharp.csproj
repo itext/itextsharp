@@ -4179,6 +4179,10 @@
     <Compile Include="iTextSharp\text\xml\XmlDomWriter.cs" />
     <Compile Include="iTextSharp\text\xml\XmlToTxt.cs" />
     <Compile Include="iTextSharp\text\xml\XMLUtil.cs" />
+    <Compile Include="iTextSharp\text\xml\xmp\DublinCoreProperties.cs" />
+    <Compile Include="iTextSharp\text\xml\xmp\PdfProperties.cs" />
+    <Compile Include="iTextSharp\text\xml\xmp\XmpBasicProperties.cs" />
+    <Compile Include="iTextSharp\text\xml\xmp\XmpMMProperties.cs" />
     <Compile Include="iTextSharp\xmp\impl\Base64.cs" />
     <Compile Include="iTextSharp\xmp\impl\ByteBuffer.cs" />
     <Compile Include="iTextSharp\xmp\impl\CountOutputStream.cs" />

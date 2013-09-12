@@ -30,6 +30,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using System.Xml;
 using iTextSharp.xmp.options;
 
@@ -179,12 +180,11 @@ namespace iTextSharp.xmp.impl {
 
                     if (options.FixControlChars) {
                         try {
-                            string encoding = buffer.Encoding;
-                            StreamReader fixReader = new FixAsciiControlsReader(buffer.ByteStream, encoding);
+                            StreamReader streamReader = new StreamReader(buffer.ByteStream, Encoding.GetEncoding(buffer.Encoding));
+                            FixAsciiControlsReader fixReader = new FixAsciiControlsReader(streamReader);
                             doc.Load(fixReader);
                             return doc;
-                        }
-                        catch (Exception) {
+                        } catch (Exception) {
                             // can normally not happen as the encoding is provided by a util function
                             throw new XmpException("Unsupported Encoding", XmpError.INTERNALFAILURE, e);
                         }
@@ -208,25 +208,18 @@ namespace iTextSharp.xmp.impl {
         private static XmlDocument ParseXmlFromString(string input, ParseOptions options) {
             try {
                 XmlDocument doc = new XmlDocument();
-                doc.Load(new MemoryStream(GetBytes(input)));
+                doc.Load(new StringReader(input));
                 return doc;
             }
             catch (XmpException e) {
                 if (e.ErrorCode == XmpError.BADXML && options.FixControlChars) {
                     XmlDocument doc = new XmlDocument();
-                    doc.Load(new FixAsciiControlsReader(new MemoryStream(GetBytes(input))));
+                    doc.Load(new FixAsciiControlsReader(new StringReader(input)));
                     return doc;
                 }
                 throw e;
             }
         }
-
-        private static byte[] GetBytes(string str) {
-            byte[] bytes = new byte[str.Length*sizeof (char)];
-            Buffer.BlockCopy(str.ToCharArray(), 0, bytes, 0, bytes.Length);
-            return bytes;
-        }
-
 
         /// <summary>
         /// Find the XML node that is the root of the XMP data tree. Generally this

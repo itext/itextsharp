@@ -6,6 +6,8 @@ using iTextSharp.text.pdf.collection;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf.security;
+using iTextSharp.text.xml.xmp;
+
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -559,6 +561,14 @@ namespace iTextSharp.text.pdf {
             set {
                 stamper.XmpMetadata = value;
             }
+        }
+
+        public void CreateXmpMetadata() {
+            stamper.CreateXmpMetadata();
+        }
+
+        public XmpWriter XmpWriter {
+            get { return stamper.XmpWriter; }
         }
 
         /**

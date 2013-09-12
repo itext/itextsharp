@@ -107,7 +107,7 @@ namespace iTextSharp.xmp.impl {
         }
 
         public override void Flush() {
-            throw new Exception("The method or operation is not implemented.");
+            _outp.Flush();
         }
 
         public override long Seek(long offset, SeekOrigin origin) {

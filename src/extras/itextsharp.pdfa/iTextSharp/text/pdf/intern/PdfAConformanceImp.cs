@@ -72,8 +72,8 @@ namespace iTextSharp.text.pdf.intern{
         /**
          * @see com.itextpdf.text.pdf.interfaces.PdfAConformance#getConformanceLevel()
          */
-        public PdfAConformanceLevel GetConformanceLevel() {
-            return conformanceLevel;
+        public PdfAConformanceLevel ConformanceLevel {
+            get { return conformanceLevel; }
         }
 
         /**

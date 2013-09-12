@@ -1302,6 +1302,18 @@
     <Compile Include="iTextSharp\text\xml\xmp\XmpWriter.cs">
       <SubType>Code</SubType>
     </Compile>
+	<Compile Include="iTextSharp\text\xml\xmp\DublinCoreProperties.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\xml\xmp\PdfProperties.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\xml\xmp\XmpBasicProperties.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="iTextSharp\text\xml\xmp\XmpMMProperties.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="iTextSharp\text\ZapfDingbatsList.cs">
       <SubType>Code</SubType>
     </Compile>

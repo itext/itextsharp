@@ -30,17 +30,21 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL" />
+    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml" />
+    <Reference Include="XmlDiffPatch, Version=1.0.8.28, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="iTextSharp\text\pdfa\PdfA1CheckerTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfA2CheckerTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfAFileStructureTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfAWriterTest.cs" />
+    <Compile Include="iTextSharp\text\xml\xmp\PdfAXmpWriterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -69,8 +73,15 @@
     <None Include="resources\text\pdfa\jpeg2000\p0_02.j2k" />
     <None Include="resources\text\pdfa\jpeg2000\p1_01.j2k" />
     <None Include="resources\text\pdfa\jpeg2000\p1_02.j2k" />
+    <None Include="resources\text\xml\xmp\pdf_metadata.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata_added.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata_added2.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata_automatic.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata_updated.pdf" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="lib\XmlDiffPatch.dll" />
     <Content Include="resources\text\pdfa\jpeg2000\cpyrght.htm" />
     <Content Include="resources\text\pdfa\jpeg2000\cpyrght_files\d13c15.gif" />
   </ItemGroup>

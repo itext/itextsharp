@@ -50,6 +50,7 @@ namespace iTextSharp.text.xml.xmp {
     /**
     * An implementation of an XmpSchema.
     */
+    [Obsolete]
     public class PdfSchema : XmpSchema {
         
         /** default namespace identifier*/

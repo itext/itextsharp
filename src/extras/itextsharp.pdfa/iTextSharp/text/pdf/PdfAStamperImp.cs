@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.log;
@@ -118,11 +119,12 @@ namespace iTextSharp.text.pdf {
             return ttfUnicodeWriter;
         }
 
-        /**
-         * @see PdfStamperImp#GetXmpWriter(java.io.MemoryStream, com.itextpdf.text.pdf.PdfDocument.PdfInfo)
-         */
-        internal protected override XmpWriter GetXmpWriter(MemoryStream baos, PdfDictionary info) {
-            return new PdfAXmpWriter(baos, info, ((IPdfAConformance)pdfIsoConformance).GetConformanceLevel());
+        override internal XmpWriter CreateXmpWriter(MemoryStream baos, PdfDictionary info) {
+            return new PdfAXmpWriter(baos, info, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel);
+        }
+
+        override internal XmpWriter CreateXmpWriter(MemoryStream baos, IDictionary<String, String> info) {
+            return new PdfAXmpWriter(baos, info, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel);
         }
 
         override public IPdfIsoConformance GetPdfIsoConformance() {
@@ -145,7 +147,7 @@ namespace iTextSharp.text.pdf {
             if(pdfaidConformance == null || pdfaidPart == null) {
                 throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("only.pdfa.documents.can.be.opened.in.PdfAStamper"));
             }
-            switch(((IPdfAConformance)pdfIsoConformance).GetConformanceLevel()) {
+            switch(((IPdfAConformance)pdfIsoConformance).ConformanceLevel) {
                 case PdfAConformanceLevel.PDF_A_1A:
                 case PdfAConformanceLevel.PDF_A_1B:
                     if(!"1".Equals(pdfaidPart.Value)) {

@@ -126,7 +126,7 @@ namespace iTextSharp.xmp {
         /// <returns> Returns the <code>XMPMeta</code>-object created from the input. </returns>
         /// <exception cref="XmpException"> If the file is not well-formed XML or if the parsing fails. </exception>
         /// <seealso cref= XMPMetaFactory#parseFromBuffer(byte[], ParseOptions) </seealso>
-        public static IXmpMeta ParseFromBuffer(sbyte[] buffer) {
+        public static IXmpMeta ParseFromBuffer(byte[] buffer) {
             return ParseFromBuffer(buffer, null);
         }
 
@@ -138,7 +138,7 @@ namespace iTextSharp.xmp {
         /// <returns> Returns the <code>XMPMeta</code>-object created from the input. </returns>
         /// <exception cref="XmpException"> If the file is not well-formed XML or if the parsing fails. </exception>
         /// <seealso cref= XMPMetaFactory#parse(InputStream, ParseOptions) </seealso>
-        public static IXmpMeta ParseFromBuffer(sbyte[] buffer, ParseOptions options) {
+        public static IXmpMeta ParseFromBuffer(byte[] buffer, ParseOptions options) {
             return XmpMetaParser.Parse(buffer, options);
         }
 

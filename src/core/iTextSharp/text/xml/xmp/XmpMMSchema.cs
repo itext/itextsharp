@@ -49,6 +49,7 @@ namespace iTextSharp.text.xml.xmp {
     /**
     * An implementation of an XmpSchema.
     */
+    [Obsolete]
     public class XmpMMSchema : XmpSchema {
 
         /** default namespace identifier*/

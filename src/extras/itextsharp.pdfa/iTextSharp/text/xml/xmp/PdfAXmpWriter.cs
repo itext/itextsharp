@@ -1,11 +1,8 @@
-using System.Collections.Generic;
-using System.IO;
-using iTextSharp.text.pdf;
 /*
- * $Id: PdfAXmpWriter.java 322 2012-07-23 09:58:41Z bruno $
+ * $Id: PdfAXmpWriter.java 5941 2013-08-07 18:32:21Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2013 1T3XT BVBA
  * Authors: Alexander Chingarev, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -44,24 +41,37 @@ using iTextSharp.text.pdf;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-namespace iTextSharp.text.xml.xmp{
-    /**
-     * Subclass of XmpWriter that adds info about the PDF/A level.
-     * @see XmpWriter
-     */
+
+/**
+ * Subclass of XmpWriter that adds info about the PDF/A level.
+ * @see XmpWriter
+ */
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using iTextSharp.text.pdf;
+using iTextSharp.xmp;
+
+namespace iTextSharp.text.xml.xmp {
+
     public class PdfAXmpWriter : XmpWriter {
 
         /**
          * Creates and XMP writer that adds info about the PDF/A conformance level.
          * @param os
-         * @param info
          * @param conformanceLevel
          * @throws IOException
          */
-        public PdfAXmpWriter(Stream os, PdfDictionary info, PdfAConformanceLevel conformanceLevel)
-        : base(os, info)
-    {
-            AddRdfDescription(conformanceLevel);
+
+        public PdfAXmpWriter(Stream os, PdfAConformanceLevel conformanceLevel)
+            : base(os) {
+            try {
+                AddRdfDescription(conformanceLevel);
+            }
+            catch (XmpException xmpExc) {
+                throw new IOException(xmpExc.Message);
+            }
         }
 
         /**
@@ -71,10 +81,33 @@ namespace iTextSharp.text.xml.xmp{
          * @param conformanceLevel
          * @throws IOException
          */
-        public PdfAXmpWriter(Stream os, IDictionary<string, string> info, PdfAConformanceLevel conformanceLevel)
-        : base(os, info)
-    {
-            AddRdfDescription(conformanceLevel);
+
+        public PdfAXmpWriter(Stream os, PdfDictionary info, PdfAConformanceLevel conformanceLevel)
+            : base(os, info) {
+            try {
+                AddRdfDescription(conformanceLevel);
+            }
+            catch (XmpException xmpExc) {
+                throw new IOException(xmpExc.Message);
+            }
+        }
+
+        /**
+         * Creates and XMP writer that adds info about the PDF/A conformance level.
+         * @param os
+         * @param info
+         * @param conformanceLevel
+         * @throws IOException
+         */
+
+        public PdfAXmpWriter(Stream os, IDictionary<String, String> info, PdfAConformanceLevel conformanceLevel)
+            : base(os, info) {
+            try {
+                AddRdfDescription(conformanceLevel);
+            }
+            catch (XmpException xmpExc) {
+                throw new IOException(xmpExc.Message);
+            }
         }
 
         /**
@@ -82,47 +115,44 @@ namespace iTextSharp.text.xml.xmp{
          * @param conformanceLevel
          * @throws IOException
          */
+
         private void AddRdfDescription(PdfAConformanceLevel conformanceLevel) {
-            PdfASchema schema = new PdfASchema();
-            switch (conformanceLevel)
-            {
+            switch (conformanceLevel) {
                 case PdfAConformanceLevel.PDF_A_1A:
-                    schema.AddPart("1");
-                    schema.AddConformance("A");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.PART, "1");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.CONFORMANCE, "A");
                     break;
                 case PdfAConformanceLevel.PDF_A_1B:
-                    schema.AddPart("1");
-                    schema.AddConformance("B");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.PART, "1");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.CONFORMANCE, "B");
                     break;
                 case PdfAConformanceLevel.PDF_A_2A:
-                    schema.AddPart("2");
-                    schema.AddConformance("A");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.PART, "2");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.CONFORMANCE, "A");
                     break;
                 case PdfAConformanceLevel.PDF_A_2B:
-                    schema.AddPart("2");
-                    schema.AddConformance("B");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.PART, "2");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.CONFORMANCE, "B");
                     break;
                 case PdfAConformanceLevel.PDF_A_2U:
-                    schema.AddPart("2");
-                    schema.AddConformance("U");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.PART, "2");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.CONFORMANCE, "U");
                     break;
                 case PdfAConformanceLevel.PDF_A_3A:
-                    schema.AddPart("3");
-                    schema.AddConformance("A");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.PART, "3");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.CONFORMANCE, "A");
                     break;
                 case PdfAConformanceLevel.PDF_A_3B:
-                    schema.AddPart("3");
-                    schema.AddConformance("B");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.PART, "3");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.CONFORMANCE, "B");
                     break;
                 case PdfAConformanceLevel.PDF_A_3U:
-                    schema.AddPart("3");
-                    schema.AddConformance("U");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.PART, "3");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.CONFORMANCE, "U");
                     break;
                 default:
                     break;
             }
-            base.AddRdfDescription(schema);
         }
-
     }
 }

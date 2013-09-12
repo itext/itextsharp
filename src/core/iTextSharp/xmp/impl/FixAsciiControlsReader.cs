@@ -62,16 +62,8 @@ namespace iTextSharp.xmp.impl {
         /// The look-ahead size is 6 at maximum (&amp;#xAB;) </summary>
         /// <seealso cref= PushbackReader#PushbackReader(Reader, int) </seealso>
         /// <param name="in"> a Reader </param>
-        public FixAsciiControlsReader(Stream inp)
+        public FixAsciiControlsReader(TextReader inp)
             : base(inp, BUFFER_SIZE) {
-        }
-
-        public FixAsciiControlsReader(Stream inp, Encoding enc)
-            : base(inp, BUFFER_SIZE, enc) {
-        }
-
-        public FixAsciiControlsReader(Stream inp, string enc)
-            : base(inp, BUFFER_SIZE, enc) {
         }
 
         /// <seealso cref= Reader#read(char[], int, int) </seealso>

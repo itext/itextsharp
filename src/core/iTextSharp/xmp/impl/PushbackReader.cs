@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Text;
 /*
  * Copyright (c) 1996, 2011, Oracle and/or its affiliates. All rights reserved.
  * ORACLE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -49,8 +48,8 @@ namespace iTextSharp.xmp.impl {
         /// <param name="in">   The reader from which characters will be read </param>
         /// <param name="size"> The size of the pushback buffer </param>
         /// <exception cref="IllegalArgumentException"> if size is <= 0 </exception>
-        public PushbackReader(Stream inp, int size, Encoding enc)
-            : base(inp, enc) {
+        public PushbackReader(TextReader inp, int size)
+            : base(inp) {
             if (size <= 0) {
                 throw new ArgumentException("size <= 0");
             }
@@ -62,24 +61,8 @@ namespace iTextSharp.xmp.impl {
         /// Creates a new pushback reader with a one-character pushback buffer.
         /// </summary>
         /// <param name="in">  The reader from which characters will be read </param>
-        public PushbackReader(Stream inp, Encoding enc)
-            : this(inp, 1, enc) {
-        }
-
-        public PushbackReader(Stream inp, int size, string enc)
-            : this(inp, size, Encoding.GetEncoding(enc)) {
-        }
-
-        public PushbackReader(Stream inp, string enc)
-            : this(inp, Encoding.GetEncoding(enc)) {
-        }
-
-        public PushbackReader(Stream inp, int size)
-            : this(inp, size, Encoding.Default) {
-        }
-
-        public PushbackReader(Stream inp)
-            : this(inp, Encoding.Default) {
+        public PushbackReader(TextReader inp)
+            : this(inp, 1) {
         }
 
         /// <summary>
@@ -98,13 +81,11 @@ namespace iTextSharp.xmp.impl {
         /// </returns>
         /// <exception cref="IOException">  If an I/O error occurs </exception>
         public override int Read() {
-            lock (Locker) {
-                EnsureOpen();
-                if (_pos < _buf.Length) {
-                    return _buf[_pos++];
-                }
-                return base.Read();
+            EnsureOpen();
+            if (_pos < _buf.Length) {
+                return _buf[_pos++];
             }
+            return base.Read();
         }
 
         /// <summary>
@@ -119,40 +100,38 @@ namespace iTextSharp.xmp.impl {
         /// </returns>
         /// <exception cref="IOException">  If an I/O error occurs </exception>
         public override int Read(char[] cbuf, int off, int len) {
-            lock (Locker) {
-                EnsureOpen();
-                try {
-                    if (len <= 0) {
-                        if (len < 0) {
-                            throw new IndexOutOfRangeException();
-                        }
-                        if ((off < 0) || (off > cbuf.Length)) {
-                            throw new IndexOutOfRangeException();
-                        }
-                        return 0;
+            EnsureOpen();
+            try {
+                if (len <= 0) {
+                    if (len < 0) {
+                        throw new IndexOutOfRangeException();
                     }
-                    int avail = _buf.Length - _pos;
-                    if (avail > 0) {
-                        if (len < avail) {
-                            avail = len;
-                        }
-                        Array.Copy(_buf, _pos, cbuf, off, avail);
-                        _pos += avail;
-                        off += avail;
-                        len -= avail;
+                    if ((off < 0) || (off > cbuf.Length)) {
+                        throw new IndexOutOfRangeException();
                     }
-                    if (len > 0) {
-                        len = base.Read(cbuf, off, len);
-                        if (len == -1) {
-                            return (avail == 0) ? - 1 : avail;
-                        }
-                        return avail + len;
-                    }
-                    return avail;
+                    return 0;
                 }
-                catch (IndexOutOfRangeException) {
-                    throw new IndexOutOfRangeException();
+                int avail = _buf.Length - _pos;
+                if (avail > 0) {
+                    if (len < avail) {
+                        avail = len;
+                    }
+                    Array.Copy(_buf, _pos, cbuf, off, avail);
+                    _pos += avail;
+                    off += avail;
+                    len -= avail;
                 }
+                if (len > 0) {
+                    len = base.Read(cbuf, off, len);
+                    if (len == -1) {
+                        return (avail == 0) ? -1 : avail;
+                    }
+                    return avail + len;
+                }
+                return avail;
+            }
+            catch (IndexOutOfRangeException) {
+                throw new IndexOutOfRangeException();
             }
         }
 
@@ -166,13 +145,11 @@ namespace iTextSharp.xmp.impl {
         /// <exception cref="IOException">  If the pushback buffer is full,
         ///                          or if some other I/O error occurs </exception>
         public virtual void Unread(int c) {
-            lock (Locker) {
-                EnsureOpen();
-                if (_pos == 0) {
-                    throw new IOException("Pushback buffer overflow");
-                }
-                _buf[--_pos] = (char) c;
+            EnsureOpen();
+            if (_pos == 0) {
+                throw new IOException("Pushback buffer overflow");
             }
+            _buf[--_pos] = (char) c;
         }
 
         /// <summary>
@@ -189,14 +166,12 @@ namespace iTextSharp.xmp.impl {
         /// <exception cref="IOException">  If there is insufficient room in the pushback
         ///                          buffer, or if some other I/O error occurs </exception>
         public virtual void Unread(char[] cbuf, int off, int len) {
-            lock (Locker) {
-                EnsureOpen();
-                if (len > _pos) {
-                    throw new IOException("Pushback buffer overflow");
-                }
-                _pos -= len;
-                Array.Copy(cbuf, off, _buf, _pos, len);
+            EnsureOpen();
+            if (len > _pos) {
+                throw new IOException("Pushback buffer overflow");
             }
+            _pos -= len;
+            Array.Copy(cbuf, off, _buf, _pos, len);
         }
 
         /// <summary>
@@ -217,12 +192,12 @@ namespace iTextSharp.xmp.impl {
         /// Tells whether this stream is ready to be read.
         /// </summary>
         /// <exception cref="IOException">  If an I/O error occurs </exception>
-        public override bool Ready() {
-            lock (Locker) {
-                EnsureOpen();
-                return (_pos < _buf.Length) || base.Ready();
-            }
-        }
+        //public override bool Ready() {
+        //    lock (Locker) {
+        //        EnsureOpen();
+        //        return (_pos < _buf.Length) || base.Ready();
+        //    }
+        //}
 
         /// <summary>
         /// Closes the stream and releases any system resources associated with
@@ -244,23 +219,23 @@ namespace iTextSharp.xmp.impl {
         /// </param>
         /// <returns>    The number of characters actually skipped
         /// </returns>
-        public override long Skip(long n) {
-            if (n < 0L) {
-                throw new ArgumentException("skip value is negative");
-            }
-            lock (Locker) {
-                EnsureOpen();
-                int avail = _buf.Length - _pos;
-                if (avail > 0) {
-                    if (n <= avail) {
-                        _pos += (int) n;
-                        return n;
-                    }
-                    _pos = _buf.Length;
-                    n -= avail;
-                }
-                return avail + base.Skip(n);
-            }
-        }
+        //public override long Skip(long n) {
+        //    if (n < 0L) {
+        //        throw new ArgumentException("skip value is negative");
+        //    }
+        //    lock (Locker) {
+        //        EnsureOpen();
+        //        int avail = _buf.Length - _pos;
+        //        if (avail > 0) {
+        //            if (n <= avail) {
+        //                _pos += (int) n;
+        //                return n;
+        //            }
+        //            _pos = _buf.Length;
+        //            n -= avail;
+        //        }
+        //        return avail + base.Skip(n);
+        //    }
+        //}
     }
 }

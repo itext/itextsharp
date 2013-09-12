@@ -72,6 +72,7 @@
     <Compile Include="iTextSharp\text\pdf\PdfAStamperImp.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfATtfUnicodeWriter.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfAWriter.cs" />
+	<Compile Include="iTextSharp\text\xml\xmp\PdfAProperties.cs" />
     <Compile Include="iTextSharp\text\xml\xmp\PdfASchema.cs" />
     <Compile Include="iTextSharp\text\xml\xmp\PdfAXmpWriter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
