@@ -136,7 +136,7 @@ namespace iTextSharp.text.pdf.mc
                     break;
                 case PdfObject.ARRAY:
                     PdfArray array = (PdfArray) objecta;
-                    for (int i = 0; i < array.Length; i++) {
+                    for (int i = 0; i < array.Size; i++) {
                         ProcessStructElemKids(structElem, array.GetAsIndirectObject(i), array.GetDirectObject(i));
                     }
                     break;

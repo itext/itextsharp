@@ -206,7 +206,7 @@ namespace iTextSharp.text.pdf.mc {
             }
             else {
                 PdfDictionary annot;
-                for(int i = 0; i < annots.Length; i++) {
+                for(int i = 0; i < annots.Size; i++) {
                     annot = annots.GetAsDict(i);
                     if(annot.GetAsNumber(PdfName.STRUCTPARENT) == null)
                         throw new DocumentException(MessageLocalization.GetComposedMessage("could.not.flatten.file.untagged.annotations.found"));
