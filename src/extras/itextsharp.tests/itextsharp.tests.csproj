@@ -47,6 +47,7 @@
     <Compile Include="iTextSharp\text\signature\XmlDSigKSTest.cs" />
     <Compile Include="iTextSharp\text\signature\XmlDSigRsaTest.cs" />
     <Compile Include="iTextSharp\text\signature\XmlDSigTest.cs" />
+    <Compile Include="iTextSharp\text\xml\xmp\XmpWriterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfCopyTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TaggedPdfTest.cs" />
@@ -89,6 +90,11 @@
     <None Include="itextsharp.snk" />
     <None Include="resources\text\pdf\mc\SF2809.pdf" />
     <None Include="resources\text\pdf\mc\SF2809_alt.pdf" />
+    <None Include="resources\text\xml\xmp\pdf_metadata.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata_added.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata_added2.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata_automatic.pdf" />
     <Content Include="resources\text\pdf\signature\ds-ks\pkcs12" />
     <Content Include="resources\text\pdf\signature\ds\key" />
     <Content Include="resources\text\pdf\signature\ds-ks\xfa.signed.package.xml" />

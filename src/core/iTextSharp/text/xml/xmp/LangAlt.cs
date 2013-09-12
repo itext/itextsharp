@@ -48,6 +48,7 @@ using System.util;
  */
 
 namespace iTextSharp.text.xml.xmp {
+    [Obsolete]
     public class LangAlt : Properties {
 
         /** Key for the default language. */

@@ -51,6 +51,7 @@ namespace iTextSharp.text.xml.xmp {
     /**
     * StringBuilder to construct an XMP array.
     */
+    [Obsolete]
     public class XmpArray : List<string> {
 
         /** An array that is unordered. */

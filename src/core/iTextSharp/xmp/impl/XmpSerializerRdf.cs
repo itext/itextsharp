@@ -399,7 +399,7 @@ namespace iTextSharp.xmp.impl {
                     Write(prop.Name);
                     Write("=\"");
                     AppendNodeValue(prop.Value, true);
-                    Write('"');
+                    Write('\"');
                 }
                 else {
                     allAreAttrs = false;
@@ -1178,7 +1178,7 @@ namespace iTextSharp.xmp.impl {
         /// Writes a char to the output. </summary>
         /// <param name="c"> a char </param>
         /// <exception cref="IOException"> forwards writer exceptions </exception>
-        private void Write(int c) {
+        private void Write(char c) {
             _writer.Write(c);
         }
 

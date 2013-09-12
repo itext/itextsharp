@@ -51,6 +51,7 @@ namespace iTextSharp.text.xml.xmp {
     /**
     * Abstract superclass of the XmpSchemas supported by iText.
     */
+    [Obsolete]
     public abstract class XmpSchema : Properties {
         /** the namesspace */
         protected String xmlns;

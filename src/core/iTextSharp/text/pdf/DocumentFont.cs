@@ -623,7 +623,8 @@ namespace iTextSharp.text.pdf {
                         return defaultWidth;
                 }
                 else {
-                    int[] ws = metrics[char1];
+                    int[] ws = null;
+                    metrics.TryGetValue(char1, out ws);
                     if(ws != null)
                         return ws[1];
                     else
@@ -662,7 +663,8 @@ namespace iTextSharp.text.pdf {
                     char[] chars = text.ToCharArray();
                     int len = chars.Length;
                     for(int k = 0; k < len; ++k) {
-                        int[] ws = metrics[chars[k]];
+                        int[] ws = null;
+                        metrics.TryGetValue(chars[k], out ws);
                         if(ws != null)
                             total += ws[1];
                     }

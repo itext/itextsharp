@@ -1,14 +1,8 @@
-using System;
-using System.IO;
-using System.Collections.Generic;
-using iTextSharp.text.pdf;
-using iTextSharp.text.xml.simpleparser;
 /*
  * $Id$
- * 
  *
- * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * This file is part of the iText (R) project.
+ * Copyright (c) 1998-2013 1T3XT BVBA
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -33,8 +27,8 @@ using iTextSharp.text.xml.simpleparser;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -48,302 +42,313 @@ using iTextSharp.text.xml.simpleparser;
  * address: sales@itextpdf.com
  */
 
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using iTextSharp.text.pdf;
+using iTextSharp.xmp;
+using iTextSharp.xmp.options;
+
 namespace iTextSharp.text.xml.xmp {
 
+
     /**
-    * With this class you can create an Xmp Stream that can be used for adding
-    * Metadata to a PDF Dictionary. Remark that this class doesn't cover the
-    * complete XMP specification. 
-    */
+     * With this class you can create an Xmp Stream that can be used for adding
+     * Metadata to a PDF Dictionary. Remark that this class doesn't cover the
+     * complete XMP specification.
+     */
+
     public class XmpWriter {
 
         /** A possible charset for the XMP. */
-        public const String UTF8 = "UTF-8";
+        public static String UTF8 = "UTF-8";
         /** A possible charset for the XMP. */
-        public const String UTF16 = "UTF-16";
+        public static String UTF16 = "UTF-16";
         /** A possible charset for the XMP. */
-        public const String UTF16BE = "UTF-16BE";
+        public static String UTF16BE = "UTF-16BE";
         /** A possible charset for the XMP. */
-        public const String UTF16LE = "UTF-16LE";
-        
-        /** String used to fill the extra space. */
-        public const String EXTRASPACE = "                                                                                                   \n";
-        
-        /** You can add some extra space in the XMP packet; 1 unit in this variable represents 100 spaces and a newline. */
-        protected int extraSpace;
-        
-        /** The writer to which you can write bytes for the XMP stream. */
-        protected StreamWriter writer;
-        
-        /** The about string that goes into the rdf:Description tags. */
-        protected String about;
-        
+        public static String UTF16LE = "UTF-16LE";
+
+        protected IXmpMeta xmpMeta;
+        protected Stream outputStream;
+        protected SerializeOptions serializeOptions;
+
         /**
-        * Processing Instruction required at the start of an XMP stream
-        * @since iText 2.1.6
-        */
-        public const String XPACKET_PI_BEGIN = "<?xpacket begin=\"\uFEFF\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n";
-        
-        /**
-        * Processing Instruction required at the end of an XMP stream for XMP streams that can be updated
-        * @since iText 2.1.6
-        */
-        public const String XPACKET_PI_END_W = "<?xpacket end=\"w\"?>";
-        
-        /**
-        * Processing Instruction required at the end of an XMP stream for XMP streams that are read only
-        * @since iText 2.1.6
-        */
-        public const String XPACKET_PI_END_R = "<?xpacket end=\"r\"?>";
-	        
-        /** The end attribute. */
-        protected char end = 'w';
-        
-        /**
-        * Creates an XmpWriter. 
-        * @param os
-        * @param utfEncoding
-        * @param extraSpace
-        * @throws IOException
-        */
-        public XmpWriter(Stream os, string utfEncoding, int extraSpace) {
-            this.extraSpace = extraSpace;
-            writer = new StreamWriter(os, new EncodingNoPreamble(IanaEncodings.GetEncodingEncoding(utfEncoding)));
-            writer.Write(XPACKET_PI_BEGIN);
-            writer.Write("<x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n");
-            writer.Write("<rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n");
-            about = "";
-        }
-        
-        /**
-        * Creates an XmpWriter.
-        * @param os
-        * @throws IOException
-        */
-        public XmpWriter(Stream os) : this(os, UTF8, 20) {
-        }
-        
-        /** Sets the XMP to read-only */
-        public void SetReadOnly() {
-            end = 'r';
-        }
-        
-        /**
-        * @param about The about to set.
-        */
-        public String About {
-            set {
-                this.about = value;
+         * Creates an XmpWriter.
+         * @param os
+         * @param utfEncoding
+         * @param extraSpace
+         * @throws IOException
+         */
+
+        public XmpWriter(Stream os, String utfEncoding, int extraSpace) {
+            outputStream = os;
+            serializeOptions = new SerializeOptions();
+            if (UTF16BE.Equals(utfEncoding) || UTF16.Equals(utfEncoding))
+                serializeOptions.EncodeUtf16Be = true;
+            else if (UTF16LE.Equals(utfEncoding))
+                serializeOptions.EncodeUtf16Le = true;
+            serializeOptions.Padding = extraSpace;
+            xmpMeta = XmpMetaFactory.Create();
+            xmpMeta.ObjectName = XmpConst.TAG_XMPMETA;
+            xmpMeta.ObjectName = "";
+            try {
+                xmpMeta.SetProperty(XmpConst.NS_DC, DublinCoreProperties.FORMAT, "application/pdf");
+                xmpMeta.SetProperty(XmpConst.NS_PDF, PdfProperties.PRODUCER, Version.GetInstance().GetVersion);
             }
-        }
-        
-        /**
-        * Adds an rdf:Description.
-        * @param xmlns
-        * @param content
-        * @throws IOException
-        */
-        public void AddRdfDescription(String xmlns, String content) {
-            writer.Write("<rdf:Description rdf:about=\"");
-            writer.Write(about);
-            writer.Write("\" ");
-            writer.Write(xmlns);
-            writer.Write(">");
-            writer.Write(content);
-            writer.Write("</rdf:Description>\n");
-        }
-        
-        /**
-        * Adds an rdf:Description.
-        * @param s
-        * @throws IOException
-        */
-        public void AddRdfDescription(XmpSchema s) {
-            writer.Write("<rdf:Description rdf:about=\"");
-            writer.Write(about);
-            writer.Write("\" ");
-            writer.Write(s.Xmlns);
-            writer.Write(">");
-            writer.Write(s.ToString());
-            writer.Write("</rdf:Description>\n");
-        }
-        
-        /**
-        * Flushes and closes the XmpWriter.
-        * @throws IOException
-        */
-        public void Close() {
-            writer.Write("</rdf:RDF>");
-            writer.Write("</x:xmpmeta>\n");
-            for (int i = 0; i < extraSpace; i++) {
-                writer.Write(EXTRASPACE);
-            }
-            writer.Write(end == 'r' ? XPACKET_PI_END_R : XPACKET_PI_END_W);
-            writer.Flush();
-            writer.Close();
+            catch (XmpException) {}
         }
 
         /**
-        * @deprecated
-        * @param os
-        * @param info
-        * @param PdfXConformance
-        * @throws IOException
-        */
-        public XmpWriter(Stream os, PdfDictionary info, int PdfXConformance) : this(os, info) {
-            if (info != null) {
-                DublinCoreSchema dc = new DublinCoreSchema();
-                PdfSchema p = new PdfSchema();
-                XmpBasicSchema basic = new XmpBasicSchema();
-                PdfObject obj;
-                String value;
-                foreach (PdfName key in info.Keys) {
-                    obj = info.Get(key);
-                    if (obj == null)
-                        continue;
-                    if (!obj.IsString())
-                        continue;
-                    value = ((PdfString)obj).ToUnicodeString();
-                    if (PdfName.TITLE.Equals(key)) {
-                        dc.AddTitle(new LangAlt(value));
-                    }
-                    if (PdfName.AUTHOR.Equals(key)) {
-                        dc.AddAuthor(value);
-                    }
-                    if (PdfName.SUBJECT.Equals(key)) {
-                        dc.AddSubject(value);
-                        dc.AddDescription(new LangAlt(value));
-                    }
-                    if (PdfName.KEYWORDS.Equals(key)) {
-                        p.AddKeywords(value);
-                    }
-                    if (PdfName.CREATOR.Equals(key)) {
-                        basic.AddCreatorTool(value);
-                    }
-                    if (PdfName.PRODUCER.Equals(key)) {
-                        p.AddProducer(value);
-                    }
-                    if (PdfName.CREATIONDATE.Equals(key)) {
-                        basic.AddCreateDate(PdfDate.GetW3CDate(obj.ToString()));
-                    }
-                    if (PdfName.MODDATE.Equals(key)) {
-                        basic.AddModDate(PdfDate.GetW3CDate(obj.ToString()));
-                    }
-                }
-                if (dc.Count > 0) AddRdfDescription(dc);
-                if (p.Count > 0) AddRdfDescription(p);
-                if (basic.Count > 0) AddRdfDescription(basic);                
-            }
-        }
+         * Creates an XmpWriter.
+         * @param os
+         * @throws IOException
+         */
+        public XmpWriter(Stream os) : this(os, UTF8, 2000) {}
 
         /**
-        * @param os
-        * @param info
-        * @throws IOException
-        */
+         * @param os
+         * @param info
+         * @throws IOException
+         */
+
         public XmpWriter(Stream os, PdfDictionary info)
-            : this(os)
-        {
-            if (info != null)
-            {
-                DublinCoreSchema dc = new DublinCoreSchema();
-                PdfSchema p = new PdfSchema();
-                XmpBasicSchema basic = new XmpBasicSchema();
+            : this(os) {
+            if (info != null) {
+                PdfName key;
                 PdfObject obj;
                 String value;
-                foreach (PdfName key in info.Keys)
-                {
+                foreach (PdfName pdfName in info.Keys) {
+                    key = pdfName;
                     obj = info.Get(key);
                     if (obj == null)
                         continue;
                     if (!obj.IsString())
                         continue;
-                    value = ((PdfString)obj).ToUnicodeString();
-                    if (PdfName.TITLE.Equals(key))
-                    {
-                        dc.AddTitle(value);
+                    value = ((PdfString) obj).ToUnicodeString();
+                    try {
+                        AddDocInfoProperty(key, value);
                     }
-                    if (PdfName.AUTHOR.Equals(key))
-                    {
-                        dc.AddAuthor(value);
-                    }
-                    if (PdfName.SUBJECT.Equals(key))
-                    {
-                        dc.AddSubject(value);
-                        dc.AddDescription(value);
-                    }
-                    if (PdfName.KEYWORDS.Equals(key))
-                    {
-                        p.AddKeywords(value);
-                    }
-                    if (PdfName.CREATOR.Equals(key))
-                    {
-                        basic.AddCreatorTool(value);
-                    }
-                    if (PdfName.PRODUCER.Equals(key))
-                    {
-                        p.AddProducer(value);
-                    }
-                    if (PdfName.CREATIONDATE.Equals(key))
-                    {
-                        basic.AddCreateDate(PdfDate.GetW3CDate(obj.ToString()));
-                    }
-                    if (PdfName.MODDATE.Equals(key))
-                    {
-                        basic.AddModDate(PdfDate.GetW3CDate(obj.ToString()));
+                    catch (XmpException xmpExc) {
+                        throw new IOException(xmpExc.Message);
                     }
                 }
-                if (dc.Count > 0) AddRdfDescription(dc);
-                if (p.Count > 0) AddRdfDescription(p);
-                if (basic.Count > 0) AddRdfDescription(basic);
             }
         }
-        
+
         /**
-        * @param os
-        * @param info
-        * @throws IOException
-        */
-        public XmpWriter(Stream os, IDictionary<string,string> info) : this(os) {
+         * @param os
+         * @param info
+         * @throws IOException
+         * @since 5.0.1 (generic type in signature)
+         */
+
+        public XmpWriter(Stream os, IDictionary<String, String> info)
+            : this(os) {
             if (info != null) {
-                DublinCoreSchema dc = new DublinCoreSchema();
-                PdfSchema p = new PdfSchema();
-                XmpBasicSchema basic = new XmpBasicSchema();
+                String key;
                 String value;
-                foreach (KeyValuePair<string,string> entry in info) {
-                    String key = entry.Key;
+                foreach (KeyValuePair<string, string> entry in info) {
+                    key = entry.Key;
                     value = entry.Value;
                     if (value == null)
                         continue;
-                    if ("Title".Equals(key)) {
-                        dc.AddTitle(value);
+                    try {
+                        AddDocInfoProperty(key, value);
                     }
-                    if ("Author".Equals(key)) {
-                        dc.AddAuthor(value);
-                    }
-                    if ("Subject".Equals(key)) {
-                        dc.AddSubject(value);
-                        dc.AddDescription(value);
-                    }
-                    if ("Keywords".Equals(key)) {
-                        p.AddKeywords(value);
-                    }
-                    if ("Creator".Equals(key)) {
-                        basic.AddCreatorTool(value);
-                    }
-                    if ("Producer".Equals(key)) {
-                        p.AddProducer(value);
-                    }
-                    if ("CreationDate".Equals(key)) {
-                        basic.AddCreateDate(PdfDate.GetW3CDate(value));
-                    }
-                    if ("ModDate".Equals(key)) {
-                        basic.AddModDate(PdfDate.GetW3CDate(value));
+                    catch (XmpException xmpExc) {
+                        throw new IOException(xmpExc.Message);
                     }
                 }
-                if (dc.Count > 0) AddRdfDescription(dc);
-                if (p.Count > 0) AddRdfDescription(p);
-                if (basic.Count > 0) AddRdfDescription(basic);
+            }
+        }
+
+        public IXmpMeta XmpMeta {
+            get { return xmpMeta; }
+        }
+
+        /** Sets the XMP to read-only */
+
+        public bool ReadOnly {
+            get { return serializeOptions.ReadOnlyPacket; }
+            set { serializeOptions.ReadOnlyPacket = value; }
+        }
+
+        /**
+         * @param about The about to set.
+         */
+
+        public String About {
+            get { return xmpMeta.ObjectName; }
+            set { xmpMeta.ObjectName = value; }
+        }
+
+        /**
+         * Adds an rdf:Description.
+         * @param xmlns
+         * @param content
+         * @throws IOException
+         */
+
+        [Obsolete]
+        public void AddRdfDescription(String xmlns, String content) {
+            try {
+                String str = "<rdf:RDF xmlns:rdf=\"" + XmpConst.NS_RDF + "\">" +
+                             "<rdf:Description rdf:about=\"" + xmpMeta.ObjectName +
+                             "\" " +
+                             xmlns +
+                             ">" +
+                             content +
+                             "</rdf:Description></rdf:RDF>\n";
+                byte[] bytes = Encoding.Convert(Encoding.UTF8, Encoding.ASCII, Encoding.UTF8.GetBytes(str));
+                IXmpMeta extMeta = XmpMetaFactory.ParseFromString(str);
+                XmpUtils.AppendProperties(extMeta, xmpMeta, true, true);
+            }
+            catch (XmpException xmpExc) {
+                throw new IOException(xmpExc.Message);
+            }
+        }
+
+        /**
+         * Adds an rdf:Description.
+         * @param s
+         * @throws IOException
+         */
+
+        [Obsolete]
+        public void AddRdfDescription(XmpSchema s) {
+            try {
+                String str = "<rdf:RDF xmlns:rdf=\"" + XmpConst.NS_RDF + "\">" +
+                             "<rdf:Description rdf:about=\"" + xmpMeta.ObjectName +
+                             "\" " +
+                             s.Xmlns +
+                             ">" +
+                             s.ToString() +
+                             "</rdf:Description></rdf:RDF>\n";
+                IXmpMeta extMeta = XmpMetaFactory.ParseFromString(str);
+                XmpUtils.AppendProperties(extMeta, xmpMeta, true, true);
+            }
+            catch (XmpException xmpExc) {
+                throw new IOException(xmpExc.Message);
+            }
+        }
+
+        /**
+         * @param schemaNS The namespace URI for the property. Has the same usage as in getProperty.
+         * @param propName The name of the property.
+         *                 Has the same usage as in <code>getProperty()</code>.
+         * @param value    the value for the property (only leaf properties have a value).
+         *                 Arrays and non-leaf levels of structs do not have values.
+         *                 Must be <code>null</code> if the value is not relevant.<br/>
+         *                 The value is automatically detected: Boolean, Integer, Long, Double, XMPDateTime and
+         *                 byte[] are handled, on all other <code>toString()</code> is called.
+         * @throws XMPException Wraps all errors and exceptions that may occur.
+         */
+
+        public void SetProperty(String schemaNS, String propName, Object value) {
+            xmpMeta.SetProperty(schemaNS, propName, value);
+        }
+
+        /**
+         * Simplifies the construction of an array by not requiring that you pre-create an empty array.
+         * The array that is assigned is created automatically if it does not yet exist. Each call to
+         * AppendArrayItem() appends an item to the array.
+         *
+         * @param schemaNS  The namespace URI for the array.
+         * @param arrayName The name of the array. May be a general path expression, must not be null or
+         *                  the empty string.
+         * @param value     the value of the array item.
+         * @throws XMPException Wraps all errors and exceptions that may occur.
+         */
+
+        public void AppendArrayItem(String schemaNS, String arrayName, String value) {
+            xmpMeta.AppendArrayItem(schemaNS, arrayName, new PropertyOptions(PropertyOptions.ARRAY), value, null);
+        }
+
+        /**
+         * Simplifies the construction of an ordered array by not requiring that you pre-create an empty array.
+         * The array that is assigned is created automatically if it does not yet exist. Each call to
+         * AppendArrayItem() appends an item to the array.
+         *
+         * @param schemaNS  The namespace URI for the array.
+         * @param arrayName The name of the array. May be a general path expression, must not be null or
+         *                  the empty string.
+         * @param value     the value of the array item.
+         * @throws XMPException Wraps all errors and exceptions that may occur.
+         */
+
+        public void AppendOrderedArrayItem(String schemaNS, String arrayName, String value) {
+            xmpMeta.AppendArrayItem(schemaNS, arrayName, new PropertyOptions(PropertyOptions.ARRAY_ORDERED), value, null);
+        }
+
+        /**
+         * Simplifies the construction of an alternate array by not requiring that you pre-create an empty array.
+         * The array that is assigned is created automatically if it does not yet exist. Each call to
+         * AppendArrayItem() appends an item to the array.
+         *
+         * @param schemaNS  The namespace URI for the array.
+         * @param arrayName The name of the array. May be a general path expression, must not be null or
+         *                  the empty string.
+         * @param value     the value of the array item.
+         * @throws XMPException Wraps all errors and exceptions that may occur.
+         */
+
+        public void AppendAlternateArrayItem(String schemaNS, String arrayName, String value) {
+            xmpMeta.AppendArrayItem(schemaNS, arrayName, new PropertyOptions(PropertyOptions.ARRAY_ALTERNATE), value,
+                                    null);
+        }
+
+        /**
+         * Flushes and closes the XmpWriter.
+         * @throws IOException
+         */
+
+        public void Serialize(Stream externalOutputStream) {
+            XmpMetaFactory.Serialize(xmpMeta, externalOutputStream, serializeOptions);
+        }
+
+        /**
+         * Flushes and closes the XmpWriter.
+         * @throws IOException
+         */
+
+        public void Close() {
+            if (outputStream == null)
+                return;
+            try {
+                XmpMetaFactory.Serialize(xmpMeta, outputStream, serializeOptions);
+                outputStream = null;
+            }
+            catch (XmpException xmpExc) {
+                throw new IOException(xmpExc.Message);
+            }
+        }
+
+        public void AddDocInfoProperty(Object key, String value) {
+            if (key is String)
+                key = new PdfName((String) key);
+            if (PdfName.TITLE.Equals(key)) {
+                xmpMeta.SetLocalizedText(XmpConst.NS_DC, DublinCoreProperties.TITLE, XmpConst.X_DEFAULT,
+                                         XmpConst.X_DEFAULT, value);
+            } else if (PdfName.AUTHOR.Equals(key)) {
+                xmpMeta.AppendArrayItem(XmpConst.NS_DC, DublinCoreProperties.CREATOR,
+                                        new PropertyOptions(PropertyOptions.ARRAY_ORDERED), value, null);
+            } else if (PdfName.SUBJECT.Equals(key)) {
+                xmpMeta.AppendArrayItem(XmpConst.NS_DC, DublinCoreProperties.SUBJECT,
+                                        new PropertyOptions(PropertyOptions.ARRAY), value, null);
+                xmpMeta.SetLocalizedText(XmpConst.NS_DC, DublinCoreProperties.DESCRIPTION, XmpConst.X_DEFAULT,
+                                         XmpConst.X_DEFAULT, value);
+            } else if (PdfName.KEYWORDS.Equals(key)) {
+                xmpMeta.SetProperty(XmpConst.NS_PDF, PdfProperties.KEYWORDS, value);
+            } else if (PdfName.PRODUCER.Equals(key)) {
+                xmpMeta.SetProperty(XmpConst.NS_PDF, PdfProperties.PRODUCER, value);
+            } else if (PdfName.CREATOR.Equals(key)) {
+                xmpMeta.SetProperty(XmpConst.NS_XMP, XmpBasicProperties.CREATORTOOL, value);
+            } else if (PdfName.CREATIONDATE.Equals(key)) {
+                xmpMeta.SetProperty(XmpConst.NS_XMP, XmpBasicProperties.CREATEDATE, PdfDate.GetW3CDate(value));
+            } else if (PdfName.MODDATE.Equals(key)) {
+                xmpMeta.SetProperty(XmpConst.NS_XMP, XmpBasicProperties.MODIFYDATE, PdfDate.GetW3CDate(value));
             }
         }
     }

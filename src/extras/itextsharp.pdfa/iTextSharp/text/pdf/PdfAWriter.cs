@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.log;
@@ -48,11 +49,12 @@ using iTextSharp.text.pdf.intern;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
-namespace iTextSharp.text.pdf
-{   
+
+namespace iTextSharp.text.pdf {
     /**
      * @see PdfWriter
      */
+
     public class PdfAWriter : PdfWriter {
 
         protected ICC_Profile colorProfile;
@@ -65,8 +67,8 @@ namespace iTextSharp.text.pdf
          * @return	a new <CODE>PdfWriter</CODE>
          * @throws	DocumentException on error
          */
-        public static PdfAWriter GetInstance(Document document, Stream os, PdfAConformanceLevel conformanceLevel)
-        {
+
+        public static PdfAWriter GetInstance(Document document, Stream os, PdfAConformanceLevel conformanceLevel) {
             PdfDocument pdf = new PdfDocument();
             document.AddDocListener(pdf);
             PdfAWriter writer = new PdfAWriter(pdf, os, conformanceLevel);
@@ -83,7 +85,9 @@ namespace iTextSharp.text.pdf
          * @return	a new <CODE>PdfWriter</CODE>
          * @throws	DocumentException on error
          */
-        public static PdfAWriter GetInstance(Document document, Stream os, IDocListener listener, PdfAConformanceLevel conformanceLevel){
+
+        public static PdfAWriter GetInstance(Document document, Stream os, IDocListener listener,
+                                             PdfAConformanceLevel conformanceLevel) {
             PdfDocument pdf = new PdfDocument();
             pdf.AddDocListener(listener);
             document.AddDocListener(pdf);
@@ -97,6 +101,7 @@ namespace iTextSharp.text.pdf
          * @param writer
          * @param conformanceLevel
          */
+
         public static void SetPdfVersion(PdfWriter writer, PdfAConformanceLevel conformanceLevel) {
             switch (conformanceLevel) {
                 case PdfAConformanceLevel.PDF_A_1A:
@@ -122,7 +127,9 @@ namespace iTextSharp.text.pdf
         /**
          * @see PdfWriter#setOutputIntents(String, String, String, String, ICC_Profile)
          */
-        public override void SetOutputIntents(String outputConditionIdentifier, String outputCondition, String registryName, String info, ICC_Profile colorProfile){
+
+        public override void SetOutputIntents(String outputConditionIdentifier, String outputCondition,
+                                              String registryName, String info, ICC_Profile colorProfile) {
             base.SetOutputIntents(outputConditionIdentifier, outputCondition, registryName, info, colorProfile);
             PdfArray a = extraCatalog.GetAsArray(PdfName.OUTPUTINTENTS);
             if (a != null) {
@@ -137,14 +144,17 @@ namespace iTextSharp.text.pdf
          * Always throws an exception since PDF/X conformance level cannot be set for PDF/A conformant documents.
          * @param pdfx
          */
+
         public void SetPDFXConformance(int pdfx) {
-            throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("pdfx.conformance.cannot.be.set.for.PdfAWriter.instance"));
+            throw new PdfXConformanceException(
+                MessageLocalization.GetComposedMessage("pdfx.conformance.cannot.be.set.for.PdfAWriter.instance"));
         }
 
         /**
          * @see com.itextpdf.text.pdf.PdfWriter#isPdfIso()
          */
-        override public bool IsPdfIso() {
+
+        public override bool IsPdfIso() {
             return pdfIsoConformance.IsPdfIso();
         }
 
@@ -155,9 +165,10 @@ namespace iTextSharp.text.pdf
         /**
          * @param conformanceLevel PDF/A conformance level of a new PDF document
          */
-        internal protected PdfAWriter(PdfAConformanceLevel conformanceLevel)
+
+        protected internal PdfAWriter(PdfAConformanceLevel conformanceLevel)
             : base() {
-            ((IPdfAConformance)pdfIsoConformance).SetConformanceLevel(conformanceLevel);
+            ((IPdfAConformance) pdfIsoConformance).SetConformanceLevel(conformanceLevel);
             SetPdfVersion(this, conformanceLevel);
         }
 
@@ -169,10 +180,10 @@ namespace iTextSharp.text.pdf
          * @param os the <CODE>Stream</CODE> the writer has to write to
          * @param conformanceLevel PDF/A conformance level of a new PDF document
          */
-        internal protected PdfAWriter(PdfDocument document, Stream os, PdfAConformanceLevel conformanceLevel)
-            : base(document, os)
-        {
-            ((IPdfAConformance)pdfIsoConformance).SetConformanceLevel(conformanceLevel);
+
+        protected internal PdfAWriter(PdfDocument document, Stream os, PdfAConformanceLevel conformanceLevel)
+            : base(document, os) {
+            ((IPdfAConformance) pdfIsoConformance).SetConformanceLevel(conformanceLevel);
             SetPdfVersion(this, conformanceLevel);
         }
 
@@ -180,30 +191,31 @@ namespace iTextSharp.text.pdf
          * @see com.itextpdf.text.pdf.PdfWriter#getTtfUnicodeWriter()
          */
 
-        internal protected override TtfUnicodeWriter GetTtfUnicodeWriter() {
+        protected internal override TtfUnicodeWriter GetTtfUnicodeWriter() {
             if (ttfUnicodeWriter == null)
                 ttfUnicodeWriter = new PdfATtfUnicodeWriter(this);
             return ttfUnicodeWriter;
         }
 
-        /**
-         * @see PdfWriter#getXmpWriter(java.io.MemoryStream, com.itextpdf.text.pdf.PdfDocument.PdfInfo)
-         */
-        internal protected override XmpWriter GetXmpWriter(MemoryStream baos, PdfDictionary info) {
-            return new PdfAXmpWriter(baos, info, ((IPdfAConformance)pdfIsoConformance).GetConformanceLevel());
+        override internal XmpWriter CreateXmpWriter(MemoryStream baos, PdfDictionary info) {
+            return
+                xmpWriter = new PdfAXmpWriter(baos, info, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel);
         }
 
-        /**
-         * @see com.itextpdf.text.pdf.PdfWriter#getPdfIsoConformance()
-         */
+        override internal XmpWriter CreateXmpWriter(MemoryStream baos, IDictionary<String, String> info) {
+            return
+                xmpWriter = new PdfAXmpWriter(baos, info, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel);
+        }
+
         public override IPdfIsoConformance GetPdfIsoConformance() {
             return new PdfAConformanceImp(this);
         }
-    
-        protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfAWriter));
-	    protected override ICounter GetCounter() {
-		    return COUNTER;
-	    }
+
+        protected ICounter COUNTER = CounterFactory.GetCounter(typeof (PdfAWriter));
+
+        protected override ICounter GetCounter() {
+            return COUNTER;
+        }
     }
 
 }

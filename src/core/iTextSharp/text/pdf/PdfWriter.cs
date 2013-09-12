@@ -11,6 +11,8 @@ using iTextSharp.text.pdf.collection;
 using iTextSharp.text.xml.xmp;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
+using iTextSharp.xmp;
+
 /*
  * $Id$
  * 
@@ -1217,6 +1219,18 @@ namespace iTextSharp.text.pdf {
                     PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_LAYER, OCProperties);
 
                 // [C9] if there is XMP data to add: add it
+                if (xmpMetadata == null && xmpWriter != null) {
+                    try {
+                        MemoryStream baos = new MemoryStream();
+                        xmpWriter.Serialize(baos);
+                        xmpWriter.Close();
+                        xmpMetadata = baos.ToArray();
+                    } catch (IOException) {
+                        xmpWriter = null;
+                    } catch (XmpException) {
+                        xmpWriter = null;
+                    }
+                }
                 if (xmpMetadata != null) {
                     PdfStream xmp = new PdfStream(xmpMetadata);
                     xmp.Put(PdfName.TYPE, PdfName.METADATA);
@@ -1819,25 +1833,22 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        /**
-        * Creates XMP Metadata based on the metadata in the PdfDocument.
-        */
-        public void CreateXmpMetadata() {
-            XmpMetadata = CreateXmpMetadataBytes();
+        protected XmpWriter xmpWriter = null;
+
+        public XmpWriter XmpWriter {
+            get { return xmpWriter; }
         }
 
         /**
-        * @return an XmpMetadata byte array
-        */
-        private byte[] CreateXmpMetadataBytes() {
-            MemoryStream baos = new MemoryStream();
+         * Use this method to creates XMP Metadata based
+         * on the metadata in the PdfDocument.
+         * @since 5.4.4 just creates XmpWriter instance which will be serialized in close.
+         */
+        virtual public void CreateXmpMetadata() {
             try {
-                XmpWriter xmp = GetXmpWriter(baos, pdf.Info);
-                xmp.Close();
-            }
-            catch (IOException) {
-            }
-            return baos.ToArray();
+                xmpWriter = CreateXmpWriter(null, pdf.Info);
+                xmpMetadata = null;
+            } catch (IOException) {}
         }
 
     // [C10] PDFX Conformance
@@ -3300,7 +3311,11 @@ namespace iTextSharp.text.pdf {
             return ttfUnicodeWriter;
         }
 
-        internal protected virtual XmpWriter GetXmpWriter(MemoryStream baos, PdfDictionary info) {
+        virtual internal XmpWriter CreateXmpWriter(MemoryStream baos, PdfDictionary info) {
+            return new XmpWriter(baos, info);
+        }
+
+        virtual internal XmpWriter CreateXmpWriter(MemoryStream baos, IDictionary<String, String> info) {
             return new XmpWriter(baos, info);
         }
 

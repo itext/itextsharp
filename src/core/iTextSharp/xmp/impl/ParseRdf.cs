@@ -553,11 +553,10 @@ namespace iTextSharp.xmp.impl {
                     string attrLocal = attribute.LocalName;
                     if (XML_LANG.Equals(attribute.Name)) {
                         AddQualifierNode(newChild, XML_LANG, attribute.Value);
-                    }
-                    else if (NS_RDF.Equals(attrNs) && ("ID".Equals(attrLocal) || "datatype".Equals(attrLocal))) {
+                    } else if (NS_RDF.Equals(attrNs) && ("ID".Equals(attrLocal) || "datatype".Equals(attrLocal))) {
                         continue; // Ignore all rdf:ID and rdf:datatype attributes.
-                    }
-                    throw new XmpException("Invalid attribute for literal property element", XmpError.BADRDF);
+                    } else
+                        throw new XmpException("Invalid attribute for literal property element", XmpError.BADRDF);
                 }
             }
             string textValue = "";

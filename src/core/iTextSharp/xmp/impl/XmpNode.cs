@@ -529,7 +529,7 @@ namespace iTextSharp.xmp.impl {
                     quals[sortFrom].Sort();
                     sortFrom++;
                 }
-                Array.Sort(quals, sortFrom, quals.Length);
+                Array.Sort(quals, sortFrom, quals.Length - sortFrom);
                 for (int j = 0; j < quals.Length; j++) {
                     _qualifier[j] = quals[j];
                     quals[j].Sort();
@@ -617,7 +617,7 @@ namespace iTextSharp.xmp.impl {
                 while (quals.Length > i && (XmpConst.XML_LANG.Equals(quals[i].Name) || "rdf:type".Equals(quals[i].Name))) {
                     i++;
                 }
-                Array.Sort(quals, i, quals.Length);
+                Array.Sort(quals, i, quals.Length - i);
                 for (i = 0; i < quals.Length; i++) {
                     XmpNode qualifier = quals[i];
                     qualifier.DumpNode(result, recursive, indent + 2, i + 1);

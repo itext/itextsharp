@@ -56,7 +56,7 @@ namespace iTextSharp.text.pdf.interfaces
          * Returns the conformance level.
          * @return
          */
-        PdfAConformanceLevel GetConformanceLevel();
+        PdfAConformanceLevel ConformanceLevel { get; }
 
         /**
          * Sets the conformance level.

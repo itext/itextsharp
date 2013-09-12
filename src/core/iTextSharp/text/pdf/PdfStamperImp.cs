@@ -8,6 +8,9 @@ using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.collection;
 using iTextSharp.text.xml.xmp;
 using iTextSharp.text.error_messages;
+using iTextSharp.xmp;
+using iTextSharp.xmp.options;
+
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2012 1T3XT BVBA
@@ -257,40 +260,47 @@ namespace iTextSharp.text.pdf {
                 altMetadata = PdfReader.GetStreamBytesRaw((PRStream)xmpo);
                 PdfReader.KillIndirect(catalog.Get(PdfName.METADATA));
             }
+            PdfStream xmp = null;
             if (xmpMetadata != null) {
                 altMetadata = xmpMetadata;
-            }
-            if (altMetadata != null) {
-                PdfStream xmp;
+            } else if (xmpWriter != null) {
                 try {
-                    XmpReader xmpr;
-                    if (moreInfo == null || xmpMetadata != null) {
-                        xmpr = new XmpReader(altMetadata);
-                        if (!(xmpr.ReplaceNode("http://ns.adobe.com/pdf/1.3/", "Producer", producer)
-                            || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/pdf/1.3/", "Producer", producer)))
-                            xmpr.Add("rdf:Description", "http://ns.adobe.com/pdf/1.3/", "Producer", producer);
-                        if (!(xmpr.ReplaceNode("http://ns.adobe.com/xap/1.0/", "ModifyDate", date.GetW3CDate())
-                            || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/xap/1.0/", "ModifyDate", date.GetW3CDate())))
-                            xmpr.Add("rdf:Description", "http://ns.adobe.com/xap/1.0/", "ModifyDate", date.GetW3CDate());
-                        if (!(xmpr.ReplaceNode("http://ns.adobe.com/xap/1.0/", "MetadataDate", date.GetW3CDate())
-                                || xmpr.ReplaceDescriptionAttribute("http://ns.adobe.com/xap/1.0/", "MetadataDate", date.GetW3CDate()))) {
-                        }
-                    }
-                    else {
-                        MemoryStream baos = new MemoryStream();
-                        try {
-                            XmpWriter xmpw = GetXmpWriter(baos, newInfo);
-                            xmpw.Close();
-                        }
-                        catch (IOException) {
-                        }
-                        xmpr = new XmpReader(baos.ToArray());
-                    }
-                    xmp = new PdfStream(xmpr.SerializeDoc());
+                    MemoryStream baos = new MemoryStream();
+                    PdfProperties.SetProducer(xmpWriter.XmpMeta, producer);
+                    XmpBasicProperties.SetModDate(xmpWriter.XmpMeta, date.GetW3CDate());
+                    XmpBasicProperties.SetMetaDataDate(xmpWriter.XmpMeta, date.GetW3CDate());
+                    xmpWriter.Serialize(baos);
+                    xmpWriter.Close();
+                    xmp = new PdfStream(baos.ToArray());
+                } catch (XmpException) {
+                    xmpWriter = null;
                 }
-                catch {
+            }
+            if (xmp == null && altMetadata != null) {
+                try {
+                    MemoryStream baos = new MemoryStream();
+                    if (moreInfo == null || xmpMetadata != null) {
+                        IXmpMeta xmpMeta = XmpMetaFactory.ParseFromBuffer(altMetadata);
+
+                        PdfProperties.SetProducer(xmpMeta, producer);
+                        XmpBasicProperties.SetModDate(xmpMeta, date.GetW3CDate());
+                        XmpBasicProperties.SetMetaDataDate(xmpMeta, date.GetW3CDate());
+
+                        SerializeOptions serializeOptions = new SerializeOptions();
+                        serializeOptions.Padding = 2000;
+                        XmpMetaFactory.Serialize(xmpMeta, baos, serializeOptions);
+                    } else {
+                        XmpWriter xmpw = CreateXmpWriter(baos, newInfo);
+                        xmpw.Close();
+                    }
+                    xmp = new PdfStream(baos.ToArray());
+                } catch (XmpException) {
+                    xmp = new PdfStream(altMetadata);
+                } catch (IOException) {
                     xmp = new PdfStream(altMetadata);
                 }
+            }
+            if (xmp != null) {
                 xmp.Put(PdfName.TYPE, PdfName.METADATA);
                 xmp.Put(PdfName.SUBTYPE, PdfName.XML);
                 if (crypto != null && !crypto.IsMetadataEncrypted()) {
@@ -1676,6 +1686,13 @@ namespace iTextSharp.text.pdf {
                 map[key] = layer;
             }
             return map;
+        }
+
+        override public void CreateXmpMetadata() {
+            try {
+                xmpWriter = CreateXmpWriter(null, reader.Info);
+                xmpMetadata = null;
+            } catch (IOException) { }
         }
         
         internal class PageStamp {

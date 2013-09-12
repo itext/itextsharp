@@ -51,8 +51,25 @@ namespace iTextSharp.text.xml.xmp {
     * Allows you to replace the contents of a specific tag.
     * @since 2.1.3
     */
-
+    [Obsolete]
     public class XmpReader {
+
+
+        /** String used to fill the extra space. */
+        public const String EXTRASPACE = "                                                                                                   \n";
+
+        /**
+        * Processing Instruction required at the start of an XMP stream
+        * @since iText 2.1.6
+        */
+        public const String XPACKET_PI_BEGIN = "<?xpacket begin=\"\uFEFF\" id=\"W5M0MpCehiHzreSzNTczkc9d\"?>\n";
+
+        /**
+        * Processing Instruction required at the end of an XMP stream for XMP streams that can be updated
+        * @since iText 2.1.6
+        */
+        public const String XPACKET_PI_END_W = "<?xpacket end=\"w\"?>";
+
 
         private XmlDocument domDocument;
         
@@ -177,17 +194,17 @@ namespace iTextSharp.text.xml.xmp {
             XmlDomWriter xw = new XmlDomWriter();
             MemoryStream fout = new MemoryStream();
             xw.SetOutput(fout, null);
-            byte[] b = new UTF8Encoding(false).GetBytes(XmpWriter.XPACKET_PI_BEGIN);
+            byte[] b = new UTF8Encoding(false).GetBytes(XPACKET_PI_BEGIN);
             fout.Write(b, 0, b.Length);
             fout.Flush();
             XmlNodeList xmpmeta = domDocument.GetElementsByTagName("x:xmpmeta");
             xw.Write(xmpmeta[0]);
             fout.Flush();
-            b = new UTF8Encoding(false).GetBytes(XmpWriter.EXTRASPACE);
+            b = new UTF8Encoding(false).GetBytes(EXTRASPACE);
             for (int i = 0; i < 20; i++) {
                 fout.Write(b, 0, b.Length);
             }
-            b = new UTF8Encoding(false).GetBytes(XmpWriter.XPACKET_PI_END_W);
+            b = new UTF8Encoding(false).GetBytes(XPACKET_PI_END_W);
             fout.Write(b, 0, b.Length);
             fout.Close();
             return fout.ToArray();
