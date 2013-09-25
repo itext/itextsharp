@@ -81,7 +81,7 @@ namespace iTextSharp.tool.xml.net {
          * f.IsDirectory()
          * </pre>
          */
-        public FileRetrieveImpl(String[] strings) : base() {
+        public FileRetrieveImpl(String[] strings) : this() {
             foreach (String s in strings) {
                 if (s.StartsWith("http") || s.StartsWith("https")) {
                     urls.Add(s);
