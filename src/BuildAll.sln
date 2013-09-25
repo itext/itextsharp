@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itextsharp.tests", "extras\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itextsharp.pdfa.tests", "extras\itextsharp.pdfa.tests\itextsharp.pdfa.tests.csproj", "{67AA00E9-15AF-4592-8119-110C8CBD1E31}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "itextsharp.xmlworker.tests", "extras\itextsharp.xmlworker.tests\itextsharp.xmlworker.tests.csproj", "{4CC217F8-36B2-4753-ACD7-733AB1C60FB0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,10 @@ Global
 		{67AA00E9-15AF-4592-8119-110C8CBD1E31}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{67AA00E9-15AF-4592-8119-110C8CBD1E31}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{67AA00E9-15AF-4592-8119-110C8CBD1E31}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4CC217F8-36B2-4753-ACD7-733AB1C60FB0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4CC217F8-36B2-4753-ACD7-733AB1C60FB0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4CC217F8-36B2-4753-ACD7-733AB1C60FB0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4CC217F8-36B2-4753-ACD7-733AB1C60FB0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -66,7 +66,7 @@ namespace iTextSharp.tool.xml.pipeline {
          * Construct a WritableElement
          * @param e an element to add to the list of elements.
          */
-        public WritableElement(IElement e) : base() {
+        public WritableElement(IElement e): this() {
             this.list.Add(e);
         }
 

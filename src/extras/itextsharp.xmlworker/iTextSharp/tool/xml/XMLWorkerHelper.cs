@@ -193,6 +193,12 @@ namespace iTextSharp.tool.xml {
             ParseXHtml(writer, doc, inp, inCssFile, charset, new XMLWorkerFontProvider());
         }
 
+        public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Encoding charset) {
+            ParseXHtml(writer, doc, inp,
+                Assembly.GetExecutingAssembly().GetManifestResourceStream("iTextSharp.tool.xml.css.default.css"),
+                charset);
+        }
+
         public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, IFontProvider fontProvider) {
             ParseXHtml(writer, doc, inp, inCssFile, null, fontProvider);
         }
