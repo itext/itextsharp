@@ -15,6 +15,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         [SetUp]
         public void SetUp()
         {
+            Directory.CreateDirectory(TARGET);
+
             PdfReader reader = new PdfReader(
                 TestResourceUtils.GetResourceAsStream(TEST_RESOURCES_PATH, "fontWithToUnicode.pdf"));
             PdfDictionary resourcesDict = reader.GetPageResources(1);
