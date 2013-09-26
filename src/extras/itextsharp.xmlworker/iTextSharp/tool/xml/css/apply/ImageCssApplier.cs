@@ -1,6 +1,5 @@
 using System;
 using System.Globalization;
-using iTextSharp.text;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
 /*
@@ -46,6 +45,9 @@ using iTextSharp.tool.xml.css;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+using iTextSharp.tool.xml.html;
+using Image = iTextSharp.text.Image;
+
 namespace iTextSharp.tool.xml.css.apply {
 
     /**
@@ -58,6 +60,51 @@ namespace iTextSharp.tool.xml.css.apply {
          * @see com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag)
          */
         public Image Apply(Image img, Tag tag) {
+            String widthValue;
+            tag.CSS.TryGetValue(HTML.Attribute.WIDTH, out widthValue);
+            if (widthValue == null)
+            {
+                tag.Attributes.TryGetValue(HTML.Attribute.WIDTH, out widthValue);
+            }
+
+            String heightValue;
+            tag.CSS.TryGetValue(HTML.Attribute.HEIGHT, out heightValue);
+            if (heightValue == null)
+            {
+                tag.Attributes.TryGetValue(HTML.Attribute.HEIGHT, out heightValue);
+            }
+
+            if (widthValue == null)
+                img.ScaleToFitLineWhenOverflow = true;
+            else
+                img.ScaleToFitLineWhenOverflow = false;
+
+            if (heightValue == null)
+                img.ScaleToFitHeight = true;
+            else
+                img.ScaleToFitHeight = false;
+
+
+            CssUtils utils = CssUtils.GetInstance();
+            float widthInPoints = utils.ParsePxInCmMmPcToPt(widthValue);
+
+            float heightInPoints = utils.ParsePxInCmMmPcToPt(heightValue);
+
+            if (widthInPoints > 0 && heightInPoints > 0)
+            {
+                img.ScaleAbsolute(widthInPoints, heightInPoints);
+            }
+            else if (widthInPoints > 0)
+            {
+                heightInPoints = img.Height * widthInPoints / img.Width;
+                img.ScaleAbsolute(widthInPoints, heightInPoints);
+            }
+            else if (heightInPoints > 0)
+            {
+                widthInPoints = img.Width * heightInPoints / img.Height;
+                img.ScaleAbsolute(widthInPoints, heightInPoints);
+            }
+
             String before;
             tag.CSS.TryGetValue(CSS.Property.BEFORE, out before);
             if (before != null) {
