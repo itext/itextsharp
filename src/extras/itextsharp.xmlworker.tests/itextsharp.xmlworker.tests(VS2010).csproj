@@ -461,16 +461,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\core\itextsharp.csproj">
-      <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
-      <Name>itextsharp</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\itextsharp.xmlworker\itextsharp.xmlworker.csproj">
-      <Project>{96647204-4A3E-41D7-BC74-B1608D6D1857}</Project>
-      <Name>itextsharp.xmlworker</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="resources\bugs\3353957.html" />
     <Content Include="resources\bugs\colored_lists_snippet.html" />
     <Content Include="resources\bugs\ol-test.html" />
@@ -1277,6 +1267,16 @@
     <None Include="resources\com\itextpdf\tool\xml\examples\table\3_8-BF-06\3_8-BF-06.pdf" />
     <None Include="resources\examples\tiger.svg" />
     <None Include="resources\multiple.demo" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\itextsharp%28VS2010%29.csproj">
+      <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
+      <Name>itextsharp%28VS2010%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\itextsharp.xmlworker\itextsharp.xmlworker%28VS2010%29.csproj">
+      <Project>{96647204-4A3E-41D7-BC74-B1608D6D1857}</Project>
+      <Name>itextsharp.xmlworker%28VS2010%29</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
