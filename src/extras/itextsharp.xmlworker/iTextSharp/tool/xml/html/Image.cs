@@ -102,26 +102,6 @@ namespace iTextSharp.tool.xml.html {
                     throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
                 }
                 if (null != img) {
-                    String width;
-                    attributes.TryGetValue(HTML.Attribute.WIDTH, out width);
-                    float widthInPoints = utils.ParsePxInCmMmPcToPt(width);
-                    String height;
-                    attributes.TryGetValue(HTML.Attribute.HEIGHT, out height);
-                    float heightInPoints = utils.ParsePxInCmMmPcToPt(height);
-                    if (width == null || height == null) {
-                        img.ScaleToFitLineWhenOverflow = true;
-                    } else {
-                        img.ScaleToFitLineWhenOverflow = false;
-                    }
-                    if (widthInPoints > 0 && heightInPoints > 0) {
-                        img.ScaleAbsolute(widthInPoints, heightInPoints);
-                    } else if (widthInPoints > 0) {
-                        heightInPoints = img.Height * widthInPoints / img.Width;
-                        img.ScaleAbsolute(widthInPoints, heightInPoints);
-                    } else if (heightInPoints > 0) {
-                        widthInPoints = img.Width * heightInPoints / img.Height;
-                        img.ScaleAbsolute(widthInPoints, heightInPoints);
-                    }
                     try {
                         HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
                         l.Add(GetCssAppliers().Apply(new Chunk((iTextSharp.text.Image) GetCssAppliers().Apply(img, tag, htmlPipelineContext), 0, 0, true), tag, htmlPipelineContext));

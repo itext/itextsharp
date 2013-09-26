@@ -64,17 +64,17 @@ using iTextSharp.tool.xml.html;
                  else if (utils.IsRelativeValue(heightValue))
                  {
                      Tag ancestor = tag;
-                     float? firstAncestorsHeight = 0;
-                     while (firstAncestorsHeight == 0 && ancestor.Parent != null)
+                     float? firstAncestorsHeight = null;
+                     while (firstAncestorsHeight == null && ancestor.Parent != null)
                      {
                          ancestor = ancestor.Parent;
                          firstAncestorsHeight = GetHeight(ancestor, pageHeight);
                      }
-                     if (firstAncestorsHeight == 0)
+                     if (firstAncestorsHeight == null)
                      {
                          height = utils.ParseRelativeValue(heightValue, pageHeight);
                      }
-                     else if (firstAncestorsHeight != null)
+                     else
                      {
                          height = utils.ParseRelativeValue(heightValue, firstAncestorsHeight.Value);
                      }

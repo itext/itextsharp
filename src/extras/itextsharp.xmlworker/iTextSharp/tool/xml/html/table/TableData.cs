@@ -131,11 +131,7 @@ namespace iTextSharp.tool.xml.html.table {
 			    cell.AddElement(e);
 		    }
             if ( chunks.Count > 0 ) {
-                Paragraph p = new Paragraph();
-                p.MultipliedLeading = 1.2f;
-                p.AddAll(chunks);
-                p.Alignment = cell.HorizontalAlignment;
-                cell.AddElement(p);
+                ProcessChunkItems(chunks, cell);
             }
     	    l.Add(cell);
 		    return l;

@@ -10,7 +10,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
     {
         private BaseFont fontWithToUnicode;
         private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\ToUnicodeNonBreakableSpacesTest\";
-        private const string TARGET = @"ChunkTest\";
+        private const string TARGET = @"ToUnicodeNonBreakableSpacesTest\";
 
         [SetUp]
         public void SetUp()
