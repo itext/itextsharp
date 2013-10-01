@@ -744,10 +744,10 @@ namespace iTextSharp.text.pdf {
                 fields.Add(reader.AcroFields);
                 UpdateCalculationOrder(reader);
             }
-            bool tagged = PdfStructTreeController.CheckTagged(reader);
+            bool tagged = this.tagged && PdfStructTreeController.CheckTagged(reader);
             mergeFieldsInternalCall = true;
             for (int i = 1; i <= reader.NumberOfPages; i++) {
-                AddPage(GetImportedPage(reader, i, tagged && this.tagged));
+                AddPage(GetImportedPage(reader, i, tagged));
             }
             mergeFieldsInternalCall = false;
         }

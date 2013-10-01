@@ -50,11 +50,11 @@ namespace iTextSharp.text.pdf
         {
             PdfObject obj = reader.Catalog.Get(PdfName.STRUCTTREEROOT);
             obj = GetDirectObject(obj);
-            if ((obj == null) || (!obj.IsDictionary()))
+            if (obj == null || !obj.IsDictionary())
                 return false;
             PdfDictionary structTreeRoot = (PdfDictionary)obj;
             obj = PdfStructTreeController.GetDirectObject(structTreeRoot.Get(PdfName.PARENTTREE));
-            if (!obj.IsDictionary())
+            if (obj == null || !obj.IsDictionary())
                 return false;
             return true;
         }

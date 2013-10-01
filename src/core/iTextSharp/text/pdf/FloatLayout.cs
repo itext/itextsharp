@@ -103,7 +103,6 @@ namespace iTextSharp.text.pdf {
         public int Layout(PdfContentByte canvas, bool simulate) {
             compositeColumn.Canvas = canvas;
             int status = ColumnText.NO_MORE_TEXT;
-            filledWidth = 0;
 
             List<IElement> floatingElements = new List<IElement>();
             List<IElement> content = simulate ? new List<IElement>(this.content) : this.content;
@@ -132,14 +131,15 @@ namespace iTextSharp.text.pdf {
                             canvas.CloseMCBlock(floatingElement);
                         }
 
-                        yLine -= floatingElement.getActualHeight();
-
                         if (floatingElement.getActualWidth() > filledWidth) {
                             filledWidth = floatingElement.getActualWidth();
                         }
                         if ((status & ColumnText.NO_MORE_TEXT) == 0) {
                             content.Insert(0, floatingElement);
+                            yLine = floatingElement.YLine;
                             break;
+                        } else {
+                            yLine -= floatingElement.getActualHeight();
                         }
                     }
                 } else {
