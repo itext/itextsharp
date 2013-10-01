@@ -118,6 +118,8 @@ namespace iTextSharp.text.pdf {
 
         private FloatLayout floatLayout = null;
 
+        private float yLine;
+
         protected PdfName role = PdfName.DIV;
 
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
@@ -249,6 +251,11 @@ namespace iTextSharp.text.pdf {
             set { backgroundColor = value; }
         }
 
+        public float YLine
+        {
+            get { return yLine; }
+        }
+
         public float SpacingBefore
         {
             get { return spacingBefore; }
@@ -345,7 +352,7 @@ namespace iTextSharp.text.pdf {
             float maxY = Math.Max(lly, ury);
             float minY = Math.Min(lly, ury);
             float rightX = Math.Max(llx, urx);
-            float yLine = maxY;
+            yLine = maxY;
             bool contentCutByFixedHeight = false;
 
             if (width != null && width > 0)
