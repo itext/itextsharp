@@ -1,5 +1,4 @@
 using System;
-using System.Net;
 using System.IO;
 using iTextSharp.text;
 using iTextSharp.tool.xml.pipeline.html;

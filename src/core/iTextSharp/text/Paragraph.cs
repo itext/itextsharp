@@ -209,6 +209,7 @@ namespace iTextSharp.text {
             if (accessibleAttributes != null)
                 copy.accessibleAttributes = new Dictionary<PdfName, PdfObject>(accessibleAttributes);
             copy.TabSettings = this.TabSettings;
+            copy.KeepTogether = this.KeepTogether;
             return copy;
         }
 
