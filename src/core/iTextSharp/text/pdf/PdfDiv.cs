@@ -339,10 +339,6 @@ namespace iTextSharp.text.pdf {
 
         public void AddElement(IElement element)
         {
-            if (element is PdfPTable)
-            {
-                ((PdfPTable) element).SplitLate = false;
-            }
             content.Add(element);
         }
 
@@ -441,35 +437,17 @@ namespace iTextSharp.text.pdf {
 
             int status = ColumnText.NO_MORE_TEXT;
 
-            if (content.Count > 0)
-            {
-                FloatLayout floatLay = null;
-                if (this.floatLayout == null)
-                {
+            if (content.Count > 0) {
+                if (floatLayout == null) {
                     List<IElement> floatingElements = new List<IElement>(content);
-                    if (simulate)
-                        floatLay = new FloatLayout(floatingElements, useAscender);
-                    else
-                        floatLay = this.floatLayout = new FloatLayout(floatingElements, useAscender);
-                }
-                else
-                {
-                    if (simulate)
-                    {
-                        List<IElement> floatingElements = new List<IElement>(this.floatLayout.content);
-                        floatLay = new FloatLayout(floatingElements, useAscender);
-                    }
-                    else
-                    {
-                        floatLay = this.floatLayout;
-                    }
+                    floatLayout = new FloatLayout(floatingElements, useAscender);
                 }
 
-                floatLay.SetSimpleColumn(leftX, minY, rightX, yLine);
-                status = floatLay.Layout(canvas, simulate);
-                yLine = floatLay.YLine;
-                if (percentageWidth == null && contentWidth < floatLay.FilledWidth)
-                    contentWidth = floatLay.FilledWidth;
+                floatLayout.SetSimpleColumn(leftX, minY, rightX, yLine);
+                status = floatLayout.Layout(canvas, simulate);
+                yLine = floatLayout.YLine;
+                if (percentageWidth == null && contentWidth < floatLayout.FilledWidth)
+                    contentWidth = floatLayout.FilledWidth;
             }
 
 

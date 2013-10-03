@@ -352,9 +352,7 @@ namespace iTextSharp.text.pdf {
                 if (ck.IsImage() && minY < yLine) {
                     Image img = ck.Image;
                     if (img.ScaleToFitHeight && yLine + 2 * descender - img.ScaledHeight - ck.ImageOffsetY - img.SpacingBefore < minY) {
-                        //float scalePercent = (yLine + 2 * descender - ck.ImageOffsetY - img.SpacingBefore - minY) / img.Height * 100;
-                        //img.ScalePercent(scalePercent);
-                        float scalePercent = (yLine + 2 * descender - ck.ImageOffsetY - img.SpacingBefore - minY) / img.Height;
+                        float scalePercent = (yLine + 2 * descender - ck.ImageOffsetY - img.SpacingBefore - minY) / img.ScaledHeight;
                         ck.ImageScalePercentage = scalePercent;
                     }
                 }
