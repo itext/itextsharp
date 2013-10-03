@@ -119,7 +119,14 @@ namespace iTextSharp.tool.xml.css {
                 if (Util.EqualsIgnoreCase(CSS.Property.BORDER, key)) {
                     CssUtils.MapPutAll(css, utils.ParseBorder(value));
                 } else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN, key)) {
-                    CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "margin-", ""));
+                    IDictionary<String, String> margins = utils.ParseBoxValues(value, "margin-", "");
+                    foreach (String marginKey in margins.Keys)
+                    {
+                        if (!css.ContainsKey(marginKey))
+                        {
+                            css.Add(marginKey, margins[marginKey]);
+                        }
+                    }
                 } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_WIDTH, key)) {
                     CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "border-", "-width"));
                 } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_STYLE, key)) {

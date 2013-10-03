@@ -197,7 +197,7 @@ namespace iTextSharp.tool.xml.css.apply {
                     } else {
                         if (style == Font.BOLDITALIC) {
                             style = Font.ITALIC;
-                        } else {
+                        } else if (style == Font.BOLD) {
                             style = Font.NORMAL;
                         }
                     }
