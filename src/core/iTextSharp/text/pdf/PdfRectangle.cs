@@ -1,7 +1,3 @@
-using System;
-using System.Drawing;
-using iTextSharp.text;
-
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2013 1T3XT BVBA
@@ -43,6 +39,9 @@ using iTextSharp.text;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+
+using System;
+using iTextSharp.awt.geom;
 
 namespace iTextSharp.text.pdf {
 
@@ -304,17 +303,18 @@ namespace iTextSharp.text.pdf {
         /**
          * Swaps the values of urx and ury and of lly and llx in order to rotate the rectangle.
          *
-         * @return      a <CODE>PdfRectangle</CODE>
+         * @return a <CODE>PdfRectangle</CODE>
          */
-    
         public PdfRectangle Rotate {
             get {
                 return new PdfRectangle(lly, llx, ury, urx, 0);
             }
         }
 
+#if DRAWING
+        [Obsolete]
         public PdfRectangle Transform(System.Drawing.Drawing2D.Matrix transform) {
-            System.Drawing.PointF[] points = {new PointF(llx, lly), new PointF(urx, ury)};
+            System.Drawing.PointF[] points = { new System.Drawing.PointF(llx, lly), new System.Drawing.PointF(urx, ury) };
             float[] pts = { points[0].X, points[0].Y, points[1].X, points[1].Y };
             transform.TransformPoints(points);
             if(pts[0] > pts[2]) {
@@ -326,6 +326,24 @@ namespace iTextSharp.text.pdf {
                 points[1].Y = pts[1];
             }
             return new PdfRectangle(points[0].X, points[0].Y, points[1].X, points[1].Y);
+        }
+#endif// DRAWING
+
+        public PdfRectangle Transform(AffineTransform transform) {
+            float[] pts = {llx, lly, urx, ury};
+            transform.Transform(pts, 0, pts, 0, 2);
+            float[] dstPts = {pts[0], pts[1], pts[2], pts[3]};
+            if (pts[0] > pts[2])
+            {
+                dstPts[0] = pts[2];
+                dstPts[2] = pts[0];
+            }
+            if (pts[1] > pts[3])
+            {
+                dstPts[1] = pts[3];
+                dstPts[3] = pts[1];
+            }
+            return new PdfRectangle(dstPts[0], dstPts[1], dstPts[2], dstPts[3]);
         }
     }
 }

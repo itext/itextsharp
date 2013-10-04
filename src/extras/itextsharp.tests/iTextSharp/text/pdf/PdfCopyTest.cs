@@ -23,12 +23,17 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             TestResourceUtils.PurgeTempFiles();
         }
 
-        [Test]
+        
         /**
          * Test to demonstrate issue https://sourceforge.net/tracker/?func=detail&aid=3013642&group_id=15255&atid=115255
          */
+        [Test]
+#if DRAWING
+        [Ignore]
+#endif// !NO_DRAWING
         public void TestExtraXObjects()
         {
+#if DRAWING
             PdfReader sourceR = new PdfReader(CreateImagePdf());
             try
             {
@@ -54,15 +59,16 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             {
                 sourceR.Close();
             }
+#endif// DRAWING
         }
 
+#if DRAWING
         private static byte[] CreateImagePdf()
         {
             MemoryStream byteStream = new MemoryStream();
 
 
             Document document = new Document();
-            PdfWriter writer = PdfWriter.GetInstance(document, byteStream);
             document.SetPageSize(PageSize.LETTER);
 
             document.Open();
@@ -81,5 +87,6 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
             return pdfBytes;
         }
+#endif// DRAWING
     }
 }

@@ -1,5 +1,4 @@
 using System;
-using iTextSharp.text;
 using iTextSharp.text.pdf.codec;
 using System.Collections.Generic;
 /*
@@ -748,6 +747,7 @@ namespace iTextSharp.text.pdf {
             return Image.GetInstance(width + 2 * ws, height + 2 * ws, false, Image.CCITTG4, 0, g4, null);
         }
 
+#if DRAWING
         /**
         * Creates a <CODE>java.awt.Image</CODE>. A successful call to the method <CODE>generate()</CODE>
         * before calling this method is required.
@@ -772,6 +772,8 @@ namespace iTextSharp.text.pdf {
             }
             return bmp;
         }
+#endif// DRAWING
+
 
         private class DmParams {
             internal DmParams(int height, int width, int heightSection, int widthSection, int dataSize, int dataBlock, int errorBlock) {

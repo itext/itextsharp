@@ -536,18 +536,8 @@ namespace iTextSharp.text {
             }
             throw new IOException(MessageLocalization.GetComposedMessage("the.byte.array.is.not.a.recognized.imageformat"));
         }
-        /// <summary>
-        /// Converts a .NET image to a Native(PNG, JPG, GIF, WMF) image
-        /// </summary>
-        /// <param name="image"></param>
-        /// <param name="?"></param>
-        /// <returns></returns>
-        public static Image GetInstance(System.Drawing.Image image, System.Drawing.Imaging.ImageFormat format) {
-            MemoryStream ms = new MemoryStream();
-            image.Save(ms, format);
-            return GetInstance(ms.ToArray());
-        }
     
+#if DRAWING
         /// <summary>
         /// Gets an instance of an Image from a System.Drwaing.Image.
         /// </summary>
@@ -702,6 +692,18 @@ namespace iTextSharp.text {
                 return img;
             }
         }
+
+        /// <summary>
+        /// Converts a .NET image to a Native(PNG, JPG, GIF, WMF) image
+        /// </summary>
+        /// <param name="image"></param>
+        /// <param name="?"></param>
+        /// <returns></returns>
+        public static Image GetInstance(System.Drawing.Image image, System.Drawing.Imaging.ImageFormat format) {
+            MemoryStream ms = new MemoryStream();
+            image.Save(ms, format);
+            return GetInstance(ms.ToArray());
+        }
     
         /// <summary>
         /// Gets an instance of an Image from a System.Drawing.Image.
@@ -715,7 +717,8 @@ namespace iTextSharp.text {
         public static Image GetInstance(System.Drawing.Image image, BaseColor color) {
             return Image.GetInstance(image, color, false);
         }
-    
+#endif// DRAWING
+
         /// <summary>
         /// Gets an instance of an Image.
         /// </summary>

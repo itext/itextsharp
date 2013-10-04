@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Drawing;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf.codec;
 using iTextSharp.text.exceptions;
@@ -371,11 +370,13 @@ namespace iTextSharp.text.pdf.parser {
             return imageBytes; 
         }
 
+#if DRAWING
         public System.Drawing.Image GetDrawingImage() {
             byte[] r = GetImageAsBytes();
             if (r == null)
                 return null;
-            return Bitmap.FromStream(new MemoryStream(r));
+            return System.Drawing.Bitmap.FromStream(new MemoryStream(r));
         }
+#endif// DRAWING
     }
 }

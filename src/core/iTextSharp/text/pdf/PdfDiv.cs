@@ -45,7 +45,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Drawing.Drawing2D;
+using iTextSharp.awt.geom;
 using iTextSharp.text.api;
 using iTextSharp.text.pdf.interfaces;
 
@@ -402,7 +402,7 @@ namespace iTextSharp.text.pdf {
                 else
                     translationY = 0f;
                 canvas.SaveState();
-                canvas.Transform(new Matrix(1f, 0, 0, 1f, translationX.Value, translationY.Value));
+                canvas.Transform(new AffineTransform(1f, 0, 0, 1f, translationX.Value, translationY.Value));
             }
 
             if (!simulate)

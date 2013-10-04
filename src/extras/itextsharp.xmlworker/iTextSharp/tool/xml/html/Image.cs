@@ -4,7 +4,6 @@ using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.log;
 using iTextSharp.text.xml;
-using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css;
 using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.net;

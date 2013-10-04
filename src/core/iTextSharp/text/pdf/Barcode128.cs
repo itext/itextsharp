@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
  * $Id$
@@ -666,6 +665,7 @@ namespace iTextSharp.text.pdf {
             return this.BarcodeSize;
         }    
 
+#if DRAWING
         public override System.Drawing.Image CreateDrawingImage(System.Drawing.Color foreground, System.Drawing.Color background) {
             String bCode;
             if (codeType == CODE128_RAW) {
@@ -698,6 +698,7 @@ namespace iTextSharp.text.pdf {
             }
             return bmp;
         }
+#endif// DRAWING
 
         /**
         * Sets the code to generate. If it's an UCC code and starts with '(' it will

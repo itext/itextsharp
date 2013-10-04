@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using iTextSharp.awt.geom;
 using iTextSharp.text.exceptions;
 using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.intern;
@@ -104,7 +105,7 @@ namespace iTextSharp.text.pdf {
             protected internal BaseColor graphicsColorFill = new GrayColor(0);
             protected internal BaseColor textColorStroke = new GrayColor(0);
             protected internal BaseColor graphicsColorStroke = new GrayColor(0);
-            internal System.Drawing.Drawing2D.Matrix CTM = new System.Drawing.Drawing2D.Matrix();
+            internal AffineTransform CTM = new AffineTransform();
 
             internal GraphicState() {
             }
@@ -132,7 +133,7 @@ namespace iTextSharp.text.pdf {
                 graphicsColorFill = cp.graphicsColorFill;
                 textColorStroke = cp.textColorStroke;
                 graphicsColorStroke = cp.graphicsColorStroke;
-                CTM = cp.CTM.Clone();
+                CTM = (AffineTransform)cp.CTM.Clone();
             }
 
             internal void Restore(GraphicState restore) {
@@ -1345,13 +1346,29 @@ namespace iTextSharp.text.pdf {
          * adds an image with the given matrix.
          * @param image image to add
          * @param transform transform to apply to the template prior to adding it.
+         */
+        public void AddImage(Image image, AffineTransform transform) {
+    	    double[] matrix = new double[6];
+    	    transform.GetMatrix(matrix);
+    	    AddImage(image, (float)matrix[0], (float)matrix[1], (float)matrix[2],
+    			      (float)matrix[3], (float)matrix[4], (float) matrix[5], false);
+        }
+
+#if DRAWING
+        /**
+         * adds an image with the given matrix.
+         * @param image image to add
+         * @param transform transform to apply to the template prior to adding it.
          * @since 5.0.1
          */
+        [Obsolete]
         public void AddImage(Image image, System.Drawing.Drawing2D.Matrix transform) {
             float[] matrix = transform.Elements;
             AddImage(image, matrix[0], matrix[1], matrix[2], 
                      matrix[3], matrix[4], matrix[5], false );
         }
+#endif// DRAWING
+
         /**
         * Adds an <CODE>Image</CODE> to the page. The positioning of the <CODE>Image</CODE>
         * is done with the transformation matrix. To position an <CODE>image</CODE> at (x,y)
@@ -1827,18 +1844,34 @@ namespace iTextSharp.text.pdf {
                 .Append(c).Append_i(' ').Append(d).Append_i(' ')
                 .Append(x).Append_i(' ').Append(y).Append(" Tm").Append_i(separator);
         }
+
+        /**
+         * Changes the text matrix.
+         * <P>
+         * @param transform overwrite the current text matrix with this one
+         */
+        public void SetTextMatrix(AffineTransform transform) {
+    	    double[] matrix = new double[6];
+    	    transform.GetMatrix(matrix);
+    	    SetTextMatrix((float)matrix[0], (float)matrix[1], (float)matrix[2],
+                    (float)matrix[3], (float)matrix[4], (float)matrix[5]);
+        }
     
+#if DRAWING
         /**
          * Changes the text matrix.
          * <P>
          * @param transform overwrite the current text matrix with this one
          * @since 5.0.1
          */
+        [Obsolete]
         public void SetTextMatrix(System.Drawing.Drawing2D.Matrix transform) {
             float[] matrix = transform.Elements;
             SetTextMatrix(matrix[0], matrix[1], matrix[2], 
                           matrix[3], matrix[4], matrix[5]);
         }
+#endif// DRAWING
+
         /**
          * Changes the text matrix. The first four parameters are {1,0,0,1}.
          * <P>
@@ -2160,7 +2193,7 @@ namespace iTextSharp.text.pdf {
             if (inText && IsTagged()) {
                 EndText();
             }
-            state.CTM.Multiply(new System.Drawing.Drawing2D.Matrix(a, b, c, d, e, f));
+            state.CTM.Concatenate(new AffineTransform(a, b, c, d, e, f));
             content.Append(a).Append(' ').Append(b).Append(' ').Append(c).Append(' ');
             content.Append(d).Append(' ').Append(e).Append(' ').Append(f).Append(" cm").Append_i(separator);
         }
@@ -2168,11 +2201,27 @@ namespace iTextSharp.text.pdf {
         /**
          * Concatenate a matrix to the current transformation matrix.
          * @param transform added to the Current Transformation Matrix
+         */
+        public void ConcatCTM(AffineTransform transform) {
+    	    double[] matrix = new double[6];
+    	    transform.GetMatrix(matrix);
+    	    ConcatCTM((float) matrix[0], (float) matrix[1], (float) matrix[2],
+                    (float) matrix[3], (float) matrix[4], (float) matrix[5]);
+        }
+
+#if DRAWING
+        /**
+         * Concatenate a matrix to the current transformation matrix.
+         * @param transform added to the Current Transformation Matrix
          * @since 5.0.1
          */
+        [Obsolete]
         public void ConcatCTM(System.Drawing.Drawing2D.Matrix transform) {
-            Transform(transform);
+            float[] matrix = transform.Elements;
+            ConcatCTM(matrix[0], matrix[1], matrix[2],
+                    matrix[3], matrix[4], matrix[5]);
         }
+#endif// DRAWING
             
         /**
          * Generates an array of bezier curves to draw an arc.
@@ -2501,9 +2550,34 @@ namespace iTextSharp.text.pdf {
          * adds a template with the given matrix.
          * @param template template to add
          * @param transform transform to apply to the template prior to adding it.
+         */
+        public void AddTemplate(PdfTemplate template, AffineTransform transform) {
+            AddTemplate(template, transform, false);
+        }
+
+        /**
+         * adds a template with the given matrix.
+         * @param template template to add
+         * @param transform transform to apply to the template prior to adding it.
          * @param tagContent <code>true</code> - template content will be tagged(all that will be added after), <code>false</code> - only a Do operator will be tagged.
          *                   taken into account only if <code>isTagged()</code> - <code>true</code>.
          */
+        public void AddTemplate(PdfTemplate template, AffineTransform transform, bool tagContent) {
+    	    double[] matrix = new double[6];
+    	    transform.GetMatrix(matrix);
+    	    AddTemplate(template, (float) matrix[0], (float) matrix[1], (float) matrix[2],
+                    (float) matrix[3], (float) matrix[4], (float) matrix[5], tagContent);
+        }
+
+#if DRAWING
+        /**
+         * adds a template with the given matrix.
+         * @param template template to add
+         * @param transform transform to apply to the template prior to adding it.
+         * @param tagContent <code>true</code> - template content will be tagged(all that will be added after), <code>false</code> - only a Do operator will be tagged.
+         *                   taken into account only if <code>isTagged()</code> - <code>true</code>.
+         */
+        [Obsolete]
         public void AddTemplate(PdfTemplate template, System.Drawing.Drawing2D.Matrix transform, bool tagContent) {
             float[] matrix = transform.Elements;
             AddTemplate(template, matrix[0], matrix[1], matrix[2],
@@ -2516,9 +2590,11 @@ namespace iTextSharp.text.pdf {
          * @param transform transform to apply to the template prior to adding it.
          * @since 5.0.1
          */
+        [Obsolete]
         public void AddTemplate(PdfTemplate template, System.Drawing.Drawing2D.Matrix transform) {
             AddTemplate(template, transform, false);
         }
+#endif// DRAWING
 
         internal void AddTemplateReference(PdfIndirectReference template, PdfName name, float a, float b, float c, float d, float e, float f) {
             if (inText && IsTagged()) {
@@ -3351,7 +3427,7 @@ namespace iTextSharp.text.pdf {
 
         internal void AddAnnotation(PdfAnnotation annot, bool applyCTM)
         {
-            if (applyCTM && !state.CTM.IsIdentity) {
+            if (applyCTM && !state.CTM.IsIdentity()) {
                 annot.ApplyCTM(state.CTM);
             }
             AddAnnotation(annot);
@@ -3370,6 +3446,23 @@ namespace iTextSharp.text.pdf {
             prs.AddDefaultColor(name, obj);
         }
 
+        /** Concatenates a transformation to the current transformation
+         * matrix.
+         * @param af the transformation
+         */
+        public void Transform(AffineTransform af) {
+            if (inText && IsTagged()) {
+                EndText();
+            }
+            double[] matrix = new double[6];
+            af.GetMatrix(matrix);
+            state.CTM.Concatenate(af);
+            content.Append(matrix[0]).Append(' ').Append(matrix[1]).Append(' ').Append(matrix[2]).Append(' ');
+            content.Append(matrix[3]).Append(' ').Append(matrix[4]).Append(' ').Append(matrix[5]).Append(" cm").Append_i(separator);
+        }
+
+#if DRAWING
+        [Obsolete]
         public void Transform(System.Drawing.Drawing2D.Matrix tx) {
             if (inText && IsTagged()) {
                 EndText();
@@ -3377,6 +3470,7 @@ namespace iTextSharp.text.pdf {
             float[] c = tx.Elements;
             ConcatCTM(c[0], c[1], c[2], c[3], c[4], c[5]);
         }
+#endif// DRAWING
 
         /**
         * Begins a marked content sequence. This sequence will be tagged with the structure <CODE>struc</CODE>.

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using iTextSharp.awt.geom;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf.intern;
 
@@ -707,7 +708,23 @@ namespace iTextSharp.text.pdf {
             }
         }
 
+        public void ApplyCTM(AffineTransform ctm) {
+            PdfArray origRect = GetAsArray(PdfName.RECT);
+            if(origRect != null) {
+                PdfRectangle rect;
+                if(origRect.Size == 4) {
+                    rect = new PdfRectangle(origRect.GetAsNumber(0).FloatValue, origRect.GetAsNumber(1).FloatValue,
+                        origRect.GetAsNumber(2).FloatValue, origRect.GetAsNumber(3).FloatValue);
+                }
+                else {
+                    rect = new PdfRectangle(origRect.GetAsNumber(0).FloatValue, origRect.GetAsNumber(1).FloatValue);
+                }
+                Put(PdfName.RECT, rect.Transform(ctm));
+            }
+        }
 
+#if DRAWING
+        [Obsolete]
         public void ApplyCTM(System.Drawing.Drawing2D.Matrix ctm) {
             PdfArray origRect = GetAsArray(PdfName.RECT);
             if(origRect != null) {
@@ -721,7 +738,7 @@ namespace iTextSharp.text.pdf {
                 Put(PdfName.RECT, rect.Transform(ctm));
             }
         }
-
+#endif// DRAWING
 
 
         /**

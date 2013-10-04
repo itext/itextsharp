@@ -1,5 +1,4 @@
 using System;
-using iTextSharp.text;
 /*
  * $Id$
  * 
@@ -420,6 +419,9 @@ namespace iTextSharp.text.pdf {
             }
         }
 
+#if DRAWING
         public abstract System.Drawing.Image CreateDrawingImage(System.Drawing.Color foreground, System.Drawing.Color background);
+#endif// DRAWING
     }
+
 }

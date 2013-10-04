@@ -1,9 +1,6 @@
 using System;
 using System.Text;
 using System.Collections.Generic;
-using System.Drawing;
-
-using iTextSharp.text;
 
 /*
  * $Id$
