@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.util;
-using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
  * This file is part of the iText project.

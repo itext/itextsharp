@@ -1,11 +1,10 @@
 using System;
 using System.IO;
-using itextsharp.tests.iTextSharp.testutils;
+using iTextSharp.awt.geom;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.parser;
 using NUnit.Framework;
-using Matrix = System.Drawing.Drawing2D.Matrix;
 
 namespace itextsharp.tests.iTextSharp.text.pdf.parser
 {
@@ -170,13 +169,12 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
             template.SetColorStroke(BaseColor.GREEN);
             template.Rectangle(0, 0, template.Width, template.Height);
             template.Stroke();
-            Matrix matrix = new Matrix();
-            if (rotate)
-            {
-                matrix.Translate(0, template.Height);
-                matrix.Rotate(-90);
+            AffineTransform tx = new AffineTransform();
+            if(rotate) {
+                tx.Translate(0, template.Height);
+                tx.rotate(-90 / 180f * Math.PI);
             }
-            template.Transform(matrix);
+            template.Transform(tx);
             template.BeginText();
             template.SetFontAndSize(BaseFont.CreateFont(), 12);
             if (rotate)

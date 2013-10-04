@@ -1,5 +1,4 @@
 using System;
-using iTextSharp.text;
 using iTextSharp.text.error_messages;
 
 /*
@@ -139,8 +138,10 @@ namespace iTextSharp.text.pdf {
             return this.BarcodeSize;
         }
 
+#if DRAWING
         public override System.Drawing.Image CreateDrawingImage(System.Drawing.Color foreground, System.Drawing.Color background) {
             throw new InvalidOperationException(MessageLocalization.GetComposedMessage("the.two.barcodes.must.be.composed.externally"));
         }
+#endif// DRAWING
     }
 }

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using iTextSharp.text;
 
 /*
  * $Id$
@@ -67,7 +66,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
 
         public Stack<MetaState> savedStates;
         public List<MetaObject> MetaObjects;
-        public System.Drawing.Point currentPoint;
+        public Point currentPoint;
         public MetaPen currentPen;
         public MetaBrush currentBrush;
         public MetaFont currentFont;
@@ -89,7 +88,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
         public MetaState() {
             savedStates = new Stack<MetaState>();
             MetaObjects = new List<MetaObject>();
-            currentPoint = new System.Drawing.Point(0, 0);
+            currentPoint = new Point(0, 0);
             currentPen = new MetaPen();
             currentBrush = new MetaBrush();
             currentFont = new MetaFont();
@@ -156,7 +155,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
                     if (style != MetaPen.PS_NULL) {
                         BaseColor color = currentPen.Color;
                         cb.SetColorStroke(color);
-                        cb.SetLineWidth(Math.Abs((float)currentPen.PenWidth * scalingX / extentWx));
+                        cb.SetLineWidth(Math.Abs(currentPen.PenWidth * scalingX / extentWx));
                         switch (style) {
                             case MetaPen.PS_DASH:
                                 cb.SetLineDash(18, 6, 0);
@@ -265,7 +264,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
             return (float)(scalingX < 0 ? Math.PI - ta : ta);
         }
         
-        public System.Drawing.Point CurrentPoint {
+        public Point CurrentPoint {
             get {
                 return currentPoint;
             }

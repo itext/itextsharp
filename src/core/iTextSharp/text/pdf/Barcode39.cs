@@ -1,6 +1,5 @@
 using System;
 using System.Text;
-using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
  * $Id$
@@ -336,6 +335,7 @@ namespace iTextSharp.text.pdf {
             return this.BarcodeSize;
         }
 
+#if DRAWING
         public override System.Drawing.Image CreateDrawingImage(System.Drawing.Color foreground, System.Drawing.Color background) {
             String bCode = code;
             if (extended)
@@ -363,5 +363,6 @@ namespace iTextSharp.text.pdf {
             }
             return bmp;
         }
+#endif// DRAWING
     }
 }

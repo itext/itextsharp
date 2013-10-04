@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Net;
-using iTextSharp.text;
 using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 
@@ -232,7 +231,7 @@ namespace iTextSharp.text.pdf.codec.wmf
                 case META_MOVETO:
                 {
                     int y = meta.ReadShort();
-                    System.Drawing.Point p = new System.Drawing.Point(meta.ReadShort(), y);
+                    Point p = new Point(meta.ReadShort(), y);
                     state.CurrentPoint = p;
                     break;
                 }
@@ -240,11 +239,11 @@ namespace iTextSharp.text.pdf.codec.wmf
                 {
                     int y = meta.ReadShort();
                     int x = meta.ReadShort();
-                    System.Drawing.Point p = state.CurrentPoint;
-                    cb.MoveTo(state.TransformX(p.X), state.TransformY(p.Y));
+                    Point p = state.CurrentPoint;
+                    cb.MoveTo(state.TransformX(p.x), state.TransformY(p.y));
                     cb.LineTo(state.TransformX(x), state.TransformY(y));
                     cb.Stroke();
-                    state.CurrentPoint = new System.Drawing.Point(x, y);
+                    state.CurrentPoint = new Point(x, y);
                     break;
                 }
                 case META_POLYLINE:

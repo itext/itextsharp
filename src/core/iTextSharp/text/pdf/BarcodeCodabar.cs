@@ -1,5 +1,4 @@
 using System;
-using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
  * $Id$
@@ -286,6 +285,7 @@ namespace iTextSharp.text.pdf
             return BarcodeSize;
         }
 
+#if DRAWING
         public override System.Drawing.Image CreateDrawingImage(System.Drawing.Color foreground, System.Drawing.Color background) {
             String fullCode = code;
             if (generateChecksum && checksumText)
@@ -316,5 +316,6 @@ namespace iTextSharp.text.pdf
             }
             return bmp;
         }
+#endif// DRAWING
     }
 }

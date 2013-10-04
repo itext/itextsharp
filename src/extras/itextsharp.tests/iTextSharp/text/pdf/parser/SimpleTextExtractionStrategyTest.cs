@@ -1,10 +1,10 @@
 using System;
 using System.IO;
+using iTextSharp.awt.geom;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.parser;
 using NUnit.Framework;
-using Matrix = System.Drawing.Drawing2D.Matrix;
 
 namespace itextsharp.tests.iTextSharp.text.pdf.parser
 {
@@ -186,9 +186,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
 
             BaseFont font = BaseFont.CreateFont();
 
-            Matrix matrix = new Matrix();
-            matrix.Translate(100, 500);
-            cb.Transform(matrix);
+            cb.Transform(AffineTransform.GetTranslateInstance(100, 500));
             cb.BeginText();
             cb.SetFontAndSize(font, 12);
 
@@ -252,9 +250,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
             float x = document.PageSize.Width / 2;
             float y = document.PageSize.Height / 2;
 
-            Matrix matrix = new Matrix();
-            matrix.Translate(x, y);
-            cb.Transform(matrix);
+            cb.Transform(AffineTransform.GetTranslateInstance(x, y));
 
             cb.MoveTo(-10, 0);
             cb.LineTo(10, 0);
@@ -264,17 +260,13 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
 
             cb.BeginText();
             cb.SetFontAndSize(font, 12);
-            matrix = new Matrix();
-            matrix.Rotate(rotation);
-            cb.Transform(matrix);
+            cb.Transform(AffineTransform.GetRotateInstance(rotation / 180f * Math.PI));
             cb.ShowText(text1);
             if (moveTextToNextLine)
                 cb.MoveText(0, moveTextDelta);
             else
             {
-                matrix = new Matrix();
-                matrix.Translate(moveTextDelta, 0);
-                cb.Transform(matrix);
+                cb.Transform(AffineTransform.GetTranslateInstance(moveTextDelta, 0));
             }
             cb.ShowText(text2);
             cb.EndText();

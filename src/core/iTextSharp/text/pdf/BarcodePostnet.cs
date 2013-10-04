@@ -1,5 +1,4 @@
 using System;
-using iTextSharp.text;
 
 /*
  * This file is part of the iText project.
@@ -167,7 +166,8 @@ namespace iTextSharp.text.pdf {
             cb.Fill();
             return this.BarcodeSize;
         }
-    
+
+#if DRAWING
         public override System.Drawing.Image CreateDrawingImage(System.Drawing.Color foreground, System.Drawing.Color background) {
             int barWidth = (int)x;
             if (barWidth <= 0)
@@ -210,5 +210,6 @@ namespace iTextSharp.text.pdf {
             }
             return bmp;
         }
+#endif// DRAWING
     }
 }

@@ -1,6 +1,4 @@
 using System;
-using iTextSharp.text;
-using System.Collections;
 using iTextSharp.text.error_messages;
 
 /*
@@ -641,6 +639,7 @@ namespace iTextSharp.text.pdf {
             return rect;
         }
 
+#if DRAWING
         public override System.Drawing.Image CreateDrawingImage(System.Drawing.Color foreground, System.Drawing.Color background) {
             int width = 0;
             byte[] bars = null;
@@ -689,5 +688,6 @@ namespace iTextSharp.text.pdf {
             }
             return bmp;
         }
+#endif// DRAWING
     }
 }
