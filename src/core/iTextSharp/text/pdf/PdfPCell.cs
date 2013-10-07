@@ -796,7 +796,7 @@ namespace iTextSharp.text.pdf {
                         right = NoWrap ? PdfPRow.RIGHT_LIMIT : Right - EffectivePaddingRight;
                         top = Top - EffectivePaddingTop;
                         left = Left + EffectivePaddingLeft;
-                        bottom = HasFixedHeight() ? top + EffectivePaddingBottom - FixedHeight : PdfPRow.BOTTOM_LIMIT;
+                        bottom = HasFixedHeight() ? Top + EffectivePaddingBottom - FixedHeight : PdfPRow.BOTTOM_LIMIT;
                     }
                     PdfPRow.SetColumn(ct, left, bottom, right, top);
                     ct.Go(true);
