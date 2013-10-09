@@ -348,8 +348,8 @@ namespace iTextSharp.text {
                             return false;
                         else {
                             if (tokenizer1.TokenType == tokenizer2.TokenType && tokenizer2.TokenType == PRTokeniser.TokType.NUMBER) {
-                                if (Math.Abs(float.Parse(tokenizer1.StringValue, new CultureInfo("en-US"))
-                                             - float.Parse(tokenizer2.StringValue, new CultureInfo("en-US"))) > 0.001)
+                                if (Math.Abs(float.Parse(tokenizer1.StringValue, CultureInfo.InvariantCulture)
+                                             - float.Parse(tokenizer2.StringValue, CultureInfo.InvariantCulture)) > 0.001)
                                     return false;
                             } else if (!tokenizer1.StringValue.Equals(tokenizer2.StringValue))
                                 return false;

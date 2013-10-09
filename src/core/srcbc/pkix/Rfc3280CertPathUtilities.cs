@@ -11,7 +11,6 @@ using Org.BouncyCastle.Security;
 using Org.BouncyCastle.Security.Certificates;
 using Org.BouncyCastle.Utilities;
 using Org.BouncyCastle.Utilities.Collections;
-using Org.BouncyCastle.Utilities.Date;
 using Org.BouncyCastle.X509;
 using Org.BouncyCastle.X509.Store;
 
@@ -1199,7 +1198,7 @@ namespace Org.BouncyCastle.Pkix
 			{
 				// TODO This format is forced by the NistCertPath tests
 				string formattedDate = certStatus.RevocationDate.Value.ToString(
-					"G", new CultureInfo("en-us"));
+					"G", System.util.Util.GetStandartEnUSLocale());
 				string message = "Certificate revocation after " + formattedDate;
 				message += ", reason: " + CrlReasons[certStatus.Status];
 				throw new Exception(message);

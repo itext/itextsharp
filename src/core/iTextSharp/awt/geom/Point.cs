@@ -1,6 +1,6 @@
 ﻿namespace iTextSharp.awt.geom
 {
-    public class Point
+    public class Point : Point2D
     {
         public double x;
         public double y;
@@ -36,11 +36,11 @@
             return "Point: [x=" + x + ",y=" + y + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
 
-        public double GetX() {
+        public override double GetX() {
             return x;
         }
 
-        public double GetY() {
+        public override double GetY() {
             return y;
         }
 
@@ -56,7 +56,7 @@
             SetLocation((double)x, (double)y);
         }
 
-        public void SetLocation(double x, double y) {
+        public override void SetLocation(double x, double y) {
     	    this.x = x;
     	    this.y = y;
         }
