@@ -1,11 +1,8 @@
-using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using itextsharp.tests.iTextSharp.testutils;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using NUnit.Framework;
-using Image = iTextSharp.text.Image;
 
 namespace itextsharp.tests.iTextSharp.text.pdf
 {
@@ -74,9 +71,9 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             document.Open();
 
 
-            Bitmap awtImg = new Bitmap(100, 100, PixelFormat.Format32bppRgb);
-            Graphics g = Graphics.FromImage(awtImg);
-            g.FillRectangle(new SolidBrush(Color.Green), 10, 10, 80, 80);
+            System.Drawing.Bitmap awtImg = new System.Drawing.Bitmap(100, 100, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+            System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(awtImg);
+            g.FillRectangle(new System.Drawing.SolidBrush(System.Drawing.Color.Green), 10, 10, 80, 80);
             g.Save();
             Image itextImg = Image.GetInstance(awtImg, (BaseColor)null);
             document.Add(itextImg);

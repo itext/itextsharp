@@ -66,5 +66,24 @@ namespace System.util
         public static int CompareToIgnoreCase(string s1, string s2) {
             return CultureInfo.InvariantCulture.CompareInfo.Compare(s1, s2, CompareOptions.IgnoreCase);
         }
+
+        public static CultureInfo GetStandartEnUSLocale() {
+            CultureInfo locale = (CultureInfo)CultureInfo.InvariantCulture.Clone();
+            //                          en-US                        Invariant
+            //=====================     ==================           ==================
+            //Currency Symbol           $                            ¤
+            //Currency                  $123456.78                   ¤123456.78
+            //Short Date                1/11/2012                    01/11/2012
+            //Time                      10:36:52 PM                  22:36:52
+            //Metric                    No                           Yes
+            //Long Date                 Wednesday, January 11, 2012  Wednesday, 11 January, 2012
+            //Year Month                January, 2012                2012 January
+            locale.NumberFormat.CurrencySymbol = "$";
+            locale.DateTimeFormat.ShortDatePattern = "M/d/yyyy";
+            locale.DateTimeFormat.ShortTimePattern = "h:mm tt";
+            locale.DateTimeFormat.LongDatePattern = "dddd, MMMM dd, yyyy";
+            locale.DateTimeFormat.YearMonthPattern = "MMMM, yyyy";
+            return locale;
+        }
     }
 }

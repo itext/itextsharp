@@ -101,7 +101,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == fs)
+                if (e.GetObject().Equals(fs))
                     exceptionThrown = true;
             }
             if (!exceptionThrown)
@@ -142,7 +142,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == num)
+                if (e.GetObject().Equals(num))
                     exceptionThrown = true;
             }
             if (!exceptionThrown)
@@ -187,7 +187,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == pdfStr)
+                if (e.GetObject().Equals(pdfStr))
                     exceptionThrown = true;
             }
             if (!exceptionThrown)
@@ -263,7 +263,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == array)
+                if (e.GetObject().Equals(array))
                     exceptionThrown = true;
             }
             if (!exceptionThrown)
@@ -338,7 +338,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == dictionary)
+                if (e.GetObject().Equals(dictionary))
                     exceptionThrown = true;
             }
             if (!exceptionThrown)
@@ -492,7 +492,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (BaseColor.RED == e.GetObject())
+                if (BaseColor.RED.Equals(e.GetObject()))
                 {
                     exceptionThrown = true;
                 }
@@ -535,7 +535,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (BaseColor.RED == e.GetObject())
+                if (BaseColor.RED.Equals(e.GetObject()))
                 {
                     exceptionThrown = true;
                 }
@@ -579,7 +579,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == gs)
+                if (e.GetObject().Equals(gs))
                 {
                     exceptionThrown = true;
                 }
@@ -654,7 +654,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == gs)
+                if (e.GetObject().Equals(gs))
                 {
                     exceptionThrown = true;
                 }
@@ -698,7 +698,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == gs)
+                if (e.GetObject().Equals(gs))
                 {
                     exceptionThrown = true;
                 }
@@ -742,7 +742,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (((PdfFormXObject)e.GetObject()).GetAsDict(PdfName.GROUP) == group)
+                if (((PdfFormXObject)e.GetObject()).GetAsDict(PdfName.GROUP).Equals(group))
                 {
                     exceptionThrown = true;
                 }
@@ -785,7 +785,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == gs)
+                if (e.GetObject().Equals(gs))
                 {
                     exceptionThrown = true;
                 }
@@ -886,7 +886,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == annot)
+                if (e.GetObject().Equals(annot))
                 {
                     exceptionThrown = true;
                 }
@@ -929,7 +929,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == annot)
+                if (e.GetObject().Equals(annot))
                 {
                     exceptionThrown = true;
                 }
@@ -971,7 +971,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == annot)
+                if (e.GetObject().Equals(annot))
                 {
                     exceptionThrown = true;
                 }
@@ -1013,7 +1013,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == annot)
+                if (e.GetObject().Equals(annot))
                 {
                     exceptionThrown = true;
                 }
@@ -1060,7 +1060,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == annot)
+                if (e.GetObject().Equals(annot))
                 {
                     exceptionThrown = true;
                 }
@@ -1105,7 +1105,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == annot)
+                if (e.GetObject().Equals(annot))
                 {
                     exceptionThrown = true;
                 }
@@ -1178,7 +1178,7 @@ namespace iTextSharp.text.pdfa
             }
             catch (PdfAConformanceException e)
             {
-                if (e.GetObject() == annot && e.Message.Contains("Contents"))
+                if (e.GetObject().Equals(annot) && e.Message.Contains("Contents"))
                 {
                     exceptionThrown = true;
                 }
