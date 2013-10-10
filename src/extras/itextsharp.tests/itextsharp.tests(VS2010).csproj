@@ -93,6 +93,7 @@
     <Compile Include="iTextSharp\text\pdf\MetaDataTest.cs" />
     <Compile Include="iTextSharp\text\pdf\MultithreadedTtfTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\FilteredTextRenderListenerTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\GlyphTextRenderListenerTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\LocationTextExtractionStrategyTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\MatrixTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\MultiFilteredRenderListenerTest.cs" />
@@ -178,6 +179,8 @@
     <None Include="resources\text\pdf\mc\SF2809_alt.pdf" />
     <None Include="resources\text\pdf\MultithreadedTtfTest\FreeSans.ttf" />
     <None Include="resources\text\pdf\MultithreadedTtfTest\test.pdf" />
+    <None Include="resources\text\pdf\parser\GlyphTextRenderListenerTest\Sample.pdf" />
+    <None Include="resources\text\pdf\parser\GlyphTextRenderListenerTest\test.pdf" />
     <None Include="resources\text\pdf\parser\MultiFilteredRenderListenerTest\test.pdf" />
     <None Include="resources\text\pdf\parser\PdfContentStreamProcessorTest\yaxiststar.pdf" />
     <None Include="resources\text\pdf\parser\PdfImageObjectTest\ASCII85_RunLengthDecode.pdf" />

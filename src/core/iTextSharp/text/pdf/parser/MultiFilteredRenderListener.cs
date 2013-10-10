@@ -16,7 +16,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param filterSet filter set to be attached. The delegate will be invoked if all the filters pass.
          */
 
-        public IRenderListener AttachRenderListener(IRenderListener deleg, params RenderFilter[] filterSet) {
+        public E AttachRenderListener<E>(E deleg, params RenderFilter[] filterSet) where E : IRenderListener {
             delegates.Add(deleg);
             filters.Add(filterSet);
 

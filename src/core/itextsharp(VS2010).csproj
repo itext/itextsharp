@@ -736,6 +736,8 @@
     <Compile Include="iTextSharp\text\pdf\parser\FilteredTextRenderListener.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\parser\GlyphRenderListener.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\GlyphTextRenderListener.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\GraphicsState.cs">
       <SubType>Code</SubType>
     </Compile>
