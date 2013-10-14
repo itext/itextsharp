@@ -48,16 +48,16 @@ namespace iTextSharp.text.pdf.intern
 {
     public class PdfA1Checker : PdfAChecker {
     
-        internal static readonly PdfName setState = new PdfName("SetState");
-        internal static readonly PdfName noOp = new PdfName("NoOp");
+        public static readonly PdfName setState = new PdfName("SetState");
+        public static readonly PdfName noOp = new PdfName("NoOp");
         private static HashSet2<PdfName> allowedAnnotTypes = new HashSet2<PdfName>(new PdfName[]{PdfName.TEXT, PdfName.LINK, PdfName.FREETEXT,
                 PdfName.LINE, PdfName.SQUARE, PdfName.CIRCLE, PdfName.HIGHLIGHT, PdfName.UNDERLINE, PdfName.SQUIGGLY, PdfName.STRIKEOUT, PdfName.STAMP,
                 PdfName.INK, PdfName.POPUP, PdfName.WIDGET, PdfName.PRINTERMARK, PdfName.TRAPNET});
-        private static HashSet2<PdfName> allowedNamedActions = new HashSet2<PdfName>(new PdfName[]{PdfName.NEXTPAGE, PdfName.PREVPAGE,
+        public static readonly HashSet2<PdfName> allowedNamedActions = new HashSet2<PdfName>(new PdfName[]{PdfName.NEXTPAGE, PdfName.PREVPAGE,
                 PdfName.FIRSTPAGE, PdfName.LASTPAGE});
         private static HashSet2<PdfName> restrictedActions = new HashSet2<PdfName>(new PdfName[]{PdfName.LAUNCH, PdfName.SOUND,
                 PdfName.MOVIE, PdfName.RESETFORM, PdfName.IMPORTDATA, PdfName.JAVASCRIPT});
-        private static HashSet2<PdfName> contentAnnotations = new HashSet2<PdfName>(new PdfName[]{PdfName.TEXT, PdfName.LINK, PdfName.FREETEXT,
+        public static readonly HashSet2<PdfName> contentAnnotations = new HashSet2<PdfName>(new PdfName[]{PdfName.TEXT, PdfName.LINK, PdfName.FREETEXT,
                 PdfName.LINE, PdfName.SQUARE, PdfName.CIRCLE, PdfName.STAMP, PdfName.INK, PdfName.POPUP, PdfName.WIDGET});
         public const double maxRealValue = 32767;
         public const int maxStringLength = 65535;
@@ -120,6 +120,8 @@ namespace iTextSharp.text.pdf.intern
             }
         }
 
+        protected override void CheckInlineImage(PdfWriter writer, int key, Object obj1) {}
+
         protected override void CheckGState(PdfWriter writer, int key, Object obj1) {
             PdfDictionary gs = (PdfDictionary) obj1;
             PdfObject obj = gs.Get(PdfName.BM);
@@ -164,8 +166,17 @@ namespace iTextSharp.text.pdf.intern
                 if (stream.Contains(PdfName.F) || stream.Contains(PdfName.FFILTER) || stream.Contains(PdfName.FDECODEPARMS)) {
                     throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("stream.object.dictionary.shall.not.contain.the.f.ffilter.or.fdecodeparams.keys"));
                 }
-                if (stream.Contains(PdfName.LZWDECODE)) {
-                    throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("lzwdecode.filter.is.not.permitted"));
+
+                PdfObject filter = stream.GetDirectObject(PdfName.FILTER);
+                if (filter is PdfName) {
+                    if (filter.Equals(PdfName.LZWDECODE))
+                        throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("lzwdecode.filter.is.not.permitted"));
+                }
+                else if (filter is PdfArray) {
+                    foreach (PdfObject f in ((PdfArray) filter)) {
+                        if (f.Equals(PdfName.LZWDECODE))
+                            throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("lzwdecode.filter.is.not.permitted"));
+                    }
                 }
 
                 if (PdfName.FORM.Equals(stream.GetAsName(PdfName.SUBTYPE))) {
@@ -219,10 +230,19 @@ namespace iTextSharp.text.pdf.intern
                 if (dictionary.Size > maxDictionaryLength) {
                     throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("pdf.dictionary.is.out.of.bounds"));
                 }
-                if (PdfName.CATALOG.Equals(dictionary.GetAsName(PdfName.TYPE))) {
+                PdfName type = dictionary.GetAsName(PdfName.TYPE);
+                if (PdfName.CATALOG.Equals(type)) {
                     if (dictionary.Contains(PdfName.AA)) {
                         throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("the.document.catalog.dictionary.shall.not.include.an.aa.entry"));
                     }
+
+                    if (dictionary.Contains(PdfName.NAMES)) {
+                        PdfDictionary names = dictionary.GetAsDict(PdfName.NAMES);
+                        if (names != null && names.Contains(PdfName.EMBEDDEDFILES)) {
+                            throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("the.document.catalog.dictionary.shall.not.include.embeddedfiles.names.entry"));
+                        }
+                    }
+
                     if (CheckStructure(conformanceLevel)) {
                         PdfDictionary markInfo = dictionary.GetAsDict(PdfName.MARKINFO);
                         if (markInfo == null || markInfo.GetAsBoolean(PdfName.MARKED) == null || markInfo.GetAsBoolean(PdfName.MARKED).BooleanValue == false) {
@@ -233,6 +253,11 @@ namespace iTextSharp.text.pdf.intern
                         }
                     }
 
+                }
+                if (PdfName.PAGE.Equals(type)) {
+                    if (dictionary.Contains(PdfName.AA)) {
+                        throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("page.dictionary.shall.not.include.aa.entry"));
+                    }
                 }
             }
         }
@@ -298,6 +323,9 @@ namespace iTextSharp.text.pdf.intern
                 PdfFormField field = (PdfFormField) obj1;
                 if (!field.Contains(PdfName.SUBTYPE))
                     return;
+                if (field.Contains(PdfName.AA) || field.Contains(PdfName.A)) {
+                    throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("widget.annotation.dictionary.or.field.dictionary.shall.not.include.a.or.aa.entry"));
+                }
             }
             if (obj1 is PdfAnnotation) {
                 PdfAnnotation annot = (PdfAnnotation) obj1;
@@ -386,7 +414,7 @@ namespace iTextSharp.text.pdf.intern
                 PdfStructureElement structElem = (PdfStructureElement) obj1;
                 PdfName role = structElem.StructureType;
                 if (PdfName.FIGURE.Equals(role) || PdfName.FORMULA.Equals(role) || PdfName.FORM.Equals(role)) {
-                    PdfObject o = structElem.GetAttribute(PdfName.ALT);
+                    PdfObject o = structElem.Get(PdfName.ALT);
                     if (o is PdfString && o.ToString().Length > 0) {
 
                     } else {
