@@ -46,14 +46,83 @@ using System;
 
 namespace iTextSharp.text.pdf.intern
 {
-    public class PdfA3Checker : PdfA2Checker {
+    public class PdfA3Checker : PdfAChecker {
         internal PdfA3Checker(PdfAConformanceLevel conformanceLevel)
             :base(conformanceLevel) {
         }
 
-        protected override void CheckFileSpec(PdfWriter writer, int key, Object obj1) {
+
+        protected override void CheckFont(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
         }
 
+
+        protected override void CheckImage(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+
+        protected override void CheckInlineImage(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+
+        protected override void CheckGState(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+
+        protected override void CheckLayer(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+
+        protected override void CheckTrailer(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+
+        protected override void CheckStream(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+
+        protected override void CheckPdfObject(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+
+        protected override void CheckCanvas(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+
+        protected override void CheckColor(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+
+        protected override void CheckAnnotation(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+
+        protected override void CheckAction(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+
+        protected override void CheckForm(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+
+        protected override void CheckStructElem(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
+
+        protected override void CheckFileSpec(PdfWriter writer, int key, Object obj1) {
+        }
 
     }
 }

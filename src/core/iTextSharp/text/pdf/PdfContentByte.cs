@@ -1415,6 +1415,7 @@ namespace iTextSharp.text.pdf {
                             pimage.Put(PdfName.DECODEPARMS, decodeparms);
                         }
                     }
+                    PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_INLINE_IMAGE, pimage);
                     foreach (PdfName key in pimage.Keys) {
                         if (!abrev.ContainsKey(key))
                             continue;

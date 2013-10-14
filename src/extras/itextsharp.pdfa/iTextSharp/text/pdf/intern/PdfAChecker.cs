@@ -57,6 +57,8 @@ namespace iTextSharp.text.pdf.intern
 
         protected abstract void CheckImage(PdfWriter writer, int key, Object obj1);
 
+        abstract protected void CheckInlineImage(PdfWriter writer, int key, Object obj1);
+
         protected abstract void CheckGState(PdfWriter writer, int key, Object obj1);
 
         protected abstract void CheckLayer(PdfWriter writer, int key, Object obj1);
@@ -130,6 +132,9 @@ namespace iTextSharp.text.pdf.intern
                 case PdfIsoKeys.PDFISOKEY_STRUCTELEM:
                     if(CheckStructure(conformanceLevel))
                         CheckStructElem(writer, key, obj1);
+                    break;
+                case PdfIsoKeys.PDFISOKEY_INLINE_IMAGE:
+                    CheckInlineImage(writer, key, obj1);
                     break;
                 default:
                     break;

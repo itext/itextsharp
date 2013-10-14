@@ -139,6 +139,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName ALTERNATE = new PdfName("Alternate");
         /**
          * A name
+         * @since 5.4.5
+         */
+        public static readonly PdfName ALTERNATEPRESENTATION = new PdfName("AlternatePresentations");
+        /**
+         * A name
          * @since 5.4.3
          */
         public static readonly PdfName ALTERNATES = new PdfName("Alternates");
@@ -841,6 +846,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName GLITTER = new PdfName("Glitter");
         /** A name of an attribute. */
         public static readonly PdfName GOTO = new PdfName("GoTo");
+        /**
+         * A name
+         * @since 5.4.5
+         */
+        public static readonly PdfName GOTO3DVIEW = new PdfName("GoTo3DView");
         /** A name of an attribute. */
         public static readonly PdfName GOTOE = new PdfName("GoToE");
         /** A name of an attribute. */
@@ -1220,6 +1230,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName NEAR = new PdfName("Near");
         /** A name */
         public static readonly PdfName NEEDAPPEARANCES = new PdfName("NeedAppearances");
+        /**
+         * A name.
+         * @since 5.4.5
+         */
+        public static readonly PdfName NEEDRENDERING = new PdfName("NeedsRendering");
         /** A name */
         public static readonly PdfName NEWWINDOW = new PdfName("NewWindow");
         /** A name */
@@ -1440,6 +1455,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName PRESENTATION = new PdfName("Presentation");
         /** A name */
         public static readonly PdfName PRESERVERB = new PdfName("PreserveRB");
+        /**
+         * A name.
+         * @since 5.4.5
+         */
+        public static readonly PdfName PRESSTEPS = new PdfName("PresSteps");
         /** A name */
         public static readonly PdfName PREV = new PdfName("Prev");
         /** A name */
@@ -1553,6 +1573,7 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName RESETFORM = new PdfName("ResetForm");
         /** A name */
         public static readonly PdfName RESOURCES = new PdfName("Resources");
+        public static readonly PdfName REQUIREMENTS = new PdfName("Requirements");
         /** A name */
         public static readonly PdfName RI = new PdfName("RI");
         /**
