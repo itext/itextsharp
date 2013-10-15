@@ -174,6 +174,7 @@ namespace iTextSharp.text.pdf {
         protected bool rowCompleted = true;
 
         protected bool loopCheck = true;
+        protected bool rowsNotChecked = true;
 
         protected PdfName role = PdfName.TABLE;
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
@@ -771,9 +772,11 @@ namespace iTextSharp.text.pdf {
             float yPosStart = yPos;
 
             PdfPTableBody currentBlock = null;
-            for (int k = rowStart; k < rowEnd; ++k)
-            {
-                PdfPRow row = rows[k];
+            if (rowsNotChecked)
+                GetFittingRows(float.MaxValue, rowStart);
+            List<PdfPRow> __rows = GetRows(rowStart, rowEnd);
+            int k = rowStart;
+            foreach (PdfPRow row in __rows) {
                 if (GetHeader().rows != null && GetHeader().rows.Contains(row) && currentBlock == null) {
                     currentBlock = OpenTableBlock(GetHeader(), canvases[TEXTCANVAS]);
                 } else if (GetBody().rows != null && GetBody().rows.Contains(row) && currentBlock == null) {
@@ -786,21 +789,22 @@ namespace iTextSharp.text.pdf {
                     row.WriteCells(colStart, colEnd, xPos, yPos, canvases, reusable);
                     yPos -= row.MaxHeights;
                 }
-                if (GetHeader().rows != null && GetHeader().rows.Contains(row) && (k == rowEnd - 1 || !GetHeader().rows.Contains(rows[k + 1]))) {
+                if (GetHeader().rows != null && GetHeader().rows.Contains(row) && (k == rowEnd - 1 || !GetHeader().rows.Contains(__rows[k + 1]))) {
                     currentBlock = CloseTableBlock(GetHeader(), canvases[TEXTCANVAS]);
-                } else if (GetBody().rows != null && GetBody().rows.Contains(row) && (k == rowEnd - 1 || !GetBody().rows.Contains(rows[k + 1]))) {
+                } else if (GetBody().rows != null && GetBody().rows.Contains(row) && (k == rowEnd - 1 || !GetBody().rows.Contains(__rows[k + 1]))) {
                     currentBlock = CloseTableBlock(GetBody(), canvases[TEXTCANVAS]);
-                } else if (GetFooter().rows != null && GetFooter().rows.Contains(row) && (k == rowEnd - 1 || !GetFooter().rows.Contains(rows[k + 1]))) {
+                } else if (GetFooter().rows != null && GetFooter().rows.Contains(row) && (k == rowEnd - 1 || !GetFooter().rows.Contains(__rows[k + 1]))) {
                     currentBlock = CloseTableBlock(GetFooter(), canvases[TEXTCANVAS]);
                 }
+                k++;
             }
             if (tableEvent != null && colStart == 0 && colEnd == totalCols)
             {
                 float[] heights = new float[rowEnd - rowStart + 1];
                 heights[0] = yPosStart;
-                for (int k = rowStart; k < rowEnd; ++k)
+                for (k = rowStart; k < rowEnd; ++k)
                 {
-                    PdfPRow row = rows[k];
+                    PdfPRow row = __rows[k];
                     float hr = 0;
                     if (row != null)
                         hr = row.MaxHeights;
@@ -1451,7 +1455,9 @@ namespace iTextSharp.text.pdf {
 
         protected PdfPRow AdjustCellsInRow(int start, int end)
         {
-            PdfPRow row = new PdfPRow(GetRow(start));
+            PdfPRow row = GetRow(start);
+            if (row.Adjusted) return row;
+            row = new PdfPRow(row);
             PdfPCell cell;
             PdfPCell[] cells = row.GetCells();
             for (int i = 0; i < cells.Length; i++)
@@ -1467,6 +1473,7 @@ namespace iTextSharp.text.pdf {
                 }
                 row.SetExtraHeight(i, extra);
             }
+            row.Adjusted = true;
             return row;
         }
 
@@ -1917,7 +1924,7 @@ namespace iTextSharp.text.pdf {
                 completedRowsHeight = maxCompletedRowsHeight;
                 totalHeight = maxTotalHeight;
             }
-
+            rowsNotChecked = false;
             return new FittingRows(startIdx, k - 1, totalHeight, completedRowsHeight, correctedHeightsForLastRow);
         }
     }
