@@ -19,6 +19,13 @@ namespace iTextSharp.text.pdf.security
 
         public const String SignedProperties_Type = "http://uri.etsi.org/01903#SignedProperties";
 
+        public const String OIDAsURN = "OIDAsURN";
+        public const String OID_DSA_SHA1 = "urn:oid:1.2.840.10040.4.3";
+        public const String OID_DSA_SHA1_DESC = "ANSI X9.57 DSA signature generated with SHA-1 hash (DSA x9.30)";
+
+        public const String OID_RSA_SHA1 = "urn:oid:1.2.840.113549.1.1.5";
+        public const String OID_RSA_SHA1_DESC = "RSA (PKCS #1 v1.5) with SHA-1 signature";
+
         public const String DSA = "DSA";
         public const String RSA = "RSA";
         public const String SHA1 = "SHA1";
@@ -34,6 +41,7 @@ namespace iTextSharp.text.pdf.security
         public const String Id = "Id";
         public const String ObjectReference = "ObjectReference";
         public const String Target = "Target";
+        public const String Qualifier = "Qualifier";
 
         public const String XADES_Encoding = "xades:Encoding";
         public const String XADES_MimeType = "xades:MimeType";
@@ -48,6 +56,12 @@ namespace iTextSharp.text.pdf.security
         public const String XADES_SignedSignatureProperties = "xades:SignedSignatureProperties";
         public const String XADES_SignedProperties = "xades:SignedProperties";
         public const String XADES_QualifyingProperties = "xades:QualifyingProperties";
+        public const String XADES_SignaturePolicyIdentifier = "xades:SignaturePolicyIdentifier";
+        public const String XADES_SignaturePolicyId = "xades:SignaturePolicyId";
+        public const String XADES_SigPolicyId = "xades:SigPolicyId";
+        public const String XADES_Identifier = "xades:Identifier";
+        public const String XADES_SigPolicyHash = "xades:SigPolicyHash";
+
 
         public const String Reference_ = "Reference-";
         public const String SignedProperties_ = "SignedProperties-";
