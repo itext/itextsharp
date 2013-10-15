@@ -113,7 +113,7 @@
     <Compile Include="iTextSharp\text\pdf\ToUnicodeNonBreakableSpacesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\UnbalancedOperatorsTest.cs" />
     <Compile Include="iTextSharp\text\RemoteGifImageTest.cs" />
-    <Compile Include="iTextSharp\text\signature\XadesBesTest.cs" />
+    <Compile Include="iTextSharp\text\signature\XadesTest.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\SimpleXMLParserTest.cs" />
     <Compile Include="iTextSharp\text\xml\xmp\XmpWriterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

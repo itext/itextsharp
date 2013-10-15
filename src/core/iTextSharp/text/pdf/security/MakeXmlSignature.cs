@@ -84,11 +84,13 @@ namespace iTextSharp.text.pdf.security
          * @param sap the XmlSignatureAppearance
          * @param externalSignature  the interface providing the actual signing
          * @param chain the certificate chain
+         * @param includeSignaturePolicy if true SignaturePolicyIdentifier will be included (XAdES-EPES)
          * @throws GeneralSecurityException
          * @throws IOException
          * @throws DocumentException
          */
-        public static void SignXadesBes(XmlSignatureAppearance sap, IExternalSignature externalSignature, X509Certificate[] chain) {
+        public static void SignXades(XmlSignatureAppearance sap, IExternalSignature externalSignature, X509Certificate[] chain,
+            bool includeSignaturePolicy) {
 
             VerifyArguments(sap, externalSignature);
             String contentReferenceId = SecurityConstants.Reference_ + GetRandomId();
@@ -100,8 +102,21 @@ namespace iTextSharp.text.pdf.security
             List<XmlElement> references = new List<XmlElement>(2);
             
             XmlElement signature = GenerateSignatureElement(sap.GetXmlLocator(), signatureId, true);
+            String[] signaturePolicy = null;
+            if(includeSignaturePolicy) {
+                signaturePolicy = new String[2];
+                if(externalSignature.GetEncryptionAlgorithm().Equals(SecurityConstants.RSA)) {
+                    signaturePolicy[0] = SecurityConstants.OID_RSA_SHA1;
+                    signaturePolicy[1] = SecurityConstants.OID_RSA_SHA1_DESC;
+                }
+                else {
+                    signaturePolicy[0] = SecurityConstants.OID_DSA_SHA1;
+                    signaturePolicy[1] = SecurityConstants.OID_DSA_SHA1_DESC;
+                }
+            }
+
             XmlElement signedProperty;
-            XmlElement dsObject = GenerateXadesBesObject(sap, signatureId, contentReferenceId, signedPropertiesId, out signedProperty);
+            XmlElement dsObject = GenerateXadesObject(sap, signatureId, contentReferenceId, signedPropertiesId, signaturePolicy, out signedProperty);
             
             references.Add(GenerateCustomReference(doc, signedProperty, "#" + signedPropertiesId, SecurityConstants.SignedProperties_Type, null));
             references.Add(GenerateContentReference(doc, sap, contentReferenceId));
@@ -109,6 +124,32 @@ namespace iTextSharp.text.pdf.security
             Sign(signature, sap.GetXmlLocator(), externalSignature, references, dsObject, keyInfo);
 
             sap.Close();
+        }
+
+        /**
+         * Signs the xml with XAdES BES using the enveloped mode, with optional xpath transform (see XmlSignatureAppearance).
+         * @param sap the XmlSignatureAppearance
+         * @param externalSignature  the interface providing the actual signing
+         * @param chain the certificate chain
+         * @throws GeneralSecurityException
+         * @throws IOException
+         * @throws DocumentException
+         */
+        public static void SignXadesBes(XmlSignatureAppearance sap, IExternalSignature externalSignature, X509Certificate[] chain) {
+            SignXades(sap, externalSignature, chain, false);
+        }
+
+        /**
+         * Signs the xml with XAdES BES using the enveloped mode, with optional xpath transform (see XmlSignatureAppearance).
+         * @param sap the XmlSignatureAppearance
+         * @param externalSignature  the interface providing the actual signing
+         * @param chain the certificate chain
+         * @throws GeneralSecurityException
+         * @throws IOException
+         * @throws DocumentException
+         */
+        public static void SignXadesEpes(XmlSignatureAppearance sap, IExternalSignature externalSignature, X509Certificate[] chain) {
+            SignXades(sap, externalSignature, chain, true);
         }
 
         /**
@@ -198,8 +239,8 @@ namespace iTextSharp.text.pdf.security
             return Guid.NewGuid().ToString().Substring(24);
         }
 
-        private static XmlElement GenerateXadesBesObject(XmlSignatureAppearance sap,
-            String signatureId, String contentReferenceId, String signedPropertiesId, out XmlElement signedProperty) {
+        private static XmlElement GenerateXadesObject(XmlSignatureAppearance sap, String signatureId,String contentReferenceId, String signedPropertiesId,
+            String[] signaturePolicy, out XmlElement signedProperty) {
 
             HashAlgorithm md = new SHA1Managed();
             X509Certificate cert = sap.GetCertificate();
@@ -212,14 +253,14 @@ namespace iTextSharp.text.pdf.security
             QualifyingProperties.SetAttribute("Target", "#"+signatureId);
             XmlElement SignedProperties = doc.CreateElement(SecurityConstants.XADES_SignedProperties, SecurityConstants.XADES_132_URI);
                 SignedProperties.SetAttribute("Id", signedPropertiesId);
-                XmlElement SignedSignatureProperties = doc.CreateElement(SecurityConstants.XADES_SignedSignatureProperties, SecurityConstants.XADES_132_URI);
-                XmlElement SigningTime = doc.CreateElement(SecurityConstants.XADES_SigningTime, SecurityConstants.XADES_132_URI);
+                    XmlElement SignedSignatureProperties = doc.CreateElement(SecurityConstants.XADES_SignedSignatureProperties, SecurityConstants.XADES_132_URI);
+                        XmlElement SigningTime = doc.CreateElement(SecurityConstants.XADES_SigningTime, SecurityConstants.XADES_132_URI);
                             String result = sap.GetSignDate().ToString(SecurityConstants.SigningTimeFormat);
                         SigningTime.AppendChild(doc.CreateTextNode(result));
                     SignedSignatureProperties.AppendChild(SigningTime);
-                    XmlElement SigningCertificate = doc.CreateElement(SecurityConstants.XADES_SigningCertificate, SecurityConstants.XADES_132_URI);
-                    XmlElement Cert = doc.CreateElement(SecurityConstants.XADES_Cert, SecurityConstants.XADES_132_URI);
-                    XmlElement CertDigest = doc.CreateElement(SecurityConstants.XADES_CertDigest, SecurityConstants.XADES_132_URI);
+                        XmlElement SigningCertificate = doc.CreateElement(SecurityConstants.XADES_SigningCertificate, SecurityConstants.XADES_132_URI);
+                            XmlElement Cert = doc.CreateElement(SecurityConstants.XADES_Cert, SecurityConstants.XADES_132_URI);
+                                XmlElement CertDigest = doc.CreateElement(SecurityConstants.XADES_CertDigest, SecurityConstants.XADES_132_URI);
                                     XmlElement DigestMethod = doc.CreateElement(SecurityConstants.DigestMethod, SecurityConstants.XMLDSIG_URI);
                                     DigestMethod.SetAttribute(SecurityConstants.Algorithm, SecurityConstants.XMLDSIG_URI_SHA1);
                                 CertDigest.AppendChild(DigestMethod);
@@ -237,6 +278,35 @@ namespace iTextSharp.text.pdf.security
                             Cert.AppendChild(IssueSerial);
                         SigningCertificate.AppendChild(Cert);
                     SignedSignatureProperties.AppendChild(SigningCertificate);
+                    if(signaturePolicy != null) {
+                        XmlElement SignaturePolicyIdentifier = doc.CreateElement(SecurityConstants.XADES_SignaturePolicyIdentifier, SecurityConstants.XADES_132_URI);
+                            XmlElement SignaturePolicyId = doc.CreateElement(SecurityConstants.XADES_SignaturePolicyId, SecurityConstants.XADES_132_URI);
+                                XmlElement SigPolicyId = doc.CreateElement(SecurityConstants.XADES_SigPolicyId, SecurityConstants.XADES_132_URI);
+                                    XmlElement Identifier = doc.CreateElement(SecurityConstants.XADES_Identifier, SecurityConstants.XADES_132_URI);
+                                    Identifier.AppendChild(doc.CreateTextNode(signaturePolicy[0]));
+                                    Identifier.SetAttribute(SecurityConstants.Qualifier, SecurityConstants.OIDAsURN);
+                                SigPolicyId.AppendChild(Identifier);
+                                //ANSI X9.57 DSA signature generated with SHA-1 hash (DSA x9.30)
+                                    XmlElement Description = doc.CreateElement(SecurityConstants.XADES_Description, SecurityConstants.XADES_132_URI);
+                                    Description.AppendChild(doc.CreateTextNode(signaturePolicy[1]));
+                                SigPolicyId.AppendChild(Description);
+                            SignaturePolicyId.AppendChild(SigPolicyId);
+                                XmlElement SigPolicyHash = doc.CreateElement(SecurityConstants.XADES_SigPolicyHash, SecurityConstants.XADES_132_URI);
+                                    DigestMethod = doc.CreateElement(SecurityConstants.DigestMethod, SecurityConstants.XMLDSIG_URI);
+                                    DigestMethod.SetAttribute(SecurityConstants.Algorithm, SecurityConstants.XMLDSIG_URI_SHA1);
+                                SigPolicyHash.AppendChild(DigestMethod);
+                                    DigestValue = doc.CreateElement(SecurityConstants.DigestValue, SecurityConstants.XMLDSIG_URI);
+                                    byte[] policyIdContent = System.Text.Encoding.UTF8.GetBytes(SigPolicyId.OuterXml);
+                        FileStream writer = new FileStream("d:\\sharp.txt", FileMode.Create);
+                        writer.Write(policyIdContent, 0, policyIdContent.Length);
+                        writer.Close();
+                                    DigestValue.AppendChild(doc.CreateTextNode(Convert.ToBase64String((md.ComputeHash(policyIdContent)))));
+                                SigPolicyHash.AppendChild(DigestValue);
+                            SignaturePolicyId.AppendChild(SigPolicyHash);
+                        SignaturePolicyIdentifier.AppendChild(SignaturePolicyId);
+                    SignedSignatureProperties.AppendChild(SignaturePolicyIdentifier);
+                    }
+
                     SignedProperties.AppendChild(SignedSignatureProperties);
                     XmlElement SignedDataObjectProperties = doc.CreateElement(SecurityConstants.XADES_SignedDataObjectProperties, SecurityConstants.XADES_132_URI);
                     XmlElement DataObjectFormat = doc.CreateElement(SecurityConstants.XADES_DataObjectFormat, SecurityConstants.XADES_132_URI);

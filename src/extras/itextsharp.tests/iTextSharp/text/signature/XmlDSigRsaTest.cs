@@ -12,10 +12,10 @@ namespace itextsharp.tests.resources.text.signature
     [TestFixture]
     public class XmlDSigRsaTest : XmlDSigTest {
 
-        public const String KeyStore = @"..\..\resources\text\pdf\signature\ds\key";
+        public const String KeyStore = @"..\..\resources\text\pdf\signature\ds-rsa\key";
         public const String Src = @"..\..\resources\text\pdf\signature\xfa.pdf";
-        public const String CmpDir = @"..\..\resources\text\pdf\signature\ds\";
-        public const String DestDir = @"signatures\ds\";
+        public const String CmpDir = @"..\..\resources\text\pdf\signature\ds-rsa\";
+        public const String DestDir = @"signatures\ds-rsa\";
 
         RSA publicKey;
         AsymmetricKeyParameter privateKey;
@@ -47,6 +47,8 @@ namespace itextsharp.tests.resources.text.signature
 
             String cmp = SaveXmlFromResult(output);
 
+            Assert.IsTrue(VerifySignature(cmp), "XmlDSig Verification");
+
             Assert.IsTrue(CompareXmls(cmp, CmpDir + filename.Replace(".pdf", ".xml")));
         }
 
@@ -59,6 +61,9 @@ namespace itextsharp.tests.resources.text.signature
             SignWithKeyInfo(Src, output, privateKey, publicKey, DigestAlgorithms.SHA1);
 
             String cmp = SaveXmlFromResult(output);
+
+            Assert.IsTrue(VerifySignature(cmp), "XmlDSig Verification");
+
             Assert.IsTrue(CompareXmls(cmp, CmpDir + filename.Replace(".pdf", ".xml")));
         }
 
@@ -71,6 +76,9 @@ namespace itextsharp.tests.resources.text.signature
                                      publicKey, DigestAlgorithms.SHA1);
 
             String cmp = SaveXmlFromResult(output);
+
+            Assert.IsTrue(VerifyPackageSignature(cmp), "XmlDSig Verification");
+
             Assert.IsTrue(CompareXmls(cmp, CmpDir + filename.Replace(".pdf", ".xml")));
         }
 
@@ -84,6 +92,9 @@ namespace itextsharp.tests.resources.text.signature
                                    publicKey, DigestAlgorithms.SHA1);
 
             String cmp = SaveXmlFromResult(output);
+
+            Assert.IsTrue(VerifyPackageSignature(cmp), "XmlDSig Verification");
+
             Assert.IsTrue(CompareXmls(cmp, CmpDir + filename.Replace(".pdf", ".xml")));
         }
     }

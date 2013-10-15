@@ -134,8 +134,7 @@ namespace iTextSharp.text.pdf
             }
 
             StringBuilder builder = new StringBuilder("/xdp:xdp/*[local-name()='");
-            builder.Append(strPackage);
-            builder.Append("']");
+            builder.Append(strPackage).Append("']");
             xpathExpression = builder.ToString();
             namespaceManager = new XmlNamespaceManager(new NameTable());
             namespaceManager.AddNamespace("xdp", "http://ns.adobe.com/xdp/");
