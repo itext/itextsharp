@@ -80,6 +80,7 @@ namespace iTextSharp.text.pdf {
         protected float maxHeight = 0;
         
         protected bool calculated = false;
+        protected bool adjusted = false;
         
         private int[] canvasesPos;
 
@@ -810,6 +811,11 @@ namespace iTextSharp.text.pdf {
                     return true;
             }
             return false;
+        }
+
+        public bool Adjusted {
+            get { return adjusted; }
+            set { adjusted = value; }
         }
 
         public PdfObject GetAccessibleAttribute(PdfName key) {
