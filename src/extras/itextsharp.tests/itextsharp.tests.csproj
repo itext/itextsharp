@@ -98,7 +98,7 @@
     <Compile Include="iTextSharp\text\pdf\ToUnicodeNonBreakableSpacesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\UnbalancedOperatorsTest.cs" />
     <Compile Include="iTextSharp\text\RemoteGifImageTest.cs" />
-    <Compile Include="iTextSharp\text\signature\XadesBesTest.cs" />
+    <Compile Include="iTextSharp\text\signature\XadesTest.cs" />
     <Compile Include="iTextSharp\text\signature\XmlDSigKSTest.cs" />
     <Compile Include="iTextSharp\text\signature\XmlDSigRsaTest.cs" />
     <Compile Include="iTextSharp\text\signature\XmlDSigTest.cs" />
