@@ -18,7 +18,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
         protected String outPdf;
         protected String inputHtml;
         private String cmpPdf;
-        private String differenceImage;
+        private String differenceImagePrefix;
         private CompareTool compareTool;
         protected static String testPath;
         protected static String testName;
@@ -40,7 +40,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
                           testName + Path.DirectorySeparatorChar;
                 String inputPath = RESOURCES + Path.DirectorySeparatorChar + testPath + Path.DirectorySeparatorChar +
                                    testName + Path.DirectorySeparatorChar;
-                differenceImage = outPath + "difference";
+                differenceImagePrefix = "difference";
                 outPdf = outPath + testName + ".pdf";
                 inputHtml = inputPath + "<testName>.html".Replace("<testName>", testName);
                 cmpPdf = inputPath + "<testName>.pdf".Replace("<testName>", testName);
@@ -59,7 +59,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
             if (this.GetType() != typeof (SampleTest) && (testName.Length > 0)) {
                 TransformHtml2Pdf();
                 if (DetectCrashesAndHangUpsOnly() == false) {
-                    String errorMessage = compareTool.Compare(outPath, differenceImage);
+                    String errorMessage = compareTool.Compare(outPath, differenceImagePrefix);
                     if (errorMessage != null) {
                         Assert.Fail(errorMessage);
                     }

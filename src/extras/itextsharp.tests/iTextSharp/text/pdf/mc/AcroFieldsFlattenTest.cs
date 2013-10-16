@@ -47,7 +47,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.mc {
 
         private void Compare(String outPdf, String cmpPdf) {
             CompareTool ct = new CompareTool(outPdf, cmpPdf);
-            Assert.IsNull(ct.Compare(OUT_FOLDER, OUT_FOLDER + "difference"));
+            Assert.IsNull(ct.Compare(OUT_FOLDER, "difference"));
 
             String outXml = Path.GetFileNameWithoutExtension(outPdf);
             String cmpXml = Path.GetFileNameWithoutExtension(cmpPdf);

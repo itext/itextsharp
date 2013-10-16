@@ -63,6 +63,8 @@ public class CompareTool {
     static private String differentPages = "File <filename> differs on page <pagenumber>.";
     static private String undefinedGsPath = "Path to GhostScript is not specified. Please use -DgsExec=<path_to_ghostscript> (e.g. -DgsExec=\"C:/Program Files/gs/gs8.64/bin/gswin32c.exe\")";
 
+    static private String ignoredAreasPrefix = "ignored_areas_";
+
     private String outPdf;
     private String outPdfName;
     private String outImage;
@@ -77,7 +79,11 @@ public class CompareTool {
         init(outPdf, cmpPdf);
     }
 
-    public String Compare(String outPath, String differenceImage) {
+    public String Compare(String outPath, String differenceImagePrefix) {
+        return Compare(outPath, differenceImagePrefix, null);
+    }
+
+    public String Compare(String outPath, String differenceImagePrefix, Dictionary<int, List<Rectangle>> ignoredAreas) {
         if (gsExec == null || !File.Exists(gsExec)) {
             return undefinedGsPath;
         }
@@ -102,8 +108,38 @@ public class CompareTool {
             } else
                 targetDir = Directory.CreateDirectory(outPath);
 
-            if (File.Exists(differenceImage)) {
-                File.Delete(differenceImage);
+            if (File.Exists(outPath + differenceImagePrefix)) {
+                File.Delete(outPath + differenceImagePrefix);
+            }
+
+            if (ignoredAreas != null && ignoredAreas.Count > 0) {
+                PdfStamper outStamper = new PdfStamper(new PdfReader(outPdf),
+                    new FileStream(outPath + ignoredAreasPrefix + outPdfName, FileMode.Create));
+                PdfStamper cmpStamper = new PdfStamper(new PdfReader(cmpPdf),
+                    new FileStream(outPath + ignoredAreasPrefix + cmpPdfName, FileMode.Create));
+
+                foreach (KeyValuePair< int, List<Rectangle> > entry in ignoredAreas)
+                {
+                    int pageNumber = entry.Key;
+                    List<Rectangle> rectangles = entry.Value;
+
+                    if (rectangles != null && rectangles.Count > 0) {
+                        PdfContentByte outCB = outStamper.GetOverContent(pageNumber);
+                        PdfContentByte cmpCB = cmpStamper.GetOverContent(pageNumber);
+
+                        foreach (Rectangle rect in rectangles)
+                        {
+                            rect.BackgroundColor = BaseColor.BLACK;
+                            outCB.Rectangle(rect);
+                            cmpCB.Rectangle(rect);
+                        }
+                    }
+                }
+
+                outStamper.Close();
+                cmpStamper.Close();
+
+                init(outPath + ignoredAreasPrefix + outPdfName, outPath + ignoredAreasPrefix + cmpPdfName);
             }
 
             String gsParams = this.gsParams.Replace("<outputfile>", outPath + cmpImage).Replace("<inputfile>", cmpPdf);
@@ -167,7 +203,7 @@ public class CompareTool {
                         is2.Close();
                         if (!cmpResult) {
                             if (File.Exists(compareExec)) {
-                                String compareParams = this.compareParams.Replace("<image1>", imageFiles[i].FullName).Replace("<image2>", cmpImageFiles[i].FullName).Replace("<difference>", differenceImage + (i + 1).ToString() + ".png");
+                                String compareParams = this.compareParams.Replace("<image1>", imageFiles[i].FullName).Replace("<image2>", cmpImageFiles[i].FullName).Replace("<difference>", outPath + differenceImagePrefix + (i + 1).ToString() + ".png");
                                 p = new Process();
                                 p.StartInfo.FileName = @compareExec;
                                 p.StartInfo.Arguments = @compareParams;
@@ -186,7 +222,7 @@ public class CompareTool {
                                         differentPagesFail =
                                             differentPages.Replace("<filename>", outPdf).Replace("<pagenumber>",
                                                                                                  (i + 1).ToString());
-                                        differentPagesFail += "\nPlease, examine " + differenceImage + (i + 1).ToString() +
+                                        differentPagesFail += "\nPlease, examine " + outPath + differenceImagePrefix + (i + 1).ToString() +
                                                               ".png for more details.";
                                     } else {
                                         differentPagesFail =
@@ -228,16 +264,21 @@ public class CompareTool {
         return null;
     }
 
-    public String Compare(String outPdf, String cmpPdf, String outPath, String differenceImage) {
+    public String Compare(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix, Dictionary<int, List<Rectangle>> ignoredAreas) {
         init(outPdf, cmpPdf);
-        return Compare(outPath, differenceImage);
+        return Compare(outPath, differenceImagePrefix, ignoredAreas);
+    }
+
+    public String Compare(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix) {
+        init(outPdf, cmpPdf);
+        return Compare(outPath, differenceImagePrefix, null);
     }
 
     private void init(String outPdf, String cmpPdf) {
         this.outPdf = outPdf;
         this.cmpPdf = cmpPdf;
-        outPdfName = Path.GetFileNameWithoutExtension(outPdf);
-        cmpPdfName = Path.GetFileNameWithoutExtension(cmpPdf);
+        outPdfName = Path.GetFileName(outPdf);
+        cmpPdfName = Path.GetFileName(cmpPdf);
         //template for GhostScript and ImageMagic
         outImage = outPdfName + "-%03d.png";
         cmpImage = "cmp_" + cmpPdfName + "-%03d.png";
