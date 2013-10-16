@@ -7,7 +7,6 @@ using System.Security.Cryptography.X509Certificates;
 using System.Security.Cryptography.Xml;
 using System.Xml;
 using System.Xml.XPath;
-using itextsharp.tests.iTextSharp.text.xml.simpleparser;
 using Microsoft.XmlDiffPatch;
 using NUnit.Framework;
 using Org.BouncyCastle.Crypto;

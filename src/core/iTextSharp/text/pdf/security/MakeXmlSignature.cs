@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Security.Cryptography;
 using System.Security.Cryptography.Xml;
 using System.Xml;
@@ -203,7 +202,7 @@ namespace iTextSharp.text.pdf.security
         private static byte[] CalculateC14nByteRange(XmlDocument doc) {
             XmlDsigC14NTransform c14nTransform = new XmlDsigC14NTransform();
             c14nTransform.LoadInput(doc);
-            return ((MemoryStream)c14nTransform.GetOutput()).ToArray();
+            return ((System.IO.MemoryStream)c14nTransform.GetOutput()).ToArray();
         }
 
         private static byte[] CalculateC14nDigest(XmlDocument doc, HashAlgorithm hash) {
@@ -297,9 +296,6 @@ namespace iTextSharp.text.pdf.security
                                 SigPolicyHash.AppendChild(DigestMethod);
                                     DigestValue = doc.CreateElement(SecurityConstants.DigestValue, SecurityConstants.XMLDSIG_URI);
                                     byte[] policyIdContent = System.Text.Encoding.UTF8.GetBytes(SigPolicyId.OuterXml);
-                        FileStream writer = new FileStream("d:\\sharp.txt", FileMode.Create);
-                        writer.Write(policyIdContent, 0, policyIdContent.Length);
-                        writer.Close();
                                     DigestValue.AppendChild(doc.CreateTextNode(Convert.ToBase64String((md.ComputeHash(policyIdContent)))));
                                 SigPolicyHash.AppendChild(DigestValue);
                             SignaturePolicyId.AppendChild(SigPolicyHash);
