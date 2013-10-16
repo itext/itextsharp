@@ -104,6 +104,14 @@ namespace iTextSharp.text.pdf.intern
             if (obj != null && !allowedBlendModes.Contains((PdfName)obj)) {
                 throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("blend.mode.1.not.allowed", obj.ToString()));
             }
+            if (gs.Contains(PdfName.TR)) {
+                throw new PdfAConformanceException(obj1,
+                    MessageLocalization.GetComposedMessage("an.extgstate.dictionary.shall.not.contain.the.tr.key"));
+            }
+            if (gs.Contains(PdfName.HTP)) {
+                throw new PdfAConformanceException(obj1,
+                    MessageLocalization.GetComposedMessage("an.extgstate.dictionary.shall.not.contain.the.htp.key"));
+            }
         }
 
         protected override void CheckImage(PdfWriter writer, int key, Object obj1) {
@@ -417,6 +425,19 @@ namespace iTextSharp.text.pdf.intern
 
                     if (dictionary.Contains(PdfName.PRESSTEPS)) {
                         throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("page.dictionary.shall.not.include.pressteps.entry"));
+                    }
+                }
+                PdfObject obj2 = dictionary.Get(PdfName.HALFTONETYPE);
+                if (obj2 != null && obj2.IsNumber()) {
+                    PdfNumber number = (PdfNumber) obj2;
+                    if (number.IntValue != 1 || number.IntValue != 5) {
+                        throw new PdfAConformanceException(obj1,
+                            MessageLocalization.GetComposedMessage("an.extgstate.dictionary.shall.contain.the.halftonetype.key.of.value.1.or.5"));
+                    }
+
+                    if (dictionary.Contains(PdfName.HALFTONENAME)) {
+                        throw new PdfAConformanceException(obj1,
+                            MessageLocalization.GetComposedMessage("an.extgstate.dictionary.shall.not.contain.the.halftonename.key"));
                     }
                 }
             }
