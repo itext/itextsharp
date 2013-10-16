@@ -902,6 +902,16 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName H6 = new PdfName("H6");
         /**
          * A name
+         * @since 5.4.5
+         */
+        public static readonly PdfName HALFTONENAME = new PdfName("HalftoneName");
+        /**
+         * A name
+         * @since 5.4.5
+         */
+        public static readonly PdfName HALFTONETYPE = new PdfName("HalftoneType");
+        /**
+         * A name
          * @since 2.1.6
          */
         public static readonly PdfName HALIGN = new PdfName("HAlign");
@@ -940,6 +950,16 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.6
          */
         public static readonly PdfName HOFFSET = new PdfName("HOffset");
+        /**
+         * A name
+         * @since 5.4.5
+         */
+        public static readonly PdfName HT = new PdfName("HT");
+        /**
+         * A name
+         * @since 5.4.5
+         */
+        public static readonly PdfName HTP = new PdfName("HTP");
         /** A name */
         public static readonly PdfName I = new PdfName("I");
         /**

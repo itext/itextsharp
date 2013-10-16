@@ -220,5 +220,94 @@ namespace iTextSharp.text.pdfa
 
             document.Close();
         }
+
+        [Test]
+        public void EgsCheckTest1() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document,
+                new FileStream(OUT + "EgsCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+
+            PdfContentByte canvas = writer.DirectContent;
+            PdfGState gs = new PdfGState();
+            gs.Put(PdfName.TR, new PdfName("Test"));
+            gs.Put(PdfName.HTP, new PdfName("Test"));
+            canvas.SetGState(gs);
+
+            bool exceptionThrown = false;
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException e) {
+                if (e.GetObject() == gs) {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException should be thrown.");
+        }
+
+        [Test]
+        public void EgsCheckTest2() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document,
+                new FileStream(OUT + "EgsCheckTest2.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+
+            PdfContentByte canvas = writer.DirectContent;
+            PdfGState gs = new PdfGState();
+            PdfDictionary dict = new PdfDictionary();
+            dict.Put(PdfName.HALFTONETYPE, new PdfNumber(6));
+            gs.Put(PdfName.HT, dict);
+            canvas.SetGState(gs);
+
+            bool exceptionThrown = false;
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException e) {
+                exceptionThrown = true;
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException should be thrown.");
+        }
+
+        [Test]
+        public void EgsCheckTest3() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document,
+                new FileStream(OUT + "EgsCheckTest3.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+
+            PdfContentByte canvas = writer.DirectContent;
+            PdfGState gs = new PdfGState();
+            PdfDictionary dict = new PdfDictionary();
+            dict.Put(PdfName.HALFTONETYPE, new PdfNumber(5));
+            dict.Put(PdfName.HALFTONENAME, new PdfName("Test"));
+            gs.Put(PdfName.HT, dict);
+            canvas.SetGState(gs);
+
+            bool exceptionThrown = false;
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException e) {
+                exceptionThrown = true;
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException should be thrown.");
+        }
     }
 }
