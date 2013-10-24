@@ -89,7 +89,7 @@ namespace iTextSharp.tool.xml {
             }
         }
 
-        public void StartElement(String tag, IDictionary<String, String> attr, String ns) {
+        public virtual void StartElement(String tag, IDictionary<String, String> attr, String ns) {
             Tag t = CreateTag(tag, attr, ns);
             WorkerContextImpl ctx = (WorkerContextImpl)GetLocalWC();
             if (null != ctx.GetCurrentTag()) {
@@ -136,7 +136,7 @@ namespace iTextSharp.tool.xml {
          * elementList.
          *
          */
-        public void EndElement(String tag, String ns) {
+        public virtual void EndElement(String tag, String ns) {
             String thetag = null;
             if (parseHtml) {
                 thetag = tag.ToLowerInvariant();
