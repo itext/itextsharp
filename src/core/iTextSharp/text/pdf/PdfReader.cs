@@ -74,6 +74,7 @@ namespace iTextSharp.text.pdf {
         public static bool unethicalreading = false;
 
         public static bool debugmode = false;
+        private static ILogger LOGGER = LoggerFactory.GetLogger(typeof(PdfReader));
 
         static PdfName[] pageInhCandidates = {
             PdfName.MEDIABOX, PdfName.ROTATE, PdfName.RESOURCES, PdfName.CROPBOX
@@ -1118,7 +1119,8 @@ namespace iTextSharp.text.pdf {
                 }
             } catch(IOException e) {
                 if(debugmode) {
-                    Trace.WriteLine(e.StackTrace);
+                    if (LOGGER.IsLogging(Level.ERROR))
+                        LOGGER.Error(e.Message, e);
                     obj = null;
                 }
                 else
@@ -1218,7 +1220,8 @@ namespace iTextSharp.text.pdf {
                     }
                 } catch(IOException e) {
                     if(debugmode) {
-                        Trace.WriteLine(e.StackTrace);
+                        if (LOGGER.IsLogging(Level.ERROR))
+                            LOGGER.Error(e.Message, e);
                         obj = null;
                     }
                     else
