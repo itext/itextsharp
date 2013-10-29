@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using iTextSharp.text.io;
-using iTextSharp.text.pdf;
 
 /*
  * $Id$
@@ -82,6 +81,11 @@ namespace iTextSharp.text.error_messages {
         * @return the message
         */
         public static String GetMessage(String key) {
+            return GetMessage(key, true);
+        }
+
+
+        public static String GetMessage(String key, bool useDefaultLanguageIfMessageNotFound) {
             Dictionary<string,string> cl = currentLanguage;
             String val;
             if (cl != null) {
@@ -89,10 +93,14 @@ namespace iTextSharp.text.error_messages {
                 if (val != null)
                     return val;
             }
-            cl = defaultLanguage;
-            cl.TryGetValue(key, out val);
-            if (val != null)
-                return val;
+
+            if (useDefaultLanguageIfMessageNotFound) {
+                cl = defaultLanguage;
+                cl.TryGetValue(key, out val);
+                if (val != null)
+                    return val;
+            }
+
             return "No message found for " + key;
         }
 
