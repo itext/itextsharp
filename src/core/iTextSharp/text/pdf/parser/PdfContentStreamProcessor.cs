@@ -658,7 +658,7 @@ namespace iTextSharp.text.pdf.parser {
                 PdfName dictionaryName = (PdfName)operands[0];
                 PdfDictionary extGState = processor.resources.GetAsDict(PdfName.EXTGSTATE);
                 if (extGState == null)
-                    throw new ArgumentException(MessageLocalization.GetComposedMessage("resources.do.not.contain.extgstate.entry.unable.to.process.oper.1", oper));
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("resources.do.not.contain.extgstate.entry.unable.to.process.operator.1", oper));
                 PdfDictionary gsDic = extGState.GetAsDict(dictionaryName);
                 if (gsDic == null)
                     throw new ArgumentException(MessageLocalization.GetComposedMessage("1.is.an.unknown.graphics.state.dictionary", dictionaryName));

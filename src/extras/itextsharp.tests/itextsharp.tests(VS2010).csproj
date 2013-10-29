@@ -76,6 +76,7 @@
   <ItemGroup>
     <Compile Include="iTextSharp\testutils\TestResourceUtils.cs" />
     <Compile Include="iTextSharp\text\ChunkTest.cs" />
+    <Compile Include="iTextSharp\text\error_messages\ErrorMessageExistenceTest.cs" />
     <Compile Include="iTextSharp\text\error_messages\ErrorMessageTest.cs" />
     <Compile Include="iTextSharp\text\error_messages\MessageLocalizationTest.cs" />
     <Compile Include="iTextSharp\text\io\ArrayRandomAccessSourceTest.cs" />

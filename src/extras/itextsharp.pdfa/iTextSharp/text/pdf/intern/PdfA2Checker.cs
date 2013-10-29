@@ -305,7 +305,7 @@ namespace iTextSharp.text.pdf.intern
                         throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("a.form.xobject.dictionary.shall.not.contain.opi.key"));
                     }
                     if (stream.Contains(PdfName.PS)) {
-                        throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("a.form.xobject..dictionary.shall.not.contain.ps.key"));
+                        throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("a.form.xobject.dictionary.shall.not.contain.ps.key"));
                     }
                 }
 

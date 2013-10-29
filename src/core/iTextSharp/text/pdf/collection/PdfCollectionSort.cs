@@ -80,7 +80,7 @@ namespace iTextSharp.text.pdf.collection {
                 Put(PdfName.A, new PdfBoolean(ascending));
             }
             else {
-                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("you.have.to.define.a.bool.array.for.this.collection.sort.dictionary"));
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("you.have.to.define.a.boolean.array.for.this.collection.sort.dictionary"));
             }
         }
         
@@ -101,7 +101,7 @@ namespace iTextSharp.text.pdf.collection {
                 Put(PdfName.A, array);
             }
             else {
-                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("you.need.a.single.bool.for.this.collection.sort.dictionary"));
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("you.need.a.single.boolean.for.this.collection.sort.dictionary"));
             }
         }
     }

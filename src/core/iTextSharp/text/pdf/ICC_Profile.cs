@@ -74,7 +74,7 @@ namespace iTextSharp.text.pdf
             }
             // invalid ICC
             if (icc.numComponents != numComponents) {
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("ICC profile contains " + icc.numComponents + " component(s), the image data contains " + numComponents + " component(s)"));
+                throw new ArgumentException("ICC profile contains " + icc.numComponents + " component(s), the image data contains " + numComponents + " component(s)");
             }
             return icc;
         }
