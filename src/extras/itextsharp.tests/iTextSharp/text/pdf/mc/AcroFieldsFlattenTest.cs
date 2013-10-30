@@ -42,11 +42,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.mc {
             reader = new PdfReader(OUT_FOLDER + filledAcroFormFileName);
             MCFieldFlattener flattener = new MCFieldFlattener();
             flattener.Process(reader, new FileStream(OUT_FOLDER + flattenAcroFormFileName, FileMode.Create));
-        }
-
-        [TearDown]
-        public void TearDown() {
-            //Compare(OUT_FOLDER + flattenAcroFormFileName, CMP_FOLDER + flattenAcroFormFileName);    
+            //Compare(OUT_FOLDER + flattenAcroFormFileName, CMP_FOLDER + flattenAcroFormFileName);
         }
 
         private void Compare(String outPdf, String cmpPdf) {

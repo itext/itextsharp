@@ -127,11 +127,8 @@ namespace iTextSharp.text.pdf.parser {
         public bool HasMcid(int mcid, bool checkTheTopmostLevelOnly) {
             if (checkTheTopmostLevelOnly) {
                 if (markedContentInfos is IList) {
-                    IList<MarkedContentInfo> mci = (IList<MarkedContentInfo>)markedContentInfos;
-                    // Java and C# Stack classes have different numeration direction, so top element of the stack is 
-                    // at last postion in Java and at first position in C#
-                    MarkedContentInfo info = mci.Count > 0 ? mci[0] : null;
-                    return (info != null && info.HasMcid()) ? info.GetMcid() == mcid : false;
+                    int? infoMcid = GetMcid();
+                    return (infoMcid != null) ? infoMcid == mcid : false;
                 }
             } else {
                 foreach (MarkedContentInfo info in markedContentInfos) {
@@ -141,6 +138,20 @@ namespace iTextSharp.text.pdf.parser {
                 }
             }
             return false;
+        }
+
+        /**
+         * @return the marked content associated with the TextRenderInfo instance.
+         */
+        public int? GetMcid() {
+            if (markedContentInfos is IList) {
+                IList<MarkedContentInfo> mci = (IList<MarkedContentInfo>)markedContentInfos;
+                // Java and C# Stack classes have different numeration direction, so top element of the stack is 
+                // at last postion in Java and at first position in C#
+                MarkedContentInfo info = mci.Count > 0 ? mci[0] : null;
+                return (info != null && info.HasMcid()) ? (int?)info.GetMcid() : null;
+            }
+            return null;
         }
 
         /**

@@ -58,13 +58,6 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
             String testName = GetTestName();
             if (this.GetType() != typeof (SampleTest) && (testName.Length > 0)) {
                 TransformHtml2Pdf();
-            }
-        }
-
-        [TearDown]
-        public void Compare() {
-            String testName = GetTestName();
-            if (this.GetType() != typeof (SampleTest) && (testName.Length > 0)) {
                 if (DetectCrashesAndHangUpsOnly() == false) {
                     String errorMessage = compareTool.Compare(outPath, differenceImagePrefix);
                     if (errorMessage != null) {
