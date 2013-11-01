@@ -50,11 +50,14 @@ namespace iTextSharp.text.pdf
      * @see TtfUnicodeWriter
      */
     internal class PdfATtfUnicodeWriter : TtfUnicodeWriter {
+        readonly protected PdfAConformanceLevel pdfAConformanceLevel;
+
         /**
          * @see TtfUnicodeWriter#TtfUnicodeWriter(PdfWriter)
          */
-        public PdfATtfUnicodeWriter(PdfWriter writer)
+        public PdfATtfUnicodeWriter(PdfWriter writer, PdfAConformanceLevel pdfAConformanceLevel)
             : base(writer) {
+            this.pdfAConformanceLevel = pdfAConformanceLevel;
         }
 
         /**
@@ -70,22 +73,24 @@ namespace iTextSharp.text.pdf
             PdfObject pobj = null;
             PdfIndirectObject obj = null;
             PdfIndirectReference cidset = null;
-            PdfStream stream;
-            if (metrics.Length == 0) {
-                stream = new PdfStream(new byte[]{(byte)0x80});
-            }
-            else {
-                int top = metrics[metrics.Length - 1][0];
-                byte[] bt = new byte[top / 8 + 1];
-                for (int k = 0; k < metrics.Length; ++k) {
-                    int v = metrics[k][0];
-                    bt[v / 8] |= rotbits[v % 8];
+            if (pdfAConformanceLevel == PdfAConformanceLevel.PDF_A_1A ||
+                pdfAConformanceLevel == PdfAConformanceLevel.PDF_A_1B) {
+                PdfStream stream;
+                if (metrics.Length == 0) {
+                    stream = new PdfStream(new byte[] {(byte) 0x80});
                 }
-                stream = new PdfStream(bt);
-                stream.FlateCompress(font.CompressionLevel);
-            }
+                else {
+                    int top = metrics[metrics.Length - 1][0];
+                    byte[] bt = new byte[top/8 + 1];
+                    for (int k = 0; k < metrics.Length; ++k) {
+                        int v = metrics[k][0];
+                        bt[v/8] |= rotbits[v%8];
+                    }
+                    stream = new PdfStream(bt);
+                    stream.FlateCompress(font.CompressionLevel);
+                }
                 cidset = writer.AddToBody(stream).IndirectReference;
-
+            }
             if (font.Cff) {
                 byte[] b = font.ReadCffFont();
                 if (font.Subset || font.SubsetRanges != null) {

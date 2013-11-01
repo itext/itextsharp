@@ -81,6 +81,27 @@ namespace iTextSharp.text.pdf {
             ReadPdfAInfo();
         }
 
+        protected override void ReadColorProfile() {
+            PdfObject outputIntents = reader.Catalog.GetAsArray(PdfName.OUTPUTINTENTS);
+            if (outputIntents != null && ((PdfArray) outputIntents).Size > 0) {
+                PdfStream iccProfileStream = null;
+                for (int i = 0; i < ((PdfArray) outputIntents).Size; i++) {
+                    PdfDictionary outputIntentDictionary = ((PdfArray) outputIntents).GetAsDict(i);
+                    if (outputIntentDictionary != null) {
+                        PdfName gts = outputIntentDictionary.GetAsName(PdfName.S);
+                        if (iccProfileStream == null || PdfName.GTS_PDFA1.Equals(gts)) {
+                            iccProfileStream = outputIntentDictionary.GetAsStream(PdfName.DESTOUTPUTPROFILE);
+                            if (iccProfileStream != null && PdfName.GTS_PDFA1.Equals(gts))
+                                break;
+                        }
+                    }
+                }
+                if (iccProfileStream is PRStream) {
+                    colorProfile = ICC_Profile.GetInstance(PdfReader.GetStreamBytes((PRStream) iccProfileStream));
+                }
+            }
+        }
+
         /**
          * @see PdfStamperImp#setOutputIntents(String, String, String, String, ICC_Profile)
          */
@@ -115,7 +136,7 @@ namespace iTextSharp.text.pdf {
 
         internal protected override TtfUnicodeWriter GetTtfUnicodeWriter() {
             if(ttfUnicodeWriter == null)
-                ttfUnicodeWriter = new PdfATtfUnicodeWriter(this);
+                ttfUnicodeWriter = new PdfATtfUnicodeWriter(this, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel);
             return ttfUnicodeWriter;
         }
 
@@ -127,7 +148,7 @@ namespace iTextSharp.text.pdf {
             return new PdfAXmpWriter(baos, info, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel);
         }
 
-        override public IPdfIsoConformance GetPdfIsoConformance() {
+        override public IPdfIsoConformance InitPdfIsoConformance() {
             return new PdfAConformanceImp(this);
         }
 

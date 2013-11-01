@@ -591,7 +591,7 @@ namespace iTextSharp.text.pdf {
         * Constructs a <CODE>PdfWriter</CODE>.
         */
         protected PdfWriter() {
-            pdfIsoConformance = GetPdfIsoConformance();
+            pdfIsoConformance = InitPdfIsoConformance();
             root = new PdfPages(this);
         }
         
@@ -606,7 +606,7 @@ namespace iTextSharp.text.pdf {
         */
         
         protected PdfWriter(PdfDocument document, Stream os) : base(document, os) {
-            pdfIsoConformance = GetPdfIsoConformance();
+            pdfIsoConformance = InitPdfIsoConformance();
             root = new PdfPages(this);
             pdf = document;
             directContentUnder = new PdfContentByte(this);
@@ -772,6 +772,12 @@ namespace iTextSharp.text.pdf {
         /** body of the PDF document */
         protected internal PdfBody body;
 
+        protected ICC_Profile colorProfile;
+
+        public ICC_Profile ColorProfile {
+            get { return colorProfile; }
+        }
+
         /**
         * Adds the local destinations to the body of the document.
         * @param dest the <CODE>Hashtable</CODE> containing the destinations
@@ -808,7 +814,7 @@ namespace iTextSharp.text.pdf {
         * @return a PdfIndirectObject
         * @throws IOException
         */
-        public PdfIndirectObject AddToBody(PdfObject objecta, bool inObjStm) {
+        public virtual PdfIndirectObject AddToBody(PdfObject objecta, bool inObjStm) {
             PdfIndirectObject iobj = body.Add(objecta, inObjStm);
             return iobj;
         }
@@ -833,7 +839,7 @@ namespace iTextSharp.text.pdf {
         * @return a PdfIndirectObject
         * @throws IOException
         */
-        public PdfIndirectObject AddToBody(PdfObject objecta, PdfIndirectReference refa, bool inObjStm) {
+        public virtual PdfIndirectObject AddToBody(PdfObject objecta, PdfIndirectReference refa, bool inObjStm) {
             PdfIndirectObject iobj = body.Add(objecta, refa, inObjStm);
             return iobj;
         }
@@ -845,7 +851,7 @@ namespace iTextSharp.text.pdf {
         * @return a PdfIndirectObject
         * @throws IOException
         */
-        public PdfIndirectObject AddToBody(PdfObject objecta, int refNumber) {
+        public virtual PdfIndirectObject AddToBody(PdfObject objecta, int refNumber) {
             PdfIndirectObject iobj = body.Add(objecta, refNumber);
             return iobj;
         }
@@ -858,7 +864,7 @@ namespace iTextSharp.text.pdf {
         * @return a PdfIndirectObject
         * @throws IOException
         */
-        public PdfIndirectObject AddToBody(PdfObject objecta, int refNumber, bool inObjStm) {
+        public virtual PdfIndirectObject AddToBody(PdfObject objecta, int refNumber, bool inObjStm) {
             PdfIndirectObject iobj = body.Add(objecta, refNumber, 0, inObjStm);
             return iobj;
         }
@@ -1863,8 +1869,7 @@ namespace iTextSharp.text.pdf {
         /** Stores the PDF ISO conformance. */
         protected IPdfIsoConformance pdfIsoConformance;
 
-        public virtual IPdfIsoConformance GetPdfIsoConformance()
-        {
+        public virtual IPdfIsoConformance InitPdfIsoConformance() {
             return new PdfXConformanceImp(this);
         }
         /**
@@ -1926,6 +1931,7 @@ namespace iTextSharp.text.pdf {
         */
         public virtual void SetOutputIntents(String outputConditionIdentifier, String outputCondition, String registryName, String info, ICC_Profile colorProfile)
         {
+            PdfWriter.CheckPdfIsoConformance(this, PdfIsoKeys.PDFISOKEY_OUTPUTINTENT, colorProfile);
             PdfDictionary outa = ExtraCatalog; //force the creation
             outa = new PdfDictionary(PdfName.OUTPUTINTENT);
             if (outputCondition != null)
@@ -1944,6 +1950,7 @@ namespace iTextSharp.text.pdf {
             outa.Put(PdfName.S, PdfName.GTS_PDFX);
 
             extraCatalog.Put(PdfName.OUTPUTINTENTS, new PdfArray(outa));
+            this.colorProfile = colorProfile;
         }
         
     /**

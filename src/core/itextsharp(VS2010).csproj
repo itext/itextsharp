@@ -1186,6 +1186,7 @@
     <Compile Include="iTextSharp\text\pdf\RandomAccessFileOrArray.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\RefKey.cs" />
     <Compile Include="iTextSharp\text\pdf\security\ExternalBlankSignatureContainer.cs">
       <SubType>Code</SubType>
     </Compile>

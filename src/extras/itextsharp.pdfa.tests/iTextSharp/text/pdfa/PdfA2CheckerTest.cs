@@ -1,31 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using NUnit.Framework;
 using iTextSharp.text.pdf;
 
-namespace iTextSharp.text.pdfa
-{
+namespace iTextSharp.text.pdfa {
     [TestFixture]
-    public class PdfA2CheckerTest
-    {
+    public class PdfA2CheckerTest {
         public const String RESOURCES = @"..\..\resources\text\pdfa\";
         public const String TARGET = "PdfA2CheckerTest\\";
         public const String OUT = TARGET + "pdf\\out";
 
 
         [SetUp]
-        public void Initialize()
-        {
+        public void Initialize() {
             Directory.CreateDirectory(TARGET + "pdf");
             Directory.CreateDirectory(TARGET + "xml");
             Document.Compress = false;
         }
 
         [Test]
-        public void TransparencyCheckTest()
-        {
-            string filename = OUT + "TransparencyCheckTest1.pdf";
+        public void MetadaCheckTest() {
+            FileStream fos = new FileStream(OUT + "metadaPDFA2CheckTest1.pdf", FileMode.Create);
+            Document document = new Document();
+            PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2B);
+            document.Open();
+            PdfContentByte canvas = writer.DirectContent;
+
+            canvas.SetColorFill(BaseColor.LIGHT_GRAY);
+            canvas.MoveTo(writer.PageSize.Left, writer.PageSize.Bottom);
+            canvas.LineTo(writer.PageSize.Right, writer.PageSize.Bottom);
+            canvas.LineTo(writer.PageSize.Right, writer.PageSize.Top);
+            canvas.LineTo(writer.PageSize.Left, writer.PageSize.Bottom);
+            canvas.Fill();
+
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            bool exceptionThrown = false;
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException exc) {
+                exceptionThrown = true;
+            }
+
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformance exception should be thrown on unknown blend mode.");
+        }
+
+        [Test]
+        public void TransparencyCheckTest1() {
+            string filename = OUT + "pdfa2TransparencyCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2B);
@@ -49,45 +76,292 @@ namespace iTextSharp.text.pdfa
             canvas.Fill();
             canvas.RestoreState();
 
-            bool exception = false;
-            canvas.SaveState();
-            gs = new PdfGState();
-            gs.BlendMode = new PdfName("UnknownBM");
-            canvas.SetGState(gs);
-            canvas.Rectangle(300, 300, 100, 100);
-            canvas.Fill();
-            canvas.RestoreState();
+            bool conformanceExceptionThrown = false;
+            try {
+                canvas.SaveState();
+                gs = new PdfGState();
+                gs.BlendMode = new PdfName("UnknownBM");
+                canvas.SetGState(gs);
+                canvas.Rectangle(300, 300, 100, 100);
+                canvas.Fill();
+                canvas.RestoreState();
+
+                document.Close();
+            }
+            catch (PdfAConformanceException pdface) {
+                conformanceExceptionThrown = true;
+            }
+
+            if (!conformanceExceptionThrown)
+                Assert.Fail("PdfAConformance exception should be thrown on unknown blend mode.");
+        }
+
+        [Test]
+        public void TransparencyCheckTest2() {
+            Document document = new Document();
+            try {
+                // step 2
+                PdfAWriter writer = PdfAWriter.GetInstance(document,
+                    new FileStream(OUT + "pdfa2TransperancyCheckTest2.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+                writer.CreateXmpMetadata();
+                // step 3
+                document.Open();
+                PdfDictionary sec = new PdfDictionary();
+                sec.Put(PdfName.GAMMA, new PdfArray(new float[] {2.2f, 2.2f, 2.2f}));
+                sec.Put(PdfName.MATRIX,
+                    new PdfArray(new float[]
+                    {0.4124f, 0.2126f, 0.0193f, 0.3576f, 0.7152f, 0.1192f, 0.1805f, 0.0722f, 0.9505f}));
+                sec.Put(PdfName.WHITEPOINT, new PdfArray(new float[] {0.9505f, 1f, 1.089f}));
+                PdfArray arr = new PdfArray(PdfName.CALRGB);
+                arr.Add(sec);
+                writer.SetDefaultColorspace(PdfName.DEFAULTRGB, writer.AddToBody(arr).IndirectReference);
+                // step 4
+                PdfContentByte cb = writer.DirectContent;
+                float gap = (document.PageSize.Width - 400)/3;
+
+                PictureBackdrop(gap, 500f, cb);
+                PictureBackdrop(200 + 2*gap, 500, cb);
+                PictureBackdrop(gap, 500 - 200 - gap, cb);
+                PictureBackdrop(200 + 2*gap, 500 - 200 - gap, cb);
+
+                PictureCircles(gap, 500, cb);
+                cb.SaveState();
+                PdfGState gs1 = new PdfGState();
+                gs1.FillOpacity = 0.5f;
+                cb.SetGState(gs1);
+                PictureCircles(200 + 2*gap, 500, cb);
+                cb.RestoreState();
+
+                cb.SaveState();
+                PdfTemplate tp = cb.CreateTemplate(200, 200);
+                PdfTransparencyGroup group = new PdfTransparencyGroup();
+                tp.Group = group;
+                PictureCircles(0, 0, tp);
+                cb.SetGState(gs1);
+                cb.AddTemplate(tp, gap, 500 - 200 - gap);
+                cb.RestoreState();
+
+                cb.SaveState();
+                tp = cb.CreateTemplate(200, 200);
+                tp.Group = group;
+                PdfGState gs2 = new PdfGState();
+                gs2.FillOpacity = 0.5f;
+                gs2.BlendMode = PdfGState.BM_HARDLIGHT;
+                tp.SetGState(gs2);
+                PictureCircles(0, 0, tp);
+                cb.AddTemplate(tp, 200 + 2*gap, 500 - 200 - gap);
+                cb.RestoreState();
+
+                Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf",
+                    BaseFont.WINANSI, true);
+                font.Color = BaseColor.BLACK;
+                cb.ResetRGBColorFill();
+                ColumnText ct = new ColumnText(cb);
+                Phrase ph = new Phrase("Ungrouped objects\nObject opacity = 1.0", font);
+                ct.SetSimpleColumn(ph, gap, 0, gap + 200, 500, 18, Element.ALIGN_CENTER);
+                ct.Go();
+
+                ph = new Phrase("Ungrouped objects\nObject opacity = 0.5", font);
+                ct.SetSimpleColumn(ph, 200 + 2*gap, 0, 200 + 2*gap + 200, 500,
+                    18, Element.ALIGN_CENTER);
+                ct.Go();
+
+                ph = new Phrase("Transparency group\nObject opacity = 1.0\nGroup opacity = 0.5\nBlend mode = Normal",
+                    font);
+                ct.SetSimpleColumn(ph, gap, 0, gap + 200, 500 - 200 - gap, 18, Element.ALIGN_CENTER);
+                ct.Go();
+
+                ph = new Phrase(
+                    "Transparency group\nObject opacity = 0.5\nGroup opacity = 1.0\nBlend mode = HardLight", font);
+                ct.SetSimpleColumn(ph, 200 + 2*gap, 0, 200 + 2*gap + 200, 500 - 200 - gap,
+                    18, Element.ALIGN_CENTER);
+                ct.Go();
+                //ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+                //writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+            }
+            catch (DocumentException de) {
+                Console.Error.WriteLine(de.Message);
+            }
+            catch (IOException ioe) {
+                Console.Error.WriteLine(ioe.Message);
+            }
+
+            bool conformanceExceptionThrown = false;
             try {
                 document.Close();
             }
-            catch (PdfAConformanceException) {
-                exception = true;
+            catch (PdfAConformanceException pdface) {
+                conformanceExceptionThrown = true;
             }
-            if (!exception)
-                Assert.Fail("PdfAConformance exception should be thrown on unknown blend mode.");
 
+            if (!conformanceExceptionThrown)
+                Assert.Fail("PdfAConformance exception should be thrown on unknown blend mode.");
+        }
+
+        [Test]
+        public void TransparencyCheckTest3() {
+            Document document = new Document();
+            try {
+                // step 2
+                PdfAWriter writer = PdfAWriter.GetInstance(
+                    document,
+                    new FileStream(OUT + "pdfa2TransperancyCheckTest3.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+                writer.CreateXmpMetadata();
+                // step 3
+                document.Open();
+                PdfDictionary sec = new PdfDictionary();
+                sec.Put(PdfName.GAMMA, new PdfArray(new float[] {2.2f, 2.2f, 2.2f}));
+                sec.Put(PdfName.MATRIX,
+                    new PdfArray(new float[]
+                    {0.4124f, 0.2126f, 0.0193f, 0.3576f, 0.7152f, 0.1192f, 0.1805f, 0.0722f, 0.9505f}));
+                sec.Put(PdfName.WHITEPOINT, new PdfArray(new float[] {0.9505f, 1f, 1.089f}));
+                PdfArray arr = new PdfArray(PdfName.CALRGB);
+                arr.Add(sec);
+                writer.SetDefaultColorspace(PdfName.DEFAULTRGB, writer.AddToBody(arr).IndirectReference);
+
+                // step 4
+                PdfContentByte cb = writer.DirectContent;
+                float gap = (document.PageSize.Width - 400)/3;
+
+                PictureBackdrop(gap, 500, cb, writer);
+                PictureBackdrop(200 + 2*gap, 500, cb, writer);
+                PictureBackdrop(gap, 500 - 200 - gap, cb, writer);
+                PictureBackdrop(200 + 2*gap, 500 - 200 - gap, cb, writer);
+                PdfTemplate tp;
+                PdfTransparencyGroup group;
+
+                tp = cb.CreateTemplate(200, 200);
+                PictureCircles(0, 0, tp, writer);
+                group = new PdfTransparencyGroup();
+                group.Isolated = true;
+                group.Knockout = true;
+                tp.Group = group;
+                cb.AddTemplate(tp, gap, 500);
+
+                tp = cb.CreateTemplate(200, 200);
+                PictureCircles(0, 0, tp, writer);
+                group = new PdfTransparencyGroup();
+                group.Isolated = true;
+                group.Knockout = false;
+                tp.Group = group;
+                cb.AddTemplate(tp, 200 + 2*gap, 500);
+
+                tp = cb.CreateTemplate(200, 200);
+                PictureCircles(0, 0, tp, writer);
+                group = new PdfTransparencyGroup();
+                group.Isolated = false;
+                group.Knockout = true;
+                tp.Group = group;
+                cb.AddTemplate(tp, gap, 500 - 200 - gap);
+
+                tp = cb.CreateTemplate(200, 200);
+                PictureCircles(0, 0, tp, writer);
+                group = new PdfTransparencyGroup();
+                group.Isolated = false;
+                group.Knockout = false;
+                tp.Group = group;
+                cb.AddTemplate(tp, 200 + 2*gap, 500 - 200 - gap);
+            }
+            catch (DocumentException de) {
+                Console.Error.WriteLine(de.Message);
+            }
+            catch (IOException ioe) {
+                Console.Error.WriteLine(ioe.Message);
+            }
+
+            bool conformanceException = false;
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException pdface) {
+                conformanceException = true;
+            }
+
+            if (!conformanceException)
+                Assert.Fail("PdfAConformance exception should be thrown on unknown blend mode.");
+        }
+
+        [Test]
+        public void TransparencyCheckTest4() {
+            // step 1
+            Document document = new Document(new Rectangle(850, 600));
+            // step 2
+            PdfAWriter writer
+                = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2TransperancyCheckTest4.pdf", FileMode.Create),
+                    PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            // step 3
+            document.Open();
+            // step 4
+            PdfContentByte canvas = writer.DirectContent;
+
+            // add the clipped image
+            Image img = Image.GetInstance(RESOURCES + "img/bruno_ingeborg.jpg");
+            float w = img.ScaledWidth;
+            float h = img.ScaledHeight;
+            canvas.Ellipse(1, 1, 848, 598);
+            canvas.Clip();
+            canvas.NewPath();
+            canvas.AddImage(img, w, 0, 0, h, 0, -600);
+
+            // Create a transparent PdfTemplate
+            PdfTemplate t2 = writer.DirectContent.CreateTemplate(850, 600);
+            PdfTransparencyGroup transGroup = new PdfTransparencyGroup();
+            transGroup.Put(PdfName.CS, PdfName.DEVICEGRAY);
+            transGroup.Isolated = true;
+            transGroup.Knockout = false;
+            t2.Group = transGroup;
+
+            // Add transparent ellipses to the template
+            int gradationStep = 30;
+            float[] gradationRatioList = new float[gradationStep];
+            for (int i = 0; i < gradationStep; i++) {
+                gradationRatioList[i] = 1 - (float) Math.Sin(Math.PI/180*90.0f/gradationStep*(i + 1));
+            }
+            for (int i = 1; i < gradationStep + 1; i++) {
+                t2.SetLineWidth(5*(gradationStep + 1 - i));
+                t2.SetGrayStroke(gradationRatioList[gradationStep - i]);
+                t2.Ellipse(0, 0, 850, 600);
+                t2.Stroke();
+            }
+
+            // Create an image mask for the direct content
+            PdfDictionary maskDict = new PdfDictionary();
+            maskDict.Put(PdfName.TYPE, PdfName.MASK);
+            maskDict.Put(PdfName.S, new PdfName("Luminosity"));
+            maskDict.Put(new PdfName("G"), t2.IndirectReference);
+            PdfGState gState = new PdfGState();
+            gState.Put(PdfName.SMASK, maskDict);
+            canvas.SetGState(gState);
+
+            canvas.AddTemplate(t2, 0, 0);
+
+            ICC_Profile icc =
+                ICC_Profile.GetInstance(
+                    File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            // step 5
+            document.Close();
         }
 
         [Test, Ignore]
-        public void ImageCheckTest1()
-        {
+        public void ImageCheckTest1() {
             string filename = OUT + "ImageCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
             PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2A);
+            writer.CreateXmpMetadata();
             document.Open();
 
             String[] pdfaErrors = new String[9];
-            for (int i = 1; i <= 9; i++)
-            {
-                try
-                {
+            for (int i = 1; i <= 9; i++) {
+                try {
                     Image img = Image.GetInstance(String.Format("{0}jpeg2000\\file{1}.jp2", RESOURCES, i));
                     document.Add(img);
                     document.NewPage();
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     pdfaErrors[i - 1] = e.Message;
                 }
             }
@@ -106,59 +380,50 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test, Ignore]
-        public void ImageCheckTest2()
-        {
+        public void ImageCheckTest2() {
             string filename = OUT + "ImageCheckTest2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
             PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2A);
+            writer.CreateXmpMetadata();
             document.Open();
 
             List<String> pdfaErrors = new List<String>();
-            try
-            {
+            try {
                 Image img = Image.GetInstance(RESOURCES + @"jpeg2000\p0_01.j2k");
                 document.Add(img);
                 document.NewPage();
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 pdfaErrors.Add(e.Message);
             }
 
-            try
-            {
+            try {
                 Image img = Image.GetInstance(RESOURCES + @"jpeg2000\p0_02.j2k");
                 document.Add(img);
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 pdfaErrors.Add(e.Message);
             }
 
-            try
-            {
+            try {
                 Image img = Image.GetInstance(RESOURCES + @"jpeg2000\p1_01.j2k");
                 document.Add(img);
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 pdfaErrors.Add(e.Message);
             }
 
-            try
-            {
+            try {
                 Image img = Image.GetInstance(RESOURCES + @"jpeg2000\p1_02.j2k");
                 document.Add(img);
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 pdfaErrors.Add(e.Message);
             }
 
             Assert.Equals(4, pdfaErrors.Count);
-            for (int i = 0; i < 4; i++)
-            {
+            for (int i = 0; i < 4; i++) {
                 Assert.AreEqual(true, pdfaErrors[i].Contains("JPX"));
             }
 
@@ -166,12 +431,12 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void LayerCheckTest1()
-        {
+        public void LayerCheckTest1() {
             string filename = OUT + "LayerCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
             PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
             writer.ViewerPreferences = PdfWriter.PageModeUseOC;
             writer.PdfVersion = PdfWriter.VERSION_1_5;
             document.Open();
@@ -186,16 +451,18 @@ namespace iTextSharp.text.pdfa
             cb.ShowTextAligned(Element.ALIGN_LEFT, "Peek-a-Boo!!!", 50, 766, 0);
             cb.EndLayer();
             cb.EndText();
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
             document.Close();
         }
 
         [Test]
-        public void LayerCheckTest2()
-        {
+        public void LayerCheckTest2() {
             string filename = OUT + "LayerCheckTest2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
             PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
             writer.ViewerPreferences = PdfWriter.PageModeUseOC;
             writer.PdfVersion = PdfWriter.VERSION_1_5;
             document.Open();
@@ -217,7 +484,8 @@ namespace iTextSharp.text.pdfa
             cb.BeginLayer(nested_2);
             ColumnText.ShowTextAligned(cb, Element.ALIGN_LEFT, new Phrase("nested layer 2", font), 100, 750, 0);
             cb.EndLayer();
-
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
             document.Close();
         }
 
@@ -225,7 +493,7 @@ namespace iTextSharp.text.pdfa
         public void EgsCheckTest1() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document,
-                new FileStream(OUT + "EgsCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
+                new FileStream(OUT + "pdfa2egsCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
             writer.CreateXmpMetadata();
             document.Open();
 
@@ -236,7 +504,15 @@ namespace iTextSharp.text.pdfa
             PdfGState gs = new PdfGState();
             gs.Put(PdfName.TR, new PdfName("Test"));
             gs.Put(PdfName.HTP, new PdfName("Test"));
+            canvas.SaveState();
             canvas.SetGState(gs);
+            canvas.RestoreState();
+            canvas.MoveTo(writer.PageSize.Left, writer.PageSize.Bottom);
+            canvas.LineTo(writer.PageSize.Right, writer.PageSize.Bottom);
+            canvas.LineTo(writer.PageSize.Right, writer.PageSize.Top);
+            canvas.Fill();
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             bool exceptionThrown = false;
             try {
@@ -284,7 +560,7 @@ namespace iTextSharp.text.pdfa
         public void EgsCheckTest3() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document,
-                new FileStream(OUT + "EgsCheckTest3.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
+                new FileStream(OUT + "pdfa2EgsCheckTest3.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
             writer.CreateXmpMetadata();
             document.Open();
 
@@ -308,6 +584,856 @@ namespace iTextSharp.text.pdfa
             }
             if (!exceptionThrown)
                 Assert.Fail("PdfAConformanceException should be thrown.");
+        }
+
+        [Test]
+        public void EgsCheckTest4() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2egsCheckTest4.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+
+            PdfContentByte canvas = writer.DirectContent;
+            PdfGState gs = new PdfGState();
+            gs.Put(PdfName.TR2, new PdfName("Test"));
+            gs.Put(PdfName.HTP, new PdfName("Test"));
+            canvas.SaveState();
+            canvas.SetGState(gs);
+            canvas.RestoreState();
+            canvas.MoveTo(writer.PageSize.Left, writer.PageSize.Bottom);
+            canvas.LineTo(writer.PageSize.Right, writer.PageSize.Bottom);
+            canvas.LineTo(writer.PageSize.Right, writer.PageSize.Top);
+            canvas.Fill();
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            bool exceptionThrown = false;
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException e) {
+                if (e.GetObject() == gs) {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException should be thrown.");
+        }
+
+        [Test]
+        public void CanvasCheckTest1() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "canvasCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_1B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfContentByte canvas = writer.DirectContent;
+            bool exceptionThrown = false;
+            try {
+                for (int i = 0; i < 29; i++) {
+                    canvas.SaveState();
+                }
+            }
+            catch (PdfAConformanceException e) {
+                if ("q".Equals(e.GetObject())) {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException should be thrown.");
+            for (int i = 0; i < 28; i++) {
+                canvas.RestoreState();
+            }
+
+            document.Close();
+        }
+
+        [Test]
+        public void CanvasCheckTest2() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "canvasCheckTestt2.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_1B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfContentByte canvas = writer.DirectContent;
+            for (int i = 0; i < 28; i++) {
+                canvas.SaveState();
+            }
+            for (int i = 0; i < 28; i++) {
+                canvas.RestoreState();
+            }
+            document.Close();
+        }
+
+        [Test]
+        public void AnnotationCheckTest1() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.SUBTYPE, new PdfName("Movie"));
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            bool exceptionThrown = false;
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException e) {
+                if (e.GetObject() == annot && e.Message.Equals("Annotation type /Movie not allowed.")) {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException with correct message should be thrown.");
+        }
+
+        [Test]
+        public void AnnotationCheckTest2() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest2.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            bool exceptionThrown = false;
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException e) {
+                if (e.GetObject() == annot && e.Message.Equals("Annotation type null not allowed.")) {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException with correct message should be thrown.");
+        }
+
+        [Test]
+        public void AnnotationCheckTest2_1() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest2_1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.SUBTYPE, PdfName.POPUP);
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            document.Close();
+        }
+
+        [Test]
+        public void AnnotationCheckTest2_2() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest2_2.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 200, 100, 200));
+            annot.Put(PdfName.SUBTYPE, PdfName.WIDGET);
+            annot.Put(PdfName.CONTENTS, new PdfDictionary());
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            document.Close();
+        }
+
+        [Test]
+        public void AnnotationCheckTest2_3() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest2_3.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.SUBTYPE, PdfName.WIDGET);
+            annot.Put(PdfName.CONTENTS, new PdfDictionary());
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            bool exceptionThrown = false;
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException e) {
+                if (e.GetObject() == annot && e.Message.Equals("Every annotation shall have at least one appearance dictionary")) {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException with correct message should be thrown.");
+        }
+
+        [Test]
+        public void AnnotationCheckTest3() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest3.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.SUBTYPE, PdfName.TEXT);
+            annot.Put(PdfName.F, new PdfNumber(0));
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            bool exceptionThrown = false;
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException e) {
+                if (e.GetObject() == annot && e.Message
+                    .Equals("The F key's Print flag bit shall be set to 1 and its Hidden, Invisible, NoView and ToggleNoView flag bits shall be set to 0.")) {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException with correct message should be thrown.");
+        }
+
+        [Test]
+        public void AnnotationCheckTest4() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest4.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.SUBTYPE, PdfName.TEXT);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT & PdfAnnotation.FLAGS_INVISIBLE));
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            bool exceptionThrown = false;
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException e) {
+                if (e.GetObject() == annot && e.Message
+                    .Equals("The F key's Print flag bit shall be set to 1 and its Hidden, Invisible, NoView and ToggleNoView flag bits shall be set to 0.")) {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException should be thrown.");
+        }
+
+        [Test]
+        public void AnnotationCheckTest5() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest5.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            annot.Put(PdfName.SUBTYPE, PdfName.WIDGET);
+            annot.Put(PdfName.CONTENTS, new PdfDictionary());
+            PdfDictionary ap = new PdfDictionary();
+            PdfStream s = new PdfStream(Encoding.Default.GetBytes("Hello World"));
+            ap.Put(PdfName.D, new PdfDictionary());
+            ap.Put(PdfName.N, writer.AddToBody(s).IndirectReference);
+            annot.Put(PdfName.AP, ap);
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            bool exceptionThrown = false;
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException e) {
+                if (e.GetObject() == annot && e.Message
+                    .Equals("Appearance dictionary shall contain only the N key with stream value.")) {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException should be thrown.");
+        }
+
+        [Test]
+        public void AnnotationCheckTest6() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest6.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            annot.Put(PdfName.SUBTYPE, PdfName.WIDGET);
+            annot.Put(PdfName.CONTENTS, new PdfDictionary());
+            annot.Put(PdfName.FT, new PdfName("Btn"));
+            PdfDictionary ap = new PdfDictionary();
+            PdfStream s = new PdfStream(Encoding.Default.GetBytes("Hello World"));
+            //PdfDictionary s = new PdfDictionary();
+            ap.Put(PdfName.N, writer.AddToBody(s).IndirectReference);
+            annot.Put(PdfName.AP, ap);
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            bool exceptionThrown = false;
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException e) {
+                if (e.GetObject() == annot && e.Message
+                    .Equals("Appearance dictionary of Widget subtype and Btn filled type shall contain only the n key with dictionary value")) {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException should be thrown.");
+        }
+
+        [Test]
+        public void AnnotationCheckTest7() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest7.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            annot.Put(PdfName.SUBTYPE, PdfName.WIDGET);
+            annot.Put(PdfName.CONTENTS, new PdfDictionary());
+            PdfDictionary ap = new PdfDictionary();
+            //PdfStream s = new PdfStream(Encoding.Default.GetBytes("Hello World"));
+            PdfDictionary s = new PdfDictionary();
+            ap.Put(PdfName.N, writer.AddToBody(s).IndirectReference);
+            annot.Put(PdfName.AP, ap);
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            bool exceptionThrown = false;
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException e) {
+                if (e.GetObject() == annot && e.Message
+                    .Equals("Appearance dictionary shall contain only the N key with stream value.")) {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException should be thrown.");
+        }
+
+        [Test]
+        public void AnnotationCheckTest8() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest8.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            annot.Put(PdfName.SUBTYPE, PdfName.WIDGET);
+            annot.Put(PdfName.CONTENTS, new PdfDictionary());
+            PdfDictionary ap = new PdfDictionary();
+            PdfStream s = new PdfStream(Encoding.Default.GetBytes("Hello World"));
+            ap.Put(PdfName.N, writer.AddToBody(s).IndirectReference);
+            annot.Put(PdfName.AP, ap);
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            document.Close();
+        }
+
+        [Test]
+        public void AnnotationCheckTest9() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest9.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.SUBTYPE, PdfName.TEXT);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT | PdfAnnotation.FLAGS_NOZOOM | PdfAnnotation.FLAGS_NOROTATE));
+            PdfDictionary ap = new PdfDictionary();
+            PdfStream s = new PdfStream(Encoding.Default.GetBytes("Hello World"));
+            ap.Put(PdfName.N, writer.AddToBody(s).IndirectReference);
+            annot.Put(PdfName.AP, ap);
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            document.Close();
+        }
+
+        [Test]
+        public void AnnotationCheckTest10() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest8.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.SUBTYPE, PdfName.STAMP);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            bool exceptionThrown = false;
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException e) {
+                if (e.GetObject() == annot && e.Message
+                    .Equals("Annotation of type /Stamp should have Contents key.")) {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException should be thrown.");
+        }
+
+        [Test]
+        public void AnnotationCheckTest11() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest9.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
+            writer.CreateXmpMetadata();
+            writer.SetTagged();
+            document.Open();
+            document.AddLanguage("en-US");
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
+            annot.Put(PdfName.SUBTYPE, PdfName.STAMP);
+            annot.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            annot.Put(PdfName.CONTENTS, new PdfString("Hello World"));
+            PdfDictionary ap = new PdfDictionary();
+            PdfStream s = new PdfStream(Encoding.Default.GetBytes("Hello World"));
+            ap.Put(PdfName.N, writer.AddToBody(s).IndirectReference);
+            annot.Put(PdfName.AP, ap);
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.AddAnnotation(annot);
+            document.Close();
+        }
+
+        [Test]
+        public void ColorCheckTest1() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2ColorCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+            PdfDictionary sec = new PdfDictionary();
+            sec.Put(PdfName.GAMMA, new PdfArray(new float[] {2.2f, 2.2f, 2.2f}));
+            sec.Put(PdfName.MATRIX, new PdfArray(new float[] {0.4124f, 0.2126f, 0.0193f, 0.3576f, 0.7152f, 0.1192f, 0.1805f, 0.0722f, 0.9505f}));
+            sec.Put(PdfName.WHITEPOINT, new PdfArray(new float[] {0.9505f, 1f, 1.089f}));
+            PdfArray arr = new PdfArray(PdfName.CALRGB);
+            arr.Add(sec);
+            writer.SetDefaultColorspace(PdfName.DEFAULTCMYK, writer.AddToBody(arr).IndirectReference);
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            font.Color = GrayColor.GRAYBLACK;
+            document.Add(new Paragraph("Hello World", font));
+            font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            font.Color = new CMYKColor(0, 100, 0, 0);
+            document.Add(new Paragraph("Hello World", font));
+            font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            font.Color = new BaseColor(0, 255, 0);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfContentByte canvas = writer.DirectContent;
+            canvas.SetColorFill(new CMYKColor(0.1f, 0.1f, 0.1f, 0.1f));
+            canvas.MoveTo(writer.PageSize.Left, writer.PageSize.Bottom);
+            canvas.LineTo(writer.PageSize.Right, writer.PageSize.Bottom);
+            canvas.LineTo(writer.PageSize.Right, writer.PageSize.Top);
+            canvas.Fill();
+
+            document.Close();
+        }
+
+        [Test]
+        public void ColorCheckTest2() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2ColorCheckTest2.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12, Font.NORMAL, BaseColor.RED);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfContentByte canvas = writer.DirectContent;
+            bool exceptionThrown = false;
+            canvas.SetColorFill(new CMYKColor(0.1f, 0.1f, 0.1f, 0.1f));
+            canvas.MoveTo(writer.PageSize.Left, writer.PageSize.Bottom);
+            canvas.LineTo(writer.PageSize.Right, writer.PageSize.Bottom);
+            canvas.LineTo(writer.PageSize.Right, writer.PageSize.Top);
+            canvas.Fill();
+
+            try {
+                document.Close();
+            }
+            catch (PdfAConformanceException e) {
+                if (e.GetObject() is PdfDictionary
+                    && ((PdfDictionary) e.GetObject()).Get(PdfName.TYPE) == PdfName.OUTPUTINTENT) {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException should be thrown.");
+        }
+
+        [Test]
+        public void ColorCheckTest3() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2ColorCheckTest3.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+            PdfDictionary sec = new PdfDictionary();
+            sec.Put(PdfName.GAMMA, new PdfArray(new float[] {2.2f, 2.2f, 2.2f}));
+            sec.Put(PdfName.MATRIX, new PdfArray(new float[] {0.4124f, 0.2126f, 0.0193f, 0.3576f, 0.7152f, 0.1192f, 0.1805f, 0.0722f, 0.9505f}));
+            sec.Put(PdfName.WHITEPOINT, new PdfArray(new float[] {0.9505f, 1f, 1.089f}));
+            PdfArray arr = new PdfArray(PdfName.CALRGB);
+            arr.Add(sec);
+            writer.SetDefaultColorspace(PdfName.DEFAULTGRAY, writer.AddToBody(arr).IndirectReference);
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            document.Close();
+
+            PdfReader reader = new PdfReader(OUT + "pdfa2ColorCheckTest3.pdf");
+            PdfAStamper stamper = new PdfAStamper(reader, new FileStream(OUT + "pdfa2ColorCheckTest3_updating_failed.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            bool exceptionThrown = false;
+            try {
+                font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+                font.Color = BaseColor.RED;
+                PdfContentByte canvas = stamper.GetOverContent(1);
+                canvas.SetFontAndSize(font.BaseFont, 12);
+                canvas.SetColorFill(BaseColor.RED);
+                ColumnText.ShowTextAligned(canvas, Element.ALIGN_LEFT, new Paragraph("Hello World", font), 36, 775, 0);
+                stamper.Close();
+            }
+            catch (PdfAConformanceException e) {
+                exceptionThrown = true;
+            }
+            reader.Close();
+
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformance exception should be thrown");
+
+            reader = new PdfReader(OUT + "pdfa2ColorCheckTest3.pdf");
+            stamper = new PdfAStamper(reader, new FileStream(OUT + "pdfa2ColorCheckTest3_updating_ok.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            stamper.Writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+            font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            font.Color = BaseColor.RED;
+            PdfContentByte canvas1 = stamper.GetOverContent(1);
+            canvas1.SetFontAndSize(font.BaseFont, 12);
+            canvas1.SetColorFill(BaseColor.RED);
+            ColumnText.ShowTextAligned(canvas1,
+                Element.ALIGN_LEFT, new Paragraph("Hello World", font), 36, 775, 0);
+            stamper.Close();
+            reader.Close();
+        }
+
+        [Test]
+        public void ColorCheckTest4() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2ColorCheckTest4.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            document.Close();
+
+            PdfReader reader = new PdfReader(OUT + "pdfa2ColorCheckTest4.pdf");
+            PdfAStamper stamper = new PdfAStamper(reader, new FileStream(OUT + "pdfa2ColorCheckTest4_updating_failed.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            bool exceptionThrown = false;
+            try {
+                icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+                stamper.Writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+                font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+                font.Color = BaseColor.RED;
+                PdfContentByte canvas = stamper.GetOverContent(1);
+                canvas.SetFontAndSize(font.BaseFont, 12);
+                canvas.SetColorFill(BaseColor.RED);
+                ColumnText.ShowTextAligned(canvas,
+                    Element.ALIGN_LEFT, new Paragraph("Hello World", font), 36, 775, 760);
+                stamper.Close();
+            }
+            catch (PdfAConformanceException e) {
+                exceptionThrown = true;
+            }
+            reader.Close();
+
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformance exception should be thrown");
+        }
+
+        [Test]
+        public void ColorCheckTest5() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2ColorCheckTest5.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+            bool exceptionThrown = false;
+            try {
+                Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+                document.Add(new Paragraph("Hello World", font));
+
+                PdfContentByte canvas = writer.DirectContent;
+
+                canvas.SetColorFill(BaseColor.LIGHT_GRAY);
+                canvas.MoveTo(writer.PageSize.Left, writer.PageSize.Bottom);
+                canvas.LineTo(writer.PageSize.Right, writer.PageSize.Bottom);
+                canvas.LineTo(writer.PageSize.Right, writer.PageSize.Top);
+                canvas.LineTo(writer.PageSize.Left, writer.PageSize.Bottom);
+                canvas.Fill();
+
+
+                canvas.SetFontAndSize(font.BaseFont, 20);
+                canvas.SetColorStroke(new CMYKColor(0, 0, 0, 1f));
+                canvas.SetTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_STROKE);
+                canvas.SaveState();
+                canvas.SetTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_CLIP);
+                canvas.RestoreState();
+                canvas.BeginText();
+                canvas.ShowTextAligned(Element.ALIGN_LEFT, "Hello World", 36, 770, 0);
+                canvas.EndText();
+
+                ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+                writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+                document.Close();
+            }
+            catch (PdfAConformanceException e) {
+                exceptionThrown = true;
+            }
+
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformance exception should be thrown");
+        }
+
+        [Test]
+        public void ColorCheckTest6() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2ColorCheckTest6.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+
+            PdfContentByte canvas = writer.DirectContent;
+
+            canvas.SetColorFill(BaseColor.LIGHT_GRAY);
+            canvas.MoveTo(writer.PageSize.Left, writer.PageSize.Bottom);
+            canvas.LineTo(writer.PageSize.Right, writer.PageSize.Bottom);
+            canvas.LineTo(writer.PageSize.Right, writer.PageSize.Top);
+            canvas.LineTo(writer.PageSize.Left, writer.PageSize.Bottom);
+            canvas.Fill();
+
+
+            canvas.SetFontAndSize(font.BaseFont, 20);
+            canvas.SetColorStroke(new CMYKColor(0, 0, 0, 1f));
+            canvas.SetTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_INVISIBLE);
+            canvas.BeginText();
+            canvas.ShowTextAligned(Element.ALIGN_LEFT, "Hello World", 36, 770, 0);
+            canvas.EndText();
+            canvas.SetTextRenderingMode(PdfContentByte.TEXT_RENDER_MODE_FILL);
+            canvas.BeginText();
+            canvas.ShowTextAligned(Element.ALIGN_LEFT, "Hello World", 36, 750, 0);
+            canvas.EndText();
+
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            document.Close();
+        }
+
+        [Test]
+        public void FontCheckTest1() {
+            bool exceptionThrown = false;
+            try {
+                Document document = new Document();
+                PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2FontCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
+                writer.CreateXmpMetadata();
+                writer.SetTagged();
+                document.Open();
+                document.AddLanguage("en-US");
+
+                Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, false /*BaseFont.EMBEDDED*/, 12);
+                document.Add(new Paragraph("Hello World", font));
+                ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+                writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+                document.Close();
+            }
+            catch (DocumentException docExc) {
+                exceptionThrown = true;
+            }
+            catch (PdfAConformanceException exc) {
+                exceptionThrown = true;
+            }
+
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformance exception should be thrown");
+        }
+
+        /**
+         * Prints a square and fills half of it with a gray rectangle.
+         *
+         * @param x
+         * @param y
+         * @param cb
+         * @throws Exception
+         */
+        private void PictureBackdrop(float x, float y, PdfContentByte cb) {
+            cb.SetColorStroke(BaseColor.BLACK);
+            cb.SetColorFill(BaseColor.LIGHT_GRAY);
+            cb.Rectangle(x, y, 100, 200);
+            cb.Fill();
+            cb.SetLineWidth(2);
+            cb.Rectangle(x, y, 200, 200);
+            cb.Stroke();
+        }
+
+        /**
+         * Prints 3 circles in different colors that intersect with eachother.
+         *
+         * @param x
+         * @param y
+         * @param cb
+         * @throws Exception
+         */
+        private void PictureCircles(float x, float y, PdfContentByte cb) {
+            cb.SetColorFill(BaseColor.RED);
+            cb.Circle(x + 70, y + 70, 50);
+            cb.Fill();
+            cb.SetColorFill(BaseColor.YELLOW);
+            cb.Circle(x + 100, y + 130, 50);
+            cb.Fill();
+            cb.SetColorFill(BaseColor.BLUE);
+            cb.Circle(x + 130, y + 70, 50);
+            cb.Fill();
+        }
+
+        /**
+         * Prints a square and fills half of it with a gray rectangle.
+         *
+         * @param x
+         * @param y
+         * @param cb
+         * @throws Exception
+         */
+        private void PictureBackdrop(float x, float y, PdfContentByte cb,
+            PdfWriter writer) {
+            PdfShading axial = PdfShading.SimpleAxial(writer, x, y, x + 200, y,
+                BaseColor.YELLOW, BaseColor.RED);
+            PdfShadingPattern axialPattern = new PdfShadingPattern(axial);
+            cb.SetShadingFill(axialPattern);
+            cb.SetColorStroke(BaseColor.BLACK);
+            cb.SetLineWidth(2);
+            cb.Rectangle(x, y, 200, 200);
+            cb.FillStroke();
+        }
+
+        /**
+         * Prints 3 circles in different colors that intersect with eachother.
+         *
+         * @param x
+         * @param y
+         * @param cb
+         * @throws Exception
+         */
+        private void PictureCircles(float x, float y, PdfContentByte cb, PdfWriter writer) {
+            PdfGState gs = new PdfGState();
+            gs.BlendMode = PdfGState.BM_MULTIPLY;
+            gs.FillOpacity = 1f;
+            cb.SetGState(gs);
+            cb.SetColorFill(BaseColor.LIGHT_GRAY);
+            cb.Circle(x + 75, y + 75, 70);
+            cb.Fill();
+            cb.Circle(x + 75, y + 125, 70);
+            cb.Fill();
+            cb.Circle(x + 125, y + 75, 70);
+            cb.Fill();
+            cb.Circle(x + 125, y + 125, 70);
+            cb.Fill();
         }
     }
 }

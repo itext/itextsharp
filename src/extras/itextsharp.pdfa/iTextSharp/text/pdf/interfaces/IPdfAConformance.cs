@@ -1,5 +1,3 @@
-using iTextSharp.text.pdf.interfaces;
-
 /*
  * $Id: PdfAConformance.java 322 2012-07-23 09:58:41Z bruno $
  *
