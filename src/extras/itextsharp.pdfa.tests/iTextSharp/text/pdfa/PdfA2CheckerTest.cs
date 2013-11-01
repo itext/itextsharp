@@ -1032,7 +1032,7 @@ namespace iTextSharp.text.pdfa {
         [Test]
         public void AnnotationCheckTest10() {
             Document document = new Document();
-            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest8.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest10.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
             writer.CreateXmpMetadata();
             document.Open();
 
