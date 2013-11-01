@@ -41,7 +41,7 @@ namespace iTextSharp.text.pdfa
                 Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
                 document.Add(new Paragraph("Hello World", font));
 
-                FileStream iccProfileFileStream = new FileStream(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open);
+                FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
                 ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
                 iccProfileFileStream.Close();
 
@@ -75,7 +75,7 @@ namespace iTextSharp.text.pdfa
                 Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.NOT_EMBEDDED, 12, Font.BOLD);
                 document.Add(new Paragraph("Hello World", font));
 
-                FileStream iccProfileFileStream = new FileStream(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read);
+                FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
                 ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
                 iccProfileFileStream.Close();
 
@@ -106,7 +106,7 @@ namespace iTextSharp.text.pdfa
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
 
-            FileStream iccProfileFileStream = new FileStream(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open);
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
             ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
             iccProfileFileStream.Close();
 
@@ -137,7 +137,7 @@ namespace iTextSharp.text.pdfa
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
 
-            FileStream iccProfileFileStream = new FileStream(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open);
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
             ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
             iccProfileFileStream.Close();
 
