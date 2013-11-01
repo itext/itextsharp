@@ -227,7 +227,7 @@ namespace iTextSharp.text.pdf
             if (!obj.IsIndirect())
                 return;
             PRIndirectReference currRef = (PRIndirectReference)obj;
-            PdfCopy.RefKey key =  new PdfCopy.RefKey(currRef);
+            RefKey key =  new RefKey(currRef);
             if (!writer.indirects.ContainsKey(key)) {
                 writer.CopyIndirect(currRef, true, false);
             }

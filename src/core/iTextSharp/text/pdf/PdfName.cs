@@ -164,6 +164,8 @@ namespace iTextSharp.text.pdf {
         /** A name */
         public static readonly PdfName AP = new PdfName("AP");
         /** A name */
+        public static readonly PdfName APP = new PdfName("App");
+        /** A name */
         public static readonly PdfName APPDEFAULT = new PdfName("AppDefault");
         /**
          * A name
@@ -304,6 +306,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName CALRGB = new PdfName("CalRGB");
         /** A name */
         public static readonly PdfName CAPHEIGHT = new PdfName("CapHeight");
+        /**
+         * A name
+         * @since 5.4.5
+         */
+        public static readonly PdfName CARET = new PdfName("Caret");
         /**
          * A name
          * @since 2.1.6
@@ -1521,6 +1528,8 @@ namespace iTextSharp.text.pdf {
          */
         public static readonly PdfName PROJCS = new PdfName("PROJCS");
         /** A name */
+        public static readonly PdfName PROP_BUILD = new PdfName("Prop_Build");
+        /** A name */
         public static readonly PdfName PROPERTIES = new PdfName("Properties");
         /** A name */
         public static readonly PdfName PS = new PdfName("PS");
@@ -1764,6 +1773,8 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName SIZE = new PdfName("Size");
         /** A name */
         public static readonly PdfName SMASK = new PdfName("SMask");
+
+        public static readonly PdfName SMASKINDATA = new PdfName("SMaskInData");
         /** A name */
         public static readonly PdfName SORT = new PdfName("Sort");
         /**
@@ -2162,6 +2173,11 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.6
          */
         public static readonly PdfName WARICHU = new PdfName("Warichu");
+        /**
+         * A name
+         * @since 5.4.5
+         */
+        public static readonly PdfName WATERMARK = new PdfName("Watermark");
         /** A name of an attribute. */
         public static readonly PdfName WC = new PdfName("WC");
         /** A name of an attribute. */

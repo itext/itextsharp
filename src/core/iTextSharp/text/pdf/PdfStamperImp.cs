@@ -133,6 +133,26 @@ namespace iTextSharp.text.pdf {
                     fullCompression = false;
             }
             initialXrefSize = reader.XrefSize;
+            ReadColorProfile();
+        }
+
+        protected virtual void ReadColorProfile() {
+            PdfObject outputIntents = reader.Catalog.GetAsArray(PdfName.OUTPUTINTENTS);
+            if (outputIntents != null && ((PdfArray) outputIntents).Size > 0) {
+                PdfStream iccProfileStream = null;
+                for (int i = 0; i < ((PdfArray) outputIntents).Size; i++) {
+                    PdfDictionary outputIntentDictionary = ((PdfArray) outputIntents).GetAsDict(i);
+                    if (outputIntentDictionary != null) {
+                        iccProfileStream = outputIntentDictionary.GetAsStream(PdfName.DESTOUTPUTPROFILE);
+                        if (iccProfileStream != null)
+                            break;
+                    }
+                }
+
+                if (iccProfileStream is PRStream) {
+                    colorProfile = ICC_Profile.GetInstance(PdfReader.GetStreamBytes((PRStream) iccProfileStream));
+                }
+            }
         }
 
         virtual protected void SetViewerPreferences() {
@@ -171,6 +191,10 @@ namespace iTextSharp.text.pdf {
             SetOutlines();
             SetJavaScript();
             AddFileAttachments();
+            // [C11] Output Intents
+            if (extraCatalog != null) {
+                catalog.MergeDifferent(extraCatalog);
+            }
             if (openAction != null) {
                 catalog.Put(PdfName.OPENACTION, openAction);
             }

@@ -102,10 +102,12 @@ namespace iTextSharp.text.pdf {
             protected internal float wordSpace = 0;
 
             protected internal BaseColor textColorFill = new GrayColor(0);
-            protected internal BaseColor graphicsColorFill = new GrayColor(0);
+            protected internal BaseColor colorFill = new GrayColor(0);
             protected internal BaseColor textColorStroke = new GrayColor(0);
-            protected internal BaseColor graphicsColorStroke = new GrayColor(0);
-            internal AffineTransform CTM = new AffineTransform();
+            protected internal BaseColor colorStroke = new GrayColor(0);
+            protected internal int textRenderMode = TEXT_RENDER_MODE_FILL;
+            protected internal AffineTransform CTM = new AffineTransform();
+            protected internal PdfObject extGState = null;
 
             internal GraphicState() {
             }
@@ -130,10 +132,12 @@ namespace iTextSharp.text.pdf {
                 charSpace = cp.charSpace;
                 wordSpace = cp.wordSpace;
                 textColorFill = cp.textColorFill;
-                graphicsColorFill = cp.graphicsColorFill;
+                colorFill = cp.colorFill;
                 textColorStroke = cp.textColorStroke;
-                graphicsColorStroke = cp.graphicsColorStroke;
+                colorStroke = cp.colorStroke;
                 CTM = (AffineTransform)cp.CTM.Clone();
+                textRenderMode = cp.textRenderMode;
+                extGState = cp.extGState;
             }
 
             internal void Restore(GraphicState restore) {
@@ -601,7 +605,6 @@ namespace iTextSharp.text.pdf {
          * @param   blue    the intensity of blue. A value between 0 and 1
          */
         private void HelperRGB(float red, float green, float blue) {
-            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_RGB, null);
             if (red < 0)
                 red = 0.0f;
             else if (red > 1.0f)
@@ -1177,6 +1180,8 @@ namespace iTextSharp.text.pdf {
                         MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
                 }
             }
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorStroke);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_GSTATE, state.extGState);
             content.Append('S').Append_i(separator);
         }
     
@@ -1194,6 +1199,8 @@ namespace iTextSharp.text.pdf {
                         MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
                 }
             }
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorStroke);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_GSTATE, state.extGState);
             content.Append('s').Append_i(separator);
         }
     
@@ -1211,6 +1218,8 @@ namespace iTextSharp.text.pdf {
                         MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
                 }
             }
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorFill);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_GSTATE, state.extGState);
             content.Append('f').Append_i(separator);
         }
     
@@ -1228,6 +1237,8 @@ namespace iTextSharp.text.pdf {
                         MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
                 }
             }
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorFill);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_GSTATE, state.extGState);
             content.Append("f*").Append_i(separator);
         }
     
@@ -1245,6 +1256,9 @@ namespace iTextSharp.text.pdf {
                         MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
                 }
             }
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorFill);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorStroke);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_GSTATE, state.extGState);
             content.Append('B').Append_i(separator);
         }
     
@@ -1262,6 +1276,9 @@ namespace iTextSharp.text.pdf {
                         MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
                 }
             }
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorFill);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorStroke);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_GSTATE, state.extGState);
             content.Append('b').Append_i(separator);
         }
     
@@ -1279,6 +1296,9 @@ namespace iTextSharp.text.pdf {
                         MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
                 }
             }
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorFill);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorStroke);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_GSTATE, state.extGState);
             content.Append("B*").Append_i(separator);
         }
     
@@ -1296,6 +1316,9 @@ namespace iTextSharp.text.pdf {
                         MessageLocalization.GetComposedMessage("path.construction.operator.inside.text.object"));
                 }
             }
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorFill);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, state.colorStroke);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_GSTATE, state.extGState);
             content.Append("b*").Append_i(separator);
         }
     
@@ -1689,6 +1712,7 @@ namespace iTextSharp.text.pdf {
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
+            state.textRenderMode = value;
             content.Append(value).Append(" Tr").Append_i(separator);
         }
     
@@ -1725,6 +1749,7 @@ namespace iTextSharp.text.pdf {
          * @param text the text to write
          */
         public void ShowText(string text) {
+            CheckState();
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
@@ -1784,6 +1809,7 @@ namespace iTextSharp.text.pdf {
          * @param text the text to write
          */
         public void NewlineShowText(string text) {
+            CheckState();
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
@@ -1802,6 +1828,7 @@ namespace iTextSharp.text.pdf {
          * @param text the text to write
          */
         public void NewlineShowText(float wordSpacing, float charSpacing, string text) {
+            CheckState();
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
@@ -2510,6 +2537,7 @@ namespace iTextSharp.text.pdf {
         public void AddTemplate(PdfTemplate template, float a, float b, float c, float d, float e, float f, bool tagContent) {
             CheckWriter();
             CheckNoPattern(template);
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_FORM_XOBJ, template);
             PdfName name = writer.AddDirectTemplateSimple(template, null);
             PageResources prs = PageResources;
             name = prs.AddXObject(name, template.IndirectReference);
@@ -2737,7 +2765,6 @@ namespace iTextSharp.text.pdf {
          * @param color the color
          */    
         public virtual void SetColorStroke(BaseColor value) {
-            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, value);
             int type = ExtendedColor.GetType(value);
             switch (type) {
                 case ExtendedColor.TYPE_GRAY: {
@@ -2775,7 +2802,6 @@ namespace iTextSharp.text.pdf {
          * @param color the color
          */    
         public virtual void SetColorFill(BaseColor value) {
-            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR, value);
             int type = ExtendedColor.GetType(value);
             switch (type) {
                 case ExtendedColor.TYPE_GRAY: {
@@ -3031,6 +3057,7 @@ namespace iTextSharp.text.pdf {
          * @param text array of text
          */
         public void ShowText(PdfTextArray text) {
+            CheckState();
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
@@ -3367,6 +3394,7 @@ namespace iTextSharp.text.pdf {
             PdfObject[] obj = writer.AddSimpleExtGState(gstate);
             PageResources prs = PageResources;
             PdfName name = prs.AddExtGState((PdfName)obj[0], (PdfIndirectReference)obj[1]);
+            state.extGState = gstate;
             content.Append(name.GetBytes()).Append(" gs").Append_i(separator);
         }
         
@@ -3767,10 +3795,18 @@ namespace iTextSharp.text.pdf {
                     }
                 } else {
                     if (fill) {
-                        state.graphicsColorFill = color;
+                        state.colorFill = color;
                     } else {
-                        state.graphicsColorStroke = color;
+                        state.colorStroke = color;
                     }
+                }
+            }
+            else {
+                if (fill) {
+                    state.colorFill = color;
+                }
+                else {
+                    state.colorStroke = color;
                 }
             }
         }
@@ -3792,21 +3828,22 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        private void RestoreColor(){
+        private void RestoreColor() {
             if (IsTagged()) {
                 if (inText) {
-                    if (!state.textColorFill.Equals(state.graphicsColorFill)) {
+                    if (!state.textColorFill.Equals(state.colorFill)) {
                         RestoreColor(state.textColorFill, true);
                     }
-                    if (!state.textColorStroke.Equals(state.graphicsColorStroke)) {
+                    if (!state.textColorStroke.Equals(state.colorStroke)) {
                         RestoreColor(state.textColorStroke, false);
                     }
-                } else {
-                    if (!state.textColorFill.Equals(state.graphicsColorFill)) {
-                        RestoreColor(state.graphicsColorFill, true);
+                }
+                else {
+                    if (!state.textColorFill.Equals(state.colorFill)) {
+                        RestoreColor(state.colorFill, true);
                     }
-                    if (!state.textColorStroke.Equals(state.graphicsColorStroke)) {
-                        RestoreColor(state.graphicsColorStroke, false);
+                    if (!state.textColorStroke.Equals(state.colorStroke)) {
+                        RestoreColor(state.colorStroke, false);
                     }
                 }
             }
@@ -3833,6 +3870,30 @@ namespace iTextSharp.text.pdf {
 
         protected internal bool InText {
             get {return inText;}
+        }
+
+        protected void CheckState() {
+            bool stroke = false;
+            bool fill = false;
+            if (state.textRenderMode == TEXT_RENDER_MODE_FILL) {
+                fill = true;
+            }
+            else if (state.textRenderMode == TEXT_RENDER_MODE_STROKE) {
+                stroke = true;
+            }
+            else if (state.textRenderMode == TEXT_RENDER_MODE_FILL_STROKE) {
+                fill = true;
+                stroke = true;
+            }
+            if (fill) {
+                PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR,
+                    IsTagged() ? state.textColorFill : state.colorFill);
+            }
+            if (stroke) {
+                PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_COLOR,
+                    IsTagged() ? state.textColorStroke : state.colorStroke);
+            }
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_GSTATE, state.extGState);
         }
     }
 }

@@ -109,5 +109,8 @@ namespace iTextSharp.text.pdf.intern{
             return true;
         }
 
+        public PdfAChecker PdfAChecker {
+            get { return pdfAChecker; }
+        }
     }
 }

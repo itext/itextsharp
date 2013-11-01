@@ -1,5 +1,4 @@
-﻿using System;
-/*
+﻿/*
  * $Id: PdfAChecker.java 5827 2013-05-31 08:56:23Z blowagie $
  *
  * This file is part of the iText (R) project.
@@ -42,22 +41,113 @@
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+using System;
+using System.Collections.Generic;
+using System.util.collections;
 
 namespace iTextSharp.text.pdf.intern
 {
     public abstract class PdfAChecker {
 
         protected PdfAConformanceLevel conformanceLevel;
+        protected Dictionary<RefKey, PdfObject> cachedObjects = new Dictionary<RefKey, PdfObject>();
+        private HashSet2<PdfName> keysForCheck;
+        private static byte[] emptyByteArray = new byte[] { };
 
         internal PdfAChecker(PdfAConformanceLevel conformanceLevel) {
+            keysForCheck = InitKeysForCheck();
             this.conformanceLevel = conformanceLevel;
         }
-        
+
+        abstract protected HashSet2<PdfName> InitKeysForCheck();
+
+        public void CacheObject(PdfIndirectReference iref, PdfObject obj) {
+            if (obj.Type == 0) {
+                cachedObjects[new RefKey(iref)] = obj;
+            }
+            else if (obj is PdfDictionary) {
+                cachedObjects[new RefKey(iref)] = CleverPdfDictionaryClone((PdfDictionary) obj);
+            }
+            else if (obj.IsArray()) {
+                cachedObjects[new RefKey(iref)] = CleverPdfArrayClone((PdfArray) obj);
+            }
+        }
+
+        private PdfObject CleverPdfArrayClone(PdfArray array) {
+            PdfArray newArray = new PdfArray();
+            for (int i = 0; i < array.Size; i++) {
+                PdfObject obj = array[i];
+                if (obj is PdfDictionary)
+                    newArray.Add(CleverPdfDictionaryClone((PdfDictionary) obj));
+                else
+                    newArray.Add(obj);
+            }
+
+            return newArray;
+        }
+
+        private PdfObject CleverPdfDictionaryClone(PdfDictionary dict) {
+            PdfDictionary newDict;
+            if (dict.IsStream()) {
+                newDict = new PdfStream(emptyByteArray);
+                newDict.Remove(PdfName.LENGTH);
+            }
+            else
+                newDict = new PdfDictionary();
+
+            foreach (PdfName key in dict.Keys)
+                if (keysForCheck.Contains(key))
+                    newDict.Put(key, dict.Get(key));
+
+            return newDict;
+        }
+
+        protected PdfObject GetDirectObject(PdfObject obj) {
+            if (obj == null)
+                return null;
+            //use counter to prevent indirect reference cycling
+            int count = 0;
+            while (obj.Type == 0) {
+                PdfObject tmp = null;
+                cachedObjects.TryGetValue(new RefKey((PdfIndirectReference) obj), out tmp);
+                if (tmp == null)
+                    break;
+                obj = tmp;
+                //10 - is max allowed reference chain
+                if (count++ > 10)
+                    break;
+            }
+            return obj;
+        }
+
+        protected PdfDictionary GetDirectDictionary(PdfObject obj) {
+            obj = GetDirectObject(obj);
+            if (obj != null && obj.IsDictionary())
+                return (PdfDictionary) obj;
+            return null;
+        }
+
+        protected PdfStream GetDirectStream(PdfObject obj) {
+            obj = GetDirectObject(obj);
+            if (obj != null && obj.IsStream())
+                return (PdfStream) obj;
+            return null;
+        }
+
+        protected PdfArray GetDirectArray(PdfObject obj) {
+            obj = GetDirectObject(obj);
+            if (obj != null && obj.IsArray())
+                return (PdfArray) obj;
+            return null;
+        }
+
         protected abstract void CheckFont(PdfWriter writer, int key, Object obj1);
 
         protected abstract void CheckImage(PdfWriter writer, int key, Object obj1);
 
         abstract protected void CheckInlineImage(PdfWriter writer, int key, Object obj1);
+
+        abstract protected void CheckFormXObj(PdfWriter writer, int key, Object obj1);
 
         protected abstract void CheckGState(PdfWriter writer, int key, Object obj1);
 
@@ -82,6 +172,8 @@ namespace iTextSharp.text.pdf.intern
         protected abstract void CheckForm(PdfWriter writer, int key, Object obj1);
 
         protected abstract void CheckStructElem(PdfWriter writer, int key, Object obj1);
+
+        abstract protected void CheckOutputIntent(PdfWriter writer, int key, Object obj1);
 
 
         internal void CheckPdfAConformance(PdfWriter writer, int key, Object obj1) {
@@ -136,6 +228,12 @@ namespace iTextSharp.text.pdf.intern
                 case PdfIsoKeys.PDFISOKEY_INLINE_IMAGE:
                     CheckInlineImage(writer, key, obj1);
                     break;
+                case PdfIsoKeys.PDFISOKEY_OUTPUTINTENT:
+                    CheckOutputIntent(writer, key, obj1);
+                    break;
+                case PdfIsoKeys.PDFISOKEY_FORM_XOBJ:
+                    CheckFormXObj(writer, key, obj1);
+                    break;
                 default:
                     break;
             }
@@ -145,6 +243,10 @@ namespace iTextSharp.text.pdf.intern
             return conformanceLevel == PdfAConformanceLevel.PDF_A_1A
                 || conformanceLevel == PdfAConformanceLevel.PDF_A_2A
                 || conformanceLevel == PdfAConformanceLevel.PDF_A_3A;
+        }
+
+        protected static bool CheckFlag(int flags, int flag) {
+            return (flags & flag) != 0;
         }
     }
 }

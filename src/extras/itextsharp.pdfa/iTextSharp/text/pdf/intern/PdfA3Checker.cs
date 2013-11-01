@@ -43,6 +43,7 @@
  */
 
 using System;
+using System.util.collections;
 
 namespace iTextSharp.text.pdf.intern
 {
@@ -51,6 +52,9 @@ namespace iTextSharp.text.pdf.intern
             :base(conformanceLevel) {
         }
 
+        protected override HashSet2<PdfName> InitKeysForCheck() {
+            return new HashSet2<PdfName>();
+        }
 
         protected override void CheckFont(PdfWriter writer, int key, Object obj1) {
             //To change body of implemented methods use File | Settings | File Templates.
@@ -61,6 +65,9 @@ namespace iTextSharp.text.pdf.intern
             //To change body of implemented methods use File | Settings | File Templates.
         }
 
+        protected override void CheckFormXObj(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
 
         protected override void CheckInlineImage(PdfWriter writer, int key, Object obj1) {
             //To change body of implemented methods use File | Settings | File Templates.
@@ -122,7 +129,11 @@ namespace iTextSharp.text.pdf.intern
         }
 
         protected override void CheckFileSpec(PdfWriter writer, int key, Object obj1) {
+            // don't do anything
         }
 
+        protected override void CheckOutputIntent(PdfWriter writer, int key, Object obj1) {
+            //To change body of implemented methods use File | Settings | File Templates.
+        }
     }
 }

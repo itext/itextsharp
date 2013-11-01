@@ -24,7 +24,6 @@ namespace iTextSharp.text.pdf{
             PdfIndirectReference ind_font = null;
             PdfObject pobj = null;
             PdfIndirectObject obj = null;
-            PdfIndirectReference cidset = null;
             // sivan: cff
             if (font.Cff)
             {
@@ -57,7 +56,7 @@ namespace iTextSharp.text.pdf{
             String subsetPrefix = "";
             if (font.Subset)
                 subsetPrefix = TrueTypeFontUnicode.CreateSubsetPrefix();
-            PdfDictionary dic = font.GetFontDescriptor(ind_font, subsetPrefix, cidset);
+            PdfDictionary dic = font.GetFontDescriptor(ind_font, subsetPrefix, null);
             obj = writer.AddToBody(dic);
             ind_font = obj.IndirectReference;
 
@@ -77,7 +76,5 @@ namespace iTextSharp.text.pdf{
             pobj = font.GetFontBaseType(ind_font, subsetPrefix, toUnicodeRef);
             writer.AddToBody(pobj, refer);
         }
-
-
     }
 }

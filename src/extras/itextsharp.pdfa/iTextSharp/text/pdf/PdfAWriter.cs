@@ -57,8 +57,6 @@ namespace iTextSharp.text.pdf {
 
     public class PdfAWriter : PdfWriter {
 
-        protected ICC_Profile colorProfile;
-
         /**
          * Use this method to get an instance of the <CODE>PdfWriter</CODE>.
          * @param	document	The <CODE>Document</CODE> that has to be written
@@ -137,7 +135,6 @@ namespace iTextSharp.text.pdf {
                 if (d != null)
                     d.Put(PdfName.S, PdfName.GTS_PDFA1);
             }
-            this.colorProfile = colorProfile;
         }
 
         /**
@@ -156,10 +153,6 @@ namespace iTextSharp.text.pdf {
 
         public override bool IsPdfIso() {
             return pdfIsoConformance.IsPdfIso();
-        }
-
-        public ICC_Profile GetColorProfile() {
-            return colorProfile;
         }
 
         /**
@@ -193,7 +186,7 @@ namespace iTextSharp.text.pdf {
 
         protected internal override TtfUnicodeWriter GetTtfUnicodeWriter() {
             if (ttfUnicodeWriter == null)
-                ttfUnicodeWriter = new PdfATtfUnicodeWriter(this);
+                ttfUnicodeWriter = new PdfATtfUnicodeWriter(this, ((IPdfAConformance)pdfIsoConformance).ConformanceLevel);
             return ttfUnicodeWriter;
         }
 
@@ -207,7 +200,7 @@ namespace iTextSharp.text.pdf {
                 xmpWriter = new PdfAXmpWriter(baos, info, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel);
         }
 
-        public override IPdfIsoConformance GetPdfIsoConformance() {
+        public override IPdfIsoConformance InitPdfIsoConformance() {
             return new PdfAConformanceImp(this);
         }
 
@@ -215,6 +208,46 @@ namespace iTextSharp.text.pdf {
 
         protected override ICounter GetCounter() {
             return COUNTER;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject obj) {
+            PdfIndirectObject iobj = base.AddToBody(obj);
+            GetPdfAChecker().CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject obj, bool inObjStm) {
+            PdfIndirectObject iobj = base.AddToBody(obj, inObjStm);
+            GetPdfAChecker().CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject obj, PdfIndirectReference reference, bool inObjStm) {
+            PdfIndirectObject iobj = base.AddToBody(obj, reference, inObjStm);
+            GetPdfAChecker().CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject obj, PdfIndirectReference reference) {
+            PdfIndirectObject iobj = base.AddToBody(obj, reference);
+            GetPdfAChecker().CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject obj, int refNumber) {
+            PdfIndirectObject iobj = base.AddToBody(obj, refNumber);
+            GetPdfAChecker().CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject obj, int refNumber, bool inObjStm) {
+            PdfIndirectObject iobj = base.AddToBody(obj, refNumber, inObjStm);
+            GetPdfAChecker().CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        private PdfAChecker GetPdfAChecker() {
+            return ((PdfAConformanceImp) pdfIsoConformance).PdfAChecker;
         }
     }
 
