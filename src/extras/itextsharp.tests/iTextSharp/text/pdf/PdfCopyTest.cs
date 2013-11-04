@@ -6,17 +6,16 @@ using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf
 {
-    class PdfCopyTest
-    {
+    class PdfCopyTest {
+        private const string RESOURCES = @"..\..\resources\text\pdf\PdfCopyTest\";
+
         [SetUp]
-        public void SetUp()
-        {
+        public void SetUp() {
             TestResourceUtils.PurgeTempFiles();
         }
 
         [TearDown]
-        public void TearDown()
-        {
+        public void TearDown() {
             TestResourceUtils.PurgeTempFiles();
         }
 
@@ -85,5 +84,34 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             return pdfBytes;
         }
 #endif// DRAWING
+
+
+        [Test]
+        /**
+         * Test to make sure that the following issue is fixed: http://sourceforge.net/mailarchive/message.php?msg_id=30891213
+         */
+        public void TestDecodeParmsArrayWithNullItems() {
+            Document document = new Document();
+            MemoryStream byteStream = new MemoryStream();
+            PdfSmartCopy pdfSmartCopy = new PdfSmartCopy(document, byteStream);
+            document.Open();
+
+            PdfReader reader = TestResourceUtils.GetResourceAsPdfReader(RESOURCES, "imgWithDecodeParms.pdf");
+            pdfSmartCopy.AddPage(pdfSmartCopy.GetImportedPage(reader, 1));
+
+            document.Close();
+            reader.Close();
+
+            reader = new PdfReader(byteStream.ToArray());
+            PdfDictionary page = reader.GetPageN(1);
+            PdfDictionary resources = page.GetAsDict(PdfName.RESOURCES);
+            PdfDictionary xObject = resources.GetAsDict(PdfName.XOBJECT);
+            PdfStream img = xObject.GetAsStream(new PdfName("Im0"));
+            PdfArray decodeParms = img.GetAsArray(PdfName.DECODEPARMS);
+            Assert.AreEqual(2, decodeParms.Size);
+            Assert.IsTrue(decodeParms[0] is PdfNull);
+
+            reader.Close();
+        }
     }
 }
