@@ -65,7 +65,8 @@ namespace iTextSharp.text.pdf {
             this.writer = writer;
             signDate = DateTime.Now;
             fieldName = GetNewSigName();
-        }		
+            signatureCreator = Version.GetInstance().GetVersion;
+        }
         
         /*
          * SIGNATURE
@@ -161,9 +162,23 @@ namespace iTextSharp.text.pdf {
          * @param locationCaption the signing location caption
          */
 
-        public string LocationCaption
-        {
+        public string LocationCaption {
             set { locationCaption = value; }
+        }
+
+        /** Holds value of the application that creates the signature */
+        private String signatureCreator;
+
+        /**
+         * Gets the signature creator.
+         * @return the signature creator
+         *
+         * Sets the name of the application used to create the signature.
+         * @param signatureCreator the name of the signature creating application
+         */
+        public string SignatureCreator {
+            get { return signatureCreator; }
+            set { this.signatureCreator = value; }
         }
 
         /** The contact name of the signer. */
