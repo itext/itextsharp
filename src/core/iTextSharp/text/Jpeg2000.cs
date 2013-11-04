@@ -204,8 +204,8 @@ namespace iTextSharp.text
                     inp = new MemoryStream(rawData);
                 }
                 boxLength = Cio_read(4);
-                if (boxLength == 0x0000000c)
-                {
+                if (boxLength == 0x0000000c) {
+                    isJp2 = true;
                     boxType = Cio_read(4);
                     if (JP2_JP != boxType)
                     {
