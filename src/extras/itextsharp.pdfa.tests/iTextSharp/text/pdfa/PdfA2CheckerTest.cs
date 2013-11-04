@@ -345,12 +345,12 @@ namespace iTextSharp.text.pdfa {
             document.Close();
         }
 
-        [Test, Ignore]
+        [Test]
         public void ImageCheckTest1() {
             string filename = OUT + "ImageCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
-            PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2A);
+            PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
             document.Open();
 
@@ -379,12 +379,12 @@ namespace iTextSharp.text.pdfa {
             document.Close();
         }
 
-        [Test, Ignore]
+        [Test]
         public void ImageCheckTest2() {
             string filename = OUT + "ImageCheckTest2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
-            PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2A);
+            PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
             document.Open();
 
@@ -422,7 +422,7 @@ namespace iTextSharp.text.pdfa {
                 pdfaErrors.Add(e.Message);
             }
 
-            Assert.Equals(4, pdfaErrors.Count);
+            Assert.AreEqual(4, pdfaErrors.Count);
             for (int i = 0; i < 4; i++) {
                 Assert.AreEqual(true, pdfaErrors[i].Contains("JPX"));
             }
