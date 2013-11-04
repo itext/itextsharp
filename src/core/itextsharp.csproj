@@ -4175,6 +4175,8 @@
     <Compile Include="iTextSharp\text\pdf\security\OcspClientBouncyCastle.cs" />
     <Compile Include="iTextSharp\text\pdf\security\OcspVerifier.cs" />
     <Compile Include="iTextSharp\text\pdf\security\PdfPKCS7.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\PdfSignatureAppDictionary.cs" />
+    <Compile Include="iTextSharp\text\pdf\security\PdfSignatureBuildProperties.cs" />
     <Compile Include="iTextSharp\text\pdf\security\PrivateKeySignature.cs" />
     <Compile Include="iTextSharp\text\pdf\security\RootStoreVerifier.cs" />
     <Compile Include="iTextSharp\text\pdf\security\SecurityConstants.cs" />

@@ -1,5 +1,3 @@
-using System;
-
 /*
  * This file is part of the iText project.
  * Copyright (c) 1998-2013 1T3XT BVBA
@@ -41,6 +39,7 @@ using System;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+using iTextSharp.text.pdf.security;
 
 namespace iTextSharp.text.pdf {
 
@@ -98,6 +97,37 @@ namespace iTextSharp.text.pdf {
         public string Reason {
             set {
                 Put(PdfName.REASON, new PdfString(value, PdfObject.TEXT_UNICODE));
+            }
+        }
+
+        /**
+         * Sets the signature creator name in the
+         * {@link PdfSignatureBuildProperties} dictionary.
+         * 
+         * @param name
+         */
+        public string SignatureCreator {
+            set {
+                if (value != null) {
+                    PdfSignatureBuildProperties.SignatureCreator = value;
+                }
+            }
+        }
+
+        /**
+         * Gets the {@link PdfSignatureBuildProperties} instance if it exists, if
+         * not it adds a new one and returns this.
+         * 
+         * @return {@link PdfSignatureBuildProperties}
+         */
+        private PdfSignatureBuildProperties PdfSignatureBuildProperties {
+            get {
+                PdfSignatureBuildProperties buildPropDic = (PdfSignatureBuildProperties) GetAsDict(PdfName.PROP_BUILD);
+                if (buildPropDic == null) {
+                    buildPropDic = new PdfSignatureBuildProperties();
+                    Put(PdfName.PROP_BUILD, buildPropDic);
+                }
+                return buildPropDic;
             }
         }
         

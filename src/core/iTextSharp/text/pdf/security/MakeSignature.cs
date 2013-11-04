@@ -105,6 +105,7 @@ namespace iTextSharp.text.pdf.security {
             PdfSignature dic = new PdfSignature(PdfName.ADOBE_PPKLITE, sigtype == CryptoStandard.CADES ? PdfName.ETSI_CADES_DETACHED : PdfName.ADBE_PKCS7_DETACHED);
             dic.Reason = sap.Reason;
             dic.Location = sap.Location;
+            dic.SignatureCreator = sap.SignatureCreator;
             dic.Contact = sap.Contact;
             dic.Date = new PdfDate(sap.SignDate); // time-stamp will over-rule this
             sap.CryptoDictionary = dic;
@@ -179,6 +180,7 @@ namespace iTextSharp.text.pdf.security {
             PdfSignature dic = new PdfSignature(null, null);
             dic.Reason = sap.Reason;
             dic.Location = sap.Location;
+            dic.SignatureCreator = sap.SignatureCreator;
             dic.Contact = sap.Contact;
             dic.Date = new PdfDate(sap.SignDate); // time-stamp will over-rule this
             externalSignatureContainer.ModifySigningDictionary(dic);
