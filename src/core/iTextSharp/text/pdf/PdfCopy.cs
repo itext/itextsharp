@@ -419,12 +419,14 @@ namespace iTextSharp.text.pdf {
             PdfObject res = CopyObject(obj, keepStructure, directRootKids);
             if (disableIndirects.Contains(obj))
                 iref.Copied = false;
-            if ((res != null) && !(res is PdfNull)) {
+            if (res != null) {
                 AddToBody(res, theRef);
                 return theRef;
             }
-            indirects.Remove(key);
-            return null;
+            else {
+                indirects.Remove(key);
+                return null;
+            }
         }
          /**
         * Translate a PRIndirectReference to a PdfIndirectReference
@@ -481,24 +483,21 @@ namespace iTextSharp.text.pdf {
                     (key.Equals(PdfName.STRUCTPARENTS) || key.Equals(PdfName.STRUCTPARENT))) {
                     continue;
                 }
-                if (PdfName.PAGE.Equals(type))
-                {
-                    if (!key.Equals(PdfName.B) && !key.Equals(PdfName.PARENT))
-                    {
+                if (PdfName.PAGE.Equals(type)) {
+                    if (!key.Equals(PdfName.B) && !key.Equals(PdfName.PARENT)) {
                         parentObjects[value] = inp;
                         PdfObject res = CopyObject(value, keepStruct, directRootKids);
-                        if ((res != null) && !(res is PdfNull))
+                        if (res != null)
                             outp.Put(key, res);
                     }
                 }
-                else
-                {
+                else {
                     PdfObject res;
                     if (tagged && value.IsIndirect() && IsStructTreeRootReference((PRIndirectReference) value))
                         res = structureTreeRoot.Reference;
                     else
                         res = CopyObject(value, keepStruct, directRootKids);
-                    if ((res != null) && !(res is PdfNull))
+                    if (res != null)
                         outp.Put(key, res);
                 }
             }
@@ -523,7 +522,7 @@ namespace iTextSharp.text.pdf {
                 PdfObject value = inp.Get(key);
                 parentObjects[value] = inp;
                 PdfObject res = CopyObject(value);
-                if ((res != null) && !(res is PdfNull))
+                if (res != null)
                     outp.Put(key, res);
             }
             
@@ -541,7 +540,7 @@ namespace iTextSharp.text.pdf {
             foreach (PdfObject value in inp.ArrayList) {
                 parentObjects[value] = inp;
                 PdfObject res = CopyObject(value, keepStruct, directRootKids);
-                if ((res != null) && !(res is PdfNull))
+                if (res != null)
                     outp.Add(res);
             }
             return outp;
