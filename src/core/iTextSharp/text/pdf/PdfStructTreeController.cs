@@ -363,7 +363,7 @@ namespace iTextSharp.text.pdf
                 PdfObject put = structureTreeRoot.GetMappedClass(name);
                 if (put != null) {
                     if (!CompareObjects(put,obj)) {
-                        throw new BadPdfFormatException(MessageLocalization.GetComposedMessage("conflict.input.classmap",name));
+                        throw new BadPdfFormatException(MessageLocalization.GetComposedMessage("conflict.in.classmap",name));
                     }
                 } else {
                     if (obj.IsDictionary())
@@ -403,7 +403,7 @@ namespace iTextSharp.text.pdf
                 roleMap.Put(structType,obj);
             } else if ((currentRole = roleMap.Get(structType)) != null) {
                 if (!currentRole.Equals(obj)) {
-                    throw new BadPdfFormatException(MessageLocalization.GetComposedMessage("conflict.input.rolemap",obj));
+                    throw new BadPdfFormatException(MessageLocalization.GetComposedMessage("conflict.in.rolemap",obj));
                 }
             } else {
                 roleMap.Put(structType,obj);

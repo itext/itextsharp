@@ -172,7 +172,7 @@ namespace iTextSharp.text.pdf.intern
                 if (halfTone != null) {
                     if (halfTone.Contains(PdfName.HALFTONENAME))
                         throw new PdfAConformanceException(obj1,
-                            MessageLocalization.GetComposedMessage("halftones.shall.not.Contains.halftonename"));
+                            MessageLocalization.GetComposedMessage("halftones.shall.not.contains.halftonename"));
 
                     PdfNumber halftoneType = halfTone.GetAsNumber(PdfName.HALFTONETYPE);
                     if (halftoneType == null || (halftoneType.IntValue != 1 && halftoneType.IntValue != 5))
@@ -769,7 +769,7 @@ namespace iTextSharp.text.pdf.intern
                         if (n == null || !n.IsDictionary())
                             throw new PdfAConformanceException(obj1,
                                 MessageLocalization.GetComposedMessage(
-                                    "appearance.dictionary.of.widget.subtype.and.btn.filled.type.shall.contain.only.the.n.key.with.dictionary.value"));
+                                    "appearance.dictionary.of.widget.subtype.and.btn.field.type.shall.contain.only.the.n.key.with.dictionary.value"));
                     }
                     else {
                         if (n == null || !n.IsStream())
