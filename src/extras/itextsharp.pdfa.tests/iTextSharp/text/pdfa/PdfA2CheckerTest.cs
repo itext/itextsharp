@@ -935,7 +935,7 @@ namespace iTextSharp.text.pdfa {
             }
             catch (PdfAConformanceException e) {
                 if (e.GetObject() == annot && e.Message
-                    .Equals("Appearance dictionary of Widget subtype and Btn filled type shall contain only the n key with dictionary value")) {
+                    .Equals("Appearance dictionary of Widget subtype and Btn field type shall contain only the n key with dictionary value")) {
                     exceptionThrown = true;
                 }
             }

@@ -460,7 +460,7 @@ namespace iTextSharp.text.pdf.intern
 
                 }
                 if (PdfName.WIDGET.Equals(annot.GetAsName(PdfName.SUBTYPE)) && (annot.Contains(PdfName.AA) || annot.Contains(PdfName.A))) {
-                    throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("widGet.annotation.dictionary.or.field.dictionary.shall.not.include.a.or.aa.entry"));
+                    throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("widget.annotation.dictionary.or.field.dictionary.shall.not.include.a.or.aa.entry"));
                 }
                 if (CheckStructure(conformanceLevel)) {
                     if (contentAnnotations.Contains(subtype) && !annot.Contains(PdfName.CONTENTS)) {

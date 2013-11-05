@@ -1450,7 +1450,7 @@ namespace iTextSharp.text.pdf {
         */
         public override int Duration {
             set {
-                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("use.the.methods.at.pdfstamper"));
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("use.setpageaction.pdfname.actiontype.pdfaction.action.int.page"));
             }
         }
         
@@ -1460,7 +1460,7 @@ namespace iTextSharp.text.pdf {
         */
         public override PdfTransition Transition {
             set {
-                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("use.the.methods.at.pdfstamper"));
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("use.setpageaction.pdfname.actiontype.pdfaction.action.int.page"));
             }
         }
 
@@ -1568,7 +1568,7 @@ namespace iTextSharp.text.pdf {
         */
         public override Image Thumbnail {
             set {
-                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("use.pdfstamper.thumbnail"));
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("use.pdfstamper.setthumbnail"));
             }
         }
         
