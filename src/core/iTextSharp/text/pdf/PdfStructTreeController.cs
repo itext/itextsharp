@@ -16,10 +16,6 @@ namespace iTextSharp.text.pdf
         private PdfIndirectReference nullReference = null;
         //private Dictionary<int, object> openedDocuments = new Dictionary<int, object>();
         public enum ReturnType {BELOW, FOUND, ABOVE, NOTFOUND};
-        public static PdfName [] standardTypes = {PdfName.P, PdfName.H, PdfName.H1, PdfName.H2, PdfName.H3, PdfName.H4,
-                PdfName.H5, PdfName.H6, PdfName.L, PdfName.LBL, PdfName.LI, PdfName.LBODY, PdfName.TABLE, PdfName.TABLEROW,
-                PdfName.TH, PdfName.TD, PdfName.THEAD, PdfName.TBODY, PdfName.TFOOT, PdfName.SPAN, PdfName.QUOTE, PdfName.NOTE,
-                PdfName.REFERENCE, PdfName.BIBENTRY, PdfName.CODE, PdfName.LINK, PdfName.ANNOT, PdfName.RUBY, PdfName.WARICHU};
 
         protected internal PdfStructTreeController(PdfReader reader, PdfCopy writer){
             if (!writer.IsTagged())
@@ -380,7 +376,7 @@ namespace iTextSharp.text.pdf
             if (structType == null) {
                 return;
             }
-            foreach (PdfName name in standardTypes) {
+            foreach (PdfName name in writer.GetStandardStructElems()) {
                 if (name.Equals(structType))
                     return;
             }

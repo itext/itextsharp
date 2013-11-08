@@ -197,7 +197,9 @@ namespace iTextSharp.text.pdf {
                 PdfDictionary param = new PdfDictionary();
                 if (fileParameter != null)
                     param.Merge(fileParameter);
-
+                if (!param.Contains(PdfName.MODDATE)) {
+                    param.Put(PdfName.MODDATE, new PdfDate());
+                }
                 if (fileStore != null) {
                     param.Put(PdfName.SIZE, new PdfNumber(stream.RawLength));
                     stream.Put(PdfName.PARAMS, param);

@@ -2,7 +2,7 @@
 
 namespace iTextSharp.text.pdf.security
 {
-    internal class SecurityConstants {
+    internal sealed class SecurityConstants {
 
         public const String XMLNS = "xmlns";
         public const String XMLNS_XADES = "xmlns:xades";

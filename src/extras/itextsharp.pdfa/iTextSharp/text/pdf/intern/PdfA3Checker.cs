@@ -44,96 +44,81 @@
 
 using System;
 using System.util.collections;
+using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf.intern
 {
-    public class PdfA3Checker : PdfAChecker {
+    public class PdfA3Checker : PdfA2Checker {
+
+        private static HashSet2<PdfName> allowedAFRelationships = new HashSet2<PdfName>(new PdfName[] {
+            AFRelationshipValue.Source, AFRelationshipValue.Data, AFRelationshipValue.Alternative,
+            AFRelationshipValue.Supplement, AFRelationshipValue.Unspecified});
+
         internal PdfA3Checker(PdfAConformanceLevel conformanceLevel)
             :base(conformanceLevel) {
         }
 
         protected override HashSet2<PdfName> InitKeysForCheck() {
-            return new HashSet2<PdfName>();
-        }
-
-        protected override void CheckFont(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-
-        protected override void CheckImage(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        protected override void CheckFormXObj(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-        protected override void CheckInlineImage(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-
-        protected override void CheckGState(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-
-        protected override void CheckLayer(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-
-        protected override void CheckTrailer(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-
-        protected override void CheckStream(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-
-        protected override void CheckPdfObject(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-
-        protected override void CheckCanvas(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-
-        protected override void CheckColor(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-
-        protected override void CheckAnnotation(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-
-        protected override void CheckAction(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-
-        protected override void CheckForm(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
-        }
-
-
-        protected override void CheckStructElem(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
+            HashSet2<PdfName> keysForCheck = base.InitKeysForCheck();
+            keysForCheck.Add(PdfName.PARAMS);
+            keysForCheck.Add(PdfName.MODDATE);
+            keysForCheck.Add(PdfName.F);
+            return keysForCheck;
         }
 
         protected override void CheckFileSpec(PdfWriter writer, int key, Object obj1) {
-            // don't do anything
+            if (obj1 is PdfFileSpecification) {
+                PdfDictionary fileSpec = (PdfFileSpecification) obj1;
+                if (!fileSpec.Contains(PdfName.UF) || !fileSpec.Contains(PdfName.F)
+                    || !fileSpec.Contains(PdfName.DESC)) {
+                    throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("file.specification.dictionary.shall.contain.f.uf.and.desc.entries"));
+                }
+
+                PdfObject obj = fileSpec.Get(PdfName.AFRELATIONSHIP);
+
+                if (obj == null || !obj.IsName() || !allowedAFRelationships.Contains(obj as PdfName)) {
+                    throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("file.specification.dictionary.shall.contain.correct.afrelationship.key"));
+                }
+
+                if (fileSpec.Contains(PdfName.EF)) {
+                    PdfDictionary dict = GetDirectDictionary(fileSpec.Get(PdfName.EF));
+                    if (dict == null || !dict.Contains(PdfName.F)) {
+                        throw new PdfAConformanceException(obj1,
+                            MessageLocalization.GetComposedMessage("ef.key.of.file.specification.dictionary.shall.contain.dictionary.with.valid.f.key"));
+                    }
+
+                    PdfDictionary embeddedFile = GetDirectDictionary(dict.Get(PdfName.F));
+                    if (embeddedFile == null) {
+                        throw new PdfAConformanceException(obj1,
+                            MessageLocalization.GetComposedMessage("ef.key.of.file.specification.dictionary.shall.contain.dictionary.with.valid.f.key"));
+                    }
+
+                    CheckEmbeddedFile(embeddedFile);
+                }
+            }
         }
 
-        protected override void CheckOutputIntent(PdfWriter writer, int key, Object obj1) {
-            //To change body of implemented methods use File | Settings | File Templates.
+        protected override void CheckEmbeddedFile(PdfDictionary embeddedFile) {
+            PdfDictionary parms = GetDirectDictionary(embeddedFile.Get(PdfName.PARAMS));
+            if (parms == null) {
+                throw new PdfAConformanceException(embeddedFile, MessageLocalization.GetComposedMessage("embedded.file.shall.contain.valid.params.key"));
+            }
+            PdfObject modDate = parms.Get(PdfName.MODDATE);
+            if (modDate == null || !(modDate is PdfDate)) {
+                throw new PdfAConformanceException(embeddedFile, MessageLocalization.GetComposedMessage("embedded.file.shall.contain.params.key.with.valid.moddate.key"));
+            }
         }
+
+        protected override void CheckPdfObject(PdfWriter writer, int key, Object obj1) {
+            base.CheckPdfObject(writer, key, obj1);
+            if (obj1 is PdfDictionary) {
+                PdfDictionary dictionary = (PdfDictionary) obj1;
+                PdfName type = dictionary.GetAsName(PdfName.TYPE);
+                if (PdfName.EMBEDDEDFILE.Equals(type)) {
+                    CheckEmbeddedFile(dictionary);
+                }
+            }
+        }
+
     }
 }

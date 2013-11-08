@@ -64,10 +64,14 @@ namespace itextsharp.tests.text.pdf {
         }
 
         private void InitializeDocument(String name) {
+            InitializeDocument(name, PdfWriter.VERSION_1_7);
+        }
+
+        private void InitializeDocument(String name, char pdfVersion) {
             output = OUT + name + ".pdf";
             document = new Document();
             writer = PdfWriter.GetInstance(document, new FileStream(output, FileMode.Create));
-            writer.PdfVersion = '7';
+            writer.PdfVersion = pdfVersion;
             writer.SetTagged();
             document.Open();
 
@@ -681,8 +685,8 @@ namespace itextsharp.tests.text.pdf {
             table.FooterRows = 2;
             try {
                 for (int i = 1; i <= 50; i++) {
-                    table.AddCell("row " + i + ", coumn 1");
-                    table.AddCell("row " + i + ", coumn 2");
+                    table.AddCell("row " + i + ", column 1");
+                    table.AddCell("row " + i + ", column 2");
                 }
             }
             catch (Exception) {
@@ -800,34 +804,23 @@ namespace itextsharp.tests.text.pdf {
             table.FooterRows = 2;
 
             try {
-                PdfPHeaderCell headerCell = null, headerCell2 = null;
-                cell = null;
-                for (int i = 1; i <= 2; i++) {
-                    if (i == 1) {
-                        headerCell = new PdfPHeaderCell();
-                        headerCell.Scope = PdfPHeaderCell.ROW;
-                        headerCell.Phrase = new Phrase("header1");
-                        headerCell.Name = "header1";
-                        table.AddCell(headerCell);
-
-                        headerCell2 = new PdfPHeaderCell();
-                        headerCell2.Scope = PdfPHeaderCell.ROW;
-                        headerCell2.Phrase = new Phrase("header2");
-                        headerCell2.Name = "header2";
-                        table.AddCell(headerCell2);
-                    }
-                    else {
-                        cell = new PdfPCell(new Phrase("row " + i + ", coumn 1"));
-                        cell.AddHeader(headerCell);
-                        table.AddCell(cell);
-
-                        cell = new PdfPCell(new Phrase("row " + i + ", coumn 2"));
-                        cell.AddHeader(headerCell2);
-                        cell.AddHeader(headerCell2);
-
-                        table.AddCell(cell);
-                    }
-                }
+                PdfPHeaderCell headerCell = new PdfPHeaderCell();
+                headerCell.Scope = PdfPHeaderCell.ROW;
+                headerCell.Phrase = new Phrase("header1");
+                headerCell.Name = "header1";
+                table.AddCell(headerCell);
+                PdfPHeaderCell headerCell2 = new PdfPHeaderCell();
+                headerCell2.Scope = PdfPHeaderCell.ROW;
+                headerCell2.Phrase = new Phrase("header2");
+                headerCell2.Name = "header2";
+                table.AddCell(headerCell2);
+                cell = new PdfPCell(new Phrase("row 2, column 1"));
+                cell.AddHeader(headerCell);
+                table.AddCell(cell);
+                cell = new PdfPCell(new Phrase("row 2, column 2"));
+                cell.AddHeader(headerCell2);
+                cell.AddHeader(headerCell2);
+                table.AddCell(cell);
             }
             catch (Exception e) {
                 Trace.WriteLine(e.Message);
@@ -984,6 +977,78 @@ namespace itextsharp.tests.text.pdf {
                 document.Close();
             }
             Assert.Fail("Expected error: 'Template with tagged content could not be used more than once.");
+        }
+
+        [Test]
+        public void CreateTaggedPdf22() {
+            InitializeDocument("22", PdfWriter.VERSION_1_4);
+            Paragraph p = new Paragraph();
+            PdfName nParagraph = new PdfName("Paragraph");
+            p.Role = nParagraph;
+            writer.StructureTreeRoot.MapRole(nParagraph, PdfName.P);
+
+            try {
+                Chunk c = new Chunk("Quick brown ");
+                PdfName nTextBlock = new PdfName("TextBlock");
+                c.Role = nTextBlock;
+                writer.StructureTreeRoot.MapRole(nTextBlock, PdfName.SPAN);
+                p.Add(c);
+                Image i = Image.GetInstance(RESOURCES + "img\\dog.bmp");
+                c = new Chunk(i, 0, 0);
+                PdfName nImage = new PdfName("Image");
+                c.Role = nImage;
+                writer.StructureTreeRoot.MapRole(nImage, PdfName.FIGURE);
+                c.SetAccessibleAttribute(PdfName.ALT, new PdfString("Fox image"));
+                p.Add(c);
+                p.Add(new Chunk(" jumped over a lazy "));
+                i = Image.GetInstance(RESOURCES + "img\\dog.bmp");
+                c = new Chunk(i, 0, 0);
+                c.SetAccessibleAttribute(PdfName.ALT, new PdfString("Dog image"));
+                p.Add(c);
+            }
+            catch (Exception e) {
+            }
+            document.Add(h1);
+            document.Add(p);
+            document.Close();
+            int[] nums = new int[] {7};
+            CheckNums(nums);
+            CompareResults("22");
+        }
+
+        [Test]
+        public void CreateTaggedPdf23() {
+            InitializeDocument("23", PdfWriter.VERSION_1_4);
+
+            PdfPTable table = new PdfPTable(2);
+            PdfPCell cell = new PdfPCell(new Paragraph("header 1"));
+            cell.Colspan = 2;
+            table.AddCell(cell);
+            cell = new PdfPCell(new Paragraph("header 2"));
+            cell.Colspan = 2;
+            table.AddCell(cell);
+            cell = new PdfPCell(new Paragraph("footer 1"));
+            cell.Colspan = 2;
+            table.AddCell(cell);
+            cell = new PdfPCell(new Paragraph("footer 2"));
+            cell.Colspan = 2;
+            table.AddCell(cell);
+            table.HeaderRows = 4;
+            table.FooterRows = 2;
+            try {
+                for (int i = 1; i <= 50; i++) {
+                    table.AddCell("row " + i + ", column 1");
+                    table.AddCell("row " + i + ", column 2");
+                }
+            }
+            catch (Exception e) {
+            }
+            document.Add(table);
+            document.Close();
+
+            int[] nums = new int[] {234, 44};
+            CheckNums(nums);
+            CompareResults("23");
         }
 
         private void CheckNums(int[] nums) {
