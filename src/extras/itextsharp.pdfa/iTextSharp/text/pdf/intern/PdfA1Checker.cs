@@ -152,7 +152,7 @@ namespace iTextSharp.text.pdf.intern
                 if (obj != null && (v = ((PdfNumber) obj).DoubleValue) != 1.0)
                     throw new PdfAConformanceException(obj1,
                         MessageLocalization.GetComposedMessage("transparency.is.not.allowed.ca.eq.1", v.ToString()));
-                obj = gs.Get(PdfName.ca_);
+                obj = gs.Get(PdfName.ca);
                 v = 0.0;
                 if (obj != null && (v = ((PdfNumber) obj).DoubleValue) != 1.0)
                     throw new PdfAConformanceException(obj1,

@@ -136,7 +136,7 @@ namespace iTextSharp.text.pdf.intern
                         transparencyDetectedOnThePage = true;
                 }
 
-                PdfNumber ca = gs.GetAsNumber(PdfName.ca_);
+                PdfNumber ca = gs.GetAsNumber(PdfName.ca);
                 if (ca != null && ca.FloatValue < 1f) {
                     transparencyDetectedOnThePage = true;
                 }

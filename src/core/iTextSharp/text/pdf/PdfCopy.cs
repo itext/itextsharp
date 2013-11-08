@@ -1255,7 +1255,6 @@ namespace iTextSharp.text.pdf {
                 map.TryGetValue(s, out obj);
                 if (tk.HasMoreTokens()) {
                     if (obj == null) {
-                        obj = new Dictionary<string,object>();
                         map[s] = obj;
                         map = (Dictionary<string,object>)obj;
                         continue;
@@ -1583,7 +1582,6 @@ namespace iTextSharp.text.pdf {
         
         public override void Close() {
             if (open) {
-                PdfReaderInstance ri = currentPdfReaderInstance;
                 pdf.Close();
                 base.Close();
                 // Users are responsible for closing PdfReaders
@@ -1603,6 +1601,9 @@ namespace iTextSharp.text.pdf {
         internal override PdfIndirectReference Add(PdfPage page, PdfContents contents) { return null; }
 
         public override void FreeReader(PdfReader reader) {
+            PdfArray array = reader.trailer.GetAsArray(PdfName.ID);
+            if (array != null)
+                originalFileID = array.GetAsString(0).GetBytes();
             indirectMap.Remove(reader);
 // TODO: Removed - the user should be responsible for closing all PdfReaders.  But, this could cause a lot of memory leaks in code out there that hasn't been properly closing things - maybe add a finalizer to PdfReader that calls PdfReader#close() ??            	
             //if (currentPdfReaderInstance != null) {

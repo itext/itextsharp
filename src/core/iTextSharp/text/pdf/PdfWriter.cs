@@ -1174,6 +1174,8 @@ namespace iTextSharp.text.pdf {
 
         /** A number refering to the previous Cross-Reference Table. */
         protected long prevxref = 0;
+        /** The original file ID (if present). */
+        protected byte[] originalFileID = null;
 
         /**
         * Signals that the <CODE>Document</CODE> has been opened and that
@@ -1269,13 +1271,15 @@ namespace iTextSharp.text.pdf {
                 PdfIndirectReference encryption = null;
                 PdfObject fileID = null;
                 body.FlushObjStm();
+                bool isModified = (originalFileID != null);
                 if (crypto != null) {
                     PdfIndirectObject encryptionObject = AddToBody(crypto.GetEncryptionDictionary(), false);
                     encryption = encryptionObject.IndirectReference;
-                    fileID = crypto.FileID;
+                    fileID = crypto.GetFileID(isModified);
                 }
-                else
-                    fileID = PdfEncryption.CreateInfoId(PdfEncryption.CreateDocumentId());
+                else {
+                    fileID = PdfEncryption.CreateInfoId(isModified ? originalFileID : PdfEncryption.CreateDocumentId(), isModified);
+                }
                 
                 // write the cross-reference table of the body
                 body.WriteCrossReferenceTable(os, indirectCatalog.IndirectReference,
