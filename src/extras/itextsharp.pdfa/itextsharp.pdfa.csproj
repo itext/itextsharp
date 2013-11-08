@@ -49,6 +49,7 @@
     <Reference Include="System" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="iTextSharp\text\pdf\AFRelationshipValue.cs" />
     <Compile Include="iTextSharp\text\pdf\interfaces\IPdfAConformance.cs" />
     <Compile Include="iTextSharp\text\pdf\intern\PdfA1Checker.cs" />
     <Compile Include="iTextSharp\text\pdf\intern\PdfA2Checker.cs" />
