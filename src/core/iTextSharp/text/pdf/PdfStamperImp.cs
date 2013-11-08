@@ -378,15 +378,15 @@ namespace iTextSharp.text.pdf {
                     PdfIndirectObject encryptionObject = AddToBody(crypto.GetEncryptionDictionary(), false);
                     encryption = encryptionObject.IndirectReference;
                 }
-                fileID = crypto.FileID;
+                fileID = crypto.GetFileID(true);
             }
             else {
                 PdfArray IDs = reader.trailer.GetAsArray(PdfName.ID);
                 if(IDs != null && IDs.GetAsString(0) != null) {
-                    fileID = PdfEncryption.CreateInfoId(IDs.GetAsString(0).GetBytes());
+                    fileID = PdfEncryption.CreateInfoId(IDs.GetAsString(0).GetBytes(), true);
                 }
                 else {
-                    fileID = PdfEncryption.CreateInfoId(PdfEncryption.CreateDocumentId());
+                    fileID = PdfEncryption.CreateInfoId(PdfEncryption.CreateDocumentId(), true);
                 }
             }
             PRIndirectReference iRoot = (PRIndirectReference)reader.trailer.Get(PdfName.ROOT);

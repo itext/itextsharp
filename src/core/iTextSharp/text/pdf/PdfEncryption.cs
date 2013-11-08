@@ -498,7 +498,7 @@ public class PdfEncryption {
             keySize = 16;
     }
 
-    public static PdfObject CreateInfoId(byte[] id) {
+    public static PdfObject CreateInfoId(byte[] id, bool modified) {
         ByteBuffer buf = new ByteBuffer(90);
         buf.Append('[').Append('<');
         if(id.Length != 16)
@@ -506,7 +506,8 @@ public class PdfEncryption {
         for (int k = 0; k < 16; ++k)
             buf.AppendHex(id[k]);
         buf.Append('>').Append('<');
-        id = CreateDocumentId();
+        if (modified)
+            id = CreateDocumentId();
         for (int k = 0; k < 16; ++k)
             buf.AppendHex(id[k]);
         buf.Append('>').Append(']');
@@ -668,11 +669,10 @@ public class PdfEncryption {
         return dic;
     }
     
-    public PdfObject FileID {
-        get {
-            return CreateInfoId(documentID);
-        }
+    public PdfObject GetFileID(bool modified) {
+        return CreateInfoId(documentID, modified);
     }
+
     public OutputStreamEncryption GetEncryptionStream(Stream os) {
         return new OutputStreamEncryption(os, key, 0, keySize, revision);
     }
