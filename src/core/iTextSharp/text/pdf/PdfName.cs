@@ -125,7 +125,15 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName AESV2 = new PdfName("AESV2");
         /** A name */
         public static readonly PdfName AESV3 = new PdfName("AESV3");
-        /** A name */
+        /**
+         * A name
+         * @since 5.4.5
+         */
+        public static readonly PdfName AFRELATIONSHIP = new PdfName("AFRelationship");
+        /**
+         * A name
+         * @since 5.0.3
+         */
         public static readonly PdfName AHX = new PdfName("AHx");
         /** A name */
         public static readonly PdfName AIS = new PdfName("AIS");

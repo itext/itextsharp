@@ -122,7 +122,7 @@ namespace iTextSharp.text.pdf.intern
 
         protected PdfDictionary GetDirectDictionary(PdfObject obj) {
             obj = GetDirectObject(obj);
-            if (obj != null && obj.IsDictionary())
+            if (obj != null && obj is PdfDictionary)
                 return (PdfDictionary) obj;
             return null;
         }

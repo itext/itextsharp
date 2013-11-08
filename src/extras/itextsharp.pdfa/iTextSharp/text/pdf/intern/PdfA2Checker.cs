@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Security.AccessControl;
 using System.Text;
 using System.util.collections;
 using iTextSharp.text.error_messages;
@@ -72,7 +71,8 @@ namespace iTextSharp.text.pdf.intern
         private static readonly HashSet2<PdfName> keysForCheck = new HashSet2<PdfName>(new PdfName[] {PdfName.AP, PdfName.N,
             PdfName.R, PdfName.D, PdfName.FONTFILE, PdfName.FONTFILE2, PdfName.FONTFILE3, PdfName.NAME, PdfName.XFA,
             PdfName.ALTERNATEPRESENTATION, PdfName.DOCMDP, PdfName.REFERENCE, new PdfName("DigestLocation"),
-            new PdfName("DigestMethod"), new PdfName("DigestValue"), PdfName.MARKED, PdfName.S});
+            new PdfName("DigestMethod"), new PdfName("DigestValue"), PdfName.MARKED, PdfName.S, PdfName.SUBTYPE,
+            PdfName.F});
 
         static public readonly PdfName DIGESTLOCATION = new PdfName("DigestLocation");
         static public readonly PdfName DIGESTMETHOD = new PdfName("DigestMethod");
@@ -407,11 +407,35 @@ namespace iTextSharp.text.pdf.intern
 
         protected override void CheckFileSpec(PdfWriter writer, int key, Object obj1) {
             if (obj1 is PdfFileSpecification) {
-                PdfDictionary fileSpec = (PdfFileSpecification)obj1;
-                if (fileSpec.Contains(PdfName.EF) &&
-                        (!fileSpec.Contains(PdfName.UF) || !fileSpec.Contains(PdfName.F))) {
+                PdfDictionary fileSpec = (PdfFileSpecification) obj1;
+                if (!fileSpec.Contains(PdfName.UF) || !fileSpec.Contains(PdfName.F) || !fileSpec.Contains(PdfName.DESC)) {
                     throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("file.specification.dictionary.shall.contain.f.uf.and.desc.entries"));
                 }
+
+                if (fileSpec.Contains(PdfName.EF)) {
+                    PdfDictionary dict = GetDirectDictionary(fileSpec.Get(PdfName.EF));
+                    if (dict == null || !dict.Contains(PdfName.F)) {
+                        throw new PdfAConformanceException(obj1,
+                            MessageLocalization.GetComposedMessage("ef.key.of.file.specification.dictionary.shall.contain.dictionary.with.valid.f.key"));
+                    }
+
+                    PdfDictionary embeddedFile = GetDirectDictionary(dict.Get(PdfName.F));
+                    if (embeddedFile == null) {
+                        throw new PdfAConformanceException(obj1,
+                            MessageLocalization.GetComposedMessage("ef.key.of.file.specification.dictionary.shall.contain.dictionary.with.valid.f.key"));
+                    }
+
+                    CheckEmbeddedFile(embeddedFile);
+                }
+            }
+        }
+
+        private static PdfName MimeTypePdf = new PdfName(PdfAWriter.MimeTypePdf);
+
+        protected virtual void CheckEmbeddedFile(PdfDictionary embeddedFile) {
+            PdfName subtype = embeddedFile.GetAsName(PdfName.SUBTYPE);
+            if (subtype == null || !MimeTypePdf.Equals(subtype)) {
+                throw new PdfAConformanceException(embeddedFile, MessageLocalization.GetComposedMessage("embedded.file.shall.contain.pdf.mime.type"));
             }
         }
 
@@ -626,6 +650,8 @@ namespace iTextSharp.text.pdf.intern
                                     "outputintent.shall.have.colourspace.gray.rgb.or.cmyk"));
                         }
                     }
+                } else if (PdfName.EMBEDDEDFILE.Equals(type)) {
+                    CheckEmbeddedFile(dictionary);
                 }
                 PdfObject obj2 = dictionary.Get(PdfName.HALFTONETYPE);
                 if (obj2 != null && obj2.IsNumber()) {

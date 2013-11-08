@@ -817,12 +817,16 @@ namespace iTextSharp.text.pdf {
         }
 
         private PdfPTableBody OpenTableBlock(PdfPTableBody block, PdfContentByte canvas) {
-            canvas.OpenMCBlock(block);
-            return block;
+            if (canvas.writer.GetStandardStructElems().Contains(block.Role)) {
+                canvas.OpenMCBlock(block);
+                return block;
+            }
+            return null;
         }
 
         private PdfPTableBody CloseTableBlock(PdfPTableBody block, PdfContentByte canvas) {
-            canvas.CloseMCBlock(block);
+            if (canvas.writer.GetStandardStructElems().Contains(block.Role))
+                canvas.CloseMCBlock(block);
             return null;
         }
 

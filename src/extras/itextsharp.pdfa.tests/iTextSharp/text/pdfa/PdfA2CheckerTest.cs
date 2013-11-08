@@ -1063,7 +1063,7 @@ namespace iTextSharp.text.pdfa {
         [Test]
         public void AnnotationCheckTest11() {
             Document document = new Document();
-            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest9.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest11.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
             writer.CreateXmpMetadata();
             writer.SetTagged();
             document.Open();
@@ -1185,7 +1185,7 @@ namespace iTextSharp.text.pdfa {
                 ColumnText.ShowTextAligned(canvas, Element.ALIGN_LEFT, new Paragraph("Hello World", font), 36, 775, 0);
                 stamper.Close();
             }
-            catch (PdfAConformanceException e) {
+            catch (PdfAConformanceException) {
                 exceptionThrown = true;
             }
             reader.Close();
@@ -1235,7 +1235,7 @@ namespace iTextSharp.text.pdfa {
                     Element.ALIGN_LEFT, new Paragraph("Hello World", font), 36, 775, 760);
                 stamper.Close();
             }
-            catch (PdfAConformanceException e) {
+            catch (PdfAConformanceException) {
                 exceptionThrown = true;
             }
             reader.Close();
@@ -1280,7 +1280,7 @@ namespace iTextSharp.text.pdfa {
 
                 document.Close();
             }
-            catch (PdfAConformanceException e) {
+            catch (PdfAConformanceException) {
                 exceptionThrown = true;
             }
 
@@ -1343,10 +1343,10 @@ namespace iTextSharp.text.pdfa {
 
                 document.Close();
             }
-            catch (DocumentException docExc) {
+            catch (DocumentException) {
                 exceptionThrown = true;
             }
-            catch (PdfAConformanceException exc) {
+            catch (PdfAConformanceException) {
                 exceptionThrown = true;
             }
 
@@ -1434,6 +1434,80 @@ namespace iTextSharp.text.pdfa {
             cb.Fill();
             cb.Circle(x + 125, y + 125, 70);
             cb.Fill();
+        }
+
+        [Test]
+        public void FileSpecCheckTest1() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "fileSpecCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            byte[] somePdf = new byte[25];
+            writer.AddFileAttachment("some pdf file", somePdf, "foo.pdf", "foo.pdf", PdfAWriter.MimeTypePdf,
+                AFRelationshipValue.Data);
+
+            document.Close();
+        }
+
+        [Test]
+        public void FileSpecCheckTest2() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "fileSpecCheckTest2.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            FileStream iss = File.OpenRead(RESOURCES + "pdfa.pdf");
+            MemoryStream os = new MemoryStream();
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = iss.Read(buffer, 0, 1024)) > 0) {
+                os.Write(buffer, 0, length);
+            }
+            writer.AddPdfAttachment("some pdf file", os.ToArray(), "foo.pdf", "foo.pdf");
+
+            document.Close();
+        }
+
+        [Test]
+        public void FileSpecCheckTest3() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "fileSpecCheckTest3.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            MemoryStream txt = new MemoryStream();
+            TextWriter outp = new StreamWriter(txt);
+            outp.Write("<foo><foo2>Hello world</foo2></foo>");
+            outp.Close();
+
+            bool exceptionThrown = false;
+            try {
+                writer.AddFileAttachment("foo file", txt.ToArray(), "foo.xml", "foo.xml", "application/xml",
+                    AFRelationshipValue.Source);
+            }
+            catch (PdfAConformanceException e) {
+                if (e.GetObject() != null && e.Message.Equals("Embedded file shall contain correct pdf mime type.")) {
+                    exceptionThrown = true;
+                }
+            }
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformanceException with correct message should be thrown.");
         }
     }
 }
