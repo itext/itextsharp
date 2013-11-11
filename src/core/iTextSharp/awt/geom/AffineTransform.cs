@@ -332,19 +332,19 @@ namespace iTextSharp.awt.geom
             Concatenate(AffineTransform.GetTranslateInstance(mx, my));
         }
 
-        public void scale(double scx, double scy) {
+        public void Scale(double scx, double scy) {
             Concatenate(AffineTransform.GetScaleInstance(scx, scy));
         }
 
-        public void shear(double shx, double shy) {
+        public void Shear(double shx, double shy) {
             Concatenate(AffineTransform.GetShearInstance(shx, shy));
         }
 
-        public void rotate(double angle) {
+        public void Rotate(double angle) {
             Concatenate(AffineTransform.GetRotateInstance(angle));
         }
 
-        public void rotate(double angle, double px, double py) {
+        public void Rotate(double angle, double px, double py) {
             Concatenate(AffineTransform.GetRotateInstance(angle, px, py));
         }
 

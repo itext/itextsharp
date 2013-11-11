@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
  * This file is part of the iText project.
@@ -79,7 +78,7 @@ namespace iTextSharp.text.pdf {
         * @param text the text
         * @return a <CODE>Phrase</CODE> with one or more chunks
         */
-        public Phrase Process(String text) {
+        public virtual Phrase Process(String text) {
             if (fonts.Count == 0)
                 throw new ArgumentOutOfRangeException(MessageLocalization.GetComposedMessage("no.font.is.defined"));
             char[] cc = text.ToCharArray();

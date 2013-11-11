@@ -113,9 +113,11 @@ public class CompareTool {
             }
 
             if (ignoredAreas != null && ignoredAreas.Count > 0) {
-                PdfStamper outStamper = new PdfStamper(new PdfReader(outPdf),
+                PdfReader cmpReader = new PdfReader(cmpPdf);
+                PdfReader outReader = new PdfReader(outPdf);
+                PdfStamper outStamper = new PdfStamper(outReader,
                     new FileStream(outPath + ignoredAreasPrefix + outPdfName, FileMode.Create));
-                PdfStamper cmpStamper = new PdfStamper(new PdfReader(cmpPdf),
+                PdfStamper cmpStamper = new PdfStamper(cmpReader,
                     new FileStream(outPath + ignoredAreasPrefix + cmpPdfName, FileMode.Create));
 
                 foreach (KeyValuePair< int, List<Rectangle> > entry in ignoredAreas)
@@ -138,6 +140,9 @@ public class CompareTool {
 
                 outStamper.Close();
                 cmpStamper.Close();
+
+                outReader.Close();
+                cmpReader.Close();
 
                 init(outPath + ignoredAreasPrefix + outPdfName, outPath + ignoredAreasPrefix + cmpPdfName);
             }
