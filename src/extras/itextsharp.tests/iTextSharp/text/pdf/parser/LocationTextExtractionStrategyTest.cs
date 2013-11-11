@@ -172,7 +172,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
             AffineTransform tx = new AffineTransform();
             if(rotate) {
                 tx.Translate(0, template.Height);
-                tx.rotate(-90 / 180f * Math.PI);
+                tx.Rotate(-90 / 180f * Math.PI);
             }
             template.Transform(tx);
             template.BeginText();
