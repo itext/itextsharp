@@ -74,9 +74,6 @@ namespace iTextSharp.tool.xml.html.pdfelement {
         /** The alignment of the text. */
         protected internal int alignment = Element.ALIGN_UNDEFINED;
 
-        /** The text leading that is multiplied by the biggest font size in the line. */
-        protected internal float multipliedLeading = 0;
-
         /** The indentation of this paragraph on the left side. */
         protected internal float indentationLeft;
 
@@ -178,8 +175,6 @@ namespace iTextSharp.tool.xml.html.pdfelement {
             if (phrase is NoNewLineParagraph) {
                 NoNewLineParagraph p = (NoNewLineParagraph)phrase;
                 alignment = p.Alignment;
-                leading = phrase.Leading;
-                multipliedLeading = p.MultipliedLeading;
                 indentationLeft = p.IndentationLeft;
                 indentationRight = p.IndentationRight;
                 firstLineIndent = p.FirstLineIndent;
@@ -190,7 +185,6 @@ namespace iTextSharp.tool.xml.html.pdfelement {
             if (phrase is Paragraph) {
                 Paragraph p = (Paragraph)phrase;
                 Alignment = p.Alignment;
-                SetLeading(phrase.Leading, p.MultipliedLeading);
                 IndentationLeft = p.IndentationLeft;
                 IndentationRight = p.IndentationRight;
                 FirstLineIndent = p.FirstLineIndent;
@@ -233,43 +227,6 @@ namespace iTextSharp.tool.xml.html.pdfelement {
             }
         }
 
-        /**
-         * @see com.itextpdf.text.Phrase#setLeading(float)
-         */
-        public override float Leading {
-            set {
-                this.leading = value;
-                this.multipliedLeading = 0;
-            }
-        }
-
-        /**
-         * Sets the variable leading. The resultant leading will be
-         * multipliedLeading*maxFontSize where maxFontSize is the
-         * size of the biggest font in the line.
-         * @param multipliedLeading the variable leading
-         */
-        public virtual float MultipliedLeading {
-            set {
-                this.leading = 0;
-                this.multipliedLeading = value;
-            }
-            get {
-                return this.multipliedLeading;
-            }
-        }
-
-        /**
-         * Sets the leading fixed and variable. The resultant leading will be
-         * fixedLeading+multipliedLeading*maxFontSize where maxFontSize is the
-         * size of the biggest font in the line.
-         * @param fixedLeading the fixed leading
-         * @param multipliedLeading the variable leading
-         */
-        public virtual void SetLeading(float fixedLeading, float multipliedLeading) {
-            this.leading = fixedLeading;
-            this.multipliedLeading = multipliedLeading;
-        }
 
         /**
          * Sets the indentation of this paragraph on the left side.
@@ -352,23 +309,6 @@ namespace iTextSharp.tool.xml.html.pdfelement {
             get {
                 return this.keeptogether;
             }
-        }
-
-        /**
-         * Gets the total leading.
-         * This method is based on the assumption that the
-         * font of the Paragraph is the font of all the elements
-         * that make part of the paragraph. This isn't necessarily
-         * true.
-         * @return the total leading (fixed and multiplied)
-         */
-        public override float GetTotalLeading() {
-            float m = font == null ?
-                    Font.DEFAULTSIZE * multipliedLeading : font.GetCalculatedLeading(multipliedLeading);
-            if (m > 0 && !HasLeading()) {
-                return m;
-            }
-            return Leading + m;
         }
 
         /**

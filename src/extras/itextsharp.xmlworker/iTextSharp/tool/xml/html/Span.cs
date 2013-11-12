@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using iTextSharp.text;
-using iTextSharp.tool.xml;
-using iTextSharp.tool.xml.exceptions;
+
 /*
  * $Id: Span.java 122 2011-05-27 12:20:58Z redlab_b $
  *
