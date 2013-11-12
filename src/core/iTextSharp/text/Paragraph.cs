@@ -76,9 +76,6 @@ namespace iTextSharp.text {
     
         ///<summary> The alignment of the text. </summary>
         protected int alignment = Element.ALIGN_UNDEFINED;
-    
-        /** The text leading that is multiplied by the biggest font size in the line. */
-        protected float multipliedLeading = 0;
         
         ///<summary> The indentation of this paragraph on the left side. </summary>
         protected float indentationLeft;
@@ -175,12 +172,12 @@ namespace iTextSharp.text {
             if (phrase is Paragraph) {
                 Paragraph p = (Paragraph)phrase;
                 Alignment = p.Alignment;
-                ExtraParagraphSpace = p.ExtraParagraphSpace;
-                FirstLineIndent = p.FirstLineIndent;
                 IndentationLeft = p.IndentationLeft;
                 IndentationRight = p.IndentationRight;
+                FirstLineIndent = p.FirstLineIndent;
                 SpacingAfter = p.SpacingAfter;
                 SpacingBefore = p.SpacingBefore;
+                ExtraParagraphSpace = p.ExtraParagraphSpace;
                 Role = p.role;
                 id = p.ID;
                 if (p.accessibleAttributes != null)
@@ -335,41 +332,6 @@ namespace iTextSharp.text {
     
         // setting the membervariables
         
-        public override float Leading {
-            set {
-                this.leading = value;
-                this.multipliedLeading = 0;
-            }
-        }
-
-        /**
-        * Sets the leading fixed and variable. The resultant leading will be
-        * fixedLeading+multipliedLeading*maxFontSize where maxFontSize is the
-        * size of the bigest font in the line.
-        * @param fixedLeading the fixed leading
-        * @param multipliedLeading the variable leading
-        */
-        public void SetLeading(float fixedLeading, float multipliedLeading) {
-            this.leading = fixedLeading;
-            this.multipliedLeading = multipliedLeading;
-        }
-
-    /**
-     * Sets the variable leading. The resultant leading will be
-     * multipliedLeading*maxFontSize where maxFontSize is the
-     * size of the bigest font in the line.
-     * @param multipliedLeading the variable leading
-     */
-        public float MultipliedLeading {
-            get {
-                return this.multipliedLeading;
-            }
-            set {
-                this.leading = 0;
-                this.multipliedLeading = value;
-            }
-        }
-
     
         /// <summary>
         /// Get/set the alignment of this paragraph.
@@ -442,25 +404,6 @@ namespace iTextSharp.text {
                 this.keeptogether = value;
             }
         }    
-
-        /**
-        * Gets the total leading.
-        * This method is based on the assumption that the
-        * font of the Paragraph is the font of all the elements
-        * that make part of the paragraph. This isn't necessarily
-        * true.
-        * @return the total leading (fixed and multiplied)
-        */
-        public float TotalLeading {
-            get {
-                float m = font == null ?
-                        Font.DEFAULTSIZE * multipliedLeading : font.GetCalculatedLeading(multipliedLeading);
-                if (m > 0 && !HasLeading()) {
-                    return m;
-                }
-                return Leading + m;
-            }
-        }
 
         public float FirstLineIndent {
             get {

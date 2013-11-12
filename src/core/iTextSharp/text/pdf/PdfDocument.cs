@@ -477,7 +477,7 @@ namespace iTextSharp.text.pdf {
                         tabSettings = ((Phrase)element).TabSettings;
 
                     // we cast the element to a phrase and set the leading of the document
-                    leading = ((Phrase) element).GetTotalLeading();
+                    leading = ((Phrase) element).TotalLeading;
                     // we process the element
                     element.Process(this);
                     tabSettings = backupTabSettings;

@@ -77,6 +77,9 @@ namespace iTextSharp.text {
     
         /// <summary>This is the leading of this phrase.</summary>
         protected Single leading = Single.NaN;
+
+        /** The text leading that is multiplied by the biggest font size in the line. */
+        protected float multipliedLeading = 0;
     
         ///<summary> This is the font of this phrase. </summary>
         protected Font font;
@@ -108,7 +111,7 @@ namespace iTextSharp.text {
         */
         public Phrase(Phrase phrase) : base() {
             this.AddAll(phrase);
-            leading = phrase.Leading;
+            SetLeading(phrase.Leading, phrase.MultipliedLeading);
             font = phrase.Font;
             tabSettings = phrase.TabSettings;
             hyphenation = phrase.hyphenation;
@@ -430,6 +433,38 @@ namespace iTextSharp.text {
             return true;
         }
 
+        /**
+         * Sets the leading fixed and variable. The resultant leading will be
+         * fixedLeading+multipliedLeading*maxFontSize where maxFontSize is the
+         * size of the biggest font in the line.
+         * @param fixedLeading the fixed leading
+         * @param multipliedLeading the variable leading
+         */
+        public void SetLeading(float fixedLeading, float multipliedLeading) {
+            this.leading = fixedLeading;
+            this.multipliedLeading = multipliedLeading;
+        }
+
+        /**
+         * Gets the variable leading
+         * @return the leading
+         */
+        /**
+         * Sets the variable leading. The resultant leading will be
+         * multipliedLeading*maxFontSize where maxFontSize is the
+         * size of the biggest font in the line.
+         * @param multipliedLeading the variable leading
+         */
+        public float MultipliedLeading {
+            get {
+                return multipliedLeading;
+            }
+            set {
+                this.leading = 0;
+                this.multipliedLeading = value;
+            }
+        }
+
         /// <summary>
         /// Gets/sets the leading of this phrase.
         /// </summary>
@@ -441,14 +476,28 @@ namespace iTextSharp.text {
                 }
                 return leading;
             }
-
             set {
                 this.leading = value;
+                this.multipliedLeading = 0;
             }
         }
-    
-        public virtual float GetTotalLeading() {
-            return this.Leading;
+
+        /**
+         * Gets the total leading.
+         * This method is based on the assumption that the
+         * font of the Paragraph is the font of all the elements
+         * that make part of the paragraph. This isn't necessarily
+         * true.
+         * @return the total leading (fixed and multiplied)
+         */
+        public virtual float TotalLeading {
+            get {
+                float m = font == null ? Font.DEFAULTSIZE*multipliedLeading : font.GetCalculatedLeading(multipliedLeading);
+                if (m > 0 && !HasLeading()) {
+                    return m;
+                }
+                return Leading + m;
+            }
         }
 
         /// <summary>
@@ -464,10 +513,10 @@ namespace iTextSharp.text {
             }
         }
     
-    /**
-    * Returns the content as a String object.
-    * This method differs from toString because toString will return an ArrayList with the toString value of the Chunks in this Phrase.
-    */
+        /**
+        * Returns the content as a String object.
+        * This method differs from toString because toString will return an ArrayList with the toString value of the Chunks in this Phrase.
+        */
         public String Content {
             get {
     	        StringBuilder buf = new StringBuilder();
