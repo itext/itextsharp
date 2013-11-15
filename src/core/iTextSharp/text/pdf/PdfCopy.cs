@@ -415,9 +415,9 @@ namespace iTextSharp.text.pdf {
                 }
             }
             iref.SetCopied();
-            parentObjects[obj] = inp;
+            if (obj != null) parentObjects[obj] = inp;
             PdfObject res = CopyObject(obj, keepStructure, directRootKids);
-            if (disableIndirects.Contains(obj))
+            if (obj != null && disableIndirects.Contains(obj))
                 iref.Copied = false;
             if (res != null) {
                 AddToBody(res, theRef);
@@ -683,7 +683,7 @@ namespace iTextSharp.text.pdf {
             if (indirectMap.ContainsKey(reader)) {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("document.1.has.already.been.added", reader.ToString()));
             }
-            reader.SelectPages(pagesToKeep);
+            reader.SelectPages(pagesToKeep, false);
             AddDocument(reader);
         }
 
@@ -730,7 +730,8 @@ namespace iTextSharp.text.pdf {
                 UpdateReferences(objecta);
             }
             PdfIndirectObject iobj;
-            if ((tagged || mergeFields) && indirectObjects != null && (objecta.IsArray() || objecta.IsDictionary() || objecta.IsStream())) {
+            if ((tagged || mergeFields) && indirectObjects != null && (objecta.IsArray() || objecta.IsDictionary() || objecta.IsStream() || objecta.IsNull()))
+            {
                 RefKey key = new RefKey(refa);
                 PdfIndirectObject obj;
                 if (!indirectObjects.TryGetValue(key, out obj)) {

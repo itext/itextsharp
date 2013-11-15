@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text;
 using System.IO;
 using iTextSharp.text.exceptions;
@@ -141,7 +140,7 @@ namespace iTextSharp.text.pdf {
 
         /**
          * Constructs a new PdfReader.  This is the master constructor.
-         * @param the source of bytes for the reader
+         * @param byteSource source of bytes for the reader
          * @param partialRead if true, the reader is opened in partial mode (PDF is parsed on demand), if false, the entire PDF is parsed into memory as the reader opens
          * @param ownerPassword the password or null if no password is required
          * @param certificate the certificate or null if no certificate is required
@@ -3346,10 +3345,21 @@ namespace iTextSharp.text.pdf {
         * <CODE>List</CODE> of <CODE>Integer</CODE>. The page ordering can be changed but
         * no page repetitions are allowed. Note that it may be very slow in partial mode.
         * @param pagesToKeep the pages to keep in the document
-        */    
+        */
         public void SelectPages(ICollection<int> pagesToKeep) {
+            SelectPages(pagesToKeep, true);
+        }
+
+        /**
+         * Selects the pages to keep in the document. The pages are described as a
+         * <CODE>List</CODE> of <CODE>Integer</CODE>. The page ordering can be changed but
+         * no page repetitions are allowed. Note that it may be very slow in partial mode.
+         * @param pagesToKeep the pages to keep in the document
+         * @param removeUnused indicate if to remove unsed objects. @see removeUnusedObjects
+         */
+        internal void SelectPages(ICollection<int> pagesToKeep, bool removeUnused) {
             pageRefs.SelectPages(pagesToKeep);
-            RemoveUnusedObjects();
+            if (removeUnused) RemoveUnusedObjects();
         }
 
         /** Sets the viewer preferences as the sum of several constants.
