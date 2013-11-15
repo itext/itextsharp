@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Microsoft.XmlDiffPatch;
@@ -41,6 +42,9 @@ namespace itextsharp.tests.text.pdf
         public const String SOURCE62 = RESOURCES + "pdf\\source62.pdf";
         public const String SOURCE63 = RESOURCES + "pdf\\source63.pdf";
         public const String SOURCE64 = RESOURCES + "pdf\\source64.pdf";
+        public const String SOURCE72 = RESOURCES + "pdf\\source72.pdf";
+        public const String SOURCE73 = RESOURCES + "pdf\\source73.pdf";
+
 
         public const String OUT = TARGET + "pdf\\out";
         public const String TARGET = "TaggedPdfCopyTest\\";
@@ -739,9 +743,6 @@ namespace itextsharp.tests.text.pdf
 
             PdfReader reader = new PdfReader(output);
             PdfDictionary catalog = reader.Catalog;
-            PdfDictionary structTreeRoot = catalog.GetAsDict(PdfName.STRUCTTREEROOT);
-            PdfDictionary structParent = structTreeRoot.GetAsDict(PdfName.PARENTTREE);
-            PdfArray nums = structParent.GetAsArray(PdfName.NUMS);
             PdfDictionary acroForm = catalog.GetAsDict(PdfName.ACROFORM);
             PdfDictionary fonts = acroForm.GetAsDict(PdfName.DR).GetAsDict(PdfName.FONT);
 
@@ -788,6 +789,51 @@ namespace itextsharp.tests.text.pdf
             PdfDictionary page1 = reader.GetPageN(1);
             PdfDictionary t1_0 = page1.GetAsDict(PdfName.RESOURCES).GetAsDict(PdfName.XOBJECT).GetAsStream(new PdfName("Fm0")).GetAsDict(PdfName.RESOURCES).GetAsDict(PdfName.FONT).GetAsDict(new PdfName("T1_0"));
             Assert.NotNull(t1_0);
+
+            reader.Close();
+        }
+
+        [Test]
+        public void CopyTaggedPdf20() {
+            InitializeDocument("20");
+            copy.SetMergeFields();
+
+            PdfReader reader2 = new PdfReader(SOURCE72);
+            copy.AddDocument(reader2, new List<int>() {1, 3, 5});
+            document.Close();
+            reader2.Close();
+
+            PdfReader reader = new PdfReader(output);
+            PdfDictionary catalog = reader.Catalog;
+            PdfDictionary acroForm = catalog.GetAsDict(PdfName.ACROFORM);
+            PdfArray acroFields = acroForm.GetAsArray(PdfName.FIELDS);
+            Assert.IsTrue(acroFields.Size == 4);
+
+            reader.Close();
+
+            CompareResults("20");
+        }
+
+        [Test]
+        public void CopyTaggedPdf21() {
+            InitializeDocument("21");
+            copy.SetMergeFields();
+
+            PdfReader reader1 = new PdfReader(SOURCE73);
+            copy.AddDocument(reader1);
+            document.Close();
+            reader1.Close();
+
+            PdfReader reader = new PdfReader(output);
+            PdfDictionary page = reader.GetPageN(1);
+            PdfDictionary resources = page.GetAsDict(PdfName.RESOURCES);
+            PdfDictionary xObject = resources.GetAsDict(PdfName.XOBJECT);
+            PdfStream img = xObject.GetAsStream(new PdfName("Im0"));
+            PdfArray decodeParms = img.GetAsArray(PdfName.DECODEPARMS);
+            Assert.AreEqual(2, decodeParms.Size);
+            PdfObject iref = decodeParms[0];
+            Assert.IsTrue(iref is PdfIndirectReference);
+            Assert.IsTrue(reader.GetPdfObjectRelease(((PdfIndirectReference) iref).Number) is PdfNull);
 
             reader.Close();
         }
