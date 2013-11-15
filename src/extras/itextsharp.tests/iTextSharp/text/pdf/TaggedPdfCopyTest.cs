@@ -799,7 +799,11 @@ namespace itextsharp.tests.text.pdf
             copy.SetMergeFields();
 
             PdfReader reader2 = new PdfReader(SOURCE72);
-            copy.AddDocument(reader2, new List<int>() {1, 3, 5});
+            List<int> pagesToKeep = new List<int>();
+            pagesToKeep.Add(1);
+            pagesToKeep.Add(3);
+            pagesToKeep.Add(5);
+            copy.AddDocument(reader2, pagesToKeep);
             document.Close();
             reader2.Close();
 
