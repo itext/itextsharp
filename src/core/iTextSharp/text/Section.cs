@@ -171,7 +171,8 @@ namespace iTextSharp.text {
         protected internal Section(Paragraph title, int numberDepth) {
             this.numberDepth = numberDepth;
             this.title = title;
-            title.Role = new PdfName("H" + numberDepth);
+            if (title != null)
+                title.Role = new PdfName("H" + numberDepth);
         }
     
         // private methods
