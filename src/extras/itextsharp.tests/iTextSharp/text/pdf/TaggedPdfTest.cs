@@ -657,9 +657,15 @@ namespace itextsharp.tests.text.pdf {
             s2.Add(new Paragraph("Some text..."));
             document.Add(c);
 
+            c = new Chapter(4);
+            c.TriggerNewPage = false;
+            c.Indentation = 40;
+            c.AddSection("First section of a fourths chapter, the chapter itself is invisible");
+            document.Add(c);
+
             document.Close();
 
-            int[] nums = new int[] {114, 60};
+            int[] nums = new int[] {114, 63};
             CheckNums(nums);
             CompareResults("11");
         }
