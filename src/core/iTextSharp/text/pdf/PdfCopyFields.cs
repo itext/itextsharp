@@ -200,8 +200,6 @@ namespace iTextSharp.text.pdf {
         /**
         * Sets the document's compression to the new 1.5 mode with object streams and xref
         * streams. It can be set at any time but once set it can't be unset.
-        * <p>
-        * If set before opening the document it will also set the pdf version to 1.5.
         */
         public void SetFullCompression() {
             fc.SetFullCompression();
