@@ -340,12 +340,6 @@ namespace iTextSharp.text.pdf {
         * @since 2.1.2
         */
         protected bool isSectionTitle = false;
-        
-        /**
-        * Signals that the current leading has to be subtracted from a YMark object.
-        * @since 2.1.2
-        */
-        protected int leadingCount = 0;
 
         /** This represents the current alignment of the PDF Elements. */
         protected internal int alignment = Element.ALIGN_LEFT;
@@ -359,6 +353,30 @@ namespace iTextSharp.text.pdf {
          * @since 5.4.0
          */
         protected TabSettings tabSettings;
+
+        /**
+         * Signals that the current leading has to be subtracted from a YMark object when positive
+         * and save current leading
+         * @since 2.1.2
+         */
+        private Stack<float> leadingStack = new Stack<float>();
+
+        /**
+         * Save current @leading
+         */
+        protected void PushLeading() {
+            leadingStack.Push(leading);
+        }
+
+        /**
+         * Restore @leading from leadingStack
+         */
+        protected void PopLeading()
+        {
+            leading = leadingStack.Pop();
+            if (leadingStack.Count > 0)
+                leading = leadingStack.Peek();
+        }
 
         /**
          * Getter and setter for the current tab stops.
@@ -443,10 +461,10 @@ namespace iTextSharp.text.pdf {
                     break;
                 }
                 case Element.ANCHOR: {
-                    leadingCount++;
                     Anchor anchor = (Anchor) element;
                     String url = anchor.Reference;
                     leading = anchor.Leading;
+                    PushLeading();
                     if (url != null) {
                         anchorAction = new PdfAction(url);
                     }
@@ -454,7 +472,7 @@ namespace iTextSharp.text.pdf {
                     // we process the element
                     element.Process(this);
                     anchorAction = null;
-                    leadingCount--;
+                    PopLeading();
                     break;
                 }
                 case Element.ANNOTATION: {
@@ -471,21 +489,20 @@ namespace iTextSharp.text.pdf {
                     break;
                 }
                 case Element.PHRASE: {
-                    leadingCount++;
                     TabSettings backupTabSettings = tabSettings;
                     if (((Phrase)element).TabSettings != null)
                         tabSettings = ((Phrase)element).TabSettings;
 
                     // we cast the element to a phrase and set the leading of the document
                     leading = ((Phrase) element).TotalLeading;
+                    PushLeading();
                     // we process the element
                     element.Process(this);
                     tabSettings = backupTabSettings;
-                    leadingCount--;
+                    PopLeading();
                     break;
                 }
                 case Element.PARAGRAPH: {
-                    leadingCount++;
                     TabSettings backupTabSettings = tabSettings;
                     if (((Phrase)element).TabSettings != null)
                         tabSettings = ((Phrase)element).TabSettings;
@@ -502,6 +519,7 @@ namespace iTextSharp.text.pdf {
                     // we adjust the parameters of the document
                     alignment = paragraph.Alignment;
                     leading = paragraph.TotalLeading;
+                    PushLeading();
                     
                     CarriageReturn();
                     // we don't want to make orphans/widows
@@ -550,7 +568,7 @@ namespace iTextSharp.text.pdf {
                     indentation.indentRight -= paragraph.IndentationRight;
                     CarriageReturn();
                     tabSettings = backupTabSettings;
-                    leadingCount--;
+                    PopLeading();
                     if (IsTagged(writer))
                     {
                         FlushLines();
@@ -644,7 +662,6 @@ namespace iTextSharp.text.pdf {
                     break;
                 }
                 case Element.LISTITEM: {
-                    leadingCount++;
                     // we cast the element to a ListItem
                     ListItem listItem = (ListItem) element;
                     if (IsTagged(writer)) {
@@ -658,6 +675,7 @@ namespace iTextSharp.text.pdf {
                     indentation.listIndentLeft += listItem.IndentationLeft;
                     indentation.indentRight += listItem.IndentationRight;
                     leading = listItem.TotalLeading;
+                    PushLeading();
                     CarriageReturn();
                     // we prepare the current line to be able to show us the listsymbol
                     line.ListItem = listItem;
@@ -674,7 +692,7 @@ namespace iTextSharp.text.pdf {
                     CarriageReturn();
                     indentation.listIndentLeft -= listItem.IndentationLeft;
                     indentation.indentRight -= listItem.IndentationRight;
-                    leadingCount--;
+                    PopLeading();
                     if (IsTagged(writer))
                     {
                         FlushLines();
@@ -722,7 +740,7 @@ namespace iTextSharp.text.pdf {
                 }
                 case Element.YMARK: {
                     IDrawInterface zh = (IDrawInterface)element;
-                    zh.Draw(graphics, IndentLeft, IndentBottom, IndentRight, IndentTop, IndentTop - currentHeight - (leadingCount > 0 ? leading : 0));
+                    zh.Draw(graphics, IndentLeft, IndentBottom, IndentRight, IndentTop, IndentTop - currentHeight - (leadingStack.Count > 0 ? leading : 0));
                     pageEmpty = false;
                     break;
                 }
