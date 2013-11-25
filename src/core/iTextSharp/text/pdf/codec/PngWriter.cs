@@ -96,7 +96,7 @@ namespace iTextSharp.text.pdf.codec {
                 zip.WriteByte(0);
                 zip.Write(data, k, remaining);
             }
-            zip.Finish();
+            zip.Close();
             WriteChunk(IDAT, stream.ToArray());
         }
 
@@ -113,7 +113,7 @@ namespace iTextSharp.text.pdf.codec {
             stream.WriteByte(0);
             ZDeflaterOutputStream zip = new ZDeflaterOutputStream(stream, 5);
             zip.Write(data, 0, data.Length);
-            zip.Finish();
+            zip.Close();
             WriteChunk(iCCP, stream.ToArray());
         }
 
