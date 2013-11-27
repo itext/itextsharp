@@ -1,6 +1,3 @@
-using System;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
 /*
  * 
  * $Id$
@@ -64,7 +61,7 @@ namespace iTextSharp.text.pdf.draw {
         /** The color of the line. */
         protected BaseColor lineColor;
         /** The alignment of the line. */
-        protected int alignment = Element.ALIGN_CENTER;
+        protected int alignment = Element.ALIGN_BOTTOM;
         
         /**
         * Creates a new instance of the LineSeparator class.
@@ -80,6 +77,17 @@ namespace iTextSharp.text.pdf.draw {
             this.lineColor = lineColor;
             this.alignment = align;
             this.offset = offset;
+        }
+
+        /**
+         * Creates a new instance of the LineSeparator class.
+         * @param font			the font
+         */
+        public LineSeparator(Font font) {
+            this.lineWidth = PdfChunk.UNDERLINE_THICKNESS*font.Size;
+            this.offset = PdfChunk.UNDERLINE_OFFSET*font.Size;
+            this.percentage = 100;
+            this.lineColor = font.Color;
         }
 
         /**

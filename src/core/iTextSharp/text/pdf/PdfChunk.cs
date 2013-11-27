@@ -151,6 +151,8 @@ namespace iTextSharp.text.pdf {
         protected float leading = 0;
         internal IAccessibleElement accessibleElement = null;
 
+        public const float UNDERLINE_THICKNESS = 1f / 15;
+        public const float UNDERLINE_OFFSET = -1f / 3;
 
         // constructors
     
@@ -242,7 +244,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             if (f.IsUnderlined()) {
-                Object[] obj = {null, new float[]{0, 1f / 15, 0, -1f / 3, 0}};
+                Object[] obj = { null, new float[] { 0, UNDERLINE_THICKNESS, 0, UNDERLINE_OFFSET, 0 } };
                 Object[][] obja = null;
                 if (attributes.ContainsKey(Chunk.UNDERLINE))
                     obja = (Object[][])attributes[Chunk.UNDERLINE];
