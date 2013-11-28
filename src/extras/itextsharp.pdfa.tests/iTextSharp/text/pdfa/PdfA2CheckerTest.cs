@@ -35,7 +35,10 @@ namespace iTextSharp.text.pdfa {
             canvas.LineTo(writer.PageSize.Left, writer.PageSize.Bottom);
             canvas.Fill();
 
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             bool exceptionThrown = false;
@@ -336,9 +339,10 @@ namespace iTextSharp.text.pdfa {
 
             canvas.AddTemplate(t2, 0, 0);
 
-            ICC_Profile icc =
-                ICC_Profile.GetInstance(
-                    File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             // step 5
@@ -451,7 +455,11 @@ namespace iTextSharp.text.pdfa {
             cb.ShowTextAligned(Element.ALIGN_LEFT, "Peek-a-Boo!!!", 50, 766, 0);
             cb.EndLayer();
             cb.EndText();
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
             document.Close();
         }
@@ -484,7 +492,11 @@ namespace iTextSharp.text.pdfa {
             cb.BeginLayer(nested_2);
             ColumnText.ShowTextAligned(cb, Element.ALIGN_LEFT, new Phrase("nested layer 2", font), 100, 750, 0);
             cb.EndLayer();
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
             document.Close();
         }
@@ -511,7 +523,11 @@ namespace iTextSharp.text.pdfa {
             canvas.LineTo(writer.PageSize.Right, writer.PageSize.Bottom);
             canvas.LineTo(writer.PageSize.Right, writer.PageSize.Top);
             canvas.Fill();
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             bool exceptionThrown = false;
@@ -607,7 +623,11 @@ namespace iTextSharp.text.pdfa {
             canvas.LineTo(writer.PageSize.Right, writer.PageSize.Bottom);
             canvas.LineTo(writer.PageSize.Right, writer.PageSize.Top);
             canvas.Fill();
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             bool exceptionThrown = false;
@@ -632,7 +652,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfContentByte canvas = writer.DirectContent;
@@ -665,7 +689,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfContentByte canvas = writer.DirectContent;
@@ -687,7 +715,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
@@ -716,7 +748,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
@@ -744,7 +780,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
@@ -763,7 +803,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 200, 100, 200));
@@ -784,7 +828,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
@@ -815,7 +863,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
@@ -846,7 +898,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
@@ -877,7 +933,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
@@ -914,7 +974,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
@@ -952,7 +1016,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
@@ -989,7 +1057,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
@@ -1014,7 +1086,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
@@ -1038,7 +1114,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
@@ -1071,7 +1151,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfAnnotation annot = new PdfAnnotation(writer, new Rectangle(100, 100, 200, 200));
@@ -1110,7 +1194,11 @@ namespace iTextSharp.text.pdfa {
             font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             font.Color = new BaseColor(0, 255, 0);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfContentByte canvas = writer.DirectContent;
@@ -1132,7 +1220,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12, Font.NORMAL, BaseColor.RED);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             PdfContentByte canvas = writer.DirectContent;
@@ -1195,7 +1287,11 @@ namespace iTextSharp.text.pdfa {
 
             reader = new PdfReader(OUT + "pdfa2ColorCheckTest3.pdf");
             stamper = new PdfAStamper(reader, new FileStream(OUT + "pdfa2ColorCheckTest3_updating_ok.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             stamper.Writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
             font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             font.Color = BaseColor.RED;
@@ -1214,7 +1310,11 @@ namespace iTextSharp.text.pdfa {
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2ColorCheckTest4.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
             document.Open();
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
@@ -1224,7 +1324,11 @@ namespace iTextSharp.text.pdfa {
             PdfAStamper stamper = new PdfAStamper(reader, new FileStream(OUT + "pdfa2ColorCheckTest4_updating_failed.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             bool exceptionThrown = false;
             try {
-                icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+                iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read,
+                    FileShare.Read);
+                icc = ICC_Profile.GetInstance(iccProfileFileStream);
+                iccProfileFileStream.Close();
+
                 stamper.Writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
                 font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
                 font.Color = BaseColor.RED;
@@ -1275,7 +1379,10 @@ namespace iTextSharp.text.pdfa {
                 canvas.ShowTextAligned(Element.ALIGN_LEFT, "Hello World", 36, 770, 0);
                 canvas.EndText();
 
-                ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+                FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+                ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+                iccProfileFileStream.Close();
+
                 writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
                 document.Close();
@@ -1319,7 +1426,10 @@ namespace iTextSharp.text.pdfa {
             canvas.ShowTextAligned(Element.ALIGN_LEFT, "Hello World", 36, 750, 0);
             canvas.EndText();
 
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             document.Close();
@@ -1338,7 +1448,11 @@ namespace iTextSharp.text.pdfa {
 
                 Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, false /*BaseFont.EMBEDDED*/, 12);
                 document.Add(new Paragraph("Hello World", font));
-                ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+                FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+                ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+                iccProfileFileStream.Close();
+
                 writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
                 document.Close();
@@ -1445,7 +1559,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             byte[] somePdf = new byte[25];
@@ -1464,7 +1582,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             FileStream iss = File.OpenRead(RESOURCES + "pdfa.pdf");
@@ -1488,7 +1610,11 @@ namespace iTextSharp.text.pdfa {
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
             document.Add(new Paragraph("Hello World", font));
-            ICC_Profile icc = ICC_Profile.GetInstance(File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
 
             MemoryStream txt = new MemoryStream();
