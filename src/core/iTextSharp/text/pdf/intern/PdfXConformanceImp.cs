@@ -180,6 +180,9 @@ namespace iTextSharp.text.pdf.intern {
                     break;
                 case PdfIsoKeys.PDFISOKEY_GSTATE:
                     PdfDictionary gs = (PdfDictionary)obj1;
+                    // The example PdfXPdfA threw a NullPointerException because gs was null
+                    if (gs == null)
+                        break;
                     PdfObject obj = gs.Get(PdfName.BM);
                     if (obj != null && !PdfGState.BM_NORMAL.Equals(obj) && !PdfGState.BM_COMPATIBLE.Equals(obj))
                         throw new PdfXConformanceException(MessageLocalization.GetComposedMessage("blend.mode.1.not.allowed", obj.ToString()));

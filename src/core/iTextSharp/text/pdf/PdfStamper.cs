@@ -588,7 +588,8 @@ namespace iTextSharp.text.pdf {
         public void SetFullCompression() {
             if (stamper.append)
                 return;
-            stamper.SetFullCompression();
+            stamper.fullCompression = true;
+            stamper.SetAtLeastPdfVersion(PdfWriter.VERSION_1_5);
         }    
 
         /**
