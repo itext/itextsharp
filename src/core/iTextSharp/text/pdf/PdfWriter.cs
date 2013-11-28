@@ -2224,7 +2224,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Holds value of property fullCompression.
         */
-        protected bool fullCompression = false;
+        internal bool fullCompression = false;
 
         /**
         * Gets the 1.5 compression status.
