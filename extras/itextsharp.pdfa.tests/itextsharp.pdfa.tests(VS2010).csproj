@@ -1,0 +1,157 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{67AA00E9-15AF-4592-8119-110C8CBD1E31}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>itextsharp.pdfa.tests</RootNamespace>
+    <AssemblyName>itextsharp.pdfa.tests</AssemblyName>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>itextsharp.snk</AssemblyOriginatorKeyFile>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>4.0</OldToolsVersion>
+    <UpgradeBackupLocation />
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;DRAWING</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;DRAWING</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_woDrawing|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug_woDrawing\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_woDrawing|AnyCPU' ">
+    <OutputPath>bin\Release_woDrawing\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="XmlDiffPatch, Version=1.0.8.28, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' Or '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="iTextSharp\text\pdfa\PdfA1CheckerTest.cs" />
+    <Compile Include="iTextSharp\text\pdfa\PdfA2CheckerTest.cs" />
+    <Compile Include="iTextSharp\text\pdfa\PdfA3CheckerTest.cs" />
+    <Compile Include="iTextSharp\text\pdfa\PdfAFileStructureTest.cs" />
+    <Compile Include="iTextSharp\text\pdfa\PdfAWriterTest.cs" />
+    <Compile Include="iTextSharp\text\xml\xmp\PdfAXmpWriterTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\itextsharp%28VS2010%29.csproj">
+      <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
+      <Name>itextsharp%28VS2010%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\itextsharp.pdfa\itextsharp.pdfa%28VS2010%29.csproj">
+      <Project>{C892FA61-C495-4F30-8799-A198F89F23F4}</Project>
+      <Name>itextsharp.pdfa%28VS2010%29</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="itextsharp.snk" />
+    <None Include="resources\text\pdfa\FreeMonoBold.ttf" />
+    <None Include="resources\text\pdfa\jpeg2000\file1.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file2.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file3.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file4.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file5.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file6.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file7.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file8.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\file9.jp2" />
+    <None Include="resources\text\pdfa\jpeg2000\p0_01.j2k" />
+    <None Include="resources\text\pdfa\jpeg2000\p0_02.j2k" />
+    <None Include="resources\text\pdfa\jpeg2000\p1_01.j2k" />
+    <None Include="resources\text\pdfa\jpeg2000\p1_02.j2k" />
+    <None Include="resources\text\xml\xmp\pdf_metadata.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata_added.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata_added2.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata_automatic.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata_updated.pdf" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lib\XmlDiffPatch.dll" />
+    <Content Include="resources\text\pdfa\jpeg2000\cpyrght.htm" />
+    <Content Include="resources\text\pdfa\jpeg2000\cpyrght_files\d13c15.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Windows.Installer.3.1">
+      <Visible>False</Visible>
+      <ProductName>Windows Installer 3.1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

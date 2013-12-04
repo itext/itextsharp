@@ -1,0 +1,248 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D533E5BC-52BF-43DE-8C8E-1FB41C0CB78E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>itextsharp.tests</RootNamespace>
+    <AssemblyName>itextsharp.tests</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <OldToolsVersion>2.0</OldToolsVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE;DRAWING</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE;DRAWING</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>itextsharp.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug_woDrawing|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug_woDrawing\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release_woDrawing|AnyCPU' ">
+    <OutputPath>bin\Release_woDrawing\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.6.2.12296, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Security" />
+    <Reference Include="System.Xml" />
+    <Reference Include="XmlDiffPatch, Version=1.0.8.28, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' Or '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="iTextSharp\testutils\TestResourceUtils.cs" />
+    <Compile Include="iTextSharp\text\ChunkTest.cs" />
+    <Compile Include="iTextSharp\text\error_messages\ErrorMessageExistenceTest.cs" />
+    <Compile Include="iTextSharp\text\error_messages\ErrorMessageTest.cs" />
+    <Compile Include="iTextSharp\text\error_messages\MessageLocalizationTest.cs" />
+    <Compile Include="iTextSharp\text\io\ArrayRandomAccessSourceTest.cs" />
+    <Compile Include="iTextSharp\text\io\GetBufferedRandomAccessSourceTest.cs" />
+    <Compile Include="iTextSharp\text\io\GroupedRandomAccessSourceTest.cs" />
+    <Compile Include="iTextSharp\text\io\WindowRandomAccessSourceTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\AcroFieldsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\BookmarksTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\CMapAwareDocumentFontTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\DocumentFontTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\fonts.cmaps\CMapParserExTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\fonts.cmaps\CMapTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\IndicLigatures.cs" />
+    <Compile Include="iTextSharp\text\pdf\mc\AcroFieldsFlattenTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\MetaDataTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\MultithreadedTtfTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\FilteredTextRenderListenerTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\GlyphTextRenderListenerTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\LocationTextExtractionStrategyTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\MatrixTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\MultiFilteredRenderListenerTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\PdfContentStreamProcessorTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\PdfImageObjectTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\PdfTextExtractorEncodingsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\SimpleTextExtractionStrategyTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\TextMarginFinderTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\TextRenderInfoTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\VectorTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfCopyTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfReaderSelectPagesTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PdfReaderTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\PRTokeniserTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\RandomAccessFileOrArrayTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\TestPdfCopyAndStamp.cs" />
+    <Compile Include="iTextSharp\text\pdf\ToUnicodeNonBreakableSpacesTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\UnbalancedOperatorsTest.cs" />
+    <Compile Include="iTextSharp\text\RemoteGifImageTest.cs" />
+    <Compile Include="iTextSharp\text\signature\XadesTest.cs" />
+    <Compile Include="iTextSharp\text\xml\simpleparser\SimpleXMLParserTest.cs" />
+    <Compile Include="iTextSharp\text\xml\xmp\XmpWriterTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="iTextSharp\text\pdf\TaggedPdfCopyTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\TaggedPdfTest.cs" />
+    <Compile Include="iTextSharp\text\signature\XmlDSigKSTest.cs" />
+    <Compile Include="iTextSharp\text\signature\XmlDSigRsaTest.cs" />
+    <Compile Include="iTextSharp\text\signature\XmlDSigTest.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="itextsharp.snk" />
+    <None Include="lib\XmlDiffPatch.dll">
+    </None>
+    <Content Include="resources\text\ChunkTest\logo.gif" />
+    <Content Include="resources\text\pdf\fonts\cmaps\CMapParserExTest\cmap_with_def_dictionary_key.txt" />
+    <Content Include="resources\text\pdf\signature\ds-ks\xfa.signed.package.xml" />
+    <Content Include="resources\text\pdf\signature\ds-ks\xfa.signed.xml" />
+    <Content Include="resources\text\pdf\signature\ds\xfa.signed.ki.package.xml" />
+    <Content Include="resources\text\pdf\signature\ds\xfa.signed.ki.xml" />
+    <Content Include="resources\text\pdf\signature\ds\xfa.signed.pk.package.xml" />
+    <Content Include="resources\text\pdf\signature\ds\xfa.signed.pk.xml" />
+    <Content Include="resources\text\pdf\signature\ds\xfa.signed.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test0.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test1.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test10.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test2.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test3.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test4.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test5.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test6.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test7.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test8.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\xml\test9.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\img\dog.bmp" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\img\fox.bmp" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test1.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test10.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test11.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test12.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test13.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test15.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test16.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test17.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test18.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test19.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test2.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test3.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test4.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test5.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test6.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test7.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test8.xml" />
+    <Content Include="resources\text\pdf\TaggedPdfTest\xml\test9.xml" />
+    <None Include="resources\text\pdf\AcroFieldsTest\choice_field_order.pdf" />
+    <None Include="resources\text\pdf\AcroFieldsTest\choice_field_order_export.pdf" />
+    <None Include="resources\text\pdf\AcroFieldsTest\list_register.xfdf" />
+    <None Include="resources\text\pdf\AcroFieldsTest\register.xfdf" />
+    <None Include="resources\text\pdf\AcroFieldsTest\SimpleRegistrationForm.pdf" />
+    <None Include="resources\text\pdf\CMapAwareDocumentFontTest\fontwithwidthissue.pdf" />
+    <None Include="resources\text\pdf\DocumentFontTest\type0FontWithoutToUnicodeMap.pdf" />
+    <None Include="resources\text\pdf\fonts\cmaps\CMapParserExTest\cmap_results_in_empty_map.cmap" />
+    <None Include="resources\text\pdf\mc\SF2809.pdf" />
+    <None Include="resources\text\pdf\mc\SF2809_alt.pdf" />
+    <None Include="resources\text\pdf\MultithreadedTtfTest\FreeSans.ttf" />
+    <None Include="resources\text\pdf\MultithreadedTtfTest\test.pdf" />
+    <None Include="resources\text\pdf\parser\GlyphTextRenderListenerTest\Sample.pdf" />
+    <None Include="resources\text\pdf\parser\GlyphTextRenderListenerTest\test.pdf" />
+    <None Include="resources\text\pdf\parser\MultiFilteredRenderListenerTest\test.pdf" />
+    <None Include="resources\text\pdf\parser\PdfContentStreamProcessorTest\yaxiststar.pdf" />
+    <None Include="resources\text\pdf\parser\PdfImageObjectTest\ASCII85_RunLengthDecode.pdf" />
+    <None Include="resources\text\pdf\parser\PdfImageObjectTest\ccittfaxdecode.pdf" />
+    <None Include="resources\text\pdf\parser\PdfImageObjectTest\dctdecode.pdf" />
+    <None Include="resources\text\pdf\parser\PdfImageObjectTest\flatedecode_runlengthdecode.pdf" />
+    <None Include="resources\text\pdf\parser\PdfImageObjectTest\jbig2decode.pdf" />
+    <None Include="resources\text\pdf\parser\PdfImageObjectTest\multistagefilter1.pdf" />
+    <None Include="resources\text\pdf\PdfReaderSelectPagesTest\RomeoJuliet.pdf" />
+    <None Include="resources\text\pdf\PdfReaderTest\getLinkTest1.pdf" />
+    <None Include="resources\text\pdf\PdfReaderTest\getLinkTest2.pdf" />
+    <None Include="resources\text\pdf\PdfReaderTest\RomeoJuliet.pdf" />
+    <None Include="resources\text\pdf\ToUnicodeNonBreakableSpacesTest\fontWithToUnicode.pdf" />
+    <None Include="resources\text\xml\xmp\pdf_metadata.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata_added.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata_added2.pdf" />
+    <None Include="resources\text\xml\xmp\xmp_metadata_automatic.pdf" />
+    <Content Include="resources\text\pdf\signature\ds-ks\pkcs12" />
+    <Content Include="resources\text\pdf\signature\ds\key" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="resources\text\ChunkTest\source11.pdf" />
+    <Content Include="resources\text\ChunkTest\source12.pdf" />
+    <Content Include="resources\text\ChunkTest\source13.pdf" />
+    <Content Include="resources\text\ChunkTest\source14.pdf" />
+    <Content Include="resources\text\ChunkTest\source15.pdf" />
+    <Content Include="resources\text\pdf\signature\xfa.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source10.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source11.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source12.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source16.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source17.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source22.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source32.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source4.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source42.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source51.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source52.pdf" />
+    <Content Include="resources\text\pdf\TaggedPdfCopyTest\pdf\source53.pdf" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\core\itextsharp%28VS2010%29.csproj">
+      <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
+      <Name>itextsharp%28VS2010%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\itextsharp.pdfa\itextsharp.pdfa%28VS2010%29.csproj">
+      <Project>{C892FA61-C495-4F30-8799-A198F89F23F4}</Project>
+      <Name>itextsharp.pdfa%28VS2010%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\iTextSharp.xtra\itextsharp.xtra%28VS2010%29.csproj">
+      <Project>{BE1934CF-90A9-43D3-A794-7E540874EDBB}</Project>
+      <Name>itextsharp.xtra%28VS2010%29</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
