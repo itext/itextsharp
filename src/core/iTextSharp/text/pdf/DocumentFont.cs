@@ -439,7 +439,13 @@ namespace iTextSharp.text.pdf {
         }
         
         private void FillEncoding(PdfName encoding) {
-            if (PdfName.MAC_ROMAN_ENCODING.Equals(encoding) || PdfName.WIN_ANSI_ENCODING.Equals(encoding)) {
+            if (encoding == null && IsSymbolic()) {
+                for (int k = 0; k < 256; ++k)
+                {
+                    uni2byte[k] = k;
+                    byte2uni[k] = k;
+                }
+            } else if (PdfName.MAC_ROMAN_ENCODING.Equals(encoding) || PdfName.WIN_ANSI_ENCODING.Equals(encoding)) {
                 byte[] b = new byte[256];
                 for (int k = 0; k < 256; ++k)
                     b[k] = (byte)k;
@@ -809,5 +815,17 @@ namespace iTextSharp.text.pdf {
                 return diffmap;
             }
         }
+
+        bool IsSymbolic()
+        {
+            PdfDictionary fontDescriptor = font.GetAsDict(PdfName.FONTDESCRIPTOR);
+            if (fontDescriptor == null)
+                return false;
+            PdfNumber flags = fontDescriptor.GetAsNumber(PdfName.FLAGS);
+            if (flags == null)
+                return false;
+            return (flags.IntValue & 0x04) != 0;
+        }
+
     }
 }
