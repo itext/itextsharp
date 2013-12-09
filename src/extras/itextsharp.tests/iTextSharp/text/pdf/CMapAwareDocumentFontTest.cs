@@ -25,7 +25,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             }
         }
 
-        [Test, Ignore]
+        [Test]
         public void WeirdHyphensTest() {
             PdfReader reader = TestResourceUtils.GetResourceAsPdfReader(TEST_RESOURCES_PATH, "WeirdHyphens.pdf");
             List<String> textChunks = new List<String>();
