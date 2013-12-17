@@ -69,7 +69,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         public void ResolveCharSpacing() {
             Assert.AreEqual(CssUtils.GetInstance().ParsePxInCmMmPcToPt("1.6pc"),
                 elementList[5].Chunks[0].GetCharacterSpacing(), 0);
-            Assert.AreEqual(CssUtils.GetInstance().ParsePxInCmMmPcToPt("0.83em"),
+            Assert.AreEqual(CssUtils.GetInstance().ParseRelativeValue("0.83em", elementList[6].Chunks[2].Font.Size),
                 elementList[6].Chunks[2].GetCharacterSpacing(), 0);
         }
     }

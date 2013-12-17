@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.util;
 using iTextSharp.text.html;
-using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css.apply;
 using iTextSharp.tool.xml.exceptions;
 

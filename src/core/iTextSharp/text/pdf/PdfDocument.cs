@@ -1595,19 +1595,17 @@ namespace iTextSharp.text.pdf {
                                 hScale = (float)hs;
                             text.SetTextMatrix(hScale, b, c, 1, xMarker, yMarker);
                         }
-                        if (!isJustified)
-                        {
-                            if (chunk.IsAttribute(Chunk.WORD_SPACING))
-                            {
-                                float ws = (float)chunk.GetAttribute(Chunk.WORD_SPACING);
+                        if (!isJustified) {
+                            if (chunk.IsAttribute(Chunk.WORD_SPACING)) {
+                                float ws = (float) chunk.GetAttribute(Chunk.WORD_SPACING);
                                 text.SetWordSpacing(ws);
                             }
-                        }
 
-                        if (chunk.IsAttribute(Chunk.CHAR_SPACING)) {
-                    	    float cs = (float) chunk.GetAttribute(Chunk.CHAR_SPACING);
-						    text.SetCharacterSpacing(cs);
-					    }
+                            if (chunk.IsAttribute(Chunk.CHAR_SPACING)) {
+                                float? cs = (float?) chunk.GetAttribute(Chunk.CHAR_SPACING);
+                                text.SetCharacterSpacing(cs.Value);
+                            }
+                        }
                         if (chunk.IsImage()) {
                             Image image = chunk.Image;
                             width = chunk.ImageWidth;
@@ -1718,11 +1716,13 @@ namespace iTextSharp.text.pdf {
                     adjustMatrix = true;
                     text.SetTextMatrix(xMarker, yMarker);
                 }
-                if (chunk.IsAttribute(Chunk.CHAR_SPACING)) {
-				    text.SetCharacterSpacing(baseCharacterSpacing);
-                }
-                if (chunk.IsAttribute(Chunk.WORD_SPACING)) {
-                    text.SetWordSpacing(baseWordSpacing);
+                if (!isJustified) {
+                    if (chunk.IsAttribute(Chunk.CHAR_SPACING)) {
+                        text.SetCharacterSpacing(baseCharacterSpacing);
+                    }
+                    if (chunk.IsAttribute(Chunk.WORD_SPACING)) {
+                        text.SetWordSpacing(baseWordSpacing);
+                    }
                 }
                 if (IsTagged(writer) && chunk.accessibleElement != null) {
                     text.CloseMCBlock(chunk.accessibleElement);

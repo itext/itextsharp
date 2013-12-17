@@ -100,12 +100,18 @@ namespace iTextSharp.tool.xml.css.apply {
                 String key = entry.Key;
                 value = entry.Value;
                 if (Util.EqualsIgnoreCase(CSS.Property.FONT_STYLE, key)) {
-                    if (Util.EqualsIgnoreCase(CSS.Value.OBLIQUE, value))
-                    {
+                    if (Util.EqualsIgnoreCase(CSS.Value.OBLIQUE, value)) {
                         c.SetSkew(0, 12);
                     }
                 } else if (Util.EqualsIgnoreCase(CSS.Property.LETTER_SPACING, key)) {
-                    c.SetCharacterSpacing(utils.ParsePxInCmMmPcToPt(value));
+                    String letterSpacing = entry.Value;
+                    float letterSpacingValue = 0f;
+                    if (utils.IsRelativeValue(value)) {
+                        letterSpacingValue = utils.ParseRelativeValue(letterSpacing, f.Size);
+                    } else if (utils.IsMetricValue(value)) {
+                        letterSpacingValue = utils.ParsePxInCmMmPcToPt(letterSpacing);
+                    }
+                    c.SetCharacterSpacing(letterSpacingValue);
                 } else if (Util.EqualsIgnoreCase(CSS.Property.XFA_FONT_HORIZONTAL_SCALE, key)) {
                     // only % allowed; need a catch block NumberFormatExc?
                     c.SetHorizontalScaling(
