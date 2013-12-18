@@ -9,6 +9,7 @@ using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.collection;
 using iTextSharp.text.xml.xmp;
+using iTextSharp.xmp.options;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
 using iTextSharp.xmp;
@@ -1857,6 +1858,10 @@ namespace iTextSharp.text.pdf {
         virtual public void CreateXmpMetadata() {
             try {
                 xmpWriter = CreateXmpWriter(null, pdf.Info);
+                if (IsTagged()) {
+                    xmpWriter.XmpMeta.SetPropertyInteger(XmpConst.NS_PDFUA_ID, PdfProperties.PART, 1,
+                        new PropertyOptions(PropertyOptions.SEPARATE_NODE));
+                }
                 xmpMetadata = null;
             } catch (IOException) {}
         }
