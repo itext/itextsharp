@@ -76,7 +76,6 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\list\Background_color_list02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\table\Background_color_table01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\text\Background_color_text01Test.cs" />
-	<Compile Include="iTextSharp\tool\xml\examples\css\background\background_color\text\Background_color_text02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\border\border\cell\Border_cell01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\border\border\cell\InheritedTableBorderTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\border\border\div\Border_div01Test.cs" />
@@ -129,6 +128,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\color\list\Color_list01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\color\table\Color_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\color\text\Color_text01.cs" />
+	<Compile Include="iTextSharp\tool\xml\examples\css\color\text\Color_text02.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Blocks001Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\ComplexDiv01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\ComplexDiv02Test.cs" />
