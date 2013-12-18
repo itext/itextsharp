@@ -63,7 +63,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
             Assert.IsTrue(rootSelectors.ContainsKey("root"), "Not found root");
             Assert.IsTrue(rootSelectors.ContainsKey("#rootId"), "Not found rootId");
             Assert.IsTrue(rootSelectors.ContainsKey(".rootClass"), "Not found rootClass");
-            Assert.AreEqual(3, rootSelectors.Count, "Too many entries");
+            Assert.AreEqual(5, rootSelectors.Count, "Too many entries");
         }
 
         [Test]
@@ -71,7 +71,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
             Tag t = new Tag("dummy");
             t.Attributes["class"] = "klass1 klass2 klass3";
             IDictionary<String, object> set = css.CreateClassSelectors(t);
-            Assert.AreEqual(3, set.Count, "should have found 3 selectors");
+            Assert.AreEqual(6, set.Count, "should have found 6 selectors");
         }
     }
 }
