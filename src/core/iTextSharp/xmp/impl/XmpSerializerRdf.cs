@@ -1159,6 +1159,7 @@ namespace iTextSharp.xmp.impl {
         /// <returns> Returns true if the node serialized as RDF-Attribute </returns>
         private bool canBeRDFAttrProp(XmpNode node) {
             return !node.HasQualifier() && !node.Options.Uri && !node.Options.CompositeProperty &&
+                   !node.Options.ContainsOneOf(PropertyOptions.SEPARATE_NODE) &&
                    !XmpConst.ARRAY_ITEM_NAME.Equals(node.Name);
         }
 

@@ -182,7 +182,7 @@ namespace iTextSharp.text.xml.xmp {
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
             // step 5
             document.Close();
-            CompareResults("xmp_metadata.pdf", fileName);
+            CompareResults("xmp_metadata_deprecated.pdf", fileName);
         }
 
         private void CompareResults(String orig, String curr) {
