@@ -216,6 +216,9 @@ namespace iTextSharp.tool.xml.css {
                     StringBuilder builder = new StringBuilder();
                     builder.Append('.').Append(klass);
                     set[builder.ToString()] = null;
+                    builder = new StringBuilder();
+                    builder.Append(t.Name).Append('.').Append(klass);
+                    set[builder.ToString()] = null;
                 }
             }
             return set;
@@ -233,6 +236,9 @@ namespace iTextSharp.tool.xml.css {
             if (null != id) {
                 StringBuilder builder = new StringBuilder();
                 builder.Append('#').Append(id);
+                set[builder.ToString()] = null;
+                builder = new StringBuilder();
+                builder.Append(t.Name).Append('#').Append(id);
                 set[builder.ToString()] = null;
             }
             return set;
