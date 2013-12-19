@@ -859,7 +859,7 @@ namespace iTextSharp.text.pdf {
                             PdfDictionary dict = (PdfDictionary) iobj.objecti;
                             PdfIndirectReference pg = (PdfIndirectReference) dict.Get(PdfName.PG);
                             //if pg is real page - do nothing, else set correct pg and remove first MCID if exists
-                            if (!pageReferences.Contains(pg) && !pg.Equals(currPage)) {
+                            if (pg != null && !pageReferences.Contains(pg) && !pg.Equals(currPage)) {
                                 dict.Put(PdfName.PG, currPage);
                                 PdfArray kids = dict.GetAsArray(PdfName.K);
                                 if (kids != null) {

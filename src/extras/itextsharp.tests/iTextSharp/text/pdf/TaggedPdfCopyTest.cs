@@ -44,6 +44,7 @@ namespace itextsharp.tests.text.pdf
         public const String SOURCE64 = RESOURCES + "pdf\\source64.pdf";
         public const String SOURCE72 = RESOURCES + "pdf\\source72.pdf";
         public const String SOURCE73 = RESOURCES + "pdf\\source73.pdf";
+        public const String DEV_805 = RESOURCES + "pdf\\dev-805.pdf";
 
 
         public const String OUT = TARGET + "pdf\\out";
@@ -839,6 +840,23 @@ namespace itextsharp.tests.text.pdf
             Assert.IsTrue(iref is PdfIndirectReference);
             Assert.IsTrue(reader.GetPdfObjectRelease(((PdfIndirectReference) iref).Number) is PdfNull);
 
+            reader.Close();
+        }
+
+        //Check for crash in case of structure element contains no "Pg" keys.
+        [Test]
+        public void CopyTaggedPdf22() {
+            InitializeDocument("22");
+
+            PdfReader reader = new PdfReader(DEV_805);
+
+            int n = reader.NumberOfPages;
+            for (int page = 0; page < n;) {
+                copy.AddPage(copy.GetImportedPage(reader, ++page, true));
+            }
+
+            copy.FreeReader(reader);
+            document.Close();
             reader.Close();
         }
 
