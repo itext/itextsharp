@@ -898,7 +898,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
 
-            //because of cîncurêent modification detected by CLR
+            //because of concurrent modification detected by CLR
             foreach (RefKey key in inactiveKeys)
                 indirectObjects[key] = null;
         }

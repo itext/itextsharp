@@ -122,7 +122,7 @@ namespace itextsharp.tests.iTextSharp.text.io
                 current[0] = source;
             }
 
-        };
+        }
 
         [Test]
         public void TestRelease()
