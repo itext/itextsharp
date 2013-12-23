@@ -172,7 +172,7 @@ namespace iTextSharp.text.html.simpleparser {
             public void EndElement(HTMLWorker worker, String tag) {
             }
 
-        };
+        }
 
         public static IHTMLTagProcessor UL_OL = new HTMLTagProcessor_UL_OL();
 
@@ -236,7 +236,7 @@ namespace iTextSharp.text.html.simpleparser {
                 worker.UpdateChain(tag);
             }
 
-        };
+        }
 
         public static IHTMLTagProcessor H = new HTMLTagProcessor_H();
 

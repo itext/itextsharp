@@ -738,7 +738,7 @@ namespace iTextSharp.text.pdf {
             internal char vowel;
             internal int lignum;           /* is a ligature with lignum aditional characters */
             internal int numshapes = 1;
-        };
+        }
 
         protected int options = 0;
         protected int runDirection = PdfWriter.RUN_DIRECTION_RTL;

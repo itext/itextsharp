@@ -793,7 +793,7 @@ namespace iTextSharp.text.pdf {
             internal int dataSize;
             internal int dataBlock;
             internal int errorBlock;
-        };
+        }
 
         /**
         * Gets the generated image. The image is represented as a stream of bytes, each byte representing
