@@ -107,7 +107,7 @@ namespace iTextSharp.text.pdf.intern {
         /**
         * Returns the page layout and page mode value.
         */
-        public int PageLayoutAndMode {
+        virtual public int PageLayoutAndMode {
             get {
                 return pageLayoutAndMode;
             }
@@ -116,7 +116,7 @@ namespace iTextSharp.text.pdf.intern {
         /**
         * Returns the viewer preferences.
         */
-        public PdfDictionary GetViewerPreferences() {
+        virtual public PdfDictionary GetViewerPreferences() {
             return viewerPreferences;
         }
         
@@ -127,7 +127,7 @@ namespace iTextSharp.text.pdf.intern {
         *            the viewer preferences
         * @see PdfWriter#setViewerPreferences
         */
-        public int ViewerPreferences {
+        virtual public int ViewerPreferences {
             set {
                 int preferences = value;
                 this.pageLayoutAndMode |= preferences;
@@ -262,7 +262,7 @@ namespace iTextSharp.text.pdf.intern {
         * 
         * @param catalog
         */
-        public void AddToCatalog(PdfDictionary catalog) {
+        virtual public void AddToCatalog(PdfDictionary catalog) {
             // Page Layout
             catalog.Remove(PdfName.PAGELAYOUT);
             if ((pageLayoutAndMode & PdfWriter.PageLayoutSinglePage) != 0)

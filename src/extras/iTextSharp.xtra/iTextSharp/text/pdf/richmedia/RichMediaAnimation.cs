@@ -72,7 +72,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * Sets the number of times the animation is played.
          * @param   playCount   the play count
          */
-        public int PlayCount {
+        virtual public int PlayCount {
             set {
                 Put(PdfName.PLAYCOUNT, new PdfNumber(value));
             }
@@ -84,7 +84,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * the animation, or effectively speeds up the animation.
          * @param   speed   a speed value
          */
-        public float Speed {
+        virtual public float Speed {
             set {
                 Put(PdfName.SPEED, new PdfNumber(value));
             }

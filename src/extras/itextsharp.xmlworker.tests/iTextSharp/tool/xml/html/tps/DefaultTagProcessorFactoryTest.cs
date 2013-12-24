@@ -23,25 +23,25 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         private TagProcessorImplementation tpi;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
             tp = Tags.GetHtmlTagProcessorFactory();
             tpi = new TagProcessorImplementation();
         }
 
         [Test]
-        public void TestLoadDefaults() {
+        virtual public void TestLoadDefaults() {
             Assert.IsTrue(tp.GetProcessor("a", "") is Anchor);
         }
 
         [Test]
         [ExpectedException(typeof (NoTagProcessorException))]
-        public void LoadFail() {
+        virtual public void LoadFail() {
             tp.GetProcessor("unknown", "");
         }
 
         [Test]
-        public void AddTagProcessor() {
+        virtual public void AddTagProcessor() {
             tp.AddProcessor(tpi, new string[] {"addatag"});
             ITagProcessor processor = tp.GetProcessor("addatag", "");
             Assert.AreEqual(tpi, processor);
@@ -49,7 +49,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 
         [Test]
         [ExpectedException(typeof (NoTagProcessorException))]
-        public void RemoveTagProcessor() {
+        virtual public void RemoveTagProcessor() {
             tp.AddProcessor(tpi, new string[] {"addatag"});
             tp.RemoveProcessor("addatag");
             tp.GetProcessor("addatag", "");

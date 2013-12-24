@@ -87,31 +87,31 @@ namespace iTextSharp.text.xml {
         /**
          * @see com.itextpdf.text.xml.simpleparser.SimpleXMLDocHandler#startElement(java.lang.String, java.util.Map)
          */
-        public void StartElement(String tag, IDictionary<String, String> h) {
+        virtual public void StartElement(String tag, IDictionary<String, String> h) {
         }
 
         /**
          * @see com.itextpdf.text.xml.simpleparser.SimpleXMLDocHandler#endElement(java.lang.String)
          */
-        public void EndElement(String tag) {
+        virtual public void EndElement(String tag) {
         }
 
         /**
          * @see com.itextpdf.text.xml.simpleparser.SimpleXMLDocHandler#startDocument()
          */
-        public void StartDocument() {
+        virtual public void StartDocument() {
         }
 
         /**
          * @see com.itextpdf.text.xml.simpleparser.SimpleXMLDocHandler#endDocument()
          */
-        public void EndDocument() {
+        virtual public void EndDocument() {
         }
 
         /**
          * @see com.itextpdf.text.xml.simpleparser.SimpleXMLDocHandler#text(java.lang.String)
          */
-        public void Text(String str) {
+        virtual public void Text(String str) {
             buf.Append(str);
         }
     }

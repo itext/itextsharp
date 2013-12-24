@@ -63,7 +63,7 @@ namespace iTextSharp.text.pdf.crypto {
             cbc.Init(forEncryption, kp);
         }
         
-        public byte[] ProcessBlock(byte[] inp, int inpOff, int inpLen) {
+        virtual public byte[] ProcessBlock(byte[] inp, int inpOff, int inpLen) {
             if ((inpLen % cbc.GetBlockSize()) != 0)
                 throw new ArgumentException("Not multiple of block: " + inpLen);
             byte[] outp = new byte[inpLen];

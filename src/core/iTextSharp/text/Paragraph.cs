@@ -223,7 +223,7 @@ namespace iTextSharp.text {
          * Breaks this Paragraph up in different parts, separating paragraphs, lists and tables from each other.
          * @return
          */
-        public IList<IElement> BreakUp() {
+        virtual public IList<IElement> BreakUp() {
             IList<IElement> list = new List<IElement>();
             Paragraph tmp = null;
             foreach (IElement e in this) {
@@ -337,7 +337,7 @@ namespace iTextSharp.text {
         /// Get/set the alignment of this paragraph.
         /// </summary>
         /// <value>a integer</value>
-        public int Alignment{
+        virtual public int Alignment{
             get {
                 return alignment;
             }
@@ -350,7 +350,7 @@ namespace iTextSharp.text {
         /// Get/set the indentation of this paragraph on the left side.
         /// </summary>
         /// <value>a float</value>
-        public float IndentationLeft {
+        virtual public float IndentationLeft {
             get {
                 return indentationLeft;
             }
@@ -364,7 +364,7 @@ namespace iTextSharp.text {
         /// Get/set the indentation of this paragraph on the right side.
         /// </summary>
         /// <value>a float</value>
-        public float IndentationRight {
+        virtual public float IndentationRight {
             get {
                 return indentationRight;
             }
@@ -374,7 +374,7 @@ namespace iTextSharp.text {
             }
         }
     
-        public float SpacingBefore {
+        virtual public float SpacingBefore {
             get {
                 return spacingBefore;
             }
@@ -383,7 +383,7 @@ namespace iTextSharp.text {
             }
         }
 
-        public float SpacingAfter {
+        virtual public float SpacingAfter {
             get {
                 return spacingAfter;
             }
@@ -396,7 +396,7 @@ namespace iTextSharp.text {
         /// Set/get if this paragraph has to be kept together on one page.
         /// </summary>
         /// <value>a bool</value>
-        public bool KeepTogether {
+        virtual public bool KeepTogether {
             get {
                 return keeptogether;
             }
@@ -405,7 +405,7 @@ namespace iTextSharp.text {
             }
         }    
 
-        public float FirstLineIndent {
+        virtual public float FirstLineIndent {
             get {
                 return this.firstLineIndent;
             }
@@ -414,7 +414,7 @@ namespace iTextSharp.text {
             }
         }
 
-        public float ExtraParagraphSpace {
+        virtual public float ExtraParagraphSpace {
             get {
                 return this.extraParagraphSpace;
             }
@@ -423,7 +423,7 @@ namespace iTextSharp.text {
             }
         }
 
-        public PdfObject GetAccessibleAttribute(PdfName key) {
+        virtual public PdfObject GetAccessibleAttribute(PdfName key) {
             if (accessibleAttributes != null) {
                 PdfObject value;
                 accessibleAttributes.TryGetValue(key, out value);
@@ -432,7 +432,7 @@ namespace iTextSharp.text {
                 return null;
         }
 
-        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+        virtual public void SetAccessibleAttribute(PdfName key, PdfObject value) {
             if (accessibleAttributes == null)
                 accessibleAttributes = new Dictionary<PdfName, PdfObject>();
             accessibleAttributes[key] = value;
@@ -440,16 +440,16 @@ namespace iTextSharp.text {
 
 
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+        virtual public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             return accessibleAttributes;
         }
 
-        public PdfName Role {
+        virtual public PdfName Role {
             get { return role; }
             set { this.role = value; }
         }
 
-        public AccessibleElementId ID {
+        virtual public AccessibleElementId ID {
             get
             {
                 if (id == null)

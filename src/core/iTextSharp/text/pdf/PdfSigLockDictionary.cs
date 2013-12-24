@@ -67,7 +67,7 @@ namespace iTextSharp.text.pdf {
                 this.name = name;
             }
             
-            public PdfName Value {
+            virtual public PdfName Value {
                 get {
                     return name;
                 }
@@ -88,7 +88,7 @@ namespace iTextSharp.text.pdf {
                 number = new PdfNumber(p);
             }
             
-            public PdfNumber Value {
+            virtual public PdfNumber Value {
                 get {
                     return number;
                 }

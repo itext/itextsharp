@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace iTextSharp.text.pdf
 {
@@ -34,13 +34,13 @@ namespace iTextSharp.text.pdf
             name = headerCell.name;
         }
 
-        public int Scope
+        virtual public int Scope
         {
             get { return scope; }
             set { scope = value; }
         }
 
-        public string Name
+        virtual public string Name
         {
             get { return name; }
             set { name = value; }

@@ -65,7 +65,7 @@ namespace iTextSharp.tool.xml.html.table {
          * @see com.itextpdf.text.pdf.PdfPCellEvent#cellLayout(com.itextpdf.text.pdf.PdfPCell,
          *      com.itextpdf.text.Rectangle, com.itextpdf.text.pdf.PdfContentByte[])
          */
-        public void CellLayout(PdfPCell cell, Rectangle position,
+        virtual public void CellLayout(PdfPCell cell, Rectangle position,
                 PdfContentByte[] canvases) {
             float effectivePadding = styleValues.BorderWidthLeft/2 + styleValues.HorBorderSpacing;
             float x1 = position.Left + effectivePadding;

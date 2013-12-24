@@ -65,7 +65,7 @@ namespace iTextSharp.tool.xml.parser.state {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.parser.State#process(int)
          */
-        public void Process(char character) {
+        virtual public void Process(char character) {
             StringBuilder entity = this.parser.Memory().CurrentEntity();
             if (character == ';') {
     //          if ("nbsp".Equals(entity.ToString())) {

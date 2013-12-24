@@ -224,7 +224,7 @@ namespace iTextSharp.text.pdf.security {
                 }                
             }
             
-            public String GetField(String name) {
+            virtual public String GetField(String name) {
                 List<string> vs;
                 if (values.TryGetValue(name, out vs))
                     return vs.Count == 0 ? null : vs[0];
@@ -237,7 +237,7 @@ namespace iTextSharp.text.pdf.security {
             * @param name
             * @return an ArrayList
             */
-            public List<string> GetFieldArray(String name) {
+            virtual public List<string> GetFieldArray(String name) {
                 List<string> vs;
                 if (values.TryGetValue(name, out vs))
                     return vs;
@@ -249,7 +249,7 @@ namespace iTextSharp.text.pdf.security {
             * getter for values
             * @return a Hashtable with the fields of the X509 name
             */
-            public Dictionary<string,List<string>> GetFields() {
+            virtual public Dictionary<string,List<string>> GetFields() {
                 return values;
             }
             
@@ -278,11 +278,11 @@ namespace iTextSharp.text.pdf.security {
                 this.index = -1;
             }
             
-            public bool HasMoreTokens() {
+            virtual public bool HasMoreTokens() {
                 return (index != oid.Length);
             }
             
-            public String NextToken() {
+            virtual public String NextToken() {
                 if (index == oid.Length) {
                     return null;
                 }

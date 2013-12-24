@@ -10,7 +10,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
         private Tag sibling3;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             sibling1 = new Tag("sibling1");
             sibling2 = new Tag("sibling2");
             sibling3 = new Tag("sibling3");
@@ -23,7 +23,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void TestSiblingAvailable1() {
+        virtual public void TestSiblingAvailable1() {
             parent.AddChild(sibling1);
             parent.AddChild(sibling2);
             parent.AddChild(sibling3);
@@ -36,7 +36,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void TestSiblingAvailable2() {
+        virtual public void TestSiblingAvailable2() {
             parent.AddChild(sibling1);
             parent.AddChild(sibling2);
             parent.AddChild(sibling3);
@@ -49,7 +49,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void TestSiblingAvailableMinus1() {
+        virtual public void TestSiblingAvailableMinus1() {
             parent.AddChild(sibling1);
             parent.AddChild(sibling2);
             parent.AddChild(sibling3);
@@ -62,7 +62,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test, ExpectedException(typeof (NoSiblingException))]
-        public void TestNoSiblingAvailable() {
+        virtual public void TestNoSiblingAvailable() {
             parent.AddChild(sibling2);
             parent.AddChild(sibling3);
             TagUtils.GetInstance().GetSibling(sibling2, -1);

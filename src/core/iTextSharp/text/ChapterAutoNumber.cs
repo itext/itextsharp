@@ -105,7 +105,7 @@ namespace iTextSharp.text {
         * @param	number	the new chapter number
         * @since 2.1.4
         */
-        public int SetAutomaticNumber(int number) {
+        virtual public int SetAutomaticNumber(int number) {
     	    if (!numberSet) {
         	    number++;
         	    base.SetChapterNumber(number);

@@ -58,7 +58,7 @@ namespace iTextSharp.text.pdf.hyphenation {
 			n = 0;
 		}
 
-		public byte[] Arr {
+		virtual public byte[] Arr {
 			get {
 				return arr;
 			}
@@ -67,7 +67,7 @@ namespace iTextSharp.text.pdf.hyphenation {
 		/**
 		 * return number of items in array
 		 */
-		public int Length {
+		virtual public int Length {
 			get {
 				return n;
 			}
@@ -76,7 +76,7 @@ namespace iTextSharp.text.pdf.hyphenation {
 		/**
 		 * returns current capacity of array
 		 */
-		public int Capacity {
+		virtual public int Capacity {
 			get {
 				return arr.Length;
 			}
@@ -95,7 +95,7 @@ namespace iTextSharp.text.pdf.hyphenation {
 		/**
 		 * This is to implement memory allocation in the array. Like Malloc().
 		 */
-		public int Alloc(int size) {
+		virtual public int Alloc(int size) {
 			int index = n;
 			int len = arr.Length;
 			if (n + size >= len) {
@@ -107,7 +107,7 @@ namespace iTextSharp.text.pdf.hyphenation {
 			return index;
 		}
 
-		public void TrimToSize() {
+		virtual public void TrimToSize() {
 			if (n < arr.Length) {
 				byte[] aux = new byte[n];
 				Array.Copy(arr, 0, aux, 0, n);

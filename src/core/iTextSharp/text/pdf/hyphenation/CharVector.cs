@@ -61,17 +61,17 @@ namespace iTextSharp.text.pdf.hyphenation {
 		/**
 		 * Reset Vector but don't resize or clear elements
 		 */
-		public void Clear() {
+		virtual public void Clear() {
 			n = 0;
 		}
 
-		public Object Clone() {
+		virtual public Object Clone() {
 			CharVector cv = new CharVector((char[])array.Clone(), BLOCK_SIZE);
 			cv.n = this.n;
 			return cv;
 		}
 
-		public char[] Arr {
+		virtual public char[] Arr {
 			get {
 				return array;
 			}
@@ -80,7 +80,7 @@ namespace iTextSharp.text.pdf.hyphenation {
 		/**
 		 * return number of items in array
 		 */
-		public int Length {
+		virtual public int Length {
 			get {
 				return n;
 			}
@@ -89,7 +89,7 @@ namespace iTextSharp.text.pdf.hyphenation {
 		/**
 		 * returns current capacity of array
 		 */
-		public int Capacity {
+		virtual public int Capacity {
 			get {
 				return array.Length;
 			}
@@ -105,7 +105,7 @@ namespace iTextSharp.text.pdf.hyphenation {
 			}
 		}
 
-		public int Alloc(int size) {
+		virtual public int Alloc(int size) {
 			int index = n;
 			int len = array.Length;
 			if (n + size >= len) {
@@ -117,7 +117,7 @@ namespace iTextSharp.text.pdf.hyphenation {
 			return index;
 		}
 
-		public void TrimToSize() {
+		virtual public void TrimToSize() {
 			if (n < array.Length) {
 				char[] aux = new char[n];
 				Array.Copy(array, 0, aux, 0, n);

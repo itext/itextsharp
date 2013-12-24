@@ -63,7 +63,7 @@ namespace iTextSharp.text.pdf.spatial {
          * Sets the EPSG code.
          * @param epsg
          */
-        public void SetEPSG(int epsg) {
+        virtual public void SetEPSG(int epsg) {
             base.Put(PdfName.EPSG, new PdfNumber(epsg));
         }
         
@@ -71,7 +71,7 @@ namespace iTextSharp.text.pdf.spatial {
          * Sets the Well Known Text.
          * @param wkt a String that will be converted to a PdfString in ASCII.
          */
-        public void SetWKT(String wkt) {
+        virtual public void SetWKT(String wkt) {
             base.Put(PdfName.WKT, new PdfString(wkt));
         }
     }

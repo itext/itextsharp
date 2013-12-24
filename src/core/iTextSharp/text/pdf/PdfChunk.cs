@@ -318,11 +318,11 @@ namespace iTextSharp.text.pdf {
         * @param c the CID code
         * @return the Unicode equivalent
         */    
-        public int GetUnicodeEquivalent(int c) {
+        virtual public int GetUnicodeEquivalent(int c) {
             return baseFont.GetUnicodeEquivalent(c);
         }
 
-        protected int GetWord(string text, int start) {
+        virtual protected int GetWord(string text, int start) {
             int len = text.Length;
             while (start < len) {
                 if (!char.IsLetter(text[start]))
@@ -624,7 +624,7 @@ namespace iTextSharp.text.pdf {
          * @return <CODE>true</CODE> if the <CODE>PdfChunk</CODE> split was caused by a newline.
          */
     
-        public bool IsNewlineSplit() {
+        virtual public bool IsNewlineSplit() {
             return newlineSplit;
         }
     
@@ -636,7 +636,7 @@ namespace iTextSharp.text.pdf {
          * @return the calculated width
          */
     
-        public float GetWidthCorrected(float charSpacing, float wordSpacing) {
+        virtual public float GetWidthCorrected(float charSpacing, float wordSpacing) {
             if (image != null) {
                 return image.ScaledWidth + charSpacing;
             }
@@ -651,7 +651,7 @@ namespace iTextSharp.text.pdf {
         * Gets the text displacement relatiev to the baseline.
         * @return a displacement in points
         */
-        public float TextRise {
+        virtual public float TextRise {
             get {
                 object f = GetAttribute(Chunk.SUBSUPSCRIPT);
                 if (f != null) {
@@ -666,7 +666,7 @@ namespace iTextSharp.text.pdf {
          * @return the width of the space trimmed, otherwise 0
          */
     
-        public float TrimLastSpace() {
+        virtual public float TrimLastSpace() {
             BaseFont ft = font.Font;
             if (ft.FontType == BaseFont.FONT_TYPE_CJK && ft.GetUnicodeEquivalent(' ') != ' ') {
                 if (value.Length > 1 && value.EndsWith("\u0001")) {
@@ -683,7 +683,7 @@ namespace iTextSharp.text.pdf {
             return 0;
         }
     
-        public float TrimFirstSpace()
+        virtual public float TrimFirstSpace()
         {
             BaseFont ft = font.Font;
             if (ft.FontType == BaseFont.FONT_TYPE_CJK && ft.GetUnicodeEquivalent(' ') != ' ') {
@@ -848,7 +848,7 @@ namespace iTextSharp.text.pdf {
          * Returns a scalePercentage in case the image needs to be scaled.
          * Sets a scale percentage in case the image needs to be scaled.
          */
-        public float ImageScalePercentage
+        virtual public float ImageScalePercentage
         {
             get { return imageScalePercentage; }
             set { imageScalePercentage = value; }
@@ -964,14 +964,14 @@ namespace iTextSharp.text.pdf {
             return str;
         }
 
-        public bool ChangeLeading {
+        virtual public bool ChangeLeading {
             get {
                 return changeLeading;
             }
         }
 
 
-        public float Leading {
+        virtual public float Leading {
             get {
                 return leading;
             }

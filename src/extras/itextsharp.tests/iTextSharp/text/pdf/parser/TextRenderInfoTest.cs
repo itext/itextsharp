@@ -11,7 +11,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
     class TextRenderInfoTest
     {
         [Test]
-        public void TestCharacterRenderInfos()
+        virtual public void TestCharacterRenderInfos()
         {
             byte[] bytes = CreateSimplePdf(PageSize.LETTER.Rotate().Rotate(), "ABCD");
             //TestResourceUtils.saveBytesToFile(bytes, new File("C:/temp/out.pdf"));
@@ -26,11 +26,11 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         private class CharacterPositionRenderListener : ITextExtractionStrategy
         {
 
-            public void BeginTextBlock()
+            virtual public void BeginTextBlock()
             {
             }
 
-            public void RenderText(TextRenderInfo renderInfo)
+            virtual public void RenderText(TextRenderInfo renderInfo)
             {
                 List<TextRenderInfo> subs = renderInfo.GetCharacterRenderInfos();
                 TextRenderInfo previousCharInfo = subs[0];
@@ -51,15 +51,15 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
                 Assert.AreEqual(v1[0], v2[0], 1 / 72f, message);
                 Assert.AreEqual(v1[1], v2[1], 1 / 72f, message);
             }
-            public void EndTextBlock()
+            virtual public void EndTextBlock()
             {
             }
 
-            public void RenderImage(ImageRenderInfo renderInfo)
+            virtual public void RenderImage(ImageRenderInfo renderInfo)
             {
             }
 
-            public String GetResultantText()
+            virtual public String GetResultantText()
             {
                 return null;
             }

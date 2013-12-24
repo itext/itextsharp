@@ -8,7 +8,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void ValidateAttributesNotNull() {
+        virtual public void ValidateAttributesNotNull() {
             Tag t = new Tag("dummy");
             Assert.NotNull(t.Attributes);
         }
@@ -18,7 +18,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void ValidateCssNotNull() {
+        virtual public void ValidateCssNotNull() {
             Tag t = new Tag("dummy");
             Assert.NotNull(t.CSS);
         }
@@ -28,7 +28,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void ValidateChildrenNotNull() {
+        virtual public void ValidateChildrenNotNull() {
             Tag t = new Tag("dummy");
             Assert.NotNull(t.Children);
         }
@@ -38,7 +38,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void ValidateParentSetOnAdd() {
+        virtual public void ValidateParentSetOnAdd() {
             Tag t = new Tag("pappie");
             Tag t2 = new Tag("baby");
             t.AddChild(t2);
@@ -51,7 +51,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void ValidateChildNotSetOnSetParent() {
+        virtual public void ValidateChildNotSetOnSetParent() {
             Tag t = new Tag("pappie");
             Tag t2 = new Tag("baby");
             t2.Parent = t;
@@ -63,7 +63,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void CompareTrue() {
+        virtual public void CompareTrue() {
             Assert.IsTrue(new Tag("pappie").CompareTag(new Tag("pappie")));
         }
 
@@ -72,7 +72,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void CompareFalse() {
+        virtual public void CompareFalse() {
             Assert.IsFalse(new Tag("pappie").CompareTag(new Tag("lappie")));
         }
 
@@ -81,7 +81,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void CompareTrueNS() {
+        virtual public void CompareTrueNS() {
             Assert.IsTrue(new Tag("pappie", "ns").CompareTag(new Tag("pappie", "ns")));
         }
 
@@ -90,7 +90,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void CompareFalseNS() {
+        virtual public void CompareFalseNS() {
             Assert.IsFalse(new Tag("pappie", "ns").CompareTag(new Tag("pappie", "xs")));
         }
 
@@ -99,7 +99,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void CompareFalseTagAndNS() {
+        virtual public void CompareFalseTagAndNS() {
             Assert.IsFalse(new Tag("pappie", "ns").CompareTag(new Tag("mammie", "xs")));
         }
     }

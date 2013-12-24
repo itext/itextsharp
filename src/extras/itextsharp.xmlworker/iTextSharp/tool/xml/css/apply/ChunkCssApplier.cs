@@ -272,7 +272,7 @@ namespace iTextSharp.tool.xml.css.apply {
          *
          * @return float containing the width of the widest word.
          */
-        public float GetWidestWord(Chunk c) {
+        virtual public float GetWidestWord(Chunk c) {
             String[] words = c.Content.Split(CssUtils.whitespace);
             float widestWord = 0;
             for (int i = 0; i < words.Length; i++)
@@ -293,7 +293,7 @@ namespace iTextSharp.tool.xml.css.apply {
          * @param target chunk which needs the required styles.
          */
 
-        public void CopyChunkStyles(Chunk source, Chunk target)
+        virtual public void CopyChunkStyles(Chunk source, Chunk target)
         {
             target.Font = source.Font;
             target.Attributes = source.Attributes;
@@ -302,7 +302,7 @@ namespace iTextSharp.tool.xml.css.apply {
             target.SetHorizontalScaling(source.HorizontalScaling);
         }
 
-        public IFontProvider FontProvider
+        virtual public IFontProvider FontProvider
         {
             get {
                 return fontProvider;

@@ -63,7 +63,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             map[((PdfNumber)code).IntValue] = codepoint;
         }
         
-        public int Lookup(int character) {
+        virtual public int Lookup(int character) {
             return map[character];
         }    
     }

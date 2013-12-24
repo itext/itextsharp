@@ -18,13 +18,13 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         private const string RESOURCES = @"..\..\resources\";
 
         private class CustomElementHandler : IElementHandler {
-            public void Add(IWritable w) {
+            virtual public void Add(IWritable w) {
                 elementList.AddRange(((WritableElement) w).Elements());
             }
         }
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
 
             TextReader bis = File.OpenText(RESOURCES + "/snippets/font_color_snippet.html");
@@ -34,7 +34,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [Test]
-        public void ResolveFontSize() {
+        virtual public void ResolveFontSize() {
             Tag t = new Tag("t");
             t.CSS["font-size"] = "12pt";
             Chunk c = new Chunk("default text with no styles attached.");
@@ -46,7 +46,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [Test]
-        public void ResolveColor() {
+        virtual public void ResolveColor() {
             Assert.AreEqual(BaseColor.BLACK, elementList[0].Chunks[0].Font.Color);
             Assert.AreEqual(255, elementList[3].Chunks[0].Font.Color.B);
             Assert.AreEqual(255, elementList[3].Chunks[2].Font.Color.G);
@@ -54,7 +54,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [TearDown]
-        public void TearDown() {
+        virtual public void TearDown() {
             elementList = null;
         }
     }

@@ -63,11 +63,11 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             map[codepoint] = ((PdfNumber)code).IntValue;
         }
         
-        public int Lookup(int character) {
+        virtual public int Lookup(int character) {
             return map[character];
         }
 
-        public CMapToUnicode ExportToUnicode() {
+        virtual public CMapToUnicode ExportToUnicode() {
             CMapToUnicode uni = new CMapToUnicode();
             int[] keys = map.GetKeys();
             foreach (int key in keys) {

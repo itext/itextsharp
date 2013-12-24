@@ -79,7 +79,7 @@ namespace iTextSharp.text.io {
         /**
          * {@inheritDoc}
          */
-        public long Length {
+        virtual public long Length {
             get {
                 return source.Length;
             }
@@ -92,7 +92,7 @@ namespace iTextSharp.text.io {
             // do not close the source
         }
 
-        public void Dispose() {
+        virtual public void Dispose() {
             Close();
         }
     }

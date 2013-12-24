@@ -115,7 +115,7 @@ namespace iTextSharp.text.pdf {
             annotation = false;
         }
     
-        public void SetWidget(Rectangle rect, PdfName highlight) {
+        virtual public void SetWidget(Rectangle rect, PdfName highlight) {
             Put(PdfName.TYPE, PdfName.ANNOT);
             Put(PdfName.SUBTYPE, PdfName.WIDGET);
             Put(PdfName.RECT, new PdfRectangle(rect));
@@ -129,7 +129,7 @@ namespace iTextSharp.text.pdf {
             return field;
         }
     
-        public int Button {
+        virtual public int Button {
             set {
                 Put(PdfName.FT, PdfName.BTN);
                 if (value != 0)
@@ -219,26 +219,26 @@ namespace iTextSharp.text.pdf {
         /** Getter for property parent.
         * @return Value of property parent.
         */
-        public PdfFormField Parent {
+        virtual public PdfFormField Parent {
             get {
                 return parent;
             }
         }
         
-        public void AddKid(PdfFormField field) {
+        virtual public void AddKid(PdfFormField field) {
             field.parent = this;
             if (kids == null)
                 kids = new List<PdfFormField>();
             kids.Add(field);
         }
         
-        public List<PdfFormField> Kids {
+        virtual public List<PdfFormField> Kids {
             get {
                 return kids;
             }
         }
         
-        public int SetFieldFlags(int flags) {
+        virtual public int SetFieldFlags(int flags) {
             PdfNumber obj = (PdfNumber)Get(PdfName.FF);
             int old;
             if (obj == null)
@@ -250,19 +250,19 @@ namespace iTextSharp.text.pdf {
             return old;
         }
         
-        public string ValueAsString {
+        virtual public string ValueAsString {
             set {
                 Put(PdfName.V, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
         }
 
-        public string ValueAsName {
+        virtual public string ValueAsName {
             set {
                 Put(PdfName.V, new PdfName(value));
             }
         }
 
-        public PdfSignature ValueAsSig {
+        virtual public PdfSignature ValueAsSig {
             set {
                 Put(PdfName.V, value);
             }
@@ -277,44 +277,44 @@ namespace iTextSharp.text.pdf {
          * @param rv HTML markup for the rich value of this field
          * @since 5.0.6
          */
-        public String RichValue {
+        virtual public String RichValue {
             set {
                 Put(PdfName.RV, new PdfString(value));
             }
         }
 
-        public string DefaultValueAsString {
+        virtual public string DefaultValueAsString {
             set {
                 Put(PdfName.DV, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
         }
 
-        public string DefaultValueAsName {
+        virtual public string DefaultValueAsName {
             set {
                 Put(PdfName.DV, new PdfName(value));
             }
         }
         
-        public string FieldName {
+        virtual public string FieldName {
             set {
                 if (value != null)
                     Put(PdfName.T, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
         }
         
-        public string UserName {
+        virtual public string UserName {
             set {
                 Put(PdfName.TU, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
         }
         
-        public string MappingName {
+        virtual public string MappingName {
             set {
                 Put(PdfName.TM, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
         }
         
-        public int Quadding {
+        virtual public int Quadding {
             set {
                 Put(PdfName.Q, new PdfNumber(value));
             }

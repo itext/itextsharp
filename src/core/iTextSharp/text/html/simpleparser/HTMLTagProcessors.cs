@@ -101,7 +101,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#startElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
              */
-            public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
+            virtual public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
                 tag = MapTag(tag);
                 attrs[tag] = null;
                 worker.UpdateChain(tag, attrs);
@@ -109,7 +109,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#endElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
              */
-            public void EndElement(HTMLWorker worker, String tag) {
+            virtual public void EndElement(HTMLWorker worker, String tag) {
                 tag = MapTag(tag);
                 worker.UpdateChain(tag);
             }
@@ -141,14 +141,14 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#startElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
              */
-            public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
+            virtual public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
                 worker.UpdateChain(tag, attrs);
                 worker.FlushContent();
             }
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#endElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
              */
-            public void EndElement(HTMLWorker worker, String tag) {
+            virtual public void EndElement(HTMLWorker worker, String tag) {
                 worker.ProcessLink();
                 worker.UpdateChain(tag);
             }
@@ -163,13 +163,13 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#startElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String, java.util.Map)
              */
-            public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
+            virtual public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
                 worker.NewLine();
             }
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#endElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
              */
-            public void EndElement(HTMLWorker worker, String tag) {
+            virtual public void EndElement(HTMLWorker worker, String tag) {
             }
 
         }
@@ -181,7 +181,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#startElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String, java.util.Map)
              */
-            public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
+            virtual public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
                 worker.CarriageReturn();
                 if (worker.IsPendingLI())
                     worker.EndElement(HtmlTags.LI);
@@ -193,7 +193,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#endElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
              */
-            public void EndElement(HTMLWorker worker, String tag) {
+            virtual public void EndElement(HTMLWorker worker, String tag) {
                 worker.CarriageReturn();
                 if (worker.IsPendingLI())
                     worker.EndElement(HtmlTags.LI);
@@ -208,12 +208,12 @@ namespace iTextSharp.text.html.simpleparser {
 
         private class HTMLTagProcessor_HR : IHTMLTagProcessor {
 
-            public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
+            virtual public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
                 worker.CarriageReturn();
                 worker.PushToStack(worker.CreateLineSeparator(attrs));
             }
 
-            public void EndElement(HTMLWorker worker, String tag) {
+            virtual public void EndElement(HTMLWorker worker, String tag) {
             }
 
         }
@@ -225,14 +225,14 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#startElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String, java.util.Map)
              */
-            public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
+            virtual public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
                 worker.UpdateChain(tag, attrs);
             }
 
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#endElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
              */
-            public void EndElement(HTMLWorker worker, String tag) {
+            virtual public void EndElement(HTMLWorker worker, String tag) {
                 worker.UpdateChain(tag);
             }
 
@@ -244,7 +244,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#startElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String, java.util.Map)
              */
-            public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
+            virtual public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
                 worker.CarriageReturn();
                 if (!attrs.ContainsKey(HtmlTags.SIZE)) {
                     int v = 7 - int.Parse(tag.Substring(1));
@@ -256,7 +256,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#endElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
              */
-            public void EndElement(HTMLWorker worker, String tag) {
+            virtual public void EndElement(HTMLWorker worker, String tag) {
                 worker.CarriageReturn();
                 worker.UpdateChain(tag);
             }
@@ -270,7 +270,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#startElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String, java.util.Map)
              */
-            public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
+            virtual public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
                 worker.CarriageReturn();
                 if (worker.IsPendingLI())
                     worker.EndElement(tag);
@@ -283,7 +283,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#endElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
              */
-            public void EndElement(HTMLWorker worker, String tag) {
+            virtual public void EndElement(HTMLWorker worker, String tag) {
                 worker.CarriageReturn();
                 worker.SetPendingLI(false);
                 worker.SetSkipText(true);
@@ -300,7 +300,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#startElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String, java.util.Map)
              */
-            public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
+            virtual public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
                 worker.CarriageReturn();
                 if (!attrs.ContainsKey(HtmlTags.FACE)) {
                     attrs[HtmlTags.FACE] = "Courier";
@@ -312,7 +312,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#endElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
              */
-            public void EndElement(HTMLWorker worker, String tag) {
+            virtual public void EndElement(HTMLWorker worker, String tag) {
                 worker.CarriageReturn();
                 worker.UpdateChain(tag);
                 worker.SetInsidePRE(false);
@@ -327,7 +327,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#startElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String, java.util.Map)
              */
-            public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
+            virtual public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
                 worker.CarriageReturn();
                 worker.UpdateChain(tag, attrs);
             }
@@ -335,7 +335,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#endElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
              */
-            public void EndElement(HTMLWorker worker, String tag) {
+            virtual public void EndElement(HTMLWorker worker, String tag) {
                 worker.CarriageReturn();
                 worker.UpdateChain(tag);
             }
@@ -351,7 +351,7 @@ namespace iTextSharp.text.html.simpleparser {
              * @throws DocumentException
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#startElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String, java.util.Map)
              */
-            public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
+            virtual public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
                 worker.CarriageReturn();
                 TableWrapper table = new TableWrapper(attrs);
                 worker.PushToStack(table);
@@ -370,7 +370,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#endElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
              */
-            public void EndElement(HTMLWorker worker, String tag) {
+            virtual public void EndElement(HTMLWorker worker, String tag) {
                 worker.CarriageReturn();
                 if (worker.IsPendingTR())
                     worker.EndElement(HtmlTags.TR);
@@ -390,7 +390,7 @@ namespace iTextSharp.text.html.simpleparser {
              * @throws DocumentException
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#startElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String, java.util.Map)
              */
-            public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
+            virtual public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
                 worker.CarriageReturn();
                 if (worker.IsPendingTR())
                     worker.EndElement(tag);
@@ -402,7 +402,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#endElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
              */
-            public void EndElement(HTMLWorker worker, String tag) {
+            virtual public void EndElement(HTMLWorker worker, String tag) {
                 worker.CarriageReturn();
                 if (worker.IsPendingTD())
                     worker.EndElement(HtmlTags.TD);
@@ -422,7 +422,7 @@ namespace iTextSharp.text.html.simpleparser {
              * @throws DocumentException
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#startElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String, java.util.Map)
              */
-            public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
+            virtual public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
                 worker.CarriageReturn();
                 if (worker.IsPendingTD())
                     worker.EndElement(tag);
@@ -435,7 +435,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#endElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
              */
-            public void EndElement(HTMLWorker worker, String tag) {
+            virtual public void EndElement(HTMLWorker worker, String tag) {
                 worker.CarriageReturn();
                 worker.SetPendingTD(false);
                 worker.UpdateChain(HtmlTags.TD);
@@ -451,7 +451,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#startElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String, java.util.Map)
              */
-            public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
+            virtual public void StartElement(HTMLWorker worker, String tag, IDictionary<String, String> attrs) {
                 worker.UpdateChain(tag, attrs);
                 worker.ProcessImage(worker.CreateImage(attrs), attrs);
                 worker.UpdateChain(tag);
@@ -460,7 +460,7 @@ namespace iTextSharp.text.html.simpleparser {
             /**
              * @see com.itextpdf.text.html.simpleparser.HTMLTagProcessors#endElement(com.itextpdf.text.html.simpleparser.HTMLWorker, java.lang.String)
              */
-            public void EndElement(HTMLWorker worker, String tag) {
+            virtual public void EndElement(HTMLWorker worker, String tag) {
             }
 
         }

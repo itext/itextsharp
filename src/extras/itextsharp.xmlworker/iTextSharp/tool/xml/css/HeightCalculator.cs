@@ -51,7 +51,7 @@ using iTextSharp.tool.xml.html;
      {
          private CssUtils utils = CssUtils.GetInstance();
 
-         public float? GetHeight(Tag tag, float pageHeight)
+         virtual public float? GetHeight(Tag tag, float pageHeight)
          {
              float? height = null;
              String heightValue = null;

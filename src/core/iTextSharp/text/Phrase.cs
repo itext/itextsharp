@@ -226,7 +226,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isContent()
         * @since   iText 2.0.8
         */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return true;
         }
 
@@ -234,7 +234,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isNestable()
         * @since   iText 2.0.8
         */
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             return true;
         }
 
@@ -283,7 +283,7 @@ namespace iTextSharp.text {
          * @return  a boolean
          * @since 5.0.1
          */
-        public bool Add(String s) {
+        virtual public bool Add(String s) {
             if (s == null) {
                 return false;
             }
@@ -341,7 +341,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="collection">a collection of Chunks, Anchors and Phrases.</param>
         /// <returns>true if the action succeeded, false if not.</returns>
-        public bool AddAll<T>(ICollection<T> collection) where T : IElement {
+        virtual public bool AddAll<T>(ICollection<T> collection) where T : IElement {
             if (collection.Count == 0)
                 return false;
             foreach (IElement itm in collection) {
@@ -359,7 +359,7 @@ namespace iTextSharp.text {
         /// </remarks>
         /// <param name="chunk">a Chunk</param>
         /// <returns>a bool</returns>
-        protected bool AddChunk(Chunk chunk) {
+        virtual protected bool AddChunk(Chunk chunk) {
     	    Font f = chunk.Font;
     	    String c = chunk.Content;
             if (font != null && !font.IsStandardFont()) {
@@ -396,7 +396,7 @@ namespace iTextSharp.text {
         /// Adds a Object to the Paragraph.
         /// </summary>
         /// <param name="obj">the object to add.</param>
-        public void AddSpecial(IElement obj) {
+        virtual public void AddSpecial(IElement obj) {
             base.Add(obj);
         }
     
@@ -411,7 +411,7 @@ namespace iTextSharp.text {
         /// false if the Phrase
         /// contains more than one or more non-emptyChunks.
         /// </returns>
-        public bool IsEmpty() {
+        virtual public bool IsEmpty() {
             switch (Count) {
                 case 0:
                     return true;
@@ -426,7 +426,7 @@ namespace iTextSharp.text {
             }
         }
     
-        public bool HasLeading() {
+        virtual public bool HasLeading() {
             if (float.IsNaN(leading)) {
                 return false;
             }
@@ -440,7 +440,7 @@ namespace iTextSharp.text {
          * @param fixedLeading the fixed leading
          * @param multipliedLeading the variable leading
          */
-        public void SetLeading(float fixedLeading, float multipliedLeading) {
+        virtual public void SetLeading(float fixedLeading, float multipliedLeading) {
             this.leading = fixedLeading;
             this.multipliedLeading = multipliedLeading;
         }
@@ -455,7 +455,7 @@ namespace iTextSharp.text {
          * size of the biggest font in the line.
          * @param multipliedLeading the variable leading
          */
-        public float MultipliedLeading {
+        virtual public float MultipliedLeading {
             get {
                 return multipliedLeading;
             }
@@ -504,7 +504,7 @@ namespace iTextSharp.text {
         /// Gets the font of the first Chunk that appears in this Phrase.
         /// </summary>
         /// <value>a Font</value>
-        public Font Font {
+        virtual public Font Font {
             get {
                 return font;
             }
@@ -517,7 +517,7 @@ namespace iTextSharp.text {
         * Returns the content as a String object.
         * This method differs from toString because toString will return an ArrayList with the toString value of the Chunks in this Phrase.
         */
-        public String Content {
+        virtual public String Content {
             get {
     	        StringBuilder buf = new StringBuilder();
                 foreach (Chunk obj in Chunks)
@@ -531,7 +531,7 @@ namespace iTextSharp.text {
         * @param   hyphenation a HyphenationEvent instance
         * @since   2.1.2
         */
-        public IHyphenationEvent Hyphenation {
+        virtual public IHyphenationEvent Hyphenation {
             set {
                 hyphenation = value;
             }
@@ -546,7 +546,7 @@ namespace iTextSharp.text {
         * @since   5.4.1
         */
 
-        public TabSettings TabSettings
+        virtual public TabSettings TabSettings
         {
             get { return tabSettings; }
             set { tabSettings = value; }
@@ -617,7 +617,7 @@ namespace iTextSharp.text {
     	    return p;
         }
 
-        public bool Trim() {
+        virtual public bool Trim() {
             while (this.Count > 0) {
                 IElement firstChunk = this[0];
                 if (firstChunk is Chunk && ((Chunk)firstChunk).IsWhitespace()) {

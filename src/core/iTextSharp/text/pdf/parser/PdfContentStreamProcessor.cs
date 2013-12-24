@@ -115,7 +115,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the existing registered handler, if any
          * @since 5.0.1
          */
-        public IXObjectDoHandler RegisterXObjectDoHandler(PdfName xobjectSubType, IXObjectDoHandler handler){
+        virtual public IXObjectDoHandler RegisterXObjectDoHandler(PdfName xobjectSubType, IXObjectDoHandler handler){
             IXObjectDoHandler old;
             xobjectDoHandlers.TryGetValue(xobjectSubType, out old);
             xobjectDoHandlers[xobjectSubType] = handler;
@@ -210,7 +210,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the existing registered oper, if any
          * @since 2.1.7
          */
-        public IContentOperator RegisterContentOperator(String operatorString, IContentOperator oper){
+        virtual public IContentOperator RegisterContentOperator(String operatorString, IContentOperator oper){
             IContentOperator value = null;
             if (operators.ContainsKey(operatorString))
                 value = operators[operatorString];
@@ -221,7 +221,7 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * Resets the graphics state stack, matrices and resources.
          */
-        public void Reset(){
+        virtual public void Reset(){
             gsStack.Clear();
             gsStack.Push(new GraphicsState());
             textMatrix = null;
@@ -352,7 +352,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param contentBytes  the bytes of a content stream
          * @param resources     the resources that come with the content stream
          */
-        public void ProcessContent(byte[] contentBytes, PdfDictionary resources){
+        virtual public void ProcessContent(byte[] contentBytes, PdfDictionary resources){
             this.resources.Push(resources);
             PRTokeniser tokeniser = new PRTokeniser(new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource(contentBytes)));
             PdfContentParser ps = new PdfContentParser(tokeniser);
@@ -375,7 +375,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param info the inline image
          * @param colorSpaceDic the color space for the inline immage
          */
-        protected void HandleInlineImage(InlineImageInfo info, PdfDictionary colorSpaceDic)
+        virtual protected void HandleInlineImage(InlineImageInfo info, PdfDictionary colorSpaceDic)
         {
             ImageRenderInfo renderInfo = ImageRenderInfo.CreateForEmbeddedImage(Gs().ctm, info, colorSpaceDic);
             renderListener.RenderImage(renderInfo);
@@ -388,11 +388,11 @@ namespace iTextSharp.text.pdf.parser {
         private class ResourceDictionary : PdfDictionary {
             private IList<PdfDictionary> resourcesStack = new List<PdfDictionary>();
             
-            public void Push(PdfDictionary resources){
+            virtual public void Push(PdfDictionary resources){
                 resourcesStack.Add(resources);
             }
 
-            public void Pop(){
+            virtual public void Pop(){
                 resourcesStack.RemoveAt(resourcesStack.Count-1);
             }
 
@@ -412,7 +412,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (unregistered).
          */
         private class IgnoreOperatorContentOperator : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands){
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands){
                 // ignore the oper
             }
         }
@@ -421,7 +421,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (TJ).
          */
         private class ShowTextArray : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 PdfArray array = (PdfArray)operands[0];
                 float tj = 0;
                 foreach (PdfObject entryObj in array) {
@@ -451,7 +451,7 @@ namespace iTextSharp.text.pdf.parser {
                 this.moveNextLineAndShowText = moveNextLineAndShowText;
             }
 
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 PdfNumber aw = (PdfNumber)operands[0];
                 PdfNumber ac = (PdfNumber)operands[1];
                 PdfString str = (PdfString)operands[2];
@@ -481,7 +481,7 @@ namespace iTextSharp.text.pdf.parser {
                 this.showText = showText;
             }
 
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 textMoveNextLine.Invoke(processor, null, new List<PdfObject>(0));
                 showText.Invoke(processor, null, operands);
             }
@@ -491,7 +491,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (Tj).
          */
         private class ShowText : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 PdfString str = (PdfString)operands[0];
 
                 processor.DisplayPdfString(str);
@@ -508,7 +508,7 @@ namespace iTextSharp.text.pdf.parser {
                 this.moveStartNextLine = moveStartNextLine;
             }
 
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 List<PdfObject> tdoperands = new List<PdfObject>(2);
                 tdoperands.Insert(0, new PdfNumber(0));
                 tdoperands.Insert(1, new PdfNumber(-processor.Gs().leading));
@@ -520,7 +520,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (Tm).
          */
         private class TextSetTextMatrix : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 float a = ((PdfNumber)operands[0]).FloatValue;
                 float b = ((PdfNumber)operands[1]).FloatValue;
                 float c = ((PdfNumber)operands[2]).FloatValue;
@@ -543,7 +543,7 @@ namespace iTextSharp.text.pdf.parser {
                 this.moveStartNextLine = moveStartNextLine;
                 this.setTextLeading = setTextLeading;
             }
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 float ty = ((PdfNumber)operands[1]).FloatValue;
 
                 List<PdfObject> tlOperands = new List<PdfObject>(1);
@@ -557,7 +557,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (Td).
          */
         private class TextMoveStartNextLine : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 float tx = ((PdfNumber)operands[0]).FloatValue;
                 float ty = ((PdfNumber)operands[1]).FloatValue;
 
@@ -571,7 +571,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (Tf).
          */
         private class SetTextFont : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 PdfName fontResourceName = (PdfName)operands[0];
                 float size = ((PdfNumber)operands[1]).FloatValue;
 
@@ -593,7 +593,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (Tr).
          */
         private class SetTextRenderMode : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 PdfNumber render = (PdfNumber)operands[0];
                 processor.Gs().renderMode = render.IntValue;
             }
@@ -603,7 +603,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (Ts).
          */
         private class SetTextRise : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 PdfNumber rise = (PdfNumber)operands[0];
                 processor.Gs().rise = rise.FloatValue;
             }
@@ -613,7 +613,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (TL).
          */
         private class SetTextLeading : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 PdfNumber leading = (PdfNumber)operands[0];
                 processor.Gs().leading = leading.FloatValue;
             }
@@ -623,7 +623,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (Tz).
          */
         private class SetTextHorizontalScaling : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 PdfNumber scale = (PdfNumber)operands[0];
                 processor.Gs().horizontalScaling = scale.FloatValue/100f;
             }
@@ -633,7 +633,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (Tc).
          */
         private class SetTextCharacterSpacing : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 PdfNumber charSpace = (PdfNumber)operands[0];
                 processor.Gs().characterSpacing = charSpace.FloatValue;
             }
@@ -643,7 +643,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (Tw).
          */
         private class SetTextWordSpacing : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 PdfNumber wordSpace = (PdfNumber)operands[0];
                 processor.Gs().wordSpacing = wordSpace.FloatValue;
             }
@@ -653,7 +653,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (gs).
          */
         private class ProcessGraphicsStateResource : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
 
                 PdfName dictionaryName = (PdfName)operands[0];
                 PdfDictionary extGState = processor.resources.GetAsDict(PdfName.EXTGSTATE);
@@ -679,7 +679,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (q).
          */
         private class PushGraphicsState : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 GraphicsState gs = processor.gsStack.Peek();
                 GraphicsState copy = new GraphicsState(gs);
                 processor.gsStack.Push(copy);
@@ -690,7 +690,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (cm).
          */
         private class ModifyCurrentTransformationMatrix : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 float a = ((PdfNumber)operands[0]).FloatValue;
                 float b = ((PdfNumber)operands[1]).FloatValue;
                 float c = ((PdfNumber)operands[2]).FloatValue;
@@ -743,7 +743,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content operator implementation (g).
          */
         private class SetGrayFill : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 processor.Gs().fillColor = GetColor(1, operands);
             }
         }
@@ -752,7 +752,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content operator implementation (G).
          */
         private class SetGrayStroke : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 processor.Gs().strokeColor = GetColor(1, operands);
             }
         }
@@ -761,7 +761,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content operator implementation (rg).
          */
         private class SetRGBFill : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 processor.Gs().fillColor = GetColor(3, operands);
             }
         }
@@ -770,7 +770,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content operator implementation (RG).
          */
         private class SetRGBStroke : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 processor.Gs().strokeColor = GetColor(3, operands);
             }
         }
@@ -779,7 +779,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content operator implementation (rg).
          */
         private class SetCMYKFill : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 processor.Gs().fillColor = GetColor(4, operands);
             }
         }
@@ -788,7 +788,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content operator implementation (RG).
          */
         private class SetCMYKStroke : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 processor.Gs().strokeColor = GetColor(4, operands);
             }
         }
@@ -797,7 +797,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content operator implementation (CS).
          */
         private class SetColorSpaceFill : IContentOperator{
-		    public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+		    virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
 			    processor.Gs().colorSpaceFill = (PdfName)operands[0];		
 		    }
         }
@@ -806,7 +806,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content operator implementation (cs).
          */
         private class SetColorSpaceStroke : IContentOperator{
-		    public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+		    virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
 			    processor.Gs().colorSpaceStroke = (PdfName)operands[0];		
 		    }
         }
@@ -815,7 +815,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content operator implementation (sc / scn).
          */
         private class SetColorFill : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 processor.Gs().fillColor = GetColor(processor.Gs().colorSpaceFill, operands);
             }
         }
@@ -824,7 +824,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content operator implementation (SC / SCN).
          */
         private class SetColorStroke : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 processor.Gs().strokeColor = GetColor(processor.Gs().colorSpaceStroke, operands);
             }
         }
@@ -833,7 +833,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (Q).
          */
         private class PopGraphicsState : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 processor.gsStack.Pop();
             }
         }
@@ -842,7 +842,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (BT).
          */
         private class BeginTextC : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 processor.textMatrix = new Matrix();
                 processor.textLineMatrix = processor.textMatrix;
                 processor.BeginText();
@@ -853,7 +853,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (ET).
          */
         private class EndTextC : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 processor.textMatrix = null;
                 processor.textLineMatrix = null;
                 processor.EndText();
@@ -866,7 +866,7 @@ namespace iTextSharp.text.pdf.parser {
          */
         private class BeginMarkedContentC : IContentOperator{
 
-            public void Invoke(PdfContentStreamProcessor processor,
+            virtual public void Invoke(PdfContentStreamProcessor processor,
                     PdfLiteral oper, List<PdfObject> operands)
                     {
                 processor.BeginMarkedContent((PdfName)operands[0], new PdfDictionary());
@@ -880,7 +880,7 @@ namespace iTextSharp.text.pdf.parser {
          */
         private class BeginMarkedContentDictionary : IContentOperator{
 
-            public void Invoke(PdfContentStreamProcessor processor,
+            virtual public void Invoke(PdfContentStreamProcessor processor,
                     PdfLiteral oper, List<PdfObject> operands)
                     {
                 
@@ -903,7 +903,7 @@ namespace iTextSharp.text.pdf.parser {
          * @since 5.0.2
          */
         private class EndMarkedContentC : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor,
+            virtual public void Invoke(PdfContentStreamProcessor processor,
                     PdfLiteral oper, List<PdfObject> operands)
                     {
                 processor.EndMarkedContent();
@@ -914,7 +914,7 @@ namespace iTextSharp.text.pdf.parser {
          * A content oper implementation (Do).
          */
         private class Do : IContentOperator{
-            public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
+            virtual public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 PdfName xobjectName = (PdfName)operands[0];
                 processor.DisplayXObject(xobjectName);
             }
@@ -925,7 +925,7 @@ namespace iTextSharp.text.pdf.parser {
          */
         private class FormXObjectDoHandler : IXObjectDoHandler{
 
-            public void HandleXObject(PdfContentStreamProcessor processor, PdfStream stream, PdfIndirectReference refi) {
+            virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream stream, PdfIndirectReference refi) {
                 
                 PdfDictionary resources = stream.GetAsDict(PdfName.RESOURCES);
 
@@ -963,7 +963,7 @@ namespace iTextSharp.text.pdf.parser {
          */
         private class ImageXObjectDoHandler : IXObjectDoHandler{
 
-            public void HandleXObject(PdfContentStreamProcessor processor, PdfStream xobjectStream, PdfIndirectReference refi) {
+            virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream xobjectStream, PdfIndirectReference refi) {
                 PdfDictionary colorSpaceDic = processor.resources.GetAsDict(PdfName.COLORSPACE);
                 ImageRenderInfo renderInfo = ImageRenderInfo.CreateForXObject(processor.Gs().ctm, refi, colorSpaceDic);
                 processor.renderListener.RenderImage(renderInfo);
@@ -974,7 +974,7 @@ namespace iTextSharp.text.pdf.parser {
          * An XObject subtype handler that does nothing
          */
         private class IgnoreXObjectDoHandler : IXObjectDoHandler{
-            public void HandleXObject(PdfContentStreamProcessor processor, PdfStream xobjectStream, PdfIndirectReference refi) {
+            virtual public void HandleXObject(PdfContentStreamProcessor processor, PdfStream xobjectStream, PdfIndirectReference refi) {
                 // ignore XObject subtype
             }
         }    

@@ -10,7 +10,7 @@ namespace itextsharp.tests.iTextSharp.text.io
         byte[] data;
 
         [SetUp]
-        public void SetUp()
+        virtual public void SetUp()
         {
 
             using (MemoryStream ms = new MemoryStream())
@@ -26,7 +26,7 @@ namespace itextsharp.tests.iTextSharp.text.io
 
 
         [Test]
-        public void TestGet()
+        virtual public void TestGet()
         {
             ArrayRandomAccessSource source1 = new ArrayRandomAccessSource(data);
             ArrayRandomAccessSource source2 = new ArrayRandomAccessSource(data);
@@ -70,7 +70,7 @@ namespace itextsharp.tests.iTextSharp.text.io
         }
 
         [Test]
-        public void TestGetArray()
+        virtual public void TestGetArray()
         {
             ArrayRandomAccessSource source1 = new ArrayRandomAccessSource(data); // 0 - 99
             ArrayRandomAccessSource source2 = new ArrayRandomAccessSource(data); // 100 - 199
@@ -125,7 +125,7 @@ namespace itextsharp.tests.iTextSharp.text.io
         }
 
         [Test]
-        public void TestRelease()
+        virtual public void TestRelease()
         {
 
             ArrayRandomAccessSource source1 = new ArrayRandomAccessSource(data); // 0 - 99

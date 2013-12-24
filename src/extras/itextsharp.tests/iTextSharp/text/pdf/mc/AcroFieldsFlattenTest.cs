@@ -14,7 +14,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.mc {
         public const String OUT_FOLDER = @"..\..\target\text\pdf\mc\";
 
         [SetUp]
-        public void Initialize() {
+        virtual public void Initialize() {
             DirectoryInfo dir = new DirectoryInfo(OUT_FOLDER);
             if (dir.Exists) {
                 foreach (FileInfo file in dir.GetFiles()) {
@@ -26,7 +26,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.mc {
         }
 
         [Test]
-        public void fieldFieldsAndFlattenTest() {
+        virtual public void fieldFieldsAndFlattenTest() {
             String acroFormFileName = "SF2809.pdf";
             String filledAcroFormFileName = "SF2809_filled.pdf";
             String flattenAcroFormFileName = "SF2809_alt.pdf";

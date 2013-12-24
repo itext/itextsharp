@@ -1,4 +1,4 @@
-﻿/*
+/*
  * $Id: IndicLigaturizer.java 5561 2012-11-22 16:22:14Z blowagie $
  *
  * This file is part of the iText (R) project.
@@ -81,7 +81,7 @@ namespace iTextSharp.text.pdf.languages {
          *            the original String
          * @return the ligaturized String
          */
-        public String Process(String s) {
+        virtual public String Process(String s) {
             if (String.IsNullOrEmpty(s))
                 return "";
             StringBuilder res = new StringBuilder();
@@ -122,7 +122,7 @@ namespace iTextSharp.text.pdf.languages {
          * @return false
          * @see com.itextpdf.text.pdf.languages.LanguageProcessor#isRTL()
          */
-        public bool IsRTL() {
+        virtual public bool IsRTL() {
             return false;
         }
 
@@ -133,7 +133,7 @@ namespace iTextSharp.text.pdf.languages {
          *            the character that needs to be checked
          * @return true if the characters is a vowel letter
          */
-        protected bool IsSwaraLetter(char ch) {
+        virtual protected bool IsSwaraLetter(char ch) {
             return (ch >= langTable[LETTER_A] && ch <= langTable[LETTER_AU]);
         }
 
@@ -144,7 +144,7 @@ namespace iTextSharp.text.pdf.languages {
          *            the character that needs to be checked
          * @return true if the characters is a vowel sign
          */
-        protected bool IsSwaraMatra(char ch) {
+        virtual protected bool IsSwaraMatra(char ch) {
             return ((ch >= langTable[MATRA_AA] && ch <= langTable[MATRA_AI])
                     || ch == langTable[MATRA_HLR] || ch == langTable[MATRA_HLRR]);
         }
@@ -156,7 +156,7 @@ namespace iTextSharp.text.pdf.languages {
          *            the character that needs to be checked
          * @return true if the chracter is a consonant letter
          */
-        protected bool IsVyanjana(char ch) {
+        virtual protected bool IsVyanjana(char ch) {
             return (ch >= langTable[LETTER_KA] && ch <= langTable[LETTER_HA]);
         }
 

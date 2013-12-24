@@ -74,14 +74,14 @@ namespace iTextSharp.tool.xml.parser.io {
         public ParserListenerWriter(IAppender writer) : this(writer, true) {
         }
 
-        public void UnknownText(String str) {
+        virtual public void UnknownText(String str) {
         }
 
-        public void Text(string text) {
+        virtual public void Text(string text) {
             writer.Append(text);
         }
 
-        public void StartElement(String currentTag, IDictionary<String, String> attributes, String ns) {
+        virtual public void StartElement(String currentTag, IDictionary<String, String> attributes, String ns) {
             String myns = (ns.Length > 0)?ns+":":ns;
             if ( attributes.Count >0) {
                 writer.Append("<").Append(myns ).Append(currentTag).Append(" ");
@@ -94,7 +94,7 @@ namespace iTextSharp.tool.xml.parser.io {
             }
         }
 
-        public void EndElement(String curentTag, String ns) {
+        virtual public void EndElement(String curentTag, String ns) {
             String myns = (ns.Length > 0)?ns+":":ns;
             writer.Append("</").Append(myns).Append(curentTag).Append('>');
             if (formatted) {
@@ -105,19 +105,19 @@ namespace iTextSharp.tool.xml.parser.io {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.parser.ParserListener#comment(java.lang.String)
          */
-        public void Comment(String comment) {
+        virtual public void Comment(String comment) {
             writer.Append("<!--").Append(comment).Append("-->");
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.parser.XMLParserListener#init()
          */
-        public void Init() {
+        virtual public void Init() {
         }
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.parser.XMLParserListener#close()
          */
-        public void Close() {
+        virtual public void Close() {
         }
     }
 }

@@ -62,7 +62,7 @@ namespace iTextSharp.text.xml.xmp {
         public const String BASEURL = "xmp:BaseURL";
         /** The date and time the resource was originally created. */
         public const String CREATEDATE = "xmp:CreateDate";
-        /** The name of the first known tool used to create the resource. If history is present in the metadata, this value should be equivalent to that of xmpMM:History’s softwareAgent property. */
+        /** The name of the first known tool used to create the resource. If history is present in the metadata, this value should be equivalent to that of xmpMM:Historyï¿½s softwareAgent property. */
         public const String CREATORTOOL = "xmp:CreatorTool";
         /** An unordered array of text strings that unambiguously identify the resource within a given context. */
         public const String IDENTIFIER = "xmp:Identifier";
@@ -86,7 +86,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds the creatortool.
         * @param creator
         */
-        public void AddCreatorTool(String creator) {
+        virtual public void AddCreatorTool(String creator) {
             this[CREATORTOOL] = creator;
         }
         
@@ -94,7 +94,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds the creation date.
         * @param date
         */
-        public void AddCreateDate(String date) {
+        virtual public void AddCreateDate(String date) {
             this[CREATEDATE] = date;
         }
         
@@ -102,7 +102,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds the modification date.
         * @param date
         */
-        public void AddModDate(String date) {
+        virtual public void AddModDate(String date) {
             this[MODIFYDATE] = date;
         }
 
@@ -110,14 +110,14 @@ namespace iTextSharp.text.xml.xmp {
 	    * Adds the meta data date.
 	    * @param date
 	    */
-	    public void AddMetaDataDate(String date) {
+	    virtual public void AddMetaDataDate(String date) {
 		    this[METADATADATE] = date;
 	    }
 
         /** Adds the identifier.
         * @param id
         */
-        public void AddIdentifiers(String[] id) {
+        virtual public void AddIdentifiers(String[] id) {
             XmpArray array = new XmpArray(XmpArray.UNORDERED);
             for (int i = 0; i < id.Length; i++) {
                 array.Add(id[i]);
@@ -128,7 +128,7 @@ namespace iTextSharp.text.xml.xmp {
         /** Adds the nickname.
         * @param name
         */
-        public void AddNickname(String name) {
+        virtual public void AddNickname(String name) {
             this[NICKNAME] = name;
         }
     }

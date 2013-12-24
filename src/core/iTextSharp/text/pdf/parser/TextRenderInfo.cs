@@ -101,7 +101,7 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @return the text to render
          */
-        public String GetText(){ 
+        virtual public String GetText(){ 
             return text; 
         }
 
@@ -112,7 +112,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return true if the text is marked with this id
          * @since 5.0.2
          */
-        public bool HasMcid(int mcid) {
+        virtual public bool HasMcid(int mcid) {
             return HasMcid(mcid, false);
 	    }
 
@@ -124,7 +124,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return true if the text is marked with this id
          * @since 5.3.5
          */
-        public bool HasMcid(int mcid, bool checkTheTopmostLevelOnly) {
+        virtual public bool HasMcid(int mcid, bool checkTheTopmostLevelOnly) {
             if (checkTheTopmostLevelOnly) {
                 if (markedContentInfos is IList) {
                     int? infoMcid = GetMcid();
@@ -143,7 +143,7 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @return the marked content associated with the TextRenderInfo instance.
          */
-        public int? GetMcid() {
+        virtual public int? GetMcid() {
             if (markedContentInfos is IList) {
                 IList<MarkedContentInfo> mci = (IList<MarkedContentInfo>)markedContentInfos;
                 // Java and C# Stack classes have different numeration direction, so top element of the stack is 
@@ -167,7 +167,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the baseline line segment
          * @since 5.0.2
          */
-        public LineSegment GetBaseline(){
+        virtual public LineSegment GetBaseline(){
             return GetUnscaledBaselineWithOffset(0 + gs.rise).TransformBy(textToUserSpaceTransformMatrix);
         }
 
@@ -177,7 +177,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the ascentline line segment
          * @since 5.0.2
          */
-        public LineSegment GetAscentLine(){
+        virtual public LineSegment GetAscentLine(){
             float ascent = gs.GetFont().GetFontDescriptor(BaseFont.ASCENT, gs.GetFontSize());
             return GetUnscaledBaselineWithOffset(ascent + gs.rise).TransformBy(textToUserSpaceTransformMatrix);
         }
@@ -188,7 +188,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the descentline line segment
          * @since 5.0.2
          */
-        public LineSegment GetDescentLine(){
+        virtual public LineSegment GetDescentLine(){
             // per GetFontDescription() API, descent is returned as a negative number, so we apply that as a normal vertical offset
             float descent = gs.GetFont().GetFontDescriptor(BaseFont.DESCENT, gs.GetFontSize());
             return GetUnscaledBaselineWithOffset(descent + gs.rise).TransformBy(textToUserSpaceTransformMatrix);
@@ -206,7 +206,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the font
          * @since iText 5.0.2
          */
-        public DocumentFont GetFont() {
+        virtual public DocumentFont GetFont() {
             return gs.GetFont();
         }
 
@@ -234,7 +234,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return The Rise for the text draw operation, in user space units (Ts value, scaled to user space)
          * @since 5.3.3
          */
-        public float GetRise()
+        virtual public float GetRise()
         {
             if (gs.rise == 0) return 0; // optimize the common case
 
@@ -272,7 +272,7 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @return The width, in user space units, of a single space character in the current font
          */
-        public float GetSingleSpaceWidth(){
+        virtual public float GetSingleSpaceWidth(){
             return ConvertWidthFromTextSpaceToUserSpace(GetUnscaledFontSpaceWidth());
         }
         
@@ -291,7 +291,7 @@ namespace iTextSharp.text.pdf.parser {
          * </ul>
          * @since iText 5.0.1
          */
-        public int GetTextRenderMode(){
+        virtual public int GetTextRenderMode(){
             return gs.renderMode;
         }
 
@@ -299,7 +299,7 @@ namespace iTextSharp.text.pdf.parser {
          * Returns the current fill color.
          * @param a BaseColor
          */
-        public BaseColor GetFillColor() {
+        virtual public BaseColor GetFillColor() {
             return gs.fillColor;
         }
 
@@ -307,7 +307,7 @@ namespace iTextSharp.text.pdf.parser {
          * Returns the current stroke color.
          * @param a BaseColor
          */
-        public BaseColor GetStrokeColor() {
+        virtual public BaseColor GetStrokeColor() {
             return gs.strokeColor;
         }
         
@@ -347,7 +347,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return A list of {@link TextRenderInfo} objects that represent each glyph used in the draw operation. The next effect is if there was a separate Tj opertion for each character in the rendered string
          * @since 5.3.3
          */
-        public List<TextRenderInfo> GetCharacterRenderInfos()
+        virtual public List<TextRenderInfo> GetCharacterRenderInfos()
         {
             List<TextRenderInfo> rslt = new List<TextRenderInfo>(text.Length);
 

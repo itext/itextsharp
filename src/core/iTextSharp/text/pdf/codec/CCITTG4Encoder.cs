@@ -75,7 +75,7 @@ namespace iTextSharp.text.pdf.codec {
         * @param offset the offset into the data
         * @param size the size of the data to be encoded
         */    
-        public void Fax4Encode(byte[] data, int offset, int size) {
+        virtual public void Fax4Encode(byte[] data, int offset, int size) {
             dataBp = data;
             offsetData = offset;
             sizeData = size;
@@ -106,7 +106,7 @@ namespace iTextSharp.text.pdf.codec {
         * @param data the data to be encoded
         * @param height the number of lines to encode
         */    
-        public void Fax4Encode(byte[] data, int height) {
+        virtual public void Fax4Encode(byte[] data, int height) {
             Fax4Encode(data, 0, rowbytes * height);
         }
 
@@ -204,7 +204,7 @@ namespace iTextSharp.text.pdf.codec {
         * Closes the encoder and returns the encoded data.
         * @return the encoded data
         */    
-        public byte[] Close() {
+        virtual public byte[] Close() {
             Fax4PostEncode();
             return outBuf.ToByteArray();
         }

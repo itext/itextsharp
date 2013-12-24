@@ -15,7 +15,7 @@ namespace iTextSharp.text.xml.xmp {
         public static String CMP_FOLDER = @"../../resources/text/xml/xmp/";
 
         [TestFixtureSetUp]
-        public void Init() {
+        virtual public void Init() {
             if (Directory.Exists(OUT_FOLDER)) {
                 foreach (String path in Directory.GetFiles(OUT_FOLDER))
                     if (File.Exists(path))
@@ -25,7 +25,7 @@ namespace iTextSharp.text.xml.xmp {
         }
 
         [Test]
-        public void CreatePdfTest() {
+        virtual public void CreatePdfTest() {
             String fileName = "xmp_metadata.pdf";
             // step 1
             Document document = new Document();
@@ -63,7 +63,7 @@ namespace iTextSharp.text.xml.xmp {
         }
 
         [Test]
-        public void CreatePdfAutomaticTest() {
+        virtual public void CreatePdfAutomaticTest() {
             String fileName = "xmp_metadata_automatic.pdf";
             // step 1
             Document document = new Document();
@@ -94,7 +94,7 @@ namespace iTextSharp.text.xml.xmp {
         }
 
         [Test]
-        public void ManipulatePdfTest() {
+        virtual public void ManipulatePdfTest() {
             String fileName = "xmp_metadata_added.pdf";
             PdfReader reader = new PdfReader(CMP_FOLDER + "pdf_metadata.pdf");
             PdfStamper stamper = new PdfAStamper(reader, new FileStream(OUT_FOLDER + fileName, FileMode.Create),
@@ -112,7 +112,7 @@ namespace iTextSharp.text.xml.xmp {
         }
 
         [Test]
-        public void ManipulatePdf2Test() {
+        virtual public void ManipulatePdf2Test() {
             String fileName = "xmp_metadata_added2.pdf";
             PdfReader reader = new PdfReader(CMP_FOLDER + "pdf_metadata.pdf");
             PdfStamper stamper = new PdfAStamper(reader, new FileStream(OUT_FOLDER + fileName, FileMode.Create),
@@ -132,7 +132,7 @@ namespace iTextSharp.text.xml.xmp {
         }
 
         [Test]
-        public void ManipulatePdfAutomaticTest() {
+        virtual public void ManipulatePdfAutomaticTest() {
             String fileName = "xmp_metadata_updated.pdf";
             PdfReader reader = new PdfReader(CMP_FOLDER + "pdf_metadata.pdf");
             PdfStamper stamper = new PdfAStamper(reader, new FileStream(OUT_FOLDER + fileName, FileMode.Create),
@@ -144,7 +144,7 @@ namespace iTextSharp.text.xml.xmp {
         }
 
         [Test]
-        public void DeprecatedLogicTest() {
+        virtual public void DeprecatedLogicTest() {
             String fileName = "xmp_metadata_deprecated.pdf";
             // step 1
             Document document = new Document();

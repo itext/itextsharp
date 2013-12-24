@@ -130,7 +130,7 @@ namespace iTextSharp.text.pdf {
          * @return  <CODE>false</CODE> because this is a single page
          */
     
-        public bool IsParent() {
+        virtual public bool IsParent() {
             return false;
         }
     

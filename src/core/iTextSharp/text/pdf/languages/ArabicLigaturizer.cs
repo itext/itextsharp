@@ -757,7 +757,7 @@ namespace iTextSharp.text.pdf {
             this.options = options;
         }
 
-        public String Process(String s) {
+        virtual public String Process(String s) {
             return BidiLine.ProcessLTR(s, runDirection, options);
         }
 
@@ -766,7 +766,7 @@ namespace iTextSharp.text.pdf {
             * @return true
             * @see com.itextpdf.text.pdf.languages.LanguageProcessor#isRTL()
             */
-        public bool IsRTL() {
+        virtual public bool IsRTL() {
             return true;
         }
     }

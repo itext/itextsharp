@@ -11,7 +11,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         RandomAccessFileOrArray rafoa;
 
         [SetUp]
-        public void SetUp()
+        virtual public void SetUp()
         {
             MemoryStream os = new MemoryStream();
             for (int i = 0; i < 10000; i++)
@@ -24,7 +24,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
 
         [Test]
-        public void TestPushback_byteByByte()
+        virtual public void TestPushback_byteByByte()
         {
 
             Assert.AreEqual(data[0], (byte)rafoa.Read());
@@ -38,7 +38,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void TestSimple()
+        virtual public void TestSimple()
         {
             for (int i = 0; i < data.Length; i++)
             {
@@ -47,7 +47,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void TestSeek()
+        virtual public void TestSeek()
         {
             RandomAccessFileOrArray rafoa = new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource(data));
             rafoa.Seek(72);
@@ -58,7 +58,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void TestFilePositionWithPushback()
+        virtual public void TestFilePositionWithPushback()
         {
             RandomAccessFileOrArray rafoa = new RandomAccessFileOrArray(new RandomAccessSourceFactory().CreateSource(data));
             long offset = 72;

@@ -62,19 +62,19 @@ namespace iTextSharp.text.pdf.events {
         * Add a page event to the forwarder.
         * @param event an event that has to be added to the forwarder.
         */
-        public void AddTableEvent(IPdfPTableEvent eventa) {
+        virtual public void AddTableEvent(IPdfPTableEvent eventa) {
             events.Add(eventa);
         }
 
         /**
         * @see com.lowagie.text.pdf.PdfPTableEvent#tableLayout(com.lowagie.text.pdf.PdfPTable, float[][], float[], int, int, com.lowagie.text.pdf.PdfContentByte[])
         */
-        public void TableLayout(PdfPTable table, float[][] widths, float[] heights, int headerRows, int rowStart, PdfContentByte[] canvases) {
+        virtual public void TableLayout(PdfPTable table, float[][] widths, float[] heights, int headerRows, int rowStart, PdfContentByte[] canvases) {
             foreach (IPdfPTableEvent eventa in events) {
                 eventa.TableLayout(table, widths, heights, headerRows, rowStart, canvases);
             }
         }
-        public void SplitTable(PdfPTable table) {
+        virtual public void SplitTable(PdfPTable table) {
 		    foreach (IPdfPTableEvent eventa in events) {
 			    if (eventa is IPdfPTableEventSplit)
                     ((IPdfPTableEventSplit)eventa).SplitTable(table);
@@ -84,7 +84,7 @@ namespace iTextSharp.text.pdf.events {
          * @see com.itextpdf.text.pdf.PdfPTableEventAfterSplit#afterSplitTable(com.itextpdf.text.pdf.PdfPTable, com.itextpdf.text.pdf.PdfPRow, int)
          * @since iText 5.4.3
          */
-        public void AfterSplitTable(PdfPTable table, PdfPRow startRow, int startIdx) {
+        virtual public void AfterSplitTable(PdfPTable table, PdfPRow startRow, int startIdx) {
             foreach (IPdfPTableEvent evente in events) {
                 if (evente is IPdfPTableEventAfterSplit)
                     ((IPdfPTableEventAfterSplit)evente).AfterSplitTable(table, startRow, startIdx);

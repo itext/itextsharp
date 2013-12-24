@@ -67,7 +67,7 @@ namespace iTextSharp.tool.xml.pipeline.ctx {
         /**
          * @return the contained object
          */
-        public T Get() {
+        virtual public T Get() {
             return this.obj;
         }
     }

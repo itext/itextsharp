@@ -53,15 +53,15 @@ namespace iTextSharp.text.pdf.codec {
     public class TiffWriter {
         private SortedDictionary<int,FieldBase> ifd = new SortedDictionary<int,FieldBase>();
 
-        public void AddField(FieldBase field) {
+        virtual public void AddField(FieldBase field) {
             ifd[field.GetTag()] = field;
         }
 
-        public int GetIfdSize() {
+        virtual public int GetIfdSize() {
             return 6 + ifd.Count * 12;
         }
 
-        public void WriteFile(Stream stream) {
+        virtual public void WriteFile(Stream stream) {
             stream.WriteByte(0x4d);
             stream.WriteByte(0x4d);
             stream.WriteByte(0);
@@ -96,19 +96,19 @@ namespace iTextSharp.text.pdf.codec {
                 this.count = count;
             }
 
-            public int GetValueSize() {
+            virtual public int GetValueSize() {
                 return (int)((data.Length + 1) & 0xfffffffe);
             }
 
-            public int GetTag() {
+            virtual public int GetTag() {
                 return tag;
             }
 
-            public void SetOffset(int offset) {
+            virtual public void SetOffset(int offset) {
                 this.offset = offset;
             }
 
-            public void WriteField(Stream stream) {
+            virtual public void WriteField(Stream stream) {
                 WriteShort(tag, stream);
                 WriteShort(fieldType, stream);
                 WriteLong(count, stream);
@@ -123,7 +123,7 @@ namespace iTextSharp.text.pdf.codec {
                 }
             }
 
-            public void WriteValue(Stream stream) {
+            virtual public void WriteValue(Stream stream) {
                 if (data.Length <= 4)
                     return;
                 stream.Write(data, 0, data.Length);

@@ -109,7 +109,7 @@ namespace iTextSharp.text.pdf {
         * Adds a child layer. Nested layers can only have one parent.
         * @param child the child layer
         */    
-        public void AddChild(PdfLayer child) {
+        virtual public void AddChild(PdfLayer child) {
             if (child.parent != null)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("the.layer.1.already.has.a.parent", child.GetAsString(PdfName.NAME).ToUnicodeString()));
             child.parent = this;
@@ -123,7 +123,7 @@ namespace iTextSharp.text.pdf {
         * Gets the parent layer.
         * @return the parent layer or <CODE>null</CODE> if the layer has no parent
         */    
-        public PdfLayer Parent {
+        virtual public PdfLayer Parent {
             get {
                 return parent;
             }
@@ -133,7 +133,7 @@ namespace iTextSharp.text.pdf {
         * Gets the children layers.
         * @return the children layers or <CODE>null</CODE> if the layer has no children
         */    
-        public List<PdfLayer> Children {
+        virtual public List<PdfLayer> Children {
             get {
                 return children;
             }
@@ -143,7 +143,7 @@ namespace iTextSharp.text.pdf {
         * Gets the <CODE>PdfIndirectReference</CODE> that represents this layer.
         * @return the <CODE>PdfIndirectReference</CODE> that represents this layer
         */    
-        public PdfIndirectReference Ref {
+        virtual public PdfIndirectReference Ref {
             get {
                 return refi;
             }
@@ -156,7 +156,7 @@ namespace iTextSharp.text.pdf {
         * Sets the name of this layer.
         * @param name the name of this layer
         */    
-        public string Name {
+        virtual public string Name {
             set {
                 Put(PdfName.NAME, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
@@ -166,7 +166,7 @@ namespace iTextSharp.text.pdf {
         * Gets the dictionary representing the layer. It just returns <CODE>this</CODE>.
         * @return the dictionary representing the layer
         */    
-        public PdfObject PdfObject {
+        virtual public PdfObject PdfObject {
             get {
                 return this;
             }
@@ -176,7 +176,7 @@ namespace iTextSharp.text.pdf {
         * Gets the initial visibility of the layer.
         * @return the initial visibility of the layer
         */
-        public bool On {
+        virtual public bool On {
             get {
                 return this.on;
             }
@@ -206,7 +206,7 @@ namespace iTextSharp.text.pdf {
         * applications, and <B>Technical</B>, for technical designs such as building plans or
         * schematics
         */    
-        public void SetCreatorInfo(String creator, String subtype) {
+        virtual public void SetCreatorInfo(String creator, String subtype) {
             PdfDictionary usage = Usage;
             PdfDictionary dic = new PdfDictionary();
             dic.Put(PdfName.CREATOR, new PdfString(creator, PdfObject.TEXT_UNICODE));
@@ -222,7 +222,7 @@ namespace iTextSharp.text.pdf {
         * @param preferred used by viewer applications when there is a partial match but no exact
         * match between the system language and the language strings in all usage dictionaries
         */    
-        public void SetLanguage(String lang, bool preferred) {
+        virtual public void SetLanguage(String lang, bool preferred) {
             PdfDictionary usage = Usage;
             PdfDictionary dic = new PdfDictionary();
             dic.Put(PdfName.LANG, new PdfString(lang, PdfObject.TEXT_UNICODE));
@@ -238,7 +238,7 @@ namespace iTextSharp.text.pdf {
         * PDF or a raster image format).
         * @param export the export state
         */    
-        public bool Export {
+        virtual public bool Export {
             set {
                 PdfDictionary usage = Usage;
                 PdfDictionary dic = new PdfDictionary();
@@ -256,7 +256,7 @@ namespace iTextSharp.text.pdf {
         * should be ON. A negative value will set the largest possible magnification supported by the
         * viewer application
         */    
-        public void SetZoom(float min, float max) {
+        virtual public void SetZoom(float min, float max) {
             if (min <= 0 && max < 0)
                 return;
             PdfDictionary usage = Usage;
@@ -276,7 +276,7 @@ namespace iTextSharp.text.pdf {
         * @param printstate indicates that the group should be
         * set to that state when the document is printed from a viewer application
         */    
-        public void SetPrint(String subtype, bool printstate) {
+        virtual public void SetPrint(String subtype, bool printstate) {
             PdfDictionary usage = Usage;
             PdfDictionary dic = new PdfDictionary();
             dic.Put(PdfName.SUBTYPE, new PdfName(subtype));
@@ -289,7 +289,7 @@ namespace iTextSharp.text.pdf {
         * document is opened in a viewer application.
         * @param view the view state
         */    
-        public bool View {
+        virtual public bool View {
             set {
                 PdfDictionary usage = Usage;
                 PdfDictionary dic = new PdfDictionary();
@@ -304,7 +304,7 @@ namespace iTextSharp.text.pdf {
          * "FG" (Foreground), "BG" (Background), or "L" (Logo).
          * @since 5.0.2
          */
-        public string PageElement {
+        virtual public string PageElement {
             set {
                 PdfDictionary usage = Usage;
                 PdfDictionary dic = new PdfDictionary();
@@ -319,7 +319,7 @@ namespace iTextSharp.text.pdf {
          * @param names one or more names
          * @since 5.0.2
          */
-        public void SetUser(String type, String[] names) {
+        virtual public void SetUser(String type, String[] names) {
             PdfDictionary usage = Usage;
             PdfDictionary dic = new PdfDictionary();
             dic.Put(PdfName.TYPE, new PdfName(type));
@@ -340,7 +340,7 @@ namespace iTextSharp.text.pdf {
         * also be absent from the panel.
         * @param onPanel the visibility of the layer in Acrobat's layer panel
         */
-        public bool OnPanel {
+        virtual public bool OnPanel {
             get {
                 return this.onPanel;
             }

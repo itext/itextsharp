@@ -114,12 +114,12 @@ namespace iTextSharp.text.pdf {
          * @return the new view
          */
 
-        public RandomAccessFileOrArray CreateView()
+        virtual public RandomAccessFileOrArray CreateView()
         {
             return new RandomAccessFileOrArray(new IndependentRandomAccessSource(byteSource));
         }
 
-        public IRandomAccessSource CreateSourceView()
+        virtual public IRandomAccessSource CreateSourceView()
         {
             return new IndependentRandomAccessSource(byteSource);
         }
@@ -185,7 +185,7 @@ namespace iTextSharp.text.pdf {
 
         //TODO: I'm only putting this in here for backwards compatability with PdfReader(RAFOA, byte[]).  Once we get rid of the
         //PdfReader constructor, we can get rid of this method as well
-        protected internal IRandomAccessSource GetByteSource()
+        virtual protected internal IRandomAccessSource GetByteSource()
         {
             return byteSource;
         }
@@ -195,7 +195,7 @@ namespace iTextSharp.text.pdf {
          * @param b the byte to push
          */
 
-        public void PushBack(byte b)
+        virtual public void PushBack(byte b)
         {
             back = b;
             isBack = true;
@@ -207,7 +207,7 @@ namespace iTextSharp.text.pdf {
          * @throws IOException
          */
 
-        public int Read()
+        virtual public int Read()
         {
             if (isBack)
             {
@@ -217,7 +217,7 @@ namespace iTextSharp.text.pdf {
             return byteSource.Get(byteSourcePosition++);
         }
 
-        public int Read(byte[] b, int off, int len)
+        virtual public int Read(byte[] b, int off, int len)
         {
             if (len == 0)
                 return 0;
@@ -243,17 +243,17 @@ namespace iTextSharp.text.pdf {
             return count;
         }
 
-        public int Read(byte[] b)
+        virtual public int Read(byte[] b)
         {
             return Read(b, 0, b.Length);
         }
 
-        public void ReadFully(byte[] b)
+        virtual public void ReadFully(byte[] b)
         {
             ReadFully(b, 0, b.Length);
         }
 
-        public void ReadFully(byte[] b, int off, int len)
+        virtual public void ReadFully(byte[] b, int off, int len)
         {
             if (len == 0)
                 return;
@@ -267,12 +267,12 @@ namespace iTextSharp.text.pdf {
             } while (n < len);
         }
 
-        public long Skip(long n)
+        virtual public long Skip(long n)
         {
             return SkipBytes(n);
         }
 
-        public long SkipBytes(long n)
+        virtual public long SkipBytes(long n)
         {
             if (n <= 0)
             {
@@ -309,39 +309,39 @@ namespace iTextSharp.text.pdf {
             return newpos - pos + adj;
         }
 
-        public void ReOpen()
+        virtual public void ReOpen()
         {
             Seek(0);
         }
 
-        public void Close()
+        virtual public void Close()
         {
             isBack = false;
             byteSource.Close();
         }
 
-        public long Length
+        virtual public long Length
         {
             get { return byteSource.Length; }
         }
 
-        public void Seek(long pos)
+        virtual public void Seek(long pos)
         {
             byteSourcePosition = pos;
             isBack = false;
         }
 
-        public void Seek(int pos)
+        virtual public void Seek(int pos)
         {
             Seek((long) pos);
         }
 
-        public long FilePointer
+        virtual public long FilePointer
         {
             get { return byteSourcePosition - (isBack ? 1 : 0); }
         }
 
-        public bool ReadBoolean()
+        virtual public bool ReadBoolean()
         {
             int ch = this.Read();
             if (ch < 0)
@@ -349,7 +349,7 @@ namespace iTextSharp.text.pdf {
             return (ch != 0);
         }
 
-        public byte ReadByte()
+        virtual public byte ReadByte()
         {
             int ch = this.Read();
             if (ch < 0)
@@ -357,7 +357,7 @@ namespace iTextSharp.text.pdf {
             return (byte) (ch);
         }
 
-        public int ReadUnsignedByte()
+        virtual public int ReadUnsignedByte()
         {
             int ch = this.Read();
             if (ch < 0)
@@ -365,7 +365,7 @@ namespace iTextSharp.text.pdf {
             return ch;
         }
 
-        public short ReadShort()
+        virtual public short ReadShort()
         {
             int ch1 = this.Read();
             int ch2 = this.Read();
@@ -405,7 +405,7 @@ namespace iTextSharp.text.pdf {
             return (short) ((ch2 << 8) + (ch1 << 0));
         }
 
-        public int ReadUnsignedShort()
+        virtual public int ReadUnsignedShort()
         {
             int ch1 = this.Read();
             int ch2 = this.Read();
@@ -445,7 +445,7 @@ namespace iTextSharp.text.pdf {
             return (ch2 << 8) + (ch1 << 0);
         }
 
-        public char ReadChar()
+        virtual public char ReadChar()
         {
             int ch1 = this.Read();
             int ch2 = this.Read();
@@ -484,7 +484,7 @@ namespace iTextSharp.text.pdf {
             return (char) ((ch2 << 8) + (ch1 << 0));
         }
 
-        public int ReadInt()
+        virtual public int ReadInt()
         {
             int ch1 = this.Read();
             int ch2 = this.Read();
@@ -571,7 +571,7 @@ namespace iTextSharp.text.pdf {
             return ((ch4 << 24) + (ch3 << 16) + (ch2 << 8) + (ch1 << 0));
         }
 
-        public long ReadLong()
+        virtual public long ReadLong()
         {
             return ((long) (ReadInt()) << 32) + (ReadInt() & 0xFFFFFFFFL);
         }
@@ -583,7 +583,7 @@ namespace iTextSharp.text.pdf {
             return ((long) i2 << 32) + (i1 & 0xFFFFFFFFL);
         }
 
-        public float ReadFloat()
+        virtual public float ReadFloat()
         {
             int[] a = {ReadInt()};
             float[] b = {0};
@@ -599,7 +599,7 @@ namespace iTextSharp.text.pdf {
             return b[0];
         }
 
-        public double ReadDouble()
+        virtual public double ReadDouble()
         {
             long[] a = {ReadLong()};
             double[] b = {0};
@@ -615,7 +615,7 @@ namespace iTextSharp.text.pdf {
             return b[0];
         }
 
-        public String ReadLine()
+        virtual public String ReadLine()
         {
             StringBuilder input = new StringBuilder();
             int c = -1;
@@ -649,7 +649,7 @@ namespace iTextSharp.text.pdf {
         }
 
 
-        public String ReadString(int length, String encoding)
+        virtual public String ReadString(int length, String encoding)
         {
             byte[] buf = new byte[length];
             ReadFully(buf);

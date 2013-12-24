@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 /*
  * $Id: PdfARadioCheckField.java 5870 2013-06-25 12:34:21Z achingarev $
  *

@@ -6,7 +6,7 @@ namespace itextsharp.tests.iTextSharp.text.io
     class GetBufferedRandomAccessSourceTest
     {
         [Test]
-        public void TestSmallSizedFile()
+        virtual public void TestSmallSizedFile()
         {
             // we had a problem if source was less than 4 characters in length - would result in array index out of bounds problems on get()
             byte[] data = new byte[] { 42 };

@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 
 
@@ -19,7 +19,7 @@ namespace System.util.collections
                 Add(item);
         }
         
-        public IEnumerator<T> GetEnumerator()
+        virtual public IEnumerator<T> GetEnumerator()
         {
             return set.Keys.GetEnumerator();
         }
@@ -29,41 +29,41 @@ namespace System.util.collections
             return GetEnumerator();
         }
 
-        public void Add(T item)
+        virtual public void Add(T item)
         {
             set[item] = null;
         }
 
-        public void Clear()
+        virtual public void Clear()
         {
             set.Clear();
         }
 
-        public bool Contains(T item)
+        virtual public bool Contains(T item)
         {
             return set.ContainsKey(item);
         }
 
-        public void CopyTo(T[] array, int arrayIndex)
+        virtual public void CopyTo(T[] array, int arrayIndex)
         {
             set.Keys.CopyTo(array, arrayIndex);
         }
 
-        public bool Remove(T item)
+        virtual public bool Remove(T item)
         {
             return set.Remove(item);
         }
 
-        public int Count
+        virtual public int Count
         {
             get { return set.Count; }
         }
-        public bool IsReadOnly
+        virtual public bool IsReadOnly
         {
             get { return false; }
         }
 
-        public bool RetainAll(ICollection<T> collection) {
+        virtual public bool RetainAll(ICollection<T> collection) {
 	        bool modified = false;
             List<T> toRemove = new List<T>();
             foreach (T item in this)

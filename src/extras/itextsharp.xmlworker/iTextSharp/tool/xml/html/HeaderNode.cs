@@ -74,7 +74,7 @@ namespace iTextSharp.tool.xml.html {
          * The parent node for this node.
          * @return HeaderNode
          */
-        public HeaderNode Parent {
+        virtual public HeaderNode Parent {
             get {
                 return parent;
             }
@@ -84,7 +84,7 @@ namespace iTextSharp.tool.xml.html {
          * @return level
          * 
          */
-        public int Level {
+        virtual public int Level {
             get {
                 return level;
             }
@@ -94,7 +94,7 @@ namespace iTextSharp.tool.xml.html {
          * Returns the PdfOutline attached to this HeaderNode.
          * @return the PdfOutline of this HeaderNode
          */
-        public PdfOutline Outline {
+        virtual public PdfOutline Outline {
             get {
                 return outline;
             }

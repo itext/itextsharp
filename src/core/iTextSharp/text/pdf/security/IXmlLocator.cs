@@ -1,4 +1,4 @@
-﻿using System.Xml;
+using System.Xml;
 /*
  * $Id: XmlLocator.java 5830 2013-05-31 09:29:15Z blowagie $
  *

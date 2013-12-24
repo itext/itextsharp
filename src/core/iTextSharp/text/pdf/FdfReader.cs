@@ -153,7 +153,7 @@ namespace iTextSharp.text.pdf {
         * with the field content.
         * @return all the fields
         */    
-        public Dictionary<String, PdfDictionary> Fields {
+        virtual public Dictionary<String, PdfDictionary> Fields {
             get {
                 return fields;
             }
@@ -163,7 +163,7 @@ namespace iTextSharp.text.pdf {
         * @param name the fully qualified field name
         * @return the field dictionary
         */    
-        public PdfDictionary GetField(String name) {
+        virtual public PdfDictionary GetField(String name) {
             PdfDictionary dic;
             fields.TryGetValue(name, out dic);
             return dic;;
@@ -176,7 +176,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException 
         * @since 5.0.1 
         */
-        public byte[] GetAttachedFile(String name) {
+        virtual public byte[] GetAttachedFile(String name) {
             PdfDictionary field = GetField(name);
             if (field != null) {
                 PdfIndirectReference ir = (PRIndirectReference)field.Get(PdfName.V);
@@ -194,7 +194,7 @@ namespace iTextSharp.text.pdf {
         * @param name the fully qualified field name
         * @return the field value or <CODE>null</CODE>
         */    
-        public String GetFieldValue(String name) {
+        virtual public String GetFieldValue(String name) {
             PdfDictionary field = GetField(name);
             if (field == null)
                 return null;
@@ -232,7 +232,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the PDF file specification contained in the FDF.
         * @return the PDF file specification contained in the FDF
         */    
-        public String FileSpec {
+        virtual public String FileSpec {
             get {
                 return fileSpec;
             }

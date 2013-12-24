@@ -75,7 +75,7 @@ namespace iTextSharp.text.pdf.intern {
         /**
         * Checks if the AcroForm is valid.
         */
-        public bool HasValidAcroForm() {
+        virtual public bool HasValidAcroForm() {
             return acroForm.IsValid();
         }
         
@@ -83,23 +83,23 @@ namespace iTextSharp.text.pdf.intern {
         * Gets the AcroForm object.
         * @return the PdfAcroform object of the PdfDocument
         */
-        public PdfAcroForm AcroForm {
+        virtual public PdfAcroForm AcroForm {
             get {
                 return acroForm;
             }
         }
         
-        public int SigFlags {
+        virtual public int SigFlags {
             set {
                 acroForm.SigFlags = value;
             }
         }
         
-        public void AddCalculationOrder(PdfFormField formField) {
+        virtual public void AddCalculationOrder(PdfFormField formField) {
             acroForm.AddCalculationOrder(formField);
         }
         
-        public void AddAnnotation(PdfAnnotation annot) {
+        virtual public void AddAnnotation(PdfAnnotation annot) {
             if (annot.IsForm()) {
                 PdfFormField field = (PdfFormField)annot;
                 if (field.Parent == null)
@@ -109,7 +109,7 @@ namespace iTextSharp.text.pdf.intern {
                 annotations.Add(annot);
         }
         
-        public void AddPlainAnnotation(PdfAnnotation annot) {
+        virtual public void AddPlainAnnotation(PdfAnnotation annot) {
             annotations.Add(annot);
         }
         
@@ -122,16 +122,16 @@ namespace iTextSharp.text.pdf.intern {
             }
         }
         
-        public bool HasUnusedAnnotations() {
+        virtual public bool HasUnusedAnnotations() {
             return annotations.Count > 0;
         }
 
-        public void ResetAnnotations() {
+        virtual public void ResetAnnotations() {
             annotations = delayedAnnotations;
             delayedAnnotations = new List<PdfAnnotation>();
         }
         
-        public PdfArray RotateAnnotations(PdfWriter writer, Rectangle pageSize) {
+        virtual public PdfArray RotateAnnotations(PdfWriter writer, Rectangle pageSize) {
             PdfArray array = new PdfArray();
             int rotation = pageSize.Rotation % 360;
             int currentPage = writer.CurrentPageNumber;

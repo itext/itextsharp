@@ -158,7 +158,7 @@ namespace iTextSharp.text.pdf {
         * The default is <CODE>LAYOUT_LABEL_ONLY</CODE>.
         * @param layout New value of property layout.
         */
-        public int Layout {
+        virtual public int Layout {
             set {
                 if (value < LAYOUT_LABEL_ONLY || value > LAYOUT_LABEL_OVER_ICON)
                     throw new ArgumentException(MessageLocalization.GetComposedMessage("layout.out.of.bounds"));
@@ -173,7 +173,7 @@ namespace iTextSharp.text.pdf {
         * Sets the icon as an image.
         * @param image the image
         */
-        public Image Image {
+        virtual public Image Image {
             get {
                 return this.image;
             }
@@ -187,7 +187,7 @@ namespace iTextSharp.text.pdf {
         * Sets the icon as a template.
         * @param template the template
         */
-        public PdfTemplate Template {
+        virtual public PdfTemplate Template {
             set {
                 this.template = value;
                 image = null;
@@ -204,7 +204,7 @@ namespace iTextSharp.text.pdf {
         * The default is <CODE>SCALE_ICON_ALWAYS</CODE>.
         * @param scaleIcon the way the icon will be scaled
         */
-        public int ScaleIcon {
+        virtual public int ScaleIcon {
             set {
                 if (value < SCALE_ICON_ALWAYS || value > SCALE_ICON_IS_TOO_SMALL)
                     scaleIcon = SCALE_ICON_ALWAYS;
@@ -221,7 +221,7 @@ namespace iTextSharp.text.pdf {
         * if <CODE>false</CODE> the scaling is done anamorphicaly.
         * @param proportionalIcon the way the icon is scaled
         */
-        public bool ProportionalIcon {
+        virtual public bool ProportionalIcon {
             get {
                 return proportionalIcon;
             }
@@ -236,7 +236,7 @@ namespace iTextSharp.text.pdf {
         * A value of 0.5 centers it within the rectangle. The default is 0.5.
         * @param iconVerticalAdjustment a number between 0 and 1 indicating the fraction of leftover space to allocate at the bottom of the icon
         */
-        public float IconVerticalAdjustment {
+        virtual public float IconVerticalAdjustment {
             get {
                 return iconVerticalAdjustment;
             }
@@ -255,7 +255,7 @@ namespace iTextSharp.text.pdf {
         * A value of 0.5 centers it within the rectangle. The default is 0.5.
         * @param iconHorizontalAdjustment a number between 0 and 1 indicating the fraction of leftover space to allocate at the left of the icon
         */
-        public float IconHorizontalAdjustment {
+        virtual public float IconHorizontalAdjustment {
             get {
                 return iconHorizontalAdjustment;
             }
@@ -290,7 +290,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         * @return the button appearance
         */    
-        public PdfAppearance GetAppearance() {
+        virtual public PdfAppearance GetAppearance() {
             PdfAppearance app = GetBorderAppearance();
             Rectangle box = new Rectangle(app.BoundingBox);
             if ((text == null || text.Length == 0) && (layout == LAYOUT_LABEL_ONLY || (image == null && template == null && iconReference == null))) {
@@ -530,7 +530,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         * @return the pushbutton field
         */    
-        public PdfFormField Field {
+        virtual public PdfFormField Field {
             get {
                 PdfFormField field = PdfFormField.CreatePushButton(writer);
                 field.SetWidget(box, PdfAnnotation.HIGHLIGHT_INVERT);
@@ -595,7 +595,7 @@ namespace iTextSharp.text.pdf {
         * @param iconFitToBounds if <CODE>true</CODE> the icon will be scaled to fit fully within the bounds of the annotation,
         * if <CODE>false</CODE> the border width will be taken into account
         */
-        public bool IconFitToBounds {
+        virtual public bool IconFitToBounds {
             get {
                 return iconFitToBounds;
             }
@@ -612,7 +612,7 @@ namespace iTextSharp.text.pdf {
         * Sets the reference to an existing icon.
         * @param iconReference the reference to an existing icon
         */
-        public PRIndirectReference IconReference {
+        virtual public PRIndirectReference IconReference {
             get {
                 return iconReference;
             }

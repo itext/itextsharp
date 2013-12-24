@@ -152,7 +152,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         * @return A <code>PdfAppearance</code>
         */
-        public PdfAppearance GetAppearance() {
+        virtual public PdfAppearance GetAppearance() {
             PdfAppearance app = GetBorderAppearance();
             app.BeginVariableText();
             if (text == null || text.Length == 0) {
@@ -367,7 +367,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         * @return a new text field
         */    
-        public PdfFormField GetTextField() {
+        virtual public PdfFormField GetTextField() {
             if (maxCharacterLength <= 0)
                 options &= ~COMB;
             if ((options & COMB) != 0)
@@ -442,7 +442,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         * @return a new combo field
         */    
-        public PdfFormField GetComboField() {
+        virtual public PdfFormField GetComboField() {
             return GetChoiceField(false);
         }
         
@@ -451,7 +451,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         * @return a new list field
         */    
-        public PdfFormField GetListField() {
+        virtual public PdfFormField GetListField() {
             return GetChoiceField(true);
         }
 
@@ -471,7 +471,7 @@ namespace iTextSharp.text.pdf {
     	    return topChoice;
         }
 
-        protected PdfFormField GetChoiceField(bool isList) {
+        virtual protected PdfFormField GetChoiceField(bool isList) {
             options &= (~MULTILINE) & (~COMB);
             String[] uchoices = choices;
             if (uchoices == null)
@@ -594,7 +594,7 @@ namespace iTextSharp.text.pdf {
         /** Sets the default text. It is only meaningful for text fields.
         * @param defaultText the default text
         */
-        public string DefaultText {
+        virtual public string DefaultText {
             get {
                 return defaultText;
             }
@@ -607,7 +607,7 @@ namespace iTextSharp.text.pdf {
         * fields.
         * @param choices the choices to be presented to the user
         */
-        public string[] Choices {
+        virtual public string[] Choices {
             get {
                 return choices;
             }
@@ -621,7 +621,7 @@ namespace iTextSharp.text.pdf {
         * as the export values.
         * @param choiceExports the export values in list/combo fields
         */
-        public string[] ChoiceExports {
+        virtual public string[] ChoiceExports {
             get {
                 return choiceExports;
             }
@@ -633,7 +633,7 @@ namespace iTextSharp.text.pdf {
         /** Sets the zero based index of the selected item.
         * @param choiceSelection the zero based index of the selected item
         */
-        public int ChoiceSelection {
+        virtual public int ChoiceSelection {
             get {
                 return GetTopChoice();
             }
@@ -643,7 +643,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public List<int> ChoiceSelections {
+        virtual public List<int> ChoiceSelections {
             get {
                 return choiceSelections;
             }
@@ -667,7 +667,7 @@ namespace iTextSharp.text.pdf {
         * This doesn't do anything unless this.options & MUTLISELECT != 0 
         * @param selection new selection
         */
-        public void AddChoiceSelection(int selection) {
+        virtual public void AddChoiceSelection(int selection) {
             if ((this.options & BaseField.MULTISELECT) != 0) {
                 choiceSelections.Add(selection);
             }
@@ -684,7 +684,7 @@ namespace iTextSharp.text.pdf {
         * @param extraMarginLeft the extra marging left
         * @param extraMarginTop the extra margin top
         */    
-        public void SetExtraMargin(float extraMarginLeft, float extraMarginTop) {
+        virtual public void SetExtraMargin(float extraMarginLeft, float extraMarginTop) {
             this.extraMarginLeft = extraMarginLeft;
             this.extraMarginTop = extraMarginTop;
         }
@@ -699,7 +699,7 @@ namespace iTextSharp.text.pdf {
         * font doesn't contain the needed glyphs.
         * @param substitutionFonts the list
         */
-        public List<BaseFont> SubstitutionFonts {
+        virtual public List<BaseFont> SubstitutionFonts {
             set {
                 substitutionFonts = value;
             }
@@ -718,7 +718,7 @@ namespace iTextSharp.text.pdf {
         * substitution fonts. It may be <code>null</code>.
         * @param extensionFont New value of property extensionFont.
         */
-        public BaseFont ExtensionFont {
+        virtual public BaseFont ExtensionFont {
             set {
                 extensionFont = value;
             }

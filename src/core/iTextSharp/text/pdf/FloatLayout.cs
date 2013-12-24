@@ -58,7 +58,7 @@ namespace iTextSharp.text.pdf {
 
         protected float rightX;
 
-        public float YLine {
+        virtual public float YLine {
             get { return yLine; }
             set { yLine = value; }
         }
@@ -69,7 +69,7 @@ namespace iTextSharp.text.pdf {
 
         protected float floatRightX;
 
-        public float FilledWidth {
+        virtual public float FilledWidth {
             get { return filledWidth; }
             set { filledWidth = value; }
         }
@@ -89,7 +89,7 @@ namespace iTextSharp.text.pdf {
             content = elements;
         }
 
-        public void SetSimpleColumn( float llx, float lly, float urx, float ury) {
+        virtual public void SetSimpleColumn( float llx, float lly, float urx, float ury) {
             leftX = Math.Min(llx, urx);
             maxY = Math.Max(lly, ury);
             minY = Math.Min(lly, ury);
@@ -100,7 +100,7 @@ namespace iTextSharp.text.pdf {
             filledWidth = 0;
         }
 
-        public int Layout(PdfContentByte canvas, bool simulate) {
+        virtual public int Layout(PdfContentByte canvas, bool simulate) {
             compositeColumn.Canvas = canvas;
             int status = ColumnText.NO_MORE_TEXT;
 

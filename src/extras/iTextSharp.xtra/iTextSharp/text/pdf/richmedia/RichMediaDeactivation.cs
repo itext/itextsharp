@@ -71,7 +71,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * @param   condition   possible values are:
          *      PdfName.XD, PdfName.PC, or PdfName.PI
          */
-        public PdfName Condition {
+        virtual public PdfName Condition {
             set {
                 Put(PdfName.CONDITION, value);
             }

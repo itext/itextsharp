@@ -1,4 +1,4 @@
-﻿/*
+/*
  * $Id: ExternalBlankSignatureContainer.java 5566 2012-11-25 12:27:33Z psoares33 $
  *
  * This file is part of the iText (R) project.
@@ -65,11 +65,11 @@ namespace com.itextpdf.text.pdf.security{
             sigDic.Put(PdfName.SUBFILTER, subFilter);
         }
     
-        public byte[] Sign(Stream data) {
+        virtual public byte[] Sign(Stream data) {
             return new byte[0];
         }
 
-        public void ModifySigningDictionary(PdfDictionary signDic) {
+        virtual public void ModifySigningDictionary(PdfDictionary signDic) {
             signDic.PutAll(sigDic);
         }
     

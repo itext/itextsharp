@@ -604,7 +604,7 @@ namespace iTextSharp.text.pdf.codec {
         
         // One-dimensional decoding methods
         
-        public void Decode1D(byte[] buffer, byte[] compData,
+        virtual public void Decode1D(byte[] buffer, byte[] compData,
         int startX, int height) {
             this.data = compData;
             
@@ -620,7 +620,7 @@ namespace iTextSharp.text.pdf.codec {
             }
         }
         
-        public void DecodeNextScanline(byte[] buffer,
+        virtual public void DecodeNextScanline(byte[] buffer,
         int lineOffset, int bitOffset) {
             int bits = 0, code = 0, isT = 0;
             int current, entry, twoBits;
@@ -759,7 +759,7 @@ namespace iTextSharp.text.pdf.codec {
         
         // Two-dimensional decoding methods
         
-        public void Decode2D(byte[] buffer,
+        virtual public void Decode2D(byte[] buffer,
         byte[] compData,
         int startX,
         int height,
@@ -910,7 +910,7 @@ namespace iTextSharp.text.pdf.codec {
             }
         }
         
-        public void DecodeT6(byte[] buffer,
+        virtual public void DecodeT6(byte[] buffer,
         byte[] compData,
         int startX,
         int height,
@@ -1516,7 +1516,7 @@ namespace iTextSharp.text.pdf.codec {
             return true;
         }
 
-        public bool HandleIncorrectImage {
+        virtual public bool HandleIncorrectImage {
             set { handleIncorrectImage = value; }
         }
     }

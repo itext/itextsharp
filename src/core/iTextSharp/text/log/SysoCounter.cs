@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 /*
  * $Id: SysoCounter.java 5829 2013-05-31 09:01:34Z blowagie $
  *
@@ -69,21 +69,21 @@ namespace iTextSharp.text.log
 	    /**
 	     * @see com.itextpdf.text.log.Counter#getCounter(java.lang.Class)
 	     */
-	    public ICounter GetCounter(Type klass) {
+	    virtual public ICounter GetCounter(Type klass) {
 		    return new SysoCounter(klass);
 	    }
 
 	    /**
 	     * @see com.itextpdf.text.log.Counter#read(long)
 	     */
-	    public void Read(long l) {
+	    virtual public void Read(long l) {
 		    System.Console.WriteLine("[{0}] {1} bytes read", name, l);
 	    }
 
 	    /**
 	     * @see com.itextpdf.text.log.Counter#written(long)
 	     */
-	    public void Written(long l) {
+	    virtual public void Written(long l) {
             System.Console.WriteLine("[{0}] {1} bytes written", name, l);
 	    }
     }

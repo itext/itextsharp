@@ -132,7 +132,7 @@ namespace iTextSharp.text.pdf {
          * @return        a value
          */
     
-        public int IntValue {
+        virtual public int IntValue {
             get {
                 return (int) value;
             }
@@ -144,7 +144,7 @@ namespace iTextSharp.text.pdf {
          * @return        a value
          */
     
-        public long LongValue {
+        virtual public long LongValue {
             get {
                 return (long) value;
             }
@@ -156,13 +156,13 @@ namespace iTextSharp.text.pdf {
          * @return        a value
          */
     
-        public double DoubleValue {
+        virtual public double DoubleValue {
             get {
                 return value;
             }
         }
     
-        public float FloatValue {
+        virtual public float FloatValue {
             get {
                 return (float)value;
             }
@@ -174,7 +174,7 @@ namespace iTextSharp.text.pdf {
          * Increments the value of the <CODE>PdfNumber</CODE>-object with 1.
          */
     
-        public void Increment() {
+        virtual public void Increment() {
             value += 1.0;
             Content = ByteBuffer.FormatDouble(value);
         }

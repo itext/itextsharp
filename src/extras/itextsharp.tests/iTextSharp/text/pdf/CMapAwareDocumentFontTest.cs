@@ -10,7 +10,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
         private string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\CMapAwareDocumentFontTest\";
 
         [Test]
-        public void TestWidths() {
+        virtual public void TestWidths() {
             PdfReader pdfReader = TestResourceUtils.GetResourceAsPdfReader(TEST_RESOURCES_PATH, "fontwithwidthissue.pdf");
 
             try {
@@ -26,7 +26,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
         }
 
         [Test]
-        public void WeirdHyphensTest() {
+        virtual public void WeirdHyphensTest() {
             PdfReader reader = TestResourceUtils.GetResourceAsPdfReader(TEST_RESOURCES_PATH, "WeirdHyphens.pdf");
             List<String> textChunks = new List<String>();
             IRenderListener listener = new MyTextRenderListener(textChunks);
@@ -49,16 +49,16 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
                 this.textChunks = textChunks;
             }
 
-            public void BeginTextBlock() {
+            virtual public void BeginTextBlock() {
             }
 
-            public void EndTextBlock() {
+            virtual public void EndTextBlock() {
             }
 
-            public void RenderImage(ImageRenderInfo renderInfo) {
+            virtual public void RenderImage(ImageRenderInfo renderInfo) {
             }
 
-            public void RenderText(TextRenderInfo renderInfo) {
+            virtual public void RenderText(TextRenderInfo renderInfo) {
                 textChunks.Add(renderInfo.GetText());
             }
         }

@@ -62,7 +62,7 @@ namespace iTextSharp.text.pdf.codec.wmf
             this.type = type;
         }
     
-        public int Type {
+        virtual public int Type {
             get {
                 return type;
             }

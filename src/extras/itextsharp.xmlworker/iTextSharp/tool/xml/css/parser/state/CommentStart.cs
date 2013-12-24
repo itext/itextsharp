@@ -20,7 +20,7 @@ namespace iTextSharp.tool.xml.css.parser.state {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.parser.State#process(int)
          */
-        public void Process(char c) {
+        virtual public void Process(char c) {
             if ('*' == c) {
                 this.controller.StateCommentInside();
             } else {

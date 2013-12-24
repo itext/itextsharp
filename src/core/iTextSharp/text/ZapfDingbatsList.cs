@@ -89,7 +89,7 @@ namespace iTextSharp.text
         *
         * @param zapfDingbatColor color for the ZapfDingbat
         */
-        public void setDingbatColor(BaseColor zapfDingbatColor)
+        virtual public void setDingbatColor(BaseColor zapfDingbatColor)
         {
             float fontsize = symbol.Font.Size;
             symbol.Font = FontFactory.GetFont(FontFactory.ZAPFDINGBATS, fontsize, Font.NORMAL, zapfDingbatColor);
@@ -99,7 +99,7 @@ namespace iTextSharp.text
         * set the char-number 
         * @param zn a char-number
         */
-        public int CharNumber {
+        virtual public int CharNumber {
             set {
                 this.zn = value;
             }

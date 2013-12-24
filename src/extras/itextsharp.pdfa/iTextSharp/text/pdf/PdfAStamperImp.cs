@@ -126,7 +126,7 @@ namespace iTextSharp.text.pdf {
          * Always throws an exception since PDF/X conformance level cannot be set for PDF/A conformant documents.
          * @param pdfx
          */
-        public void SetPDFXConformance(int pdfx) {
+        virtual public void SetPDFXConformance(int pdfx) {
             throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("pdfx.conformance.cannot.be.set.for.PdfAStamperImp.instance"));
         }
 

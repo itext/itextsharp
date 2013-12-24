@@ -14,7 +14,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
         private int numberOfThreads = 100;
 
         [Test]
-        public void TtfTest() {
+        virtual public void TtfTest() {
             Directory.CreateDirectory(TARGET_PATH);
             exceptions = new Dictionary<int, Exception>();
 
@@ -54,7 +54,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
                 interrups = 0;
             }
 
-            public void Set(int runs) {
+            virtual public void Set(int runs) {
                 lock (_lock) {
                     try {
                         locks = runs;
@@ -66,7 +66,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
                 }
             }
 
-            public void Decrement() {
+            virtual public void Decrement() {
                 lock (_lock) {
                     try {
                         locks--;
@@ -78,7 +78,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             }
 
 
-            public void Await() {
+            virtual public void Await() {
                 lock (_lock) {
                     while (locks > 0 && interrups != locks) {
                         Monitor.Wait(_lock);
@@ -86,7 +86,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
                 }
             }
 
-            public void Await(long ms) {
+            virtual public void Await(long ms) {
                 DateTime max = DateTime.Now.AddMilliseconds(ms);
                 lock (_lock) {
                     while (locks > 0 && interrups != locks && DateTime.Now < max) {
@@ -105,7 +105,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
                 this.latch = latch;
             }
 
-            public void Run() {
+            virtual public void Run() {
                 try {
                     PdfReader reader =
                         new PdfReader(File.Open(TEST_RESOURCES_PATH + "test.pdf", FileMode.Open, FileAccess.Read,

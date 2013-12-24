@@ -10,7 +10,7 @@ namespace itextsharp.tests.iTextSharp.text.io
         byte[] data;
 
         [SetUp]
-        public void SetUp()
+        virtual public void SetUp()
         {
 
             using (MemoryStream ms = new MemoryStream())
@@ -27,7 +27,7 @@ namespace itextsharp.tests.iTextSharp.text.io
         }
 
         [Test]
-        public void TestBasics()
+        virtual public void TestBasics()
         {
             WindowRandomAccessSource window = new WindowRandomAccessSource(source, 7, 17);
 

@@ -75,22 +75,22 @@ namespace iTextSharp.text.log {
             this.name = klass;
         }
 
-        public ILogger GetLogger(Type klass) {
+        virtual public ILogger GetLogger(Type klass) {
             return new SysoLogger(klass.FullName, shorten);
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.text.log.Logger#getLogger(java.lang.String)
          */
-        public ILogger GetLogger(String name) {
+        virtual public ILogger GetLogger(String name) {
             return new SysoLogger("[itext]", 0);
         }
 
-        public bool IsLogging(Level level) {
+        virtual public bool IsLogging(Level level) {
             return true;
         }
 
-        public void Warn(String message) {
+        virtual public void Warn(String message) {
             Console.Out.WriteLine("{0} WARN  {1}", Shorten(name), message);
         }
 
@@ -116,23 +116,23 @@ namespace iTextSharp.text.log {
             return className;
         }
 
-        public void Trace(String message) {
+        virtual public void Trace(String message) {
             Console.Out.WriteLine("{0} TRACE {1}", Shorten(name), message);
         }
 
-        public void Debug(String message) {
+        virtual public void Debug(String message) {
             Console.Out.WriteLine("{0} DEBUG {1}", Shorten(name), message);
         }
 
-        public void Info(String message) {
+        virtual public void Info(String message) {
             Console.Out.WriteLine("{0} INFO  {1}", Shorten(name), message);
         }
 
-        public void Error(String message) {
+        virtual public void Error(String message) {
             Console.Out.WriteLine("{0} ERROR {1}", name, message);
         }
 
-        public void Error(String message, Exception e) {
+        virtual public void Error(String message, Exception e) {
             Console.Out.WriteLine("{0} ERROR {1}", name, message);
             Console.Out.WriteLine(e.StackTrace);
         }

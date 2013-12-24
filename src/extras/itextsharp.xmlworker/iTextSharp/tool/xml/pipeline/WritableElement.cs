@@ -74,7 +74,7 @@ namespace iTextSharp.tool.xml.pipeline {
          * Add a single element to the list of elements.
          * @param e an IElement
          */
-        public void Add(IElement e) {
+        virtual public void Add(IElement e) {
             list.Add(e);
         }
 
@@ -85,14 +85,14 @@ namespace iTextSharp.tool.xml.pipeline {
          *
          * @param l the list to add.
          */
-        public void AddAll(IList<IElement> l) {
+        virtual public void AddAll(IList<IElement> l) {
             list.AddRange(l);
         }
         /**
          * Returns the list of elements.
          * @return the list of elements.
          */
-        public IList<IElement> Elements() {
+        virtual public IList<IElement> Elements() {
             return list;
         }
 

@@ -159,7 +159,7 @@ namespace iTextSharp.text
             return v;
         }
 
-        public void Jp2_read_boxhdr()
+        virtual public void Jp2_read_boxhdr()
         {
             boxLength = Cio_read(4);
             boxType = Cio_read(4);
@@ -330,17 +330,17 @@ namespace iTextSharp.text
             return colr;
         }
 
-        public int GetNumOfComps()
+        virtual public int GetNumOfComps()
         {
             return numOfComps;
         }
 
-        public byte[] GetBpcBoxData()
+        virtual public byte[] GetBpcBoxData()
         {
             return bpcBoxData;
         }
 
-        public List<ColorSpecBox> GetColorSpecBoxes()
+        virtual public List<ColorSpecBox> GetColorSpecBoxes()
         {
             return colorSpecBoxes;
         }
@@ -348,7 +348,7 @@ namespace iTextSharp.text
         /**
          * @return <code>true</code> if the image is JP2, <code>false</code> if a codestream.
          */
-        public bool IsJp2()
+        virtual public bool IsJp2()
         {
             return isJp2;
         }
@@ -357,24 +357,24 @@ namespace iTextSharp.text
         {
             private byte[] colorProfile;
 
-            public int? GetMeth()
+            virtual public int? GetMeth()
             {
                 return this.Count > 0 ? this[0] : null;
             }
 
-            public int? GetPrec() {
+            virtual public int? GetPrec() {
                 return this.Count > 1 ? this[1] : null;
             }
 
-            public int? GetApprox() {
+            virtual public int? GetApprox() {
                 return this.Count > 2 ? this[2] : null;
             }
 
-            public int? GetEnumCs() {
+            virtual public int? GetEnumCs() {
                 return this.Count > 3 ? this[3] : null;
             }
 
-            public byte[] GetColorProfile() {
+            virtual public byte[] GetColorProfile() {
                 return colorProfile;
             }
 

@@ -67,7 +67,7 @@ namespace iTextSharp.text.pdf.spatial.objects {
          * 
          * @param label
          */
-        public void SetLabel(PdfString label) {
+        virtual public void SetLabel(PdfString label) {
             base.Put(PdfName.U, label);
         }
 
@@ -81,7 +81,7 @@ namespace iTextSharp.text.pdf.spatial.objects {
          * 
          * @param n
          */
-        public void SetConversionFactor(PdfNumber n) {
+        virtual public void SetConversionFactor(PdfNumber n) {
             base.Put(PdfName.C, n);
         }
 
@@ -92,7 +92,7 @@ namespace iTextSharp.text.pdf.spatial.objects {
          * 
          * @param f
          */
-        public void SetFractionalValue(Fraction f) {
+        virtual public void SetFractionalValue(Fraction f) {
             base.Put(PdfName.F, DecodeUnits.Decode(f));
         }
 
@@ -112,7 +112,7 @@ namespace iTextSharp.text.pdf.spatial.objects {
          * 
          * @param precision
          */
-        public void SetPrecision(PdfNumber precision) {
+        virtual public void SetPrecision(PdfNumber precision) {
             base.Put(PdfName.D, precision);
         }
 
@@ -122,7 +122,7 @@ namespace iTextSharp.text.pdf.spatial.objects {
          * 
          * @param isFixedDenominator
          */
-        public void SetFixedDenominator(PdfBoolean isFixedDenominator) {
+        virtual public void SetFixedDenominator(PdfBoolean isFixedDenominator) {
             base.Put(PdfName.FD, isFixedDenominator);
         }
 
@@ -133,7 +133,7 @@ namespace iTextSharp.text.pdf.spatial.objects {
          * 
          * @param rt
          */
-        public void SetCipherGroupingCharacter(PdfString rt) {
+        virtual public void SetCipherGroupingCharacter(PdfString rt) {
             base.Put(PdfName.RT, rt);
         }
 
@@ -144,7 +144,7 @@ namespace iTextSharp.text.pdf.spatial.objects {
          * 
          * @param dc
          */
-        public void SetDecimalChartacter(PdfString dc) {
+        virtual public void SetDecimalChartacter(PdfString dc) {
             base.Put(PdfName.RD, dc);
         }
 
@@ -155,7 +155,7 @@ namespace iTextSharp.text.pdf.spatial.objects {
          * 
          * @param ps
          */
-        public void SetLabelLeftString(PdfString ps) {
+        virtual public void SetLabelLeftString(PdfString ps) {
             base.Put(PdfName.PS, ps);
         }
 
@@ -166,7 +166,7 @@ namespace iTextSharp.text.pdf.spatial.objects {
          * 
          * @param ss
          */
-        public void SetLabelRightString(PdfString ss) {
+        virtual public void SetLabelRightString(PdfString ss) {
             base.Put(PdfName.SS, ss);
         }
 
@@ -177,7 +177,7 @@ namespace iTextSharp.text.pdf.spatial.objects {
          * entry. Default value: suffix.
          * @param pos PdfName.S or PdfName.P
          */
-        public void SetLabelPosition(PdfName pos) {
+        virtual public void SetLabelPosition(PdfName pos) {
             base.Put(PdfName.O, pos);
         }
     }

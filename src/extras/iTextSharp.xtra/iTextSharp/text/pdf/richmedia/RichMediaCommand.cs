@@ -71,7 +71,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * The object can be a PdfString, PdfNumber or PdfBoolean, or a PdfArray
          * containing those objects.
          */
-        public PdfObject Arguments {
+        virtual public PdfObject Arguments {
             set {
                 Put(PdfName.A, value);
             }

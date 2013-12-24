@@ -99,13 +99,13 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public void AddToBody() {
+        virtual public void AddToBody() {
             Put(PdfName.SHADING, ShadingReference);
             Put(PdfName.MATRIX, new PdfArray(matrix));
             writer.AddToBody(this, PatternReference);
         }
     
-        public float[] Matrix {
+        virtual public float[] Matrix {
             get {
                 return matrix;
             }
@@ -117,7 +117,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public PdfShading Shading {
+        virtual public PdfShading Shading {
             get {
                 return shading;
             }

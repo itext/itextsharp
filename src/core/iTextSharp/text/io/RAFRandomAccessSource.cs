@@ -118,7 +118,7 @@ namespace iTextSharp.text.io {
 		    raf.Close();
 	    }
 
-        public void Dispose() {
+        virtual public void Dispose() {
             Close();
         }
     }

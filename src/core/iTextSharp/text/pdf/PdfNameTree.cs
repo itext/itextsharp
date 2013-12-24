@@ -162,7 +162,7 @@ namespace iTextSharp.text.pdf {
         }
 
         internal class CompareSrt : IComparer<string>  {
-            public int Compare(string x, string y) {
+            virtual public int Compare(string x, string y) {
                 char[] a = x.ToCharArray();
                 char[] b = y.ToCharArray();
                 int m = Math.Min(a.Length, b.Length);

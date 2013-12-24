@@ -143,7 +143,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="listener">the IElementListener</param>
         /// <returns>true if the element was processed successfully</returns>
-        public bool Process(IElementListener listener) {
+        virtual public bool Process(IElementListener listener) {
             try {
                 return listener.Add(this);
             }
@@ -156,7 +156,7 @@ namespace iTextSharp.text {
         /// Gets the type of the text element.
         /// </summary>
         /// <value>a type</value>
-        public int Type {
+        virtual public int Type {
             get {
                 return type;
             }
@@ -166,7 +166,7 @@ namespace iTextSharp.text {
         /// Gets all the chunks in this element.
         /// </summary>
         /// <value>an ArrayList</value>
-        public IList<Chunk> Chunks {
+        virtual public IList<Chunk> Chunks {
             get {
                 return new List<Chunk>();
             }
@@ -176,7 +176,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isContent()
         * @since   iText 2.0.8
         */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return false;
         }
 
@@ -184,7 +184,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isNestable()
         * @since   iText 2.0.8
         */
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             return false;
         }
 
@@ -195,7 +195,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="str">a string</param>
         /// <returns>a StringBuilder</returns>
-        public StringBuilder Append(string str) {
+        virtual public StringBuilder Append(string str) {
             return content.Append(str);
         }
     
@@ -205,7 +205,7 @@ namespace iTextSharp.text {
         /// Returns the content of the meta information.
         /// </summary>
         /// <value>a string</value>
-        public string Content {
+        virtual public string Content {
             get {
                 return content.ToString();
             }

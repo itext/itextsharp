@@ -125,7 +125,7 @@ namespace iTextSharp.text.pdf
             }
         }
 
-        public PdfName StructureType
+        virtual public PdfName StructureType
         {
             get { return structureType; }
         }
@@ -180,12 +180,12 @@ namespace iTextSharp.text.pdf
         * @return the parent of this node
         */
 
-        public PdfDictionary Parent
+        virtual public PdfDictionary Parent
         {
             get { return GetParent(false); }
         }
 
-        public PdfDictionary GetParent(bool includeStructTreeRoot)
+        virtual public PdfDictionary GetParent(bool includeStructTreeRoot)
         {
             if (parent == null && includeStructTreeRoot)
                 return top;
@@ -205,7 +205,7 @@ namespace iTextSharp.text.pdf
         * @return the reference this object will be written to
         */
 
-        public PdfIndirectReference Reference
+        virtual public PdfIndirectReference Reference
         {
             get { return this.reference; }
         }
@@ -216,7 +216,7 @@ namespace iTextSharp.text.pdf
          * @since 5.3.4
          */
 
-        public PdfObject GetAttribute(PdfName name)
+        virtual public PdfObject GetAttribute(PdfName name)
         {
             PdfDictionary attr = GetAsDict(PdfName.A);
             if (attr != null && attr.Contains(name))
@@ -235,7 +235,7 @@ namespace iTextSharp.text.pdf
          * @since 5.3.4
          */
 
-        public void SetAttribute(PdfName name, PdfObject obj)
+        virtual public void SetAttribute(PdfName name, PdfObject obj)
         {
             PdfDictionary attr = GetAsDict(PdfName.A);
             if (attr == null)
@@ -247,7 +247,7 @@ namespace iTextSharp.text.pdf
         }
 
 
-        public void WriteAttributes(IAccessibleElement element)
+        virtual public void WriteAttributes(IAccessibleElement element)
         {
             if(top.Writer.GetPdfVersion().Version < PdfWriter.VERSION_1_7)
                 return;

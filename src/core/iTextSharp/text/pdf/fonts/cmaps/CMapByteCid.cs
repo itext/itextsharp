@@ -91,7 +91,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
          * @param seq
          * @return the cid code or -1 for end
          */
-        public int DecodeSingle(CMapSequence seq) {
+        virtual public int DecodeSingle(CMapSequence seq) {
             int end = seq.off + seq.len;
             int currentPlane = 0;
             while (seq.off < end) {
@@ -108,7 +108,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             return -1;
         }
 
-        public String DecodeSequence(CMapSequence seq) {
+        virtual public String DecodeSequence(CMapSequence seq) {
             StringBuilder sb = new StringBuilder();
             int cid = 0;
             while ((cid = DecodeSingle(seq)) >= 0) {

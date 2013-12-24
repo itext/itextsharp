@@ -82,7 +82,7 @@ namespace iTextSharp.text.pdf.intern {
         /**
         * @see com.lowagie.text.pdf.interfaces.PdfVersion#setPdfVersion(char)
         */
-        public char PdfVersion {
+        virtual public char PdfVersion {
             set {
           		this.version = value;
                 if (headerWasWritten || appendmode) {
@@ -97,7 +97,7 @@ namespace iTextSharp.text.pdf.intern {
         /**
         * @see com.lowagie.text.pdf.interfaces.PdfVersion#setAtLeastPdfVersion(char)
         */
-        public void SetAtLeastPdfVersion(char version) {
+        virtual public void SetAtLeastPdfVersion(char version) {
             if (version > header_version) {
                 PdfVersion = version;
             }
@@ -106,7 +106,7 @@ namespace iTextSharp.text.pdf.intern {
         /**
         * @see com.lowagie.text.pdf.interfaces.PdfVersion#setPdfVersion(com.lowagie.text.pdf.PdfName)
         */
-        public void SetPdfVersion(PdfName version) {
+        virtual public void SetPdfVersion(PdfName version) {
             if (catalog_version == null || catalog_version.CompareTo(version) < 0) {
                 this.catalog_version = version;
             }
@@ -115,7 +115,7 @@ namespace iTextSharp.text.pdf.intern {
         /**
         * Sets the append mode.
         */
-        public void SetAppendmode(bool appendmode) {
+        virtual public void SetAppendmode(bool appendmode) {
             this.appendmode = appendmode;
         }
         
@@ -123,7 +123,7 @@ namespace iTextSharp.text.pdf.intern {
         * Writes the header to the OutputStreamCounter.
         * @throws IOException 
         */
-        public void WriteHeader(OutputStreamCounter os) {
+        virtual public void WriteHeader(OutputStreamCounter os) {
             if (appendmode) {
                 os.Write(HEADER[0], 0, HEADER[0].Length);
             }
@@ -139,7 +139,7 @@ namespace iTextSharp.text.pdf.intern {
         * Returns the PDF version as a name.
         * @param version    the version character.
         */
-        public PdfName GetVersionAsName(char version) {
+        virtual public PdfName GetVersionAsName(char version) {
             switch (version) {
             case PdfWriter.VERSION_1_2:
                 return PdfWriter.PDF_VERSION_1_2;
@@ -162,12 +162,12 @@ namespace iTextSharp.text.pdf.intern {
         * Returns the version as a byte[].
         * @param version the version character
         */
-        public byte[] GetVersionAsByteArray(char version) {
+        virtual public byte[] GetVersionAsByteArray(char version) {
             return DocWriter.GetISOBytes(GetVersionAsName(version).ToString().Substring(1));
         }
 
 	    /** Adds the version to the Catalog dictionary. */
-	    public void AddToCatalog(PdfDictionary catalog) {
+	    virtual public void AddToCatalog(PdfDictionary catalog) {
 		    if(catalog_version != null) {
 			    catalog.Put(PdfName.VERSION, catalog_version);
 		    }
@@ -180,7 +180,7 @@ namespace iTextSharp.text.pdf.intern {
         * @see com.lowagie.text.pdf.interfaces.PdfVersion#addDeveloperExtension(com.lowagie.text.pdf.PdfDeveloperExtension)
         * @since   2.1.6
         */
-        public void AddDeveloperExtension(PdfDeveloperExtension de) {
+        virtual public void AddDeveloperExtension(PdfDeveloperExtension de) {
             if (extensions == null) {
                 extensions = new PdfDictionary();
             }
@@ -198,7 +198,7 @@ namespace iTextSharp.text.pdf.intern {
             extensions.Put(de.Prefix, de.GetDeveloperExtensions());
         }
 
-        public char Version
+        virtual public char Version
         {
             get { return version; }
         }

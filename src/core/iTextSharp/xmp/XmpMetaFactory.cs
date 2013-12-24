@@ -240,27 +240,27 @@ namespace iTextSharp.xmp {
 
             #region XmpVersionInfo Members
 
-            public int Major {
+            virtual public int Major {
                 get { return major; }
             }
 
-            public int Minor {
+            virtual public int Minor {
                 get { return minor; }
             }
 
-            public int Micro {
+            virtual public int Micro {
                 get { return micro; }
             }
 
-            public bool Debug {
+            virtual public bool Debug {
                 get { return debug; }
             }
 
-            public int Build {
+            virtual public int Build {
                 get { return engBuild; }
             }
 
-            public string Message {
+            virtual public string Message {
                 get { return message; }
             }
 

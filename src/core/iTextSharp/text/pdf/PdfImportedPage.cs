@@ -80,19 +80,19 @@ namespace iTextSharp.text.pdf {
         * @return self
         *
         */
-        public PdfImportedPage FromReader {
+        virtual public PdfImportedPage FromReader {
             get {
                 return this;
             }
         }
 
-        public int PageNumber {
+        virtual public int PageNumber {
             get {
                 return pageNumber;
             }
         }
 
-        public int Rotation {
+        virtual public int Rotation {
             get { return rotation; }
         }
 
@@ -183,7 +183,7 @@ namespace iTextSharp.text.pdf {
          * @return true if the page has to be copied.
          * @since iText 5.0.4
          */
-        public bool IsToCopy() {
+        virtual public bool IsToCopy() {
             return toCopy;
         }
 
@@ -191,7 +191,7 @@ namespace iTextSharp.text.pdf {
          * Indicate that the resources of the imported page have been copied.
          * @since iText 5.0.4
          */
-        public void SetCopied() {
+        virtual public void SetCopied() {
             toCopy = false;
         }
     }

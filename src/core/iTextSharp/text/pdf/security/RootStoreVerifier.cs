@@ -74,7 +74,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @param keyStore
 	     *            a root store
 	     */
-        public List<X509Certificate> Certificates {
+        virtual public List<X509Certificate> Certificates {
             set { certificates = value; }
         }
 

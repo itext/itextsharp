@@ -82,7 +82,7 @@ namespace iTextSharp.text
         /**
         * change the font to SYMBOL
         */
-        protected void SetGreekFont() {
+        virtual protected void SetGreekFont() {
             float fontsize = symbol.Font.Size;
             symbol.Font = FontFactory.GetFont(FontFactory.SYMBOL, fontsize, Font.NORMAL);
         }

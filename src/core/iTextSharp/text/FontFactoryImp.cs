@@ -218,7 +218,7 @@ namespace iTextSharp.text {
         /// <param name="size">the size of this font</param>
         /// <param name="style">the style of this font</param>
         /// <returns>a Font object</returns>
-        public Font GetFont(string fontname, string encoding, bool embedded, float size, int style) {
+        virtual public Font GetFont(string fontname, string encoding, bool embedded, float size, int style) {
             return GetFont(fontname, encoding, embedded, size, style, null);
         }
     
@@ -350,7 +350,7 @@ namespace iTextSharp.text {
         * @param fullName the font name
         * @param path the font path
         */
-        public void RegisterFamily(String familyName, String fullName, String path) {
+        virtual public void RegisterFamily(String familyName, String fullName, String path) {
             if (path != null)
                 trueTypeFonts[fullName] = path;
             List<string> tmp;
@@ -479,7 +479,7 @@ namespace iTextSharp.text {
         * @return the number of fonts registered
         * @since 2.1.2
         */
-        public int RegisterDirectory(String dir, bool scanSubdirectories) {
+        virtual public int RegisterDirectory(String dir, bool scanSubdirectories) {
             if (LOGGER.IsLogging(Level.DEBUG)) {
                 LOGGER.Debug(String.Format("Registering directory {0}, looking for fonts", dir));
             }

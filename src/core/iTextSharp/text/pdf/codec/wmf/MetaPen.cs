@@ -62,26 +62,26 @@ namespace iTextSharp.text.pdf.codec.wmf {
             type = META_PEN;
         }
 
-        public void Init(InputMeta meta) {
+        virtual public void Init(InputMeta meta) {
             style = meta.ReadWord();
             penWidth = meta.ReadShort();
             meta.ReadWord();
             color = meta.ReadColor();
         }
     
-        public int Style {
+        virtual public int Style {
             get {
                 return style;
             }
         }
     
-        public int PenWidth {
+        virtual public int PenWidth {
             get {
                 return penWidth;
             }
         }
     
-        public BaseColor Color {
+        virtual public BaseColor Color {
             get {
                 return color;
             }

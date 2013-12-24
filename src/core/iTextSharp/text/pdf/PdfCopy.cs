@@ -203,7 +203,7 @@ namespace iTextSharp.text.pdf {
         * @param rotateContents <CODE>true</CODE> to set auto-rotation, <CODE>false</CODE>
         * otherwise
         */    
-        public bool RotateContents {
+        virtual public bool RotateContents {
             set {
                 rotateContents = value;
             }
@@ -212,7 +212,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public void SetMergeFields() {
+        virtual public void SetMergeFields() {
             mergeFields = true;
             resources = new PdfDictionary();
             fields = new List<AcroFields>();
@@ -245,7 +245,7 @@ namespace iTextSharp.text.pdf {
             return GetImportedPageImpl(reader, pageNumber);
         }
 
-        public PdfImportedPage GetImportedPage(PdfReader reader, int pageNumber, bool keepTaggedPdfStructure) {
+        virtual public PdfImportedPage GetImportedPage(PdfReader reader, int pageNumber, bool keepTaggedPdfStructure) {
             if (mergeFields && !mergeFieldsInternalCall) {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("1.method.cannot.be.used.in.mergeFields.mode.please.use.addDocument", "getImportedPage"));
             }
@@ -355,7 +355,7 @@ namespace iTextSharp.text.pdf {
                 }
         }
 
-        protected PdfImportedPage GetImportedPageImpl(PdfReader reader, int pageNumber) {
+        virtual protected PdfImportedPage GetImportedPageImpl(PdfReader reader, int pageNumber) {
                 if (currentPdfReaderInstance != null) {
                     if (currentPdfReaderInstance.Reader != reader) {
                         // TODO: Removed - the user should be responsible for closing all PdfReaders.  But, this could cause a lot of memory leaks in code out there that hasn't been properly closing things - maybe add a finalizer to PdfReader that calls PdfReader#close() ??            	
@@ -445,7 +445,7 @@ namespace iTextSharp.text.pdf {
         * Translate a PRDictionary to a PdfDictionary. Also translate all of the
         * objects contained in it.
         */
-        protected PdfDictionary CopyDictionary(PdfDictionary inp, bool keepStruct, bool directRootKids) {
+        virtual protected PdfDictionary CopyDictionary(PdfDictionary inp, bool keepStruct, bool directRootKids) {
             PdfDictionary outp = new PdfDictionary();
             PdfObject type = PdfReader.GetPdfObjectRelease(inp.Get(PdfName.TYPE));
             
@@ -508,14 +508,14 @@ namespace iTextSharp.text.pdf {
         * Translate a PRDictionary to a PdfDictionary. Also translate all of the
         * objects contained in it.
         */
-        protected PdfDictionary CopyDictionary(PdfDictionary inp) {
+        virtual protected PdfDictionary CopyDictionary(PdfDictionary inp) {
             return CopyDictionary(inp, false, false);
         }
 
         /**
         * Translate a PRStream to a PdfStream. The data part copies itself.
         */
-        protected PdfStream CopyStream(PRStream inp) {
+        virtual protected PdfStream CopyStream(PRStream inp) {
             PRStream outp = new PRStream(inp, null);
             
             foreach (PdfName key in inp.Keys) {
@@ -534,7 +534,7 @@ namespace iTextSharp.text.pdf {
         * Translate a PRArray to a PdfArray. Also translate all of the objects contained
         * in it
         */
-        protected PdfArray CopyArray(PdfArray inp, bool keepStruct, bool directRootKids) {
+        virtual protected PdfArray CopyArray(PdfArray inp, bool keepStruct, bool directRootKids) {
             PdfArray outp = new PdfArray();
             
             foreach (PdfObject value in inp.ArrayList) {
@@ -550,14 +550,14 @@ namespace iTextSharp.text.pdf {
         * Translate a PRArray to a PdfArray. Also translate all of the objects contained
         * in it
         */
-        protected PdfArray CopyArray(PdfArray inp) {
+        virtual protected PdfArray CopyArray(PdfArray inp) {
             return CopyArray(inp, false, false);
         }
 
         /**
         * Translate a PR-object to a Pdf-object
         */
-        protected internal PdfObject CopyObject(PdfObject inp, bool keepStruct, bool directRootKids) {
+        virtual protected internal PdfObject CopyObject(PdfObject inp, bool keepStruct, bool directRootKids) {
             if (inp == null)
                 return PdfNull.PDFNULL;
             switch (inp.Type) {
@@ -596,14 +596,14 @@ namespace iTextSharp.text.pdf {
          /**
         * Translate a PR-object to a Pdf-object
         */
-        protected internal PdfObject CopyObject(PdfObject inp) {
+        virtual protected internal PdfObject CopyObject(PdfObject inp) {
             return CopyObject(inp, false, false);
         }
 
         /**
         * convenience method. Given an importedpage, set our "globals"
         */
-        protected int SetFromIPage(PdfImportedPage iPage) {
+        virtual protected int SetFromIPage(PdfImportedPage iPage) {
             int pageNum = iPage.PageNumber;
             PdfReaderInstance inst = currentPdfReaderInstance = iPage.PdfReaderInstance;
             reader = inst.Reader;
@@ -614,7 +614,7 @@ namespace iTextSharp.text.pdf {
         /**
         * convenience method. Given a reader, set our "globals"
         */
-        protected void SetFromReader(PdfReader reader) {
+        virtual protected void SetFromReader(PdfReader reader) {
             this.reader = reader;
             
             if (!indirectMap.TryGetValue(reader, out indirects))
@@ -667,7 +667,7 @@ namespace iTextSharp.text.pdf {
          * @since	2.1.5
          * @throws DocumentException
          */
-        public void AddPage(Rectangle rect, int rotation) {
+        virtual public void AddPage(Rectangle rect, int rotation) {
             if (mergeFields && !mergeFieldsInternalCall) {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("1.method.cannot.be.used.in.mergeFields.mode.please.use.addDocument", "addPage"));
             }
@@ -679,7 +679,7 @@ namespace iTextSharp.text.pdf {
             ++currentPageNumber;
         }
 
-        public void AddDocument(PdfReader reader, List<int> pagesToKeep) {
+        virtual public void AddDocument(PdfReader reader, List<int> pagesToKeep) {
             if (indirectMap.ContainsKey(reader)) {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("document.1.has.already.been.added", reader.ToString()));
             }
@@ -687,7 +687,7 @@ namespace iTextSharp.text.pdf {
             AddDocument(reader);
         }
 
-        public void AddDocument(PdfReader reader) {
+        virtual public void AddDocument(PdfReader reader) {
             if (indirectMap.ContainsKey(reader)) {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("document.1.has.already.been.added", reader.ToString()));
             }
@@ -798,7 +798,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        protected void FixTaggedStructure()
+        virtual protected void FixTaggedStructure()
         {
             Dictionary<int, PdfIndirectReference> numTree = structureTreeRoot.NumTree;
             HashSet2<RefKey> activeKeys = new HashSet2<RefKey>();
@@ -1056,7 +1056,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        protected void FlushIndirectObjects()
+        virtual protected void FlushIndirectObjects()
         {
             foreach (PdfIndirectObject iobj in savedObjects)
                 indirectObjects.Remove(new RefKey(iobj.Number, iobj.Generation));
@@ -1511,7 +1511,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        protected bool IsStructTreeRootReference(PdfIndirectReference prRef)
+        virtual protected bool IsStructTreeRootReference(PdfIndirectReference prRef)
         {
             if (prRef == null || structTreeRootReference == null)
                 return false;
@@ -1687,7 +1687,7 @@ namespace iTextSharp.text.pdf {
         * @param iPage an imported page
         * @return the <CODE>PageStamp</CODE>
         */
-        public PageStamp CreatePageStamp(PdfImportedPage iPage) {
+        virtual public PageStamp CreatePageStamp(PdfImportedPage iPage) {
             int pageNum = iPage.PageNumber;
             PdfReader reader = iPage.PdfReaderInstance.Reader;
             PdfDictionary pageN = reader.GetPageN(pageNum);
@@ -1709,7 +1709,7 @@ namespace iTextSharp.text.pdf {
                 this.cstp = cstp;
             }
             
-            public PdfContentByte GetUnderContent(){
+            virtual public PdfContentByte GetUnderContent(){
                 if (under == null) {
                     if (pageResources == null) {
                         pageResources = new PageResources();
@@ -1721,7 +1721,7 @@ namespace iTextSharp.text.pdf {
                 return under;
             }
             
-            public PdfContentByte GetOverContent(){
+            virtual public PdfContentByte GetOverContent(){
                 if (over == null) {
                     if (pageResources == null) {
                         pageResources = new PageResources();
@@ -1733,7 +1733,7 @@ namespace iTextSharp.text.pdf {
                 return over;
             }
 
-            public void AlterContents() {
+            virtual public void AlterContents() {
                 if (over == null && under == null)
                     return;
                 PdfArray ar = null;
@@ -1824,7 +1824,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
 
-            public void AddAnnotation(PdfAnnotation annot) {
+            virtual public void AddAnnotation(PdfAnnotation annot) {
                 List<PdfAnnotation> allAnnots = new List<PdfAnnotation>();
                 if (annot.IsForm()) {
                     PdfFormField field = (PdfFormField)annot;

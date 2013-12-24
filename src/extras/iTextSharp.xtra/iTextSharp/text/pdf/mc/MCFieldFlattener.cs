@@ -62,7 +62,7 @@ namespace iTextSharp.text.pdf.mc {
          * @throws IOException
          * @throws DocumentException 
          */
-        public void Process(PdfReader reader, Stream os) {
+        virtual public void Process(PdfReader reader, Stream os) {
             int n = reader.NumberOfPages;
             // getting the root dictionary
             PdfDictionary catalog = reader.Catalog;

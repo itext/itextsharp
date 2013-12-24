@@ -326,7 +326,7 @@ namespace iTextSharp.text.pdf.ocg {
             #region PdfOperator Members
 
             /// <seealso cref= "PdfOperator.Process(OCGParser, PdfLiteral, List{T})"> </seealso>
-            public void Process(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
+            virtual public void Process(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
                 parser.Process(@operator, operands, true);
             }
 
@@ -344,7 +344,7 @@ namespace iTextSharp.text.pdf.ocg {
             #region PdfOperator Members
 
             /// <seealso cref= "PdfOperator.Process(OCGParser, PdfLiteral, List{T})"> </seealso>
-            public void Process(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
+            virtual public void Process(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
                 parser.Process(@operator, operands, false);
             }
 
@@ -362,7 +362,7 @@ namespace iTextSharp.text.pdf.ocg {
             #region PdfOperator Members
 
             /// <seealso cref= "PdfOperator.Process(OCGParser, PdfLiteral, List{T})"> </seealso>
-            public void Process(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
+            virtual public void Process(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
                 parser.Process(@operator, operands, true);
             }
 
@@ -380,7 +380,7 @@ namespace iTextSharp.text.pdf.ocg {
             #region PdfOperator Members
 
             /// <seealso cref= "PdfOperator.Process(OCGParser, PdfLiteral, List{T})"> </seealso>
-            public void Process(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
+            virtual public void Process(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
                 if ("BDC".Equals(@operator.ToString()) && operands.Count > 1 && PdfName.OC.Equals(operands[0])) {
                     parser.CheckMarkedContentStart((PdfName) operands[1]);
                 }
@@ -407,7 +407,7 @@ namespace iTextSharp.text.pdf.ocg {
             #region PdfOperator Members
 
             /// <seealso cref= "PdfOperator.Process(OCGParser, PdfLiteral, List{T})"> </seealso>
-            public void Process(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
+            virtual public void Process(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
                 parser.Process(@operator, operands, true);
             }
 
@@ -442,7 +442,7 @@ namespace iTextSharp.text.pdf.ocg {
             #region PdfOperator Members
 
             /// <seealso cref= "PdfOperator.Process(OCGParser, PdfLiteral, List{T})"> </seealso>
-            public void Process(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
+            virtual public void Process(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
                 parser.Process(@operator, operands, true);
             }
 
@@ -460,7 +460,7 @@ namespace iTextSharp.text.pdf.ocg {
             #region PdfOperator Members
 
             /// <seealso cref= "PdfOperator.Process(OCGParser, PdfLiteral, List{T})"> </seealso>
-            public void Process(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
+            virtual public void Process(OCGParser parser, PdfLiteral @operator, IList<PdfObject> operands) {
                 if (parser.IsVisible(operands)) {
                     parser.Process(@operator, operands, true);
                 }

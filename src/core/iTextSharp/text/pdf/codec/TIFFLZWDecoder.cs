@@ -85,7 +85,7 @@ namespace iTextSharp.text.pdf.codec {
         * @param uncompData      Array to return the uncompressed data in.
         * @param h               The number of rows the compressed data contains.
         */
-        public byte[] Decode(byte[] data, byte[] uncompData, int h) {
+        virtual public byte[] Decode(byte[] data, byte[] uncompData, int h) {
             
             if (data[0] == (byte)0x00 && data[1] == (byte)0x01) {
                 throw new InvalidOperationException(MessageLocalization.GetComposedMessage("tiff.5.0.style.lzw.codes.are.not.supported"));
@@ -169,7 +169,7 @@ namespace iTextSharp.text.pdf.codec {
         /**
         * Initialize the string table.
         */
-        public void InitializeStringTable() {
+        virtual public void InitializeStringTable() {
             
             stringTable = new byte[4096][];
             
@@ -185,7 +185,7 @@ namespace iTextSharp.text.pdf.codec {
         /**
         * Write out the string just uncompressed.
         */
-        public void WriteString(byte[] strn) {
+        virtual public void WriteString(byte[] strn) {
             // Fix for broken tiff files
             int max = uncompData.Length - dstIndex;
             if (strn.Length < max)
@@ -197,7 +197,7 @@ namespace iTextSharp.text.pdf.codec {
         /**
         * Add a new string to the string table.
         */
-        public void AddStringToTable(byte[] oldString, byte newString) {
+        virtual public void AddStringToTable(byte[] oldString, byte newString) {
             int length = oldString.Length;
             byte[] strn = new byte[length + 1];
             Array.Copy(oldString, 0, strn, 0, length);
@@ -218,7 +218,7 @@ namespace iTextSharp.text.pdf.codec {
         /**
         * Add a new string to the string table.
         */
-        public void AddStringToTable(byte[] strn) {
+        virtual public void AddStringToTable(byte[] strn) {
             
             // Add this new String to the table
             stringTable[tableIndex++] = strn;
@@ -235,7 +235,7 @@ namespace iTextSharp.text.pdf.codec {
         /**
         * Append <code>newString</code> to the end of <code>oldString</code>.
         */
-        public byte[] ComposeString(byte[] oldString, byte newString) {
+        virtual public byte[] ComposeString(byte[] oldString, byte newString) {
             int length = oldString.Length;
             byte[] strn = new byte[length + 1];
             Array.Copy(oldString, 0, strn, 0, length);
@@ -245,7 +245,7 @@ namespace iTextSharp.text.pdf.codec {
         }
         
         // Returns the next 9, 10, 11 or 12 bits
-        public int GetNextCode() {
+        virtual public int GetNextCode() {
             // Attempt to get the next code. The exception is caught to make
             // this robust to cases wherein the EndOfInformation code has been
             // omitted from a strip. Examples of such cases have been observed

@@ -253,7 +253,7 @@ namespace iTextSharp.text.pdf {
         * @param Font The index of the font being processed
         * @return The Processed FDSelect of the font
         */
-        protected void ReadFDSelect(int Font)
+        virtual protected void ReadFDSelect(int Font)
         {
             // Restore the number of glyphs
             int NumOfGlyphs = fonts[Font].nglyphs;
@@ -312,7 +312,7 @@ namespace iTextSharp.text.pdf {
         * Function reads the FDSelect and builds the FDArrayUsed HashMap According to the glyphs used
         * @param Font the Number of font being processed
         */
-        protected void BuildFDArrayUsed(int Font)
+        virtual protected void BuildFDArrayUsed(int Font)
         {
             int[] FDSelect = fonts[Font].FDSelect;
             // For each glyph used
@@ -331,7 +331,7 @@ namespace iTextSharp.text.pdf {
         * Read the FDArray count, offsize and Offset array
         * @param Font
         */
-        protected void ReadFDArray(int Font)
+        virtual protected void ReadFDArray(int Font)
         {
             Seek(fonts[Font].fdarrayOffset);
             fonts[Font].FDArrayCount = GetCard16();
@@ -351,7 +351,7 @@ namespace iTextSharp.text.pdf {
         * @return The new font stream
         * @throws IOException
         */
-        public byte[] Process(String fontName) {
+        virtual public byte[] Process(String fontName) {
             try
             {    
                 // Verify that the file is open
@@ -391,7 +391,7 @@ namespace iTextSharp.text.pdf {
         * @param Font the font
         * @return The calculated Bias
         */
-        protected int CalcBias(int Offset,int Font)
+        virtual protected int CalcBias(int Offset,int Font)
         {
             Seek(Offset);
             int nSubrs = GetCard16();
@@ -412,7 +412,7 @@ namespace iTextSharp.text.pdf {
         * @param FontIndex the font
         * @throws IOException
         */
-        protected void BuildNewCharString(int FontIndex) 
+        virtual protected void BuildNewCharString(int FontIndex) 
         {
             NewCharStringsIndex = BuildNewIndex(fonts[FontIndex].charstringsOffsets,GlyphsUsed,ENDCHAR_OP);
         }
@@ -423,7 +423,7 @@ namespace iTextSharp.text.pdf {
         * @param Font the font
         * @throws IOException
         */
-        protected void BuildNewLGSubrs(int Font)
+        virtual protected void BuildNewLGSubrs(int Font)
         {
             // If the font is CID then the lsubrs are divided into FontDicts.
             // for each FD array the lsubrs will be subsetted.
@@ -488,7 +488,7 @@ namespace iTextSharp.text.pdf {
         * @param Font the font
         * @param FD The FDARRAY processed
         */
-        protected void BuildFDSubrsOffsets(int Font,int FD)
+        virtual protected void BuildFDSubrsOffsets(int Font,int FD)
         {
             // Initiate to -1 to indicate lsubr operator present
             fonts[Font].PrivateSubrsOffset[FD] = -1;
@@ -518,7 +518,7 @@ namespace iTextSharp.text.pdf {
         * @param hSubr HashMap of the subrs used
         * @param lSubr ArrayList of the subrs used
         */
-        protected void BuildSubrUsed(int Font,int FD,int SubrOffset,int[] SubrsOffsets,Dictionary<int,int[]> hSubr,List<int> lSubr)
+        virtual protected void BuildSubrUsed(int Font,int FD,int SubrOffset,int[] SubrsOffsets,Dictionary<int,int[]> hSubr,List<int> lSubr)
         {
 
             // Calc the Bias for the subr index
@@ -569,7 +569,7 @@ namespace iTextSharp.text.pdf {
         * to Gsubrs and adds to Hashmap & ArrayList
         * @param Font the font
         */
-        protected void BuildGSubrsUsed(int Font)
+        virtual protected void BuildGSubrsUsed(int Font)
         {
             int LBias = 0;
             int SizeOfNonCIDSubrsUsed = 0;
@@ -627,7 +627,7 @@ namespace iTextSharp.text.pdf {
         * @param hSubr the HashMap for the lSubrs
         * @param lSubr the ArrayList for the lSubrs
         */
-        protected void ReadASubr(int begin,int end,int GBias,int LBias,Dictionary<int,int[]> hSubr,List<int> lSubr,int[] LSubrsOffsets)
+        virtual protected void ReadASubr(int begin,int end,int GBias,int LBias,Dictionary<int,int[]> hSubr,List<int> lSubr,int[] LSubrsOffsets)
         {
             // Clear the stack for the subrs
             EmptyStack();
@@ -703,7 +703,7 @@ namespace iTextSharp.text.pdf {
         * Function Checks how the current operator effects the run time stack after being run 
         * An operator may increase or decrease the stack size
         */
-        protected void HandelStack()
+        virtual protected void HandelStack()
         {
             // Findout what the operator does to the stack
             int StackHandel = StackOpp();
@@ -731,7 +731,7 @@ namespace iTextSharp.text.pdf {
         * Function checks the key and return the change to the stack after the operator
         * @return The change in the stack. 2-> flush the stack
         */
-        protected int StackOpp()
+        virtual protected int StackOpp()
         {
             if (key == "ifelse")
                 return -3;
@@ -753,7 +753,7 @@ namespace iTextSharp.text.pdf {
         * Empty the Type2 Stack
         *
         */
-        protected void EmptyStack()
+        virtual protected void EmptyStack()
         {
             // Null the arguments
             for (int i=0; i<arg_count; i++) args[i]=null;
@@ -764,7 +764,7 @@ namespace iTextSharp.text.pdf {
         * Pop one element from the stack 
         *
         */
-        protected void PopStack()
+        virtual protected void PopStack()
         {
             if (arg_count>0)
             {
@@ -777,7 +777,7 @@ namespace iTextSharp.text.pdf {
         * Add an item to the stack
         *
         */
-        protected void PushStack()
+        virtual protected void PushStack()
         {
             arg_count++;
         }
@@ -785,7 +785,7 @@ namespace iTextSharp.text.pdf {
         /**
         * The function reads the next command after the file pointer is set
         */
-        protected void ReadCommand()
+        virtual protected void ReadCommand()
         {
             key = null;
             bool gotKey = false;
@@ -861,7 +861,7 @@ namespace iTextSharp.text.pdf {
         * @param LSubrsOffsets The Offsets array of the subroutines
         * @return The number of hints in the subroutine read.
         */
-        protected int CalcHints(int begin,int end,int LBias,int GBias,int[] LSubrsOffsets)
+        virtual protected int CalcHints(int begin,int end,int LBias,int GBias,int[] LSubrsOffsets)
         {
             // Goto begining of the subr
             Seek(begin);
@@ -925,7 +925,7 @@ namespace iTextSharp.text.pdf {
         * @return the new index subset version 
         * @throws IOException
         */
-        protected byte[] BuildNewIndex(int[] Offsets,Dictionary<int,int[]> Used,byte OperatorForUnusedEntries) 
+        virtual protected byte[] BuildNewIndex(int[] Offsets,Dictionary<int,int[]> Used,byte OperatorForUnusedEntries) 
         {
             int unusedCount = 0;
             int Offset=0;
@@ -978,7 +978,7 @@ namespace iTextSharp.text.pdf {
         * @param NewObjects the subsetted object array
         * @return the new index created
         */
-        protected byte[] AssembleIndex(int[] NewOffsets,byte[] NewObjects)
+        virtual protected byte[] AssembleIndex(int[] NewOffsets,byte[] NewObjects)
         {
             // Calc the index' count field
             char Count = (char)(NewOffsets.Length-1);
@@ -1036,7 +1036,7 @@ namespace iTextSharp.text.pdf {
         * @return the subseted font stream
         * @throws IOException
         */
-        protected byte[] BuildNewFile(int Font)
+        virtual protected byte[] BuildNewFile(int Font)
         {
             // Prepare linked list for new font components
             OutputList = new List<Item>();
@@ -1211,7 +1211,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Function Copies the header from the original fileto the output list
         */
-        protected void CopyHeader()
+        virtual protected void CopyHeader()
         {
             Seek(0);
             int major = GetCard8();
@@ -1228,7 +1228,7 @@ namespace iTextSharp.text.pdf {
         * @param Offsize the offsize field of the index
         * @param First the first offset of the index
         */
-        protected void BuildIndexHeader(int Count,int Offsize,int First)
+        virtual protected void BuildIndexHeader(int Count,int Offsize,int First)
         {
             // Add the count field
             OutputList.Add(new UInt16Item((char)Count)); // count
@@ -1260,7 +1260,7 @@ namespace iTextSharp.text.pdf {
         * @param charsetRef OffsetItem for the CharSet
         * @param charstringsRef OffsetItem for the CharString
         */
-        protected void CreateKeys(OffsetItem fdarrayRef,OffsetItem fdselectRef,OffsetItem charsetRef,OffsetItem charstringsRef)
+        virtual protected void CreateKeys(OffsetItem fdarrayRef,OffsetItem fdselectRef,OffsetItem charsetRef,OffsetItem charstringsRef)
         {
             // create an FDArray key
             OutputList.Add(fdarrayRef);
@@ -1283,7 +1283,7 @@ namespace iTextSharp.text.pdf {
         * to accomodate the CID rules
         * @param Font the font
         */
-        protected void CreateNewStringIndex(int Font)
+        virtual protected void CreateNewStringIndex(int Font)
         {
             String fdFontName = fonts[Font].name+"-OneRange";
             if (fdFontName.Length > 127)
@@ -1325,7 +1325,7 @@ namespace iTextSharp.text.pdf {
         * @param fdselectRef OffsetItem for the FDSelect
         * @param nglyphs the number of glyphs in the font
         */
-        protected void CreateFDSelect(OffsetItem fdselectRef,int nglyphs)
+        virtual protected void CreateFDSelect(OffsetItem fdselectRef,int nglyphs)
         {
             OutputList.Add(new MarkerItem(fdselectRef));
             OutputList.Add(new UInt8Item((char)3)); // format identifier
@@ -1343,7 +1343,7 @@ namespace iTextSharp.text.pdf {
         * @param charsetRef OffsetItem for the CharSet
         * @param nglyphs the number of glyphs in the font
         */
-        protected void CreateCharset(OffsetItem charsetRef,int nglyphs)
+        virtual protected void CreateCharset(OffsetItem charsetRef,int nglyphs)
         {
             OutputList.Add(new MarkerItem(charsetRef));
             OutputList.Add(new UInt8Item((char)2)); // format identifier
@@ -1359,7 +1359,7 @@ namespace iTextSharp.text.pdf {
         * @param privateRef OffsetItem for the Private Dict
         * @param Font the font
         */
-        protected void CreateFDArray(OffsetItem fdarrayRef,OffsetItem privateRef,int Font)
+        virtual protected void CreateFDArray(OffsetItem fdarrayRef,OffsetItem privateRef,int Font)
         {
             OutputList.Add(new MarkerItem(fdarrayRef));
             // Build the header (count=offsize=first=1)
@@ -1572,7 +1572,7 @@ namespace iTextSharp.text.pdf {
         * @param indexOffset The offset for the computed index
         * @return The size of the index
         */
-        protected int CountEntireIndexRange(int indexOffset) 
+        virtual protected int CountEntireIndexRange(int indexOffset) 
         {
             // Go to the beginning of the index 
             Seek(indexOffset);

@@ -66,7 +66,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         * @return the index into the vspace array where the packed values
         * are stored.
         */
-        protected int PackValues(String values) {
+        virtual protected int PackValues(String values) {
             int i, n = values.Length;
             int m = (n & 1) == 1 ? (n >> 1) + 2 : (n >> 1) + 1;
             int offset = vspace.Alloc(m);
@@ -84,7 +84,7 @@ namespace iTextSharp.text.pdf.hyphenation {
             return offset;
         }
 
-        protected String UnpackValues(int k) {
+        virtual protected String UnpackValues(int k) {
             StringBuilder buf = new StringBuilder();
             byte v = vspace[k++];
             while (v != 0) {
@@ -101,7 +101,7 @@ namespace iTextSharp.text.pdf.hyphenation {
             return buf.ToString();
         }
 
-        public void LoadSimplePatterns(Stream stream) {
+        virtual public void LoadSimplePatterns(Stream stream) {
             SimplePatternParser pp = new SimplePatternParser();
             ivalues = new TernaryTree();
 
@@ -118,7 +118,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         }
 
 
-        public String FindPattern(String pat) {
+        virtual public String FindPattern(String pat) {
             int k = base.Find(pat);
             if (k >= 0) {
                 return UnpackValues(k);
@@ -130,7 +130,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         * String compare, returns 0 if equal or
         * t is a substring of s
         */
-        protected int Hstrcmp(char[] s, int si, char[] t, int ti) {
+        virtual protected int Hstrcmp(char[] s, int si, char[] t, int ti) {
             for (; s[si] == t[ti]; si++, ti++) {
                 if (s[si] == 0) {
                     return 0;
@@ -142,7 +142,7 @@ namespace iTextSharp.text.pdf.hyphenation {
             return s[si] - t[ti];
         }
 
-        protected byte[] GetValues(int k) {
+        virtual protected byte[] GetValues(int k) {
             StringBuilder buf = new StringBuilder();
             byte v = vspace[k++];
             while (v != 0) {
@@ -187,7 +187,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         * @param index start index from word
         * @param il interletter values array to update
         */
-        protected void SearchPatterns(char[] word, int index, byte[] il) {
+        virtual protected void SearchPatterns(char[] word, int index, byte[] il) {
             byte[] values;
             int i = index;
             char p, q;
@@ -259,7 +259,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         * @return a {@link Hyphenation Hyphenation} object representing
         * the hyphenated word or null if word is not hyphenated.
         */
-        public Hyphenation Hyphenate(String word, int remainCharCount,
+        virtual public Hyphenation Hyphenate(String word, int remainCharCount,
                                     int pushCharCount) {
             char[] w = word.ToCharArray();
             return Hyphenate(w, 0, w.Length, remainCharCount, pushCharCount);
@@ -300,7 +300,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         * @return a {@link Hyphenation Hyphenation} object representing
         * the hyphenated word or null if word is not hyphenated.
         */
-        public Hyphenation Hyphenate(char[] w, int offset, int len,
+        virtual public Hyphenation Hyphenate(char[] w, int offset, int len,
                                     int remainCharCount, int pushCharCount) {
             int i;
             char[] word = new char[len + 3];
@@ -401,7 +401,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         * for letter 'a', for example, should be defined as "aA", the first
         * character being the normalization char.
         */
-        public void AddClass(String chargroup) {
+        virtual public void AddClass(String chargroup) {
             if (chargroup.Length > 0) {
                 char equivChar = chargroup[0];
                 char[] key = new char[2];
@@ -421,7 +421,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         * @param hyphenatedword a vector of alternating strings and
         * {@link Hyphen hyphen} objects.
         */
-        public void AddException(String word, List<object> hyphenatedword) {
+        virtual public void AddException(String word, List<object> hyphenatedword) {
             stoplist[word] = hyphenatedword;
         }
 
@@ -435,7 +435,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         * within the pattern. It should contain only digit characters.
         * (i.e. '0' to '9').
         */
-        public void AddPattern(String pattern, String ivalue) {
+        virtual public void AddPattern(String pattern, String ivalue) {
             int k = ivalues.Find(ivalue);
             if (k <= 0) {
                 k = PackValues(ivalue);

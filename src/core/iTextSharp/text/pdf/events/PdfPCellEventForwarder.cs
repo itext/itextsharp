@@ -65,14 +65,14 @@ namespace iTextSharp.text.pdf.events {
         * Add a page event to the forwarder.
         * @param event an event that has to be added to the forwarder.
         */
-        public void AddCellEvent(IPdfPCellEvent eventa) {
+        virtual public void AddCellEvent(IPdfPCellEvent eventa) {
             events.Add(eventa);
         }
 
         /**
         * @see com.lowagie.text.pdf.PdfPCellEvent#cellLayout(com.lowagie.text.pdf.PdfPCell, com.lowagie.text.Rectangle, com.lowagie.text.pdf.PdfContentByte[])
         */
-        public void CellLayout(PdfPCell cell, Rectangle position, PdfContentByte[] canvases) {
+        virtual public void CellLayout(PdfPCell cell, Rectangle position, PdfContentByte[] canvases) {
             foreach (IPdfPCellEvent eventa in events) {
                 eventa.CellLayout(cell, position, canvases);
             }

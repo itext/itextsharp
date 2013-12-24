@@ -175,7 +175,7 @@ namespace iTextSharp.text.pdf {
          * @throws IOException on error
          * @see #PdfStream(InputStream,PdfWriter)
          */
-        public void WriteLength() {
+        virtual public void WriteLength() {
             if (inputStream == null)
                 throw new PdfException(MessageLocalization.GetComposedMessage("writelength.can.only.be.called.in.a.contructed.pdfstream.inputstream.pdfwriter"));
             if (inputStreamLength == -1)
@@ -183,7 +183,7 @@ namespace iTextSharp.text.pdf {
             writer.AddToBody(new PdfNumber(inputStreamLength), iref, false);
         }
     
-        public int RawLength {
+        virtual public int RawLength {
             get {
                 return rawLength;
             }
@@ -194,7 +194,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Compresses the stream.
         */
-        public void FlateCompress() {
+        virtual public void FlateCompress() {
             FlateCompress(DEFAULT_COMPRESSION);
         }
         
@@ -203,7 +203,7 @@ namespace iTextSharp.text.pdf {
         * @param compressionLevel the compression level (0 = best speed, 9 = best compression, -1 is default)
         * @since   2.1.3
         */
-        public void FlateCompress(int compressionLevel) {
+        virtual public void FlateCompress(int compressionLevel) {
             if (!Document.Compress)
                 return;
             // check if the flateCompress-method has already been used
@@ -338,7 +338,7 @@ namespace iTextSharp.text.pdf {
         * @param os the destination to write to
         * @throws IOException on error
         */    
-        public void WriteContent(Stream os) {
+        virtual public void WriteContent(Stream os) {
             if (streamBytes != null)
                 streamBytes.WriteTo(os);
             else if (bytes != null)

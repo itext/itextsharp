@@ -10,7 +10,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
     class IndicLigatures
     {
         [Test]
-        public void TestDevanagari()
+        virtual public void TestDevanagari()
         {
             IndicLigaturizer d = new DevanagariLigaturizer();
             String processed = d.Process("\u0936\u093e\u0902\u0924\u094d\u093f");
@@ -18,7 +18,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void TestDevanagari2()
+        virtual public void TestDevanagari2()
         {
             IndicLigaturizer d = new DevanagariLigaturizer();
             String processed = d.Process("\u0936\u093e\u0902\u0924\u093f");
@@ -26,7 +26,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void TestGujarati()
+        virtual public void TestGujarati()
         {
             IndicLigaturizer g = new GujaratiLigaturizer();
             String processed = g.Process("\u0ab6\u0abe\u0a82\u0aa4\u0acd\u0abf");
@@ -34,7 +34,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void TestGujarati2()
+        virtual public void TestGujarati2()
         {
             IndicLigaturizer g = new GujaratiLigaturizer();
             String processed = g.Process("\u0ab6\u0abe\u0a82\u0aa4\u0abf");

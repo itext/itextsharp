@@ -120,7 +120,7 @@ namespace iTextSharp.text.pdf {
          * @return        the actual value of the object.
          */
     
-        public bool BooleanValue {
+        virtual public bool BooleanValue {
             get {
                 return value;
             }

@@ -73,7 +73,7 @@ namespace iTextSharp.text.pdf {
          * @param ck chunk array
          * @return	<CODE>true</CODE> if the character can be used to split a string, <CODE>false</CODE> otherwise
          */
-        public bool IsSplitCharacter(int start, int current, int end, char[] cc, PdfChunk[] ck) {
+        virtual public bool IsSplitCharacter(int start, int current, int end, char[] cc, PdfChunk[] ck) {
             char c = GetCurrentCharacter(current, cc, ck);
             if (c <= ' ' || c == '-' || c == '\u2010') {
                 return true;
@@ -94,7 +94,7 @@ namespace iTextSharp.text.pdf {
          * @param ck chunk array
          * @return	the current character
          */
-        protected char GetCurrentCharacter(int current, char[] cc, PdfChunk[] ck) {
+        virtual protected char GetCurrentCharacter(int current, char[] cc, PdfChunk[] ck) {
             if (ck == null) {
                 return (char)cc[current];
             }

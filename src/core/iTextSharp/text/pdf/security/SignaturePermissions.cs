@@ -67,11 +67,11 @@ namespace iTextSharp.text.pdf.security {
                 this.fields = fields;
             }
             /** Getter for the field lock action. */
-            public PdfName Action {
+            virtual public PdfName Action {
                 get { return action; }
             }
             /** Getter for the fields involved in the lock action. */
-            public PdfArray Fields {
+            virtual public PdfArray Fields {
                 get { return fields; }
             }
             /** toString method */
@@ -131,28 +131,28 @@ namespace iTextSharp.text.pdf.security {
          * Getter to find out if the signature is a certification signature.
          * @return true if the signature is a certification signature, false for an approval signature.
          */
-        public bool Certification {
+        virtual public bool Certification {
             get { return certification; }
         }
         /**
          * Getter to find out if filling out fields is allowed after signing.
          * @return true if filling out fields is allowed
          */
-        public bool FillInAllowed {
+        virtual public bool FillInAllowed {
             get { return fillInAllowed; }
         }
         /**
          * Getter to find out if adding annotations is allowed after signing.
          * @return true if adding annotations is allowed
          */
-        public bool AnnotationsAllowed {
+        virtual public bool AnnotationsAllowed {
             get { return annotationsAllowed; }
         }
         /**
          * Getter for the field lock actions, and fields that are impacted by the action
          * @return an Array with field names
          */
-        public List<FieldLock> FieldLocks {
+        virtual public List<FieldLock> FieldLocks {
             get { return fieldLocks; }
         }
 	}

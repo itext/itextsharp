@@ -65,7 +65,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * to the Flash Player context when activated.
          * @param   flashVars   a String with the Flash variables
          */
-        public string FlashVars {
+        virtual public string FlashVars {
             set {
                 Put(PdfName.FLASHVARS, new PdfString(value));
             }
@@ -76,7 +76,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * @param   binding possible values:
          * PdfName.NONE, PdfName.FOREGROUND, PdfName.BACKGROUND, PdfName.MATERIAL
          */
-        public PdfName Binding {
+        virtual public PdfName Binding {
             set {
                 Put(PdfName.BINDING, value);
             }
@@ -87,7 +87,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * Required if Binding value is Material.
          * @param   bindingMaterialName a material name
          */
-        public PdfString BindingMaterialName {
+        virtual public PdfString BindingMaterialName {
             set {
                 Put(PdfName.BINDINGMATERIALNAME, value);
             }
@@ -98,7 +98,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * in time within a Flash animation.
          * @param   cuePoints   a PdfArray with CuePoint objects
          */
-        public PdfArray CuePoints {
+        virtual public PdfArray CuePoints {
             set {
                 Put(PdfName.CUEPOINTS, value);
             }
@@ -110,7 +110,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * by the scripting run time.
          * @param   settings    a PdfString
          */
-        public PdfString Settings {
+        virtual public PdfString Settings {
             set {
                 Put(PdfName.SETTINGS, value);
             }

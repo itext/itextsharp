@@ -320,7 +320,7 @@ namespace iTextSharp.text.pdf {
          * @throws DocumentException the AFM file is invalid
          * @throws IOException the AFM file could not be read
          */
-        public void Process(RandomAccessFileOrArray rf) {
+        virtual public void Process(RandomAccessFileOrArray rf) {
             string line;
             bool isMetrics = false;
             while ((line = rf.ReadLine()) != null) {
@@ -523,7 +523,7 @@ namespace iTextSharp.text.pdf {
          * @param fontStream the indirect reference to a PdfStream containing the font or <CODE>null</CODE>
          * @return the PdfDictionary containing the font descriptor or <CODE>null</CODE>
          */
-        public PdfDictionary GetFontDescriptor(PdfIndirectReference fontStream) {
+        virtual public PdfDictionary GetFontDescriptor(PdfIndirectReference fontStream) {
             if (builtinFont)
                 return null;
             PdfDictionary dic = new PdfDictionary(PdfName.FONTDESCRIPTOR);

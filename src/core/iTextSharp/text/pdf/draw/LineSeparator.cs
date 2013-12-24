@@ -113,7 +113,7 @@ namespace iTextSharp.text.pdf.draw {
         * @param rightX the right x coordindate
         * @param y          the y coordinate
         */
-        public void DrawLine(PdfContentByte canvas, float leftX, float rightX, float y) {
+        virtual public void DrawLine(PdfContentByte canvas, float leftX, float rightX, float y) {
             float w;
             if (Percentage < 0)
                 w = -Percentage;
@@ -143,7 +143,7 @@ namespace iTextSharp.text.pdf.draw {
         * Setter for the line width.
         * @param lineWidth  the thickness of the line that will be drawn.
         */
-        public float LineWidth {
+        virtual public float LineWidth {
             get {
                 return lineWidth;
             }
@@ -156,7 +156,7 @@ namespace iTextSharp.text.pdf.draw {
         * Setter for the width as a percentage of the available width.
         * @return   a width percentage
         */
-        public float Percentage {
+        virtual public float Percentage {
             get {
                 return percentage;
             }
@@ -170,7 +170,7 @@ namespace iTextSharp.text.pdf.draw {
         * @param color  a color
         */
 
-        public BaseColor LineColor {
+        virtual public BaseColor LineColor {
             get {
                 return lineColor;
             }
@@ -183,7 +183,7 @@ namespace iTextSharp.text.pdf.draw {
         * Setter for the alignment of the line.
         * @param align  an alignment value
         */
-        public int Alignment {
+        virtual public int Alignment {
             get {
                 return alignment;
             }

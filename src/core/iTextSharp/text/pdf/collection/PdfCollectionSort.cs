@@ -74,7 +74,7 @@ namespace iTextSharp.text.pdf.collection {
         * Defines the sort order of the field (ascending or descending).
         * @param ascending true is the default, use false for descending order
         */
-        public void SetSortOrder(bool ascending) {
+        virtual public void SetSortOrder(bool ascending) {
             PdfObject o = (PdfObject)Get(PdfName.S);
             if (o is PdfName) {
                 Put(PdfName.A, new PdfBoolean(ascending));
@@ -88,7 +88,7 @@ namespace iTextSharp.text.pdf.collection {
         * Defines the sort order of the field (ascending or descending).
         * @param ascending an array with every element corresponding with a name of a field.
         */
-        public void SetSortOrder(bool[] ascending) {
+        virtual public void SetSortOrder(bool[] ascending) {
             PdfObject o = (PdfObject)Get(PdfName.S);
             if (o is PdfArray) {
                 if (((PdfArray)o).Size != ascending.Length) {

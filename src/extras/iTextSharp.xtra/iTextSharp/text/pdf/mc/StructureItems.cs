@@ -107,7 +107,7 @@ namespace iTextSharp.text.pdf.mc
          * @param ref	the reference to the StructElem dictionary
          * @throws DocumentException
          */
-        protected void ProcessStructElems(PdfDictionary structElem, PdfIndirectReference refa) {
+        virtual protected void ProcessStructElems(PdfDictionary structElem, PdfIndirectReference refa) {
             LOGGER.Info(String.Format("addStructureItems({0}, {1})", structElem, refa));
             if (structElem == null)
                 return;
@@ -122,7 +122,7 @@ namespace iTextSharp.text.pdf.mc
          * @param ref			the reference to the StructElem dictionary
          * @param object		the kids object
          */
-        protected void ProcessStructElemKids(PdfDictionary structElem, PdfIndirectReference refa, PdfObject objecta) {
+        virtual protected void ProcessStructElemKids(PdfDictionary structElem, PdfIndirectReference refa, PdfObject objecta) {
             LOGGER.Info(String.Format("addStructureItem({0}, {1}, {2})", structElem, refa, objecta));
             if (objecta == null)
                 return;
@@ -164,7 +164,7 @@ namespace iTextSharp.text.pdf.mc
          * @param	PdfNumber	the number to remove
          */
 
-        public void RemoveFromParentTree(PdfNumber structParent) {
+        virtual public void RemoveFromParentTree(PdfNumber structParent) {
             parentTree.Remove(structParent.IntValue);
         }
 
@@ -177,7 +177,7 @@ namespace iTextSharp.text.pdf.mc
          * @return	a new MCID
          * @throws DocumentException
          */
-        public int ProcessMCID(PdfNumber structParents, PdfIndirectReference refa) {
+        virtual public int ProcessMCID(PdfNumber structParents, PdfIndirectReference refa) {
             if (refa == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("can.t.read.document.structure"));
             PdfObject objecta;
@@ -198,7 +198,7 @@ namespace iTextSharp.text.pdf.mc
          * @param writer	The writer to which the StructParents have to be written
          * @throws IOException 
          */
-        public void WriteParentTree(PdfWriter writer) {
+        virtual public void WriteParentTree(PdfWriter writer) {
             if (structTreeRoot == null)
                 return;
             int[] numbers = new int[parentTree.Count];

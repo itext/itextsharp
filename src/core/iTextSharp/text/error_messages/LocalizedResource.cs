@@ -114,7 +114,7 @@ namespace iTextSharp.text.error_messages {
             }
         }
 
-        public string GetMessage(string key) {
+        virtual public string GetMessage(string key) {
             string v = msgs[key];
             if (v == null)
                 return key;

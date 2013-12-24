@@ -116,12 +116,12 @@ namespace iTextSharp.text.pdf
                 crypto.SetHashKey(number, generation);
         }
 
-        public int Number
+        virtual public int Number
         {
             get { return number; }
         }
 
-        public int Generation
+        virtual public int Generation
         {
             get { return generation; }
         }
@@ -145,7 +145,7 @@ namespace iTextSharp.text.pdf
          * @param os the stream to write to
          * @throws IOException on write error
          */
-        public void WriteTo(Stream os)
+        virtual public void WriteTo(Stream os)
         {
             byte[] tmp = DocWriter.GetISOBytes(number.ToString());
             os.Write(tmp, 0, tmp.Length);

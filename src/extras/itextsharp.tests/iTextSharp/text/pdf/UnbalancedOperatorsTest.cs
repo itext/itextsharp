@@ -20,7 +20,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void TestBasicDocument()
+        virtual public void TestBasicDocument()
         {
             InitializeDocument();
             writer.DirectContent.SaveState();
@@ -30,7 +30,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void TestNewPage()
+        virtual public void TestNewPage()
         {
             InitializeDocument();
             writer.DirectContent.SaveState();
@@ -43,7 +43,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
         [Test]
         [ExpectedException(typeof(IllegalPdfSyntaxException))]
-        public void TestUnbalancedRestoreState()
+        virtual public void TestUnbalancedRestoreState()
         {
             InitializeDocument();
             document.Add(new Paragraph("Hello World"));
@@ -53,7 +53,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
         [Test]
         [ExpectedException(typeof(IllegalPdfSyntaxException))]
-        public void TestUnbalancedSaveStateOnClose()
+        virtual public void TestUnbalancedSaveStateOnClose()
         {
             InitializeDocument();
             writer.DirectContent.SaveState();
@@ -63,7 +63,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
         [Test]
         [ExpectedException(typeof(IllegalPdfSyntaxException))]
-        public void TestUnbalancedSaveStateOnNewPage()
+        virtual public void TestUnbalancedSaveStateOnNewPage()
         {
             InitializeDocument();
             writer.DirectContent.SaveState();

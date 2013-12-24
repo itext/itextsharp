@@ -64,7 +64,7 @@ namespace iTextSharp.text.pdf {
             cgray = Normalize(floatGray);
         }
     
-        public float Gray {
+        virtual public float Gray {
             get {
                 return cgray;
             }

@@ -86,7 +86,7 @@ namespace iTextSharp.tool.xml.parser.state {
          *
          * @see com.itextpdf.tool.xml.parser.State#process(int)
          */
-        public void Process(char character) {
+        virtual public void Process(char character) {
             if (character == '<') {
                 if (this.parser.BufferSize() > 0) {
                     this.parser.Text(this.parser.Current());

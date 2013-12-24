@@ -121,7 +121,7 @@ namespace iTextSharp.text.io {
             source.Close();
         }
 
-        public void Dispose() {
+        virtual public void Dispose() {
             Close();
         }
     }

@@ -257,7 +257,7 @@ namespace iTextSharp.text {
         /// Gets the family of this font.
         /// </summary>
         /// <value>the value of the family</value>
-        public FontFamily Family {
+        virtual public FontFamily Family {
             get {
                 return family;
             }
@@ -354,7 +354,7 @@ namespace iTextSharp.text {
         /** Gets the size that can be used with the calculated <CODE>BaseFont</CODE>.
         * @return the size that can be used with the calculated <CODE>BaseFont</CODE>
         */    
-        public float CalculatedSize {
+        virtual public float CalculatedSize {
             get {
                 float s = this.size;
                 if (s == UNDEFINED) {
@@ -371,7 +371,7 @@ namespace iTextSharp.text {
         *            a certain linespacing
         * @return the height of a line
         */
-        public float GetCalculatedLeading(float linespacing) {
+        virtual public float GetCalculatedLeading(float linespacing) {
             return linespacing * CalculatedSize;
         }
 
@@ -381,7 +381,7 @@ namespace iTextSharp.text {
         /// Gets the style of this font.
         /// </summary>
         /// <value>the style of this font</value>
-        public int Style {
+        virtual public int Style {
             get {
                 return style;
             }
@@ -390,7 +390,7 @@ namespace iTextSharp.text {
         /** Gets the style that can be used with the calculated <CODE>BaseFont</CODE>.
         * @return the style that can be used with the calculated <CODE>BaseFont</CODE>
         */    
-        public int CalculatedStyle {
+        virtual public int CalculatedStyle {
             get {
                 int style = this.style;
                 if (style == UNDEFINED) {
@@ -409,7 +409,7 @@ namespace iTextSharp.text {
         /// checks if this font is Bold.
         /// </summary>
         /// <returns>a boolean</returns>
-        public bool IsBold() {
+        virtual public bool IsBold() {
             if (style == UNDEFINED) {
                 return false;
             }
@@ -420,7 +420,7 @@ namespace iTextSharp.text {
         /// checks if this font is Bold.
         /// </summary>
         /// <returns>a boolean</returns>
-        public bool IsItalic() {
+        virtual public bool IsItalic() {
             if (style == UNDEFINED) {
                 return false;
             }
@@ -431,7 +431,7 @@ namespace iTextSharp.text {
         /// checks if this font is underlined.
         /// </summary>
         /// <returns>a boolean</returns>
-        public bool IsUnderlined() {
+        virtual public bool IsUnderlined() {
             if (style == UNDEFINED) {
                 return false;
             }
@@ -442,7 +442,7 @@ namespace iTextSharp.text {
         /// checks if the style of this font is STRIKETHRU.
         /// </summary>
         /// <returns>a boolean</returns>
-        public bool IsStrikethru() {
+        virtual public bool IsStrikethru() {
             if (style == UNDEFINED) {
                 return false;
             }
@@ -529,7 +529,7 @@ namespace iTextSharp.text {
         /// Gets the BaseFont inside this object.
         /// </summary>
         /// <value>the BaseFont</value>
-        public BaseFont BaseFont {
+        virtual public BaseFont BaseFont {
             get {
                 return baseFont;
             }
@@ -541,7 +541,7 @@ namespace iTextSharp.text {
         * <CODE>false</CODE> to always use <CODE>Cp1252</CODE>
         * @return the <CODE>BaseFont</CODE> this class represents
         */    
-        public BaseFont GetCalculatedBaseFont(bool specialEncoding) {
+        virtual public BaseFont GetCalculatedBaseFont(bool specialEncoding) {
             if (baseFont != null)
                 return baseFont;
             int style = this.style;

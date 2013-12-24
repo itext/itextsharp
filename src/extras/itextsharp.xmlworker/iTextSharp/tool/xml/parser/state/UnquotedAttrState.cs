@@ -64,7 +64,7 @@ namespace iTextSharp.tool.xml.parser.state {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.parser.State#process(int)
          */
-        public void Process(char character) {
+        virtual public void Process(char character) {
             if (Char.IsWhiteSpace(character)) {
                 this.parser.Memory().PutCurrentAttrValue(this.parser.BufferToString());
                 this.parser.Flush();

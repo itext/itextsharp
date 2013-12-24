@@ -87,12 +87,12 @@ namespace iTextSharp.tool.xml.html.pdfelement {
                 float parseToPt, bool b) : base(verticalPositionMark, parseToPt, b) {
         }
 
-        public int TabCount {
+        virtual public int TabCount {
             get { return tabCount; }
             set { tabCount = value; }
         }
 
-        public String Alignment {
+        virtual public String Alignment {
             get { return alignment; }
             set { alignment = value; }
         }

@@ -8,7 +8,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
     class MetaDataTest
     {
         [Test]
-        public void TestProducer()
+        virtual public void TestProducer()
         {
             MemoryStream ms = new MemoryStream();
             Document document = new Document();

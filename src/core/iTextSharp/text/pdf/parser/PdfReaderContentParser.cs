@@ -68,7 +68,7 @@ namespace iTextSharp.text.pdf.parser {
          * @throws IOException if operations on the reader fail
          */
         
-        public E ProcessContent<E>(int pageNumber, E renderListener) where E : IRenderListener {
+        virtual public E ProcessContent<E>(int pageNumber, E renderListener) where E : IRenderListener {
             PdfDictionary pageDic = reader.GetPageN(pageNumber);
             PdfDictionary resourcesDic = pageDic.GetAsDict(PdfName.RESOURCES);
             

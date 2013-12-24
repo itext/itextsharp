@@ -124,13 +124,13 @@ namespace iTextSharp.text.pdf
             return icc;
         }
 
-        public byte[] Data {
+        virtual public byte[] Data {
             get {
                 return data;
             }
         }
         
-        public int NumComponents {
+        virtual public int NumComponents {
             get {
                 return numComponents;
             }

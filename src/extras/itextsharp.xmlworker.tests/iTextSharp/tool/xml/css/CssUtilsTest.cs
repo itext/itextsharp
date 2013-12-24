@@ -17,14 +17,14 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         private String str;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
             css = CssUtils.GetInstance();
             str = "  een  twee   drie    vier    een  twee   drie    vier";
         }
 
         [Test]
-        public void CalculateHorizontalMargin() {
+        virtual public void CalculateHorizontalMargin() {
             Tag t = new Tag(str);
             t.CSS["margin-left"] = "15pt";
             t.CSS["margin-right"] = "15pt";
@@ -32,7 +32,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ValidateMetricValue() {
+        virtual public void ValidateMetricValue() {
             Assert.AreEqual(true, css.IsMetricValue("px"));
             Assert.AreEqual(true, css.IsMetricValue("in"));
             Assert.AreEqual(true, css.IsMetricValue("cm"));
@@ -46,7 +46,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ValidateNumericValue() {
+        virtual public void ValidateNumericValue() {
             Assert.AreEqual(true, css.IsNumericValue("1"));
             Assert.AreEqual(true, css.IsNumericValue("12"));
             Assert.AreEqual(true, css.IsNumericValue("1.2"));
@@ -57,14 +57,14 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ParseLength() {
+        virtual public void ParseLength() {
             Assert.AreEqual(9, css.ParsePxInCmMmPcToPt("12"), 0);
             Assert.AreEqual(576, css.ParsePxInCmMmPcToPt("8inch"), 0);
             Assert.AreEqual(576, css.ParsePxInCmMmPcToPt("8", CSS.Value.IN), 0);
         }
 
         [Test]
-        public void SplitFont() {
+        virtual public void SplitFont() {
             IDictionary<String, String> processFont = css.ProcessFont("bold italic 16pt/3px Verdana");
             Assert.AreEqual("bold", processFont["font-weight"]);
             Assert.AreEqual("italic", processFont["font-style"]);
@@ -74,7 +74,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void SplitBackgroundOne() {
+        virtual public void SplitBackgroundOne() {
             IDictionary<String, String> background =
                 css.ProcessBackground("#00ff00 url('smiley.gif') no-repeat fixed center top");
             Assert.AreEqual("#00ff00", background["background-color"]);
@@ -85,7 +85,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void SplitBackgroundTwo() {
+        virtual public void SplitBackgroundTwo() {
             IDictionary<String, String> background = css
                 .ProcessBackground("rgdbq(150, 90, 60) url'smiley.gif') repeat-x scroll 20 60%");
 
@@ -100,7 +100,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void SplitBackgroundThree() {
+        virtual public void SplitBackgroundThree() {
             IDictionary<String, String> background = css.ProcessBackground("DarkOliveGreen fixed center");
             Assert.AreEqual("DarkOliveGreen", background["background-color"]);
 
@@ -113,13 +113,13 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ReplaceDoubleSpaces() {
+        virtual public void ReplaceDoubleSpaces() {
             String stripDoubleSpacesAndTrim = css.StripDoubleSpacesAndTrim(str);
             Assert.IsTrue(!(stripDoubleSpacesAndTrim.Contains("  ")), "double spaces [  ] detected");
         }
 
         [Test]
-        public void Parse1BoxValuesTest() {
+        virtual public void Parse1BoxValuesTest() {
             String box = "2px";
             IDictionary<String, String> values = css.ParseBoxValues(box, "pre-", "-post");
             ValidateKeys(values);
@@ -141,7 +141,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void Parse2BoxValuesTest() {
+        virtual public void Parse2BoxValuesTest() {
             String box = "2px 5px";
             IDictionary<String, String> values = css.ParseBoxValues(box, "pre-", "-post");
             ValidateKeys(values);
@@ -152,7 +152,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void Parse3BoxValuesTest() {
+        virtual public void Parse3BoxValuesTest() {
             String box = "2px 3px 4px";
             IDictionary<String, String> values = css.ParseBoxValues(box, "pre-", "-post");
             ValidateKeys(values);
@@ -163,7 +163,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void Parse4BoxValuesTest() {
+        virtual public void Parse4BoxValuesTest() {
             String box = "2px 3px 4px 5px";
             IDictionary<String, String> values = css.ParseBoxValues(box, "pre-", "-post");
             ValidateKeys(values);
@@ -174,7 +174,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ParseBorder() {
+        virtual public void ParseBorder() {
             String border = "dashed";
             IDictionary<String, String> map = css.ParseBorder(border);
             Assert.IsTrue(map.ContainsKey("border-left-style"));
@@ -188,7 +188,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ParseBorder2() {
+        virtual public void ParseBorder2() {
             String border = "dashed green";
             IDictionary<String, String> map = css.ParseBorder(border);
             Assert.IsTrue(map.ContainsKey("border-left-style"));
@@ -210,7 +210,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ParseBorder3() {
+        virtual public void ParseBorder3() {
             String border = "1px dashed";
             IDictionary<String, String> map = css.ParseBorder(border);
             Assert.IsTrue(map.ContainsKey("border-left-style"));
@@ -232,7 +232,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ParseBorder4() {
+        virtual public void ParseBorder4() {
             String border = "1px dashed green";
             IDictionary<String, String> map = css.ParseBorder(border);
             Assert.IsTrue(map.ContainsKey("border-left-style"));
@@ -270,17 +270,17 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ParseUrlSingleQuoted() {
+        virtual public void ParseUrlSingleQuoted() {
             Assert.AreEqual("file.jpg", css.ExtractUrl("url( 'file.jpg')"));
         }
 
         [Test]
-        public void ParseUrlDoubleQuoted() {
+        virtual public void ParseUrlDoubleQuoted() {
             Assert.AreEqual("file.jpg", css.ExtractUrl("url ( \"file.jpg\" )"));
         }
 
         [Test]
-        public void ParseUnparsableUrl() {
+        virtual public void ParseUnparsableUrl() {
             Assert.AreEqual("('file.jpg')", css.ExtractUrl("('file.jpg')"));
         }
     }

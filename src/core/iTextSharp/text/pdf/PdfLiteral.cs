@@ -78,13 +78,13 @@ namespace iTextSharp.text.pdf
             base.ToPdf(writer, os);
         }
 
-        public long Position {
+        virtual public long Position {
             get {
                 return position;
             }
         }
 
-        public int PosLength {
+        virtual public int PosLength {
             get {
                 if (bytes != null)
                     return bytes.Length;

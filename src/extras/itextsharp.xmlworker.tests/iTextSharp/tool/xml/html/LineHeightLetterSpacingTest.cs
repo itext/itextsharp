@@ -25,13 +25,13 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         private const string RESOURCES = @"..\..\resources\";
 
         private class CustomElementHandler : IElementHandler {
-            public void Add(IWritable w) {
+            virtual public void Add(IWritable w) {
                 elementList.AddRange(((WritableElement) w).Elements());
             }
         }
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
             StreamReader bis = File.OpenText(RESOURCES + "/snippets/line-height_letter-spacing_snippet.html");
             XMLWorkerHelper helper = XMLWorkerHelper.GetInstance();
@@ -40,23 +40,23 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [TearDown]
-        public void TearDown() {
+        virtual public void TearDown() {
             elementList = null;
         }
 
         [Test]
-        public void ResolveNumberOfElements() {
+        virtual public void ResolveNumberOfElements() {
             Assert.AreEqual(7, elementList.Count);
         }
 
         [Test]
-        public void ResolveFontSize() {
+        virtual public void ResolveFontSize() {
             Assert.AreEqual(16, elementList[2].Chunks[0].Font.Size, 0);
             Assert.AreEqual(15, elementList[4].Chunks[0].Font.Size, 0);
         }
 
         [Test]
-        public void ResolveLeading() {
+        virtual public void ResolveLeading() {
             Assert.IsTrue(Math.Abs(1.2f - ((Paragraph) elementList[0]).MultipliedLeading) < 0.0001f);
             Assert.AreEqual(8, ((Paragraph) elementList[1]).Leading, 0);
             // leading laten bepalen door inner line-height setting?
@@ -66,7 +66,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [Test]
-        public void ResolveCharSpacing() {
+        virtual public void ResolveCharSpacing() {
             Assert.AreEqual(CssUtils.GetInstance().ParsePxInCmMmPcToPt("1.6pc"),
                 elementList[5].Chunks[0].GetCharacterSpacing(), 0);
             Assert.AreEqual(CssUtils.GetInstance().ParseRelativeValue("0.83em", elementList[6].Chunks[2].Font.Size),

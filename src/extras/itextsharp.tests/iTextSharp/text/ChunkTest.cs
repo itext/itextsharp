@@ -32,24 +32,24 @@ namespace iTextSharp.text {
         private const String OUTABSTOPSC = TARGET + "/tabstopsColumnText.pdf";
 
         [SetUp]
-        public void Init() {
+        virtual public void Init() {
             Directory.CreateDirectory(TARGET);
         }
 
         [Test]
-        public void PrependingWhitspaces() {
+        virtual public void PrependingWhitspaces() {
             Chunk c = new Chunk(_4SPACES);
             Assert.AreEqual(_4SPACES, c.Content, "difference in string");
         }
 
         [Test]
-        public void PrependingTab() {
+        virtual public void PrependingTab() {
             Chunk c = new Chunk(_TAB);
             Assert.AreEqual("4spaces    ", c.Content, "difference in string");
         }
 
         [Test]
-        public void TabspaceDocumentTest() {
+        virtual public void TabspaceDocumentTest() {
             Font f = FontFactory.GetFont(FontFactory.COURIER, 11);
             FileStream fs = new FileStream(OUTTABSPACED, FileMode.Create);
             Document doc = new Document();
@@ -87,7 +87,7 @@ namespace iTextSharp.text {
         }
 
         [Test]
-        public void TabspaceColumnTextTest() {
+        virtual public void TabspaceColumnTextTest() {
             Font f = FontFactory.GetFont(FontFactory.COURIER, 11);
             Document doc = new Document();
             Paragraph p;
@@ -126,7 +126,7 @@ namespace iTextSharp.text {
         }
 
         [Test]
-        public void TabDocumentTest() {
+        virtual public void TabDocumentTest() {
             Font f = FontFactory.GetFont(FontFactory.COURIER, 11);
             FileStream fs = new FileStream(OUTTABD, FileMode.Create);
             Document doc = new Document();
@@ -186,7 +186,7 @@ namespace iTextSharp.text {
         }
 
         [Test]
-        public void TabColumnTextTest() {
+        virtual public void TabColumnTextTest() {
             Font f = FontFactory.GetFont(FontFactory.COURIER, 11);
             Document doc = new Document();
             Paragraph p;
@@ -248,7 +248,7 @@ namespace iTextSharp.text {
         }
 
         [Test]
-        public void TabStopsColumnText() {
+        virtual public void TabStopsColumnText() {
             Document document = new Document(PageSize.A4);
             PdfWriter writer = PdfWriter.GetInstance(document, new FileStream(OUTABSTOPSC, FileMode.Create));
             document.Open();
@@ -299,7 +299,7 @@ namespace iTextSharp.text {
             Assert.IsTrue(CompareInnerText(SOURCE15, OUTABSTOPSC));
         }
 
-        public void AddTabspaces(Paragraph p, Font f, int count) {
+        virtual public void AddTabspaces(Paragraph p, Font f, int count) {
             p.Add(Chunk.CreateTabspace());
             p.Add(new Chunk("|", f));
             if (count == 16)
@@ -308,7 +308,7 @@ namespace iTextSharp.text {
                 AddTabspaces(p, f, count + 1);
         }
 
-        public void AddTabs(Paragraph p, Font f, int count, String text) {
+        virtual public void AddTabs(Paragraph p, Font f, int count, String text) {
             p.Add(Chunk.TABBING);
             p.Add(new Chunk(text, f));
             if (count == 17)
@@ -317,7 +317,7 @@ namespace iTextSharp.text {
                 AddTabs(p, f, count + 1, text);
         }
 
-        public void AddTabs(Paragraph p, Font f, int count) {
+        virtual public void AddTabs(Paragraph p, Font f, int count) {
             p.Add(Chunk.TABBING);
             p.Add(new Chunk("|", f));
             if (count == 17)
@@ -326,7 +326,7 @@ namespace iTextSharp.text {
                 AddTabs(p, f, count + 1);
         }
 
-        public bool CompareInnerText(String path1, String path2) {
+        virtual public bool CompareInnerText(String path1, String path2) {
             PdfReader reader1 = new PdfReader(path1);
             byte[] streamBytes1 = reader1.GetPageContent(1);
             PRTokeniser tokenizer1 =

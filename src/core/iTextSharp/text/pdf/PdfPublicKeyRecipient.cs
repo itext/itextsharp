@@ -59,19 +59,19 @@ namespace iTextSharp.text.pdf {
             this.permission = permission;
         }
 
-        public X509Certificate Certificate {
+        virtual public X509Certificate Certificate {
             get {
                 return certificate;
             }
         }
 
-        public int Permission {
+        virtual public int Permission {
             get {
                 return permission;
             }
         }
 
-        protected internal byte[] Cms {
+        virtual protected internal byte[] Cms {
             set {
                 cms = value;
             }

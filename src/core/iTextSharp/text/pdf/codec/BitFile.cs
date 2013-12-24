@@ -74,7 +74,7 @@ namespace iTextSharp.text.pdf.codec {
             bitsLeft_ = 8;
         }
 
-        public void Flush() {
+        virtual public void Flush() {
             int numBytes = index_ + (bitsLeft_ == 8 ? 0 : 1);
             if (numBytes > 0) {
                 if (blocks_)
@@ -86,7 +86,7 @@ namespace iTextSharp.text.pdf.codec {
             }
         }
 
-        public void WriteBits(int bits, int numbits) {
+        virtual public void WriteBits(int bits, int numbits) {
             int bitsWritten = 0;
             int numBytes = 255;		// gif block count
             do {

@@ -69,7 +69,7 @@ namespace iTextSharp.text.pdf.hyphenation {
             hyphenChar = '-';    // default
         }
         
-        public void Parse(Stream stream, IPatternConsumer consumer) {
+        virtual public void Parse(Stream stream, IPatternConsumer consumer) {
             this.consumer = consumer;
             try {
                 SimpleXMLParser.Parse(this, stream);
@@ -90,7 +90,7 @@ namespace iTextSharp.text.pdf.hyphenation {
             return pat.ToString();
         }
 
-        protected List<object> NormalizeException(List<object> ex) {
+        virtual protected List<object> NormalizeException(List<object> ex) {
             List<object> res = new List<object>();
             for (int i = 0; i < ex.Count; i++) {
                 Object item = ex[i];
@@ -121,7 +121,7 @@ namespace iTextSharp.text.pdf.hyphenation {
             return res;
         }
 
-        protected String GetExceptionWord(List<object> ex) {
+        virtual protected String GetExceptionWord(List<object> ex) {
             StringBuilder res = new StringBuilder();
             for (int i = 0; i < ex.Count; i++) {
                 Object item = ex[i];
@@ -152,10 +152,10 @@ namespace iTextSharp.text.pdf.hyphenation {
             return il.ToString();
         }
 
-        public void EndDocument() {
+        virtual public void EndDocument() {
         }
         
-        public void EndElement(String tag) {
+        virtual public void EndElement(String tag) {
             if (token.Length > 0) {
                 String word = token.ToString();
                 switch (currElement) {
@@ -186,10 +186,10 @@ namespace iTextSharp.text.pdf.hyphenation {
             }
         }
         
-        public void StartDocument() {
+        virtual public void StartDocument() {
         }
         
-        public void StartElement(String tag, IDictionary<string,string> h) {
+        virtual public void StartElement(String tag, IDictionary<string,string> h) {
             if (tag.Equals("hyphen-char")) {
                 String hh;
                 h.TryGetValue("value", out hh);
@@ -213,7 +213,7 @@ namespace iTextSharp.text.pdf.hyphenation {
             token.Length = 0;
         }
         
-        public void Text(String str) {
+        virtual public void Text(String str) {
             StringTokenizer tk = new StringTokenizer(str);
             while (tk.HasMoreTokens()) {
                 String word = tk.NextToken();

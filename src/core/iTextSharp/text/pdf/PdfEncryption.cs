@@ -133,7 +133,7 @@ public class PdfEncryption {
         publicKeyHandler = enc.publicKeyHandler;
     }
 
-    public void SetCryptoMode(int mode, int kl) {
+    virtual public void SetCryptoMode(int mode, int kl) {
         cryptoMode = mode;
         encryptMetadata = (mode & PdfWriter.DO_NOT_ENCRYPT_METADATA) != PdfWriter.DO_NOT_ENCRYPT_METADATA;
         embeddedFilesOnly = (mode & PdfWriter.EMBEDDED_FILES_ONLY) == PdfWriter.EMBEDDED_FILES_ONLY;
@@ -167,15 +167,15 @@ public class PdfEncryption {
         }
     }
     
-    public int GetCryptoMode() {
+    virtual public int GetCryptoMode() {
         return cryptoMode;
     }
     
-    public bool IsMetadataEncrypted() {
+    virtual public bool IsMetadataEncrypted() {
         return encryptMetadata;
     }
 
-    public int GetPermissions() {
+    virtual public int GetPermissions() {
         return permissions;
     }
 
@@ -184,7 +184,7 @@ public class PdfEncryption {
      * @return  if true only the embedded files will be encrypted
      * @since   2.1.3
      */
-    public bool IsEmbeddedFilesOnly() {
+    virtual public bool IsEmbeddedFilesOnly() {
         return embeddedFilesOnly;
     }
 
@@ -301,7 +301,7 @@ public class PdfEncryption {
     }
 
     // gets keylength and revision and uses revison to choose the initial values for permissions
-    public void SetupAllKeys(byte[] userPassword, byte[] ownerPassword, int permissions) {
+    virtual public void SetupAllKeys(byte[] userPassword, byte[] ownerPassword, int permissions) {
         if (ownerPassword == null || ownerPassword.Length == 0)
             ownerPassword = DigestAlgorithms.Digest("MD5", CreateDocumentId());
         md5.Reset();
@@ -381,7 +381,7 @@ public class PdfEncryption {
     private const int SALT_LENGHT = 8;
     private const int OU_LENGHT = 48;
 
-    public bool ReadKey(PdfDictionary enc, byte[] password) {
+    virtual public bool ReadKey(PdfDictionary enc, byte[] password) {
         if (password == null)
             password = new byte[0];
         byte[] oValue = DocWriter.GetISOBytes(enc.Get(PdfName.O).ToString());
@@ -445,7 +445,7 @@ public class PdfEncryption {
         return DigestAlgorithms.Digest("MD5", b);
     }
 
-    public void SetupByUserPassword(byte[] documentID, byte[] userPassword, byte[] ownerKey, int permissions) {
+    virtual public void SetupByUserPassword(byte[] documentID, byte[] userPassword, byte[] ownerKey, int permissions) {
         SetupByUserPad(documentID, PadPassword(userPassword), ownerKey, permissions);
     }
 
@@ -458,7 +458,7 @@ public class PdfEncryption {
 
     /**
      */
-    public void SetupByOwnerPassword(byte[] documentID, byte[] ownerPassword, byte[] userKey, byte[] ownerKey, int permissions) {
+    virtual public void SetupByOwnerPassword(byte[] documentID, byte[] ownerPassword, byte[] userKey, byte[] ownerKey, int permissions) {
         SetupByOwnerPad(documentID, PadPassword(ownerPassword), userKey, ownerKey, permissions);
     }
 
@@ -468,16 +468,16 @@ public class PdfEncryption {
         SetupUserKey();
     }
 
-	public void SetKey(byte[] key) {
+	virtual public void SetKey(byte[] key) {
         this.key = key;
     }
     
-    public void SetupByEncryptionKey(byte[] key, int keylength) {
+    virtual public void SetupByEncryptionKey(byte[] key, int keylength) {
         mkey = new byte[keylength/8];
         System.Array.Copy(key, 0, mkey, 0, mkey.Length);
     }    
 
-    public void SetHashKey(int number, int generation) {
+    virtual public void SetHashKey(int number, int generation) {
         if (revision == AES_256)
             return;
         md5.Reset();    //added by ujihara
@@ -515,7 +515,7 @@ public class PdfEncryption {
         return new PdfLiteral(buf.ToByteArray());
     }
 
-    public PdfDictionary GetEncryptionDictionary() {
+    virtual public PdfDictionary GetEncryptionDictionary() {
         PdfDictionary dic = new PdfDictionary();
         
         if (publicKeyHandler.GetRecipientsSize() > 0) {
@@ -669,22 +669,22 @@ public class PdfEncryption {
         return dic;
     }
     
-    public PdfObject GetFileID(bool modified) {
+    virtual public PdfObject GetFileID(bool modified) {
         return CreateInfoId(documentID, modified);
     }
 
-    public OutputStreamEncryption GetEncryptionStream(Stream os) {
+    virtual public OutputStreamEncryption GetEncryptionStream(Stream os) {
         return new OutputStreamEncryption(os, key, 0, keySize, revision);
     }
     
-    public int CalculateStreamSize(int n) {
+    virtual public int CalculateStreamSize(int n) {
         if (revision == AES_128 || revision == AES_256)
             return (n & 0x7ffffff0) + 32;
         else
             return n;
     }
     
-    public byte[] EncryptByteArray(byte[] b) {
+    virtual public byte[] EncryptByteArray(byte[] b) {
         MemoryStream ba = new MemoryStream();
         OutputStreamEncryption os2 = GetEncryptionStream(ba);
         os2.Write(b, 0, b.Length);
@@ -692,11 +692,11 @@ public class PdfEncryption {
         return ba.ToArray();
     }
     
-    public StandardDecryption GetDecryptor() {
+    virtual public StandardDecryption GetDecryptor() {
         return new StandardDecryption(key, 0, keySize, revision);
     }
     
-    public byte[] DecryptByteArray(byte[] b) {
+    virtual public byte[] DecryptByteArray(byte[] b) {
         MemoryStream ba = new MemoryStream();
         StandardDecryption dec = GetDecryptor();
         byte[] b2 = dec.Update(b, 0, b.Length);
@@ -708,12 +708,12 @@ public class PdfEncryption {
         return ba.ToArray();
     }
 
-    public void AddRecipient(X509Certificate cert, int permission) {
+    virtual public void AddRecipient(X509Certificate cert, int permission) {
         documentID = CreateDocumentId();
         publicKeyHandler.AddRecipient(new PdfPublicKeyRecipient(cert, permission));
     }
 
-    public byte[] ComputeUserPassword(byte[] ownerPassword) {
+    virtual public byte[] ComputeUserPassword(byte[] ownerPassword) {
         byte[] userPad = ComputeOwnerKey(ownerKey, PadPassword(ownerPassword));
         for (int i = 0; i < userPad.Length; i++) {
             bool match = true;

@@ -77,7 +77,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the indirect reference to this color.
          * @return the indirect reference to this color
          */
-        public PdfIndirectReference IndirectReference {
+        virtual public PdfIndirectReference IndirectReference {
             get {
                 return indirectReference;
             }
@@ -95,7 +95,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the <CODE>SpotColor</CODE> object.
          * @return the <CODE>PdfSpotColor</CODE>
          */
-        public PdfObject GetSpotColor(PdfWriter writer) {
+        virtual public PdfObject GetSpotColor(PdfWriter writer) {
             return spotcolor.GetSpotObject(writer);
         }
     }

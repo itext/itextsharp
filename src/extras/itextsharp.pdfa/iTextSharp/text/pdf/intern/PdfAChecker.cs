@@ -1,4 +1,4 @@
-﻿/*
+/*
  * $Id: PdfAChecker.java 5827 2013-05-31 08:56:23Z blowagie $
  *
  * This file is part of the iText (R) project.
@@ -61,7 +61,7 @@ namespace iTextSharp.text.pdf.intern
 
         abstract protected HashSet2<PdfName> InitKeysForCheck();
 
-        public void CacheObject(PdfIndirectReference iref, PdfObject obj) {
+        virtual public void CacheObject(PdfIndirectReference iref, PdfObject obj) {
             if (obj.Type == 0) {
                 cachedObjects[new RefKey(iref)] = obj;
             }
@@ -102,7 +102,7 @@ namespace iTextSharp.text.pdf.intern
             return newDict;
         }
 
-        protected PdfObject GetDirectObject(PdfObject obj) {
+        virtual protected PdfObject GetDirectObject(PdfObject obj) {
             if (obj == null)
                 return null;
             //use counter to prevent indirect reference cycling
@@ -120,21 +120,21 @@ namespace iTextSharp.text.pdf.intern
             return obj;
         }
 
-        protected PdfDictionary GetDirectDictionary(PdfObject obj) {
+        virtual protected PdfDictionary GetDirectDictionary(PdfObject obj) {
             obj = GetDirectObject(obj);
             if (obj != null && obj is PdfDictionary)
                 return (PdfDictionary) obj;
             return null;
         }
 
-        protected PdfStream GetDirectStream(PdfObject obj) {
+        virtual protected PdfStream GetDirectStream(PdfObject obj) {
             obj = GetDirectObject(obj);
             if (obj != null && obj.IsStream())
                 return (PdfStream) obj;
             return null;
         }
 
-        protected PdfArray GetDirectArray(PdfObject obj) {
+        virtual protected PdfArray GetDirectArray(PdfObject obj) {
             obj = GetDirectObject(obj);
             if (obj != null && obj.IsArray())
                 return (PdfArray) obj;

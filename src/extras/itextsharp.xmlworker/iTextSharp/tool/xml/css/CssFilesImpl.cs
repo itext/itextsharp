@@ -72,7 +72,7 @@ namespace iTextSharp.tool.xml.css {
          * @see com.itextpdf.tool.xml.css.CssFiles#hasFiles()
          */
 
-        public bool HasFiles() {
+        virtual public bool HasFiles() {
             return this.files.Count > 0;
         }
 
@@ -87,7 +87,7 @@ namespace iTextSharp.tool.xml.css {
          * </ul>
          */
 
-        public IDictionary<String, String> GetCSS(Tag t) {
+        virtual public IDictionary<String, String> GetCSS(Tag t) {
             IDictionary<String, String> aggregatedProps = new Dictionary<String, String>();
             IDictionary<String, Object> childSelectors = select.CreateAllSelectors(t);
             foreach (String selector in childSelectors.Keys)
@@ -102,14 +102,14 @@ namespace iTextSharp.tool.xml.css {
          * @param selector the selector to search for.
          */
 
-        public void PopulateCss(IDictionary<String, String> aggregatedProps, String selector) {
+        virtual public void PopulateCss(IDictionary<String, String> aggregatedProps, String selector) {
             foreach (ICssFile cssFile in this.files)
             {
                 PopulateOneCss(cssFile, aggregatedProps, selector);
             }
         }
 
-        public void PopulateOneCss(ICssFile cssFile, IDictionary<String, String> aggregatedProps, String selector)
+        virtual public void PopulateOneCss(ICssFile cssFile, IDictionary<String, String> aggregatedProps, String selector)
         {
             IDictionary<String, String> t = cssFile.Get(selector);
             IDictionary<String, String> css = new Dictionary<String, String>();
@@ -159,13 +159,13 @@ namespace iTextSharp.tool.xml.css {
             CssUtils.MapPutAll(aggregatedProps, css);
         }
 
-        public void Add(ICssFile css) {
+        virtual public void Add(ICssFile css) {
             if (css != null) {
                 this.files.Add(css);
             }
         }
 
-        public void Clear() {
+        virtual public void Clear() {
             for (int k = 0; k < files.Count; ++k) {
                 if (!files[k].IsPersistent()) {
                     files.RemoveAt(k);

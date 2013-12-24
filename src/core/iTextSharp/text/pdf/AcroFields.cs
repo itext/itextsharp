@@ -240,7 +240,7 @@ namespace iTextSharp.text.pdf {
          * @param fieldName the fully qualified field name
          * @return the list of names or <CODE>null</CODE> if the field does not exist
          */
-        public String[] GetAppearanceStates(String fieldName) {
+        virtual public String[] GetAppearanceStates(String fieldName) {
             if (!fields.ContainsKey(fieldName))
                 return null;
             Item fd = fields[fieldName];
@@ -324,7 +324,7 @@ namespace iTextSharp.text.pdf {
         * @param fieldName the field name
         * @return the list of export option values from fields of type list or combo
         */    
-        public String[] GetListOptionExport(String fieldName) {
+        virtual public String[] GetListOptionExport(String fieldName) {
             return GetListOption(fieldName, 0);
         }
         
@@ -335,7 +335,7 @@ namespace iTextSharp.text.pdf {
         * @param fieldName the field name
         * @return the list of export option values from fields of type list or combo
         */    
-        public String[] GetListOptionDisplay(String fieldName) {
+        virtual public String[] GetListOptionDisplay(String fieldName) {
             return GetListOption(fieldName, 1);
         }
         
@@ -360,7 +360,7 @@ namespace iTextSharp.text.pdf {
         * @param displayValues the display values
         * @return <CODE>true</CODE> if the operation succeeded, <CODE>false</CODE> otherwise
         */    
-        public bool SetListOption(String fieldName, String[] exportValues, String[] displayValues) {
+        virtual public bool SetListOption(String fieldName, String[] exportValues, String[] displayValues) {
             if (exportValues == null && displayValues == null)
                 return false;
             if (exportValues != null && displayValues != null && exportValues.Length != displayValues.Length)
@@ -402,7 +402,7 @@ namespace iTextSharp.text.pdf {
         * @param fieldName the field name
         * @return the field type
         */    
-        public int GetFieldType(String fieldName) {
+        virtual public int GetFieldType(String fieldName) {
             Item fd = GetFieldItem(fieldName);
             if (fd == null)
                 return FIELD_TYPE_NONE;
@@ -442,7 +442,7 @@ namespace iTextSharp.text.pdf {
         * Export the fields as a FDF.
         * @param writer the FDF writer
         */    
-        public void ExportAsFdf(FdfWriter writer) {
+        virtual public void ExportAsFdf(FdfWriter writer) {
             foreach (KeyValuePair<string,Item> entry in fields) {
                 Item item = entry.Value;
                 string name = entry.Key;
@@ -465,7 +465,7 @@ namespace iTextSharp.text.pdf {
         * @return <CODE>true</CODE> if the renaming was successful, <CODE>false</CODE>
         * otherwise
         */    
-        public bool RenameField(String oldName, String newName) {
+        virtual public bool RenameField(String oldName, String newName) {
             int idx1 = oldName.LastIndexOf('.') + 1;
             int idx2 = newName.LastIndexOf('.') + 1;
             if (idx1 != idx2)
@@ -533,7 +533,7 @@ namespace iTextSharp.text.pdf {
             return ret;
         }
         
-        public void DecodeGenericDictionary(PdfDictionary merged, BaseField tx) {
+        virtual public void DecodeGenericDictionary(PdfDictionary merged, BaseField tx) {
             int flags = 0;
             // the text size and color
             PdfString da = merged.GetAsString(PdfName.DA);
@@ -791,7 +791,7 @@ namespace iTextSharp.text.pdf {
          * @return The rich value if present, or null.
          * @since 5.0.6
          */
-        public String GetFieldRichValue(String name) {
+        virtual public String GetFieldRichValue(String name) {
             if (xfa.XfaPresent) {
                 return null;
             }
@@ -817,7 +817,7 @@ namespace iTextSharp.text.pdf {
         * @param name the fully qualified field name
         * @return the field value
         */    
-        public String GetField(String name) {
+        virtual public String GetField(String name) {
             if (xfa.XfaPresent) {
                 name = xfa.FindFieldName(name, this);
                 if (name == null)
@@ -884,7 +884,7 @@ namespace iTextSharp.text.pdf {
         * @return the field value
         * @since 2.1.3
         */    
-        public String[] GetListSelection(String name) {
+        virtual public String[] GetListSelection(String name) {
             String[] ret;
             String s = GetField(name);
             if (s == null) {
@@ -927,7 +927,7 @@ namespace iTextSharp.text.pdf {
         * Set to <CODE>null</CODE> to process all
         * @return <CODE>true</CODE> if the property exists, <CODE>false</CODE> otherwise
         */    
-        public bool SetFieldProperty(String field, String name, Object value, int[] inst) {
+        virtual public bool SetFieldProperty(String field, String name, Object value, int[] inst) {
             if (writer == null)
                 throw new Exception(MessageLocalization.GetComposedMessage("this.acrofields.instance.is.read.only"));
             if (!fields.ContainsKey(field))
@@ -1083,18 +1083,18 @@ namespace iTextSharp.text.pdf {
         * Sets a field property. Valid property names are:
         * <p>
         * <ul>
-        * <li>flags - a set of flags specifying various characteristics of the field’s widget annotation.
-        * The value of this entry replaces that of the F entry in the form’s corresponding annotation dictionary.<br>
-        * <li>setflags - a set of flags to be set (turned on) in the F entry of the form’s corresponding
+        * <li>flags - a set of flags specifying various characteristics of the fieldï¿½s widget annotation.
+        * The value of this entry replaces that of the F entry in the formï¿½s corresponding annotation dictionary.<br>
+        * <li>setflags - a set of flags to be set (turned on) in the F entry of the formï¿½s corresponding
         * widget annotation dictionary. Bits equal to 1 cause the corresponding bits in F to be set to 1.<br>
-        * <li>clrflags - a set of flags to be cleared (turned off) in the F entry of the form’s corresponding
+        * <li>clrflags - a set of flags to be cleared (turned off) in the F entry of the formï¿½s corresponding
         * widget annotation dictionary. Bits equal to 1 cause the corresponding
         * bits in F to be set to 0.<br>
         * <li>fflags - a set of flags specifying various characteristics of the field. The value
-        * of this entry replaces that of the Ff entry in the form’s corresponding field dictionary.<br>
-        * <li>setfflags - a set of flags to be set (turned on) in the Ff entry of the form’s corresponding
+        * of this entry replaces that of the Ff entry in the formï¿½s corresponding field dictionary.<br>
+        * <li>setfflags - a set of flags to be set (turned on) in the Ff entry of the formï¿½s corresponding
         * field dictionary. Bits equal to 1 cause the corresponding bits in Ff to be set to 1.<br>
-        * <li>clrfflags - a set of flags to be cleared (turned off) in the Ff entry of the form’s corresponding
+        * <li>clrfflags - a set of flags to be cleared (turned off) in the Ff entry of the formï¿½s corresponding
         * field dictionary. Bits equal to 1 cause the corresponding bits in Ff
         * to be set to 0.<br>
         * </ul>
@@ -1105,7 +1105,7 @@ namespace iTextSharp.text.pdf {
         * Set to <CODE>null</CODE> to process all
         * @return <CODE>true</CODE> if the property exists, <CODE>false</CODE> otherwise
         */    
-        public bool SetFieldProperty(String field, String name, int value, int[] inst) {
+        virtual public bool SetFieldProperty(String field, String name, int value, int[] inst) {
             if (writer == null)
                 throw new Exception(MessageLocalization.GetComposedMessage("this.acrofields.instance.is.read.only"));
             if (!fields.ContainsKey(field))
@@ -1202,7 +1202,7 @@ namespace iTextSharp.text.pdf {
         * @throws java.io.IOException on error
         * @throws com.lowagie.text.DocumentException o error
         */
-        public void MergeXfaData(XmlNode n) {
+        virtual public void MergeXfaData(XmlNode n) {
             XfaForm.Xml2SomDatasets data = new XfaForm.Xml2SomDatasets(n);
             foreach (String name in data.Order) {
                 String text = XfaForm.GetNodeText((XmlNode)data.Name2Node[name]);
@@ -1215,7 +1215,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @throws DocumentException on error
         */    
-        public void SetFields(FdfReader fdf) {
+        virtual public void SetFields(FdfReader fdf) {
             Dictionary<String, PdfDictionary> fd = fdf.Fields;
             foreach (string f in fd.Keys) {
                 String v = fdf.GetFieldValue(f);
@@ -1230,7 +1230,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         */
         
-        public void SetFields(XfdfReader xfdf) {
+        virtual public void SetFields(XfdfReader xfdf) {
             Dictionary<String, string> fd = xfdf.Fields;
             foreach (string f in fd.Keys) {
                 String v = xfdf.GetFieldValue(f);
@@ -1257,7 +1257,7 @@ namespace iTextSharp.text.pdf {
         * @return <CODE>true</CODE> if the field was found and changed,
         * <CODE>false</CODE> otherwise
         */    
-        public bool RegenerateField(String name) {
+        virtual public bool RegenerateField(String name) {
     	    String value = GetField(name);
             return SetField(name, value, value);
         }
@@ -1270,7 +1270,7 @@ namespace iTextSharp.text.pdf {
         * @return <CODE>true</CODE> if the field was found and changed,
         * <CODE>false</CODE> otherwise
         */    
-        public bool SetField(String name, String value) {
+        virtual public bool SetField(String name, String value) {
             return SetField(name, value, null);
         }
         
@@ -1286,7 +1286,7 @@ namespace iTextSharp.text.pdf {
          * @throws IOException 
          * @since 5.0.6
          */
-        public bool SetFieldRichValue(String name, String richValue) {
+        virtual public bool SetFieldRichValue(String name, String richValue) {
             if (writer == null) {
                 // can't set field values: fail
                 throw new DocumentException(MessageLocalization.GetComposedMessage("this.acrofields.instance.is.read.only"));
@@ -1336,7 +1336,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @throws DocumentException on error
         */    
-        public bool SetField(String name, String value, String display) {
+        virtual public bool SetField(String name, String value, String display) {
             if (writer == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("this.acrofields.instance.is.read.only"));
             if (xfa.XfaPresent) {
@@ -1468,7 +1468,7 @@ namespace iTextSharp.text.pdf {
         * @return   true only if the field value was changed
         * @since 2.1.4
         */
-        public bool SetListSelection(String name, String[] value) {
+        virtual public bool SetListSelection(String name, String[] value) {
             Item item = GetFieldItem(name);
             if (item == null)
                 return false;
@@ -1518,7 +1518,7 @@ namespace iTextSharp.text.pdf {
         * the value is an instance of <CODE>AcroFields.Item</CODE>.
         * @return all the fields
         */    
-        public IDictionary<String, Item> Fields {
+        virtual public IDictionary<String, Item> Fields {
             get {
                 return fields;
             }
@@ -1530,7 +1530,7 @@ namespace iTextSharp.text.pdf {
         * @return the field structure or <CODE>null</CODE> if the field
         * does not exist
         */    
-        public Item GetFieldItem(String name) {
+        virtual public Item GetFieldItem(String name) {
             if (xfa.XfaPresent) {
                 name = xfa.FindFieldName(name, this);
                 if (name == null)
@@ -1546,7 +1546,7 @@ namespace iTextSharp.text.pdf {
         * @param name the name of the field
         * @return the long field name
         */    
-        public String GetTranslatedFieldName(String name) {
+        virtual public String GetTranslatedFieldName(String name) {
             if (xfa.XfaPresent) {
                 String namex = xfa.FindFieldName(name, this);
                 if (namex != null)
@@ -1562,7 +1562,7 @@ namespace iTextSharp.text.pdf {
         * @param name the field name
         * @return the positions or <CODE>null</CODE> if field does not exist
         */    
-        public IList<FieldPosition> GetFieldPositions(String name) {
+        virtual public IList<FieldPosition> GetFieldPositions(String name) {
             Item item = GetFieldItem(name);
             if (item == null)
                 return null;
@@ -1634,7 +1634,7 @@ namespace iTextSharp.text.pdf {
         * @param page the page to remove the fields from
         * @return <CODE>true</CODE> if any field was removed, <CODE>false otherwise</CODE>
         */    
-        public bool RemoveFieldsFromPage(int page) {
+        virtual public bool RemoveFieldsFromPage(int page) {
             if (page < 1)
                 return false;
             String[] names = new String[fields.Count];
@@ -1655,7 +1655,7 @@ namespace iTextSharp.text.pdf {
         * @param page the page to remove the field from or -1 to remove it from all the pages
         * @return <CODE>true</CODE> if the field exists, <CODE>false otherwise</CODE>
         */    
-        public bool RemoveField(String name, int page) {
+        virtual public bool RemoveField(String name, int page) {
             Item item = GetFieldItem(name);
             if (item == null)
                 return false;
@@ -1711,7 +1711,7 @@ namespace iTextSharp.text.pdf {
         * @param name the field name
         * @return <CODE>true</CODE> if the field exists, <CODE>false otherwise</CODE>
         */    
-        public bool RemoveField(String name) {
+        virtual public bool RemoveField(String name) {
             return RemoveField(name, -1);
         }
         
@@ -1721,7 +1721,7 @@ namespace iTextSharp.text.pdf {
         * controlled. The default is <CODE>true</CODE>.
         * @param generateAppearances the option to generate appearances
         */
-        public bool GenerateAppearances {
+        virtual public bool GenerateAppearances {
             set {
                 generateAppearances = value;
                 PdfDictionary top = reader.Catalog.GetAsDict(PdfName.ACROFORM);
@@ -1769,7 +1769,7 @@ namespace iTextSharp.text.pdf {
             * @param value      if value is null, the key will be removed
             * @param writeFlags ORed together WRITE_* flags
             */
-            public void WriteToAll(PdfName key, PdfObject value, int writeFlags) {
+            virtual public void WriteToAll(PdfName key, PdfObject value, int writeFlags) {
                 int i;
                 PdfDictionary curDict = null;
                 if ((writeFlags & WRITE_MERGED) != 0) {
@@ -1798,7 +1798,7 @@ namespace iTextSharp.text.pdf {
             * @since 2.1.5
             * @param writeFlags WRITE_MERGED is ignored
             */
-            public void MarkUsed( AcroFields parentFields, int writeFlags ) {
+            virtual public void MarkUsed( AcroFields parentFields, int writeFlags ) {
                 if ((writeFlags & WRITE_VALUE) != 0) {
                     for (int i = 0; i < Size; ++i) {
                         parentFields.MarkUsed( GetValue( i ) );
@@ -1856,7 +1856,7 @@ namespace iTextSharp.text.pdf {
             * @since 2.1.5
             * @return number of instances
             */
-            public int Size {
+            virtual public int Size {
                 get {
                     return values.Count;
                 }
@@ -1885,7 +1885,7 @@ namespace iTextSharp.text.pdf {
             * @param idx instance index
             * @return dictionary storing this instance's value.  It may be shared across instances.
             */
-            public PdfDictionary GetValue(int idx) {
+            virtual public PdfDictionary GetValue(int idx) {
                 return values[idx];
             }
 
@@ -1906,7 +1906,7 @@ namespace iTextSharp.text.pdf {
             * @param idx instance index
             * @return The dictionary found in the appropriate page's Annot array.
             */
-            public PdfDictionary GetWidget(int idx) {
+            virtual public PdfDictionary GetWidget(int idx) {
                 return widgets[idx];
             }
 
@@ -1927,7 +1927,7 @@ namespace iTextSharp.text.pdf {
             * @param idx instance index
             * @return reference to the given field instance
             */
-            public PdfIndirectReference GetWidgetRef(int idx) {
+            virtual public PdfIndirectReference GetWidgetRef(int idx) {
                 return widget_refs[idx];
             }
 
@@ -1951,7 +1951,7 @@ namespace iTextSharp.text.pdf {
             * @param idx  instance index
             * @return the merged dictionary for the given instance
             */
-            public PdfDictionary GetMerged(int idx) {
+            virtual public PdfDictionary GetMerged(int idx) {
                 return merged[idx];
             }
 
@@ -1972,7 +1972,7 @@ namespace iTextSharp.text.pdf {
             * @param idx
             * @return remember, pages are "1-indexed", not "0-indexed" like field instances.
             */
-            public int GetPage(int idx) {
+            virtual public int GetPage(int idx) {
                 return page[idx];
             }
 
@@ -2003,7 +2003,7 @@ namespace iTextSharp.text.pdf {
             * @param idx
             * @return tab index of the given field instance
             */
-            public int GetTabOrder(int idx) {
+            virtual public int GetTabOrder(int idx) {
                 return tabOrder[idx];
             }
 
@@ -2028,7 +2028,7 @@ namespace iTextSharp.text.pdf {
                     hits[inst[k]] = 1;
             }
             
-            public bool IsHit(int n) {
+            virtual public bool IsHit(int n) {
                 if (hits == null)
                     return true;
                 return hits.ContainsKey(n);
@@ -2041,7 +2041,7 @@ namespace iTextSharp.text.pdf {
          * @return true if the field was signed, false if the field was not signed or not found
          * @since 5.0.5
          */
-        public bool ClearSignatureField(String name) {
+        virtual public bool ClearSignatureField(String name) {
             sigNames = null;
             FindSignatureNames();
             if (!sigNames.ContainsKey(name))
@@ -2116,7 +2116,7 @@ namespace iTextSharp.text.pdf {
         * Gets the field names that have signatures and are signed.
         * @return the field names that have signatures and are signed
         */    
-        public List<string> GetSignatureNames() {
+        virtual public List<string> GetSignatureNames() {
             FindSignatureNames();
             return new List<string>(orderedSignatureNames);
         }
@@ -2125,7 +2125,7 @@ namespace iTextSharp.text.pdf {
         * Gets the field names that have blank signatures.
         * @return the field names that have blank signatures
         */    
-        public List<string> GetBlankSignatureNames() {
+        virtual public List<string> GetBlankSignatureNames() {
             FindSignatureNames();
             List<String> sigs = new List<String>();
             foreach (KeyValuePair<string,Item> entry in fields) {
@@ -2146,7 +2146,7 @@ namespace iTextSharp.text.pdf {
         * @return the signature dictionary keyed by /V or <CODE>null</CODE> if the field is not
         * a signature
         */    
-        public PdfDictionary GetSignatureDictionary(String name) {
+        virtual public PdfDictionary GetSignatureDictionary(String name) {
             FindSignatureNames();
             name = GetTranslatedFieldName(name);
             if (!sigNames.ContainsKey(name))
@@ -2163,7 +2163,7 @@ namespace iTextSharp.text.pdf {
          * @param name the field name
          * @return a reference to the /N entry of the /AP dictionary or <CODE>null</CODE> if the field is not found
          */
-        public PdfIndirectReference GetNormalAppearance(String name) {
+        virtual public PdfIndirectReference GetNormalAppearance(String name) {
             GetSignatureNames();
             name = GetTranslatedFieldName(name);
             Item item = fields[name];
@@ -2186,7 +2186,7 @@ namespace iTextSharp.text.pdf {
         * @return <CODE>true</CODE> if the signature covers the entire document,
         * <CODE>false</CODE> otherwise
         */    
-        public bool SignatureCoversWholeDocument(String name) {
+        virtual public bool SignatureCoversWholeDocument(String name) {
             FindSignatureNames();
             name = GetTranslatedFieldName(name);
             if (!sigNames.ContainsKey(name))
@@ -2221,7 +2221,7 @@ namespace iTextSharp.text.pdf {
         * @param name the signature field name
         * @return a <CODE>PdfPKCS7</CODE> class to continue the verification
         */    
-        public PdfPKCS7 VerifySignature(String name) {
+        virtual public PdfPKCS7 VerifySignature(String name) {
             PdfDictionary v = GetSignatureDictionary(name);
             if (v == null)
                 return null;
@@ -2276,7 +2276,7 @@ namespace iTextSharp.text.pdf {
         * Gets the total number of revisions this document has.
         * @return the total number of revisions
         */
-        public int TotalRevisions {
+        virtual public int TotalRevisions {
             get {
                 FindSignatureNames();
                 return this.totalRevisions;
@@ -2288,7 +2288,7 @@ namespace iTextSharp.text.pdf {
         * @param field the signature field name
         * @return the revision or zero if it's not a signature field
         */    
-        public int GetRevision(String field) {
+        virtual public int GetRevision(String field) {
             FindSignatureNames();
             field = GetTranslatedFieldName(field);
             if (!sigNames.ContainsKey(field))
@@ -2303,7 +2303,7 @@ namespace iTextSharp.text.pdf {
         * it's not a signature field
         * @throws IOException on error
         */    
-        public Stream ExtractRevision(String field) {
+        virtual public Stream ExtractRevision(String field) {
             FindSignatureNames();
             field = GetTranslatedFieldName(field);
             if (!sigNames.ContainsKey(field))
@@ -2339,7 +2339,7 @@ namespace iTextSharp.text.pdf {
         * </pre>
         * @param fieldCache an HasMap that will carry the cached appearances
         */
-        public IDictionary<String, TextField> FieldCache {
+        virtual public IDictionary<String, TextField> FieldCache {
             set {
                 fieldCache = value;
             }
@@ -2359,7 +2359,7 @@ namespace iTextSharp.text.pdf {
         * @param extraMarginLeft the extra marging left
         * @param extraMarginTop the extra margin top
         */    
-        public void SetExtraMargin(float extraMarginLeft, float extraMarginTop) {
+        virtual public void SetExtraMargin(float extraMarginLeft, float extraMarginTop) {
             this.extraMarginLeft = extraMarginLeft;
             this.extraMarginTop = extraMarginTop;
         }
@@ -2369,7 +2369,7 @@ namespace iTextSharp.text.pdf {
         * font doesn't contain the needed glyphs.
         * @param font the font
         */
-        public void AddSubstitutionFont(BaseFont font) {
+        virtual public void AddSubstitutionFont(BaseFont font) {
             if (substitutionFonts == null)
                 substitutionFonts = new List<BaseFont>();
             substitutionFonts.Add(font);
@@ -2409,7 +2409,7 @@ namespace iTextSharp.text.pdf {
         }
 
         private class ISorterComparator : IComparer<Object[]> {        
-            public int Compare(Object[] o1, Object[] o2) {
+            virtual public int Compare(Object[] o1, Object[] o2) {
                 int n1 = ((int[])o1[1])[0];
                 int n2 = ((int[])o2[1])[0];
                 return n1 - n2;
@@ -2421,7 +2421,7 @@ namespace iTextSharp.text.pdf {
         * font doesn't contain the needed glyphs.
         * @param substitutionFonts the list
         */
-        public List<BaseFont> SubstitutionFonts {
+        virtual public List<BaseFont> SubstitutionFonts {
             set {
                 substitutionFonts = value;
             }
@@ -2434,7 +2434,7 @@ namespace iTextSharp.text.pdf {
         * Gets the XFA form processor.
         * @return the XFA form processor
         */
-        public XfaForm Xfa {
+        virtual public XfaForm Xfa {
             get {
                 return xfa;
             }
@@ -2443,7 +2443,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Removes the XFA stream from the document.
         */
-        public void RemoveXfa() {
+        virtual public void RemoveXfa() {
             PdfDictionary root = reader.Catalog;
             PdfDictionary acroform = root.GetAsDict(PdfName.ACROFORM);
             acroform.Remove(PdfName.XFA);
@@ -2460,7 +2460,7 @@ namespace iTextSharp.text.pdf {
         * @param field the field name that should be a pushbutton
         * @return a new pushbutton or <CODE>null</CODE> if the field is not a pushbutton
         */
-        public PushbuttonField GetNewPushbuttonFromField(String field) {
+        virtual public PushbuttonField GetNewPushbuttonFromField(String field) {
             return GetNewPushbuttonFromField(field, 0);
         }
 
@@ -2472,7 +2472,7 @@ namespace iTextSharp.text.pdf {
         * @param order the field order in fields with same name
         * @return a new pushbutton or <CODE>null</CODE> if the field is not a pushbutton
         */
-        public PushbuttonField GetNewPushbuttonFromField(String field, int order) {
+        virtual public PushbuttonField GetNewPushbuttonFromField(String field, int order) {
             if (GetFieldType(field) != FIELD_TYPE_PUSHBUTTON)
                 return null;
             Item item = GetFieldItem(field);
@@ -2536,7 +2536,7 @@ namespace iTextSharp.text.pdf {
         * @return <CODE>true</CODE> if the field was replaced, <CODE>false</CODE> if the field
         * was not a pushbutton
         */
-        public bool ReplacePushbuttonField(String field, PdfFormField button) {
+        virtual public bool ReplacePushbuttonField(String field, PdfFormField button) {
             return ReplacePushbuttonField(field, button, 0);
         }
         
@@ -2550,7 +2550,7 @@ namespace iTextSharp.text.pdf {
         * @return <CODE>true</CODE> if the field was replaced, <CODE>false</CODE> if the field
         * was not a pushbutton
         */
-        public bool ReplacePushbuttonField(String field, PdfFormField button, int order) {
+        virtual public bool ReplacePushbuttonField(String field, PdfFormField button, int order) {
             if (GetFieldType(field) != FIELD_TYPE_PUSHBUTTON)
                 return false;
             Item item = GetFieldItem(field);

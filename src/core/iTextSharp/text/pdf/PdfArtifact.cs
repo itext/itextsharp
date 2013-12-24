@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using iTextSharp.text.pdf.interfaces;
 /*
  * $Id: PdfArtifact.java 5830 2013-05-31 09:29:15Z blowagie $
@@ -52,36 +52,36 @@ namespace iTextSharp.text.pdf
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
         protected AccessibleElementId id = new AccessibleElementId();
 
-        public PdfObject GetAccessibleAttribute(PdfName key) {
+        virtual public PdfObject GetAccessibleAttribute(PdfName key) {
             if (accessibleAttributes != null)
                 return accessibleAttributes[key];
             else
                 return null;
         }
 
-        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+        virtual public void SetAccessibleAttribute(PdfName key, PdfObject value) {
             if (accessibleAttributes == null)
                 accessibleAttributes = new Dictionary<PdfName, PdfObject>();
             accessibleAttributes[key] = value;
         }
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+        virtual public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             return accessibleAttributes;
         }
 
-        public PdfName Role
+        virtual public PdfName Role
         {
             get { return role; }
             set { role = value; }
         }
 
-        public AccessibleElementId ID
+        virtual public AccessibleElementId ID
         {
             get { return id; }
             set { id = value; }
         }
 
-        public PdfString Type {
+        virtual public PdfString Type {
             get {
                 if (accessibleAttributes == null)
                     return null;
@@ -94,7 +94,7 @@ namespace iTextSharp.text.pdf
             }
         }
 
-        public PdfArray BBox {
+        virtual public PdfArray BBox {
             get {
                 if (accessibleAttributes == null)
                     return null;
@@ -107,7 +107,7 @@ namespace iTextSharp.text.pdf
             }
         }
 
-        public PdfArray Attached {
+        virtual public PdfArray Attached {
             get {
                 if(accessibleAttributes == null)
                     return null;

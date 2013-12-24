@@ -133,7 +133,7 @@ namespace iTextSharp.text.pdf {
         *
         * @return width the bounding width
         */
-        public float Width {
+        virtual public float Width {
             get {
                 return bBox.Width;
             }
@@ -150,7 +150,7 @@ namespace iTextSharp.text.pdf {
         * @return heigth the bounding height
         */
         
-        public float Height {
+        virtual public float Height {
             get {
                 return bBox.Height;
             }
@@ -161,7 +161,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public Rectangle BoundingBox {
+        virtual public Rectangle BoundingBox {
             get {
                 return bBox;
             }
@@ -174,7 +174,7 @@ namespace iTextSharp.text.pdf {
         * Gets the layer this template belongs to.
         * @return the layer this template belongs to or <code>null</code> for no layer defined
         */
-        public IPdfOCG Layer {
+        virtual public IPdfOCG Layer {
             get {
                 return layer;
             }
@@ -183,7 +183,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public void SetMatrix(float a, float b, float c, float d, float e, float f) {
+        virtual public void SetMatrix(float a, float b, float c, float d, float e, float f) {
             matrix = new PdfArray();
             matrix.Add(new PdfNumber(a));
             matrix.Add(new PdfNumber(b));
@@ -205,7 +205,7 @@ namespace iTextSharp.text.pdf {
         * @return the indirect reference to this template
         */
         
-        public PdfIndirectReference IndirectReference {
+        virtual public PdfIndirectReference IndirectReference {
             get {
     	        // uncomment the null check as soon as we're sure all examples still work
     	        if (thisReference == null /* && writer != null */) {
@@ -215,11 +215,11 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public void BeginVariableText() {
+        virtual public void BeginVariableText() {
             content.Append("/Tx BMC ");
         }
         
-        public void EndVariableText() {
+        virtual public void EndVariableText() {
             content.Append("EMC ");
         }
         
@@ -271,7 +271,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public int Type {
+        virtual public int Type {
             get {
                 return type;
             }
@@ -299,7 +299,7 @@ namespace iTextSharp.text.pdf {
          *            a PdfDictionary with additional information.
          * @since 5.1.0
          */
-        public PdfDictionary Additional {
+        virtual public PdfDictionary Additional {
             set {
                 additional = value;
             }
@@ -312,19 +312,19 @@ namespace iTextSharp.text.pdf {
             get { return pageReference ?? writer.CurrentPage; }
         }
 
-        public PdfIndirectReference PageReference
+        virtual public PdfIndirectReference PageReference
         {
             get { return pageReference; }
             set { pageReference = value; }
         }
 
-        public bool ContentTagged
+        virtual public bool ContentTagged
         {
             get { return contentTagged; }
             set { contentTagged = value; }
         }
 
-        public PdfObject GetAccessibleAttribute(PdfName key) {
+        virtual public PdfObject GetAccessibleAttribute(PdfName key) {
             if (accessibleAttributes != null)
             {
                 PdfObject obj;
@@ -335,22 +335,22 @@ namespace iTextSharp.text.pdf {
                 return null;
         }
 
-        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+        virtual public void SetAccessibleAttribute(PdfName key, PdfObject value) {
             if (accessibleAttributes == null)
                 accessibleAttributes = new Dictionary<PdfName, PdfObject>();
             accessibleAttributes[key] = value;
         }
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+        virtual public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             return accessibleAttributes;
         }
 
-        public PdfName Role {
+        virtual public PdfName Role {
             get { return role; }
             set { role = value; }
         }
 
-        public AccessibleElementId ID {
+        virtual public AccessibleElementId ID {
             get {
                 if (id == null)
                     id = new AccessibleElementId();

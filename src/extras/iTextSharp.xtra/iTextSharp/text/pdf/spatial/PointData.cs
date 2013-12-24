@@ -76,7 +76,7 @@ namespace iTextSharp.text.pdf.spatial {
          * @param value an XPTS value
          * @param identifier
          */
-        public void AddXPTSValue(PdfNumber value, PtIdentifier identifier) {
+        virtual public void AddXPTSValue(PdfNumber value, PtIdentifier identifier) {
             xpts.Add(value);
             names.Add(DecodeUnits.Decode(identifier));
         }

@@ -443,7 +443,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        internal protected void AlterContents() {
+        virtual internal protected void AlterContents() {
             foreach (PageStamp ps in pagesToContent.Values) {
                 PdfDictionary pageN = ps.pageN;
                 MarkUsed(pageN);
@@ -542,7 +542,7 @@ namespace iTextSharp.text.pdf {
         * @param openFile
         * @throws IOException
         */
-        public void RegisterReader(PdfReader reader, bool openFile) {
+        virtual public void RegisterReader(PdfReader reader, bool openFile) {
             if (readers2intrefs.ContainsKey(reader))
                 return;
             readers2intrefs[reader] = new IntHashtable();
@@ -556,7 +556,7 @@ namespace iTextSharp.text.pdf {
         /**
         * @param reader
         */
-        public void UnRegisterReader(PdfReader reader) {
+        virtual public void UnRegisterReader(PdfReader reader) {
             if (!readers2intrefs.ContainsKey(reader))
                 return;
             readers2intrefs.Remove(reader);
@@ -600,7 +600,7 @@ namespace iTextSharp.text.pdf {
         * @param fdf
         * @throws IOException
         */
-        public void AddComments(FdfReader fdf) {
+        virtual public void AddComments(FdfReader fdf) {
             if (readers2intrefs.ContainsKey(fdf))
                 return;
             PdfDictionary catalog = fdf.Catalog;
@@ -850,7 +850,7 @@ namespace iTextSharp.text.pdf {
             return true;
         }
         
-        internal protected void FlatFields() {
+        virtual internal protected void FlatFields() {
             if (append)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("field.flattening.is.not.supported.in.append.mode"));
             GetAcroFields();
@@ -1023,7 +1023,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected void FlatFreeTextFields() {
+        virtual protected void FlatFreeTextFields() {
             if (append)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("freetext.flattening.is.not.supported.in.append.mode"));
             
@@ -1140,7 +1140,7 @@ namespace iTextSharp.text.pdf {
             MarkUsed(fields);
         }
         
-        internal protected void AddFieldResources() {
+        virtual internal protected void AddFieldResources() {
             if (fieldTemplates.Count == 0)
                 return;
             PdfDictionary catalog = reader.Catalog;
@@ -1310,7 +1310,7 @@ namespace iTextSharp.text.pdf {
             MarkUsed(catalog);
         }
         
-        internal protected void SetJavaScript() {
+        virtual internal protected void SetJavaScript() {
             Dictionary<string,PdfObject> djs = pdf.GetDocumentLevelJS();
             if (djs.Count == 0)
                 return;
@@ -1326,7 +1326,7 @@ namespace iTextSharp.text.pdf {
             names.Put(PdfName.JAVASCRIPT, AddToBody(tree).IndirectReference);
         }
             
-        protected void AddFileAttachments() {
+        virtual protected void AddFileAttachments() {
             Dictionary<string,PdfObject> fs = pdf.GetDocumentFileAttachment();
             if (fs.Count == 0)
                 return;
@@ -1369,7 +1369,7 @@ namespace iTextSharp.text.pdf {
             catalog.Put( PdfName.COLLECTION, collection );
         }
 
-        internal protected void SetOutlines() {
+        virtual internal protected void SetOutlines() {
             if (newBookmarks == null)
                 return;
             DeleteOutlines();
@@ -1492,7 +1492,7 @@ namespace iTextSharp.text.pdf {
             MarkUsed(pg);
         }
 
-        public void MarkUsed(PdfObject obj) {
+        virtual public void MarkUsed(PdfObject obj) {
             if (append && obj != null) {
                 PRIndirectReference ref_p = null;
                 if (obj.Type == PdfObject.INDIRECT)
@@ -1504,7 +1504,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected internal void MarkUsed(int num) {
+        virtual protected internal void MarkUsed(int num) {
             if (append)
                 marked[num] = 1;
         }
@@ -1586,7 +1586,7 @@ namespace iTextSharp.text.pdf {
         * Note that the original OCProperties of the existing document can contain more information.
         * @since    2.1.2
         */
-        protected void ReadOCProperties() {
+        virtual protected void ReadOCProperties() {
             if (documentOCG.Count != 0) {
                 return;
             }
@@ -1685,7 +1685,7 @@ namespace iTextSharp.text.pdf {
         * @return   a Map with all the PdfLayers in the document (and the name/title of the layer as key)
         * @since    2.1.2
         */
-        public Dictionary<string,PdfLayer> GetPdfLayers() {
+        virtual public Dictionary<string,PdfLayer> GetPdfLayers() {
             if (documentOCG.Count == 0) {
                 ReadOCProperties();
             }

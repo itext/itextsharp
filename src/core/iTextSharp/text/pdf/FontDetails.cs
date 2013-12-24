@@ -239,7 +239,7 @@ namespace iTextSharp.text.pdf {
         /** Writes the font definition to the document.
          * @param writer the <CODE>PdfWriter</CODE> of this document
          */    
-        public void WriteFont(PdfWriter writer) {
+        virtual public void WriteFont(PdfWriter writer) {
             switch (fontType) {
                 case BaseFont.FONT_TYPE_T3:
                     baseFont.WriteFont(writer, indirectReference, null);
@@ -277,7 +277,7 @@ namespace iTextSharp.text.pdf {
          * to include all.
          * @param subset new value of property subset
          */
-        public bool Subset {
+        virtual public bool Subset {
             set {
                 this.subset = value;
             }

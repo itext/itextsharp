@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text;
 using System.Xml;
 using iTextSharp.text.pdf.security;
@@ -146,11 +146,11 @@ namespace iTextSharp.text.pdf
         /**
          * Get XPath expression
          */
-        public String GetXpathExpression() {
+        virtual public String GetXpathExpression() {
             return xpathExpression;
         }
 
-        public XmlNamespaceManager GetNamespaceManager() {
+        virtual public XmlNamespaceManager GetNamespaceManager() {
             return namespaceManager;
         }
     }

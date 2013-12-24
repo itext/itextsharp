@@ -30,7 +30,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         private WorkerContextImpl workerContextImpl;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
             root = new Tag("body");
             p = new Tag("p");
@@ -70,7 +70,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         }
 
         [Test]
-        public void ListWithOneNoListMarginAndPadding() {
+        virtual public void ListWithOneNoListMarginAndPadding() {
             ListItextSharp endList = (ListItextSharp)
                 orderedUnorderedList.End(workerContextImpl, ul, listWithOne)[0];
             Assert.AreEqual(50f + 25f - 12f, ((ListItem) endList.Items[0]).SpacingBefore, 0f);
@@ -78,14 +78,14 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         }
 
         [Test]
-        public void ListWithOneNoListPaddingTop() {
+        virtual public void ListWithOneNoListPaddingTop() {
             ul.CSS["margin-top"] = "100pt";
             ListItextSharp endList = (ListItextSharp) orderedUnorderedList.End(workerContextImpl, ul, listWithOne)[0];
             Assert.AreEqual(100f + 25f - 12f, ((ListItem) endList.Items[0]).SpacingBefore, 0f);
         }
 
         [Test]
-        public void ListWithOneNoListPaddingTop2() {
+        virtual public void ListWithOneNoListPaddingTop2() {
             ul.CSS["margin-top"] = "100pt";
             ul.CSS["padding-top"] = "0pt";
             ListItextSharp endList = (ListItextSharp) orderedUnorderedList.End(workerContextImpl, ul, listWithOne)[0];
@@ -93,7 +93,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         }
 
         [Test]
-        public void ListWithOneWithListPaddingTop() {
+        virtual public void ListWithOneWithListPaddingTop() {
             ul.CSS["margin-top"] = "100pt";
             ul.CSS["padding-top"] = "25pt";
             ListItextSharp endList = (ListItextSharp) orderedUnorderedList.End(workerContextImpl, ul, listWithOne)[0];
@@ -105,7 +105,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void ListWithOneNoListPaddingBottom() {
+        virtual public void ListWithOneNoListPaddingBottom() {
             ul.CSS["margin-bottom"] = "25pt";
             ListItextSharp endList = (ListItextSharp) orderedUnorderedList.End(workerContextImpl, ul, listWithOne)[0];
             Assert.AreEqual(50f + 25f, ((ListItem) endList.Items[0]).SpacingAfter, 0f);
@@ -116,7 +116,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void ListWithOneNoListPaddingBottom2() {
+        virtual public void ListWithOneNoListPaddingBottom2() {
             ul.CSS["margin-bottom"] = "100pt";
             ul.CSS["padding-bottom"] = "0pt";
             ListItextSharp endList = (ListItextSharp) orderedUnorderedList.End(workerContextImpl, ul, listWithOne)[0];
@@ -128,7 +128,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void ListWithOneWithListPaddingBottom() {
+        virtual public void ListWithOneWithListPaddingBottom() {
             ul.CSS["margin-bottom"] = "100pt";
             ul.CSS["padding-bottom"] = "25pt";
             ListItextSharp endList = (ListItextSharp) orderedUnorderedList.End(workerContextImpl, ul, listWithOne)[0];
@@ -141,7 +141,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void ListWithTwoNoListMarginAndPadding() {
+        virtual public void ListWithTwoNoListMarginAndPadding() {
             ListItextSharp endList = (ListItextSharp) orderedUnorderedList.End(workerContextImpl, ul, listWithTwo)[0];
             Assert.AreEqual(50f + 25f - 12f, ((ListItem) endList.Items[0]).SpacingBefore, 0f);
             Assert.AreEqual(50f + 25f, ((ListItem) endList.Items[1]).SpacingAfter, 0f);
@@ -152,7 +152,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void ListWithTwoNoListPaddingTop() {
+        virtual public void ListWithTwoNoListPaddingTop() {
             ul.CSS["margin-top"] = "100pt";
             ListItextSharp endList = (ListItextSharp) orderedUnorderedList.End(workerContextImpl, ul, listWithTwo)[0];
             Assert.AreEqual(100f + 25f - 12f, ((ListItem) endList.Items[0]).SpacingBefore, 0f);
@@ -163,7 +163,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void ListWithTwoNoListPaddingTop2() {
+        virtual public void ListWithTwoNoListPaddingTop2() {
             ul.CSS["margin-top"] = "100pt";
             ul.CSS["padding-top"] = "0pt";
             ListItextSharp endList = (ListItextSharp) orderedUnorderedList.End(workerContextImpl, ul, listWithTwo)[0];
@@ -175,7 +175,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void ListWithTwoWithListPaddingTop() {
+        virtual public void ListWithTwoWithListPaddingTop() {
             ul.CSS["margin-top"] = "100pt";
             ul.CSS["padding-top"] = "25pt";
             ListItextSharp endList = (ListItextSharp) orderedUnorderedList.End(workerContextImpl, ul, listWithTwo)[0];
@@ -187,7 +187,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void ListWithTwoNoListPaddingBottom() {
+        virtual public void ListWithTwoNoListPaddingBottom() {
             ul.CSS["margin-bottom"] = "100pt";
             ListItextSharp endList = (ListItextSharp) orderedUnorderedList.End(workerContextImpl, ul, listWithTwo)[0];
             Assert.AreEqual(100f + 25f, ((ListItem) endList.Items[1]).SpacingAfter, 0f);
@@ -198,7 +198,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void ListWithTwoNoListPaddingBottom2() {
+        virtual public void ListWithTwoNoListPaddingBottom2() {
             ul.CSS["margin-bottom"] = "100pt";
             ul.CSS["padding-bottom"] = "0pt";
             ListItextSharp endList = (ListItextSharp) orderedUnorderedList.End(workerContextImpl, ul, listWithTwo)[0];
@@ -210,7 +210,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void ListWithTwoWithListPaddingBottom() {
+        virtual public void ListWithTwoWithListPaddingBottom() {
             ul.CSS["margin-bottom"] = "100pt";
             ul.CSS["padding-bottom"] = "25pt";
             ListItextSharp endList = (ListItextSharp) orderedUnorderedList.End(workerContextImpl, ul, listWithTwo)[0];
@@ -222,7 +222,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyIfStackOwner() {
+        virtual public void VerifyIfStackOwner() {
             Assert.IsTrue(orderedUnorderedList.IsStackOwner());
         }
     }

@@ -113,7 +113,7 @@ namespace iTextSharp.text.pdf.collection {
         * The relative order of the field name. Fields are sorted in ascending order.
         * @param i a number indicating the order of the field
         */
-        public int Order {
+        virtual public int Order {
             set {
                 Put(PdfName.O, new PdfNumber(value));
             }
@@ -123,7 +123,7 @@ namespace iTextSharp.text.pdf.collection {
         * Sets the initial visibility of the field.
         * @param visible   the default is true (visible)
         */
-        public bool Visible {
+        virtual public bool Visible {
             set {
                 Put(PdfName.V, new PdfBoolean(value));
             }
@@ -133,7 +133,7 @@ namespace iTextSharp.text.pdf.collection {
         * Indication if the field value should be editable in the viewer.
         * @param editable  the default is false (not editable)
         */
-        public bool Editable {
+        virtual public bool Editable {
             set {
                 Put(PdfName.E, new PdfBoolean(value));
             }
@@ -142,7 +142,7 @@ namespace iTextSharp.text.pdf.collection {
         /**
         * Checks if the type of the field is suitable for a Collection Item.
         */
-        public bool IsCollectionItem() {
+        virtual public bool IsCollectionItem() {
             switch (fieldType) {
             case TEXT:
             case DATE:
@@ -157,7 +157,7 @@ namespace iTextSharp.text.pdf.collection {
         * Returns a PdfObject that can be used as the value of a Collection Item.
         * @param String    value   the value that has to be changed into a PdfObject (PdfString, PdfDate or PdfNumber) 
         */
-        public PdfObject GetValue(String v) {
+        virtual public PdfObject GetValue(String v) {
             switch (fieldType) {
             case TEXT:
                 return new PdfString(v, PdfObject.TEXT_UNICODE);

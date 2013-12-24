@@ -69,25 +69,25 @@ namespace iTextSharp.text.pdf {
             cblack = Normalize(floatBlack);
         }
     
-        public float Cyan {
+        virtual public float Cyan {
             get {
                 return ccyan;
             }
         }
 
-        public float Magenta {
+        virtual public float Magenta {
             get {
                 return cmagenta;
             }
         }
 
-        public float Yellow {
+        virtual public float Yellow {
             get {
                 return cyellow;
             }
         }
 
-        public float Black {
+        virtual public float Black {
             get {
                 return cblack;
             }

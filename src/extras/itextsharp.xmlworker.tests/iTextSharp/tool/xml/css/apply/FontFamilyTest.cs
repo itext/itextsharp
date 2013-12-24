@@ -13,7 +13,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         private ChunkCssApplier applier = new ChunkCssApplier();
 
         [Test]
-        public void ResolveSingleQuotedFontFamily() {
+        virtual public void ResolveSingleQuotedFontFamily() {
             Tag t = new Tag(null);
             t.CSS["color"] = "#000000";
             t.CSS["font-family"] = "'Helvetica'";
@@ -24,7 +24,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveDoubleQuotedFontFamily() {
+        virtual public void ResolveDoubleQuotedFontFamily() {
             Tag t = new Tag(null);
             t.CSS["color"] = "#000000";
             t.CSS["font-family"] = "\"Helvetica\"";

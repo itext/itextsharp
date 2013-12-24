@@ -252,7 +252,7 @@ namespace iTextSharp.xmp.impl {
         #region IComparable Members
 
         /// <seealso cref= Comparable#compareTo(Object)  </seealso>
-        public int CompareTo(object xmpNode) {
+        virtual public int CompareTo(object xmpNode) {
             if (Options.SchemaNode) {
                 return _value.CompareTo(((XmpNode) xmpNode).Value);
             }

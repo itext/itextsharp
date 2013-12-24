@@ -64,14 +64,14 @@ namespace iTextSharp.text {
          *
          * @see com.itextpdf.text.Element#process(com.itextpdf.text.ElementListener)
          */
-        public bool Process(IElementListener listener) {
+        virtual public bool Process(IElementListener listener) {
             throw new NotSupportedException();
         }
 
         /**
          * @return {@link Element#WRITABLE_DIRECT}
          */
-        public int Type {
+        virtual public int Type {
             get {
                 return Element.WRITABLE_DIRECT;
             }
@@ -82,7 +82,7 @@ namespace iTextSharp.text {
          *
          * @see com.itextpdf.text.Element#isContent()
          */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return false;
         }
 
@@ -91,7 +91,7 @@ namespace iTextSharp.text {
          *
          * @see com.itextpdf.text.Element#isNestable()
          */
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             throw new NotSupportedException();
         }
 
@@ -100,7 +100,7 @@ namespace iTextSharp.text {
          *
          * @see com.itextpdf.text.Element#getChunks()
          */
-        public IList<Chunk> Chunks {
+        virtual public IList<Chunk> Chunks {
             get {
                 return new List<Chunk>();
             }

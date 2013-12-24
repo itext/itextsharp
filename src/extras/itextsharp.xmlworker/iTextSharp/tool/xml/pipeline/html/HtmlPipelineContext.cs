@@ -100,7 +100,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @return a ITagProcessor
          */
 
-        protected internal ITagProcessor ResolveProcessor(String tag, String nameSpace)
+        virtual protected internal ITagProcessor ResolveProcessor(String tag, String nameSpace)
         {
             ITagProcessor tp = tagFactory.GetProcessor(tag, nameSpace);
             if (tp is CssAppliersAware)
@@ -115,7 +115,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @param stackKeeper the {@link StackKeeper}
          */
 
-        protected internal void AddFirst(StackKeeper stackKeeper)
+        virtual protected internal void AddFirst(StackKeeper stackKeeper)
         {
             this.queue.AddFirst(stackKeeper);
 
@@ -127,7 +127,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @throws NoStackException if there are no elements on the stack
          */
 
-        protected internal StackKeeper Peek()
+        virtual protected internal StackKeeper Peek()
         {
             if (queue.Count == 0)
                 throw new NoStackException();
@@ -138,7 +138,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @return the current content of elements.
          */
 
-        protected internal IList<IElement> CurrentContent()
+        virtual protected internal IList<IElement> CurrentContent()
         {
             return ctn;
         }
@@ -156,7 +156,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @return returns true if the stack is empty
          */
 
-        protected internal bool IsEmpty()
+        virtual protected internal bool IsEmpty()
         {
             return queue.Count == 0;
         }
@@ -167,7 +167,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @throws NoStackException if there are no elements on the stack
          */
 
-        protected internal StackKeeper Poll()
+        virtual protected internal StackKeeper Poll()
         {
             try
             {

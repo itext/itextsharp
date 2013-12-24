@@ -73,7 +73,7 @@ namespace iTextSharp.text.pdf.spatial {
          *
          * @param bbox
          */
-        public void SetBBox(Rectangle bbox) {
+        virtual public void SetBBox(Rectangle bbox) {
             base.Put(PdfName.BBOX, new PdfRectangle(bbox, bbox.Rotation));
         }
 
@@ -83,7 +83,7 @@ namespace iTextSharp.text.pdf.spatial {
          *
          * @param value
          */
-        public void SetName(PdfString value) {
+        virtual public void SetName(PdfString value) {
             base.Put(PdfName.NAME, value);
         }
 
@@ -93,7 +93,7 @@ namespace iTextSharp.text.pdf.spatial {
          *
          * @param measure
          */
-        public void SetMeasure(Measure measure) {
+        virtual public void SetMeasure(Measure measure) {
             base.Put(PdfName.MEASURE, measure);
         }
 
@@ -103,7 +103,7 @@ namespace iTextSharp.text.pdf.spatial {
          *
          * @param ptData
          */
-        public void SetPtData(PointData ptData) {
+        virtual public void SetPtData(PointData ptData) {
             base.Put(PdfName.PTDATA, ptData);
         }
     }

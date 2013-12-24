@@ -65,7 +65,7 @@ namespace iTextSharp.text.pdf
             :base(message) {
         }
 
-        public Object GetObject() {
+        virtual public Object GetObject() {
             return obj;
         }
     }

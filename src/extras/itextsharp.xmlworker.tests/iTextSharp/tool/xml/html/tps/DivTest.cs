@@ -20,7 +20,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         private WorkerContextImpl workerContextImpl;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             workerContextImpl = new WorkerContextImpl();
             workerContextImpl.Put(typeof (HtmlPipeline).FullName, new HtmlPipelineContext(null));
             currentContent.Add(new Paragraph("titel paragraph"));
@@ -35,7 +35,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyContent() {
+        virtual public void VerifyContent() {
             IList<IElement> content = d.Content(workerContextImpl, new Tag("div"), "text inside a div tag");
             Assert.IsTrue(content[0] is NoNewLineParagraph);
         }
@@ -45,7 +45,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyNumberOfParagraphs() {
+        virtual public void VerifyNumberOfParagraphs() {
             IList<IElement> endContent = d.End(workerContextImpl, new Tag("div"), currentContent);
             Assert.AreEqual(1, endContent.Count);
         }
@@ -55,7 +55,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyIfPdfDiv() {
+        virtual public void VerifyIfPdfDiv() {
             IList<IElement> endContent = d.End(workerContextImpl, new Tag("div"), currentContent);
             Assert.IsTrue(endContent[0] is PdfDiv);
         }
@@ -65,7 +65,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyIfStackOwner() {
+        virtual public void VerifyIfStackOwner() {
             Assert.IsTrue(d.IsStackOwner());
         }
     }

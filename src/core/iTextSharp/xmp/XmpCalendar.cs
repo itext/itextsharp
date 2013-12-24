@@ -21,17 +21,17 @@ namespace iTextSharp.xmp {
         public XmpCalendar() : this(DateTime.Now, TimeZone.CurrentTimeZone) {
         }
 
-        public DateTime DateTime {
+        virtual public DateTime DateTime {
             get { return _dateTime; }
             set { _dateTime = value; }
         }
 
-        public TimeZone TimeZone {
+        virtual public TimeZone TimeZone {
             get { return _timeZone; }
             set { _timeZone = value; }
         }
 
-        public long TimeInMillis {
+        virtual public long TimeInMillis {
             get { return _dateTime.Ticks; }
             set { _dateTime = new DateTime(value); }
         }

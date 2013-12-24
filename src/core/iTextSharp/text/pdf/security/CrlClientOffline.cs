@@ -69,7 +69,7 @@ namespace iTextSharp.text.pdf.security {
          * Returns the CRL bytes (the parameters are ignored).
          * @see com.itextpdf.text.pdf.security.CrlClient#getEncoded(java.security.cert.X509Certificate, java.lang.String)
          */
-        public ICollection<byte[]> GetEncoded(X509Certificate checkCert, String url) {
+        virtual public ICollection<byte[]> GetEncoded(X509Certificate checkCert, String url) {
             return crls;
         }
     }

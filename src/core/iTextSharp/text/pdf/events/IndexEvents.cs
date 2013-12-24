@@ -91,7 +91,7 @@ namespace iTextSharp.text.pdf.events {
         * @param in3   The third level.
         * @return Returns the Chunk.
         */
-        public Chunk Create(String text, String in1, String in2,
+        virtual public Chunk Create(String text, String in1, String in2,
                 String in3) {
 
             Chunk chunk = new Chunk(text);
@@ -110,7 +110,7 @@ namespace iTextSharp.text.pdf.events {
         * @param in1   The first level.
         * @return Returns the Chunk.
         */
-        public Chunk Create(String text, String in1) {
+        virtual public Chunk Create(String text, String in1) {
             return Create(text, in1, "", "");
         }
 
@@ -122,7 +122,7 @@ namespace iTextSharp.text.pdf.events {
         * @param in2   The second level.
         * @return Returns the Chunk.
         */
-        public Chunk Create(String text, String in1, String in2) {
+        virtual public Chunk Create(String text, String in1, String in2) {
             return Create(text, in1, in2, "");
         }
 
@@ -134,7 +134,7 @@ namespace iTextSharp.text.pdf.events {
         * @param in2   The second level.
         * @param in3   The third level.
         */
-        public void Create(Chunk text, String in1, String in2,
+        virtual public void Create(Chunk text, String in1, String in2,
                 String in3) {
 
             String tag = "idx_" + (indexcounter++);
@@ -150,7 +150,7 @@ namespace iTextSharp.text.pdf.events {
         * @param text  The text.
         * @param in1   The first level.
         */
-        public void Create(Chunk text, String in1) {
+        virtual public void Create(Chunk text, String in1) {
             Create(text, in1, "", "");
         }
 
@@ -161,13 +161,13 @@ namespace iTextSharp.text.pdf.events {
         * @param in1   The first level.
         * @param in2   The second level.
         */
-        public void Create(Chunk text, String in1, String in2) {
+        virtual public void Create(Chunk text, String in1, String in2) {
             Create(text, in1, in2, "");
         }
 
         private class ISortIndex : IComparer<Entry> {
         
-            public int Compare(Entry en1, Entry en2) {
+            virtual public int Compare(Entry en1, Entry en2) {
 
                 int rt = 0;
                 if (en1.GetIn1() != null && en2.GetIn1() != null) {
@@ -196,7 +196,7 @@ namespace iTextSharp.text.pdf.events {
         * Set the comparator.
         * @param aComparator The comparator to set.
         */
-        public void SetComparator(IComparer<Entry> aComparator) {
+        virtual public void SetComparator(IComparer<Entry> aComparator) {
             comparator = aComparator;
         }
 
@@ -204,7 +204,7 @@ namespace iTextSharp.text.pdf.events {
         * Returns the sorted list with the entries and the collected page numbers.
         * @return Returns the sorted list with the entries and teh collected page numbers.
         */
-        public List<Entry> GetSortedEntries() {
+        virtual public List<Entry> GetSortedEntries() {
 
             Dictionary<string,Entry> grouped = new Dictionary<string,Entry>();
 
@@ -289,7 +289,7 @@ namespace iTextSharp.text.pdf.events {
             * Returns the in1.
             * @return Returns the in1.
             */
-            public String GetIn1() {
+            virtual public String GetIn1() {
                 return in1;
             }
 
@@ -297,7 +297,7 @@ namespace iTextSharp.text.pdf.events {
             * Returns the in2.
             * @return Returns the in2.
             */
-            public String GetIn2() {
+            virtual public String GetIn2() {
                 return in2;
             }
 
@@ -305,7 +305,7 @@ namespace iTextSharp.text.pdf.events {
             * Returns the in3.
             * @return Returns the in3.
             */
-            public String GetIn3() {
+            virtual public String GetIn3() {
                 return in3;
             }
 
@@ -313,7 +313,7 @@ namespace iTextSharp.text.pdf.events {
             * Returns the tag.
             * @return Returns the tag.
             */
-            public String GetTag() {
+            virtual public String GetTag() {
                 return tag;
             }
 
@@ -321,7 +321,7 @@ namespace iTextSharp.text.pdf.events {
             * Returns the pagenumer for this entry.
             * @return Returns the pagenumer for this entry.
             */
-            public int GetPageNumber() {
+            virtual public int GetPageNumber() {
                 if (parent.indextag.ContainsKey(tag))
                     return parent.indextag[tag];
                 else
@@ -333,7 +333,7 @@ namespace iTextSharp.text.pdf.events {
             * @param number    The page number.
             * @param tag
             */
-            public void AddPageNumberAndTag(int number, String tag) {
+            virtual public void AddPageNumberAndTag(int number, String tag) {
                 pagenumbers.Add(number);
                 tags.Add(tag);
             }
@@ -342,7 +342,7 @@ namespace iTextSharp.text.pdf.events {
             * Returns the key for the map-entry.
             * @return Returns the key for the map-entry.
             */
-            public String GetKey() {
+            virtual public String GetKey() {
                 return in1 + "!" + in2 + "!" + in3;
             }
 
@@ -350,7 +350,7 @@ namespace iTextSharp.text.pdf.events {
             * Returns the pagenumbers.
             * @return Returns the pagenumbers.
             */
-            public List<int> GetPagenumbers() {
+            virtual public List<int> GetPagenumbers() {
                 return pagenumbers;
             }
 
@@ -358,7 +358,7 @@ namespace iTextSharp.text.pdf.events {
             * Returns the tags.
             * @return Returns the tags.
             */
-            public List<string> GetTags() {
+            virtual public List<string> GetTags() {
                 return tags;
             }
 

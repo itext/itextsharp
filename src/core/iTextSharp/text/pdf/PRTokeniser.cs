@@ -88,43 +88,43 @@ namespace iTextSharp.text.pdf {
             this.file = file;
         }
 
-        public void Seek(long pos) {
+        virtual public void Seek(long pos) {
             file.Seek(pos);
         }
     
-        public long FilePointer {
+        virtual public long FilePointer {
             get {
 				return file.FilePointer;
             }
         }
 
-        public void Close() {
+        virtual public void Close() {
             file.Close();
         }
     
-        public long Length {
+        virtual public long Length {
             get {
 				return file.Length;
             }
         }
 
-        public int Read() {
+        virtual public int Read() {
             return file.Read();
         }
     
-        public RandomAccessFileOrArray SafeFile {
+        virtual public RandomAccessFileOrArray SafeFile {
             get {
                 return new RandomAccessFileOrArray(file);
             }
         }
     
-        public RandomAccessFileOrArray File {
+        virtual public RandomAccessFileOrArray File {
             get {
                 return file;
             }
         }
 
-        public string ReadString(int size) {
+        virtual public string ReadString(int size) {
             StringBuilder buf = new StringBuilder();
             int ch;
             while ((size--) > 0) {
@@ -144,40 +144,40 @@ namespace iTextSharp.text.pdf {
             return (ch == '(' || ch == ')' || ch == '<' || ch == '>' || ch == '[' || ch == ']' || ch == '/' || ch == '%');
         }
 
-        public TokType TokenType {
+        virtual public TokType TokenType {
             get {
                 return type;
             }
         }
     
-        public string StringValue {
+        virtual public string StringValue {
             get {
                 return stringValue;
             }
         }
     
-        public int Reference {
+        virtual public int Reference {
             get {
                 return reference;
             }
         }
     
-        public int Generation {
+        virtual public int Generation {
             get {
                 return generation;
             }
         }
     
-        public void BackOnePosition(int ch) {
+        virtual public void BackOnePosition(int ch) {
             if (ch != -1)
                 file.PushBack((byte)ch);
         }
     
-        public void ThrowError(string error) {
+        virtual public void ThrowError(string error) {
 			throw new InvalidPdfException (MessageLocalization.GetComposedMessage ("1.at.file.pointer.2", error, file.FilePointer));
         }
     
-        public int GetHeaderOffset() {
+        virtual public int GetHeaderOffset() {
             String str = ReadString(1024);
             int idx = str.IndexOf("%PDF-");
             if (idx < 0){
@@ -188,7 +188,7 @@ namespace iTextSharp.text.pdf {
             return idx;
         }
 
-        public char CheckPdfHeader() {
+        virtual public char CheckPdfHeader() {
             file.Seek(0);
             String str = ReadString(1024);
             int idx = str.IndexOf("%PDF-");
@@ -197,7 +197,7 @@ namespace iTextSharp.text.pdf {
             return str[7];
         }
         
-        public void CheckFdfHeader() {
+        virtual public void CheckFdfHeader() {
             file.Seek(0);
             String str = ReadString(1024);
             int idx = str.IndexOf("%FDF-");
@@ -205,7 +205,7 @@ namespace iTextSharp.text.pdf {
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("fdf.header.not.found"));
         }
 
-        public long GetStartxref() {
+        virtual public long GetStartxref() {
             int arrLength = 1024;
 			long fileLength = file.Length;
             long pos = fileLength - arrLength;
@@ -230,7 +230,7 @@ namespace iTextSharp.text.pdf {
             return -1;
         }
     
-        public void NextValidToken() {
+        virtual public void NextValidToken() {
             int level = 0;
             string n1 = null;
             string n2 = null;
@@ -280,7 +280,7 @@ namespace iTextSharp.text.pdf {
             // case can occur inside an Object Stream.
         }
     
-        public bool NextToken() {
+        virtual public bool NextToken() {
             int ch = 0;
             do {
                 ch = file.Read();
@@ -497,17 +497,17 @@ namespace iTextSharp.text.pdf {
             return true;
         }
     
-		public long LongValue {
+		virtual public long LongValue {
 			get { return long.Parse (stringValue); }
 		}
 
-        public int IntValue {
+        virtual public int IntValue {
             get {
                 return int.Parse(stringValue);
             }
         }
 
-        public bool ReadLineSegment(byte[] input) {
+        virtual public bool ReadLineSegment(byte[] input) {
             int c = -1;
             bool eol = false;
             int ptr = 0;
@@ -595,7 +595,7 @@ namespace iTextSharp.text.pdf {
             return null;
         }
         
-        public bool IsHexString() {
+        virtual public bool IsHexString() {
             return this.hexString;
         }
         

@@ -91,7 +91,7 @@ namespace iTextSharp.text.log {
          *
          * @param logger the logger
          */
-        public void SetLogger(ILogger logger) {
+        virtual public void SetLogger(ILogger logger) {
             this.logger = logger;
         }
 
@@ -100,7 +100,7 @@ namespace iTextSharp.text.log {
          *
          * @return the logger
          */
-        public ILogger Logger() {
+        virtual public ILogger Logger() {
             return logger;
         }
     }

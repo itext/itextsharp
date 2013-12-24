@@ -22,7 +22,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.net {
         private static FileStream output;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             retriever = new FileRetrieveImpl();
             actual = TARGET + "css/actual.css";
             expected = RESOURCES + "css/test.css";
@@ -31,7 +31,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.net {
         }
 
         [TearDown]
-        public void TearDown() {
+        virtual public void TearDown() {
             output =
                 null;
 
@@ -43,7 +43,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.net {
         }
 
         private class CustomReadingProcessor : IReadingProcessor {
-            public void Process(int inbit) {
+            virtual public void Process(int inbit) {
                 try {
                     byte[] bytes = Encoding.Default.GetBytes(new char[] {(char) inbit});
                     output.Write(bytes, 0, bytes.Length);
@@ -55,7 +55,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.net {
         }
 
         [Test]
-        public void RetrieveURL() {
+        virtual public void RetrieveURL() {
             if (File.Exists("http://itextsupport.com/files/testresources/css/test.css")) {
                 output = new FileStream(actual, FileMode.Create);
                 retriever.ProcessFromHref("http://itextsupport.com/files/testresources/css/test.css",
@@ -79,7 +79,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.net {
         }
 
         [Test]
-        public void RetrieveStreamFromFile() {
+        virtual public void RetrieveStreamFromFile() {
             output = new FileStream(actual, FileMode.Create);
             FileStream css = File.OpenRead(RESOURCES + @"\css\test.css");
             retriever.ProcessFromStream(css, new CustomReadingProcessor());
@@ -89,7 +89,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.net {
         }
 
         [Test]
-        public void RetrieveFile() {
+        virtual public void RetrieveFile() {
             output = new FileStream(actual, FileMode.Create);
             retriever.AddRootDir(RESOURCES);
             retriever.ProcessFromHref(@"css\test.css", new CustomReadingProcessor());

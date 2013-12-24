@@ -75,7 +75,7 @@ namespace iTextSharp.text.pdf {
             this.writer = writer;
         }
     
-        protected void SetColorSpace(BaseColor color) {
+        virtual protected void SetColorSpace(BaseColor color) {
             cspace = color;
             int type = ExtendedColor.GetType(color);
             PdfObject colorSpace = null;
@@ -106,7 +106,7 @@ namespace iTextSharp.text.pdf {
             shading.Put(PdfName.COLORSPACE, colorSpace);
         }
     
-        public BaseColor ColorSpace {
+        virtual public BaseColor ColorSpace {
             get {
                 return cspace;
             }
@@ -229,7 +229,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public void AddToBody() {
+        virtual public void AddToBody() {
             if (bBox != null)
                 shading.Put(PdfName.BBOX, new PdfArray(bBox));
             if (antiAlias)
@@ -249,7 +249,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public float[] BBox {
+        virtual public float[] BBox {
             get {
                 return bBox;
             }
@@ -260,7 +260,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public bool AntiAlias {
+        virtual public bool AntiAlias {
             set {
                 this.antiAlias = value;
             }

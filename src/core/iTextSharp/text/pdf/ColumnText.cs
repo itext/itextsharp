@@ -282,14 +282,14 @@ namespace iTextSharp.text.pdf {
          * @param org the original <CODE>ColumnText</CODE>
          * @return itself
          */    
-        public ColumnText SetACopy(ColumnText org) {
+        virtual public ColumnText SetACopy(ColumnText org) {
             SetSimpleVars(org);
             if (org.bidiLine != null)
                 bidiLine = new BidiLine(org.bidiLine);
             return this;
         }
     
-        protected internal void SetSimpleVars(ColumnText org) {
+        virtual protected internal void SetSimpleVars(ColumnText org) {
             maxY = org.maxY;
             minY = org.minY;
             alignment = org.alignment;
@@ -360,7 +360,7 @@ namespace iTextSharp.text.pdf {
          * Adds a <CODE>Phrase</CODE> to the current text array.
          * @param phrase the text
          */
-        public void AddText(Phrase phrase) {
+        virtual public void AddText(Phrase phrase) {
             if (phrase == null || composite)
                 return;
             AddWaitingPhrase();
@@ -378,7 +378,7 @@ namespace iTextSharp.text.pdf {
          * Anything added previously with AddElement() is lost.
          * @param phrase the text
          */
-        public void SetText(Phrase phrase) {
+        virtual public void SetText(Phrase phrase) {
             bidiLine = null;
             composite = false;
             compositeColumn = null;
@@ -394,7 +394,7 @@ namespace iTextSharp.text.pdf {
          * Will not have any effect if AddElement() was called before.
          * @param chunk the text
          */
-        public void AddText(Chunk chunk) {
+        virtual public void AddText(Chunk chunk) {
             if (chunk == null || composite)
                 return;
             AddText(new Phrase(chunk));
@@ -410,7 +410,7 @@ namespace iTextSharp.text.pdf {
          *
          * @param element the <CODE>Element</CODE>
          */
-        public void AddElement(IElement element) {
+        virtual public void AddElement(IElement element) {
             if (element == null)
                 return;
             if (element is Image) {
@@ -489,7 +489,7 @@ namespace iTextSharp.text.pdf {
          * @param cLine the column array
          * @return the converted array
          */
-        protected List<float []> ConvertColumn(float[] cLine) {
+        virtual protected List<float []> ConvertColumn(float[] cLine) {
             if (cLine.Length < 4)
                 throw new Exception(MessageLocalization.GetComposedMessage("no.valid.column.line.found"));
             List<float []> cc = new List<float []>();
@@ -523,7 +523,7 @@ namespace iTextSharp.text.pdf {
          * @param wall the column to intersect
          * @return the x coordinate of the intersection
          */
-        protected float FindLimitsPoint(List<float []> wall) {
+        virtual protected float FindLimitsPoint(List<float []> wall) {
             lineStatus = LINE_STATUS_OK;
             if (yLine < minY || yLine > maxY) {
                 lineStatus = LINE_STATUS_OFFLIMITS;
@@ -544,7 +544,7 @@ namespace iTextSharp.text.pdf {
          * column bounds. It will set the <CODE>lineStatus</CODE> apropriatly.
          * @return a <CODE>float[2]</CODE>with the x coordinates of the intersection
          */
-        protected float[] FindLimitsOneLine() {
+        virtual protected float[] FindLimitsOneLine() {
             float x1 = FindLimitsPoint(leftWall);
             if (lineStatus == LINE_STATUS_OFFLIMITS || lineStatus == LINE_STATUS_NOLINE)
                 return null;
@@ -560,7 +560,7 @@ namespace iTextSharp.text.pdf {
          * column bounds. It will set the <CODE>lineStatus</CODE> apropriatly.
          * @return a <CODE>float[4]</CODE>with the x coordinates of the intersection
          */
-        protected float[] FindLimitsTwoLines() {
+        virtual protected float[] FindLimitsTwoLines() {
             bool repeat = false;
             for (;;) {
                 if (repeat && currentLeading == 0)
@@ -593,7 +593,7 @@ namespace iTextSharp.text.pdf {
          * @param leftLine the left column bound
          * @param rightLine the right column bound
          */
-        public void SetColumns(float[] leftLine, float[] rightLine) {
+        virtual public void SetColumns(float[] leftLine, float[] rightLine) {
             maxY = -10e20f;
             minY = 10e20f;
             YLine = Math.Max(leftLine[1], leftLine[leftLine.Length - 1]);
@@ -613,7 +613,7 @@ namespace iTextSharp.text.pdf {
          * @param leading the leading
          * @param alignment the column alignment
          */
-        public void SetSimpleColumn(Phrase phrase, float llx, float lly, float urx, float ury, float leading, int alignment) {
+        virtual public void SetSimpleColumn(Phrase phrase, float llx, float lly, float urx, float ury, float leading, int alignment) {
             AddText(phrase);
             SetSimpleColumn(llx, lly, urx, ury, leading, alignment);
         }
@@ -627,7 +627,7 @@ namespace iTextSharp.text.pdf {
          * @param leading the leading
          * @param alignment the column alignment
          */
-        public void SetSimpleColumn(float llx, float lly, float urx, float ury, float leading, int alignment) {
+        virtual public void SetSimpleColumn(float llx, float lly, float urx, float ury, float leading, int alignment) {
             Leading = leading;
             this.alignment = alignment;
             SetSimpleColumn(llx, lly, urx, ury);
@@ -640,7 +640,7 @@ namespace iTextSharp.text.pdf {
          * @param urx
          * @param ury
          */
-        public void SetSimpleColumn(float llx, float lly, float urx, float ury) {
+        virtual public void SetSimpleColumn(float llx, float lly, float urx, float ury) {
             leftX = Math.Min(llx, urx);
             maxY = Math.Max(lly, ury);
             minY = Math.Min(lly, ury);
@@ -656,7 +656,7 @@ namespace iTextSharp.text.pdf {
          * Simplified method for rectangular columns.
          * @param rect  the rectangle for the column
          */
-        public void SetSimpleColumn(Rectangle rect) {
+        virtual public void SetSimpleColumn(Rectangle rect) {
             SetSimpleColumn(rect.Left, rect.Bottom, rect.Right, rect.Top);
         }
 
@@ -667,7 +667,7 @@ namespace iTextSharp.text.pdf {
          * @param fixedLeading the fixed leading
          * @param multipliedLeading the variable leading
          */
-        public void SetLeading(float fixedLeading, float multipliedLeading) {
+        virtual public void SetLeading(float fixedLeading, float multipliedLeading) {
             this.fixedLeading = fixedLeading;
             this.multipliedLeading = multipliedLeading;
         }
@@ -676,7 +676,7 @@ namespace iTextSharp.text.pdf {
          * Gets the fixed leading
          * @return the leading
          */
-        public float Leading {
+        virtual public float Leading {
             get {
                 return fixedLeading;
             }
@@ -691,7 +691,7 @@ namespace iTextSharp.text.pdf {
          * Gets the variable leading
          * @return the leading
          */
-        public float MultipliedLeading {
+        virtual public float MultipliedLeading {
             get {
                 return multipliedLeading;
             }
@@ -701,7 +701,7 @@ namespace iTextSharp.text.pdf {
          * Gets the yLine.
          * @return the yLine
          */
-        public float YLine {
+        virtual public float YLine {
             get {
                 return yLine;
             }
@@ -714,7 +714,7 @@ namespace iTextSharp.text.pdf {
         /**
          * Gets the number of rows that were drawn when a table is involved.
          */
-        public int RowsDrawn {
+        virtual public int RowsDrawn {
             get {
                 return rowIdx;
             }
@@ -724,7 +724,7 @@ namespace iTextSharp.text.pdf {
          * Gets the Element.
          * @return the alignment
          */
-        public int Alignment{
+        virtual public int Alignment{
             get {
                 return alignment;
             }
@@ -738,7 +738,7 @@ namespace iTextSharp.text.pdf {
          * Gets the first paragraph line indent.
          * @return the indent
          */
-        public float Indent {
+        virtual public float Indent {
             get {
                 return indent;
             }
@@ -755,7 +755,7 @@ namespace iTextSharp.text.pdf {
          * @param indent the indent
          * @param	repeatFirstLineIndent	do we need to repeat the indentation of the first line after a newline?
          */
-        public void SetIndent(float indent, bool repeatFirstLineIndent) {
+        virtual public void SetIndent(float indent, bool repeatFirstLineIndent) {
             this.indent = indent;
             lastWasNewline = true;
             this.repeatFirstLineIndent = repeatFirstLineIndent;
@@ -765,7 +765,7 @@ namespace iTextSharp.text.pdf {
          * Gets the following paragraph lines indent.
          * @return the indent
          */
-        public float FollowingIndent {
+        virtual public float FollowingIndent {
             get {
                 return followingIndent;
             }
@@ -780,7 +780,7 @@ namespace iTextSharp.text.pdf {
          * Gets the right paragraph lines indent.
          * @return the indent
          */
-        public float RightIndent {
+        virtual public float RightIndent {
             get {
                 return rightIndent;
             }
@@ -796,11 +796,11 @@ namespace iTextSharp.text.pdf {
         *
         * @return the currentLeading
         */
-        public float CurrentLeading {
+        virtual public float CurrentLeading {
             get { return currentLeading; }
         }
 
-        public bool InheritGraphicState
+        virtual public bool InheritGraphicState
         {
             get { return inheritGraphicState; }
             set { inheritGraphicState = value; }
@@ -812,7 +812,7 @@ namespace iTextSharp.text.pdf {
          * and/or <CODE>NO_MORE_COLUMN</CODE>
          * @throws DocumentException on error
          */
-        public int Go() {
+        virtual public int Go() {
             return Go(false);
         }
     
@@ -823,11 +823,11 @@ namespace iTextSharp.text.pdf {
          * and/or <CODE>NO_MORE_COLUMN</CODE>
          * @throws DocumentException on error
          */
-        public int Go(bool simulate) {
+        virtual public int Go(bool simulate) {
             return  Go(simulate, null);
         }
 
-        public int Go(bool simulate, IElement elementToGo) {
+        virtual public int Go(bool simulate, IElement elementToGo) {
             if (composite)
                 return GoComposite(simulate);
 
@@ -1013,7 +1013,7 @@ namespace iTextSharp.text.pdf {
          * Sets the extra space between paragraphs.
          * @return the extra space between paragraphs
          */
-        public float ExtraParagraphSpace {
+        virtual public float ExtraParagraphSpace {
             get {
                 return extraParagraphSpace;
             }
@@ -1027,7 +1027,7 @@ namespace iTextSharp.text.pdf {
          * Clears the chunk array. A call to <CODE>go()</CODE> will always return
          * NO_MORE_TEXT.
          */
-        public void ClearChunks() {
+        virtual public void ClearChunks() {
             if (bidiLine != null)
                 bidiLine.ClearChunks();
         }
@@ -1036,7 +1036,7 @@ namespace iTextSharp.text.pdf {
          * fully justified text.
          * @return the space/character extra spacing ratio
          */    
-        public float SpaceCharRatio {
+        virtual public float SpaceCharRatio {
             get {
                 return spaceCharRatio;
             }
@@ -1049,7 +1049,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the run direction.
          * @return the run direction
          */    
-        public int RunDirection {
+        virtual public int RunDirection {
             get {
                 return runDirection;
             }
@@ -1064,7 +1064,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the number of lines written.
          * @return the number of lines written
          */
-        public int LinesWritten {
+        virtual public int LinesWritten {
             get {
                 return this.linesWritten;
             }
@@ -1075,7 +1075,7 @@ namespace iTextSharp.text.pdf {
          * (will not work in simulation mode!).
          * @since 5.0.3
          */
-        public float LastX {
+        virtual public float LastX {
             get {
                 return lastX;
             }
@@ -1085,7 +1085,7 @@ namespace iTextSharp.text.pdf {
          * AR_COMPOSEDTASHKEEL and AR_LIG.
          * @param arabicOptions the arabic shaping options
          */
-        public int ArabicOptions {
+        virtual public int ArabicOptions {
             set {
                 this.arabicOptions = value;
             }
@@ -1097,7 +1097,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the biggest descender value of the last line written.
          * @return the biggest descender value of the last line written
          */    
-        public float Descender {
+        virtual public float Descender {
             get {
                 return descender;
             }
@@ -1257,7 +1257,7 @@ namespace iTextSharp.text.pdf {
             return size;
 	    }
 
-        protected int GoComposite(bool simulate) {
+        virtual protected int GoComposite(bool simulate) {
             PdfDocument pdf = null;
             if (canvas != null)
                 pdf = canvas.pdf;
@@ -1827,7 +1827,7 @@ namespace iTextSharp.text.pdf {
          * Sets the canvas.
          * @param canvas
          */
-        public PdfContentByte Canvas {
+        virtual public PdfContentByte Canvas {
             set {
                 canvas = value;
                 canvases = null;
@@ -1843,7 +1843,7 @@ namespace iTextSharp.text.pdf {
          * Sets the canvases.
          * @param canvas
          */
-        public PdfContentByte[] Canvases {
+        virtual public PdfContentByte[] Canvases {
             set {
                 canvases = value;
                 canvas = canvases[PdfPTable.TEXTCANVAS];
@@ -1860,11 +1860,11 @@ namespace iTextSharp.text.pdf {
          * @return true or false
          * @since 2.1.2
          */
-        public bool ZeroHeightElement() {
+        virtual public bool ZeroHeightElement() {
             return composite && compositeElements.Count != 0 && ((IElement)compositeElements[0]).Type == Element.YMARK;
         }
 
-        public IList<IElement> CompositeElements {
+        virtual public IList<IElement> CompositeElements {
             get {
     	        return compositeElements;
             }
@@ -1874,7 +1874,7 @@ namespace iTextSharp.text.pdf {
          * Enables/Disables adjustment of first line height based on max ascender.
          * @param use enable adjustment if true
          */
-        public bool UseAscender {
+        virtual public bool UseAscender {
             set {
                 useAscender = value;
             }
@@ -1899,7 +1899,7 @@ namespace iTextSharp.text.pdf {
          * to zero to start another measurement.
          * @param filledWidth the real width used by the largest line
          */
-        public float FilledWidth {
+        virtual public float FilledWidth {
             set {
                 filledWidth = value;
             }
@@ -1912,7 +1912,7 @@ namespace iTextSharp.text.pdf {
          * Replaces the <CODE>filledWidth</CODE> if greater than the existing one.
          * @param w the new <CODE>filledWidth</CODE> if greater than the existing one
          */
-        public void UpdateFilledWidth(float w) {
+        virtual public void UpdateFilledWidth(float w) {
             if (w > filledWidth)
                 filledWidth = w;
         }
@@ -1926,7 +1926,7 @@ namespace iTextSharp.text.pdf {
          * after the other in the same column calling go() several times.
          * @param adjustFirstLine <CODE>true</CODE> to adjust the first line, <CODE>false</CODE> otherwise
          */
-        public bool AdjustFirstLine {
+        virtual public bool AdjustFirstLine {
             set {
                 adjustFirstLine = value;
             }

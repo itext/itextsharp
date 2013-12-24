@@ -182,7 +182,7 @@ namespace iTextSharp.tool.xml.pipeline.end {
          * The document to write to.
          * @param document the Document
          */
-        public void SetDocument(Document document) {
+        virtual public void SetDocument(Document document) {
             this.doc = document;
         }
 
@@ -190,7 +190,7 @@ namespace iTextSharp.tool.xml.pipeline.end {
          * The writer used to write to the document.
          * @param writer the writer.
          */
-        public void SetWriter(PdfWriter writer) {
+        virtual public void SetWriter(PdfWriter writer) {
             this.writer = writer;
         }
     }

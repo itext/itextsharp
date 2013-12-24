@@ -56,7 +56,7 @@ namespace iTextSharp.text.pdf {
             this.shadingPattern = shadingPattern;
         }
 
-        public PdfShadingPattern PdfShadingPattern {
+        virtual public PdfShadingPattern PdfShadingPattern {
             get {
                 return shadingPattern;
             }

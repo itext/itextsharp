@@ -153,7 +153,7 @@ namespace iTextSharp.text.pdf {
             Write(buf, 0, 1);
         }
 
-        public void Finish() {
+        virtual public void Finish() {
             if (!finished) {
                 finished = true;
                 if (aes) {

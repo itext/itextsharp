@@ -95,7 +95,7 @@ namespace iTextSharp.text.pdf.draw {
         /**
         * @see com.lowagie.text.Element#process(com.lowagie.text.ElementListener)
         */
-        public bool Process(IElementListener listener) {
+        virtual public bool Process(IElementListener listener) {
             try {
                 return listener.Add(this);
             } catch (DocumentException) {
@@ -106,7 +106,7 @@ namespace iTextSharp.text.pdf.draw {
         /**
         * @see com.lowagie.text.Element#type()
         */
-        public int Type {
+        virtual public int Type {
             get {
                 return Element.YMARK;
             }
@@ -115,21 +115,21 @@ namespace iTextSharp.text.pdf.draw {
         /**
         * @see com.lowagie.text.Element#isContent()
         */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return true;
         }
 
         /**
         * @see com.lowagie.text.Element#isNestable()
         */
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             return false;
         }
 
         /**
         * @see com.lowagie.text.Element#getChunks()
         */
-        public IList<Chunk> Chunks {
+        virtual public IList<Chunk> Chunks {
             get {
                 List<Chunk> list = new List<Chunk>();
                 list.Add(new Chunk(this, true));

@@ -69,14 +69,14 @@ namespace iTextSharp.tool.xml.css {
          *F
          * @see com.itextpdf.tool.xml.net.ReadingProcessor#process(char)
          */
-        public void Process(int i) {
+        virtual public void Process(int i) {
             controller.Process((char) i);
         }
 
         /**
          * @return the css
          */
-        public ICssFile GetCss() {
+        virtual public ICssFile GetCss() {
             return css;
         }
     }

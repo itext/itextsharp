@@ -120,7 +120,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param previousChunk the chunk that appeared immediately before the current chunk
          * @return true if the two chunks represent different words (i.e. should have a space between them).  False otherwise.
          */
-        protected bool IsChunkAtWordBoundary(TextChunk chunk, TextChunk previousChunk) {
+        virtual protected bool IsChunkAtWordBoundary(TextChunk chunk, TextChunk previousChunk) {
             float dist = chunk.DistanceFromEndOf(previousChunk);
             if(dist < -chunk.CharSpaceWidth || dist > chunk.CharSpaceWidth / 2.0f)
                 return true;
@@ -242,19 +242,19 @@ namespace iTextSharp.text.pdf.parser {
             /**
              * @return the text captured by this chunk
              */
-            public String Text {
+            virtual public String Text {
                 get { return text; }
             }
 
             /**
              * @return the width of a single space character as rendered by this chunk
              */
-            public float CharSpaceWidth {
+            virtual public float CharSpaceWidth {
                 get { return charSpaceWidth; }
             }
 
 
-            public void PrintDiagnostics(){
+            virtual public void PrintDiagnostics(){
                 Console.Out.WriteLine("Text (@" + startLocation + " -> " + endLocation + "): " + text);
                 Console.Out.WriteLine("orientationMagnitude: " + orientationMagnitude);
                 Console.Out.WriteLine("distPerpendicular: " + distPerpendicular);
@@ -265,7 +265,7 @@ namespace iTextSharp.text.pdf.parser {
              * @param as the location to compare to
              * @return true is this location is on the the same line as the other
              */
-            public bool SameLine(TextChunk a){
+            virtual public bool SameLine(TextChunk a){
                 if (orientationMagnitude != a.orientationMagnitude) return false;
                 if (distPerpendicular != a.distPerpendicular) return false;
                 return true;
@@ -279,7 +279,7 @@ namespace iTextSharp.text.pdf.parser {
              * @param other
              * @return the number of spaces between the end of 'other' and the beginning of this chunk
              */
-            public float DistanceFromEndOf(TextChunk other){
+            virtual public float DistanceFromEndOf(TextChunk other){
                 float distance = distParallelStart - other.distParallelEnd;
                 return distance;
             }
@@ -288,7 +288,7 @@ namespace iTextSharp.text.pdf.parser {
              * Compares based on orientation, perpendicular distance, then parallel distance
              * @see java.lang.Comparable#compareTo(java.lang.Object)
              */
-            public int CompareTo(TextChunk rhs) {
+            virtual public int CompareTo(TextChunk rhs) {
                 if (this == rhs) return 0; // not really needed, but just in case
                 
                 int rslt;

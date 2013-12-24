@@ -68,7 +68,7 @@ namespace iTextSharp.tool.xml.css {
          * @see com.itextpdf.tool.xml.css.CssFile#add(java.lang.String,
          * java.util.Map)
          */
-        public void Add(String selector, IDictionary<String, String> props) {
+        virtual public void Add(String selector, IDictionary<String, String> props) {
             throw new NotSupportedException();
         }
 
@@ -77,7 +77,7 @@ namespace iTextSharp.tool.xml.css {
          *
          * @see com.itextpdf.tool.xml.css.CssFile#get(java.lang.String)
          */
-        public IDictionary<String, String> Get(String selector) {
+        virtual public IDictionary<String, String> Get(String selector) {
             return css.Get(selector);
         }
 
@@ -86,7 +86,7 @@ namespace iTextSharp.tool.xml.css {
          *
          * @see com.itextpdf.tool.xml.css.CssFile#isPersistent()
          */
-        public bool IsPersistent() {
+        virtual public bool IsPersistent() {
             return persistent;
         }
 
@@ -95,7 +95,7 @@ namespace iTextSharp.tool.xml.css {
          *
          * @see com.itextpdf.tool.xml.css.CssFile#isPersistent(bool)
          */
-        public void IsPersistent(bool b) {
+        virtual public void IsPersistent(bool b) {
             throw new NotSupportedException();
         }
     }

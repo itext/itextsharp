@@ -18,7 +18,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
         }
 
         [Test]
-        public void TestNoBreakSpace() {
+        virtual public void TestNoBreakSpace() {
             MemoryStream ms = new MemoryStream();
             Document document = new Document();
 

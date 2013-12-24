@@ -151,7 +151,7 @@ namespace System.util.zlib {
             Write(buf1, 0, 1);
         }
 
-        public void Finish() {
+        virtual public void Finish() {
             int err;
             do{
                 z.next_out=buf;
@@ -168,7 +168,7 @@ namespace System.util.zlib {
             Flush();
         }
 
-        public void End() {
+        virtual public void End() {
             if(z==null)
                 return;
             z.deflateEnd();

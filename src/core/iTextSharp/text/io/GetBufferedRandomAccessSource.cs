@@ -108,7 +108,7 @@ namespace iTextSharp.text.io {
             getBufferEnd = -1;
         }
 
-        public void Dispose() {
+        virtual public void Dispose() {
             Close();
         }
     }

@@ -88,7 +88,7 @@ namespace iTextSharp.tool.xml.parser.state {
             }
         }
 
-        protected void CheckAttributeWithNoValue() {
+        virtual protected void CheckAttributeWithNoValue() {
             if (SetAttribute()) {
                 this.parser.Memory().PutCurrentAttrValue("");
             }
@@ -98,7 +98,7 @@ namespace iTextSharp.tool.xml.parser.state {
          * @return true if an attribute was set
          *
          */
-        protected internal bool SetAttribute() {
+        virtual protected internal bool SetAttribute() {
             String attr = this.parser.BufferToString();
             if (attr.Length > 0) {
                 this.parser.Memory().CurrentAttr(attr);

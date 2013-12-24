@@ -107,7 +107,7 @@ namespace iTextSharp.text.pdf {
          * @return        a number.
          */
     
-        public int Number {
+        virtual public int Number {
             get {
                 return number;
             }
@@ -119,7 +119,7 @@ namespace iTextSharp.text.pdf {
          * @return        a number.
          */
     
-        public int Generation {
+        virtual public int Generation {
             get {
                 return generation;
             }

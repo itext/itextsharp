@@ -76,7 +76,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   tag     the name of the HTML/XML tag
          * @param   attrs   a map containing styles
          */
-        public void LoadTagStyle(String tag, IDictionary<String, String> attrs) {
+        virtual public void LoadTagStyle(String tag, IDictionary<String, String> attrs) {
             tagMap[tag.ToLowerInvariant()] = attrs;
         }
 
@@ -87,7 +87,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   key     the key specifying a specific style
          * @param   value   the value defining the style
          */
-        public void LoadTagStyle(String tag, String key, String value) {
+        virtual public void LoadTagStyle(String tag, String key, String value) {
             tag = tag.ToLowerInvariant();
             IDictionary<String, String> styles;
             tagMap.TryGetValue(tag, out styles);
@@ -103,7 +103,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   className   the value of the class attribute
          * @param   attrs       a map containing styles
          */
-        public void LoadStyle(String className, Dictionary<String, String> attrs) {
+        virtual public void LoadStyle(String className, Dictionary<String, String> attrs) {
             classMap[className.ToLowerInvariant()] = attrs;
         }
 
@@ -114,7 +114,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   key         the key specifying a specific style
          * @param   value       the value defining the style
          */
-        public void LoadStyle(String className, String key, String value) {
+        virtual public void LoadStyle(String className, String key, String value) {
             className = className.ToLowerInvariant();
             IDictionary<String, String> styles;
             classMap.TryGetValue(className, out styles);
@@ -131,7 +131,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   tag     the tag that needs to be resolved
          * @param   attrs   existing style map that will be updated
          */
-        public void ApplyStyle(String tag, IDictionary<String, String> attrs) {
+        virtual public void ApplyStyle(String tag, IDictionary<String, String> attrs) {
             // first fetch the styles corresponding with the tag name
             IDictionary<String, String> map;
             tagMap.TryGetValue(tag.ToLowerInvariant(), out map);

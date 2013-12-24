@@ -20,13 +20,13 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
 
 
         private class CustomElementHandler : IElementHandler {
-            public void Add(IWritable w) {
+            virtual public void Add(IWritable w) {
                 elementList.AddRange(((WritableElement) w).Elements());
             }
         }
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
             StreamReader bis = File.OpenText(RESOURCES + "/snippets/margin-align_snippet.html");
             XMLWorkerHelper helper = XMLWorkerHelper.GetInstance();
@@ -50,7 +50,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
 	*/
 
         [Test]
-        public void ResolveIndentations() {
+        virtual public void ResolveIndentations() {
             CssUtils cssUtils = CssUtils.GetInstance();
             Assert.AreEqual(cssUtils.ParseRelativeValue("1em", 12), ((Paragraph) elementList[0]).SpacingBefore, 0);
             Assert.AreEqual(cssUtils.ParsePxInCmMmPcToPt("1.5in"), ((Paragraph) elementList[1]).IndentationLeft, 0);
@@ -63,7 +63,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [TearDown]
-        public void TearDown() {
+        virtual public void TearDown() {
             elementList = null;
         }
     }

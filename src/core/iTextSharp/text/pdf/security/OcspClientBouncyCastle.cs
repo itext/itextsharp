@@ -121,7 +121,7 @@ namespace iTextSharp.text.pdf.security {
             return ocspResponse;
         }
         
-        public BasicOcspResp GetBasicOCSPResp(X509Certificate checkCert, X509Certificate rootCert, String url) {
+        virtual public BasicOcspResp GetBasicOCSPResp(X509Certificate checkCert, X509Certificate rootCert, String url) {
             try {
                 OcspResp ocspResponse = GetOcspResponse(checkCert, rootCert, url);
                 if (ocspResponse == null)

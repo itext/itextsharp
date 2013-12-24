@@ -10,7 +10,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser {
         private string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\parser\MultiFilteredRenderListenerTest\";
 
         [Test]
-        public void Test() {
+        virtual public void Test() {
             PdfReader pdfReader = TestResourceUtils.GetResourceAsPdfReader(TEST_RESOURCES_PATH, "test.pdf");
 
             String[] expectedText = new String[] {
@@ -52,7 +52,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser {
         }
 
         [Test]
-        public void MultipleFiltersForOneRegionTest() {
+        virtual public void MultipleFiltersForOneRegionTest() {
             PdfReader pdfReader = TestResourceUtils.GetResourceAsPdfReader(TEST_RESOURCES_PATH, "test.pdf");
 
             Rectangle[] regions = new Rectangle[] {

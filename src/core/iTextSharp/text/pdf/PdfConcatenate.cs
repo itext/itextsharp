@@ -83,7 +83,7 @@ namespace iTextSharp.text.pdf {
          * @throws DocumentException
          * @throws IOException
          */
-        public int AddPages(PdfReader reader) {
+        virtual public int AddPages(PdfReader reader) {
             Open();
             int n = reader.NumberOfPages;
             for (int i = 1; i <= n; i++) {
@@ -97,7 +97,7 @@ namespace iTextSharp.text.pdf {
         /**
          * Gets the PdfCopy instance so that you can add bookmarks or change preferences before you close PdfConcatenate.
          */
-        public PdfCopy Writer {
+        virtual public PdfCopy Writer {
             get {
                 return copy;
             }
@@ -107,7 +107,7 @@ namespace iTextSharp.text.pdf {
          * Opens the document (if it isn't open already).
          * Opening the document is done implicitly.
          */
-        public void Open() {
+        virtual public void Open() {
             if (!document.IsOpen()) {
                 document.Open();
             }
@@ -116,7 +116,7 @@ namespace iTextSharp.text.pdf {
         /**
          * We've finished writing the concatenated document.
          */
-        public void Close() {
+        virtual public void Close() {
             document.Close();
         }
     }

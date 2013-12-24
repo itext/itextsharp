@@ -120,7 +120,7 @@ namespace iTextSharp.text.pdf.codec {
                 this.segmentNumber = segment_number;
             }
 
-            public int CompareTo(JBIG2Segment s) {
+            virtual public int CompareTo(JBIG2Segment s) {
                 return this.segmentNumber - s.segmentNumber;
             }
         }
@@ -146,7 +146,7 @@ namespace iTextSharp.text.pdf.codec {
             * @return  a byte array
             * @throws IOException
             */
-            public byte[] GetData(bool for_embedding) {
+            virtual public byte[] GetData(bool for_embedding) {
                 MemoryStream os = new MemoryStream();
                 foreach (int sn in segs.Keys) {
                     JBIG2Segment s = segs[sn];
@@ -180,7 +180,7 @@ namespace iTextSharp.text.pdf.codec {
                 os.Close();
                 return os.ToArray();
             }
-            public void AddSegment(JBIG2Segment s) {
+            virtual public void AddSegment(JBIG2Segment s) {
                 segs[s.segmentNumber] = s;
             }
         }
@@ -195,7 +195,7 @@ namespace iTextSharp.text.pdf.codec {
             return bc;
         }
 
-        public void Read() {
+        virtual public void Read() {
             if (this.read) {
                 throw new InvalidOperationException(MessageLocalization.GetComposedMessage("already.attempted.a.read.on.this.jbig2.file"));
             }
@@ -387,23 +387,23 @@ namespace iTextSharp.text.pdf.codec {
             }
         }
 
-        public int NumberOfPages() {
+        virtual public int NumberOfPages() {
             return pages.Count;
         }
 
-        public int GetPageHeight(int i) {
+        virtual public int GetPageHeight(int i) {
             return pages[i].pageBitmapHeight;
         }
 
-        public int GetPageWidth(int i) {
+        virtual public int GetPageWidth(int i) {
             return pages[i].pageBitmapWidth;
         }
 
-        public JBIG2Page GetPage(int page) {
+        virtual public JBIG2Page GetPage(int page) {
             return pages[page];
         }
 
-        public byte[] GetGlobal(bool for_embedding) {
+        virtual public byte[] GetGlobal(bool for_embedding) {
             MemoryStream os = new MemoryStream();
             try {
                 foreach (JBIG2Segment s in globals.Keys) {

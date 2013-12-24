@@ -88,7 +88,7 @@ namespace iTextSharp.tool.xml.html {
          * @see com.itextpdf.tool.xml.html.CssAppliers#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag, com.itextpdf.tool.xml.css.apply.MarginMemory, com.itextpdf.tool.xml.css.apply.PageSizeContainable, com.itextpdf.tool.xml.pipeline.html.ImageProvider)
          */
 
-        public IElement Apply(IElement e, Tag t, IMarginMemory mm, IPageSizeContainable psc, IImageProvider ip)
+        virtual public IElement Apply(IElement e, Tag t, IMarginMemory mm, IPageSizeContainable psc, IImageProvider ip)
         {
             // warning, mapping is done by instance of, make sure to add things in the right order when adding more.
             if (e is Chunk)
@@ -130,7 +130,7 @@ namespace iTextSharp.tool.xml.html {
          * @see com.itextpdf.tool.xml.html.CssAppliers#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag, com.itextpdf.tool.xml.pipeline.html.HtmlPipelineContext)
          */
 
-        public IElement Apply(IElement e, Tag t, HtmlPipelineContext ctx)
+        virtual public IElement Apply(IElement e, Tag t, HtmlPipelineContext ctx)
         {
             try
             {
@@ -142,17 +142,17 @@ namespace iTextSharp.tool.xml.html {
             }
         }
 
-        public ChunkCssApplier GetChunkCssAplier()
+        virtual public ChunkCssApplier GetChunkCssAplier()
         {
             return chunk;
         }
 
-        public ChunkCssApplier ChunkCssAplier {
+        virtual public ChunkCssApplier ChunkCssAplier {
             get { return this.chunk; }
             set { this.chunk = value; }
         }
 
-        public CssAppliers Clone()
+        virtual public CssAppliers Clone()
         {
             CssAppliersImpl clone = new CssAppliersImpl();
             clone.chunk = chunk;

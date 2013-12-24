@@ -140,7 +140,7 @@ namespace iTextSharp.text.pdf.codec.wmf
         this.meta = new InputMeta(meta);
     }
     
-    public void ReadAll() {
+    virtual public void ReadAll() {
         if (meta.ReadInt() != unchecked((int)0x9AC6CDD7)) {
             throw new DocumentException(MessageLocalization.GetComposedMessage("not.a.placeable.windows.metafile"));
         }
@@ -566,7 +566,7 @@ namespace iTextSharp.text.pdf.codec.wmf
         state.Cleanup(cb);
     }
     
-    public void OutputText(int x, int y, int flag, int x1, int y1, int x2, int y2, string text) {
+    virtual public void OutputText(int x, int y, int flag, int x1, int y1, int x2, int y2, string text) {
         MetaFont font = state.CurrentFont;
         float refX = state.TransformX(x);
         float refY = state.TransformY(y);
@@ -618,7 +618,7 @@ namespace iTextSharp.text.pdf.codec.wmf
         cb.RestoreState();
     }
     
-    public bool IsNullStrokeFill(bool isRectangle) {
+    virtual public bool IsNullStrokeFill(bool isRectangle) {
         MetaPen pen = state.CurrentPen;
         MetaBrush brush = state.CurrentBrush;
         bool noPen = (pen.Style == MetaPen.PS_NULL);
@@ -634,7 +634,7 @@ namespace iTextSharp.text.pdf.codec.wmf
         return result;
     }
 
-    public void StrokeAndFill(){
+    virtual public void StrokeAndFill(){
         MetaPen pen = state.CurrentPen;
         MetaBrush brush = state.CurrentBrush;
         int penStyle = pen.Style;

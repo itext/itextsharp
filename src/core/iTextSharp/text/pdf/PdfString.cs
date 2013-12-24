@@ -170,12 +170,12 @@ namespace iTextSharp.text.pdf {
          * @return        a <CODE>string</CODE>
          */
     
-        public string Encoding {
+        virtual public string Encoding {
             get {
                 return encoding;
             }
         }
-        public String ToUnicodeString() {
+        virtual public String ToUnicodeString() {
             if (encoding != null && encoding.Length != 0)
                 return value;
             GetBytes();
@@ -211,18 +211,18 @@ namespace iTextSharp.text.pdf {
             return bytes;
         }
     
-        public byte[] GetOriginalBytes() {
+        virtual public byte[] GetOriginalBytes() {
             if (originalValue == null)
                 return GetBytes();
             return PdfEncodings.ConvertToBytes(originalValue, null);
         }
     
-        public PdfString SetHexWriting(bool hexWriting) {
+        virtual public PdfString SetHexWriting(bool hexWriting) {
             this.hexWriting = hexWriting;
             return this;
         }
     
-        public bool IsHexWriting() {
+        virtual public bool IsHexWriting() {
             return hexWriting;
         }
     }

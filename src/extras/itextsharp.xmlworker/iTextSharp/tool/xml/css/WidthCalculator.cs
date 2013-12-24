@@ -62,7 +62,7 @@ namespace iTextSharp.tool.xml.css {
          * @param pagewidth the page width
          * @return the width
          */
-        public float GetWidth(Tag tag, IList<String> roottags, float pagewidth){
+        virtual public float GetWidth(Tag tag, IList<String> roottags, float pagewidth){
             float width = 0;
             String widthValue;
             tag.CSS.TryGetValue(HTML.Attribute.WIDTH, out widthValue);

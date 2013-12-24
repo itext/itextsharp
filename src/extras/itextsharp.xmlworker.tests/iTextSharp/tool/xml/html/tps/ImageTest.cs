@@ -26,7 +26,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         private const String RESOURCES = @"..\..\resources\";
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             i.SetCssAppliers(new CssAppliersImpl());
             I.Attributes[HTML.Attribute.SRC] = RESOURCES + "images.jpg";
             workerContextImpl = new WorkerContextImpl();
@@ -38,7 +38,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyEnd() {
+        virtual public void VerifyEnd() {
             IList<IElement> content = i.End(workerContextImpl, I, null);
             Assert.IsTrue(content[0] is Chunk);
             Dictionary<String, Object> attributes = ((Chunk) content[0]).Attributes;
@@ -50,7 +50,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyIfStackOwner() {
+        virtual public void VerifyIfStackOwner() {
             Assert.IsFalse(i.IsStackOwner());
         }
     }

@@ -144,20 +144,20 @@ namespace iTextSharp.text.pdf {
         }
     
     
-        public int Duration {
+        virtual public int Duration {
             get {
                 return duration;
             }
         }
     
     
-        public int Type {
+        virtual public int Type {
             get {
                 return type;
             }
         }
 
-        public PdfDictionary TransitionDictionary {
+        virtual public PdfDictionary TransitionDictionary {
             get {
                 PdfDictionary trans = new PdfDictionary(PdfName.TRANS);
                 switch (type) {

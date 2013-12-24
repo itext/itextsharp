@@ -66,7 +66,7 @@ namespace iTextSharp.tool.xml.parser.state {
          *
          * @see com.itextpdf.tool.xml.parser.State#process(int)
          */
-        public void Process(char character) {
+        virtual public void Process(char character) {
             String tag = this.parser.BufferToString();
             if (HTMLUtils.IsWhiteSpace(character) || character == '>' || character == '/' || character == ':' || tag.Equals("!--") || tag.Equals("![CDATA[") || character == '?') {
                 // cope with <? xml and <! DOCTYPE

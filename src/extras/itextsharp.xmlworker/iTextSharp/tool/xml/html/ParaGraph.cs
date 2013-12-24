@@ -125,7 +125,7 @@ namespace iTextSharp.tool.xml.html {
 		return l;
 	}
 
-    protected void ProcessParagraphItems(IWorkerContext ctx, Tag tag, IList<IElement> paragraphItems, IList<IElement> l) {
+    virtual protected void ProcessParagraphItems(IWorkerContext ctx, Tag tag, IList<IElement> paragraphItems, IList<IElement> l) {
                 Paragraph p = new Paragraph();
         p.MultipliedLeading = 1.2f;
         IElement lastElement = paragraphItems[paragraphItems.Count - 1];
@@ -155,7 +155,7 @@ namespace iTextSharp.tool.xml.html {
             }
         }
     }
-    protected void ProcessListItems(IWorkerContext ctx, Tag tag, IList<ListItem> listItems, IList<IElement> l) {
+    virtual protected void ProcessListItems(IWorkerContext ctx, Tag tag, IList<ListItem> listItems, IList<IElement> l) {
         try {
             List list = new List();
             list.Autoindent = false;

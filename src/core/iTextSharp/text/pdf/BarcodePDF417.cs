@@ -114,7 +114,7 @@ namespace iTextSharp.text.pdf {
         * @param id the id (starting at 0)
         * @see #setMacroSegmentCount(int)
         */
-        public int MacroSegmentId {
+        virtual public int MacroSegmentId {
             set {
                 this.macroSegmentId = value;
             }
@@ -125,7 +125,7 @@ namespace iTextSharp.text.pdf {
         * @param cnt the number of macro segments
         * @see #setMacroSegmentId(int)
         */
-        public int MacroSegmentCount {
+        virtual public int MacroSegmentCount {
             set {
                 this.macroSegmentCount = value;
             }
@@ -135,19 +135,19 @@ namespace iTextSharp.text.pdf {
         * Sets the File ID for macro PDF417 encoding 
         * @param id the file id
         */
-        public String MacroFileId {
+        virtual public String MacroFileId {
             set {
                 this.macroFileId = value;
             }
         }
 
-        protected bool CheckSegmentType(Segment segment, char type) {
+        virtual protected bool CheckSegmentType(Segment segment, char type) {
             if (segment == null)
                 return false;
             return segment.type == type;
         }
         
-        protected int GetSegmentLength(Segment segment) {
+        virtual protected int GetSegmentLength(Segment segment) {
             if (segment == null)
                 return 0;
             return segment.end - segment.start;
@@ -156,7 +156,7 @@ namespace iTextSharp.text.pdf {
         /** Set the default settings that correspond to <CODE>PDF417_USE_ASPECT_RATIO</CODE>
         * and <CODE>PDF417_AUTO_ERROR_LEVEL</CODE>.
         */    
-        public void SetDefaultParameters() {
+        virtual public void SetDefaultParameters() {
             options = 0;
             outBits = null;
             text = new byte[0];
@@ -164,7 +164,7 @@ namespace iTextSharp.text.pdf {
             aspectRatio = 0.5f;
         }
 
-        protected void OutCodeword17(int codeword) {
+        virtual protected void OutCodeword17(int codeword) {
             int bytePtr = bitPtr / 8;
             int bit = bitPtr - bytePtr * 8;
             outBits[bytePtr++] |= (byte)(codeword >> (9 + bit));
@@ -174,7 +174,7 @@ namespace iTextSharp.text.pdf {
             bitPtr += 17;
         }
 
-        protected void OutCodeword18(int codeword) {
+        virtual protected void OutCodeword18(int codeword) {
             int bytePtr = bitPtr / 8;
             int bit = bitPtr - bytePtr * 8;
             outBits[bytePtr++] |= (byte)(codeword >> (10 + bit));
@@ -186,19 +186,19 @@ namespace iTextSharp.text.pdf {
             bitPtr += 18;
         }
 
-        protected void OutCodeword(int codeword) {
+        virtual protected void OutCodeword(int codeword) {
             OutCodeword17(codeword);
         }
 
-        protected void OutStopPattern() {
+        virtual protected void OutStopPattern() {
             OutCodeword18(STOP_PATTERN);
         }
 
-        protected void OutStartPattern() {
+        virtual protected void OutStartPattern() {
             OutCodeword17(START_PATTERN);
         }
 
-        protected void OutPaintCode() {
+        virtual protected void OutPaintCode() {
             int codePtr = 0;
             bitColumns = START_CODE_SIZE * (codeColumns + 3) + STOP_SIZE;
             int lenBits = ((bitColumns - 1) / 8 + 1) * codeRows;
@@ -246,7 +246,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        protected void CalculateErrorCorrection(int dest) {
+        virtual protected void CalculateErrorCorrection(int dest) {
             if (errorLevel < 0 || errorLevel > 8)
                 errorLevel = 0;
             int[] A = ERROR_LEVEL[errorLevel];
@@ -287,7 +287,7 @@ namespace iTextSharp.text.pdf {
             return (PUNCTUATION + ps);
         }
         
-        protected int GetTextTypeAndValue(int maxLength, int idx) {
+        virtual protected int GetTextTypeAndValue(int maxLength, int idx) {
             return GetTextTypeAndValue(text, maxLength,idx);
         }
         
@@ -415,11 +415,11 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        protected void TextCompaction(int start, int length) {
+        virtual protected void TextCompaction(int start, int length) {
             TextCompaction(text, start, length);
         }
 
-        protected void BasicNumberCompaction(int start, int length) {
+        virtual protected void BasicNumberCompaction(int start, int length) {
             BasicNumberCompaction(text, start, length);
         }
 
@@ -464,11 +464,11 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        protected void NumberCompaction(int start, int length) {
+        virtual protected void NumberCompaction(int start, int length) {
             NumberCompaction(text, start, length);
         }
 
-        protected void ByteCompaction6(int start) {
+        virtual protected void ByteCompaction6(int start) {
             int length = 6;
             int ret = cwPtr;
             int retLast = 4;
@@ -649,7 +649,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        protected void Assemble() {
+        virtual protected void Assemble() {
             int k;
             if (segmentList.Size == 0)
                 return;
@@ -731,7 +731,7 @@ namespace iTextSharp.text.pdf {
             return 0;
         }
 
-        protected void DumpList() {
+        virtual protected void DumpList() {
             if (segmentList.Size == 0)
                 return;
             for (int k = 0; k < segmentList.Size; ++k) {
@@ -747,7 +747,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        protected int GetMaxSquare() {
+        virtual protected int GetMaxSquare() {
             if (codeColumns > 21) {
                 codeColumns = 29;
                 codeRows = 32;
@@ -760,7 +760,7 @@ namespace iTextSharp.text.pdf {
         }
 
         /** Paints the barcode. If no exception was thrown a valid barcode is available. */    
-        public void PaintCode() {
+        virtual public void PaintCode() {
             int maxErr, lenErr, tot, pad;
             if ((options & PDF417_USE_RAW_CODEWORDS) != 0) {
                 if (lenCodewords > MAX_DATA_CODEWORDS || lenCodewords < 1 || lenCodewords != codewords[0]) {
@@ -881,7 +881,7 @@ namespace iTextSharp.text.pdf {
         * @return the barcode <CODE>Image</CODE>
         * @throws BadElementException on error
         */    
-        public Image GetImage() {
+        virtual public Image GetImage() {
             PaintCode();
             byte[] g4 = CCITTG4Encoder.Compress(outBits, bitColumns, codeRows);
             return Image.GetInstance(bitColumns, codeRows, false, Element.CCITTG4, (options & PDF417_INVERT_BITMAP) == 0 ? 0 : Element.CCITT_BLACKIS1, g4, null);
@@ -914,7 +914,7 @@ namespace iTextSharp.text.pdf {
         * be scaled in the Y direction by <CODE>yHeight</CODE>.
         * @return The raw barcode image
         */
-        public byte[] OutBits {
+        virtual public byte[] OutBits {
             get {
                 return this.outBits;
             }
@@ -923,7 +923,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the number of X pixels of <CODE>outBits</CODE>.
         * @return the number of X pixels of <CODE>outBits</CODE>
         */
-        public int BitColumns {
+        virtual public int BitColumns {
             get {
                 return this.bitColumns;
             }
@@ -937,7 +937,7 @@ namespace iTextSharp.text.pdf {
         * to keep the barcode valid.
         * @param codeRows the number of barcode rows
         */
-        public int CodeRows {
+        virtual public int CodeRows {
             set {
                 this.codeRows = value;
             }
@@ -950,7 +950,7 @@ namespace iTextSharp.text.pdf {
         * This number may be changed to keep the barcode valid.
         * @param codeColumns the number of barcode data columns
         */
-        public int CodeColumns {
+        virtual public int CodeColumns {
             set {
                 this.codeColumns = value;
             }
@@ -964,7 +964,7 @@ namespace iTextSharp.text.pdf {
         * is set.
         * @return the codeword array
         */
-        public int[] Codewords {
+        virtual public int[] Codewords {
             get {
                 return this.codewords;
             }
@@ -973,7 +973,7 @@ namespace iTextSharp.text.pdf {
         /** Sets the length of the codewords.
         * @param lenCodewords the length of the codewords
         */
-        public int LenCodewords {
+        virtual public int LenCodewords {
             set {
                 this.lenCodewords = value;
             }
@@ -989,7 +989,7 @@ namespace iTextSharp.text.pdf {
         /** Sets the error level correction for the barcode.
         * @param errorLevel the error level correction for the barcode
         */
-        public int ErrorLevel {
+        virtual public int ErrorLevel {
             set {
                 this.errorLevel = value;
             }
@@ -1002,7 +1002,7 @@ namespace iTextSharp.text.pdf {
         * be interpreted in the codepage Cp437.
         * @param text the bytes that form the barcode
         */
-        public byte[] Text {
+        virtual public byte[] Text {
             set {
                 this.text = value;
             }
@@ -1016,7 +1016,7 @@ namespace iTextSharp.text.pdf {
         * @param s the text that will form the barcode
         * @throws UnsupportedEncodingException if the encoding Cp437 is not supported
         */    
-        public void SetText(String s) {
+        virtual public void SetText(String s) {
             this.text = PdfEncodings.ConvertToBytes(s, "cp437");
         }
         
@@ -1024,7 +1024,7 @@ namespace iTextSharp.text.pdf {
         * the <CODE>PDF417_*</CODE> constants.
         * @param options the options to generate the barcode
         */
-        public int Options {
+        virtual public int Options {
             set {
                 this.options = value;
             }
@@ -1037,7 +1037,7 @@ namespace iTextSharp.text.pdf {
         * barcode width twice as large as the height.
         * @param aspectRatio the barcode aspect ratio
         */
-        public float AspectRatio {
+        virtual public float AspectRatio {
             set {
                 this.aspectRatio = value;
             }
@@ -1049,7 +1049,7 @@ namespace iTextSharp.text.pdf {
         /** Sets the Y pixel height relative to X. It is usually 3.
         * @param yHeight the Y pixel height relative to X
         */
-        public float YHeight {
+        virtual public float YHeight {
             set {
                 this.yHeight = value;
             }
@@ -1572,23 +1572,23 @@ namespace iTextSharp.text.pdf {
         protected class SegmentList {
             protected List<Segment> list = new List<Segment>();
             
-            public void Add(char type, int start, int end) {
+            virtual public void Add(char type, int start, int end) {
                 list.Add(new Segment(type, start, end));
             }
 
-            public Segment Get(int idx) {
+            virtual public Segment Get(int idx) {
                 if (idx < 0 || idx >= list.Count)
                     return null;
                 return list[idx];
             }
 
-            public void Remove(int idx) {
+            virtual public void Remove(int idx) {
                 if (idx < 0 || idx >= list.Count)
                     return;
                 list.RemoveAt(idx);
             }
             
-            public int Size {
+            virtual public int Size {
                 get {
                     return list.Count;
                 }

@@ -194,7 +194,7 @@ namespace iTextSharp.text {
         /// Adds a IDocListener to the Document.
         /// </summary>
         /// <param name="listener">the new IDocListener</param>
-        public void AddDocListener(IDocListener listener) {
+        virtual public void AddDocListener(IDocListener listener) {
             listeners.Add(listener);
             if (listener is IAccessibleElement) {
                 IAccessibleElement ae = (IAccessibleElement)listener;
@@ -211,7 +211,7 @@ namespace iTextSharp.text {
         /// Removes a IDocListener from the Document.
         /// </summary>
         /// <param name="listener">the IDocListener that has to be removed.</param>
-        public void RemoveIDocListener(IDocListener listener) {
+        virtual public void RemoveIDocListener(IDocListener listener) {
             listeners.Remove(listener);
         }
 
@@ -349,7 +349,7 @@ namespace iTextSharp.text {
         /// Returns the current page number.
         /// </summary>
         /// <value>an int</value>
-        public int PageNumber {
+        virtual public int PageNumber {
             get {
                 return this.pageN;
             }
@@ -392,7 +392,7 @@ namespace iTextSharp.text {
         /// <param name="name">the name of the header</param>
         /// <param name="content">the content of the header</param>
         /// <returns>true if successful, false otherwise</returns>
-        public bool AddHeader(string name, string content) {
+        virtual public bool AddHeader(string name, string content) {
             return Add(new Header(name, content));
         }
 
@@ -401,7 +401,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="title">the title</param>
         /// <returns>true if successful, false otherwise</returns>
-        public bool AddTitle(string title) {
+        virtual public bool AddTitle(string title) {
             return Add(new Meta(Element.TITLE, title));
         }
 
@@ -410,7 +410,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="subject">the subject</param>
         /// <returns>true if successful, false otherwise</returns>
-        public bool AddSubject(string subject) {
+        virtual public bool AddSubject(string subject) {
             return Add(new Meta(Element.SUBJECT, subject));
         }
 
@@ -419,7 +419,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="keywords">keywords to add</param>
         /// <returns>true if successful, false otherwise</returns>
-        public bool AddKeywords(string keywords) {
+        virtual public bool AddKeywords(string keywords) {
             return Add(new Meta(Element.KEYWORDS, keywords));
         }
 
@@ -428,7 +428,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="author">the name of the author</param>
         /// <returns>true if successful, false otherwise</returns>
-        public bool AddAuthor(string author) {
+        virtual public bool AddAuthor(string author) {
             return Add(new Meta(Element.AUTHOR, author));
         }
 
@@ -437,7 +437,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="creator">the name of the creator</param>
         /// <returns>true if successful, false otherwise</returns>
-        public bool AddCreator(string creator) {
+        virtual public bool AddCreator(string creator) {
             return Add(new Meta(Element.CREATOR, creator));
         }
 
@@ -445,7 +445,7 @@ namespace iTextSharp.text {
         /// Adds the producer to a Document.
         /// </summary>
         /// <returns>true if successful, false otherwise</returns>
-        public bool AddProducer() {
+        virtual public bool AddProducer() {
             return Add(new Meta(Element.PRODUCER, Version.GetInstance().GetVersion));
         }
 
@@ -454,7 +454,7 @@ namespace iTextSharp.text {
          * @param language
          * @return <code>true</code> if successfull, <code>false</code> otherwise
         */ 
-        public bool AddLanguage(String language) {
+        virtual public bool AddLanguage(String language) {
             try {
                 return Add(new Meta(Element.LANGUAGE, language));
             } catch (DocumentException de) {
@@ -466,7 +466,7 @@ namespace iTextSharp.text {
         /// Adds the current date and time to a Document.
         /// </summary>
         /// <returns>true if successful, false otherwise</returns>
-        public bool AddCreationDate() {
+        virtual public bool AddCreationDate() {
             return Add(new Meta(Element.CREATIONDATE, DateTime.Now.ToString("ddd MMM dd HH:mm:ss zzz yyyy")));
         }
 
@@ -476,7 +476,7 @@ namespace iTextSharp.text {
         /// Returns the left margin.
         /// </summary>
         /// <value>the left margin</value>
-        public float LeftMargin {
+        virtual public float LeftMargin {
             get {
                 return marginLeft;
             }
@@ -486,7 +486,7 @@ namespace iTextSharp.text {
         /// Return the right margin.
         /// </summary>
         /// <value>the right margin</value>
-        public float RightMargin {
+        virtual public float RightMargin {
             get {
                 return marginRight;
             }
@@ -496,7 +496,7 @@ namespace iTextSharp.text {
         /// Returns the top margin.
         /// </summary>
         /// <value>the top margin</value>
-        public float TopMargin {
+        virtual public float TopMargin {
             get {
                 return marginTop;
             }
@@ -506,7 +506,7 @@ namespace iTextSharp.text {
         /// Returns the bottom margin.
         /// </summary>
         /// <value>the bottom margin</value>
-        public float BottomMargin {
+        virtual public float BottomMargin {
             get {
                 return marginBottom;
             }
@@ -516,7 +516,7 @@ namespace iTextSharp.text {
         /// Returns the lower left x-coordinate.
         /// </summary>
         /// <value>the lower left x-coordinate</value>
-        public float Left {
+        virtual public float Left {
             get {
                 return pageSize.GetLeft(marginLeft);
             }
@@ -526,7 +526,7 @@ namespace iTextSharp.text {
         /// Returns the upper right x-coordinate.
         /// </summary>
         /// <value>the upper right x-coordinate.</value>
-        public float Right {
+        virtual public float Right {
             get {
                 return pageSize.GetRight(marginRight);
             }
@@ -536,7 +536,7 @@ namespace iTextSharp.text {
         /// Returns the upper right y-coordinate.
         /// </summary>
         /// <value>the upper right y-coordinate.</value>
-        public float Top {
+        virtual public float Top {
             get {
                 return pageSize.GetTop(marginTop);
             }
@@ -546,7 +546,7 @@ namespace iTextSharp.text {
         /// Returns the lower left y-coordinate.
         /// </summary>
         /// <value>the lower left y-coordinate.</value>
-        public float Bottom {
+        virtual public float Bottom {
             get {
                 return pageSize.GetBottom(marginBottom);
             }
@@ -557,7 +557,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="margin">a margin</param>
         /// <returns>the lower left x-coordinate</returns>
-        public float GetLeft(float margin) {
+        virtual public float GetLeft(float margin) {
             return pageSize.GetLeft(marginLeft + margin);
         }
 
@@ -566,7 +566,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="margin">a margin</param>
         /// <returns>the upper right x-coordinate</returns>
-        public float GetRight(float margin) {
+        virtual public float GetRight(float margin) {
             return pageSize.GetRight(marginRight + margin);
         }
 
@@ -575,7 +575,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="margin">a margin</param>
         /// <returns>the upper right y-coordinate</returns>
-        public float GetTop(float margin) {
+        virtual public float GetTop(float margin) {
             return pageSize.GetTop(marginTop + margin);
         }
 
@@ -584,7 +584,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="margin">a margin</param>
         /// <returns>the lower left y-coordinate</returns>
-        public float GetBottom(float margin) {
+        virtual public float GetBottom(float margin) {
             return pageSize.GetBottom(marginBottom + margin);
         }
 
@@ -592,7 +592,7 @@ namespace iTextSharp.text {
         /// Gets the pagesize.
         /// </summary>
         /// <value>the page size</value>
-        public Rectangle PageSize {
+        virtual public Rectangle PageSize {
             get {
                 return this.pageSize;
             }
@@ -602,7 +602,7 @@ namespace iTextSharp.text {
         /// Checks if the document is open.
         /// </summary>
         /// <returns>true if the document is open</returns>
-        public bool IsOpen() {
+        virtual public bool IsOpen() {
             return open;
         }
 
@@ -610,7 +610,7 @@ namespace iTextSharp.text {
         /// Gets the JavaScript onLoad command.
         /// </summary>
         /// <value>the JavaScript onLoad command.</value>
-        public string JavaScript_onLoad {
+        virtual public string JavaScript_onLoad {
             get {
                 return this.javaScript_onLoad;
             }
@@ -624,7 +624,7 @@ namespace iTextSharp.text {
         /// Gets the JavaScript onUnLoad command.
         /// </summary>
         /// <value>the JavaScript onUnLoad command</value>
-        public string JavaScript_onUnLoad {
+        virtual public string JavaScript_onUnLoad {
             get {
                 return this.javaScript_onUnLoad;
             }
@@ -638,7 +638,7 @@ namespace iTextSharp.text {
         /// Gets the style class of the HTML body tag
         /// </summary>
         /// <value>the style class of the HTML body tag</value>
-        public string HtmlStyleClass {
+        virtual public string HtmlStyleClass {
             get {
                 return this.htmlStyleClass;
             }
@@ -688,7 +688,7 @@ namespace iTextSharp.text {
         * 
         * @return the margin mirroring flag
         */    
-        public bool IsMarginMirroring() {
+        virtual public bool IsMarginMirroring() {
             return marginMirroring;
         }
 
@@ -698,7 +698,7 @@ namespace iTextSharp.text {
             }
         }
 
-        public PdfObject GetAccessibleAttribute(PdfName key) {
+        virtual public PdfObject GetAccessibleAttribute(PdfName key) {
             if (accessibleAttributes != null) {
                 PdfObject value;
                 accessibleAttributes.TryGetValue(key, out value);
@@ -707,17 +707,17 @@ namespace iTextSharp.text {
                 return null;
         }
 
-        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+        virtual public void SetAccessibleAttribute(PdfName key, PdfObject value) {
             if (accessibleAttributes == null)
                 accessibleAttributes = new Dictionary<PdfName, PdfObject>();
             accessibleAttributes[key] = value;
         }
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+        virtual public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             return accessibleAttributes;
         }
 
-        public PdfName Role {
+        virtual public PdfName Role {
             get {
                 return role;
             }
@@ -726,7 +726,7 @@ namespace iTextSharp.text {
             }
         }
         
-        public AccessibleElementId ID {
+        virtual public AccessibleElementId ID {
             get { return id; }
             set { id = value; }
         }

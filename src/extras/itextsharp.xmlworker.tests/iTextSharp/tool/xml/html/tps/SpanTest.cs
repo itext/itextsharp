@@ -20,7 +20,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         private WorkerContextImpl workerContextImpl;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             workerContextImpl = new WorkerContextImpl();
             workerContextImpl.Put(typeof (HtmlPipeline).FullName, new HtmlPipelineContext(null));
             s.SetCssAppliers(new CssAppliersImpl());
@@ -33,7 +33,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyContent() {
+        virtual public void VerifyContent() {
             Assert.IsTrue(content[1] is Chunk);
             String unsanitized = content[1].ToString();
             Assert.AreEqual("text snippet return it sanitized!!", unsanitized);
@@ -44,7 +44,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyEnd() {
+        virtual public void VerifyEnd() {
             Assert.IsTrue(s.End(workerContextImpl, new Tag("span"), content)[0] is NoNewLineParagraph);
         }
 
@@ -53,7 +53,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyIfStackOwner() {
+        virtual public void VerifyIfStackOwner() {
             Assert.IsTrue(s.IsStackOwner());
         }
     }

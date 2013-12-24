@@ -1,4 +1,4 @@
-﻿/*
+/*
  * $Id: PdfSignatureBuildProperties.java 6037 2013-10-21 13:44:07Z blowagie $
  *
  * This file is part of the iText (R) project.
@@ -61,7 +61,7 @@ namespace iTextSharp.text.pdf.security {
          * @param name
          */
 
-        public string SignatureCreator {
+        virtual public string SignatureCreator {
             set { GetPdfSignatureAppProperty().SignatureCreator = value; }
         }
 

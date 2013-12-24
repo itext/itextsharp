@@ -69,25 +69,25 @@ namespace iTextSharp.text.pdf.codec.wmf {
             type = META_BRUSH;
         }
 
-        public void Init(InputMeta meta) {
+        virtual public void Init(InputMeta meta) {
             style = meta.ReadWord();
             color = meta.ReadColor();
             hatch = meta.ReadWord();
         }
     
-        public int Style {
+        virtual public int Style {
             get {
                 return style;
             }
         }
     
-        public int Hatch {
+        virtual public int Hatch {
             get {
                 return hatch;
             }
         }
     
-        public BaseColor Color {
+        virtual public BaseColor Color {
             get {
                 return color;
             }

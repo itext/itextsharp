@@ -65,7 +65,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         * @throws IOException on error
         */    
-        public void WriteTo(Stream os) {
+        virtual public void WriteTo(Stream os) {
             Wrt wrt = new Wrt(os, this);
             wrt.WriteTo();
         }
@@ -118,7 +118,7 @@ namespace iTextSharp.text.pdf {
         * @return <CODE>true</CODE> if the field was found and removed,
         * <CODE>false</CODE> otherwise
         */    
-        public bool RemoveField(String field) {
+        virtual public bool RemoveField(String field) {
             Dictionary<String, Object> map = fields;
             StringTokenizer tk = new StringTokenizer(field, ".");
             if (!tk.HasMoreTokens())
@@ -159,7 +159,7 @@ namespace iTextSharp.text.pdf {
         * field name and the values are <CODE>PdfObject</CODE>.
         * @return a map with all the fields
         */    
-        public Dictionary<String, Object> GetFields() {
+        virtual public Dictionary<String, Object> GetFields() {
             Dictionary<String, Object> values = new Dictionary<String, Object>();
             IterateFields(values, fields, "");
             return values;
@@ -169,7 +169,7 @@ namespace iTextSharp.text.pdf {
         * @param field the field name
         * @return the field value or <CODE>null</CODE> if not found
         */    
-        public String GetField(String field) {
+        virtual public String GetField(String field) {
             Dictionary<String, Object> map = fields;
             StringTokenizer tk = new StringTokenizer(field, ".");
             if (!tk.HasMoreTokens())
@@ -206,7 +206,7 @@ namespace iTextSharp.text.pdf {
         * <CODE>false</CODE> if the name is incompatible with
         * an existing field
         */    
-        public bool SetFieldAsName(String field, String value) {
+        virtual public bool SetFieldAsName(String field, String value) {
             return SetField(field, new PdfName(value));
         }
         
@@ -217,7 +217,7 @@ namespace iTextSharp.text.pdf {
         * <CODE>false</CODE> if the name is incompatible with
         * an existing field
         */    
-        public bool SetFieldAsString(String field, String value) {
+        virtual public bool SetFieldAsString(String field, String value) {
             return SetField(field, new PdfString(value, PdfObject.TEXT_UNICODE));
         }
         
@@ -233,14 +233,14 @@ namespace iTextSharp.text.pdf {
          * an existing field
          * @since	2.1.5
          */
-        public bool SetFieldAsAction(String field, PdfAction action) {
+        virtual public bool SetFieldAsAction(String field, PdfAction action) {
             return SetField(field, action);
         }
     
         /** Sets all the fields from this <CODE>FdfReader</CODE>
         * @param fdf the <CODE>FdfReader</CODE>
         */    
-        public void SetFields(FdfReader fdf) {
+        virtual public void SetFields(FdfReader fdf) {
             Dictionary<String, PdfDictionary> map = fdf.Fields;
             foreach (KeyValuePair<string,PdfDictionary> entry in map) {
                 String key = entry.Key;
@@ -259,14 +259,14 @@ namespace iTextSharp.text.pdf {
         /** Sets all the fields from this <CODE>PdfReader</CODE>
         * @param pdf the <CODE>PdfReader</CODE>
         */    
-        public void SetFields(PdfReader pdf) {
+        virtual public void SetFields(PdfReader pdf) {
             SetFields(pdf.AcroFields);
         }
         
         /** Sets all the fields from this <CODE>AcroFields</CODE>
         * @param acro the <CODE>AcroFields</CODE>
         */    
-        public void SetFields(AcroFields af) {
+        virtual public void SetFields(AcroFields af) {
             foreach (KeyValuePair<string,AcroFields.Item> entry in af.Fields) {
                 String fn = entry.Key;
                 AcroFields.Item item = entry.Value;
@@ -284,7 +284,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the PDF file name associated with the FDF.
         * @return the PDF file name associated with the FDF
         */
-        public String File {
+        virtual public String File {
             get {
                 return this.file;
             }
@@ -344,7 +344,7 @@ namespace iTextSharp.text.pdf {
         }
 
        	protected ICounter COUNTER = CounterFactory.GetCounter(typeof(FdfWriter));
-	    protected ICounter GetCounter() {
+	    virtual protected ICounter GetCounter() {
 		    return COUNTER;
 	    }
     }

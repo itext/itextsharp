@@ -105,7 +105,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return an object containing the image dictionary and byte[]
          * @since 5.0.2
          */
-        public PdfImageObject GetImage() {
+        virtual public PdfImageObject GetImage() {
             PrepareImageObject();
             return imageObject;
         }
@@ -125,7 +125,7 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @return a vector in User space representing the start point of the xobject
          */
-        public Vector GetStartPoint(){ 
+        virtual public Vector GetStartPoint(){ 
             return new Vector(0, 0, 1).Cross(ctm); 
         }
 
@@ -133,14 +133,14 @@ namespace iTextSharp.text.pdf.parser {
          * @return The coordinate transformation matrix active when this image was rendered.  Coordinates are in User space.
          * @since 5.0.3
          */
-        public Matrix GetImageCTM(){
+        virtual public Matrix GetImageCTM(){
             return ctm;
         }
         
         /**
          * @return the size of the image, in User space units
          */
-        public float GetArea(){
+        virtual public float GetArea(){
             // the image space area is 1, so we multiply that by the determinant of the CTM to get the transformed area
             return ctm.GetDeterminant();
         }
@@ -149,7 +149,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return an indirect reference to the image
          * @since 5.0.2
          */
-        public PdfIndirectReference GetRef() {
+        virtual public PdfIndirectReference GetRef() {
             return refi;
         }
     }

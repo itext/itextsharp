@@ -97,7 +97,7 @@ namespace iTextSharp.tool.xml.pipeline.css {
 	     *
 	     * @param resolver the CSSResolver to use.
 	     */
-	    public void SetResolver(ICSSResolver resolver) {
+	    virtual public void SetResolver(ICSSResolver resolver) {
 		    this.resolver = resolver;
 	    }
     }

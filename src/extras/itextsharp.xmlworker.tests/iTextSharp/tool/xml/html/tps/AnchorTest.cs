@@ -20,7 +20,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void TestContentToChunk() {
+        virtual public void TestContentToChunk() {
             Anchor a = new Anchor();
             Tag t = new Tag("dummy");
             String content2 = "some content";
@@ -37,7 +37,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyIfStackOwner() {
+        virtual public void VerifyIfStackOwner() {
             Assert.IsTrue(new Anchor().IsStackOwner());
         }
     }

@@ -114,19 +114,19 @@ namespace iTextSharp.text.pdf {
         }
 
 
-        public void AddRecipient(PdfPublicKeyRecipient recipient) {
+        virtual public void AddRecipient(PdfPublicKeyRecipient recipient) {
             recipients.Add(recipient);
         }
         
-        protected internal byte[] GetSeed() {
+        virtual protected internal byte[] GetSeed() {
             return (byte[])seed.Clone();
         }
         
-        public int GetRecipientsSize() {
+        virtual public int GetRecipientsSize() {
             return recipients.Count;
         }
         
-        public byte[] GetEncodedRecipient(int index) {
+        virtual public byte[] GetEncodedRecipient(int index) {
             //Certificate certificate = recipient.GetX509();
             PdfPublicKeyRecipient recipient = recipients[index];
             byte[] cms = recipient.Cms;
@@ -170,7 +170,7 @@ namespace iTextSharp.text.pdf {
             return cms;    
         }
         
-        public PdfArray GetEncodedRecipients() {
+        virtual public PdfArray GetEncodedRecipients() {
             PdfArray EncodedRecipients = new PdfArray();
             byte[] cms = null;
             for (int i=0; i<recipients.Count; i++) {

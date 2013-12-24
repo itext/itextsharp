@@ -222,7 +222,7 @@ namespace iTextSharp.text.pdf.codec {
         }
 
         
-        protected void Process(Stream stream, bool noHeader) {
+        virtual protected void Process(Stream stream, bool noHeader) {
             if (noHeader || stream is BufferedStream) {
                 inputStream = stream;
             } else {

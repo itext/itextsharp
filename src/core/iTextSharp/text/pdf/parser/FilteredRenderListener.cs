@@ -71,7 +71,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param renderInfo contains info to render text
          * @see com.itextpdf.text.pdf.parser.RenderListener#renderText(com.itextpdf.text.pdf.parser.TextRenderInfo)
          */
-        public void RenderText(TextRenderInfo renderInfo) {
+        virtual public void RenderText(TextRenderInfo renderInfo) {
             foreach (RenderFilter filter in filters) {
                 if (!filter.AllowText(renderInfo))
                     return;
@@ -83,7 +83,7 @@ namespace iTextSharp.text.pdf.parser {
          * This class delegates this call
          * @see com.itextpdf.text.pdf.parser.RenderListener#beginTextBlock()
          */
-        public void BeginTextBlock() {
+        virtual public void BeginTextBlock() {
             deleg.BeginTextBlock();
         }
 
@@ -91,7 +91,7 @@ namespace iTextSharp.text.pdf.parser {
          * This class delegates this call
          * @see com.itextpdf.text.pdf.parser.RenderListener#endTextBlock()
          */
-        public void EndTextBlock() {
+        virtual public void EndTextBlock() {
             deleg.EndTextBlock();
         }
 
@@ -100,7 +100,7 @@ namespace iTextSharp.text.pdf.parser {
          * @see com.itextpdf.text.pdf.parser.RenderListener#renderImage(com.itextpdf.text.pdf.parser.ImageRenderInfo)
          * @since 5.0.1
          */
-        public void RenderImage(ImageRenderInfo renderInfo) {
+        virtual public void RenderImage(ImageRenderInfo renderInfo) {
             foreach (RenderFilter filter in filters) {
                 if (!filter.AllowImage(renderInfo))
                     return;

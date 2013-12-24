@@ -9,19 +9,19 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\DocumentFontTest\";
 
         [SetUp]
-        public void SetUp()
+        virtual public void SetUp()
         {
             TestResourceUtils.PurgeTempFiles();
         }
 
         [TearDown]
-        public void TearDown()
+        virtual public void TearDown()
         {
             TestResourceUtils.PurgeTempFiles();
         }
 
         [Test]
-        public void TestConstructionForType0WithoutToUnicodeMap()
+        virtual public void TestConstructionForType0WithoutToUnicodeMap()
         {
             int pageNum = 2;
             PdfName fontIdName = new PdfName("TT9");

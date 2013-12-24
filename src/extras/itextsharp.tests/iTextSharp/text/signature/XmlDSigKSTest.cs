@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
@@ -21,7 +21,7 @@ namespace itextsharp.tests.resources.text.signature
 
 
         [Test]
-        public void XmlDSigRsaKS()
+        virtual public void XmlDSigRsaKS()
         {
             Directory.CreateDirectory(DestDir);
 
@@ -62,7 +62,7 @@ namespace itextsharp.tests.resources.text.signature
         }
 
         [Test]
-        public void XmlDSigRsaKSPackage() {
+        virtual public void XmlDSigRsaKSPackage() {
 
             Directory.CreateDirectory(DestDir);
 

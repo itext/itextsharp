@@ -248,7 +248,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @return the indirect reference
         */    
-        public PdfIndirectReference Reference {
+        virtual public PdfIndirectReference Reference {
             get {
                 if (refi != null)
                     return refi;
@@ -263,7 +263,7 @@ namespace iTextSharp.text.pdf {
         * backslash escaped according to the file specification rules
         * @param fileName the file name as a byte array
         */    
-        public byte[] MultiByteFileName {
+        virtual public byte[] MultiByteFileName {
             set {
                 Put(PdfName.F, new PdfString(value).SetHexWriting(true));
             }
@@ -276,7 +276,7 @@ namespace iTextSharp.text.pdf {
         * @param filename  the filename
         * @param unicode   if true, the filename is UTF-16BE encoded; otherwise PDFDocEncoding is used;
         */    
-        public void SetUnicodeFileName(String filename, bool unicode) {
+        virtual public void SetUnicodeFileName(String filename, bool unicode) {
             Put(PdfName.UF, new PdfString(filename, unicode ? PdfObject.TEXT_UNICODE : PdfObject.TEXT_PDFDOCENCODING));
         }
         
@@ -286,7 +286,7 @@ namespace iTextSharp.text.pdf {
         * cache a copy of the file.
         * @param volatile_file if true, the external file should not be cached
         */
-        public bool Volatile {
+        virtual public bool Volatile {
             set {
                 Put(PdfName.V, new PdfBoolean(value));
             }
@@ -297,14 +297,14 @@ namespace iTextSharp.text.pdf {
         * @param description   some text
         * @param unicode       if true, the text is added as a unicode string
         */
-        public void AddDescription(String description, bool unicode) {
+        virtual public void AddDescription(String description, bool unicode) {
             Put(PdfName.DESC, new PdfString(description, unicode ? PdfObject.TEXT_UNICODE : PdfObject.TEXT_PDFDOCENCODING));
         }
         
         /**
         * Adds the Collection item dictionary.
         */
-        public void AddCollectionItem(PdfCollectionItem ci) {
+        virtual public void AddCollectionItem(PdfCollectionItem ci) {
             Put(PdfName.CI, ci);
         }
 

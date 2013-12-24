@@ -298,7 +298,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="listener">an IElementListener</param>
         /// <returns>true if the element was processed successfully</returns>
-        public bool Process(IElementListener listener) {
+        virtual public bool Process(IElementListener listener) {
             try {
                 return listener.Add(this);
             }
@@ -311,7 +311,7 @@ namespace iTextSharp.text {
         /// Gets the type of the text element.
         /// </summary>
         /// <value>a type</value>
-        public int Type {
+        virtual public int Type {
             get {
                 return Element.CHUNK;
             }
@@ -321,7 +321,7 @@ namespace iTextSharp.text {
         /// Gets all the chunks in this element.
         /// </summary>
         /// <value>an ArrayList</value>
-        public IList<Chunk> Chunks {
+        virtual public IList<Chunk> Chunks {
             get {
                 List<Chunk> tmp = new List<Chunk>();
                 tmp.Add(this);
@@ -336,7 +336,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="str">a string</param>
         /// <returns>a StringBuilder</returns>
-        public StringBuilder Append(string str) {
+        virtual public StringBuilder Append(string str) {
             contentWithNoTabs = null;
             return content.Append(str);
         }
@@ -387,7 +387,7 @@ namespace iTextSharp.text {
         * Gets the width of the Chunk in points.
         * @return a width in points
         */
-        public float GetWidthPoint() {
+        virtual public float GetWidthPoint() {
             if (GetImage() != null) {
                 return GetImage().ScaledWidth;
             }
@@ -398,7 +398,7 @@ namespace iTextSharp.text {
         /// Checks the attributes of this Chunk.
         /// </summary>
         /// <returns>false if there aren't any.</returns>
-        public bool HasAttributes() {
+        virtual public bool HasAttributes() {
             return attributes != null;
         }
 
@@ -409,7 +409,7 @@ namespace iTextSharp.text {
         /// It may be null.
         /// </remarks>
         /// <value>a Hashtable</value>
-        public Dictionary<string,object> Attributes {
+        virtual public Dictionary<string,object> Attributes {
             get {
                 return attributes;
             }
@@ -440,7 +440,7 @@ namespace iTextSharp.text {
         * @param scale the horizontal scaling factor
         * @return this <CODE>Chunk</CODE>
         */    
-        public Chunk SetHorizontalScaling(float scale) {
+        virtual public Chunk SetHorizontalScaling(float scale) {
             return SetAttribute(HSCALE, scale);
         }
         
@@ -448,7 +448,7 @@ namespace iTextSharp.text {
         * Gets the horizontal scaling.
         * @return a percentage in float
         */
-        public float HorizontalScaling {
+        virtual public float HorizontalScaling {
             get {
                 if (attributes != null && attributes.ContainsKey(HSCALE))
                     return (float)attributes[HSCALE];
@@ -469,7 +469,7 @@ namespace iTextSharp.text {
         * @param yPosition the absolute y position relative to the baseline
         * @return this <CODE>Chunk</CODE>
         */    
-        public Chunk SetUnderline(float thickness, float yPosition) {
+        virtual public Chunk SetUnderline(float thickness, float yPosition) {
             return SetUnderline(null, thickness, 0f, yPosition, 0f, PdfContentByte.LINE_CAP_BUTT);
         }
 
@@ -489,7 +489,7 @@ namespace iTextSharp.text {
         * PdfContentByte.LINE_CAP_PROJECTING_SQUARE
         * @return this <CODE>Chunk</CODE>
         */    
-        public Chunk SetUnderline(BaseColor color, float thickness, float thicknessMul, float yPosition, float yPositionMul, int cap) {
+        virtual public Chunk SetUnderline(BaseColor color, float thickness, float thicknessMul, float yPosition, float yPositionMul, int cap) {
             if (attributes == null)
                 attributes = new Dictionary<string,object>();
             Object[] obj = {color, new float[]{thickness, thicknessMul, yPosition, yPositionMul, (float)cap}};
@@ -512,11 +512,11 @@ namespace iTextSharp.text {
         /// </remarks>
         /// <param name="rise">the displacement in points</param>
         /// <returns>this Chunk</returns>
-        public Chunk SetTextRise(float rise) {
+        virtual public Chunk SetTextRise(float rise) {
             return SetAttribute(SUBSUPSCRIPT, rise);
         }
 
-        public float GetTextRise() {
+        virtual public float GetTextRise() {
             if (attributes != null && attributes.ContainsKey(SUBSUPSCRIPT)) {
                 return (float)attributes[SUBSUPSCRIPT];
             }
@@ -533,7 +533,7 @@ namespace iTextSharp.text {
         * @param beta the second angle in degrees
         * @return this <CODE>Chunk</CODE>
         */    
-        public Chunk SetSkew(float alpha, float beta) {
+        virtual public Chunk SetSkew(float alpha, float beta) {
             alpha = (float)Math.Tan(alpha * Math.PI / 180);
             beta = (float)Math.Tan(beta * Math.PI / 180);
             return SetAttribute(SKEW, new float[]{alpha, beta});
@@ -547,7 +547,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="color">the color of the background</param>
         /// <returns>this Chunk</returns>
-        public Chunk SetBackground(BaseColor color) {
+        virtual public Chunk SetBackground(BaseColor color) {
             return SetBackground(color, 0, 0, 0, 0);
         }
 
@@ -559,7 +559,7 @@ namespace iTextSharp.text {
         * @param extraTop increase the size of the rectangle in the top
         * @return this <CODE>Chunk</CODE>
         */
-        public Chunk SetBackground(BaseColor color, float extraLeft, float extraBottom, float extraRight, float extraTop) {
+        virtual public Chunk SetBackground(BaseColor color, float extraLeft, float extraBottom, float extraRight, float extraTop) {
             return SetAttribute(BACKGROUND, new Object[]{color, new float[]{extraLeft, extraBottom, extraRight, extraTop}});
         }
 
@@ -576,7 +576,7 @@ namespace iTextSharp.text {
         * @param strokeColor the stroke color or <CODE>null</CODE> to follow the text color
         * @return this <CODE>Chunk</CODE>
         */    
-        public Chunk SetTextRenderMode(int mode, float strokeWidth, BaseColor strokeColor) {
+        virtual public Chunk SetTextRenderMode(int mode, float strokeWidth, BaseColor strokeColor) {
             return SetAttribute(TEXTRENDERMODE, new Object[]{mode, strokeWidth, strokeColor});
         }
 
@@ -588,7 +588,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="splitCharacter">the SplitCharacter interface</param>
         /// <returns>this Chunk</returns>
-        public Chunk SetSplitCharacter(ISplitCharacter splitCharacter) {
+        virtual public Chunk SetSplitCharacter(ISplitCharacter splitCharacter) {
             return SetAttribute(SPLITCHARACTER, splitCharacter);
         }
 
@@ -600,7 +600,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="hyphenation">the hyphenation engine</param>
         /// <returns>this Chunk</returns>
-        public Chunk SetHyphenation(IHyphenationEvent hyphenation) {
+        virtual public Chunk SetHyphenation(IHyphenationEvent hyphenation) {
             return SetAttribute(HYPHENATION, hyphenation);
         }
 
@@ -613,7 +613,7 @@ namespace iTextSharp.text {
         /// <param name="filename">the file name of the destination document</param>
         /// <param name="name">the name of the destination to go to</param>
         /// <returns>this Chunk</returns>
-        public Chunk SetRemoteGoto(string filename, string name) {
+        virtual public Chunk SetRemoteGoto(string filename, string name) {
             return SetAttribute(REMOTEGOTO, new Object[]{filename, name});
         }
 
@@ -623,7 +623,7 @@ namespace iTextSharp.text {
         /// <param name="filename">the file name of the destination document</param>
         /// <param name="page">the page of the destination to go to. First page is 1</param>
         /// <returns>this Chunk</returns>
-        public Chunk SetRemoteGoto(string filename, int page) {
+        virtual public Chunk SetRemoteGoto(string filename, int page) {
             return SetAttribute(REMOTEGOTO, new Object[]{filename, page});
         }
 
@@ -638,7 +638,7 @@ namespace iTextSharp.text {
         /// </remarks>
         /// <param name="name">the name of the destination to go to</param>
         /// <returns>this Chunk</returns>
-        public Chunk SetLocalGoto(string name) {
+        virtual public Chunk SetLocalGoto(string name) {
             return SetAttribute(LOCALGOTO, name);
         }
 
@@ -650,7 +650,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="name">the name for this destination</param>
         /// <returns>this Chunk</returns>
-        public Chunk SetLocalDestination(string name) {
+        virtual public Chunk SetLocalDestination(string name) {
             return SetAttribute(LOCALDESTINATION, name);
         }
 
@@ -665,7 +665,7 @@ namespace iTextSharp.text {
         /// </remarks>
         /// <param name="text">the text for the tag</param>
         /// <returns>this Chunk</returns>
-        public Chunk SetGenericTag(string text) {
+        virtual public Chunk SetGenericTag(string text) {
             return SetAttribute(GENERICTAG, text);
         }
 
@@ -678,7 +678,7 @@ namespace iTextSharp.text {
 	     * @return this <CODE>Chunk</CODE>
 	     */
 
-	    public Chunk setLineHeight(float lineheight) {
+	    virtual public Chunk setLineHeight(float lineheight) {
 		    return SetAttribute(LINEHEIGHT, lineheight);
 	    }
 
@@ -689,7 +689,7 @@ namespace iTextSharp.text {
         /// Returns the image.
         /// </summary>
         /// <value>an Image</value>
-        public Image GetImage() {
+        virtual public Image GetImage() {
             if (attributes != null && attributes.ContainsKey(IMAGE)) 
                 return (Image)((Object[])attributes[Chunk.IMAGE])[0];
             else
@@ -704,7 +704,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="action">the action</param>
         /// <returns>this Chunk</returns>
-        public Chunk SetAction(PdfAction action) {
+        virtual public Chunk SetAction(PdfAction action) {
             Role = PdfName.LINK;
             return SetAttribute(ACTION, action);
         }
@@ -714,7 +714,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="url">the Uri to link to</param>
         /// <returns>this Chunk</returns>
-        public Chunk SetAnchor(Uri url) {
+        virtual public Chunk SetAnchor(Uri url) {
             Role = PdfName.LINK;
             return SetAttribute(ACTION, new PdfAction(url));
         }
@@ -724,7 +724,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="url">the url to link to</param>
         /// <returns>this Chunk</returns>
-        public Chunk SetAnchor(string url) {
+        virtual public Chunk SetAnchor(string url) {
             Role = PdfName.LINK;
             return SetAttribute(ACTION, new PdfAction(url));
         }
@@ -736,7 +736,7 @@ namespace iTextSharp.text {
         /// Sets a new page tag.
         /// </summary>
         /// <returns>this Chunk</returns>
-        public Chunk SetNewPage() {
+        virtual public Chunk SetNewPage() {
             return SetAttribute(NEWPAGE, null);
         }
 
@@ -748,7 +748,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="annotation">the annotation</param>
         /// <returns>this Chunk</returns>
-        public Chunk SetAnnotation(PdfAnnotation annotation) {
+        virtual public Chunk SetAnnotation(PdfAnnotation annotation) {
             return SetAttribute(PDFANNOTATION, annotation);
         }
 
@@ -756,7 +756,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isContent()
         * @since   iText 2.0.8
         */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return true;
         }
 
@@ -764,7 +764,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isNestable()
         * @since   iText 2.0.8
         */
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             return true;
         }
 
@@ -773,7 +773,7 @@ namespace iTextSharp.text {
         * @param    hyphenation a HyphenationEvent instance
         * @since    2.1.2
         */
-        public IHyphenationEvent GetHyphenation() {
+        virtual public IHyphenationEvent GetHyphenation() {
             if (attributes != null && attributes.ContainsKey(HYPHENATION))
                 return (IHyphenationEvent)attributes[HYPHENATION];
             else
@@ -799,7 +799,7 @@ namespace iTextSharp.text {
 	    * @param charSpace the character spacing value
 	    * @return this <CODE>Chunk</CODE>
 	    */
-	    public Chunk SetCharacterSpacing(float charSpace) {
+	    virtual public Chunk SetCharacterSpacing(float charSpace) {
 		    return SetAttribute(CHAR_SPACING, charSpace);
 	    }
     	
@@ -808,7 +808,7 @@ namespace iTextSharp.text {
 	    * 
 	    * @return a value in float
 	    */
-	    public float GetCharacterSpacing() {
+	    virtual public float GetCharacterSpacing() {
 		    if (attributes != null && attributes.ContainsKey(CHAR_SPACING))
 			    return (float)attributes[CHAR_SPACING];
             else
@@ -826,7 +826,7 @@ namespace iTextSharp.text {
 	     * @param wordSpace the word spacing value
 	     * @return this <CODE>Chunk</CODE>
 	     */	
-	    public Chunk SetWordSpacing(float wordSpace) {
+	    virtual public Chunk SetWordSpacing(float wordSpace) {
 		    return SetAttribute(WORD_SPACING, wordSpace);
 	    }
 	
@@ -835,7 +835,7 @@ namespace iTextSharp.text {
 	     *
 	     * @return a value in float
 	     */	
-	    public float GetWordSpacing() {
+	    virtual public float GetWordSpacing() {
 		    if (attributes != null && attributes.ContainsKey(WORD_SPACING)) {
 			    float f = (float)attributes[WORD_SPACING];
 			    return f;
@@ -863,7 +863,7 @@ namespace iTextSharp.text {
             return whitespace;
         }
 
-        public bool IsWhitespace() {
+        virtual public bool IsWhitespace() {
             return attributes != null && attributes.ContainsKey(WHITESPACE);
         }
 
@@ -880,12 +880,12 @@ namespace iTextSharp.text {
         }
 
         [Obsolete]
-        public bool IsTabspace()
+        virtual public bool IsTabspace()
         {
             return attributes != null && attributes.ContainsKey(TAB);
         }
 
-        public PdfObject GetAccessibleAttribute(PdfName key) {
+        virtual public PdfObject GetAccessibleAttribute(PdfName key) {
             if (GetImage() != null) {
                 return GetImage().GetAccessibleAttribute(key);
             } else if (accessibleAttributes != null) {
@@ -897,7 +897,7 @@ namespace iTextSharp.text {
                 return null;
         }
 
-        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+        virtual public void SetAccessibleAttribute(PdfName key, PdfObject value) {
             if (GetImage() != null) {
                 GetImage().SetAccessibleAttribute(key, value);
             } else {
@@ -907,14 +907,14 @@ namespace iTextSharp.text {
             }
         }
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+        virtual public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             if (GetImage() != null)
                 return GetImage().GetAccessibleAttributes();
             else
                 return accessibleAttributes;
         }
 
-        public PdfName Role{
+        virtual public PdfName Role{
             get
             {
                 if (GetImage() != null)
@@ -931,7 +931,7 @@ namespace iTextSharp.text {
             }
         }
 
-        public AccessibleElementId ID {
+        virtual public AccessibleElementId ID {
             get
             {
                 if (id == null)
@@ -941,7 +941,7 @@ namespace iTextSharp.text {
             set { id = value; }
         }
 
-        public String GetTextExpansion() {
+        virtual public String GetTextExpansion() {
             PdfObject o = GetAccessibleAttribute(PdfName.E);
             if (o is PdfString)
                 return ((PdfString)o).ToUnicodeString();
@@ -953,7 +953,7 @@ namespace iTextSharp.text {
          * It is highly recommend to set textuual expansion when generating PDF/UA documents.
          * @param value
          */
-        public void SetTextExpansion(String value) {
+        virtual public void SetTextExpansion(String value) {
             SetAccessibleAttribute(PdfName.E, new PdfString(value));
         }
     }

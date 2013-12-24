@@ -94,7 +94,7 @@ namespace iTextSharp.text.pdf {
         * Gets the prefix name.
         * @return  a PdfName
         */
-        public PdfName Prefix {
+        virtual public PdfName Prefix {
             get {
                 return prefix;
             }
@@ -104,7 +104,7 @@ namespace iTextSharp.text.pdf {
         * Gets the baseversion name.
         * @return  a PdfName
         */
-        public PdfName Baseversion {
+        virtual public PdfName Baseversion {
             get {
                 return baseversion;
             }
@@ -114,7 +114,7 @@ namespace iTextSharp.text.pdf {
         * Gets the extension level within the baseversion.
         * @return  an integer
         */
-        public int ExtensionLevel {
+        virtual public int ExtensionLevel {
             get {
                 return extensionLevel;
             }
@@ -125,7 +125,7 @@ namespace iTextSharp.text.pdf {
         * with the prefix.
         * @return  a PdfDictionary
         */
-        public PdfDictionary GetDeveloperExtensions() {
+        virtual public PdfDictionary GetDeveloperExtensions() {
             PdfDictionary developerextensions = new PdfDictionary();
             developerextensions.Put(PdfName.BASEVERSION, baseversion);
             developerextensions.Put(PdfName.EXTENSIONLEVEL, new PdfNumber(extensionLevel));
