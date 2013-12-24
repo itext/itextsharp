@@ -109,7 +109,7 @@ namespace iTextSharp.text.pdf.codec {
          * @param buf data to be compressed to output stream
          * @exception IOException if underlying output stream error
          **/
-        public void Compress(byte[] buf, int offset, int length) {
+        virtual public void Compress(byte[] buf, int offset, int length) {
             int idx;
             byte c;
             short index;
@@ -145,7 +145,7 @@ namespace iTextSharp.text.pdf.codec {
          *
          * @exception IOException if underlying output stream error
          **/
-        public void Flush() {
+        virtual public void Flush() {
             if (prefix_ != -1)
                 bf_.WriteBits(prefix_, numBits_);
 

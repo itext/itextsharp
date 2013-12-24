@@ -133,7 +133,7 @@ namespace iTextSharp.text.pdf {
         * @param moreInfo additional entries to the info dictionary
         *
         */
-        public IDictionary<String, String> MoreInfo {
+        virtual public IDictionary<String, String> MoreInfo {
             set {
                 moreInfo = value;
             }
@@ -150,7 +150,7 @@ namespace iTextSharp.text.pdf {
         * @param pageImported the page number of the imported page
         * @param pageReplaced the page to replace in this document
         */
-        public void ReplacePage(PdfReader r, int pageImported, int pageReplaced) {
+        virtual public void ReplacePage(PdfReader r, int pageImported, int pageReplaced) {
             stamper.ReplacePage(r, pageImported, pageReplaced);
         }
 
@@ -161,7 +161,7 @@ namespace iTextSharp.text.pdf {
         * @param pageNumber the page number position where the new page will be inserted
         * @param mediabox the size of the new page
         */    
-        public void InsertPage(int pageNumber, Rectangle mediabox) {
+        virtual public void InsertPage(int pageNumber, Rectangle mediabox) {
             stamper.InsertPage(pageNumber, mediabox);
         }
         
@@ -169,7 +169,7 @@ namespace iTextSharp.text.pdf {
         * Gets the signing instance. The appearances and other parameters can the be set.
         * @return the signing instance
         */    
-        public PdfSignatureAppearance SignatureAppearance {
+        virtual public PdfSignatureAppearance SignatureAppearance {
             get {
                 return sigApp;
             }
@@ -179,7 +179,7 @@ namespace iTextSharp.text.pdf {
          * Gets the xml signing instance. The appearances and other parameters can the be set.
          * @return the signing instance
          */
-        public XmlSignatureAppearance XmlSignatureAppearance {
+        virtual public XmlSignatureAppearance XmlSignatureAppearance {
             get {
                 return sigXmlApp;
             }
@@ -194,7 +194,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         * @throws IOException on error
         */
-        public void Close() {
+        virtual public void Close() {
             if (stamper.closed)
                 return;
             if (!hasSignature) {
@@ -212,7 +212,7 @@ namespace iTextSharp.text.pdf {
         * @return a <CODE>PdfContentByte</CODE> to write under the page of
         * the original document
         */    
-        public PdfContentByte GetUnderContent(int pageNum) {
+        virtual public PdfContentByte GetUnderContent(int pageNum) {
             return stamper.GetUnderContent(pageNum);
         }
 
@@ -222,7 +222,7 @@ namespace iTextSharp.text.pdf {
         * @return a <CODE>PdfContentByte</CODE> to write over the page of
         * the original document
         */    
-        public PdfContentByte GetOverContent(int pageNum) {
+        virtual public PdfContentByte GetOverContent(int pageNum) {
             return stamper.GetOverContent(pageNum);
         }
         
@@ -235,7 +235,7 @@ namespace iTextSharp.text.pdf {
         * @param rotateContents <CODE>true</CODE> to set auto-rotation, <CODE>false</CODE>
         * otherwise
         */    
-        public bool RotateContents {
+        virtual public bool RotateContents {
             set {
                 stamper.RotateContents = value;
             }
@@ -256,7 +256,7 @@ namespace iTextSharp.text.pdf {
         * @param strength128Bits <code>true</code> for 128 bit key length, <code>false</code> for 40 bit key length
         * @throws DocumentException if anything was already written to the output
         */
-        public void SetEncryption(byte[] userPassword, byte[] ownerPassword, int permissions, bool strength128Bits) {
+        virtual public void SetEncryption(byte[] userPassword, byte[] ownerPassword, int permissions, bool strength128Bits) {
             if (stamper.append)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("append.mode.does.not.support.changing.the.encryption.status"));
             if (stamper.ContentWritten)
@@ -277,7 +277,7 @@ namespace iTextSharp.text.pdf {
         * Optionally DO_NOT_ENCRYPT_METADATA can be ored to output the metadata in cleartext
         * @throws DocumentException if the document is already open
         */
-        public void SetEncryption(byte[] userPassword, byte[] ownerPassword, int permissions, int encryptionType) {
+        virtual public void SetEncryption(byte[] userPassword, byte[] ownerPassword, int permissions, int encryptionType) {
             if (stamper.IsAppend())
                 throw new DocumentException(MessageLocalization.GetComposedMessage("append.mode.does.not.support.changing.the.encryption.status"));
             if (stamper.ContentWritten)
@@ -298,7 +298,7 @@ namespace iTextSharp.text.pdf {
         * @param permissions the user permissions
         * @throws DocumentException if anything was already written to the output
         */
-        public void SetEncryption(bool strength, String userPassword, String ownerPassword, int permissions) {
+        virtual public void SetEncryption(bool strength, String userPassword, String ownerPassword, int permissions) {
             SetEncryption(DocWriter.GetISOBytes(userPassword), DocWriter.GetISOBytes(ownerPassword), permissions, strength);
         }
 
@@ -316,7 +316,7 @@ namespace iTextSharp.text.pdf {
         * @param permissions the user permissions
         * @throws DocumentException if the document is already open
         */
-        public void SetEncryption(int encryptionType, String userPassword, String ownerPassword, int permissions) {
+        virtual public void SetEncryption(int encryptionType, String userPassword, String ownerPassword, int permissions) {
             SetEncryption(DocWriter.GetISOBytes(userPassword), DocWriter.GetISOBytes(ownerPassword), permissions, encryptionType);
         }
 
@@ -333,7 +333,7 @@ namespace iTextSharp.text.pdf {
         * @param encryptionType the type of encryption. It can be one of STANDARD_ENCRYPTION_40, STANDARD_ENCRYPTION_128 or ENCRYPTION_AES128.
         * @throws DocumentException if the encryption was set too late
         */
-        public void SetEncryption(X509Certificate[] certs, int[] permissions, int encryptionType) {
+        virtual public void SetEncryption(X509Certificate[] certs, int[] permissions, int encryptionType) {
             if (stamper.IsAppend())
                 throw new DocumentException(MessageLocalization.GetComposedMessage("append.mode.does.not.support.changing.the.encryption.status"));
             if (stamper.ContentWritten)
@@ -347,14 +347,14 @@ namespace iTextSharp.text.pdf {
         * @param pageNumber the page number. The first page is 1
         * @return the template representing the imported page
         */
-        public PdfImportedPage GetImportedPage(PdfReader reader, int pageNumber) {
+        virtual public PdfImportedPage GetImportedPage(PdfReader reader, int pageNumber) {
             return stamper.GetImportedPage(reader, pageNumber);
         }
         
         /** Gets the underlying PdfWriter.
         * @return the underlying PdfWriter
         */    
-        public PdfWriter Writer {
+        virtual public PdfWriter Writer {
             get {
                 return stamper;
             }
@@ -363,7 +363,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the underlying PdfReader.
         * @return the underlying PdfReader
         */
-        public PdfReader Reader {
+        virtual public PdfReader Reader {
             get {
                 return stamper.reader;
             }
@@ -373,7 +373,7 @@ namespace iTextSharp.text.pdf {
         * and to merge FDF forms.
         * @return the <CODE>AcroFields</CODE> object
         */    
-        public AcroFields AcroFields {
+        virtual public AcroFields AcroFields {
             get {
                 return stamper.GetAcroFields();
             }
@@ -384,7 +384,7 @@ namespace iTextSharp.text.pdf {
         * @param flat <CODE>true</CODE> to flatten the fields, <CODE>false</CODE>
         * to keep the fields
         */    
-        public bool FormFlattening {
+        virtual public bool FormFlattening {
             set {
                 stamper.FormFlattening = value;
             }
@@ -394,7 +394,7 @@ namespace iTextSharp.text.pdf {
         * @param flat <CODE>true</CODE> to flatten the FreeText annotations, <CODE>false</CODE>
         * (the default) to keep the FreeText annotations as active content.
         */
-        public bool FreeTextFlattening {
+        virtual public bool FreeTextFlattening {
             set {
                 stamper.FreeTextFlattening = value;
             }
@@ -405,7 +405,7 @@ namespace iTextSharp.text.pdf {
         * @param annot the annotation
         * @param page the page
         */    
-        public void AddAnnotation(PdfAnnotation annot, int page) {
+        virtual public void AddAnnotation(PdfAnnotation annot, int page) {
             stamper.AddAnnotation(annot, page);
         }
 
@@ -420,7 +420,7 @@ namespace iTextSharp.text.pdf {
         * @return   a signature form field
         * @since    2.1.4
         */
-        public PdfFormField AddSignature(String name, int page, float llx, float lly, float urx, float ury) {
+        virtual public PdfFormField AddSignature(String name, int page, float llx, float lly, float urx, float ury) {
             PdfAcroForm acroForm = stamper.AcroForm;
             PdfFormField signature = PdfFormField.CreateSignature(stamper);
             acroForm.SetSignatureParams(signature, name, llx, lly, urx, ury);
@@ -434,7 +434,7 @@ namespace iTextSharp.text.pdf {
         * @param fdf the FDF file
         * @throws IOException on error
         */    
-        public void AddComments(FdfReader fdf) {
+        virtual public void AddComments(FdfReader fdf) {
             stamper.AddComments(fdf);
         }
         
@@ -443,7 +443,7 @@ namespace iTextSharp.text.pdf {
         * {@link SimpleBookmark}.
         * @param outlines the bookmarks or <CODE>null</CODE> to remove any
         */    
-        public IList<Dictionary<String, Object>> Outlines {
+        virtual public IList<Dictionary<String, Object>> Outlines {
             set {
                 stamper.Outlines = value;
             }
@@ -456,7 +456,7 @@ namespace iTextSharp.text.pdf {
         * @throws PdfException on error
         * @throws DocumentException on error
         */    
-        public void SetThumbnail(Image image, int page) {
+        virtual public void SetThumbnail(Image image, int page) {
             stamper.SetThumbnail(image, page);
         }
         
@@ -470,7 +470,7 @@ namespace iTextSharp.text.pdf {
         * @param name the field name
         * @return <CODE>true</CODE> if the field exists, <CODE>false</CODE> otherwise
         */    
-        public bool PartialFormFlattening(String name) {
+        virtual public bool PartialFormFlattening(String name) {
             return stamper.PartialFormFlattening(name);
         }
         
@@ -478,7 +478,7 @@ namespace iTextSharp.text.pdf {
         * opens all this JavaScript runs. The existing JavaScript will be replaced.
         * @param js the JavaScript code
         */
-        public string JavaScript {
+        virtual public string JavaScript {
             set {
                 stamper.AddJavaScript(value, !PdfEncodings.IsPdfDocEncoding(value));
             }
@@ -493,7 +493,7 @@ namespace iTextSharp.text.pdf {
         * @param fileDisplay the actual file name stored in the pdf
         * @throws IOException on error
         */    
-        public void AddFileAttachment(String description, byte[] fileStore, String file, String fileDisplay) {
+        virtual public void AddFileAttachment(String description, byte[] fileStore, String file, String fileDisplay) {
             AddFileAttachment(description, PdfFileSpecification.FileEmbedded(stamper, file, fileDisplay, fileStore));
         }
 
@@ -501,7 +501,7 @@ namespace iTextSharp.text.pdf {
         * @param description the file description
         * @param fs the file specification
         */    
-        public void AddFileAttachment(String description, PdfFileSpecification fs) {
+        virtual public void AddFileAttachment(String description, PdfFileSpecification fs) {
             stamper.AddFileAttachment(description, fs);
         }
 
@@ -518,7 +518,7 @@ namespace iTextSharp.text.pdf {
         * attached files as entries.
         * @param initialView can be PdfName.D, PdfName.T or PdfName.H
         */
-        public void MakePackage( PdfName initialView ) {
+        virtual public void MakePackage( PdfName initialView ) {
             PdfCollection collection = new PdfCollection(0);
             collection.Put(PdfName.VIEW, initialView);
             stamper.MakePackage( collection );
@@ -528,7 +528,7 @@ namespace iTextSharp.text.pdf {
         * Adds or replaces the Collection Dictionary in the Catalog.
         * @param    collection  the new collection dictionary.
         */
-        public void MakePackage(PdfCollection collection) {
+        virtual public void MakePackage(PdfCollection collection) {
             stamper.MakePackage(collection);        
         }
 
@@ -557,17 +557,17 @@ namespace iTextSharp.text.pdf {
         * @param xmp
         * @see PdfWriter#setXmpMetadata(byte[])
         */
-        public byte[] XmpMetadata {
+        virtual public byte[] XmpMetadata {
             set {
                 stamper.XmpMetadata = value;
             }
         }
 
-        public void CreateXmpMetadata() {
+        virtual public void CreateXmpMetadata() {
             stamper.CreateXmpMetadata();
         }
 
-        public XmpWriter XmpWriter {
+        virtual public XmpWriter XmpWriter {
             get { return stamper.XmpWriter; }
         }
 
@@ -575,7 +575,7 @@ namespace iTextSharp.text.pdf {
         * Gets the 1.5 compression status.
         * @return <code>true</code> if the 1.5 compression is on
         */
-        public bool FullCompression {
+        virtual public bool FullCompression {
             get {
                 return stamper.FullCompression;
             }
@@ -585,7 +585,7 @@ namespace iTextSharp.text.pdf {
         * Sets the document's compression to the new 1.5 mode with object streams and xref
         * streams. It can be set at any time but once set it can't be unset.
         */
-        public void SetFullCompression() {
+        virtual public void SetFullCompression() {
             if (stamper.append)
                 return;
             stamper.fullCompression = true;
@@ -600,7 +600,7 @@ namespace iTextSharp.text.pdf {
         * @param page the page where the action will be applied. The first page is 1
         * @throws PdfException if the action type is invalid
         */    
-        public void SetPageAction(PdfName actionType, PdfAction action, int page) {
+        virtual public void SetPageAction(PdfName actionType, PdfAction action, int page) {
             stamper.SetPageAction(actionType, action, page);
         }
 
@@ -609,7 +609,7 @@ namespace iTextSharp.text.pdf {
         * @param seconds   the number of seconds to display the page. A negative value removes the entry
         * @param page the page where the duration will be applied. The first page is 1
         */
-        public void SetDuration(int seconds, int page) {
+        virtual public void SetDuration(int seconds, int page) {
             stamper.SetDuration(seconds, page);
         }
         
@@ -618,7 +618,7 @@ namespace iTextSharp.text.pdf {
         * @param transition   the transition object. A <code>null</code> removes the transition
         * @param page the page where the transition will be applied. The first page is 1
         */
-        public void SetTransition(PdfTransition transition, int page) {
+        virtual public void SetTransition(PdfTransition transition, int page) {
             stamper.SetTransition(transition, page);
         }
 
@@ -781,19 +781,19 @@ namespace iTextSharp.text.pdf {
         * @return   a Map with all the PdfLayers in the document (and the name/title of the layer as key)
         * @since    2.1.2
         */
-        public Dictionary<string,PdfLayer> GetPdfLayers() {
+        virtual public Dictionary<string,PdfLayer> GetPdfLayers() {
             return stamper.GetPdfLayers();
         }
 
-        public void Dispose() {
+        virtual public void Dispose() {
             Close();
         }
 
-        public void MarkUsed(PdfObject obj) {
+        virtual public void MarkUsed(PdfObject obj) {
             stamper.MarkUsed(obj);
         }
 
-        public LtvVerification LtvVerification {
+        virtual public LtvVerification LtvVerification {
             get {
                 if (verification == null)
                     verification = new LtvVerification(this);

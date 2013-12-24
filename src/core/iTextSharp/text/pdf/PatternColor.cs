@@ -60,7 +60,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the pattern.
          * @return the pattern
          */    
-        public PdfPatternPainter Painter {
+        virtual public PdfPatternPainter Painter {
             get {
                 return this.painter;
             }

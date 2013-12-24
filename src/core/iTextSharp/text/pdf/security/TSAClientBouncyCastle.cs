@@ -132,7 +132,7 @@ namespace iTextSharp.text.pdf.security {
         /**
          * @param tsaInfo the tsaInfo to set
          */
-        public void SetTSAInfo(ITSAInfoBouncyCastle tsaInfo) {
+        virtual public void SetTSAInfo(ITSAInfoBouncyCastle tsaInfo) {
             this.tsaInfo = tsaInfo;
         }
 
@@ -149,7 +149,7 @@ namespace iTextSharp.text.pdf.security {
          * Gets the MessageDigest to digest the data imprint
          * @return the digest algorithm name
          */
-        public IDigest GetMessageDigest() {
+        virtual public IDigest GetMessageDigest() {
             return DigestAlgorithms.GetMessageDigest(digestAlgorithm);
         }
 

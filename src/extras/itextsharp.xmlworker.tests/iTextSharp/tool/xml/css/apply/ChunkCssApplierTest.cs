@@ -11,7 +11,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         private ChunkCssApplier applier = new ChunkCssApplier();
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
             t = new Tag(null);
             t.CSS["color"] = "#000000";
@@ -22,7 +22,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveFontFamily() {
+        virtual public void ResolveFontFamily() {
             Assert.AreEqual("Helvetica", c.Font.Familyname);
 //		t.CSS.put("font-family", "Verdana");
 //		c = new ChunkCssApplier().Apply(c, t);
@@ -30,7 +30,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveFontSize() {
+        virtual public void ResolveFontSize() {
             Assert.AreEqual(12, c.Font.Size, 0);
             t.CSS["font-size"] = "18pt";
             c = applier.Apply(c, t);
@@ -38,7 +38,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveCharacterSpacing() {
+        virtual public void ResolveCharacterSpacing() {
             Assert.AreEqual(0, c.GetCharacterSpacing(), 0);
             t.CSS["letter-spacing"] = "15pt";
             c = applier.Apply(c, t);
@@ -46,7 +46,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveHorizontalAndVerticalScaling() {
+        virtual public void ResolveHorizontalAndVerticalScaling() {
             t.CSS["xfa-font-vertical-scale"] = "75pt";
             Assert.AreEqual(1, c.HorizontalScaling, 0);
             t.CSS["xfa-font-horizontal-scale"] = "75%";
@@ -59,7 +59,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveColor() {
+        virtual public void ResolveColor() {
             Assert.AreEqual(BaseColor.BLACK, c.Font.Color);
             t.CSS["color"] = "#00f";
             c = applier.Apply(c, t);
@@ -73,7 +73,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveVerticalAlign() {
+        virtual public void ResolveVerticalAlign() {
             Assert.AreEqual(0, c.GetTextRise(), 0);
             t.CSS["vertical-align"] = "5pt";
             c = applier.Apply(c, t);

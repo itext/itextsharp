@@ -70,7 +70,7 @@ namespace iTextSharp.text.pdf.crypto {
             }
         }
         
-        public byte[] Update(byte[] b, int off, int len) {
+        virtual public byte[] Update(byte[] b, int off, int len) {
             if (aes) {
                 if (initiated)
                     return cipher.Update(b, off, len);
@@ -96,7 +96,7 @@ namespace iTextSharp.text.pdf.crypto {
             }
         }
         
-        public byte[] Finish() {
+        virtual public byte[] Finish() {
             if (aes) {
                 return cipher.DoFinal();
             }

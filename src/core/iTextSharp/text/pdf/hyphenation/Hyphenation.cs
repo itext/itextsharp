@@ -36,7 +36,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         /**
          * @return the number of hyphenation points in the word
          */
-        public int Length {
+        virtual public int Length {
             get {
                 return len;
             }
@@ -45,21 +45,21 @@ namespace iTextSharp.text.pdf.hyphenation {
         /**
          * @return the pre-break text, not including the hyphen character
          */
-        public string GetPreHyphenText(int index) {
+        virtual public string GetPreHyphenText(int index) {
             return word.Substring(0, hyphenPoints[index]);
         }
 
         /**
          * @return the post-break text
          */
-        public string GetPostHyphenText(int index) {
+        virtual public string GetPostHyphenText(int index) {
             return word.Substring(hyphenPoints[index]);
         }
 
         /**
          * @return the hyphenation points
          */
-        public int[] HyphenationPoints {
+        virtual public int[] HyphenationPoints {
             get {
                 return hyphenPoints;
             }

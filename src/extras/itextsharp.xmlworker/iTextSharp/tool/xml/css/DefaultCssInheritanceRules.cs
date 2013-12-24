@@ -61,7 +61,7 @@ namespace iTextSharp.tool.xml.css {
          * com.itextpdf.tool.xml.css.CssInheritanceRules#inheritCssTag(java.lang
          * .String)
          */
-        public bool InheritCssTag(String tag) {
+        virtual public bool InheritCssTag(String tag) {
             return true;
         }
 
@@ -100,7 +100,7 @@ namespace iTextSharp.tool.xml.css {
          * com.itextpdf.tool.xml.css.CssInheritanceRules#inheritCssSelector(com.
          * itextpdf.tool.xml.Tag, java.lang.String)
          */
-        public bool InheritCssSelector(Tag tag, String key) {
+        virtual public bool InheritCssSelector(Tag tag, String key) {
             if (GLOBAL.Contains(key)) {
                 return false;
             }

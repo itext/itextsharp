@@ -368,20 +368,20 @@ namespace iTextSharp.text.pdf {
         * document.
         * @return a new file instance of the original PDF document
         */
-        public RandomAccessFileOrArray SafeFile {
+        virtual public RandomAccessFileOrArray SafeFile {
             get {
                 return tokens.SafeFile;
             }
         }
         
-        protected internal PdfReaderInstance GetPdfReaderInstance(PdfWriter writer) {
+        virtual protected internal PdfReaderInstance GetPdfReaderInstance(PdfWriter writer) {
             return new PdfReaderInstance(this, writer);
         }
         
         /** Gets the number of pages in the document.
         * @return the number of pages in the document
         */
-        public int NumberOfPages {
+        virtual public int NumberOfPages {
             get {
                 return pageRefs.Size;
             }
@@ -391,7 +391,7 @@ namespace iTextSharp.text.pdf {
         * any changes will be reflected in the catalog.
         * @return the document's catalog
         */
-        public PdfDictionary Catalog {
+        virtual public PdfDictionary Catalog {
             get {
                 return catalog;
             }
@@ -400,7 +400,7 @@ namespace iTextSharp.text.pdf {
         /** Returns the document's acroform, if it has one.
         * @return the document's acroform
         */
-        public PRAcroForm AcroForm {
+        virtual public PRAcroForm AcroForm {
             get {
                 if (!acroFormParsed) {
                     acroFormParsed = true;
@@ -423,7 +423,7 @@ namespace iTextSharp.text.pdf {
         * @param index the page number. The first page is 1
         * @return the page rotation
         */
-        public int GetPageRotation(int index) {
+        virtual public int GetPageRotation(int index) {
             return GetPageRotation(pageRefs.GetPageNRelease(index));
         }
         
@@ -442,7 +442,7 @@ namespace iTextSharp.text.pdf {
         * @param index the page number. The first page is 1
         * @return a <CODE>Rectangle</CODE>
         */
-        public Rectangle GetPageSizeWithRotation(int index) {
+        virtual public Rectangle GetPageSizeWithRotation(int index) {
             return GetPageSizeWithRotation(pageRefs.GetPageNRelease(index));
         }
         
@@ -451,7 +451,7 @@ namespace iTextSharp.text.pdf {
         * @param page the page dictionary
         * @return the rotated page
         */    
-        public Rectangle GetPageSizeWithRotation(PdfDictionary page) {
+        virtual public Rectangle GetPageSizeWithRotation(PdfDictionary page) {
             Rectangle rect = GetPageSize(page);
             int rotation = GetPageRotation(page);
             while (rotation > 0) {
@@ -466,7 +466,7 @@ namespace iTextSharp.text.pdf {
         * @param index the page number. The first page is 1
         * @return the page size
         */
-        public Rectangle GetPageSize(int index) {
+        virtual public Rectangle GetPageSize(int index) {
             return GetPageSize(pageRefs.GetPageNRelease(index));
         }
         
@@ -475,7 +475,7 @@ namespace iTextSharp.text.pdf {
         * @param page the page dictionary
         * @return the page
         */    
-        public Rectangle GetPageSize(PdfDictionary page) {
+        virtual public Rectangle GetPageSize(PdfDictionary page) {
             PdfArray mediaBox = page.GetAsArray(PdfName.MEDIABOX);
             return GetNormalizedRectangle(mediaBox);
         }
@@ -488,7 +488,7 @@ namespace iTextSharp.text.pdf {
         * @param index the page number. The first page is 1
         * @return the crop box
         */
-        public Rectangle GetCropBox(int index) {
+        virtual public Rectangle GetCropBox(int index) {
             PdfDictionary page = pageRefs.GetPageNRelease(index);
             PdfArray cropBox = (PdfArray)GetPdfObjectRelease(page.Get(PdfName.CROPBOX));
             if (cropBox == null)
@@ -501,7 +501,7 @@ namespace iTextSharp.text.pdf {
         * @param boxName the box name
         * @return the box rectangle or null
         */
-        public Rectangle GetBoxSize(int index, String boxName) {
+        virtual public Rectangle GetBoxSize(int index, String boxName) {
             PdfDictionary page = pageRefs.GetPageNRelease(index);
             PdfArray box = null;
             if (boxName.Equals("trim"))
@@ -523,7 +523,7 @@ namespace iTextSharp.text.pdf {
         * of <CODE>String</CODE>.
         * @return content of the document information dictionary
         */
-        public Dictionary<string,string> Info {
+        virtual public Dictionary<string,string> Info {
             get {
                 Dictionary<string,string> map = new Dictionary<string,string>();
                 PdfDictionary info = trailer.GetAsDict(PdfName.INFO);
@@ -567,7 +567,7 @@ namespace iTextSharp.text.pdf {
         /**
          * Checks if the PDF is a tagged PDF.
          */
-        public bool IsTagged() {
+        virtual public bool IsTagged() {
             PdfDictionary markInfo = catalog.GetAsDict(PdfName.MARKINFO);
             if(markInfo == null)
                 return false;
@@ -618,7 +618,7 @@ namespace iTextSharp.text.pdf {
             RemoveUnusedObjects();
         }
 
-        protected internal void ReadPdfPartial()
+        virtual protected internal void ReadPdfPartial()
         {
             fileLength = tokens.File.Length;
             pdfVersion = tokens.CheckPdfHeader();
@@ -981,7 +981,7 @@ namespace iTextSharp.text.pdf {
         * @param idx
         * @return a PdfObject
         */
-        public PdfObject GetPdfObjectRelease(int idx) {
+        virtual public PdfObject GetPdfObjectRelease(int idx) {
             PdfObject obj = GetPdfObject(idx);
             ReleaseLastXrefPartial();
             return obj;
@@ -991,7 +991,7 @@ namespace iTextSharp.text.pdf {
         * @param idx
         * @return aPdfObject
         */
-        public PdfObject GetPdfObject(int idx) {
+        virtual public PdfObject GetPdfObject(int idx) {
             lastXrefPartial = -1;
             if (idx < 0 || idx >= xrefObj.Count)
                 return null;
@@ -1010,14 +1010,14 @@ namespace iTextSharp.text.pdf {
         /**
         * 
         */
-        public void ResetLastXrefPartial() {
+        virtual public void ResetLastXrefPartial() {
             lastXrefPartial = -1;
         }
         
         /**
         * 
         */
-        public void ReleaseLastXrefPartial() {
+        virtual public void ReleaseLastXrefPartial() {
             if (partial && lastXrefPartial != -1) {
                 xrefObj[lastXrefPartial] = null;
                 lastXrefPartial = -1;
@@ -1052,12 +1052,12 @@ namespace iTextSharp.text.pdf {
         * @param obj
         * @return an indirect reference
         */
-        public PRIndirectReference AddPdfObject(PdfObject obj) {
+        virtual public PRIndirectReference AddPdfObject(PdfObject obj) {
             xrefObj.Add(obj);
             return new PRIndirectReference(this, xrefObj.Count - 1);
         }
         
-        protected internal void ReadPages() {
+        virtual protected internal void ReadPages() {
             catalog = trailer.GetAsDict(PdfName.ROOT);
             if(catalog == null)
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("the.document.has.no.catalog.object"));
@@ -1068,7 +1068,7 @@ namespace iTextSharp.text.pdf {
             pageRefs = new PageRefs(this);
         }
         
-        protected internal void ReadDocObjPartial() {
+        virtual protected internal void ReadDocObjPartial() {
             xrefObj = new List<PdfObject>(xref.Length / 2);
             for (int k = 0; k < xref.Length / 2; ++k) {
                 xrefObj.Add(null);
@@ -1084,7 +1084,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        protected internal PdfObject ReadSingleObject(int k) {
+        virtual protected internal PdfObject ReadSingleObject(int k) {
             strings.Clear();
             int k2 = k * 2;
 			long pos = xref[k2];
@@ -1132,7 +1132,7 @@ namespace iTextSharp.text.pdf {
             return obj;
         }
         
-		protected internal PdfObject ReadOneObjStm (PRStream stream, int idx) {
+		virtual protected internal PdfObject ReadOneObjStm (PRStream stream, int idx) {
             int first = stream.GetAsNumber(PdfName.FIRST).IntValue;
             byte[] b = GetStreamBytes(stream, tokens.File);
             PRTokeniser saveTokens = tokens;
@@ -1180,7 +1180,7 @@ namespace iTextSharp.text.pdf {
         /**
         * @return the percentage of the cross reference table that has been read
         */
-        public double DumpPerc() {
+        virtual public double DumpPerc() {
             int total = 0;
             for (int k = 0; k < xrefObj.Count; ++k) {
                 if (xrefObj[k] != null)
@@ -1189,7 +1189,7 @@ namespace iTextSharp.text.pdf {
             return (total * 100.0 / xrefObj.Count);
         }
         
-        protected internal void ReadDocObj() {
+        virtual protected internal void ReadDocObj() {
             List<PRStream> streams = new List<PRStream>();
             xrefObj = new List<PdfObject>(xref.Length / 2);
             for (int k = 0; k < xref.Length / 2; ++k) {
@@ -1298,7 +1298,7 @@ namespace iTextSharp.text.pdf {
             stream.Length = (int)streamLength;
         }
         
-        protected internal void ReadObjStm(PRStream stream, IntHashtable map) {
+        virtual protected internal void ReadObjStm(PRStream stream, IntHashtable map) {
             int first = stream.GetAsNumber(PdfName.FIRST).IntValue;
             int n = stream.GetAsNumber(PdfName.N).IntValue;
             byte[] b = GetStreamBytes(stream, tokens.File);
@@ -1384,7 +1384,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected internal void ReadXref() {
+        virtual protected internal void ReadXref() {
             hybridXref = false;
             newXrefType = false;
             tokens.Seek(tokens.GetStartxref());
@@ -1417,7 +1417,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected internal PdfDictionary ReadXrefSection() {
+        virtual protected internal PdfDictionary ReadXrefSection() {
             tokens.NextValidToken();
             if (!tokens.StringValue.Equals("xref"))
                 tokens.ThrowError(MessageLocalization.GetComposedMessage("xref.subsection.not.found"));
@@ -1490,7 +1490,7 @@ namespace iTextSharp.text.pdf {
             return trailer;
         }
         
-        protected internal bool ReadXRefStream(long ptr) {
+        virtual protected internal bool ReadXRefStream(long ptr) {
             tokens.Seek(ptr);
             int thisStream = 0;
             if (!tokens.NextToken())
@@ -1601,7 +1601,7 @@ namespace iTextSharp.text.pdf {
             return ReadXRefStream(prev);
         }
         
-        protected internal void RebuildXref() {
+        virtual protected internal void RebuildXref() {
             hybridXref = false;
             newXrefType = false;
             tokens.Seek(0);
@@ -1660,7 +1660,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected internal PdfDictionary ReadDictionary() {
+        virtual protected internal PdfDictionary ReadDictionary() {
             PdfDictionary dic = new PdfDictionary();
             while (true) {
                 tokens.NextValidToken();
@@ -1680,7 +1680,7 @@ namespace iTextSharp.text.pdf {
             return dic;
         }
         
-        protected internal PdfArray ReadArray() {
+        virtual protected internal PdfArray ReadArray() {
             PdfArray array = new PdfArray();
             while (true) {
                 PdfObject obj = ReadPRObject();
@@ -1699,7 +1699,7 @@ namespace iTextSharp.text.pdf {
         // reuse one of the static ones.
         private int readDepth = 0;
 
-        protected internal PdfObject ReadPRObject() {
+        virtual protected internal PdfObject ReadPRObject() {
             tokens.NextValidToken();
             PRTokeniser.TokType type = tokens.TokenType;
             switch (type) {
@@ -2056,7 +2056,7 @@ namespace iTextSharp.text.pdf {
         * @return true if rebuilt.
         *
         */
-        public bool IsRebuilt() {
+        virtual public bool IsRebuilt() {
             return this.rebuilt;
         }
         
@@ -2064,7 +2064,7 @@ namespace iTextSharp.text.pdf {
         * @param pageNum the page number. 1 is the first
         * @return the page dictionary
         */    
-        public PdfDictionary GetPageN(int pageNum) {
+        virtual public PdfDictionary GetPageN(int pageNum) {
             PdfDictionary dic = pageRefs.GetPageN(pageNum);
             if (dic == null)
                 return null;
@@ -2077,7 +2077,7 @@ namespace iTextSharp.text.pdf {
         * @param pageNum
         * @return a Dictionary object
         */
-        public PdfDictionary GetPageNRelease(int pageNum) {
+        virtual public PdfDictionary GetPageNRelease(int pageNum) {
             PdfDictionary dic = GetPageN(pageNum);
             pageRefs.ReleasePage(pageNum);
             return dic;
@@ -2086,14 +2086,14 @@ namespace iTextSharp.text.pdf {
         /**
         * @param pageNum
         */
-        public void ReleasePage(int pageNum) {
+        virtual public void ReleasePage(int pageNum) {
             pageRefs.ReleasePage(pageNum);
         }
         
         /**
         * 
         */
-        public void ResetReleasePage() {
+        virtual public void ResetReleasePage() {
             pageRefs.ResetReleasePage();
         }
 
@@ -2101,7 +2101,7 @@ namespace iTextSharp.text.pdf {
         * @param pageNum the page number. 1 is the first
         * @return the page reference
         */    
-        public PRIndirectReference GetPageOrigRef(int pageNum) {
+        virtual public PRIndirectReference GetPageOrigRef(int pageNum) {
             return pageRefs.GetPageOrigRef(pageNum);
         }
         
@@ -2111,7 +2111,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @return the content
         */    
-        public byte[] GetPageContent(int pageNum, RandomAccessFileOrArray file) {
+        virtual public byte[] GetPageContent(int pageNum, RandomAccessFileOrArray file) {
             PdfDictionary page = GetPageNRelease(pageNum);
             if (page == null)
                 return null;
@@ -2196,7 +2196,7 @@ namespace iTextSharp.text.pdf {
          * @return The page's resources, or 'null' if the page has none.
          * @since 5.1
          */
-        public PdfDictionary GetPageResources(int pageNum) {
+        virtual public PdfDictionary GetPageResources(int pageNum) {
             return GetPageResources(GetPageN(pageNum));
         }
         
@@ -2206,7 +2206,7 @@ namespace iTextSharp.text.pdf {
          * @return The page's resources, or 'null' if the page has none.
          * @since 5.1
          */
-        public PdfDictionary GetPageResources(PdfDictionary pageDict) {
+        virtual public PdfDictionary GetPageResources(PdfDictionary pageDict) {
             return pageDict.GetAsDict(PdfName.RESOURCES); 
         }
 
@@ -2215,7 +2215,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @return the content
         */    
-        public byte[] GetPageContent(int pageNum) {
+        virtual public byte[] GetPageContent(int pageNum) {
             RandomAccessFileOrArray rf = SafeFile;
             try {
                 rf.ReOpen();
@@ -2226,7 +2226,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected internal void KillXref(PdfObject obj) {
+        virtual protected internal void KillXref(PdfObject obj) {
             if (obj == null)
                 return;
             if ((obj is PdfIndirectReference) && !obj.IsIndirect())
@@ -2262,7 +2262,7 @@ namespace iTextSharp.text.pdf {
         * @param pageNum the page number. 1 is the first
         * @throws IOException on error
         */    
-        public void SetPageContent(int pageNum, byte[] content) {
+        virtual public void SetPageContent(int pageNum, byte[] content) {
     	    SetPageContent(pageNum, content, PdfStream.DEFAULT_COMPRESSION);
         }
 
@@ -2271,7 +2271,7 @@ namespace iTextSharp.text.pdf {
         * @param pageNum the page number. 1 is the first
         * @since   2.1.3   (the method already existed without param compressionLevel)
         */
-        public void SetPageContent(int pageNum, byte[] content, int compressionLevel) {
+        virtual public void SetPageContent(int pageNum, byte[] content, int compressionLevel) {
             PdfDictionary page = GetPageN(pageNum);
             if (page == null)
                 return;
@@ -2438,7 +2438,7 @@ namespace iTextSharp.text.pdf {
         }
 
         /** Eliminates shared streams if they exist. */    
-        public void EliminateSharedStreams() {
+        virtual public void EliminateSharedStreams() {
             if (!sharedStreams)
                 return;
             sharedStreams = false;
@@ -2491,7 +2491,7 @@ namespace iTextSharp.text.pdf {
         * Sets the tampered state. A tampered PdfReader cannot be reused in PdfStamper.
         * @param tampered the tampered state
         */            
-        public bool Tampered {
+        virtual public bool Tampered {
             get {
                 return tampered;
             }
@@ -2504,7 +2504,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @return the XML metadata
         */
-        public byte[] Metadata {
+        virtual public byte[] Metadata {
             get {
                 PdfObject obj = GetPdfObject(catalog.Get(PdfName.METADATA));
                 if (!(obj is PRStream))
@@ -2531,7 +2531,7 @@ namespace iTextSharp.text.pdf {
         * Gets the byte address of the last xref table.
         * @return the byte address of the last xref table
         */    
-        public long LastXref {
+        virtual public long LastXref {
             get {
                 return lastXref;
             }
@@ -2541,7 +2541,7 @@ namespace iTextSharp.text.pdf {
         * Gets the number of xref objects.
         * @return the number of xref objects
         */    
-        public int XrefSize {
+        virtual public int XrefSize {
             get {
                 return xrefObj.Count;
             }
@@ -2551,7 +2551,7 @@ namespace iTextSharp.text.pdf {
         * Gets the byte address of the %%EOF marker.
         * @return the byte address of the %%EOF marker
         */    
-		public long EofPos {
+		virtual public long EofPos {
             get {
                 return eofPos;
             }
@@ -2562,7 +2562,7 @@ namespace iTextSharp.text.pdf {
         * version 1.4 is returned as '4'.
         * @return the PDF version
         */    
-        public char PdfVersion {
+        virtual public char PdfVersion {
             get {
                 return pdfVersion;
             }
@@ -2572,7 +2572,7 @@ namespace iTextSharp.text.pdf {
         * Returns <CODE>true</CODE> if the PDF is encrypted.
         * @return <CODE>true</CODE> if the PDF is encrypted
         */    
-        public bool IsEncrypted() {
+        virtual public bool IsEncrypted() {
             return encrypted;
         }
         
@@ -2581,7 +2581,7 @@ namespace iTextSharp.text.pdf {
         * <CODE>PdfWriter.SetEncryption()</CODE>.
         * @return the encryption permissions
         */    
-        public int Permissions {
+        virtual public int Permissions {
             get {
                 return pValue;
             }
@@ -2591,7 +2591,7 @@ namespace iTextSharp.text.pdf {
         * Returns <CODE>true</CODE> if the PDF has a 128 bit key encryption.
         * @return <CODE>true</CODE> if the PDF has a 128 bit key encryption
         */    
-        public bool Is128Key() {
+        virtual public bool Is128Key() {
             return rValue == 3;
         }
         
@@ -2599,7 +2599,7 @@ namespace iTextSharp.text.pdf {
         * Gets the trailer dictionary
         * @return the trailer dictionary
         */    
-        public PdfDictionary Trailer {
+        virtual public PdfDictionary Trailer {
             get {
                 return trailer;
             }
@@ -2657,7 +2657,7 @@ namespace iTextSharp.text.pdf {
         * random values.
         * @return the number of font subsets altered
         */    
-        public int ShuffleSubsetNames() {
+        virtual public int ShuffleSubsetNames() {
             int total = 0;
             for (int k = 1; k < xrefObj.Count; ++k) {
                 PdfObject obj = GetPdfObjectRelease(k);
@@ -2712,7 +2712,7 @@ namespace iTextSharp.text.pdf {
         /** Finds all the fonts not subset but embedded and marks them as subset.
         * @return the number of fonts altered
         */    
-        public int CreateFakeFontSubsets() {
+        virtual public int CreateFakeFontSubsets() {
             int total = 0;
             for (int k = 1; k < xrefObj.Count; ++k) {
                 PdfObject obj = GetPdfObjectRelease(k);
@@ -2769,7 +2769,7 @@ namespace iTextSharp.text.pdf {
         * and the value is the destinations array.
         * @return gets all the named destinations
         */    
-        public Dictionary<Object, PdfObject> GetNamedDestination() {
+        virtual public Dictionary<Object, PdfObject> GetNamedDestination() {
             return GetNamedDestination(false);
         }
 
@@ -2780,7 +2780,7 @@ namespace iTextSharp.text.pdf {
         * @return gets all the named destinations
         * @since   2.1.6
         */
-        public Dictionary<Object, PdfObject> GetNamedDestination(bool keepNames) {
+        virtual public Dictionary<Object, PdfObject> GetNamedDestination(bool keepNames) {
             Dictionary<Object, PdfObject> names = GetNamedDestinationFromNames(keepNames);
             Dictionary<string, PdfObject> names2 = GetNamedDestinationFromStrings(); 
             foreach (KeyValuePair<string, PdfObject> ie in names2)
@@ -2793,7 +2793,7 @@ namespace iTextSharp.text.pdf {
         * and the value is the destinations array.
         * @return gets the named destinations
         */    
-        public Dictionary<String, PdfObject> GetNamedDestinationFromNames() {
+        virtual public Dictionary<String, PdfObject> GetNamedDestinationFromNames() {
             Dictionary<String, PdfObject> ret = new Dictionary<string,PdfObject>();
             foreach (KeyValuePair<object,PdfObject> s in GetNamedDestinationFromNames(false))
                 ret[(string)s.Key] = s.Value;
@@ -2807,7 +2807,7 @@ namespace iTextSharp.text.pdf {
         * @return gets the named destinations
         * @since   2.1.6
         */
-        public Dictionary<Object, PdfObject> GetNamedDestinationFromNames(bool keepNames) {
+        virtual public Dictionary<Object, PdfObject> GetNamedDestinationFromNames(bool keepNames) {
             Dictionary<Object, PdfObject> names = new Dictionary<Object, PdfObject>();
             if (catalog.Get(PdfName.DESTS) != null) {
                 PdfDictionary dic = (PdfDictionary)GetPdfObjectRelease(catalog.Get(PdfName.DESTS));
@@ -2834,7 +2834,7 @@ namespace iTextSharp.text.pdf {
         * and the value is the destinations array.
         * @return gets the named destinations
         */    
-        public Dictionary<String, PdfObject> GetNamedDestinationFromStrings() {
+        virtual public Dictionary<String, PdfObject> GetNamedDestinationFromStrings() {
             if (catalog.Get(PdfName.NAMES) != null) {
                 PdfDictionary dic = (PdfDictionary)GetPdfObjectRelease(catalog.Get(PdfName.NAMES));
                 if (dic != null) {
@@ -2860,7 +2860,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Removes all the fields from the document.
         */    
-        public void RemoveFields() {
+        virtual public void RemoveFields() {
             pageRefs.ResetReleasePage();
             for (int k = 1; k <= pageRefs.Size; ++k) {
                 PdfDictionary page = pageRefs.GetPageN(k);
@@ -2889,7 +2889,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Removes all the annotations and fields from the document.
         */    
-        public void RemoveAnnotations() {
+        virtual public void RemoveAnnotations() {
             pageRefs.ResetReleasePage();
             for (int k = 1; k <= pageRefs.Size; ++k) {
                 PdfDictionary page = pageRefs.GetPageN(k);
@@ -2902,7 +2902,7 @@ namespace iTextSharp.text.pdf {
             pageRefs.ResetReleasePage();
         }
         
-        public List<PdfAnnotation.PdfImportedLink> GetLinks(int page) {
+        virtual public List<PdfAnnotation.PdfImportedLink> GetLinks(int page) {
             pageRefs.ResetReleasePage();
             List<PdfAnnotation.PdfImportedLink> result = new List<PdfAnnotation.PdfImportedLink>();
             PdfDictionary pageDic = pageRefs.GetPageN(page);
@@ -2937,7 +2937,7 @@ namespace iTextSharp.text.pdf {
         * Replaces remote named links with local destinations that have the same name.
         * @since   5.0
         */
-        public void MakeRemoteNamedDestinationsLocal() {
+        virtual public void MakeRemoteNamedDestinationsLocal() {
             if (remoteToLocalNamedDestinations)
                 return;
             remoteToLocalNamedDestinations = true;
@@ -3012,7 +3012,7 @@ namespace iTextSharp.text.pdf {
         }
 
         /** Replaces all the local named links with the actual destinations. */    
-        public void ConsolidateNamedDestinations() {
+        virtual public void ConsolidateNamedDestinations() {
             if (consolidateNamedDestinations)
                 return;
             consolidateNamedDestinations = true;
@@ -3140,11 +3140,11 @@ namespace iTextSharp.text.pdf {
         /**
         * Closes the reader, and any underlying stream or data source used to create the reader
         */
-        public void Close() {
+        virtual public void Close() {
             tokens.Close();
         }
         
-        protected internal void RemoveUnusedNode(PdfObject obj, bool[] hits) {
+        virtual protected internal void RemoveUnusedNode(PdfObject obj, bool[] hits) {
             Stack<object> state = new Stack<object>();
             state.Push(obj);
             while (state.Count != 0) {
@@ -3239,7 +3239,7 @@ namespace iTextSharp.text.pdf {
         /** Removes all the unreachable objects.
         * @return the number of indirect objects removed
         */    
-        public int RemoveUnusedObjects() {
+        virtual public int RemoveUnusedObjects() {
             bool[] hits = new bool[xrefObj.Count];
             RemoveUnusedNode(trailer, hits);
             int total = 0;
@@ -3267,7 +3267,7 @@ namespace iTextSharp.text.pdf {
         /** Gets a read-only version of <CODE>AcroFields</CODE>.
         * @return a read-only version of <CODE>AcroFields</CODE>
         */    
-        public AcroFields AcroFields {
+        virtual public AcroFields AcroFields {
             get {
                 return new AcroFields(this, null);
             }
@@ -3279,7 +3279,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @return the global document JavaScript
         */    
-        public String GetJavaScript(RandomAccessFileOrArray file) {
+        virtual public String GetJavaScript(RandomAccessFileOrArray file) {
             PdfDictionary names = (PdfDictionary)GetPdfObjectRelease(catalog.Get(PdfName.NAMES));
             if (names == null)
                 return null;
@@ -3317,7 +3317,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @return the global document JavaScript
         */    
-        public String JavaScript {
+        virtual public String JavaScript {
             get {
                 RandomAccessFileOrArray rf = SafeFile;
                 try {
@@ -3336,7 +3336,7 @@ namespace iTextSharp.text.pdf {
         * no page repetitions are allowed. Note that it may be very slow in partial mode.
         * @param ranges the comma separated ranges as described in {@link SequenceList}
         */    
-        public void SelectPages(String ranges) {
+        virtual public void SelectPages(String ranges) {
             SelectPages(SequenceList.Expand(ranges, NumberOfPages));
         }
         
@@ -3346,7 +3346,7 @@ namespace iTextSharp.text.pdf {
         * no page repetitions are allowed. Note that it may be very slow in partial mode.
         * @param pagesToKeep the pages to keep in the document
         */
-        public void SelectPages(ICollection<int> pagesToKeep) {
+        virtual public void SelectPages(ICollection<int> pagesToKeep) {
             SelectPages(pagesToKeep, true);
         }
 
@@ -3398,7 +3398,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public bool Appendable {
+        virtual public bool Appendable {
             set {
                 appendable = value;
                 if (appendable)
@@ -3413,7 +3413,7 @@ namespace iTextSharp.text.pdf {
         * Getter for property newXrefType.
         * @return Value of property newXrefType.
         */
-        public bool IsNewXrefType() {
+        virtual public bool IsNewXrefType() {
             return newXrefType;
         }    
         
@@ -3421,7 +3421,7 @@ namespace iTextSharp.text.pdf {
         * Getter for property fileLength.
         * @return Value of property fileLength.
         */
-        public long FileLength {
+        virtual public long FileLength {
             get {
                 return fileLength;
             }
@@ -3431,7 +3431,7 @@ namespace iTextSharp.text.pdf {
         * Getter for property hybridXref.
         * @return Value of property hybridXref.
         */
-        public bool IsHybridXref() {
+        virtual public bool IsHybridXref() {
             return hybridXref;
         }
         
@@ -3498,7 +3498,7 @@ namespace iTextSharp.text.pdf {
             * @param pageNum the page number. 1 is the first
             * @return the page dictionary
             */    
-            public PdfDictionary GetPageN(int pageNum) {
+            virtual public PdfDictionary GetPageN(int pageNum) {
                 PRIndirectReference refi = GetPageOrigRef(pageNum);
                 return (PdfDictionary)PdfReader.GetPdfObject(refi);
             }
@@ -3507,7 +3507,7 @@ namespace iTextSharp.text.pdf {
             * @param pageNum
             * @return a dictionary object
             */
-            public PdfDictionary GetPageNRelease(int pageNum) {
+            virtual public PdfDictionary GetPageNRelease(int pageNum) {
                 PdfDictionary page = GetPageN(pageNum);
                 ReleasePage(pageNum);
                 return page;
@@ -3517,7 +3517,7 @@ namespace iTextSharp.text.pdf {
             * @param pageNum
             * @return an indirect reference
             */
-            public PRIndirectReference GetPageOrigRefRelease(int pageNum) {
+            virtual public PRIndirectReference GetPageOrigRefRelease(int pageNum) {
                 PRIndirectReference refi = GetPageOrigRef(pageNum);
                 ReleasePage(pageNum);
                 return refi;
@@ -3527,7 +3527,7 @@ namespace iTextSharp.text.pdf {
             * @param pageNum the page number. 1 is the first
             * @return the page reference
             */    
-            public PRIndirectReference GetPageOrigRef(int pageNum) {
+            virtual public PRIndirectReference GetPageOrigRef(int pageNum) {
                 --pageNum;
                 if (pageNum < 0 || pageNum >= Size)
                     return null;
@@ -3567,7 +3567,7 @@ namespace iTextSharp.text.pdf {
             /**
             * @param pageNum
             */
-            public void ReleasePage(int pageNum) {
+            virtual public void ReleasePage(int pageNum) {
                 if (refsp == null)
                     return;
                 --pageNum;
@@ -3584,7 +3584,7 @@ namespace iTextSharp.text.pdf {
             /**
             * 
             */
-            public void ResetReleasePage() {
+            virtual public void ResetReleasePage() {
                 if (refsp == null)
                     return;
                 lastPageRead = -1;
@@ -3668,7 +3668,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             
-            protected internal PRIndirectReference GetSinglePage(int n) {
+            virtual protected internal PRIndirectReference GetSinglePage(int n) {
                 PdfDictionary acc = new PdfDictionary();
                 PdfDictionary top = reader.rootPages;
                 int baseb = 0;
@@ -3763,7 +3763,7 @@ namespace iTextSharp.text.pdf {
          *
          * @return <code>true</code> if usage rights are present; <code>false</code> otherwise
          */
-        public bool HasUsageRights()
+        virtual public bool HasUsageRights()
         {
             PdfDictionary perms = catalog.GetAsDict(PdfName.PERMS);
             if (perms == null)
@@ -3776,7 +3776,7 @@ namespace iTextSharp.text.pdf {
         * and any PDF modification with iText will invalidate them. Invalidated usage rights may
         * confuse Acrobat and it's advisabe to remove them altogether.
         */
-        public void RemoveUsageRights() {
+        virtual public void RemoveUsageRights() {
             PdfDictionary perms = catalog.GetAsDict(PdfName.PERMS);
             if (perms == null)
                 return;
@@ -3796,7 +3796,7 @@ namespace iTextSharp.text.pdf {
         * </p>
         * @return gets the certification level for this document
         */
-        public int GetCertificationLevel() {
+        virtual public int GetCertificationLevel() {
             PdfDictionary dic = catalog.GetAsDict(PdfName.PERMS);
             if (dic == null)
                 return PdfSignatureAppearance.NOT_CERTIFIED;
@@ -3831,26 +3831,26 @@ namespace iTextSharp.text.pdf {
             }
         } 
 
-        public int GetCryptoMode() {
+        virtual public int GetCryptoMode() {
     	    if (decrypt == null) 
     		    return -1;
     	    else 
     		    return decrypt.GetCryptoMode();
         }
         
-        public bool IsMetadataEncrypted() {
+        virtual public bool IsMetadataEncrypted() {
     	    if (decrypt == null) 
     		    return false; 
     	    else 
     		    return decrypt.IsMetadataEncrypted();
         }
         
-        public byte[] ComputeUserPassword() {
+        virtual public byte[] ComputeUserPassword() {
     	    if (!encrypted || !ownerPasswordUsed) return null;
     	    return decrypt.ComputeUserPassword(password);
         }
 
-        public void Dispose() {
+        virtual public void Dispose() {
             Close();
         }
     }

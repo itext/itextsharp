@@ -12,7 +12,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         private CSSFileWrapper w;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             ICssFile css = new CssFileImpl();
             w = new CSSFileWrapper(css, true);
         }
@@ -20,13 +20,13 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
 
         [Test]
         [ExpectedException(typeof (NotSupportedException))]
-        public void Testadd() {
+        virtual public void Testadd() {
             w.Add("", null);
         }
 
         [Test]
         [ExpectedException(typeof (NotSupportedException))]
-        public void TestisPersistent() {
+        virtual public void TestisPersistent() {
             w.IsPersistent(false);
         }
     }

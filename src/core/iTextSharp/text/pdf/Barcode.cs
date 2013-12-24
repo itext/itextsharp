@@ -141,7 +141,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the minimum bar width.
          * @return the minimum bar width
          */
-        public float X {
+        virtual public float X {
             get {
                 return x;
             }
@@ -154,7 +154,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the bar multiplier for wide bars.
          * @return the bar multiplier for wide bars
          */
-        public float N {
+        virtual public float N {
             get {
                 return n;
             }
@@ -167,7 +167,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the text font. <CODE>null</CODE> if no text.
          * @return the text font. <CODE>null</CODE> if no text
          */
-        public BaseFont Font {
+        virtual public BaseFont Font {
             get {
                 return font;
             }
@@ -180,7 +180,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the size of the text.
          * @return the size of the text
          */
-        public float Size {
+        virtual public float Size {
             get {
                 return size;
             }
@@ -195,7 +195,7 @@ namespace iTextSharp.text.pdf {
          * the text distance above the bars.
          * @return the baseline.
          */
-        public float Baseline {
+        virtual public float Baseline {
             get {
                 return baseline;
             }
@@ -208,7 +208,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the height of the bars.
          * @return the height of the bars
          */
-        public float BarHeight {
+        virtual public float BarHeight {
             get {
                 return barHeight;
             }
@@ -222,7 +222,7 @@ namespace iTextSharp.text.pdf {
          * <CODE>Element.ALIGN_CENTER</CODE> or <CODE>Element.ALIGN_RIGHT</CODE>.
          * @return the text alignment
          */
-        public int TextAlignment{
+        virtual public int TextAlignment{
             get {
                 return textAlignment;
             }
@@ -234,7 +234,7 @@ namespace iTextSharp.text.pdf {
     
         /** The property for the optional checksum generation.
          */
-        public bool GenerateChecksum {
+        virtual public bool GenerateChecksum {
             set {
                 this.generateChecksum = value;
             }
@@ -246,7 +246,7 @@ namespace iTextSharp.text.pdf {
         /** Sets the property to show the generated checksum in the the text.
          * @param checksumText new value of property checksumText
          */
-        public bool ChecksumText {
+        virtual public bool ChecksumText {
             set {
                 this.checksumText = value;
             }
@@ -259,7 +259,7 @@ namespace iTextSharp.text.pdf {
          * the barcode 39.
          * @param startStopText new value of property startStopText
          */
-        public bool StartStopText {
+        virtual public bool StartStopText {
             set {
                 this.startStopText = value;
             }
@@ -271,7 +271,7 @@ namespace iTextSharp.text.pdf {
         /** Sets the property to generate extended barcode 39.
          * @param extended new value of property extended
          */
-        public bool Extended {
+        virtual public bool Extended {
             set {
                 this.extended = value;
             }
@@ -296,7 +296,7 @@ namespace iTextSharp.text.pdf {
         /** Sets the property to show the guard bars for barcode EAN.
          * @param guardBars new value of property guardBars
          */
-        public bool GuardBars {
+        virtual public bool GuardBars {
             set {
                 this.guardBars = value;
             }
@@ -308,7 +308,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the code type.
          * @return the code type
          */
-        public int CodeType {
+        virtual public int CodeType {
             get {
                 return codeType;
             }
@@ -326,7 +326,7 @@ namespace iTextSharp.text.pdf {
             get;
         }
 
-        public float InkSpreading {
+        virtual public float InkSpreading {
             set {
                 inkSpreading = value;
             }
@@ -381,7 +381,7 @@ namespace iTextSharp.text.pdf {
          * @return the template
          * @see #placeBarcode(PdfContentByte cb, BaseColor barColor, BaseColor textColor)
          */    
-        public PdfTemplate CreateTemplateWithBarcode(PdfContentByte cb, BaseColor barColor, BaseColor textColor) {
+        virtual public PdfTemplate CreateTemplateWithBarcode(PdfContentByte cb, BaseColor barColor, BaseColor textColor) {
             PdfTemplate tp = cb.CreateTemplate(0, 0);
             Rectangle rect = PlaceBarcode(tp, barColor, textColor);
             tp.BoundingBox = rect;
@@ -396,7 +396,7 @@ namespace iTextSharp.text.pdf {
          * @return the <CODE>Image</CODE>
          * @see #placeBarcode(PdfContentByte cb, BaseColor barColor, BaseColor textColor)
          */    
-        public Image CreateImageWithBarcode(PdfContentByte cb, BaseColor barColor, BaseColor textColor) {
+        virtual public Image CreateImageWithBarcode(PdfContentByte cb, BaseColor barColor, BaseColor textColor) {
             return Image.GetInstance(CreateTemplateWithBarcode(cb, barColor, textColor));
         }
 
@@ -410,7 +410,7 @@ namespace iTextSharp.text.pdf {
         * text derived from the supplied code.
         * @param altText the alternate text
         */
-        public String AltText {
+        virtual public String AltText {
             set {
                 altText = value;
             }

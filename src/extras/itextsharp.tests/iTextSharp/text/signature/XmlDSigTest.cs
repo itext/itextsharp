@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
@@ -18,7 +18,7 @@ namespace itextsharp.tests.resources.text.signature
 {
     public class XmlDSigTest
     {
-        protected void SignWithCertificate(String src, String dest, ICipherParameters pk,
+        virtual protected void SignWithCertificate(String src, String dest, ICipherParameters pk,
             X509Certificate[] chain, String digestAlgorithm) {
             
             // Creating the reader and the stamper
@@ -34,7 +34,7 @@ namespace itextsharp.tests.resources.text.signature
             MakeXmlSignature.SignXmlDSig(appearance, pks, chain);
         }
 
-        protected void SignXades(String src, String dest, ICipherParameters pk,
+        virtual protected void SignXades(String src, String dest, ICipherParameters pk,
             X509Certificate[] chain, String digestAlgorithm, bool includeSignaturePolicy) {
 
             // Creating the reader and the stamper
@@ -51,7 +51,7 @@ namespace itextsharp.tests.resources.text.signature
             MakeXmlSignature.SignXades(appearance, pks, chain, includeSignaturePolicy);
         }
         
-        protected void SignWithKeyInfo(String src, String dest, ICipherParameters pk,
+        virtual protected void SignWithKeyInfo(String src, String dest, ICipherParameters pk,
             AsymmetricAlgorithm publicKey, String digestAlgorithm) {
             
             // Creating the reader and the stamper
@@ -76,7 +76,7 @@ namespace itextsharp.tests.resources.text.signature
             MakeXmlSignature.SignXmlDSig(appearance, pks, keyInfo);
         }
 
-        protected void SignWithPublicKey(String src, String dest, ICipherParameters pk,
+        virtual protected void SignWithPublicKey(String src, String dest, ICipherParameters pk,
             AsymmetricAlgorithm publicKey, String digestAlgorithm) {
 
             // Creating the reader and the stamper
@@ -93,7 +93,7 @@ namespace itextsharp.tests.resources.text.signature
             MakeXmlSignature.SignXmlDSig(appearance, pks, publicKey);
         }
 
-        protected void SignPackageWithCertificate(String src, String dest, XfaXpathConstructor.XdpPackage xdpPackage,
+        virtual protected void SignPackageWithCertificate(String src, String dest, XfaXpathConstructor.XdpPackage xdpPackage,
             ICipherParameters pk, X509Certificate[] chain, String digestAlgorithm) {
 
             // Creating the reader and the stamper
@@ -112,7 +112,7 @@ namespace itextsharp.tests.resources.text.signature
             MakeXmlSignature.SignXmlDSig(appearance, pks, chain);
         }
 
-        protected void SignXadesPackage(String src, String dest, XfaXpathConstructor.XdpPackage xdpPackage,
+        virtual protected void SignXadesPackage(String src, String dest, XfaXpathConstructor.XdpPackage xdpPackage,
     ICipherParameters pk, X509Certificate[] chain, String digestAlgorithm, bool includeSignaturePolicy) {
 
             // Creating the reader and the stamper
@@ -132,7 +132,7 @@ namespace itextsharp.tests.resources.text.signature
             MakeXmlSignature.SignXades(appearance, pks, chain, includeSignaturePolicy);
         }
 
-        protected void SignPackageWithKeyInfo(String src, String dest, XfaXpathConstructor.XdpPackage xdpPackage,
+        virtual protected void SignPackageWithKeyInfo(String src, String dest, XfaXpathConstructor.XdpPackage xdpPackage,
             ICipherParameters pk, AsymmetricAlgorithm publicKey, String digestAlgorithm) {
 
             // Creating the reader and the stamper
@@ -159,7 +159,7 @@ namespace itextsharp.tests.resources.text.signature
             MakeXmlSignature.SignXmlDSig(appearance, pks, keyInfo);
         }
 
-        protected void SignPackageWithPublicKey(String src, String dest, XfaXpathConstructor.XdpPackage xdpPackage,
+        virtual protected void SignPackageWithPublicKey(String src, String dest, XfaXpathConstructor.XdpPackage xdpPackage,
             ICipherParameters pk, AsymmetricAlgorithm publicKey, String digestAlgorithm){
 
             // Creating the reader and the stamper
@@ -178,7 +178,7 @@ namespace itextsharp.tests.resources.text.signature
             MakeXmlSignature.SignXmlDSig(appearance, pks, publicKey);
         }
 
-        protected String SaveXmlFromResult(String input) {
+        virtual protected String SaveXmlFromResult(String input) {
             
             PdfReader reader = new PdfReader(input);
             XfaForm form = new XfaForm(reader);
@@ -190,7 +190,7 @@ namespace itextsharp.tests.resources.text.signature
             return output;
         }
 
-        protected bool CompareXmls(String xml1, String xml2) {
+        virtual protected bool CompareXmls(String xml1, String xml2) {
             XmlDiff xmldiff = new XmlDiff(XmlDiffOptions.None);
             return xmldiff.Compare(xml1, xml2, false);
         }

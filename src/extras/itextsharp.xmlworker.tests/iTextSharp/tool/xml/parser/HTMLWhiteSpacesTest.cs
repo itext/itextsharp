@@ -16,31 +16,31 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.parser {
         private static StringBuilder b;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             str = "<body><b>&euro;<b> 124</body>";
         }
 
         private class CustomXMLParserListener : IXMLParserListener {
-            public void UnknownText(String text) {
+            virtual public void UnknownText(String text) {
             }
 
-            public void Text(String text) {
+            virtual public void Text(String text) {
                 b.Append(text);
             }
 
-            public void StartElement(String tag, IDictionary<String, String> attributes, String ns) {
+            virtual public void StartElement(String tag, IDictionary<String, String> attributes, String ns) {
             }
 
-            public void Init() {
+            virtual public void Init() {
             }
 
-            public void EndElement(String tag, String ns) {
+            virtual public void EndElement(String tag, String ns) {
             }
 
-            public void Comment(String comment) {
+            virtual public void Comment(String comment) {
             }
 
-            public void Close() {
+            virtual public void Close() {
             }
         }
 
@@ -50,7 +50,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.parser {
 	 */
 
         [Test]
-        public void CheckIfSpaceIsStillThere() {
+        virtual public void CheckIfSpaceIsStillThere() {
             b = new StringBuilder();
             XMLParser p = new XMLParser(true, new CustomXMLParserListener());
             p.Parse(new StringReader(str));
@@ -58,7 +58,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.parser {
         }
 
         [TearDown]
-        public void TearDown() {
+        virtual public void TearDown() {
             b = null;
         }
     }

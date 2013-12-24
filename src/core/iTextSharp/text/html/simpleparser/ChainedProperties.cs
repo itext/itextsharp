@@ -98,7 +98,7 @@ namespace iTextSharp.text.html.simpleparser {
 	     * @param	key	the key of the property
 	     * @return	true if the key is found
 	     */
-        public bool HasProperty(String key) {
+        virtual public bool HasProperty(String key) {
             for (int k = chain.Count - 1; k >= 0; --k) {
                 TagAttributes p = chain[k];
                 IDictionary<String, String> attrs = p.attrs;
@@ -113,12 +113,12 @@ namespace iTextSharp.text.html.simpleparser {
 	     * @param tag	the tags that needs to be added to the chain
 	     * @param props	the tag's attributes
 	     */
-	    public void AddToChain(String tag, IDictionary<String, String> props) {
+	    virtual public void AddToChain(String tag, IDictionary<String, String> props) {
 		    AdjustFontSize(props);
 		    chain.Add(new TagAttributes(tag, props));
         }
         
-        public void RemoveChain(String tag) {
+        virtual public void RemoveChain(String tag) {
             for (int k = chain.Count - 1; k >= 0; --k) {
                 if (tag.Equals(chain[k].tag)) {
                     chain.RemoveAt(k);
@@ -133,7 +133,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   attrs the attributes that may have to be updated
          * @since 5.0.6 (renamed)
          */
-        protected internal void AdjustFontSize(IDictionary<String, String> attrs) {
+        virtual protected internal void AdjustFontSize(IDictionary<String, String> attrs) {
             // fetch the font size
             String value;
             attrs.TryGetValue(HtmlTags.SIZE, out value);

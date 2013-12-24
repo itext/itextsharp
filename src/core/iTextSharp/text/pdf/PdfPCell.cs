@@ -243,7 +243,7 @@ namespace iTextSharp.text.pdf {
         * Adds an iText element to the cell.
         * @param element
         */
-        public void AddElement(IElement element) {
+        virtual public void AddElement(IElement element) {
             if (table != null) {
                 table = null;
                 column.SetText(null);
@@ -263,7 +263,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the <CODE>Phrase</CODE> from this cell.
         * @return the <CODE>Phrase</CODE>
         */
-        public Phrase Phrase {
+        virtual public Phrase Phrase {
             get {
                 return phrase;
             }
@@ -277,7 +277,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the horizontal alignment for the cell.
         * @return the horizontal alignment for the cell
         */
-        public int HorizontalAlignment {
+        virtual public int HorizontalAlignment {
             get {
                 return column.Alignment;
             }
@@ -289,7 +289,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the vertical alignment for the cell.
         * @return the vertical alignment for the cell
         */
-        public int VerticalAlignment {
+        virtual public int VerticalAlignment {
             get {
                 return verticalAlignment;
             }
@@ -304,7 +304,7 @@ namespace iTextSharp.text.pdf {
         *  the left border width if {@link #UseBorderPadding} is true.
         * @return effective value of property paddingLeft.
         */
-        public float EffectivePaddingLeft {
+        virtual public float EffectivePaddingLeft {
             get {
                 if (UseBorderPadding) {
                     float border = BorderWidthLeft / (UseVariableBorders ? 1f : 2f);
@@ -317,7 +317,7 @@ namespace iTextSharp.text.pdf {
         /**
         * @return Value of property paddingLeft.
         */
-        public float PaddingLeft {
+        virtual public float PaddingLeft {
             get {
                 return paddingLeft;
             }
@@ -330,7 +330,7 @@ namespace iTextSharp.text.pdf {
         *  the right border width if {@link #UseBorderPadding} is true.
         * @return effective value of property paddingRight.
         */
-        public float EffectivePaddingRight {
+        virtual public float EffectivePaddingRight {
             get {
                 if (UseBorderPadding) {
                     float border = BorderWidthRight / (UseVariableBorders ? 1f : 2f);
@@ -344,7 +344,7 @@ namespace iTextSharp.text.pdf {
         * Getter for property paddingRight.
         * @return Value of property paddingRight.
         */
-        public float PaddingRight {
+        virtual public float PaddingRight {
             get {
                 return paddingRight;
             }
@@ -357,7 +357,7 @@ namespace iTextSharp.text.pdf {
         *  the top border width if {@link #isUseBorderPadding()} is true.
         * @return effective value of property paddingTop.
         */
-        public float EffectivePaddingTop {
+        virtual public float EffectivePaddingTop {
             get {
                 if (UseBorderPadding) {
                     float border = BorderWidthTop/(UseVariableBorders?1f:2f);
@@ -371,7 +371,7 @@ namespace iTextSharp.text.pdf {
         * Getter for property paddingTop.
         * @return Value of property paddingTop.
         */
-        public float PaddingTop {
+        virtual public float PaddingTop {
             get {
                 return paddingTop;
             }
@@ -385,7 +385,7 @@ namespace iTextSharp.text.pdf {
         *  the bottom border width if {@link #UseBorderPadding} is true.
         * @return effective value of property paddingBottom.
         */
-        public float EffectivePaddingBottom {
+        virtual public float EffectivePaddingBottom {
             get {
                 if (UseBorderPadding) {
                     float border = BorderWidthBottom/(UseVariableBorders?1f:2f);
@@ -399,7 +399,7 @@ namespace iTextSharp.text.pdf {
         * Getter for property paddingBottom.
         * @return Value of property paddingBottom.
         */
-        public float PaddingBottom {
+        virtual public float PaddingBottom {
             get {
                 return paddingBottom;
             }
@@ -412,7 +412,7 @@ namespace iTextSharp.text.pdf {
         * Sets the padding of the contents in the cell (space between content and border).
         * @param padding
         */
-        public float Padding {
+        virtual public float Padding {
             set {
                 paddingBottom = value;
                 paddingTop = value;
@@ -425,7 +425,7 @@ namespace iTextSharp.text.pdf {
         * Adjusts effective padding to include border widths.
         * @param use adjust effective padding if true
         */
-        public bool UseBorderPadding {
+        virtual public bool UseBorderPadding {
             set {
                 useBorderPadding = value;
             }
@@ -441,7 +441,7 @@ namespace iTextSharp.text.pdf {
         * @param fixedLeading the fixed leading
         * @param multipliedLeading the variable leading
         */
-        public void SetLeading(float fixedLeading, float multipliedLeading) {
+        virtual public void SetLeading(float fixedLeading, float multipliedLeading) {
             column.SetLeading(fixedLeading, multipliedLeading);
         }
         
@@ -449,7 +449,7 @@ namespace iTextSharp.text.pdf {
         * Gets the fixed leading
         * @return the leading
         */
-        public float Leading {
+        virtual public float Leading {
             get {
                 return column.Leading;
             }
@@ -459,7 +459,7 @@ namespace iTextSharp.text.pdf {
         * Gets the variable leading
         * @return the leading
         */
-        public float MultipliedLeading {
+        virtual public float MultipliedLeading {
             get {
                 return column.MultipliedLeading;
             }
@@ -469,7 +469,7 @@ namespace iTextSharp.text.pdf {
         * Gets the first paragraph line indent.
         * @return the indent
         */
-        public float Indent {
+        virtual public float Indent {
             get {
                 return column.Indent;
             }
@@ -482,7 +482,7 @@ namespace iTextSharp.text.pdf {
         * Gets the extra space between paragraphs.
         * @return the extra space between paragraphs
         */
-        public float ExtraParagraphSpace {
+        virtual public float ExtraParagraphSpace {
             get {
                 return column.ExtraParagraphSpace;
             }
@@ -495,7 +495,7 @@ namespace iTextSharp.text.pdf {
         * Getter for property fixedHeight.
         * @return Value of property fixedHeight.
         */
-        public float FixedHeight {
+        virtual public float FixedHeight {
             get {
                 return fixedHeight;
             }
@@ -511,7 +511,7 @@ namespace iTextSharp.text.pdf {
         * @return   true is a fixed height was set.
         * @since 2.1.5
         */
-        public bool HasFixedHeight() {
+        virtual public bool HasFixedHeight() {
             return FixedHeight > 0;
         }
 
@@ -519,7 +519,7 @@ namespace iTextSharp.text.pdf {
         * Setter for property noWrap.
         * @param noWrap New value of property noWrap.
         */
-        public bool NoWrap {
+        virtual public bool NoWrap {
             set {
                 noWrap = value;
             }
@@ -532,7 +532,7 @@ namespace iTextSharp.text.pdf {
         * Getter for property table.
         * @return Value of property table.
         */
-        public PdfPTable Table {
+        virtual public PdfPTable Table {
             get {
                 return table;
             }
@@ -551,7 +551,7 @@ namespace iTextSharp.text.pdf {
         /** Getter for property minimumHeight.
         * @return Value of property minimumHeight.
         */
-        public float MinimumHeight {
+        virtual public float MinimumHeight {
             get {
                 return minimumHeight;
             }
@@ -567,14 +567,14 @@ namespace iTextSharp.text.pdf {
         * @return   true if a minimum height was set.
         * @since 2.1.5
         */
-        public bool HasMinimumHeight() {
+        virtual public bool HasMinimumHeight() {
             return MinimumHeight > 0;
         }
 
         /** Getter for property colspan.
         * @return Value of property colspan.
         */
-        public int Colspan {
+        virtual public int Colspan {
             get {
                 return colspan;
             }
@@ -586,7 +586,7 @@ namespace iTextSharp.text.pdf {
         /** Getter for property rowspan.
         * @return Value of property rowspan.
         */
-        public int Rowspan {
+        virtual public int Rowspan {
             get {
                 return rowspan;
             }
@@ -599,7 +599,7 @@ namespace iTextSharp.text.pdf {
         * Gets the following paragraph lines indent.
         * @return the indent
         */
-        public float FollowingIndent {
+        virtual public float FollowingIndent {
             get {
                 return column.FollowingIndent;
             }
@@ -612,7 +612,7 @@ namespace iTextSharp.text.pdf {
         * Gets the right paragraph lines indent.
         * @return the indent
         */
-        public float RightIndent {
+        virtual public float RightIndent {
             get {
                 return column.RightIndent;
             }
@@ -625,7 +625,7 @@ namespace iTextSharp.text.pdf {
         * fully justified text.
         * @return the space/character extra spacing ratio
         */
-        public float SpaceCharRatio {
+        virtual public float SpaceCharRatio {
             get {
                 return column.SpaceCharRatio;
             }
@@ -638,7 +638,7 @@ namespace iTextSharp.text.pdf {
         * Gets the run direction of the text content in the cell
         * @return One of the following values: PdfWriter.RUN_DIRECTION_DEFAULT, PdfWriter.RUN_DIRECTION_NO_BIDI, PdfWriter.RUN_DIRECTION_LTR or PdfWriter.RUN_DIRECTION_RTL.
         */
-        public int RunDirection {
+        virtual public int RunDirection {
             get {
                 return column.RunDirection;
             }
@@ -651,7 +651,7 @@ namespace iTextSharp.text.pdf {
         * @return Value of property image.
         *
         */
-        public Image Image {
+        virtual public Image Image {
             get {
                 return this.image;
             }
@@ -666,7 +666,7 @@ namespace iTextSharp.text.pdf {
         * @return the cell event
         *
         */
-        public IPdfPCellEvent CellEvent {
+        virtual public IPdfPCellEvent CellEvent {
             get {
                 return this.cellEvent;
             }
@@ -686,7 +686,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the arabic shaping options.
         * @return the arabic shaping options
         */
-        public int ArabicOptions {
+        virtual public int ArabicOptions {
             get {
                 return column.ArabicOptions;
             }
@@ -698,7 +698,7 @@ namespace iTextSharp.text.pdf {
         /** Gets state of first line height based on max ascender
         * @return true if an ascender is to be used.
         */
-        public bool UseAscender {
+        virtual public bool UseAscender {
             get {
                 return column.UseAscender;
             }
@@ -711,7 +711,7 @@ namespace iTextSharp.text.pdf {
         * @return Value of property useDescender.
         *
         */
-        public bool UseDescender {
+        virtual public bool UseDescender {
             get {
                 return this.useDescender;
             }
@@ -724,7 +724,7 @@ namespace iTextSharp.text.pdf {
         * Gets the ColumnText with the content of the cell.
         * @return a columntext object
         */
-        public ColumnText Column {
+        virtual public ColumnText Column {
             get {
                 return column;
             }
@@ -738,7 +738,7 @@ namespace iTextSharp.text.pdf {
         * @return   a List object.
         * @since    2.1.1
         */
-        public List<IElement> CompositeElements {
+        virtual public List<IElement> CompositeElements {
             get {
                 return column.compositeElements;
             }
@@ -768,7 +768,7 @@ namespace iTextSharp.text.pdf {
         * @return  the height of the cell
         * @since   3.0.0
         */
-        public float GetMaxHeight() {
+        virtual public float GetMaxHeight() {
             bool pivoted = (Rotation == 90 || Rotation == 270);
             Image img = this.Image;
             if (img != null) {
@@ -821,7 +821,7 @@ namespace iTextSharp.text.pdf {
         }
 
 
-        public PdfObject GetAccessibleAttribute(PdfName key) {
+        virtual public PdfObject GetAccessibleAttribute(PdfName key) {
             if (accessibleAttributes != null) {
                 PdfObject value;
                 accessibleAttributes.TryGetValue(key, out value);
@@ -830,7 +830,7 @@ namespace iTextSharp.text.pdf {
                 return null;
         }
 
-        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+        virtual public void SetAccessibleAttribute(PdfName key, PdfObject value) {
             if (accessibleAttributes == null)
                 accessibleAttributes = new Dictionary<PdfName, PdfObject>();
             accessibleAttributes[key] = value;
@@ -838,7 +838,7 @@ namespace iTextSharp.text.pdf {
 
 
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+        virtual public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             return accessibleAttributes;
         }
 
@@ -847,17 +847,17 @@ namespace iTextSharp.text.pdf {
             set { this.role = value; }
         }
 
-        public AccessibleElementId ID {
+        virtual public AccessibleElementId ID {
             get { return id; }
             set { id = value; }
         }
 
-        public List<PdfPHeaderCell> Headers
+        virtual public List<PdfPHeaderCell> Headers
         {
             get { return headers; }
         }
 
-        public void AddHeader(PdfPHeaderCell header)
+        virtual public void AddHeader(PdfPHeaderCell header)
         {
             if (headers == null)
                 headers = new List<PdfPHeaderCell>();

@@ -297,7 +297,7 @@ namespace iTextSharp.text.pdf {
         *                     what is added to this document to an outputstream.
         * @throws DocumentException on error
         */
-        public void AddWriter(PdfWriter writer) {
+        virtual public void AddWriter(PdfWriter writer) {
             if (this.writer == null) {
                 this.writer = writer;
                 annotationsImp = new PdfAnnotationsImp(writer);
@@ -324,7 +324,7 @@ namespace iTextSharp.text.pdf {
         * @return  the current leading
         * @since   2.1.2
         */
-        public float Leading {
+        virtual public float Leading {
             get {
                 return leading;
             }
@@ -364,14 +364,14 @@ namespace iTextSharp.text.pdf {
         /**
          * Save current @leading
          */
-        protected void PushLeading() {
+        virtual protected void PushLeading() {
             leadingStack.Push(leading);
         }
 
         /**
          * Restore @leading from leadingStack
          */
-        protected void PopLeading()
+        virtual protected void PopLeading()
         {
             leading = leadingStack.Pop();
             if (leadingStack.Count > 0)
@@ -382,7 +382,7 @@ namespace iTextSharp.text.pdf {
          * Getter and setter for the current tab stops.
          * @since	5.4.0
          */
-        public TabSettings TabSettings {
+        virtual public TabSettings TabSettings {
             get { return tabSettings; }
             set { tabSettings = value; }
         }
@@ -848,7 +848,7 @@ namespace iTextSharp.text.pdf {
          * @param xmpMetadata The xmpMetadata to set.
          * @throws IOException 
          */
-        public byte[] XmpMetadata {
+        virtual public byte[] XmpMetadata {
             set {
                 PdfStream xmp = new PdfStream(value);
                 xmp.Put(PdfName.TYPE, PdfName.METADATA);
@@ -1077,7 +1077,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         */
         
-        protected internal void InitPage() {
+        virtual protected internal void InitPage() {
             // the pagenumber is incremented
             pageN++;
             
@@ -1142,7 +1142,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         */
         
-        protected internal void NewLine() {
+        virtual protected internal void NewLine() {
             lastElementType = -1;
             CarriageReturn();
             if (lines != null && lines.Count > 0) {
@@ -1158,7 +1158,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         */
         
-        protected internal void CarriageReturn() {
+        virtual protected internal void CarriageReturn() {
             // the arraylist with lines may not be null
             if (lines == null) {
                 lines = new List<PdfLine>();
@@ -1197,7 +1197,7 @@ namespace iTextSharp.text.pdf {
         *   terminated. 
         * @return The current vertical page position.
         */
-        public float GetVerticalPosition(bool ensureNewLine) {
+        virtual public float GetVerticalPosition(bool ensureNewLine) {
             // ensuring that a new line has been started.
             if (ensureNewLine) {
                 EnsureNewLine();
@@ -1211,7 +1211,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Ensures that a new line has been started. 
         */
-        protected internal void EnsureNewLine() {
+        virtual protected internal void EnsureNewLine() {
             if ((lastElementType == Element.PHRASE) || 
                 (lastElementType == Element.CHUNK)) {
                 NewLine();
@@ -1225,7 +1225,7 @@ namespace iTextSharp.text.pdf {
         * @return the displacement that was caused
         * @throws DocumentException on error
         */
-        protected internal float FlushLines() {
+        virtual protected internal float FlushLines() {
             // checks if the ArrayList with the lines is not null
             if (lines == null) {
                 return 0;
@@ -1777,7 +1777,7 @@ namespace iTextSharp.text.pdf {
         * @return   a margin
         */
         
-        protected internal float IndentLeft {
+        virtual protected internal float IndentLeft {
             get {
                 return GetLeft(indentation.indentLeft + indentation.listIndentLeft + indentation.imageIndentLeft + indentation.sectionIndentLeft);
             }
@@ -1789,7 +1789,7 @@ namespace iTextSharp.text.pdf {
         * @return   a margin
         */
         
-        protected internal float IndentRight {
+        virtual protected internal float IndentRight {
             get {
                 return GetRight(indentation.indentRight + indentation.sectionIndentRight + indentation.imageIndentRight);
             }
@@ -1801,7 +1801,7 @@ namespace iTextSharp.text.pdf {
         * @return   a margin
         */
         
-        protected internal float IndentTop {
+        virtual protected internal float IndentTop {
             get {
                 return GetTop(indentation.indentTop);
             }
@@ -1813,7 +1813,7 @@ namespace iTextSharp.text.pdf {
         * @return   a margin
         */
         
-        protected internal float IndentBottom {
+        virtual protected internal float IndentBottom {
             get {
                 return GetBottom(indentation.indentBottom);
             }
@@ -1823,7 +1823,7 @@ namespace iTextSharp.text.pdf {
         * Adds extra space.
         * This method should probably be rewritten.
         */
-        protected internal void AddSpacing(float extraspace, float oldleading, Font f) {
+        virtual protected internal void AddSpacing(float extraspace, float oldleading, Font f) {
             if (extraspace == 0) return;
             if (pageEmpty) return;
             if (currentHeight + line.Height + leading > IndentTop - IndentBottom) return;
@@ -1937,7 +1937,7 @@ namespace iTextSharp.text.pdf {
         * The first level is created with this outline.
         * @return the root outline
         */
-        public PdfOutline RootOutline {
+        virtual public PdfOutline RootOutline {
             get {
                 return rootOutline;
             }
@@ -2024,7 +2024,7 @@ namespace iTextSharp.text.pdf {
 
         protected internal PdfPageLabels pageLabels;
 
-        public PdfPageLabels PageLabels {
+        virtual public PdfPageLabels PageLabels {
             get {
                 return pageLabels;
             }
@@ -2226,7 +2226,7 @@ namespace iTextSharp.text.pdf {
         * Sets the collection dictionary.
         * @param collection a dictionary of type PdfCollection
         */
-        public PdfCollection Collection {
+        virtual public PdfCollection Collection {
             set {
                 this.collection = value;
             }
@@ -2240,7 +2240,7 @@ namespace iTextSharp.text.pdf {
         * Gets the AcroForm object.
         * @return the PdfAcroform object of the PdfDocument
         */
-        public PdfAcroForm AcroForm {
+        virtual public PdfAcroForm AcroForm {
             get {
                 return annotationsImp.AcroForm;
             }
@@ -2292,7 +2292,7 @@ namespace iTextSharp.text.pdf {
                 boxSize[boxName] = new PdfRectangle(size);
         }
         
-        protected internal void SetNewPageSizeAndMargins() {
+        virtual protected internal void SetNewPageSizeAndMargins() {
             pageSize = nextPageSize;
             if (marginMirroring && (PageNumber & 1) == 0) {
                 marginRight = nextMarginLeft;
@@ -2428,7 +2428,7 @@ namespace iTextSharp.text.pdf {
         * Method added by Pelikan Stephan
         * @see com.lowagie.text.DocListener#clearTextWrap()
         */
-        public void ClearTextWrap() {
+        virtual public void ClearTextWrap() {
             float tmpHeight = imageEnd - currentHeight;
             if (line != null) {
                 tmpHeight += line.Height;
@@ -2439,7 +2439,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public int GetStructParentIndex(Object obj) {
+        virtual public int GetStructParentIndex(Object obj) {
             int[] i;
             structParentIndices.TryGetValue(obj, out i);
             if(i == null) {
@@ -2449,7 +2449,7 @@ namespace iTextSharp.text.pdf {
             return i[0];
         }
 
-        public int GetNextMarkPoint(Object obj) {
+        virtual public int GetNextMarkPoint(Object obj) {
             int[] i;
             structParentIndices.TryGetValue(obj, out i);
             if(i == null) {
@@ -2461,7 +2461,7 @@ namespace iTextSharp.text.pdf {
             return markPoint;
         }
 
-        public int[] GetStructParentIndexAndNextMarkPoint(Object obj) {
+        virtual public int[] GetStructParentIndexAndNextMarkPoint(Object obj) {
             int[] i;
             structParentIndices.TryGetValue(obj, out i);
             if(i == null) {
@@ -2483,7 +2483,7 @@ namespace iTextSharp.text.pdf {
         * @throws PdfException on error
         * @throws DocumentException on error
         */        
-        protected internal void Add(Image image) {
+        virtual protected internal void Add(Image image) {
             
             if (image.HasAbsolutePosition()) {
                 graphics.AddImage(image);

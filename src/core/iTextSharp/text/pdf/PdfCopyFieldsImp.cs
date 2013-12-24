@@ -155,7 +155,7 @@ namespace iTextSharp.text.pdf {
             return name;
         }
         
-        protected internal void UpdateCalculationOrder(PdfReader reader) {
+        virtual protected internal void UpdateCalculationOrder(PdfReader reader) {
             PdfDictionary catalog = reader.Catalog;
             PdfDictionary acro = catalog.GetAsDict(PdfName.ACROFORM);
             if (acro == null)
@@ -257,7 +257,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected PdfArray BranchForm(Dictionary<string,object> level, PdfIndirectReference parent, String fname) {
+        virtual protected PdfArray BranchForm(Dictionary<string,object> level, PdfIndirectReference parent, String fname) {
             PdfArray arr = new PdfArray();
             foreach (KeyValuePair<string,object> entry in level) {
                 String name = entry.Key;
@@ -322,7 +322,7 @@ namespace iTextSharp.text.pdf {
             return arr;
         }
         
-        protected void CreateAcroForms() {
+        virtual protected void CreateAcroForms() {
             if (fieldTree.Count == 0)
                 return;
             form = new PdfDictionary();
@@ -358,7 +358,7 @@ namespace iTextSharp.text.pdf {
             CloseIt();
         }
         
-        protected void CloseIt() {
+        virtual protected void CloseIt() {
             for (int k = 0; k < readers.Count; ++k) {
                 readers[k].RemoveFields();
             }
@@ -536,7 +536,7 @@ namespace iTextSharp.text.pdf {
             return cat;
         }
 
-        protected PdfIndirectReference GetNewReference(PRIndirectReference refi) {
+        virtual protected PdfIndirectReference GetNewReference(PRIndirectReference refi) {
             return new PdfIndirectReference(0, GetNewObjectNumber(refi.Reader, refi.Number, 0));
         }
         
@@ -555,7 +555,7 @@ namespace iTextSharp.text.pdf {
         * @param   ref the reference that needs to be set to "visited"
         * @return  true if the reference was set to visited
         */
-        protected internal bool SetVisited(PRIndirectReference refi) {
+        virtual protected internal bool SetVisited(PRIndirectReference refi) {
             IntHashtable refs;
             if (visited.TryGetValue(refi.Reader, out refs)) {
                 int old = refs[refi.Number];
@@ -571,7 +571,7 @@ namespace iTextSharp.text.pdf {
         * @param   ref the reference that needs to be checked
         * @return  true if the reference was already visited
         */
-        protected internal bool IsVisited(PRIndirectReference refi) {
+        virtual protected internal bool IsVisited(PRIndirectReference refi) {
             IntHashtable refs;
             if (visited.TryGetValue(refi.Reader, out refs))
                 return refs.ContainsKey(refi.Number);
@@ -579,7 +579,7 @@ namespace iTextSharp.text.pdf {
                 return false;
         }
         
-        protected internal bool IsVisited(PdfReader reader, int number, int generation) {
+        virtual protected internal bool IsVisited(PdfReader reader, int number, int generation) {
             IntHashtable refs = readers2intrefs[reader];
             return refs.ContainsKey(number);
         }
@@ -589,7 +589,7 @@ namespace iTextSharp.text.pdf {
         * @param   ref the reference that needs to be checked
         * @return  true is the reference refers to a page object.
         */
-        protected internal bool IsPage(PRIndirectReference refi) {
+        virtual protected internal bool IsPage(PRIndirectReference refi) {
             IntHashtable refs;
             if (pages2intrefs.TryGetValue(refi.Reader, out refs))
                 return refs.ContainsKey(refi.Number);
@@ -601,7 +601,7 @@ namespace iTextSharp.text.pdf {
             return file;
         }
 
-        public void OpenDoc() {
+        virtual public void OpenDoc() {
             if (!nd.IsOpen())
                 nd.Open();
         }    

@@ -121,7 +121,7 @@ public class PRStream : PdfStream {
      * @param compress true if you want the stream to be compresssed.
      * @since   iText 2.1.1
      */
-    public void SetData(byte[] data, bool compress) {
+    virtual public void SetData(byte[] data, bool compress) {
         SetData(data, compress, DEFAULT_COMPRESSION);
     }
     
@@ -135,7 +135,7 @@ public class PRStream : PdfStream {
      * @param compressionLevel  a value between -1 and 9 (ignored if compress == false)
      * @since   iText 2.1.3
      */
-    public void SetData(byte[] data, bool compress, int compressionLevel) {
+    virtual public void SetData(byte[] data, bool compress, int compressionLevel) {
         Remove(PdfName.FILTER);
         this.offset = -1;
         if (Document.Compress && compress) {
@@ -155,7 +155,7 @@ public class PRStream : PdfStream {
     /**Sets the data associated with the stream
      * @param data raw data, decrypted and uncompressed.
      */
-    public void SetData(byte[] data) {
+    virtual public void SetData(byte[] data) {
         SetData(data, true);
     }
 
@@ -169,13 +169,13 @@ public class PRStream : PdfStream {
         }
     }
     
-	public long Offset {
+	virtual public long Offset {
         get {
             return offset;
         }
     }
     
-    public PdfReader Reader {
+    virtual public PdfReader Reader {
         get {
             return reader;
         }
@@ -185,7 +185,7 @@ public class PRStream : PdfStream {
         return bytes;
     }
     
-    public int ObjNum {
+    virtual public int ObjNum {
         get {
             return objNum;
         }
@@ -194,7 +194,7 @@ public class PRStream : PdfStream {
         }
     }
     
-    public int ObjGen {
+    virtual public int ObjGen {
         get {
             return objGen;
         }

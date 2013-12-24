@@ -56,13 +56,13 @@ namespace iTextSharp.tool.xml.html.pdfelement {
     public class HtmlCell : PdfPCell {
         private float fixedWidth;
 
-        public float FixedWidth {
+        virtual public float FixedWidth {
             get { return fixedWidth; }
             set { fixedWidth = value; }
         }
         private TableStyleValues values = new TableStyleValues();
 
-        public TableStyleValues CellValues {
+        virtual public TableStyleValues CellValues {
             get { return values; }
             set { values = value; }
         }

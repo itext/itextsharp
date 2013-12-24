@@ -55,7 +55,7 @@ namespace iTextSharp.text.pdf.mc {
          * Returns the number of the page object to which the structure item belongs.
          * @return a number of the reference of a page
          */
-        public int GetPageref() {
+        virtual public int GetPageref() {
             return pageref;
         }
 

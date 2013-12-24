@@ -254,7 +254,7 @@ namespace iTextSharp.text.pdf {
          * @return  the unicode String that results from decoding
          * @since 2.1.7
          */
-        public String Decode(byte[] cidbytes, int offset, int len){
+        virtual public String Decode(byte[] cidbytes, int offset, int len){
             StringBuilder sb = new StringBuilder();
             if (toUnicodeCmap == null && byteCid != null) {
                 CMapSequence seq = new CMapSequence(cidbytes, offset, len);
@@ -287,7 +287,7 @@ namespace iTextSharp.text.pdf {
          * @return  a String encoded taking into account if the bytes are in unicode or not.
          * @deprecated method name is not indicative of what it does.  Use <code>decode</code> instead.
          */
-        public String Encode(byte[] bytes, int offset, int len){
+        virtual public String Encode(byte[] bytes, int offset, int len){
             return Decode(bytes, offset, len);    
         }
     }

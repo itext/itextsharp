@@ -75,7 +75,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds keywords.
         * @param keywords
         */
-        public void AddKeywords(String keywords) {
+        virtual public void AddKeywords(String keywords) {
             this[KEYWORDS] = keywords;
         }
         
@@ -83,7 +83,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds the producer.
         * @param producer
         */
-        public void AddProducer(String producer) {
+        virtual public void AddProducer(String producer) {
             this[PRODUCER] = producer;
         }
 
@@ -91,7 +91,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds the version.
         * @param version
         */
-        public void AddVersion(String version) {
+        virtual public void AddVersion(String version) {
             this[VERSION] = version;
         }
     }

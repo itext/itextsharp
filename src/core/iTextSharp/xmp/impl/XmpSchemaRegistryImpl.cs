@@ -492,11 +492,11 @@ namespace iTextSharp.xmp.impl {
 
         #region IDictionary Members
 
-        public bool IsReadOnly {
+        virtual public bool IsReadOnly {
             get { return true; }
         }
 
-        public IDictionaryEnumerator GetEnumerator() {
+        virtual public IDictionaryEnumerator GetEnumerator() {
             return _originalDictionary.GetEnumerator();
         }
 
@@ -505,19 +505,19 @@ namespace iTextSharp.xmp.impl {
             set { throw new NotSupportedException("Collection is read-only."); }
         }
 
-        public void Remove(object key) {
+        virtual public void Remove(object key) {
             ReportNotSupported();
         }
 
-        public bool Contains(object key) {
+        virtual public bool Contains(object key) {
             return _originalDictionary.Contains(key);
         }
 
-        public void Clear() {
+        virtual public void Clear() {
             ReportNotSupported();
         }
 
-        public ICollection Values {
+        virtual public ICollection Values {
             get {
                 // no need to wrap with a read-only thing,
                 // as ICollection is always read-only
@@ -525,11 +525,11 @@ namespace iTextSharp.xmp.impl {
             }
         }
 
-        public void Add(object key, object value) {
+        virtual public void Add(object key, object value) {
             ReportNotSupported();
         }
 
-        public ICollection Keys {
+        virtual public ICollection Keys {
             get {
                 // no need to wrap with a read-only thing,
                 // as ICollection is always read-only
@@ -537,23 +537,23 @@ namespace iTextSharp.xmp.impl {
             }
         }
 
-        public bool IsFixedSize {
+        virtual public bool IsFixedSize {
             get { return _originalDictionary.IsFixedSize; }
         }
 
-        public bool IsSynchronized {
+        virtual public bool IsSynchronized {
             get { return _originalDictionary.IsSynchronized; }
         }
 
-        public int Count {
+        virtual public int Count {
             get { return _originalDictionary.Count; }
         }
 
-        public void CopyTo(Array array, int index) {
+        virtual public void CopyTo(Array array, int index) {
             _originalDictionary.CopyTo(array, index);
         }
 
-        public object SyncRoot {
+        virtual public object SyncRoot {
             get { return _originalDictionary.SyncRoot; }
         }
 

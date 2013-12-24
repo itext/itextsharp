@@ -11,7 +11,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
     {
 
         [Test]
-        public void TestRegion()
+        virtual public void TestRegion()
         {
             byte[] pdf = CreatePdfWithCornerText();
 

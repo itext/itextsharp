@@ -26,7 +26,7 @@ namespace iTextSharp.text.pdfa
         private bool initialByteBufferHightPrecisionState;
 
         [SetUp]
-        public void Initialize()
+        virtual public void Initialize()
         {
             Directory.CreateDirectory(TARGET + "pdf");
             Directory.CreateDirectory(TARGET + "xml");
@@ -36,13 +36,13 @@ namespace iTextSharp.text.pdfa
         }
 
         [TearDown]
-        public void TearDown()
+        virtual public void TearDown()
         {
             ByteBuffer.HIGH_PRECISION = initialByteBufferHightPrecisionState;
         }
 
         [Test]
-        public void MetadaCheckTest() {
+        virtual public void MetadaCheckTest() {
             string filename = OUT + "metadaPDFA1CheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
 
@@ -77,7 +77,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void TrailerCheckTest()
+        virtual public void TrailerCheckTest()
         {
             string filename = OUT + "TrailerCheckTest.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -114,7 +114,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void FileSpecCheckTest()
+        virtual public void FileSpecCheckTest()
         {
             string filename = OUT + "FileSpecCheckTest.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -153,7 +153,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void PdfObjectCheckTest1()
+        virtual public void PdfObjectCheckTest1()
         {
 
             string filename = OUT + "PdfObjectCheckTest1.pdf";
@@ -194,7 +194,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void PdfObjectCheckTest2()
+        virtual public void PdfObjectCheckTest2()
         {
             string filename = OUT + "PdfObjectCheckTest2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -239,7 +239,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void PdfObjectCheckTest3()
+        virtual public void PdfObjectCheckTest3()
         {
             string filename = OUT + "PdfObjectCheckTest3.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -272,7 +272,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void PdfObjectCheckTest4()
+        virtual public void PdfObjectCheckTest4()
         {
             string filename = OUT + "PdfObjectCheckTest4.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -316,7 +316,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void PdfObjectCheckTest5()
+        virtual public void PdfObjectCheckTest5()
         {
             string filename = OUT + "PdfObjectCheckTest5.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -347,7 +347,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void PdfObjectCheckTest6()
+        virtual public void PdfObjectCheckTest6()
         {
             string filename = OUT + "PdfObjectCheckTest6.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -391,7 +391,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void PdfObjectCheckTest7()
+        virtual public void PdfObjectCheckTest7()
         {
             string filename = OUT + "PdfObjectCheckTest7.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -423,7 +423,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void CanvasCheckTest1()
+        virtual public void CanvasCheckTest1()
         {
             string filename = OUT + "CanvasCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -472,7 +472,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void CanvasCheckTest2()
+        virtual public void CanvasCheckTest2()
         {
             string filename = OUT + "pdfa1CanvasCheckTest2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -506,7 +506,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void ColorCheckTest1()
+        virtual public void ColorCheckTest1()
         {
             string filename = OUT + "pdfa1ColorCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -555,7 +555,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void ColorCheckTest2()
+        virtual public void ColorCheckTest2()
         {
             string filename = OUT + "pdfa1ColorCheckTest2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -599,7 +599,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void ColorCheckTest3() {
+        virtual public void ColorCheckTest3() {
             Document document = new Document();
             string filename = OUT + "pdfa1ColorCheckTest3.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -657,7 +657,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void ColorCheckTest4() {
+        virtual public void ColorCheckTest4() {
             Document document = new Document();
             string filename = OUT + "pdfa1ColorCheckTest4.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -706,7 +706,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void EgsCheckTest1()
+        virtual public void EgsCheckTest1()
         {
             string filename = OUT + "EgsCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -751,7 +751,7 @@ namespace iTextSharp.text.pdfa
 
 
         [Test]
-        public void EgsCheckTest2()
+        virtual public void EgsCheckTest2()
         {
             string filename = OUT + "EgsCheckTest2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -781,7 +781,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void EgsCheckTest3()
+        virtual public void EgsCheckTest3()
         {
             string filename = OUT + "EgsCheckTest3.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -825,7 +825,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void EgsCheckTest4()
+        virtual public void EgsCheckTest4()
         {
             string filename = OUT + "EgsCheckTest4.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -868,7 +868,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void TransparencyCheckTest1()
+        virtual public void TransparencyCheckTest1()
         {
             string filename = OUT + "TransparencyCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -912,7 +912,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void TransparencyCheckTest2()
+        virtual public void TransparencyCheckTest2()
         {
             string filename = OUT + "TransparencyCheckTest2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -955,7 +955,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void TransparencyCheckTest3()
+        virtual public void TransparencyCheckTest3()
         {
             string filename = OUT + "TransparencyCheckTest3.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -985,7 +985,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void TransparencyCheckTest4()
+        virtual public void TransparencyCheckTest4()
         {
             string filename = OUT + "TransparencyCheckTest4.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1014,7 +1014,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void AnnotationCheckTest1()
+        virtual public void AnnotationCheckTest1()
         {
             string filename = OUT + "AnnotationCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1054,7 +1054,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void AnnotationCheckTest2()
+        virtual public void AnnotationCheckTest2()
         {
             string filename = OUT + "AnnotationCheckTest2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1097,7 +1097,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void AnnotationCheckTest3()
+        virtual public void AnnotationCheckTest3()
         {
             string filename = OUT + "annotationCheckTest3.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1138,7 +1138,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void AnnotationCheckTest4()
+        virtual public void AnnotationCheckTest4()
         {
             string filename = OUT + "AnnotationCheckTest4.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1179,7 +1179,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void AnnotationCheckTest5()
+        virtual public void AnnotationCheckTest5()
         {
             string filename = OUT + "AnnotationCheckTest5.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1227,7 +1227,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void AnnotationCheckTest6()
+        virtual public void AnnotationCheckTest6()
         {
             string filename = OUT + "AnnotationCheckTest6.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1273,7 +1273,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void AnnotationCheckTest7()
+        virtual public void AnnotationCheckTest7()
         {
             string filename = OUT + "AnnotationCheckTest7.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1303,7 +1303,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void AnnotationCheckTest8()
+        virtual public void AnnotationCheckTest8()
         {
             string filename = OUT + "AnnotationCheckTest8.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1346,7 +1346,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void AnnotationCheckTest9()
+        virtual public void AnnotationCheckTest9()
         {
             string filename = OUT + "annotationCheckTest9.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1379,7 +1379,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void FieldCheckTest1()
+        virtual public void FieldCheckTest1()
         {
             String[] LANGUAGES = { "Russian", "English", "Dutch", "French", "Spanish", "German" };
 
@@ -1431,7 +1431,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void FieldCheckTest2()
+        virtual public void FieldCheckTest2()
         {
             String[] LANGUAGES = { "Russian", "English", "Dutch", "French" };
 
@@ -1482,7 +1482,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void FieldCheckTest3()
+        virtual public void FieldCheckTest3()
         {
             string filename = OUT + "FieldCheckTest3.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1527,7 +1527,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void FieldCheckTest4()
+        virtual public void FieldCheckTest4()
         {
             string filename = OUT + "FieldCheckTest4.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1565,7 +1565,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void FieldCheckTest5()
+        virtual public void FieldCheckTest5()
         {
             String[] LANGUAGES = { "Russian", "English", "Dutch", "French" };
 
@@ -1626,7 +1626,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void MarkInfoCheckTest1()
+        virtual public void MarkInfoCheckTest1()
         {
             string filename = OUT + "MarkInfoCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1659,7 +1659,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void MarkInfoCheckTest2()
+        virtual public void MarkInfoCheckTest2()
         {
             string filename = OUT + "MarkInfoCheckTest2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1695,7 +1695,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void RoleMapCheckTest1()
+        virtual public void RoleMapCheckTest1()
         {
             string filename = OUT + "RoleMapCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1737,7 +1737,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void RoleMapCheckTest2()
+        virtual public void RoleMapCheckTest2()
         {
             string filename = OUT + "RoleMapCheckTest2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1767,7 +1767,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void RoleMapCheckTest3()
+        virtual public void RoleMapCheckTest3()
         {
             string filename = OUT + "RoleMapCheckTest3.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -1812,7 +1812,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void FontCheckTest1() {
+        virtual public void FontCheckTest1() {
             bool exceptionThrown = false;
             try {
                 Document document = new Document();

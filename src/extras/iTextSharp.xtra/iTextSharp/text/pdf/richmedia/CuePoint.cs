@@ -77,7 +77,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * Flash content and for display purposes.
          * @param   name    the name of the cue point
          */
-        public PdfString Name {
+        virtual public PdfString Name {
             set {
                 Put(PdfName.NAME, value);
             }
@@ -88,7 +88,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * the cue point within Flash content and for display purposes.
          * @param   time    the time value of the cue point
          */
-        public int Time {
+        virtual public int Time {
             set {
                 Put(PdfName.TIME, new PdfNumber(value));
             }
@@ -100,7 +100,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * reached the matching cue point during its playback.
          * @param   action  an action
          */
-        public PdfObject Action {
+        virtual public PdfObject Action {
             set {
                 if (value is PdfDictionary || value is PdfIndirectReference)
                     Put(PdfName.A, value);

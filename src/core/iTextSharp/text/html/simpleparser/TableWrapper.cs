@@ -87,7 +87,7 @@ namespace iTextSharp.text.html.simpleparser {
          * Adds a new row to the table.
          * @param row a list of PdfPCell elements
          */
-        public void AddRow(IList<PdfPCell> row) {
+        virtual public void AddRow(IList<PdfPCell> row) {
             if (row != null) {
                 List<PdfPCell> t = new List<PdfPCell>(row);
                 t.Reverse();
@@ -99,7 +99,7 @@ namespace iTextSharp.text.html.simpleparser {
          * Setter for the column widths
          * @since iText 5.0.6
          */
-        public float[] ColWidths {
+        virtual public float[] ColWidths {
             set { colWidths = value; }
         }
 
@@ -108,7 +108,7 @@ namespace iTextSharp.text.html.simpleparser {
          * in the table stub.
          * @return  a PdfPTable
          */
-        public PdfPTable CreateTable() {
+        virtual public PdfPTable CreateTable() {
             // no rows = simplest table possible
             if (rows.Count == 0)
                 return new PdfPTable(1);
@@ -157,25 +157,25 @@ namespace iTextSharp.text.html.simpleparser {
 
         // these Element methods are irrelevant for a table stub.
         
-        public bool Process(IElementListener listener) {
+        virtual public bool Process(IElementListener listener) {
             return false;
         }
 
-        public int Type {
+        virtual public int Type {
             get { 
                 return 0;
             }
         }
 
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return false;
         }
 
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             return false;
         }
 
-        public IList<Chunk> Chunks {
+        virtual public IList<Chunk> Chunks {
             get {
                 return null;    
             }

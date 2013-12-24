@@ -88,7 +88,7 @@ namespace iTextSharp.text.pdf {
         * @return    a value
         */
         
-        public int CompareTo(PdfFont pdfFont) {
+        virtual public int CompareTo(PdfFont pdfFont) {
             if (pdfFont == null) {
                 return -1;
             }

@@ -167,7 +167,7 @@ namespace iTextSharp.text.pdf {
             return ann;
         }
 
-        public PdfIndirectReference IndirectReference {
+        virtual public PdfIndirectReference IndirectReference {
             get {
                 if (reference == null) {
                     reference = writer.PdfIndirectReference;
@@ -360,7 +360,7 @@ namespace iTextSharp.text.pdf {
             return annot;
         }
         
-        public PdfContentByte DefaultAppearanceString {
+        virtual public PdfContentByte DefaultAppearanceString {
             set {
                 byte[] b = value.InternalBuffer.ToByteArray();
                 int len = b.Length;
@@ -372,7 +372,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public int Flags {
+        virtual public int Flags {
             set {
                 if (value == 0)
                     Remove(PdfName.F);
@@ -381,13 +381,13 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public PdfBorderArray Border {
+        virtual public PdfBorderArray Border {
             set {
                 Put(PdfName.BORDER, value);
             }
         }
 
-        public PdfBorderDictionary BorderStyle {
+        virtual public PdfBorderDictionary BorderStyle {
             set {
                 Put(PdfName.BS, value);
             }
@@ -399,14 +399,14 @@ namespace iTextSharp.text.pdf {
         * <CODE>HIGHLIGHT_OUTLINE</CODE> and <CODE>HIGHLIGHT_PUSH</CODE>;
         * @param highlight the annotation's highlighting mode
         */    
-        public void SetHighlighting(PdfName highlight) {
+        virtual public void SetHighlighting(PdfName highlight) {
             if (highlight.Equals(HIGHLIGHT_INVERT))
                 Remove(PdfName.H);
             else
                 Put(PdfName.H, highlight);
         }
 
-        public void SetAppearance(PdfName ap, PdfTemplate template) {
+        virtual public void SetAppearance(PdfName ap, PdfTemplate template) {
             PdfDictionary dic = (PdfDictionary)Get(PdfName.AP);
             if (dic == null)
                 dic = new PdfDictionary();
@@ -419,7 +419,7 @@ namespace iTextSharp.text.pdf {
             templates[template] = null;
         }
 
-        public void SetAppearance(PdfName ap, string state, PdfTemplate template) {
+        virtual public void SetAppearance(PdfName ap, string state, PdfTemplate template) {
             PdfDictionary dicAp = (PdfDictionary)Get(PdfName.AP);
             if (dicAp == null)
                 dicAp = new PdfDictionary();
@@ -440,7 +440,7 @@ namespace iTextSharp.text.pdf {
             templates[template] = null;
         }
 
-        public string AppearanceState {
+        virtual public string AppearanceState {
             set {
                 if (value == null) {
                     Remove(PdfName.AS);
@@ -450,13 +450,13 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public BaseColor Color {
+        virtual public BaseColor Color {
             set {
                 Put(PdfName.C, new PdfColor(value));
             }
         }
     
-        public string Title {
+        virtual public string Title {
             set {
                 if (value == null) {
                     Remove(PdfName.T);
@@ -466,20 +466,20 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public PdfAnnotation Popup {
+        virtual public PdfAnnotation Popup {
             set {
                 Put(PdfName.POPUP, value.IndirectReference);
                 value.Put(PdfName.PARENT, this.IndirectReference);
             }
         }
     
-        public PdfAction Action {
+        virtual public PdfAction Action {
             set {
                 Put(PdfName.A, value);
             }
         }
     
-        public void SetAdditionalActions(PdfName key, PdfAction action) {
+        virtual public void SetAdditionalActions(PdfName key, PdfAction action) {
             PdfDictionary dic;
             PdfObject obj = Get(PdfName.AA);
             if (obj != null && obj.IsDictionary())
@@ -498,7 +498,7 @@ namespace iTextSharp.text.pdf {
             used = true;
         }
     
-        public Dictionary<PdfTemplate,object> Templates {
+        virtual public Dictionary<PdfTemplate,object> Templates {
             get {
                 return templates;
             }
@@ -507,31 +507,31 @@ namespace iTextSharp.text.pdf {
         /** Getter for property form.
          * @return Value of property form.
          */
-        public bool IsForm() {
+        virtual public bool IsForm() {
             return form;
         }
     
         /** Getter for property annotation.
          * @return Value of property annotation.
          */
-        public bool IsAnnotation() {
+        virtual public bool IsAnnotation() {
             return annotation;
         }
     
-        public int Page {
+        virtual public int Page {
             set {
                 Put(PdfName.P, writer.GetPageReference(value));
             }
         }
     
-        public void SetPage() {
+        virtual public void SetPage() {
             Put(PdfName.P, writer.CurrentPage);
         }
     
         /** Getter for property placeInPage.
          * @return Value of property placeInPage.
          */
-        public int PlaceInPage {
+        virtual public int PlaceInPage {
             get {
                 return placeInPage;
             }
@@ -559,7 +559,7 @@ namespace iTextSharp.text.pdf {
             return dup;
         }
 
-        public int Rotate {
+        virtual public int Rotate {
             set {
                 Put(PdfName.ROTATE, new PdfNumber(value));
             }
@@ -576,7 +576,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public int MKRotation {
+        virtual public int MKRotation {
             set {
                 MK.Put(PdfName.R, new PdfNumber(value));
             }
@@ -611,7 +611,7 @@ namespace iTextSharp.text.pdf {
             return array;
         }
         
-        public BaseColor MKBorderColor {
+        virtual public BaseColor MKBorderColor {
             set {
                 if (value == null)
                     MK.Remove(PdfName.BC);
@@ -620,7 +620,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public BaseColor MKBackgroundColor {
+        virtual public BaseColor MKBackgroundColor {
             set {
                 if (value == null)
                     MK.Remove(PdfName.BG);
@@ -629,43 +629,43 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public string MKNormalCaption {
+        virtual public string MKNormalCaption {
             set {
                 MK.Put(PdfName.CA, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
         }
         
-        public string MKRolloverCaption {
+        virtual public string MKRolloverCaption {
             set {
                 MK.Put(PdfName.RC, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
         }
         
-        public string MKAlternateCaption {
+        virtual public string MKAlternateCaption {
             set {
                 MK.Put(PdfName.AC, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
         }
         
-        public PdfTemplate MKNormalIcon {
+        virtual public PdfTemplate MKNormalIcon {
             set {
                 MK.Put(PdfName.I, value.IndirectReference);
             }
         }
         
-        public PdfTemplate MKRolloverIcon {
+        virtual public PdfTemplate MKRolloverIcon {
             set {
                 MK.Put(PdfName.RI, value.IndirectReference);
             }
         }
         
-        public PdfTemplate MKAlternateIcon {
+        virtual public PdfTemplate MKAlternateIcon {
             set {
                 MK.Put(PdfName.IX, value.IndirectReference);
             }
         }
         
-        public void SetMKIconFit(PdfName scale, PdfName scalingType, float leftoverLeft, float leftoverBottom, bool fitInBounds) {
+        virtual public void SetMKIconFit(PdfName scale, PdfName scalingType, float leftoverLeft, float leftoverBottom, bool fitInBounds) {
             PdfDictionary dic = new PdfDictionary();
             if (!scale.Equals(PdfName.A))
                 dic.Put(PdfName.SW, scale);
@@ -681,7 +681,7 @@ namespace iTextSharp.text.pdf {
             MK.Put(PdfName.IF, dic);
         }
         
-        public int MKTextPosition {
+        virtual public int MKTextPosition {
             set {
                 MK.Put(PdfName.TP, new PdfNumber(value));
             }
@@ -691,7 +691,7 @@ namespace iTextSharp.text.pdf {
         * Sets the layer this annotation belongs to.
         * @param layer the layer this annotation belongs to
         */    
-        public IPdfOCG Layer {
+        virtual public IPdfOCG Layer {
             set {
                 Put(PdfName.OC, value.Ref);
             }
@@ -702,13 +702,13 @@ namespace iTextSharp.text.pdf {
         * With this name the annotation can be identified among
         * all the annotations on a page (it has to be unique).
         */
-        public String Name {
+        virtual public String Name {
             set {
                 Put(PdfName.NM, new PdfString(value));
             }
         }
 
-        public void ApplyCTM(AffineTransform ctm) {
+        virtual public void ApplyCTM(AffineTransform ctm) {
             PdfArray origRect = GetAsArray(PdfName.RECT);
             if(origRect != null) {
                 PdfRectangle rect;
@@ -814,11 +814,11 @@ namespace iTextSharp.text.pdf {
                 ury = rc.GetAsNumber(3).FloatValue;
             }
             
-            public bool IsInternal() {
+            virtual public bool IsInternal() {
                 return destination != null;
             }
             
-            public int GetDestinationPage() {
+            virtual public int GetDestinationPage() {
                 if (!IsInternal()) return 0;
                 
                 // here destination is something like
@@ -834,12 +834,12 @@ namespace iTextSharp.text.pdf {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("page.not.found"));
             }
             
-            public void SetDestinationPage(int newPage) {
+            virtual public void SetDestinationPage(int newPage) {
                 if (!IsInternal()) throw new ArgumentException(MessageLocalization.GetComposedMessage("cannot.change.destination.of.external.link"));
                 this.newPage=newPage;
             }
             
-            public void TransformDestination(float a, float b, float c, float d, float e, float f) {
+            virtual public void TransformDestination(float a, float b, float c, float d, float e, float f) {
                 if (!IsInternal()) throw new ArgumentException(MessageLocalization.GetComposedMessage("cannot.change.destination.of.external.link"));
                 if (destination.GetAsName(1).Equals(PdfName.XYZ)) {
                     float x = destination.GetAsNumber(2).FloatValue;
@@ -851,7 +851,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             
-            public void TransformRect(float a, float b, float c, float d, float e, float f) {
+            virtual public void TransformRect(float a, float b, float c, float d, float e, float f) {
                 float x = llx * a + lly * c + e;
                 float y = llx * b + lly * d + f;
                 llx = x;
@@ -862,7 +862,7 @@ namespace iTextSharp.text.pdf {
                 ury = y;
             }
             
-            public PdfAnnotation CreateAnnotation(PdfWriter writer) {
+            virtual public PdfAnnotation CreateAnnotation(PdfWriter writer) {
                 PdfAnnotation annotation = new PdfAnnotation(writer, new Rectangle(llx, lly, urx, ury));
                 if (newPage != 0) {
                     PdfIndirectReference refi = writer.GetPageReference(newPage);

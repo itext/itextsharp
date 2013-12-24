@@ -73,7 +73,7 @@ namespace iTextSharp.tool.xml.net {
          * @throws NoImageException if there is no image
          * @throws IOException if an IOException occurred
          */
-        public Image RetrieveImage(String src) {
+        virtual public Image RetrieveImage(String src) {
             Image img = null;
             if (null != provider) {
                 img = provider.Retrieve(src);

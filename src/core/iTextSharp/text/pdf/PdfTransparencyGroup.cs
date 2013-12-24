@@ -59,7 +59,7 @@ namespace iTextSharp.text.pdf {
         * Determining the initial backdrop against which its stack is composited.
         * @param isolated
         */
-        public bool Isolated {
+        virtual public bool Isolated {
             set {
                 if (value)
                     Put(PdfName.I, PdfBoolean.PDFTRUE);
@@ -72,7 +72,7 @@ namespace iTextSharp.text.pdf {
         * Determining whether the objects within the stack are composited with one another or only with the group's backdrop.
         * @param knockout
         */
-        public bool Knockout {
+        virtual public bool Knockout {
             set {
                 if (value)
                     Put(PdfName.K, PdfBoolean.PDFTRUE);

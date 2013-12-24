@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
@@ -15,17 +15,17 @@ namespace com.itextpdf.text.pdf
             indentation = 0;
         }
 
-        public PdfObject GetAccessibleProperty(PdfName key)
+        virtual public PdfObject GetAccessibleProperty(PdfName key)
         {
             return null;
         }
 
-        public void SetAccessibleProperty(PdfName key, PdfObject value)
+        virtual public void SetAccessibleProperty(PdfName key, PdfObject value)
         {
 
         }
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleProperties()
+        virtual public Dictionary<PdfName, PdfObject> GetAccessibleProperties()
         {
             return null;
         }
@@ -36,13 +36,13 @@ namespace com.itextpdf.text.pdf
             set { role = value; }
         }
 
-        public float Indentation
+        virtual public float Indentation
         {
             get { return indentation; }
             set { indentation = value; }
         }
 
-        public bool TagLabelContent { 
+        virtual public bool TagLabelContent { 
             /**
             * Gets the value of <code>tagLabelContent</code> property.
             * If the property is <code>true</code> it means that content of the list item lable will be tagged.

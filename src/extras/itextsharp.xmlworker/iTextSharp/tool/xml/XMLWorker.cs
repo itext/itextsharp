@@ -80,7 +80,7 @@ namespace iTextSharp.tool.xml {
             rootpPipe = pipeline;
         }
 
-        public void Init()  {
+        virtual public void Init()  {
             IPipeline p = rootpPipe;
             try {
                 while ((p = p.Init(GetLocalWC()))!= null);
@@ -188,7 +188,7 @@ namespace iTextSharp.tool.xml {
          * @see
          * com.itextpdf.tool.xml.parser.ParserListener#unknownText(java.lang.String)
          */
-        public void UnknownText(String text) {
+        virtual public void UnknownText(String text) {
             // TODO unknown text encountered
         }
 
@@ -198,7 +198,7 @@ namespace iTextSharp.tool.xml {
          * @see
          * com.itextpdf.tool.xml.parser.ParserListener#comment(java.lang.String)
          */
-        public void Comment(String comment) {
+        virtual public void Comment(String comment) {
             // TODO xml comment encountered
         }
 
@@ -210,7 +210,7 @@ namespace iTextSharp.tool.xml {
          * Returns the current tag.
          * @return the current tag
          */
-        protected internal Tag GetCurrentTag() {
+        virtual protected internal Tag GetCurrentTag() {
             return GetLocalWC().GetCurrentTag();
         }
 
@@ -220,7 +220,7 @@ namespace iTextSharp.tool.xml {
          *
          * @return the local WorkerContext
          */
-        protected internal IWorkerContext GetLocalWC() {
+        virtual protected internal IWorkerContext GetLocalWC() {
             IWorkerContext ik = (IWorkerContext)Thread.GetData(context);
             if (ik == null) {
                 ik = new WorkerContextImpl();

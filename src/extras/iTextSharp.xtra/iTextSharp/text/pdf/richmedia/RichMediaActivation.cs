@@ -74,7 +74,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * @param   condition   possible values are:
          *      PdfName.XA, PdfName.PO, or PdfName.PV
          */
-        public PdfName Condition {
+        virtual public PdfName Condition {
             set {
                 Put(PdfName.CONDITION, value);
             }
@@ -86,7 +86,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * present in this artwork.
          * @param   animation   a RichMediaAnimation dictionary
          */
-        public RichMediaAnimation Animation {
+        virtual public RichMediaAnimation Animation {
             set {
                 Put(PdfName.ANIMATION, value);
             }
@@ -98,7 +98,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * annotation's RichMediaContent dictionary.
          * @param   view    an indirect reference
          */
-        public PdfIndirectReference View {
+        virtual public PdfIndirectReference View {
             set {
                 Put(PdfName.VIEW, value);
             }
@@ -111,7 +111,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * the RichMediaAnnotation object).
          * @param   configuration   an indirect reference
          */
-        public PdfIndirectReference Configuration {
+        virtual public PdfIndirectReference Configuration {
             set {
                 Put(PdfName.CONFIGURATION, value);
             }
@@ -123,7 +123,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * laid out and drawn.
          * @param   richMediaPresentation   a RichMediaPresentation object
          */
-        public RichMediaPresentation Presentation {
+        virtual public RichMediaPresentation Presentation {
             set {
                 Put(PdfName.PRESENTATION, value);
             }
@@ -135,7 +135,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * be present in the Assets name tree of the RichMediaContent dictionary.
          * @param   scripts a PdfArray
          */
-        public PdfArray Scripts {
+        virtual public PdfArray Scripts {
             set {
                 Put(PdfName.SCRIPTS, value);
             }

@@ -79,11 +79,11 @@ namespace iTextSharp.text.pdf {
         *
         * @param  number   displacement of the string
         */
-        public void Add(PdfNumber number) {
+        virtual public void Add(PdfNumber number) {
             Add((float)number.DoubleValue);
         }
         
-        public void Add(float number) {
+        virtual public void Add(float number) {
             if (number != 0) {
                 if (!float.IsNaN(lastNum)) {
                     lastNum += number;
@@ -101,7 +101,7 @@ namespace iTextSharp.text.pdf {
             // adding zero doesn't modify the TextArray at all
         }
         
-        public void Add(String str) {
+        virtual public void Add(String str) {
             if (str.Length > 0) {
                 if (lastStr != null) {
                     lastStr = lastStr + str;

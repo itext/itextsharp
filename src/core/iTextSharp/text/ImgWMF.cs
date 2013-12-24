@@ -147,7 +147,7 @@ namespace iTextSharp.text {
         /// Reads the WMF into a template.
         /// </summary>
         /// <param name="template">the template to read to</param>
-        public void ReadWMF(PdfTemplate template) {
+        virtual public void ReadWMF(PdfTemplate template) {
             TemplateData = template;
             template.Width = this.Width;
             template.Height = this.Height;

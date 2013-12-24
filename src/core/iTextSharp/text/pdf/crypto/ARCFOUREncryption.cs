@@ -54,11 +54,11 @@ namespace iTextSharp.text.pdf.crypto {
         public ARCFOUREncryption() {
         }
         
-        public void PrepareARCFOURKey(byte[] key) {
+        virtual public void PrepareARCFOURKey(byte[] key) {
             PrepareARCFOURKey(key, 0, key.Length);
         }
 
-        public void PrepareARCFOURKey(byte[] key, int off, int len) {
+        virtual public void PrepareARCFOURKey(byte[] key, int off, int len) {
             int index1 = 0;
             int index2 = 0;
             for (int k = 0; k < 256; ++k)
@@ -75,7 +75,7 @@ namespace iTextSharp.text.pdf.crypto {
             }
         }
 
-        public void EncryptARCFOUR(byte[] dataIn, int off, int len, byte[] dataOut, int offOut) {
+        virtual public void EncryptARCFOUR(byte[] dataIn, int off, int len, byte[] dataOut, int offOut) {
             int length = len + off;
             byte tmp;
             for (int k = off; k < length; ++k) {
@@ -88,15 +88,15 @@ namespace iTextSharp.text.pdf.crypto {
             }
         }
 
-        public void EncryptARCFOUR(byte[] data, int off, int len) {
+        virtual public void EncryptARCFOUR(byte[] data, int off, int len) {
             EncryptARCFOUR(data, off, len, data, off);
         }
 
-        public void EncryptARCFOUR(byte[] dataIn, byte[] dataOut) {
+        virtual public void EncryptARCFOUR(byte[] dataIn, byte[] dataOut) {
             EncryptARCFOUR(dataIn, 0, dataIn.Length, dataOut, 0);
         }
 
-        public void EncryptARCFOUR(byte[] data) {
+        virtual public void EncryptARCFOUR(byte[] data) {
             EncryptARCFOUR(data, 0, data.Length, data, 0);
         }   
     }

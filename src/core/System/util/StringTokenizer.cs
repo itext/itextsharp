@@ -67,7 +67,7 @@ namespace System.util {
             this.pos = 0;
         }
 
-        public bool HasMoreTokens() {
+        virtual public bool HasMoreTokens() {
             if (! retDelims) {
                 while (pos < len && delim.IndexOf(str[pos]) >= 0)
                     pos++;
@@ -75,12 +75,12 @@ namespace System.util {
             return pos < len;
         }
 
-        public String NextToken(String delim) {
+        virtual public String NextToken(String delim) {
             this.delim = delim;
             return NextToken();
         }
 
-        public String NextToken() {
+        virtual public String NextToken() {
             if (pos < len && delim.IndexOf(str[pos]) >= 0) {
                 if (retDelims)
                     return str.Substring(pos++, 1);
@@ -95,7 +95,7 @@ namespace System.util {
             throw new IndexOutOfRangeException();
         }
 
-        public int CountTokens() {
+        virtual public int CountTokens() {
             int count = 0;
             int delimiterCount = 0;
             bool tokenFound = false;

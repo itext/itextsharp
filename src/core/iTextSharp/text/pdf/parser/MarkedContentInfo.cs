@@ -62,7 +62,7 @@ namespace iTextSharp.text.pdf.parser {
          * Get the tag of this marked content
          * @return the tag of this marked content
          */
-        public PdfName GetTag(){
+        virtual public PdfName GetTag(){
             return tag;
         }
         
@@ -70,7 +70,7 @@ namespace iTextSharp.text.pdf.parser {
          * Determine if an MCID is available
          * @return true if the MCID is available, false otherwise
          */
-        public bool HasMcid(){
+        virtual public bool HasMcid(){
             return dictionary.Contains(PdfName.MCID);
         }
         
@@ -80,7 +80,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the MCID value
          * @throws NullPointerException if there is no MCID (see {@link MarkedContentInfo#hasMcid()})
          */
-        public int GetMcid(){
+        virtual public int GetMcid(){
             PdfNumber id = dictionary.GetAsNumber(PdfName.MCID);
             if (id == null)
                 throw new InvalidOperationException("MarkedContentInfo does not contain MCID");

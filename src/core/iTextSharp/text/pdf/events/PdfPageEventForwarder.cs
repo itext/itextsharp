@@ -65,7 +65,7 @@ namespace iTextSharp.text.pdf.events {
         * Add a page eventa to the forwarder.
         * @param eventa an eventa that has to be added to the forwarder.
         */
-        public void AddPageEvent(IPdfPageEvent eventa) {
+        virtual public void AddPageEvent(IPdfPageEvent eventa) {
             events.Add(eventa);
         }
         

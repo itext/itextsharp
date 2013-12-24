@@ -136,7 +136,7 @@ namespace iTextSharp.text.pdf {
         * Returns the high level version of this PdfRectangle
         * @return this PdfRectangle translated to class Rectangle
         */
-        public Rectangle Rectangle {
+        virtual public Rectangle Rectangle {
             get {
                 return new Rectangle(Left, Bottom, Right, Top);
             }
@@ -190,7 +190,7 @@ namespace iTextSharp.text.pdf {
          * @return      the lower left x-coordinaat
          */
     
-        public float Left {
+        virtual public float Left {
             get {
                 return llx;
             }
@@ -202,7 +202,7 @@ namespace iTextSharp.text.pdf {
          * @return      the upper right x-coordinate
          */
     
-        public float Right {
+        virtual public float Right {
             get {
                 return urx;
             }
@@ -214,7 +214,7 @@ namespace iTextSharp.text.pdf {
          * @return      the upper right y-coordinate
          */
     
-        public float Top {
+        virtual public float Top {
             get {
                 return ury;
             }
@@ -226,7 +226,7 @@ namespace iTextSharp.text.pdf {
          * @return      the lower left y-coordinate
          */
     
-        public float Bottom {
+        virtual public float Bottom {
             get {
                 return lly;
             }
@@ -239,7 +239,7 @@ namespace iTextSharp.text.pdf {
          * @return      the lower left x-coordinate
          */
     
-        public float GetLeft(int margin) {
+        virtual public float GetLeft(int margin) {
             return llx + margin;
         }
     
@@ -250,7 +250,7 @@ namespace iTextSharp.text.pdf {
          * @return      the upper right x-coordinate
          */
     
-        public float GetRight(int margin) {
+        virtual public float GetRight(int margin) {
             return urx - margin;
         }
     
@@ -261,7 +261,7 @@ namespace iTextSharp.text.pdf {
          * @return      the upper right y-coordinate
          */
     
-        public float GetTop(int margin) {
+        virtual public float GetTop(int margin) {
             return ury - margin;
         }
     
@@ -272,7 +272,7 @@ namespace iTextSharp.text.pdf {
          * @return      the lower left y-coordinate
          */
     
-        public float GetBottom(int margin) {
+        virtual public float GetBottom(int margin) {
             return lly + margin;
         }
     
@@ -282,7 +282,7 @@ namespace iTextSharp.text.pdf {
          * @return      a width
          */
     
-        public float Width {
+        virtual public float Width {
             get {
                 return urx - llx;
             }
@@ -294,7 +294,7 @@ namespace iTextSharp.text.pdf {
          * @return      a height
          */
     
-        public float Height {
+        virtual public float Height {
             get {
                 return ury - lly;
             }
@@ -305,7 +305,7 @@ namespace iTextSharp.text.pdf {
          *
          * @return a <CODE>PdfRectangle</CODE>
          */
-        public PdfRectangle Rotate {
+        virtual public PdfRectangle Rotate {
             get {
                 return new PdfRectangle(lly, llx, ury, urx, 0);
             }
@@ -329,7 +329,7 @@ namespace iTextSharp.text.pdf {
         }
 #endif// DRAWING
 
-        public PdfRectangle Transform(AffineTransform transform) {
+        virtual public PdfRectangle Transform(AffineTransform transform) {
             float[] pts = {llx, lly, urx, ury};
             transform.Transform(pts, 0, pts, 0, 2);
             float[] dstPts = {pts[0], pts[1], pts[2], pts[3]};

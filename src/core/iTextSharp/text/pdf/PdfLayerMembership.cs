@@ -88,7 +88,7 @@ namespace iTextSharp.text.pdf {
         * Gets the <CODE>PdfIndirectReference</CODE> that represents this membership layer.
         * @return the <CODE>PdfIndirectReference</CODE> that represents this layer
         */    
-        public PdfIndirectReference Ref {
+        virtual public PdfIndirectReference Ref {
             get {
                 return refi;
             }
@@ -98,7 +98,7 @@ namespace iTextSharp.text.pdf {
         * Adds a new member to the layer.
         * @param layer the new member to the layer
         */    
-        public void AddMember(PdfLayer layer) {
+        virtual public void AddMember(PdfLayer layer) {
             if (!layers.ContainsKey(layer)) {
                 members.Add(layer.Ref);
                 layers[layer] = null;
@@ -109,7 +109,7 @@ namespace iTextSharp.text.pdf {
         * Gets the member layers.
         * @return the member layers
         */    
-        public Dictionary<PdfLayer,object>.KeyCollection Layers {
+        virtual public Dictionary<PdfLayer,object>.KeyCollection Layers {
             get {
                 return layers.Keys;
             }
@@ -121,7 +121,7 @@ namespace iTextSharp.text.pdf {
         * The default value is ANYON.
         * @param type the visibility policy
         */    
-        public PdfName VisibilityPolicy {
+        virtual public PdfName VisibilityPolicy {
             set {
                 Put(PdfName.P, value);
             }
@@ -135,7 +135,7 @@ namespace iTextSharp.text.pdf {
          * expressions.
          * @since 5.0.2
          */
-        public PdfVisibilityExpression VisibilityExpression {
+        virtual public PdfVisibilityExpression VisibilityExpression {
             set {
                 Put(PdfName.VE, value);
             }
@@ -145,7 +145,7 @@ namespace iTextSharp.text.pdf {
         * Gets the dictionary representing the membership layer. It just returns <CODE>this</CODE>.
         * @return the dictionary representing the layer
         */    
-        public PdfObject PdfObject {
+        virtual public PdfObject PdfObject {
             get {
                 return this;
             }

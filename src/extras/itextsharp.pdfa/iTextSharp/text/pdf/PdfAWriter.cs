@@ -143,7 +143,7 @@ namespace iTextSharp.text.pdf {
          * @param pdfx
          */
 
-        public void SetPDFXConformance(int pdfx) {
+        virtual public void SetPDFXConformance(int pdfx) {
             throw new PdfXConformanceException(
                 MessageLocalization.GetComposedMessage("pdfx.conformance.cannot.be.set.for.PdfAWriter.instance"));
         }
@@ -264,7 +264,7 @@ namespace iTextSharp.text.pdf {
          *
          * @throws IOException on error
          */
-        public void AddFileAttachment(String description, byte[] fileStore, String file, String fileDisplay,
+        virtual public void AddFileAttachment(String description, byte[] fileStore, String file, String fileDisplay,
             String mimeType, PdfName afRelationshipValue) {
             PdfFileSpecification pdfFileSpecification = PdfFileSpecification.FileEmbedded(this, file, fileDisplay,
                 fileStore, mimeType, null, PdfStream.BEST_COMPRESSION);
@@ -289,7 +289,7 @@ namespace iTextSharp.text.pdf {
          *
          * @throws IOException on error
          */
-        public void AddFileAttachment(String description, byte[] fileStore, String file, String fileDisplay, PdfName afRelationshipValue) {
+        virtual public void AddFileAttachment(String description, byte[] fileStore, String file, String fileDisplay, PdfName afRelationshipValue) {
             AddFileAttachment(description, fileStore, file, fileDisplay, MimeTypeOctetStream, afRelationshipValue);
         }
 
@@ -317,7 +317,7 @@ namespace iTextSharp.text.pdf {
          * @param fileDisplay the actual file name stored in the pdf
          * @throws IOException on error
          */
-        public void AddPdfAttachment(String description, byte[] fileStore, String file, String fileDisplay) {
+        virtual public void AddPdfAttachment(String description, byte[] fileStore, String file, String fileDisplay) {
             AddPdfAttachment(description, fileStore, file, fileDisplay, AFRelationshipValue.Unspecified);
         }
 
@@ -333,7 +333,7 @@ namespace iTextSharp.text.pdf {
          *
          * @throws IOException on error
          */
-        public void AddPdfAttachment(String description, byte[] fileStore, String file, String fileDisplay, PdfName afRelationshipValue) {
+        virtual public void AddPdfAttachment(String description, byte[] fileStore, String file, String fileDisplay, PdfName afRelationshipValue) {
             AddFileAttachment(description, fileStore, file, fileDisplay, MimeTypePdf, afRelationshipValue);
         }
     }

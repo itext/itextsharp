@@ -107,7 +107,7 @@ namespace iTextSharp.text.pdf {
             this.phase = phase;
         }
     
-        public void Add(float n) {
+        virtual public void Add(float n) {
             Add(new PdfNumber(n));
         }
     

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -56,7 +56,7 @@ namespace itextsharp.tests.text.pdf
     }*/
 
         [SetUp]
-        public void Initialize()
+        virtual public void Initialize()
         {
             Directory.CreateDirectory(TARGET + "pdf");
             Directory.CreateDirectory(TARGET + "xml");
@@ -73,7 +73,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void ClassMapConflict()
+        virtual public void ClassMapConflict()
         {
             InitializeDocument("-cmc");
             PdfReader reader1 = new PdfReader(SOURCE11);
@@ -101,7 +101,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void RoleMapConflict()
+        virtual public void RoleMapConflict()
         {
             InitializeDocument("-rolemap");
 
@@ -131,7 +131,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void PdfMergeTest()
+        virtual public void PdfMergeTest()
         {
             PdfDictionary CM31 = new PdfDictionary();
             PdfDictionary sElem = new PdfDictionary();
@@ -192,7 +192,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf0()
+        virtual public void CopyTaggedPdf0()
         {
             InitializeDocument("0");
             PdfReader reader = new PdfReader(SOURCE11);
@@ -240,7 +240,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf1()
+        virtual public void CopyTaggedPdf1()
         {
             InitializeDocument("1");
             PdfReader reader = new PdfReader(SOURCE32);
@@ -262,7 +262,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf2()
+        virtual public void CopyTaggedPdf2()
         {
             InitializeDocument("2");
             PdfReader reader = new PdfReader(SOURCE16);
@@ -284,7 +284,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf3()
+        virtual public void CopyTaggedPdf3()
         {
             InitializeDocument("3");
             PdfReader reader = new PdfReader(SOURCE10);
@@ -312,7 +312,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf4()
+        virtual public void CopyTaggedPdf4()
         {
             InitializeDocument("4");
             PdfReader reader = new PdfReader(SOURCE10);
@@ -340,7 +340,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf5()
+        virtual public void CopyTaggedPdf5()
         {
             InitializeDocument("5");
             PdfReader reader = new PdfReader(SOURCE10);
@@ -370,7 +370,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf6()
+        virtual public void CopyTaggedPdf6()
         {
             InitializeDocument("6");
             PdfReader reader = new PdfReader(SOURCE11);
@@ -425,7 +425,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf7()
+        virtual public void CopyTaggedPdf7()
         {
             InitializeDocument("7");
             PdfReader reader = new PdfReader(SOURCE16);
@@ -461,7 +461,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf8()
+        virtual public void CopyTaggedPdf8()
         {
             InitializeDocument("8");
             PdfReader reader = new PdfReader(SOURCE42);
@@ -497,7 +497,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf9()
+        virtual public void CopyTaggedPdf9()
         {
             InitializeDocument("9");
             PdfReader reader4 = new PdfReader(SOURCE4);
@@ -549,7 +549,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf10()
+        virtual public void CopyTaggedPdf10()
         {
             //source17: StructTreeRoot has no kids - incorrect syntax of tags - try to fix in result pdf
             InitializeDocument("10");
@@ -572,7 +572,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf11()
+        virtual public void CopyTaggedPdf11()
         {
             //source51: invalid nums - references to PdfDictionary, all pages has the same "NumDictionary"
             // 58 0 obj
@@ -609,7 +609,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf12()
+        virtual public void CopyTaggedPdf12()
         {
             //source52: Nums array is empty:
             // 58 0 obj
@@ -645,7 +645,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf13()
+        virtual public void CopyTaggedPdf13()
         {
             //source53: StructTreeRoot doesn't have kids and Nums is empty
             InitializeDocument("13");
@@ -667,7 +667,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf14() {
+        virtual public void CopyTaggedPdf14() {
             InitializeDocument("14");
             PdfReader reader = new PdfReader(SOURCE11);
 
@@ -687,7 +687,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf15() {
+        virtual public void CopyTaggedPdf15() {
             InitializeDocument("15");
             copy.SetMergeFields();
 
@@ -730,7 +730,7 @@ namespace itextsharp.tests.text.pdf
 
         [Test]
         [Ignore]
-        public void CopyTaggedPdf16() {
+        virtual public void CopyTaggedPdf16() {
             InitializeDocument("16");
             copy.SetMergeFields();
 
@@ -756,7 +756,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf17() {
+        virtual public void CopyTaggedPdf17() {
             InitializeDocument("17");
 
             PdfReader reader1 = new PdfReader(SOURCE10);
@@ -776,7 +776,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf19() {
+        virtual public void CopyTaggedPdf19() {
             InitializeDocument("19");
 
             PdfReader reader = new PdfReader(SOURCE18);
@@ -795,7 +795,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf20() {
+        virtual public void CopyTaggedPdf20() {
             InitializeDocument("20");
             copy.SetMergeFields();
 
@@ -820,7 +820,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        public void CopyTaggedPdf21() {
+        virtual public void CopyTaggedPdf21() {
             InitializeDocument("21");
             copy.SetMergeFields();
 
@@ -845,7 +845,7 @@ namespace itextsharp.tests.text.pdf
 
         //Check for crash in case of structure element contains no "Pg" keys.
         [Test]
-        public void CopyTaggedPdf22() {
+        virtual public void CopyTaggedPdf22() {
             InitializeDocument("22");
 
             PdfReader reader = new PdfReader(DEV_805);
@@ -861,7 +861,7 @@ namespace itextsharp.tests.text.pdf
         }
 
         [TearDown]
-        public void Compress()
+        virtual public void Compress()
         {
             Document.Compress = true;
         }

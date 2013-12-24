@@ -17,7 +17,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         private Tag span;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             p = new Tag("p");
             span = new Tag("span");
 
@@ -29,7 +29,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ResolveXXAndXSmall() {
+        virtual public void ResolveXXAndXSmall() {
             p.CSS[CSS.Property.FONT_SIZE] = CSS.Value.XX_SMALL;
             p.CSS[CSS.Property.FONT_SIZE] = fst.TranslateFontSize(p).ToString(CultureInfo.InvariantCulture) + "pt";
             Chunk c1 = new ChunkCssApplier().Apply(new Chunk("Text before span "), p);
@@ -42,7 +42,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ResolveSmallAndMedium() {
+        virtual public void ResolveSmallAndMedium() {
             p.CSS[CSS.Property.FONT_SIZE] = CSS.Value.SMALL;
             p.CSS[CSS.Property.FONT_SIZE] = fst.TranslateFontSize(p).ToString(CultureInfo.InvariantCulture) + "pt";
             Chunk c1 = new ChunkCssApplier().Apply(new Chunk("Text before span "), p);
@@ -55,7 +55,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ResolveLargeXLargeXXLarge() {
+        virtual public void ResolveLargeXLargeXXLarge() {
             p.CSS[CSS.Property.FONT_SIZE] = CSS.Value.LARGE;
             p.CSS[CSS.Property.FONT_SIZE] = fst.TranslateFontSize(p).ToString(CultureInfo.InvariantCulture) + "pt";
             Chunk c1 = new ChunkCssApplier().Apply(new Chunk("Text before span "), p);
@@ -73,7 +73,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ResolveDefaultToSmaller() {
+        virtual public void ResolveDefaultToSmaller() {
             p.CSS[CSS.Property.FONT_SIZE] = fst.TranslateFontSize(p).ToString(CultureInfo.InvariantCulture) + "pt";
             Chunk c1 = new ChunkCssApplier().Apply(new Chunk("Text before span "), p);
             Assert.AreEqual(12, c1.Font.Size, 0);
@@ -85,7 +85,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ResolveDefaultToLarger() {
+        virtual public void ResolveDefaultToLarger() {
             p.CSS[CSS.Property.FONT_SIZE] = fst.TranslateFontSize(p).ToString(CultureInfo.InvariantCulture) + "pt";
             Chunk c1 = new ChunkCssApplier().Apply(new Chunk("Text before span "), p);
             Assert.AreEqual(12, c1.Font.Size, 0);
@@ -97,7 +97,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void Resolve15ToSmaller() {
+        virtual public void Resolve15ToSmaller() {
             p.CSS[CSS.Property.FONT_SIZE] = "15pt";
             p.CSS[CSS.Property.FONT_SIZE] = fst.TranslateFontSize(p).ToString(CultureInfo.InvariantCulture) + "pt";
             Chunk c1 = new ChunkCssApplier().Apply(new Chunk("Text before span "), p);
@@ -110,7 +110,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void Resolve15ToLarger() {
+        virtual public void Resolve15ToLarger() {
             p.CSS[CSS.Property.FONT_SIZE] = "15pt";
             p.CSS[CSS.Property.FONT_SIZE] = fst.TranslateFontSize(p).ToString(CultureInfo.InvariantCulture) + "pt";
             Chunk c1 = new ChunkCssApplier().Apply(new Chunk("Text before span "), p);
@@ -123,7 +123,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void Resolve34ToSmaller() {
+        virtual public void Resolve34ToSmaller() {
             p.CSS[CSS.Property.FONT_SIZE] = "34pt";
             p.CSS[CSS.Property.FONT_SIZE] = fst.TranslateFontSize(p).ToString(CultureInfo.InvariantCulture) + "pt";
             Chunk c1 = new ChunkCssApplier().Apply(new Chunk("Text before span "), p);
@@ -136,7 +136,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void Resolve34ToLarger() {
+        virtual public void Resolve34ToLarger() {
             p.CSS[CSS.Property.FONT_SIZE] = "34pt";
             p.CSS[CSS.Property.FONT_SIZE] = fst.TranslateFontSize(p) + "pt";
             Chunk c1 = new ChunkCssApplier().Apply(new Chunk("Text before span "), p);

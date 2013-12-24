@@ -305,7 +305,7 @@ namespace iTextSharp.text.pdf {
          * @return      the <CODE>PdfIndirectReference</CODE> to this outline.
          */
     
-        public PdfIndirectReference IndirectReference {
+        virtual public PdfIndirectReference IndirectReference {
             get {
                 return reference;
             }
@@ -321,7 +321,7 @@ namespace iTextSharp.text.pdf {
          * @return      the <CODE>PdfOutline</CODE> that is the parent of this outline.
          */
     
-        public PdfOutline Parent {
+        virtual public PdfOutline Parent {
             get {
                 return parent;
             }
@@ -334,7 +334,7 @@ namespace iTextSharp.text.pdf {
          * @return <CODE>true</CODE> if this page was set as the <CODE>PdfDestination</CODE>-page.
          */
     
-        public bool SetDestinationPage(PdfIndirectReference pageReference) {
+        virtual public bool SetDestinationPage(PdfIndirectReference pageReference) {
             if (destination == null) {
                 return false;
             }
@@ -345,7 +345,7 @@ namespace iTextSharp.text.pdf {
          * Gets the destination for this outline.
          * @return the destination
          */
-        public PdfDestination PdfDestination {
+        virtual public PdfDestination PdfDestination {
             get {
                 return destination;
             }
@@ -367,7 +367,7 @@ namespace iTextSharp.text.pdf {
          * @return      a level
          */
     
-        public int Level {
+        virtual public int Level {
             get {
                 if (parent == null) {
                     return 0;
@@ -409,11 +409,11 @@ namespace iTextSharp.text.pdf {
             base.ToPdf(writer, os);
         }
     
-        public void AddKid(PdfOutline outline) {
+        virtual public void AddKid(PdfOutline outline) {
             kids.Add(outline);
         }
     
-        public List<PdfOutline> Kids {
+        virtual public List<PdfOutline> Kids {
             get {
                 return kids;
             }
@@ -426,7 +426,7 @@ namespace iTextSharp.text.pdf {
         /** Getter for property tag.
          * @return Value of property tag.
          */
-        public string Tag {
+        virtual public string Tag {
             get {
                 return tag;
             }
@@ -436,7 +436,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public string Title {
+        virtual public string Title {
             get {
                 PdfString title = (PdfString)Get(PdfName.TITLE);
                 return title.ToString();
@@ -450,7 +450,7 @@ namespace iTextSharp.text.pdf {
         /** Setter for property open.
          * @param open New value of property open.
          */
-        public bool Open {
+        virtual public bool Open {
             set {
                 this.open = value;
             }
@@ -459,7 +459,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public BaseColor Color {
+        virtual public BaseColor Color {
             get {
                 return color;
             }
@@ -468,7 +468,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public int Style {
+        virtual public int Style {
             get {
                 return style;
             }

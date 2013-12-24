@@ -145,7 +145,7 @@ namespace iTextSharp.text.pdf {
         * @param widths
         * @return true if everything went right
         */
-        public bool SetWidths(float[] widths) {
+        virtual public bool SetWidths(float[] widths) {
             if (widths.Length != cells.Length)
                 return false;
             System.Array.Copy(widths, 0, this.widths, 0, cells.Length);
@@ -174,7 +174,7 @@ namespace iTextSharp.text.pdf {
         * Initializes the extra heights array.
         * @since    2.1.6
         */
-        protected internal void InitExtraHeights() {
+        virtual protected internal void InitExtraHeights() {
             extraHeights = new float[cells.Length];
             for (int i = 0; i < extraHeights.Length; i++) {
                 extraHeights[i] = 0;
@@ -187,7 +187,7 @@ namespace iTextSharp.text.pdf {
         * @param    height  the extra height
         * @since    2.1.6
         */
-        public void SetExtraHeight(int cell, float height) {
+        virtual public void SetExtraHeight(int cell, float height) {
             if (cell < 0 || cell >= cells.Length)
                 return;
             extraHeights[cell] = height;
@@ -198,7 +198,7 @@ namespace iTextSharp.text.pdf {
          * 
          * @return the maximum height of the row.
          */
-        protected internal void CalculateHeights() {
+        virtual protected internal void CalculateHeights() {
             maxHeight = 0;
             for (int k = 0; k < cells.Length; ++k) {
                 PdfPCell cell = cells[k];
@@ -212,7 +212,7 @@ namespace iTextSharp.text.pdf {
             calculated = true;
         }
 
-        public bool MayNotBreak
+        virtual public bool MayNotBreak
         {
             get { return mayNotBreak; }
             set { mayNotBreak = value; }
@@ -228,7 +228,7 @@ namespace iTextSharp.text.pdf {
         * @param canvases
         * @since    2.1.6   extra parameter currentMaxHeight
         */
-        public void WriteBorderAndBackground(float xPos, float yPos, float currentMaxHeight, PdfPCell cell, PdfContentByte[] canvases) {
+        virtual public void WriteBorderAndBackground(float xPos, float yPos, float currentMaxHeight, PdfPCell cell, PdfContentByte[] canvases) {
             BaseColor background = cell.BackgroundColor;
             if (background != null || cell.HasBorders()) {
                 // Add xPos resp. yPos to the cell's coordinates for absolute coordinates
@@ -258,7 +258,7 @@ namespace iTextSharp.text.pdf {
         /**
         * @since    2.1.6 private is now protected
         */
-        protected void SaveAndRotateCanvases(PdfContentByte[] canvases, float a, float b, float c, float d, float e, float f) {
+        virtual protected void SaveAndRotateCanvases(PdfContentByte[] canvases, float a, float b, float c, float d, float e, float f) {
             int last = PdfPTable.TEXTCANVAS + 1;
             if (canvasesPos == null)
                 canvasesPos = new int[last * 2];
@@ -274,7 +274,7 @@ namespace iTextSharp.text.pdf {
         /**
         * @since    2.1.6 private is now protected
         */
-        protected void RestoreCanvases(PdfContentByte[] canvases) {
+        virtual protected void RestoreCanvases(PdfContentByte[] canvases) {
             int last = PdfPTable.TEXTCANVAS + 1;
             for (int k = 0; k < last; ++k) {
                 ByteBuffer bb = canvases[k].InternalBuffer;
@@ -311,7 +311,7 @@ namespace iTextSharp.text.pdf {
          * if true, you can reuse the cells, the row, the parent table as many times you want.
          * @since 5.1.0 added the reusable parameter
          */
-        public void WriteCells(int colStart, int colEnd, float xPos, float yPos, PdfContentByte[] canvases, bool reusable) {
+        virtual public void WriteCells(int colStart, int colEnd, float xPos, float yPos, PdfContentByte[] canvases, bool reusable) {
             if (!calculated)
                 CalculateHeights();
             if (colEnd < 0)
@@ -556,7 +556,7 @@ namespace iTextSharp.text.pdf {
         * 
         * @return true if the dimensions of the columns were calculated
         */
-        public bool IsCalculated() {
+        virtual public bool IsCalculated() {
             return calculated;
         }
 
@@ -564,7 +564,7 @@ namespace iTextSharp.text.pdf {
         * Gets the maximum height of the row (i.e. of the 'highest' cell).
         * @return the maximum height of the row
         */
-        public float MaxHeights {
+        virtual public float MaxHeights {
             get {
                 if (!calculated)
                     CalculateHeights();
@@ -621,7 +621,7 @@ namespace iTextSharp.text.pdf {
          * @param idx   the index of the row that needs to be copied
          * @since 5.1.0
          */
-        public void CopyRowContent(PdfPTable table, int idx) {
+        virtual public void CopyRowContent(PdfPTable table, int idx) {
             if (table == null) {
                 return;
             }
@@ -648,7 +648,7 @@ namespace iTextSharp.text.pdf {
         * @return the remainder row or null if the newHeight was so small that only
         * an empty row would result
         */
-        public PdfPRow SplitRow(PdfPTable table, int rowIndex, float new_height) {
+        virtual public PdfPRow SplitRow(PdfPTable table, int rowIndex, float new_height) {
             LOGGER.Info("Splitting " + rowIndex + " " + new_height);
             // second part of the row
             PdfPCell[] newCells = new PdfPCell[cells.Length];
@@ -740,12 +740,12 @@ namespace iTextSharp.text.pdf {
 
 
         // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
-        public float GetMaxRowHeightsWithoutCalculating() {
+        virtual public float GetMaxRowHeightsWithoutCalculating() {
             return maxHeight;
         }
 
         // Contributed by Deutsche Bahn Systel GmbH (Thorsten Seitz), splitting row spans
-        public void SetFinalMaxHeights(float maxHeight) {
+        virtual public void SetFinalMaxHeights(float maxHeight) {
             MaxHeights = maxHeight;
             calculated = true; // otherwise maxHeight would be recalculated in getter
         }
@@ -759,7 +759,7 @@ namespace iTextSharp.text.pdf {
          * 
          * @since iText 5.4.3
          */
-        public void SplitRowspans(PdfPTable original, int originalIdx, PdfPTable part, int partIdx) {
+        virtual public void SplitRowspans(PdfPTable original, int originalIdx, PdfPTable part, int partIdx) {
             if(original == null || part == null) {
                 return;
             }
@@ -797,7 +797,7 @@ namespace iTextSharp.text.pdf {
         * @return   an array of cells
         * @since    2.1.1
         */
-        public PdfPCell[] GetCells() {
+        virtual public PdfPCell[] GetCells() {
             return cells;
         }
 
@@ -805,7 +805,7 @@ namespace iTextSharp.text.pdf {
          * Checks if a cell in the row has a rowspan greater than 1.
          * @since 5.1.0
          */
-        public bool HasRowspan() {
+        virtual public bool HasRowspan() {
             for (int i = 0; i < cells.Length; i++) {
                 if (cells[i] != null && cells[i].Rowspan > 1)
                     return true;
@@ -813,12 +813,12 @@ namespace iTextSharp.text.pdf {
             return false;
         }
 
-        public bool Adjusted {
+        virtual public bool Adjusted {
             get { return adjusted; }
             set { adjusted = value; }
         }
 
-        public PdfObject GetAccessibleAttribute(PdfName key) {
+        virtual public PdfObject GetAccessibleAttribute(PdfName key) {
             if (accessibleAttributes != null) {
                 PdfObject value;
                 accessibleAttributes.TryGetValue(key, out value);
@@ -827,7 +827,7 @@ namespace iTextSharp.text.pdf {
                 return null;
         }
 
-        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+        virtual public void SetAccessibleAttribute(PdfName key, PdfObject value) {
             if (accessibleAttributes == null)
                 accessibleAttributes = new Dictionary<PdfName, PdfObject>();
             accessibleAttributes[key] = value;
@@ -835,16 +835,16 @@ namespace iTextSharp.text.pdf {
 
 
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+        virtual public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             return accessibleAttributes;
         }
 
-        public PdfName Role {
+        virtual public PdfName Role {
             get { return role; }
             set { this.role = value; }
         }
 
-        public AccessibleElementId ID {
+        virtual public AccessibleElementId ID {
             get { return id; }
             set { id = value; }
         }

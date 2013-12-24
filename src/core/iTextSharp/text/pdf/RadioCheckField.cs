@@ -158,7 +158,7 @@ namespace iTextSharp.text.pdf {
         * Sets the value when the field is checked.
         * @param onValue the value when the field is checked
         */
-        public string OnValue {
+        virtual public string OnValue {
             get {
                 return onValue;
             }
@@ -172,7 +172,7 @@ namespace iTextSharp.text.pdf {
         * @param checked the state of the field, <CODE>true</CODE> for checked
         * and <CODE>false</CODE> for unchecked
         */
-        public bool Checked {
+        virtual public bool Checked {
             get {
                 return vchecked;
             }
@@ -243,7 +243,7 @@ namespace iTextSharp.text.pdf {
         * otherwise
         * @return the appearance
         */    
-        public PdfAppearance GetAppearanceRadioCircle(bool on) {
+        virtual public PdfAppearance GetAppearanceRadioCircle(bool on) {
             PdfAppearance app = PdfAppearance.CreateAppearance(writer, box.Width, box.Height);
             switch (rotation) {
                 case 90:
@@ -297,7 +297,7 @@ namespace iTextSharp.text.pdf {
         * (the same behavior as HTML radio buttons)
         * @return the radio group
         */    
-        public PdfFormField GetRadioGroup(bool noToggleToOff, bool radiosInUnison) {
+        virtual public PdfFormField GetRadioGroup(bool noToggleToOff, bool radiosInUnison) {
             PdfFormField field = PdfFormField.CreateRadioButton(writer, noToggleToOff);
             if (radiosInUnison)
                 field.SetFieldFlags(PdfFormField.FF_RADIOSINUNISON);
@@ -317,7 +317,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @throws DocumentException on error
         */    
-        public PdfFormField RadioField {
+        virtual public PdfFormField RadioField {
             get {
                 return GetField(true);
             }
@@ -329,7 +329,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @throws DocumentException on error
         */    
-        public PdfFormField CheckField {
+        virtual public PdfFormField CheckField {
             get {
                 return GetField(false);
             }

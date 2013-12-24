@@ -68,7 +68,7 @@ namespace iTextSharp.tool.xml.html.table {
             this.styleValues = styleValues;
         }
 
-        public void TableLayout(PdfPTable table, float[][] width, float[] height,
+        virtual public void TableLayout(PdfPTable table, float[][] width, float[] height,
                 int headerRows, int rowStart, PdfContentByte[] canvas) {
             float left = styleValues.BorderWidthLeft;
             float right = styleValues.BorderWidthRight;
@@ -142,7 +142,7 @@ namespace iTextSharp.tool.xml.html.table {
          * Returns the used TableStyleValues
          * @return TableStyleValues
          */
-        public TableStyleValues TableStyleValues {
+        virtual public TableStyleValues TableStyleValues {
             get {
                 return this.styleValues;
             }

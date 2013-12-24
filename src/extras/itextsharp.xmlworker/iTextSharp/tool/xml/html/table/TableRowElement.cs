@@ -105,7 +105,7 @@ namespace iTextSharp.tool.xml.html.table {
              * The position when header/footers should not be repeated on each page.
              * @return an integer position
              */
-            public int Normal {
+            virtual public int Normal {
                 get {
                     return normal;
                 }
@@ -114,7 +114,7 @@ namespace iTextSharp.tool.xml.html.table {
              * The position when headers/footers should be repeated on each page.
              * @return an integer position
              */
-            public int Repeated {
+            virtual public int Repeated {
                 get {
                     return repeated;
                 }
@@ -156,14 +156,14 @@ namespace iTextSharp.tool.xml.html.table {
         /* (non-Javadoc)
          * @see com.itextpdf.text.Element#process(com.itextpdf.text.ElementListener)
          */
-        public bool Process(IElementListener listener) {
+        virtual public bool Process(IElementListener listener) {
             throw new iTextSharp.tool.xml.exceptions.NotImplementedException();
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.text.Element#type()
          */
-        public int Type {
+        virtual public int Type {
             get {
                 throw new iTextSharp.tool.xml.exceptions.NotImplementedException();
             }
@@ -172,21 +172,21 @@ namespace iTextSharp.tool.xml.html.table {
         /* (non-Javadoc)
          * @see com.itextpdf.text.Element#isContent()
          */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             throw new iTextSharp.tool.xml.exceptions.NotImplementedException();
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.text.Element#isNestable()
          */
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             throw new iTextSharp.tool.xml.exceptions.NotImplementedException();
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.text.Element#getChunks()
          */
-        public IList<Chunk> Chunks {
+        virtual public IList<Chunk> Chunks {
             get {
                 throw new iTextSharp.tool.xml.exceptions.NotImplementedException();
             }
@@ -195,7 +195,7 @@ namespace iTextSharp.tool.xml.html.table {
         /**
          * @return the content.
          */
-        public IList<HtmlCell> Content {
+        virtual public IList<HtmlCell> Content {
             get {
                 return content;
             }
@@ -204,7 +204,7 @@ namespace iTextSharp.tool.xml.html.table {
         /**
          * @return the {@link Place} of the row.
          */
-        public Place RowPlace {
+        virtual public Place RowPlace {
             get {
                 return place;
             }

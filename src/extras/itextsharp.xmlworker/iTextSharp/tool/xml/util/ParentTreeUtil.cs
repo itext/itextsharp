@@ -64,7 +64,7 @@ namespace iTextSharp.tool.xml.util {
          * @return parentTree a arrayList<String> containing the parents of Tag t
          */
 
-        public IList<String> GetParentTree(Tag t)
+        virtual public IList<String> GetParentTree(Tag t)
         {
             IList<String> parentTree = new List<String>();
             while (t.Parent != null && !(t.Parent.Name.Equals(HTML.Tag.BODY)))

@@ -69,7 +69,7 @@ namespace iTextSharp.text.pdf {
         * @param reader The PDF reader containing the source document
         * @throws DocumentException
         */
-        public void CopyDocumentFields(PdfReader reader) {
+        virtual public void CopyDocumentFields(PdfReader reader) {
             if (!reader.IsOpenedWithFullPermissions)
                 throw new BadPasswordException(MessageLocalization.GetComposedMessage("pdfreader.not.opened.with.owner.password"));
             if (readers2intrefs.ContainsKey(reader)) {

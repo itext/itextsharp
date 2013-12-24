@@ -72,7 +72,7 @@ namespace iTextSharp.text.pdf.security {
 	     * Decide whether or not online checking is allowed.
 	     * @param onlineCheckingAllowed
 	     */
-	    public bool OnlineCheckingAllowed {
+	    virtual public bool OnlineCheckingAllowed {
             set { onlineCheckingAllowed = value; }
 	    }
     	

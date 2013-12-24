@@ -11,7 +11,7 @@ namespace iTextSharp.tool.xml.css.apply {
     public class DivCssApplier {
         private CssUtils utils = CssUtils.GetInstance();
 
-        public PdfDiv apply(PdfDiv div, Tag t, IMarginMemory memory, IPageSizeContainable psc) {
+        virtual public PdfDiv apply(PdfDiv div, Tag t, IMarginMemory memory, IPageSizeContainable psc) {
             IDictionary<String, String> css = t.CSS;
             float fontSize = FontSizeTranslator.GetInstance().TranslateFontSize(t);
             if (fontSize == Font.UNDEFINED) {

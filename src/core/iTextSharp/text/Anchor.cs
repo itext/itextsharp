@@ -222,7 +222,7 @@ namespace iTextSharp.text
          * @param localDestination	true if the chunk is a local goto and the reference a local destination
          * @return	the value of notGotoOK or false, if a previous Chunk was used to determine the local destination
          */
-        protected bool ApplyAnchor(Chunk chunk, bool notGotoOK, bool localDestination) {
+        virtual protected bool ApplyAnchor(Chunk chunk, bool notGotoOK, bool localDestination) {
             if (name != null && notGotoOK && !chunk.IsEmpty()) {
                 chunk.SetLocalDestination(name);
                 notGotoOK = false;
@@ -251,7 +251,7 @@ namespace iTextSharp.text
         /// <summary>
         /// Name of this Anchor.
         /// </summary>
-        public string Name {
+        virtual public string Name {
             get {
                 return this.name;
             }
@@ -266,7 +266,7 @@ namespace iTextSharp.text
         /// <summary>
         /// reference of this Anchor.
         /// </summary>
-        public string Reference {
+        virtual public string Reference {
             get {
                 return reference;
             }
@@ -280,7 +280,7 @@ namespace iTextSharp.text
         /// reference of this Anchor.
         /// </summary>
         /// <value>an Uri</value>
-        public Uri Url {
+        virtual public Uri Url {
             get {
                 try {
                     return new Uri(reference);

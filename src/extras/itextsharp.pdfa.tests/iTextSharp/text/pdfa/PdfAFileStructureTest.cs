@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Text;
 using NUnit.Framework;
@@ -14,7 +14,7 @@ namespace iTextSharp.text.pdfa
             The file header line shall be immediately followed by a comment consisting of a % character followed by at least four characters, each of whose encoded byte values shall have a decimal value greater than 127.
         */
         [Test]
-        public void FileHeader()
+        virtual public void FileHeader()
         {
             MemoryStream baos = new MemoryStream();
             Document document = new Document();
@@ -37,7 +37,7 @@ namespace iTextSharp.text.pdfa
             No data shall follow the last end-of-file marker except a single optional end-of-line marker.
          */
         [Test]
-        public void FileTrailer()
+        virtual public void FileTrailer()
         {
             MemoryStream baos = new MemoryStream();
             Document document = new Document();
@@ -58,7 +58,7 @@ namespace iTextSharp.text.pdfa
             Hexadecimal strings shall contain an even number of non-white-space characters, each in the range 0 to 9, A to F or a to f.
          */
         [Test]
-        public void stringObjects()
+        virtual public void stringObjects()
         {
             byte[] bytes = new byte[256];
             for (int i = 0; i < 256; i++)
@@ -78,7 +78,7 @@ namespace iTextSharp.text.pdfa
             A stream object dictionary shall not contain the F, FFilter, or FDecodeParams keys.
         */
         [Test]
-        public void streamObjects()
+        virtual public void streamObjects()
         {
             MemoryStream baos = new MemoryStream();
             Document document = new Document();
@@ -101,7 +101,7 @@ namespace iTextSharp.text.pdfa
             The object number and endobj keyword shall each be preceded by an EOL marker. The obj and endobj keywords shall each be followed by an EOL marker.
          */
         [Test]
-        public void indirectObjects()
+        virtual public void indirectObjects()
         {
             MemoryStream baos = new MemoryStream();
             Document document = new Document();

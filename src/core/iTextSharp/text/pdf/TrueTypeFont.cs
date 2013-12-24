@@ -139,16 +139,16 @@ namespace iTextSharp.text.pdf {
          */
         protected RandomAccessFileOrArray rf;
 
-        public RandomAccessFileOrArray Rf { get { return rf; } }
+        virtual public RandomAccessFileOrArray Rf { get { return rf; } }
         /** The file name.
          */
         protected string fileName;
 
-        public string FileName { get { return fileName; } }
+        virtual public string FileName { get { return fileName; } }
     
         protected bool cff = false;
 
-        public bool Cff { get { return cff; } }
+        virtual public bool Cff { get { return cff; } }
     
         protected int cffOffset;
     
@@ -159,7 +159,7 @@ namespace iTextSharp.text.pdf {
          */    
         protected int directoryOffset;
 
-        public int DirectoryOffset { get { return directoryOffset; } }
+        virtual public int DirectoryOffset { get { return directoryOffset; } }
 
         /** The index for the TTC font. It is an empty <CODE>string</CODE> for a
          * TTF file.
@@ -700,7 +700,7 @@ namespace iTextSharp.text.pdf {
          * @return the <CODE>string</CODE> read
          * @throws IOException the font file could not be read
          */
-        protected string ReadStandardString(int length) {
+        virtual protected string ReadStandardString(int length) {
             return rf.ReadString(length, "windows-1252");
         }
     
@@ -711,7 +711,7 @@ namespace iTextSharp.text.pdf {
          * @return the <CODE>string</CODE> read
          * @throws IOException the font file could not be read
          */
-        protected string ReadUnicodeString(int length) {
+        virtual protected string ReadUnicodeString(int length) {
             StringBuilder buf = new StringBuilder();
             length /= 2;
             for (int k = 0; k < length; ++k) {
@@ -725,7 +725,7 @@ namespace iTextSharp.text.pdf {
          * @throws DocumentException the font is invalid
          * @throws IOException the font file could not be read
          */
-        protected void ReadGlyphWidths() {
+        virtual protected void ReadGlyphWidths() {
             int[] table_location;
             tables.TryGetValue("hmtx", out table_location);
             if (table_location == null)
@@ -742,7 +742,7 @@ namespace iTextSharp.text.pdf {
          * @param glyph the glyph to get the width of
          * @return the width of the glyph in normalized 1000 units
          */
-        protected int GetGlyphWidth(int glyph) {
+        virtual protected int GetGlyphWidth(int glyph) {
             if (glyph >= glyphWidthsByIndex.Length)
                 glyph = glyphWidthsByIndex.Length - 1;
             return glyphWidthsByIndex[glyph];
@@ -1059,7 +1059,7 @@ namespace iTextSharp.text.pdf {
          * @param fontStream the indirect reference to a PdfStream containing the font or <CODE>null</CODE>
          * @throws DocumentException if there is an error
          */
-        public PdfDictionary GetFontDescriptor(PdfIndirectReference fontStream, string subsetPrefix, PdfIndirectReference cidset) {
+        virtual public PdfDictionary GetFontDescriptor(PdfIndirectReference fontStream, string subsetPrefix, PdfIndirectReference cidset) {
             PdfDictionary dic = new PdfDictionary(PdfName.FONTDESCRIPTOR);
             dic.Put(PdfName.ASCENT, new PdfNumber((int)os_2.sTypoAscender * 1000 / head.unitsPerEm));
             dic.Put(PdfName.CAPHEIGHT, new PdfNumber((int)os_2.sCapHeight * 1000 / head.unitsPerEm));
@@ -1109,7 +1109,7 @@ namespace iTextSharp.text.pdf {
          * @param fontDescriptor the indirect reference to a PdfDictionary containing the font descriptor or <CODE>null</CODE>
          * @throws DocumentException if there is an error
          */
-        protected PdfDictionary GetFontBaseType(PdfIndirectReference fontDescriptor, string subsetPrefix, int firstChar, int lastChar, byte[] shortTag) {
+        virtual protected PdfDictionary GetFontBaseType(PdfIndirectReference fontDescriptor, string subsetPrefix, int firstChar, int lastChar, byte[] shortTag) {
             PdfDictionary dic = new PdfDictionary(PdfName.FONT);
             if (cff) {
                 dic.Put(PdfName.SUBTYPE, PdfName.TYPE1);
@@ -1163,7 +1163,7 @@ namespace iTextSharp.text.pdf {
             return dic;
         }
         
-        public byte[] GetFullFont() {
+        virtual public byte[] GetFullFont() {
             RandomAccessFileOrArray rf2 = null;
             try {
                 rf2 = new RandomAccessFileOrArray(rf);
@@ -1177,7 +1177,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected internal byte[] GetSubSet(HashSet2<int> glyphs, bool subsetp)  {
+        virtual protected internal byte[] GetSubSet(HashSet2<int> glyphs, bool subsetp)  {
             lock (head) {
                 TrueTypeFontSubSet sb = new TrueTypeFontSubSet(fileName, new RandomAccessFileOrArray(rf), glyphs, directoryOffset, true, !subsetp);
                 return sb.Process();
@@ -1212,7 +1212,7 @@ namespace iTextSharp.text.pdf {
             return s;
         }
         
-        public void AddRangeUni(Dictionary<int, int[]> longTag, bool includeMetrics, bool subsetp) {
+        virtual public void AddRangeUni(Dictionary<int, int[]> longTag, bool includeMetrics, bool subsetp) {
             if (!subsetp && (subsetRanges != null || directoryOffset > 0)) {
                 int[] rg = (subsetRanges == null && directoryOffset > 0) ? new int[]{0, 0xffff} : CompactRanges(subsetRanges);
                 Dictionary<int, int[]> usemap;
@@ -1323,7 +1323,7 @@ namespace iTextSharp.text.pdf {
         * @return  a byte array
         * @since   2.1.3
         */
-        public byte[] ReadCffFont() {
+        virtual public byte[] ReadCffFont() {
             RandomAccessFileOrArray rf2 = new RandomAccessFileOrArray(rf);
             byte[] b = new byte[cffLength];
             try {

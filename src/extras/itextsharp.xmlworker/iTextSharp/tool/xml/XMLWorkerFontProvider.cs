@@ -72,7 +72,7 @@ namespace iTextSharp.tool.xml {
             }
         }
 
-        public void AddFontSubstitute(String font, String substitute) {
+        virtual public void AddFontSubstitute(String font, String substitute) {
             fontSubstitutionMap[font] = substitute;
         }
 

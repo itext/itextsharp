@@ -363,7 +363,7 @@ namespace iTextSharp.text.pdf.security {
          * Getter/setter for property sigName.
          * @return Value of property sigName.
          */
-        public string SignName {
+        virtual public string SignName {
             get {
                 return signName;
             }
@@ -376,7 +376,7 @@ namespace iTextSharp.text.pdf.security {
          * Getter for property reason.
          * @return Value of property reason.
          */
-        public string Reason {
+        virtual public string Reason {
             get {
                 return reason;
             }
@@ -389,7 +389,7 @@ namespace iTextSharp.text.pdf.security {
          * Getter for property location.
          * @return Value of property location.
          */
-        public string Location {
+        virtual public string Location {
             get {
                 return location;
             }
@@ -402,7 +402,7 @@ namespace iTextSharp.text.pdf.security {
          * Getter for property signDate.
          * @return Value of property signDate.
          */
-        public DateTime SignDate {
+        virtual public DateTime SignDate {
             get {
                 return signDate;
             }
@@ -423,7 +423,7 @@ namespace iTextSharp.text.pdf.security {
          * Get the version of the PKCS#7 object.
          * @return the version of the PKCS#7 object.
          */
-        public int Version {
+        virtual public int Version {
             get {
                 return version;
             }
@@ -433,7 +433,7 @@ namespace iTextSharp.text.pdf.security {
          * Get the version of the PKCS#7 "SignerInfo" object.
          * @return the version of the PKCS#7 "SignerInfo" object.
          */
-        public int SigningInfoVersion {
+        virtual public int SigningInfoVersion {
             get {
                 return signerversion;
             }
@@ -458,7 +458,7 @@ namespace iTextSharp.text.pdf.security {
         /**
          * Getter for the ID of the digest algorithm, e.g. "2.16.840.1.101.3.4.2.1"
          */
-        public String DigestAlgorithmOid {
+        virtual public String DigestAlgorithmOid {
             get {
                 return digestAlgorithmOid;
             }
@@ -468,7 +468,7 @@ namespace iTextSharp.text.pdf.security {
          * Returns the name of the digest algorithm, e.g. "SHA256".
          * @return the digest algorithm name, e.g. "SHA256"
          */
-        public String GetHashAlgorithm() {
+        virtual public String GetHashAlgorithm() {
             return DigestAlgorithms.GetDigest(digestAlgorithmOid);
         }
         
@@ -480,7 +480,7 @@ namespace iTextSharp.text.pdf.security {
         /**
          * Getter for the digest encryption algorithm
          */
-        public String DigestEncryptionAlgorithmOid {
+        virtual public String DigestEncryptionAlgorithmOid {
             get {
                 return digestEncryptionAlgorithmOid;
             }
@@ -490,7 +490,7 @@ namespace iTextSharp.text.pdf.security {
          * Get the algorithm used to calculate the message digest, e.g. "SHA1withRSA".
          * @return the algorithm used to calculate the message digest
          */
-        public String GetDigestAlgorithm() {
+        virtual public String GetDigestAlgorithm() {
             return GetHashAlgorithm() + "with" + GetEncryptionAlgorithm();
         }
 
@@ -514,7 +514,7 @@ namespace iTextSharp.text.pdf.security {
          * is also <CODE>null</CODE>. If the <CODE>digest</CODE> is not <CODE>null</CODE>
          * then it may be "RSA" or "DSA"
          */
-        public void SetExternalDigest(byte[] digest, byte[] RSAdata, String digestEncryptionAlgorithm) {
+        virtual public void SetExternalDigest(byte[] digest, byte[] RSAdata, String digestEncryptionAlgorithm) {
             externalDigest = digest;
             externalRSAdata = RSAdata;
             if (digestEncryptionAlgorithm != null) {
@@ -569,7 +569,7 @@ namespace iTextSharp.text.pdf.security {
          * @param len the data length
          * @throws SignatureException on error
          */
-        public void Update(byte[] buf, int off, int len) {
+        virtual public void Update(byte[] buf, int off, int len) {
             if (RSAdata != null || digestAttr != null || isTsp)
                 messageDigest.BlockUpdate(buf, off, len);
             else
@@ -582,7 +582,7 @@ namespace iTextSharp.text.pdf.security {
          * Gets the bytes for the PKCS#1 object.
          * @return a byte array
          */
-        public byte[] GetEncodedPKCS1() {
+        virtual public byte[] GetEncodedPKCS1() {
             if (externalDigest != null)
                 digest = externalDigest;
             else
@@ -602,7 +602,7 @@ namespace iTextSharp.text.pdf.security {
          * Gets the bytes for the PKCS7SignedData object.
          * @return the bytes for the PKCS7SignedData object
          */
-        public byte[] GetEncodedPKCS7() {
+        virtual public byte[] GetEncodedPKCS7() {
             return GetEncodedPKCS7(null, DateTime.Now, null, null, null, CryptoStandard.CMS);
         }
 
@@ -613,7 +613,7 @@ namespace iTextSharp.text.pdf.security {
          * @param signingTime the signing time in the authenticatedAttributes
          * @return the bytes for the PKCS7SignedData object
          */
-        public byte[] GetEncodedPKCS7(byte[] secondDigest, DateTime signingTime) {
+        virtual public byte[] GetEncodedPKCS7(byte[] secondDigest, DateTime signingTime) {
             return GetEncodedPKCS7(secondDigest, signingTime, null, null, null, CryptoStandard.CMS);
         }
 
@@ -627,7 +627,7 @@ namespace iTextSharp.text.pdf.security {
          * @return byte[] the bytes for the PKCS7SignedData object
          * @since   2.1.6
          */
-        public byte[] GetEncodedPKCS7(byte[] secondDigest, DateTime signingTime, ITSAClient tsaClient, byte[] ocsp, ICollection<byte[]> crlBytes, CryptoStandard sigtype) {
+        virtual public byte[] GetEncodedPKCS7(byte[] secondDigest, DateTime signingTime, ITSAClient tsaClient, byte[] ocsp, ICollection<byte[]> crlBytes, CryptoStandard sigtype) {
             if (externalDigest != null) {
                 digest = externalDigest;
                 if (RSAdata != null)
@@ -802,7 +802,7 @@ namespace iTextSharp.text.pdf.security {
          * @param signingTime the signing time
          * @return the byte array representation of the authenticatedAttributes ready to be signed
          */
-        public byte[] getAuthenticatedAttributeBytes(byte[] secondDigest, DateTime signingTime, byte[] ocsp, ICollection<byte[]> crlBytes, CryptoStandard sigtype) {
+        virtual public byte[] getAuthenticatedAttributeBytes(byte[] secondDigest, DateTime signingTime, byte[] ocsp, ICollection<byte[]> crlBytes, CryptoStandard sigtype) {
             return GetAuthenticatedAttributeSet(secondDigest, signingTime, ocsp, crlBytes, sigtype).GetEncoded(Asn1Encodable.Der);
         }
 
@@ -915,7 +915,7 @@ namespace iTextSharp.text.pdf.security {
          * @throws SignatureException on error
          * @return <CODE>true</CODE> if the signature checks out, <CODE>false</CODE> otherwise
          */
-        public bool Verify() {
+        virtual public bool Verify() {
             if (verified)
                 return verifyResult;
             if (isTsp) {
@@ -971,7 +971,7 @@ namespace iTextSharp.text.pdf.security {
          * @return true if it checks false otherwise
          * @since   2.1.6
          */
-        public bool VerifyTimestampImprint() {
+        virtual public bool VerifyTimestampImprint() {
             if (timeStampToken == null)
                 return false;
             TimeStampTokenInfo info = timeStampToken.TimeStampInfo;
@@ -999,7 +999,7 @@ namespace iTextSharp.text.pdf.security {
          * Other certificates, from OCSP for example, will also be included.
          * @return the X.509 certificates associated with this PKCS#7 object
          */
-        public X509Certificate[] Certificates {
+        virtual public X509Certificate[] Certificates {
             get {
                 X509Certificate[] c = new X509Certificate[certs.Count];
                 certs.CopyTo(c, 0);
@@ -1014,7 +1014,7 @@ namespace iTextSharp.text.pdf.security {
          * @return the X.509 certificates associated with this PKCS#7 object
          * @since   2.1.6
          */
-        public X509Certificate[] SignCertificateChain {
+        virtual public X509Certificate[] SignCertificateChain {
             get {
                 X509Certificate[] ret = new X509Certificate[signCerts.Count];
                 signCerts.CopyTo(ret, 0);
@@ -1026,7 +1026,7 @@ namespace iTextSharp.text.pdf.security {
          * Get the X.509 certificate actually used to sign the digest.
          * @return the X.509 certificate actually used to sign the digest
          */
-        public X509Certificate SigningCertificate {
+        virtual public X509Certificate SigningCertificate {
             get {
                 return signCert;
             }
@@ -1075,7 +1075,7 @@ namespace iTextSharp.text.pdf.security {
          * Get the X.509 certificate revocation lists associated with this PKCS#7 object
          * @return the X.509 certificate revocation lists associated with this PKCS#7 object
          */
-        public ICollection<X509Crl> CRLs {
+        virtual public ICollection<X509Crl> CRLs {
             get {
                 return crls;
             }
@@ -1103,7 +1103,7 @@ namespace iTextSharp.text.pdf.security {
          * @return the OCSP basic response or null
          * @since   2.1.6
          */
-        public BasicOcspResp Ocsp {
+        virtual public BasicOcspResp Ocsp {
             get {
                 return basicResp;
             }
@@ -1114,7 +1114,7 @@ namespace iTextSharp.text.pdf.security {
          * @return true if it checks, false otherwise
          * @since   2.1.6
          */
-        public bool IsRevocationValid() {
+        virtual public bool IsRevocationValid() {
             if (basicResp == null)
                 return false;
             if (signCerts.Count < 2)
@@ -1187,7 +1187,7 @@ namespace iTextSharp.text.pdf.security {
          * Check if it's a PAdES-LTV time stamp.
          * @return true if it's a PAdES-LTV time stamp, false otherwise
          */
-        public bool IsTsp {
+        virtual public bool IsTsp {
             get {
                return isTsp;
             }
@@ -1198,7 +1198,7 @@ namespace iTextSharp.text.pdf.security {
          * @return the timestamp token or null
          * @since   2.1.6
          */
-        public TimeStampToken TimeStampToken {
+        virtual public TimeStampToken TimeStampToken {
             get {
                 return timeStampToken;
             }
@@ -1209,7 +1209,7 @@ namespace iTextSharp.text.pdf.security {
          * @return  a date
          * @since   2.1.6
          */
-        public DateTime TimeStampDate {
+        virtual public DateTime TimeStampDate {
             get {
                 if (timeStampToken == null)
                     return DateTime.MaxValue;
@@ -1221,7 +1221,7 @@ namespace iTextSharp.text.pdf.security {
         /**
          * Returns the filter subtype.
          */
-        public PdfName GetFilterSubtype()
+        virtual public PdfName GetFilterSubtype()
         {
             return filterSubtype;
         }
@@ -1230,7 +1230,7 @@ namespace iTextSharp.text.pdf.security {
          * Returns the encryption algorithm
          * @return	the name of an encryption algorithm
          */
-        public String GetEncryptionAlgorithm()
+        virtual public String GetEncryptionAlgorithm()
         {
             String encryptAlgo = EncryptionAlgorithms.GetAlgorithm(digestEncryptionAlgorithmOid);
             if (encryptAlgo == null)

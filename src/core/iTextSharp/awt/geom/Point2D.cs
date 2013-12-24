@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace iTextSharp.awt.geom
 {
@@ -25,7 +25,7 @@ namespace iTextSharp.awt.geom
                 return y;
             }
 
-            public void SetLocation(float x, float y) {
+            virtual public void SetLocation(float x, float y) {
                 this.x = x;
                 this.y = y;
             }
@@ -80,7 +80,7 @@ namespace iTextSharp.awt.geom
 
         public abstract void SetLocation(double x, double y);
 
-        public void SetLocation(Point2D p) {
+        virtual public void SetLocation(Point2D p) {
             SetLocation(p.GetX(), p.GetY());
         }
 
@@ -90,11 +90,11 @@ namespace iTextSharp.awt.geom
             return x2 * x2 + y2 * y2;
         }
 
-        public double DistanceSq(double px, double py) {
+        virtual public double DistanceSq(double px, double py) {
             return Point2D.DistanceSq(GetX(), GetY(), px, py);
         }
 
-        public double DistanceSq(Point2D p) {
+        virtual public double DistanceSq(Point2D p) {
             return Point2D.DistanceSq(GetX(), GetY(), p.GetX(), p.GetY());
         }
 
@@ -102,11 +102,11 @@ namespace iTextSharp.awt.geom
             return Math.Sqrt(DistanceSq(x1, y1, x2, y2));
         }
 
-        public double Distance(double px, double py) {
+        virtual public double Distance(double px, double py) {
             return Math.Sqrt(DistanceSq(px, py));
         }
 
-        public double Distance(Point2D p) {
+        virtual public double Distance(Point2D p) {
             return Math.Sqrt(DistanceSq(p));
         }
 

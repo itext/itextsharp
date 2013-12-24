@@ -78,7 +78,7 @@ namespace iTextSharp.text.pdf.richmedia {
 	     * Sets the name of the configuration (must be unique).
 	     * @param	name	the name
 	     */
-	    public PdfString Name {
+	    virtual public PdfString Name {
             set {
 		        Put(PdfName.NAME, value);
             }
@@ -89,7 +89,7 @@ namespace iTextSharp.text.pdf.richmedia {
 	     * configuration.
 	     * @param	instance	a RichMediaInstance
 	     */
-	    public void AddInstance(RichMediaInstance instance) {
+	    virtual public void AddInstance(RichMediaInstance instance) {
 		    instances.Add(instance);
 	    }
     }

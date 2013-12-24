@@ -94,7 +94,7 @@ namespace iTextSharp.text.pdf {
          * @param certificationLevel the values can be: <code>NOT_CERTIFIED</code>, <code>CERTIFIED_NO_CHANGES_ALLOWED</code>,
          * <code>CERTIFIED_FORM_FILLING</code> and <code>CERTIFIED_FORM_FILLING_AND_ANNOTATIONS</code>
          */
-        public int CertificationLevel {
+        virtual public int CertificationLevel {
             get {
                 return certificationLevel;
             }
@@ -125,7 +125,7 @@ namespace iTextSharp.text.pdf {
          * Gets and setsthe signing reason.
          * @return the signing reason
          */
-        public string Reason {
+        virtual public string Reason {
             get {
                 return reason;
             }
@@ -139,7 +139,7 @@ namespace iTextSharp.text.pdf {
          * @param reasonCaption the signing reason caption
          */
 
-        public string ReasonCaption
+        virtual public string ReasonCaption
         {
             set { reasonCaption = value; }
         }
@@ -148,7 +148,7 @@ namespace iTextSharp.text.pdf {
          * Gets and sets the signing location.
          * @return the signing location
          */
-        public string Location {
+        virtual public string Location {
             get {
                 return location;
             }
@@ -162,7 +162,7 @@ namespace iTextSharp.text.pdf {
          * @param locationCaption the signing location caption
          */
 
-        public string LocationCaption {
+        virtual public string LocationCaption {
             set { locationCaption = value; }
         }
 
@@ -176,7 +176,7 @@ namespace iTextSharp.text.pdf {
          * Sets the name of the application used to create the signature.
          * @param signatureCreator the name of the signature creating application
          */
-        public string SignatureCreator {
+        virtual public string SignatureCreator {
             get { return signatureCreator; }
             set { this.signatureCreator = value; }
         }
@@ -188,7 +188,7 @@ namespace iTextSharp.text.pdf {
          * Gets the signing contact.
          * @return the signing contact
          */
-        public string Contact {
+        virtual public string Contact {
             get {
                 return contact;
             }
@@ -201,7 +201,7 @@ namespace iTextSharp.text.pdf {
          * Gets the signature date.
          * @return the signature date
          */
-        public DateTime SignDate {
+        virtual public DateTime SignDate {
             get {
                 return signDate;
             }
@@ -225,7 +225,7 @@ namespace iTextSharp.text.pdf {
          * <p>
          * @return the document bytes that are hashable
          */
-        public Stream GetRangeStream() {
+        virtual public Stream GetRangeStream() {
             RandomAccessSourceFactory fac = new RandomAccessSourceFactory();
             return new RASInputStream(fac.CreateRanged(GetUnderlyingSource(), range));
         }
@@ -248,7 +248,7 @@ namespace iTextSharp.text.pdf {
         /**
          * Adds the appropriate developer extension.
          */
-	    public void AddDeveloperExtension(PdfDeveloperExtension de) {
+	    virtual public void AddDeveloperExtension(PdfDeveloperExtension de) {
 		    writer.AddDeveloperExtension(de);
 	    }
         
@@ -261,7 +261,7 @@ namespace iTextSharp.text.pdf {
          * Gets the user made signature dictionary. This is the dictionary at the /V key.
          * @return the user made signature dictionary
          */
-        public PdfDictionary CryptoDictionary {
+        virtual public PdfDictionary CryptoDictionary {
             get {
                 return cryptoDictionary;
             }
@@ -275,7 +275,7 @@ namespace iTextSharp.text.pdf {
          * This certificate doesn't take part in the actual signing process.
          * @param signCertificate the certificate 
          */
-        public X509Certificate Certificate {
+        virtual public X509Certificate Certificate {
             get {
                 return signCertificate;
             }
@@ -306,7 +306,7 @@ namespace iTextSharp.text.pdf {
         * Sets the signature event to allow modification of the signature dictionary.
         * @param signatureEvent the signature event
         */
-        public ISignatureEvent SignatureEvent {
+        virtual public ISignatureEvent SignatureEvent {
             get {
                 return signatureEvent;
             }
@@ -326,7 +326,7 @@ namespace iTextSharp.text.pdf {
          * Gets the field name.
          * @return the field name
          */
-        public String FieldName {
+        virtual public String FieldName {
             get {
                 return fieldName;
             }
@@ -337,7 +337,7 @@ namespace iTextSharp.text.pdf {
          * doesn't clash with any existing name.
          * @return a new signature field name
          */
-        public String GetNewSigName() {
+        virtual public String GetNewSigName() {
             AcroFields af = writer.GetAcroFields();
             String name = "Signature";
             int step = 0;
@@ -368,7 +368,7 @@ namespace iTextSharp.text.pdf {
          * @return <CODE>true</CODE> if a new field was created, <CODE>false</CODE> if signing
          * an existing field or if the signature is invisible
          */
-        public bool IsNewField() {
+        virtual public bool IsNewField() {
             return this.newField;
         }
         
@@ -381,7 +381,7 @@ namespace iTextSharp.text.pdf {
          * Gets the page number of the field.
          * @return the page number of the field
          */
-        public int Page {
+        virtual public int Page {
             get {
                 return page;
             }
@@ -398,7 +398,7 @@ namespace iTextSharp.text.pdf {
          * @return the rectangle representing the signature dimensions. It may be <CODE>null</CODE>
          * or have zero width or height for invisible signatures
          */
-        public Rectangle Rect {
+        virtual public Rectangle Rect {
             get {
                 return rect;
             }
@@ -411,7 +411,7 @@ namespace iTextSharp.text.pdf {
          * Gets the rectangle that represent the position and dimension of the signature in the page.
          * @return the rectangle that represent the position and dimension of the signature in the page
          */
-        public Rectangle PageRect {
+        virtual public Rectangle PageRect {
             get {
                 return pageRect;
             }
@@ -421,7 +421,7 @@ namespace iTextSharp.text.pdf {
          * Gets the visibility status of the signature.
          * @return the visibility status of the signature
          */
-        public bool IsInvisible() {
+        virtual public bool IsInvisible() {
             return (rect == null || rect.Width == 0 || rect.Height == 0);
         }
 
@@ -431,7 +431,7 @@ namespace iTextSharp.text.pdf {
          * @param page the page to place the field. The fist page is 1
          * @param fieldName the field name or <CODE>null</CODE> to generate automatically a new field name
          */
-        public void SetVisibleSignature(Rectangle pageRect, int page, String fieldName) {
+        virtual public void SetVisibleSignature(Rectangle pageRect, int page, String fieldName) {
             if (fieldName != null) {
                 if (fieldName.IndexOf('.') >= 0)
                     throw new ArgumentException(MessageLocalization.GetComposedMessage("field.names.cannot.contain.a.dot"));
@@ -454,7 +454,7 @@ namespace iTextSharp.text.pdf {
          * Sets the signature to be visible. An empty signature field with the same name must already exist.
          * @param fieldName the existing empty signature field name
          */
-        public void SetVisibleSignature(String fieldName) {
+        virtual public void SetVisibleSignature(String fieldName) {
             AcroFields af = writer.GetAcroFields();
             AcroFields.Item item = af.GetFieldItem(fieldName);
             if (item == null)
@@ -536,7 +536,7 @@ namespace iTextSharp.text.pdf {
         * @return the rendering mode for this signature
         * @since 5.0.1
         */
-        public RenderingMode SignatureRenderingMode {
+        virtual public RenderingMode SignatureRenderingMode {
             get {
                 return renderingMode;
             }
@@ -554,7 +554,7 @@ namespace iTextSharp.text.pdf {
          * @param signatureGraphic image rendered. If <CODE>null</CODE> the mode is defaulted
          * to <CODE>RenderingMode.DESCRIPTION</CODE>
          */
-        public Image SignatureGraphic {
+        virtual public Image SignatureGraphic {
             get {
                 return signatureGraphic;
             }
@@ -572,7 +572,7 @@ namespace iTextSharp.text.pdf {
          * @param acro6Layers if <code>true</code> only the layers n0 and n2 will be present
          * @deprecated Adobe no longer supports Adobe Acrobat / Reader versions older than 9
          */
-        public bool Acro6Layers {
+        virtual public bool Acro6Layers {
             get {
                 return acro6Layers;
             }
@@ -593,7 +593,7 @@ namespace iTextSharp.text.pdf {
          * @param layer the layer
          * @return a template
          */
-        public PdfTemplate GetLayer(int layer) {
+        virtual public PdfTemplate GetLayer(int layer) {
             if (layer < 0 || layer >= app.Length)
                 return null;
             PdfTemplate t = app[layer];
@@ -612,7 +612,7 @@ namespace iTextSharp.text.pdf {
         /**
          * Indicates that the existing appearances needs to be reused as layer 0.
          */
-        public bool ReuseAppearance
+        virtual public bool ReuseAppearance
         {
             set { reuseAppearance = value; }
         }
@@ -673,7 +673,7 @@ namespace iTextSharp.text.pdf {
          * Gets the background image for the layer 2.
          * @return the background image for the layer 2
          */
-        public Image Image {
+        virtual public Image Image {
             get {
                 return image;
             }
@@ -692,7 +692,7 @@ namespace iTextSharp.text.pdf {
          * In any of the cases the image will always be centered. It's zero by default.
          * @param imageScale the scaling to be applied to the background image
          */
-        public float ImageScale {
+        virtual public float ImageScale {
             get {
                 return imageScale;
             }
@@ -709,7 +709,7 @@ namespace iTextSharp.text.pdf {
          * @param text the signature text identifying the signer. If <CODE>null</CODE> or not set
          * a standard description will be used
          */
-        public string Layer2Text {
+        virtual public string Layer2Text {
             get {
                 return layer2Text;
             }
@@ -725,7 +725,7 @@ namespace iTextSharp.text.pdf {
          * Sets the n2 and n4 layer font. If the font size is zero, auto-fit will be used.
          * @param layer2Font the n2 and n4 font
          */
-        public Font Layer2Font {
+        virtual public Font Layer2Font {
             get {
                 return layer2Font;
             }
@@ -740,7 +740,7 @@ namespace iTextSharp.text.pdf {
         /** Sets the run direction in the n2 and n4 layer.
          * @param runDirection the run direction
          */
-        public int RunDirection {
+        virtual public int RunDirection {
             set {
                 if (value < PdfWriter.RUN_DIRECTION_DEFAULT || value > PdfWriter.RUN_DIRECTION_RTL)
                     throw new ArgumentException(MessageLocalization.GetComposedMessage("invalid.run.direction.1", runDirection));
@@ -761,7 +761,7 @@ namespace iTextSharp.text.pdf {
          * @param text the text identifying the signature status. If <CODE>null</CODE> or not set
          * the description "Signature Not Verified" will be used
          */
-        public string Layer4Text {
+        virtual public string Layer4Text {
             get {
                 return layer4Text;
             }
@@ -782,7 +782,7 @@ namespace iTextSharp.text.pdf {
          * for further details.
          * @return the template that aggregates all appearance layers
          */
-        public PdfTemplate GetTopLayer() {
+        virtual public PdfTemplate GetTopLayer() {
             if (frm == null) {
                 frm = new PdfTemplate(writer);
                 frm.BoundingBox = rect;
@@ -807,7 +807,7 @@ namespace iTextSharp.text.pdf {
          * @return the main appearance layer
          * @throws DocumentException on error
          */
-        public PdfTemplate GetAppearance() {
+        virtual public PdfTemplate GetAppearance() {
             if (IsInvisible()) {
                 PdfTemplate t = new PdfTemplate(writer);
                 t.BoundingBox = new Rectangle(0, 0);
@@ -1083,7 +1083,7 @@ namespace iTextSharp.text.pdf {
          * Gets the <CODE>PdfStamper</CODE> associated with this instance.
          * @return the <CODE>PdfStamper</CODE> associated with this instance
          */
-        public PdfStamper Stamper {
+        virtual public PdfStamper Stamper {
             get {
                 return stamper;
             }
@@ -1093,7 +1093,7 @@ namespace iTextSharp.text.pdf {
          * Sets the PdfStamper
          * @param stamper PdfStamper
          */        
-        public void SetStamper(PdfStamper stamper) {
+        virtual public void SetStamper(PdfStamper stamper) {
             this.stamper = stamper;
         }
 
@@ -1106,7 +1106,7 @@ namespace iTextSharp.text.pdf {
         /**
          * Getter for the byte buffer.
          */
-        public ByteBuffer Sigout {
+        virtual public ByteBuffer Sigout {
             get {
                 return sigout;
             }
@@ -1118,7 +1118,7 @@ namespace iTextSharp.text.pdf {
         /** OutputStream for the bytes of the stamper. */
         private Stream originalout;
         
-        public Stream Originalout {
+        virtual public Stream Originalout {
             get {
                 return originalout;
             }
@@ -1134,13 +1134,13 @@ namespace iTextSharp.text.pdf {
         * Gets the temporary file.
         * @return the temporary file or <CODE>null</CODE> is the document is created in memory
         */    
-        public string TempFile {
+        virtual public string TempFile {
             get {
                 return tempFile;
             }
         }
 
-        public void SetTempFile(string tempFile) {
+        virtual public void SetTempFile(string tempFile) {
             this.tempFile = tempFile;
         }
 
@@ -1158,7 +1158,7 @@ namespace iTextSharp.text.pdf {
          * @return <CODE>true</CODE> if the document is in the process of closing,
          * <CODE>false</CODE> otherwise
          */
-        public bool IsPreClosed() {
+        virtual public bool IsPreClosed() {
             return preClosed;
         }
         
@@ -1178,7 +1178,7 @@ namespace iTextSharp.text.pdf {
          * @throws IOException on error
          * @throws DocumentException on error
          */
-        public void PreClose(Dictionary<PdfName, int> exclusionSizes) {
+        virtual public void PreClose(Dictionary<PdfName, int> exclusionSizes) {
             if (preClosed)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("document.already.pre.closed"));
             stamper.MergeVerification();
@@ -1364,7 +1364,7 @@ namespace iTextSharp.text.pdf {
          * @throws DocumentException on error
          * @throws IOException on error
          */
-        public void Close(PdfDictionary update) {
+        virtual public void Close(PdfDictionary update) {
             try {
                 if (!preClosed)
                     throw new DocumentException(MessageLocalization.GetComposedMessage("preclose.must.be.called.first"));

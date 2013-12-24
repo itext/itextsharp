@@ -98,7 +98,7 @@ namespace iTextSharp.text.xml.xmp {
 	    * @return	true if the content was successfully replaced
 	    * @since	2.1.6 the return type has changed from void to boolean
 	    */
-	    public bool ReplaceNode(String namespaceURI, String localName, String value) {
+	    virtual public bool ReplaceNode(String namespaceURI, String localName, String value) {
 		    XmlNodeList nodes = domDocument.GetElementsByTagName(localName, namespaceURI);
 		    XmlNode node;
 		    if (nodes.Count == 0)
@@ -118,7 +118,7 @@ namespace iTextSharp.text.xml.xmp {
         * @return   true if the content was successfully replaced
         * @since    5.0.0 the return type has changed from void to boolean
         */
-        public bool ReplaceDescriptionAttribute(String namespaceURI, String localName, String value) {
+        virtual public bool ReplaceDescriptionAttribute(String namespaceURI, String localName, String value) {
             XmlNodeList descNodes = domDocument.GetElementsByTagName("Description", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
             if(descNodes.Count == 0) {
                 return false;
@@ -144,7 +144,7 @@ namespace iTextSharp.text.xml.xmp {
 	    * @return	true if the content was successfully added
 	    * @since	2.1.6
 	    */
-	    public bool Add(String parent, String namespaceURI, String localName, String value) {
+	    virtual public bool Add(String parent, String namespaceURI, String localName, String value) {
 		    XmlNodeList nodes = domDocument.GetElementsByTagName(parent);
 		    if (nodes.Count == 0)
 			    return false;
@@ -176,7 +176,7 @@ namespace iTextSharp.text.xml.xmp {
         * @param n the <CODE>Node</CODE> to add the text to
         * @param value the text to add
         */
-        public bool SetNodeText(XmlDocument domDocument, XmlNode n, String value) {
+        virtual public bool SetNodeText(XmlDocument domDocument, XmlNode n, String value) {
             if (n == null)
                 return false;
             XmlNode nc = null;
@@ -190,7 +190,7 @@ namespace iTextSharp.text.xml.xmp {
         /**
          * Writes the document to a byte array.
          */
-        public byte[] SerializeDoc() {
+        virtual public byte[] SerializeDoc() {
             XmlDomWriter xw = new XmlDomWriter();
             MemoryStream fout = new MemoryStream();
             xw.SetOutput(fout, null);

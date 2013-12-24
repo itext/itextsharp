@@ -110,7 +110,7 @@ namespace iTextSharp.tool.xml {
             return cssFile;
         }
 
-        public ICssFile GetDefaultCSS() {
+        virtual public ICssFile GetDefaultCSS() {
             if (defaultCssFile == null) {
                 defaultCssFile = GetCSS(Assembly.GetExecutingAssembly().GetManifestResourceStream("iTextSharp.tool.xml.css.default.css"));
             }
@@ -127,7 +127,7 @@ namespace iTextSharp.tool.xml {
          * @param in the reader
          * @throws IOException thrown when something went wrong with the IO
          */
-        public void ParseXHtml(IElementHandler d, TextReader inp) {
+        virtual public void ParseXHtml(IElementHandler d, TextReader inp) {
             CssFilesImpl cssFiles = new CssFilesImpl();
             cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
@@ -151,7 +151,7 @@ namespace iTextSharp.tool.xml {
          * @param inp the reader
          * @throws IOException thrown when something went wrong with the IO
          */
-        public void ParseXHtml(PdfWriter writer, Document doc, TextReader inp) {
+        virtual public void ParseXHtml(PdfWriter writer, Document doc, TextReader inp) {
             CssFilesImpl cssFiles = new CssFilesImpl();
             cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
@@ -165,7 +165,7 @@ namespace iTextSharp.tool.xml {
             p.Parse(inp);
         }
 
-        public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, Encoding charset, IFontProvider fontProvider) {
+        virtual public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, Encoding charset, IFontProvider fontProvider) {
             CssFilesImpl cssFiles = new CssFilesImpl();
             if (inCssFile != null)
                 cssFiles.Add(GetCSS(inCssFile));
@@ -185,21 +185,21 @@ namespace iTextSharp.tool.xml {
             }
         }
 
-        public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile) {
+        virtual public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile) {
             ParseXHtml(writer, doc, inp, inCssFile, null, new XMLWorkerFontProvider());
         }
 
-        public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, Encoding charset) {
+        virtual public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, Encoding charset) {
             ParseXHtml(writer, doc, inp, inCssFile, charset, new XMLWorkerFontProvider());
         }
 
-        public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Encoding charset) {
+        virtual public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Encoding charset) {
             ParseXHtml(writer, doc, inp,
                 Assembly.GetExecutingAssembly().GetManifestResourceStream("iTextSharp.tool.xml.css.default.css"),
                 charset);
         }
 
-        public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, IFontProvider fontProvider) {
+        virtual public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, IFontProvider fontProvider) {
             ParseXHtml(writer, doc, inp, inCssFile, null, fontProvider);
         }
 
@@ -208,7 +208,7 @@ namespace iTextSharp.tool.xml {
          * @param inp the Stream
          * @throws IOException if something went seriously wrong with IO.
          */
-        public void ParseXHtml(IElementHandler d, Stream inp, Encoding charset) {
+        virtual public void ParseXHtml(IElementHandler d, Stream inp, Encoding charset) {
             CssFilesImpl cssFiles = new CssFilesImpl();
             cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
@@ -232,7 +232,7 @@ namespace iTextSharp.tool.xml {
          * @return the default CSSResolver
          *
          */
-        public ICSSResolver GetDefaultCssResolver(bool addDefaultCss) {
+        virtual public ICSSResolver GetDefaultCssResolver(bool addDefaultCss) {
             ICSSResolver resolver = new StyleAttrCSSResolver();
             if (addDefaultCss) {
                 resolver.AddCss(GetDefaultCSS());
@@ -247,7 +247,7 @@ namespace iTextSharp.tool.xml {
          * @return a
          *         <code>DefaultTagProcessorFactory<code> that maps HTML tags to {@link TagProcessor}s
          */
-        protected internal ITagProcessorFactory GetDefaultTagProcessorFactory() {
+        virtual protected internal ITagProcessorFactory GetDefaultTagProcessorFactory() {
             if (null == tpf) {
                 tpf = Tags.GetHtmlTagProcessorFactory();
             }

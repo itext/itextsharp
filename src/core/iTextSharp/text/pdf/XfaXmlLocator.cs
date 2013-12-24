@@ -1,4 +1,4 @@
-﻿using System.Xml;
+using System.Xml;
 using iTextSharp.text.pdf.security;
 /*
  * $Id: XfaXmlLocator.java 5830 2013-05-31 09:29:15Z blowagie $
@@ -59,14 +59,14 @@ namespace iTextSharp.text.pdf
         private XfaForm xfaForm;
         private string encoding;
 
-        protected void CreateXfaForm() {
+        virtual protected void CreateXfaForm() {
             xfaForm = new XfaForm(stamper.Reader);
         }
 
         /**
          * Gets Document to sign
          */
-        public XmlDocument GetDocument() {
+        virtual public XmlDocument GetDocument() {
             return xfaForm.DomDocument;
         }
 
@@ -76,7 +76,7 @@ namespace iTextSharp.text.pdf
          * @throws IOException
          * @throws DocumentException
          */
-        public void SetDocument(XmlDocument document) {
+        virtual public void SetDocument(XmlDocument document) {
             byte[] outerXml = System.Text.Encoding.UTF8.GetBytes(document.OuterXml);
             //Create PdfStream
             PdfIndirectReference iref = stamper.Writer.
@@ -84,11 +84,11 @@ namespace iTextSharp.text.pdf
             stamper.Reader.AcroForm.Put(PdfName.XFA, iref);
         }
 
-        public string GetEncoding() {
+        virtual public string GetEncoding() {
             return encoding;
         }
 
-        public void SetEncoding(string encoding) {
+        virtual public void SetEncoding(string encoding) {
             this.encoding = encoding;
         }
     }

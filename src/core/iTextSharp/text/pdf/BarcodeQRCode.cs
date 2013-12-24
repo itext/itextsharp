@@ -96,7 +96,7 @@ namespace iTextSharp.text.pdf {
          * @return the barcode <CODE>Image</CODE>
          * @throws BadElementException on error
          */
-        public Image GetImage() {
+        virtual public Image GetImage() {
         byte[] b = GetBitMatrix();
         byte[] g4 = CCITTG4Encoder.Compress(b, bm.GetWidth(), bm.GetHeight());
         return Image.GetInstance(bm.GetWidth(), bm.GetHeight(), false, Image.CCITTG4, Image.CCITT_BLACKIS1, g4, null);

@@ -18,7 +18,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         private WorkerContextImpl workerContextImpl;
 
         [SetUp]
-        public void Init() {
+        virtual public void Init() {
             b.SetCssAppliers(new CssAppliersImpl());
             workerContextImpl = new WorkerContextImpl();
             workerContextImpl.Put(typeof (HtmlPipeline).FullName, new HtmlPipelineContext(null));
@@ -29,7 +29,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyContent() {
+        virtual public void VerifyContent() {
             IList<IElement> content = b.Content(workerContextImpl, new Tag("body"), "text inside a body tag");
             Assert.IsTrue(content[0] is NoNewLineParagraph);
         }
@@ -39,7 +39,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyIfStackOwner() {
+        virtual public void VerifyIfStackOwner() {
             Assert.IsFalse(b.IsStackOwner());
         }
     }

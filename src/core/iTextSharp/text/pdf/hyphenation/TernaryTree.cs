@@ -104,7 +104,7 @@ namespace iTextSharp.text.pdf.hyphenation {
             Init();
         }
 
-        protected void Init() {
+        virtual protected void Init() {
             root = (char)0;
             freenode = (char)1;
             length = 0;
@@ -123,7 +123,7 @@ namespace iTextSharp.text.pdf.hyphenation {
          * is inserted. This saves a lot of space,
          * specially for long keys.
          */
-        public void Insert(string key, char val) {
+        virtual public void Insert(string key, char val) {
             // make sure we have enough room in the arrays
             int len = key.Length
                 + 1;    // maximum number of nodes that may be generated
@@ -135,7 +135,7 @@ namespace iTextSharp.text.pdf.hyphenation {
             root = Insert(root, strkey, 0, val);
         }
 
-        public void Insert(char[] key, int start, char val) {
+        virtual public void Insert(char[] key, int start, char val) {
             int len = Strlen(key) + 1;
             if (freenode + len > eq.Length)
                 RedimNodeArrays(eq.Length + BLOCK_SIZE);
@@ -259,7 +259,7 @@ namespace iTextSharp.text.pdf.hyphenation {
             return Strlen(a, 0);
         }
 
-        public int Find(string key) {
+        virtual public int Find(string key) {
             int len = key.Length;
             char[] strkey = new char[len + 1];
             key.CopyTo(0, strkey, 0, len);
@@ -268,7 +268,7 @@ namespace iTextSharp.text.pdf.hyphenation {
             return Find(strkey, 0);
         }
 
-        public int Find(char[] key, int start) {
+        virtual public int Find(char[] key, int start) {
             int d;
             char p = root;
             int i = start;
@@ -296,7 +296,7 @@ namespace iTextSharp.text.pdf.hyphenation {
             return -1;
         }
 
-        public bool Knows(string key) {
+        virtual public bool Knows(string key) {
             return (Find(key) >= 0);
         }
 
@@ -317,13 +317,13 @@ namespace iTextSharp.text.pdf.hyphenation {
             sc = na;
         }
 
-        public int Size {
+        virtual public int Size {
             get {
                 return length;
             }
         }
 
-        public Object Clone() {
+        virtual public Object Clone() {
             TernaryTree t = new TernaryTree();
             t.lo = (char[])this.lo.Clone();
             t.hi = (char[])this.hi.Clone();
@@ -343,7 +343,7 @@ namespace iTextSharp.text.pdf.hyphenation {
          * tree. The array of keys is assumed to be sorted in ascending
          * order.
          */
-        protected void InsertBalanced(string[] k, char[] v, int offset, int n) {
+        virtual protected void InsertBalanced(string[] k, char[] v, int offset, int n) {
             int m;
             if (n < 1)
                 return;
@@ -359,7 +359,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         /**
          * Balance the tree for best search performance
          */
-        public void Balance() {
+        virtual public void Balance() {
             // System.out.Print("Before root splitchar = "); System.out.Println(sc[root]);
 
             int i = 0, n = length;
@@ -390,7 +390,7 @@ namespace iTextSharp.text.pdf.hyphenation {
          * a map (implemented with a TernaryTree!).
          *
          */
-        public void TrimToSize() {
+        virtual public void TrimToSize() {
             // first balance the tree for best performance
             Balance();
 
@@ -427,7 +427,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         }
 
 
-        public Iterator Keys {
+        virtual public Iterator Keys {
             get {
                 return new Iterator(this);
             }
@@ -464,7 +464,7 @@ namespace iTextSharp.text.pdf.hyphenation {
                     child = c;
                 }
 
-                public Object Clone() {
+                virtual public Object Clone() {
                     return new Item(parent, child);
                 }
 
@@ -488,21 +488,21 @@ namespace iTextSharp.text.pdf.hyphenation {
                 Rewind();
             }
 
-            public void Rewind() {
+            virtual public void Rewind() {
                 ns.Clear();
                 ks.Length = 0;
                 cur = parent.root;
                 Run();
             }
 
-            public Object NextElement() {
+            virtual public Object NextElement() {
                 string res = curkey;
                 cur = Up();
                 Run();
                 return res;
             }
 
-            public char Value {
+            virtual public char Value {
                 get {
                     if (cur >= 0)
                         return this.parent.eq[cur];
@@ -510,7 +510,7 @@ namespace iTextSharp.text.pdf.hyphenation {
                 }
             }
 
-            public bool HasMoreElements() {
+            virtual public bool HasMoreElements() {
                 return (cur != -1);
             }
 

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * $Id:  $
  *
  * This file is part of the iText (R) project.
@@ -58,7 +58,7 @@ namespace iTextSharp.text.pdf.languages {
             this.runDirection = runDirection;
         }
 
-        public String Process(String s) {
+        virtual public String Process(String s) {
             return BidiLine.ProcessLTR(s, runDirection, 0);
         }
 
@@ -68,7 +68,7 @@ namespace iTextSharp.text.pdf.languages {
          * @see com.itextpdf.text.pdf.languages.LanguageProcessor#isRTL()
          */
 
-        public bool IsRTL() {
+        virtual public bool IsRTL() {
             return true;
         }
 

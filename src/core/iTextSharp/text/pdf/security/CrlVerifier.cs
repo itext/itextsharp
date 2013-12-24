@@ -120,7 +120,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @return true if the verification succeeded
 	     * @throws GeneralSecurityException
 	     */
-	    public bool Verify(X509Crl crl, X509Certificate signCert, X509Certificate issuerCert, DateTime signDate) {
+	    virtual public bool Verify(X509Crl crl, X509Certificate signCert, X509Certificate issuerCert, DateTime signDate) {
 		    if (crl == null || signDate == DateTime.MaxValue)
 			    return false;
 		    // We only check CRLs valid on the signing date for which the issuer matches
@@ -141,7 +141,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @param issuerCert	its issuer
 	     * @return	an X509CRL object
 	     */
-	    public X509Crl GetCrl(X509Certificate signCert, X509Certificate issuerCert) {
+	    virtual public X509Crl GetCrl(X509Certificate signCert, X509Certificate issuerCert) {
 		    try {
 			    // gets the URL from the certificate
 			    String crlurl = CertificateUtil.GetCRLURL(signCert);
@@ -168,7 +168,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @param crlIssuer	the trusted anchor
 	     * @return	true if the CRL can be trusted
 	     */
-	    public bool IsSignatureValid(X509Crl crl, X509Certificate crlIssuer) {
+	    virtual public bool IsSignatureValid(X509Crl crl, X509Certificate crlIssuer) {
 		    // check if the CRL was issued by the issuer
 		    if (crlIssuer != null) {
 			    try {

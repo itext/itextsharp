@@ -72,7 +72,7 @@ namespace iTextSharp.text.xml.xmp
          * Adds part.
          * @param part
          */
-        public void AddPart(String part)
+        virtual public void AddPart(String part)
         {
             base[PART] = part;
         }
@@ -81,7 +81,7 @@ namespace iTextSharp.text.xml.xmp
          * Adds the conformance.
          * @param conformance
          */
-        public void AddConformance(String conformance)
+        virtual public void AddConformance(String conformance)
         {
             base[CONFORMANCE] = conformance;
         }

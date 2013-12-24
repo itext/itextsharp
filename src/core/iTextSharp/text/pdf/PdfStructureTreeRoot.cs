@@ -91,7 +91,7 @@ namespace iTextSharp.text.pdf {
         * @param used the user tag
         * @param standard the standard tag
         */    
-        public void MapRole(PdfName used, PdfName standard) {
+        virtual public void MapRole(PdfName used, PdfName standard) {
             PdfDictionary rm = (PdfDictionary)Get(PdfName.ROLEMAP);
             if (rm == null) {
                 rm = new PdfDictionary();
@@ -100,7 +100,7 @@ namespace iTextSharp.text.pdf {
             rm.Put(used, standard);
         }
         
-        public void MapClass(PdfName name, PdfObject obj) {
+        virtual public void MapClass(PdfName name, PdfObject obj) {
             if (classMap == null) {
                 classMap = new PdfDictionary();
                 classes = new Dictionary<PdfName, PdfObject>();
@@ -108,7 +108,7 @@ namespace iTextSharp.text.pdf {
             classes.Add(name,obj);
         }
 
-        public PdfObject GetMappedClass(PdfName name) {
+        virtual public PdfObject GetMappedClass(PdfName name) {
             if (classes == null)
                 return null;
             PdfObject result;
@@ -120,13 +120,13 @@ namespace iTextSharp.text.pdf {
         * Gets the writer.
         * @return the writer
         */
-        public PdfWriter Writer {
+        virtual public PdfWriter Writer {
             get {
                 return this.writer;
             }
         }
 
-        public Dictionary<int, PdfIndirectReference> NumTree
+        virtual public Dictionary<int, PdfIndirectReference> NumTree
         {
             get
             {
@@ -140,7 +140,7 @@ namespace iTextSharp.text.pdf {
         * Gets the reference this object will be written to.
         * @return the reference this object will be written to
         */    
-        public PdfIndirectReference Reference {
+        virtual public PdfIndirectReference Reference {
             get {
                 return this.reference;
             }
@@ -211,7 +211,7 @@ namespace iTextSharp.text.pdf {
          * @returns PdfObject
          * @since 5.3.4
          */
-        public PdfObject GetAttribute(PdfName name) {
+        virtual public PdfObject GetAttribute(PdfName name) {
             PdfDictionary attr = GetAsDict(PdfName.A);
             if (attr != null) {
                 if (attr.Contains(name))
@@ -224,7 +224,7 @@ namespace iTextSharp.text.pdf {
          * Sets the attribute value.
          * @since 5.3.4
          */
-        public void SetAttribute(PdfName name, PdfObject obj) {
+        virtual public void SetAttribute(PdfName name, PdfObject obj) {
             PdfDictionary attr = GetAsDict(PdfName.A);
             if (attr == null) {
                 attr = new PdfDictionary();

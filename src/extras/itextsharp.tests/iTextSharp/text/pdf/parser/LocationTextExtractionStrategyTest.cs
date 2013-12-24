@@ -16,7 +16,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestYPosition()
+        virtual public void TestYPosition()
         {
             PdfReader r = CreatePdfWithOverlappingTextVertical(new String[] { "A", "B", "C", "D" }, new String[] { "AA", "BB", "CC", "DD" });
 
@@ -26,7 +26,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestXPosition()
+        virtual public void TestXPosition()
         {
             byte[] content = CreatePdfWithOverlappingTextHorizontal(new String[] { "A", "B", "C", "D" }, new String[] { "AA", "BB", "CC", "DD" });
             PdfReader r = new PdfReader(content);
@@ -40,7 +40,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestRotatedPage()
+        virtual public void TestRotatedPage()
         {
             byte[] bytes = CreateSimplePdf(PageSize.LETTER.Rotate(), "A\nB\nC\nD");
 
@@ -52,7 +52,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestRotatedPage2()
+        virtual public void TestRotatedPage2()
         {
             byte[] bytes = CreateSimplePdf(PageSize.LETTER.Rotate().Rotate(), "A\nB\nC\nD");
             //TestResourceUtils.saveBytesToFile(bytes, new File("C:/temp/out.pdf"));
@@ -65,7 +65,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestRotatedPage3()
+        virtual public void TestRotatedPage3()
         {
             byte[] bytes = CreateSimplePdf(PageSize.LETTER.Rotate().Rotate().Rotate(), "A\nB\nC\nD");
             //TestResourceUtils.saveBytesToFile(bytes, new File("C:/temp/out.pdf"));
@@ -78,7 +78,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestExtractXObjectTextWithRotation()
+        virtual public void TestExtractXObjectTextWithRotation()
         {
             //LocationAwareTextExtractingPdfContentRenderListener.DUMP_STATE = true;
             String text1 = "X";
@@ -91,7 +91,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestNegativeCharacterSpacing()
+        virtual public void TestNegativeCharacterSpacing()
         {
             byte[] content = CreatePdfWithNegativeCharSpacing("W", 200, "A");
             //TestResourceUtils.openBytesAsPdf(content);
@@ -101,7 +101,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestSanityCheckOnVectorMath()
+        virtual public void TestSanityCheckOnVectorMath()
         {
             Vector start = new Vector(0, 0, 1);
             Vector end = new Vector(1, 0, 1);
@@ -117,7 +117,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestSuperscript()
+        virtual public void TestSuperscript()
         {
             byte[] content = createPdfWithSupescript("Hel", "lo");
             //TestResourceUtils.openBytesAsPdf(content);
@@ -217,7 +217,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
             return pdfBytes;
         }
 
-        protected byte[] CreatePdfWithOverlappingTextHorizontal(String[] text1, String[] text2)
+        virtual protected byte[] CreatePdfWithOverlappingTextHorizontal(String[] text1, String[] text2)
         {
             MemoryStream baos = new MemoryStream();
             Document doc = new Document();

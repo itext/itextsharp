@@ -6,20 +6,20 @@ namespace iTextSharp.text.pdf.parser {
             this.deleg = deleg;
         }
 
-        public void BeginTextBlock() {
+        virtual public void BeginTextBlock() {
             deleg.BeginTextBlock();
         }
 
-        public void RenderText(TextRenderInfo renderInfo) {
+        virtual public void RenderText(TextRenderInfo renderInfo) {
             foreach (TextRenderInfo glyphInfo in renderInfo.GetCharacterRenderInfos())
                 deleg.RenderText(glyphInfo);
         }
 
-        public void EndTextBlock() {
+        virtual public void EndTextBlock() {
             deleg.EndTextBlock();
         }
 
-        public void RenderImage(ImageRenderInfo renderInfo) {
+        virtual public void RenderImage(ImageRenderInfo renderInfo) {
             deleg.RenderImage(renderInfo);
         }
     }

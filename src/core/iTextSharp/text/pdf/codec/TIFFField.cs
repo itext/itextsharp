@@ -161,7 +161,7 @@ namespace iTextSharp.text.pdf.codec {
         /**
         * Returns the tag number, between 0 and 65535.
         */
-        public int GetTag() {
+        virtual public int GetTag() {
             return tag;
         }
 
@@ -179,7 +179,7 @@ namespace iTextSharp.text.pdf.codec {
         /**
         * Returns the number of elements in the IFD.
         */
-        public int GetCount() {
+        virtual public int GetCount() {
             return count;
         }
 
@@ -195,7 +195,7 @@ namespace iTextSharp.text.pdf.codec {
         * <p> A ClassCastException will be thrown if the field is not
         * of type TIFF_BYTE, TIFF_SBYTE, or TIFF_UNDEFINED.
         */
-        public byte[] GetAsBytes() {
+        virtual public byte[] GetAsBytes() {
             return (byte[])data;
         }
 
@@ -206,7 +206,7 @@ namespace iTextSharp.text.pdf.codec {
         * <p> A ClassCastException will be thrown if the field is not
         * of type TIFF_SHORT.
         */
-        public char[] GetAsChars() {
+        virtual public char[] GetAsChars() {
             return (char[])data;
         }
 
@@ -217,7 +217,7 @@ namespace iTextSharp.text.pdf.codec {
         * <p> A ClassCastException will be thrown if the field is not
         * of type TIFF_SSHORT.
         */
-        public short[] GetAsShorts() {
+        virtual public short[] GetAsShorts() {
             return (short[])data;
         }
 
@@ -228,7 +228,7 @@ namespace iTextSharp.text.pdf.codec {
         * <p> A ClassCastException will be thrown if the field is not
         * of type TIFF_SLONG.
         */
-        public int[] GetAsInts() {
+        virtual public int[] GetAsInts() {
             return (int[])data;
         }
 
@@ -239,7 +239,7 @@ namespace iTextSharp.text.pdf.codec {
         * <p> A ClassCastException will be thrown if the field is not
         * of type TIFF_LONG.
         */
-        public long[] GetAsLongs() {
+        virtual public long[] GetAsLongs() {
             return (long[])data;
         }
 
@@ -249,7 +249,7 @@ namespace iTextSharp.text.pdf.codec {
         * <p> A ClassCastException will be thrown if the field is not
         * of type TIFF_FLOAT.
         */
-        public float[] GetAsFloats() {
+        virtual public float[] GetAsFloats() {
             return (float[])data;
         }
 
@@ -259,7 +259,7 @@ namespace iTextSharp.text.pdf.codec {
         * <p> A ClassCastException will be thrown if the field is not
         * of type TIFF_DOUBLE.
         */
-        public double[] GetAsDoubles() {
+        virtual public double[] GetAsDoubles() {
             return (double[])data;
         }
 
@@ -269,7 +269,7 @@ namespace iTextSharp.text.pdf.codec {
         * <p> A ClassCastException will be thrown if the field is not
         * of type TIFF_SRATIONAL.
         */
-        public int[][] GetAsSRationals() {
+        virtual public int[][] GetAsSRationals() {
             return (int[][])data;
         }
 
@@ -279,7 +279,7 @@ namespace iTextSharp.text.pdf.codec {
         * <p> A ClassCastException will be thrown if the field is not
         * of type TIFF_RATTIONAL.
         */
-        public long[][] GetAsRationals() {
+        virtual public long[][] GetAsRationals() {
             return (long[][])data;
         }
 
@@ -296,7 +296,7 @@ namespace iTextSharp.text.pdf.codec {
         * type TIFF_BYTE, TIFF_SBYTE, TIFF_UNDEFINED, TIFF_SHORT,
         * TIFF_SSHORT, or TIFF_SLONG.
         */
-        public int GetAsInt(int index) {
+        virtual public int GetAsInt(int index) {
             switch (type) {
             case TIFF_BYTE: case TIFF_UNDEFINED:
                 return ((byte[])data)[index] & 0xff;
@@ -326,7 +326,7 @@ namespace iTextSharp.text.pdf.codec {
         * type TIFF_BYTE, TIFF_SBYTE, TIFF_UNDEFINED, TIFF_SHORT,
         * TIFF_SSHORT, TIFF_SLONG, or TIFF_LONG.
         */
-        public long GetAsLong(int index) {
+        virtual public long GetAsLong(int index) {
             switch (type) {
             case TIFF_BYTE: case TIFF_UNDEFINED:
                 return ((byte[])data)[index] & 0xff;
@@ -356,7 +356,7 @@ namespace iTextSharp.text.pdf.codec {
         * <p> A ClassCastException will be thrown if the field is
         * of type TIFF_UNDEFINED or TIFF_ASCII.
         */
-        public float GetAsFloat(int index) {
+        virtual public float GetAsFloat(int index) {
             switch (type) {
             case TIFF_BYTE:
                 return ((byte[])data)[index] & 0xff;
@@ -394,7 +394,7 @@ namespace iTextSharp.text.pdf.codec {
         * <p> A ClassCastException will be thrown if the field is of
         * type TIFF_UNDEFINED or TIFF_ASCII.
         */
-        public double GetAsDouble(int index) {
+        virtual public double GetAsDouble(int index) {
             switch (type) {
             case TIFF_BYTE:
                 return ((byte[])data)[index] & 0xff;
@@ -429,7 +429,7 @@ namespace iTextSharp.text.pdf.codec {
         * <p> A ClassCastException will be thrown if the field is not
         * of type TIFF_ASCII.
         */
-        public String GetAsString(int index) {
+        virtual public String GetAsString(int index) {
             return ((String[])data)[index];
         }
 
@@ -440,7 +440,7 @@ namespace iTextSharp.text.pdf.codec {
         * <p> A ClassCastException will be thrown if the field is not
         * of type TIFF_SRATIONAL.
         */
-        public int[] GetAsSRational(int index) {
+        virtual public int[] GetAsSRational(int index) {
             return ((int[][])data)[index];
         }
 
@@ -451,7 +451,7 @@ namespace iTextSharp.text.pdf.codec {
         * <p> A ClassCastException will be thrown if the field is not
         * of type TIFF_RATIONAL.
         */
-        public long[] GetAsRational(int index) {
+        virtual public long[] GetAsRational(int index) {
             if (type == TIFF_LONG)
                 return GetAsLongs();
             return ((long[][])data)[index];
@@ -468,7 +468,7 @@ namespace iTextSharp.text.pdf.codec {
         * @throws ClassCastException if the parameter is not a
         *         <code>TIFFField</code>.
         */
-        public int CompareTo(TIFFField o) {
+        virtual public int CompareTo(TIFFField o) {
             if (o == null) {
                 throw new ArgumentException();
             }

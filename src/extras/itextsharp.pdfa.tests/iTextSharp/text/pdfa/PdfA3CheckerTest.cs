@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using iTextSharp.text.pdf;
 using NUnit.Framework;
@@ -12,13 +12,13 @@ namespace iTextSharp.text.pdfa {
 
 
         [SetUp]
-        public void Initialize() {
+        virtual public void Initialize() {
             Directory.CreateDirectory(TARGET + "pdf");
             Directory.CreateDirectory(TARGET + "xml");
         }
 
         [Test]
-        public void FileSpecCheckTest1() {
+        virtual public void FileSpecCheckTest1() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "fileSpecCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_3B);
             writer.CreateXmpMetadata();
@@ -44,7 +44,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void FileSpecCheckTest2() {
+        virtual public void FileSpecCheckTest2() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "fileSpecCheckTest2.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_3B);
             writer.CreateXmpMetadata();
@@ -73,7 +73,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void FileSpecCheckTest3() {
+        virtual public void FileSpecCheckTest3() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "fileSpecCheckTest3.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_3B);
             writer.CreateXmpMetadata();
@@ -96,7 +96,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void FileSpecCheckTest4() {
+        virtual public void FileSpecCheckTest4() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "fileSpecCheckTest4.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_3B);
             writer.CreateXmpMetadata();
@@ -118,7 +118,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void FileSpecCheckTest5() {
+        virtual public void FileSpecCheckTest5() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "fileSpecCheckTest5.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_3B);
             writer.CreateXmpMetadata();

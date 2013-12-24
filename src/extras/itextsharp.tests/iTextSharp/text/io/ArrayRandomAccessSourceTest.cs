@@ -10,7 +10,7 @@ namespace itextsharp.tests.iTextSharp.text.io
         byte[] data;
 
         [SetUp]
-        public void Initialize()
+        virtual public void Initialize()
         {
             Random r = new Random(42);
 
@@ -28,7 +28,7 @@ namespace itextsharp.tests.iTextSharp.text.io
         }
 
         [Test]
-        public void TestGet()
+        virtual public void TestGet()
         {
             ArrayRandomAccessSource s = new ArrayRandomAccessSource(data);
             try
@@ -60,7 +60,7 @@ namespace itextsharp.tests.iTextSharp.text.io
         }
 
         [Test]
-        public void TestGetArray()
+        virtual public void TestGetArray()
         {
             byte[] chunk = new byte[257];
             ArrayRandomAccessSource s = new ArrayRandomAccessSource(data);

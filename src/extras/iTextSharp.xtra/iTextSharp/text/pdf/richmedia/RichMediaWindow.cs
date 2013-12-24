@@ -69,7 +69,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * @param   maxWidth        the maximum width
          * @param   minWidth        the minimum width
          */
-        public void SetWidth(float defaultWidth, float maxWidth, float minWidth) {
+        virtual public void SetWidth(float defaultWidth, float maxWidth, float minWidth) {
             Put(PdfName.WIDTH, CreateDimensionDictionary(defaultWidth, maxWidth, minWidth));
         }
 
@@ -80,7 +80,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * @param   maxHeight       the maximum height
          * @param   minHeight       the minimum height
          */
-        public void SetHeight(float defaultHeight, float maxHeight, float minHeight) {
+        virtual public void SetHeight(float defaultHeight, float maxHeight, float minHeight) {
             Put(PdfName.HEIGHT, CreateDimensionDictionary(defaultHeight, maxHeight, minHeight));
         }
         
@@ -103,7 +103,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * Sets a RichMediaPosition dictionary describing the position of the RichMediaWindow.
          * @param   position    a RichMediaPosition object
          */
-        public RichMediaPosition Position {
+        virtual public RichMediaPosition Position {
             set {
                 Put(PdfName.POSITION, value);
             }

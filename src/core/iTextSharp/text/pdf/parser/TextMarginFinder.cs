@@ -57,7 +57,7 @@ namespace iTextSharp.text.pdf.parser {
          * We'll use this object to obtain coordinates.
          * @see com.itextpdf.text.pdf.parser.RenderListener#renderText(com.itextpdf.text.pdf.parser.TextRenderInfo)
          */
-        public void RenderText(TextRenderInfo renderInfo) {
+        virtual public void RenderText(TextRenderInfo renderInfo) {
             if (textRectangle == null)
                 textRectangle = renderInfo.GetDescentLine().GetBoundingRectange();
             else
@@ -71,7 +71,7 @@ namespace iTextSharp.text.pdf.parser {
          * Getter for the left margin.
          * @return the X position of the left margin
          */
-        public float GetLlx() {
+        virtual public float GetLlx() {
             return textRectangle.X;
         }
 
@@ -79,7 +79,7 @@ namespace iTextSharp.text.pdf.parser {
          * Getter for the bottom margin.
          * @return the Y position of the bottom margin
          */
-        public float GetLly() {
+        virtual public float GetLly() {
             return textRectangle.Y;
         }
 
@@ -87,7 +87,7 @@ namespace iTextSharp.text.pdf.parser {
          * Getter for the right margin.
          * @return the X position of the right margin
          */
-        public float GetUrx() {
+        virtual public float GetUrx() {
             return textRectangle.X + textRectangle.Width;
         }
 
@@ -95,7 +95,7 @@ namespace iTextSharp.text.pdf.parser {
          * Getter for the top margin.
          * @return the Y position of the top margin
          */
-        public float GetUry() {
+        virtual public float GetUry() {
             return textRectangle.Y + textRectangle.Height;
         }
 
@@ -103,7 +103,7 @@ namespace iTextSharp.text.pdf.parser {
          * Gets the width of the text block.
          * @return a width
          */
-        public float GetWidth() {
+        virtual public float GetWidth() {
             return textRectangle.Width;
         }
         
@@ -111,28 +111,28 @@ namespace iTextSharp.text.pdf.parser {
          * Gets the height of the text block.
          * @return a height
          */
-        public float GetHeight() {
+        virtual public float GetHeight() {
             return textRectangle.Height;
         }
         
         /**
          * @see com.itextpdf.text.pdf.parser.RenderListener#beginTextBlock()
          */
-        public void BeginTextBlock() {
+        virtual public void BeginTextBlock() {
             // do nothing
         }
 
         /**
          * @see com.itextpdf.text.pdf.parser.RenderListener#endTextBlock()
          */
-        public void EndTextBlock() {
+        virtual public void EndTextBlock() {
             // do nothing
         }
 
         /**
          * @see com.itextpdf.text.pdf.parser.RenderListener#renderImage(com.itextpdf.text.pdf.parser.ImageRenderInfo)
          */
-        public void RenderImage(ImageRenderInfo renderInfo) {
+        virtual public void RenderImage(ImageRenderInfo renderInfo) {
             // do nothing
         }
     }

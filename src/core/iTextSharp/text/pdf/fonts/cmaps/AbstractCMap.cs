@@ -56,22 +56,22 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
 
         private int supplement;
 
-        public int Supplement {
+        virtual public int Supplement {
             get { return supplement; }
             set { supplement = value; }
         }
         
-        public String Name {
+        virtual public String Name {
             get { return cmapName; }
             set { cmapName = value; }
         }
 
-        public String Ordering {
+        virtual public String Ordering {
             get { return ordering; }
             set { ordering = value; }
         }
         
-        public String Registry {
+        virtual public String Registry {
             get { return registry; }
             set { registry = value; }
         }
@@ -116,7 +116,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             return br;
         }
 
-        public String DecodeStringToUnicode(PdfString ps) {
+        virtual public String DecodeStringToUnicode(PdfString ps) {
             if (ps.IsHexWriting())
                 return PdfEncodings.ConvertToString(ps.GetBytes(), "UnicodeBigUnmarked");
             else

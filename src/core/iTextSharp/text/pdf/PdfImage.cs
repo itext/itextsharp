@@ -273,13 +273,13 @@ namespace iTextSharp.text.pdf {
         * @return        the name
         */
         
-        public PdfName Name {
+        virtual public PdfName Name {
             get {
                 return name;
             }
         }
 
-        public Image Image
+        virtual public Image Image
         {
             get { return image; }
         }
@@ -298,7 +298,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected void ImportAll(PdfImage dup) {
+        virtual protected void ImportAll(PdfImage dup) {
             name = dup.name;
             compressed = dup.compressed;
             compressionLevel = dup.compressionLevel;

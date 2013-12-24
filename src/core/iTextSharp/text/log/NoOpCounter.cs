@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 /*
  * $Id: NoOpCounter.java 5829 2013-05-31 09:01:34Z blowagie $
  *
@@ -48,15 +48,15 @@ namespace iTextSharp.text.log
      */
     public class NoOpCounter : ICounter
     {
-        public ICounter GetCounter(Type klass) {
+        virtual public ICounter GetCounter(Type klass) {
             return this;
         }
 
-        public void Read(long l) {
+        virtual public void Read(long l) {
 
         }
 
-        public void Written(long l) {
+        virtual public void Written(long l) {
         
         }
     }

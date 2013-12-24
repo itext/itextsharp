@@ -144,7 +144,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public PdfDictionary FontDictionary {
+        virtual public PdfDictionary FontDictionary {
             get { return font; }        
         }
         

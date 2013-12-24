@@ -105,7 +105,7 @@ namespace iTextSharp.tool.xml.parser {
          * @param state the state to set as current state.
          * @return the Parser
          */
-        public XMLParser SetState(IState state) {
+        virtual public XMLParser SetState(IState state) {
             previousState = currentState;
             currentState = state;
             parser.SetState(state);
@@ -116,7 +116,7 @@ namespace iTextSharp.tool.xml.parser {
          * Returns to the previous state.
          * @return Parser
          */
-        public XMLParser PreviousState() {
+        virtual public XMLParser PreviousState() {
             parser.SetState(previousState);
             return parser;
         }
@@ -125,7 +125,7 @@ namespace iTextSharp.tool.xml.parser {
          * set Parser state to {@link UnknownState}.
          * @return Parser
          */
-        public XMLParser Unknown() {
+        virtual public XMLParser Unknown() {
             return SetState(unknown);
         }
 
@@ -133,7 +133,7 @@ namespace iTextSharp.tool.xml.parser {
          * set Parser state to {@link TagEncounteredState}.
          * @return Parser
          */
-        public XMLParser TagEncountered() {
+        virtual public XMLParser TagEncountered() {
             return SetState(tagEncountered);
         }
 
@@ -141,7 +141,7 @@ namespace iTextSharp.tool.xml.parser {
          * set Parser state to {@link TagAttributeState}.
          * @return Parser
          */
-        public XMLParser TagAttributes() {
+        virtual public XMLParser TagAttributes() {
             return SetState(tagAttributes);
         }
 
@@ -149,7 +149,7 @@ namespace iTextSharp.tool.xml.parser {
          * set Parser state to {@link InsideTagState}.
          * @return Parser
          */
-        public XMLParser InTag() {
+        virtual public XMLParser InTag() {
             return SetState(inTag);
         }
 
@@ -157,7 +157,7 @@ namespace iTextSharp.tool.xml.parser {
          * set Parser state to {@link AttributeValueState}.
          * @return Parser
          */
-        public XMLParser AttributeValue() {
+        virtual public XMLParser AttributeValue() {
             return SetState(attrValue);
         }
 
@@ -165,7 +165,7 @@ namespace iTextSharp.tool.xml.parser {
          * set Parser state to {@link SingleQuotedAttrValueState}.
          * @return Parser
          */
-        public XMLParser SingleQuotedAttr() {
+        virtual public XMLParser SingleQuotedAttr() {
             return SetState(singleQuoted);
         }
 
@@ -173,7 +173,7 @@ namespace iTextSharp.tool.xml.parser {
          * set Parser state to {@link DoubleQuotedAttrValueState}.
          * @return Parser
          */
-        public XMLParser DoubleQuotedAttr() {
+        virtual public XMLParser DoubleQuotedAttr() {
             return SetState(doubleQuoted);
         }
 
@@ -181,7 +181,7 @@ namespace iTextSharp.tool.xml.parser {
 	     * set Parser state to {@link ProcessingInstructionEncounteredState}.
 	     * @return Parser
 	     */
-        public XMLParser ProcessingInstructions() {
+        virtual public XMLParser ProcessingInstructions() {
             return SetState(processingInstruction);
         }
 
@@ -189,7 +189,7 @@ namespace iTextSharp.tool.xml.parser {
          * set Parser state to {@link SelfClosingTagState}.
          * @return Parser
          */
-        public XMLParser SelfClosing() {
+        virtual public XMLParser SelfClosing() {
             return SetState(selfClosing);
         }
 
@@ -197,7 +197,7 @@ namespace iTextSharp.tool.xml.parser {
          *set Parser state to {@link SpecialCharState}.
          * @return Parser
          */
-        public XMLParser SpecialChar() {
+        virtual public XMLParser SpecialChar() {
             return SetState(this.specialChar);
         }
 
@@ -205,7 +205,7 @@ namespace iTextSharp.tool.xml.parser {
          * set Parser state to {@link ClosingTagState}.
          * @return Parser
          */
-        public XMLParser ClosingTag() {
+        virtual public XMLParser ClosingTag() {
             return SetState(this.closingTag);
         }
 
@@ -213,7 +213,7 @@ namespace iTextSharp.tool.xml.parser {
          * set Parser state to {@link CommentState}.
          * @return Parser
          */
-        public XMLParser Comment() {
+        virtual public XMLParser Comment() {
             return SetState(this.comment);
         }
 
@@ -221,7 +221,7 @@ namespace iTextSharp.tool.xml.parser {
          * set Parser state to {@link CloseCommentState}.
          * @return Parser
          */
-        public XMLParser CloseComment() {
+        virtual public XMLParser CloseComment() {
             return SetState(closeComment);
         }
 
@@ -229,7 +229,7 @@ namespace iTextSharp.tool.xml.parser {
          * set Parser state to {@link CdataState}.
          * @return Parser
          */
-        public XMLParser Cdata() {
+        virtual public XMLParser Cdata() {
             return SetState(cdata);
         }
 
@@ -237,7 +237,7 @@ namespace iTextSharp.tool.xml.parser {
          * set Parser state to {@link XmlState}.
          * @return Parser
          */
-        public XMLParser Xml() {
+        virtual public XMLParser Xml() {
             return SetState(xml);
         }
 
@@ -245,7 +245,7 @@ namespace iTextSharp.tool.xml.parser {
          * set Parser state to {@link DocTypeState}.
          * @return Parser
          */
-        public XMLParser Doctype() {
+        virtual public XMLParser Doctype() {
             return SetState(doctype);
         }
         /**
@@ -253,7 +253,7 @@ namespace iTextSharp.tool.xml.parser {
          * @return Parser
          *
          */
-        public XMLParser UnquotedAttr() {
+        virtual public XMLParser UnquotedAttr() {
             return SetState(unquoted);
 
         }

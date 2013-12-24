@@ -110,7 +110,7 @@ namespace iTextSharp.tool.xml.exceptions {
 	     * @param key the key for the message
 	     * @return the message
 	     */
-	    public String GetMessage(String key) {
+	    virtual public String GetMessage(String key) {
 		    return bundle.GetMessage(key);
 	    }
     }

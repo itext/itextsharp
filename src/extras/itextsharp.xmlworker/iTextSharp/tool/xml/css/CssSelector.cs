@@ -67,7 +67,7 @@ namespace iTextSharp.tool.xml.css {
          * @param t the tag
          * @return set of selectors
          */
-        public IDictionary<String,object> CreateAllSelectors(Tag t) {
+        virtual public IDictionary<String,object> CreateAllSelectors(Tag t) {
             IDictionary<String,object> set = new Dictionary<String,object>();
             CssUtils.MapPutAll(set, CreateTagSelectors(t));
             CssUtils.MapPutAll(set, CreateClassSelectors(t));
@@ -75,7 +75,7 @@ namespace iTextSharp.tool.xml.css {
             return set;
         }
 
-        public void CreateSelectors(Tag t, IDictionary<String, object> selectors) {
+        virtual public void CreateSelectors(Tag t, IDictionary<String, object> selectors) {
             IDictionary<String, object> tagNameSet = new Dictionary<String, object>();
             foreach (String selector in selectors.Keys) {
                 tagNameSet[t.Name + (selector.StartsWith(" ") ? "" : " ") + selector] = null;
@@ -170,7 +170,7 @@ namespace iTextSharp.tool.xml.css {
          * @param t the tag to create selectors for.
          * @return all selectors for the given tag.
          */
-        public IDictionary<String,object> CreateTagSelectors(Tag t) {
+        virtual public IDictionary<String,object> CreateTagSelectors(Tag t) {
             IDictionary<String,object> selectors = new Dictionary<String,object>();
             selectors[t.Name] = null;;
             if (null != t.Parent) {
@@ -206,7 +206,7 @@ namespace iTextSharp.tool.xml.css {
          * @param t the tag
          * @return set of Strings
          */
-        public IDictionary<String,object> CreateClassSelectors(Tag t) {
+        virtual public IDictionary<String,object> CreateClassSelectors(Tag t) {
             String classes;
             t.Attributes.TryGetValue(HTML.Attribute.CLASS, out classes);
             IDictionary<String,object> set = new Dictionary<String,object>();
@@ -229,7 +229,7 @@ namespace iTextSharp.tool.xml.css {
          * @param t the tag
          * @return set of Strings
          */
-        public IDictionary<String,object> CreateIdSelector(Tag t) {
+        virtual public IDictionary<String,object> CreateIdSelector(Tag t) {
             String id;
             t.Attributes.TryGetValue(HTML.Attribute.ID, out id);
             IDictionary<String,object> set = new Dictionary<String,object>();

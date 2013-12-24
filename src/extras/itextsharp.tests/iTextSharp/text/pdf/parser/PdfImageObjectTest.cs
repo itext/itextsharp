@@ -39,37 +39,37 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestMultiStageFilters()
+        virtual public void TestMultiStageFilters()
         {
             TestFile("multistagefilter1.pdf", 1, "Obj13");
         }
 
         [Test]
-        public void TestAscii85Filters()
+        virtual public void TestAscii85Filters()
         {
             TestFile("ASCII85_RunLengthDecode.pdf", 1, "Im9");
         }
 
         [Test]
-        public void TestCcittFilters()
+        virtual public void TestCcittFilters()
         {
             TestFile("ccittfaxdecode.pdf", 1, "background0");
         }
 
         [Test]
-        public void TestFlateDecodeFilters()
+        virtual public void TestFlateDecodeFilters()
         {
             TestFile("flatedecode_runlengthdecode.pdf", 1, "Im9");
         }
 
         [Test]
-        public void TestDctDecodeFilters()
+        virtual public void TestDctDecodeFilters()
         {
             TestFile("dctdecode.pdf", 1, "im1");
         }
 
         [Test]
-        public void Testjbig2Filters()
+        virtual public void Testjbig2Filters()
         {
             TestFile("jbig2decode.pdf", 1, "2");
         }

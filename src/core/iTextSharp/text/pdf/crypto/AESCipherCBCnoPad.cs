@@ -66,7 +66,7 @@ namespace iTextSharp.text.pdf.crypto {
             bp.Init(forEncryption, piv);
         }
         
-        public byte[] Update(byte[] inp, int inpOff, int inpLen) {
+        virtual public byte[] Update(byte[] inp, int inpOff, int inpLen) {
             int neededLen = bp.GetUpdateOutputSize(inpLen);
             byte[] outp = null;
             if (neededLen > 0)
@@ -77,7 +77,7 @@ namespace iTextSharp.text.pdf.crypto {
             return outp;
         }
         
-        public byte[] DoFinal() {
+        virtual public byte[] DoFinal() {
             int neededLen = bp.GetOutputSize(0);
             byte[] outp = new byte[neededLen];
             int n = 0;

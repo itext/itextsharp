@@ -204,7 +204,7 @@ namespace iTextSharp.text.pdf {
          * Can this object be in an object stream?
          * @return true if this object can be in an object stream.
          */
-        public bool CanBeInObjStm() {
+        virtual public bool CanBeInObjStm() {
             switch (type) {
                 case NULL:
                 case BOOLEAN:
@@ -265,7 +265,7 @@ namespace iTextSharp.text.pdf {
          * @return        a length
          */
     
-        public int Length {
+        virtual public int Length {
             get {
                 return ToString().Length;
             }
@@ -277,7 +277,7 @@ namespace iTextSharp.text.pdf {
          * @param        content            the new content of this <CODE>PdfObject</CODE>
          */
     
-        protected string Content {
+        virtual protected string Content {
             set {
                 bytes = PdfEncodings.ConvertToBytes(value, null);
             }
@@ -291,7 +291,7 @@ namespace iTextSharp.text.pdf {
          * @return        a type
          */
     
-        public int Type {
+        virtual public int Type {
             get {
                 return type;
             }
@@ -303,7 +303,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsNull() {
+        virtual public bool IsNull() {
             return (this.type == NULL);
         }
     
@@ -313,7 +313,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsBoolean() {
+        virtual public bool IsBoolean() {
             return (this.type == BOOLEAN);
         }
     
@@ -323,7 +323,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsNumber() {
+        virtual public bool IsNumber() {
             return (this.type == NUMBER);
         }
     
@@ -333,7 +333,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsString() {
+        virtual public bool IsString() {
             return (this.type == STRING);
         }
     
@@ -343,7 +343,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsName() {
+        virtual public bool IsName() {
             return (this.type == NAME);
         }
     
@@ -353,7 +353,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsArray() {
+        virtual public bool IsArray() {
             return (this.type == ARRAY);
         }
     
@@ -363,7 +363,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsDictionary() {
+        virtual public bool IsDictionary() {
             return (this.type == DICTIONARY);
         }
     
@@ -373,7 +373,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsStream() {
+        virtual public bool IsStream() {
             return (this.type == STREAM);
         }
 
@@ -381,11 +381,11 @@ namespace iTextSharp.text.pdf {
          * Checks if this is an indirect object.
          * @return true if this is an indirect object
          */
-        public bool IsIndirect() {
+        virtual public bool IsIndirect() {
             return (this.type == INDIRECT);
         }
     
-        public PRIndirectReference IndRef {
+        virtual public PRIndirectReference IndRef {
             get {
                 return indRef;
             }
@@ -394,7 +394,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public int CompareTo(PdfObject obj) {
+        virtual public int CompareTo(PdfObject obj) {
             return this.GetHashCode().CompareTo(obj.GetHashCode());
         }
 

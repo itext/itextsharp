@@ -2340,7 +2340,7 @@ namespace iTextSharp.text.pdf {
          * @throws Exception if the specified object's type prevents it
          *         from being compared to this Object.
          */
-        public int CompareTo(PdfName name) {
+        virtual public int CompareTo(PdfName name) {
             byte[] myBytes = bytes;
             byte[] objBytes = name.bytes;
             int len = Math.Min(myBytes.Length, objBytes.Length);

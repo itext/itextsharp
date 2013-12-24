@@ -140,7 +140,7 @@ namespace iTextSharp.text.pdf.security {
          * @return true if a validation was generated, false otherwise
          * @throws Exception
          */
-        public bool AddVerification(String signatureName, IOcspClient ocsp, ICrlClient crl, CertificateOption certOption, Level level, CertificateInclusion certInclude) {
+        virtual public bool AddVerification(String signatureName, IOcspClient ocsp, ICrlClient crl, CertificateOption certOption, Level level, CertificateInclusion certInclude) {
             if (used)
                 throw new InvalidOperationException(MessageLocalization.GetComposedMessage("verification.already.output"));
             PdfPKCS7 pk = acroFields.VerifySignature(signatureName);
@@ -222,7 +222,7 @@ namespace iTextSharp.text.pdf.security {
          * @throws GeneralSecurityException
          *
          */
-        public bool AddVerification(String signatureName, ICollection<byte[]> ocsps, ICollection<byte[]> crls, ICollection<byte[]> certs) {
+        virtual public bool AddVerification(String signatureName, ICollection<byte[]> ocsps, ICollection<byte[]> crls, ICollection<byte[]> certs) {
             if (used)
                 throw new InvalidOperationException(MessageLocalization.GetComposedMessage("verification.already.output"));
             ValidationData vd = new ValidationData();
@@ -281,7 +281,7 @@ namespace iTextSharp.text.pdf.security {
          * a new one.
          * @throws IOException 
          */
-        public void Merge() {
+        virtual public void Merge() {
             if (used || validated.Count == 0)
                 return;
             used = true;

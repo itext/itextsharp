@@ -15,7 +15,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         }
 
         [Test]
-        public void VerifyEnd() {
+        virtual public void VerifyEnd() {
             AbstractTagProcessor a = new CustomTagProcessor();
             Tag tag = new Tag("dummy");
             tag.CSS["page-break-after"] = "always";
@@ -24,7 +24,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         }
 
         [Test]
-        public void VerifyStart() {
+        virtual public void VerifyStart() {
             AbstractTagProcessor a = new CustomTagProcessor();
             Tag tag = new Tag("dummy");
             tag.CSS["page-break-before"] = "always";
@@ -33,7 +33,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         }
 
         [Test]
-        public void VerifyFontsizeTranslation() {
+        virtual public void VerifyFontsizeTranslation() {
             AbstractTagProcessor a = new CustomTagProcessor();
             Tag tag = new Tag("dummy");
             tag.CSS["font-size"] = "16px";
@@ -42,7 +42,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         }
 
         [Test]
-        public void VerifyIfStackowner() {
+        virtual public void VerifyIfStackowner() {
             Assert.IsFalse((new CustomTagProcessor()).IsStackOwner());
         }
     }

@@ -46,28 +46,28 @@ namespace iTextSharp.tool.xml.html {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.ITagProcessor#startElement(com.itextpdf.tool.xml.Tag)
          */
-        public IList<IElement> StartElement(IWorkerContext ctx, Tag tag) {
+        virtual public IList<IElement> StartElement(IWorkerContext ctx, Tag tag) {
             return new List<IElement>(0);
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.ITagProcessor#content(com.itextpdf.tool.xml.Tag, java.lang.String)
          */
-        public IList<IElement> Content(IWorkerContext ctx, Tag tag, String content) {
+        virtual public IList<IElement> Content(IWorkerContext ctx, Tag tag, String content) {
             return new List<IElement>(0);
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.ITagProcessor#endElement(com.itextpdf.tool.xml.Tag, java.util.List)
          */
-        public IList<IElement> EndElement(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
+        virtual public IList<IElement> EndElement(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
             return new List<IElement>(0);
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.ITagProcessor#isStackOwner()
          */
-        public bool IsStackOwner() {
+        virtual public bool IsStackOwner() {
             return false;
         }
     }

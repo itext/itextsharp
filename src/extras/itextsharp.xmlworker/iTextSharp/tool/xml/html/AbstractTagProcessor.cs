@@ -108,7 +108,7 @@ namespace iTextSharp.tool.xml.html {
          * implementors {@link AbstractTagProcessor#start(Tag)} method.
          *
          */
-        public virtual IList<IElement> StartElement(IWorkerContext ctx, Tag tag) {
+        public IList<IElement> StartElement(IWorkerContext ctx, Tag tag) {
             float fontSize = fontsizeTrans.TranslateFontSize(tag);
             if (fontSize != Font.UNDEFINED) {
                 tag.CSS[CSS.Property.FONT_SIZE] = fontSize.ToString(CultureInfo.InvariantCulture) + "pt";
@@ -143,7 +143,7 @@ namespace iTextSharp.tool.xml.html {
             return new List<IElement>(0);
         }
 
-        protected List<IElement> TextContent(IWorkerContext ctx, Tag tag, String content) {
+        virtual protected List<IElement> TextContent(IWorkerContext ctx, Tag tag, String content) {
 		    List<Chunk> sanitizedChunks = HTMLUtils.Sanitize(content, false);
 		    List<IElement> l = new List<IElement>(1);
             foreach (Chunk sanitized in sanitizedChunks) {
@@ -307,18 +307,18 @@ namespace iTextSharp.tool.xml.html {
          * @return a List with paragraphs
          */
 
-        public virtual IList<IElement> CurrentContentToParagraph(IList<IElement> currentContent,
+        public IList<IElement> CurrentContentToParagraph(IList<IElement> currentContent,
                                                                  bool addNewLines)
         {
             return this.CurrentContentToParagraph(currentContent, addNewLines, false, null, null);
         }
 
-        public void SetCssAppliers(CssAppliers cssAppliers)
+        virtual public void SetCssAppliers(CssAppliers cssAppliers)
         {
             this.cssAppliers = cssAppliers;
         }
 
-        public CssAppliers GetCssAppliers()
+        virtual public CssAppliers GetCssAppliers()
         {
             return cssAppliers;
         }

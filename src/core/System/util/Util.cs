@@ -71,8 +71,8 @@ namespace System.util
             CultureInfo locale = (CultureInfo)CultureInfo.InvariantCulture.Clone();
             //                          en-US                        Invariant
             //=====================     ==================           ==================
-            //Currency Symbol           $                            ¤
-            //Currency                  $123456.78                   ¤123456.78
+            //Currency Symbol           $                            ï¿½
+            //Currency                  $123456.78                   ï¿½123456.78
             //Short Date                1/11/2012                    01/11/2012
             //Time                      10:36:52 PM                  22:36:52
             //Metric                    No                           Yes

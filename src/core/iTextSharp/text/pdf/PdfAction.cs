@@ -363,7 +363,7 @@ namespace iTextSharp.text.pdf {
         /** Add a chained action.
          * @param na the next action
          */    
-        public void Next(PdfAction na) {
+        virtual public void Next(PdfAction na) {
             PdfObject nextAction = Get(PdfName.NEXT);
             if (nextAction == null)
                 Put(PdfName.NEXT, na);

@@ -104,7 +104,7 @@ namespace iTextSharp.text.pdf.security {
          * Adds an URL to the list of CRL URLs
          * @param url	an URL in the form of a String
          */
-        protected void AddUrl(String url)
+        virtual protected void AddUrl(String url)
         {
             if (urls.Contains(url))
             {
@@ -124,7 +124,7 @@ namespace iTextSharp.text.pdf.security {
          * the CrlClientOffline class.
          * @see com.itextpdf.text.pdf.security.CrlClient#getEncoded(java.security.cert.X509Certificate, java.lang.String)
          */
-        public ICollection<byte[]> GetEncoded(X509Certificate checkCert, String url) {
+        virtual public ICollection<byte[]> GetEncoded(X509Certificate checkCert, String url) {
             if (checkCert == null)
                 return null;
             List<String> urllist = new List<string>(urls);

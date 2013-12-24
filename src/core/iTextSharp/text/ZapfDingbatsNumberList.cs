@@ -90,7 +90,7 @@ namespace iTextSharp.text
         *
         * @return    char-number
         */
-        public int NumberType {
+        virtual public int NumberType {
             get {
                 return type;
             }

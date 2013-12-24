@@ -255,7 +255,7 @@ namespace iTextSharp.text.pdf {
 
         protected List<int[]> subsetRanges;
 
-        public List<int[]> SubsetRanges { get { return subsetRanges; } }
+        virtual public List<int[]> SubsetRanges { get { return subsetRanges; } }
 
         /** The font type.
          */    
@@ -775,7 +775,7 @@ namespace iTextSharp.text.pdf {
          * Creates the <CODE>widths</CODE> and the <CODE>differences</CODE> arrays
          * @throws UnsupportedEncodingException the encoding is not supported
          */
-        protected void CreateEncoding() {
+        virtual protected void CreateEncoding() {
             if (encoding.StartsWith("#")) {
                 specialMap = new IntHashtable();
                 StringTokenizer tok = new StringTokenizer(encoding.Substring(1), " ,\t\n\r\f");
@@ -931,7 +931,7 @@ namespace iTextSharp.text.pdf {
         * @param text the <CODE>String</CODE> to get the descent of
         * @return the dexcent in normalized 1000 units
         */
-        public int GetDescent(String text) {
+        virtual public int GetDescent(String text) {
             int min = 0;
             char[] chars = text.ToCharArray();
             for (int k = 0; k < chars.Length; ++k) {
@@ -948,7 +948,7 @@ namespace iTextSharp.text.pdf {
         * @param text the <CODE>String</CODE> to get the ascent of
         * @return the ascent in normalized 1000 units
         */
-        public int GetAscent(String text) {
+        virtual public int GetAscent(String text) {
             int max = 0;
             char[] chars = text.ToCharArray();
             for (int k = 0; k < chars.Length; ++k) {
@@ -966,7 +966,7 @@ namespace iTextSharp.text.pdf {
         * @param fontSize the size of the font
         * @return the dexcent in points
         */
-        public float GetDescentPoint(String text, float fontSize)
+        virtual public float GetDescentPoint(String text, float fontSize)
         {
             return (float)GetDescent(text) * 0.001f * fontSize;
         }
@@ -978,7 +978,7 @@ namespace iTextSharp.text.pdf {
         * @param fontSize the size of the font
         * @return the ascent in points
         */
-        public float GetAscentPoint(String text, float fontSize)
+        virtual public float GetAscentPoint(String text, float fontSize)
         {
             return (float)GetAscent(text) * 0.001f * fontSize;
         }
@@ -990,7 +990,7 @@ namespace iTextSharp.text.pdf {
         * @param fontSize the font size
         * @return the width in points
         */
-        public float GetWidthPointKerned(String text, float fontSize) {
+        virtual public float GetWidthPointKerned(String text, float fontSize) {
             float size = (float)GetWidth(text) * 0.001f * fontSize;
             if (!HasKernPairs())
                 return size;
@@ -1009,7 +1009,7 @@ namespace iTextSharp.text.pdf {
          * @param fontSize the font size
          * @return the width in points
          */
-        public float GetWidthPoint(string text, float fontSize) {
+        virtual public float GetWidthPoint(string text, float fontSize) {
             return (float)GetWidth(text) * 0.001f * fontSize;
         }
     
@@ -1019,7 +1019,7 @@ namespace iTextSharp.text.pdf {
          * @param fontSize the font size
          * @return the width in points
          */
-        public float GetWidthPoint(int char1, float fontSize) {
+        virtual public float GetWidthPoint(int char1, float fontSize) {
             return GetWidth(char1) * 0.001f * fontSize;
         }
     
@@ -1091,7 +1091,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the encoding used to convert <CODE>string</CODE> into <CODE>byte[]</CODE>.
          * @return the encoding name
          */
-        public string Encoding {
+        virtual public string Encoding {
             get {
                 return encoding;
             }
@@ -1120,7 +1120,7 @@ namespace iTextSharp.text.pdf {
          * FONT_TYPE_TT, FONT_TYPE_CJK and FONT_TYPE_TTUNI.
          * @return the font type
          */
-        public int FontType {
+        virtual public int FontType {
             get {
                 return fontType;
             }
@@ -1133,14 +1133,14 @@ namespace iTextSharp.text.pdf {
         /** Gets the embedded flag.
          * @return <CODE>true</CODE> if the font is embedded.
          */
-        public bool IsEmbedded() {
+        virtual public bool IsEmbedded() {
             return embedded;
         }
     
         /** Gets the symbolic flag of the font.
          * @return <CODE>true</CODE> if the font is symbolic
          */
-        public bool IsFontSpecific() {
+        virtual public bool IsFontSpecific() {
             return fontSpecific;
         }
     
@@ -1303,7 +1303,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the font width array.
          * @return the font width array
          */    
-        public int[] Widths {
+        virtual public int[] Widths {
             get {
                 return widths;
             }
@@ -1312,7 +1312,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the array with the names of the characters.
          * @return the array with the names of the characters
          */    
-        public string[] Differences {
+        virtual public string[] Differences {
             get {
                 return differences;
             }
@@ -1321,7 +1321,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the array with the unicode characters.
          * @return the array with the unicode characters
          */    
-        public char[] UnicodeDifferences {
+        virtual public char[] UnicodeDifferences {
             get {
                 return unicodeDifferences;
             }
@@ -1332,7 +1332,7 @@ namespace iTextSharp.text.pdf {
          * @param forceWidthsOutput <CODE>true</CODE> to force the generation of the
          * widths array
          */
-        public bool ForceWidthsOutput {
+        virtual public bool ForceWidthsOutput {
             set {
                 this.forceWidthsOutput = value;
             }
@@ -1346,7 +1346,7 @@ namespace iTextSharp.text.pdf {
          * the content stream without passing through string.GetBytes().
          * @param directTextToByte New value of property directTextToByte.
          */
-        public bool DirectTextToByte {
+        virtual public bool DirectTextToByte {
             set {
                 this.directTextToByte = value;
             }
@@ -1362,7 +1362,7 @@ namespace iTextSharp.text.pdf {
         * otherwise just the characters ranges will be included.
         * @param subset new value of property subset
         */
-        public bool Subset {
+        virtual public bool Subset {
             set {
                 this.subset = value;
             }
@@ -1523,7 +1523,7 @@ namespace iTextSharp.text.pdf {
         * width advance and work correctly in the iText Arabic shaping and reordering
         * context.
         */    
-        public void CorrectArabicAdvance() {
+        virtual public void CorrectArabicAdvance() {
             for (char c = '\u064b'; c <= '\u0658'; ++c)
                 SetCharAdvance(c, 0);
             SetCharAdvance('\u0670', 0);
@@ -1543,7 +1543,7 @@ namespace iTextSharp.text.pdf {
         * end range inclusive. Several ranges are allowed in the same array.
         * @param range the character range
         */
-        public void AddSubsetRange(int[] range) {
+        virtual public void AddSubsetRange(int[] range) {
             if (subsetRanges == null)
                 subsetRanges = new List<int[]>();
             subsetRanges.Add(range);
@@ -1554,7 +1554,7 @@ namespace iTextSharp.text.pdf {
         * @param compressionLevel a value between 0 (best speed) and 9 (best compression)
         * @since 2.1.3
         */
-        public int CompressionLevel {
+        virtual public int CompressionLevel {
             set {
                 if (value < PdfStream.NO_COMPRESSION || value > PdfStream.BEST_COMPRESSION)
                     compressionLevel = PdfStream.DEFAULT_COMPRESSION;

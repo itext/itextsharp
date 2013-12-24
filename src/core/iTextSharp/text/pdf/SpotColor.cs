@@ -65,13 +65,13 @@ namespace iTextSharp.text.pdf {
             this.tint = tint;
         }
     
-        public PdfSpotColor PdfSpotColor {
+        virtual public PdfSpotColor PdfSpotColor {
             get {
                 return spot;
             }
         }
     
-        public float Tint {
+        virtual public float Tint {
             get {
                 return tint;
             }

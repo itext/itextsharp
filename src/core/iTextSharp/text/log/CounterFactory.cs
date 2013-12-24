@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 /*
  * $Id: CounterFactory.java 5829 2013-05-31 09:01:34Z blowagie $
  *
@@ -80,14 +80,14 @@ namespace iTextSharp.text.log
 	    /**
 	     * Getter for the counter.
 	     */
-	    public ICounter GetCounter() {
+	    virtual public ICounter GetCounter() {
 		    return counter;
 	    }
 	
 	    /**
 	     * Setter for the counter.
 	     */
-	    public void SetCounter(ICounter counter) {
+	    virtual public void SetCounter(ICounter counter) {
 		    this.counter = counter;
 	    }
     }

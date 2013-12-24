@@ -116,7 +116,7 @@ namespace iTextSharp.text.pdf {
         * <CODE>true</CODE> the value is ignored
         * @return a content where the glyph can be defined
         */    
-        public PdfContentByte DefineGlyph(char c, float wx, float llx, float lly, float urx, float ury) {
+        virtual public PdfContentByte DefineGlyph(char c, float wx, float llx, float lly, float urx, float ury) {
             if (c == 0 || c > 255)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("the.char.1.doesn.t.belong.in.this.type3.font", (int)c));
             usedSlot[c] = true;

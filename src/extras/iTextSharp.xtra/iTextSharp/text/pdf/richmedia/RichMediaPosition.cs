@@ -66,7 +66,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * @param   hAlign possible values are
          * PdfName.NEAR, PdfName.CENTER, or PdfName.FAR
          */
-        public PdfName HAlign {
+        virtual public PdfName HAlign {
             set {
                 Put(PdfName.HALIGN, value);
             }
@@ -77,7 +77,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * @param   vAlign possible values are
          * PdfName.NEAR, PdfName.CENTER, or PdfName.FAR
          */
-        public PdfName VAlign {
+        virtual public PdfName VAlign {
             set {
                 Put(PdfName.VALIGN, value);
             }
@@ -91,7 +91,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * direction.
          * @param   hOffset an offset
          */
-        public float HOffset {
+        virtual public float HOffset {
             set {
                 Put(PdfName.HOFFSET, new PdfNumber(value));
             }
@@ -105,7 +105,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * direction.
          * @param   vOffset an offset
          */
-        public float VOffset {
+        virtual public float VOffset {
             set {
                 Put(PdfName.VOFFSET, new PdfNumber(value));
             }

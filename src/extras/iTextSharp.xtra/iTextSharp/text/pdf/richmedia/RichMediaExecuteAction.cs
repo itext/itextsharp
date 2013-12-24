@@ -73,7 +73,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * Sets the target instance for this action.
          * @param   ref a reference to a RichMediaInstance
          */
-        public PdfIndirectReference RichMediaInstance {
+        virtual public PdfIndirectReference RichMediaInstance {
             set {
                 Put(PdfName.TI, value);
             }

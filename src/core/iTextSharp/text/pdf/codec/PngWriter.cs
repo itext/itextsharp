@@ -67,7 +67,7 @@ namespace iTextSharp.text.pdf.codec {
             outp.Write(PNG_SIGNTURE, 0, PNG_SIGNTURE.Length);
         }
 
-        public void WriteHeader(int width, int height, int bitDepth, int colorType) {
+        virtual public void WriteHeader(int width, int height, int bitDepth, int colorType) {
             MemoryStream ms = new MemoryStream();
             OutputInt(width, ms);
             OutputInt(height, ms);
@@ -79,11 +79,11 @@ namespace iTextSharp.text.pdf.codec {
             WriteChunk(IHDR, ms.ToArray());
         }
 
-        public void WriteEnd() {
+        virtual public void WriteEnd() {
             WriteChunk(IEND, new byte[0]);
         }
 
-        public void WriteData(byte[] data, int stride) {
+        virtual public void WriteData(byte[] data, int stride) {
             MemoryStream stream = new MemoryStream();
             ZDeflaterOutputStream zip = new ZDeflaterOutputStream(stream, 5);
             int k;
@@ -100,11 +100,11 @@ namespace iTextSharp.text.pdf.codec {
             WriteChunk(IDAT, stream.ToArray());
         }
 
-        public void WritePalette(byte[] data) {
+        virtual public void WritePalette(byte[] data) {
             WriteChunk(PLTE, data);
         }
 
-        public void WriteIccProfile(byte[] data) {
+        virtual public void WriteIccProfile(byte[] data) {
             MemoryStream stream = new MemoryStream();
             stream.WriteByte((byte)'I');
             stream.WriteByte((byte)'C');
@@ -153,7 +153,7 @@ namespace iTextSharp.text.pdf.codec {
             return update_crc(0xffffffffU, buf, 0, buf.Length) ^ 0xffffffffU;
         }
 
-        public void OutputInt(int n) {
+        virtual public void OutputInt(int n) {
             OutputInt(n, outp);
         }
 
@@ -164,7 +164,7 @@ namespace iTextSharp.text.pdf.codec {
             s.WriteByte((byte)n);
         }
 
-        public void WriteChunk(byte[] chunkType, byte[] data) {
+        virtual public void WriteChunk(byte[] chunkType, byte[] data) {
             OutputInt(data.Length);
             outp.Write(chunkType, 0, 4);
             outp.Write(data, 0, data.Length);

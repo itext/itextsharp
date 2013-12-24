@@ -134,7 +134,7 @@ namespace iTextSharp.tool.xml.parser {
          * @param pl the {@link XMLParserListener}
          * @return the parser
          */
-        public XMLParser AddListener(IXMLParserListener pl) {
+        virtual public XMLParser AddListener(IXMLParserListener pl) {
             listeners.Add(pl);
             return this;
         }
@@ -144,7 +144,7 @@ namespace iTextSharp.tool.xml.parser {
          * @param pl the {@link XMLParserListener} to remove
          * @return the parser
          */
-        public XMLParser RemoveListener(IXMLParserListener pl) {
+        virtual public XMLParser RemoveListener(IXMLParserListener pl) {
             listeners.Remove(pl);
             return this;
         }
@@ -154,7 +154,7 @@ namespace iTextSharp.tool.xml.parser {
          * @param in the Stream to parse
          * @throws IOException if IO went wrong
          */
-        public void Parse(Stream inp) {
+        virtual public void Parse(Stream inp) {
             Parse(new StreamReader(inp));
         }
 
@@ -164,7 +164,7 @@ namespace iTextSharp.tool.xml.parser {
          * @param detectEncoding true if encoding should be detected from the stream
          * @throws IOException if IO went wrong
          */
-        public void Parse(Stream inp, bool detectEncoding) {
+        virtual public void Parse(Stream inp, bool detectEncoding) {
             if (detectEncoding) {
                 Parse(DetectEncoding(inp));
             } else {
@@ -178,7 +178,7 @@ namespace iTextSharp.tool.xml.parser {
 	     * @param charSet to use for the constructed reader.
 	     * @throws IOException if reading fails
 	     */
-	    public void Parse(Stream inp, Encoding charSet) {
+	    virtual public void Parse(Stream inp, Encoding charSet) {
 		    this.charset = charSet;
 		    StreamReader reader = new StreamReader(inp, charSet);
 		    Parse(reader);
@@ -190,7 +190,7 @@ namespace iTextSharp.tool.xml.parser {
          * @param reader the reader
          * @throws IOException if IO went wrong
          */
-        public void Parse(TextReader reader) {
+        virtual public void Parse(TextReader reader) {
             ParseWithReader(reader);
         }
 
@@ -230,7 +230,7 @@ namespace iTextSharp.tool.xml.parser {
          * @throws IOException if IO went wrong
          * @throws UnsupportedEncodingException if unsupported encoding was detected
          */
-        public StreamReader DetectEncoding(Stream inp) {
+        virtual public StreamReader DetectEncoding(Stream inp) {
             byte[] b4 = new byte[4];
             int count = inp.Read(b4, 0, b4.Length);
             if (count != 4)
@@ -274,7 +274,7 @@ namespace iTextSharp.tool.xml.parser {
          *
          * @param state the current state
          */
-        protected internal void SetState(IState state) {
+        virtual protected internal void SetState(IState state) {
             this.state = state;
         }
 
@@ -282,7 +282,7 @@ namespace iTextSharp.tool.xml.parser {
          * @param character the character to append
          * @return the parser
          */
-        public XMLParser Append(char character) {
+        virtual public XMLParser Append(char character) {
             this.memory.Current().Append(character);
             return this;
 
@@ -302,14 +302,14 @@ namespace iTextSharp.tool.xml.parser {
          * The state controller of the parser
          * @return {@link StateController}
          */
-        public StateController SelectState() {
+        virtual public StateController SelectState() {
             return this.controller;
         }
 
         /**
          * Triggered when the UnknownState encountered anything before encountering a tag.
          */
-        public void UnknownData() {
+        virtual public void UnknownData() {
             foreach (IXMLParserListener l in listeners) {
                 l.UnknownText(this.memory.Current().ToString());
             }
@@ -318,7 +318,7 @@ namespace iTextSharp.tool.xml.parser {
         /**
          * Flushes the currently stored data in the buffer.
          */
-        public void Flush() {
+        virtual public void Flush() {
             this.memory.ResetBuffer();
         }
 
@@ -326,7 +326,7 @@ namespace iTextSharp.tool.xml.parser {
          * Returns the current content of the text buffer.
          * @return current buffer content
          */
-        public string Current() {
+        virtual public string Current() {
             return this.memory.Current().ToString();
         }
 
@@ -335,14 +335,14 @@ namespace iTextSharp.tool.xml.parser {
          *
          * @return the memory
          */
-        public XMLParserMemory Memory() {
+        virtual public XMLParserMemory Memory() {
             return memory;
         }
 
         /**
          * Triggered when an opening tag has been encountered.
          */
-        public void StartElement() {
+        virtual public void StartElement() {
             CurrentTagState(TagState.OPEN);
             CallText();
             foreach (IXMLParserListener l in listeners) {
@@ -367,7 +367,7 @@ namespace iTextSharp.tool.xml.parser {
         /**
          * Triggered when a closing tag has been encountered.
          */
-        public void EndElement() {
+        virtual public void EndElement() {
             CurrentTagState(TagState.CLOSE);
             CallText();
             foreach (IXMLParserListener l in listeners) {
@@ -380,14 +380,14 @@ namespace iTextSharp.tool.xml.parser {
          *
          * @param bs the content
          */
-        public void Text(string bs) {
+        virtual public void Text(string bs) {
             text = bs;
         }
 
         /**
          * Triggered for comments.
          */
-        public void Comment() {
+        virtual public void Comment() {
             CallText();
             foreach (IXMLParserListener l in listeners) {
                 l.Comment(this.memory.Current().ToString());
@@ -397,7 +397,7 @@ namespace iTextSharp.tool.xml.parser {
         /**
          * @return the current last character of the buffer or ' ' if none.
          */
-        public char CurrentLastChar() {
+        virtual public char CurrentLastChar() {
             StringBuilder sb = this.memory.Current();
             if (sb.Length == 0)
                 return ' ';
@@ -409,14 +409,14 @@ namespace iTextSharp.tool.xml.parser {
          * Get the current tag
          * @return the current tag.
          */
-        public String CurrentTag() {
+        virtual public String CurrentTag() {
             return this.memory.GetCurrentTag();
         }
         /**
          * Get the state of the current tag
          * @return the state of the current tag
          */
-        public TagState CurrentTagState() {
+        virtual public TagState CurrentTagState() {
             return this.tagState;
         }
 
@@ -430,13 +430,13 @@ namespace iTextSharp.tool.xml.parser {
         /**
          * @param monitor the monitor to set
          */
-        public void SetMonitor(IParserMonitor monitor) {
+        virtual public void SetMonitor(IParserMonitor monitor) {
             this.monitor = monitor;
         }
         /**
          * @return the current buffer as a String
          */
-        public String BufferToString() {
+        virtual public String BufferToString() {
             return this.memory.Current().ToString();
         }
 
@@ -444,7 +444,7 @@ namespace iTextSharp.tool.xml.parser {
          * @param bytes the byte array to append
          * @return this instance of the XMLParser
          */
-        public XMLParser Append(char[] bytes) {
+        virtual public XMLParser Append(char[] bytes) {
             this.memory.Current().Append(bytes);
             return this;
         }
@@ -452,7 +452,7 @@ namespace iTextSharp.tool.xml.parser {
         /**
          * @return the size of the buffer
          */
-        public int BufferSize() {
+        virtual public int BufferSize() {
             return (null != this.memory.Current())?this.memory.Current().Length:0;
         }
 
@@ -461,7 +461,7 @@ namespace iTextSharp.tool.xml.parser {
          * @param string the String to append
          * @return this instance of the XMLParser
          */
-        public XMLParser Append(String str) {
+        virtual public XMLParser Append(String str) {
             this.memory.Current().Append(str);
             return this;
 
@@ -470,7 +470,7 @@ namespace iTextSharp.tool.xml.parser {
          * Returns the current used character set.
          * @return the charset
          */
-        public Encoding Charset {
+        virtual public Encoding Charset {
             get {
                 return charset;
             }

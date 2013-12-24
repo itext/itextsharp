@@ -59,24 +59,24 @@ namespace System.util {
             this.col = col;
         }
 
-        public bool HasNext() {
+        virtual public bool HasNext() {
             return cursor != col.Count;
         }
 
-        public T Next() {
+        virtual public T Next() {
             T next = col[cursor];
             lastRet = cursor++;
             return next;
         }
 
-        public T Previous() {
+        virtual public T Previous() {
             int i = cursor - 1;
             T previous = col[i];
             lastRet = cursor = i;
             return previous;
         }
 
-        public void Remove() {
+        virtual public void Remove() {
             if (lastRet == -1)
                 throw new InvalidOperationException();
             col.RemoveAt(lastRet);

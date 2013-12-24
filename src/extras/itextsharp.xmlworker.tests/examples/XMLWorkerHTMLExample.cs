@@ -22,7 +22,7 @@ namespace itextsharp.xmlworker.tests.examples {
         private const string RESOURCES = @"..\..\resources\";
 
         [Test]
-        public void SetupDefaultProcessingYourself() {
+        virtual public void SetupDefaultProcessingYourself() {
             Document doc = new Document(PageSize.A4);
             PdfWriter writer = PdfWriter.GetInstance(doc,
                 new FileStream(TARGET + "columbus2.pdf", FileMode.Create));
@@ -53,7 +53,7 @@ namespace itextsharp.xmlworker.tests.examples {
 	 */
 
         [Test]
-        public void AddingAnImageRoot() {
+        virtual public void AddingAnImageRoot() {
             Document doc = new Document(PageSize.A4);
             PdfWriter writer = PdfWriter.GetInstance(doc,
                 new FileStream(TARGET + "columbus3.pdf", FileMode.Create));
@@ -71,7 +71,7 @@ namespace itextsharp.xmlworker.tests.examples {
 
 
         private class CustomLinkProvider : ILinkProvider {
-            public string GetLinkRoot() {
+            virtual public string GetLinkRoot() {
                 return "http://www.gutenberg.org/dirs/1/8/0/6/18066/18066-h/";
             }
         }
@@ -85,7 +85,7 @@ namespace itextsharp.xmlworker.tests.examples {
 	 */
 
         [Test]
-        public void AddingALinkProvider() {
+        virtual public void AddingALinkProvider() {
             Document doc = new Document(PageSize.A4);
             PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(TARGET + "columbus3.pdf", FileMode.Create));
             doc.Open();

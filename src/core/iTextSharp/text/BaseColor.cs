@@ -134,35 +134,35 @@ namespace iTextSharp.text {
         /**
          * @return the combined color value
          */
-        public int RGB {
+        virtual public int RGB {
             get { return value; }
         }
         /**
          *
          * @return the value for red
          */
-        public int R {
+        virtual public int R {
             get { return (RGB >> 16) & 0xFF; }
         }
         /**
          *
          * @return the value for green
          */
-        public int G {
+        virtual public int G {
             get { return (RGB >> 8) & 0xFF; }
         }
         /**
          *
          * @return the value for blue
          */
-        public int B {
+        virtual public int B {
             get { return (RGB >> 0) & 0xFF; }
         }
         /**
          *
          * @return the value for the alpha channel
          */
-        public int A {
+        virtual public int A {
             get { return (RGB >> 24) & 0xff; }
         }
 
@@ -170,7 +170,7 @@ namespace iTextSharp.text {
          * Make this BaseColor brighter. Factor used is 0.7.
          * @return the new BaseColor
          */
-        public BaseColor Brighter() {
+        virtual public BaseColor Brighter() {
             int r = R;
             int g = G;
             int b = B;
@@ -195,14 +195,14 @@ namespace iTextSharp.text {
          * Make this color darker. Factor used is 0.7
          * @return the new BaseColor
          */
-        public BaseColor Darker() {
+        virtual public BaseColor Darker() {
             return new BaseColor(Math.Max((int) (R * FACTOR), 0),
                     Math.Max((int) (G * FACTOR), 0),
                     Math.Max((int) (B * FACTOR), 0));
         }
 
         [Obsolete ("Use RGB instead")]
-        public int ToArgb() {
+        virtual public int ToArgb() {
             return value;
         }
 

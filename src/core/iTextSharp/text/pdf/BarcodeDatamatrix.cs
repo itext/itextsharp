@@ -666,7 +666,7 @@ namespace iTextSharp.text.pdf {
         * <CODE>DM_ERROR_EXTENSION</CODE> - an error was while parsing an extension.
         * @throws java.io.UnsupportedEncodingException on error
         */
-        public int Generate(String text) {
+        virtual public int Generate(String text) {
             byte[] t = System.Text.Encoding.GetEncoding(1252).GetBytes(text);
             return Generate(t, 0, t.Length);
         }
@@ -683,7 +683,7 @@ namespace iTextSharp.text.pdf {
         * <CODE>DM_ERROR_INVALID_SQUARE</CODE> - the dimensions given for the symbol are illegal.<br>
         * <CODE>DM_ERROR_EXTENSION</CODE> - an error was while parsing an extension.
         */
-        public int Generate(byte[] text, int textOffset, int textSize) {
+        virtual public int Generate(byte[] text, int textOffset, int textSize) {
             int extCount, e, k, full;
             DmParams dm, last;
             byte[] data = new byte[2500];
@@ -740,7 +740,7 @@ namespace iTextSharp.text.pdf {
         * @return the barcode <CODE>Image</CODE>
         * @throws BadElementException on error
         */    
-        public Image CreateImage() {
+        virtual public Image CreateImage() {
             if (image == null)
                 return null;
             byte[] g4 = CCITTG4Encoder.Compress(image, width + 2 * ws, height + 2 * ws);
@@ -802,7 +802,7 @@ namespace iTextSharp.text.pdf {
         * plus 2 * ws.
         * @return the generated image
         */
-        public byte[] BitImage {
+        virtual public byte[] BitImage {
             get {
                 return image;
             }
@@ -844,7 +844,7 @@ namespace iTextSharp.text.pdf {
         * 144, 144<br>
         * @param height the height of the barcode
         */
-        public int Height {
+        virtual public int Height {
             get {
                 return height;
             }
@@ -889,7 +889,7 @@ namespace iTextSharp.text.pdf {
         * 144, 144<br>
         * @param width the width of the barcode
         */
-        public int Width {
+        virtual public int Width {
             get {
                 return width;
             }
@@ -902,7 +902,7 @@ namespace iTextSharp.text.pdf {
         * Gets/sets the whitespace border around the barcode.
         * @param ws the whitespace border around the barcode
         */
-        public int Ws {
+        virtual public int Ws {
             get {
                 return ws;
             }
@@ -938,7 +938,7 @@ namespace iTextSharp.text.pdf {
         * <CODE>DM_TEST</CODE> - doesn't generate the image but returns all the other information.
         * @param options the barcode options
         */
-        public int Options {
+        virtual public int Options {
             get {
                 return options;
             }

@@ -230,7 +230,7 @@ namespace iTextSharp.text.pdf {
         * @param writer the writer
         * @throws java.io.IOException on error
         */
-        public void SetXfa(PdfWriter writer) {
+        virtual public void SetXfa(PdfWriter writer) {
             SetXfa(this, reader, writer);
         }
 
@@ -254,7 +254,7 @@ namespace iTextSharp.text.pdf {
         * Returns <CODE>true</CODE> if it is a XFA form.
         * @return <CODE>true</CODE> if it is a XFA form
         */
-        public bool XfaPresent {
+        virtual public bool XfaPresent {
             get {
                 return xfaPresent;
             }
@@ -267,7 +267,7 @@ namespace iTextSharp.text.pdf {
         * Gets the top level DOM document.
         * @return the top level DOM document
         */
-        public XmlDocument DomDocument {
+        virtual public XmlDocument DomDocument {
             get {
                 return domDocument;
             }
@@ -285,7 +285,7 @@ namespace iTextSharp.text.pdf {
         * @param af the fields
         * @return the complete name or <CODE>null</CODE> if not found
         */
-        public String FindFieldName(String name, AcroFields af) {
+        virtual public String FindFieldName(String name, AcroFields af) {
             IDictionary<String, AcroFields.Item> items = af.Fields;
             if (items.ContainsKey(name))
                 return name;
@@ -306,7 +306,7 @@ namespace iTextSharp.text.pdf {
         * @param name the complete or partial name
         * @return the complete name or <CODE>null</CODE> if not found
         */
-        public String FindDatasetsName(String name) {
+        virtual public String FindDatasetsName(String name) {
             if (datasetsSom.Name2Node.ContainsKey(name))
                 return name;
             return datasetsSom.InverseSearchGlobal(Xml2Som.SplitParts(name));
@@ -318,7 +318,7 @@ namespace iTextSharp.text.pdf {
         * @param name the complete or partial name
         * @return the <CODE>Node</CODE> or <CODE>null</CODE> if not found
         */
-        public XmlNode FindDatasetsNode(String name) {
+        virtual public XmlNode FindDatasetsNode(String name) {
             if (name == null)
                 return null;
             name = FindDatasetsName(name);
@@ -359,7 +359,7 @@ namespace iTextSharp.text.pdf {
         * @param n the <CODE>Node</CODE> to add the text to
         * @param text the text to add
         */
-        public void SetNodeText(XmlNode n, String text) {
+        virtual public void SetNodeText(XmlNode n, String text) {
             if (n == null)
                 return;
             XmlNode nc = null;
@@ -375,7 +375,7 @@ namespace iTextSharp.text.pdf {
         * Sets the <CODE>PdfReader</CODE> to be used by this instance.
         * @param reader the <CODE>PdfReader</CODE> to be used by this instance
         */
-        public PdfReader Reader {
+        virtual public PdfReader Reader {
             set { 
                 reader = value;
             }
@@ -388,7 +388,7 @@ namespace iTextSharp.text.pdf {
         * Checks if this XFA form was changed.
         * @return <CODE>true</CODE> if this XFA form was changed
         */
-        public bool Changed {
+        virtual public bool Changed {
             get {
                 return changed;
             }
@@ -410,7 +410,7 @@ namespace iTextSharp.text.pdf {
             * index 0.
             * @return the full name
             */
-            public String DefaultName {
+            virtual public String DefaultName {
                 get {
                     InverseStore store = this;
                     while (true) {
@@ -430,7 +430,7 @@ namespace iTextSharp.text.pdf {
             * @param name the name to search
             * @return <CODE>true</CODE> if a similitude was found
             */
-            public bool IsSimilar(String name) {
+            virtual public bool IsSimilar(String name) {
                 int idx = name.IndexOf('[');
                 name = name.Substring(0, idx + 1);
                 foreach (String n in part) { 
@@ -450,7 +450,7 @@ namespace iTextSharp.text.pdf {
             * Looks at the object at the top of this stack without removing it from the stack.
             * @return the object at the top of this stack
             */
-            public T Peek() {
+            virtual public T Peek() {
                 if (Count == 0)
                     throw new InvalidOperationException();
                 return this[Count - 1];
@@ -460,7 +460,7 @@ namespace iTextSharp.text.pdf {
             * Removes the object at the top of this stack and returns that object as the value of this function.
             * @return the object at the top of this stack 
             */
-            public T Pop() {
+            virtual public T Pop() {
                 if (Count == 0)
                     throw new InvalidOperationException();
                 T ret = this[Count - 1];
@@ -473,7 +473,7 @@ namespace iTextSharp.text.pdf {
             * @param item the item to be pushed onto this stack
             * @return the <CODE>item</CODE> argument
             */
-            public T Push(T item) {
+            virtual public T Push(T item) {
                 Add(item);
                 return item;
             }
@@ -482,7 +482,7 @@ namespace iTextSharp.text.pdf {
             * Tests if this stack is empty.
             * @return <CODE>true</CODE> if and only if this stack contains no items; <CODE>false</CODE> otherwise
             */
-            public bool Empty() {
+            virtual public bool Empty() {
                 return Count == 0;
             }
         }
@@ -560,7 +560,7 @@ namespace iTextSharp.text.pdf {
             * by '.'.
             * @return the stack as the sequence of elements separated by '.'
             */
-            protected String PrintStack() {
+            virtual protected String PrintStack() {
                 if (stack.Empty())
                     return "";
                 StringBuilder s = new StringBuilder();
@@ -596,7 +596,7 @@ namespace iTextSharp.text.pdf {
             * Adds a SOM name to the search node chain.
             * @param unstack the SOM name
             */
-            public void InverseSearchAdd(String unstack) {
+            virtual public void InverseSearchAdd(String unstack) {
                 InverseSearchAdd(inverseSearch, stack, unstack);
             }
             
@@ -636,7 +636,7 @@ namespace iTextSharp.text.pdf {
             * @param parts the SOM parts
             * @return the full name or <CODE>null</CODE> if not found
             */
-            public String InverseSearchGlobal(List<String> parts) {
+            virtual public String InverseSearchGlobal(List<String> parts) {
                 if (parts.Count == 0)
                     return null;
                 InverseStore store;
@@ -698,7 +698,7 @@ namespace iTextSharp.text.pdf {
             * Gets the order the names appear in the XML, depth first.
             * @return the order the names appear in the XML, depth first
             */
-            public List<String> Order {
+            virtual public List<String> Order {
                 get {
                     return order;
                 }
@@ -711,7 +711,7 @@ namespace iTextSharp.text.pdf {
             * Gets the mapping of full names to nodes.
             * @return the mapping of full names to nodes
             */
-            public Dictionary<String, XmlNode> Name2Node {
+            virtual public Dictionary<String, XmlNode> Name2Node {
                 get {
                     return name2Node;
                 }
@@ -724,7 +724,7 @@ namespace iTextSharp.text.pdf {
             * Gets the data to do a search from the bottom hierarchie.
             * @return the data to do a search from the bottom hierarchie
             */
-            public Dictionary<string,InverseStore> InverseSearch {
+            virtual public Dictionary<string,InverseStore> InverseSearch {
                 get {
                     return inverseSearch;
                 }
@@ -758,7 +758,7 @@ namespace iTextSharp.text.pdf {
             * @param shortName the short name
             * @return the new <CODE>Node</CODE> of the inserted name
             */
-            public XmlNode InsertNode(XmlNode n, String shortName) {
+            virtual public XmlNode InsertNode(XmlNode n, String shortName) {
                 Stack2<string> stack = SplitParts(shortName);
                 XmlDocument doc = n.OwnerDocument;
                 XmlNode n2 = null;
@@ -875,7 +875,7 @@ namespace iTextSharp.text.pdf {
             * name may contain the #subform name part.
             * @return the mapping from short names to long names
             */
-            public Dictionary<String, String> AcroShort2LongName {
+            virtual public Dictionary<String, String> AcroShort2LongName {
                 get {
                     return acroShort2LongName;
                 }
@@ -911,7 +911,7 @@ namespace iTextSharp.text.pdf {
             * @param s the exact template name
             * @return the field type or <CODE>null</CODE> if not found
             */
-            public String GetFieldType(String s) {
+            virtual public String GetFieldType(String s) {
                 XmlNode n;
                 name2Node.TryGetValue(s, out n);
                 if (n == null)
@@ -1019,7 +1019,7 @@ namespace iTextSharp.text.pdf {
             * @return <CODE>true</CODE> if it's a dynamic form; <CODE>false</CODE>
             * if it's a static form
             */
-            public bool DynamicForm {
+            virtual public bool DynamicForm {
                 get {
                     return dynamicForm;
                 }
@@ -1033,7 +1033,7 @@ namespace iTextSharp.text.pdf {
         * Gets the class that contains the template processing section of the XFA.
         * @return the class that contains the template processing section of the XFA
         */
-        public Xml2SomTemplate TemplateSom {
+        virtual public Xml2SomTemplate TemplateSom {
             get {
                 return templateSom;
             }
@@ -1046,7 +1046,7 @@ namespace iTextSharp.text.pdf {
         * Gets the class that contains the datasets processing section of the XFA.
         * @return the class that contains the datasets processing section of the XFA
         */
-        public Xml2SomDatasets DatasetsSom {
+        virtual public Xml2SomDatasets DatasetsSom {
             get {
                 return datasetsSom;
             }
@@ -1059,7 +1059,7 @@ namespace iTextSharp.text.pdf {
         * Gets the class that contains the "classic" fields processing.
         * @return the class that contains the "classic" fields processing
         */
-        public AcroFieldsSearch AcroFieldsSom {
+        virtual public AcroFieldsSearch AcroFieldsSom {
             get {
                 return acroFieldsSom;
             }
@@ -1072,38 +1072,38 @@ namespace iTextSharp.text.pdf {
         * Gets the <CODE>Node</CODE> that corresponds to the datasets part.
         * @return the <CODE>Node</CODE> that corresponds to the datasets part
         */
-        public XmlNode DatasetsNode {
+        virtual public XmlNode DatasetsNode {
             get {
                 return datasetsNode;
             }
         }
 
-        public void FillXfaForm(string file) {
+        virtual public void FillXfaForm(string file) {
             using (FileStream fs = new FileStream(file, FileMode.Open)) {
 		        FillXfaForm(fs, false);
             }
         }
 
-        public void FillXfaForm(Stream stream) {
+        virtual public void FillXfaForm(Stream stream) {
             FillXfaForm(stream, false);
         }
         
-        public void FillXfaForm(Stream stream, bool readOnly) {
+        virtual public void FillXfaForm(Stream stream, bool readOnly) {
     	    FillXfaForm(new XmlTextReader(stream), readOnly);
         }
 
-        public void FillXfaForm(XmlReader reader) {
+        virtual public void FillXfaForm(XmlReader reader) {
             FillXfaForm(reader, false);
         }
         
-        public void FillXfaForm(XmlReader reader, bool readOnly) {
+        virtual public void FillXfaForm(XmlReader reader, bool readOnly) {
             XmlDocument doc = new XmlDocument();
             doc.PreserveWhitespace = true;
             doc.Load(reader);
     	    FillXfaForm(doc.DocumentElement);
         }
 
-        public void FillXfaForm(XmlNode node) {
+        virtual public void FillXfaForm(XmlNode node) {
             FillXfaForm(node, false);
         }
         
@@ -1111,7 +1111,7 @@ namespace iTextSharp.text.pdf {
         * Replaces the data under datasets/data.
         * @since	iText 5.0.0
         */
-        public void FillXfaForm(XmlNode node, bool readOnly) {
+        virtual public void FillXfaForm(XmlNode node, bool readOnly) {
             if (readOnly) {
                 XmlNodeList nodeList = domDocument.GetElementsByTagName("field");
                 for (int i = 0; i < nodeList.Count; i++) {

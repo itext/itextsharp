@@ -308,7 +308,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isContent()
         * @since   iText 2.0.8
         */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return true;
         }
 
@@ -344,7 +344,7 @@ namespace iTextSharp.text {
         /// <param name="top">the top position</param>
         /// <param name="bottom">the bottom position</param>
         /// <returns>a Rectangle</returns>
-        public Rectangle GetRectangle(float top, float bottom) {
+        virtual public Rectangle GetRectangle(float top, float bottom) {
             Rectangle tmp = new Rectangle(this);
             if (this.Top > top) {
                 tmp.Top = top;
@@ -361,7 +361,7 @@ namespace iTextSharp.text {
         /// Swaps the values of urx and ury and of lly and llx in order to rotate the rectangle.
         /// </summary>
         /// <returns>a Rectangle</returns>
-        public Rectangle Rotate() {
+        virtual public Rectangle Rotate() {
             Rectangle rect = new Rectangle(lly, llx, ury, urx);
             rect.Rotation = rotation + 90;
             return rect;
@@ -577,7 +577,7 @@ namespace iTextSharp.text {
         /// Returns the height of the rectangle.
         /// </summary>
         /// <value>a height</value>
-        public float Height {
+        virtual public float Height {
             get {
                 return ury - lly;
             }
@@ -587,7 +587,7 @@ namespace iTextSharp.text {
         /// Indicates if the table has borders.
         /// </summary>
         /// <returns>a bool</returns>
-        public bool HasBorders() {
+        virtual public bool HasBorders() {
             switch (border) {
                 case UNDEFINED:
                 case NO_BORDER:
@@ -603,7 +603,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="type">the type of border</param>
         /// <returns>a bool</returns>
-        public bool HasBorder(int type) {
+        virtual public bool HasBorder(int type) {
             if (border == UNDEFINED)
                 return false;
             return (border & type) == type;

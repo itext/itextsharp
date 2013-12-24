@@ -31,7 +31,7 @@ namespace itextsharp.xmlworker.tests.examples {
 	 */
 
         [Test]
-        public void DefaultSetup() {
+        virtual public void DefaultSetup() {
             Document doc = new Document(PageSize.A4);
             PdfWriter instance = PdfWriter.GetInstance(doc,
                 new FileStream(TARGET + "columbus.pdf", FileMode.Create));
@@ -42,7 +42,7 @@ namespace itextsharp.xmlworker.tests.examples {
         }
 
         private class CustomElementHandler : IElementHandler {
-            public void Add(IWritable w) {
+            virtual public void Add(IWritable w) {
                 if (w is WritableElement) {
                     IList<IElement> elements = ((WritableElement) w).Elements();
                     // do something with the lists of elements
@@ -56,7 +56,7 @@ namespace itextsharp.xmlworker.tests.examples {
 	 */
 
         [Test]
-        public void DefaultSetupWithoutDocument() {
+        virtual public void DefaultSetupWithoutDocument() {
             XMLWorkerHelper.GetInstance()
                 .ParseXHtml(new CustomElementHandler(), File.OpenRead(RESOURCES + @"\examples\columbus.html"), Encoding.Default);
         }

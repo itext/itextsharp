@@ -216,7 +216,7 @@ namespace iTextSharp.text.io {
             }
         }
 
-        public void Dispose() {
+        virtual public void Dispose() {
             Close();
         }
 

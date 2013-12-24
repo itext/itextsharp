@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using iTextSharp.text.pdf.interfaces;
 
 namespace iTextSharp.text.pdf {
@@ -15,7 +15,7 @@ namespace iTextSharp.text.pdf {
         {
         }
 
-        public PdfObject GetAccessibleAttribute(PdfName key) {
+        virtual public PdfObject GetAccessibleAttribute(PdfName key) {
             if (accessibleAttributes != null) {
                 PdfObject value;
                 accessibleAttributes.TryGetValue(key, out value);
@@ -24,7 +24,7 @@ namespace iTextSharp.text.pdf {
                 return null;
         }
 
-        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+        virtual public void SetAccessibleAttribute(PdfName key, PdfObject value) {
             if (accessibleAttributes == null)
                 accessibleAttributes = new Dictionary<PdfName, PdfObject>();
             accessibleAttributes[key] = value;
@@ -32,7 +32,7 @@ namespace iTextSharp.text.pdf {
 
 
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+        virtual public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             return accessibleAttributes;
         }
 
@@ -41,7 +41,7 @@ namespace iTextSharp.text.pdf {
             set { this.role = value; }
         }
 
-        public AccessibleElementId ID {
+        virtual public AccessibleElementId ID {
             get { return id; }
             set { id = value; }
         }

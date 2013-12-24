@@ -33,7 +33,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         private const string RESOURCES = @"..\..\resources\";
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
             cssFiles = new CssFilesImpl();
             String path = RESOURCES + @"\css\test.css";
@@ -48,7 +48,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [Test]
-        public void Parse1CssFileAndValidate() {
+        virtual public void Parse1CssFileAndValidate() {
             p.Parse(new StringReader(HTML1));
             Dictionary<String, String> props = new Dictionary<String, String>();
             cssFiles.PopulateCss(props, "body");
@@ -57,7 +57,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [Test]
-        public void Parse2CsszFileAndValidate() {
+        virtual public void Parse2CsszFileAndValidate() {
             p.Parse(new StringReader(HTML2));
             Dictionary<String, String> props = new Dictionary<String, String>();
             cssFiles.PopulateCss(props, "body");
@@ -70,7 +70,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [Test]
-        public void Parse2CsszFilePluseStyleTagAndValidate() {
+        virtual public void Parse2CsszFilePluseStyleTagAndValidate() {
             p.Parse(new StringReader(HTML3));
             Dictionary<String, String> props = new Dictionary<String, String>();
             cssFiles.PopulateCss(props, "body");

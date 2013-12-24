@@ -67,7 +67,7 @@ namespace iTextSharp.text.pdf.spatial {
          *
          * @param bounds
          */
-        public void SetBounds(NumberArray bounds) {
+        virtual public void SetBounds(NumberArray bounds) {
             base.Put(PdfName.BOUNDS, bounds);
         }
 
@@ -76,7 +76,7 @@ namespace iTextSharp.text.pdf.spatial {
          *
          * @param cs
          */
-        public void SetCoordinateSystem(CoordinateSystem cs) {
+        virtual public void SetCoordinateSystem(CoordinateSystem cs) {
             base.Put(PdfName.GCS, cs);
         }
 
@@ -90,7 +90,7 @@ namespace iTextSharp.text.pdf.spatial {
          *
          * @param cs
          */
-        public void SetDisplayCoordinateSystem(GeographicCoordinateSystem cs) {
+        virtual public void SetDisplayCoordinateSystem(GeographicCoordinateSystem cs) {
             base.Put(PdfName.DCS, cs);
         }
 
@@ -102,7 +102,7 @@ namespace iTextSharp.text.pdf.spatial {
          * @param s
          * @param a
          */
-        public void SetDisplayUnits(Linear l, Square s, Angular a) {
+        virtual public void SetDisplayUnits(Linear l, Square s, Angular a) {
             PdfArray arr = new PdfArray();
             arr.Add(DecodeUnits.Decode(l));
             arr.Add(DecodeUnits.Decode(s));
@@ -118,7 +118,7 @@ namespace iTextSharp.text.pdf.spatial {
          *
          * @param pairedpoints
          */
-        public void SetGPTS(NumberArray pairedpoints) {
+        virtual public void SetGPTS(NumberArray pairedpoints) {
             Put(PdfName.GPTS, pairedpoints);
         }
 
@@ -132,7 +132,7 @@ namespace iTextSharp.text.pdf.spatial {
          *
          * @param pairedpoints
          */
-        public void SetLPTS(NumberArray pairedpoints) {
+        virtual public void SetLPTS(NumberArray pairedpoints) {
             Put(PdfName.LPTS, pairedpoints);
         }
     }

@@ -220,7 +220,7 @@ namespace iTextSharp.text.pdf {
          * @return    <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool HasPage() {
+        virtual public bool HasPage() {
             return status;
         }
     
@@ -230,7 +230,7 @@ namespace iTextSharp.text.pdf {
          * @return true if the page reference was added
          */
     
-        public bool AddPage(PdfIndirectReference page) {
+        virtual public bool AddPage(PdfIndirectReference page) {
             if (!status) {
                 AddFirst(page);
                 status = true;

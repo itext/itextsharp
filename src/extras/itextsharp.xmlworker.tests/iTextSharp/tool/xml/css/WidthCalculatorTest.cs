@@ -22,7 +22,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         private WidthCalculator calc;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             body = new Tag("body", new Dictionary<String, String>());
             table = new Tag("table", new Dictionary<String, String>());
             row = new Tag("tr", new Dictionary<String, String>());
@@ -40,28 +40,28 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ResolveBodyWidth80() {
+        virtual public void ResolveBodyWidth80() {
             body.Attributes[HTML.Attribute.WIDTH] = "80%";
             Assert.AreEqual(0.8*config.PageSize.Width, calc.GetWidth(body, config.GetRootTags(), config.PageSize.Width),
                 0);
         }
 
         [Test]
-        public void ResolveTableWidth80() {
+        virtual public void ResolveTableWidth80() {
             table.Attributes[HTML.Attribute.WIDTH] = "80%";
             Assert.AreEqual(0.8*config.PageSize.Width, calc.GetWidth(table, config.GetRootTags(), config.PageSize.Width),
                 0);
         }
 
         [Test]
-        public void ResolveCellWidth20of100() {
+        virtual public void ResolveCellWidth20of100() {
             cell.Attributes[HTML.Attribute.WIDTH] = "20%";
             Assert.AreEqual(config.PageSize.Width*0.2f, calc.GetWidth(cell, config.GetRootTags(), config.PageSize.Width),
                 0.01f);
         }
 
         [Test]
-        public void ResolveCellWidth20of80() {
+        virtual public void ResolveCellWidth20of80() {
             table.Attributes[HTML.Attribute.WIDTH] = "80%";
             cell.Attributes[HTML.Attribute.WIDTH] = "20%";
             Assert.AreEqual(0.8f*config.PageSize.Width*0.2f,

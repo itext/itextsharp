@@ -18,7 +18,7 @@ namespace iTextSharp.tool.xml
 	 * @see com.itextpdf.tool.xml.ElementHandler#add(com.itextpdf.tool.xml.Writable)
 	 */
 
-        public void Add(IWritable w)
+        virtual public void Add(IWritable w)
         {
             if (w is WritableElement) {
                 foreach (IElement element in ((WritableElement)w).Elements())

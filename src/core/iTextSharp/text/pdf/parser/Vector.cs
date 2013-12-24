@@ -95,7 +95,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param by the matrix to cross this vector with
          * @return the result of the cross product
          */
-        public Vector Cross(Matrix by){
+        virtual public Vector Cross(Matrix by){
             
             float x = vals[I1]*by[Matrix.I11] + vals[I2]*by[Matrix.I21] + vals[I3]*by[Matrix.I31];
             float y = vals[I1]*by[Matrix.I12] + vals[I2]*by[Matrix.I22] + vals[I3]*by[Matrix.I32];
@@ -109,7 +109,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param v the vector to subtract from this one
          * @return the results of the subtraction
          */
-        public Vector Subtract(Vector v){
+        virtual public Vector Subtract(Vector v){
             float x = vals[I1] - v.vals[I1];
             float y = vals[I2] - v.vals[I2];
             float z = vals[I3] - v.vals[I3];
@@ -122,7 +122,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param with the vector to cross this vector with
          * @return the cross product
          */
-        public Vector Cross(Vector with){
+        virtual public Vector Cross(Vector with){
             float x = vals[I2]*with.vals[I3] - vals[I3]*with.vals[I2];
             float y = vals[I3]*with.vals[I1] - vals[I1]*with.vals[I3];
             float z = vals[I1]*with.vals[I2] - vals[I2]*with.vals[I1];
@@ -135,7 +135,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the unit vector
          * @since 5.0.1
          */
-        public Vector Normalize(){
+        virtual public Vector Normalize(){
             float l = this.Length;
             float x = vals[I1]/l;
             float y = vals[I2]/l;
@@ -149,7 +149,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the result of the scalar multiplication
          * @since 5.0.1
          */
-        public Vector Multiply(float by){
+        virtual public Vector Multiply(float by){
             float x = vals[I1] * by;
             float y = vals[I2] * by;
             float z = vals[I3] * by;
@@ -161,7 +161,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param with the vector to dot product this vector with
          * @return the dot product
          */
-        public float Dot(Vector with){
+        virtual public float Dot(Vector with){
             return vals[I1]*with.vals[I1] + vals[I2]*with.vals[I2] + vals[I3]*with.vals[I3];
         }
         
@@ -178,7 +178,7 @@ namespace iTextSharp.text.pdf.parser {
          *  
          * @return the length of this vector
          */
-        public float Length {
+        virtual public float Length {
             get {
                 return (float)Math.Sqrt(LengthSquared);
             }
@@ -194,7 +194,7 @@ namespace iTextSharp.text.pdf.parser {
          * 
          * @return the square of the length of the vector
          */
-        public float LengthSquared {
+        virtual public float LengthSquared {
             get {
                 return vals[I1]*vals[I1] + vals[I2]*vals[I2] + vals[I3]*vals[I3];
             }

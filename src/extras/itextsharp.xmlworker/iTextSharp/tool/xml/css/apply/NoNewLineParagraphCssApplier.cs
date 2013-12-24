@@ -63,7 +63,7 @@ namespace iTextSharp.tool.xml.css.apply {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag)
          */
-        public NoNewLineParagraph Apply(NoNewLineParagraph p, Tag t, IMarginMemory configuration) {
+        virtual public NoNewLineParagraph Apply(NoNewLineParagraph p, Tag t, IMarginMemory configuration) {
             /*if (this.configuration.GetRootTags().Contains(t.Name)) {
                 m.SetLeading(t);
             } else {

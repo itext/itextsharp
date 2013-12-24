@@ -717,7 +717,7 @@ namespace iTextSharp.text.pdf {
             return cidByte.Lookup(uniCid.Lookup(char1));
         }
         
-        public bool IsIdentity() {
+        virtual public bool IsIdentity() {
             return cidDirect;
         }
     }

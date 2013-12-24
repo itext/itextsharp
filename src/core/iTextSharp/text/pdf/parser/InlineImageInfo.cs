@@ -61,7 +61,7 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @return the image dictionary associated with this inline image
          */
-        public PdfDictionary ImageDictionary {
+        virtual public PdfDictionary ImageDictionary {
             get {
                 return imageDictionary;
             }
@@ -70,7 +70,7 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @return the raw samples associated with this inline image
          */
-        public byte[] Samples {
+        virtual public byte[] Samples {
             get {
                 return samples;
             }

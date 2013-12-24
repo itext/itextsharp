@@ -89,7 +89,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
             type = META_FONT;
         }
 
-        public void Init(InputMeta meta) {
+        virtual public void Init(InputMeta meta) {
             height = Math.Abs(meta.ReadShort());
             meta.Skip(2);
             angle = (float)(meta.ReadShort() / 1800.0 * Math.PI);
@@ -119,7 +119,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
             faceName = faceName.ToLower(System.Globalization.CultureInfo.InvariantCulture);
         }
     
-        public BaseFont Font {
+        virtual public BaseFont Font {
             get {
                 if (font != null)
                     return font;
@@ -180,21 +180,21 @@ namespace iTextSharp.text.pdf.codec.wmf {
             }
         }
     
-        public float Angle {
+        virtual public float Angle {
             get {
                 return angle;
             }
         }
     
-        public bool IsUnderline() {
+        virtual public bool IsUnderline() {
             return underline;
         }
     
-        public bool IsStrikeout() {
+        virtual public bool IsStrikeout() {
             return strikeout;
         }
     
-        public float GetFontSize(MetaState state) {
+        virtual public float GetFontSize(MetaState state) {
             return Math.Abs(state.TransformY(height) - state.TransformY(0)) * Document.WmfFontCorrection;
         }
     }

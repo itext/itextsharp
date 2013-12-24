@@ -79,11 +79,11 @@ public class CompareTool {
         init(outPdf, cmpPdf);
     }
 
-    public String Compare(String outPath, String differenceImagePrefix) {
+    virtual public String Compare(String outPath, String differenceImagePrefix) {
         return Compare(outPath, differenceImagePrefix, null);
     }
 
-    public String Compare(String outPath, String differenceImagePrefix, Dictionary<int, List<Rectangle>> ignoredAreas) {
+    virtual public String Compare(String outPath, String differenceImagePrefix, Dictionary<int, List<Rectangle>> ignoredAreas) {
         if (gsExec == null || !File.Exists(gsExec)) {
             return undefinedGsPath;
         }
@@ -269,12 +269,12 @@ public class CompareTool {
         return null;
     }
 
-    public String Compare(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix, Dictionary<int, List<Rectangle>> ignoredAreas) {
+    virtual public String Compare(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix, Dictionary<int, List<Rectangle>> ignoredAreas) {
         init(outPdf, cmpPdf);
         return Compare(outPath, differenceImagePrefix, ignoredAreas);
     }
 
-    public String Compare(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix) {
+    virtual public String Compare(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix) {
         init(outPdf, cmpPdf);
         return Compare(outPath, differenceImagePrefix, null);
     }
@@ -329,7 +329,7 @@ public class CompareTool {
     }
 
     class ImageNameComparator : IComparer<FileSystemInfo> {
-        public int Compare(FileSystemInfo f1, FileSystemInfo f2) {
+        virtual public int Compare(FileSystemInfo f1, FileSystemInfo f2) {
             String f1Name = f1.FullName;
             String f2Name = f2.FullName;
             return f1Name.CompareTo(f2Name);

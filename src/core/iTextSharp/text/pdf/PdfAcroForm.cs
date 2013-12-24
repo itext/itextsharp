@@ -76,7 +76,7 @@ namespace iTextSharp.text.pdf {
             this.writer = writer;
         }
 
-        public bool NeedAppearances {
+        virtual public bool NeedAppearances {
             set {
     	        Put(PdfName.NEEDAPPEARANCES, value ? PdfBoolean.PDFTRUE : PdfBoolean.PDFFALSE);
             }
@@ -86,7 +86,7 @@ namespace iTextSharp.text.pdf {
         /**
          * Adds fieldTemplates.
          */
-        public void AddFieldTemplates(Dictionary<PdfTemplate,object> ft) {
+        virtual public void AddFieldTemplates(Dictionary<PdfTemplate,object> ft) {
             foreach (PdfTemplate key in ft.Keys) {
                 fieldTemplates[key] = ft[key];
             }
@@ -95,14 +95,14 @@ namespace iTextSharp.text.pdf {
         /**
          * Adds documentFields.
          */
-        public void AddDocumentField(PdfIndirectReference piref) {
+        virtual public void AddDocumentField(PdfIndirectReference piref) {
             documentFields.Add(piref);
         }
 
         /**
          * Closes the AcroForm.
          */
-        public bool IsValid() {
+        virtual public bool IsValid() {
             if (documentFields.Size == 0) return false;
             Put(PdfName.FIELDS, documentFields);
             if (sigFlags != 0)
@@ -126,14 +126,14 @@ namespace iTextSharp.text.pdf {
         /**
          * Adds an object to the calculationOrder.
          */
-        public void AddCalculationOrder(PdfFormField formField) {
+        virtual public void AddCalculationOrder(PdfFormField formField) {
             calculationOrder.Add(formField.IndirectReference);
         }
 
         /**
          * Sets the signature flags.
          */
-        public int SigFlags {
+        virtual public int SigFlags {
             set {
                 sigFlags |= value;
             }
@@ -142,11 +142,11 @@ namespace iTextSharp.text.pdf {
         /**
          * Adds a formfield to the AcroForm.
          */
-        public void AddFormField(PdfFormField formField) {
+        virtual public void AddFormField(PdfFormField formField) {
             writer.AddAnnotation(formField);
         }
 
-        public PdfFormField AddHtmlPostButton(string name, string caption, string value, string url, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
+        virtual public PdfFormField AddHtmlPostButton(string name, string caption, string value, string url, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
             PdfAction action = PdfAction.CreateSubmitForm(url, null, PdfAction.SUBMIT_HTML_FORMAT);
             PdfFormField button = new PdfFormField(writer, llx, lly, urx, ury, action);
             SetButtonParams(button, PdfFormField.FF_PUSHBUTTON, name, value);
@@ -155,7 +155,7 @@ namespace iTextSharp.text.pdf {
         return button;
         }
 
-        public PdfFormField AddResetButton(string name, string caption, string value, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
+        virtual public PdfFormField AddResetButton(string name, string caption, string value, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
             PdfAction action = PdfAction.CreateResetForm(null, 0);
             PdfFormField button = new PdfFormField(writer, llx, lly, urx, ury, action);
             SetButtonParams(button, PdfFormField.FF_PUSHBUTTON, name, value);
@@ -164,7 +164,7 @@ namespace iTextSharp.text.pdf {
             return button;
         }
 
-        public PdfFormField AddMap(string name, string value, string url, PdfContentByte appearance, float llx, float lly, float urx, float ury) {
+        virtual public PdfFormField AddMap(string name, string value, string url, PdfContentByte appearance, float llx, float lly, float urx, float ury) {
             PdfAction action = PdfAction.CreateSubmitForm(url, null, PdfAction.SUBMIT_HTML_FORMAT | PdfAction.SUBMIT_COORDINATES);
             PdfFormField button = new PdfFormField(writer, llx, lly, urx, ury, action);
             SetButtonParams(button, PdfFormField.FF_PUSHBUTTON, name, null);
@@ -175,7 +175,7 @@ namespace iTextSharp.text.pdf {
             return button;
         }
 
-        public void SetButtonParams(PdfFormField button, int characteristics, string name, string value) {
+        virtual public void SetButtonParams(PdfFormField button, int characteristics, string name, string value) {
             button.Button = characteristics;
             button.Flags = PdfAnnotation.FLAGS_PRINT;
             button.SetPage();
@@ -183,13 +183,13 @@ namespace iTextSharp.text.pdf {
             if (value != null) button.ValueAsString = value;
         }
 
-        public void DrawButton(PdfFormField button, string caption, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
+        virtual public void DrawButton(PdfFormField button, string caption, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
             PdfAppearance pa = PdfAppearance.CreateAppearance(writer, urx - llx, ury - lly);
             pa.DrawButton(0f, 0f, urx - llx, ury - lly, caption, font, fontSize);
             button.SetAppearance(PdfAnnotation.APPEARANCE_NORMAL, pa);
         }
 
-        public PdfFormField AddHiddenField(string name, string value) {
+        virtual public PdfFormField AddHiddenField(string name, string value) {
             PdfFormField hidden = PdfFormField.CreateEmpty(writer);
             hidden.FieldName = name;
             hidden.ValueAsName = value;
@@ -197,7 +197,7 @@ namespace iTextSharp.text.pdf {
             return hidden;
         }
 
-        public PdfFormField AddSingleLineTextField(string name, string text, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
+        virtual public PdfFormField AddSingleLineTextField(string name, string text, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
             PdfFormField field = PdfFormField.CreateTextField(writer, PdfFormField.SINGLELINE, PdfFormField.PLAINTEXT, 0);
             SetTextFieldParams(field, text, name, llx, lly, urx, ury);
             DrawSingleLineOfText(field, text, font, fontSize, llx, lly, urx, ury);
@@ -205,7 +205,7 @@ namespace iTextSharp.text.pdf {
             return field;
         }
 
-        public PdfFormField AddMultiLineTextField(string name, string text, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
+        virtual public PdfFormField AddMultiLineTextField(string name, string text, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
             PdfFormField field = PdfFormField.CreateTextField(writer, PdfFormField.MULTILINE, PdfFormField.PLAINTEXT, 0);
             SetTextFieldParams(field, text, name, llx, lly, urx, ury);
             DrawMultiLineOfText(field, text, font, fontSize, llx, lly, urx, ury);
@@ -213,7 +213,7 @@ namespace iTextSharp.text.pdf {
             return field;
         }
 
-        public PdfFormField AddSingleLinePasswordField(string name, string text, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
+        virtual public PdfFormField AddSingleLinePasswordField(string name, string text, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
             PdfFormField field = PdfFormField.CreateTextField(writer, PdfFormField.SINGLELINE, PdfFormField.PASSWORD, 0);
             SetTextFieldParams(field, text, name, llx, lly, urx, ury);
             DrawSingleLineOfText(field, text, font, fontSize, llx, lly, urx, ury);
@@ -221,7 +221,7 @@ namespace iTextSharp.text.pdf {
             return field;
         }
 
-        public void SetTextFieldParams(PdfFormField field, string text, string name, float llx, float lly, float urx, float ury) {
+        virtual public void SetTextFieldParams(PdfFormField field, string text, string name, float llx, float lly, float urx, float ury) {
             field.SetWidget(new Rectangle(llx, lly, urx, ury), PdfAnnotation.HIGHLIGHT_INVERT);
             field.ValueAsString = text;
             field.DefaultValueAsString = text;
@@ -230,7 +230,7 @@ namespace iTextSharp.text.pdf {
             field.SetPage();
         }
 
-        public void DrawSingleLineOfText(PdfFormField field, string text, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
+        virtual public void DrawSingleLineOfText(PdfFormField field, string text, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
             PdfAppearance tp = PdfAppearance.CreateAppearance(writer, urx - llx, ury - lly);
             PdfAppearance tp2 = (PdfAppearance)tp.Duplicate;
             tp2.SetFontAndSize(font, fontSize);
@@ -253,7 +253,7 @@ namespace iTextSharp.text.pdf {
             field.SetAppearance(PdfAnnotation.APPEARANCE_NORMAL, tp);
         }
 
-        public void DrawMultiLineOfText(PdfFormField field, string text, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
+        virtual public void DrawMultiLineOfText(PdfFormField field, string text, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
             PdfAppearance tp = PdfAppearance.CreateAppearance(writer, urx - llx, ury - lly);
             PdfAppearance tp2 = (PdfAppearance)tp.Duplicate;
             tp2.SetFontAndSize(font, fontSize);
@@ -281,7 +281,7 @@ namespace iTextSharp.text.pdf {
             field.SetAppearance(PdfAnnotation.APPEARANCE_NORMAL, tp);
         }
 
-        public PdfFormField AddCheckBox(string name, string value, bool status, float llx, float lly, float urx, float ury) {
+        virtual public PdfFormField AddCheckBox(string name, string value, bool status, float llx, float lly, float urx, float ury) {
             PdfFormField field = PdfFormField.CreateCheckBox(writer);
             SetCheckBoxParams(field, name, value, status, llx, lly, urx, ury);
             DrawCheckBoxAppearences(field, value, llx, lly, urx, ury);
@@ -289,7 +289,7 @@ namespace iTextSharp.text.pdf {
             return field;
         }
 
-        public void SetCheckBoxParams(PdfFormField field, string name, string value, bool status, float llx, float lly, float urx, float ury) {
+        virtual public void SetCheckBoxParams(PdfFormField field, string name, string value, bool status, float llx, float lly, float urx, float ury) {
             field.SetWidget(new Rectangle(llx, lly, urx, ury), PdfAnnotation.HIGHLIGHT_TOGGLE);
             field.FieldName = name;
             if (status) {
@@ -305,7 +305,7 @@ namespace iTextSharp.text.pdf {
             field.BorderStyle = new PdfBorderDictionary(1, PdfBorderDictionary.STYLE_SOLID);
         }
 
-        public void DrawCheckBoxAppearences(PdfFormField field, string value, float llx, float lly, float urx, float ury) {
+        virtual public void DrawCheckBoxAppearences(PdfFormField field, string value, float llx, float lly, float urx, float ury) {
             BaseFont font = BaseFont.CreateFont(BaseFont.ZAPFDINGBATS, BaseFont.WINANSI, BaseFont.NOT_EMBEDDED);
             float size = (ury - lly);
             PdfAppearance tpOn = PdfAppearance.CreateAppearance(writer, urx - llx, ury - lly);
@@ -327,18 +327,18 @@ namespace iTextSharp.text.pdf {
             field.SetAppearance(PdfAnnotation.APPEARANCE_NORMAL, "Off", tpOff);
         }
 
-        public PdfFormField GetRadioGroup(string name, string defaultValue, bool noToggleToOff) {
+        virtual public PdfFormField GetRadioGroup(string name, string defaultValue, bool noToggleToOff) {
             PdfFormField radio = PdfFormField.CreateRadioButton(writer, noToggleToOff);
             radio.FieldName = name;
             radio.ValueAsName = defaultValue;
             return radio;
         }
 
-        public void AddRadioGroup(PdfFormField radiogroup) {
+        virtual public void AddRadioGroup(PdfFormField radiogroup) {
             AddFormField(radiogroup);
         }
 
-        public PdfFormField AddRadioButton(PdfFormField radiogroup, string value, float llx, float lly, float urx, float ury) {
+        virtual public PdfFormField AddRadioButton(PdfFormField radiogroup, string value, float llx, float lly, float urx, float ury) {
             PdfFormField radio = PdfFormField.CreateEmpty(writer);
             radio.SetWidget(new Rectangle(llx, lly, urx, ury), PdfAnnotation.HIGHLIGHT_TOGGLE);
             string name = ((PdfName)radiogroup.Get(PdfName.V)).ToString().Substring(1);
@@ -353,7 +353,7 @@ namespace iTextSharp.text.pdf {
             return radio;
         }
 
-        public void DrawRadioAppearences(PdfFormField field, string value, float llx, float lly, float urx, float ury) {
+        virtual public void DrawRadioAppearences(PdfFormField field, string value, float llx, float lly, float urx, float ury) {
             PdfAppearance tpOn = PdfAppearance.CreateAppearance(writer, urx - llx, ury - lly);
             tpOn.DrawRadioField(0f, 0f, urx - llx, ury - lly, true);
             field.SetAppearance(PdfAnnotation.APPEARANCE_NORMAL, value, tpOn);
@@ -362,7 +362,7 @@ namespace iTextSharp.text.pdf {
             field.SetAppearance(PdfAnnotation.APPEARANCE_NORMAL, "Off", tpOff);
         }
 
-        public PdfFormField AddSelectList(string name, string[] options, string defaultValue, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
+        virtual public PdfFormField AddSelectList(string name, string[] options, string defaultValue, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
             PdfFormField choice = PdfFormField.CreateList(writer, options, 0);
             SetChoiceParams(choice, name, defaultValue, llx, lly, urx, ury);
             StringBuilder text = new StringBuilder();
@@ -374,7 +374,7 @@ namespace iTextSharp.text.pdf {
             return choice;
         }
 
-        public PdfFormField AddSelectList(string name, string[,] options, string defaultValue, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
+        virtual public PdfFormField AddSelectList(string name, string[,] options, string defaultValue, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
             PdfFormField choice = PdfFormField.CreateList(writer, options, 0);
             SetChoiceParams(choice, name, defaultValue, llx, lly, urx, ury);
             StringBuilder text = new StringBuilder();
@@ -386,7 +386,7 @@ namespace iTextSharp.text.pdf {
             return choice;
         }
 
-        public PdfFormField AddComboBox(string name, string[] options, string defaultValue, bool editable, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
+        virtual public PdfFormField AddComboBox(string name, string[] options, string defaultValue, bool editable, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
             PdfFormField choice = PdfFormField.CreateCombo(writer, editable, options, 0);
             SetChoiceParams(choice, name, defaultValue, llx, lly, urx, ury);
             if (defaultValue == null) {
@@ -397,7 +397,7 @@ namespace iTextSharp.text.pdf {
             return choice;
         }
 
-        public PdfFormField AddComboBox(string name, string[,] options, string defaultValue, bool editable, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
+        virtual public PdfFormField AddComboBox(string name, string[,] options, string defaultValue, bool editable, BaseFont font, float fontSize, float llx, float lly, float urx, float ury) {
             PdfFormField choice = PdfFormField.CreateCombo(writer, editable, options, 0);
             SetChoiceParams(choice, name, defaultValue, llx, lly, urx, ury);
             string value = null;
@@ -415,7 +415,7 @@ namespace iTextSharp.text.pdf {
             return choice;
         }
 
-        public void SetChoiceParams(PdfFormField field, string name, string defaultValue, float llx, float lly, float urx, float ury) {
+        virtual public void SetChoiceParams(PdfFormField field, string name, string defaultValue, float llx, float lly, float urx, float ury) {
             field.SetWidget(new Rectangle(llx, lly, urx, ury), PdfAnnotation.HIGHLIGHT_INVERT);
             if (defaultValue != null) {
                 field.ValueAsString = defaultValue;
@@ -427,7 +427,7 @@ namespace iTextSharp.text.pdf {
             field.BorderStyle = new PdfBorderDictionary(2, PdfBorderDictionary.STYLE_SOLID);
         }
 
-        public PdfFormField AddSignature(String name, float llx, float lly, float urx, float ury) {
+        virtual public PdfFormField AddSignature(String name, float llx, float lly, float urx, float ury) {
             PdfFormField signature = PdfFormField.CreateSignature(writer);
             SetSignatureParams(signature, name, llx, lly, urx, ury);
             DrawSignatureAppearences(signature, llx, lly, urx, ury);
@@ -443,7 +443,7 @@ namespace iTextSharp.text.pdf {
          * @param urx
          * @param ury
          */
-        public void SetSignatureParams(PdfFormField field, String name, float llx, float lly, float urx, float ury) {
+        virtual public void SetSignatureParams(PdfFormField field, String name, float llx, float lly, float urx, float ury) {
             field.SetWidget(new Rectangle(llx, lly, urx, ury), PdfAnnotation.HIGHLIGHT_INVERT);
             field.FieldName = name;
             field.Flags = PdfAnnotation.FLAGS_PRINT;
@@ -459,7 +459,7 @@ namespace iTextSharp.text.pdf {
          * @param urx
          * @param ury
          */
-        public void DrawSignatureAppearences(PdfFormField field, float llx, float lly, float urx, float ury) {
+        virtual public void DrawSignatureAppearences(PdfFormField field, float llx, float lly, float urx, float ury) {
             PdfAppearance tp = PdfAppearance.CreateAppearance(writer, urx - llx, ury - lly);
             tp.SetGrayFill(1.0f);
             tp.Rectangle(0, 0, urx - llx, ury - lly);

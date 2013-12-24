@@ -10,12 +10,12 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         private const string RESOURCES = @"..\..\resources\text\pdf\PdfCopyTest\";
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             TestResourceUtils.PurgeTempFiles();
         }
 
         [TearDown]
-        public void TearDown() {
+        virtual public void TearDown() {
             TestResourceUtils.PurgeTempFiles();
         }
 
@@ -27,7 +27,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 #if DRAWING
         [Ignore]
 #endif// !NO_DRAWING
-        public void TestExtraXObjects()
+        virtual public void TestExtraXObjects()
         {
 #if DRAWING
             PdfReader sourceR = new PdfReader(CreateImagePdf());
@@ -90,7 +90,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         /**
          * Test to make sure that the following issue is fixed: http://sourceforge.net/mailarchive/message.php?msg_id=30891213
          */
-        public void TestDecodeParmsArrayWithNullItems() {
+        virtual public void TestDecodeParmsArrayWithNullItems() {
             Document document = new Document();
             MemoryStream byteStream = new MemoryStream();
             PdfSmartCopy pdfSmartCopy = new PdfSmartCopy(document, byteStream);

@@ -162,7 +162,7 @@ namespace iTextSharp.text.pdf
             }
         }
         
-        protected PdfAppearance GetBorderAppearance() {
+        virtual protected PdfAppearance GetBorderAppearance() {
             PdfAppearance app = PdfAppearance.CreateAppearance(writer, box.Width, box.Height);
             switch (rotation) {
                 case 90:
@@ -390,7 +390,7 @@ namespace iTextSharp.text.pdf
         * set the border color to <CODE>null</CODE>.
         * @param borderWidth the border width in points
         */
-        public float BorderWidth {
+        virtual public float BorderWidth {
             set {
                 this.borderWidth = value;
             }
@@ -405,7 +405,7 @@ namespace iTextSharp.text.pdf
         * <CODE>STYLE_UNDERLINE</CODE>.
         * @param borderStyle the border style
         */
-        public int BorderStyle {
+        virtual public int BorderStyle {
             set {
                 this.borderStyle = value;
             }
@@ -418,7 +418,7 @@ namespace iTextSharp.text.pdf
         * the border.
         * @param borderColor the border color
         */
-        public BaseColor BorderColor {
+        virtual public BaseColor BorderColor {
             set {
                 this.borderColor = value;
             }
@@ -431,7 +431,7 @@ namespace iTextSharp.text.pdf
         * transparent background.
         * @param backgroundColor the background color
         */
-        public BaseColor BackgroundColor {
+        virtual public BaseColor BackgroundColor {
             set {
                 this.backgroundColor = value;
             }
@@ -444,7 +444,7 @@ namespace iTextSharp.text.pdf
         * will be black.
         * @param textColor the text color
         */
-        public BaseColor TextColor {
+        virtual public BaseColor TextColor {
             set {
                 this.textColor = value;
             }
@@ -457,7 +457,7 @@ namespace iTextSharp.text.pdf
         * will be used.
         * @param font the text font
         */
-        public BaseFont Font {
+        virtual public BaseFont Font {
             set {
                 this.font = value;
             }
@@ -470,7 +470,7 @@ namespace iTextSharp.text.pdf
         * only for text fields.
         * @param fontSize the font size
         */
-        public float FontSize {
+        virtual public float FontSize {
             set {
                 this.fontSize = value;
             }
@@ -483,7 +483,7 @@ namespace iTextSharp.text.pdf
         * <CODE>Element.ALIGN_CENTER</CODE> and <CODE>Element.ALIGN_RIGHT</CODE>.
         * @param alignment the text horizontal alignment
         */
-        public int Alignment {
+        virtual public int Alignment {
             set {
                 this.alignment = value;
             }
@@ -495,7 +495,7 @@ namespace iTextSharp.text.pdf
         /** Sets the text for text fields.
         * @param text the text
         */
-        public string Text {
+        virtual public string Text {
             set {
                 this.text = value;
             }
@@ -507,7 +507,7 @@ namespace iTextSharp.text.pdf
         /** Sets the field dimension and position.
         * @param box the field dimension and position
         */
-        public Rectangle Box {
+        virtual public Rectangle Box {
             set {
                 if (value == null)
                     box = null;
@@ -525,7 +525,7 @@ namespace iTextSharp.text.pdf
         * the page rotation where the field will be shown.
         * @param rotation the field rotation
         */
-        public int Rotation {
+        virtual public int Rotation {
             set {
                 if (value % 90 != 0)
                     throw new ArgumentException(MessageLocalization.GetComposedMessage("rotation.must.be.a.multiple.of.90"));
@@ -542,7 +542,7 @@ namespace iTextSharp.text.pdf
         * page rotation.
         * @param page the page
         */    
-        public void SetRotationFromPage(Rectangle page) {
+        virtual public void SetRotationFromPage(Rectangle page) {
             Rotation = page.Rotation;
         }
         
@@ -551,7 +551,7 @@ namespace iTextSharp.text.pdf
         * and <CODE>HIDDEN_BUT_PRINTABLE</CODE>.
         * @param visibility field visibility flag
         */
-        public int Visibility {
+        virtual public int Visibility {
             set {
                 this.visibility = value;
             }
@@ -564,7 +564,7 @@ namespace iTextSharp.text.pdf
         * @param fieldName the field name. If <CODE>null</CODE> only the widget keys
         * will be included in the field allowing it to be used as a kid field.
         */
-        public string FieldName {
+        virtual public string FieldName {
             set {
                 this.fieldName = value;
             }
@@ -580,7 +580,7 @@ namespace iTextSharp.text.pdf
         * <CODE>DO_NOT_SPELL_CHECK</CODE> and <CODE>EDIT</CODE>.
         * @param options the option flags
         */
-        public int Options {
+        virtual public int Options {
             set {
                 this.options = value;
             }
@@ -589,11 +589,11 @@ namespace iTextSharp.text.pdf
             }
         }
         
-        /** Sets the maximum length of the field’s text, in characters.
+        /** Sets the maximum length of the fieldï¿½s text, in characters.
         * It is only meaningful for text fields.
-        * @param maxCharacterLength the maximum length of the field’s text, in characters
+        * @param maxCharacterLength the maximum length of the fieldï¿½s text, in characters
         */
-        public int MaxCharacterLength {
+        virtual public int MaxCharacterLength {
             set {
                 this.maxCharacterLength = value;
             }
@@ -602,7 +602,7 @@ namespace iTextSharp.text.pdf
             }
         }
         
-        public PdfWriter Writer {
+        virtual public PdfWriter Writer {
             get {
                 return writer;
             }

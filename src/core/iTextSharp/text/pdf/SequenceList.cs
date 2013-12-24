@@ -87,7 +87,7 @@ namespace iTextSharp.text.pdf {
             text = range.ToCharArray();
         }
         
-        protected char NextChar() {
+        virtual protected char NextChar() {
             while (true) {
                 if (ptr >= text.Length)
                     return EOT;
@@ -97,13 +97,13 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected void PutBack() {
+        virtual protected void PutBack() {
             --ptr;
             if (ptr < 0)
                 ptr = 0;
         }
         
-        protected int Type {
+        virtual protected int Type {
             get {
                 StringBuilder buf = new StringBuilder();
                 int state = FIRST;
@@ -170,7 +170,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected bool GetAttributes() {
+        virtual protected bool GetAttributes() {
             low = -1;
             high = -1;
             odd = even = inverse = false;

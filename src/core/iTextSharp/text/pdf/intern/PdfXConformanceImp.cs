@@ -68,7 +68,7 @@ namespace iTextSharp.text.pdf.intern {
         /**
         * @see com.lowagie.text.pdf.interfaces.PdfXConformance#setPDFXConformance(int)
         */
-        public int PDFXConformance {
+        virtual public int PDFXConformance {
             set {
                 this.pdfxConformance = value;
             }
@@ -80,7 +80,7 @@ namespace iTextSharp.text.pdf.intern {
         /**
 	     * @see com.itextpdf.text.pdf.interfaces.PdfIsoConformance#isPdfIso()
 	     */
-        public bool IsPdfIso()
+        virtual public bool IsPdfIso()
         {
             return IsPdfX();
         }
@@ -89,21 +89,21 @@ namespace iTextSharp.text.pdf.intern {
         * Checks if the PDF/X Conformance is necessary.
         * @return true if the PDF has to be in conformance with any of the PDF/X specifications
         */
-        public bool IsPdfX() {
+        virtual public bool IsPdfX() {
             return pdfxConformance != PdfWriter.PDFXNONE;
         }
         /**
         * Checks if the PDF has to be in conformance with PDF/X-1a:2001
         * @return true of the PDF has to be in conformance with PDF/X-1a:2001
         */
-        public bool IsPdfX1A2001() {
+        virtual public bool IsPdfX1A2001() {
             return pdfxConformance == PdfWriter.PDFX1A2001;
         }
         /**
         * Checks if the PDF has to be in conformance with PDF/X-3:2002
         * @return true of the PDF has to be in conformance with PDF/X-3:2002
         */
-        public bool IsPdfX32002() {
+        virtual public bool IsPdfX32002() {
             return pdfxConformance == PdfWriter.PDFX32002;
         }
         
@@ -113,7 +113,7 @@ namespace iTextSharp.text.pdf.intern {
         * @param key       the type of PDF ISO conformance that has to be checked
         * @param obj1      the object that is checked for conformance
         */
-        public void CheckPdfIsoConformance(int key, Object obj1) {
+        virtual public void CheckPdfIsoConformance(int key, Object obj1) {
             if (writer == null || !writer.IsPdfX())
                 return;
             int conf = writer.PDFXConformance;

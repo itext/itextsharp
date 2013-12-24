@@ -56,7 +56,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             map[((PdfNumber)code).IntValue] = ser;
         }
         
-        public byte[] Lookup(int cid) {
+        virtual public byte[] Lookup(int cid) {
             byte[] ser;
             map.TryGetValue(cid, out ser);
             if (ser == null)

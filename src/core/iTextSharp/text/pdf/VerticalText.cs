@@ -111,7 +111,7 @@ namespace iTextSharp.text.pdf {
 		 * Adds a <CODE>Phrase</CODE> to the current text array.
 		 * @param phrase the text
 		 */
-		public void AddText(Phrase phrase) {
+		virtual public void AddText(Phrase phrase) {
 			foreach(Chunk c in phrase.Chunks) {
 				chunks.Add(new PdfChunk(c, null));
 			}
@@ -121,7 +121,7 @@ namespace iTextSharp.text.pdf {
 		 * Adds a <CODE>Chunk</CODE> to the current text array.
 		 * @param chunk the text
 		 */
-		public void AddText(Chunk chunk) {
+		virtual public void AddText(Chunk chunk) {
 			chunks.Add(new PdfChunk(chunk, null));
 		}
 
@@ -132,7 +132,7 @@ namespace iTextSharp.text.pdf {
 		 * @param maxLines the maximum number of lines
 		 * @param leading the separation between the lines
 		 */    
-		public void SetVerticalLayout(float startX, float startY, float height, int maxLines, float leading) {
+		virtual public void SetVerticalLayout(float startX, float startY, float height, int maxLines, float leading) {
 			this.startX = startX;
 			this.startY = startY;
 			this.height = height;
@@ -143,7 +143,7 @@ namespace iTextSharp.text.pdf {
 		/** Gets the separation between the vertical lines.
 		 * @return the vertical line separation
 		 */    
-		public float Leading {
+		virtual public float Leading {
 			get {
 				return leading;
 			}
@@ -158,7 +158,7 @@ namespace iTextSharp.text.pdf {
 		 * @param width the width of the line
 		 * @return the line or null if no more chunks
 		 */
-		protected PdfLine CreateLine(float width) {
+		virtual protected PdfLine CreateLine(float width) {
 			if (chunks.Count == 0)
 				return null;
 			splittedChunkText = null;
@@ -181,7 +181,7 @@ namespace iTextSharp.text.pdf {
 		/**
 		 * Normalizes the list of chunks when the line is accepted.
 		 */
-		protected void ShortenChunkArray() {
+		virtual protected void ShortenChunkArray() {
 			if (currentChunkMarker < 0)
 				return;
 			if (currentChunkMarker >= chunks.Count) {
@@ -201,7 +201,7 @@ namespace iTextSharp.text.pdf {
 		 * and/or <CODE>NO_MORE_COLUMN</CODE>
 		 * @throws DocumentException on error
 		 */
-		public int Go() {
+		virtual public int Go() {
 			return Go(false);
 		}
     
@@ -212,7 +212,7 @@ namespace iTextSharp.text.pdf {
 		 * and/or <CODE>NO_MORE_COLUMN</CODE>
 		 * @throws DocumentException on error
 		 */
-		public int Go(bool simulate) {
+		virtual public int Go(bool simulate) {
 			bool dirty = false;
 			PdfContentByte graphics = null;
 			if (text != null) {
@@ -306,7 +306,7 @@ namespace iTextSharp.text.pdf {
 		 * @param startX the X coordinate
 		 * @param startY the Y coordinate
 		 */    
-		public void SetOrigin(float startX, float startY) {
+		virtual public void SetOrigin(float startX, float startY) {
 			this.startX = startX;
 			this.startY = startY;
 		}
@@ -315,7 +315,7 @@ namespace iTextSharp.text.pdf {
 		 * after each call to <code>go()</code>.
 		 * @return  the X coordinate
 		 */    
-		public float OriginX {
+		virtual public float OriginX {
 			get {
 				return startX;
 			}
@@ -324,7 +324,7 @@ namespace iTextSharp.text.pdf {
 		/** Gets the Y coordinate where the next line will be writen.
 		 * @return  the Y coordinate
 		 */    
-		public float OriginY {
+		virtual public float OriginY {
 			get {
 				return startY;
 			}
@@ -334,7 +334,7 @@ namespace iTextSharp.text.pdf {
 		 * after each call to <code>go()</code>.
 		 * @return Value of property maxLines.
 		 */
-		public int MaxLines {
+		virtual public int MaxLines {
 			get {
 				return maxLines;
 			}
@@ -347,7 +347,7 @@ namespace iTextSharp.text.pdf {
 		/** Gets the height of the line
 		 * @return the height
 		 */
-		public float Height {
+		virtual public float Height {
 			get {
 				return height;
 			}
@@ -361,7 +361,7 @@ namespace iTextSharp.text.pdf {
 		 * Gets the Element.
 		 * @return the alignment
 		 */
-		public int Alignment {
+		virtual public int Alignment {
 			get {
 				return alignment;
 			}

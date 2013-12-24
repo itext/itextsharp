@@ -78,7 +78,7 @@ namespace iTextSharp.text.xml.xmp {
         * @param buf
         * @param p
         */
-        protected void Process(StringBuilder buf, Object p) {
+        virtual protected void Process(StringBuilder buf, Object p) {
             buf.Append('<');
             buf.Append(p);
             buf.Append('>');
@@ -91,7 +91,7 @@ namespace iTextSharp.text.xml.xmp {
         /**
         * @return Returns the xmlns.
         */
-        public String Xmlns {
+        virtual public String Xmlns {
             get {
                 return xmlns;
             }
@@ -102,7 +102,7 @@ namespace iTextSharp.text.xml.xmp {
         * @param value
         * @return the previous property (null if there wasn't one)
         */
-        public void AddProperty(String key, String value) {
+        virtual public void AddProperty(String key, String value) {
             this[key] = value;
         }
         
@@ -112,7 +112,7 @@ namespace iTextSharp.text.xml.xmp {
             }
         }
         
-        public void SetProperty(string key, XmpArray value) {
+        virtual public void SetProperty(string key, XmpArray value) {
             base[key] = value.ToString();
         }
         
@@ -123,7 +123,7 @@ namespace iTextSharp.text.xml.xmp {
         * @param value
         * @return the previous property (null if there wasn't one)
         */
-        public void SetProperty(String key, LangAlt value) {
+        virtual public void SetProperty(String key, LangAlt value) {
             base[key] = value.ToString();
         }
         

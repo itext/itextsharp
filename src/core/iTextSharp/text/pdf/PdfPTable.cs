@@ -159,7 +159,7 @@ namespace iTextSharp.text.pdf {
         */
         protected bool complete = true;
 
-        public bool Complete {
+        virtual public bool Complete {
             get { return complete; }
             set { complete = value; }
         }
@@ -268,7 +268,7 @@ namespace iTextSharp.text.pdf {
         * @since 2.1.6 private is now protected
         */
 
-        protected internal void CopyFormat(PdfPTable sourceTable)
+        virtual protected internal void CopyFormat(PdfPTable sourceTable)
         {
             relativeWidths = new float[sourceTable.NumberOfColumns];
             absoluteWidths = new float[sourceTable.NumberOfColumns];
@@ -316,7 +316,7 @@ namespace iTextSharp.text.pdf {
         *                           of columns
         */
 
-        public void SetWidths(float[] relativeWidths)
+        virtual public void SetWidths(float[] relativeWidths)
         {
             if (relativeWidths.Length != NumberOfColumns)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("wrong.number.of.columns"));
@@ -334,7 +334,7 @@ namespace iTextSharp.text.pdf {
         *                           of columns
         */
 
-        public void SetWidths(int[] relativeWidths)
+        virtual public void SetWidths(int[] relativeWidths)
         {
             float[] tb = new float[relativeWidths.Length];
             for (int k = 0; k < relativeWidths.Length; ++k)
@@ -346,7 +346,7 @@ namespace iTextSharp.text.pdf {
         * @since 2.1.6 private is now protected
         */
 
-        protected internal void CalculateWidths()
+        virtual protected internal void CalculateWidths()
         {
             if (totalWidth <= 0)
                 return;
@@ -364,7 +364,7 @@ namespace iTextSharp.text.pdf {
         *                           of columns
         */
 
-        public void SetTotalWidth(float[] columnWidth)
+        virtual public void SetTotalWidth(float[] columnWidth)
         {
             if (columnWidth.Length != NumberOfColumns)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("wrong.number.of.columns"));
@@ -380,7 +380,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException
         */
 
-        public void SetWidthPercentage(float[] columnWidth, Rectangle pageSize)
+        virtual public void SetWidthPercentage(float[] columnWidth, Rectangle pageSize)
         {
             if (columnWidth.Length != NumberOfColumns)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("wrong.number.of.columns"));
@@ -395,7 +395,7 @@ namespace iTextSharp.text.pdf {
         * @return the full width of the table
         */
 
-        public float TotalWidth
+        virtual public float TotalWidth
         {
             get { return totalWidth; }
             set
@@ -417,7 +417,7 @@ namespace iTextSharp.text.pdf {
          * and made it public
          */
 
-        public float CalculateHeights()
+        virtual public float CalculateHeights()
         {
             if (totalWidth <= 0)
                 return 0;
@@ -435,7 +435,7 @@ namespace iTextSharp.text.pdf {
          * @param the new number of columns
          */
 
-        public void ResetColumnCount(int newColCount)
+        virtual public void ResetColumnCount(int newColCount)
         {
             if (newColCount <= 0)
                 throw new ArgumentException(
@@ -456,7 +456,7 @@ namespace iTextSharp.text.pdf {
         * @return default <CODE>PdfPCell</CODE>
         */
 
-        public PdfPCell DefaultCell
+        virtual public PdfPCell DefaultCell
         {
             get { return defaultCell; }
         }
@@ -467,7 +467,7 @@ namespace iTextSharp.text.pdf {
         * @param cell the cell element
         */
 
-        public PdfPCell AddCell(PdfPCell cell)
+        virtual public PdfPCell AddCell(PdfPCell cell)
         {
             rowCompleted = false;
             PdfPCell ncell;
@@ -625,7 +625,7 @@ namespace iTextSharp.text.pdf {
         * @param text the text for the cell
         */
 
-        public void AddCell(String text)
+        virtual public void AddCell(String text)
         {
             AddCell(new Phrase(text));
         }
@@ -635,7 +635,7 @@ namespace iTextSharp.text.pdf {
         * @param table the table to be added to the cell
         */
 
-        public void AddCell(PdfPTable table)
+        virtual public void AddCell(PdfPTable table)
         {
             defaultCell.Table = table;
             PdfPCell newCell = AddCell(defaultCell);
@@ -649,7 +649,7 @@ namespace iTextSharp.text.pdf {
         *              This image will fit in the cell
         */
 
-        public void AddCell(Image image)
+        virtual public void AddCell(Image image)
         {
             defaultCell.Image = image;
             PdfPCell newCell = AddCell(defaultCell);
@@ -662,7 +662,7 @@ namespace iTextSharp.text.pdf {
         * @param phrase the <CODE>Phrase</CODE> to be added to the cell
         */
 
-        public void AddCell(Phrase phrase)
+        virtual public void AddCell(Phrase phrase)
         {
             defaultCell.Phrase = phrase;
             PdfPCell newCell = AddCell(defaultCell);
@@ -685,7 +685,7 @@ namespace iTextSharp.text.pdf {
         * @see #beginWritingRows(com.lowagie.text.pdf.PdfContentByte)
         */
 
-        public float WriteSelectedRows(int rowStart, int rowEnd, float xPos, float yPos, PdfContentByte[] canvases)
+        virtual public float WriteSelectedRows(int rowStart, int rowEnd, float xPos, float yPos, PdfContentByte[] canvases)
         {
             return WriteSelectedRows(0, -1, rowStart, rowEnd, xPos, yPos, canvases);
         }
@@ -711,7 +711,7 @@ namespace iTextSharp.text.pdf {
         * @see #beginWritingRows(com.lowagie.text.pdf.PdfContentByte)
         */
 
-        public float WriteSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos,
+        virtual public float WriteSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos,
                                        PdfContentByte[] canvases)
         {
             return WriteSelectedRows(colStart, colEnd, rowStart, rowEnd, xPos, yPos, canvases, true);
@@ -741,7 +741,7 @@ namespace iTextSharp.text.pdf {
          * @since 5.1.0 added the reusable parameter
          */
 
-        public float WriteSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos,
+        virtual public float WriteSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos,
                                        PdfContentByte[] canvases, bool reusable)
         {
             if (totalWidth <= 0)
@@ -843,7 +843,7 @@ namespace iTextSharp.text.pdf {
         * @return the y coordinate position of the bottom of the last row
         */
 
-        public float WriteSelectedRows(int rowStart, int rowEnd, float xPos, float yPos, PdfContentByte canvas)
+        virtual public float WriteSelectedRows(int rowStart, int rowEnd, float xPos, float yPos, PdfContentByte canvas)
         {
             return WriteSelectedRows(0, -1, rowStart, rowEnd, xPos, yPos, canvas);
         }
@@ -867,7 +867,7 @@ namespace iTextSharp.text.pdf {
         * @return the y coordinate position of the bottom of the last row
         */
 
-        public float WriteSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos,
+        virtual public float WriteSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos,
                                        PdfContentByte canvas)
         {
             return WriteSelectedRows(colStart, colEnd, rowStart, rowEnd, xPos, yPos, canvas, true);
@@ -896,7 +896,7 @@ namespace iTextSharp.text.pdf {
          * @since 5.1.0 added the reusable parameter
          */
 
-        public float WriteSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos,
+        virtual public float WriteSelectedRows(int colStart, int colEnd, int rowStart, int rowEnd, float xPos, float yPos,
                                        PdfContentByte canvas, bool reusable)
         {
             int totalCols = NumberOfColumns;
@@ -988,7 +988,7 @@ namespace iTextSharp.text.pdf {
         * @return the number of rows in this table
         */
 
-        public int Size
+        virtual public int Size
         {
             get { return rows.Count; }
         }
@@ -997,7 +997,7 @@ namespace iTextSharp.text.pdf {
         * @return the total height of the table
         */
 
-        public float TotalHeight
+        virtual public float TotalHeight
         {
             get { return totalHeight; }
         }
@@ -1007,7 +1007,7 @@ namespace iTextSharp.text.pdf {
         * @return the height of a particular row
         */
 
-        public float GetRowHeight(int idx)
+        virtual public float GetRowHeight(int idx)
         {
             return GetRowHeight(idx, false);
         }
@@ -1021,7 +1021,7 @@ namespace iTextSharp.text.pdf {
         * @since 5.0.0
         */
 
-        protected internal float GetRowHeight(int idx, bool firsttime)
+        virtual protected internal float GetRowHeight(int idx, bool firsttime)
         {
             if (totalWidth <= 0 || idx < 0 || idx >= rows.Count)
                 return 0;
@@ -1071,7 +1071,7 @@ namespace iTextSharp.text.pdf {
         * @since    2.1.6
         */
 
-        public float GetRowspanHeight(int rowIndex, int cellIndex)
+        virtual public float GetRowspanHeight(int rowIndex, int cellIndex)
         {
             if (totalWidth <= 0 || rowIndex < 0 || rowIndex >= rows.Count)
                 return 0;
@@ -1095,7 +1095,7 @@ namespace iTextSharp.text.pdf {
          * @since 5.1.0
          */
 
-        public bool HasRowspan(int rowIdx)
+        virtual public bool HasRowspan(int rowIdx)
         {
             if (rowIdx < rows.Count && GetRow(rowIdx).HasRowspan())
             {
@@ -1119,7 +1119,7 @@ namespace iTextSharp.text.pdf {
          * @since 5.0.1
          */
 
-        public void NormalizeHeadersFooters()
+        virtual public void NormalizeHeadersFooters()
         {
             if (footerRows > headerRows)
                 footerRows = headerRows;
@@ -1130,7 +1130,7 @@ namespace iTextSharp.text.pdf {
         * @return the height of the rows that constitute the header and footer
         */
 
-        public float HeaderHeight
+        virtual public float HeaderHeight
         {
             get
             {
@@ -1152,7 +1152,7 @@ namespace iTextSharp.text.pdf {
         * @since 2.1.1
         */
 
-        public float FooterHeight
+        virtual public float FooterHeight
         {
             get
             {
@@ -1174,7 +1174,7 @@ namespace iTextSharp.text.pdf {
         * @return <CODE>true</CODE> if the row was deleted
         */
 
-        public bool DeleteRow(int rowNumber)
+        virtual public bool DeleteRow(int rowNumber)
         {
             if (rowNumber < 0 || rowNumber >= rows.Count)
             {
@@ -1200,7 +1200,7 @@ namespace iTextSharp.text.pdf {
         * @return <CODE>true</CODE> if the last row was deleted
         */
 
-        public bool DeleteLastRow()
+        virtual public bool DeleteLastRow()
         {
             return DeleteRow(rows.Count - 1);
         }
@@ -1209,7 +1209,7 @@ namespace iTextSharp.text.pdf {
         * Removes all of the rows except headers
         */
 
-        public void DeleteBodyRows()
+        virtual public void DeleteBodyRows()
         {
             List<PdfPRow> rows2 = new List<PdfPRow>();
             for (int k = 0; k < headerRows; ++k)
@@ -1225,12 +1225,12 @@ namespace iTextSharp.text.pdf {
         * @since   2.1.1
         */
 
-        public int NumberOfColumns
+        virtual public int NumberOfColumns
         {
             get { return relativeWidths.Length; }
         }
 
-        public int HeaderRows
+        virtual public int HeaderRows
         {
             get { return headerRows; }
             set
@@ -1241,7 +1241,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public int FooterRows
+        virtual public int FooterRows
         {
             get { return footerRows; }
             set
@@ -1258,7 +1258,7 @@ namespace iTextSharp.text.pdf {
         * @return    an <CODE>List</CODE>
         */
 
-        public IList<Chunk> Chunks
+        virtual public IList<Chunk> Chunks
         {
             get { return new List<Chunk>(); }
         }
@@ -1269,7 +1269,7 @@ namespace iTextSharp.text.pdf {
         * @return    a type
         */
 
-        public int Type
+        virtual public int Type
         {
             get { return Element.PTABLE; }
         }
@@ -1279,7 +1279,7 @@ namespace iTextSharp.text.pdf {
         * @see com.lowagie.text.Element#isContent()
         */
 
-        public bool IsContent()
+        virtual public bool IsContent()
         {
             return true;
         }
@@ -1289,7 +1289,7 @@ namespace iTextSharp.text.pdf {
         * @see com.lowagie.text.Element#isNestable()
         */
 
-        public bool IsNestable()
+        virtual public bool IsNestable()
         {
             return true;
         }
@@ -1302,7 +1302,7 @@ namespace iTextSharp.text.pdf {
         * @return    <CODE>true</CODE> if the element was processed successfully
         */
 
-        public bool Process(IElementListener listener)
+        virtual public bool Process(IElementListener listener)
         {
             try
             {
@@ -1314,13 +1314,13 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public float WidthPercentage
+        virtual public float WidthPercentage
         {
             get { return widthPercentage; }
             set { widthPercentage = value; }
         }
 
-        public int HorizontalAlignment
+        virtual public int HorizontalAlignment
         {
             get { return horizontalAlignment; }
             set { horizontalAlignment = value; }
@@ -1333,7 +1333,7 @@ namespace iTextSharp.text.pdf {
          * @return the row at position idx
          */
 
-        public PdfPRow GetRow(int idx)
+        virtual public PdfPRow GetRow(int idx)
         {
             return rows[idx];
         }
@@ -1344,7 +1344,7 @@ namespace iTextSharp.text.pdf {
          * @return the index of a row
          */
 
-        public int getLastCompletedRowIndex()
+        virtual public int getLastCompletedRowIndex()
         {
             return rows.Count - 1;
         }
@@ -1355,7 +1355,7 @@ namespace iTextSharp.text.pdf {
          * @param breakPoints int[]
          */
 
-        public void SetBreakPoints(int[] breakPoints)
+        virtual public void SetBreakPoints(int[] breakPoints)
         {
             for (int i = 0; i < rows.Count; i++)
             {
@@ -1374,7 +1374,7 @@ namespace iTextSharp.text.pdf {
          * @param rows int[]
          */
 
-        public void KeepRowsTogether(int[] rows)
+        virtual public void KeepRowsTogether(int[] rows)
         {
             for (int i = 0; i < rows.Length; i++)
             {
@@ -1389,7 +1389,7 @@ namespace iTextSharp.text.pdf {
          * @param end int
          */
 
-        public void KeepRowsTogether(int start, int end)
+        virtual public void KeepRowsTogether(int start, int end)
         {
             if (start < end)
             {
@@ -1407,7 +1407,7 @@ namespace iTextSharp.text.pdf {
          * @param start int
          */
 
-        public void KeepRowsTogether(int start)
+        virtual public void KeepRowsTogether(int start)
         {
             if (start < rows.Count)
             {
@@ -1423,7 +1423,7 @@ namespace iTextSharp.text.pdf {
         * @return an arraylist
         */
 
-        public List<PdfPRow> Rows
+        virtual public List<PdfPRow> Rows
         {
             get { return rows; }
         }
@@ -1436,7 +1436,7 @@ namespace iTextSharp.text.pdf {
         * @since    2.1.6
         */
 
-        public List<PdfPRow> GetRows(int start, int end)
+        virtual public List<PdfPRow> GetRows(int start, int end)
         {
             List<PdfPRow> list = new List<PdfPRow>();
             if (start < 0 || end > Size)
@@ -1457,7 +1457,7 @@ namespace iTextSharp.text.pdf {
         * @since    2.1.6
         */
 
-        protected PdfPRow AdjustCellsInRow(int start, int end)
+        virtual protected PdfPRow AdjustCellsInRow(int start, int end)
         {
             PdfPRow row = GetRow(start);
             if (row.Adjusted) return row;
@@ -1487,7 +1487,7 @@ namespace iTextSharp.text.pdf {
          * @param event the table event for this table
          */
 
-        public IPdfPTableEvent TableEvent
+        virtual public IPdfPTableEvent TableEvent
         {
             get { return tableEvent; }
             set
@@ -1510,7 +1510,7 @@ namespace iTextSharp.text.pdf {
         * @return he absolute sizes of each column width
         */
 
-        public float[] AbsoluteWidths
+        virtual public float[] AbsoluteWidths
         {
             get { return absoluteWidths; }
         }
@@ -1559,7 +1559,7 @@ namespace iTextSharp.text.pdf {
             return widths;
         }
 
-        public bool SkipFirstHeader
+        virtual public bool SkipFirstHeader
         {
             get { return skipFirstHeader; }
             set { skipFirstHeader = value; }
@@ -1573,13 +1573,13 @@ namespace iTextSharp.text.pdf {
         * @since 2.1.6
         */
 
-        public bool SkipLastFooter
+        virtual public bool SkipLastFooter
         {
             get { return skipLastFooter; }
             set { skipLastFooter = value; }
         }
 
-        public int RunDirection
+        virtual public int RunDirection
         {
             get { return runDirection; }
             set
@@ -1599,31 +1599,31 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public bool LockedWidth
+        virtual public bool LockedWidth
         {
             get { return lockedWidth; }
             set { lockedWidth = value; }
         }
 
-        public bool SplitRows
+        virtual public bool SplitRows
         {
             get { return splitRows; }
             set { splitRows = value; }
         }
 
-        public float SpacingBefore
+        virtual public float SpacingBefore
         {
             get { return spacingBefore; }
             set { spacingBefore = value; }
         }
 
-        public float SpacingAfter
+        virtual public float SpacingAfter
         {
             get { return spacingAfter; }
             set { spacingAfter = value; }
         }
 
-        public bool ExtendLastRow
+        virtual public bool ExtendLastRow
         {
             get { return extendLastRow[0]; }
             set
@@ -1643,7 +1643,7 @@ namespace iTextSharp.text.pdf {
         * @since iText 5.0.0
         */
 
-        public void SetExtendLastRow(bool extendLastRows, bool extendFinalRow)
+        virtual public void SetExtendLastRow(bool extendLastRows, bool extendFinalRow)
         {
             extendLastRow[0] = extendLastRows;
             extendLastRow[1] = extendFinalRow;
@@ -1658,7 +1658,7 @@ namespace iTextSharp.text.pdf {
         * @since iText 5.0.0
         */
 
-        public bool IsExtendLastRow(bool newPageFollows)
+        virtual public bool IsExtendLastRow(bool newPageFollows)
         {
             if (newPageFollows)
             {
@@ -1667,13 +1667,13 @@ namespace iTextSharp.text.pdf {
             return extendLastRow[1];
         }
 
-        public bool HeadersInEvent
+        virtual public bool HeadersInEvent
         {
             get { return headersInEvent; }
             set { headersInEvent = value; }
         }
 
-        public bool SplitLate
+        virtual public bool SplitLate
         {
             get { return splitLate; }
             set { splitLate = value; }
@@ -1687,7 +1687,7 @@ namespace iTextSharp.text.pdf {
         * @param p_KeepTogether whether to try to keep the table on one page
         */
 
-        public bool KeepTogether
+        virtual public bool KeepTogether
         {
             set { keepTogether = value; }
             get { return keepTogether; }
@@ -1698,7 +1698,7 @@ namespace iTextSharp.text.pdf {
         * but calling this method will make sure that it will be present in the table.
         */
 
-        public void CompleteRow()
+        virtual public void CompleteRow()
         {
             while (!rowCompleted)
             {
@@ -1711,7 +1711,7 @@ namespace iTextSharp.text.pdf {
         * @see com.lowagie.text.LargeElement#flushContent()
         */
 
-        public void FlushContent()
+        virtual public void FlushContent()
         {
             DeleteBodyRows();
             SkipFirstHeader = true;
@@ -1722,19 +1722,19 @@ namespace iTextSharp.text.pdf {
         * @see com.lowagie.text.LargeElement#isComplete()
         */
 
-        public bool ElementComplete
+        virtual public bool ElementComplete
         {
             get { return complete; }
             set { complete = value; }
         }
 
-        public bool LoopCheck
+        virtual public bool LoopCheck
         {
             get { return loopCheck; }
             set { this.loopCheck = value; }
         }
 
-        public PdfObject GetAccessibleAttribute(PdfName key) {
+        virtual public PdfObject GetAccessibleAttribute(PdfName key) {
             if (accessibleAttributes != null) {
                 PdfObject value;
                 accessibleAttributes.TryGetValue(key, out value);
@@ -1743,7 +1743,7 @@ namespace iTextSharp.text.pdf {
                 return null;
         }
 
-        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+        virtual public void SetAccessibleAttribute(PdfName key, PdfObject value) {
             if (accessibleAttributes == null)
                 accessibleAttributes = new Dictionary<PdfName, PdfObject>();
             accessibleAttributes[key] = value;
@@ -1751,33 +1751,33 @@ namespace iTextSharp.text.pdf {
 
 
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+        virtual public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             return accessibleAttributes;
         }
 
-        public PdfName Role {
+        virtual public PdfName Role {
             get { return role; }
             set { this.role = value; }
         }
 
-        public AccessibleElementId ID {
+        virtual public AccessibleElementId ID {
             get { return id; }
             set { id = value; }
         }
 
-        public PdfPTableHeader GetHeader() {
+        virtual public PdfPTableHeader GetHeader() {
             if (header == null)
                 header = new PdfPTableHeader();
             return header;
         }
 
-        public PdfPTableBody GetBody() {
+        virtual public PdfPTableBody GetBody() {
             if (body == null)
                 body = new PdfPTableBody();
             return body;
         }
 
-        public PdfPTableFooter GetFooter() {
+        virtual public PdfPTableFooter GetFooter() {
             if (footer == null)
                 footer = new PdfPTableFooter();
             return footer;
@@ -1792,7 +1792,7 @@ namespace iTextSharp.text.pdf {
          * @return row index
          * @since iText 5.4.3
          */
-        public int GetCellStartRowIndex(int rowIdx, int colIdx) {
+        virtual public int GetCellStartRowIndex(int rowIdx, int colIdx) {
             int lastRow = rowIdx;
             while (GetRow(lastRow).GetCells()[colIdx] == null && lastRow > 0) {
                 --lastRow;
@@ -1828,7 +1828,7 @@ namespace iTextSharp.text.pdf {
              *  i.e. the cell content won't be split.
              * (Only to be used with splitLate == true)
              */
-            public void CorrectLastRowChosen(PdfPTable table, int k) {
+            virtual public void CorrectLastRowChosen(PdfPTable table, int k) {
                 PdfPRow row = table.GetRow(k);
                 float value;
                 if (correctedHeightsForLastRow.TryGetValue(k, out value)) {
@@ -1848,17 +1848,17 @@ namespace iTextSharp.text.pdf {
 
             public int rowspan = 1, colspan = 1;
 
-            public void BeginCell(PdfPCell cell, float completedRowsHeight, float rowHeight) {
+            virtual public void BeginCell(PdfPCell cell, float completedRowsHeight, float rowHeight) {
                 rowspan = cell.Rowspan;
                 colspan = cell.Colspan;
                 height = completedRowsHeight + Math.Max(cell.GetMaxHeight(), rowHeight);
             }
 
-            public void ConsumeRowspan(float completedRowsHeight, float rowHeight) {
+            virtual public void ConsumeRowspan(float completedRowsHeight, float rowHeight) {
         	    --rowspan;
             }
 
-            public bool CellEnds() {
+            virtual public bool CellEnds() {
                 return rowspan == 1;
             }
         }
@@ -1878,7 +1878,7 @@ namespace iTextSharp.text.pdf {
          * 
          * @since iText 5.4.3
          */
-        public FittingRows GetFittingRows(float availableHeight, int startIdx) {
+        virtual public FittingRows GetFittingRows(float availableHeight, int startIdx) {
             System.Diagnostics.Debug.Assert (GetRow(startIdx).GetCells()[0] != null); // top left cell of current page may not be null
             int cols = NumberOfColumns;
             ColumnMeasurementState[] states = new ColumnMeasurementState[cols];

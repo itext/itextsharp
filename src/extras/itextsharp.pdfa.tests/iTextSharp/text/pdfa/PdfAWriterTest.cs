@@ -14,7 +14,7 @@ namespace iTextSharp.text.pdfa
 
 
         [SetUp]
-        public void Initialize()
+        virtual public void Initialize()
         {
             Directory.CreateDirectory(TARGET + "pdf");
             Directory.CreateDirectory(TARGET + "xml");
@@ -22,7 +22,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void TestCreatePdfA_1()
+        virtual public void TestCreatePdfA_1()
         {
             Document document = null;
             PdfAWriter writer = null;
@@ -55,7 +55,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void TestCreatePdfA_2()
+        virtual public void TestCreatePdfA_2()
         {
             bool exceptionThrown = false;
             Document document = null;
@@ -91,7 +91,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void TestPdfAStamper1()
+        virtual public void TestPdfAStamper1()
         {
             string filename = OUT + "TestPdfAStamper1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -122,7 +122,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void TestPdfAStamper2()
+        virtual public void TestPdfAStamper2()
         {
             string filename = OUT + "TestPdfAStamper2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
@@ -163,7 +163,7 @@ namespace iTextSharp.text.pdfa
         }
 
         [Test]
-        public void TestPdfAStamper3()
+        virtual public void TestPdfAStamper3()
         {
             string filename = OUT + "TestPdfAStamper3.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);

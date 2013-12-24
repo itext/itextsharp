@@ -80,7 +80,7 @@ namespace iTextSharp.text.pdf {
         * @return the same <CODE>ArrayList</CODE> given as argument or a new one
         * @throws IOException on error
         */    
-        public List<PdfObject> Parse(List<PdfObject> ls) {
+        virtual public List<PdfObject> Parse(List<PdfObject> ls) {
             if (ls == null)
                 ls = new List<PdfObject>();
             else
@@ -98,7 +98,7 @@ namespace iTextSharp.text.pdf {
         * Gets the tokeniser.
         * @return the tokeniser.
         */
-        public PRTokeniser GetTokeniser() {
+        virtual public PRTokeniser GetTokeniser() {
             return this.tokeniser;
         }
         
@@ -106,7 +106,7 @@ namespace iTextSharp.text.pdf {
         * Sets the tokeniser.
         * @param tokeniser the tokeniser
         */
-        public PRTokeniser Tokeniser {
+        virtual public PRTokeniser Tokeniser {
             set {
                 tokeniser = value;
             }
@@ -120,7 +120,7 @@ namespace iTextSharp.text.pdf {
         * @return the dictionary
         * @throws IOException on error
         */    
-        public PdfDictionary ReadDictionary() {
+        virtual public PdfDictionary ReadDictionary() {
             PdfDictionary dic = new PdfDictionary();
             while (true) {
                 if (!NextValidToken())
@@ -148,7 +148,7 @@ namespace iTextSharp.text.pdf {
         * @return an array
         * @throws IOException on error
         */    
-        public PdfArray ReadArray() {
+        virtual public PdfArray ReadArray() {
             PdfArray array = new PdfArray();
             while (true) {
                 PdfObject obj = ReadPRObject();
@@ -167,7 +167,7 @@ namespace iTextSharp.text.pdf {
         * @return the pdf object
         * @throws IOException on error
         */    
-        public PdfObject ReadPRObject() {
+        virtual public PdfObject ReadPRObject() {
             if (!NextValidToken())
                 return null;
             PRTokeniser.TokType type = tokeniser.TokenType;
@@ -197,7 +197,7 @@ namespace iTextSharp.text.pdf {
         * @return <CODE>true</CODE> if a token was read, <CODE>false</CODE> if the end of content was reached
         * @throws IOException on error
         */    
-        public bool NextValidToken() {
+        virtual public bool NextValidToken() {
             while (tokeniser.NextToken()) {
                 if (tokeniser.TokenType == PRTokeniser.TokType.COMMENT)
                     continue;

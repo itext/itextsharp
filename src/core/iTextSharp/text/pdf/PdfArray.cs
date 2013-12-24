@@ -182,7 +182,7 @@ namespace iTextSharp.text.pdf {
          * @throws IndexOutOfBoundsException the specified position doesn't exist
          * @since 2.1.5
          */
-        public PdfObject Remove(int idx) {
+        virtual public PdfObject Remove(int idx) {
             PdfObject tmp = arrayList[idx];
             arrayList.RemoveAt(idx);
             return tmp;
@@ -194,7 +194,7 @@ namespace iTextSharp.text.pdf {
      * @return        an ArrayList
      */
         
-        public List<PdfObject> ArrayList {
+        virtual public List<PdfObject> ArrayList {
             get {
                 return arrayList;
             }
@@ -206,7 +206,7 @@ namespace iTextSharp.text.pdf {
      * @return        the size of the ArrayList
      */
         
-        public int Size {
+        virtual public int Size {
             get {
                 return arrayList.Count;
             }
@@ -218,7 +218,7 @@ namespace iTextSharp.text.pdf {
          * @return <CODE>true</CODE> if the array is empty
          * @since 2.1.5
          */
-        public bool IsEmpty() {
+        virtual public bool IsEmpty() {
             return arrayList.Count == 0;
         }
 
@@ -282,11 +282,11 @@ namespace iTextSharp.text.pdf {
      * @return        <CODE>true</CODE>
      */
         
-        public bool Contains(PdfObject obj) {
+        virtual public bool Contains(PdfObject obj) {
             return arrayList.Contains(obj);
         }
 
-        public ListIterator<PdfObject> GetListIterator() {
+        virtual public ListIterator<PdfObject> GetListIterator() {
             return new ListIterator<PdfObject>(arrayList);
         }
 
@@ -309,12 +309,12 @@ namespace iTextSharp.text.pdf {
     //        return (PdfObject)arrayList[idx];
     //    }
         
-        public PdfObject GetDirectObject( int idx ) {
+        virtual public PdfObject GetDirectObject( int idx ) {
             return PdfReader.GetPdfObject(this[idx]);
         }
         
         // more of the same like PdfDictionary. (MAS 2/17/06)
-        public PdfDictionary GetAsDict(int idx) {
+        virtual public PdfDictionary GetAsDict(int idx) {
             PdfDictionary dict = null;
             PdfObject orig = GetDirectObject(idx);
             if (orig != null && orig.IsDictionary())
@@ -322,7 +322,7 @@ namespace iTextSharp.text.pdf {
             return dict;
         }
         
-        public PdfArray GetAsArray(int idx) {
+        virtual public PdfArray GetAsArray(int idx) {
             PdfArray array = null;
             PdfObject orig = GetDirectObject(idx);
             if (orig != null && orig.IsArray())
@@ -330,7 +330,7 @@ namespace iTextSharp.text.pdf {
             return array;
         }
         
-        public PdfStream GetAsStream(int idx) {
+        virtual public PdfStream GetAsStream(int idx) {
             PdfStream stream = null;
             PdfObject orig = GetDirectObject(idx);
             if (orig != null && orig.IsStream())
@@ -338,7 +338,7 @@ namespace iTextSharp.text.pdf {
             return stream;
         }
         
-        public PdfString GetAsString(int idx) {
+        virtual public PdfString GetAsString(int idx) {
             PdfString str = null;
             PdfObject orig = GetDirectObject(idx);
             if (orig != null && orig.IsString())
@@ -346,7 +346,7 @@ namespace iTextSharp.text.pdf {
             return str;
         }
         
-        public PdfNumber GetAsNumber(int idx) {
+        virtual public PdfNumber GetAsNumber(int idx) {
             PdfNumber number = null;
             PdfObject orig = GetDirectObject(idx);
             if (orig != null && orig.IsNumber())
@@ -354,7 +354,7 @@ namespace iTextSharp.text.pdf {
             return number;
         }
         
-        public PdfName GetAsName(int idx) {
+        virtual public PdfName GetAsName(int idx) {
             PdfName name = null;
             PdfObject orig = GetDirectObject(idx);
             if (orig != null && orig.IsName())
@@ -362,7 +362,7 @@ namespace iTextSharp.text.pdf {
             return name;
         }
         
-        public PdfBoolean GetAsBoolean(int idx) {
+        virtual public PdfBoolean GetAsBoolean(int idx) {
             PdfBoolean b = null;
             PdfObject orig = GetDirectObject(idx);
             if (orig != null && orig.IsBoolean())
@@ -370,7 +370,7 @@ namespace iTextSharp.text.pdf {
             return b;
         }
         
-        public PdfIndirectReference GetAsIndirectObject(int idx) {
+        virtual public PdfIndirectReference GetAsIndirectObject(int idx) {
             PdfIndirectReference refi = null;
             PdfObject orig = this[idx]; // not getDirect this time.
             if (orig is PdfIndirectReference)
@@ -378,7 +378,7 @@ namespace iTextSharp.text.pdf {
             return refi;
         }
 
-        public IEnumerator<PdfObject> GetEnumerator() {
+        virtual public IEnumerator<PdfObject> GetEnumerator() {
             return arrayList.GetEnumerator();
         }
 
@@ -391,7 +391,7 @@ namespace iTextSharp.text.pdf {
          * @return this PdfArray's values as a long[] 
          * @since 5.3.5
          */
-        public long[] AsLongArray(){
+        virtual public long[] AsLongArray(){
             long[] rslt = new long[Size];
             for (int k = 0; k < rslt.Length; ++k) {
                 rslt[k] = GetAsNumber(k).LongValue;

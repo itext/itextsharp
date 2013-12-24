@@ -17,13 +17,13 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         private const string RESOURCES = @"..\..\resources\";
 
         private class CustomElementHandler : IElementHandler {
-            public void Add(IWritable w) {
+            virtual public void Add(IWritable w) {
                 elementList.AddRange(((WritableElement) w).Elements());
             }
         }
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
             StreamReader bis = File.OpenText(RESOURCES + "/snippets/b-p_snippet.html");
             XMLWorkerHelper helper = XMLWorkerHelper.GetInstance();
@@ -32,12 +32,12 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [TearDown]
-        public void TearDown() {
+        virtual public void TearDown() {
             elementList = null;
         }
 
         [Test]
-        public void ResolveNumberOfElements() {
+        virtual public void ResolveNumberOfElements() {
             Assert.AreEqual(7, elementList.Count);
         }
     }

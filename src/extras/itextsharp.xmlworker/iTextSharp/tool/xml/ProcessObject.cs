@@ -64,14 +64,14 @@ namespace iTextSharp.tool.xml {
         /**
          * @return true if a writable is contained.
          */
-        public bool ContainsWritable() {
+        virtual public bool ContainsWritable() {
             return queue.Count > 0;
         }
 
         /**
          * @return a Writable or null if none.
          */
-        public IWritable Poll() {
+        virtual public IWritable Poll() {
             if (queue.Count == 0)
                 return null;
             return queue.Dequeue();
@@ -80,14 +80,14 @@ namespace iTextSharp.tool.xml {
          * Add a writable.
          * @param writable the writable to add
          */
-        public void Add(IWritable writable) {
+        virtual public void Add(IWritable writable) {
             queue.Enqueue(writable);
         }
         /**
          * Adds a list of writable.
          * @param elems the writables
          */
-        public void AddAll(IList<IWritable> elems) {
+        virtual public void AddAll(IList<IWritable> elems) {
             foreach (IWritable i in elems) {
                 queue.Enqueue(i);
             }

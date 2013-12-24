@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 
 namespace iTextSharp.text
 {
@@ -36,19 +36,19 @@ namespace iTextSharp.text
             this.tabInterval = tabInterval;
         }
 
-        public List<TabStop> TabStops
+        virtual public List<TabStop> TabStops
         {
             get { return tabStops; }
             set { tabStops = value; }
         }
 
-        public float TabInterval
+        virtual public float TabInterval
         {
             get { return tabInterval; }
             set { tabInterval = value; }
         }
 
-        public TabStop GetTabStopNewInstance(float currentPosition)
+        virtual public TabStop GetTabStopNewInstance(float currentPosition)
         {
             TabStop tabStop = null;
             if (tabStops != null)

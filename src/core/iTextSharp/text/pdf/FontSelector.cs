@@ -62,7 +62,7 @@ namespace iTextSharp.text.pdf {
         * Adds a <CODE>Font</CODE> to be searched for valid characters.
         * @param font the <CODE>Font</CODE>
         */    
-        public void AddFont(Font font) {
+        virtual public void AddFont(Font font) {
             if (font.BaseFont != null) {
                 fonts.Add(font);
                 return;

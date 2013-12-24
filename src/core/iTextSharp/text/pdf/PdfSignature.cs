@@ -55,7 +55,7 @@ namespace iTextSharp.text.pdf {
             Put(PdfName.SUBFILTER, subFilter);
         }
         
-        public int[] ByteRange {
+        virtual public int[] ByteRange {
             set {
                 PdfArray array = new PdfArray();
                 for (int k = 0; k < value.Length; ++k)
@@ -64,37 +64,37 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public byte[] Contents {
+        virtual public byte[] Contents {
             set {
                 Put(PdfName.CONTENTS, new PdfString(value).SetHexWriting(true));
             }
         }
         
-        public byte[] Cert {
+        virtual public byte[] Cert {
             set {
                 Put(PdfName.CERT, new PdfString(value));
             }
         }
         
-        public string Name {
+        virtual public string Name {
             set {
                 Put(PdfName.NAME, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
         }
 
-        public PdfDate Date {
+        virtual public PdfDate Date {
             set {
                 Put(PdfName.M, value);
             }
         }
 
-        public string Location {
+        virtual public string Location {
             set {
                 Put(PdfName.LOCATION, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
         }
 
-        public string Reason {
+        virtual public string Reason {
             set {
                 Put(PdfName.REASON, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
@@ -106,7 +106,7 @@ namespace iTextSharp.text.pdf {
          * 
          * @param name
          */
-        public string SignatureCreator {
+        virtual public string SignatureCreator {
             set {
                 if (value != null) {
                     PdfSignatureBuildProperties.SignatureCreator = value;
@@ -131,7 +131,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public string Contact {
+        virtual public string Contact {
             set {
                 Put(PdfName.CONTACTINFO, new PdfString(value, PdfObject.TEXT_UNICODE));
             }

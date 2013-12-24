@@ -125,7 +125,7 @@ namespace iTextSharp.text.pdf.mc {
         /**
          * Populates the operators variable.
          */
-        protected void PopulateOperators() {
+        virtual protected void PopulateOperators() {
             if(operators != null)
                 return;
             operators = new Dictionary<string, PdfOperator>();
@@ -164,7 +164,7 @@ namespace iTextSharp.text.pdf.mc {
          * @param page a page dictionary
          * @throws IOException
          */
-        public void Parse(PdfDictionary page, PdfIndirectReference pageref) {
+        virtual public void Parse(PdfDictionary page, PdfIndirectReference pageref) {
             LOGGER.Info("Parsing page with reference " + pageref);
             // initializing member variables
             baos = new MemoryStream();
@@ -225,7 +225,7 @@ namespace iTextSharp.text.pdf.mc {
          * we want to remove it from the stack.
          * @param xobj	the name of an XObject
          */
-        protected void DealWithXObj(PdfName xobj) {
+        virtual protected void DealWithXObj(PdfName xobj) {
             PdfDictionary dict = xobjects.GetAsStream(xobj);
             PdfNumber structParent = dict.GetAsNumber(PdfName.STRUCTPARENT);
             LOGGER.Info(String.Format("Encountered StructParent {0} in content", structParent));
@@ -244,7 +244,7 @@ namespace iTextSharp.text.pdf.mc {
          * @param mcid	the MCID that was encountered in the content stream
          * @throws IOException
          */
-        protected void DealWithMcid(PdfNumber mcid)
+        virtual protected void DealWithMcid(PdfNumber mcid)
         {
             if (mcid == null)
                 return;
@@ -290,7 +290,7 @@ namespace iTextSharp.text.pdf.mc {
          * @param item the structure item
          * @throws IOException
          */
-        protected void ConvertToXObject(StructureObject item) {
+        virtual protected void ConvertToXObject(StructureObject item) {
             PdfDictionary structElem = item.GetStructElem();
             if (structElem == null)
                 return;
@@ -402,7 +402,7 @@ namespace iTextSharp.text.pdf.mc {
          * @throws IOException
          * @throws DocumentException 
          */
-        protected void ProcessOperator(PdfLiteral operatora, List<PdfObject> operands) {
+        virtual protected void ProcessOperator(PdfLiteral operatora, List<PdfObject> operands) {
             PdfOperator op;
             operators.TryGetValue(operatora.ToString(), out op);
             if (op == null)
@@ -416,7 +416,7 @@ namespace iTextSharp.text.pdf.mc {
          * @param operands	its operands
          * @throws IOException
          */
-        protected void PrintOperator(PdfLiteral opr, IList<PdfObject> operands) {
+        virtual protected void PrintOperator(PdfLiteral opr, IList<PdfObject> operands) {
             operands.Remove(opr);
             foreach (PdfObject o in operands) {
                 Printsp(o);
@@ -430,7 +430,7 @@ namespace iTextSharp.text.pdf.mc {
          * @param operands	its operands
          * @throws IOException
          */
-        protected void PrintTextOperator(PdfLiteral opr, IList<PdfObject> operands) {
+        virtual protected void PrintTextOperator(PdfLiteral opr, IList<PdfObject> operands) {
             foreach (PdfObject obj in operands)
                 text.Append(obj).Append(" ");
             text.Append("\n");
@@ -442,7 +442,7 @@ namespace iTextSharp.text.pdf.mc {
          * @param o a PdfObject
          * @throws IOException
          */
-        protected void Printsp(PdfObject o) {
+        virtual protected void Printsp(PdfObject o) {
             CheckBT();
             o.ToPdf(null, baos);
             baos.WriteByte((byte) ' ');
@@ -453,7 +453,7 @@ namespace iTextSharp.text.pdf.mc {
          * @param o a PdfObject
          * @throws IOException
          */
-        protected void Println(PdfObject o) {
+        virtual protected void Println(PdfObject o) {
             CheckBT();
             o.ToPdf(null, baos);
             baos.WriteByte((byte) '\n');
@@ -462,7 +462,7 @@ namespace iTextSharp.text.pdf.mc {
         /**
          * Checks if a BT operator is waiting to be added.
          */
-        protected void CheckBT() {
+        virtual protected void CheckBT() {
             if (btWrite) {
                 byte[] bytes = Encoding.ASCII.GetBytes("BT ");
                 baos.Write(bytes, 0, bytes.Length);
@@ -482,7 +482,7 @@ namespace iTextSharp.text.pdf.mc {
          * Also sets a parameter indicating that BT needs to be written.
          * @param inText	true if we're inside.
          */
-        protected void SetInText(bool inText) {
+        virtual protected void SetInText(bool inText) {
             if(inText) {
                 text = new StringBuilder();
                 btWrite = true;
@@ -519,7 +519,7 @@ namespace iTextSharp.text.pdf.mc {
             /**
              * @see com.itextpdf.text.pdf.mc.MCParser.PdfOperator#process(com.itextpdf.text.pdf.ocg.OCGParser, com.itextpdf.text.pdf.PdfLiteral, java.util.List)
              */
-            public void Process(MCParser parser, PdfLiteral opr, IList<PdfObject> operands) {
+            virtual public void Process(MCParser parser, PdfLiteral opr, IList<PdfObject> operands) {
                 parser.PrintOperator(opr, operands);
             }
         }
@@ -532,7 +532,7 @@ namespace iTextSharp.text.pdf.mc {
             /**
              * @see com.itextpdf.text.pdf.mc.MCParser.PdfOperator#process(com.itextpdf.text.pdf.ocg.OCGParser, com.itextpdf.text.pdf.PdfLiteral, java.util.List)
              */
-            public void Process(MCParser parser, PdfLiteral opr, IList<PdfObject> operands) {
+            virtual public void Process(MCParser parser, PdfLiteral opr, IList<PdfObject> operands) {
                 if(operands[1].IsDictionary()) {
                     PdfDictionary dict = (PdfDictionary)operands[1];
                     parser.DealWithMcid(dict.GetAsNumber(PdfName.MCID));
@@ -548,7 +548,7 @@ namespace iTextSharp.text.pdf.mc {
 		    /**
 		     * @see com.itextpdf.text.pdf.mc.MCParser.PdfOperator#process(com.itextpdf.text.pdf.mc.MCParser, com.itextpdf.text.pdf.PdfLiteral, java.util.List)
 		     */
-		    public void Process(MCParser parser, PdfLiteral operatora, IList<PdfObject> operands) {
+		    virtual public void Process(MCParser parser, PdfLiteral operatora, IList<PdfObject> operands) {
 			    if (operands[0].IsName())
 				    parser.DealWithXObj((PdfName)operands[0]);
 			    parser.PrintOperator(operatora, operands);
@@ -562,7 +562,7 @@ namespace iTextSharp.text.pdf.mc {
             /**
              * @see com.itextpdf.text.pdf.mc.MCParser.PdfOperator#process(com.itextpdf.text.pdf.mc.MCParser, com.itextpdf.text.pdf.PdfLiteral, java.util.List)
              */
-            public void Process(MCParser parser, PdfLiteral opr, IList<PdfObject> operands) {
+            virtual public void Process(MCParser parser, PdfLiteral opr, IList<PdfObject> operands) {
                 LOGGER.Debug("BT: begin text on hold");
                 parser.SetInText(true);
             }
@@ -575,7 +575,7 @@ namespace iTextSharp.text.pdf.mc {
             /**
              * @see com.itextpdf.text.pdf.mc.MCParser.PdfOperator#process(com.itextpdf.text.pdf.mc.MCParser, com.itextpdf.text.pdf.PdfLiteral, java.util.List)
              */
-            public void Process(MCParser parser, PdfLiteral opr, IList<PdfObject> operands) {
+            virtual public void Process(MCParser parser, PdfLiteral opr, IList<PdfObject> operands) {
                 LOGGER.Debug("ET: end text block");
                 parser.SetInText(false);
                 parser.PrintOperator(opr, operands);
@@ -590,7 +590,7 @@ namespace iTextSharp.text.pdf.mc {
             /**
              * @see com.itextpdf.text.pdf.mc.MCParser.PdfOperator#process(com.itextpdf.text.pdf.mc.MCParser, com.itextpdf.text.pdf.PdfLiteral, java.util.List)
              */
-            public void Process(MCParser parser, PdfLiteral opr, IList<PdfObject> operands) {
+            virtual public void Process(MCParser parser, PdfLiteral opr, IList<PdfObject> operands) {
                 parser.PrintTextOperator(opr, operands);
             }
         }
@@ -602,7 +602,7 @@ namespace iTextSharp.text.pdf.mc {
             /**
              * @see com.itextpdf.text.pdf.mc.MCParser.PdfOperator#process(com.itextpdf.text.pdf.mc.MCParser, com.itextpdf.text.pdf.PdfLiteral, java.util.List)
              */
-            public void Process(MCParser parser, PdfLiteral opr, IList<PdfObject> operands) {
+            virtual public void Process(MCParser parser, PdfLiteral opr, IList<PdfObject> operands) {
                 parser.PrintTextOperator(opr, operands);
             }
         }
@@ -615,7 +615,7 @@ namespace iTextSharp.text.pdf.mc {
             /**
              * @see com.itextpdf.text.pdf.mc.MCParser.PdfOperator#process(com.itextpdf.text.pdf.mc.MCParser, com.itextpdf.text.pdf.PdfLiteral, java.util.List)
              */
-            public void Process(MCParser parser, PdfLiteral opr, IList<PdfObject> operands) {
+            virtual public void Process(MCParser parser, PdfLiteral opr, IList<PdfObject> operands) {
                 IList<PdfObject> list = new List<PdfObject>();
                 list.Add(TSTAR);
                 parser.PrintTextOperator(MCParser.TSTAR, list);

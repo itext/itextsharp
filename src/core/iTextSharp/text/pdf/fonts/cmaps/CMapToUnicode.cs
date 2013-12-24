@@ -60,7 +60,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
          *
          * @return true If there are any one byte mappings, false otherwise.
          */
-        public bool HasOneByteMappings() {
+        virtual public bool HasOneByteMappings() {
             return singleByteMappings.Count != 0;
         }
 
@@ -69,7 +69,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
          *
          * @return true If there are any two byte mappings, false otherwise.
          */
-        public bool HasTwoByteMappings() {
+        virtual public bool HasTwoByteMappings() {
             return doubleByteMappings.Count != 0;
         }
 
@@ -83,7 +83,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
          *
          * @return The string that matches the lookup.
          */
-        public String Lookup( byte[] code, int offset, int length )
+        virtual public String Lookup( byte[] code, int offset, int length )
         {
             String result = null;
             int key = 0;
@@ -100,7 +100,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             return result;
         }
 
-        public IDictionary<int, int> CreateReverseMapping() {
+        virtual public IDictionary<int, int> CreateReverseMapping() {
             IDictionary<int, int> result = new Dictionary<int, int>();
             foreach (KeyValuePair<int, String> entry in singleByteMappings) {
                 result[ConvertToInt(entry.Value)] = entry.Key;
@@ -111,7 +111,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             return result;
         }
 
-        public IDictionary<int, int> CreateDirectMapping() {
+        virtual public IDictionary<int, int> CreateDirectMapping() {
             IDictionary<int, int> result = new Dictionary<int, int>();
             foreach (KeyValuePair<int, String> entry in singleByteMappings) {
                 result[entry.Key] = ConvertToInt(entry.Value);

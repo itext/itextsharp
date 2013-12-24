@@ -225,7 +225,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="listener">an IElementListener</param>
         /// <returns>true if the element was processed successfully</returns>
-        public bool Process(IElementListener listener) {
+        virtual public bool Process(IElementListener listener) {
             try {
                 foreach (IElement ele in list) {
                     listener.Add(ele);
@@ -241,7 +241,7 @@ namespace iTextSharp.text {
         /// Gets the type of the text element.
         /// </summary>
         /// <value>a type</value>
-        public int Type {
+        virtual public int Type {
             get {
                 return Element.LIST;
             }
@@ -251,7 +251,7 @@ namespace iTextSharp.text {
         /// Gets all the chunks in this element.
         /// </summary>
         /// <value>an ArrayList</value>
-        public IList<Chunk> Chunks {
+        virtual public IList<Chunk> Chunks {
             get {
                 List<Chunk> tmp = new List<Chunk>();
                 foreach (IElement ele in list) {
@@ -309,7 +309,7 @@ namespace iTextSharp.text {
         // extra methods
         
         /** Makes sure all the items in the list have the same indentation. */
-        public void NormalizeIndentation() {
+        virtual public void NormalizeIndentation() {
             float max = 0;
             foreach (IElement o in list) {
                 if (o is ListItem) {
@@ -325,7 +325,7 @@ namespace iTextSharp.text {
 
         //setters/getters
 
-        public bool Numbered {
+        virtual public bool Numbered {
             set {
                 numbered = value;
             }
@@ -334,7 +334,7 @@ namespace iTextSharp.text {
             }
         }
 
-        public bool Lettered {
+        virtual public bool Lettered {
             set {
                 lettered = value;
             }
@@ -343,7 +343,7 @@ namespace iTextSharp.text {
             }
         }
 
-        public bool Lowercase {
+        virtual public bool Lowercase {
             set {
                 lowercase = value;
             }
@@ -355,7 +355,7 @@ namespace iTextSharp.text {
         /// <summary>
         /// Alias for VB.NET compatibility.
         /// </summary>
-        public bool IsLowercase {
+        virtual public bool IsLowercase {
             set {
                 lowercase = value;
             }
@@ -364,7 +364,7 @@ namespace iTextSharp.text {
             }
         }
 
-        public bool Autoindent {
+        virtual public bool Autoindent {
             set {
                 autoindent = value;
             }
@@ -373,7 +373,7 @@ namespace iTextSharp.text {
             }
         }
 
-        public bool Alignindent {
+        virtual public bool Alignindent {
             set {
                 alignindent = value;
             }
@@ -386,7 +386,7 @@ namespace iTextSharp.text {
         /// Get/set the first number
         /// </summary>
         /// <value>an int</value>
-        public int First {
+        virtual public int First {
             get {
                 return first;
             }
@@ -400,7 +400,7 @@ namespace iTextSharp.text {
         /// Sets the symbol
         /// </summary>
         /// <value>a Chunk</value>
-        public Chunk ListSymbol {
+        virtual public Chunk ListSymbol {
             set {
                 this.symbol = value;
             }
@@ -413,7 +413,7 @@ namespace iTextSharp.text {
         /// This is a shortcut for SetListSymbol(Chunk symbol).
         /// </remarks>
         /// <param name="symbol">a string</param>
-        public void SetListSymbol(string symbol) {
+        virtual public void SetListSymbol(string symbol) {
             this.symbol = new Chunk(symbol);
         }
     
@@ -421,7 +421,7 @@ namespace iTextSharp.text {
         /// Get/set the indentation of this paragraph on the left side.
         /// </summary>
         /// <value>the indentation</value>
-        public float IndentationLeft {
+        virtual public float IndentationLeft {
             get {
                 return indentationLeft;
             }
@@ -435,7 +435,7 @@ namespace iTextSharp.text {
         /// Get/set the indentation of this paragraph on the right side.
         /// </summary>
         /// <value>the indentation</value>
-        public float IndentationRight {
+        virtual public float IndentationRight {
             get {
                 return indentationRight;
             }
@@ -449,7 +449,7 @@ namespace iTextSharp.text {
         /// Gets the symbol indentation.
         /// </summary>
         /// <value>the symbol indentation</value>
-        public float SymbolIndent {
+        virtual public float SymbolIndent {
             set {
                 symbolIndent = value;
             }
@@ -462,7 +462,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isContent()
         * @since   iText 2.0.8
         */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return true;
         }
 
@@ -470,7 +470,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isNestable()
         * @since   iText 2.0.8
         */
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             return true;
         }
 
@@ -480,7 +480,7 @@ namespace iTextSharp.text {
         /// Gets all the items in the list.
         /// </summary>
         /// <value>an ArrayList containing ListItems</value>
-        public List<IElement> Items {
+        virtual public List<IElement> Items {
             get {
                 return list;
             }
@@ -490,7 +490,7 @@ namespace iTextSharp.text {
         /// Gets the size of the list.
         /// </summary>
         /// <value>a size</value>
-        public int Size {
+        virtual public int Size {
             get {
                 return list.Count;
             }
@@ -509,7 +509,7 @@ namespace iTextSharp.text {
         /// Gets the leading of the first listitem.
         /// </summary>
         /// <value>a leading</value>
-        public float TotalLeading {
+        virtual public float TotalLeading {
             get {
                 if (list.Count < 1) {
                     return -1;
@@ -523,7 +523,7 @@ namespace iTextSharp.text {
         /// Get/set the symbol indentation.
         /// </summary>
         /// <value>a Chunk</value>
-        public Chunk Symbol {
+        virtual public Chunk Symbol {
             get {
                 return symbol;
             }
@@ -537,7 +537,7 @@ namespace iTextSharp.text {
 	    * @return	the String that is after a number or letter in the list symbol
 	    * @since	iText 2.1.1
 	    */
-	    public String getPostSymbol() {
+	    virtual public String getPostSymbol() {
 		    return postSymbol;
 	    }
 
@@ -546,7 +546,7 @@ namespace iTextSharp.text {
 	    * @since	iText 2.1.1
 	    * @param	postSymbol the String that has to be added after a number or letter in the list symbol.
 	    */
-	    public String PostSymbol {
+	    virtual public String PostSymbol {
             set {
 		        postSymbol = value;
             }
@@ -560,7 +560,7 @@ namespace iTextSharp.text {
 	    * @since	iText 2.1.1
 	    * @param	preSymbol the String that has to be added before a number or letter in the list symbol.
 	    */
-	    public String PreSymbol {
+	    virtual public String PreSymbol {
             set {
 		        preSymbol = value;
             }
@@ -569,7 +569,7 @@ namespace iTextSharp.text {
             }
 	    }
 
-        public ListItem GetFirstItem() {
+        virtual public ListItem GetFirstItem() {
             IElement lastElement = list.Count > 0 ? list[0] : null;
             if (lastElement != null) {
                 if (lastElement is ListItem) {
@@ -581,7 +581,7 @@ namespace iTextSharp.text {
             return null;
         }
 
-        public ListItem GetLastItem() {
+        virtual public ListItem GetLastItem() {
             IElement lastElement = list.Count > 0 ? list[list.Count - 1] : null;
             if (lastElement != null) {
                 if (lastElement is ListItem) {
@@ -593,7 +593,7 @@ namespace iTextSharp.text {
             return null;
         }
 
-        public PdfObject GetAccessibleAttribute(PdfName key) {
+        virtual public PdfObject GetAccessibleAttribute(PdfName key) {
             if (accessibleAttributes != null)
             {
                 PdfObject obj;
@@ -604,23 +604,23 @@ namespace iTextSharp.text {
                 return null;
         }
 
-        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+        virtual public void SetAccessibleAttribute(PdfName key, PdfObject value) {
             if (accessibleAttributes == null)
                 accessibleAttributes = new Dictionary<PdfName, PdfObject>();
             accessibleAttributes[key] = value;
         }
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+        virtual public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             return accessibleAttributes;
         }
 
-        public PdfName Role
+        virtual public PdfName Role
         {
             get { return role; }
             set { this.role = value; }
         }
 
-        public AccessibleElementId ID {
+        virtual public AccessibleElementId ID {
             get
             {
                 if (id == null)

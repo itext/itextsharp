@@ -1,4 +1,4 @@
-﻿namespace iTextSharp.text.pdf {
+namespace iTextSharp.text.pdf {
     public class RefKey {
         private int num;
         private int gen;

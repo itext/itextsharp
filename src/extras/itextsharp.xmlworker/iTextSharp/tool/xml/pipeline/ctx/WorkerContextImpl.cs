@@ -68,7 +68,7 @@ namespace iTextSharp.tool.xml.pipeline.ctx {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.pipeline.WorkerContext#get(java.lang.Class)
          */
-        public ICustomContext Get(String klass) {
+        virtual public ICustomContext Get(String klass) {
              Object c = mc[klass];
              if (c != null) {
                  return (ICustomContext) c;
@@ -80,21 +80,21 @@ namespace iTextSharp.tool.xml.pipeline.ctx {
          * @param key the key to store the CustomContext for.
          * @param context the CustomContext to store.
          */
-        public void Put(String key, ICustomContext context) {
+        virtual public void Put(String key, ICustomContext context) {
             mc[key] = context;
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.WorkerContext#setCurrentTag()
          */
-        public void SetCurrentTag(Tag t) {
+        virtual public void SetCurrentTag(Tag t) {
             this.tag = t;
 
         }
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.WorkerContext#getCurrentTag()
          */
-        public Tag GetCurrentTag() {
+        virtual public Tag GetCurrentTag() {
             return tag;
         }
     }

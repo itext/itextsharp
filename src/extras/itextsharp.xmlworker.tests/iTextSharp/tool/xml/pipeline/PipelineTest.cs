@@ -30,7 +30,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
         /** Init test. */
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             ctx = new WorkerContextImpl();
             abstractPipelineExtension = new AbstractPipelineExtension(null);
             ap = new CustomAbstractPipeline(abstractPipelineExtension);
@@ -43,7 +43,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 
         [Test]
         [ExpectedException(typeof (PipelineException))]
-        public void ValidateNoCustomContextExceptionThrown() {
+        virtual public void ValidateNoCustomContextExceptionThrown() {
             AbstractPipeline ap = new CustomAbstractPipeline(null);
             ap.GetLocalContext(ctx);
         }
@@ -53,7 +53,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void ValidateNext() {
+        virtual public void ValidateNext() {
             Assert.AreEqual(abstractPipelineExtension, ap.GetNext());
         }
 
@@ -62,7 +62,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void ValidateNextClose() {
+        virtual public void ValidateNextClose() {
             Assert.AreEqual(abstractPipelineExtension, ap.Close(ctx, null, null));
         }
 
@@ -71,7 +71,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void ValidateNextOpen() {
+        virtual public void ValidateNextOpen() {
             Assert.AreEqual(abstractPipelineExtension, ap.Open(ctx, null, null));
         }
 
@@ -80,7 +80,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void ValidateNextContent() {
+        virtual public void ValidateNextContent() {
             Assert.AreEqual(abstractPipelineExtension, ap.Content(ctx, null, null, null));
         }
     }

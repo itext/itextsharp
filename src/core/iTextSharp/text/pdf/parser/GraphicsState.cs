@@ -55,21 +55,21 @@ namespace iTextSharp.text.pdf.parser {
         /** The current character spacing. */
         internal float characterSpacing;
 
-        public float CharacterSpacing {
+        virtual public float CharacterSpacing {
             get { return characterSpacing; }
         }
 
         /** The current word spacing. */
         internal float wordSpacing;
 
-        public float WordSpacing { 
+        virtual public float WordSpacing { 
 			get { return wordSpacing; } 
 		}
 
         /** The current horizontal scaling */
         internal float horizontalScaling;
 
-        public float HorizontalScaling {
+        virtual public float HorizontalScaling {
             get { return horizontalScaling; }
         }
 
@@ -78,14 +78,14 @@ namespace iTextSharp.text.pdf.parser {
         /** The active font. */
         internal CMapAwareDocumentFont font;
 
-        public CMapAwareDocumentFont Font {
+        virtual public CMapAwareDocumentFont Font {
             get { return font; }
         }
 
         /** The current font size. */
         internal float fontSize;
 
-        public float FontSize {
+        virtual public float FontSize {
             get { return fontSize; }
         }
 
@@ -152,7 +152,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the ctm
          * @since iText 5.0.1
          */
-        public Matrix GetCtm() {
+        virtual public Matrix GetCtm() {
             return ctm;
         }
 
@@ -161,7 +161,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the character spacing
          * @since iText 5.0.1
          */
-        public float GetCharacterSpacing() {
+        virtual public float GetCharacterSpacing() {
             return characterSpacing;
         }
 
@@ -170,7 +170,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the word spacing
          * @since iText 5.0.1
          */
-        public float GetWordSpacing() {
+        virtual public float GetWordSpacing() {
             return wordSpacing;
         }
 
@@ -179,7 +179,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the horizontal scaling
          * @since iText 5.0.1
          */
-        public float GetHorizontalScaling() {
+        virtual public float GetHorizontalScaling() {
             return horizontalScaling;
         }
 
@@ -188,7 +188,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the leading
          * @since iText 5.0.1
          */
-        public float GetLeading() {
+        virtual public float GetLeading() {
             return leading;
         }
 
@@ -197,7 +197,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the font
          * @since iText 5.0.1
          */
-        public CMapAwareDocumentFont GetFont() {
+        virtual public CMapAwareDocumentFont GetFont() {
             return font;
         }
 
@@ -206,7 +206,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the font size
          * @since iText 5.0.1
          */
-        public float GetFontSize() {
+        virtual public float GetFontSize() {
             return fontSize;
         }
 
@@ -215,7 +215,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the renderMode
          * @since iText 5.0.1
          */
-        public int GetRenderMode() {
+        virtual public int GetRenderMode() {
             return renderMode;
         }
 
@@ -224,7 +224,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the text rise
          * @since iText 5.0.1
          */
-        public float GetRise() {
+        virtual public float GetRise() {
             return rise;
         }
 
@@ -233,14 +233,14 @@ namespace iTextSharp.text.pdf.parser {
          * @return the knockout
          * @since iText 5.0.1
          */
-        public bool IsKnockout() {
+        virtual public bool IsKnockout() {
             return knockout;
         }
 
         /**
          * Gets the current color space for fill operations
          */
-        public PdfName ColorSpaceFill
+        virtual public PdfName ColorSpaceFill
         {
             get { return colorSpaceFill; }
         }
@@ -248,7 +248,7 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * Gets the current color space for stroke operations
          */
-        public PdfName ColorSpaceStroke
+        virtual public PdfName ColorSpaceStroke
         {
             get { return colorSpaceStroke; }
         }
@@ -257,7 +257,7 @@ namespace iTextSharp.text.pdf.parser {
          * Gets the current fill color
          * @return a BaseColor
          */
-        public BaseColor FillColor
+        virtual public BaseColor FillColor
         {
             get { return fillColor; }
         }
@@ -266,7 +266,7 @@ namespace iTextSharp.text.pdf.parser {
          * Gets the current stroke color
          * @return a BaseColor
          */
-        public BaseColor StrokeColor
+        virtual public BaseColor StrokeColor
         {
             get { return strokeColor; }
         }

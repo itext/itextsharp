@@ -70,7 +70,7 @@ namespace iTextSharp.tool.xml.css.apply {
          * com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element,
          * com.itextpdf.tool.xml.Tag)
          */
-    public HtmlCell Apply(HtmlCell cell, Tag t, IMarginMemory memory, IPageSizeContainable psc) {
+    virtual public HtmlCell Apply(HtmlCell cell, Tag t, IMarginMemory memory, IPageSizeContainable psc) {
         Tag row = t.Parent;
         while(row != null && !row.Name.Equals(HTML.Tag.TR)){
            row = row.Parent;

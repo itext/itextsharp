@@ -16,20 +16,20 @@ namespace iTextSharp.text.pdf.parser {
          * @param filterSet filter set to be attached. The delegate will be invoked if all the filters pass.
          */
 
-        public E AttachRenderListener<E>(E deleg, params RenderFilter[] filterSet) where E : IRenderListener {
+        virtual public E AttachRenderListener<E>(E deleg, params RenderFilter[] filterSet) where E : IRenderListener {
             delegates.Add(deleg);
             filters.Add(filterSet);
 
             return deleg;
         }
 
-        public void BeginTextBlock() {
+        virtual public void BeginTextBlock() {
             foreach (IRenderListener deleg in delegates) {
                 deleg.BeginTextBlock();
             }
         }
 
-        public void RenderText(TextRenderInfo renderInfo) {
+        virtual public void RenderText(TextRenderInfo renderInfo) {
             for (int i = 0; i < delegates.Count; i++) {
                 bool filtersPassed = true;
                 foreach (RenderFilter filter in filters[i]) {
@@ -43,13 +43,13 @@ namespace iTextSharp.text.pdf.parser {
             }
         }
 
-        public void EndTextBlock() {
+        virtual public void EndTextBlock() {
             foreach (IRenderListener deleg in delegates) {
                 deleg.EndTextBlock();
             }
         }
 
-        public void RenderImage(ImageRenderInfo renderInfo) {
+        virtual public void RenderImage(ImageRenderInfo renderInfo) {
             for (int i = 0; i < delegates.Count; i++) {
                 bool filtersPassed = true;
                 foreach (RenderFilter filter in filters[i]) {

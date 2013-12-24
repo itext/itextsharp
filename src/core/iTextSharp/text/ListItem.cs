@@ -231,7 +231,7 @@ namespace iTextSharp.text {
         /// Get/set the listsymbol.
         /// </summary>
         /// <value>a Chunk</value>
-        public Chunk ListSymbol {
+        virtual public Chunk ListSymbol {
             get {
                 return symbol;
             }
@@ -251,7 +251,7 @@ namespace iTextSharp.text {
         *
         * @param	indentation		the new indentation
         */        
-        public void SetIndentationLeft(float indentation, bool autoindent) {
+        virtual public void SetIndentationLeft(float indentation, bool autoindent) {
             if (autoindent) {
             	IndentationLeft = ListSymbol.GetWidthPoint();
             }
@@ -265,13 +265,13 @@ namespace iTextSharp.text {
          * in the list item.
          * @since 5.0.6
          */
-        public void AdjustListSymbolFont() {
+        virtual public void AdjustListSymbolFont() {
             System.Collections.Generic.IList<Chunk> cks = Chunks;
             if (cks.Count != 0 && symbol != null)
                 symbol.Font = cks[0].Font;
         }
 
-        public ListBody ListBody {
+        virtual public ListBody ListBody {
             get
             {
                 if (listBody == null)
@@ -280,7 +280,7 @@ namespace iTextSharp.text {
             }
         }
 
-        public ListLabel ListLabel {
+        virtual public ListLabel ListLabel {
             get
             {
                 if (listLabel == null)

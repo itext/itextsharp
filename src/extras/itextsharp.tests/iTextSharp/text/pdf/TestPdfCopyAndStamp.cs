@@ -42,7 +42,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
 
         [SetUp]
-        public void SetUp()
+        virtual public void SetUp()
         {
             input = new String[]{
                 "content1.pdf",
@@ -61,11 +61,11 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [TearDown]
-        public void TearDown()
+        virtual public void TearDown()
         {
         }
 
-        public void MergeAndStampPdf(bool resetStampEachPage, String[] input, String output, String stamp)
+        virtual public void MergeAndStampPdf(bool resetStampEachPage, String[] input, String output, String stamp)
         {
             PdfReader stampReader = new PdfReader(pdfContent[stamp]);
             List<PdfReader> readersToClose = new List<PdfReader>();
@@ -137,7 +137,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             pdfContent[output] = baos.ToArray();
         }
 
-        protected void TestXObject(bool shouldExist, int page, String xObjectName)
+        virtual protected void TestXObject(bool shouldExist, int page, String xObjectName)
         {
             PdfReader reader = null;
             RandomAccessFileOrArray raf = null;
@@ -172,7 +172,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void TestWithReloadingStampReader()
+        virtual public void TestWithReloadingStampReader()
         {
             MergeAndStampPdf(true, input, output, stamp);
 
@@ -183,7 +183,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
 
         [Test]
-        public void TestWithoutReloadingStampReader()
+        virtual public void TestWithoutReloadingStampReader()
         {
             MergeAndStampPdf(false, input, output, stamp);
 
@@ -196,7 +196,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
 
         [Test]
-        public void RestMultiPageStampWithoutReloadingStampReader()
+        virtual public void RestMultiPageStampWithoutReloadingStampReader()
         {
             MergeAndStampPdf(false, input, output, multiPageStamp);
 
@@ -208,7 +208,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void TestMultiPageStampWithReloadingStampReader()
+        virtual public void TestMultiPageStampWithReloadingStampReader()
         {
             MergeAndStampPdf(true, input, output, multiPageStamp);
 

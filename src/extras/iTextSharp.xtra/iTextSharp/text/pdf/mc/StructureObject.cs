@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace iTextSharp.text.pdf.mc
 {
@@ -37,7 +37,7 @@ namespace iTextSharp.text.pdf.mc
          * Returns the structure element.
          * @return a StructElem dictionary
          */
-        public PdfDictionary GetStructElem() {
+        virtual public PdfDictionary GetStructElem() {
             return structElem;
         }
 
@@ -45,7 +45,7 @@ namespace iTextSharp.text.pdf.mc
          * Returns the structure element's reference.
          * @return an indirect reference to a StructElem dictionary
          */
-        public PdfIndirectReference GetRef() {
+        virtual public PdfIndirectReference GetRef() {
             return refa;
         }
 
@@ -56,7 +56,7 @@ namespace iTextSharp.text.pdf.mc
          * dictionary will be returned.
          * @return the object referred to by OBJR as a dictionary
          */
-        public PdfDictionary GetObjAsDict() {
+        virtual public PdfDictionary GetObjAsDict() {
             if (obj.IsDictionary())
                 return (PdfDictionary) obj;
             return null;
@@ -66,7 +66,7 @@ namespace iTextSharp.text.pdf.mc
          * Returns the reference to the object.
          * @return	an object reference
          */
-        public PdfIndirectReference GetObjRef() {
+        virtual public PdfIndirectReference GetObjRef() {
             return objref;
         }
 

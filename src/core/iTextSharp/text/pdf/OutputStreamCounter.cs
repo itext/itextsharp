@@ -54,13 +54,13 @@ namespace iTextSharp.text.pdf {
             outc = _outc;
         }  
 
-        public long Counter {
+        virtual public long Counter {
             get {
                 return counter;
             }
         }
 
-        public void ResetCounter() {
+        virtual public void ResetCounter() {
             counter = 0;
         }
 

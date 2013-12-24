@@ -104,7 +104,7 @@ namespace iTextSharp.text {
         * Getter for the JBIG2 global data.
         * @return   an array of bytes
         */
-        public byte[] GlobalBytes {
+        virtual public byte[] GlobalBytes {
             get {
                 return this.global;
             }
@@ -114,7 +114,7 @@ namespace iTextSharp.text {
         * Getter for the unique hash.
         * @return   an array of bytes
         */
-        public byte[] GlobalHash {
+        virtual public byte[] GlobalHash {
             get {
                 return this.globalHash;
             }

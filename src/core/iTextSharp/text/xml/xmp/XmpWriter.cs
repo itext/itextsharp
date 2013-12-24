@@ -164,13 +164,13 @@ namespace iTextSharp.text.xml.xmp {
             }
         }
 
-        public IXmpMeta XmpMeta {
+        virtual public IXmpMeta XmpMeta {
             get { return xmpMeta; }
         }
 
         /** Sets the XMP to read-only */
 
-        public bool ReadOnly {
+        virtual public bool ReadOnly {
             get { return serializeOptions.ReadOnlyPacket; }
             set { serializeOptions.ReadOnlyPacket = value; }
         }
@@ -179,7 +179,7 @@ namespace iTextSharp.text.xml.xmp {
          * @param about The about to set.
          */
 
-        public String About {
+        virtual public String About {
             get { return xmpMeta.ObjectName; }
             set { xmpMeta.ObjectName = value; }
         }
@@ -192,7 +192,7 @@ namespace iTextSharp.text.xml.xmp {
          */
 
         [Obsolete]
-        public void AddRdfDescription(String xmlns, String content) {
+        virtual public void AddRdfDescription(String xmlns, String content) {
             try {
                 String str = "<rdf:RDF xmlns:rdf=\"" + XmpConst.NS_RDF + "\">" +
                              "<rdf:Description rdf:about=\"" + xmpMeta.ObjectName +
@@ -217,7 +217,7 @@ namespace iTextSharp.text.xml.xmp {
          */
 
         [Obsolete]
-        public void AddRdfDescription(XmpSchema s) {
+        virtual public void AddRdfDescription(XmpSchema s) {
             try {
                 String str = "<rdf:RDF xmlns:rdf=\"" + XmpConst.NS_RDF + "\">" +
                              "<rdf:Description rdf:about=\"" + xmpMeta.ObjectName +
@@ -246,7 +246,7 @@ namespace iTextSharp.text.xml.xmp {
          * @throws XMPException Wraps all errors and exceptions that may occur.
          */
 
-        public void SetProperty(String schemaNS, String propName, Object value) {
+        virtual public void SetProperty(String schemaNS, String propName, Object value) {
             xmpMeta.SetProperty(schemaNS, propName, value);
         }
 
@@ -262,7 +262,7 @@ namespace iTextSharp.text.xml.xmp {
          * @throws XMPException Wraps all errors and exceptions that may occur.
          */
 
-        public void AppendArrayItem(String schemaNS, String arrayName, String value) {
+        virtual public void AppendArrayItem(String schemaNS, String arrayName, String value) {
             xmpMeta.AppendArrayItem(schemaNS, arrayName, new PropertyOptions(PropertyOptions.ARRAY), value, null);
         }
 
@@ -278,7 +278,7 @@ namespace iTextSharp.text.xml.xmp {
          * @throws XMPException Wraps all errors and exceptions that may occur.
          */
 
-        public void AppendOrderedArrayItem(String schemaNS, String arrayName, String value) {
+        virtual public void AppendOrderedArrayItem(String schemaNS, String arrayName, String value) {
             xmpMeta.AppendArrayItem(schemaNS, arrayName, new PropertyOptions(PropertyOptions.ARRAY_ORDERED), value, null);
         }
 
@@ -294,7 +294,7 @@ namespace iTextSharp.text.xml.xmp {
          * @throws XMPException Wraps all errors and exceptions that may occur.
          */
 
-        public void AppendAlternateArrayItem(String schemaNS, String arrayName, String value) {
+        virtual public void AppendAlternateArrayItem(String schemaNS, String arrayName, String value) {
             xmpMeta.AppendArrayItem(schemaNS, arrayName, new PropertyOptions(PropertyOptions.ARRAY_ALTERNATE), value,
                                     null);
         }
@@ -304,7 +304,7 @@ namespace iTextSharp.text.xml.xmp {
          * @throws IOException
          */
 
-        public void Serialize(Stream externalOutputStream) {
+        virtual public void Serialize(Stream externalOutputStream) {
             XmpMetaFactory.Serialize(xmpMeta, externalOutputStream, serializeOptions);
         }
 
@@ -313,7 +313,7 @@ namespace iTextSharp.text.xml.xmp {
          * @throws IOException
          */
 
-        public void Close() {
+        virtual public void Close() {
             if (outputStream == null)
                 return;
             try {
@@ -325,7 +325,7 @@ namespace iTextSharp.text.xml.xmp {
             }
         }
 
-        public void AddDocInfoProperty(Object key, String value) {
+        virtual public void AddDocInfoProperty(Object key, String value) {
             if (key is String)
                 key = new PdfName((String) key);
             if (PdfName.TITLE.Equals(key)) {

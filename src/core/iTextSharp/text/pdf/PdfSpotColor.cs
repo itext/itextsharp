@@ -73,7 +73,7 @@ namespace iTextSharp.text.pdf {
             this.altcs = altcs;
         }
     
-        public BaseColor AlternativeCS {
+        virtual public BaseColor AlternativeCS {
             get {
                 return altcs;
             }

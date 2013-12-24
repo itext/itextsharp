@@ -69,14 +69,14 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @return the start point
          */
-        public Vector GetStartPoint() {
+        virtual public Vector GetStartPoint() {
             return startPoint;
         }
 
         /**
          * @return the end point
          */
-        public Vector GetEndPoint() {
+        virtual public Vector GetEndPoint() {
             return endPoint;
         }
         
@@ -84,7 +84,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the length of this line segment
          * @since 5.0.2
          */
-        public float GetLength(){
+        virtual public float GetLength(){
             return endPoint.Subtract(startPoint).Length;
         }
         
@@ -96,7 +96,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the bounding rectangle
          * @since 5.0.2
          */
-        public RectangleJ GetBoundingRectange(){
+        virtual public RectangleJ GetBoundingRectange(){
             float x1 = GetStartPoint()[Vector.I1];
             float y1 = GetStartPoint()[Vector.I2];
             float x2 = GetEndPoint()[Vector.I1];
@@ -110,7 +110,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param m the matrix for the transformation
          * @return the transformed segment
          */
-        public LineSegment TransformBy(Matrix m){
+        virtual public LineSegment TransformBy(Matrix m){
             Vector newStart = startPoint.Cross(m);
             Vector newEnd = endPoint.Cross(m);
             return new LineSegment(newStart, newEnd);

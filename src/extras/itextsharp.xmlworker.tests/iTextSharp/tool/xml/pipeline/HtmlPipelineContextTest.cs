@@ -7,7 +7,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
         private HtmlPipelineContext ctx;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             ctx = new HtmlPipelineContext(null);
         }
 
@@ -16,7 +16,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void VerifyDefaultPageSize() {
+        virtual public void VerifyDefaultPageSize() {
             Assert.AreEqual(PageSize.A4, ctx.PageSize);
         }
 
@@ -25,7 +25,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void VerifyDefaultBookmarksEnabled() {
+        virtual public void VerifyDefaultBookmarksEnabled() {
             Assert.AreEqual(true, ctx.AutoBookmark());
         }
 
@@ -34,7 +34,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void VerifyDefaultAcceptUnknown() {
+        virtual public void VerifyDefaultAcceptUnknown() {
             Assert.AreEqual(true, ctx.AcceptUnknown());
         }
 
@@ -43,7 +43,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void VerifyDefaultRoottags() {
+        virtual public void VerifyDefaultRoottags() {
             Assert.AreEqual(true, ctx.GetRootTags().Contains("div") && ctx.GetRootTags().Contains("body"));
         }
 
@@ -52,7 +52,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void VerifyMemory() {
+        virtual public void VerifyMemory() {
             Assert.NotNull(ctx.GetMemory());
         }
 
@@ -63,7 +63,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 
         [Test]
         [ExpectedException(typeof (NoImageProviderException))]
-        public void VerifyNoImageProvider() {
+        virtual public void VerifyNoImageProvider() {
             ctx.GetImageProvider();
         }
     }

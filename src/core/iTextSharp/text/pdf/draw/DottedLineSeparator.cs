@@ -74,7 +74,7 @@ namespace iTextSharp.text.pdf.draw {
         * Setter for the gap between the center of the dots of the dotted line.
         * @param   gap the gap between the center of the dots
         */
-        public float Gap {
+        virtual public float Gap {
             get {
                 return gap;
             }

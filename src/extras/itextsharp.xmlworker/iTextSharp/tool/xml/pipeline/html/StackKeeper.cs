@@ -71,14 +71,14 @@ namespace iTextSharp.tool.xml.pipeline.html {
          *
          * @param content the element to add
          */
-        public void Add(IElement content) {
+        virtual public void Add(IElement content) {
             this.stack.Add(content);
         }
 
         /**
          * @return the elements in this stack
          */
-        public IList<IElement> GetElements() {
+        virtual public IList<IElement> GetElements() {
             return this.stack;
 
         }
@@ -88,7 +88,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          *
          * @param elements collection of Element
          */
-        public void Add<K>(ICollection<K> elements) where K : IElement{
+        virtual public void Add<K>(ICollection<K> elements) where K : IElement{
             foreach (IElement e in elements) {
                 this.stack.Add(e);
             }
@@ -97,7 +97,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
         /**
          * @return the tag
          */
-        public Tag GetTag() {
+        virtual public Tag GetTag() {
             return tag;
         }
     }

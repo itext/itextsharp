@@ -315,7 +315,7 @@ public class PdfEncodings {
 
     private class WingdingsConversion : IExtraEncoding {
         
-        public byte[] CharToByte(char char1, String encoding) {
+        virtual public byte[] CharToByte(char char1, String encoding) {
             if (char1 == ' ')
                 return new byte[]{(byte)char1};
             else if (char1 >= '\u2701' && char1 <= '\u27BE') {
@@ -326,7 +326,7 @@ public class PdfEncodings {
             return new byte[0];
         }
         
-        public byte[] CharToByte(String text, String encoding) {
+        virtual public byte[] CharToByte(String text, String encoding) {
             char[] cc = text.ToCharArray();
             byte[] b = new byte[cc.Length];
             int ptr = 0;
@@ -348,7 +348,7 @@ public class PdfEncodings {
             return b2;
         }
         
-        public String ByteToChar(byte[] b, String encoding) {
+        virtual public String ByteToChar(byte[] b, String encoding) {
             return null;
         }
 
@@ -379,7 +379,7 @@ public class PdfEncodings {
     private class Cp437Conversion : IExtraEncoding {
         private static IntHashtable c2b = new IntHashtable();
         
-        public byte[] CharToByte(String text, String encoding) {
+        virtual public byte[] CharToByte(String text, String encoding) {
             char[] cc = text.ToCharArray();
             byte[] b = new byte[cc.Length];
             int ptr = 0;
@@ -401,7 +401,7 @@ public class PdfEncodings {
             return b2;
         }
         
-        public byte[] CharToByte(char char1, String encoding) {
+        virtual public byte[] CharToByte(char char1, String encoding) {
             if (char1 < 128)
                 return new byte[]{(byte)char1};
             else {
@@ -413,7 +413,7 @@ public class PdfEncodings {
             }
         }
         
-        public String ByteToChar(byte[] b, String encoding) {
+        virtual public String ByteToChar(byte[] b, String encoding) {
             int len = b.Length;
             char[] cc = new char[len];
             int ptr = 0;
@@ -461,7 +461,7 @@ public class PdfEncodings {
                 translation = t2;
         }
         
-        public byte[] CharToByte(String text, String encoding) {
+        virtual public byte[] CharToByte(String text, String encoding) {
             char[] cc = text.ToCharArray();
             byte[] b = new byte[cc.Length];
             int ptr = 0;
@@ -479,7 +479,7 @@ public class PdfEncodings {
             return b2;
         }
         
-        public byte[] CharToByte(char char1, String encoding) {
+        virtual public byte[] CharToByte(char char1, String encoding) {
             byte v = (byte)translation[(int)char1];
             if (v != 0)
                 return new byte[]{v};
@@ -487,7 +487,7 @@ public class PdfEncodings {
                 return new byte[0];
         }
         
-        public String ByteToChar(byte[] b, String encoding) {
+        virtual public String ByteToChar(byte[] b, String encoding) {
             return null;
         }
 
@@ -541,14 +541,14 @@ public class PdfEncodings {
     
     private class SymbolTTConversion : IExtraEncoding {
         
-        public byte[] CharToByte(char char1, String encoding) {
+        virtual public byte[] CharToByte(char char1, String encoding) {
             if ((char1 & 0xff00) == 0 || (char1 & 0xff00) == 0xf000)
                 return new byte[]{(byte)char1};
             else
                 return new byte[0];
         }
         
-        public byte[] CharToByte(String text, String encoding) {
+        virtual public byte[] CharToByte(String text, String encoding) {
             char[] ch = text.ToCharArray();
             byte[] b = new byte[ch.Length];
             int ptr = 0;
@@ -565,7 +565,7 @@ public class PdfEncodings {
             return b2;
         }
         
-        public String ByteToChar(byte[] b, String encoding) {
+        virtual public String ByteToChar(byte[] b, String encoding) {
             return null;
         }       
     }

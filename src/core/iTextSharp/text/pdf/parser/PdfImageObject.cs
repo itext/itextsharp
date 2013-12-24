@@ -122,14 +122,14 @@ namespace iTextSharp.text.pdf.parser {
          */
         private ImageBytesType streamContentType = null;
 
-        public string GetFileType() {
+        virtual public string GetFileType() {
             return streamContentType.FileExtension;
         }
 
         /**
          * @return the type of image data that is returned by getImageBytes()
          */
-        public ImageBytesType GetImageBytesType(){
+        virtual public ImageBytesType GetImageBytesType(){
             return streamContentType;
         }
         
@@ -184,7 +184,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param key a key
          * @return the value
          */
-        public PdfObject Get(PdfName key) {
+        virtual public PdfObject Get(PdfName key) {
             return dictionary.Get(key);
         }
         
@@ -192,7 +192,7 @@ namespace iTextSharp.text.pdf.parser {
          * Returns the image dictionary.
          * @return the dictionary
          */
-        public PdfDictionary GetDictionary() {
+        virtual public PdfDictionary GetDictionary() {
             return dictionary;
         }
 
@@ -366,7 +366,7 @@ namespace iTextSharp.text.pdf.parser {
          * @throws IOException
          * @since 5.0.4
          */
-        public byte[] GetImageAsBytes() {
+        virtual public byte[] GetImageAsBytes() {
             return imageBytes; 
         }
 

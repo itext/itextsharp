@@ -26,7 +26,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
         protected static string RESOURCES = @"..\..\resources\com\itextpdf\";
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             testPath = this.GetType().FullName.Replace("itextsharp.xmlworker.tests.iTextSharp.", "");
             testPath = testPath.Replace(".", Path.DirectorySeparatorChar.ToString());
             testPath = testPath.Substring(0, testPath.LastIndexOf(Path.DirectorySeparatorChar) + 1);
@@ -54,7 +54,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
         }
 
         [Test, Timeout(120000)]
-        public void Test() {
+        virtual public void Test() {
             String testName = GetTestName();
             if (this.GetType() != typeof (SampleTest) && (testName.Length > 0)) {
                 TransformHtml2Pdf();
@@ -71,7 +71,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
             return "";
         }
 
-        protected bool DetectCrashesAndHangUpsOnly() {
+        virtual protected bool DetectCrashesAndHangUpsOnly() {
             return false;
         }
 
@@ -98,7 +98,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
             doc.Close();
         }
 
-        protected void TransformHtml2Pdf(Document doc, PdfWriter pdfWriter, IImageProvider imageProvider,
+        virtual protected void TransformHtml2Pdf(Document doc, PdfWriter pdfWriter, IImageProvider imageProvider,
             IFontProvider fontProvider, Stream cssFile) {
             CssFilesImpl cssFiles = new CssFilesImpl();
             if (cssFile == null)

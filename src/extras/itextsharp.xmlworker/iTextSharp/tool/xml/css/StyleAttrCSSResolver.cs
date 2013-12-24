@@ -134,7 +134,7 @@ namespace iTextSharp.tool.xml.css {
          * @see com.itextpdf.tool.xml.pipeline.css.CSSResolver#resolveStyles(com.itextpdf.tool.xml.Tag)
          */
 
-        public void ResolveStyles(Tag t)
+        virtual public void ResolveStyles(Tag t)
         {
             // get css for this tag from resolver
             IDictionary<String, String> tagCss = new Dictionary<String, String>();
@@ -316,7 +316,7 @@ namespace iTextSharp.tool.xml.css {
          *
          * @param cssInheritanceRules the inherit to set
          */
-        public void SetCssInheritance(ICssInheritanceRules cssInheritanceRules) {
+        virtual public void SetCssInheritance(ICssInheritanceRules cssInheritanceRules) {
             this.inherit = cssInheritanceRules;
         }
 
@@ -351,7 +351,7 @@ namespace iTextSharp.tool.xml.css {
          * (non-Javadoc)
          * @see com.itextpdf.tool.xml.pipeline.css.CSSResolver#addCss(java.lang.String, java.lang.String)
          */
-        public void AddCss(String content, String charSet, bool isPersistent) {
+        virtual public void AddCss(String content, String charSet, bool isPersistent) {
             CssFileProcessor proc = new CssFileProcessor();
             try {
                 retrieve.ProcessFromStream(new MemoryStream(Encoding.GetEncoding(charSet).GetBytes(content)), proc);
@@ -372,7 +372,7 @@ namespace iTextSharp.tool.xml.css {
          * @param href the path, if it starts with http we try to retrieve the file
          *            from the net, if not we try a normal file operation.
          */
-        public void AddCssFile(String href, bool isPersistent) {
+        virtual public void AddCssFile(String href, bool isPersistent) {
             CssFileProcessor cssFileProcessor = new CssFileProcessor();
             try {
                 retrieve.ProcessFromHref(href, cssFileProcessor);
@@ -388,14 +388,14 @@ namespace iTextSharp.tool.xml.css {
          * Add a file to the CssFiles Collection.
          * @param file the CssFile to add.
          */
-        public void AddCss(ICssFile file) {
+        virtual public void AddCss(ICssFile file) {
             this.cssFiles.Add(file);
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.pipeline.css.CSSResolver#addCss(java.lang.String)
          */
-        public void AddCss(String content, bool isPersistent) {
+        virtual public void AddCss(String content, bool isPersistent) {
             CssFileProcessor proc = new CssFileProcessor();
             IFileRetrieve retrieve = new FileRetrieveImpl();
             try {
@@ -412,7 +412,7 @@ namespace iTextSharp.tool.xml.css {
         /**
          * @param inherit the inherit to set
          */
-        public void SetCssInheritanceRules(ICssInheritanceRules inherit) {
+        virtual public void SetCssInheritanceRules(ICssInheritanceRules inherit) {
             this.inherit = inherit;
         }
 
@@ -420,7 +420,7 @@ namespace iTextSharp.tool.xml.css {
          * The {@link FileRetrieve} implementation to use in {@link StyleAttrCSSResolver#addCssFile(String)}.
          * @param retrieve the retrieve to set
          */
-        public IFileRetrieve FileRetrieve {
+        virtual public IFileRetrieve FileRetrieve {
             set {
                 this.retrieve = value;
             }
@@ -429,7 +429,7 @@ namespace iTextSharp.tool.xml.css {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.pipeline.css.CSSResolver#clear()
          */
-        public ICSSResolver Clear() {
+        virtual public ICSSResolver Clear() {
             cssFiles.Clear();
             return this;
         }

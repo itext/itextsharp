@@ -88,13 +88,13 @@ namespace iTextSharp.text.pdf {
             os.Write(b, 0, b.Length);
         }
 
-        public PdfReader Reader {
+        virtual public PdfReader Reader {
             get {
                 return reader;
             }
         }
         
-        public void SetNumber(int number, int generation) {
+        virtual public void SetNumber(int number, int generation) {
             this.number = number;
             this.generation = generation;
         }

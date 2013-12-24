@@ -108,7 +108,7 @@ namespace iTextSharp.tool.xml.net {
          * the given root directories will be set as root path with the given <code>href</code> as
          * file path until a valid file has been found.
          */
-        public void ProcessFromHref(String href, IReadingProcessor processor) {
+        virtual public void ProcessFromHref(String href, IReadingProcessor processor) {
             if (LOGGER.IsLogging(Level.DEBUG)) {
                 LOGGER.Debug(String.Format(LocaleMessages.GetInstance().GetMessage("retrieve.file.from"), href));
             }
@@ -169,7 +169,7 @@ namespace iTextSharp.tool.xml.net {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.net.FileRetrieve#processFromStream(java.io.Stream, com.itextpdf.tool.xml.net.ReadingProcessor)
          */
-        public void ProcessFromStream(Stream inp, IReadingProcessor processor) {
+        virtual public void ProcessFromStream(Stream inp, IReadingProcessor processor) {
             Read(processor, inp);
         }
 
@@ -201,7 +201,7 @@ namespace iTextSharp.tool.xml.net {
          * Add a root directory.
          * @param dir the root directory
          */
-        public void AddRootDir(string dir) {
+        virtual public void AddRootDir(string dir) {
             rootdirs.Add(dir);
         }
 
@@ -209,7 +209,7 @@ namespace iTextSharp.tool.xml.net {
          * Add a root URL.
          * @param url the URL
          */
-        public void AddURL(String url) {
+        virtual public void AddURL(String url) {
             urls.Add(url);
         }
 

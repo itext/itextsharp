@@ -56,23 +56,23 @@ namespace System.util.collections {
             link = new LinkedList<KeyValuePair<TKey,TValue>>();
         }
 
-        public void Add(TKey key, TValue value) {
+        virtual public void Add(TKey key, TValue value) {
             LinkedListNode<KeyValuePair<TKey,TValue>> v = new LinkedListNode<KeyValuePair<TKey,TValue>>(new KeyValuePair<TKey,TValue>(key, value));
             dic.Add(key, v);
             link.AddLast(v);
         }
 
-        public bool ContainsKey(TKey key) {
+        virtual public bool ContainsKey(TKey key) {
             return dic.ContainsKey(key);
         }
 
-        public ICollection<TKey> Keys {
+        virtual public ICollection<TKey> Keys {
             get {
                 return new KeyCollection(link, dic);
             }
         }
 
-        public bool Remove(TKey key) {
+        virtual public bool Remove(TKey key) {
             if (dic.ContainsKey(key)) {
                 link.Remove(dic[key]);
                 dic.Remove(key);
@@ -82,7 +82,7 @@ namespace System.util.collections {
                 return false;
         }
 
-        public bool TryGetValue(TKey key, out TValue value) {
+        virtual public bool TryGetValue(TKey key, out TValue value) {
             if (dic.ContainsKey(key)) {
                 value = dic[key].Value.Value;
                 return true;
@@ -93,7 +93,7 @@ namespace System.util.collections {
             }
         }
 
-        public ICollection<TValue> Values {
+        virtual public ICollection<TValue> Values {
             get {
                 return new ValueCollection(link);
             }

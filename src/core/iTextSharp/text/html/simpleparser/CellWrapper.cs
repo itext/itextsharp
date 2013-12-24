@@ -97,7 +97,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param	tag		a cell tag
          * @param	chain	the hierarchy chain
          */
-	    public PdfPCell CreatePdfPCell(String tag, ChainedProperties chain) {
+	    virtual public PdfPCell CreatePdfPCell(String tag, ChainedProperties chain) {
 		    PdfPCell cell = new PdfPCell((Phrase)null);
             // colspan
 		    String value = chain[HtmlTags.COLSPAN];
@@ -137,28 +137,28 @@ namespace iTextSharp.text.html.simpleparser {
             return cell;
 	    }
 
-        public bool Add(IElement o) {
+        virtual public bool Add(IElement o) {
             cell.AddElement(o);
             return true;
         }
         
-        public IList<Chunk> Chunks {
+        virtual public IList<Chunk> Chunks {
             get {
                 return null;
             }
         }
         
-        public bool Process(IElementListener listener) {
+        virtual public bool Process(IElementListener listener) {
             return true;
         }
         
-        public int Type {
+        virtual public int Type {
             get {
                 return Element.RECTANGLE;
             }
         }
         
-        public PdfPCell Cell {
+        virtual public PdfPCell Cell {
             get {
                 return cell;
             }
@@ -168,7 +168,7 @@ namespace iTextSharp.text.html.simpleparser {
         * @see com.lowagie.text.Element#isContent()
         * @since   iText 2.0.8
         */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return true;
         }
 
@@ -176,16 +176,16 @@ namespace iTextSharp.text.html.simpleparser {
         * @see com.lowagie.text.Element#isNestable()
         * @since   iText 2.0.8
         */
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             return true;
         }
   
 
-        public float Width {
+        virtual public float Width {
             get { return width; }
         }
 
-        public bool IsPercentage {
+        virtual public bool IsPercentage {
             get {
                 return percentage;
             }

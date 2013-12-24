@@ -131,7 +131,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param by The matrix to multiply by
          * @return  the resulting matrix
          */
-        public Matrix Multiply(Matrix by){
+        virtual public Matrix Multiply(Matrix by){
             Matrix rslt = new Matrix();
             
             float[] a = vals;
@@ -156,7 +156,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param arg the matrix to subtract from this matrix
          * @return a Matrix object
          */
-        public Matrix Subtract(Matrix arg){
+        virtual public Matrix Subtract(Matrix arg){
             Matrix rslt = new Matrix();
             
             float[] a = vals;
@@ -180,7 +180,7 @@ namespace iTextSharp.text.pdf.parser {
          * Computes the determinant of the matrix.
          * @return the determinant of the matrix
          */
-        public float GetDeterminant(){
+        virtual public float GetDeterminant(){
             // ref http://en.wikipedia.org/wiki/Determinant   
             // note that in PDF, I13 and I23 are always 0 and I33 is always 1
             // so this could be simplified/faster

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * $Id: GujaratiLigaturizer.java 5561 2012-11-22 16:22:14Z blowagie $
  *
  * This file is part of the iText (R) project.

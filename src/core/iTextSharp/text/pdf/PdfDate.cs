@@ -104,7 +104,7 @@ namespace iTextSharp.text.pdf {
         * Gives the W3C format of the PdfDate.
         * @return a formatted date
         */
-        public String GetW3CDate() {
+        virtual public String GetW3CDate() {
             return GetW3CDate(value);
         }
         

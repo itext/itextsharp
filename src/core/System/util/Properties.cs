@@ -64,18 +64,18 @@ namespace System.util
             _col = new Dictionary<string,string>();
         }
 
-        public string Remove(string key) {
+        virtual public string Remove(string key) {
             string retval;
             _col.TryGetValue(key, out retval);
             _col.Remove(key);
             return retval;
         }
 
-        public Dictionary<string,string>.Enumerator GetEnumerator() {
+        virtual public Dictionary<string,string>.Enumerator GetEnumerator() {
             return _col.GetEnumerator();
         }
 
-        public bool ContainsKey(string key) {
+        virtual public bool ContainsKey(string key) {
             return _col.ContainsKey(key);            
         }
 
@@ -83,13 +83,13 @@ namespace System.util
             _col[key] = value;        
         }
 
-        public void AddAll(Properties col) {
+        virtual public void AddAll(Properties col) {
             foreach (string itm in col.Keys) {
                 _col[itm] = col[itm];
             }
         }
 
-        public int Count {
+        virtual public int Count {
             get {
                 return _col.Count;
             }
@@ -107,17 +107,17 @@ namespace System.util
             }
         }
 
-        public Dictionary<string,string>.KeyCollection Keys {
+        virtual public Dictionary<string,string>.KeyCollection Keys {
             get {
                 return _col.Keys;
             }
         }
 
-        public void Clear() {
+        virtual public void Clear() {
             _col.Clear();
         }
 
-        public void Load(Stream inStream) {
+        virtual public void Load(Stream inStream) {
             StreamReader inp = new StreamReader(inStream, Encoding.GetEncoding(1252));
             while (true) {
                 // Get next line

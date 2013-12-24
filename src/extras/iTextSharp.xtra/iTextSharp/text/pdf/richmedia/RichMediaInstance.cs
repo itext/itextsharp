@@ -76,7 +76,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * Sets the parameters. This will only work for Flash.
          * @param params    a RichMediaParams object
          */
-        public RichMediaParams Params {
+        virtual public RichMediaParams Params {
             set {
                 if (flash) {
                     Put(PdfName.PARAMS, value);
@@ -93,7 +93,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * in the Assets name tree of the content of the annotation.
          * @param   asset   a reference to a dictionary present in the Assets name tree
          */
-        public PdfIndirectReference Asset {
+        virtual public PdfIndirectReference Asset {
             set {
                 Put(PdfName.ASSET, value);
             }

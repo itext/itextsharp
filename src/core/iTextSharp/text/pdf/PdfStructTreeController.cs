@@ -26,7 +26,7 @@ namespace iTextSharp.text.pdf
             SetReader(reader);
         }
 
-        protected internal void SetReader(PdfReader reader){
+        virtual protected internal void SetReader(PdfReader reader){
             this.reader = reader;
             PdfObject obj = reader.Catalog.Get(PdfName.STRUCTTREEROOT);
             obj = GetDirectObject(obj);
@@ -63,7 +63,7 @@ namespace iTextSharp.text.pdf
             return obj;
         }
 
-        public void CopyStructTreeForPage(PdfNumber sourceArrayNumber, int newArrayNumber) {
+        virtual public void CopyStructTreeForPage(PdfNumber sourceArrayNumber, int newArrayNumber) {
 //            int documentHash = GetDocumentHash(reader);
 //            if (!openedDocuments.ContainsKey(documentHash))
 //            {
@@ -406,7 +406,7 @@ namespace iTextSharp.text.pdf
             }
         }
 
-        protected void AddKid(PdfDictionary parent, PdfObject kid){
+        virtual protected void AddKid(PdfDictionary parent, PdfObject kid){
             PdfObject kidObj = parent.Get(PdfName.K);
             PdfArray kids;
             if (kidObj is PdfArray){

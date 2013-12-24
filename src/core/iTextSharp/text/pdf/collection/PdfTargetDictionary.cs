@@ -77,7 +77,7 @@ namespace iTextSharp.text.pdf.collection {
         * you need to specify the name that was used to attach the document.
         * @param   name    the name in the EmbeddedFiles name tree
         */
-        public String EmbeddedFileName {
+        virtual public String EmbeddedFileName {
             set {
                 Put(PdfName.N, new PdfString(value, null));
             }
@@ -89,7 +89,7 @@ namespace iTextSharp.text.pdf.collection {
         * Once you have specified the page, you still need to specify the attachment using another method.
         * @param name  the named destination referring to the page with the file attachment.
         */
-        public String FileAttachmentPagename {
+        virtual public String FileAttachmentPagename {
             set {
                 Put(PdfName.P, new PdfString(value, null));
             }
@@ -101,7 +101,7 @@ namespace iTextSharp.text.pdf.collection {
         * Once you have specified the page, you still need to specify the attachment using another method.
         * @param page  the page number of the page with the file attachment.
         */
-        public int FileAttachmentPage {
+        virtual public int FileAttachmentPage {
             set {
                 Put(PdfName.P, new PdfNumber(value));
             }
@@ -113,7 +113,7 @@ namespace iTextSharp.text.pdf.collection {
         * and then specify the name of the attachment added to this page (or use setFileAttachmentIndex).
         * @param name      the name of the attachment
         */
-        public String FileAttachmentName {
+        virtual public String FileAttachmentName {
             set {
                 Put(PdfName.A, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
@@ -125,7 +125,7 @@ namespace iTextSharp.text.pdf.collection {
         * and then specify the index of the attachment added to this page (or use setFileAttachmentName).
         * @param name      the name of the attachment
         */
-        public int FileAttachmentIndex {
+        virtual public int FileAttachmentIndex {
             set {
                 Put(PdfName.A, new PdfNumber(value));
             }
@@ -136,7 +136,7 @@ namespace iTextSharp.text.pdf.collection {
         * add the next target in the sequence.
         * @param nested    the next target in the sequence
         */
-        public PdfTargetDictionary AdditionalPath {
+        virtual public PdfTargetDictionary AdditionalPath {
             set {
                 Put(PdfName.T, value);
             }

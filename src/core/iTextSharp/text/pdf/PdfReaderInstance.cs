@@ -164,7 +164,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public void WriteAllPages() {
+        virtual public void WriteAllPages() {
             try {
                 file.ReOpen();
                 foreach (PdfImportedPage ip in importedPages.Values) {

@@ -77,7 +77,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param provider
          * @since   5.0.6 renamed from setFontImp
          */
-        public IFontProvider FontProvider {
+        virtual public IFontProvider FontProvider {
             set {
                 provider = value;
             }
@@ -91,7 +91,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   chain   chain of properties
          * @return  an iText Font object
          */
-        public Font GetFont(ChainedProperties chain) {
+        virtual public Font GetFont(ChainedProperties chain) {
             
             // [1] font name
             
@@ -171,7 +171,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param chain the hierarchy chain
          * @return a Chunk
          */
-        public Chunk CreateChunk(String content, ChainedProperties chain) {
+        virtual public Chunk CreateChunk(String content, ChainedProperties chain) {
             Font font = GetFont(chain);
             Chunk ck = new Chunk(content, font);
             if (chain.HasProperty(HtmlTags.SUB))
@@ -188,7 +188,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   chain   the hierarchy chain
          * @return  a Paragraph without any content
          */
-        public Paragraph CreateParagraph(ChainedProperties chain) {
+        virtual public Paragraph CreateParagraph(ChainedProperties chain) {
             Paragraph paragraph = new Paragraph();
             UpdateElement(paragraph, chain);
             return paragraph;
@@ -200,7 +200,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   chain   the hierarchy chain
          * @return  a ListItem without any content
          */
-        public ListItem CreateListItem(ChainedProperties chain) {
+        virtual public ListItem CreateListItem(ChainedProperties chain) {
             ListItem item = new ListItem();
             UpdateElement(item, chain);
             return item;
@@ -212,7 +212,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param paragraph
          * @param chain
          */
-        protected void UpdateElement(Paragraph paragraph, ChainedProperties chain) {
+        virtual protected void UpdateElement(Paragraph paragraph, ChainedProperties chain) {
             // Alignment
             String value = chain[HtmlTags.ALIGN];
             paragraph.Alignment = HtmlUtilities.AlignmentValue(value);
@@ -292,7 +292,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @return  a HyphenationEvent
          * @since   2.1.2
          */
-        public IHyphenationEvent GetHyphenation(ChainedProperties chain) {
+        virtual public IHyphenationEvent GetHyphenation(ChainedProperties chain) {
             String value = chain[HtmlTags.HYPHENATION];
             // no hyphenation defined
             if (value == null || value.Length == 0) {
@@ -330,7 +330,7 @@ namespace iTextSharp.text.html.simpleparser {
          * Creates a LineSeparator.
          * @since 5.0.6
          */
-        public LineSeparator CreateLineSeparator(IDictionary<String, String> attrs, float offset) {
+        virtual public LineSeparator CreateLineSeparator(IDictionary<String, String> attrs, float offset) {
             // line thickness
             float lineWidth = 1;
             String size;
@@ -359,7 +359,7 @@ namespace iTextSharp.text.html.simpleparser {
             return new LineSeparator(lineWidth, percentage, lineColor, align, offset);
         }
         
-        public Image CreateImage(
+        virtual public Image CreateImage(
                 String src,
                 IDictionary<String, String> attrs,
                 ChainedProperties chain,
@@ -428,7 +428,7 @@ namespace iTextSharp.text.html.simpleparser {
             return img;
         }
         
-        public List CreateList(String tag, ChainedProperties chain) {
+        virtual public List CreateList(String tag, ChainedProperties chain) {
             List list;
             if (Util.EqualsIgnoreCase(HtmlTags.UL, tag)) {
                 list = new List(List.UNORDERED);

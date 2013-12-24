@@ -63,7 +63,7 @@ namespace iTextSharp.text.pdf.intern{
             this.writer = writer;
         }
 
-        public void CheckPdfIsoConformance(int key, Object obj1) {
+        virtual public void CheckPdfIsoConformance(int key, Object obj1) {
             pdfAChecker.CheckPdfAConformance(writer, key, obj1);
         }
 
@@ -72,14 +72,14 @@ namespace iTextSharp.text.pdf.intern{
         /**
          * @see com.itextpdf.text.pdf.interfaces.PdfAConformance#getConformanceLevel()
          */
-        public PdfAConformanceLevel ConformanceLevel {
+        virtual public PdfAConformanceLevel ConformanceLevel {
             get { return conformanceLevel; }
         }
 
         /**
          * @see PdfAConformance#setConformanceLevel(com.itextpdf.text.pdf.PdfAConformanceLevel)
          */
-        public void SetConformanceLevel(PdfAConformanceLevel conformanceLevel) {
+        virtual public void SetConformanceLevel(PdfAConformanceLevel conformanceLevel) {
             this.conformanceLevel = conformanceLevel;
             switch(this.conformanceLevel) {
                 case PdfAConformanceLevel.PDF_A_1A:
@@ -105,11 +105,11 @@ namespace iTextSharp.text.pdf.intern{
         /**
          * @see com.itextpdf.text.pdf.interfaces.PdfAConformance#isPdfIso()
          */
-        public bool IsPdfIso() {
+        virtual public bool IsPdfIso() {
             return true;
         }
 
-        public PdfAChecker PdfAChecker {
+        virtual public PdfAChecker PdfAChecker {
             get { return pdfAChecker; }
         }
     }

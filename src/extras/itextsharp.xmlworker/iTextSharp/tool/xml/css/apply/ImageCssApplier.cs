@@ -59,7 +59,7 @@ namespace iTextSharp.tool.xml.css.apply {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag)
          */
-        public Image Apply(Image img, Tag tag) {
+        virtual public Image Apply(Image img, Tag tag) {
             String widthValue;
             tag.CSS.TryGetValue(HTML.Attribute.WIDTH, out widthValue);
             if (widthValue == null)

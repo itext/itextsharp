@@ -77,7 +77,7 @@ namespace iTextSharp.tool.xml.css.apply {
          * This means: <strong>Always replace your list with the returned one and add content to the list after applying!</strong>
          */
         // not implemented: list-style-type:armenian, georgian, decimal-leading-zero.
-        public List Apply(List list, Tag t, IImageProvider htmlPipelineContext) {
+        virtual public List Apply(List list, Tag t, IImageProvider htmlPipelineContext) {
             float fontSize = FontSizeTranslator.GetInstance().GetFontSize(t);
             List lst = list;
             IDictionary<String, String> css = t.CSS;

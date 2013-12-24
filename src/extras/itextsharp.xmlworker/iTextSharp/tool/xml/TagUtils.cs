@@ -69,7 +69,7 @@ namespace iTextSharp.tool.xml {
          * @return the previous sibling
          * @throws NoSiblingException when no previous sibling can be found, because the tag is the first child.
          */
-        public Tag GetSibling(Tag t, int i) {
+        virtual public Tag GetSibling(Tag t, int i) {
             Tag sibling = null;
             try {
                 IList<Tag> siblings = t.Parent.Children;

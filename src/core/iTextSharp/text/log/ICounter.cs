@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 /*
  * $Id: Counter.java 5829 2013-05-31 09:01:34Z blowagie $
  *

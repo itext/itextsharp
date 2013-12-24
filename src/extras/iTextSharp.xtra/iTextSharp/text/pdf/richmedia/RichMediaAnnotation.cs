@@ -121,7 +121,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * added to the Stream yet.
          * @return  a PdfDictionary with RichMediaContent
          */
-        public PdfIndirectReference RichMediaContentReference {
+        virtual public PdfIndirectReference RichMediaContentReference {
             get {
                 return richMediaContentReference;
             }
@@ -133,7 +133,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * @param   name    a name for the name tree
          * @param   fs      a file specification for an embedded file.
          */
-        public PdfIndirectReference AddAsset(String name, PdfFileSpecification fs) {
+        virtual public PdfIndirectReference AddAsset(String name, PdfFileSpecification fs) {
             if (assetsmap == null)
                 throw new IllegalPdfSyntaxException("You can't add assets to reused RichMediaContent.");
             PdfIndirectReference refi = writer.AddToBody(fs).IndirectReference;
@@ -146,7 +146,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * (Part of the RichMediaContent.)
          * @param   ref a reference to a PdfFileSpecification
          */
-        public PdfIndirectReference AddAsset(String name, PdfIndirectReference refi) {
+        virtual public PdfIndirectReference AddAsset(String name, PdfIndirectReference refi) {
             if (views == null)
                 throw new IllegalPdfSyntaxException("You can't add assets to reused RichMediaContent.");
             assetsmap[name] = refi;
@@ -158,7 +158,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * (Part of the RichMediaContent.)
          * @param   configuration   a configuration dictionary
          */
-        public PdfIndirectReference AddConfiguration(RichMediaConfiguration configuration) {
+        virtual public PdfIndirectReference AddConfiguration(RichMediaConfiguration configuration) {
             if (configurations == null)
                 throw new IllegalPdfSyntaxException("You can't add configurations to reused RichMediaContent.");
             PdfIndirectReference refi = writer.AddToBody(configuration).IndirectReference;
@@ -171,7 +171,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * (Part of the RichMediaContent.)
          * @param   ref     a reference to a RichMediaConfiguration
          */
-        public PdfIndirectReference AddConfiguration(PdfIndirectReference refi) {
+        virtual public PdfIndirectReference AddConfiguration(PdfIndirectReference refi) {
             if (configurations == null)
                 throw new IllegalPdfSyntaxException("You can't add configurations to reused RichMediaContent.");
             configurations.Add(refi);
@@ -183,7 +183,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * (Part of the RichMediaContent.)
          * @param   view    a view dictionary
          */
-        public PdfIndirectReference AddView(PdfDictionary view) {
+        virtual public PdfIndirectReference AddView(PdfDictionary view) {
             if (views == null)
                 throw new IllegalPdfSyntaxException( "You can't add views to reused RichMediaContent.");
             PdfIndirectReference refi = writer.AddToBody(view).IndirectReference;
@@ -196,7 +196,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * (Part of the RichMediaContent.)
          * @param   ref a reference to a view dictionary
          */
-        public PdfIndirectReference AddView(PdfIndirectReference refi) {
+        virtual public PdfIndirectReference AddView(PdfIndirectReference refi) {
             if (views == null)
                 throw new IllegalPdfSyntaxException("You can't add views to reused RichMediaContent.");
             views.Add(refi);
@@ -210,7 +210,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * (Part of the RichMediaSettings.)
          * @param   richMediaActivation
          */
-        public RichMediaActivation Activation {
+        virtual public RichMediaActivation Activation {
             set {
                 richMediaSettings.Put(PdfName.ACTIVATION, value);
             }
@@ -222,7 +222,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * (Part of the RichMediaSettings.)
          * @param   richMediaDeactivation
          */
-        public RichMediaDeactivation Deactivation {
+        virtual public RichMediaDeactivation Deactivation {
             set {
                 richMediaSettings.Put(PdfName.DEACTIVATION, value);
             }
@@ -233,7 +233,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * PdfWriter while doing so.
          * @return  a PdfAnnotation
          */
-        public PdfAnnotation CreateAnnotation() {
+        virtual public PdfAnnotation CreateAnnotation() {
             if (richMediaContent != null) {
                 if (assetsmap.Count > 0) {
                     PdfDictionary assets = PdfNameTree.WriteTree(assetsmap, writer);

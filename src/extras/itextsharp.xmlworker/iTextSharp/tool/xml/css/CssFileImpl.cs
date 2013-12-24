@@ -69,7 +69,7 @@ namespace iTextSharp.tool.xml.css {
          * @see com.itextpdf.tool.xml.css.CssFile#add(java.lang.String,
          * java.util.Map)
          */
-        public void Add(String selector, IDictionary<String, String> props) {
+        virtual public void Add(String selector, IDictionary<String, String> props) {
             IDictionary<String, String> currVal;
             map.TryGetValue(selector, out currVal);
             if (currVal != null) {
@@ -84,7 +84,7 @@ namespace iTextSharp.tool.xml.css {
          *
          * @see com.itextpdf.tool.xml.css.CssFile#get(java.lang.String)
          */
-        public IDictionary<String, String> Get(String selector) {
+        virtual public IDictionary<String, String> Get(String selector) {
             IDictionary<String, String> map;
             this.map.TryGetValue(selector, out map);
             return null == map?new Dictionary<String, String>(0):map;
@@ -93,14 +93,14 @@ namespace iTextSharp.tool.xml.css {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.css.CssFile#isPersistent()
          */
-        public bool IsPersistent() {
+        virtual public bool IsPersistent() {
             return persistent;
         }
 
         /**
          * @param isPeristent
          */
-        public void IsPersistent(bool isPeristent) {
+        virtual public void IsPersistent(bool isPeristent) {
             this.persistent = isPeristent;
         }
     }

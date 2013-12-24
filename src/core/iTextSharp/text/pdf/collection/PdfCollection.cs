@@ -84,7 +84,7 @@ namespace iTextSharp.text.pdf.collection {
         * in the user interface.
         * @param description   the description that was used when attaching the file to the document
         */
-        public String InitialDocument {
+        virtual public String InitialDocument {
             set {
                 Put(PdfName.D, new PdfString(value, null));
             }
@@ -94,7 +94,7 @@ namespace iTextSharp.text.pdf.collection {
         * Sets the Collection schema dictionary.
         * @param schema    an overview of the collection fields
         */
-        public PdfCollectionSchema Schema {
+        virtual public PdfCollectionSchema Schema {
             set {
                 Put(PdfName.SCHEMA, value);
             }
@@ -107,7 +107,7 @@ namespace iTextSharp.text.pdf.collection {
         * Sets the Collection sort dictionary.
         * @param sort  a collection sort dictionary
         */
-        public PdfCollectionSort Sort {
+        virtual public PdfCollectionSort Sort {
             set {
                 Put(PdfName.SORT, value);
             }

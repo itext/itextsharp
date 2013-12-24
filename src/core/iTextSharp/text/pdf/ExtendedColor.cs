@@ -84,7 +84,7 @@ namespace iTextSharp.text.pdf {
 		    this.type = type;
 	    }
 
-        public int Type {
+        virtual public int Type {
             get {
                 return type;
             }

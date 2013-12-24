@@ -59,7 +59,7 @@ namespace iTextSharp.text.pdf.collection {
         * @param name  the name of the collection field
         * @param field a Collection Field
         */
-        public void AddField(String name, PdfCollectionField field) {
+        virtual public void AddField(String name, PdfCollectionField field) {
             Put(new PdfName(name), field);
         }
     }

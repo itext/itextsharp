@@ -120,7 +120,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isContent()
         * @since   iText 2.0.8
         */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return true;
         }
 
@@ -128,7 +128,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isNestable()
         * @since   iText 2.0.8
         */
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             return true;
         }
 

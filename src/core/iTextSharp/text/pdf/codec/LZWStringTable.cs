@@ -97,7 +97,7 @@ namespace iTextSharp.text.pdf.codec {
          * @return 0xFFFF if no space in table left for addition of predecesor
          * index and byte b. Else return the code allocated for combination index + b.
          **/
-        public int AddCharString(short index, byte b) {
+        virtual public int AddCharString(short index, byte b) {
             int hshidx;
 
             if (numStrings_ >= MAXSTR) {	// if used up all codes
@@ -128,7 +128,7 @@ namespace iTextSharp.text.pdf.codec {
          * @return b if param index is HASH_FREE. Else return the code
          * for this prefix and byte successor
          **/
-        public short FindCharString(short index, byte b) {
+        virtual public short FindCharString(short index, byte b) {
             int hshidx, nxtidx;
 
             if (index == HASH_FREE)
@@ -148,7 +148,7 @@ namespace iTextSharp.text.pdf.codec {
          * @param codesize the size of code to be preallocated for the
          * string store.
          **/
-        public void ClearTable(int codesize) {
+        virtual public void ClearTable(int codesize) {
             numStrings_ = 0;
 
             for (int q = 0; q < HASHSIZE; q++)
@@ -183,7 +183,7 @@ namespace iTextSharp.text.pdf.codec {
          * negated is equal to the number of bytes that were used of the code being expanded.
          * This negative value also indicates the buffer is full.
          **/
-        public int ExpandCode(byte[] buf, int offset, short code, int skipHead) {
+        virtual public int ExpandCode(byte[] buf, int offset, short code, int skipHead) {
             if (offset == -2) {
                 if (skipHead == 1) skipHead = 0;
             }

@@ -135,7 +135,7 @@ namespace System.util.collections {
         /// key is object that implements IComparable interface
         /// performance tip: change to use use int type (such as the hashcode)
         ///</summary>
-        public void Add(IComparable key, object data) {
+        virtual public void Add(IComparable key, object data) {
             if(key == null)
                 throw(new ArgumentNullException("key"));
             
@@ -249,7 +249,7 @@ namespace System.util.collections {
         /// RotateLeft
         /// Rebalance the tree by rotating the nodes to the left
         ///</summary>
-        public void RotateLeft(OrderedTreeNode x) {
+        virtual public void RotateLeft(OrderedTreeNode x) {
             // pushing node x down and to the Left to balance the tree. x's Right child (y)
             // replaces x (since y > x), and y's Left child becomes x's Right child 
             // (since it's < y but > x).
@@ -285,7 +285,7 @@ namespace System.util.collections {
         /// RotateRight
         /// Rebalance the tree by rotating the nodes to the right
         ///</summary>
-        public void RotateRight(OrderedTreeNode x) {
+        virtual public void RotateRight(OrderedTreeNode x) {
             // pushing node x down and to the Right to balance the tree. x's Left child (y)
             // replaces x (since x < y), and y's Right child becomes x's Left child 
             // (since it's < x but > y).
@@ -318,7 +318,7 @@ namespace System.util.collections {
                 x.Parent = y;       
         }
         
-        public bool ContainsKey(IComparable key) {
+        virtual public bool ContainsKey(IComparable key) {
             OrderedTreeNode treeNode = rbTree; // begin at root
             int result = 0;
             // traverse tree until node is found
@@ -340,7 +340,7 @@ namespace System.util.collections {
         /// GetData
         /// Gets the data object associated with the specified key
         ///<summary>
-        public object GetData(IComparable key) {
+        virtual public object GetData(IComparable key) {
             if(key == null)
                 throw new ArgumentNullException("key");
             int result;
@@ -365,7 +365,7 @@ namespace System.util.collections {
         /// GetMinKey
         /// Returns the minimum key value
         ///<summary>
-        public IComparable GetMinKey() {
+        virtual public IComparable GetMinKey() {
             OrderedTreeNode treeNode = rbTree;
             
             if(treeNode == null || treeNode == sentinelNode)
@@ -384,7 +384,7 @@ namespace System.util.collections {
         /// GetMaxKey
         /// Returns the maximum key value
         ///<summary>
-        public IComparable GetMaxKey() {
+        virtual public IComparable GetMaxKey() {
             OrderedTreeNode treeNode = rbTree;
             
             if(treeNode == null || treeNode == sentinelNode)
@@ -403,21 +403,21 @@ namespace System.util.collections {
         /// GetMinValue
         /// Returns the object having the minimum key value
         ///<summary>
-        public object GetMinValue() {
+        virtual public object GetMinValue() {
             return GetData(GetMinKey());
         }
         ///<summary>
         /// GetMaxValue
         /// Returns the object having the maximum key
         ///<summary>
-        public object GetMaxValue() {
+        virtual public object GetMaxValue() {
             return GetData(GetMaxKey());
         }
         ///<summary>
         /// GetEnumerator
         /// return an enumerator that returns the tree nodes in order
         ///<summary>
-        public OrderedTreeEnumerator GetEnumerator() {
+        virtual public OrderedTreeEnumerator GetEnumerator() {
             // elements is simply a generic name to refer to the 
             // data objects the nodes contain
             return Elements(true);      
@@ -427,19 +427,19 @@ namespace System.util.collections {
         /// if(ascending is true, the keys will be returned in ascending order, else
         /// the keys will be returned in descending order.
         ///<summary>
-        public OrderedTreeEnumerator Keys {
+        virtual public OrderedTreeEnumerator Keys {
             get {
                 return KeyElements(true);
             }
         }
-        public OrderedTreeEnumerator KeyElements(bool ascending) {
+        virtual public OrderedTreeEnumerator KeyElements(bool ascending) {
             return new OrderedTreeEnumerator(rbTree, true, ascending, sentinelNode);
         }
         ///<summary>
         /// Values
         /// Provided for .NET compatibility. 
         ///<summary>
-        public OrderedTreeEnumerator Values {
+        virtual public OrderedTreeEnumerator Values {
             get {
                 return Elements(true);
             }
@@ -450,24 +450,24 @@ namespace System.util.collections {
         /// if(ascending is true, the objects will be returned in ascending order,
         /// else the objects will be returned in descending order.
         ///<summary>
-        public OrderedTreeEnumerator Elements() {
+        virtual public OrderedTreeEnumerator Elements() {
             return Elements(true);
         }
-        public OrderedTreeEnumerator Elements(bool ascending) {
+        virtual public OrderedTreeEnumerator Elements(bool ascending) {
             return new OrderedTreeEnumerator(rbTree, false, ascending, sentinelNode);
         }
         ///<summary>
         /// IsEmpty
         /// Is the tree empty?
         ///<summary>
-        public bool IsEmpty() {
+        virtual public bool IsEmpty() {
             return (rbTree == null || rbTree == sentinelNode);
         }
         ///<summary>
         /// Remove
         /// removes the key and data object (delete)
         ///<summary>
-        public void Remove(IComparable key) {
+        virtual public void Remove(IComparable key) {
             if(key == null)
                 throw new ArgumentNullException("key");
         
@@ -639,7 +639,7 @@ namespace System.util.collections {
         /// RemoveMin
         /// removes the node with the minimum key
         ///<summary>
-        public void RemoveMin() {
+        virtual public void RemoveMin() {
             if(rbTree == null || rbTree == sentinelNode)
                 return;
             Remove(GetMinKey());
@@ -648,7 +648,7 @@ namespace System.util.collections {
         /// RemoveMax
         /// removes the node with the maximum key
         ///<summary>
-        public void RemoveMax() {
+        virtual public void RemoveMax() {
             if(rbTree == null || rbTree == sentinelNode)
                 return;
             Remove(GetMaxKey());
@@ -657,12 +657,12 @@ namespace System.util.collections {
         /// Clear
         /// Empties or clears the tree
         ///<summary>
-        public void Clear () {
+        virtual public void Clear () {
             rbTree = sentinelNode;
             intCount = 0;
         }
 
-        public int Count {
+        virtual public int Count {
             get {
                 return intCount;
             }
@@ -688,7 +688,7 @@ namespace System.util.collections {
         ///<summary>
         ///Key
         ///</summary>
-        public IComparable Key {
+        virtual public IComparable Key {
             get {
                 return ordKey;
             }
@@ -700,7 +700,7 @@ namespace System.util.collections {
         ///<summary>
         ///Data
         ///</summary>
-        public object Value {
+        virtual public object Value {
             get {
                 return objValue;
             }
@@ -724,7 +724,7 @@ namespace System.util.collections {
             Reset();            
         }
 
-        public void Reset() {
+        virtual public void Reset() {
             pre = true;
             stack.Clear();
             // use depth-first traversal to push nodes into stack
@@ -745,7 +745,7 @@ namespace System.util.collections {
             }
         }
 
-        public object Current {
+        virtual public object Current {
             get {
                 if (pre)
                     throw new InvalidOperationException("Current");
@@ -756,13 +756,13 @@ namespace System.util.collections {
         ///<summary>
         /// HasMoreElements
         ///</summary>
-        public bool HasMoreElements() {
+        virtual public bool HasMoreElements() {
             return (stack.Count > 0);
         }
         ///<summary>
         /// NextElement
         ///</summary>
-        public object NextElement() {
+        virtual public object NextElement() {
             if(stack.Count == 0)
 
                 throw new InvalidOperationException("Element not found");
@@ -821,7 +821,7 @@ namespace System.util.collections {
         /// MoveNext
         /// For .NET compatibility
         ///</summary>
-        public bool MoveNext() {
+        virtual public bool MoveNext() {
             if(HasMoreElements()) {
                 NextElement();
                 pre = false;
@@ -831,7 +831,7 @@ namespace System.util.collections {
             return false;
         }
 
-        public OrderedTreeEnumerator GetEnumerator() {
+        virtual public OrderedTreeEnumerator GetEnumerator() {
             return this;
         }
     }
@@ -857,7 +857,7 @@ namespace System.util.collections {
         ///<summary>
         ///Key
         ///</summary>
-        public IComparable Key {
+        virtual public IComparable Key {
             get {
                 return ordKey;
             }
@@ -869,7 +869,7 @@ namespace System.util.collections {
         ///<summary>
         ///Data
         ///</summary>
-        public object Data {
+        virtual public object Data {
             get {
                 return objData;
             }
@@ -881,7 +881,7 @@ namespace System.util.collections {
         ///<summary>
         ///Color
         ///</summary>
-        public bool Color {
+        virtual public bool Color {
             get {
                 return intColor;
             }
@@ -893,7 +893,7 @@ namespace System.util.collections {
         ///<summary>
         ///Left
         ///</summary>
-        public OrderedTreeNode Left {
+        virtual public OrderedTreeNode Left {
             get {
                 return rbnLeft;
             }
@@ -905,7 +905,7 @@ namespace System.util.collections {
         ///<summary>
         /// Right
         ///</summary>
-        public OrderedTreeNode Right {
+        virtual public OrderedTreeNode Right {
             get {
                 return rbnRight;
             }
@@ -914,7 +914,7 @@ namespace System.util.collections {
                 rbnRight = value;
             }
         }
-        public OrderedTreeNode Parent {
+        virtual public OrderedTreeNode Parent {
             get {
                 return rbnParent;
             }

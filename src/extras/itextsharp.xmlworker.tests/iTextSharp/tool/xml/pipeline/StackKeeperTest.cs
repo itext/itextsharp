@@ -12,7 +12,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
         private Tag t;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             t = new Tag("root");
             sk = new StackKeeper(t);
             a = new Chunk("a");
@@ -24,27 +24,27 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
         }
 
         [Test]
-        public void ValidateFirstAddedElementIsFirst() {
+        virtual public void ValidateFirstAddedElementIsFirst() {
             Assert.AreEqual(a, sk.GetElements()[0]);
         }
 
         [Test]
-        public void ValidateMiddleIsMiddle() {
+        virtual public void ValidateMiddleIsMiddle() {
             Assert.AreEqual(b, sk.GetElements()[1]);
         }
 
         [Test]
-        public void ValidateLastIsLast() {
+        virtual public void ValidateLastIsLast() {
             Assert.AreEqual(c, sk.GetElements()[2]);
         }
 
         [Test]
-        public void ValidateCount() {
+        virtual public void ValidateCount() {
             Assert.AreEqual(3, sk.GetElements().Count);
         }
 
         [Test]
-        public void ValidateTag() {
+        virtual public void ValidateTag() {
             Assert.AreEqual(t, sk.GetTag());
         }
     }
