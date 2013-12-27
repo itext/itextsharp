@@ -198,8 +198,9 @@ namespace iTextSharp.text.pdf {
             if (openAction != null) {
                 catalog.Put(PdfName.OPENACTION, openAction);
             }
-            if (pdf.pageLabels != null)
+            if (pdf.pageLabels != null) {
                 catalog.Put(PdfName.PAGELABELS, pdf.pageLabels.GetDictionary(this));
+            }
             // OCG
             if (documentOCG.Count > 0) {
                 FillOCProperties(false);
@@ -223,25 +224,19 @@ namespace iTextSharp.text.pdf {
             }
             // metadata
             int skipInfo = -1;
-            PdfObject oInfo = reader.Trailer.Get(PdfName.INFO);
-            PRIndirectReference iInfo = null;
-            PdfDictionary oldInfo = null;
-            if (oInfo is PRIndirectReference)
-                iInfo = (PRIndirectReference)oInfo;
-            if (iInfo != null)
-                oldInfo = (PdfDictionary)PdfReader.GetPdfObject(iInfo);
-            else if (oInfo is PdfDictionary)
-                oldInfo = (PdfDictionary)oInfo;
-            String producer = null;
-            if (iInfo != null)
+            PdfIndirectReference iInfo = reader.Trailer.GetAsIndirectObject(PdfName.INFO);
+            if (iInfo != null) {
                 skipInfo = iInfo.Number;
-            if (oldInfo != null && oldInfo.Get(PdfName.PRODUCER) != null)
+            }
+            PdfDictionary oldInfo = reader.Trailer.GetAsDict(PdfName.INFO);
+            String producer = null;
+            if (oldInfo != null && oldInfo.Get(PdfName.PRODUCER) != null) {
                 producer = oldInfo.GetAsString(PdfName.PRODUCER).ToUnicodeString();
+            }
             Version version = Version.GetInstance();
             if (producer == null) {
                 producer = version.GetVersion;
-            }
-            else if (producer.IndexOf(version.Product) == -1) {
+            } else if (producer.IndexOf(version.Product) == -1) {
                 StringBuilder buf = new StringBuilder(producer);
                 buf.Append("; modified using ");
                 buf.Append(version.GetVersion);
@@ -269,12 +264,12 @@ namespace iTextSharp.text.pdf {
             newInfo.Put(PdfName.MODDATE, date);
             newInfo.Put(PdfName.PRODUCER, new PdfString(producer, PdfObject.TEXT_UNICODE));
             if (append) {
-                if (iInfo == null)
+                if (iInfo == null) {
                     info = AddToBody(newInfo, false).IndirectReference;
-                else
+                } else {
                     info = AddToBody(newInfo, iInfo.Number, false).IndirectReference;
-            }
-            else {
+                }
+            } else {
                 info = AddToBody(newInfo, false).IndirectReference;
             }
             // XMP
