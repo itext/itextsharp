@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("iTextSharp XML Worker")]
 [assembly: AssemblyDescription("Parses XML to PDF, with CSS support, using iTextSharp")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("1T3XT BVBA")]
+[assembly: AssemblyCompany("iText Group NV")]
 [assembly: AssemblyProduct("itextsharp.xmlworker")]
 [assembly: AssemblyCopyright("Copyright (C) 2013 by Bruno Lowagie and Paulo Soares. All Rights Reserved.")]
 [assembly: AssemblyTrademark("")]
