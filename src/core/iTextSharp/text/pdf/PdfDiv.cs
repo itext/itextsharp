@@ -419,7 +419,10 @@ namespace iTextSharp.text.pdf {
                     {
                         Rectangle background = new Rectangle(leftX, maxY - backgroundHeight, leftX + backgroundWidth, maxY);
                         background.BackgroundColor = backgroundColor;
+                        PdfArtifact artifact = new PdfArtifact();
+                        canvas.OpenMCBlock(artifact);
                         canvas.Rectangle(background);
+                        canvas.CloseMCBlock(artifact);
                     }
                 }
             }

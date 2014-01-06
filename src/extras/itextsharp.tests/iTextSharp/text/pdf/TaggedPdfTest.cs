@@ -77,9 +77,9 @@ namespace itextsharp.tests.text.pdf {
 
             //Required for PDF/UA
             writer.ViewerPreferences = PdfWriter.DisplayDocTitle;
-            writer.CreateXmpMetadata();
             document.AddLanguage("en-US");
             document.AddTitle("Some title");
+            writer.CreateXmpMetadata();
             Chunk c = new Chunk("Document Header", new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD, BaseColor.BLUE));
             c.Role = null;
             h1 = new Paragraph(c);
