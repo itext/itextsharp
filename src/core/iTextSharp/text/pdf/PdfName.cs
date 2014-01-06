@@ -1087,6 +1087,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName LAUNCH = new PdfName("Launch");
         /**
          * A name
+         * @since 5.4.6
+         */
+        public static readonly PdfName LAYOUT = new PdfName("Layout");
+        /**
+         * A name
          * @since 2.1.6
          */
         public static readonly PdfName LBL = new PdfName("Lbl");

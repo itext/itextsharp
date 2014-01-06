@@ -281,6 +281,8 @@ namespace iTextSharp.text.pdf
                 WriteAttributes((PdfPTableBody) element);
             else if (element is PdfDiv)
                 WriteAttributes((PdfDiv) element);
+            else if (element is PdfTemplate)
+                WriteAttributes((PdfTemplate)element);
             else if (element is Document)
                 WriteAttributes((Document) element);
 
@@ -306,6 +308,7 @@ namespace iTextSharp.text.pdf
                     Dictionary<String, Object> attr = chunk.Attributes;
                     if (attr != null)
                     {
+                        this.SetAttribute(PdfName.O, PdfName.LAYOUT);
                         // Setting non-inheritable attributes
                         if (attr.ContainsKey(Chunk.UNDERLINE))
                             this.SetAttribute(PdfName.TEXTDECORATIONTYPE, PdfName.UNDERLINE);
@@ -369,6 +372,7 @@ namespace iTextSharp.text.pdf
 
         private void WriteAttributes(Image image) {
             if (image != null) {
+                this.SetAttribute(PdfName.O, PdfName.LAYOUT);
                 if (image.Width > 0)
                     this.SetAttribute(PdfName.WIDTH, new PdfNumber(image.Width));
                 if (image.Height > 0)
@@ -379,6 +383,20 @@ namespace iTextSharp.text.pdf
                     BaseColor color = image.BackgroundColor;
                     this.SetAttribute(PdfName.BACKGROUNDCOLOR, new PdfArray(new float[] { color.R / 255f, color.G / 255f, color.B / 255f }));
                 }
+            }
+        }
+
+        private void WriteAttributes(PdfTemplate template) {
+            if (template != null) {
+                this.SetAttribute(PdfName.O, PdfName.LAYOUT);
+                if (template.Width > 0) {
+                    this.SetAttribute(PdfName.WIDTH, new PdfNumber(template.Width));
+                }
+                if (template.Height > 0) {
+                    this.SetAttribute(PdfName.HEIGHT, new PdfNumber(template.Height));
+                }
+                PdfRectangle rect = new PdfRectangle(template.BoundingBox);
+                this.SetAttribute(PdfName.BBOX, rect);
             }
         }
 
