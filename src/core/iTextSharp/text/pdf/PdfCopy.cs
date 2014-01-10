@@ -1346,11 +1346,12 @@ namespace iTextSharp.text.pdf {
             } 
             if (obj.IsDictionary() || obj.IsStream()) {
                 PdfDictionary d = (PdfDictionary)obj;
-                PdfDictionary newD = new PdfDictionary();
-                foreach (PdfName key in d.Keys) {
-                    newD.Put(key, Propagate(d.Get(key)));
+                PdfName[] keys = new PdfName[d.Keys.Count];
+                d.Keys.CopyTo(keys, 0);
+                foreach (PdfName key in keys) {
+                    d.Put(key, Propagate(d.Get(key)));
                 }
-                return newD;
+                return d;
             } 
             if (obj.IsIndirect()) {
                 obj = PdfReader.GetPdfObject(obj);
