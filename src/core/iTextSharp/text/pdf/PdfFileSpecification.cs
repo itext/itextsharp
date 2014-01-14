@@ -201,12 +201,11 @@ namespace iTextSharp.text.pdf {
                 if (!param.Contains(PdfName.MODDATE)) {
                     param.Put(PdfName.MODDATE, new PdfDate());
                 }
-                if (fileStore != null) {
+                if (fileStore == null) {
+                    stream.Put(PdfName.PARAMS, refFileLength);
+                } else {
                     param.Put(PdfName.SIZE, new PdfNumber(stream.RawLength));
                     stream.Put(PdfName.PARAMS, param);
-                }
-                else {
-                    stream.Put(PdfName.PARAMS, refFileLength);
                 }
 
                 if (mimeType != null)

@@ -100,13 +100,16 @@ namespace iTextSharp.text.pdf.intern
         }
 
         protected override void CheckEmbeddedFile(PdfDictionary embeddedFile) {
-            PdfDictionary parms = GetDirectDictionary(embeddedFile.Get(PdfName.PARAMS));
-            if (parms == null) {
-                throw new PdfAConformanceException(embeddedFile, MessageLocalization.GetComposedMessage("embedded.file.shall.contain.valid.params.key"));
-            }
-            PdfObject modDate = parms.Get(PdfName.MODDATE);
-            if (modDate == null || !(modDate is PdfDate)) {
-                throw new PdfAConformanceException(embeddedFile, MessageLocalization.GetComposedMessage("embedded.file.shall.contain.params.key.with.valid.moddate.key"));
+            PdfObject _params = GetDirectObject(embeddedFile.Get(PdfName.PARAMS));
+            if (_params == null) {
+                throw new PdfAConformanceException(embeddedFile,
+                    MessageLocalization.GetComposedMessage("embedded.file.shall.contain.valid.params.key"));
+            } else if (_params.IsDictionary()) {
+                PdfObject modDate = ((PdfDictionary) _params).Get(PdfName.MODDATE);
+                if (modDate == null || !(modDate is PdfDate)) {
+                    throw new PdfAConformanceException(embeddedFile,
+                        MessageLocalization.GetComposedMessage("embedded.file.shall.contain.params.key.with.valid.moddate.key"));
+                }
             }
         }
 
