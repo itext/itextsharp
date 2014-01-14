@@ -153,5 +153,34 @@ namespace iTextSharp.text.pdfa {
             if (!exceptionThrown)
                 Assert.Fail("PdfAConformanceException with correct message should be thrown.");
         }
+
+        [Test]
+        virtual public void FileSpecCheckTest6() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "fileSpecCheckTest2.pdf", FileMode.Create),
+                PdfAConformanceLevel.PDF_A_3B);
+            writer.CreateXmpMetadata();
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open,
+                FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfDictionary _params = new PdfDictionary();
+            _params.Put(PdfName.MODDATE, new PdfDate());
+            PdfFileSpecification fileSpec = PdfFileSpecification.FileEmbedded(
+                writer, RESOURCES + "foo.xml", "foo.xml", null, false, "text/xml", _params);
+            fileSpec.Put(PdfName.AFRELATIONSHIP, AFRelationshipValue.Data);
+
+            writer.AddFileAttachment(fileSpec);
+
+            document.Close();
+        }
     }
 }
