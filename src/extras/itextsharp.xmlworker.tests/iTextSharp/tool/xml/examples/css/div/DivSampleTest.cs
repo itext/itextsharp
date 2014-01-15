@@ -12,7 +12,7 @@ using iTextSharp.tool.xml.pipeline.html;
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.div {
     internal class DivSampleTest : SampleTest {
-        protected override void TransformHtml2Pdf() {
+        protected override void MakePdf(string outPdf) {
             Document doc = new Document(PageSize.A4_LANDSCAPE);
             PdfWriter pdfWriter = PdfWriter.GetInstance(doc, new FileStream(outPath + outPdf, FileMode.Create));
             doc.SetMargins(0, 0, 0, 0);

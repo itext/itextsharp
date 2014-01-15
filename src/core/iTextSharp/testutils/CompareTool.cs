@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-
 /*
  * $Id: CompareTool.cs 318 2012-02-27 22:46:07Z eugenemark $
  * 
@@ -48,23 +47,25 @@ using System.IO;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+using iTextSharp.text;
+using iTextSharp.text.pdf;
 
-namespace iTextSharp.text.pdf {
+namespace iTextSharp.testutils {
 
 public class CompareTool {
 
     private String gsExec;
     private String compareExec;
-    private String gsParams = " -dNOPAUSE -dBATCH -sDEVICE=png16m -r150 -sOutputFile=<outputfile> <inputfile>";
-    private String compareParams = " <image1> <image2> <difference>";
+    private const String gsParams = " -dNOPAUSE -dBATCH -sDEVICE=png16m -r150 -sOutputFile=<outputfile> <inputfile>";
+    private const String compareParams = " <image1> <image2> <difference>";
 
-    static private String cannotOpenTargetDirectory = "Cannot open target directory for <filename>.";
-    static private String gsFailed = "GhostScript failed for <filename>.";
-    static private String unexpectedNumberOfPages = "Unexpected number of pages for <filename>.";
-    static private String differentPages = "File <filename> differs on page <pagenumber>.";
-    static private String undefinedGsPath = "Path to GhostScript is not specified. Please use -DgsExec=<path_to_ghostscript> (e.g. -DgsExec=\"C:/Program Files/gs/gs8.64/bin/gswin32c.exe\")";
+    private const String cannotOpenTargetDirectory = "Cannot open target directory for <filename>.";
+    private const String gsFailed = "GhostScript failed for <filename>.";
+    private const String unexpectedNumberOfPages = "Unexpected number of pages for <filename>.";
+    private const String differentPages = "File <filename> differs on page <pagenumber>.";
+    private const String undefinedGsPath = "Path to GhostScript is not specified. Please use -DgsExec=<path_to_ghostscript> (e.g. -DgsExec=\"C:/Program Files/gs/gs8.64/bin/gswin32c.exe\")";
 
-    static private String ignoredAreasPrefix = "ignored_areas_";
+    private const String ignoredAreasPrefix = "ignored_areas_";
 
     private String outPdf;
     private String outPdfName;
@@ -148,7 +149,7 @@ public class CompareTool {
                 init(outPath + ignoredAreasPrefix + outPdfName, outPath + ignoredAreasPrefix + cmpPdfName);
             }
 
-            String gsParams = this.gsParams.Replace("<outputfile>", outPath + cmpImage).Replace("<inputfile>", cmpPdf);
+            String gsParams = CompareTool.gsParams.Replace("<outputfile>", outPath + cmpImage).Replace("<inputfile>", cmpPdf);
             Process p = new Process();
             p.StartInfo.FileName = @gsExec;
             p.StartInfo.Arguments = @gsParams;
@@ -169,7 +170,7 @@ public class CompareTool {
             p.StandardError.Close();
             p.WaitForExit();
             if ( p.ExitCode == 0 ) {
-                gsParams = this.gsParams.Replace("<outputfile>", outPath + outImage).Replace("<inputfile>", outPdf);
+                gsParams = CompareTool.gsParams.Replace("<outputfile>", outPath + outImage).Replace("<inputfile>", outPdf);
                 p = new Process();
                 p.StartInfo.FileName = @gsExec;
                 p.StartInfo.Arguments = @gsParams;
@@ -209,7 +210,7 @@ public class CompareTool {
                         is2.Close();
                         if (!cmpResult) {
                             if (File.Exists(compareExec)) {
-                                String compareParams = this.compareParams.Replace("<image1>", imageFiles[i].FullName).Replace("<image2>", cmpImageFiles[i].FullName).Replace("<difference>", outPath + differenceImagePrefix + (i + 1).ToString() + ".png");
+                                String compareParams = CompareTool.compareParams.Replace("<image1>", imageFiles[i].FullName).Replace("<image2>", cmpImageFiles[i].FullName).Replace("<difference>", outPath + differenceImagePrefix + (i + 1).ToString() + ".png");
                                 p = new Process();
                                 p.StartInfo.FileName = @compareExec;
                                 p.StartInfo.Arguments = @compareParams;
@@ -255,7 +256,7 @@ public class CompareTool {
                         return differentPagesFail;
                     } else {
                         if (bUnexpectedNumberOfPages)
-                            return unexpectedNumberOfPages.Replace("<filename>", outPdf) + "\n" + differentPagesFail;
+                            return unexpectedNumberOfPages.Replace("<filename>", outPdf);
                     }
                 } else {
                     return gsFailed.Replace("<filename>", outPdf);
@@ -287,14 +288,15 @@ public class CompareTool {
         cmpPdfName = Path.GetFileName(cmpPdf);
         //template for GhostScript and ImageMagic
         outImage = outPdfName + "-%03d.png";
-        cmpImage = "cmp_" + cmpPdfName + "-%03d.png";
+        if (cmpPdfName.StartsWith("cmp_")) cmpImage = cmpPdfName + "-%03d.png";
+        else cmpImage = "cmp_" + cmpPdfName + "-%03d.png";
     }
 
     private bool CompareStreams(FileStream is1, FileStream is2) {
         byte[] buffer1 = new byte[64 * 1024];
         byte[] buffer2 = new byte[64 * 1024];
-        int len1 = 0;
-        int len2 = 0;
+        int len1;
+        int len2;
         for (; ;) {
             len1 = is1.Read(buffer1, 0, 64 * 1024);
             len2 = is2.Read(buffer2, 0, 64 * 1024);

@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text;
+using iTextSharp.testutils;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.tool.xml;
@@ -13,56 +14,67 @@ using iTextSharp.tool.xml.pipeline.html;
 using NUnit.Framework;
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
-    internal class SampleTest {
-        protected String outPath;
-        protected String outPdf;
-        protected String inputHtml;
-        private String cmpPdf;
-        private String differenceImagePrefix;
-        private CompareTool compareTool;
+    internal class SampleTest : ITextTest {
+        protected String inputPath;
         protected static String testPath;
         protected static String testName;
+        protected String outPath;
+
+        protected String inputHtml;
+
+        private const String differenceImagePrefix = "difference";
 
         protected static string RESOURCES = @"..\..\resources\com\itextpdf\";
 
         [SetUp]
-        virtual public void SetUp() {
-            testPath = this.GetType().FullName.Replace("itextsharp.xmlworker.tests.iTextSharp.", "");
+        public virtual void SetUp() {
+            testPath = this.GetType().Namespace.Replace("itextsharp.xmlworker.tests.iTextSharp.", "");
             testPath = testPath.Replace(".", Path.DirectorySeparatorChar.ToString());
-            testPath = testPath.Substring(0, testPath.LastIndexOf(Path.DirectorySeparatorChar) + 1);
             testName = GetTestName();
-            if (testName.Length > 0) {
-                if (testName.Contains(Path.DirectorySeparatorChar.ToString())) {
-                    int startIndex = testName.LastIndexOf(Path.DirectorySeparatorChar) + 1;
-                    testName = testName.Substring(startIndex, testName.Length - startIndex);
-                }
-                outPath = "target" + Path.DirectorySeparatorChar + testPath +
-                          testName + Path.DirectorySeparatorChar;
-                String inputPath = RESOURCES + Path.DirectorySeparatorChar + testPath + Path.DirectorySeparatorChar +
-                                   testName + Path.DirectorySeparatorChar;
-                differenceImagePrefix = "difference";
-                outPdf = outPath + testName + ".pdf";
-                inputHtml = inputPath + "<testName>.html".Replace("<testName>", testName);
-                cmpPdf = inputPath + "<testName>.pdf".Replace("<testName>", testName);
-                compareTool = new CompareTool(outPdf, cmpPdf);
 
-                if (Directory.Exists(outPath)) {
-                    DeleteDirectory(outPath);
-                }
+            outPath = String.Format("target/{0}/{1}/", testPath, GetTestName());
+            inputPath = String.Format("{0}/{1}/{2}/", RESOURCES, testPath, GetTestName());
+            inputHtml = String.Format("{0}{1}.html", inputPath, GetTestName());
+
+            if (Directory.Exists(outPath))
+                DeleteFiles(outPath);
+            else
                 Directory.CreateDirectory(outPath);
-            }
         }
 
         [Test, Timeout(120000)]
-        virtual public void Test() {
-            String testName = GetTestName();
-            if (this.GetType() != typeof (SampleTest) && (testName.Length > 0)) {
-                TransformHtml2Pdf();
-                if (DetectCrashesAndHangUpsOnly() == false) {
-                    String errorMessage = compareTool.Compare(outPath, differenceImagePrefix);
-                    if (errorMessage != null) {
-                        Assert.Fail(errorMessage);
-                    }
+        public virtual void Test() {
+            if (this.GetType() != typeof (SampleTest) && (GetTestName().Length > 0)) {
+                SetUp();
+                base.RunTest();
+            }
+        }
+
+        protected override void MakePdf(String outPdf) {
+            Document doc = new Document(PageSize.A4);
+            PdfWriter pdfWriter = PdfWriter.GetInstance(doc, new FileStream(outPdf, FileMode.Create));
+            doc.Open();
+            FileStream cssFileStream = new FileStream(RESOURCES + @"tool\xml\examples\sampleTest.css", FileMode.Open);
+            TransformHtml2Pdf(doc, pdfWriter, new SampleTestImageProvider(),
+                new XMLWorkerFontProvider(RESOURCES + @"tool\xml\examples\fonts\"), cssFileStream);
+            cssFileStream.Close();
+            doc.Close();
+        }
+
+        protected override String GetOutPdf() {
+            return String.Format("{0}{1}.pdf", outPath, GetTestName());
+        }
+
+        protected override String GetCmpPdf() {
+            return String.Format("{0}{1}.pdf", inputPath, GetTestName());
+        }
+
+        protected override void ComparePdf(String outPdf, String cmpPdf) {
+            if (!DetectCrashesAndHangUpsOnly()) {
+                CompareTool compareTool = new CompareTool(outPdf, cmpPdf);
+                String errorMessage = compareTool.Compare(outPath, differenceImagePrefix);
+                if (errorMessage != null) {
+                    Assert.Fail(errorMessage);
                 }
             }
         }
@@ -71,7 +83,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
             return "";
         }
 
-        virtual protected bool DetectCrashesAndHangUpsOnly() {
+        protected virtual bool DetectCrashesAndHangUpsOnly() {
             return false;
         }
 
@@ -79,8 +91,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
             private String imageRootPath;
 
             public SampleTestImageProvider() {
-                imageRootPath = RESOURCES + Path.DirectorySeparatorChar + testPath + testName +
-                                Path.DirectorySeparatorChar;
+                imageRootPath = String.Format("{0}/{1}/{2}/", RESOURCES, testPath, testName);
             }
 
             public override String GetImageRootPath() {
@@ -88,17 +99,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
             }
         }
 
-        protected virtual void TransformHtml2Pdf() {
-            Document doc = new Document(PageSize.A4);
-            PdfWriter pdfWriter = PdfWriter.GetInstance(doc, new FileStream(outPdf, FileMode.Create));
-            doc.Open();
-            TransformHtml2Pdf(doc, pdfWriter, new SampleTestImageProvider(),
-                new XMLWorkerFontProvider(RESOURCES + @"\tool\xml\examples\fonts"),
-                File.OpenRead(RESOURCES + @"\tool\xml\examples\" + "sampleTest.css"));
-            doc.Close();
-        }
-
-        virtual protected void TransformHtml2Pdf(Document doc, PdfWriter pdfWriter, IImageProvider imageProvider,
+        protected virtual void TransformHtml2Pdf(Document doc, PdfWriter pdfWriter, IImageProvider imageProvider,
             IFontProvider fontProvider, Stream cssFile) {
             CssFilesImpl cssFiles = new CssFilesImpl();
             if (cssFile == null)
@@ -120,19 +121,6 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
             XMLWorker worker = new XMLWorker(pipeline, true);
             XMLParser xmlParse = new XMLParser(true, worker, Encoding.GetEncoding("UTF-8"));
             xmlParse.Parse(File.OpenRead(inputHtml), Encoding.GetEncoding("UTF-8"));
-        }
-
-        private void DeleteDirectory(string path) {
-            if (path == null)
-                return;
-
-            if (Directory.Exists(path)) {
-                foreach (string subfolder in Directory.GetDirectories(path))
-                    DeleteDirectory(subfolder);
-                foreach (string file in Directory.GetFiles(path))
-                    File.Delete(file);
-                Directory.Delete(path);
-            }
         }
     }
 }

@@ -9,27 +9,25 @@ using NUnit.Framework;
 
 namespace itextsharp.xmlworker.tests.examples {
     /**
- * @author itextpdf.com
- *
- */
-
+     * @author itextpdf.com
+     *
+     */
     internal class XMLWorkerHelperExample : Setup {
         private const string TARGET = @"";
         private const string RESOURCES = @"..\..\resources\";
 
         /**
-	 * Parse html to a PDF.
-	 * With the XMLWorkerHelper this is done in no time. Create a Document and a
-	 * PdfWriter. Don't forget to open the document and call
-	 * <code>XMLWorkerHelper.getInstance().parseXHtml()</code>. This test takes
-	 * html from <code>columbus.html</code>. This document contains &lt;img&gt;
-	 * tags with relative src attributes. You'll see that the images are not
-	 * added, unless they are absolute url's or file paths.
-	 *
-	 * @throws DocumentException
-	 * @throws IOException
-	 */
-
+	     * Parse html to a PDF.
+	     * With the XMLWorkerHelper this is done in no time. Create a Document and a
+	     * PdfWriter. Don't forget to open the document and call
+	     * <code>XMLWorkerHelper.getInstance().parseXHtml()</code>. This test takes
+	     * html from <code>columbus.html</code>. This document contains &lt;img&gt;
+	     * tags with relative src attributes. You'll see that the images are not
+	     * added, unless they are absolute url's or file paths.
+	     *
+	     * @throws DocumentException
+	     * @throws IOException
+	     */
         [Test]
         virtual public void DefaultSetup() {
             Document doc = new Document(PageSize.A4);
@@ -51,10 +49,9 @@ namespace itextsharp.xmlworker.tests.examples {
         }
 
         /**
-	 * Create lists of {@link Element} instead of a document
-	 * @throws IOException
-	 */
-
+	     * Create lists of {@link Element} instead of a document
+	     * @throws IOException
+	     */
         [Test]
         virtual public void DefaultSetupWithoutDocument() {
             XMLWorkerHelper.GetInstance()
