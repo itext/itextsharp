@@ -76,6 +76,7 @@ namespace iTextSharp.text.pdf {
         private List<Object> calculationOrderRefs;
         private bool hasSignature;
         private bool needAppearances = false;
+        private Dictionary<Object, object> mergedRadioButtons = new Dictionary<object, object>();
         
         protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfCopyFields));
         protected override ICounter GetCounter() {
@@ -294,6 +295,8 @@ namespace iTextSharp.text.pdf {
                         AdjustTabOrder(annots, ind, nn);
                     }
                     else {
+                        PdfDictionary field = (PdfDictionary) list[0];
+                        PdfName v = field.GetAsName(PdfName.V);
                         PdfArray kids = new PdfArray();
                         for (int k = 1; k < list.Count; k += 2) {
                             int page = (int)list[k];
@@ -304,10 +307,25 @@ namespace iTextSharp.text.pdf {
                                 pageDic.Put(PdfName.ANNOTS, annots);
                             }
                             PdfDictionary widget = new PdfDictionary();
-                            widget.Merge((PdfDictionary)list[k + 1]);
+                            widget.Merge((PdfDictionary) list[k + 1]);
                             widget.Put(PdfName.PARENT, ind);
-                            PdfNumber nn = (PdfNumber)widget.Get(iTextTag);
+                            PdfNumber nn = (PdfNumber) widget.Get(iTextTag);
                             widget.Remove(iTextTag);
+                            if (PdfCopy.IsCheckButton(field)) {
+                                PdfName _as = widget.GetAsName(PdfName.AS);
+                                if (v != null && _as != null)
+                                    widget.Put(PdfName.AS, v);
+                            } else if (PdfCopy.IsRadioButton(field)) {
+                                PdfName _as = widget.GetAsName(PdfName.AS);
+                                if (v != null && _as != null && !_as.Equals(GetOffStateName(widget))) {
+                                    if (!mergedRadioButtons.ContainsKey(list)) {
+                                        mergedRadioButtons[list] = null;
+                                        widget.Put(PdfName.AS, v);
+                                    } else {
+                                        widget.Put(PdfName.AS, GetOffStateName(widget));
+                                    }
+                                }
+                            }
                             PdfIndirectReference wref = AddToBody(widget).IndirectReference;
                             AdjustTabOrder(annots, wref, nn);
                             kids.Add(wref);
@@ -321,6 +339,10 @@ namespace iTextSharp.text.pdf {
                 }
             }
             return arr;
+        }
+
+        virtual protected PdfName GetOffStateName(PdfDictionary widget) {
+            return PdfName.Off_;
         }
         
         virtual protected void CreateAcroForms() {

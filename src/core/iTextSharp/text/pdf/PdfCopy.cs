@@ -125,6 +125,7 @@ namespace iTextSharp.text.pdf {
         static private int annotIdCnt = 0;
 
         protected bool mergeFields = false;
+        private bool needAppearances = false;
         private bool hasSignature;
         private PdfIndirectReference acroForm;
         private Dictionary<PdfArray, List<int>> tabOrder;
@@ -138,9 +139,10 @@ namespace iTextSharp.text.pdf {
         private Dictionary<int, PdfIndirectObject> mergedMap;
         private HashSet2<PdfIndirectObject> mergedSet;
         private bool mergeFieldsInternalCall = false;
-        
-        internal static int zero = 0;
         private static readonly PdfName iTextTag = new PdfName("_iTextTag_");
+        internal static int zero = 0;
+        private Dictionary<Object, Object> mergedRadioButtons = new Dictionary<object, object>();
+        private Dictionary<Object, PdfObject> mergedTextFields = new Dictionary<Object, PdfObject>();
 
         protected class ImportedPage {
             internal readonly int pageNumber;
@@ -710,6 +712,12 @@ namespace iTextSharp.text.pdf {
                         }
                     }
                 }
+                AcroFields acro = reader.AcroFields;
+                // when a document with NeedAppearances is encountered, the flag is set
+                // in the resulting document.
+                bool needapp = !acro.GenerateAppearances;
+                if (needapp)
+                    needAppearances = true;
                 fields.Add(reader.AcroFields);
                 UpdateCalculationOrder(reader);
             }
@@ -1366,6 +1374,9 @@ namespace iTextSharp.text.pdf {
             PdfDictionary form = new PdfDictionary();
             form.Put(PdfName.DR, Propagate(resources));
 
+            if (needAppearances) {
+                form.Put(PdfName.NEEDAPPEARANCES, PdfBoolean.PDFTRUE);
+            }
             form.Put(PdfName.DA, new PdfString("/Helv 0 Tf 0 g "));
             tabOrder = new Dictionary<PdfArray, List<int>>();
             calculationOrderRefs = new List<Object>(calculationOrder.ToArray());
@@ -1453,6 +1464,7 @@ namespace iTextSharp.text.pdf {
                         AdjustTabOrder(annots, ind, nn);
                     }
                     else {
+                        PdfDictionary field = (PdfDictionary)list[0];
                         PdfArray kids = new PdfArray();
                         for (int k = 1; k < list.Count; k += 2) {
                             int page = (int)list[k];
@@ -1460,8 +1472,36 @@ namespace iTextSharp.text.pdf {
                             PdfDictionary widget = new PdfDictionary();
                             widget.Merge((PdfDictionary)list[k + 1]);
                             widget.Put(PdfName.PARENT, ind);
-                            PdfNumber nn = (PdfNumber)widget.Get(iTextTag);
+                            PdfNumber nn = (PdfNumber) widget.Get(iTextTag);
                             widget.Remove(iTextTag);
+                            if (PdfCopy.IsTextField(field)) {
+                                PdfString v = field.GetAsString(PdfName.V);
+                                PdfObject ap = widget.Get(PdfName.AP);
+                                if (v != null && ap != null) {
+                                    if (!mergedTextFields.ContainsKey(list)) {
+                                        mergedTextFields[list] = ap;
+                                    } else {
+                                        PdfObject ap1 = mergedTextFields[list];
+                                        widget.Put(PdfName.AP, CopyObject(ap1));
+                                    }
+                                }
+                            } else if (PdfCopy.IsCheckButton(field)) {
+                                PdfName v = field.GetAsName(PdfName.V);
+                                PdfName _as = widget.GetAsName(PdfName.AS);
+                                if (v != null && _as != null)
+                                    widget.Put(PdfName.AS, v);
+                            } else if (PdfCopy.IsRadioButton(field)) {
+                                PdfName v = field.GetAsName(PdfName.V);
+                                PdfName _as = widget.GetAsName(PdfName.AS);
+                                if (v != null && _as != null && !_as.Equals(GetOffStateName(widget))) {
+                                    if (!mergedRadioButtons.ContainsKey(list)) {
+                                        mergedRadioButtons[list] = null;
+                                        widget.Put(PdfName.AS, v);
+                                    } else {
+                                        widget.Put(PdfName.AS, GetOffStateName(widget));
+                                    }
+                                }
+                            }
                             widget.Put(PdfName.TYPE, PdfName.ANNOT);
                             PdfIndirectReference wref = AddToBody(widget, PdfIndirectReference, true).IndirectReference;
                             AdjustTabOrder(annots, wref, nn);
@@ -1624,6 +1664,10 @@ namespace iTextSharp.text.pdf {
             base.FreeReader(reader);
         }
 
+        virtual protected PdfName GetOffStateName(PdfDictionary widget) {
+            return PdfName.Off_;
+        }
+
         protected static readonly HashSet2<PdfName> widgetKeys = new HashSet2<PdfName>();
         protected static readonly HashSet2<PdfName> fieldKeys = new HashSet2<PdfName>();
         static PdfCopy() {
@@ -1665,6 +1709,31 @@ namespace iTextSharp.text.pdf {
             fieldKeys.Add(PdfName.SV);
         }
 
+        internal static int? GetFlags(PdfDictionary field) {
+            PdfName type = field.GetAsName(PdfName.FT);
+            if (!PdfName.BTN.Equals(type))
+                return null;
+            PdfNumber flags = field.GetAsNumber(PdfName.FF);
+            if (flags == null)
+                return null;
+            return flags.IntValue;
+        }
+
+        internal static bool IsCheckButton(PdfDictionary field) {
+            int? flags = GetFlags(field);
+            return flags == null ||
+                   ((flags.Value & PdfFormField.FF_PUSHBUTTON) == 0 && (flags.Value & PdfFormField.FF_RADIO) == 0);
+        }
+
+        internal static bool IsRadioButton(PdfDictionary field) {
+            int? flags = GetFlags(field);
+            return flags != null && (flags.Value & PdfFormField.FF_PUSHBUTTON) == 0 && (flags.Value & PdfFormField.FF_RADIO) != 0;
+        }
+
+        internal static bool IsTextField(PdfDictionary field) {
+            PdfName type = field.GetAsName(PdfName.FT);
+            return PdfName.TX.Equals(type);
+        }
 
         /**
         * Create a page stamp. New content and annotations, including new fields, are allowed.
