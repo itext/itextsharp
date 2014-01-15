@@ -32,8 +32,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.net {
 
         [TearDown]
         virtual public void TearDown() {
-            output =
-                null;
+            output = null;
 
             try {
                 File.Delete(actual);

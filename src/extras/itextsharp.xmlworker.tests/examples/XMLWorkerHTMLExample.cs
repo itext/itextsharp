@@ -12,12 +12,12 @@ using NUnit.Framework;
 namespace itextsharp.xmlworker.tests.examples {
     internal class XMLWorkerHTMLExample : Setup {
         /**
-	 * This method shows you how to setup the processing yourself. This is how
-	 * it's done in the {@link XMLWorkerHelper}
-	 *
-	 * @throws IOException if something with IO went wrong.
-	 * @throws DocumentException if something with the document goes wrong.
-	 */
+	     * This method shows you how to setup the processing yourself. This is how
+	     * it's done in the {@link XMLWorkerHelper}
+	     *
+	     * @throws IOException if something with IO went wrong.
+	     * @throws DocumentException if something with the document goes wrong.
+	     */
         private const string TARGET = @"";
         private const string RESOURCES = @"..\..\resources\";
 
@@ -45,13 +45,12 @@ namespace itextsharp.xmlworker.tests.examples {
         }
 
         /**
-	 * Define an ImageRoot. You'll see that the document columbus3.pdf now has
-	 * images.
-	 *
-	 * @throws IOException if something with IO went wrong.
-	 * @throws DocumentException if something with the document goes wrong.
-	 */
-
+	     * Define an ImageRoot. You'll see that the document columbus3.pdf now has
+	     * images.
+	     *
+	     * @throws IOException if something with IO went wrong.
+	     * @throws DocumentException if something with the document goes wrong.
+	     */
         [Test]
         virtual public void AddingAnImageRoot() {
             Document doc = new Document(PageSize.A4);
@@ -77,13 +76,12 @@ namespace itextsharp.xmlworker.tests.examples {
         }
 
         /**
-	 * Define a LinProvider. You'll see that the document columbus3.pdf now
-	 * links that point to the right url.
-	 *
-	 * @throws IOException if something with IO went wrong.
-	 * @throws DocumentException if something with the document goes wrong.
-	 */
-
+	     * Define a LinProvider. You'll see that the document columbus3.pdf now
+	     * links that point to the right url.
+	     *
+	     * @throws IOException if something with IO went wrong.
+	     * @throws DocumentException if something with the document goes wrong.
+	     */
         [Test]
         virtual public void AddingALinkProvider() {
             Document doc = new Document(PageSize.A4);

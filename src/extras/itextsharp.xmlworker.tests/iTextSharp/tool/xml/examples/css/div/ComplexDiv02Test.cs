@@ -18,7 +18,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.div {
             return "complexDiv02";
         }
 
-        protected override void TransformHtml2Pdf() {
+        protected override void MakePdf(string outPdf) {
             Document doc = new Document(PageSize.A1.Rotate());
             PdfWriter pdfWriter = PdfWriter.GetInstance(doc, new FileStream(outPdf, FileMode.Create));
             doc.SetMargins(doc.LeftMargin - 10, doc.RightMargin - 10, doc.TopMargin, doc.BottomMargin);

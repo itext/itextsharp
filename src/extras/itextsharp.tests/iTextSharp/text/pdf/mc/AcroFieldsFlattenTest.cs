@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using iTextSharp.testutils;
 using Microsoft.XmlDiffPatch;
 using NUnit.Framework;
 using iTextSharp.text.log;
@@ -26,7 +27,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.mc {
         }
 
         [Test]
-        virtual public void fieldFieldsAndFlattenTest() {
+        virtual public void FieldFieldsAndFlattenTest() {
             String acroFormFileName = "SF2809.pdf";
             String filledAcroFormFileName = "SF2809_filled.pdf";
             String flattenAcroFormFileName = "SF2809_alt.pdf";

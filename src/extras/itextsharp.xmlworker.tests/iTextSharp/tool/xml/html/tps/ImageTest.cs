@@ -11,10 +11,9 @@ using Image = iTextSharp.tool.xml.html.Image;
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
     /**
- * @author itextpdf.com
- *
- */
-
+     * @author itextpdf.com
+     *
+     */
     internal class ImageTest {
         static ImageTest() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(5));
@@ -34,9 +33,8 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         }
 
         /**
-	 * Verifies that the call to end of {@link Image} returns a List<IElement> containing a Chunk with a Image in it.
-	 */
-
+	     * Verifies that the call to end of {@link Image} returns a List<IElement> containing a Chunk with a Image in it.
+	     */
         [Test]
         virtual public void VerifyEnd() {
             IList<IElement> content = i.End(workerContextImpl, I, null);
@@ -46,9 +44,8 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         }
 
         /**
-	 * Verifies if {@link Image} is a stack owner. Should be false.
-	 */
-
+	     * Verifies if {@link Image} is a stack owner. Should be false.
+	     */
         [Test]
         virtual public void VerifyIfStackOwner() {
             Assert.IsFalse(i.IsStackOwner());
