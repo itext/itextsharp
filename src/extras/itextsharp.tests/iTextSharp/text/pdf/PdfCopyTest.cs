@@ -1,5 +1,7 @@
+using System;
 using System.IO;
 using itextsharp.tests.iTextSharp.testutils;
+using iTextSharp.testutils;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using NUnit.Framework;
@@ -18,7 +20,6 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         virtual public void TearDown() {
             TestResourceUtils.PurgeTempFiles();
         }
-
         
         /**
          * Test to demonstrate issue https://sourceforge.net/tracker/?func=detail&aid=3013642&group_id=15255&atid=115255
@@ -112,6 +113,116 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             Assert.IsTrue(decodeParms[0] is PdfNull);
 
             reader.Close();
+        }
+
+
+        [Test]
+        public virtual void TestNeedAppearances() {
+            String f1 = RESOURCES + "appearances1.pdf";
+            String f2 = RESOURCES + "appearances2.pdf";
+            String f3 = RESOURCES + "appearances3.pdf";
+            String f4 = RESOURCES + "appearances4.pdf";
+
+            Directory.CreateDirectory("PdfCopyTest/");
+            FileStream outputPdfStream = new FileStream("PdfCopyTest/appearances.pdf", FileMode.Create);
+            Document document = new Document();
+            PdfCopy copy = new PdfCopy(document, outputPdfStream);
+            copy.SetMergeFields();
+            document.Open();
+            foreach (String f in new String[] {f1, f2, f3, f4}) {
+                PdfReader r = new PdfReader(f);
+                copy.AddDocument(r);
+            }
+            copy.Close();
+            CompareTool compareTool = new CompareTool("PdfCopyTest/appearances.pdf",
+                RESOURCES + "cmp_appearances.pdf");
+            String errorMessage = compareTool.Compare("PdfCopyTest/", "diff");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
+
+        [Test]
+        public virtual void TestNeedAppearancesFalse() {
+            String f1 = RESOURCES + "appearances1(needAppearancesFalse).pdf";
+            String f2 = RESOURCES + "appearances2(needAppearancesFalse).pdf";
+            String f3 = RESOURCES + "appearances3(needAppearancesFalse).pdf";
+            String f4 = RESOURCES + "appearances4(needAppearancesFalse).pdf";
+
+            Directory.CreateDirectory("PdfCopyTest/");
+            FileStream outputPdfStream =
+                new FileStream("PdfCopyTest/appearances(needAppearancesFalse).pdf", FileMode.Create);
+            Document document = new Document();
+            PdfCopy copy = new PdfCopy(document, outputPdfStream);
+            copy.SetMergeFields();
+            document.Open();
+            foreach (String f in new String[] {f1, f2, f3, f4}) {
+                PdfReader r = new PdfReader(f);
+                copy.AddDocument(r);
+            }
+            copy.Close();
+            CompareTool compareTool =
+                new CompareTool("PdfCopyTest/appearances(needAppearancesFalse).pdf",
+                    RESOURCES + "cmp_appearances(needAppearancesFalse).pdf");
+            String errorMessage = compareTool.Compare("PdfCopyTest/", "diff");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
+
+        [Test]
+        public virtual void TestNeedAppearancesFalseWithStreams() {
+            String f1 = RESOURCES + "appearances1(needAppearancesFalseWithStreams).pdf";
+            String f2 = RESOURCES + "appearances2(needAppearancesFalseWithStreams).pdf";
+            String f3 = RESOURCES + "appearances3(needAppearancesFalseWithStreams).pdf";
+            String f4 = RESOURCES + "appearances4(needAppearancesFalseWithStreams).pdf";
+
+            Directory.CreateDirectory("PdfCopyTest/");
+            FileStream outputPdfStream =
+                new FileStream("PdfCopyTest/appearances(needAppearancesFalseWithStreams).pdf", FileMode.Create);
+            Document document = new Document();
+            PdfCopy copy = new PdfCopy(document, outputPdfStream);
+            copy.SetMergeFields();
+            document.Open();
+            foreach (String f in new String[] {f1, f2, f3, f4}) {
+                PdfReader r = new PdfReader(f);
+                copy.AddDocument(r);
+            }
+            copy.Close();
+            CompareTool compareTool =
+                new CompareTool("PdfCopyTest/appearances(needAppearancesFalseWithStreams).pdf",
+                    RESOURCES + "cmp_appearances(needAppearancesFalseWithStreams).pdf");
+            String errorMessage = compareTool.Compare("PdfCopyTest/", "diff");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
+
+        [Test]
+        public virtual void TestNeedAppearancesMixed() {
+            String f1 = RESOURCES + "appearances1.pdf";
+            String f2 = RESOURCES + "appearances2(needAppearancesFalse).pdf";
+            String f3 = RESOURCES + "appearances3(needAppearancesFalseWithStreams).pdf";
+            String f4 = RESOURCES + "appearances4.pdf";
+
+            Directory.CreateDirectory("PdfCopyTest/");
+            FileStream outputPdfStream =
+                new FileStream("PdfCopyTest/appearances(mixed).pdf", FileMode.Create);
+            Document document = new Document();
+            PdfCopy copy = new PdfCopy(document, outputPdfStream);
+            copy.SetMergeFields();
+            document.Open();
+            foreach (String f in new String[] {f1, f2, f3, f4}) {
+                PdfReader r = new PdfReader(f);
+                copy.AddDocument(r);
+            }
+            copy.Close();
+            CompareTool compareTool = new CompareTool("PdfCopyTest/appearances(mixed).pdf",
+                RESOURCES + "cmp_appearances(mixed).pdf");
+            String errorMessage = compareTool.Compare("PdfCopyTest/", "diff");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
         }
     }
 }
