@@ -4063,6 +4063,7 @@
     <Compile Include="iTextSharp\awt\geom\AffineTransform.cs" />
     <Compile Include="iTextSharp\awt\geom\Point.cs" />
     <Compile Include="iTextSharp\awt\geom\Point2D.cs" />
+	<Compile Include="iTextSharp\testutils\ITextTest.cs" />
     <Compile Include="iTextSharp\text\AccessibleElementId.cs" />
     <Compile Include="iTextSharp\text\api\IIndentable.cs" />
     <Compile Include="iTextSharp\text\api\ISpaceable.cs" />
@@ -4102,7 +4103,7 @@
     <Compile Include="iTextSharp\text\pdf\codec\LZWCompressor.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWStringTable.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\wmf\Point.cs" />
-    <Compile Include="iTextSharp\text\pdf\CompareTool.cs" />
+    <Compile Include="iTextSharp\testutils\CompareTool.cs" />
     <Compile Include="iTextSharp\text\pdf\FloatLayout.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\AbstractCMap.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CidLocationFromByte.cs" />
