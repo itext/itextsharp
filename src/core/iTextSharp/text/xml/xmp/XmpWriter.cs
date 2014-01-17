@@ -336,11 +336,10 @@ namespace iTextSharp.text.xml.xmp {
                 xmpMeta.AppendArrayItem(XmpConst.NS_DC, DublinCoreProperties.CREATOR,
                                         new PropertyOptions(PropertyOptions.ARRAY_ORDERED), value, null);
             } else if (PdfName.SUBJECT.Equals(key)) {
-                xmpMeta.AppendArrayItem(XmpConst.NS_DC, DublinCoreProperties.SUBJECT,
-                                        new PropertyOptions(PropertyOptions.ARRAY), value, null);
                 xmpMeta.SetLocalizedText(XmpConst.NS_DC, DublinCoreProperties.DESCRIPTION, XmpConst.X_DEFAULT,
                                          XmpConst.X_DEFAULT, value);
             } else if (PdfName.KEYWORDS.Equals(key)) {
+                xmpMeta.AppendArrayItem(XmpConst.NS_DC, DublinCoreProperties.SUBJECT, new PropertyOptions(PropertyOptions.ARRAY), value, null);
                 xmpMeta.SetProperty(XmpConst.NS_PDF, PdfProperties.KEYWORDS, value);
             } else if (PdfName.PRODUCER.Equals(key)) {
                 xmpMeta.SetProperty(XmpConst.NS_PDF, PdfProperties.PRODUCER, value);
