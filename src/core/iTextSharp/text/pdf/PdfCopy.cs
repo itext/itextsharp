@@ -1123,7 +1123,7 @@ namespace iTextSharp.text.pdf {
                     if (annotId != null)
                         dictionary.Remove(PdfCopy.annotId);
                 }
-                body.Write(objecta, objecta.Number, objecta.Generation);
+                body.Add(objecta.objecti, objecta.Number, objecta.Generation, true);
                 if (annotId != null) {
                     dictionary.Put(PdfCopy.annotId, annotId);
                 }
@@ -1265,6 +1265,7 @@ namespace iTextSharp.text.pdf {
                 map.TryGetValue(s, out obj);
                 if (tk.HasMoreTokens()) {
                     if (obj == null) {
+                        obj = new Dictionary<String, Object>();
                         map[s] = obj;
                         map = (Dictionary<string,object>)obj;
                         continue;
