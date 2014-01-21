@@ -224,5 +224,56 @@ namespace itextsharp.tests.iTextSharp.text.pdf
                 Assert.Fail(errorMessage);
             }
         }
+
+
+        [Test]
+        public virtual void TestFullCompression1() {
+            String outfile = "PdfCopyTest/out-noforms.pdf";
+            String first = RESOURCES + "hello.pdf";
+            String second = RESOURCES + "hello_memory.pdf";
+            FileStream out_ = new FileStream(outfile, FileMode.Create);
+            PdfReader reader = new PdfReader(first);
+            PdfReader reader2 = new PdfReader(second);
+            Document pdfDocument = new Document();
+            PdfCopy pdfCopy = new PdfCopy(pdfDocument, out_);
+            pdfCopy.SetMergeFields();
+            pdfCopy.SetFullCompression();
+            pdfCopy.CompressionLevel = PdfStream.BEST_COMPRESSION;
+            pdfDocument.Open();
+            pdfCopy.AddDocument(reader);
+            pdfCopy.AddDocument(reader2);
+            pdfCopy.Close();
+            reader.Close();
+            reader2.Close();
+
+            reader = new PdfReader("PdfCopyTest/out-noforms.pdf");
+            Assert.NotNull(reader.GetPageN(1));
+            reader.Close();
+        }
+
+        [Test]
+        public virtual void TestFullCompression2() {
+            String outfile = "PdfCopyTest/out-forms.pdf";
+            String first = RESOURCES + "subscribe.pdf";
+            String second = RESOURCES + "filled_form_1.pdf";
+            FileStream out_ = new FileStream(outfile, FileMode.Create);
+            PdfReader reader = new PdfReader(first);
+            PdfReader reader2 = new PdfReader(second);
+            Document pdfDocument = new Document();
+            PdfCopy pdfCopy = new PdfCopy(pdfDocument, out_);
+            pdfCopy.SetMergeFields();
+            pdfCopy.SetFullCompression();
+            pdfCopy.CompressionLevel = PdfStream.BEST_COMPRESSION;
+            pdfDocument.Open();
+            pdfCopy.AddDocument(reader);
+            pdfCopy.AddDocument(reader2);
+            pdfCopy.Close();
+            reader.Close();
+            reader2.Close();
+
+            reader = new PdfReader("PdfCopyTest/out-forms.pdf");
+            Assert.NotNull(reader.GetPageN(1));
+            reader.Close();
+        }
     }
 }
