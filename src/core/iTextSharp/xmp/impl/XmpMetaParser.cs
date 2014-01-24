@@ -170,29 +170,25 @@ namespace iTextSharp.xmp.impl {
                 XmlDocument doc = new XmlDocument();
                 doc.Load(buffer.ByteStream);
                 return doc;
-            }
-            catch (XmpException e) {
+            } catch (XmlException e) {
                 XmlDocument doc = new XmlDocument();
-                if (e.ErrorCode == XmpError.BADXML || e.ErrorCode == XmpError.BADSTREAM) {
-                    if (options.AcceptLatin1) {
-                        buffer = Latin1Converter.Convert(buffer);
-                    }
-
-                    if (options.FixControlChars) {
-                        try {
-                            StreamReader streamReader = new StreamReader(buffer.ByteStream, Encoding.GetEncoding(buffer.Encoding));
-                            FixAsciiControlsReader fixReader = new FixAsciiControlsReader(streamReader);
-                            doc.Load(fixReader);
-                            return doc;
-                        } catch (Exception) {
-                            // can normally not happen as the encoding is provided by a util function
-                            throw new XmpException("Unsupported Encoding", XmpError.INTERNALFAILURE, e);
-                        }
-                    }
-                    doc.Load(buffer.ByteStream);
-                    return doc;
+                if (options.AcceptLatin1) {
+                    buffer = Latin1Converter.Convert(buffer);
                 }
-                throw e;
+
+                if (options.FixControlChars) {
+                    try {
+                        StreamReader streamReader = new StreamReader(buffer.ByteStream, Encoding.GetEncoding(buffer.Encoding));
+                        FixAsciiControlsReader fixReader = new FixAsciiControlsReader(streamReader);
+                        doc.Load(fixReader);
+                        return doc;
+                    } catch (Exception) {
+                        // can normally not happen as the encoding is provided by a util function
+                        throw new XmpException("Unsupported Encoding", XmpError.INTERNALFAILURE, e);
+                    }
+                }
+                doc.Load(buffer.ByteStream);
+                return doc;
             }
         }
 
