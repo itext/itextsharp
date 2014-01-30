@@ -72,7 +72,8 @@ namespace iTextSharp.text.pdf.codec {
         private int fillBits = 0;
         private int oneD;
 
-        private bool handleIncorrectImage;
+        // should iText try to recover from images it can't read?
+        private bool recoverFromImageError;
         
         static int[] table1 = {
             0x00, // 0 bits are left in first byte - SHOULD NOT HAPPEN
@@ -604,8 +605,7 @@ namespace iTextSharp.text.pdf.codec {
         
         // One-dimensional decoding methods
         
-        virtual public void Decode1D(byte[] buffer, byte[] compData,
-        int startX, int height) {
+        virtual public void Decode1D(byte[] buffer, byte[] compData, int startX, int height) {
             this.data = compData;
             
             int lineOffset = 0;
@@ -620,8 +620,7 @@ namespace iTextSharp.text.pdf.codec {
             }
         }
         
-        virtual public void DecodeNextScanline(byte[] buffer,
-        int lineOffset, int bitOffset) {
+        virtual public void DecodeNextScanline(byte[] buffer, int lineOffset, int bitOffset) {
             int bits = 0, code = 0, isT = 0;
             int current, entry, twoBits;
             bool isWhite = true;
@@ -759,11 +758,7 @@ namespace iTextSharp.text.pdf.codec {
         
         // Two-dimensional decoding methods
         
-        virtual public void Decode2D(byte[] buffer,
-        byte[] compData,
-        int startX,
-        int height,
-        long tiffT4Options) {
+        virtual public void Decode2D(byte[] buffer, byte[] compData, int startX, int height, long tiffT4Options) {
             this.data = compData;
             compression = 3;
             
@@ -1128,9 +1123,7 @@ namespace iTextSharp.text.pdf.codec {
             }
         }
         
-        private void SetToBlack(byte[] buffer,
-        int lineOffset, int bitOffset,
-        int numBits) {
+        private void SetToBlack(byte[] buffer, int lineOffset, int bitOffset, int numBits) {
             int bitNum = 8*lineOffset + bitOffset;
             int lastBit = bitNum + numBits;
             
@@ -1159,7 +1152,7 @@ namespace iTextSharp.text.pdf.codec {
             // Fill in remaining bits
             while (bitNum < lastBit) {
                 byteNum = bitNum >> 3;
-                if(handleIncorrectImage && !(byteNum < buffer.Length)) {
+                if(recoverFromImageError && !(byteNum < buffer.Length)) {
                     // do nothing
                 }
                 else {
@@ -1453,7 +1446,7 @@ namespace iTextSharp.text.pdf.codec {
                     next = data[bp + 1];
                 }
             } else if (fillOrder == 2) {
-                if(handleIncorrectImage && !(bp < data.Length)) {
+                if(recoverFromImageError && !(bp < data.Length)) {
                     // do nothing
                 }
                 else {
@@ -1516,8 +1509,8 @@ namespace iTextSharp.text.pdf.codec {
             return true;
         }
 
-        virtual public bool HandleIncorrectImage {
-            set { handleIncorrectImage = value; }
+        virtual public bool RecoverFromImageError {
+            set { recoverFromImageError = value; }
         }
     }
 }
