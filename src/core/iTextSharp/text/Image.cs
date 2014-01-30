@@ -367,8 +367,9 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="url">an URL</param>
         /// <returns>an object of type Gif, Jpeg or Png</returns>
-        public static Image GetInstance(Uri url, bool handleIncorrectImage) {
+        public static Image GetInstance(Uri url, bool recoverFromImageError) {
             Stream istr = null;
+            RandomAccessSourceFactory randomAccessSourceFactory = new RandomAccessSourceFactory();
             try {
                 WebRequest w = WebRequest.Create(url);
                 w.Credentials = CredentialCache.DefaultCredentials;
@@ -418,13 +419,23 @@ namespace iTextSharp.text {
                     try {
                         if (url.IsFile) {
                             String file = url.LocalPath;
-                            ra = new RandomAccessFileOrArray(file);
+                            ra = new RandomAccessFileOrArray(randomAccessSourceFactory.CreateBestSource(file));
                         } else
-                            ra = new RandomAccessFileOrArray(url);
-                        Image img = TiffImage.GetTiffImage(ra, handleIncorrectImage, 1);
+                            ra = new RandomAccessFileOrArray(randomAccessSourceFactory.CreateSource(url));
+                        Image img = TiffImage.GetTiffImage(ra, 1);
                         img.url = url;
                         return img;
-                    } finally {
+                    } catch (Exception e) {
+                        if (recoverFromImageError) {
+                            // reruns the getTiffImage() with several error recovering workarounds in place
+                            // not guaranteed to work with every TIFF
+                            Image img = TiffImage.GetTiffImage(ra, recoverFromImageError, 1);
+                            img.url = url;
+                            return img;
+                        }
+                        throw e;
+                    }
+                    finally {
                         if (ra != null)
                             ra.Close();
                     }
@@ -436,9 +447,9 @@ namespace iTextSharp.text {
                     try {
                         if (url.IsFile) {
                             String file = url.LocalPath;
-                            ra = new RandomAccessFileOrArray(file);
+                            ra = new RandomAccessFileOrArray(randomAccessSourceFactory.CreateBestSource(file));
                         } else
-                            ra = new RandomAccessFileOrArray(url);
+                            ra = new RandomAccessFileOrArray(randomAccessSourceFactory.CreateSource(url));
                         Image img = JBIG2Image.GetJbig2Image(ra, 1);
                         img.url = url;
                         return img;
@@ -460,37 +471,24 @@ namespace iTextSharp.text {
             return GetInstance(a);
         }
 
-            
-    public static Image GetInstance(String filename, bool handleIncorrectImage) {
-        return GetInstance(Utilities.ToURL(filename), handleIncorrectImage);
-    }
 
-
-    public static Image GetInstance(byte[] imgb) {
-        return GetInstance(imgb, false);
-    }
-
-
-
-        /**
-        * Creates a JBIG2 Image.
-        * @param   width   the width of the image
-        * @param   height  the height of the image
-        * @param   data    the raw image data
-        * @param   globals JBIG2 globals
-        * @since   2.1.5
-        */
-        public static Image GetInstance(int width, int height, byte[] data, byte[] globals) {
-            Image img = new ImgJBIG2(width, height, data, globals);
-            return img;
+        public static Image GetInstance(String filename, bool recoverFromImageError) {
+            return GetInstance(Utilities.ToURL(filename), recoverFromImageError);
         }
+
+
+        public static Image GetInstance(byte[] imgb) {
+            return GetInstance(imgb, false);
+        }
+
         
         /// <summary>
         /// Gets an instance of an Image.
         /// </summary>
         /// <param name="img">a byte array</param>
         /// <returns>an object of type Gif, Jpeg or Png</returns>
-        public static Image GetInstance(byte[] imgb, bool handleIncorrectImage) {
+        public static Image GetInstance(byte[] imgb, bool recoverFromImageError) {
+            RandomAccessSourceFactory randomAccessSourceFactory = new RandomAccessSourceFactory();
             int c1 = imgb[0];
             int c2 = imgb[1];
             int c3 = imgb[2];
@@ -523,17 +521,50 @@ namespace iTextSharp.text {
                     || (c1 == 'I' && c2 == 'I' && c3 == 42 && c4 == 0)) {
                 RandomAccessFileOrArray ra = null;
                 try {
-                    ra = new RandomAccessFileOrArray(imgb);
-                    Image img = TiffImage.GetTiffImage(ra, handleIncorrectImage, 1);
+                    ra = new RandomAccessFileOrArray(randomAccessSourceFactory.CreateSource(imgb));
+                    Image img = TiffImage.GetTiffImage(ra, 1);
                     if (img.OriginalData == null)
                         img.OriginalData = imgb;
 
                     return img;
+				} catch ( Exception e ) {
+                    if ( recoverFromImageError ) {
+                        // reruns the getTiffImage() with several error recovering workarounds in place
+                        // not guaranteed to work with every TIFF
+                        Image img = TiffImage.GetTiffImage(ra, recoverFromImageError, 1);
+                        if (img.OriginalData == null)
+                            img.OriginalData = imgb;
+                        return img;
+                    }
+                    throw e;
                 } finally {
                     if (ra != null)
                         ra.Close();
                 }
 
+            }
+            if (c1 == 0x97 && c2 == 'J' && c3 == 'B' && c4 == '2') {
+                int c5 = imgb[4];
+                int c6 = imgb[5];
+                int c7 = imgb[6];
+                int c8 = imgb[7];
+                if (c5 == '\r' && c6 == '\n' && c7 == 0x1a && c8 == '\n') {
+                    // a jbig2 file with a file header.  the header is the only way we know here.
+                    // embedded jbig2s don't have a header, have to create them by explicit use of Jbig2Image?
+                    // nkerr, 2008-12-05  see also the getInstance(URL)
+                    RandomAccessFileOrArray ra = null;
+                    try {
+                        ra = new RandomAccessFileOrArray(randomAccessSourceFactory.CreateSource(imgb));
+                        Image img = JBIG2Image.GetJbig2Image(ra, 1);
+                        if (img.OriginalData == null)
+                            img.OriginalData = imgb;
+                        return img;
+                    }
+                    finally {
+                        if (ra != null)
+                            ra.Close();
+                    }
+                }
             }
             throw new IOException(MessageLocalization.GetComposedMessage("the.byte.array.is.not.a.recognized.imageformat"));
         }
@@ -740,6 +771,18 @@ namespace iTextSharp.text {
         /// <returns>an object of type ImgRaw</returns>
         public static Image GetInstance(int width, int height, int components, int bpc, byte[] data) {
             return Image.GetInstance(width, height, components, bpc, data, null);
+        }
+
+        /**
+        * Creates a JBIG2 Image.
+        * @param   width   the width of the image
+        * @param   height  the height of the image
+        * @param   data    the raw image data
+        * @param   globals JBIG2 globals
+        * @since   2.1.5
+        */
+        public static Image GetInstance(int width, int height, byte[] data, byte[] globals) {
+            return new ImgJBIG2(width, height, data, globals);
         }
     
         /**
