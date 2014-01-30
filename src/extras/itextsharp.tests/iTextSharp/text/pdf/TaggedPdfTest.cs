@@ -242,13 +242,11 @@ namespace itextsharp.tests.text.pdf {
                 listItem = new ListItem(c);
                 list.Add(listItem);
                 listItem = new ListItem(new Chunk("jumped over a lazy"));
-                listItem.ListLabel.TagLabelContent = false;
                 list.Add(listItem);
                 i = Image.GetInstance(RESOURCES + "img\\dog.bmp");
                 c = new Chunk(i, 0, 0);
                 c.SetAccessibleAttribute(PdfName.ALT, new PdfString("Dog image"));
                 listItem = new ListItem(c);
-                listItem.ListLabel.TagLabelContent = false;
                 list.Add(listItem);
             }
             catch (Exception) {
@@ -257,7 +255,7 @@ namespace itextsharp.tests.text.pdf {
             document.Add(list);
             document.Close();
 
-            int[] nums = new int[] {22};
+            int[] nums = new int[] {20};
             CheckNums(nums);
             CompareResults("5");
         }
@@ -296,7 +294,7 @@ namespace itextsharp.tests.text.pdf {
             columnText.AddElement(list);
             columnText.Go();
             document.Close();
-            int[] nums = new int[] {24};
+            int[] nums = new int[] {20};
             CheckNums(nums);
             CompareResults("6");
         }
@@ -333,7 +331,7 @@ namespace itextsharp.tests.text.pdf {
             document.Add(list);
             document.Close();
 
-            int[] nums = new int[] {63, 14};
+            int[] nums = new int[] {58, 14};
             CheckNums(nums);
             CompareResults("7");
         }
@@ -378,7 +376,7 @@ namespace itextsharp.tests.text.pdf {
             columnText.Go();
             document.Close();
 
-            int[] nums = new int[] {64, 35};
+            int[] nums = new int[] {59, 35};
             CheckNums(nums);
             CompareResults("8");
         }
@@ -1055,6 +1053,57 @@ namespace itextsharp.tests.text.pdf {
             int[] nums = new int[] {234, 44};
             CheckNums(nums);
             CompareResults("23");
+        }
+
+        [Test]
+        public virtual void CreateTaggedPdf24() {
+            Document document = new Document(PageSize.LETTER);
+
+            MemoryStream baos = new MemoryStream();
+
+            PdfWriter writer = PdfWriter.GetInstance(document, baos);
+
+            writer.ViewerPreferences = PdfWriter.DisplayDocTitle;
+
+//set more document properties
+
+            writer.PdfVersion = PdfWriter.VERSION_1_7;
+            writer.SetTagged(PdfWriter.markInlineElementsOnly);
+            PdfDictionary info = writer.Info;
+            info.Put(PdfName.TITLE, new PdfString("Testing"));
+
+            writer.CreateXmpMetadata();
+
+
+// step 3
+
+            document.Open();
+            document.AddLanguage("en_US");
+            document.SetAccessibleAttribute(PdfName.LANG, new PdfString("en_US"));
+
+// step 4
+
+            Chunk ck = new Chunk("Testing testing",
+                FontFactory.GetFont(RESOURCES + @"..\FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12));
+            ck.Role = null;
+            Paragraph p = new Paragraph("Testing testing");
+            p.SetAccessibleAttribute(PdfName.ACTUALTEXT, new PdfString("ALT Text"));
+            p.SetAccessibleAttribute(PdfName.ALT, new PdfString("ALT Text"));
+
+            document.Add(p);
+
+// step 5
+            document.Close();
+
+            FileStream fos = new FileStream("TaggedPdfTest/pdf/out24.pdf", FileMode.Create);
+
+            byte[] buff = baos.ToArray();
+            fos.Write(buff, 0, buff.Length);
+
+            fos.Flush();
+
+            fos.Close();
+            CompareResults("24");
         }
 
         private void CheckNums(int[] nums) {

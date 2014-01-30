@@ -731,5 +731,9 @@ namespace iTextSharp.text {
             get { return id; }
             set { id = value; }
         }
+
+        public virtual bool IsInline {
+            get { return false; }
+        }
     }
 }

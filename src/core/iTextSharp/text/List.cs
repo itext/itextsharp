@@ -615,15 +615,13 @@ namespace iTextSharp.text {
             return accessibleAttributes;
         }
 
-        virtual public PdfName Role
-        {
+        public virtual PdfName Role {
             get { return role; }
             set { this.role = value; }
         }
 
-        virtual public AccessibleElementId ID {
-            get
-            {
+        public virtual AccessibleElementId ID {
+            get {
                 if (id == null)
                     id = new AccessibleElementId();
                 return id;
@@ -631,5 +629,8 @@ namespace iTextSharp.text {
             set { id = value; }
         }
 
+        public virtual bool IsInline {
+            get { return false; }
+        }
     }
 }

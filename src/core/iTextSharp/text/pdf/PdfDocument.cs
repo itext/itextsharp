@@ -1266,8 +1266,7 @@ namespace iTextSharp.text.pdf {
                         lbl = l.listItem.ListLabel;
                         graphics.OpenMCBlock(lbl);
                         symbol = new Chunk(symbol);
-                        if (!lbl.TagLabelContent)
-                            symbol.Role = null;
+                        symbol.Role = null;
                     }
                     ColumnText.ShowTextAligned(graphics, Element.ALIGN_LEFT, new Phrase(symbol), text.XTLM - l.ListIndent, text.YTLM, 0);
                     if (lbl != null)

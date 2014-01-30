@@ -257,7 +257,7 @@ namespace iTextSharp.text {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("a.tab.position.may.not.be.lower.than.0.yours.is.1", tabPosition));
             }
             SetAttribute(TAB, new Object[] { separator, tabPosition, newline, 0 });
-            this.role = null;
+            this.role = PdfName.ARTIFACT;
         }
 
         /**
@@ -275,7 +275,7 @@ namespace iTextSharp.text {
             SetAttribute(SPLITCHARACTER, TabSplitCharacter.TAB);
 
             SetAttribute(TABSETTINGS, null);
-            this.role = null;
+            this.role = PdfName.ARTIFACT;
         }
 
 
@@ -288,7 +288,7 @@ namespace iTextSharp.text {
         /// <param name="changeLeading">true if the leading has to be adapted to the image</param>
         public Chunk(Image image, float offsetX, float offsetY, bool changeLeading) : this(OBJECT_REPLACEMENT_CHARACTER, new Font()) {
             SetAttribute(IMAGE, new Object[]{image, offsetX, offsetY, changeLeading});
-            this.role = null;
+            this.role = PdfName.ARTIFACT;
         }
 
         // implementation of the Element-methods
@@ -940,6 +940,10 @@ namespace iTextSharp.text {
                 return id;
             }
             set { id = value; }
+        }
+
+        public virtual bool IsInline {
+            get { return true; }
         }
 
         virtual public String GetTextExpansion() {

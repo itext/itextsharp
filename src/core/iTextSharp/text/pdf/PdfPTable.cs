@@ -1766,6 +1766,10 @@ namespace iTextSharp.text.pdf {
             set { id = value; }
         }
 
+        public virtual bool IsInline {
+            get { return false; }
+        }
+
         virtual public PdfPTableHeader GetHeader() {
             if (header == null)
                 header = new PdfPTableHeader();

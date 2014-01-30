@@ -837,8 +837,6 @@ namespace iTextSharp.text.pdf {
             accessibleAttributes[key] = value;
         }
 
-
-
         virtual public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             return accessibleAttributes;
         }
@@ -853,13 +851,15 @@ namespace iTextSharp.text.pdf {
             set { id = value; }
         }
 
-        virtual public List<PdfPHeaderCell> Headers
-        {
+        public virtual bool IsInline {
+            get { return false; }
+        }
+
+        public virtual List<PdfPHeaderCell> Headers {
             get { return headers; }
         }
 
-        virtual public void AddHeader(PdfPHeaderCell header)
-        {
+        public virtual void AddHeader(PdfPHeaderCell header) {
             if (headers == null)
                 headers = new List<PdfPHeaderCell>();
             headers.Add(header);

@@ -82,6 +82,10 @@ namespace iTextSharp.text.pdf
             set { id = value; }
         }
 
+        public virtual bool IsInline {
+            get { return true; }
+        }
+
         virtual public PdfString Type {
             get {
                 if (accessibleAttributes == null)
