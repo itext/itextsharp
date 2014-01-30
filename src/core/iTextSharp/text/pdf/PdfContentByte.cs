@@ -3670,8 +3670,7 @@ namespace iTextSharp.text.pdf {
                 IAccessibleElement parent = null;
                 if (GetMcElements().Count > 0)
                     parent = GetMcElements()[GetMcElements().Count - 1];
-                if(parent != null && (parent.Role == null || PdfName.ARTIFACT.Equals(parent.Role)))
-                    element.Role = null;
+                writer.CheckElementRole(element, parent);
                 if (element.Role != null) {
                     if(!PdfName.ARTIFACT.Equals(element.Role)) {
                         if(!pdf.structElements.TryGetValue(element.ID, out structureElement)) {
@@ -3679,9 +3678,6 @@ namespace iTextSharp.text.pdf {
                             structureElement.WriteAttributes(element);
                         }
                     }
-                    bool inTextLocal = inText;
-                    if (inText)
-                        EndText();
                     if (PdfName.ARTIFACT.Equals(element.Role)) {
                         Dictionary<PdfName, PdfObject> properties = element.GetAccessibleAttributes();
                         PdfDictionary propertiesDict = null;
@@ -3693,14 +3689,23 @@ namespace iTextSharp.text.pdf {
                                 propertiesDict.Put(entry.Key, entry.Value);
                             }
                         }
+                        bool inTextLocal = inText;
+                        if (inText)
+                            EndText();
                         BeginMarkedContentSequence(element.Role, propertiesDict, true);
+                        if (inTextLocal)
+                            BeginText(true);
                     }
                     else {
-                        BeginMarkedContentSequence(structureElement);
+                        if (writer.NeedToBeMarkedInContent(element)) {
+                            bool inTextLocal = inText;
+                            if (inText)
+                                EndText();
+                            BeginMarkedContentSequence(structureElement);
+                            if (inTextLocal)
+                                BeginText(true);
+                        }
                     }
-
-                    if (inTextLocal)
-                        BeginText(true);
                 }
             }
             return structureElement;
@@ -3719,7 +3724,7 @@ namespace iTextSharp.text.pdf {
 
         private void CloseMCBlockInt(IAccessibleElement element)
         {
-            if (IsTagged() && element.Role != null) {
+            if (IsTagged() && element.Role != null && writer.NeedToBeMarkedInContent(element)) {
                 bool inTextLocal = inText;
                 if (inText)
                     EndText();

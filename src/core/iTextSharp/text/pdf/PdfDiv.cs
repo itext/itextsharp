@@ -477,28 +477,28 @@ namespace iTextSharp.text.pdf {
                 return null;
         }
 
-        virtual public void SetAccessibleAttribute(PdfName key, PdfObject value)
-        {
+        public virtual void SetAccessibleAttribute(PdfName key, PdfObject value) {
             if (accessibleAttributes == null)
                 accessibleAttributes = new Dictionary<PdfName, PdfObject>();
             accessibleAttributes[key] = value;
         }
 
-        virtual public Dictionary<PdfName, PdfObject> GetAccessibleAttributes()
-        {
+        public virtual Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             return accessibleAttributes;
         }
 
-        virtual public PdfName Role
-        {
+        public virtual PdfName Role {
             get { return role; }
             set { role = value; }
         }
 
-        virtual public AccessibleElementId ID
-        {
+        public virtual AccessibleElementId ID {
             get { return id; }
             set { id = value; }
+        }
+
+        public virtual bool IsInline {
+            get { return false; }
         }
     }
 }

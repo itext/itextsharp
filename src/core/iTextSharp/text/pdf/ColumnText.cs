@@ -974,9 +974,7 @@ namespace iTextSharp.text.pdf {
                             ListLabel lbl = ((ListItem)elementToGo).ListLabel;
                             canvas.OpenMCBlock(lbl);
                             Chunk symbol = new Chunk(((ListItem)elementToGo).ListSymbol);
-                            if (!lbl.TagLabelContent) {
-                                symbol.Role = null;
-                            }
+                            symbol.Role = null;
                             ColumnText.ShowTextAligned(canvas, Element.ALIGN_LEFT, new Phrase(symbol), leftX + lbl.Indentation, firstLineY, 0);
                             canvas.CloseMCBlock(lbl);
                         }

@@ -853,5 +853,9 @@ namespace iTextSharp.text.pdf {
         static private bool IsTagged(PdfContentByte canvas) {
             return canvas != null && canvas.writer != null && canvas.writer.IsTagged();
         }
+
+        public virtual bool IsInline {
+            get { return false; }
+        }
     }
 }

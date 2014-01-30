@@ -459,5 +459,9 @@ namespace iTextSharp.text {
             }
             set { id = value; }
         }
+
+        public virtual bool IsInline {
+            get { return false; }
+        }
     }
 }
