@@ -1460,6 +1460,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName PICKTRAYBYPDFSIZE = new PdfName("PickTrayByPDFSize");
         /**
          * A name
+         * @since 5.4.6
+         */
+        public static readonly PdfName PIECEINFO = new PdfName("PieceInfo");
+        /**
+         * A name
          * @since 2.1.6
          */
         public static readonly PdfName PLAYCOUNT = new PdfName("PlayCount");
