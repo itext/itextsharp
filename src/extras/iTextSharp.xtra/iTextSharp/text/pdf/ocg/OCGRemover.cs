@@ -75,7 +75,7 @@ namespace iTextSharp.text.pdf.ocg
             {
                 PdfDictionary page = reader.GetPageN(i);
                 Parse(parser, page);
-                page.Remove(new PdfName("PieceInfo"));
+                page.Remove(PdfName.PIECEINFO);
                 RemoveAnnots(page, ocgs);
                 RemoveProperties(page, ocgs);
             }
