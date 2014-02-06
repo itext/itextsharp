@@ -691,6 +691,9 @@ namespace iTextSharp.text.pdf {
         }
 
         virtual public void AddDocument(PdfReader reader) {
+            if (!document.IsOpen()) {
+                throw new DocumentException(MessageLocalization.GetComposedMessage("the.document.is.not.open.yet.you.can.only.add.meta.information"));
+            }
             if (indirectMap.ContainsKey(reader)) {
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("document.1.has.already.been.added", reader.ToString()));
             }
