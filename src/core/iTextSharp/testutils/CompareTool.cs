@@ -85,7 +85,7 @@ public class CompareTool {
         return Compare(outPath, differenceImagePrefix, null);
     }
 
-    virtual public String Compare(String outPath, String differenceImagePrefix, Dictionary<int, List<Rectangle>> ignoredAreas) {
+    virtual public String Compare(String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas) {
         if (gsExec == null || !File.Exists(gsExec)) {
             return undefinedGsPath;
         }
@@ -122,17 +122,15 @@ public class CompareTool {
                 PdfStamper cmpStamper = new PdfStamper(cmpReader,
                     new FileStream(outPath + ignoredAreasPrefix + cmpPdfName, FileMode.Create));
 
-                foreach (KeyValuePair< int, List<Rectangle> > entry in ignoredAreas)
-                {
+                foreach (KeyValuePair<int, IList<Rectangle>> entry in ignoredAreas) {
                     int pageNumber = entry.Key;
-                    List<Rectangle> rectangles = entry.Value;
+                    IList<Rectangle> rectangles = entry.Value;
 
                     if (rectangles != null && rectangles.Count > 0) {
                         PdfContentByte outCB = outStamper.GetOverContent(pageNumber);
                         PdfContentByte cmpCB = cmpStamper.GetOverContent(pageNumber);
 
-                        foreach (Rectangle rect in rectangles)
-                        {
+                        foreach (Rectangle rect in rectangles) {
                             rect.BackgroundColor = BaseColor.BLACK;
                             outCB.Rectangle(rect);
                             cmpCB.Rectangle(rect);
@@ -271,7 +269,7 @@ public class CompareTool {
         return null;
     }
 
-    virtual public String Compare(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix, Dictionary<int, List<Rectangle>> ignoredAreas) {
+    virtual public String Compare(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas) {
         init(outPdf, cmpPdf);
         return Compare(outPath, differenceImagePrefix, ignoredAreas);
     }
