@@ -1410,8 +1410,29 @@ namespace iTextSharp.text.pdf {
         public virtual void AddImage(Image image, float a, float b, float c, float d, float e, float f, bool inlineImage) {
             if (image.Layer != null)
                 BeginLayer(image.Layer);
-            if (inText && IsTagged()){
-                EndText();
+            if (IsTagged()) {
+                if (inText)
+                    EndText();
+                AffineTransform transform = new AffineTransform(a, b, c, d, e, f);
+                Point2D[] src = new Point2D.Float[] { new Point2D.Float(0, 0), new Point2D.Float(1, 0), new Point2D.Float(1, 1), new Point2D.Float(0, 1) };
+                Point2D[] dst = new Point2D.Float[4];
+                transform.Transform(src, 0, dst, 0, 4);
+                float left = float.MaxValue;
+                float right = float.MinValue;
+                float bottom = float.MaxValue;
+                float top = float.MinValue;
+                for (int i = 0; i < 4; i++)
+                {
+                    if (dst[i].GetX() < left)
+                        left = (float)dst[i].GetX();
+                    if (dst[i].GetX() > right)
+                        right = (float)dst[i].GetX();
+                    if (dst[i].GetY() < bottom)
+                        bottom = (float)dst[i].GetY();
+                    if (dst[i].GetY() > top)
+                        top = (float)dst[i].GetY();
+                }
+                image.SetAccessibleAttribute(PdfName.BBOX, new PdfArray(new float[] { left, bottom, right, top }));
             }
             if (writer != null && image.IsImgTemplate()) {
                 writer.AddDirectImageSimple(image);
@@ -3675,7 +3696,6 @@ namespace iTextSharp.text.pdf {
                     if(!PdfName.ARTIFACT.Equals(element.Role)) {
                         if(!pdf.structElements.TryGetValue(element.ID, out structureElement)) {
                             structureElement = new PdfStructureElement(GetParentStructureElement(), element.Role);
-                            structureElement.WriteAttributes(element);
                         }
                     }
                     if (PdfName.ARTIFACT.Equals(element.Role)) {
@@ -3722,9 +3742,12 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        private void CloseMCBlockInt(IAccessibleElement element)
-        {
+        private void CloseMCBlockInt(IAccessibleElement element) {
             if (IsTagged() && element.Role != null && writer.NeedToBeMarkedInContent(element)) {
+                PdfStructureElement structureElement = null;
+                pdf.structElements.TryGetValue(element.ID, out structureElement);
+                if (structureElement != null)
+                    structureElement.WriteAttributes(element);
                 bool inTextLocal = inText;
                 if (inText)
                     EndText();

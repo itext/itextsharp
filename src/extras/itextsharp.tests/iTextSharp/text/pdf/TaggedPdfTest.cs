@@ -1083,12 +1083,16 @@ namespace itextsharp.tests.text.pdf {
 
 // step 4
 
-            Chunk ck = new Chunk("Testing testing",
-                FontFactory.GetFont(RESOURCES + @"..\FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12));
-            ck.Role = null;
-            Paragraph p = new Paragraph("Testing testing");
-            p.SetAccessibleAttribute(PdfName.ACTUALTEXT, new PdfString("ALT Text"));
-            p.SetAccessibleAttribute(PdfName.ALT, new PdfString("ALT Text"));
+            Paragraph p = new Paragraph("Paragraph testing testing");
+            p.SetAccessibleAttribute(PdfName.ACTUALTEXT, new PdfString("Paragraph ALT Text"));
+            p.SetAccessibleAttribute(PdfName.ALT, new PdfString("Paragraph ALT Text"));
+            document.Add(p);
+
+
+            Chunk ck = new Chunk("Span testing testing", FontFactory.GetFont(RESOURCES + @"..\FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12));
+            ck.SetAccessibleAttribute(PdfName.ACTUALTEXT, new PdfString("Span ALT Text"));
+            ck.SetAccessibleAttribute(PdfName.ALT, new PdfString("Span ALT Text"));
+            p = new Paragraph(ck);
 
             document.Add(p);
 
