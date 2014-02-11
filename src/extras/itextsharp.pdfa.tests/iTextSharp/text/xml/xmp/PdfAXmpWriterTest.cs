@@ -36,11 +36,11 @@ namespace iTextSharp.text.xml.xmp {
             writer.CreateXmpMetadata();
             XmpWriter xmp = writer.XmpWriter;
 
-            DublinCoreProperties.AddSubject(xmp.XmpMeta, "Subject1");
-            DublinCoreProperties.AddSubject(xmp.XmpMeta, "Subject2");
-            DublinCoreProperties.AddSubject(xmp.XmpMeta, "Subject3");
+            DublinCoreProperties.AddSubject(xmp.XmpMeta, "Hello World");
+            DublinCoreProperties.AddSubject(xmp.XmpMeta, "XMP & Metadata");
+            DublinCoreProperties.AddSubject(xmp.XmpMeta, "Metadata");
 
-            PdfProperties.SetKeywords(xmp.XmpMeta, "Keywords");
+            PdfProperties.SetKeywords(xmp.XmpMeta, "Hello World, XMP & Metadata, Metadata");
             PdfProperties.SetVersion(xmp.XmpMeta, "1.4");
 
             // step 3
@@ -155,13 +155,13 @@ namespace iTextSharp.text.xml.xmp {
             XmpWriter xmp = new PdfAXmpWriter(os, PdfAConformanceLevel.PDF_A_2B);
             XmpSchema dc = new DublinCoreSchema();
             XmpArray subject = new XmpArray(XmpArray.UNORDERED);
-            subject.Add("Subject1");
-            subject.Add("Subject2");
-            subject.Add("Subject3");
+            subject.Add("Hello World");
+            subject.Add("XMP & Metadata");
+            subject.Add("Metadata");
             dc.SetProperty(DublinCoreSchema.SUBJECT, subject);
             xmp.AddRdfDescription(dc.Xmlns, dc.ToString());
             PdfSchema pdf = new PdfSchema();
-            pdf.AddKeywords("Keywords");
+            pdf.AddKeywords("Hello World, XMP & Metadata, Metadata");
             pdf.AddVersion("1.4");
             xmp.AddRdfDescription(pdf);
             xmp.Close();

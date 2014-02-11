@@ -39,7 +39,7 @@ namespace iTextSharp.text.xml.xmp {
             DublinCoreProperties.AddSubject(xmp.XmpMeta, "XMP & Metadata");
             DublinCoreProperties.AddSubject(xmp.XmpMeta, "Metadata");
 
-            PdfProperties.SetKeywords(xmp.XmpMeta, "Hello World, XMP, Metadata");
+            PdfProperties.SetKeywords(xmp.XmpMeta, "Hello World, XMP & Metadata, Metadata");
             PdfProperties.SetVersion(xmp.XmpMeta, "1.4");
 
             xmp.Close();
@@ -128,7 +128,7 @@ namespace iTextSharp.text.xml.xmp {
             dc.SetProperty(DublinCoreSchema.SUBJECT, subject);
             xmp.AddRdfDescription(dc.Xmlns, dc.ToString());
             PdfSchema pdf = new PdfSchema();
-            pdf.AddKeywords("Hello World, XMP, Metadata");
+            pdf.AddKeywords("Hello World, XMP & Metadata, Metadata");
             pdf.AddVersion("1.4");
             xmp.AddRdfDescription(pdf);
             xmp.Close();

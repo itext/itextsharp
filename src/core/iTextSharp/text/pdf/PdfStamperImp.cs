@@ -235,10 +235,15 @@ namespace iTextSharp.text.pdf {
                 producer = oldInfo.GetAsString(PdfName.PRODUCER).ToUnicodeString();
             }
             Version version = Version.GetInstance();
-            if (producer == null) {
+            if (producer == null || version.GetVersion.IndexOf(version.Product) == -1) {
                 producer = version.GetVersion;
-            } else if (producer.IndexOf(version.Product) == -1) {
-                StringBuilder buf = new StringBuilder(producer);
+            } else {
+                int idx = producer.IndexOf("; modified using");
+                StringBuilder buf;
+                if (idx == -1)
+                    buf = new StringBuilder(producer);
+                else
+                    buf = new StringBuilder(producer.Substring(0, idx));
                 buf.Append("; modified using ");
                 buf.Append(version.GetVersion);
                 producer = buf.ToString();
