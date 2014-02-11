@@ -153,6 +153,22 @@ public class PRStream : PdfStream {
         Length = bytes.Length;
     }
 
+    /**
+     * Sets the data associated with the stream, as-is.  This method will not
+     * remove or change any existing filter: the data has to match an existing
+     * filter or an appropriate filter has to be set.
+     *
+     * @param data data, possibly encrypted and/or compressed
+     * @since 5.5.0
+     */
+    virtual public void SetDataRaw(byte[] data)
+    {
+        this.offset = -1;
+        bytes = data;
+        Length = bytes.Length;
+    }
+
+
     /**Sets the data associated with the stream
      * @param data raw data, decrypted and uncompressed.
      */
