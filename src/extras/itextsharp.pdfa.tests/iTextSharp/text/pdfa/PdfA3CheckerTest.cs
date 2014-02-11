@@ -182,5 +182,30 @@ namespace iTextSharp.text.pdfa {
 
             document.Close();
         }
+
+        [Test]
+        public virtual void FileSpecCheckTest7() {
+            FileStream inPdf = new FileStream(RESOURCES + "fileSpec.pdf", FileMode.Open);
+            MemoryStream xml = new MemoryStream();
+            StreamWriter sr = new StreamWriter(xml);
+            sr.Write("<foo><foo2>Hello world</foo2></foo>");
+            sr.Close();
+
+            MemoryStream output = new MemoryStream();
+            PdfReader reader = new PdfReader(inPdf);
+            PdfAStamper stamper = new PdfAStamper(reader, output, PdfAConformanceLevel.PDF_A_3B);
+
+            stamper.CreateXmpMetadata();
+
+            PdfDictionary embeddedFileParams = new PdfDictionary();
+            embeddedFileParams.Put(PdfName.MODDATE, new PdfDate());
+            PdfFileSpecification fs = PdfFileSpecification.FileEmbedded(stamper.Writer, "foo", "foo",
+                xml.ToArray(), "text/xml", embeddedFileParams, 0);
+            fs.Put(PdfName.AFRELATIONSHIP, AFRelationshipValue.Source);
+            stamper.AddFileAttachment("description", fs);
+
+            stamper.Close();
+            reader.Close();
+        }
     }
 }
