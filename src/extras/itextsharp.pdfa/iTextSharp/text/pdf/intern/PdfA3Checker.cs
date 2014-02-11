@@ -106,7 +106,7 @@ namespace iTextSharp.text.pdf.intern
                     MessageLocalization.GetComposedMessage("embedded.file.shall.contain.valid.params.key"));
             } else if (_params.IsDictionary()) {
                 PdfObject modDate = ((PdfDictionary) _params).Get(PdfName.MODDATE);
-                if (modDate == null || !(modDate is PdfDate)) {
+                if (modDate == null || !(modDate is PdfString)) {
                     throw new PdfAConformanceException(embeddedFile,
                         MessageLocalization.GetComposedMessage("embedded.file.shall.contain.params.key.with.valid.moddate.key"));
                 }

@@ -192,5 +192,46 @@ namespace iTextSharp.text.pdf {
                     break;
             }
         }
+
+        public override PdfIndirectObject AddToBody(PdfObject objecti) {
+            PdfIndirectObject iobj = base.AddToBody(objecti);
+            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject objecti, bool inObjStm) {
+            PdfIndirectObject iobj = base.AddToBody(objecti, inObjStm);
+            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject objecti, PdfIndirectReference refi, bool inObjStm) {
+            PdfIndirectObject iobj = base.AddToBody(objecti, refi, inObjStm);
+            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject objecti, PdfIndirectReference refi) {
+            PdfIndirectObject iobj = base.AddToBody(objecti, refi);
+            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject objecti, int refNumber) {
+            PdfIndirectObject iobj = base.AddToBody(objecti, refNumber);
+            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject objecti, int refNumber, bool inObjStm) {
+            PdfIndirectObject iobj = base.AddToBody(objecti, refNumber, inObjStm);
+            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        private PdfAChecker PdfAChecker {
+            get { return ((PdfAConformanceImp) pdfIsoConformance).PdfAChecker; }
+        }
+
     }
 }

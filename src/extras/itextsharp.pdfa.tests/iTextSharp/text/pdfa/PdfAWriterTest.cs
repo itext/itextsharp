@@ -24,8 +24,8 @@ namespace iTextSharp.text.pdfa
         [Test]
         virtual public void TestCreatePdfA_1()
         {
-            Document document = null;
-            PdfAWriter writer = null;
+            Document document;
+            PdfAWriter writer;
             try
             {
                 string filename = OUT + "TestCreatePdfA_1.pdf";
@@ -58,8 +58,8 @@ namespace iTextSharp.text.pdfa
         virtual public void TestCreatePdfA_2()
         {
             bool exceptionThrown = false;
-            Document document = null;
-            PdfAWriter writer = null;
+            Document document;
+            PdfAWriter writer;
             try
             {
                 string filename = OUT + "TestCreatePdfA_1.pdf";
