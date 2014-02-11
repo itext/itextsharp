@@ -1088,7 +1088,7 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName LAUNCH = new PdfName("Launch");
         /**
          * A name
-         * @since 5.4.6
+         * @since 5.5.0
          */
         public static readonly PdfName LAYOUT = new PdfName("Layout");
         /**
@@ -1460,7 +1460,7 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName PICKTRAYBYPDFSIZE = new PdfName("PickTrayByPDFSize");
         /**
          * A name
-         * @since 5.4.6
+         * @since 5.5.0
          */
         public static readonly PdfName PIECEINFO = new PdfName("PieceInfo");
         /**
