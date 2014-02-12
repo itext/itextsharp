@@ -1642,7 +1642,6 @@ namespace iTextSharp.text.pdfa
 
             Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 72);
             Chunk c = new Chunk("Document Header", font);
-            c.Role = null;
             Paragraph h1 = new Paragraph(c);
             h1.Role = PdfName.H1;
             document.Add(h1);

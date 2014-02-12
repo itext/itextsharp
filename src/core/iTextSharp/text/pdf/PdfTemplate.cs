@@ -361,7 +361,7 @@ namespace iTextSharp.text.pdf {
         }
 
         public virtual bool IsInline {
-            get { return false; }
+            get { return true; }
         }
     }
 }
