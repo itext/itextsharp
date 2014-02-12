@@ -11,8 +11,6 @@ using List = iTextSharp.text.List;
 
 namespace itextsharp.tests.text.pdf {
     public class TaggedPdfTest {
-        public const String NO_PARENT_TREE = "the.document.does.not.contain.parenttree";
-        public const String NO_STRUCT_TREE_ROOT = "no.StructTreeRoot.found";
 
         private const String text = "Lorem ipsum dolor sit amet," +
                                     "consectetur adipiscing elit." +
@@ -81,7 +79,6 @@ namespace itextsharp.tests.text.pdf {
             document.AddTitle("Some title");
             writer.CreateXmpMetadata();
             Chunk c = new Chunk("Document Header", new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD, BaseColor.BLUE));
-            c.Role = null;
             h1 = new Paragraph(c);
             h1.Role = PdfName.H1;
         }
@@ -152,8 +149,6 @@ namespace itextsharp.tests.text.pdf {
             columnText.SetSimpleColumn(300, 36, 500, 800);
             columnText.Go();
             document.Close();
-            int[] nums = new int[] {77};
-            CheckNums(nums);
             CompareResults("1");
         }
 
@@ -171,8 +166,6 @@ namespace itextsharp.tests.text.pdf {
             columnText.SetSimpleColumn(36, 36, 400, 800);
             columnText.Go();
             document.Close();
-            //        int[] nums = new int[]{237, 47} ;
-            //        CheckNums("2", nums);
             CompareResults("2");
         }
 
@@ -183,8 +176,6 @@ namespace itextsharp.tests.text.pdf {
             document.Add(h1);
             document.Add(paragraph);
             document.Close();
-            int[] nums = new int[] {43, 6};
-            CheckNums(nums);
             CompareResults("3");
         }
 
@@ -220,8 +211,6 @@ namespace itextsharp.tests.text.pdf {
             document.Add(h1);
             document.Add(p);
             document.Close();
-            int[] nums = new int[] {7};
-            CheckNums(nums);
             CompareResults("4");
         }
 
@@ -255,8 +244,6 @@ namespace itextsharp.tests.text.pdf {
             document.Add(list);
             document.Close();
 
-            int[] nums = new int[] {20};
-            CheckNums(nums);
             CompareResults("5");
         }
 
@@ -294,8 +281,6 @@ namespace itextsharp.tests.text.pdf {
             columnText.AddElement(list);
             columnText.Go();
             document.Close();
-            int[] nums = new int[] {20};
-            CheckNums(nums);
             CompareResults("6");
         }
 
@@ -331,8 +316,6 @@ namespace itextsharp.tests.text.pdf {
             document.Add(list);
             document.Close();
 
-            int[] nums = new int[] {58, 14};
-            CheckNums(nums);
             CompareResults("7");
         }
 
@@ -376,8 +359,6 @@ namespace itextsharp.tests.text.pdf {
             columnText.Go();
             document.Close();
 
-            int[] nums = new int[] {59, 35};
-            CheckNums(nums);
             CompareResults("8");
         }
 
@@ -407,8 +388,6 @@ namespace itextsharp.tests.text.pdf {
                 new Paragraph(
                     "Extra paragraph at the end of the document. Please make sure that this is really last portion of page content."));
             document.Close();
-            int[] nums = new int[] {16, 70, 62};
-            CheckNums(nums);
             CompareResults("9");
         }
 
@@ -451,8 +430,6 @@ namespace itextsharp.tests.text.pdf {
             document.Add(table);
             document.Close();
 
-            int[] nums = new int[] {16, 87, 128, 74, 74, 74, 26};
-            CheckNums(nums);
             CompareResults("10");
         }
 
@@ -663,8 +640,6 @@ namespace itextsharp.tests.text.pdf {
 
             document.Close();
 
-            int[] nums = new int[] {114, 63};
-            CheckNums(nums);
             CompareResults("11");
         }
 
@@ -698,8 +673,6 @@ namespace itextsharp.tests.text.pdf {
             document.Add(table);
             document.Close();
 
-            int[] nums = new int[] {237, 47};
-            CheckNums(nums);
             CompareResults("12");
         }
 
@@ -719,8 +692,6 @@ namespace itextsharp.tests.text.pdf {
             p.Add(new Chunk(" for more details."));
             document.Add(p);
             document.Close();
-//            int[] nums = new int[] {5};
-//            CheckNums(nums);
             CompareResults("13");
         }
 
@@ -734,9 +705,6 @@ namespace itextsharp.tests.text.pdf {
             columnText.AddElement(paragraph);
             columnText.Go();
             document.Close();
-
-            int[] nums = new int[] {3};
-            CheckNums(nums);
 
             PdfReader reader = new PdfReader(OUT + "14.pdf");
             Assert.AreEqual(1, reader.NumberOfPages);
@@ -755,8 +723,6 @@ namespace itextsharp.tests.text.pdf {
 
             document.Add(p);
             document.Close();
-            int[] nums = new int[] {3};
-            CheckNums(nums);
             CompareResults("15");
         }
 
@@ -782,8 +748,6 @@ namespace itextsharp.tests.text.pdf {
 
 
             document.Close();
-            int[] nums = new int[] {48, 7};
-            CheckNums(nums);
             CompareResults("16");
         }
 
@@ -831,8 +795,6 @@ namespace itextsharp.tests.text.pdf {
             }
             document.Add(table);
             document.Close();
-            int[] nums = new int[] {27};
-            CheckNums(nums);
             CompareResults("17");
         }
 
@@ -850,8 +812,6 @@ namespace itextsharp.tests.text.pdf {
             div.AddElement(paragraph);
             document.Add(div);
             document.Close();
-            int[] nums = new int[] {32};
-            CheckNums(nums);
             CompareResults("18");
         }
 
@@ -1015,8 +975,6 @@ namespace itextsharp.tests.text.pdf {
             document.Add(h1);
             document.Add(p);
             document.Close();
-            int[] nums = new int[] {7};
-            CheckNums(nums);
             CompareResults("22");
         }
 
@@ -1050,8 +1008,6 @@ namespace itextsharp.tests.text.pdf {
             document.Add(table);
             document.Close();
 
-            int[] nums = new int[] {234, 44};
-            CheckNums(nums);
             CompareResults("23");
         }
 
@@ -1108,34 +1064,6 @@ namespace itextsharp.tests.text.pdf {
 
             fos.Close();
             CompareResults("24");
-        }
-
-        private void CheckNums(int[] nums) {
-            PdfReader reader = new PdfReader(output);
-            PdfDictionary structTreeRoot =
-                VerifyIsDictionary(reader.Catalog.GetDirectObject(PdfName.STRUCTTREEROOT), NO_STRUCT_TREE_ROOT);
-            VerifyArraySize(structTreeRoot.Get(PdfName.K), 1, "Invalid count of kids in StructTreeRoot");
-            PdfObject obj = PdfStructTreeController.GetDirectObject(structTreeRoot.Get(PdfName.PARENTTREE));
-            VerifyIsDictionary(obj, NO_PARENT_TREE);
-            PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
-            VerifyArraySize(array, nums.Length*2, "nums");
-            for (int i = 0; i < nums.Length; ++i)
-                VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
-                                "Nums of page " + (i + 1));
-            reader.Close();
-        }
-
-        private PdfArray VerifyArraySize(PdfObject obj, int size, String message) {
-            if (obj == null || !obj.IsArray()) Assert.Fail(message + " is not array");
-            if (((PdfArray) obj).Size != size)
-                Assert.Fail(message + " has wrong size");
-            return (PdfArray) obj;
-        }
-
-        private PdfDictionary VerifyIsDictionary(PdfObject obj, String message) {
-            if (obj == null || !obj.IsDictionary())
-                Assert.Fail(message);
-            return (PdfDictionary) obj;
         }
 
         [TearDown]

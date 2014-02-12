@@ -1421,18 +1421,17 @@ namespace iTextSharp.text.pdf {
                 float right = float.MinValue;
                 float bottom = float.MaxValue;
                 float top = float.MinValue;
-                for (int i = 0; i < 4; i++)
-                {
+                for (int i = 0; i < 4; i++) {
                     if (dst[i].GetX() < left)
-                        left = (float)dst[i].GetX();
+                        left = (float) dst[i].GetX();
                     if (dst[i].GetX() > right)
-                        right = (float)dst[i].GetX();
+                        right = (float) dst[i].GetX();
                     if (dst[i].GetY() < bottom)
-                        bottom = (float)dst[i].GetY();
+                        bottom = (float) dst[i].GetY();
                     if (dst[i].GetY() > top)
-                        top = (float)dst[i].GetY();
+                        top = (float) dst[i].GetY();
                 }
-                image.SetAccessibleAttribute(PdfName.BBOX, new PdfArray(new float[] { left, bottom, right, top }));
+                image.SetAccessibleAttribute(PdfName.BBOX, new PdfArray(new float[] {left, bottom, right, top}));
             }
             if (writer != null && image.IsImgTemplate()) {
                 writer.AddDirectImageSimple(image);
@@ -3743,17 +3742,20 @@ namespace iTextSharp.text.pdf {
         }
 
         private void CloseMCBlockInt(IAccessibleElement element) {
-            if (IsTagged() && element.Role != null && writer.NeedToBeMarkedInContent(element)) {
+            if (IsTagged() && element.Role != null) {
                 PdfStructureElement structureElement = null;
                 pdf.structElements.TryGetValue(element.ID, out structureElement);
-                if (structureElement != null)
+                if (structureElement != null) {
                     structureElement.WriteAttributes(element);
-                bool inTextLocal = inText;
-                if (inText)
-                    EndText();
-                EndMarkedContentSequence();
-                if (inTextLocal)
-                    BeginText(true);
+                }
+                if (writer.NeedToBeMarkedInContent(element)) {
+                    bool inTextLocal = inText;
+                    if (inText)
+                        EndText();
+                    EndMarkedContentSequence();
+                    if (inTextLocal)
+                        BeginText(true);
+                }
             }
         }
 

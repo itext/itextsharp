@@ -2550,22 +2550,32 @@ namespace iTextSharp.text.pdf {
         }
         
     //  [F12] tagged PDF
+
+        public const int markAll = 0x00;
+        public const int markInlineElementsOnly = 0x01;
         
-        protected bool tagged = false;        
-        protected int taggingCompatibilityMode = 0x00;
-        public const int markInlineElementsOnly = 0x001;
+        protected bool tagged = false;
+        protected int taggingMode = markInlineElementsOnly;
         protected PdfStructureTreeRoot structureTreeRoot;
 
-        public virtual void SetTagged(int compatibilityMode) {
+
+        /**
+         * Mark this document for tagging. It must be called before open.
+         */
+        public virtual void SetTagged() {
+            SetTagged(markInlineElementsOnly);
+        }
+
+        public virtual void SetTagged(int taggingMode) {
             if (open)
                 throw new ArgumentException(
                     MessageLocalization.GetComposedMessage("tagging.must.be.set.before.opening.the.document"));
             tagged = true;
-            this.taggingCompatibilityMode = compatibilityMode;
+            this.taggingMode = taggingMode;
         }
 
         public virtual bool NeedToBeMarkedInContent(IAccessibleElement element) {
-            if ((taggingCompatibilityMode & markInlineElementsOnly) != 0) {
+            if ((taggingMode & markInlineElementsOnly) != 0) {
                 if (element.IsInline || PdfName.ARTIFACT.Equals(element.Role)) {
                     return true;
                 }
@@ -2577,19 +2587,10 @@ namespace iTextSharp.text.pdf {
         public virtual void CheckElementRole(IAccessibleElement element, IAccessibleElement parent) {
             if (parent != null && (parent.Role == null || PdfName.ARTIFACT.Equals(parent.Role)))
                 element.Role = null;
-            else if ((taggingCompatibilityMode & markInlineElementsOnly) != 0) {
+            else if ((taggingMode & markInlineElementsOnly) != 0) {
                 if (element.IsInline && element.Role == null && (parent == null || !parent.IsInline))
                     throw new ArgumentException(MessageLocalization.GetComposedMessage("inline.elements.with.role.null.are.not.allowed"));
             }
-        }
-
-        /**
-        * Mark this document for tagging. It must be called before open.
-        */    
-        virtual public void SetTagged() {
-            if (open)
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("tagging.must.be.set.before.opening.the.document"));
-            tagged = true;
         }
         
         /**
