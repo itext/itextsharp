@@ -1354,14 +1354,12 @@ namespace iTextSharp.text.pdf {
          * Defines where the table may be broken (if necessary).
          *
          * @param breakPoints int[]
+         * @throws System.IndexOutOfRangeException if a row index is passed that is out of bounds
          */
 
         virtual public void SetBreakPoints(int[] breakPoints)
         {
-            for (int i = 0; i < rows.Count; i++)
-            {
-                GetRow(i).MayNotBreak = true;
-            }
+            KeepRowsTogether(0, rows.Count); // sets all rows as unbreakable
 
             for (int i = 0; i < breakPoints.Length; i++)
             {
@@ -1373,6 +1371,7 @@ namespace iTextSharp.text.pdf {
          * Defines which rows should not allow a page break (if possible).
          *
          * @param rows int[]
+         * @throws System.IndexOutOfRangeException if a row index is passed that is out of bounds
          */
 
         virtual public void KeepRowsTogether(int[] rows)
@@ -1388,6 +1387,7 @@ namespace iTextSharp.text.pdf {
          *
          * @param start int
          * @param end int
+         * @throws System.IndexOutOfRangeException if a row index is passed that is out of bounds
          */
 
         virtual public void KeepRowsTogether(int start, int end)
@@ -1404,19 +1404,15 @@ namespace iTextSharp.text.pdf {
 
         /**
          * Defines a range of rows (from the parameter to the last row) that should not allow a page break (if possible).
+         * The equivalent of calling {@link #keepRowsTogether(int,int) keepRowsTogether(start, rows.size()}.
          *
          * @param start int
+         * @throws System.IndexOutOfRangeException if a row index is passed that is out of bounds
          */
 
         virtual public void KeepRowsTogether(int start)
         {
-            if (start < rows.Count)
-            {
-                for (int i = start; i < rows.Count; i++)
-                {
-                    GetRow(i).MayNotBreak = true;
-                }
-            }
+            KeepRowsTogether(start, rows.Count);
         }
 
         /**

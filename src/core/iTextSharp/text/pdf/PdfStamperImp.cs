@@ -805,26 +805,9 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        internal AcroFields GetAcroFields()
-        {
-            if (acroFields == null)
-            {
+        internal AcroFields GetAcroFields() {
+            if (acroFields == null) {
                 acroFields = new AcroFields(reader, this);
-                try
-                {
-                    foreach (String key in acroFields.Fields.Keys)
-                    {
-                        if (AcroFields.FIELD_TYPE_TEXT != acroFields.GetFieldType(key))
-                            continue;
-                        String value = acroFields.GetField(key).Trim();
-                        if (value.Length > 0)
-                        {
-                            acroFields.SetField(key, value, value);
-                        }
-                    }
-                }
-                catch (DocumentException) { }
-                catch (IOException) { }
             }
             return acroFields;
         }
