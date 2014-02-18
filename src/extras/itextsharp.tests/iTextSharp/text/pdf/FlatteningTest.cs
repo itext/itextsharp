@@ -59,7 +59,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
         private const string OUTPUT_FOLDER = "FlatteningTest/";
 
         [Test]
-        public void TestFlattening() {
+        public virtual void TestFlattening() {
             if (File.Exists(INPUT_FOLDER))
                 Assert.Fail("Input folder can't be found (" + INPUT_FOLDER + ")");
 
