@@ -86,8 +86,10 @@ public class CompareTool {
     }
 
     virtual public String Compare(String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas) {
-        if (gsExec == null || !File.Exists(gsExec)) {
+        if (gsExec == null)
             return undefinedGsPath;
+        if (!File.Exists(gsExec)) {
+            return gsExec + " does not exist";
         }
 
         try {

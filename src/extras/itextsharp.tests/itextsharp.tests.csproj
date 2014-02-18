@@ -72,6 +72,7 @@
     <Compile Include="iTextSharp\text\pdf\BookmarksTest.cs" />
     <Compile Include="iTextSharp\text\pdf\CMapAwareDocumentFontTest.cs" />
     <Compile Include="iTextSharp\text\pdf\DocumentFontTest.cs" />
+	<Compile Include="iTextSharp\text\pdf\FlatteningTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts.cmaps\CMapParserExTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts.cmaps\CMapTest.cs" />
     <Compile Include="iTextSharp\text\pdf\IndicLigatures.cs" />
