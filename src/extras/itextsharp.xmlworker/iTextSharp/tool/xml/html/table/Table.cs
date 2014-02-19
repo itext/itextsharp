@@ -151,7 +151,8 @@ namespace iTextSharp.tool.xml.html.table {
                     foreach (HtmlCell cell in row.Content) {
                         // check whether the current column should be skipped due to a
                         // rowspan value of higher cell in this column.
-                        while (rowspanValue[column] > 1) {
+                        // Contribution made by Arnost Havelka (Asseco): added while condition
+                        while ((column < numberOfColumns) && (rowspanValue[column] > 1)) {
                             rowspanValue[column] = rowspanValue[column] - 1;
                             ++column;
                         }
@@ -166,6 +167,10 @@ namespace iTextSharp.tool.xml.html.table {
                             fixedWidth /= colspan;
                             for (int i = 0; i < colspan; i++) {
                                 int c = column + i;
+                                // Contribution made by Arnost Havelka (Asseco)
+                                if (c > numberOfColumns - 1) {
+                                    break;
+                                }
                                 if (fixedWidth > fixedWidths[c]) {
                                     fixedWidths[c] = fixedWidth;
                                     columnWidths[c] = fixedWidth;
@@ -178,6 +183,10 @@ namespace iTextSharp.tool.xml.html.table {
                             float widestWordOfCell = widthValues[1] / colspan;
                             for (int i = 0; i < colspan; i++) {
                                 int c = column + i;
+                                // Contribution made by Arnost Havelka (Asseco)
+                                if (c >= numberOfColumns) {
+                                    continue;
+                                }
                                 if (fixedWidths[c] == 0 && cellWidth > columnWidths[c]) {
                                     columnWidths[c] = cellWidth;
                                     if (colspan == 1) {

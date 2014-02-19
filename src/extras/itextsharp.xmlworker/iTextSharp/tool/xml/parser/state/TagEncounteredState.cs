@@ -76,7 +76,16 @@ namespace iTextSharp.tool.xml.parser.state {
                         this.parser.Flush();
                         this.parser.Memory().Comment().Length = 0;
                         parser.SelectState().Comment();
-                        this.parser.Append(character);
+                        // if else structure added to check for the presence of an empty comment without a space <!---->
+                        // if this check isn't included it would add the third dash to the stringbuilder of XmlParser and
+                        // not to memory().comment() which caused CloseCommentState to keep adding the rest of the document
+                        // as a comment because it checked the closing tag on the length, which would be 1 in this case
+                        // (the fourth dash)
+                        if (character != '-') {
+                            this.parser.Append(character);
+                        } else {
+                            this.parser.Memory().Comment().Append(character);
+                        }
                     } else if (tag.Equals("![CDATA[")) {
                         this.parser.Flush();
                         parser.SelectState().Cdata();
