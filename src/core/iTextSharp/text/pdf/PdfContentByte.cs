@@ -1436,6 +1436,11 @@ namespace iTextSharp.text.pdf {
             if (writer != null && image.IsImgTemplate()) {
                 writer.AddDirectImageSimple(image);
                 PdfTemplate template = image.TemplateData;
+                if (image.GetAccessibleAttributes() != null) {
+                    foreach (PdfName key in image.GetAccessibleAttributes().Keys) {
+                        template.SetAccessibleAttribute(key, image.GetAccessibleAttribute(key));
+                    }
+                }
                 float w = template.Width;
                 float h = template.Height;
                 AddTemplate(template, a / w, b / w, c / h, d / h, e, f);

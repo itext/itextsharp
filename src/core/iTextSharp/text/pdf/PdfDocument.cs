@@ -728,12 +728,12 @@ namespace iTextSharp.text.pdf {
                 case Element.IMGRAW:
                 case Element.IMGTEMPLATE: {
                     //carriageReturn(); suggestion by Marc Campforts
-                    if(IsTagged(writer)) {
+                    if(IsTagged(writer) && !((Image)element).IsImgTemplate()) {
                         FlushLines();
                         text.OpenMCBlock((Image)element);
                     }
                     Add((Image)element);
-                    if(IsTagged(writer)) {
+                    if(IsTagged(writer) && !((Image)element).IsImgTemplate()) {
                         FlushLines();
                         text.CloseMCBlock((Image)element);
                     }
