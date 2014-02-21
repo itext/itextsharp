@@ -339,8 +339,9 @@ namespace iTextSharp.text.xml.xmp {
                 xmpMeta.SetLocalizedText(XmpConst.NS_DC, DublinCoreProperties.DESCRIPTION, XmpConst.X_DEFAULT,
                                          XmpConst.X_DEFAULT, value);
             } else if (PdfName.KEYWORDS.Equals(key)) {
-            foreach (String v in value.Split(',', ';'))
-                xmpMeta.AppendArrayItem(XmpConst.NS_DC, DublinCoreProperties.SUBJECT, new PropertyOptions(PropertyOptions.ARRAY), v.Trim(), null);
+                foreach (String v in value.Split(',', ';'))
+                    if (v.Trim().Length > 0)
+                        xmpMeta.AppendArrayItem(XmpConst.NS_DC, DublinCoreProperties.SUBJECT, new PropertyOptions(PropertyOptions.ARRAY), v.Trim(), null);
                 xmpMeta.SetProperty(XmpConst.NS_PDF, PdfProperties.KEYWORDS, value);
             } else if (PdfName.PRODUCER.Equals(key)) {
                 xmpMeta.SetProperty(XmpConst.NS_PDF, PdfProperties.PRODUCER, value);
