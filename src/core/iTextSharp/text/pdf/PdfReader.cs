@@ -1273,7 +1273,7 @@ namespace iTextSharp.text.pdf {
                 long pos;
                 while (true) {
                     pos = tokens.FilePointer;
-                    if (!tokens.ReadLineSegment(tline))
+                    if (!tokens.ReadLineSegment(tline, false)) // added boolean because of mailing list issue (17 Feb. 2014)
                         break;
                     if (Equalsn(tline, endstream)) {
                         streamLength = pos - start;
@@ -1612,7 +1612,7 @@ namespace iTextSharp.text.pdf {
             byte[] line = new byte[64];
             for (;;) {
 				long pos = tokens.FilePointer;
-                if (!tokens.ReadLineSegment(line))
+                if (!tokens.ReadLineSegment(line, true)) // added boolean because of mailing list issue (17 Feb. 2014)
                     break;
                 if (line[0] == 't') {
                     if (!PdfEncodings.ConvertToString(line, null).StartsWith("trailer"))
