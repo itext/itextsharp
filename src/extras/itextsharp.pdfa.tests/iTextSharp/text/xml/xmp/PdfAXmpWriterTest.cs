@@ -118,7 +118,7 @@ namespace iTextSharp.text.xml.xmp {
             PdfStamper stamper = new PdfAStamper(reader, new FileStream(OUT_FOLDER + fileName, FileMode.Create),
                                                  PdfAConformanceLevel.PDF_A_1A);
             MemoryStream os = new MemoryStream();
-            XmpWriter xmp = new PdfAXmpWriter(os, reader.Info, PdfAConformanceLevel.PDF_A_1A);
+            XmpWriter xmp = new PdfAXmpWriter(os, reader.Info, PdfAConformanceLevel.PDF_A_1A, stamper.Writer);
             DublinCoreProperties.AddSubject(xmp.XmpMeta, "Hello World");
             DublinCoreProperties.AddSubject(xmp.XmpMeta, "XMP & Metadata");
             DublinCoreProperties.AddSubject(xmp.XmpMeta, "Metadata");
@@ -152,7 +152,7 @@ namespace iTextSharp.text.xml.xmp {
             PdfWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT_FOLDER + fileName, FileMode.Create),
                                                       PdfAConformanceLevel.PDF_A_2B);
             MemoryStream os = new MemoryStream();
-            XmpWriter xmp = new PdfAXmpWriter(os, PdfAConformanceLevel.PDF_A_2B);
+            XmpWriter xmp = new PdfAXmpWriter(os, PdfAConformanceLevel.PDF_A_2B, writer);
             XmpSchema dc = new DublinCoreSchema();
             XmpArray subject = new XmpArray(XmpArray.UNORDERED);
             subject.Add("Hello World");

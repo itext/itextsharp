@@ -57,6 +57,46 @@ using iTextSharp.xmp;
 namespace iTextSharp.text.xml.xmp {
 
     public class PdfAXmpWriter : XmpWriter {
+        private const String taggedExtension =
+            "    <x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" +
+            "      <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+            "        <rdf:Description rdf:about=\"\" xmlns:pdfaExtension=\"http://www.aiim.org/pdfa/ns/extension/\" xmlns:pdfaSchema=\"http://www.aiim.org/pdfa/ns/schema#\" xmlns:pdfaProperty=\"http://www.aiim.org/pdfa/ns/property#\">\n" +
+            "          <pdfaExtension:schemas>\n" +
+            "            <rdf:Bag>\n" +
+            "              <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                <pdfaSchema:namespaceURI>http://www.aiim.org/pdfua/ns/id/</pdfaSchema:namespaceURI>\n" +
+            "                <pdfaSchema:prefix>pdfuaid</pdfaSchema:prefix>\n" +
+            "                <pdfaSchema:schema>PDF/UA identification schema</pdfaSchema:schema>\n" +
+            "                <pdfaSchema:property>\n" +
+            "                  <rdf:Seq>\n" +
+            "                    <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                      <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                      <pdfaProperty:description>PDF/UA version identifier</pdfaProperty:description>\n" +
+            "                      <pdfaProperty:name>part</pdfaProperty:name>\n" +
+            "                      <pdfaProperty:valueType>Integer</pdfaProperty:valueType>\n" +
+            "                    </rdf:li>\n" +
+            "                    <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                      <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                      <pdfaProperty:description>PDF/UA amendment identifier</pdfaProperty:description>\n" +
+            "                      <pdfaProperty:name>amd</pdfaProperty:name>\n" +
+            "                      <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                    </rdf:li>\n" +
+            "                    <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                      <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                      <pdfaProperty:description>PDF/UA corrigenda identifier</pdfaProperty:description>\n" +
+            "                      <pdfaProperty:name>corr</pdfaProperty:name>\n" +
+            "                      <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                    </rdf:li>\n" +
+            "                  </rdf:Seq>\n" +
+            "                </pdfaSchema:property>\n" +
+            "              </rdf:li>\n" +
+            "            </rdf:Bag>\n" +
+            "          </pdfaExtension:schemas>\n" +
+            "        </rdf:Description>\n" +
+            "      </rdf:RDF>\n" +
+            "    </x:xmpmeta>";
+
+        private PdfWriter writer;
 
         /**
          * Creates and XMP writer that adds info about the PDF/A conformance level.
@@ -65,8 +105,9 @@ namespace iTextSharp.text.xml.xmp {
          * @throws IOException
          */
 
-        public PdfAXmpWriter(Stream os, PdfAConformanceLevel conformanceLevel)
+        public PdfAXmpWriter(Stream os, PdfAConformanceLevel conformanceLevel, PdfWriter writer)
             : base(os) {
+            this.writer = writer;
             try {
                 AddRdfDescription(conformanceLevel);
             }
@@ -83,8 +124,9 @@ namespace iTextSharp.text.xml.xmp {
          * @throws IOException
          */
 
-        public PdfAXmpWriter(Stream os, PdfDictionary info, PdfAConformanceLevel conformanceLevel)
+        public PdfAXmpWriter(Stream os, PdfDictionary info, PdfAConformanceLevel conformanceLevel, PdfWriter writer)
             : base(os, info) {
+            this.writer = writer;
             try {
                 AddRdfDescription(conformanceLevel);
             }
@@ -101,8 +143,9 @@ namespace iTextSharp.text.xml.xmp {
          * @throws IOException
          */
 
-        public PdfAXmpWriter(Stream os, IDictionary<String, String> info, PdfAConformanceLevel conformanceLevel)
+        public PdfAXmpWriter(Stream os, IDictionary<String, String> info, PdfAConformanceLevel conformanceLevel, PdfWriter writer)
             : base(os, info) {
+            this.writer = writer;
             try {
                 AddRdfDescription(conformanceLevel);
             }
@@ -153,6 +196,10 @@ namespace iTextSharp.text.xml.xmp {
                     break;
                 default:
                     break;
+            }
+            if (writer.IsTagged()) {
+                IXmpMeta taggedExtensionMeta = XmpMetaFactory.ParseFromString(taggedExtension);
+                XmpUtils.AppendProperties(taggedExtensionMeta, xmpMeta, true, false);
             }
         }
     }
