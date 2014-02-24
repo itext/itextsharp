@@ -137,8 +137,26 @@ namespace iTextSharp.text.pdf {
             return buf.ToString();
         }
 
+        /**
+         * Is a certain character a whitespace? Currently checks on the following: '0', '9', '10', '12', '13', '32'.
+         * <br />The same as calling {@link #isWhitespace(int, boolean) isWhiteSpace(ch, true)}.
+         * @param ch int
+         * @return boolean
+         * @since 5.5.1
+         */
         public static bool IsWhitespace(int ch) {
-            return (ch == 0 || ch == 9 || ch == 10 || ch == 12 || ch == 13 || ch == 32);
+            return IsWhitespace(ch, true);
+        }
+
+        /**
+         * Checks whether a character is a whitespace. Currently checks on the following: '0', '9', '10', '12', '13', '32'.
+         * @param ch int
+         * @param isWhitespace boolean
+         * @return boolean
+         * @since 5.5.1
+         */
+        public static bool IsWhitespace(int ch, bool isWhitespace) {
+            return ((isWhitespace && ch == 0) || ch == 9 || ch == 10 || ch == 12 || ch == 13 || ch == 32);
         }
     
         public static bool IsDelimiter(int ch) {
@@ -508,7 +526,34 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        virtual public bool ReadLineSegment(byte[] input) {
+        /**
+         * Reads data into the provided byte[]. Checks on leading whitespace.
+         * See {@link #isWhitespace(int) isWhiteSpace(int)} or {@link #isWhitespace(int, boolean) isWhiteSpace(int, boolean)}
+         * for a list of whitespace characters.
+         * <br />The same as calling {@link #readLineSegment(byte[], boolean) readLineSegment(input, true)}.
+         *
+         * @param input byte[]
+         * @return boolean
+         * @throws IOException
+         * @since 5.5.1
+         */
+        public virtual bool ReadLineSegment(byte[] input) {
+            return ReadLineSegment(input, true);
+        }
+
+        /**
+         * Reads data into the provided byte[]. Checks on leading whitespace.
+         * See {@link #isWhitespace(int) isWhiteSpace(int)} or {@link #isWhitespace(int, boolean) isWhiteSpace(int, boolean)}
+         * for a list of whitespace characters.
+         *
+         * @param input byte[]
+         * @param isNullWhitespace boolean to indicate whether '0' is whitespace or not.
+         *                         If in doubt, use true or overloaded method {@link #readLineSegment(byte[]) readLineSegment(input)}
+         * @return boolean
+         * @throws IOException
+         * @since 5.5.1
+         */
+        public virtual bool ReadLineSegment(byte[] input, bool isNullWhitespace) {
             int c = -1;
             bool eol = false;
             int ptr = 0;
@@ -517,7 +562,7 @@ namespace iTextSharp.text.pdf {
             // skip initial whitespace; added this because PdfReader.RebuildXref()
             // assumes that line provided by readLineSegment does not have init. whitespace;
             if ( ptr < len ) {
-                while ( IsWhitespace( (c = Read()) ) );
+                while (IsWhitespace((c = Read()), isNullWhitespace)) ;
             }
             while ( !eol && ptr < len ) {
                 switch (c) {
