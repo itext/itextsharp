@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.util;
-using iTextSharp.text.pdf;
+
 /*
  * $Id$
  *
