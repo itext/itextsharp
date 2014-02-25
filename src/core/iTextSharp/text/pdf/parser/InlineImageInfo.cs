@@ -1,5 +1,3 @@
-using System;
-using iTextSharp.text.pdf;
 /*
  * $Id: ImageRenderInfo.java 4972 2011-10-07 14:50:27Z blowagie $
  *

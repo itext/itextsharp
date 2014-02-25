@@ -1,6 +1,3 @@
-using System;
-using System.IO;
-using iTextSharp.text.pdf;
 /*
  * $Id$
  *
