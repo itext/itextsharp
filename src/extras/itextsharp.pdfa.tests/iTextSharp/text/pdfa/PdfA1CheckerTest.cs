@@ -1845,5 +1845,48 @@ namespace iTextSharp.text.pdfa
                 Assert.Fail("PdfAConformance exception should be thrown");
         }
 
+        [Test]
+        public void StamperColorCheckTest() {
+            bool exceptionThrown = false;
+            try {
+                PdfReader reader = new PdfReader(RESOURCES + "pdfa1.pdf");
+                PdfAStamper stamper = new PdfAStamper(reader, new MemoryStream(), PdfAConformanceLevel.PDF_A_1A);
+                PdfContentByte canvas = stamper.GetOverContent(1);
+                Rectangle rect = stamper.Writer.PageSize;
+                canvas.SetColorFill(new CMYKColor(0.1f, 0.1f, 0.1f, 0.1f));
+                canvas.MoveTo(rect.Left, rect.Bottom);
+                canvas.LineTo(rect.Right, rect.Bottom);
+                canvas.LineTo(rect.Right, rect.Top);
+                canvas.Fill();
+                stamper.Close();
+                reader.Close();
+            } catch (PdfAConformanceException exc) {
+                exceptionThrown = true;
+            }
+
+            if (!exceptionThrown)
+                Assert.Fail("PdfAConformance exception should be thrown");
+        }
+
+        [Test]
+        public void StamperTextTest() {
+            PdfReader reader = new PdfReader(RESOURCES + "pdfa1.pdf");
+            PdfAStamper stamper = new PdfAStamper(reader, new FileStream(OUT + "stamperTextTest.pdf", FileMode.Create),
+                PdfAConformanceLevel.PDF_A_1A);
+            PdfArtifact artifact = new PdfArtifact();
+            BaseFont bf = BaseFont.CreateFont(RESOURCES + "FreeMonoBold.ttf",
+                BaseFont.WINANSI, BaseFont.EMBEDDED);
+            artifact.Type = new PdfString("Layout");
+            PdfContentByte canvas = stamper.GetOverContent(1);
+            canvas.OpenMCBlock(artifact);
+            canvas.BeginText();
+            canvas.SetFontAndSize(bf, 120);
+            canvas.ShowTextAligned(Element.ALIGN_CENTER, "TEST", 200, 400, 45);
+            canvas.EndText();
+            canvas.CloseMCBlock(artifact);
+
+            stamper.Close();
+            reader.Close();
+        }
     }
 }
