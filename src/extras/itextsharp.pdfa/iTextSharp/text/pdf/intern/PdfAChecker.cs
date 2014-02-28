@@ -108,12 +108,15 @@ namespace iTextSharp.text.pdf.intern
                 return null;
             //use counter to prevent indirect reference cycling
             int count = 0;
-            while (obj.Type == 0) {
-                PdfObject tmp = null;
-                cachedObjects.TryGetValue(new RefKey((PdfIndirectReference) obj), out tmp);
-                if (tmp == null)
-                    break;
-                obj = tmp;
+            // resolve references
+            while (obj is PdfIndirectReference) {
+                PdfObject curr;
+                if (obj.IsIndirect())
+                    curr = PdfReader.GetPdfObject(obj);
+                else
+                    cachedObjects.TryGetValue(new RefKey((PdfIndirectReference) obj), out curr);
+                if (curr == null) break;
+                obj = curr;
                 //10 - is max allowed reference chain
                 if (count++ > 10)
                     break;
