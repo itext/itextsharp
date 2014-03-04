@@ -68,5 +68,17 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
             rdr.Close();
         }
+
+        //Check for crash
+        [Test]
+        public virtual void ReadCompressedPdfTest1() {
+            string filename = TestResourceUtils.GetResourceAsTempFile(TEST_RESOURCES_PATH, "readCompressedPdfTest1.pdf");
+            PdfReader rdr = new PdfReader(filename);
+            for (int i = 1; i <= rdr.NumberOfPages; i++) {
+                PdfDictionary p = rdr.GetPageNRelease(i);
+                Assert.AreEqual(PdfName.PAGE.ToString(), p.GetAsName(PdfName.TYPE).ToString());
+            }
+            rdr.Close();
+        }
     }
 }

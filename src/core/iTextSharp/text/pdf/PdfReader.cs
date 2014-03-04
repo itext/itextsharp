@@ -1300,6 +1300,7 @@ namespace iTextSharp.text.pdf {
         }
         
         virtual protected internal void ReadObjStm(PRStream stream, IntHashtable map) {
+            if (stream == null) return;
             int first = stream.GetAsNumber(PdfName.FIRST).IntValue;
             int n = stream.GetAsNumber(PdfName.N).IntValue;
             byte[] b = GetStreamBytes(stream, tokens.File);
