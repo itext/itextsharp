@@ -62,7 +62,7 @@ namespace iTextSharp.tool.xml.html {
 
             public const String XML = "xml";
             public const String THEAD = "thead";
-            public const String TBODY = "thead";
+            public const String TBODY = "tbody";
             public const String TFOOT = "tfoot";
             public const String OL = "ol";
             public const String UL = "ul";
