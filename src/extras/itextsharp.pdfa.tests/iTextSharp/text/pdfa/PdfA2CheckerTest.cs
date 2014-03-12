@@ -1239,10 +1239,7 @@ namespace iTextSharp.text.pdfa {
                 document.Close();
             }
             catch (PdfAConformanceException e) {
-                if (e.GetObject() is PdfDictionary
-                    && ((PdfDictionary) e.GetObject()).Get(PdfName.TYPE) == PdfName.OUTPUTINTENT) {
-                    exceptionThrown = true;
-                }
+                exceptionThrown = true;
             }
             if (!exceptionThrown)
                 Assert.Fail("PdfAConformanceException should be thrown.");

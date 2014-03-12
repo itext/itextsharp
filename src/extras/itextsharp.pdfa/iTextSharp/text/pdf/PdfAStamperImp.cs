@@ -233,5 +233,9 @@ namespace iTextSharp.text.pdf {
             get { return ((PdfAConformanceImp) pdfIsoConformance).PdfAChecker; }
         }
 
+        protected internal override void Close(IDictionary<string, string> moreInfo) {
+            base.Close(moreInfo);
+            PdfAChecker.Close(this);
+        }
     }
 }

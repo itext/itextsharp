@@ -337,6 +337,11 @@ namespace iTextSharp.text.pdf {
         virtual public void AddPdfAttachment(String description, byte[] fileStore, String file, String fileDisplay, PdfName afRelationshipValue) {
             AddFileAttachment(description, fileStore, file, fileDisplay, MimeTypePdf, afRelationshipValue);
         }
+
+        public override void Close() {
+            base.Close();
+            GetPdfAChecker().Close(this);
+        }
     }
 
 }
