@@ -88,6 +88,9 @@ namespace iTextSharp.text.pdf.intern
         protected bool transparencyWithoutPageGroupDetected = false;
         protected bool transparencyDetectedOnThePage = false;
 
+        protected String pdfaOutputIntentColorSpace = null;
+        protected PdfObject pdfaDestOutputIntent = null;
+
         internal PdfA2Checker(PdfAConformanceLevel conformanceLevel)
             :base(conformanceLevel) {
         }
@@ -524,55 +527,6 @@ namespace iTextSharp.text.pdf.intern
                             throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("document.catalog.dictionary.should.contain.lang.entry"));
                         }
                     }
-
-                    PdfArray outputIntents = GetDirectArray(dictionary.Get(PdfName.OUTPUTINTENTS));
-                    bool pdfa1OutputIntentFound = false;
-                    if (outputIntents != null && outputIntents.Size > 0) {
-                        PdfObject iccProfileStream = null;
-                        for (int i = 0; i < outputIntents.Size; i++) {
-                            PdfDictionary outputIntentDictionary = GetDirectDictionary(outputIntents[i]);
-                            PdfName gts = outputIntentDictionary.GetAsName(PdfName.S);
-                            if (PdfName.GTS_PDFA1.Equals(gts)) {
-                                if (pdfa1OutputIntentFound)
-                                    throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("a.pdfa.file.may.have.only.one.pdfa.outputintent"));
-                                pdfa1OutputIntentFound = true;
-                            }
-                            if (outputIntentDictionary != null) {
-                                PdfObject destOutputIntent = outputIntentDictionary.Get(PdfName.DESTOUTPUTPROFILE);
-                                if (destOutputIntent != null) {
-                                    if (iccProfileStream == null)
-                                        iccProfileStream = destOutputIntent;
-                                    else if (iccProfileStream.IndRef != iccProfileStream.IndRef)
-                                        throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("if.outputintents.array.more.than.one.entry.the.same.indirect.object"));
-                                }
-                                else if (PdfName.GTS_PDFA1.Equals(gts))
-                                    throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("outputintent.shall.have.gtspdfa1.and.destoutputintent"));
-                            }
-                        }
-                    }
-
-                    if (!pdfa1OutputIntentFound) {
-                        if (rgbUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTRGB) == null) {
-                            throw new PdfAConformanceException(obj1,
-                                MessageLocalization.GetComposedMessage(
-                                    "devicergb.shall.only.be.used.if.defaultrgb.pdfa.or.outputintent"));
-                        }
-                        if (cmykUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTCMYK) == null) {
-                            throw new PdfAConformanceException(obj1,
-                                MessageLocalization.GetComposedMessage(
-                                    "devicecmyk.shall.only.be.used.if.defaultcmyk.pdfa.or.outputintent"));
-                        }
-                        if (grayUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTGRAY) == null) {
-                            throw new PdfAConformanceException(obj1,
-                                MessageLocalization.GetComposedMessage(
-                                    "devicegray.shall.only.be.used.if.defaultgray.pdfa.or.outputintent"));
-                        }
-                        if (transparencyWithoutPageGroupDetected) {
-                            throw new PdfAConformanceException(obj1,
-                                MessageLocalization.GetComposedMessage(
-                                    "if.the.document.not.contain.outputintent.transparencygroup.shall.comtain.cs.key"));
-                        }
-                    }
                 } else if (PdfName.PAGE.Equals(type)) {
                     PdfName[] boxNames = new PdfName[] {PdfName.MEDIABOX, PdfName.CROPBOX, PdfName.TRIMBOX, PdfName.ARTBOX, PdfName.BLEEDBOX};
                     foreach (PdfName boxName in boxNames) {
@@ -610,46 +564,36 @@ namespace iTextSharp.text.pdf.intern
                     }
                     transparencyDetectedOnThePage = false;
                 } else if (PdfName.OUTPUTINTENT.Equals(type)) {
+                    PdfObject destOutputIntent = dictionary.Get(PdfName.DESTOUTPUTPROFILE);
+                    if (destOutputIntent != null && pdfaDestOutputIntent != null) {
+                        if (pdfaDestOutputIntent.IndRef != destOutputIntent.IndRef)
+                            throw new PdfAConformanceException(obj1,
+                                MessageLocalization.GetComposedMessage(
+                                    "if.outputintents.array.more.than.one.entry.the.same.indirect.object"));
+                    } else {
+                        pdfaDestOutputIntent = destOutputIntent;
+                    }
+
                     PdfName gts = dictionary.GetAsName(PdfName.S);
-                    if (PdfName.GTS_PDFA1.Equals(gts)) {
-                        PdfObject iccProfileStream = dictionary.Get(PdfName.DESTOUTPUTPROFILE);
-                        String inputColorSpace = "";
-                        String deviceClass = "";
-                        if (iccProfileStream != null) {
-                            ICC_Profile icc_profile = writer.ColorProfile;
-                            inputColorSpace = Encoding.GetEncoding("US-ASCII").GetString(icc_profile.Data, 16, 4);
-                            deviceClass = Encoding.GetEncoding("US-ASCII").GetString(icc_profile.Data, 12, 4);
+                    if (pdfaDestOutputIntent != null) {
+                        if (PdfName.GTS_PDFA1.Equals(gts)) {
+                            if (pdfaOutputIntentColorSpace != null)
+                                throw new PdfAConformanceException(obj1,
+                                    MessageLocalization.GetComposedMessage("a.pdfa.file.may.have.only.one.pdfa.outputintent"));
+                            pdfaOutputIntentColorSpace = "";
                         }
+
+                        String deviceClass = "";
+                        ICC_Profile icc_profile = writer.ColorProfile;
+                        if (PdfName.GTS_PDFA1.Equals(gts))
+                            pdfaOutputIntentColorSpace = Encoding.GetEncoding("US-ASCII").GetString(icc_profile.Data, 16, 4);
+                        deviceClass = Encoding.GetEncoding("US-ASCII").GetString(icc_profile.Data, 12, 4);
                         if (!"prtr".Equals(deviceClass) && !"mntr".Equals(deviceClass))
                             throw new PdfAConformanceException(obj1,
                                 MessageLocalization.GetComposedMessage("outputintent.shall.be.prtr.or.mntr"));
-                        if ("RGB ".Equals(inputColorSpace)) {
-                            if (cmykUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTCMYK) == null)
-                                throw new PdfAConformanceException(obj1,
-                                    MessageLocalization.GetComposedMessage(
-                                        "devicecmyk.shall.only.be.used.if.defaultcmyk.pdfa.or.outputintent"));
-                        }
-                        else if ("CMYK".Equals(inputColorSpace)) {
-                            if (rgbUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTRGB) == null)
-                                throw new PdfAConformanceException(obj1,
-                                    MessageLocalization.GetComposedMessage(
-                                        "devicergb.shall.only.be.used.if.defaultrgb.pdfa.or.outputintent"));
-                        }
-                        else if ("GRAY".Equals(inputColorSpace)) {
-                            if (rgbUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTRGB) == null)
-                                throw new PdfAConformanceException(obj1,
-                                    MessageLocalization.GetComposedMessage(
-                                        "devicergb.shall.only.be.used.if.defaultrgb.pdfa.or.outputintent"));
-                            if (cmykUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTCMYK) == null)
-                                throw new PdfAConformanceException(obj1,
-                                    MessageLocalization.GetComposedMessage(
-                                        "devicecmyk.shall.only.be.used.if.defaultcmyk.pdfa.or.outputintent"));
-                        }
-                        else {
-                            throw new PdfAConformanceException(obj1,
-                                MessageLocalization.GetComposedMessage(
-                                    "outputintent.shall.have.colourspace.gray.rgb.or.cmyk"));
-                        }
+                    } else {
+                        throw new PdfAConformanceException(obj1,
+                            MessageLocalization.GetComposedMessage("outputintent.shall.have.gtspdfa1.and.destoutputintent"));
                     }
                 } else if (PdfName.EMBEDDEDFILE.Equals(type)) {
                     CheckEmbeddedFile(dictionary);
@@ -888,5 +832,50 @@ namespace iTextSharp.text.pdf.intern
             }
         }
 
+        public override void Close(PdfWriter writer) {
+            if (pdfaOutputIntentColorSpace != null) {
+                if ("RGB ".Equals(pdfaOutputIntentColorSpace)) {
+                    if (cmykUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTCMYK) == null)
+                        throw new PdfAConformanceException(null,
+                            MessageLocalization.GetComposedMessage(
+                                "devicecmyk.shall.only.be.used.if.defaultcmyk.pdfa.or.outputintent"));
+                } else if ("CMYK".Equals(pdfaOutputIntentColorSpace)) {
+                    if (rgbUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTRGB) == null)
+                        throw new PdfAConformanceException(null,
+                            MessageLocalization.GetComposedMessage(
+                                "devicergb.shall.only.be.used.if.defaultrgb.pdfa.or.outputintent"));
+                } else if ("GRAY".Equals(pdfaOutputIntentColorSpace)) {
+                    if (rgbUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTRGB) == null)
+                        throw new PdfAConformanceException(null,
+                            MessageLocalization.GetComposedMessage(
+                                "devicergb.shall.only.be.used.if.defaultrgb.pdfa.or.outputintent"));
+                    if (cmykUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTCMYK) == null)
+                        throw new PdfAConformanceException(null,
+                            MessageLocalization.GetComposedMessage(
+                                "devicecmyk.shall.only.be.used.if.defaultcmyk.pdfa.or.outputintent"));
+                } else {
+                    throw new PdfAConformanceException(null,
+                        MessageLocalization.GetComposedMessage("outputintent.shall.have.colourspace.gray.rgb.or.cmyk"));
+                }
+            } else {
+                if (rgbUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTRGB) == null) {
+                    throw new PdfAConformanceException(null,
+                        MessageLocalization.GetComposedMessage("devicergb.shall.only.be.used.if.defaultrgb.pdfa.or.outputintent"));
+                }
+                if (cmykUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTCMYK) == null) {
+                    throw new PdfAConformanceException(null,
+                        MessageLocalization.GetComposedMessage("devicecmyk.shall.only.be.used.if.defaultcmyk.pdfa.or.outputintent"));
+                }
+                if (grayUsed && writer.DefaultColorspace.Get(PdfName.DEFAULTGRAY) == null) {
+                    throw new PdfAConformanceException(null,
+                        MessageLocalization.GetComposedMessage("devicegray.shall.only.be.used.if.defaultgray.pdfa.or.outputintent"));
+                }
+                if (transparencyWithoutPageGroupDetected) {
+                    throw new PdfAConformanceException(null,
+                        MessageLocalization.GetComposedMessage(
+                            "if.the.document.not.contain.outputintent.transparencygroup.shall.comtain.cs.key"));
+                }
+            }
+        }
     }
 }

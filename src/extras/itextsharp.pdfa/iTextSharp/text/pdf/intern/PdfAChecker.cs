@@ -74,6 +74,8 @@ namespace iTextSharp.text.pdf.intern
             }
         }
 
+        abstract public void Close(PdfWriter writer);
+
         private PdfObject CleverPdfArrayClone(PdfArray array) {
             PdfArray newArray = new PdfArray();
             for (int i = 0; i < array.Size; i++) {
