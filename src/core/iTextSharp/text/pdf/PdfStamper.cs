@@ -484,6 +484,15 @@ namespace iTextSharp.text.pdf {
                 stamper.AddJavaScript(value, !PdfEncodings.IsPdfDocEncoding(value));
             }
         }
+
+        /** Adds a JavaScript action at the document level. When the document
+         * opens all this JavaScript runs. The existing JavaScript will be replaced.
+         * @param name the name for the JavaScript snippet in the name tree
+         * @param js the JavaScript code
+         */
+        public virtual void AddJavaScript(String name, String js) {
+            stamper.AddJavaScript(name, PdfAction.JavaScript(js, stamper, !PdfEncodings.IsPdfDocEncoding(js)));
+        }
         
         /** Adds a file attachment at the document level. Existing attachments will be kept.
         * @param description the file description

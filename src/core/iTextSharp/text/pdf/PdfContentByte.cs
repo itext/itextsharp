@@ -411,7 +411,16 @@ namespace iTextSharp.text.pdf {
                 content.Append(value).Append(" J").Append_i(separator);
             }
         }
-    
+
+        /**
+         * Set the rendering intent, possible values are: PdfName.ABSOLUTECOLORIMETRIC,
+         * PdfName.RELATIVECOLORIMETRIC, PdfName.SATURATION, PdfName.PERCEPTUAL.
+         * @param ri
+         */
+        virtual public void SetRenderingIntent(PdfName ri) {
+            content.Append(ri.GetBytes()).Append(" ri").Append_i(separator);
+        }
+        
         /**
          * Changes the value of the <VAR>line dash pattern</VAR>.
          * <P>
