@@ -1876,7 +1876,7 @@ namespace iTextSharp.text.pdfa
             PdfArtifact artifact = new PdfArtifact();
             BaseFont bf = BaseFont.CreateFont(RESOURCES + "FreeMonoBold.ttf",
                 BaseFont.WINANSI, BaseFont.EMBEDDED);
-            artifact.Type = new PdfString("Layout");
+            artifact.SetType(PdfArtifact.ArtifactType.LAYOUT);
             PdfContentByte canvas = stamper.GetOverContent(1);
             canvas.OpenMCBlock(artifact);
             canvas.BeginText();
