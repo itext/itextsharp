@@ -78,7 +78,7 @@ public class CompareTool {
     public CompareTool(String outPdf, String cmpPdf) {
         gsExec = Environment.GetEnvironmentVariable("gsExec");
         compareExec = Environment.GetEnvironmentVariable("compareExec");
-        init(outPdf, cmpPdf);
+        Init(outPdf, cmpPdf);
     }
 
     virtual public String Compare(String outPath, String differenceImagePrefix) {
@@ -146,7 +146,7 @@ public class CompareTool {
                 outReader.Close();
                 cmpReader.Close();
 
-                init(outPath + ignoredAreasPrefix + outPdfName, outPath + ignoredAreasPrefix + cmpPdfName);
+                Init(outPath + ignoredAreasPrefix + outPdfName, outPath + ignoredAreasPrefix + cmpPdfName);
             }
 
             String gsParams = CompareTool.gsParams.Replace("<outputfile>", outPath + cmpImage).Replace("<inputfile>", cmpPdf);
@@ -272,16 +272,16 @@ public class CompareTool {
     }
 
     virtual public String Compare(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas) {
-        init(outPdf, cmpPdf);
+        Init(outPdf, cmpPdf);
         return Compare(outPath, differenceImagePrefix, ignoredAreas);
     }
 
     virtual public String Compare(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix) {
-        init(outPdf, cmpPdf);
+        Init(outPdf, cmpPdf);
         return Compare(outPath, differenceImagePrefix, null);
     }
 
-    private void init(String outPdf, String cmpPdf) {
+    private void Init(String outPdf, String cmpPdf) {
         this.outPdf = outPdf;
         this.cmpPdf = cmpPdf;
         outPdfName = Path.GetFileName(outPdf);
@@ -315,6 +315,67 @@ public class CompareTool {
 
         }
         return true;
+    }
+
+    private bool LinksAreSame(PdfAnnotation.PdfImportedLink cmpLink, PdfAnnotation.PdfImportedLink outLink) {
+        // Compare link boxes, page numbers the links refer to, and simple parameters (non-indirect, non-arrays, non-dictionaries)
+
+        if (cmpLink.GetDestinationPage() != outLink.GetDestinationPage())
+            return false;
+        if (!cmpLink.GetRect().ToString().Equals(outLink.GetRect().ToString()))
+            return false;
+
+        IDictionary<PdfName, PdfObject> cmpParams = cmpLink.GetParameters();
+        IDictionary<PdfName, PdfObject> outParams = outLink.GetParameters();
+        if (cmpParams.Count != outParams.Count)
+            return false;
+
+        foreach (KeyValuePair<PdfName, PdfObject> cmpEntry in cmpParams) {
+            PdfObject cmpObj = cmpEntry.Value;
+            if (!outParams.ContainsKey(cmpEntry.Key))
+                return false;
+            PdfObject outObj = outParams[cmpEntry.Key];
+            if (cmpObj.Type != outObj.Type)
+                return false;
+
+            switch (cmpObj.Type) {
+                case PdfObject.NULL:
+                case PdfObject.BOOLEAN:
+                case PdfObject.NUMBER:
+                case PdfObject.STRING:
+                case PdfObject.NAME:
+                    if (!cmpObj.ToString().Equals(outObj.ToString()))
+                        return false;
+                    break;
+            }
+        }
+
+        return true;
+    }
+
+    public String CompareLinks(String outPdf, String cmpPdf) {
+        Console.Out.WriteLine("Comparing link annotations...");
+        String message = null;
+        PdfReader outReader = new PdfReader(outPdf);
+        PdfReader cmpReader = new PdfReader(cmpPdf);
+        for (int i = 0; i < outReader.NumberOfPages && i < cmpReader.NumberOfPages; i++) {
+            List<PdfAnnotation.PdfImportedLink> outLinks = outReader.GetLinks(i + 1);
+            List<PdfAnnotation.PdfImportedLink> cmpLinks = cmpReader.GetLinks(i + 1);
+            if (cmpLinks.Count != outLinks.Count) {
+                message = String.Format("Different number of links on page {0}.", i + 1);
+                break;
+            }
+            for (int j = 0; j < cmpLinks.Count; j++) {
+                if (!LinksAreSame(cmpLinks[j], outLinks[j])) {
+                    message = String.Format("Different links on page {0}.\n{1}\n{2}", i + 1, cmpLinks[j].ToString(),
+                        outLinks[j].ToString());
+                    break;
+                }
+            }
+        }
+        outReader.Close();
+        cmpReader.Close();
+        return message;
     }
 
     private bool PngPredicate(FileSystemInfo pathname) {
