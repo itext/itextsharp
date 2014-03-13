@@ -1,4 +1,7 @@
+using System;
 using System.Collections.Generic;
+using System.util.collections;
+using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf.interfaces;
 /*
  * $Id: PdfArtifact.java 5830 2013-05-31 09:29:15Z blowagie $
@@ -53,6 +56,8 @@ namespace iTextSharp.text.pdf
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
         protected AccessibleElementId id = new AccessibleElementId();
 
+        private static readonly HashSet2<String> allowedArtifactTypes = new HashSet2<string>(new string[] { "Pagination", "Layout", "Page", "Background" }); 
+
         virtual public PdfObject GetAccessibleAttribute(PdfName key) {
             if (accessibleAttributes != null)
                 return accessibleAttributes[key];
@@ -95,8 +100,30 @@ namespace iTextSharp.text.pdf
                 return (PdfString) pdfObject;
             }
             set {
+                if (!allowedArtifactTypes.Contains(value.ToString()))
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("the.artifact.type.1.is.invalid", value));
                 SetAccessibleAttribute(PdfName.TYPE, value);
             }
+        }
+
+        virtual public void SetType(PdfArtifact.ArtifactType type) {
+            PdfString artifactType = null;
+            switch (type)
+            {
+                case ArtifactType.BACKGROUND:
+                    artifactType = new PdfString("Background");
+                    break;
+                case ArtifactType.LAYOUT:
+                    artifactType = new PdfString("Layout");
+                    break;
+                case ArtifactType.PAGE:
+                    artifactType = new PdfString("Page");
+                    break;
+                case ArtifactType.PAGINATION:
+                    artifactType = new PdfString("Pagination");
+                    break;
+            }
+            SetAccessibleAttribute(PdfName.TYPE, artifactType);
         }
 
         virtual public PdfArray BBox {
@@ -123,6 +150,13 @@ namespace iTextSharp.text.pdf
             set {
                 SetAccessibleAttribute(PdfName.ATTACHED, value);
             }
+        }
+
+        public enum ArtifactType {
+            PAGINATION,
+            LAYOUT,
+            PAGE,
+            BACKGROUND
         }
     }
 }
