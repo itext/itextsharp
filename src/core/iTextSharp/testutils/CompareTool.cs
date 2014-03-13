@@ -353,7 +353,7 @@ public class CompareTool {
         return true;
     }
 
-    public String CompareLinks(String outPdf, String cmpPdf) {
+    virtual public String CompareLinks(String outPdf, String cmpPdf) {
         Console.Out.WriteLine("Comparing link annotations...");
         String message = null;
         PdfReader outReader = new PdfReader(outPdf);

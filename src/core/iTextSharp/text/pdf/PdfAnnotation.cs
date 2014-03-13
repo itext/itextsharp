@@ -818,11 +818,11 @@ namespace iTextSharp.text.pdf {
                 rect = new PdfArray(rc);
             }
 
-            public IDictionary<PdfName, PdfObject> GetParameters() {
+            virtual public IDictionary<PdfName, PdfObject> GetParameters() {
                 return new Dictionary<PdfName, PdfObject>(parameters);
             }
 
-            public PdfArray GetRect() {
+            virtual public PdfArray GetRect() {
                 return new PdfArray(rect);
             }
             
