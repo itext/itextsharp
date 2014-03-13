@@ -794,6 +794,7 @@ namespace iTextSharp.text.pdf {
             Dictionary<PdfName, PdfObject> parameters;
             PdfArray destination = null;
             int newPage=0;
+            PdfArray rect;
             
             internal PdfImportedLink(PdfDictionary annotation) {
                 parameters = new Dictionary<PdfName,PdfObject>(annotation.hashMap);
@@ -813,6 +814,16 @@ namespace iTextSharp.text.pdf {
                 lly = rc.GetAsNumber(1).FloatValue;
                 urx = rc.GetAsNumber(2).FloatValue;
                 ury = rc.GetAsNumber(3).FloatValue;
+
+                rect = new PdfArray(rc);
+            }
+
+            public IDictionary<PdfName, PdfObject> GetParameters() {
+                return new Dictionary<PdfName, PdfObject>(parameters);
+            }
+
+            public PdfArray GetRect() {
+                return new PdfArray(rect);
             }
             
             virtual public bool IsInternal() {
