@@ -1446,7 +1446,11 @@ namespace iTextSharp.text.pdf {
                     valDict.Put(PdfName.V, vt);
                     merged.Put(PdfName.V, vt);
                     MarkUsed(widget);
-                    if (IsInAP(widget,  vt)) {
+                    PdfDictionary appDic = widget.GetAsDict(PdfName.AP);
+                    if (appDic == null)
+                        return false;
+                    PdfDictionary normal = appDic.GetAsDict(PdfName.N);
+                    if (IsInAP(normal, vt) || normal == null) {
                         merged.Put(PdfName.AS, vt);
                         widget.Put(PdfName.AS, vt);
                     }
@@ -1507,12 +1511,8 @@ namespace iTextSharp.text.pdf {
             return true;
         }
 
-        internal bool IsInAP(PdfDictionary dic, PdfName check) {
-            PdfDictionary appDic = dic.GetAsDict(PdfName.AP);
-            if (appDic == null)
-                return false;
-            PdfDictionary NDic = appDic.GetAsDict(PdfName.N);
-            return (NDic != null && NDic.Get(check) != null);
+        internal bool IsInAP(PdfDictionary nDic, PdfName check) {
+            return nDic != null && nDic.Get(check) != null;
         }
         
         /** Gets all the fields. The fields are keyed by the fully qualified field name and

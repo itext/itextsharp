@@ -249,7 +249,7 @@ namespace iTextSharp.text.pdf {
             }
             else {
                 PdfArray filters = new PdfArray(filter);
-                filters.Add(PdfName.FLATEDECODE);
+                filters.Add(0, PdfName.FLATEDECODE);
                 Put(PdfName.FILTER, filters);
             }
             compressed = true;

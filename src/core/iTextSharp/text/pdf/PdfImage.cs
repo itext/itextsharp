@@ -254,6 +254,8 @@ namespace iTextSharp.text.pdf {
                     default:
                         throw new IOException(MessageLocalization.GetComposedMessage("1.is.an.unknown.image.format", errorID));
                 }
+                if (image.CompressionLevel > NO_COMPRESSION)
+                    FlateCompress(image.CompressionLevel);
                 Put(PdfName.LENGTH, new PdfNumber(streamBytes.Length));
             }
             finally {
