@@ -717,7 +717,9 @@ namespace iTextSharp.text {
         /// <returns>this Chunk</returns>
         virtual public Chunk SetAnchor(Uri url) {
             Role = PdfName.LINK;
-            return SetAttribute(ACTION, new PdfAction(url));
+            String urlStr = url.AbsoluteUri;
+            SetAccessibleAttribute(PdfName.ALT, new PdfString(urlStr));
+            return SetAttribute(ACTION, new PdfAction(urlStr));
         }
 
         /// <summary>
@@ -727,6 +729,7 @@ namespace iTextSharp.text {
         /// <returns>this Chunk</returns>
         virtual public Chunk SetAnchor(string url) {
             Role = PdfName.LINK;
+            SetAccessibleAttribute(PdfName.ALT, new PdfString(url));
             return SetAttribute(ACTION, new PdfAction(url));
         }
 
