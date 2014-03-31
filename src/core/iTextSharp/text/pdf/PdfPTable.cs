@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using iTextSharp.text.error_messages;
-
 using iTextSharp.text.api;
 using iTextSharp.text.log;
 using iTextSharp.text.pdf.events;
@@ -268,9 +267,8 @@ namespace iTextSharp.text.pdf {
         * @param sourceTable
         * @since 2.1.6 private is now protected
         */
-
-        virtual protected internal void CopyFormat(PdfPTable sourceTable)
-        {
+        protected internal virtual void CopyFormat(PdfPTable sourceTable) {
+            rowsNotChecked = sourceTable.rowsNotChecked;
             relativeWidths = new float[sourceTable.NumberOfColumns];
             absoluteWidths = new float[sourceTable.NumberOfColumns];
             System.Array.Copy(sourceTable.relativeWidths, 0, relativeWidths, 0, NumberOfColumns);
@@ -281,7 +279,7 @@ namespace iTextSharp.text.pdf {
             tableEvent = sourceTable.tableEvent;
             runDirection = sourceTable.runDirection;
             if (sourceTable.defaultCell is PdfPHeaderCell)
-                defaultCell = new PdfPHeaderCell((PdfPHeaderCell)sourceTable.defaultCell);
+                defaultCell = new PdfPHeaderCell((PdfPHeaderCell) sourceTable.defaultCell);
             else
                 defaultCell = new PdfPCell(sourceTable.defaultCell);
             currentRow = new PdfPCell[sourceTable.currentRow.Length];
