@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf {
     public class FdfWriter {
         private static readonly byte[] HEADER_FDF = DocWriter.GetISOBytes("%FDF-1.4\n%\u00e2\u00e3\u00cf\u00d3\n");
         Dictionary<String, Object> fields = new Dictionary<string,object>();
+        Wrt wrt = null;
 
         /** The PDF file associated with the FDF. */
         private String file;
@@ -61,14 +62,23 @@ namespace iTextSharp.text.pdf {
         public FdfWriter() {
         }
 
+        public FdfWriter(Stream os) {
+            wrt = new Wrt(os, this);
+        }
+
         /** Writes the content to a stream.
         * @param os the stream
         * @throws DocumentException on error
         * @throws IOException on error
         */    
         virtual public void WriteTo(Stream os) {
-            Wrt wrt = new Wrt(os, this);
-            wrt.WriteTo();
+            if (wrt == null)
+                wrt = new Wrt(os, this);
+            wrt.Write();
+        }
+
+        public virtual void Write() {
+            wrt.Write();
         }
         
         internal bool SetField(String field, PdfObject value) {
@@ -234,8 +244,42 @@ namespace iTextSharp.text.pdf {
          * an existing field
          * @since	2.1.5
          */
-        virtual public bool SetFieldAsAction(String field, PdfAction action) {
+        public virtual bool SetFieldAsAction(String field, PdfAction action) {
             return SetField(field, action);
+        }
+
+        public virtual bool SetFieldAsTemplate(String field, PdfTemplate template) {
+            PdfDictionary d = new PdfDictionary();
+            if (template is PdfImportedPage)
+                d.Put(PdfName.N, template.IndirectReference);
+            else {
+                PdfStream str = template.GetFormXObject(PdfStream.NO_COMPRESSION);
+                PdfIndirectReference @ref = wrt.AddToBody(str).IndirectReference;
+                d.Put(PdfName.N, @ref);
+            }
+            return SetField(field, d);
+        }
+
+        public virtual bool SetFieldAsImage(String field, Image image) {
+            if (float.IsNaN(image.AbsoluteX))
+                image.SetAbsolutePosition(0, image.AbsoluteY);
+            if (float.IsNaN(image.AbsoluteY))
+                image.SetAbsolutePosition(image.AbsoluteY, 0);
+            PdfTemplate tmpl = PdfTemplate.CreateTemplate(wrt, image.Width, image.Height);
+            tmpl.AddImage(image);
+            PdfStream str = tmpl.GetFormXObject(PdfStream.NO_COMPRESSION);
+            PdfIndirectReference @ref = wrt.AddToBody(str).IndirectReference;
+            PdfDictionary d = new PdfDictionary();
+            d.Put(PdfName.N, @ref);
+            return SetField(field, d);
+        }
+
+        public virtual PdfImportedPage GetImportedPage(PdfReader reader, int pageNumber) {
+            return wrt.GetImportedPage(reader, pageNumber);
+        }
+
+        public virtual PdfTemplate CreateTemplate(float width, float height) {
+            return PdfTemplate.CreateTemplate(wrt, width, height);
         }
     
         /** Sets all the fields from this <CODE>FdfReader</CODE>
@@ -303,7 +347,12 @@ namespace iTextSharp.text.pdf {
                 body = new PdfBody(this);
             }
             
-            internal void WriteTo() {
+            internal void Write() {
+                foreach (PdfReaderInstance element in readerInstances.Values) {
+                    currentPdfReaderInstance = element;
+                    currentPdfReaderInstance.WriteAllPages();
+                }
+
                 PdfDictionary dic = new PdfDictionary();
                 dic.Put(PdfName.FIELDS, Calculate(fdf.fields));
                 if (fdf.file != null)
@@ -330,13 +379,13 @@ namespace iTextSharp.text.pdf {
                     PdfDictionary dic = new PdfDictionary();
                     dic.Put(PdfName.T, new PdfString(key, PdfObject.TEXT_UNICODE));
                     if (v is Dictionary<String, Object>) {
-                        dic.Put(PdfName.KIDS, Calculate((Dictionary<String, Object>)v));
-                    }
-                    else if (v is PdfAction) {	// (plaflamme)
-                        dic.Put(PdfName.A, (PdfAction)v);
-                    }
-                    else {
-                        dic.Put(PdfName.V, (PdfObject)v);
+                        dic.Put(PdfName.KIDS, Calculate((Dictionary<String, Object>) v));
+                    } else if (v is PdfAction) { // (plaflamme)
+                        dic.Put(PdfName.A, (PdfAction) v);
+                    } else if (v is PdfDictionary && ((PdfDictionary) v).Size == 1 && ((PdfDictionary) v).Contains(PdfName.N)) {
+                        dic.Put(PdfName.AP, (PdfDictionary) v);
+                    } else {
+                        dic.Put(PdfName.V, (PdfObject) v);
                     }
                     ar.Add(dic);
                 }
