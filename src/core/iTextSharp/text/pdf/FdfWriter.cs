@@ -57,6 +57,7 @@ namespace iTextSharp.text.pdf {
 
         /** The PDF file associated with the FDF. */
         private String file;
+        private String statusMessage;
         
         /** Creates a new FdfWriter. */    
         public FdfWriter() {
@@ -79,6 +80,11 @@ namespace iTextSharp.text.pdf {
 
         public virtual void Write() {
             wrt.Write();
+        }
+
+        public virtual string StatusMessage {
+            get { return statusMessage; }
+            set { statusMessage = value; }
         }
         
         internal bool SetField(String field, PdfObject value) {
@@ -357,6 +363,8 @@ namespace iTextSharp.text.pdf {
                 dic.Put(PdfName.FIELDS, Calculate(fdf.fields));
                 if (fdf.file != null)
                     dic.Put(PdfName.F, new PdfString(fdf.file, PdfObject.TEXT_UNICODE));
+                if (!string.IsNullOrEmpty(fdf.statusMessage))
+                    dic.Put(PdfName.STATUS, new PdfString(fdf.statusMessage));
                 PdfDictionary fd = new PdfDictionary();
                 fd.Put(PdfName.FDF, dic);
                 PdfIndirectReference refi = AddToBody(fd).IndirectReference;

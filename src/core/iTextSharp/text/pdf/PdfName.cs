@@ -1851,6 +1851,8 @@ namespace iTextSharp.text.pdf {
         /** A name */
         public static readonly PdfName STATE = new PdfName("State");
         /** A name */
+        public static readonly PdfName STATUS = new PdfName("Status");
+        /** A name */
         public static readonly PdfName STDCF = new PdfName("StdCF");
         /** A name */
         public static readonly PdfName STEMV = new PdfName("StemV");
