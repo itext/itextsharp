@@ -1511,24 +1511,12 @@ namespace iTextSharp.text.pdf {
                             }
                             text.AddAnnotation(annot, true);
                             if (IsTagged(writer) && chunk.accessibleElement != null) {
-                                int structParent = GetStructParentIndex(annot);
-                                annot.Put(PdfName.STRUCTPARENT, new PdfNumber(structParent));
                                 PdfStructureElement strucElem;
                                 structElements.TryGetValue(chunk.accessibleElement.ID, out strucElem);
                                 if (strucElem != null) {
-                                    PdfArray kArray = strucElem.GetAsArray(PdfName.K);
-                                    if (kArray == null) {
-                                        kArray = new PdfArray();
-                                        PdfObject k = strucElem.Get(PdfName.K);
-                                        if (k != null) {
-                                            kArray.Add(k);
-                                        }
-                                        strucElem.Put(PdfName.K, kArray);
-                                    }
-                                    PdfDictionary dict = new PdfDictionary();
-                                    dict.Put(PdfName.TYPE, PdfName.OBJR);
-                                    dict.Put(PdfName.OBJ, annot.IndirectReference);
-                                    kArray.Add(dict);
+                                    int structParent = GetStructParentIndex(annot);
+                                    annot.Put(PdfName.STRUCTPARENT, new PdfNumber(structParent));
+                                    strucElem.SetAnnotation(annot, writer.CurrentPage);
                                     writer.StructureTreeRoot.SetAnnotationMark(structParent, strucElem.Reference);
                                 }
                             }
