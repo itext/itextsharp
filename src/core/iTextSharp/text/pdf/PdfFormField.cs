@@ -114,6 +114,7 @@ namespace iTextSharp.text.pdf {
         internal PdfFormField(PdfWriter writer) : base(writer, null) {
             form = true;
             annotation = false;
+            role = PdfName.FORM;
         }
     
         virtual public void SetWidget(Rectangle rect, PdfName highlight) {

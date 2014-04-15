@@ -3188,6 +3188,10 @@ namespace iTextSharp.text.pdf {
             return cb;
         }
 
+        public virtual void InheritGraphicState(PdfContentByte parentCanvas) {
+            this.state = parentCanvas.state;
+            this.stateList = parentCanvas.stateList;
+        }
 
 
         /**
@@ -3484,19 +3488,32 @@ namespace iTextSharp.text.pdf {
             while (n-- > 0)
                 content.Append("EMC").Append_i(separator);
         }
-        
+
         internal virtual void AddAnnotation(PdfAnnotation annot) {
+            bool needToTag = IsTagged() && annot.Role != null && (!(annot is PdfFormField) || ((PdfFormField) annot).Kids == null);
+            if (needToTag) {
+                OpenMCBlock(annot);
+            }
             writer.AddAnnotation(annot);
+            if (needToTag) {
+                PdfStructureElement strucElem = null;
+                pdf.structElements.TryGetValue(annot.ID, out strucElem);
+                if (strucElem != null) {
+                    int structParent = pdf.GetStructParentIndex(annot);
+                    annot.Put(PdfName.STRUCTPARENT, new PdfNumber(structParent));
+                    strucElem.SetAnnotation(annot, CurrentPage);
+                    writer.StructureTreeRoot.SetAnnotationMark(structParent, strucElem.Reference);
+                }
+                CloseMCBlock(annot);
+            }
         }
 
-        internal void AddAnnotation(PdfAnnotation annot, bool applyCTM)
-        {
+        public virtual void AddAnnotation(PdfAnnotation annot, bool applyCTM) {
             if (applyCTM && !state.CTM.IsIdentity()) {
                 annot.ApplyCTM(state.CTM);
             }
             AddAnnotation(annot);
         }
-
 
 
         /**

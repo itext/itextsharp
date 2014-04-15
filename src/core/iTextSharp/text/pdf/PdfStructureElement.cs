@@ -194,11 +194,28 @@ namespace iTextSharp.text.pdf
                 return parent;
         }
 
-        internal void SetPageMark(int page, int mark)
-        {
+        internal virtual void SetPageMark(int page, int mark) {
             if (mark >= 0)
                 Put(PdfName.K, new PdfNumber(mark));
             top.SetPageMark(page, reference);
+        }
+
+        internal virtual void SetAnnotation(PdfAnnotation annot, PdfIndirectReference currentPage) {
+            PdfArray kArray = GetAsArray(PdfName.K);
+            if (kArray == null) {
+                kArray = new PdfArray();
+                PdfObject k = Get(PdfName.K);
+                if (k != null) {
+                    kArray.Add(k);
+                }
+                Put(PdfName.K, kArray);
+            }
+            PdfDictionary dict = new PdfDictionary();
+            dict.Put(PdfName.TYPE, PdfName.OBJR);
+            dict.Put(PdfName.OBJ, annot.IndirectReference);
+            if (annot.Role == PdfName.FORM)
+                dict.Put(PdfName.PG, currentPage);
+            kArray.Add(dict);
         }
 
         /**
