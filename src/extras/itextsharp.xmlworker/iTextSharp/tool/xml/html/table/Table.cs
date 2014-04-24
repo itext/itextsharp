@@ -152,7 +152,7 @@ namespace iTextSharp.tool.xml.html.table {
                         // check whether the current column should be skipped due to a
                         // rowspan value of higher cell in this column.
                         // Contribution made by Arnost Havelka (Asseco): added while condition
-                        while ((column < numberOfColumns) && (rowspanValue[column] > 1)) {
+                        while ((column < numberOfColumns) && (rowspanValue[column] > 0)) {
                             rowspanValue[column] = rowspanValue[column] - 1;
                             ++column;
                         }
