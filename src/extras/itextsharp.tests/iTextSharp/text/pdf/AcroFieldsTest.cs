@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace itextsharp.tests.iTextSharp.text.pdf {
     class AcroFieldsTest {
         private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\AcroFieldsTest\";
-        private const string OUT_FOLDER = @"AcroFieldsTest";
+        private const string OUT_FOLDER = @"AcroFieldsTest\";
 
         [SetUp]
         public virtual void SetUp() {
@@ -125,7 +125,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
 
             FileStream fos = new FileStream(outFdf, FileMode.Create);
             FdfWriter fdfWriter = new FdfWriter(fos);
-            fdfWriter.File = acroform_pdf;
+            fdfWriter.File = Path.GetFullPath(acroform_pdf);
 
             fdfWriter.SetFieldAsString("FirstName", "Alexander");
             fdfWriter.SetFieldAsString("LastName", "Chingarev");
@@ -149,11 +149,15 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             PdfDictionary barcode = fields["Barcode"];
             PdfStream n = barcode.GetAsDict(PdfName.AP).GetAsStream(PdfName.N);
             Assert.NotNull(n);
+            byte[] b = FdfReader.GetStreamBytes((PRStream)n);
+            Assert.AreEqual(51, b.Length);
             PdfStream img0 = n.GetAsDict(PdfName.RESOURCES).GetAsDict(PdfName.XOBJECT).GetAsStream(new PdfName("img0"));
             Assert.NotNull(img0);
             PdfDictionary signature = fields["Signature"];
-            n = barcode.GetAsDict(PdfName.AP).GetAsStream(PdfName.N);
+            n = signature.GetAsDict(PdfName.AP).GetAsStream(PdfName.N);
             Assert.NotNull(n);
+            b = FdfReader.GetStreamBytes((PRStream)n);
+            Assert.AreEqual(24410, b.Length);
             fdfReader.Close();
         }
     }
