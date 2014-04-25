@@ -1186,7 +1186,7 @@ namespace iTextSharp.text.pdf {
             preClosed = true;
             AcroFields af = writer.GetAcroFields();
             String name = FieldName;
-            bool fieldExists = !(IsInvisible() || IsNewField());
+            bool fieldExists = !IsNewField();
             PdfIndirectReference refSig = writer.PdfIndirectReference;
             writer.SigFlags = 3;
             PdfDictionary fieldLock = null;
