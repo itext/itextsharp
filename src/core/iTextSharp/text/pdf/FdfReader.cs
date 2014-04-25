@@ -92,19 +92,9 @@ namespace iTextSharp.text.pdf {
 
         protected internal override void ReadPdf() {
             fields = new Dictionary<string,PdfDictionary>();
-            try {
-                tokens.CheckFdfHeader();
-                RebuildXref();
-                ReadDocObj();
-            }
-            finally {
-                try {
-                    tokens.Close();
-                }
-                catch  {
-                    // empty on purpose
-                }
-            }
+            tokens.CheckFdfHeader();
+            RebuildXref();
+            ReadDocObj();
             ReadFields();
         }
         
