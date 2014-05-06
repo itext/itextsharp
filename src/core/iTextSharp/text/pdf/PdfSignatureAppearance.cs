@@ -360,18 +360,6 @@ namespace iTextSharp.text.pdf {
             name += step;
             return name;
         }
-
-        /** Indicates if a new field was created. */
-        private bool newField;
-        
-        /**
-         * Checks if a new field was created.
-         * @return <CODE>true</CODE> if a new field was created, <CODE>false</CODE> if signing
-         * an existing field or if the signature is invisible
-         */
-        virtual public bool IsNewField() {
-            return this.newField;
-        }
         
         /**
          * The page where the signature will appear.
@@ -448,7 +436,6 @@ namespace iTextSharp.text.pdf {
             this.pageRect.Normalize();
             rect = new Rectangle(this.pageRect.Width, this.pageRect.Height);
             this.page = page;
-            newField = true;
         }
 
         /**
@@ -1186,7 +1173,7 @@ namespace iTextSharp.text.pdf {
             preClosed = true;
             AcroFields af = writer.GetAcroFields();
             String name = FieldName;
-            bool fieldExists = !IsNewField();
+            bool fieldExists = af.DoesSignatureFieldExist(name);
             PdfIndirectReference refSig = writer.PdfIndirectReference;
             writer.SigFlags = 3;
             PdfDictionary fieldLock = null;
