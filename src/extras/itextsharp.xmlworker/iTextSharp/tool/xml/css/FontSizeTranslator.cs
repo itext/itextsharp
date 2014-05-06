@@ -77,24 +77,26 @@ namespace iTextSharp.tool.xml.css {
                  } else if (Util.EqualsIgnoreCase(value, CSS.Value.SMALLER)){
                      if (tag.Parent != null) {
                          float parentSize = GetFontSize(tag.Parent); // if the font-size of the parent can be set in some memory the translation part is not needed anymore.
-                         if (parentSize <= 6.75f){
-                             size = parentSize-1;
-                         } else if (parentSize == 7.5f){
-                             size = 6.75f;
-                         } else if (parentSize == 9.75f){
-                             size = 7.5f;
-                         } else if (parentSize == 12f){
+                         if (parentSize == Font.UNDEFINED) {
                              size = 9.75f;
-                         } else if (parentSize == 13.5f){
+                         } else if (parentSize <= 6.75f) {
+                             size = parentSize - 1;
+                         } else if (parentSize == 7.5f) {
+                             size = 6.75f;
+                         } else if (parentSize == 9.75f) {
+                             size = 7.5f;
+                         } else if (parentSize == 12f) {
+                             size = 9.75f;
+                         } else if (parentSize == 13.5f) {
                              size = 12f;
-                         } else if (parentSize == 18f){
+                         } else if (parentSize == 18f) {
                              size = 13.5f;
-                         } else if (parentSize == 24f){
+                         } else if (parentSize == 24f) {
                              size = 18f;
-                         } else if (parentSize < 24f){
-                             size = parentSize * 0.85f;
+                         } else if (parentSize < 24f) {
+                             size = parentSize*0.85f;
                          } else if (parentSize >= 24) {
-                             size = parentSize * 2 / 3;
+                             size = parentSize*2/3;
                          }
                      } else {
                          size = 9.75f;
@@ -102,7 +104,9 @@ namespace iTextSharp.tool.xml.css {
                  } else if (Util.EqualsIgnoreCase(value, CSS.Value.LARGER)){
                      if (tag.Parent != null) {
                          float parentSize = GetFontSize(tag.Parent); // if the font-size of the parent can be set in some memory the translation part is not needed anymore.
-                         if (parentSize == 6.75f){
+                         if (parentSize == Font.UNDEFINED) {
+                             size = 13.5f;
+                         } else if (parentSize == 6.75f) {
                              size = 7.5f;
                          } else if (parentSize == 7.5f){
                              size = 9.75f;
