@@ -524,7 +524,7 @@ namespace iTextSharp.text.pdf {
                     
                     CarriageReturn();
                     // we don't want to make orphans/widows
-                    if (currentHeight + line.Height + leading > IndentTop - IndentBottom) {
+                    if (currentHeight + CalculateLineHeight() > IndentTop - IndentBottom) {
                         NewPage();
                     }
 
@@ -1152,13 +1152,29 @@ namespace iTextSharp.text.pdf {
             }
             line = new PdfLine(IndentLeft, IndentRight, alignment, leading);
         }
+
+        /**
+         * line.height() is usually the same as the leading
+         * We should take leading into account if it is not the same as the line.height
+         *
+         * @return float combined height of the line
+         * @since 5.1.1
+         */
+        protected virtual float CalculateLineHeight() {
+            float tempHeight = line.Height;
+
+            if (tempHeight != leading) {
+                tempHeight += leading;
+            }
+
+            return tempHeight;
+        }
         
         /**
         * If the current line is not empty or null, it is added to the arraylist
         * of lines and a new empty line is added.
         * @throws DocumentException on error
         */
-        
         virtual protected internal void CarriageReturn() {
             // the arraylist with lines may not be null
             if (lines == null) {
@@ -1167,7 +1183,7 @@ namespace iTextSharp.text.pdf {
             // If the current line is not null or empty
             if (line != null && line.Size > 0) {
                 // we check if the end of the page is reached (bugfix by Francois Gravel)
-                if (currentHeight + line.Height + leading > IndentTop - IndentBottom) {
+                if (currentHeight + CalculateLineHeight() > IndentTop - IndentBottom) {
                     // if the end of the line is reached, we start a newPage which will flush existing lines
                     // then move to next page but before then we need to exclude the current one that does not fit
                     // After the new page we add the current line back in
@@ -1814,7 +1830,12 @@ namespace iTextSharp.text.pdf {
         virtual protected internal void AddSpacing(float extraspace, float oldleading, Font f) {
             if (extraspace == 0) return;
             if (pageEmpty) return;
-            if (currentHeight + line.Height + leading > IndentTop - IndentBottom) return;
+
+            if (currentHeight + CalculateLineHeight() > IndentTop - IndentBottom) {
+                NewPage();
+                return;
+            }
+
             leading = extraspace;
             CarriageReturn();
             if (f.IsUnderlined() || f.IsStrikethru()) {
