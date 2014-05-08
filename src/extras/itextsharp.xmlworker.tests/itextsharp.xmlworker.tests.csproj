@@ -328,6 +328,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\Address01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\B01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Big01Test.cs" />
+	<Compile Include="iTextSharp\tool\xml\examples\html\Big02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Cite01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Code01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Del01Test.cs" />
@@ -377,6 +378,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\S01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Samp01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Small01Test.cs" />
+	<Compile Include="iTextSharp\tool\xml\examples\html\Small02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Span01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Span02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Strike01Test.cs" />
