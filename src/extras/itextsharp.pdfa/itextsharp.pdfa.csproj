@@ -56,6 +56,7 @@
     <Compile Include="iTextSharp\text\pdf\intern\PdfA3Checker.cs" />
     <Compile Include="iTextSharp\text\pdf\intern\PdfAChecker.cs" />
     <Compile Include="iTextSharp\text\pdf\intern\PdfAConformanceImp.cs" />
+	<Compile Include="iTextSharp\text\pdf\intern\ZugferdChecker.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfAConformanceException.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfAConformanceLevel.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfARadioCheckField.cs" />

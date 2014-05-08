@@ -1482,7 +1482,7 @@ namespace iTextSharp.text.pdf {
          * A name
          * @since 5.0.2
          */
-        public static readonly PdfName POLYLINE = new PdfName("Polyline");
+        public static readonly PdfName POLYLINE = new PdfName("PolyLine");
         /** A name */
         public static readonly PdfName POPUP = new PdfName("Popup");
         /**
