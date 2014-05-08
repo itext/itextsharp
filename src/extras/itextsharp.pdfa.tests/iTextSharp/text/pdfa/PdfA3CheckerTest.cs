@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using iTextSharp.text.pdf;
+using iTextSharp.text.xml.xmp;
 using NUnit.Framework;
 
 namespace iTextSharp.text.pdfa {
@@ -249,6 +250,37 @@ namespace iTextSharp.text.pdfa {
             Image image = barcode.CreateImageWithBarcode(cb, color, color);
             image.Alt = "Bla Bla";
             document.Add(image);
+
+            document.Close();
+        }
+
+        [Test]
+        public void ZugferdInvoiceTest() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "zugferdInvoiceTest.pdf", FileMode.Create),
+                PdfAConformanceLevel.ZUGFeRD);
+            writer.CreateXmpMetadata();
+            writer.XmpWriter.SetProperty(PdfAXmpWriter.zugferdSchemaNS, PdfAXmpWriter.zugferdDocumentFileName, "invoice.xml");
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open,
+                FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfDictionary parameters = new PdfDictionary();
+            parameters.Put(PdfName.MODDATE, new PdfDate());
+            PdfFileSpecification fileSpec = PdfFileSpecification.FileEmbedded(
+                writer, RESOURCES + "invoice.xml",
+                "invoice.xml", null, "application/xml", parameters, 0);
+            fileSpec.Put(PdfName.AFRELATIONSHIP, AFRelationshipValue.Alternative);
+            writer.AddFileAttachment("invoice.xml", fileSpec);
+            PdfArray array = new PdfArray();
+            array.Add(fileSpec.Reference);
+            writer.ExtraCatalog.Put(new PdfName("AF"), array);
 
             document.Close();
         }
