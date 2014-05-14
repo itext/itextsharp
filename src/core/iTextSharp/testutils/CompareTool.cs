@@ -320,7 +320,7 @@ public class CompareTool {
         } else {
             String message = Compare(outPath, differenceImagePrefix, ignoredAreas, equalPages);
             if (message == null || message.Length == 0)
-                return "Compare by content fails.\nNo visual differences";
+                return "Compare by content fails. No visual differences";
             return message;
         }
     }

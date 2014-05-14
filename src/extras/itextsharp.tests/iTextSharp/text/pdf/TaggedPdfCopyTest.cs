@@ -888,8 +888,7 @@ namespace itextsharp.tests.text.pdf
             return (PdfDictionary) obj;
         }
 
-        private void CompareResults(String name)
-        {
+        private void CompareResults(String name) {
             PdfReader reader = new PdfReader(OUT + name + ".pdf");
             string orig = RESOURCES + "xml\\test" + name + ".xml";
             string curr = TARGET + "xml\\test" + name + ".xml";
@@ -898,7 +897,6 @@ namespace itextsharp.tests.text.pdf
             xmlOut.Close();
             XmlDiff xmldiff = new XmlDiff(XmlDiffOptions.None);
             Assert.True(xmldiff.Compare(orig, curr, false));
-
         }
 
         private int GetCommonNumsCount(String filename) {
