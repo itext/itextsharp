@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.xml;
 /*
@@ -96,7 +97,7 @@ namespace iTextSharp.text.pdf.parser {
          *            the Stream to which the resulting xml will be written
          */
         virtual public void ConvertToXml(PdfReader reader, Stream os) {
-            ConvertToXml(reader, os, Encoding.Default);
+            ConvertToXml(reader, os, Encoding.UTF8);
         }
 
         /**
@@ -174,6 +175,12 @@ namespace iTextSharp.text.pdf.parser {
                     }
                 }
                 outp.Write(">");
+                PdfObject alt = k.Get(PdfName.ALT);
+                if (alt != null && alt.ToString() != null) {
+                    outp.Write("<alt><![CDATA[");
+                    outp.Write(Regex.Replace(alt.ToString(), "[\\000]*", ""));
+                    outp.Write("]]></alt>");
+                }
                 PdfDictionary dict = k.GetAsDict(PdfName.PG);
                 if (dict != null)
                     ParseTag(tagN, k.GetDirectObject(PdfName.K), dict);
