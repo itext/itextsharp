@@ -368,12 +368,14 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\codec\wmf\Point.cs" />
+    <Compile Include="iTextSharp\text\pdf\DeviceNColor.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\IdentityToUnicode.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\interfaces\IAlternateDescription.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\IPdfSpecialColorSpace.cs" />
     <Compile Include="iTextSharp\text\pdf\languages\ArabicLigaturizer.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -881,6 +883,7 @@
     <Compile Include="iTextSharp\text\pdf\PdfDeveloperExtension.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\PdfDeviceNColor.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfDictionary.cs">
       <SubType>Code</SubType>
     </Compile>

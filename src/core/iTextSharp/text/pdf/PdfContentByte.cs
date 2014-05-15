@@ -2826,6 +2826,11 @@ namespace iTextSharp.text.pdf {
                     SetShadingStroke(shading.PdfShadingPattern);
                     break;
                 }
+                case ExtendedColor.TYPE_DEVICEN: {
+                    DeviceNColor devicen = (DeviceNColor) value;
+                    SetColorStroke(devicen.PdfDeviceNColor, devicen.Tints);
+                    break;
+                }
                 default:
                     SetRGBColorStroke(value.R, value.G, value.B);
                     break;
@@ -2863,6 +2868,11 @@ namespace iTextSharp.text.pdf {
                     SetShadingFill(shading.PdfShadingPattern);
                     break;
                 }
+                case ExtendedColor.TYPE_DEVICEN: {
+                    DeviceNColor devicen = (DeviceNColor) value;
+                    SetColorFill(devicen.PdfDeviceNColor, devicen.Tints);
+                    break;
+                }
                 default:
                     SetRGBColorFill(value.R, value.G, value.B);
                     break;
@@ -2878,10 +2888,23 @@ namespace iTextSharp.text.pdf {
             CheckWriter();
             state.colorDetails = writer.AddSimple(sp);
             PageResources prs = PageResources;
-            PdfName name = state.colorDetails.ColorName;
+            PdfName name = state.colorDetails.ColorSpaceName;
             name = prs.AddColor(name, state.colorDetails.IndirectReference);
             SaveColor(new SpotColor(sp, tint), true);
             content.Append(name.GetBytes()).Append(" cs ").Append(tint).Append(" scn").Append_i(separator);
+        }
+
+        public virtual void SetColorFill(PdfDeviceNColor sp, float[] tints) {
+            CheckWriter();
+            state.colorDetails = writer.AddSimple(sp);
+            PageResources prs = PageResources;
+            PdfName name = state.colorDetails.ColorSpaceName;
+            name = prs.AddColor(name, state.colorDetails.IndirectReference);
+            SaveColor(new DeviceNColor(sp, tints), true);
+            content.Append(name.GetBytes()).Append(" cs ");
+            foreach (float tint in tints)
+                content.Append(tint + " ");
+            content.Append("scn").Append_i(separator);
         }
     
         /** Sets the stroke color to a spot color.
@@ -2893,10 +2916,23 @@ namespace iTextSharp.text.pdf {
             CheckWriter();
             state.colorDetails = writer.AddSimple(sp);
             PageResources prs = PageResources;
-            PdfName name = state.colorDetails.ColorName;
+            PdfName name = state.colorDetails.ColorSpaceName;
             name = prs.AddColor(name, state.colorDetails.IndirectReference);
             SaveColor(new SpotColor(sp, tint), false);
             content.Append(name.GetBytes()).Append(" CS ").Append(tint).Append(" SCN").Append_i(separator);
+        }
+
+        public virtual void SetColorStroke(PdfDeviceNColor sp, float[] tints) {
+            CheckWriter();
+            state.colorDetails = writer.AddSimple(sp);
+            PageResources prs = PageResources;
+            PdfName name = state.colorDetails.ColorSpaceName;
+            name = prs.AddColor(name, state.colorDetails.IndirectReference);
+            SaveColor(new DeviceNColor(sp, tints), true);
+            content.Append(name.GetBytes()).Append(" CS ");
+            foreach (float tint in tints)
+                content.Append(tint + " ");
+            content.Append("scn").Append_i(separator);
         }
     
         /** Sets the fill color to a pattern. The pattern can be
@@ -2972,7 +3008,7 @@ namespace iTextSharp.text.pdf {
             PdfName name = writer.AddSimplePattern(p);
             name = prs.AddPattern(name, p.IndirectReference);
             ColorDetails csDetail = writer.AddSimplePatternColorspace(color);
-            PdfName cName = prs.AddColor(csDetail.ColorName, csDetail.IndirectReference);
+            PdfName cName = prs.AddColor(csDetail.ColorSpaceName, csDetail.IndirectReference);
             SaveColor(new UncoloredPattern(p, color, tint), true);
             content.Append(cName.GetBytes()).Append(" cs").Append_i(separator);
             OutputColorNumbers(color, tint);
@@ -3003,7 +3039,7 @@ namespace iTextSharp.text.pdf {
             PdfName name = writer.AddSimplePattern(p);
             name = prs.AddPattern(name, p.IndirectReference);
             ColorDetails csDetail = writer.AddSimplePatternColorspace(color);
-            PdfName cName = prs.AddColor(csDetail.ColorName, csDetail.IndirectReference);
+            PdfName cName = prs.AddColor(csDetail.ColorSpaceName, csDetail.IndirectReference);
             SaveColor(new UncoloredPattern(p, color, tint), false);
             content.Append(cName.GetBytes()).Append(" CS").Append_i(separator);
             OutputColorNumbers(color, tint);
@@ -3038,7 +3074,7 @@ namespace iTextSharp.text.pdf {
             content.Append(name.GetBytes()).Append(" sh").Append_i(separator);
             ColorDetails details = shading.ColorDetails;
             if (details != null)
-                prs.AddColor(details.ColorName, details.IndirectReference);
+                prs.AddColor(details.ColorSpaceName, details.IndirectReference);
         }
         
         /**
@@ -3061,7 +3097,7 @@ namespace iTextSharp.text.pdf {
             content.Append(PdfName.PATTERN.GetBytes()).Append(" cs ").Append(name.GetBytes()).Append(" scn").Append_i(separator);
             ColorDetails details = shading.ColorDetails;
             if (details != null)
-                prs.AddColor(details.ColorName, details.IndirectReference);
+                prs.AddColor(details.ColorSpaceName, details.IndirectReference);
         }
         
         /**
@@ -3076,7 +3112,7 @@ namespace iTextSharp.text.pdf {
             content.Append(PdfName.PATTERN.GetBytes()).Append(" CS ").Append(name.GetBytes()).Append(" SCN").Append_i(separator);
             ColorDetails details = shading.ColorDetails;
             if (details != null)
-                prs.AddColor(details.ColorName, details.IndirectReference);
+                prs.AddColor(details.ColorSpaceName, details.IndirectReference);
         }
 
         /** Check if we have a valid PdfWriter.

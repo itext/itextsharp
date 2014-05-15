@@ -56,12 +56,13 @@ namespace iTextSharp.text.pdf {
      */
     public abstract class ExtendedColor : BaseColor {
     
-        internal const int TYPE_RGB = 0;
-        internal const int TYPE_GRAY = 1;
-        internal const int TYPE_CMYK = 2;
-        internal const int TYPE_SEPARATION = 3;
-        internal const int TYPE_PATTERN = 4;
-        internal const int TYPE_SHADING = 5;
+        public const int TYPE_RGB = 0;
+        public const int TYPE_GRAY = 1;
+        public const int TYPE_CMYK = 2;
+        public const int TYPE_SEPARATION = 3;
+        public const int TYPE_PATTERN = 4;
+        public const int TYPE_SHADING = 5;
+        public const int TYPE_DEVICEN = 6;
     
         protected int type;
 

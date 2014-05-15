@@ -402,6 +402,7 @@ namespace iTextSharp.text.pdf {
          * @since 5.3.4
          */
         public static readonly PdfName COLOR = new PdfName("Color");
+        public static readonly PdfName COLORANTS = new PdfName("Colorants");
         /** A name */
         public static readonly PdfName COLORS = new PdfName("Colors");
         /** A name */
@@ -1264,6 +1265,7 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.6
          */
         public static readonly PdfName NAVIGATIONPANE = new PdfName("NavigationPane");
+        public static readonly PdfName NCHANNEL = new PdfName("NChannel");
         /**
          * A name
          * @since 2.1.6
@@ -1341,7 +1343,7 @@ namespace iTextSharp.text.pdf {
         /** A name */
         public static readonly PdfName OFF = new PdfName("OFF");
         /** A name */
-        public static readonly PdfName ON = new PdfName("ON");
+        public static readonly PdfName ON = new PdfName("on");
         /** A name */
         public static readonly PdfName ONECOLUMN = new PdfName("OneColumn");
         /** A name */
