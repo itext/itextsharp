@@ -965,7 +965,7 @@ namespace iTextSharp.text.pdf.codec {
                 lastChangingElement = 0;
                 
                 // Till one whole scanline is decoded
-                while (bitOffset < w) {
+                while (bitOffset < w && bytePointer < data.Length) {
                     // Get the next changing element
                     GetNextChangingElement(a0, isWhite, b);
                     b1 = b[0];
@@ -1189,7 +1189,11 @@ namespace iTextSharp.text.pdf.codec {
                 } else if (bits == 0) {     // ERROR
                     throw new InvalidImageException(MessageLocalization.GetComposedMessage("invalid.code.encountered"));
                 } else if (bits == 15) {    // EOL
-                    throw new Exception(MessageLocalization.GetComposedMessage("eol.code.word.encountered.in.white.run"));
+                    if (runLength == 0) {
+                        isWhite = false;
+                    } else {
+                        throw new Exception(MessageLocalization.GetComposedMessage("eol.code.word.encountered.in.white.run"));
+                    }
                 } else {
                     // 11 bits - 0000 0111 1111 1111 = 0x07ff
                     code = (entry >> 5) & 0x07ff;
