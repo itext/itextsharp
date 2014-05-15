@@ -81,7 +81,7 @@ namespace iTextSharp.text {
 	     * iText Group requests that you retain the iText producer line
 	     * in every PDF that is created or manipulated using iText.
 	     */
-	    private String iTextVersion = iText + " " + release + " \u00a92000-2013 iText Group NV";
+	    private String iTextVersion = iText + " " + release + " \u00a92000-2014 iText Group NV";
 
 	    /** The iText version instance. */
 	    private static Version version = null;
