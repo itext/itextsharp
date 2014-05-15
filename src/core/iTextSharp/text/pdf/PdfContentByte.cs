@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using iTextSharp.awt.geom;
@@ -2903,7 +2904,7 @@ namespace iTextSharp.text.pdf {
             SaveColor(new DeviceNColor(sp, tints), true);
             content.Append(name.GetBytes()).Append(" cs ");
             foreach (float tint in tints)
-                content.Append(tint + " ");
+                content.Append(tint.ToString(NumberFormatInfo.InvariantInfo) + " ");
             content.Append("scn").Append_i(separator);
         }
     
@@ -2931,10 +2932,10 @@ namespace iTextSharp.text.pdf {
             SaveColor(new DeviceNColor(sp, tints), true);
             content.Append(name.GetBytes()).Append(" CS ");
             foreach (float tint in tints)
-                content.Append(tint + " ");
+                content.Append(tint.ToString(NumberFormatInfo.InvariantInfo) + " ");
             content.Append("scn").Append_i(separator);
         }
-    
+
         /** Sets the fill color to a pattern. The pattern can be
          * colored or uncolored.
          * @param p the pattern
