@@ -71,6 +71,7 @@
     <Compile Include="iTextSharp\text\pdf\AcroFieldsTest.cs" />
     <Compile Include="iTextSharp\text\pdf\BookmarksTest.cs" />
     <Compile Include="iTextSharp\text\pdf\CMapAwareDocumentFontTest.cs" />
+	<Compile Include="iTextSharp\text\pdf\cs\DeviceNColorSpaceTest.cs" />
     <Compile Include="iTextSharp\text\pdf\DocumentFontTest.cs" />
 	<Compile Include="iTextSharp\text\pdf\FlatteningTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts.cmaps\CMapParserExTest.cs" />

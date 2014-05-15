@@ -1339,7 +1339,7 @@ namespace iTextSharp.text.pdf {
             currentPdfReaderInstance = null;
             // add the color
             foreach (ColorDetails color in documentColors.Values) {
-                AddToBody(color.GetSpotColor(this), color.IndirectReference);
+                AddToBody(color.GetPdfObject(this), color.IndirectReference);
             }
             // add the pattern
             foreach (PdfPatternPainter pat in documentPatterns.Keys) {
@@ -2454,7 +2454,7 @@ namespace iTextSharp.text.pdf {
     //  [F6] spot colors
 
         /** The colors of this document */
-        protected Dictionary<PdfSpotColor, ColorDetails> documentColors = new Dictionary<PdfSpotColor,ColorDetails>();
+        protected Dictionary<IPdfSpecialColorSpace, ColorDetails> documentColors = new Dictionary<IPdfSpecialColorSpace, ColorDetails>();
 
         /** The color number counter for the colors in the document. */
         protected int colorNumber = 1;
@@ -2469,11 +2469,14 @@ namespace iTextSharp.text.pdf {
         * @return an <CODE>Object[]</CODE> where position 0 is a <CODE>PdfName</CODE>
         * and position 1 is an <CODE>PdfIndirectReference</CODE>
         */
-        internal ColorDetails AddSimple(PdfSpotColor spc) {
+        internal ColorDetails AddSimple(IPdfSpecialColorSpace spc) {
             ColorDetails ret;
             documentColors.TryGetValue(spc, out ret);
             if (ret == null) {
                 ret = new ColorDetails(GetColorspaceName(), body.PdfIndirectReference, spc);
+                if (spc is PdfDeviceNColor) {
+                    ((PdfDeviceNColor) spc).GetColorantsDetails(this);
+                }
                 documentColors[spc] = ret;
             }
             return ret;
