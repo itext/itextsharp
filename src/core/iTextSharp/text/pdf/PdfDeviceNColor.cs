@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Globalization;
+using System.util;
 using iTextSharp.text.error_messages;
 
 namespace iTextSharp.text.pdf {
-    public class PdfDeviceNColor : IPdfSpecialColorSpace {
+    public class PdfDeviceNColor : ICachedColorSpace, IPdfSpecialColorSpace {
 
         PdfSpotColor[] spotColors;
         ColorDetails[] colorantsDetails;
@@ -20,7 +21,7 @@ namespace iTextSharp.text.pdf {
             get { return spotColors; }
         }
 
-        public virtual ColorDetails[] GetColorantsDetails(PdfWriter writer) {
+        public virtual ColorDetails[] GetColorantDetails(PdfWriter writer) {
             if (colorantsDetails == null) {
                 colorantsDetails = new ColorDetails[spotColors.Length];
                 int i = 0;
@@ -48,7 +49,12 @@ namespace iTextSharp.text.pdf {
                 colorantsRanges[2*i] = 0;
                 colorantsRanges[2*i + 1] = 1;
                 colorants.Add(spotColorant.Name);
-                colorantsDict.Put(spotColorant.Name, colorantsDetails[i].IndirectReference);
+                if (colorantsDict.Get(spotColorant.Name) != null)
+                    throw new Exception(MessageLocalization.GetComposedMessage("devicen.component.names.shall.be.different"));
+                if (colorantsDetails != null)
+                    colorantsDict.Put(spotColorant.Name, colorantsDetails[i].IndirectReference);
+                else
+                    colorantsDict.Put(spotColorant.Name, spotColorant.GetPdfObject(writer));
                 BaseColor color = spotColorant.AlternativeCS;
                 if (color is ExtendedColor) {
                     int type = ((ExtendedColor) color).Type;
@@ -64,6 +70,13 @@ namespace iTextSharp.text.pdf {
                             CMYK[1, i] = ((CMYKColor) color).Magenta;
                             CMYK[2, i] = ((CMYKColor) color).Yellow;
                             CMYK[3, i] = ((CMYKColor) color).Black;
+                            break;
+                        case ExtendedColor.TYPE_LAB:
+                            CMYKColor cmyk = ((LabColor) color).ToCmyk();
+                            CMYK[0, i] = cmyk.Cyan;
+                            CMYK[1, i] = cmyk.Magenta;
+                            CMYK[2, i] = cmyk.Yellow;
+                            CMYK[3, i] = cmyk.Black;
                             break;
                         default:
                             throw new Exception(
@@ -126,24 +139,19 @@ namespace iTextSharp.text.pdf {
             return array;
         }
 
-        public override bool Equals(Object obj) {
-            if (obj is PdfDeviceNColor && ((PdfDeviceNColor) obj).spotColors.Length == this.spotColors.Length) {
-                int i = 0;
-                foreach (PdfSpotColor spotColor in this.spotColors) {
-                    if (!spotColor.Equals(((PdfDeviceNColor) obj).spotColors[i]))
-                        return false;
-                    i++;
-                }
-                return true;
-            }
-            return false;
+        public override bool Equals(Object o) {
+            if (this == o) return true;
+            if (!(o is PdfDeviceNColor)) return false;
+
+            PdfDeviceNColor that = (PdfDeviceNColor) o;
+
+            if (!Util.ArraysAreEqual(spotColors, that.spotColors)) return false;
+
+            return true;
         }
 
         public override int GetHashCode() {
-            int hashCode = 0xFFFF;
-            foreach (PdfSpotColor spotColor in spotColors)
-                hashCode ^= spotColor.GetHashCode();
-            return hashCode;
+            return Util.GetArrayHashCode(spotColors);
         }
     }
 }

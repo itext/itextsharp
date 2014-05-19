@@ -2454,7 +2454,7 @@ namespace iTextSharp.text.pdf {
     //  [F6] spot colors
 
         /** The colors of this document */
-        protected Dictionary<IPdfSpecialColorSpace, ColorDetails> documentColors = new Dictionary<IPdfSpecialColorSpace, ColorDetails>();
+        protected Dictionary<ICachedColorSpace, ColorDetails> documentColors = new Dictionary<ICachedColorSpace, ColorDetails>();
 
         /** The color number counter for the colors in the document. */
         protected int colorNumber = 1;
@@ -2469,13 +2469,13 @@ namespace iTextSharp.text.pdf {
         * @return an <CODE>Object[]</CODE> where position 0 is a <CODE>PdfName</CODE>
         * and position 1 is an <CODE>PdfIndirectReference</CODE>
         */
-        internal ColorDetails AddSimple(IPdfSpecialColorSpace spc) {
+        internal virtual ColorDetails AddSimple(ICachedColorSpace spc) {
             ColorDetails ret;
             documentColors.TryGetValue(spc, out ret);
             if (ret == null) {
                 ret = new ColorDetails(GetColorspaceName(), body.PdfIndirectReference, spc);
-                if (spc is PdfDeviceNColor) {
-                    ((PdfDeviceNColor) spc).GetColorantsDetails(this);
+                if (spc is IPdfSpecialColorSpace) {
+                    ((IPdfSpecialColorSpace)spc).GetColorantDetails(this);
                 }
                 documentColors[spc] = ret;
             }
@@ -2490,7 +2490,7 @@ namespace iTextSharp.text.pdf {
         /** The patten number counter for the colors in the document. */
         protected int patternNumber = 1;
         
-        internal PdfName AddSimplePattern(PdfPatternPainter painter) {
+        internal virtual PdfName AddSimplePattern(PdfPatternPainter painter) {
             PdfName name;
             documentPatterns.TryGetValue(painter, out name);
             if (name == null) {

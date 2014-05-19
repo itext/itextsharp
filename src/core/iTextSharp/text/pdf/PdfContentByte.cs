@@ -2832,6 +2832,11 @@ namespace iTextSharp.text.pdf {
                     SetColorStroke(devicen.PdfDeviceNColor, devicen.Tints);
                     break;
                 }
+                case ExtendedColor.TYPE_LAB: {
+                    LabColor lab = (LabColor) value;
+                    SetColorStroke(lab.LabColorSpace, lab.L, lab.A, lab.B);
+                    break;
+                }
                 default:
                     SetRGBColorStroke(value.R, value.G, value.B);
                     break;
@@ -2874,6 +2879,11 @@ namespace iTextSharp.text.pdf {
                     SetColorFill(devicen.PdfDeviceNColor, devicen.Tints);
                     break;
                 }
+                case ExtendedColor.TYPE_LAB: {
+                    LabColor lab = (LabColor) value;
+                    SetColorFill(lab.LabColorSpace, lab.L, lab.A, lab.B);
+                    break;
+                }
                 default:
                     SetRGBColorFill(value.R, value.G, value.B);
                     break;
@@ -2895,16 +2905,29 @@ namespace iTextSharp.text.pdf {
             content.Append(name.GetBytes()).Append(" cs ").Append(tint).Append(" scn").Append_i(separator);
         }
 
-        public virtual void SetColorFill(PdfDeviceNColor sp, float[] tints) {
+        public virtual void SetColorFill(PdfDeviceNColor dn, float[] tints) {
             CheckWriter();
-            state.colorDetails = writer.AddSimple(sp);
+            state.colorDetails = writer.AddSimple(dn);
             PageResources prs = PageResources;
             PdfName name = state.colorDetails.ColorSpaceName;
             name = prs.AddColor(name, state.colorDetails.IndirectReference);
-            SaveColor(new DeviceNColor(sp, tints), true);
+            SaveColor(new DeviceNColor(dn, tints), true);
             content.Append(name.GetBytes()).Append(" cs ");
             foreach (float tint in tints)
                 content.Append(tint.ToString(NumberFormatInfo.InvariantInfo) + " ");
+            content.Append("scn").Append_i(separator);
+        }
+
+        public virtual void SetColorFill(PdfLabColor lab, float l, float a, float b) {
+            CheckWriter();
+            state.colorDetails = writer.AddSimple(lab);
+            PageResources prs = PageResources;
+            PdfName name = state.colorDetails.ColorSpaceName;
+            name = prs.AddColor(name, state.colorDetails.IndirectReference);
+            SaveColor(new LabColor(lab, l, a, b), true);
+            content.Append(name.GetBytes()).Append(" cs ");
+            content.Append(l.ToString(NumberFormatInfo.InvariantInfo) + " " + a.ToString(NumberFormatInfo.InvariantInfo) +
+                           " " + b.ToString(NumberFormatInfo.InvariantInfo) + " ");
             content.Append("scn").Append_i(separator);
         }
     
@@ -2933,7 +2956,19 @@ namespace iTextSharp.text.pdf {
             content.Append(name.GetBytes()).Append(" CS ");
             foreach (float tint in tints)
                 content.Append(tint.ToString(NumberFormatInfo.InvariantInfo) + " ");
-            content.Append("scn").Append_i(separator);
+            content.Append("SCN").Append_i(separator);
+        }
+
+        public virtual void SetColorStroke(PdfLabColor lab, float l, float a, float b) {
+            CheckWriter();
+            state.colorDetails = writer.AddSimple(lab);
+            PageResources prs = PageResources;
+            PdfName name = state.colorDetails.ColorSpaceName;
+            name = prs.AddColor(name, state.colorDetails.IndirectReference);
+            SaveColor(new LabColor(lab, l, a, b), true);
+            content.Append(name.GetBytes()).Append(" CS ");
+            content.Append(l + " " + a + " " + b + " ");
+            content.Append("SCN").Append_i(separator);
         }
 
         /** Sets the fill color to a pattern. The pattern can be

@@ -372,10 +372,12 @@
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\IdentityToUnicode.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\ICachedColorSpace.cs" />
     <Compile Include="iTextSharp\text\pdf\interfaces\IAlternateDescription.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\IPdfSpecialColorSpace.cs" />
+    <Compile Include="iTextSharp\text\pdf\LabColor.cs" />
     <Compile Include="iTextSharp\text\pdf\languages\ArabicLigaturizer.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -938,6 +940,7 @@
     <Compile Include="iTextSharp\text\pdf\PdfIndirectReference.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\PdfLabColor.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfLayer.cs">
       <SubType>Code</SubType>
     </Compile>

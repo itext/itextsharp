@@ -47,6 +47,7 @@ using System.IO;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+using System.util;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
@@ -424,18 +425,7 @@ public class CompareTool {
     }
 
     private bool ObjectsIsEquals(PRStream outStream, PRStream cmpStream) {
-        return ArraysAreEqual(PdfReader.GetStreamBytesRaw(outStream), PdfReader.GetStreamBytesRaw(cmpStream));
-    }
-
-    private static bool ArraysAreEqual<T>(T[] outBytes, T[] cmpBytes) {
-        if (outBytes == null && cmpBytes == null)
-            return true;
-        if (outBytes == null || cmpBytes == null || outBytes.Length != cmpBytes.Length)
-            return false;
-        for (int ind = 0; ind < outBytes.Length; ind++)
-            if (!outBytes[ind].Equals(cmpBytes[ind]))
-                return false;
-        return true;
+        return Util.ArraysAreEqual(PdfReader.GetStreamBytesRaw(outStream), PdfReader.GetStreamBytesRaw(cmpStream));
     }
 
     private bool ObjectsIsEquals(PdfArray outArray, PdfArray cmpArray) {
@@ -458,13 +448,13 @@ public class CompareTool {
     }
 
     private bool ObjectsIsEquals(PdfString outString, PdfString cmpString) {
-        return ArraysAreEqual(cmpString.GetBytes(), outString.GetBytes());
+        return Util.ArraysAreEqual(cmpString.GetBytes(), outString.GetBytes());
     }
 
     private bool ObjectsIsEquals(PdfBoolean outBoolean, PdfBoolean cmpBoolean) {
-        return ArraysAreEqual(cmpBoolean.GetBytes(), outBoolean.GetBytes());
+        return Util.ArraysAreEqual(cmpBoolean.GetBytes(), outBoolean.GetBytes());
     }
-
+    
     private void Init(String outPdf, String cmpPdf) {
         this.outPdf = outPdf;
         this.cmpPdf = cmpPdf;
