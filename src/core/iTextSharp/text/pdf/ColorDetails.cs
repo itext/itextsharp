@@ -60,14 +60,14 @@ namespace iTextSharp.text.pdf {
         PdfName colorSpaceName;
         /** The color
          */
-        IPdfSpecialColorSpace colorSpace;
+        ICachedColorSpace colorSpace;
 
         /** Each spot color used in a document has an instance of this class.
          * @param colorName the color name
          * @param indirectReference the indirect reference to the font
          * @param scolor the <CODE>PDfSpotColor</CODE>
          */
-        internal ColorDetails(PdfName colorName, PdfIndirectReference indirectReference, IPdfSpecialColorSpace scolor) {
+        internal ColorDetails(PdfName colorName, PdfIndirectReference indirectReference, ICachedColorSpace scolor) {
             this.colorSpaceName = colorName;
             this.indirectReference = indirectReference;
             this.colorSpace = scolor;

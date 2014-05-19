@@ -63,6 +63,7 @@ namespace iTextSharp.text.pdf {
         public const int TYPE_PATTERN = 4;
         public const int TYPE_SHADING = 5;
         public const int TYPE_DEVICEN = 6;
+        public const int TYPE_LAB = 7;
     
         protected int type;
 

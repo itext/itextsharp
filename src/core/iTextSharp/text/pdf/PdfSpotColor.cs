@@ -51,7 +51,7 @@ namespace iTextSharp.text.pdf {
      *
      * @see     PdfDictionary
      */
-    public class PdfSpotColor : IPdfSpecialColorSpace {
+    public class PdfSpotColor : ICachedColorSpace, IPdfSpecialColorSpace {
     
         /*  The color name */
         public PdfName name;
@@ -59,6 +59,8 @@ namespace iTextSharp.text.pdf {
         /* The alternative color space */
         public BaseColor altcs;
         // constructors
+
+        public ColorDetails altColorDetails;
     
         /**
          * Constructs a new <CODE>PdfSpotColor</CODE>.
@@ -70,6 +72,14 @@ namespace iTextSharp.text.pdf {
         public PdfSpotColor(string name, BaseColor altcs) {
             this.name = new PdfName(name);
             this.altcs = altcs;
+        }
+
+        public virtual ColorDetails[] GetColorantDetails(PdfWriter writer) {
+            if (altColorDetails == null && this.altcs is ExtendedColor &&
+                ((ExtendedColor) this.altcs).Type == ExtendedColor.TYPE_LAB) {
+                altColorDetails = writer.AddSimple(((LabColor) altcs).LabColorSpace);
+            }
+            return new ColorDetails[] {altColorDetails};
         }
     
         virtual public BaseColor AlternativeCS {
@@ -105,6 +115,15 @@ namespace iTextSharp.text.pdf {
                         func = PdfFunction.Type2(writer, new float[] {0, 1}, null, new float[] {0, 0, 0, 0},
                             new float[] {cmyk.Cyan, cmyk.Magenta, cmyk.Yellow, cmyk.Black}, 1);
                         break;
+                    case ExtendedColor.TYPE_LAB:
+                        LabColor lab = (LabColor) altcs;
+                        if (altColorDetails != null)
+                            array.Add(altColorDetails.IndirectReference);
+                        else
+                            array.Add(lab.LabColorSpace.GetPdfObject(writer));
+                        func = PdfFunction.Type2(writer, new float[] {0, 1}, null, new float[] {100f, 0f, 0f},
+                            new float[] {lab.L, lab.A, lab.B}, 1);
+                        break;
                     default:
                         throw new Exception(
                             MessageLocalization.GetComposedMessage(
@@ -119,13 +138,23 @@ namespace iTextSharp.text.pdf {
             return array;
         }
 
-        
-        override public bool Equals(Object obj) {
-            return obj is PdfSpotColor && ((PdfSpotColor)obj).name.Equals(this.name) && ((PdfSpotColor)obj).altcs.Equals(this.altcs);
+
+        public override bool Equals(Object o) {
+            if (this == o) return true;
+            if (!(o is PdfSpotColor)) return false;
+
+            PdfSpotColor spotColor = (PdfSpotColor) o;
+
+            if (!altcs.Equals(spotColor.altcs)) return false;
+            if (!name.Equals(spotColor.name)) return false;
+
+            return true;
         }
 
         public override int GetHashCode() {
-            return name.GetHashCode() ^ altcs.GetHashCode();
+            int result = name.GetHashCode();
+            result = 31*result + altcs.GetHashCode();
+            return result;
         }
     }
 }
