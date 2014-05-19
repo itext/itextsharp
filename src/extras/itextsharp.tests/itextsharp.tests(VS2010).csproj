@@ -94,7 +94,6 @@
     <Compile Include="iTextSharp\text\pdf\fonts.cmaps\CMapTest.cs" />
     <Compile Include="iTextSharp\text\pdf\IndicLigatures.cs" />
     <Compile Include="iTextSharp\text\pdf\mc\AcroFieldsFlattenTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\MergeCopyPagesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\MetaDataTest.cs" />
     <Compile Include="iTextSharp\text\pdf\MultithreadedTtfTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\FilteredTextRenderListenerTest.cs" />
