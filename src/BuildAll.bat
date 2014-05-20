@@ -38,6 +38,10 @@ rem zip itextsharp-src-xtra.zip
 call "%sevenZipExec%" a -tzip itextsharp-src-xtra.zip -r .\extras\iTextSharp.xtra\* > nul
 if errorlevel 1 goto archiveFailed
 
+rem zip itextsharp-src-xmlworker.zip
+call "%sevenZipExec%" a -tzip itextsharp-src-xmlworker.zip -r .\extras\itextsharp.xmlworker\* > nul
+if errorlevel 1 goto archiveFailed
+
 
 
 echo Building binaries...
@@ -56,6 +60,10 @@ if errorlevel 1 goto buildFailed
 
 rem rebuild xtra Release
 call "%msbuildExec%" extras\iTextSharp.xtra\iTextSharp.xtra.csproj /t:Rebuild /p:Configuration=Release > nul
+if errorlevel 1 goto buildFailed
+
+rem rebuild xmlworker Release
+call "%msbuildExec%" extras\itextsharp.xmlworker\itextsharp.xmlworker.csproj /t:Rebuild /p:Configuration=Release > nul
 if errorlevel 1 goto buildFailed
 
 
@@ -78,16 +86,23 @@ rem zip xtra dll Release itextsharp-dll-xtra.zip
 call "%sevenZipExec%" a -tzip itextsharp-dll-xtra.zip .\extras\iTextSharp.xtra\bin\Release\itextsharp.xtra.dll > nul
 if errorlevel 1 goto archiveFailed
 
+rem zip xmlworker dll Release itextsharp-dll-xmlworker.zip
+call "%sevenZipExec%" a -tzip itextsharp-dll-xmlworker.zip .\extras\itextsharp.xmlworker\bin\Release\itextsharp.xmlworker.dll > nul
+if errorlevel 1 goto archiveFailed
 
 
-echo Creating resulting archive...
+echo Creating resulting archives...
 
-rem add to result  \itext\trunk\src\core\iTextSharp\text\NOTICE.txt 
-call "%sevenZipExec%" a -tzip itextsharp-all.zip .\core\iTextSharp\text\NOTICE.txt > nul
+rem add to result notice.txt
+call "%sevenZipExec%" a -tzip itextsharp-all.zip .\notice.txt > nul
 if errorlevel 1 goto archiveFailed
 
 rem add to result archives
 call "%sevenZipExec%" a -tzip itextsharp-all.zip itextsharp-dll-core.zip itextsharp-dll-core-wo_Drawing.zip itextsharp-dll-pdfa.zip itextsharp-dll-xtra.zip itextsharp-src-core.zip itextsharp-src-pdfa.zip itextsharp-src-xtra.zip > nul
+if errorlevel 1 goto archiveFailed
+
+rem add to result archives
+call "%sevenZipExec%" a -tzip itextsharp.xmlworker-all.zip itextsharp-src-xmlworker.zip itextsharp-dll-xmlworker.zip > nul
 if errorlevel 1 goto archiveFailed
 
 rem delete temp archives
@@ -146,5 +161,11 @@ if exist itextsharp-src-pdfa.zip (
 )
 if exist itextsharp-src-xtra.zip (
 	del itextsharp-src-xtra.zip
+)
+if exist itextsharp-src-xmlworker.zip (
+	del itextsharp-src-xmlworker.zip
+)
+if exist itextsharp-dll-xmlworker.zip (
+	del itextsharp-dll-xmlworker.zip
 )
 exit /b
