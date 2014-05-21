@@ -117,13 +117,6 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
-         * @see com.itextpdf.text.pdf.PdfStamperImp#isPdfIso()
-         */
-        override public bool IsPdfIso() {
-            return pdfIsoConformance.IsPdfIso();
-        }
-
-        /**
          * Always throws an exception since PDF/X conformance level cannot be set for PDF/A conformant documents.
          * @param pdfx
          */
@@ -141,11 +134,11 @@ namespace iTextSharp.text.pdf {
             return ttfUnicodeWriter;
         }
 
-        override internal XmpWriter CreateXmpWriter(MemoryStream baos, PdfDictionary info) {
+        override protected internal XmpWriter CreateXmpWriter(MemoryStream baos, PdfDictionary info) {
             return new PdfAXmpWriter(baos, info, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel, this);
         }
 
-        override internal XmpWriter CreateXmpWriter(MemoryStream baos, IDictionary<String, String> info) {
+        override protected internal XmpWriter CreateXmpWriter(MemoryStream baos, IDictionary<String, String> info) {
             return new PdfAXmpWriter(baos, info, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel, this);
         }
 
@@ -193,40 +186,8 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public override PdfIndirectObject AddToBody(PdfObject objecti) {
-            PdfIndirectObject iobj = base.AddToBody(objecti);
+        protected internal override void CacheObject(PdfIndirectObject iobj) {
             PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
-            return iobj;
-        }
-
-        public override PdfIndirectObject AddToBody(PdfObject objecti, bool inObjStm) {
-            PdfIndirectObject iobj = base.AddToBody(objecti, inObjStm);
-            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
-            return iobj;
-        }
-
-        public override PdfIndirectObject AddToBody(PdfObject objecti, PdfIndirectReference refi, bool inObjStm) {
-            PdfIndirectObject iobj = base.AddToBody(objecti, refi, inObjStm);
-            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
-            return iobj;
-        }
-
-        public override PdfIndirectObject AddToBody(PdfObject objecti, PdfIndirectReference refi) {
-            PdfIndirectObject iobj = base.AddToBody(objecti, refi);
-            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
-            return iobj;
-        }
-
-        public override PdfIndirectObject AddToBody(PdfObject objecti, int refNumber) {
-            PdfIndirectObject iobj = base.AddToBody(objecti, refNumber);
-            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
-            return iobj;
-        }
-
-        public override PdfIndirectObject AddToBody(PdfObject objecti, int refNumber, bool inObjStm) {
-            PdfIndirectObject iobj = base.AddToBody(objecti, refNumber, inObjStm);
-            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
-            return iobj;
         }
 
         private PdfAChecker PdfAChecker {

@@ -61,6 +61,7 @@
     <Compile Include="iTextSharp\text\pdfa\PdfA1CheckerTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfA2CheckerTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfA3CheckerTest.cs" />
+	<Compile Include="iTextSharp\text\pdfa\PdfACopyTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfAFileStructureTest.cs" />
     <Compile Include="iTextSharp\text\pdfa\PdfAWriterTest.cs" />
     <Compile Include="iTextSharp\text\xml\xmp\PdfAXmpWriterTest.cs" />

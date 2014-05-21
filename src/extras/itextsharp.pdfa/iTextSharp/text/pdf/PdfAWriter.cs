@@ -150,17 +150,8 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
-         * @see com.itextpdf.text.pdf.PdfWriter#isPdfIso()
-         */
-
-        public override bool IsPdfIso() {
-            return pdfIsoConformance.IsPdfIso();
-        }
-
-        /**
          * @param conformanceLevel PDF/A conformance level of a new PDF document
          */
-
         protected internal PdfAWriter(PdfAConformanceLevel conformanceLevel)
             : base() {
             ((IPdfAConformance) pdfIsoConformance).SetConformanceLevel(conformanceLevel);
@@ -175,7 +166,6 @@ namespace iTextSharp.text.pdf {
          * @param os the <CODE>Stream</CODE> the writer has to write to
          * @param conformanceLevel PDF/A conformance level of a new PDF document
          */
-
         protected internal PdfAWriter(PdfDocument document, Stream os, PdfAConformanceLevel conformanceLevel)
             : base(document, os) {
             ((IPdfAConformance) pdfIsoConformance).SetConformanceLevel(conformanceLevel);
@@ -192,12 +182,12 @@ namespace iTextSharp.text.pdf {
             return ttfUnicodeWriter;
         }
 
-        override internal XmpWriter CreateXmpWriter(MemoryStream baos, PdfDictionary info) {
+        override protected internal XmpWriter CreateXmpWriter(MemoryStream baos, PdfDictionary info) {
             return
                 xmpWriter = new PdfAXmpWriter(baos, info, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel, this);
         }
 
-        override internal XmpWriter CreateXmpWriter(MemoryStream baos, IDictionary<String, String> info) {
+        override protected internal XmpWriter CreateXmpWriter(MemoryStream baos, IDictionary<String, String> info) {
             return
                 xmpWriter = new PdfAXmpWriter(baos, info, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel, this);
         }
@@ -212,40 +202,8 @@ namespace iTextSharp.text.pdf {
             return COUNTER;
         }
 
-        public override PdfIndirectObject AddToBody(PdfObject obj) {
-            PdfIndirectObject iobj = base.AddToBody(obj);
+        protected internal override void CacheObject(PdfIndirectObject iobj) {
             GetPdfAChecker().CacheObject(iobj.IndirectReference, iobj.objecti);
-            return iobj;
-        }
-
-        public override PdfIndirectObject AddToBody(PdfObject obj, bool inObjStm) {
-            PdfIndirectObject iobj = base.AddToBody(obj, inObjStm);
-            GetPdfAChecker().CacheObject(iobj.IndirectReference, iobj.objecti);
-            return iobj;
-        }
-
-        public override PdfIndirectObject AddToBody(PdfObject obj, PdfIndirectReference reference, bool inObjStm) {
-            PdfIndirectObject iobj = base.AddToBody(obj, reference, inObjStm);
-            GetPdfAChecker().CacheObject(iobj.IndirectReference, iobj.objecti);
-            return iobj;
-        }
-
-        public override PdfIndirectObject AddToBody(PdfObject obj, PdfIndirectReference reference) {
-            PdfIndirectObject iobj = base.AddToBody(obj, reference);
-            GetPdfAChecker().CacheObject(iobj.IndirectReference, iobj.objecti);
-            return iobj;
-        }
-
-        public override PdfIndirectObject AddToBody(PdfObject obj, int refNumber) {
-            PdfIndirectObject iobj = base.AddToBody(obj, refNumber);
-            GetPdfAChecker().CacheObject(iobj.IndirectReference, iobj.objecti);
-            return iobj;
-        }
-
-        public override PdfIndirectObject AddToBody(PdfObject obj, int refNumber, bool inObjStm) {
-            PdfIndirectObject iobj = base.AddToBody(obj, refNumber, inObjStm);
-            GetPdfAChecker().CacheObject(iobj.IndirectReference, iobj.objecti);
-            return iobj;
         }
 
         private PdfAChecker GetPdfAChecker() {
