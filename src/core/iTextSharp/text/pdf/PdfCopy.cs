@@ -769,19 +769,16 @@ namespace iTextSharp.text.pdf {
             return iobj;
         }
 
-        public override PdfIndirectObject AddToBody(PdfObject objecta)
-        {
-            PdfIndirectObject iobj = base.AddToBody(objecta);
+        protected internal override void CacheObject(PdfIndirectObject iobj) {
             if ((tagged || mergeFields) && indirectObjects != null) {
                 savedObjects.Add(iobj);
                 RefKey key = new RefKey(iobj.Number, iobj.Generation);
                 if (!indirectObjects.ContainsKey(key))
                     indirectObjects[key] = iobj;
             }
-            return iobj;
         }
 
-        internal override void FlushTaggedObjects(){
+        internal override void FlushTaggedObjects() {
             try
             {
                 FixTaggedStructure();
@@ -1631,7 +1628,7 @@ namespace iTextSharp.text.pdf {
             if (open) {
                 pdf.Close();
                 base.Close();
-                // Users are responsible for closing PdfReaders
+                // Users are responsible for closing PdfReader
                 //if (ri != null) {
                 //    try {
                 //        ri.Reader.Close();
@@ -1645,6 +1642,7 @@ namespace iTextSharp.text.pdf {
         }
 
         public override void AddAnnotation(PdfAnnotation annot) {  }
+
         internal override PdfIndirectReference Add(PdfPage page, PdfContents contents) { return null; }
 
         public override void FreeReader(PdfReader reader) {

@@ -806,6 +806,7 @@ namespace iTextSharp.text.pdf {
         */
         public virtual PdfIndirectObject AddToBody(PdfObject objecta) {
             PdfIndirectObject iobj = body.Add(objecta);
+            CacheObject(iobj);
             return iobj;
         }
         
@@ -818,6 +819,7 @@ namespace iTextSharp.text.pdf {
         */
         public virtual PdfIndirectObject AddToBody(PdfObject objecta, bool inObjStm) {
             PdfIndirectObject iobj = body.Add(objecta, inObjStm);
+            CacheObject(iobj);
             return iobj;
         }
         
@@ -830,6 +832,7 @@ namespace iTextSharp.text.pdf {
         */
         public virtual PdfIndirectObject AddToBody(PdfObject objecta, PdfIndirectReference refa) {
             PdfIndirectObject iobj = body.Add(objecta, refa);
+            CacheObject(iobj);
             return iobj;
         }
         
@@ -843,6 +846,7 @@ namespace iTextSharp.text.pdf {
         */
         public virtual PdfIndirectObject AddToBody(PdfObject objecta, PdfIndirectReference refa, bool inObjStm) {
             PdfIndirectObject iobj = body.Add(objecta, refa, inObjStm);
+            CacheObject(iobj);
             return iobj;
         }
         
@@ -855,6 +859,7 @@ namespace iTextSharp.text.pdf {
         */
         public virtual PdfIndirectObject AddToBody(PdfObject objecta, int refNumber) {
             PdfIndirectObject iobj = body.Add(objecta, refNumber);
+            CacheObject(iobj);
             return iobj;
         }
         
@@ -868,8 +873,15 @@ namespace iTextSharp.text.pdf {
         */
         public virtual PdfIndirectObject AddToBody(PdfObject objecta, int refNumber, bool inObjStm) {
             PdfIndirectObject iobj = body.Add(objecta, refNumber, 0, inObjStm);
+            CacheObject(iobj);
             return iobj;
         }
+
+        /**
+         * Use this method for caching objects.
+         * @param iobj @see PdfIndirectObject
+         */
+        protected internal virtual void CacheObject(PdfIndirectObject iobj) { }
 
         /**
         * Gets a <CODE>PdfIndirectReference</CODE> for an object that
@@ -3361,11 +3373,11 @@ namespace iTextSharp.text.pdf {
             return ttfUnicodeWriter;
         }
 
-        virtual internal XmpWriter CreateXmpWriter(MemoryStream baos, PdfDictionary info) {
+        protected internal virtual XmpWriter CreateXmpWriter(MemoryStream baos, PdfDictionary info) {
             return new XmpWriter(baos, info);
         }
 
-        virtual internal XmpWriter CreateXmpWriter(MemoryStream baos, IDictionary<String, String> info) {
+        protected internal virtual XmpWriter CreateXmpWriter(MemoryStream baos, IDictionary<String, String> info) {
             return new XmpWriter(baos, info);
         }
 
