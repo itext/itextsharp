@@ -3,5 +3,9 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.html {
         protected override string GetTestName() {
             return "table04";
         }
+
+        protected override bool CompareByContent() {
+            return false;
+        }
     }
 }

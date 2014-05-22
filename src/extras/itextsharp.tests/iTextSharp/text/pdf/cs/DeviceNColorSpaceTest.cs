@@ -122,7 +122,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.cs {
             document.Close();
 
             CompareTool compareTool = new CompareTool(dest_file, TEST_RESOURCES_PATH + "cmp_device_n_gradient_base.pdf");
-            String error = compareTool.CompareByContent(DEST_FOLDER, "diff_");
+            String error = compareTool.Compare(DEST_FOLDER, "diff_");
             if (error != null) {
                 Assert.Fail(error);
             }
@@ -158,7 +158,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.cs {
             document.Close();
 
             CompareTool compareTool = new CompareTool(dest_file, TEST_RESOURCES_PATH + "cmp_device_n_gradient_CmykRedRgbBlue.pdf");
-            String error = compareTool.CompareByContent(DEST_FOLDER, "diff_");
+            String error = compareTool.Compare(DEST_FOLDER, "diff_");
             if (error != null) {
                 Assert.Fail(error);
             }
