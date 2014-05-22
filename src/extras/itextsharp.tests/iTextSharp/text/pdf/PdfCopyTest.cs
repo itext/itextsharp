@@ -136,7 +136,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             copy.Close();
             CompareTool compareTool = new CompareTool("PdfCopyTest/appearances.pdf",
                 RESOURCES + "cmp_appearances.pdf");
-            String errorMessage = compareTool.Compare("PdfCopyTest/", "diff");
+            String errorMessage = compareTool.CompareByContent("PdfCopyTest/", "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
@@ -164,7 +164,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             CompareTool compareTool =
                 new CompareTool("PdfCopyTest/appearances(needAppearancesFalse).pdf",
                     RESOURCES + "cmp_appearances(needAppearancesFalse).pdf");
-            String errorMessage = compareTool.Compare("PdfCopyTest/", "diff");
+            String errorMessage = compareTool.CompareByContent("PdfCopyTest/", "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
@@ -192,7 +192,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             CompareTool compareTool =
                 new CompareTool("PdfCopyTest/appearances(needAppearancesFalseWithStreams).pdf",
                     RESOURCES + "cmp_appearances(needAppearancesFalseWithStreams).pdf");
-            String errorMessage = compareTool.Compare("PdfCopyTest/", "diff");
+            String errorMessage = compareTool.CompareByContent("PdfCopyTest/", "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
@@ -219,7 +219,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             copy.Close();
             CompareTool compareTool = new CompareTool("PdfCopyTest/appearances(mixed).pdf",
                 RESOURCES + "cmp_appearances(mixed).pdf");
-            String errorMessage = compareTool.Compare("PdfCopyTest/", "diff");
+            String errorMessage = compareTool.CompareByContent("PdfCopyTest/", "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }

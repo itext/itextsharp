@@ -294,6 +294,7 @@ public class CompareTool {
     private IList<RefKey> cmpPagesRef;
 
     public virtual String CompareByContent(String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas) {
+        Console.Write("[itext] INFO  Comparing by content..........");
         PdfReader outReader = new PdfReader(outPdf);
         outPages = new List<PdfDictionary>();
         outPagesRef = new List<RefKey>();
@@ -317,8 +318,12 @@ public class CompareTool {
 
 
         if (equalPages.Count == cmpPages.Count) {
+            Console.WriteLine("OK");
+            Console.Out.Flush();
             return null;
         } else {
+            Console.WriteLine("Fail");
+            Console.Out.Flush();
             String message = Compare(outPath, differenceImagePrefix, ignoredAreas, equalPages);
             if (message == null || message.Length == 0)
                 return "Compare by content fails. No visual differences";
@@ -335,7 +340,7 @@ public class CompareTool {
         return CompareByContent(outPath, differenceImagePrefix, ignoredAreas);
     }
 
-    public virtual String compareByContent(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix) {
+    public virtual String CompareByContent(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix) {
         return CompareByContent(outPdf, cmpPdf, outPath, differenceImagePrefix, null);
     }
 
@@ -365,7 +370,7 @@ public class CompareTool {
                 PdfObject cmpObj = cmpDict.GetDirectObject(key);
                 if (cmpObj.IsName() && cmpObj.ToString().IndexOf('+') > 0) {
                     PdfObject outObj = outDict.GetDirectObject(key);
-                    if (!outObj.IsName())
+                    if (!outObj.IsName() || outObj.ToString().IndexOf('+') == -1)
                         return false;
                     String cmpName = cmpObj.ToString().Substring(cmpObj.ToString().IndexOf('+'));
                     String outName = outObj.ToString().Substring(outObj.ToString().IndexOf('+'));
@@ -491,6 +496,31 @@ public class CompareTool {
         return true;
     }
 
+    public virtual String CompareDocumentInfo(String outPdf, String cmpPdf) {
+        Console.Write("[itext] INFO  Comparing document info.......");
+        String message = null;
+        PdfReader outReader = new PdfReader(outPdf);
+        PdfReader cmpReader = new PdfReader(cmpPdf);
+        String[] cmpInfo = ConvertInfo(cmpReader.Info);
+        String[] outInfo = ConvertInfo(outReader.Info);
+        for (int i = 0; i < cmpInfo.Length; ++i) {
+            if (!cmpInfo[i].Equals(outInfo[i])) {
+                message = "Document info fail";
+                break;
+            }
+        }
+        outReader.Close();
+        cmpReader.Close();
+
+        if (message == null)
+            Console.WriteLine("OK");
+        else
+            Console.WriteLine("Fail");
+        Console.Out.Flush();
+
+        return message;
+    }
+
     private bool LinksAreSame(PdfAnnotation.PdfImportedLink cmpLink, PdfAnnotation.PdfImportedLink outLink) {
         // Compare link boxes, page numbers the links refer to, and simple parameters (non-indirect, non-arrays, non-dictionaries)
 
@@ -528,7 +558,7 @@ public class CompareTool {
     }
 
     virtual public String CompareLinks(String outPdf, String cmpPdf) {
-        Console.Out.WriteLine("Comparing link annotations...");
+        Console.Write("[itext] INFO  Comparing link annotations....");
         String message = null;
         PdfReader outReader = new PdfReader(outPdf);
         PdfReader cmpReader = new PdfReader(cmpPdf);
@@ -549,7 +579,28 @@ public class CompareTool {
         }
         outReader.Close();
         cmpReader.Close();
+        if (message == null)
+            Console.WriteLine("OK");
+        else
+            Console.WriteLine("Fail");
+        Console.Out.Flush();
         return message;
+    }
+
+    private String[] ConvertInfo(IDictionary<String, String> info) {
+        String[] convertedInfo = new String[] {"", "", "", ""};
+        foreach (String key in info.Keys) {
+            if (Util.EqualsIgnoreCase(Meta.TITLE, key)) {
+                convertedInfo[0] = info[key];
+            } else if (Util.EqualsIgnoreCase(Meta.AUTHOR, key)) {
+                convertedInfo[1] = info[key];
+            } else if (Util.EqualsIgnoreCase(Meta.SUBJECT, key)) {
+                convertedInfo[2] = info[key];
+            } else if (Util.EqualsIgnoreCase(Meta.KEYWORDS, key)) {
+                convertedInfo[3] = info[key];
+            }
+        }
+        return convertedInfo;
     }
 
     private bool PngPredicate(FileSystemInfo pathname) {
