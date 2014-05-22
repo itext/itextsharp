@@ -1763,6 +1763,8 @@ namespace iTextSharp.text.pdf {
         virtual public PageStamp CreatePageStamp(PdfImportedPage iPage) {
             int pageNum = iPage.PageNumber;
             PdfReader reader = iPage.PdfReaderInstance.Reader;
+            if (IsTagged())
+                throw new Exception(MessageLocalization.GetComposedMessage("creating.page.stamp.not.allowed.for.tagged.reader"));
             PdfDictionary pageN = reader.GetPageN(pageNum);
             return new PageStamp(reader, pageN, this);
         }
