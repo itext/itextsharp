@@ -3,5 +3,9 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.font.font.
         protected override string GetTestName() {
             return "font_table01";
         }
+
+        protected override bool CompareByContent() {
+            return false;
+        }
     }
 }

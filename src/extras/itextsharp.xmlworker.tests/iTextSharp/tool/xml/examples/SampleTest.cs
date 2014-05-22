@@ -72,7 +72,11 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
         protected override void ComparePdf(String outPdf, String cmpPdf) {
             if (!DetectCrashesAndHangUpsOnly()) {
                 CompareTool compareTool = new CompareTool(outPdf, cmpPdf);
-                String errorMessage = compareTool.CompareByContent(outPath, differenceImagePrefix);
+                String errorMessage = null;
+                if (CompareByContent())
+                    errorMessage = compareTool.CompareByContent(outPath, differenceImagePrefix);
+                else
+                    errorMessage = compareTool.Compare(outPath, differenceImagePrefix);
                 if (errorMessage != null) {
                     Assert.Fail(errorMessage);
                 }
@@ -85,6 +89,10 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
 
         protected virtual bool DetectCrashesAndHangUpsOnly() {
             return false;
+        }
+
+        protected virtual bool CompareByContent() {
+            return true;
         }
 
         protected class SampleTestImageProvider : AbstractImageProvider {
