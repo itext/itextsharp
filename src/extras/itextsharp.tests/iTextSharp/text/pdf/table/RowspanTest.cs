@@ -75,7 +75,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.table {
 
             // compare
             CompareTool compareTool = new CompareTool(OUTPUT_FOLDER + file, CMP_FOLDER + file);
-            String errorMessage = compareTool.Compare(OUTPUT_FOLDER, "diff");
+            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER, "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
@@ -118,7 +118,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.table {
 
             // compare
             CompareTool compareTool = new CompareTool(OUTPUT_FOLDER + file, CMP_FOLDER + file);
-            String errorMessage = compareTool.Compare(OUTPUT_FOLDER, "diff");
+            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER, "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
