@@ -280,6 +280,10 @@ namespace iTextSharp.text.pdf {
             return SetField(field, d);
         }
 
+        public virtual bool SetFieldAsAnnotation(String field, PdfAnnotation annotation) {
+            return SetField(field, annotation);
+        }
+
         public virtual PdfImportedPage GetImportedPage(PdfReader reader, int pageNumber) {
             return wrt.GetImportedPage(reader, pageNumber);
         }
@@ -390,6 +394,8 @@ namespace iTextSharp.text.pdf {
                         dic.Put(PdfName.KIDS, Calculate((Dictionary<String, Object>) v));
                     } else if (v is PdfAction) { // (plaflamme)
                         dic.Put(PdfName.A, (PdfAction) v);
+                    } else if (v is PdfAnnotation) {
+                        dic.Put(PdfName.AA, (PdfAnnotation)v);
                     } else if (v is PdfDictionary && ((PdfDictionary) v).Size == 1 && ((PdfDictionary) v).Contains(PdfName.N)) {
                         dic.Put(PdfName.AP, (PdfDictionary) v);
                     } else {
