@@ -280,8 +280,11 @@ namespace iTextSharp.text.pdf {
             return SetField(field, d);
         }
 
-        public virtual bool SetFieldAsAnnotation(String field, PdfAnnotation annotation) {
-            return SetField(field, annotation);
+        public virtual bool SetFieldAsJavascript(String field, PdfName jsTrigName, String js) {
+            PdfAnnotation dict = new PdfAnnotation(wrt, null);
+            PdfAction javascript = PdfAction.JavaScript(js, wrt);
+            dict.Put(jsTrigName, javascript);
+            return SetField(field, dict);
         }
 
         public virtual PdfImportedPage GetImportedPage(PdfReader reader, int pageNumber) {
