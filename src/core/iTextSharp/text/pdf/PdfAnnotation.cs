@@ -111,6 +111,13 @@ namespace iTextSharp.text.pdf {
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
         private AccessibleElementId id = null;
     
+        public enum JSTrigger {
+            Key = 1,
+            Format = 2,
+            Change = 3,
+            Calculate = 4
+        }
+
         // constructors
         public PdfAnnotation(PdfWriter writer, Rectangle rect) {
             this.writer = writer;
@@ -366,6 +373,25 @@ namespace iTextSharp.text.pdf {
             return annot;
         }
         
+        public static PdfAnnotation Javascript(PdfWriter writer, JSTrigger trig, string js) {
+            PdfAction javascript = PdfAction.JavaScript(js, writer);
+            PdfAnnotation ann = new PdfAnnotation(writer, null);
+            PdfName jsTrigName;
+
+            if (trig == JSTrigger.Change) {
+                jsTrigName = AA_JS_CHANGE;
+            } else if (trig == JSTrigger.Format) {
+                jsTrigName = AA_JS_FORMAT; 
+            } else if (trig == JSTrigger.Key) {
+                jsTrigName = AA_JS_KEY;
+            } else {
+                jsTrigName = AA_JS_OTHER_CHANGE;
+            }
+
+            ann.Put(jsTrigName, javascript);
+            return ann;
+        }
+
         virtual public PdfContentByte DefaultAppearanceString {
             set {
                 byte[] b = value.InternalBuffer.ToByteArray();
