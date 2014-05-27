@@ -1,7 +1,8 @@
 using System.Collections;
 using System.IO;
-using System.Text;
 using Org.BouncyCastle.Utilities.Collections;
+using iTextSharp.text.xml.simpleparser;
+using iTextSharp.text.xml.xmp;
 using iTextSharp.xmp.options;
 
 //Copyright (c) 2006, Adobe Systems Incorporated
@@ -114,13 +115,11 @@ namespace iTextSharp.xmp.impl {
         public virtual void Serialize(IXmpMeta xmp, Stream @out, SerializeOptions options) {
             try {
                 _outputStream = new CountOutputStream(@out);
-                _writer = new StreamWriter(_outputStream, Encoding.GetEncoding(options.Encoding));
-
                 _xmp = (XmpMetaImpl) xmp;
                 _options = options;
                 _padding = options.Padding;
 
-                _writer = new StreamWriter(_outputStream, Encoding.GetEncoding(options.Encoding));
+                _writer = new StreamWriter(_outputStream, new EncodingNoPreamble(IanaEncodings.GetEncodingEncoding(options.Encoding)));
 
                 CheckOptionsConsistence();
 
