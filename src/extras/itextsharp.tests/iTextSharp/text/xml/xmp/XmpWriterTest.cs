@@ -142,6 +142,43 @@ namespace iTextSharp.text.xml.xmp {
             CompareResults("xmp_metadata.pdf", fileName);
         }
 
+        [Test]
+        virtual public void XmpEncodingTest() {
+            String fileName = "xmp_UTF-16BE-encoding";
+            Document document = new Document();
+            PdfSmartCopy copy = new PdfSmartCopy(document, new FileStream(OUT_FOLDER + fileName, FileMode.Create));
+
+            document.Open();
+
+            PdfReader reader = new PdfReader(CMP_FOLDER + "pdf_metadata.pdf");
+            int pageCount = reader.NumberOfPages;
+
+            for (int currentPage = 1; currentPage <= pageCount; currentPage++) {
+                PdfImportedPage page = copy.GetImportedPage(reader, currentPage);
+                copy.AddPage(page);
+            }
+
+
+            MemoryStream os = new MemoryStream();
+            XmpWriter xmp = new XmpWriter(os, XmpWriter.UTF16, 2000);
+            DublinCoreProperties.AddSubject(xmp.XmpMeta, "Hello World");
+            DublinCoreProperties.AddSubject(xmp.XmpMeta, "XMP & Metadata");
+            DublinCoreProperties.AddSubject(xmp.XmpMeta, "Metadata");
+            xmp.Close();
+
+            copy.XmpMetadata = os.ToArray();
+
+            string metadataXml = System.Text.Encoding.GetEncoding("UTF-16BE").GetString(copy.XmpMetadata);
+
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(metadataXml);  //<-- This is where the exception is thrown
+
+
+            document.Close();
+            copy.Close();
+            reader.Close();
+        }
+
         private void CompareResults(String orig, String curr) {
             PdfReader cmpReader = new PdfReader(CMP_FOLDER + orig);
             PdfReader outReader = new PdfReader(OUT_FOLDER + curr);
