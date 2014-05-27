@@ -46,7 +46,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using iTextSharp.text.pdf;
 using iTextSharp.xmp;
 using iTextSharp.xmp.options;
@@ -202,7 +201,6 @@ namespace iTextSharp.text.xml.xmp {
                              ">" +
                              content +
                              "</rdf:Description></rdf:RDF>\n";
-                byte[] bytes = Encoding.Convert(Encoding.UTF8, Encoding.ASCII, Encoding.UTF8.GetBytes(str));
                 IXmpMeta extMeta = XmpMetaFactory.ParseFromString(str);
                 XmpUtils.AppendProperties(extMeta, xmpMeta, true, true);
             }
