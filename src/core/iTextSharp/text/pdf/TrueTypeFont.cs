@@ -1165,16 +1165,18 @@ namespace iTextSharp.text.pdf {
         }
         
         virtual public byte[] GetFullFont() {
-            RandomAccessFileOrArray rf2 = null;
-            try {
-                rf2 = new RandomAccessFileOrArray(rf);
-                rf2.ReOpen();
-                byte[] b = new byte[rf2.Length];
-                rf2.ReadFully(b);
-                return b;
-            } 
-            finally {
-                try {if (rf2 != null) rf2.Close();} catch {}
+            lock (head) {
+                RandomAccessFileOrArray rf2 = null;
+                try {
+                    rf2 = new RandomAccessFileOrArray(rf);
+                    rf2.ReOpen();
+                    byte[] b = new byte[rf2.Length];
+                    rf2.ReadFully(b);
+                    return b;
+                } 
+                finally {
+                    try {if (rf2 != null) rf2.Close();} catch {}
+                }
             }
         }
         

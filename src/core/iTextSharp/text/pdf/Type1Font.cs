@@ -58,6 +58,8 @@ namespace iTextSharp.text.pdf {
      * @author Paulo Soares
      */
     internal class Type1Font : BaseFont {
+        private object lockObject = new object();
+
         /** The PFB file if the input was made with a <CODE>byte</CODE> array.
          */    
         protected byte[] pfb;
@@ -476,44 +478,46 @@ namespace iTextSharp.text.pdf {
         public override PdfStream GetFullFontStream() {
             if (builtinFont || !embedded)
                 return null;
-            RandomAccessFileOrArray rf = null;
-            try {
-                string filePfb = fileName.Substring(0, fileName.Length - 3) + "pfb";
-                if (pfb == null)
-                    rf = new RandomAccessFileOrArray(filePfb, true);
-                else
-                    rf = new RandomAccessFileOrArray(pfb);
-                int fileLength = (int)rf.Length;
-                byte[] st = new byte[fileLength - 18];
-                int[] lengths = new int[3];
-                int bytePtr = 0;
-                for (int k = 0; k < 3; ++k) {
-                    if (rf.Read() != 0x80)
-                        throw new DocumentException(MessageLocalization.GetComposedMessage("start.marker.missing.in.1", filePfb));
-                    if (rf.Read() != PFB_TYPES[k])
-                        throw new DocumentException(MessageLocalization.GetComposedMessage("incorrect.segment.type.in.1", filePfb));
-                    int size = rf.Read();
-                    size += rf.Read() << 8;
-                    size += rf.Read() << 16;
-                    size += rf.Read() << 24;
-                    lengths[k] = size;
-                    while (size != 0) {
-                        int got = rf.Read(st, bytePtr, size);
-                        if (got < 0)
-                            throw new DocumentException(MessageLocalization.GetComposedMessage("premature.end.in.1", filePfb));
-                        bytePtr += got;
-                        size -= got;
+            lock (lockObject) {
+                RandomAccessFileOrArray rf = null;
+                try {
+                    string filePfb = fileName.Substring(0, fileName.Length - 3) + "pfb";
+                    if (pfb == null)
+                        rf = new RandomAccessFileOrArray(filePfb, true);
+                    else
+                        rf = new RandomAccessFileOrArray(pfb);
+                    int fileLength = (int)rf.Length;
+                    byte[] st = new byte[fileLength - 18];
+                    int[] lengths = new int[3];
+                    int bytePtr = 0;
+                    for (int k = 0; k < 3; ++k) {
+                        if (rf.Read() != 0x80)
+                            throw new DocumentException(MessageLocalization.GetComposedMessage("start.marker.missing.in.1", filePfb));
+                        if (rf.Read() != PFB_TYPES[k])
+                            throw new DocumentException(MessageLocalization.GetComposedMessage("incorrect.segment.type.in.1", filePfb));
+                        int size = rf.Read();
+                        size += rf.Read() << 8;
+                        size += rf.Read() << 16;
+                        size += rf.Read() << 24;
+                        lengths[k] = size;
+                        while (size != 0) {
+                            int got = rf.Read(st, bytePtr, size);
+                            if (got < 0)
+                                throw new DocumentException(MessageLocalization.GetComposedMessage("premature.end.in.1", filePfb));
+                            bytePtr += got;
+                            size -= got;
+                        }
                     }
+                    return new StreamFont(st, lengths, compressionLevel);
                 }
-                return new StreamFont(st, lengths, compressionLevel);
-            }
-            finally {
-                if (rf != null) {
-                    try {
-                        rf.Close();
-                    }
-                    catch  {
-                        // empty on purpose
+                finally {
+                    if (rf != null) {
+                        try {
+                            rf.Close();
+                        }
+                        catch  {
+                            // empty on purpose
+                        }
                     }
                 }
             }
