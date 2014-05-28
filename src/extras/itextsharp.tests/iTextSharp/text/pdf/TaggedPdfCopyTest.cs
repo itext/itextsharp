@@ -715,15 +715,8 @@ namespace itextsharp.tests.text.pdf
             Assert.AreEqual(1, nums.GetAsNumber(2).IntValue);
             Assert.AreEqual(4, nums.GetAsNumber(8).IntValue);
 
-            Assert.AreEqual(acroForm.GetAsArray(PdfName.FIELDS).GetAsIndirectObject(0).Number, nums.GetAsDict(5).GetAsDict(PdfName.K).GetAsIndirectObject(PdfName.OBJ).Number);
-            Assert.AreEqual(acroForm.GetAsArray(PdfName.FIELDS).GetAsIndirectObject(2).Number, nums.GetAsDict(11).GetAsDict(PdfName.K).GetAsIndirectObject(PdfName.OBJ).Number);
-            Assert.AreEqual(acroForm.GetAsArray(PdfName.FIELDS).GetAsDict(1).GetAsArray(PdfName.KIDS).GetAsIndirectObject(0).Number, nums.GetAsDict(3).GetAsDict(PdfName.K).GetAsIndirectObject(PdfName.OBJ).Number);
-            Assert.AreEqual(acroForm.GetAsArray(PdfName.FIELDS).GetAsDict(1).GetAsArray(PdfName.KIDS).GetAsIndirectObject(1).Number, nums.GetAsDict(9).GetAsDict(PdfName.K).GetAsIndirectObject(PdfName.OBJ).Number);
-
-            Assert.AreEqual(2, acroForm.GetAsArray(PdfName.FIELDS).GetAsDict(0).GetAsNumber(PdfName.STRUCTPARENT).IntValue);
-            Assert.AreEqual(1, acroForm.GetAsArray(PdfName.FIELDS).GetAsDict(1).GetAsArray(PdfName.KIDS).GetAsDict(0).GetAsNumber(PdfName.STRUCTPARENT).IntValue);
-            Assert.AreEqual(5, acroForm.GetAsArray(PdfName.FIELDS).GetAsDict(2).GetAsNumber(PdfName.STRUCTPARENT).IntValue);
-            Assert.AreEqual(4, acroForm.GetAsArray(PdfName.FIELDS).GetAsDict(1).GetAsArray(PdfName.KIDS).GetAsDict(1).GetAsNumber(PdfName.STRUCTPARENT).IntValue);
+            Assert.AreEqual(12, nums.Size);
+            Assert.AreEqual(3, acroForm.GetAsArray(PdfName.FIELDS).Size);
 
             reader.Close();
         }
