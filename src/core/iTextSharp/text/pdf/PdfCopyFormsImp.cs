@@ -1,7 +1,5 @@
-using System;
 using System.IO;
 using System.Collections.Generic;
-using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
  * $Id$
@@ -84,6 +82,9 @@ namespace iTextSharp.text.pdf {
             }
             reader.ShuffleSubsetNames();
             readers2intrefs[reader] = new IntHashtable();
+
+            visited[reader] = new IntHashtable();
+
             fields.Add(reader.AcroFields);
             UpdateCalculationOrder(reader);
         }
