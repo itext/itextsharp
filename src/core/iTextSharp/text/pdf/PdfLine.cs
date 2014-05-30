@@ -159,49 +159,46 @@ namespace iTextSharp.text.pdf {
             //        if (chunk.IsNewlineSplit() && alignment == Element.ALIGN_JUSTIFIED)
             //            alignment = Element.ALIGN_LEFT;
             if (chunk.IsTab()) {
-                Object[] tab = (Object[])chunk.GetAttribute(Chunk.TAB);
-                if (chunk.IsAttribute(Chunk.TABSETTINGS))
-                {
-                    bool isWhiteSpace = (bool)tab[1];
-                    if (!isWhiteSpace || line.Count > 0)
-                    {
+                Object[] tab = (Object[]) chunk.GetAttribute(Chunk.TAB);
+                if (chunk.IsAttribute(Chunk.TABSETTINGS)) {
+                    bool isWhiteSpace = (bool) tab[1];
+                    if (!isWhiteSpace || line.Count > 0) {
                         Flush();
                         tabStopAnchorPosition = float.NaN;
                         tabStop = PdfChunk.GetTabStop(chunk, originalWidth - width);
-                        if (tabStop.Position > originalWidth)
-                        {
-                            width = 0;
+                        if (tabStop.Position > originalWidth) {
                             if (isWhiteSpace)
-                                return null;
-                            else
-                                return chunk;
+                                overflow = null;
+                            else if (Math.Abs(originalWidth - width) < 0.001) {
+                                AddToLine(chunk);
+                                overflow = null;
+                            } else {
+                                overflow = chunk;
+                            }
+							width = 0;
+                        } else {
+                            chunk.TabStop = tabStop;
+                            if (tabStop.Align == TabStop.Alignment.LEFT) {
+                                width = originalWidth - tabStop.Position;
+                                tabStop = null;
+                                tabPosition = float.NaN;
+                            } else
+                                tabPosition = originalWidth - width;
+                            AddToLine(chunk);
                         }
-                        tabStop.Position = tabStop.Position;
-                        chunk.TabStop = tabStop;
-                        if (tabStop.Align == TabStop.Alignment.LEFT)
-                        {
-                            width = originalWidth - tabStop.Position;
-                            tabStop = null;
-                            tabPosition = float.NaN;
-                        }
-                        else
-                            tabPosition = originalWidth - width;
-                    }
-                    else
+                    } else
                         return null;
-                }
-                else
-                {
+                } else {
                     //Keep deprecated tab logic for backward compatibility...
-                    float tabStopPosition = (float)tab[1];
-                    bool newline = (bool)tab[2];
+                    float tabStopPosition = (float) tab[1];
+                    bool newline = (bool) tab[2];
                     if (newline && tabPosition < originalWidth - width)
                         return chunk;
                     chunk.AdjustLeft(left);
                     width = originalWidth - tabStopPosition;
+                    AddToLine(chunk);
                 }
-                AddToLine(chunk);
-            }   // if the length of the chunk > 0 we add it to the line 
+            } // if the length of the chunk > 0 we add it to the line 
             else if (chunk.Length > 0 || chunk.IsImage()) {
                 if (overflow != null)
                     chunk.TrimLastSpace();
@@ -209,8 +206,8 @@ namespace iTextSharp.text.pdf {
                 AddToLine(chunk);
             }
         
-                // if the length == 0 and there were no other chunks added to the line yet,
-                // we risk to end up in an endless loop trying endlessly to add the same chunk
+            // if the length == 0 and there were no other chunks added to the line yet,
+            // we risk to end up in an endless loop trying endlessly to add the same chunk
             else if (line.Count < 1) {
                 chunk = overflow;
                 overflow = chunk.Truncate(width);
@@ -219,7 +216,7 @@ namespace iTextSharp.text.pdf {
                     AddToLine(chunk);
                     return overflow;
                 }
-                    // if the chunck couldn't even be truncated, we add everything, so be it
+                // if the chunck couldn't even be truncated, we add everything, so be it
                 else {
                     if (overflow != null)
                         AddToLine(chunk);
