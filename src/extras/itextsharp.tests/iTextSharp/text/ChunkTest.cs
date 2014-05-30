@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text;
+using iTextSharp.text.pdf.parser;
 using NUnit.Framework;
 using iTextSharp.text.io;
 using iTextSharp.text.pdf;
@@ -25,11 +27,15 @@ namespace iTextSharp.text {
         private const String SOURCE13 = RESOURCES + "source13.pdf";
         private const String SOURCE14 = RESOURCES + "source14.pdf";
         private const String SOURCE15 = RESOURCES + "source15.pdf";
+        private const String SOURCE16 = RESOURCES + "source16.pdf";
+        private const String SOURCE17 = RESOURCES + "source17.pdf";
         private const String OUTTABSPACED = TARGET + "/tabspaceDocument.pdf";
         private const String OUTABSPACEC = TARGET + "/tabspaceColumnText.pdf";
         private const String OUTTABD = TARGET + "/tabDocument.pdf";
         private const String OUTABC = TARGET + "/tabColumnText.pdf";
         private const String OUTABSTOPSC = TARGET + "/tabstopsColumnText.pdf";
+        private const String OUTSPTRIMDOC = TARGET + "/spaceTrimDoc.pdf";
+        private const String OUTSPTRIMCT = TARGET + "/spaceTrimColumnText.pdf";
 
         [SetUp]
         virtual public void Init() {
@@ -297,6 +303,135 @@ namespace iTextSharp.text {
 
             document.Close();
             Assert.IsTrue(CompareInnerText(SOURCE15, OUTABSTOPSC));
+        }
+
+        [Test]
+        public virtual void SpaceTrimPdfDocumentTest() {
+            Document doc = new Document(PageSize.A4, 50, 30, 50, 30);
+            PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(OUTSPTRIMDOC, FileMode.Create));
+            doc.Open();
+
+            Phrase under = new Phrase();
+            under.Font = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.UNDERLINE);
+            under.Add(new Chunk(" 1                                                      1                                                                                                                             9      "));
+
+            doc.Add(under);
+
+            doc.Close();
+            writer.Close();
+
+            PdfReader reader = new PdfReader(OUTSPTRIMDOC);
+            MyTextRenderListener listener = new MyTextRenderListener();
+            PdfContentStreamProcessor processor = new PdfContentStreamProcessor(listener);
+            PdfDictionary pageDic = reader.GetPageN(1);
+            PdfDictionary resourcesDic = pageDic.GetAsDict(PdfName.RESOURCES);
+            processor.ProcessContent(ContentByteUtils.GetContentBytesForPage(reader, 1), resourcesDic);
+            //should be 60, as in @spaceTrimColumnTextTest
+            //Assert.assertTrue("Unexpected text length", listener.getText().length() == 60);
+            Assert.IsTrue(listener.GetText().Length == 77, "Unexpected text length");
+        }
+
+        [Test]
+        public virtual void SpaceTrimColumnTextTest() {
+            Document doc = new Document(PageSize.A4, 50, 30, 50, 30);
+            PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(OUTSPTRIMCT, FileMode.Create));
+            doc.Open();
+
+            Phrase under = new Phrase();
+            under.Font = new Font(Font.FontFamily.TIMES_ROMAN, 12, Font.UNDERLINE);
+            under.Add(new Chunk(" 1                                                      1                                                                                                                             9      "));
+
+            Paragraph underlineTest = new Paragraph(under);
+            underlineTest.KeepTogether = true;
+            doc.Add(underlineTest);
+
+            doc.Close();
+            writer.Close();
+
+            PdfReader reader = new PdfReader(OUTSPTRIMCT);
+            MyTextRenderListener listener = new MyTextRenderListener();
+            PdfContentStreamProcessor processor = new PdfContentStreamProcessor(listener);
+            PdfDictionary pageDic = reader.GetPageN(1);
+            PdfDictionary resourcesDic = pageDic.GetAsDict(PdfName.RESOURCES);
+            processor.ProcessContent(ContentByteUtils.GetContentBytesForPage(reader, 1), resourcesDic);
+            Assert.IsTrue(listener.GetText().Length == 60, "Unexpected text length");
+        }
+
+        [Test]
+        public virtual void TabStopOutOfPageBoundDocumentTest() {
+            Document doc = new Document(PageSize.A4, 36, 36, 0, 30);
+            PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(TARGET + "/tabStopOutDocument.pdf", FileMode.Create));
+            doc.Open();
+            Font f = FontFactory.GetFont(FontFactory.COURIER, 11);
+            f.Size = 16;
+            Paragraph p = new Paragraph(Chunk.TABBING);
+            p.Add(new Chunk("Hello world", f));
+            List<TabStop> tabStopsList = new List<TabStop>();
+            tabStopsList.Add(new TabStop(1000, new DottedLineSeparator()));
+            tabStopsList.Add(new TabStop(1050, new LineSeparator(), TabStop.Alignment.ANCHOR, ','));
+            tabStopsList.Add(new TabStop(1100, new DottedLineSeparator(), TabStop.Alignment.ANCHOR));
+            p.TabSettings = new TabSettings(tabStopsList, 50);
+            AddTabs(p, f, 15, "l.aal");
+            AddTabs(p, f, 13, "laa,l");
+            AddTabs(p, f, 13, "laa.l");
+            AddTabs(p, f, 13, "l,aal");
+
+            doc.Add(p);
+            doc.Close();
+            writer.Close();
+            Assert.IsTrue(CompareInnerText(SOURCE16, TARGET + "/tabStopOutDocument.pdf"));
+        }
+
+        [Test]
+        public void TabStopOutOfPageBoundColumnTextTest() {
+            Font f = FontFactory.GetFont(FontFactory.COURIER, 11);
+            Document doc = new Document();
+            Paragraph p;
+            FileStream fs = new FileStream(TARGET + "/tabStopOutColumnText.pdf", FileMode.Create);
+            PdfWriter writer = PdfWriter.GetInstance(doc, fs);
+            writer.CompressionLevel = 0;
+            doc.Open();
+            ColumnText ct = new ColumnText(writer.DirectContent);
+            ct.SetSimpleColumn(36, 0, 436, 836);
+            f.Size = 16;
+            p = new Paragraph(Chunk.TABBING);
+            p.Add(new Chunk("Hello world", f));
+            List<TabStop> tabStopsList = new List<TabStop>();
+            tabStopsList.Add(new TabStop(1000, new DottedLineSeparator()));
+            tabStopsList.Add(new TabStop(1050, new LineSeparator(), TabStop.Alignment.ANCHOR, ','));
+            tabStopsList.Add(new TabStop(1100, new DottedLineSeparator(), TabStop.Alignment.ANCHOR));
+            p.TabSettings = new TabSettings(tabStopsList, 50);
+            AddTabs(p, f, 15, "l.aal");
+            AddTabs(p, f, 13, "laa,l");
+            AddTabs(p, f, 13, "laa.l");
+            AddTabs(p, f, 13, "l,aal");
+            ct.AddElement(p);
+            ct.Go();
+            doc.Close();
+            writer.Close();
+            Assert.IsTrue(CompareInnerText(SOURCE17, TARGET + "/tabStopOutColumnText.pdf"));
+        }
+
+        private class MyTextRenderListener : IRenderListener {
+            protected StringBuilder buffer = new StringBuilder();
+
+            public void BeginTextBlock() {
+            }
+
+            public void EndTextBlock() {
+            }
+
+            public void RenderImage(ImageRenderInfo renderInfo) {
+            }
+
+            public void RenderText(TextRenderInfo renderInfo) {
+                buffer.Append(renderInfo.GetText());
+                buffer.Append("\n");
+            }
+
+            public String GetText() {
+                return buffer.ToString();
+            }
         }
 
         virtual public void AddTabspaces(Paragraph p, Font f, int count) {
