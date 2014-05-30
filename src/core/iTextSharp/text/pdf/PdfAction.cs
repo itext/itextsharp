@@ -405,7 +405,7 @@ namespace iTextSharp.text.pdf {
             if (isName)
                 action.Put(PdfName.D, new PdfName(dest));
             else
-                action.Put(PdfName.D, new PdfString(dest, null));
+                action.Put(PdfName.D, new PdfString(dest, PdfObject.TEXT_UNICODE));
             return action;
         }
 
@@ -424,7 +424,7 @@ namespace iTextSharp.text.pdf {
             if (isName)
                 action.Put(PdfName.D, new PdfName(dest));
             else
-                action.Put(PdfName.D, new PdfString(dest, null));
+                action.Put(PdfName.D, new PdfString(dest, PdfObject.TEXT_UNICODE));
             if (newWindow)
                 action.Put(PdfName.NEWWINDOW, PdfBoolean.PDFTRUE);
             return action;
@@ -441,7 +441,7 @@ namespace iTextSharp.text.pdf {
             if (isName)
                 return GotoEmbedded(filename, target, new PdfName(dest), newWindow);
             else
-                return GotoEmbedded(filename, target, new PdfString(dest, null), newWindow);
+                return GotoEmbedded(filename, target, new PdfString(dest, PdfObject.TEXT_UNICODE), newWindow);
         }
 
         /**

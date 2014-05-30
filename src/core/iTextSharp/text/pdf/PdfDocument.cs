@@ -231,7 +231,7 @@ namespace iTextSharp.text.pdf {
                         if (!localDestinations.TryGetValue(name, out dest))
                             continue;
                         PdfIndirectReference refi = dest.reference;
-                        ar.Add(new PdfString(name, null));
+                        ar.Add(new PdfString(name, PdfObject.TEXT_UNICODE));
                         ar.Add(refi);
                     }
                     if (ar.Size > 0) {

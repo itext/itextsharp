@@ -213,7 +213,7 @@ namespace iTextSharp.text.pdf {
 
         public static PdfAnnotation CreateLink(PdfWriter writer, Rectangle rect, PdfName highlight, string namedDestination) {
             PdfAnnotation annot = CreateLink(writer, rect, highlight);
-            annot.Put(PdfName.DEST, new PdfString(namedDestination));
+            annot.Put(PdfName.DEST, new PdfString(namedDestination, PdfObject.TEXT_UNICODE));
             return annot;
         }
 
