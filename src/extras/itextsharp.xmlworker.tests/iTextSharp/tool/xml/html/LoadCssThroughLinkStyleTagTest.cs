@@ -51,7 +51,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         virtual public void Parse1CssFileAndValidate() {
             p.Parse(new StringReader(HTML1));
             Dictionary<String, String> props = new Dictionary<String, String>();
-            cssFiles.PopulateCss(props, "body");
+            cssFiles.PopulateCss(new Tag("body"), props);
             Assert.IsTrue(props.ContainsKey("font-size"));
             Assert.IsTrue(props.ContainsKey("color"));
         }
@@ -60,7 +60,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         virtual public void Parse2CsszFileAndValidate() {
             p.Parse(new StringReader(HTML2));
             Dictionary<String, String> props = new Dictionary<String, String>();
-            cssFiles.PopulateCss(props, "body");
+            cssFiles.PopulateCss(new Tag("body"), props);
             Assert.IsTrue(props.ContainsKey("font-size"));
             Assert.IsTrue(props.ContainsKey("color"));
             Assert.IsTrue(props.ContainsKey("margin-left"));
@@ -73,7 +73,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         virtual public void Parse2CsszFilePluseStyleTagAndValidate() {
             p.Parse(new StringReader(HTML3));
             Dictionary<String, String> props = new Dictionary<String, String>();
-            cssFiles.PopulateCss(props, "body");
+            cssFiles.PopulateCss(new Tag("body"), props);
             Assert.IsTrue(props.ContainsKey("font-size"));
             Assert.IsTrue(props.ContainsKey("color"));
             Assert.IsTrue(props.ContainsKey("margin-left"));

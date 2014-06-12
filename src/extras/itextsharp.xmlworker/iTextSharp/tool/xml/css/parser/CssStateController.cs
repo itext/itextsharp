@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using iTextSharp.tool.xml.css;
 using iTextSharp.tool.xml.css.parser.state;
 
 namespace iTextSharp.tool.xml.css.parser {
@@ -79,8 +78,14 @@ namespace iTextSharp.tool.xml.css.parser {
             }
             if (currentSelector.Contains(",")) {
                 String[] selectors = currentSelector.Split(',');
+                //check for rules like p, {…}
+                for (int i = 0; i < selectors.Length; i++) {
+                    selectors[i] = utils.StripDoubleSpacesAndTrim(selectors[i]);
+                    if (selectors[i].Length == 0)
+                        return;
+                }
                 foreach (String selector in selectors) {
-                    css.Add(utils.StripDoubleSpacesAndTrim(selector), new Dictionary<string, string>(map));
+                    css.Add(selector, map);
                 }
             } else {
                 css.Add(utils.StripDoubleSpacesAndTrim(currentSelector), map);

@@ -92,6 +92,7 @@
     <Compile Include="iTextSharp\tool\xml\css\CssFileProcessor.cs" />
     <Compile Include="iTextSharp\tool\xml\css\CssFilesImpl.cs" />
     <Compile Include="iTextSharp\tool\xml\css\CSSFileWrapper.cs" />
+    <Compile Include="iTextSharp\tool\xml\css\CssRule.cs" />
     <Compile Include="iTextSharp\tool\xml\css\CssSelector.cs" />
     <Compile Include="iTextSharp\tool\xml\css\CssUtils.cs" />
     <Compile Include="iTextSharp\tool\xml\css\DefaultCssInheritanceRules.cs" />
@@ -100,6 +101,8 @@
     <Compile Include="iTextSharp\tool\xml\css\ICssFile.cs" />
     <Compile Include="iTextSharp\tool\xml\css\ICssFiles.cs" />
     <Compile Include="iTextSharp\tool\xml\css\ICssInheritanceRules.cs" />
+    <Compile Include="iTextSharp\tool\xml\css\ICssSelectorItem.cs" />
+    <Compile Include="iTextSharp\tool\xml\css\parser\CssSelectorParser.cs" />
     <Compile Include="iTextSharp\tool\xml\css\parser\CssStateController.cs" />
     <Compile Include="iTextSharp\tool\xml\css\parser\IState.cs" />
     <Compile Include="iTextSharp\tool\xml\css\parser\state\CommentEnd.cs" />

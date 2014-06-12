@@ -60,13 +60,13 @@ namespace iTextSharp.tool.xml.css {
 	     */
 	    void Add(String selector, IDictionary<String, String> props);
 
-	    /**
-	     * Return CSS for the given selector.
-	     * @param selector the selector to look for
-	     * @return a map with all CSS properties for this selector or an empty map
-	     *         if none found.
-	     */
-	    IDictionary<String, String> Get(String selector);
+        /**
+         * Return CSS declarations for the given tag.
+         * @param t the tag for searching rules
+         * @return a list of maps with all CSS properties for this tag or an empty list
+         *         if none found.
+         */
+        IList<IDictionary<String, String>> Get(Tag t);
 
         /**
          * @return if this CSS file should never be thrown away. Used in CSSFilesImpl#clear
