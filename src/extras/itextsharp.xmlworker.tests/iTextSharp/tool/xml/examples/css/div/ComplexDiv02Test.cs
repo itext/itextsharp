@@ -9,11 +9,9 @@ using iTextSharp.tool.xml.parser;
 using iTextSharp.tool.xml.pipeline.css;
 using iTextSharp.tool.xml.pipeline.end;
 using iTextSharp.tool.xml.pipeline.html;
-using NUnit.Framework;
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.div {
-    [Ignore]
-    internal class ComplexDiv02Test : SampleTest {
+    public class ComplexDiv02Test : SampleTest {
         protected override string GetTestName() {
             return "complexDiv02";
         }
@@ -28,12 +26,12 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.div {
             CssFilesImpl cssFiles = new CssFilesImpl();
             cssFiles.Add(
                 XMLWorkerHelper.GetCSS(
-                    File.OpenRead(RESOURCES + Path.DirectorySeparatorChar + testPath + testName +
+                    File.OpenRead(RESOURCES + Path.DirectorySeparatorChar + testPath + Path.DirectorySeparatorChar + testName +
                                   Path.DirectorySeparatorChar + "complexDiv02_files" + Path.DirectorySeparatorChar +
                                   "minimum0.css")));
             cssFiles.Add(
                 XMLWorkerHelper.GetCSS(
-                    File.OpenRead(RESOURCES + Path.DirectorySeparatorChar + testPath + testName +
+                    File.OpenRead(RESOURCES + Path.DirectorySeparatorChar + testPath + Path.DirectorySeparatorChar + testName +
                                   Path.DirectorySeparatorChar + "complexDiv02_files" + Path.DirectorySeparatorChar +
                                   "print000.css")));
             cssFiles.Add(XMLWorkerHelper.GetCSS(File.OpenRead(RESOURCES + @"\tool\xml\examples\" + "sampleTest.css")));

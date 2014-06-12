@@ -40,12 +40,10 @@ namespace iTextSharp.tool.xml.css {
  *
  */
 
-    public class CssFilesImpl : ICssFiles
-    {
+    public class CssFilesImpl : ICssFiles {
 
         private IList<ICssFile> files;
         private CssUtils utils;
-        private CssSelector select;
 
         /**
          * Constructs a new CssFilesImpl.
@@ -54,7 +52,6 @@ namespace iTextSharp.tool.xml.css {
         public CssFilesImpl() {
             this.files = new List<ICssFile>();
             this.utils = CssUtils.GetInstance();
-            this.select = new CssSelector();
         }
 
         /**
@@ -89,41 +86,28 @@ namespace iTextSharp.tool.xml.css {
 
         virtual public IDictionary<String, String> GetCSS(Tag t) {
             IDictionary<String, String> aggregatedProps = new Dictionary<String, String>();
-            IDictionary<String, Object> childSelectors = select.CreateAllSelectors(t);
-            foreach (String selector in childSelectors.Keys)
-            {
-                PopulateCss(aggregatedProps, selector);
-            }
+            PopulateCss(t, aggregatedProps);
             return aggregatedProps;
         }
 
-        /**
-         * @param aggregatedProps the map to put the properties in.
-         * @param selector the selector to search for.
-         */
-
-        virtual public void PopulateCss(IDictionary<String, String> aggregatedProps, String selector) {
-            foreach (ICssFile cssFile in this.files)
-            {
-                PopulateOneCss(cssFile, aggregatedProps, selector);
+        public virtual void PopulateCss(Tag t, IDictionary<String, String> aggregatedProps) {
+            foreach (ICssFile cssFile in this.files) {
+                foreach (IDictionary<String, String> declaration in cssFile.Get(t))
+                    PopulateOneCss(aggregatedProps, declaration);
             }
         }
 
-        virtual public void PopulateOneCss(ICssFile cssFile, IDictionary<String, String> aggregatedProps, String selector)
-        {
-            IDictionary<String, String> t = cssFile.Get(selector);
+        virtual public void PopulateOneCss(IDictionary<String, String> aggregatedProps, IDictionary<String, String> cssDeclaration) {
             IDictionary<String, String> css = new Dictionary<String, String>();
-            foreach (KeyValuePair<String, String> e in t) {
+            foreach (KeyValuePair<String, String> e in cssDeclaration) {
                 String key = utils.StripDoubleSpacesTrimAndToLowerCase(e.Key);
                 String value = utils.StripDoubleSpacesAndTrim(e.Value);
                 if (Util.EqualsIgnoreCase(CSS.Property.BORDER, key)) {
                     CssUtils.MapPutAll(css, utils.ParseBorder(value));
                 } else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN, key)) {
                     IDictionary<String, String> margins = utils.ParseBoxValues(value, "margin-", "");
-                    foreach (String marginKey in margins.Keys)
-                    {
-                        if (!css.ContainsKey(marginKey))
-                        {
+                    foreach (String marginKey in margins.Keys) {
+                        if (!css.ContainsKey(marginKey)) {
                             css.Add(marginKey, margins[marginKey]);
                         }
                     }

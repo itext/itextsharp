@@ -44,6 +44,8 @@ using System.Collections.Generic;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+using iTextSharp.tool.xml.css.parser;
+
 namespace iTextSharp.tool.xml.css {
 
     /**
@@ -53,7 +55,7 @@ namespace iTextSharp.tool.xml.css {
      */
     public class CssFileImpl : ICssFile {
 
-        private IDictionary<String, IDictionary<String, String>> map;
+        private IList<CssRule> rules;
         private bool persistent;
 
         /**
@@ -61,7 +63,7 @@ namespace iTextSharp.tool.xml.css {
          */
         public CssFileImpl() {
             persistent = false;
-            map = new Dictionary<String, IDictionary<String, String>>();
+            rules = new List<CssRule>();
         }
 
         /*
@@ -71,24 +73,18 @@ namespace iTextSharp.tool.xml.css {
          * java.util.Map)
          */
         virtual public void Add(String selector, IDictionary<String, String> props) {
-            IDictionary<String, String> currVal;
-            map.TryGetValue(selector, out currVal);
-            if (currVal != null) {
-                CssUtils.MapPutAll(currVal, props);
-            } else {
-                map[selector] = props;
-            }
+            IList<ICssSelectorItem> selectorItems = CssSelectorParser.CreateCssSelector(selector);
+            if (selectorItems != null)
+                rules.Add(new CssRule(selectorItems, props));
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see com.itextpdf.tool.xml.css.CssFile#get(java.lang.String)
-         */
-        virtual public IDictionary<String, String> Get(String selector) {
-            IDictionary<String, String> map;
-            this.map.TryGetValue(selector, out map);
-            return null == map?new Dictionary<String, String>(0):map;
+        public virtual IList<IDictionary<String, String>> Get(Tag t) {
+            IList<IDictionary<String, String>> result = new List<IDictionary<String, String>>();
+            foreach (CssRule rule in rules) {
+                if (rule.Selector.Matches(t))
+                    result.Add(rule.Declarations);
+            }
+            return result;
         }
 
         /* (non-Javadoc)

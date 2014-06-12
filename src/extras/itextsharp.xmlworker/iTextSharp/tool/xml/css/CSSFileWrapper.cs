@@ -72,13 +72,8 @@ namespace iTextSharp.tool.xml.css {
             throw new NotSupportedException();
         }
 
-        /*
-         * (non-Javadoc)
-         *
-         * @see com.itextpdf.tool.xml.css.CssFile#get(java.lang.String)
-         */
-        virtual public IDictionary<String, String> Get(String selector) {
-            return css.Get(selector);
+        public virtual IList<IDictionary<String, String>> Get(Tag t) {
+            return css.Get(t);
         }
 
         /*

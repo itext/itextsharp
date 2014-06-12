@@ -399,381 +399,383 @@ namespace iTextSharp.text.pdf {
             if (writer != null && writer.IsPaused()) {
                 return false;
             }
-            if (element.Type != Element.DIV) {
-                FlushFloatingElements();
-            }
-            switch (element.Type) {
-                
-                // Information (headers)
-                case Element.HEADER:
-                    info.Addkey(((Meta)element).Name, ((Meta)element).Content);
-                    break;
-                case Element.TITLE:
-                    info.AddTitle(((Meta)element).Content);
-                    break;
-                case Element.SUBJECT:
-                    info.AddSubject(((Meta)element).Content);
-                    break;
-                case Element.KEYWORDS:
-                    info.AddKeywords(((Meta)element).Content);
-                    break;
-                case Element.AUTHOR:
-                    info.AddAuthor(((Meta)element).Content);
-                    break;
-                case Element.CREATOR:
-                    info.AddCreator(((Meta)element).Content);
-                    break;
-                case Element.LANGUAGE:
-                    SetLanguage(((Meta)element).Content);
-                    break;
-                case Element.PRODUCER:
-                    // you can not change the name of the producer
-                    info.AddProducer();
-                    break;
-                case Element.CREATIONDATE:
-                    // you can not set the creation date, only reset it
-                    info.AddCreationDate();
-                    break;
-                    
-                    // content (text)
-                case Element.CHUNK: {
-                    // if there isn't a current line available, we make one
-                    if (line == null) {
-                        CarriageReturn();
-                    }
-                    
-                    // we cast the element to a chunk
-                    PdfChunk chunk = new PdfChunk((Chunk) element, anchorAction, tabSettings);
-                    // we try to add the chunk to the line, until we succeed
-                    {
-                        PdfChunk overflow;
-                        while ((overflow = line.Add(chunk)) != null) {
+            try {
+                if (element.Type != Element.DIV) {
+                    FlushFloatingElements();
+                }
+                switch (element.Type) {
+
+                        // Information (headers)
+                    case Element.HEADER:
+                        info.Addkey(((Meta) element).Name, ((Meta) element).Content);
+                        break;
+                    case Element.TITLE:
+                        info.AddTitle(((Meta) element).Content);
+                        break;
+                    case Element.SUBJECT:
+                        info.AddSubject(((Meta) element).Content);
+                        break;
+                    case Element.KEYWORDS:
+                        info.AddKeywords(((Meta) element).Content);
+                        break;
+                    case Element.AUTHOR:
+                        info.AddAuthor(((Meta) element).Content);
+                        break;
+                    case Element.CREATOR:
+                        info.AddCreator(((Meta) element).Content);
+                        break;
+                    case Element.LANGUAGE:
+                        SetLanguage(((Meta) element).Content);
+                        break;
+                    case Element.PRODUCER:
+                        // you can not change the name of the producer
+                        info.AddProducer();
+                        break;
+                    case Element.CREATIONDATE:
+                        // you can not set the creation date, only reset it
+                        info.AddCreationDate();
+                        break;
+
+                        // content (text)
+                    case Element.CHUNK: {
+                        // if there isn't a current line available, we make one
+                        if (line == null) {
                             CarriageReturn();
-                            bool newlineSplit = chunk.IsNewlineSplit();
-                            chunk = overflow;
-                            if (!newlineSplit)
-                                chunk.TrimFirstSpace();
                         }
+
+                        // we cast the element to a chunk
+                        PdfChunk chunk = new PdfChunk((Chunk) element, anchorAction, tabSettings);
+                        // we try to add the chunk to the line, until we succeed
+                        {
+                            PdfChunk overflow;
+                            while ((overflow = line.Add(chunk)) != null) {
+                                CarriageReturn();
+                                bool newlineSplit = chunk.IsNewlineSplit();
+                                chunk = overflow;
+                                if (!newlineSplit)
+                                    chunk.TrimFirstSpace();
+                            }
+                        }
+                        pageEmpty = false;
+                        if (chunk.IsAttribute(Chunk.NEWPAGE)) {
+                            NewPage();
+                        }
+                        break;
                     }
-                    pageEmpty = false;
-                    if (chunk.IsAttribute(Chunk.NEWPAGE)) {
-                        NewPage();
+                    case Element.ANCHOR: {
+                        Anchor anchor = (Anchor) element;
+                        String url = anchor.Reference;
+                        leading = anchor.Leading;
+                        PushLeading();
+                        if (url != null) {
+                            anchorAction = new PdfAction(url);
+                        }
+
+                        // we process the element
+                        element.Process(this);
+                        anchorAction = null;
+                        PopLeading();
+                        break;
                     }
-                    break;
-                }
-                case Element.ANCHOR: {
-                    Anchor anchor = (Anchor) element;
-                    String url = anchor.Reference;
-                    leading = anchor.Leading;
-                    PushLeading();
-                    if (url != null) {
-                        anchorAction = new PdfAction(url);
+                    case Element.ANNOTATION: {
+                        if (line == null) {
+                            CarriageReturn();
+                        }
+                        Annotation annot = (Annotation) element;
+                        Rectangle rect = new Rectangle(0, 0);
+                        if (line != null)
+                            rect = new Rectangle(annot.GetLlx(IndentRight - line.WidthLeft),
+                                annot.GetUry(IndentTop - currentHeight - 20), annot.GetUrx(IndentRight - line.WidthLeft + 20),
+                                annot.GetLly(IndentTop - currentHeight));
+                        PdfAnnotation an = PdfAnnotationsImp.ConvertAnnotation(writer, annot, rect);
+                        annotationsImp.AddPlainAnnotation(an);
+                        pageEmpty = false;
+                        break;
                     }
-                    
-                    // we process the element
-                    element.Process(this);
-                    anchorAction = null;
-                    PopLeading();
-                    break;
-                }
-                case Element.ANNOTATION: {
-                    if (line == null) {
+                    case Element.PHRASE: {
+                        TabSettings backupTabSettings = tabSettings;
+                        if (((Phrase) element).TabSettings != null)
+                            tabSettings = ((Phrase) element).TabSettings;
+
+                        // we cast the element to a phrase and set the leading of the document
+                        leading = ((Phrase) element).TotalLeading;
+                        PushLeading();
+                        // we process the element
+                        element.Process(this);
+                        tabSettings = backupTabSettings;
+                        PopLeading();
+                        break;
+                    }
+                    case Element.PARAGRAPH: {
+                        TabSettings backupTabSettings = tabSettings;
+                        if (((Phrase) element).TabSettings != null)
+                            tabSettings = ((Phrase) element).TabSettings;
+
+                        // we cast the element to a paragraph
+                        Paragraph paragraph = (Paragraph) element;
+                        if (IsTagged(writer)) {
+                            FlushLines();
+                            text.OpenMCBlock(paragraph);
+                        }
+                        AddSpacing(paragraph.SpacingBefore, leading, paragraph.Font);
+
+                        // we adjust the parameters of the document
+                        alignment = paragraph.Alignment;
+                        leading = paragraph.TotalLeading;
+                        PushLeading();
+
                         CarriageReturn();
-                    }
-                    Annotation annot = (Annotation) element;
-                    Rectangle rect = new Rectangle(0, 0);
-                    if (line != null)
-                        rect = new Rectangle(annot.GetLlx(IndentRight - line.WidthLeft), annot.GetUry(IndentTop - currentHeight - 20), annot.GetUrx(IndentRight - line.WidthLeft + 20), annot.GetLly(IndentTop - currentHeight));
-                    PdfAnnotation an = PdfAnnotationsImp.ConvertAnnotation(writer, annot, rect);
-                    annotationsImp.AddPlainAnnotation(an);
-                    pageEmpty = false;
-                    break;
-                }
-                case Element.PHRASE: {
-                    TabSettings backupTabSettings = tabSettings;
-                    if (((Phrase)element).TabSettings != null)
-                        tabSettings = ((Phrase)element).TabSettings;
+                        // we don't want to make orphans/widows
+                        if (currentHeight + CalculateLineHeight() > IndentTop - IndentBottom) {
+                            NewPage();
+                        }
 
-                    // we cast the element to a phrase and set the leading of the document
-                    leading = ((Phrase) element).TotalLeading;
-                    PushLeading();
-                    // we process the element
-                    element.Process(this);
-                    tabSettings = backupTabSettings;
-                    PopLeading();
-                    break;
-                }
-                case Element.PARAGRAPH: {
-                    TabSettings backupTabSettings = tabSettings;
-                    if (((Phrase)element).TabSettings != null)
-                        tabSettings = ((Phrase)element).TabSettings;
-
-                    // we cast the element to a paragraph
-                    Paragraph paragraph = (Paragraph) element;
-                    if (IsTagged(writer))
-                    {
-                        FlushLines();
-                        text.OpenMCBlock(paragraph);
-                    }
-                    AddSpacing(paragraph.SpacingBefore, leading, paragraph.Font);
-                    
-                    // we adjust the parameters of the document
-                    alignment = paragraph.Alignment;
-                    leading = paragraph.TotalLeading;
-                    PushLeading();
-                    
-                    CarriageReturn();
-                    // we don't want to make orphans/widows
-                    if (currentHeight + CalculateLineHeight() > IndentTop - IndentBottom) {
-                        NewPage();
-                    }
-
-                    indentation.indentLeft += paragraph.IndentationLeft;
-                    indentation.indentRight += paragraph.IndentationRight;
-                    
-                    CarriageReturn();
-
-                    IPdfPageEvent pageEvent = writer.PageEvent;
-                    if (pageEvent != null && !isSectionTitle)
-                        pageEvent.OnParagraph(writer, this, IndentTop - currentHeight);
-                    
-                    // if a paragraph has to be kept together, we wrap it in a table object
-                    if (paragraph.KeepTogether) {
-                        CarriageReturn();
-                        PdfPTable table = new PdfPTable(1);
-                        table.KeepTogether = paragraph.KeepTogether;
-                        table.WidthPercentage = 100f;
-                        PdfPCell cell = new PdfPCell();
-                        cell.AddElement(paragraph);
-                        cell.Border = Rectangle.NO_BORDER;
-                        cell.Padding = 0;
-                        table.AddCell(cell);
-                        indentation.indentLeft -= paragraph.IndentationLeft;
-                        indentation.indentRight -= paragraph.IndentationRight;
-                        this.Add(table);
                         indentation.indentLeft += paragraph.IndentationLeft;
                         indentation.indentRight += paragraph.IndentationRight;
-                    }
-                    else {
-                        line.SetExtraIndent(paragraph.FirstLineIndent);
-                        element.Process(this);
+
                         CarriageReturn();
-                        AddSpacing(paragraph.SpacingAfter, paragraph.TotalLeading, paragraph.Font);
-                    }
-                    
-                    if (pageEvent != null && !isSectionTitle)
-                        pageEvent.OnParagraphEnd(writer, this, IndentTop - currentHeight);
-                    
-                    alignment = Element.ALIGN_LEFT;
-                    indentation.indentLeft -= paragraph.IndentationLeft;
-                    indentation.indentRight -= paragraph.IndentationRight;
-                    CarriageReturn();
-                    tabSettings = backupTabSettings;
-                    PopLeading();
-                    if (IsTagged(writer))
-                    {
-                        FlushLines();
-                        text.CloseMCBlock(paragraph);
-                    }
-                    break;
-                }
-                case Element.SECTION:
-                case Element.CHAPTER: {
-                    // Chapters and Sections only differ in their constructor
-                    // so we cast both to a Section
-                    Section section = (Section) element;
-                    IPdfPageEvent pageEvent = writer.PageEvent;
-                    
-                    bool hasTitle = section.NotAddedYet && section.Title != null;
-                    
-                    // if the section is a chapter, we begin a new page
-                    if (section.TriggerNewPage) {
-                        NewPage();
-                    }
 
-                    if (hasTitle) {
-                        float fith = IndentTop - currentHeight;
-                        int rotation = pageSize.Rotation;
-                        if (rotation == 90 || rotation == 180)
-                            fith = pageSize.Height - fith;
-                        PdfDestination destination = new PdfDestination(PdfDestination.FITH, fith);
-                        while (currentOutline.Level >= section.Depth) {
-                            currentOutline = currentOutline.Parent;
+                        IPdfPageEvent pageEvent = writer.PageEvent;
+                        if (pageEvent != null && !isSectionTitle)
+                            pageEvent.OnParagraph(writer, this, IndentTop - currentHeight);
+
+                        // if a paragraph has to be kept together, we wrap it in a table object
+                        if (paragraph.KeepTogether) {
+                            CarriageReturn();
+                            PdfPTable table = new PdfPTable(1);
+                            table.KeepTogether = paragraph.KeepTogether;
+                            table.WidthPercentage = 100f;
+                            PdfPCell cell = new PdfPCell();
+                            cell.AddElement(paragraph);
+                            cell.Border = Rectangle.NO_BORDER;
+                            cell.Padding = 0;
+                            table.AddCell(cell);
+                            indentation.indentLeft -= paragraph.IndentationLeft;
+                            indentation.indentRight -= paragraph.IndentationRight;
+                            this.Add(table);
+                            indentation.indentLeft += paragraph.IndentationLeft;
+                            indentation.indentRight += paragraph.IndentationRight;
+                        } else {
+                            line.SetExtraIndent(paragraph.FirstLineIndent);
+                            element.Process(this);
+                            CarriageReturn();
+                            AddSpacing(paragraph.SpacingAfter, paragraph.TotalLeading, paragraph.Font);
                         }
-                        PdfOutline outline = new PdfOutline(currentOutline, destination, section.GetBookmarkTitle(), section.BookmarkOpen);
-                        currentOutline = outline;
-                    }
-                    
-                    // some values are set
-                    CarriageReturn();
-                    indentation.sectionIndentLeft += section.IndentationLeft;
-                    indentation.sectionIndentRight += section.IndentationRight;                    
-                    if (section.NotAddedYet && pageEvent != null)
-                        if (element.Type == Element.CHAPTER)
-                            pageEvent.OnChapter(writer, this, IndentTop - currentHeight, section.Title);
-                        else
-                            pageEvent.OnSection(writer, this, IndentTop - currentHeight, section.Depth, section.Title);
-                    
-                    // the title of the section (if any has to be printed)
-                    if (hasTitle) {
-                        isSectionTitle = true;
-                        Add(section.Title);
-                        isSectionTitle = false;
-                    }
-                    indentation.sectionIndentLeft += section.Indentation;
-                    // we process the section
-                    element.Process(this);
-                    // some parameters are set back to normal again
-                    indentation.sectionIndentLeft -= (section.IndentationLeft + section.Indentation);
-                    indentation.sectionIndentRight -= section.IndentationRight;
-                    
-                    if (section.ElementComplete && pageEvent != null)
-                        if (element.Type == Element.CHAPTER)
-                            pageEvent.OnChapterEnd(writer, this, IndentTop - currentHeight);
-                        else
-                            pageEvent.OnSectionEnd(writer, this, IndentTop - currentHeight);
-                    
-                    break;
-                }
-                case Element.LIST: {
-                    // we cast the element to a List
-                    List list = (List) element;
-                    if (IsTagged(writer))
-                    {
-                        FlushLines();
-                        text.OpenMCBlock(list);
-                    }
-                    if (list.Alignindent) {
-                        list.NormalizeIndentation();
-                    }
-                    // we adjust the document
-                    indentation.listIndentLeft += list.IndentationLeft;
-                    indentation.indentRight += list.IndentationRight;
-                    // we process the items in the list
-                    element.Process(this);
-                    // some parameters are set back to normal again
-                    indentation.listIndentLeft -= list.IndentationLeft;
-                    indentation.indentRight -= list.IndentationRight;
-                    CarriageReturn();
-                    if (IsTagged(writer))
-                    {
-                        FlushLines();
-                        text.CloseMCBlock(list);
-                    }
-                    break;
-                }
-                case Element.LISTITEM: {
-                    // we cast the element to a ListItem
-                    ListItem listItem = (ListItem) element;
-                    if (IsTagged(writer)) {
-                        FlushLines();
-                        text.OpenMCBlock(listItem);
-                    }
-                    AddSpacing(listItem.SpacingBefore, leading, listItem.Font);
-                    
-                    // we adjust the document
-                    alignment = listItem.Alignment;
-                    indentation.listIndentLeft += listItem.IndentationLeft;
-                    indentation.indentRight += listItem.IndentationRight;
-                    leading = listItem.TotalLeading;
-                    PushLeading();
-                    CarriageReturn();
-                    // we prepare the current line to be able to show us the listsymbol
-                    line.ListItem = listItem;
-                    // we process the item
-                    element.Process(this);
 
-                    AddSpacing(listItem.SpacingAfter, listItem.TotalLeading, listItem.Font);
-                    
-                    // if the last line is justified, it should be aligned to the left
-                    if (line.HasToBeJustified()) {
-                        line.ResetAlignment();
-                    }
-                    // some parameters are set back to normal again
-                    CarriageReturn();
-                    indentation.listIndentLeft -= listItem.IndentationLeft;
-                    indentation.indentRight -= listItem.IndentationRight;
-                    PopLeading();
-                    if (IsTagged(writer))
-                    {
-                        FlushLines();
-                        text.CloseMCBlock(listItem.ListBody);
-                        text.CloseMCBlock(listItem);
-                    }
-                    break;
-                }
-                case Element.RECTANGLE: {
-                    Rectangle rectangle = (Rectangle) element;
-                    graphics.Rectangle(rectangle);
-                    pageEmpty = false;
-                    break;
-                }
-                case Element.PTABLE: {
-                    PdfPTable ptable = (PdfPTable)element;
-                    if (ptable.Size <= ptable.HeaderRows)
-                        break; //nothing to do
+                        if (pageEvent != null && !isSectionTitle)
+                            pageEvent.OnParagraphEnd(writer, this, IndentTop - currentHeight);
 
-                    // before every table, we add a new line and flush all lines
-                    EnsureNewLine();
-                    FlushLines();
-                    
-                    AddPTable(ptable);
-                    pageEmpty = false;
-                    NewLine();
-                    break;
-                }
-                case Element.JPEG:
-                case Element.JPEG2000:
-                case Element.JBIG2:
-                case Element.IMGRAW:
-                case Element.IMGTEMPLATE: {
-                    //carriageReturn(); suggestion by Marc Campforts
-                    if(IsTagged(writer) && !((Image)element).IsImgTemplate()) {
-                        FlushLines();
-                        text.OpenMCBlock((Image)element);
-                    }
-                    Add((Image)element);
-                    if(IsTagged(writer) && !((Image)element).IsImgTemplate()) {
-                        FlushLines();
-                        text.CloseMCBlock((Image)element);
-                    }
-                    break;
-                }
-                case Element.YMARK: {
-                    IDrawInterface zh = (IDrawInterface)element;
-                    zh.Draw(graphics, IndentLeft, IndentBottom, IndentRight, IndentTop, IndentTop - currentHeight - (leadingStack.Count > 0 ? leading : 0));
-                    pageEmpty = false;
-                    break;
-                }
-                case Element.MARKED: {
-                    MarkedObject mo;
-                    if (element is MarkedSection) {
-                        mo = ((MarkedSection)element).Title;
-                        if (mo != null) {
-                            mo.Process(this);
+                        alignment = Element.ALIGN_LEFT;
+                        indentation.indentLeft -= paragraph.IndentationLeft;
+                        indentation.indentRight -= paragraph.IndentationRight;
+                        CarriageReturn();
+                        tabSettings = backupTabSettings;
+                        PopLeading();
+                        if (IsTagged(writer)) {
+                            FlushLines();
+                            text.CloseMCBlock(paragraph);
                         }
+                        break;
                     }
-                    mo = (MarkedObject)element;
-                    mo.Process(this);
-                    break;
+                    case Element.SECTION:
+                    case Element.CHAPTER: {
+                        // Chapters and Sections only differ in their constructor
+                        // so we cast both to a Section
+                        Section section = (Section) element;
+                        IPdfPageEvent pageEvent = writer.PageEvent;
+
+                        bool hasTitle = section.NotAddedYet && section.Title != null;
+
+                        // if the section is a chapter, we begin a new page
+                        if (section.TriggerNewPage) {
+                            NewPage();
+                        }
+
+                        if (hasTitle) {
+                            float fith = IndentTop - currentHeight;
+                            int rotation = pageSize.Rotation;
+                            if (rotation == 90 || rotation == 180)
+                                fith = pageSize.Height - fith;
+                            PdfDestination destination = new PdfDestination(PdfDestination.FITH, fith);
+                            while (currentOutline.Level >= section.Depth) {
+                                currentOutline = currentOutline.Parent;
+                            }
+                            PdfOutline outline = new PdfOutline(currentOutline, destination, section.GetBookmarkTitle(),
+                                section.BookmarkOpen);
+                            currentOutline = outline;
+                        }
+
+                        // some values are set
+                        CarriageReturn();
+                        indentation.sectionIndentLeft += section.IndentationLeft;
+                        indentation.sectionIndentRight += section.IndentationRight;
+                        if (section.NotAddedYet && pageEvent != null)
+                            if (element.Type == Element.CHAPTER)
+                                pageEvent.OnChapter(writer, this, IndentTop - currentHeight, section.Title);
+                            else
+                                pageEvent.OnSection(writer, this, IndentTop - currentHeight, section.Depth, section.Title);
+
+                        // the title of the section (if any has to be printed)
+                        if (hasTitle) {
+                            isSectionTitle = true;
+                            Add(section.Title);
+                            isSectionTitle = false;
+                        }
+                        indentation.sectionIndentLeft += section.Indentation;
+                        // we process the section
+                        element.Process(this);
+                        // some parameters are set back to normal again
+                        indentation.sectionIndentLeft -= (section.IndentationLeft + section.Indentation);
+                        indentation.sectionIndentRight -= section.IndentationRight;
+
+                        if (section.ElementComplete && pageEvent != null)
+                            if (element.Type == Element.CHAPTER)
+                                pageEvent.OnChapterEnd(writer, this, IndentTop - currentHeight);
+                            else
+                                pageEvent.OnSectionEnd(writer, this, IndentTop - currentHeight);
+
+                        break;
+                    }
+                    case Element.LIST: {
+                        // we cast the element to a List
+                        List list = (List) element;
+                        if (IsTagged(writer)) {
+                            FlushLines();
+                            text.OpenMCBlock(list);
+                        }
+                        if (list.Alignindent) {
+                            list.NormalizeIndentation();
+                        }
+                        // we adjust the document
+                        indentation.listIndentLeft += list.IndentationLeft;
+                        indentation.indentRight += list.IndentationRight;
+                        // we process the items in the list
+                        element.Process(this);
+                        // some parameters are set back to normal again
+                        indentation.listIndentLeft -= list.IndentationLeft;
+                        indentation.indentRight -= list.IndentationRight;
+                        CarriageReturn();
+                        if (IsTagged(writer)) {
+                            FlushLines();
+                            text.CloseMCBlock(list);
+                        }
+                        break;
+                    }
+                    case Element.LISTITEM: {
+                        // we cast the element to a ListItem
+                        ListItem listItem = (ListItem) element;
+                        if (IsTagged(writer)) {
+                            FlushLines();
+                            text.OpenMCBlock(listItem);
+                        }
+                        AddSpacing(listItem.SpacingBefore, leading, listItem.Font);
+
+                        // we adjust the document
+                        alignment = listItem.Alignment;
+                        indentation.listIndentLeft += listItem.IndentationLeft;
+                        indentation.indentRight += listItem.IndentationRight;
+                        leading = listItem.TotalLeading;
+                        PushLeading();
+                        CarriageReturn();
+                        // we prepare the current line to be able to show us the listsymbol
+                        line.ListItem = listItem;
+                        // we process the item
+                        element.Process(this);
+
+                        AddSpacing(listItem.SpacingAfter, listItem.TotalLeading, listItem.Font);
+
+                        // if the last line is justified, it should be aligned to the left
+                        if (line.HasToBeJustified()) {
+                            line.ResetAlignment();
+                        }
+                        // some parameters are set back to normal again
+                        CarriageReturn();
+                        indentation.listIndentLeft -= listItem.IndentationLeft;
+                        indentation.indentRight -= listItem.IndentationRight;
+                        PopLeading();
+                        if (IsTagged(writer)) {
+                            FlushLines();
+                            text.CloseMCBlock(listItem.ListBody);
+                            text.CloseMCBlock(listItem);
+                        }
+                        break;
+                    }
+                    case Element.RECTANGLE: {
+                        Rectangle rectangle = (Rectangle) element;
+                        graphics.Rectangle(rectangle);
+                        pageEmpty = false;
+                        break;
+                    }
+                    case Element.PTABLE: {
+                        PdfPTable ptable = (PdfPTable) element;
+                        if (ptable.Size <= ptable.HeaderRows)
+                            break; //nothing to do
+
+                        // before every table, we add a new line and flush all lines
+                        EnsureNewLine();
+                        FlushLines();
+
+                        AddPTable(ptable);
+                        pageEmpty = false;
+                        NewLine();
+                        break;
+                    }
+                    case Element.JPEG:
+                    case Element.JPEG2000:
+                    case Element.JBIG2:
+                    case Element.IMGRAW:
+                    case Element.IMGTEMPLATE: {
+                        //carriageReturn(); suggestion by Marc Campforts
+                        if (IsTagged(writer) && !((Image) element).IsImgTemplate()) {
+                            FlushLines();
+                            text.OpenMCBlock((Image) element);
+                        }
+                        Add((Image) element);
+                        if (IsTagged(writer) && !((Image) element).IsImgTemplate()) {
+                            FlushLines();
+                            text.CloseMCBlock((Image) element);
+                        }
+                        break;
+                    }
+                    case Element.YMARK: {
+                        IDrawInterface zh = (IDrawInterface) element;
+                        zh.Draw(graphics, IndentLeft, IndentBottom, IndentRight, IndentTop,
+                            IndentTop - currentHeight - (leadingStack.Count > 0 ? leading : 0));
+                        pageEmpty = false;
+                        break;
+                    }
+                    case Element.MARKED: {
+                        MarkedObject mo;
+                        if (element is MarkedSection) {
+                            mo = ((MarkedSection) element).Title;
+                            if (mo != null) {
+                                mo.Process(this);
+                            }
+                        }
+                        mo = (MarkedObject) element;
+                        mo.Process(this);
+                        break;
+                    }
+                    case Element.WRITABLE_DIRECT:
+                        if (null != writer) {
+                            ((IWriterOperation) element).Write(writer, this);
+                        }
+                        break;
+                    case Element.DIV:
+                        EnsureNewLine();
+                        FlushLines();
+                        AddDiv((PdfDiv) element);
+                        pageEmpty = false;
+                        //newLine();
+                        break;
+                    default:
+                        return false;
                 }
-                case Element.WRITABLE_DIRECT:
-                    if (null != writer) {
-                        ((IWriterOperation)element).Write(writer, this);
-                    }
-                    break;
-                case Element.DIV:
-                    EnsureNewLine();
-                    FlushLines();
-                    AddDiv((PdfDiv)element);
-                    pageEmpty = false;
-                    //newLine();
-                    break;
-                default:
-                    return false;
+                lastElementType = element.Type;
+                return true;
+            } catch (Exception e) {
+                throw new DocumentException(e.Message);
             }
-            lastElementType = element.Type;
-            return true;
         }
         
     //  [L1] DocListener interface
