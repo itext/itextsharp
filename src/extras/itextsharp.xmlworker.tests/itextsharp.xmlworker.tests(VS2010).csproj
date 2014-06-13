@@ -254,6 +254,8 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\position\div\Position_div01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\position\Overflow01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\position\text\Position_text01.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_10Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_11Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_13Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_14bTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_14cTest.cs" />
@@ -267,6 +269,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_156bTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_156cTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_156Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_157Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_15bTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_15Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_170aTest.cs" />
@@ -276,6 +279,9 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_175bTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_175cTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_183Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_184aTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_184bTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_184cTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_1Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_2Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_3aTest.cs" />
@@ -291,14 +297,20 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_46bTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_46Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_4Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_5Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_6Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_7bTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_7Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_86Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_87bTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_87Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_88bTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_88Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_89Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_8Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_90bTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_90Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\selector\Css3Modsel_9Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\align\cell\Align_cell01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\align\div\Align_div01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\align\list\Align_list01.cs" />
