@@ -55,7 +55,6 @@ namespace iTextSharp.text.pdf {
     /**
      * @see PdfWriter
      */
-
     public class PdfAWriter : PdfWriter {
         public static String MimeTypePdf = "application/pdf";
         public static String MimeTypeOctetStream = "application/octet-stream";
@@ -220,13 +219,14 @@ namespace iTextSharp.text.pdf {
          * @param fileDisplay the actual file name stored in the pdf
          * @param mimeType mime type of the file
          * @param afRelationshipValue AFRelationship key value, @see AFRelationshipValue. If <CODE>null</CODE>, @see AFRelationshipValue.Unspecified will be added.
-         *
+         * @param fileParameter the optional extra file parameters such as the creation or modification date 
+         * @return the file specification
          * @throws IOException on error
          */
-        virtual public void AddFileAttachment(String description, byte[] fileStore, String file, String fileDisplay,
-            String mimeType, PdfName afRelationshipValue) {
+        virtual public PdfFileSpecification AddFileAttachment(String description, byte[] fileStore, String file, String fileDisplay,
+            String mimeType, PdfName afRelationshipValue, PdfDictionary fileParameter) {
             PdfFileSpecification pdfFileSpecification = PdfFileSpecification.FileEmbedded(this, file, fileDisplay,
-                fileStore, mimeType, null, PdfStream.BEST_COMPRESSION);
+                fileStore, mimeType, fileParameter, PdfStream.BEST_COMPRESSION);
 
             if (afRelationshipValue != null)
                 pdfFileSpecification.Put(PdfName.AFRELATIONSHIP, afRelationshipValue);
@@ -234,6 +234,25 @@ namespace iTextSharp.text.pdf {
                 pdfFileSpecification.Put(PdfName.AFRELATIONSHIP, AFRelationshipValue.Unspecified);
 
             AddFileAttachment(description, pdfFileSpecification);
+            return pdfFileSpecification;
+        }
+
+        /**
+         * Use this method to add a file attachment at the document level.
+         * @param description the file description
+         * @param fileStore an array with the file. If it's <CODE>null</CODE>
+         * the file will be read from the disk
+         * @param file the path to the file. It will only be used if
+         * <CODE>fileStore</CODE> is not <CODE>null</CODE>
+         * @param fileDisplay the actual file name stored in the pdf
+         * @param mimeType mime type of the file
+         * @param afRelationshipValue AFRelationship key value, @see AFRelationshipValue. If <CODE>null</CODE>, @see AFRelationshipValue.Unspecified will be added.
+         * @return the file specification
+         * @throws IOException on error
+         */
+        public virtual PdfFileSpecification AddFileAttachment(String description, byte[] fileStore, String file,
+            String fileDisplay, String mimeType, PdfName afRelationshipValue) {
+            return AddFileAttachment(description, fileStore, file, fileDisplay, mimeType, afRelationshipValue, null);
         }
 
         /**
