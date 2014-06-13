@@ -1,29 +1,34 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.RegularExpressions;
 
 namespace iTextSharp.tool.xml.css.parser {
     public class CssSelectorParser {
-        private const String selectorPattern =
-            "(\\*)|([_a-z][_a-z0-9-]*)|(\\.[_a-zA-Z][_a-zA-Z0-9-]*)|(#[_a-z][_a-zA-Z0-9-]*)|( )|(\\+)|(>)|(~)";
+        private const String selectorPatternString =
+            "(\\*)|([_a-zA-Z][\\w-]*)|(\\.[_a-zA-Z][\\w-]*)|(#[_a-z][\\w-]*)|(\\[[_a-zA-Z][\\w-]*(([~^$*|])?=((\"[\\w-]+\")|([\\w-]+)))?\\])|( )|(\\+)|(>)|(~)";
 
-        private const String selectorMatcher =
-            "^((\\*)|([_a-z][_a-z0-9-]*)|(\\.[_a-zA-Z][_a-zA-Z0-9-]*)|(#[_a-z][_a-zA-Z0-9-]*)|( )|(\\+)|(>)|(~))*$";
+        private const String selectorMatcherString = "^(" + selectorPatternString + ")*$";
+        private static readonly Regex selectorPattern = new Regex(selectorPatternString);
+        private static readonly Regex selectorMatcher = new Regex(selectorMatcherString);
 
         public static IList<ICssSelectorItem> CreateCssSelector(String selector) {
-            if (!Regex.IsMatch(selector, selectorMatcher))
+            if (!selectorMatcher.IsMatch(selector))
                 return null;
             IList<ICssSelectorItem> cssSelectorItems = new List<ICssSelectorItem>();
-            Match matcher = new Regex(selectorPattern).Match(selector);
+            Match itemMatcher = selectorPattern.Match(selector);
             bool isTagSelector = false;
-            while (matcher.Success) {
-                String selectorItem = matcher.Groups[0].Value;
+            while (itemMatcher.Success) {
+                String selectorItem = itemMatcher.Groups[0].Value;
                 switch (selectorItem[0]) {
                     case '#':
                         cssSelectorItems.Add(new CssIdSelector(selectorItem.Substring(1)));
                         break;
                     case '.':
                         cssSelectorItems.Add(new CssClassSelector(selectorItem.Substring(1)));
+                        break;
+                    case '[':
+                        cssSelectorItems.Add(new CssAttributeSelector(selectorItem));
                         break;
                     case ' ':
                     case '+':
@@ -50,7 +55,7 @@ namespace iTextSharp.tool.xml.css.parser {
                         cssSelectorItems.Add(new CssTagSelector(selectorItem));
                         break;
                 }
-                matcher = matcher.NextMatch();
+                itemMatcher = itemMatcher.NextMatch();
             }
 
             return cssSelectorItems;
@@ -123,6 +128,85 @@ namespace iTextSharp.tool.xml.css.parser {
 
             public override String ToString() {
                 return "#" + id;
+            }
+        }
+
+        internal class CssAttributeSelector : ICssSelectorItem {
+            private String property;
+            private char matchSymbol = (char) 0;
+            private String value = null;
+
+            internal CssAttributeSelector(String attrSelector) {
+                int indexOfEqual = attrSelector.IndexOf('=');
+                if (indexOfEqual == -1) {
+                    property = attrSelector.Substring(1, attrSelector.Length - 1 - 1);
+                } else {
+                    if (attrSelector[indexOfEqual + 1] == '"')
+                        value = attrSelector.Substring(indexOfEqual + 2, attrSelector.Length - 2 - (indexOfEqual + 2));
+                    else
+                        value = attrSelector.Substring(indexOfEqual + 1, attrSelector.Length - 1 - (indexOfEqual + 1));
+                    matchSymbol = attrSelector[indexOfEqual - 1];
+                    if ("~^$*|".IndexOf(matchSymbol) == -1) {
+                        matchSymbol = (char) 0;
+                        property = attrSelector.Substring(1, indexOfEqual - 1);
+                    } else {
+                        property = attrSelector.Substring(1, indexOfEqual - 1 - 1);
+                    }
+                }
+            }
+
+            public virtual char Separator {
+                get { return (char)0; }
+            }
+
+            public virtual bool Matches(Tag t) {
+                if (t == null)
+                    return false;
+                String attrValue = null;
+                t.Attributes.TryGetValue(property, out attrValue);
+                if (attrValue == null) return false;
+                if (value == null) return true;
+
+                switch (matchSymbol) {
+                    case '|':
+                        String pattern = String.Format("^{0}-?", value);
+                        if (new Regex(pattern).Match(attrValue).Success)
+                            return true;
+                        break;
+                    case '^':
+                        if (attrValue.StartsWith(value))
+                            return true;
+                        break;
+                    case '$':
+                        if (attrValue.EndsWith(value))
+                            return true;
+                        break;
+                    case '~':
+                        pattern = String.Format("(^{0}\\s+)|(\\s+{1}\\s+)|(\\s+{2}$)", value, value, value);
+                        if (new Regex(pattern).Match(attrValue).Success)
+                            return true;
+                        break;
+                    case (char) 0:
+                        if (attrValue.Equals(value))
+                            return true;
+                        break;
+                    case '*':
+                        if (attrValue.Contains(value))
+                            return true;
+                        break;
+                }
+                return false;
+            }
+
+            public override String ToString() {
+                StringBuilder buf = new StringBuilder();
+                buf.Append('[').Append(property);
+                if (matchSymbol != 0)
+                    buf.Append(matchSymbol);
+                if (value != null)
+                    buf.Append('=').Append('"').Append(value).Append('"');
+                buf.Append(']');
+                return buf.ToString();
             }
         }
 
