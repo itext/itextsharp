@@ -121,7 +121,7 @@ namespace iTextSharp.text.pdf {
         //for correct update of kids in StructTreeRootController
         internal bool updateRootKids = false;
 
-        static private PdfName annotId = new PdfName("iTextAnnotId");
+        static private readonly PdfName annotId = new PdfName("iTextAnnotId");
         static private int annotIdCnt = 0;
 
         protected bool mergeFields = false;
@@ -148,6 +148,7 @@ namespace iTextSharp.text.pdf {
             internal readonly int pageNumber;
             internal readonly PdfReader reader;
             internal readonly PdfArray mergedFields;
+            internal PdfIndirectReference annotsIndirectReference;
             internal ImportedPage(PdfReader reader, int pageNumber, bool keepFields) {
                 this.pageNumber = pageNumber;
                 this.reader = reader;
@@ -259,7 +260,7 @@ namespace iTextSharp.text.pdf {
                     newPage = new ImportedPage(reader, pageNumber, mergeFields);
                     importedPages.Add(newPage);
                 }
-                return GetImportedPage(reader, pageNumber);
+                return GetImportedPageImpl(reader, pageNumber);
             }
             if (structTreeController != null) {
                 if (reader != structTreeController.reader)
@@ -657,6 +658,11 @@ namespace iTextSharp.text.pdf {
             if (tagged)
                 structTreeRootReference = (PRIndirectReference)reader.Catalog.Get(PdfName.STRUCTTREEROOT);
             PdfDictionary newPage = CopyDictionary(thePage);
+            if (mergeFields) {
+                ImportedPage importedPage = importedPages[importedPages.Count - 1];
+                importedPage.annotsIndirectReference = body.PdfIndirectReference;
+                newPage.Put(PdfName.ANNOTS, importedPage.annotsIndirectReference);
+            }
             root.AddPage(newPage);
             iPage.SetCopied();
             ++currentPageNumber;
@@ -688,6 +694,67 @@ namespace iTextSharp.text.pdf {
             }
             reader.SelectPages(pagesToKeep, false);
             AddDocument(reader);
+        }
+
+        /**
+         * Copy document fields to a destination document.
+         * @param reader a document where fields are copied from.
+         * @throws DocumentException
+         * @throws IOException
+         */
+        public virtual void CopyDocumentFields(PdfReader reader) {
+            if (IsTagged()) {
+                throw new InvalidOperationException(
+                    MessageLocalization.GetComposedMessage("document.fields.cannot.be.copied.in.tagged.mode"));
+            }
+
+            if (!document.IsOpen()) {
+                throw new DocumentException(
+                    MessageLocalization.GetComposedMessage("the.document.is.not.open.yet.you.can.only.add.meta.information"));
+            }
+
+            if (indirectMap.ContainsKey(reader)) {
+                throw new ArgumentException(MessageLocalization.GetComposedMessage("document.1.has.already.been.added",
+                    reader.ToString()));
+            }
+
+            if (!reader.IsOpenedWithFullPermissions)
+                throw new BadPasswordException(MessageLocalization.GetComposedMessage("pdfreader.not.opened.with.owner.password"));
+
+            if (!mergeFields)
+                throw new ArgumentException(
+                    MessageLocalization.GetComposedMessage(
+                        "1.method.can.be.only.used.in.mergeFields.mode.please.use.addDocument", "copyDocumentFields"));
+
+            indirects = new Dictionary<RefKey, IndirectReferences>();
+            indirectMap[reader] = indirects;
+
+            reader.ConsolidateNamedDestinations();
+            reader.ShuffleSubsetNames();
+            for (int i = 1; i <= reader.NumberOfPages; i++) {
+                PdfDictionary page = reader.GetPageNRelease(i);
+                if (page != null && page.Contains(PdfName.ANNOTS)) {
+                    PdfArray annots = page.GetAsArray(PdfName.ANNOTS);
+                    if (annots != null && annots.Size > 0) {
+                        if (importedPages.Count < i)
+                            throw new DocumentException(
+                                MessageLocalization.GetComposedMessage("there.are.no.enough.imported.pages.for.copied.fields"));
+                        for (int j = 0; j < annots.Size; j++) {
+                            PdfDictionary annot = annots.GetAsDict(j);
+                            if (annot != null) {
+                                CopyDictionary(annot);
+                                annot.Put(annotId, new PdfNumber(++annotIdCnt));
+                            }
+                        }
+                    }
+                }
+            }
+            AcroFields acro = reader.AcroFields;
+            bool needapp = !acro.GenerateAppearances;
+            if (needapp)
+                needAppearances = true;
+            fields.Add(acro);
+            UpdateCalculationOrder(reader);
         }
 
         virtual public void AddDocument(PdfReader reader) {
@@ -1230,9 +1297,11 @@ namespace iTextSharp.text.pdf {
             for (int k = 0; k < fields.Count; ++k) {
                 AcroFields af = fields[k];
                 IDictionary<String, AcroFields.Item> fd = af.Fields;
-                AddPageOffsetToField(fd, pageOffset);
+                if (pageOffset < importedPages.Count && importedPages[pageOffset].reader == af.reader) {
+                    AddPageOffsetToField(fd, pageOffset);
+                    pageOffset += af.reader.NumberOfPages;
+                }
                 MergeWithMaster(fd);
-                pageOffset += af.reader.NumberOfPages;
             }
         }
 
@@ -1393,6 +1462,9 @@ namespace iTextSharp.text.pdf {
             if (co.Size > 0)
                 form.Put(PdfName.CO, co);
             acroForm = AddToBody(form).IndirectReference;
+            foreach (ImportedPage importedPage in importedPages) {
+                AddToBody(importedPage.mergedFields, importedPage.annotsIndirectReference);
+            }
         }
 
         private void UpdateReferences(PdfObject obj) {

@@ -52,14 +52,15 @@ namespace iTextSharp.text.pdf {
     * Allows you to add one (or more) existing PDF document(s)
     * and add the form(s) of (an)other PDF document(s).
     * @since 2.1.5
+    * @deprecated since 5.5.2
     */
     internal class PdfCopyFormsImp : PdfCopyFieldsImp {
 
         /**
-    * This sets up the output document 
-    * @param os The Outputstream pointing to the output document
-    * @throws DocumentException
-    */
+        * This sets up the output document 
+        * @param os The Outputstream pointing to the output document
+        * @throws DocumentException
+        */
         internal PdfCopyFormsImp(Stream os) : base(os) {
         }
         
