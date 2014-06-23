@@ -277,5 +277,33 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             Assert.NotNull(reader.GetPageN(1));
             reader.Close();
         }
+
+        [Test]
+        public virtual void CopyFields1Test() {
+            Document pdfDocument = new Document();
+            Directory.CreateDirectory("PdfCopyTest/");
+            PdfCopy copier = new PdfCopy(pdfDocument, new FileStream("PdfCopyTest/copyFields.pdf", FileMode.Create));
+            copier.SetMergeFields();
+
+            pdfDocument.Open();
+
+            PdfReader readerMain = new PdfReader(RESOURCES + "fieldsOn3-sPage.pdf");
+            PdfReader secondSourceReader = new PdfReader(RESOURCES + "fieldsOn2-sPage.pdf");
+            PdfReader thirdReader = new PdfReader(RESOURCES + "appearances1.pdf");
+
+            copier.AddDocument(readerMain);
+            copier.CopyDocumentFields(secondSourceReader);
+            copier.AddDocument(thirdReader);
+
+            copier.Close();
+            readerMain.Close();
+            secondSourceReader.Close();
+            thirdReader.Close();
+            CompareTool compareTool = new CompareTool("PdfCopyTest/copyFields.pdf", RESOURCES + "cmp_copyFields.pdf");
+            String errorMessage = compareTool.CompareByContent("PdfCopyTest/", "diff");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
     }
 }
