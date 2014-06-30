@@ -2612,6 +2612,45 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
+         * Adds a form XObject to this content.
+         *
+         * @param formXObj the form XObject
+         * @param name the name of form XObject in content stream
+         * @param a an element of the transformation matrix
+         * @param b an element of the transformation matrix
+         * @param c an element of the transformation matrix
+         * @param d an element of the transformation matrix
+         * @param e an element of the transformation matrix
+         * @param f an element of the transformation matrix
+         */
+        public virtual void AddFormXObj(PdfStream formXObj, PdfName name, float a, float b, float c, float d, float e, float f) {
+            CheckWriter();
+            PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_STREAM, formXObj);
+            PageResources prs = PageResources;
+            prs.AddXObject(name, writer.AddToBody(formXObj).IndirectReference);
+            PdfArtifact artifact = null;
+            if (IsTagged()) {
+                if (inText)
+                    EndText();
+                artifact = new PdfArtifact();
+                OpenMCBlock(artifact);
+            }
+
+            content.Append("q ");
+            content.Append(a).Append(' ');
+            content.Append(b).Append(' ');
+            content.Append(c).Append(' ');
+            content.Append(d).Append(' ');
+            content.Append(e).Append(' ');
+            content.Append(f).Append(" cm ");
+            content.Append(name.GetBytes()).Append(" Do Q").Append_i(separator);
+
+            if (IsTagged()) {
+                CloseMCBlock(artifact);
+            }
+        }
+
+        /**
          * adds a template with the given matrix.
          * @param template template to add
          * @param transform transform to apply to the template prior to adding it.
