@@ -321,6 +321,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\list\Decoration_list01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\table\Decoration_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\text\Decoration_text01.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\text\Decoration_text02.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\indent\cell\Indent_cell01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\indent\div\Indent_div01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\indent\list\Indent_list01.cs" />
@@ -401,6 +402,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\Del01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Del02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Del03Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\DelUnderlineTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Dfn01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Div01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Div02Test.cs" />

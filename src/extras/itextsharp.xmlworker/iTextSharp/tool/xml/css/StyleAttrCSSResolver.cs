@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.util;
+using System.util.collections;
 using iTextSharp.text.pdf.events;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.exceptions;
@@ -271,10 +273,37 @@ namespace iTextSharp.tool.xml.css {
             // overwrite properties (if value != inherit)
             foreach (KeyValuePair<String, String> e in tagCss) {
                 if (!Util.EqualsIgnoreCase(CSS.Value.INHERIT, e.Value)) {
-                    css[e.Key] = e.Value;
+                    if (e.Key.Equals(CSS.Property.TEXT_DECORATION)) {
+                        String oldValue = null;
+                        css.TryGetValue(e.Key, out oldValue);
+                        css[e.Key] = MergeTextDecorationRules(oldValue, e.Value);
+                    } else {
+                        css[e.Key] = e.Value;
+                    }
                 }
             }
+        }
 
+        private String MergeTextDecorationRules(String oldRule, String newRule) {
+            if (CSS.Value.NONE.Equals(newRule))
+                return newRule;
+
+            HashSet2<String> attrSet = new HashSet2<String>();
+            if (oldRule != null)
+                foreach (String attr in new Regex(@"\s+").Split(oldRule))
+                    attrSet.Add(attr);
+            if (newRule != null)
+                foreach (String attr in new Regex(@"\s+").Split(newRule))
+                    attrSet.Add(attr);
+            StringBuilder resultantStr = new StringBuilder();
+            foreach (String attr in attrSet) {
+                if (attr.Equals(CSS.Value.NONE) || attr.Equals(CSS.Value.INHERIT))
+                    continue;
+                if (resultantStr.Length > 0)
+                    resultantStr.Append(' ');
+                resultantStr.Append(attr);
+            }
+            return resultantStr.Length == 0 ? null : resultantStr.ToString();
         }
 
         /**

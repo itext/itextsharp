@@ -45,6 +45,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.util;
 using iTextSharp.text;
 using iTextSharp.text.html;
@@ -143,16 +144,15 @@ namespace iTextSharp.tool.xml.css.apply {
                     c.SetHorizontalScaling(100/float.Parse(xfaVertScale.Replace("%", "")));
                 }
             }
-            if (rules.TryGetValue(CSS.Property.TEXT_DECORATION, out value))
-            {
-                // Restriction? In html a underline and a line-through is possible on one piece of text. A Chunk can set an underline only once.
-                if (Util.EqualsIgnoreCase(CSS.Value.UNDERLINE, value))
-                {
-                    c.SetUnderline(0.75f, -size/8f);
-                }
-                if (Util.EqualsIgnoreCase(CSS.Value.LINE_THROUGH, value))
-                {
-                    c.SetUnderline(0.75f, size/4f);
+            if (rules.TryGetValue(CSS.Property.TEXT_DECORATION, out value)) {
+                String[] splitValues = new Regex(@"\s+").Split(value);
+                foreach (String curValue in splitValues) {
+                    if (Util.EqualsIgnoreCase(CSS.Value.UNDERLINE, curValue)) {
+                        c.SetUnderline(0.75f, -size/8f);
+                    }
+                    if (Util.EqualsIgnoreCase(CSS.Value.LINE_THROUGH, curValue)) {
+                        c.SetUnderline(0.75f, size/4f);
+                    }
                 }
             }
             if (rules.TryGetValue(CSS.Property.BACKGROUND_COLOR, out value))
