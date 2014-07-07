@@ -283,7 +283,12 @@ namespace iTextSharp.text.pdf {
             CMapToUnicode toUnicode = null;
             PdfObject enc = PdfReader.GetPdfObject(font.Get(PdfName.ENCODING));
             if (enc == null) {
-                FillEncoding(null);
+                PdfName baseFont = font.GetAsName(PdfName.BASEFONT);
+                if (BuiltinFonts14.ContainsKey(fontName)
+                    && (PdfName.SYMBOL.Equals(baseFont) || PdfName.ZAPFDINGBATS.Equals(baseFont))) {
+                    FillEncoding(baseFont);
+                } else
+                    FillEncoding(null);
                 toUnicode = ProcessToUnicode();
                 if (toUnicode != null) {
                     IDictionary<int, int> rm = toUnicode.CreateReverseMapping();
@@ -441,24 +446,29 @@ namespace iTextSharp.text.pdf {
         
         private void FillEncoding(PdfName encoding) {
             if (encoding == null && IsSymbolic()) {
-                for (int k = 0; k < 256; ++k)
-                {
+                for (int k = 0; k < 256; ++k) {
                     uni2byte[k] = k;
                     byte2uni[k] = k;
                 }
-            } else if (PdfName.MAC_ROMAN_ENCODING.Equals(encoding) || PdfName.WIN_ANSI_ENCODING.Equals(encoding)) {
+            } else if (PdfName.MAC_ROMAN_ENCODING.Equals(encoding) || PdfName.WIN_ANSI_ENCODING.Equals(encoding)
+                       || PdfName.SYMBOL.Equals(encoding) || PdfName.ZAPFDINGBATS.Equals(encoding)) {
                 byte[] b = new byte[256];
                 for (int k = 0; k < 256; ++k)
-                    b[k] = (byte)k;
+                    b[k] = (byte) k;
                 String enc = WINANSI;
                 if (PdfName.MAC_ROMAN_ENCODING.Equals(encoding))
                     enc = MACROMAN;
+                else if (PdfName.SYMBOL.Equals(encoding))
+                    enc = SYMBOL;
+                else if (PdfName.ZAPFDINGBATS.Equals(encoding))
+                    enc = ZAPFDINGBATS;
                 String cv = PdfEncodings.ConvertToString(b, enc);
                 char[] arr = cv.ToCharArray();
                 for (int k = 0; k < 256; ++k) {
                     uni2byte[arr[k]] = k;
                     byte2uni[k] = arr[k];
                 }
+                this.encoding = enc;
             }
             else {
                 for (int k = 0; k < 256; ++k) {
