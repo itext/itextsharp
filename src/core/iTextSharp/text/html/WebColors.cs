@@ -206,12 +206,15 @@ namespace iTextSharp.text.html {
             NAMES["yellow"] = new int[] { 0xff, 0xff, 0x00, 0xff };
             NAMES["yellowgreen"] = new int[] { 0x9a, 0xcd, 0x32, 0xff };
         }
-        
+
         /**
          * A web color string without the leading # will be 3 or 6 characters long
-         * and all those characters will be hex digits.
-         * NOTE: colStr must be all lower case or the current hex letter test will fail.
-         * @param colStr A non-null, lower case string that might describe an RGB color in hex.
+         * and all those characters will be hex digits. NOTE: colStr must be all
+         * lower case or the current hex letter test will fail.
+         * 
+         * @param colStr
+         *            A non-null, lower case string that might describe an RGB color
+         *            in hex.
          * @return Is this a web color hex string without the leading #?
          * @since 5.0.6
          */
@@ -229,56 +232,70 @@ namespace iTextSharp.text.html {
          * Gives you a BaseColor based on a name.
          *
          * @param name
-         *            a name such as black, violet, cornflowerblue or #RGB or #RRGGBB
-         *            or RGB or RRGGBB or rgb(R,G,B)
-         * @return the corresponding BaseColor object.  Never returns null.
+         *            a name such as black, violet, cornflowerblue or #RGB or
+         *            #RRGGBB or RGB or RRGGBB or rgb(R,G,B)
+         * @return the corresponding BaseColor object. Never returns null.
          * @throws IllegalArgumentException
          *             if the String isn't a know representation of a color.
          */
         public static BaseColor GetRGBColor(String name) {
-            int[] c = { 0, 0, 0, 255 };
-            name = name.ToLowerInvariant();
-            bool colorStrWithoutHash = MissingHashColorFormat(name); 
-            if (name.StartsWith("#") || colorStrWithoutHash) {
+            int[] color = {0, 0, 0, 255};
+            String colorName = name.ToLower();
+            bool colorStrWithoutHash = MissingHashColorFormat(colorName);
+            if (colorName.StartsWith("#") || colorStrWithoutHash) {
                 if (!colorStrWithoutHash) {
-                    name = name.Substring(1); // lop off the # to unify hex parsing.
+                    // lop off the # to unify hex parsing.
+                    colorName = colorName.Substring(1);
                 }
-                if (name.Length == 3) {
-			        String s = name.Substring(0, 1);
-				    c[0] = int.Parse(s+s, NumberStyles.HexNumber);
-				    String s2 = name.Substring(1, 1);
-                    c[1] = int.Parse(s2+s2, NumberStyles.HexNumber);
-				    String s3 = name.Substring(2);
-                    c[2] = int.Parse(s3+s3, NumberStyles.HexNumber);
-                    return new BaseColor(c[0], c[1], c[2], c[3]);
+                if (colorName.Length == 3) {
+                    String red = colorName.Substring(0, 1);
+                    color[0] = int.Parse(red + red, NumberStyles.HexNumber);
+                    String green = colorName.Substring(1, 1);
+                    color[1] = int.Parse(green + green, NumberStyles.HexNumber);
+                    String blue = colorName.Substring(2);
+                    color[2] = int.Parse(blue + blue, NumberStyles.HexNumber);
+                    return new BaseColor(color[0], color[1], color[2], color[3]);
                 }
-                if (name.Length == 6) {
-                    c[0] = int.Parse(name.Substring(0, 2), NumberStyles.HexNumber);
-                    c[1] = int.Parse(name.Substring(2, 2), NumberStyles.HexNumber);
-                    c[2] = int.Parse(name.Substring(4), NumberStyles.HexNumber);
-                    return new BaseColor(c[0], c[1], c[2], c[3]);
+                if (colorName.Length == 6) {
+                    color[0] = int.Parse(colorName.Substring(0, 2), NumberStyles.HexNumber);
+                    color[1] = int.Parse(colorName.Substring(2, 2), NumberStyles.HexNumber);
+                    color[2] = int.Parse(colorName.Substring(4), NumberStyles.HexNumber);
+                    return new BaseColor(color[0], color[1], color[2], color[3]);
                 }
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("unknown.color.format.must.be.rgb.or.rrggbb"));
+                throw new FormatException(
+                    MessageLocalization
+                        .GetComposedMessage("unknown.color.format.must.be.rgb.or.rrggbb"));
             }
-            else if (name.StartsWith("rgb(")) {
-                StringTokenizer tok = new StringTokenizer(name, "rgb(), \t\r\n\f");
+
+            if (colorName.StartsWith("rgb(")) {
+                String delim = "rgb(), \t\r\n\f";
+                StringTokenizer tok = new StringTokenizer(colorName, delim);
                 for (int k = 0; k < 3; ++k) {
-                    String v = tok.NextToken();
-                    if (v.EndsWith("%"))
-                        c[k] = int.Parse(v.Substring(0, v.Length - 1)) * 255 / 100;
-                    else
-                        c[k] = int.Parse(v);
-                    if (c[k] < 0)
-                        c[k] = 0;
-                    else if (c[k] > 255)
-                        c[k] = 255;
+                    if (tok.HasMoreTokens()) {
+                        color[k] = GetRGBChannelValue(tok.NextToken());
+                        color[k] = Math.Max(0, color[k]);
+                        color[k] = Math.Min(255, color[k]);
+                    }
                 }
-                return new BaseColor(c[0], c[1], c[2], c[3]);
+                return new BaseColor(color[0], color[1], color[2], color[3]);
             }
-            name = name.ToLower(CultureInfo.InvariantCulture);
-            if(!NAMES.ContainsKey(name))
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("color.not.found", new String[] { name })); c = NAMES[name];
-            return new BaseColor(c[0], c[1], c[2], c[3]);
+
+            if (!NAMES.ContainsKey(colorName)) {
+                throw new FormatException(
+                    MessageLocalization.GetComposedMessage("color.not.found",
+                        new String[] {colorName}));
+            }
+            color = NAMES[colorName];
+            return new BaseColor(color[0], color[1], color[2], color[3]);
+        }
+
+        private static int GetRGBChannelValue(String rgbChannel) {
+            if (rgbChannel.EndsWith("%")) {
+                return int.Parse(rgbChannel.Substring(0,
+                    rgbChannel.Length - 1))*255/100;
+            } else {
+                return int.Parse(rgbChannel);
+            }
         }
     }
 }

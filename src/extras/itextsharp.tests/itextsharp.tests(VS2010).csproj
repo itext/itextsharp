@@ -79,6 +79,7 @@
     <Compile Include="iTextSharp\text\error_messages\ErrorMessageExistenceTest.cs" />
     <Compile Include="iTextSharp\text\error_messages\ErrorMessageTest.cs" />
     <Compile Include="iTextSharp\text\error_messages\MessageLocalizationTest.cs" />
+    <Compile Include="iTextSharp\text\html\WebColorTest.cs" />
     <Compile Include="iTextSharp\text\io\ArrayRandomAccessSourceTest.cs" />
     <Compile Include="iTextSharp\text\io\GetBufferedRandomAccessSourceTest.cs" />
     <Compile Include="iTextSharp\text\io\GroupedRandomAccessSourceTest.cs" />
