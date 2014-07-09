@@ -84,6 +84,7 @@ namespace iTextSharp.tool.xml.html {
             factory.AddProcessor(HTML.Tag.P, paragraph);
             factory.AddProcessor(HTML.Tag.DT, paragraph);
             factory.AddProcessor(HTML.Tag.DD, paragraph);
+            factory.AddProcessor(HTML.Tag.BLOCKQUOTE, paragraph);
             factory.AddProcessor(HTML.Tag.BR, defaultpackage + "Break");
             factory.AddProcessor(HTML.Tag.SPAN, span);
             factory.AddProcessor(HTML.Tag.SMALL, span);

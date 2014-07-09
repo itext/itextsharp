@@ -138,6 +138,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Match005Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Match006Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Overflow02Test.cs" />
+	<Compile Include="iTextSharp\tool\xml\examples\css\div\PageOverflow01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Same002Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Shorthand001Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Shorthand002Test.cs" />
@@ -386,6 +387,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\B01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Big01Test.cs" />
 	<Compile Include="iTextSharp\tool\xml\examples\html\Big02Test.cs" />
+	<Compile Include="iTextSharp\tool\xml\examples\html\Blockquote01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Cite01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Code01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Del01Test.cs" />
