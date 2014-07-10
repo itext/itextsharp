@@ -262,7 +262,7 @@ namespace iTextSharp.text
                             try {
                                 Jp2_read_boxhdr();
                             }
-                            catch (ZeroBoxSiteException e) {
+                            catch (ZeroBoxSiteException) {
                                 //Probably we have reached the contiguous codestream box which is the last in jpeg2000 and has no length.
                             }
                         } while (JP2_COLR == boxType);

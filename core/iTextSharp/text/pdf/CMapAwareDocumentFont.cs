@@ -146,7 +146,7 @@ namespace iTextSharp.text.pdf {
                         return;
                     toUnicodeCmap = touni;
                     uni2cid = toUnicodeCmap.CreateReverseMapping();
-                } catch(IOException e) {
+                } catch(IOException) {
                     toUnicodeCmap = null;
                     uni2cid = null;
                 }
