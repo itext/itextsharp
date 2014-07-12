@@ -54,7 +54,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
             Document doc = new Document(PageSize.A4);
             PdfWriter pdfWriter = PdfWriter.GetInstance(doc, new FileStream(outPdf, FileMode.Create));
             doc.Open();
-            FileStream cssFileStream = new FileStream(RESOURCES + @"tool\xml\examples\sampleTest.css", FileMode.Open);
+            FileStream cssFileStream = new FileStream(RESOURCES + @"tool\xml\examples\sampleTest.css", FileMode.Open, FileAccess.Read, FileShare.Read);
             TransformHtml2Pdf(doc, pdfWriter, new SampleTestImageProvider(),
                 new XMLWorkerFontProvider(RESOURCES + @"tool\xml\examples\fonts\"), cssFileStream);
             cssFileStream.Close();

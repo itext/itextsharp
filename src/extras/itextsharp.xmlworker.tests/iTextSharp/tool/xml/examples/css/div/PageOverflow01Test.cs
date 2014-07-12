@@ -8,10 +8,8 @@ using iTextSharp.tool.xml.parser;
 using iTextSharp.tool.xml.pipeline.css;
 using iTextSharp.tool.xml.pipeline.end;
 using iTextSharp.tool.xml.pipeline.html;
-using NUnit.Framework;
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.div {
-    [Ignore]
     public class PageOverflow01Test : SampleTest {
         protected override string GetTestName() {
             return "pageOverflow01";
@@ -22,7 +20,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.div {
             PdfWriter pdfWriter = PdfWriter.GetInstance(doc, new FileStream(outPdf, FileMode.Create));
             doc.Open();
             TransformHtml2Pdf(doc, pdfWriter, new SampleTestImageProvider(), new XMLWorkerFontProvider(RESOURCES + @"tool\xml\examples\fonts"),
-                new FileStream(RESOURCES + @"tool\xml\examples\sampleTest.css", FileMode.Open));
+                new FileStream(RESOURCES + @"tool\xml\examples\sampleTest.css", FileMode.Open, FileAccess.Read, FileShare.Read));
             doc.Close();
         }
 
