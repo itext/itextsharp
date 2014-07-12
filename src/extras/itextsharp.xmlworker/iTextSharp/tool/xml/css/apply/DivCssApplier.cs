@@ -40,13 +40,14 @@ namespace iTextSharp.tool.xml.css.apply {
                 t.Attributes.TryGetValue(HTML.Attribute.WIDTH, out widthValue);
             }
             if (widthValue != null) {
+                float pageWidth = psc.PageSize.Width;
                 if (utils.IsNumericValue(widthValue) || utils.IsMetricValue(widthValue)) {
-				    div.Width = utils.ParsePxInCmMmPcToPt(widthValue);
+				    div.Width = Math.Min(pageWidth, utils.ParsePxInCmMmPcToPt(widthValue));
                 } else if (utils.IsRelativeValue(widthValue)) {
                     if (widthValue.Contains(CSS.Value.PERCENTAGE)) {
                         div.PercentageWidth = utils.ParseRelativeValue(widthValue, 1f);
                     } else {
-                        div.Width = utils.ParseRelativeValue(widthValue, fontSize);
+                        div.Width = Math.Min(pageWidth, utils.ParseRelativeValue(widthValue, fontSize));
                     }
                 }
             }

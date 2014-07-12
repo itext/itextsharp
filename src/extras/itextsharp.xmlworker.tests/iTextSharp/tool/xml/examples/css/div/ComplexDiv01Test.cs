@@ -43,6 +43,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.div {
                     new CssAppliersImpl(new XMLWorkerFontProvider(RESOURCES + @"\tool\xml\examples\fonts")));
             hpc.SetAcceptUnknown(true).AutoBookmark(true).SetTagFactory(Tags.GetHtmlTagProcessorFactory());
             hpc.SetImageProvider(new SampleTestImageProvider());
+            hpc.SetPageSize(doc.PageSize);
             HtmlPipeline htmlPipeline = new HtmlPipeline(hpc, new PdfWriterPipeline(doc, pdfWriter));
             IPipeline pipeline = new CssResolverPipeline(cssResolver, htmlPipeline);
             XMLWorker worker = new XMLWorker(pipeline, true);

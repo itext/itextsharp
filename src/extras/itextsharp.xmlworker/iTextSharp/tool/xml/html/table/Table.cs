@@ -158,7 +158,7 @@ namespace iTextSharp.tool.xml.html.table {
                         }
                         // sets a rowspan counter for current column (counter not
                         // needed for last column).
-                        if (cell.Rowspan > 1 && column != numberOfColumns - 1) {
+                        if (cell.Rowspan > 1 && column != numberOfColumns - 1 && column < rowspanValue.Length) {
                             rowspanValue[column] = cell.Rowspan - 1;
                         }
                         int colspan = cell.Colspan;
