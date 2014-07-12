@@ -192,7 +192,7 @@ namespace iTextSharp.text.pdf {
                     //Keep deprecated tab logic for backward compatibility...
                     float tabStopPosition = (float) tab[1];
                     bool newline = (bool) tab[2];
-                    if (newline && tabPosition < originalWidth - width)
+                    if (newline && tabStopPosition < originalWidth - width)
                         return chunk;
                     chunk.AdjustLeft(left);
                     width = originalWidth - tabStopPosition;

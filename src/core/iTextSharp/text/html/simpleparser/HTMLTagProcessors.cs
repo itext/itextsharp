@@ -50,8 +50,9 @@ namespace iTextSharp.text.html.simpleparser {
     /**
      * This class maps tags such as div and span to their corresponding
      * TagProcessor classes.
-     * @since 5.0.6
+     * @deprecated since 5.5.2
      */
+    [Obsolete]
     public class HTMLTagProcessors : Dictionary<String, IHTMLTagProcessor> {
 
         /**

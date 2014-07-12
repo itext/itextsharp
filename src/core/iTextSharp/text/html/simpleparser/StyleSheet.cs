@@ -46,11 +46,13 @@ using System.util;
  */
 
 namespace iTextSharp.text.html.simpleparser {
-   /**
-    * Old class to define styles for HTMLWorker.
-    * We've completely rewritten HTML to PDF functionality; see project XML Worker.
-    * XML Worker is able to parse CSS files and "style" attribute values.
-    */
+    /**
+     * Old class to define styles for HTMLWorker.
+     * We've completely rewritten HTML to PDF functionality; see project XML Worker.
+     * XML Worker is able to parse CSS files and "style" attribute values.
+     * @deprecated since 5.5.2
+     */
+    [Obsolete]
     public class StyleSheet {
         
         /**

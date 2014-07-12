@@ -1343,7 +1343,7 @@ namespace iTextSharp.text.pdf {
         /** A name */
         public static readonly PdfName OFF = new PdfName("OFF");
         /** A name */
-        public static readonly PdfName ON = new PdfName("on");
+        public static readonly PdfName ON = new PdfName("ON");
         /** A name */
         public static readonly PdfName ONECOLUMN = new PdfName("OneColumn");
         /** A name */

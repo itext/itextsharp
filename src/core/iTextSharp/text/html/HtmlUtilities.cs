@@ -49,12 +49,12 @@ using System.util;
  */
 
 namespace iTextSharp.text.html {
-
     /**
      * A class that contains some utilities to parse HTML attributes and content.
      * @since 5.0.6 (some of these methods used to be in the Markup class)
+     * @deprecated since 5.5.2
      */
-
+    [Obsolete]
     public class HtmlUtilities {
 
         /**

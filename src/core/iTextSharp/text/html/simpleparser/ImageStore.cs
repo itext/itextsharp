@@ -50,7 +50,9 @@ namespace iTextSharp.text.html.simpleparser {
 
     /**
      * @since 5.0.6
+     * @deprecated since 5.5.2
      */
+    [Obsolete]
     public class ImageStore : Dictionary<String, Image> {
     }
 }
