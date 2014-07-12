@@ -59,7 +59,9 @@ namespace iTextSharp.text.html {
     * http://en.wikipedia.org/wiki/Web_colors )
     * 
     * @author blowagie
+    * @deprecated since 5.5.2
     */
+    [Obsolete]
     public class WebColors : Dictionary<string,int[]> {
 
         public static WebColors NAMES = new WebColors();

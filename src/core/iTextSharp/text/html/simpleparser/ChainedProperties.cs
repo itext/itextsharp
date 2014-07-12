@@ -44,7 +44,12 @@ using System.Collections.Generic;
  */
 
 namespace iTextSharp.text.html.simpleparser {
-
+    /**
+     * Stores the hierarchy of tags along with the attributes of each tag.
+     * @since 5.0.6 renamed from ChainedProperties
+     * @deprecated since 5.5.2
+     */
+    [Obsolete]
     public class ChainedProperties {
     
         /**

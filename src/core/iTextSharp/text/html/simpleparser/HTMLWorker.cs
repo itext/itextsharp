@@ -54,11 +54,12 @@ using iTextSharp.text.xml.simpleparser;
  */
 
 namespace iTextSharp.text.html.simpleparser {
-   /**
-    * Old iText class that allows you to convert HTML to PDF.
-    * We've completely rewritten HTML to PDF conversion and we made it a separate project named XML Worker.
-    * @deprecated please switch to XML Worker instead (this is a separate project)
-    */
+    /**
+     * Old iText class that allows you to convert HTML to PDF.
+     * We've completely rewritten HTML to PDF conversion and we made it a separate project named XML Worker.
+     * @deprecated since 5.5.2; please switch to XML Worker instead (this is a separate project)
+     */
+    [Obsolete]
     public class HTMLWorker : ISimpleXMLDocHandler, IDocListener {
 
         private static readonly ILogger LOGGER = LoggerFactory.GetLogger(typeof(HTMLWorker));

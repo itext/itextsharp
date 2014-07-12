@@ -56,7 +56,9 @@ namespace iTextSharp.text.html.simpleparser {
      * that isn't available in PdfPCell.
      * @author  psoares
      * @since 5.0.6 (renamed)
+     * @deprecated since 5.5.2
      */
+    [Obsolete]
     public class CellWrapper : ITextElementArray {
     	
 	    /** The cell that is wrapped in this stub. */

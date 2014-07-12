@@ -58,7 +58,9 @@ namespace iTextSharp.text.html.simpleparser {
      * @author blowagie
      * @author psoares
      * @since 5.0.6 (renamed)
+     * @deprecated since 5.5.2
      */
+    [Obsolete]
     public class ElementFactory {
 
         /**
