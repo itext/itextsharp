@@ -123,58 +123,35 @@ namespace iTextSharp.text.pdf
             int begin = 0;
             int curNumber;
             while (true) {
-                curNumber = pages.GetAsNumber((begin + cur) * 2).IntValue;
+                curNumber = pages.GetAsNumber((begin + cur)*2).IntValue;
                 if (curNumber == arrayNumber) {
-                    PdfObject obj = pages[(begin + cur) * 2 + 1];
+                    PdfObject obj = pages[(begin + cur)*2 + 1];
                     PdfObject obj1 = obj;
                     while (obj.IsIndirect())
                         obj = PdfReader.GetPdfObjectRelease(obj);
                     //invalid Nums
                     if (obj.IsArray()) {
                         PdfObject firstNotNullKid = null;
-                        foreach (PdfObject numObj in (PdfArray)obj)
-                        {
-                            if (numObj.IsNull())
-                            {
+                        foreach (PdfObject numObj in (PdfArray) obj) {
+                            if (numObj.IsNull()) {
                                 if (nullReference == null)
                                     nullReference = writer.AddToBody(new PdfNull()).IndirectReference;
                                 structureTreeRoot.SetPageMark(newArrayNumber, nullReference);
-                            }
-                            else
-                            {
+                            } else {
                                 PdfObject res = writer.CopyObject(numObj, true, false);
                                 if (firstNotNullKid == null)
                                     firstNotNullKid = res;
-                                structureTreeRoot.SetPageMark(newArrayNumber, (PdfIndirectReference)res);
+                                structureTreeRoot.SetPageMark(newArrayNumber, (PdfIndirectReference) res);
                             }
                         }
-                        //Add kid to structureTreeRoot from structTreeRoot
-                        PdfObject structKids = structTreeRoot.Get(PdfName.K);
-                        if (structKids == null || (!structKids.IsArray() && !structKids.IsIndirect()))
-                        {
-                            // incorrect syntax of tags
-                            AddKid(structureTreeRoot, firstNotNullKid);
-                        }
-                        else
-                        {
-                            if (structKids.IsIndirect())
-                            {
-                                AddKid(structKids);
-                            }
-                            else
-                            { //structKids.isArray()
-                                foreach (PdfObject kid in (PdfArray)structKids)
-                                    AddKid(kid);
-                            }
-                        }
+                        AttachStructTreeRootKids(firstNotNullKid);
                     } else if (obj.IsDictionary()) {
-                        PdfDictionary k = GetKDict((PdfDictionary)obj);
+                        PdfDictionary k = GetKDict((PdfDictionary) obj);
                         if (k == null)
                             return ReturnType.NOTFOUND;
                         PdfObject res = writer.CopyObject(obj1, true, false);
-                        structureTreeRoot.SetAnnotationMark(newArrayNumber, (PdfIndirectReference)res);
-                    }
-                    else {
+                        structureTreeRoot.SetAnnotationMark(newArrayNumber, (PdfIndirectReference) res);
+                    } else {
                         return ReturnType.NOTFOUND;
                     }
                     return ReturnType.FOUND;
@@ -193,6 +170,25 @@ namespace iTextSharp.text.pdf
                 if (cur == 0)
                     return ReturnType.NOTFOUND;
                 cur /= 2;
+            }
+        }
+
+        /**
+         * Add kid to structureTreeRoot from structTreeRoot
+         */
+        protected internal virtual void AttachStructTreeRootKids(PdfObject firstNotNullKid) {
+            PdfObject structKids = structTreeRoot.Get(PdfName.K);
+            if (structKids == null || (!structKids.IsArray() && !structKids.IsIndirect())) {
+                // incorrect syntax of tags
+                AddKid(structureTreeRoot, firstNotNullKid);
+            } else {
+                if (structKids.IsIndirect()) {
+                    AddKid(structKids);
+                } else {
+                    //structKids.isArray()
+                    foreach (PdfObject kid in (PdfArray) structKids)
+                        AddKid(kid);
+                }
             }
         }
 

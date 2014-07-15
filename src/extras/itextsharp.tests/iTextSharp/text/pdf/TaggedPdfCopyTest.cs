@@ -45,6 +45,12 @@ namespace itextsharp.tests.text.pdf
         public const String SOURCE72 = RESOURCES + "pdf\\source72.pdf";
         public const String SOURCE73 = RESOURCES + "pdf\\source73.pdf";
         public const String DEV_805 = RESOURCES + "pdf\\dev-805.pdf";
+        public const String SOURCE_CF_11 = RESOURCES + "pdf/sourceCf11.pdf";
+        public const String SOURCE_CF_12 = RESOURCES + "pdf/sourceCf12.pdf";
+        public const String SOURCE_CF_13 = RESOURCES + "pdf/sourceCf13.pdf";
+        public const String SOURCE_CF_14 = RESOURCES + "pdf/sourceCf14.pdf";
+        public const String SOURCE_CF_15 = RESOURCES + "pdf/sourceCf15.pdf";
+        public const String SOURCE_CF_16 = RESOURCES + "pdf/sourceCf16.pdf";
 
 
         public const String OUT = TARGET + "pdf\\out";
@@ -851,6 +857,86 @@ namespace itextsharp.tests.text.pdf
             copy.FreeReader(reader);
             document.Close();
             reader.Close();
+        }
+
+        [Test]
+        public virtual void CopyFields1Test() {
+            InitializeDocument("CopyFields1");
+            copy.SetMergeFields();
+
+            PdfReader readerMain = new PdfReader(SOURCE_CF_14);
+            PdfReader secondSourceReader = new PdfReader(SOURCE_CF_15);
+            //PdfReader thirdReader = new PdfReader("./src/test/resources/com/itextpdf/text/pdf/PdfCopyTest/appearances1.pdf");
+
+            copy.AddDocument(readerMain);
+            copy.CopyDocumentFields(secondSourceReader);
+            //copy.addDocument(thirdReader);
+
+            copy.Close();
+            readerMain.Close();
+            secondSourceReader.Close();
+            //thirdReader.close();
+            /*CompareTool compareTool = new CompareTool("./target/com/itextpdf/test/pdf/PdfCopyTest/copyFields.pdf", "./src/test/resources/com/itextpdf/text/pdf/PdfCopyTest/cmp_copyFields.pdf");
+        String errorMessage = compareTool.compareByContent("./target/com/itextpdf/test/pdf/PdfCopyTest/", "diff");
+        if (errorMessage != null) {
+            junit.framework.Assert.fail(errorMessage);
+        }*/
+
+            CompareResults("CopyFields1");
+        }
+
+        [Test]
+        [Ignore]
+        virtual public void CopyFields2Test() {
+            InitializeDocument("copyFields2");
+            copy.SetMergeFields();
+
+            PdfReader readerMain = new PdfReader(SOURCE_CF_11);
+            PdfReader secondSourceReader = new PdfReader(SOURCE_CF_14);
+
+            copy.AddDocument(readerMain);
+            copy.CopyDocumentFields(secondSourceReader);
+
+            copy.Close();
+            readerMain.Close();
+            secondSourceReader.Close();
+        }
+
+        [Test]
+        [Ignore]
+        virtual public void CopyFields3Test() {
+            InitializeDocument("CopyFields3");
+            copy.SetMergeFields();
+
+            PdfReader readerMain = new PdfReader(SOURCE_CF_12);
+            PdfReader secondSourceReader = new PdfReader(SOURCE_CF_11);
+
+            copy.AddDocument(readerMain);
+            copy.CopyDocumentFields(secondSourceReader);
+
+            copy.Close();
+            readerMain.Close();
+            secondSourceReader.Close();
+
+            CompareResults("CopyFields3");
+        }
+
+        [Test]
+        virtual public void CopyFields4Test() {
+            InitializeDocument("CopyFields4");
+            copy.SetMergeFields();
+
+            PdfReader readerMain = new PdfReader(SOURCE_CF_13);
+            PdfReader secondSourceReader = new PdfReader(SOURCE_CF_16);
+
+            copy.AddDocument(readerMain);
+            copy.CopyDocumentFields(secondSourceReader);
+
+            copy.Close();
+            readerMain.Close();
+            secondSourceReader.Close();
+
+            CompareResults("CopyFields4");
         }
 
         [TearDown]

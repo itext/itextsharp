@@ -703,11 +703,6 @@ namespace iTextSharp.text.pdf {
          * @throws IOException
          */
         public virtual void CopyDocumentFields(PdfReader reader) {
-            if (IsTagged()) {
-                throw new InvalidOperationException(
-                    MessageLocalization.GetComposedMessage("document.fields.cannot.be.copied.in.tagged.mode"));
-            }
-
             if (!document.IsOpen()) {
                 throw new DocumentException(
                     MessageLocalization.GetComposedMessage("the.document.is.not.open.yet.you.can.only.add.meta.information"));
@@ -731,6 +726,18 @@ namespace iTextSharp.text.pdf {
 
             reader.ConsolidateNamedDestinations();
             reader.ShuffleSubsetNames();
+            if (tagged && PdfStructTreeController.CheckTagged(reader)) {
+                structTreeRootReference = (PRIndirectReference) reader.Catalog.Get(PdfName.STRUCTTREEROOT);
+                if (structTreeController != null) {
+                    if (reader != structTreeController.reader)
+                        structTreeController.SetReader(reader);
+                } else {
+                    structTreeController = new PdfStructTreeController(reader, this);
+                }
+            }
+
+            IList<PdfObject> annotationsToBeCopied = new List<PdfObject>();
+
             for (int i = 1; i <= reader.NumberOfPages; i++) {
                 PdfDictionary page = reader.GetPageNRelease(i);
                 if (page != null && page.Contains(PdfName.ANNOTS)) {
@@ -739,22 +746,32 @@ namespace iTextSharp.text.pdf {
                         if (importedPages.Count < i)
                             throw new DocumentException(
                                 MessageLocalization.GetComposedMessage("there.are.no.enough.imported.pages.for.copied.fields"));
+                        indirectMap[reader][new RefKey(reader.pageRefs.GetPageOrigRef(i))] = new IndirectReferences(pageReferences[i - 1]);
                         for (int j = 0; j < annots.Size; j++) {
                             PdfDictionary annot = annots.GetAsDict(j);
                             if (annot != null) {
-                                CopyDictionary(annot);
                                 annot.Put(annotId, new PdfNumber(++annotIdCnt));
+                                annotationsToBeCopied.Add(annots[j]);
                             }
                         }
                     }
                 }
             }
+
+            foreach (PdfObject annot in annotationsToBeCopied) {
+                CopyObject(annot);
+            }
+
+            if (tagged && structTreeController != null)
+                structTreeController.AttachStructTreeRootKids(null);
+
             AcroFields acro = reader.AcroFields;
             bool needapp = !acro.GenerateAppearances;
             if (needapp)
                 needAppearances = true;
             fields.Add(acro);
             UpdateCalculationOrder(reader);
+            structTreeRootReference = null;
         }
 
         virtual public void AddDocument(PdfReader reader) {
@@ -1718,6 +1735,8 @@ namespace iTextSharp.text.pdf {
         internal override PdfIndirectReference Add(PdfPage page, PdfContents contents) { return null; }
 
         public override void FreeReader(PdfReader reader) {
+            if (mergeFields)
+                throw new InvalidOperationException(MessageLocalization.GetComposedMessage("it.is.not.possible.to.free.reader.in.merge.fields.mode"));
             PdfArray array = reader.trailer.GetAsArray(PdfName.ID);
             if (array != null)
                 originalFileID = array.GetAsString(0).GetBytes();
