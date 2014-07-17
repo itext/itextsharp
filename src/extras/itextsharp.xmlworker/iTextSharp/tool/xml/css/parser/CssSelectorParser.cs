@@ -8,22 +8,20 @@ namespace iTextSharp.tool.xml.css.parser {
         private const String selectorPatternString =
             "(\\*)|([_a-zA-Z][\\w-]*)|(\\.[_a-zA-Z][\\w-]*)|(#[_a-z][\\w-]*)|(\\[[_a-zA-Z][\\w-]*(([~^$*|])?=((\"[\\w-]+\")|([\\w-]+)))?\\])|(:[\\w()-]*)|( )|(\\+)|(>)|(~)";
 
-        private const String selectorMatcherString = "^(" + selectorPatternString + ")*$";
         private static readonly Regex selectorPattern = new Regex(selectorPatternString);
-        private static readonly Regex selectorMatcher = new Regex(selectorMatcherString);
 
         private static readonly int a = 1 << 16;
         private static readonly int b = 1 << 8;
         private static readonly int c = 1;
 
         public static IList<ICssSelectorItem> CreateCssSelector(String selector) {
-            if (!selectorMatcher.IsMatch(selector))
-                return null;
             IList<ICssSelectorItem> cssSelectorItems = new List<ICssSelectorItem>();
             Match itemMatcher = selectorPattern.Match(selector);
             bool isTagSelector = false;
+            int crc = 0;
             while (itemMatcher.Success) {
                 String selectorItem = itemMatcher.Groups[0].Value;
+                crc += selectorItem.Length;
                 switch (selectorItem[0]) {
                     case '#':
                         cssSelectorItems.Add(new CssIdSelector(selectorItem.Substring(1)));
@@ -41,6 +39,7 @@ namespace iTextSharp.tool.xml.css.parser {
                     case '+':
                     case '>':
                     case '~':
+                        if (cssSelectorItems.Count == 0) return null;
                         ICssSelectorItem lastItem = cssSelectorItems[cssSelectorItems.Count - 1];
                         ICssSelectorItem currItem = new CssSeparatorSelector(selectorItem[0]);
                         if (lastItem is CssSeparatorSelector) {
@@ -65,6 +64,8 @@ namespace iTextSharp.tool.xml.css.parser {
                 itemMatcher = itemMatcher.NextMatch();
             }
 
+            if (selector.Length == 0 || selector.Length != crc)
+                return null;
             return cssSelectorItems;
         }
 
