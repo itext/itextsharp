@@ -33,6 +33,7 @@
 using System;
 using System.Collections.Generic;
 using System.util;
+using iTextSharp.tool.xml.util;
 
 namespace iTextSharp.tool.xml.css {
 /**
@@ -83,7 +84,6 @@ namespace iTextSharp.tool.xml.css {
          * <li>element+element ( and a spaced version element + element)</li>
          * </ul>
          */
-
         virtual public IDictionary<String, String> GetCSS(Tag t) {
             IDictionary<String, String> aggregatedProps = new Dictionary<String, String>();
             PopulateCss(t, aggregatedProps);
@@ -91,10 +91,16 @@ namespace iTextSharp.tool.xml.css {
         }
 
         public virtual void PopulateCss(Tag t, IDictionary<String, String> aggregatedProps) {
+            List<CssRule> rules = new List<CssRule>();
             foreach (ICssFile cssFile in this.files) {
-                foreach (IDictionary<String, String> declaration in cssFile.Get(t))
-                    PopulateOneCss(aggregatedProps, declaration);
+                rules.AddRange(cssFile.Get(t));
             }
+            // C#-specific code: use stable sort
+            SortUtil.InsertionSort(rules);
+            foreach (CssRule rule in rules)
+                PopulateOneCss(aggregatedProps, rule.NormalDeclarations);
+            foreach (CssRule rule in rules)
+                PopulateOneCss(aggregatedProps, rule.ImportantDeclarations);
         }
 
         virtual public void PopulateOneCss(IDictionary<String, String> aggregatedProps, IDictionary<String, String> cssDeclaration) {

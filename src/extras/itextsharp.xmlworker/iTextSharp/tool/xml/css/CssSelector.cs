@@ -87,7 +87,7 @@ namespace iTextSharp.tool.xml.css {
                             t = t.Parent;
                         }
                         return false;
-                    case '+':
+                    case '~':
                         if (!t.HasParent())
                             return false;
                         precededIndex = t.Parent.Children.IndexOf(t) - 1;
@@ -97,7 +97,7 @@ namespace iTextSharp.tool.xml.css {
                             precededIndex--;
                         }
                         return false;
-                    case '~':
+                    case '+':
                         if (!t.HasParent())
                             return false;
                         precededIndex = t.Parent.Children.IndexOf(t) - 1;
@@ -106,6 +106,13 @@ namespace iTextSharp.tool.xml.css {
                         return false;
                 }
             }
+        }
+
+        public virtual int CalculateSpecifity() {
+            int specifity = 0;
+            foreach (ICssSelectorItem item in this.selectorItems)
+                specifity += item.Specificity;
+            return specifity;
         }
 
         public override String ToString() {

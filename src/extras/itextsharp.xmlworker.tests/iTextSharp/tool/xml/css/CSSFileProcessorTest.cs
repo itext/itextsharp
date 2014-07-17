@@ -28,10 +28,10 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         virtual public void ParseCSS() {
             retriever.ProcessFromStream(File.OpenRead(RESOURCES + "/css/test.css"), proc);
             ICssFile file = proc.GetCss();
-            IList<IDictionary<String, String>> rules = file.Get(new Tag("body"));
+            IList<CssRule> rules = file.Get(new Tag("body"));
             Assert.IsTrue(rules.Count == 1);
-            Assert.IsTrue(rules[0].ContainsKey("margin"), "margin not found.");
-            Assert.AreEqual("20px", rules[0]["margin"], "Value for margin not correct.");
+            Assert.IsTrue(rules[0].NormalDeclarations.ContainsKey("margin"), "margin not found.");
+            Assert.AreEqual("20px", rules[0].NormalDeclarations["margin"], "Value for margin not correct.");
         }
     }
 }

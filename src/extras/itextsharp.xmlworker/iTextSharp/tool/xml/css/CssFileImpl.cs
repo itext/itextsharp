@@ -72,17 +72,20 @@ namespace iTextSharp.tool.xml.css {
          * @see com.itextpdf.tool.xml.css.CssFile#add(java.lang.String,
          * java.util.Map)
          */
-        virtual public void Add(String selector, IDictionary<String, String> props) {
+        virtual public bool Add(String selector, IDictionary<String, String> props) {
             IList<ICssSelectorItem> selectorItems = CssSelectorParser.CreateCssSelector(selector);
-            if (selectorItems != null)
+            if (selectorItems != null) {
                 rules.Add(new CssRule(selectorItems, props));
+                return true;
+            }
+            return false;
         }
 
-        public virtual IList<IDictionary<String, String>> Get(Tag t) {
-            IList<IDictionary<String, String>> result = new List<IDictionary<String, String>>();
+        public virtual IList<CssRule> Get(Tag t) {
+            IList<CssRule> result = new List<CssRule>();
             foreach (CssRule rule in rules) {
                 if (rule.Selector.Matches(t))
-                    result.Add(rule.Declarations);
+                    result.Add(rule);
             }
             return result;
         }

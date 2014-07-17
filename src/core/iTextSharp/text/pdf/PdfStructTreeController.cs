@@ -227,6 +227,7 @@ namespace iTextSharp.text.pdf
 
             if (writer.updateRootKids) {
                 AddKid(structureTreeRoot, newKid);
+                writer.StructureTreeRootKidsForReaderImported(reader);
             }
         }
 

@@ -6,11 +6,15 @@ using System.Text.RegularExpressions;
 namespace iTextSharp.tool.xml.css.parser {
     public class CssSelectorParser {
         private const String selectorPatternString =
-            "(\\*)|([_a-zA-Z][\\w-]*)|(\\.[_a-zA-Z][\\w-]*)|(#[_a-z][\\w-]*)|(\\[[_a-zA-Z][\\w-]*(([~^$*|])?=((\"[\\w-]+\")|([\\w-]+)))?\\])|( )|(\\+)|(>)|(~)";
+            "(\\*)|([_a-zA-Z][\\w-]*)|(\\.[_a-zA-Z][\\w-]*)|(#[_a-z][\\w-]*)|(\\[[_a-zA-Z][\\w-]*(([~^$*|])?=((\"[\\w-]+\")|([\\w-]+)))?\\])|(:[\\w()-]*)|( )|(\\+)|(>)|(~)";
 
         private const String selectorMatcherString = "^(" + selectorPatternString + ")*$";
         private static readonly Regex selectorPattern = new Regex(selectorPatternString);
         private static readonly Regex selectorMatcher = new Regex(selectorMatcherString);
+
+        private static readonly int a = 1 << 16;
+        private static readonly int b = 1 << 8;
+        private static readonly int c = 1;
 
         public static IList<ICssSelectorItem> CreateCssSelector(String selector) {
             if (!selectorMatcher.IsMatch(selector))
@@ -29,6 +33,9 @@ namespace iTextSharp.tool.xml.css.parser {
                         break;
                     case '[':
                         cssSelectorItems.Add(new CssAttributeSelector(selectorItem));
+                        break;
+                    case ':':
+                        cssSelectorItems.Add(new CssPseudoSelector(selectorItem));
                         break;
                     case ' ':
                     case '+':
@@ -63,17 +70,26 @@ namespace iTextSharp.tool.xml.css.parser {
 
         internal class CssTagSelector : ICssSelectorItem {
             private String t;
+            private bool isUniversal;
 
             internal CssTagSelector(String t) {
                 this.t = t;
+                isUniversal = this.t.Equals("*") ? true : false;
             }
 
             public virtual bool Matches(Tag t) {
-                return this.t.Equals("*") || this.t.Equals(t.Name);
+                return isUniversal || this.t.Equals(t.Name);
             }
 
             public virtual char Separator {
                 get { return (char) 0; }
+            }
+
+            public virtual int Specificity {
+                get {
+                    if (isUniversal) return 0;
+                    return CssSelectorParser.c;
+                }
             }
 
             public override String ToString() {
@@ -104,6 +120,10 @@ namespace iTextSharp.tool.xml.css.parser {
                 get { return (char) 0; }
             }
 
+            public virtual int Specificity {
+                get { return CssSelectorParser.b; }
+            }
+
             public override String ToString() {
                 return "." + className;
             }
@@ -124,6 +144,10 @@ namespace iTextSharp.tool.xml.css.parser {
 
             public virtual char Separator {
                 get { return (char)0; }
+            }
+
+            public virtual int Specificity {
+                get { return CssSelectorParser.a; }
             }
 
             public override String ToString() {
@@ -198,6 +222,10 @@ namespace iTextSharp.tool.xml.css.parser {
                 return false;
             }
 
+            public virtual int Specificity {
+                get { return CssSelectorParser.b; }
+            }
+
             public override String ToString() {
                 StringBuilder buf = new StringBuilder();
                 buf.Append('[').Append(property);
@@ -207,6 +235,30 @@ namespace iTextSharp.tool.xml.css.parser {
                     buf.Append('=').Append('"').Append(value).Append('"');
                 buf.Append(']');
                 return buf.ToString();
+            }
+        }
+
+        internal class CssPseudoSelector : ICssSelectorItem {
+            private String selector;
+
+            internal CssPseudoSelector(String selector) {
+                this.selector = selector;
+            }
+
+            public virtual bool Matches(Tag t) {
+                return false;
+            }
+
+            public virtual char Separator {
+                get { return (char)0; }
+            }
+
+            public virtual int Specificity {
+                get { return 0; }
+            }
+
+            public override string ToString() {
+                return selector;
             }
         }
 
@@ -223,6 +275,10 @@ namespace iTextSharp.tool.xml.css.parser {
 
             public virtual bool Matches(Tag t) {
                 return false;
+            }
+
+            public virtual int Specificity {
+                get { return 0; }
             }
 
             public override String ToString() {

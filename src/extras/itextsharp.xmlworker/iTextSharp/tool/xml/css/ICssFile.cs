@@ -58,7 +58,7 @@ namespace iTextSharp.tool.xml.css {
 	     * @param selector the CSS selector
 	     * @param props the properties for the given selector
 	     */
-	    void Add(String selector, IDictionary<String, String> props);
+	    bool Add(String selector, IDictionary<String, String> props);
 
         /**
          * Return CSS declarations for the given tag.
@@ -66,7 +66,7 @@ namespace iTextSharp.tool.xml.css {
          * @return a list of maps with all CSS properties for this tag or an empty list
          *         if none found.
          */
-        IList<IDictionary<String, String>> Get(Tag t);
+        IList<CssRule> Get(Tag t);
 
         /**
          * @return if this CSS file should never be thrown away. Used in CSSFilesImpl#clear
