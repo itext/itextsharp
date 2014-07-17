@@ -85,7 +85,10 @@ namespace iTextSharp.tool.xml.css.parser {
                         return;
                 }
                 foreach (String selector in selectors) {
-                    css.Add(selector, map);
+                    //if any separated selector has errors, all others become invalid.
+                    //in this case we just clear map, it is the easies way to support this.
+                    if (!css.Add(selector, map))
+                        map.Clear();
                 }
             } else {
                 css.Add(utils.StripDoubleSpacesAndTrim(currentSelector), map);

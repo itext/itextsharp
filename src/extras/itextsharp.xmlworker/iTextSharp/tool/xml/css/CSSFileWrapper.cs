@@ -68,11 +68,11 @@ namespace iTextSharp.tool.xml.css {
          * @see com.itextpdf.tool.xml.css.CssFile#add(java.lang.String,
          * java.util.Map)
          */
-        virtual public void Add(String selector, IDictionary<String, String> props) {
+        virtual public bool Add(String selector, IDictionary<String, String> props) {
             throw new NotSupportedException();
         }
 
-        public virtual IList<IDictionary<String, String>> Get(Tag t) {
+        public virtual IList<CssRule> Get(Tag t) {
             return css.Get(t);
         }
 

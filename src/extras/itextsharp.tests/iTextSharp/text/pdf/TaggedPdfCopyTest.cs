@@ -886,9 +886,8 @@ namespace itextsharp.tests.text.pdf
         }
 
         [Test]
-        [Ignore]
         virtual public void CopyFields2Test() {
-            InitializeDocument("copyFields2");
+            InitializeDocument("CopyFields2");
             copy.SetMergeFields();
 
             PdfReader readerMain = new PdfReader(SOURCE_CF_11);
@@ -900,10 +899,11 @@ namespace itextsharp.tests.text.pdf
             copy.Close();
             readerMain.Close();
             secondSourceReader.Close();
+
+            CompareResults("CopyFields2");
         }
 
         [Test]
-        [Ignore]
         virtual public void CopyFields3Test() {
             InitializeDocument("CopyFields3");
             copy.SetMergeFields();

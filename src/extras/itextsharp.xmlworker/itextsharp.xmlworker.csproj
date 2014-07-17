@@ -200,6 +200,7 @@
     <Compile Include="iTextSharp\tool\xml\Tag.cs" />
     <Compile Include="iTextSharp\tool\xml\TagUtils.cs" />
     <Compile Include="iTextSharp\tool\xml\util\ParentTreeUtil.cs" />
+	<Compile Include="iTextSharp\tool\xml\util\SortUtil.cs" />
     <Compile Include="iTextSharp\tool\xml\XMLWorker.cs" />
     <Compile Include="iTextSharp\tool\xml\XMLWorkerFontProvider.cs" />
     <Compile Include="iTextSharp\tool\xml\XMLWorkerHelper.cs" />

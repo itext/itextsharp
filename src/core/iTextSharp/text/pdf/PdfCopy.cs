@@ -144,6 +144,8 @@ namespace iTextSharp.text.pdf {
         private Dictionary<Object, Object> mergedRadioButtons = new Dictionary<object, object>();
         private Dictionary<Object, PdfObject> mergedTextFields = new Dictionary<Object, PdfObject>();
 
+        private HashSet2<PdfReader> readersWithImportedStructureTreeRootKids = new HashSet2<PdfReader>();
+
         protected class ImportedPage {
             internal readonly int pageNumber;
             internal readonly PdfReader reader;
@@ -330,17 +332,23 @@ namespace iTextSharp.text.pdf {
             ImportedPage lastPage = importedPages[importedPages.Count - 1];
             bool equalReader = lastPage.reader.Equals(newPage.reader);
             //reader exist, correct order;
-            if (equalReader && newPage.pageNumber > lastPage.pageNumber)
-                return 0;
+            if (equalReader && newPage.pageNumber > lastPage.pageNumber) {
+                if (readersWithImportedStructureTreeRootKids.Contains(newPage.reader))
+                    return 0;
+                else
+                    return 1;
+            }
             //reader exist, incorrect order;
             return -1;
         }
 
-        internal void FixStructureTreeRoot(HashSet2<RefKey> activeKeys, HashSet2<PdfName> activeClassMaps)
-        {
+        protected internal virtual void StructureTreeRootKidsForReaderImported(PdfReader reader) {
+            readersWithImportedStructureTreeRootKids.Add(reader);
+        }
+
+        internal virtual void FixStructureTreeRoot(HashSet2<RefKey> activeKeys, HashSet2<PdfName> activeClassMaps) {
             Dictionary<PdfName, PdfObject> newClassMap = new Dictionary<PdfName, PdfObject>(activeClassMaps.Count);
-            foreach (PdfName key in activeClassMaps)
-            {
+            foreach (PdfName key in activeClassMaps) {
                 PdfObject cm = structureTreeRoot.classes[key];
                 if (cm != null)
                     newClassMap[key] = cm;
@@ -350,8 +358,7 @@ namespace iTextSharp.text.pdf {
 
             PdfArray kids = structureTreeRoot.GetAsArray(PdfName.K);
             if (kids != null)
-                for (int i = 0; i < kids.Size; ++i)
-                {
+                for (int i = 0; i < kids.Size; ++i) {
                     PdfIndirectReference iref = (PdfIndirectReference) kids[i];
                     RefKey key = new RefKey(iref);
                     if (!activeKeys.Contains(key))
