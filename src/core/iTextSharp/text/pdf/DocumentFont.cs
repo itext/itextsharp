@@ -114,7 +114,14 @@ namespace iTextSharp.text.pdf {
             PdfName subType = font.GetAsName(PdfName.SUBTYPE);
             if (PdfName.TYPE1.Equals(subType) || PdfName.TRUETYPE.Equals(subType))
                 DoType1TT();
-            else {
+            else if (PdfName.TYPE3.Equals(subType)) {
+                // In case of a Type3 font, we just show the characters as is.
+                // Note that this doesn't always make sense:
+                // Type 3 fonts are user defined fonts where arbitrary characters are mapped to custom glyphs
+                // For instance: the character a could be mapped to an image of a dog, the character b to an image of a cat
+                // When parsing a document that shows a cat and a dog, you shouldn't expect seeing a cat and a dog. Instead you'll get b and a.
+                FillEncoding(null);
+            } else {
                 PdfName encodingName = font.GetAsName(PdfName.ENCODING);
                 if (encodingName != null){
                     String enc = PdfName.DecodeName(encodingName.ToString());
