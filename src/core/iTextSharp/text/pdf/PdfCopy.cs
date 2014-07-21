@@ -752,7 +752,7 @@ namespace iTextSharp.text.pdf {
                     if (annots != null && annots.Size > 0) {
                         if (importedPages.Count < i)
                             throw new DocumentException(
-                                MessageLocalization.GetComposedMessage("there.are.no.enough.imported.pages.for.copied.fields"));
+                                MessageLocalization.GetComposedMessage("there.are.not.enough.imported.pages.for.copied.fields"));
                         indirectMap[reader][new RefKey(reader.pageRefs.GetPageOrigRef(i))] = new IndirectReferences(pageReferences[i - 1]);
                         for (int j = 0; j < annots.Size; j++) {
                             PdfDictionary annot = annots.GetAsDict(j);
