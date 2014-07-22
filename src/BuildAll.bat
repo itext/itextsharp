@@ -47,23 +47,23 @@ if errorlevel 1 goto archiveFailed
 echo Building binaries...
 
 rem rebuild core Release
-call "%msbuildExec%" core\itextsharp.csproj /t:Rebuild /p:Configuration=Release > nul
+call "%msbuildExec%" core\itextsharp.csproj /t:Rebuild /p:Configuration=Release,Platform=AnyCPU > nul
 if errorlevel 1 goto buildFailed
 
 rem rebuild core Release_woDrawing
-call "%msbuildExec%" core\itextsharp.csproj /t:Rebuild /p:Configuration=Release_woDrawing > nul
+call "%msbuildExec%" core\itextsharp.csproj /t:Rebuild /p:Configuration=Release_woDrawing,Platform=AnyCPU > nul
 if errorlevel 1 goto buildFailed
 
 rem rebuild pdfa Release
-call "%msbuildExec%" extras\itextsharp.pdfa\itextsharp.pdfa.csproj /t:Rebuild /p:Configuration=Release > nul
+call "%msbuildExec%" extras\itextsharp.pdfa\itextsharp.pdfa.csproj /t:Rebuild /p:Configuration=Release,Platform=AnyCPU > nul
 if errorlevel 1 goto buildFailed
 
 rem rebuild xtra Release
-call "%msbuildExec%" extras\iTextSharp.xtra\iTextSharp.xtra.csproj /t:Rebuild /p:Configuration=Release > nul
+call "%msbuildExec%" extras\iTextSharp.xtra\iTextSharp.xtra.csproj /t:Rebuild /p:Configuration=Release,Platform=AnyCPU > nul
 if errorlevel 1 goto buildFailed
 
 rem rebuild xmlworker Release
-call "%msbuildExec%" extras\itextsharp.xmlworker\itextsharp.xmlworker.csproj /t:Rebuild /p:Configuration=Release > nul
+call "%msbuildExec%" extras\itextsharp.xmlworker\itextsharp.xmlworker.csproj /t:Rebuild /p:Configuration=Release,Platform=AnyCPU > nul
 if errorlevel 1 goto buildFailed
 
 
