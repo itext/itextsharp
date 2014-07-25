@@ -2,18 +2,19 @@ using System;
 using iTextSharp.text.pdf;
 
 /*
- * $Id: PdfTargetDictionary.cs 318 2012-02-27 22:46:07Z psoares33 $
+ * $Id: PdfTargetDictionary.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -77,7 +78,7 @@ namespace iTextSharp.text.pdf.collection {
         * you need to specify the name that was used to attach the document.
         * @param   name    the name in the EmbeddedFiles name tree
         */
-        public String EmbeddedFileName {
+        virtual public String EmbeddedFileName {
             set {
                 Put(PdfName.N, new PdfString(value, null));
             }
@@ -89,7 +90,7 @@ namespace iTextSharp.text.pdf.collection {
         * Once you have specified the page, you still need to specify the attachment using another method.
         * @param name  the named destination referring to the page with the file attachment.
         */
-        public String FileAttachmentPagename {
+        virtual public String FileAttachmentPagename {
             set {
                 Put(PdfName.P, new PdfString(value, null));
             }
@@ -101,7 +102,7 @@ namespace iTextSharp.text.pdf.collection {
         * Once you have specified the page, you still need to specify the attachment using another method.
         * @param page  the page number of the page with the file attachment.
         */
-        public int FileAttachmentPage {
+        virtual public int FileAttachmentPage {
             set {
                 Put(PdfName.P, new PdfNumber(value));
             }
@@ -113,7 +114,7 @@ namespace iTextSharp.text.pdf.collection {
         * and then specify the name of the attachment added to this page (or use setFileAttachmentIndex).
         * @param name      the name of the attachment
         */
-        public String FileAttachmentName {
+        virtual public String FileAttachmentName {
             set {
                 Put(PdfName.A, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
@@ -125,7 +126,7 @@ namespace iTextSharp.text.pdf.collection {
         * and then specify the index of the attachment added to this page (or use setFileAttachmentName).
         * @param name      the name of the attachment
         */
-        public int FileAttachmentIndex {
+        virtual public int FileAttachmentIndex {
             set {
                 Put(PdfName.A, new PdfNumber(value));
             }
@@ -136,7 +137,7 @@ namespace iTextSharp.text.pdf.collection {
         * add the next target in the sequence.
         * @param nested    the next target in the sequence
         */
-        public PdfTargetDictionary AdditionalPath {
+        virtual public PdfTargetDictionary AdditionalPath {
             set {
                 Put(PdfName.T, value);
             }

@@ -1,18 +1,19 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using iTextSharp.text.pdf.interfaces;
 /*
  * $Id: PdfArtifact.java 5830 2013-05-31 09:29:15Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Alexander Chingarev, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -52,36 +53,40 @@ namespace iTextSharp.text.pdf
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
         protected AccessibleElementId id = new AccessibleElementId();
 
-        public PdfObject GetAccessibleAttribute(PdfName key) {
+        virtual public PdfObject GetAccessibleAttribute(PdfName key) {
             if (accessibleAttributes != null)
                 return accessibleAttributes[key];
             else
                 return null;
         }
 
-        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+        virtual public void SetAccessibleAttribute(PdfName key, PdfObject value) {
             if (accessibleAttributes == null)
                 accessibleAttributes = new Dictionary<PdfName, PdfObject>();
             accessibleAttributes[key] = value;
         }
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+        virtual public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             return accessibleAttributes;
         }
 
-        public PdfName Role
+        virtual public PdfName Role
         {
             get { return role; }
             set { role = value; }
         }
 
-        public AccessibleElementId ID
+        virtual public AccessibleElementId ID
         {
             get { return id; }
             set { id = value; }
         }
 
-        public PdfString Type {
+        public virtual bool IsInline {
+            get { return true; }
+        }
+
+        virtual public PdfString Type {
             get {
                 if (accessibleAttributes == null)
                     return null;
@@ -94,7 +99,7 @@ namespace iTextSharp.text.pdf
             }
         }
 
-        public PdfArray BBox {
+        virtual public PdfArray BBox {
             get {
                 if (accessibleAttributes == null)
                     return null;
@@ -107,7 +112,7 @@ namespace iTextSharp.text.pdf
             }
         }
 
-        public PdfArray Attached {
+        virtual public PdfArray Attached {
             get {
                 if(accessibleAttributes == null)
                     return null;

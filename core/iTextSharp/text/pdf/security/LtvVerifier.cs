@@ -2,15 +2,16 @@
  * $Id: LtvVerifier.java 5472 2012-10-07 17:08:45Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -97,7 +98,7 @@ namespace iTextSharp.text.pdf.security {
 	     * Sets an extra verifier.
 	     * @param verifier the verifier to set
 	     */
-	    public CertificateVerifier Verifier {
+	    virtual public CertificateVerifier Verifier {
             set { verifier = value; }
 	    }
     	
@@ -105,14 +106,14 @@ namespace iTextSharp.text.pdf.security {
 	     * Sets the certificate option.
 	     * @param	option	Either CertificateOption.SIGNING_CERTIFICATE (default) or CertificateOption.WHOLE_CHAIN
 	     */
-	    public LtvVerification.CertificateOption CertificateOption {
+	    virtual public LtvVerification.CertificateOption CertificateOption {
             set { option = value; }
 	    }
     	
 	    /**
 	     * Set the verifyRootCertificate to false if you can't verify the root certificate.
 	     */
-	    public bool VerifyRootCertificate {
+	    virtual public bool VerifyRootCertificate {
             set { verifyRootCertificate = value; }
 	    }
     	
@@ -122,7 +123,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @return a PdfPKCS7 object
 	     * @throws GeneralSecurityException
 	     */
-	    protected PdfPKCS7 CoversWholeDocument() {
+	    virtual protected PdfPKCS7 CoversWholeDocument() {
 		    PdfPKCS7 pkcs7 = fields.VerifySignature(signatureName);
 		    if (fields.SignatureCoversWholeDocument(signatureName))
 			    LOGGER.Info("The timestamp covers whole document.");
@@ -139,7 +140,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @throws IOException
 	     * @throws GeneralSecurityException
 	     */
-	    public List<VerificationOK> Verify(List<VerificationOK> result) {
+	    virtual public List<VerificationOK> Verify(List<VerificationOK> result) {
 		    if (result == null)
 			    result = new List<VerificationOK>();
 		    while (pkcs7 != null) {
@@ -153,7 +154,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @throws GeneralSecurityException
 	     * @throws IOException
 	     */
-	    public List<VerificationOK> VerifySignature() {
+	    virtual public List<VerificationOK> VerifySignature() {
             LOGGER.Info("Verifying signature.");
             List<VerificationOK> result = new List<VerificationOK>();
 		    // Get the certificate chain
@@ -206,7 +207,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @param chain
 	     * @throws GeneralSecurityException
 	     */
-	    public void VerifyChain(X509Certificate[] chain) {
+	    virtual public void VerifyChain(X509Certificate[] chain) {
 		    // Loop over the certificates in the chain
 		    for (int i = 0; i < chain.Length; ++i) {
 			    X509Certificate cert = chain[i];
@@ -250,7 +251,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @throws IOException
 	     * @throws GeneralSecurityException 
 	     */
-	    public void SwitchToPreviousRevision() {
+	    virtual public void SwitchToPreviousRevision() {
 		    LOGGER.Info("Switching to previous revision.");
 		    latestRevision = false;
 		    dss = reader.Catalog.GetAsDict(PdfName.DSS);
@@ -281,7 +282,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @throws GeneralSecurityException
 	     * @throws IOException
 	     */
-	    public List<X509Crl> GetCRLsFromDSS() {
+	    virtual public List<X509Crl> GetCRLsFromDSS() {
 		    List<X509Crl> crls = new List<X509Crl>();
 		    if (dss == null)
 			    return crls;
@@ -303,7 +304,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @throws IOException
 	     * @throws GeneralSecurityException
 	     */
-	    public List<BasicOcspResp> GetOCSPResponsesFromDSS() {
+	    virtual public List<BasicOcspResp> GetOCSPResponsesFromDSS() {
 		    List<BasicOcspResp> ocsps = new List<BasicOcspResp>();
 		    if (dss == null)
 			    return ocsps;

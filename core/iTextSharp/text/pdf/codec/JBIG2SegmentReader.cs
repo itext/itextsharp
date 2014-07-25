@@ -4,18 +4,19 @@ using System.Collections.Generic;
 using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 /*
- * $Id: JBIG2SegmentReader.cs 318 2012-02-27 22:46:07Z psoares33 $
+ * $Id: JBIG2SegmentReader.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -120,7 +121,7 @@ namespace iTextSharp.text.pdf.codec {
                 this.segmentNumber = segment_number;
             }
 
-            public int CompareTo(JBIG2Segment s) {
+            virtual public int CompareTo(JBIG2Segment s) {
                 return this.segmentNumber - s.segmentNumber;
             }
         }
@@ -146,7 +147,7 @@ namespace iTextSharp.text.pdf.codec {
             * @return  a byte array
             * @throws IOException
             */
-            public byte[] GetData(bool for_embedding) {
+            virtual public byte[] GetData(bool for_embedding) {
                 MemoryStream os = new MemoryStream();
                 foreach (int sn in segs.Keys) {
                     JBIG2Segment s = segs[sn];
@@ -180,7 +181,7 @@ namespace iTextSharp.text.pdf.codec {
                 os.Close();
                 return os.ToArray();
             }
-            public void AddSegment(JBIG2Segment s) {
+            virtual public void AddSegment(JBIG2Segment s) {
                 segs[s.segmentNumber] = s;
             }
         }
@@ -195,7 +196,7 @@ namespace iTextSharp.text.pdf.codec {
             return bc;
         }
 
-        public void Read() {
+        virtual public void Read() {
             if (this.read) {
                 throw new InvalidOperationException(MessageLocalization.GetComposedMessage("already.attempted.a.read.on.this.jbig2.file"));
             }
@@ -387,23 +388,23 @@ namespace iTextSharp.text.pdf.codec {
             }
         }
 
-        public int NumberOfPages() {
+        virtual public int NumberOfPages() {
             return pages.Count;
         }
 
-        public int GetPageHeight(int i) {
+        virtual public int GetPageHeight(int i) {
             return pages[i].pageBitmapHeight;
         }
 
-        public int GetPageWidth(int i) {
+        virtual public int GetPageWidth(int i) {
             return pages[i].pageBitmapWidth;
         }
 
-        public JBIG2Page GetPage(int page) {
+        virtual public JBIG2Page GetPage(int page) {
             return pages[page];
         }
 
-        public byte[] GetGlobal(bool for_embedding) {
+        virtual public byte[] GetGlobal(bool for_embedding) {
             MemoryStream os = new MemoryStream();
             try {
                 foreach (JBIG2Segment s in globals.Keys) {

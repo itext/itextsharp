@@ -5,19 +5,20 @@ using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: MetaDo.cs 622 2013-10-04 12:47:40Z pavel-alay $
+ * $Id: MetaDo.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -140,7 +141,7 @@ namespace iTextSharp.text.pdf.codec.wmf
         this.meta = new InputMeta(meta);
     }
     
-    public void ReadAll() {
+    virtual public void ReadAll() {
         if (meta.ReadInt() != unchecked((int)0x9AC6CDD7)) {
             throw new DocumentException(MessageLocalization.GetComposedMessage("not.a.placeable.windows.metafile"));
         }
@@ -566,7 +567,7 @@ namespace iTextSharp.text.pdf.codec.wmf
         state.Cleanup(cb);
     }
     
-    public void OutputText(int x, int y, int flag, int x1, int y1, int x2, int y2, string text) {
+    virtual public void OutputText(int x, int y, int flag, int x1, int y1, int x2, int y2, string text) {
         MetaFont font = state.CurrentFont;
         float refX = state.TransformX(x);
         float refY = state.TransformY(y);
@@ -618,7 +619,7 @@ namespace iTextSharp.text.pdf.codec.wmf
         cb.RestoreState();
     }
     
-    public bool IsNullStrokeFill(bool isRectangle) {
+    virtual public bool IsNullStrokeFill(bool isRectangle) {
         MetaPen pen = state.CurrentPen;
         MetaBrush brush = state.CurrentBrush;
         bool noPen = (pen.Style == MetaPen.PS_NULL);
@@ -634,7 +635,7 @@ namespace iTextSharp.text.pdf.codec.wmf
         return result;
     }
 
-    public void StrokeAndFill(){
+    virtual public void StrokeAndFill(){
         MetaPen pen = state.CurrentPen;
         MetaBrush brush = state.CurrentBrush;
         int penStyle = pen.Style;

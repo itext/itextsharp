@@ -5,13 +5,13 @@ using iTextSharp.tool.xml;
 /*
  * $Id: DummyTagProcessor.java 101 2011-05-25 14:01:06Z redlab_b $
  *
- * This file is part of the iText (R) project. Copyright (c) 1998-2012 1T3XT BVBA Authors: Balder Van Camp, Emiel
+ * This file is part of the iText (R) project. Copyright (c) 1998-2014 iText Group NV Authors: Balder Van Camp, Emiel
  * Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License version 3 as published by the Free Software Foundation with the addition of the following permission
  * added to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
- * 1T3XT, 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * ITEXT GROUP, ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
@@ -46,28 +46,28 @@ namespace iTextSharp.tool.xml.html {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.ITagProcessor#startElement(com.itextpdf.tool.xml.Tag)
          */
-        public IList<IElement> StartElement(IWorkerContext ctx, Tag tag) {
+        virtual public IList<IElement> StartElement(IWorkerContext ctx, Tag tag) {
             return new List<IElement>(0);
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.ITagProcessor#content(com.itextpdf.tool.xml.Tag, java.lang.String)
          */
-        public IList<IElement> Content(IWorkerContext ctx, Tag tag, String content) {
+        virtual public IList<IElement> Content(IWorkerContext ctx, Tag tag, String content) {
             return new List<IElement>(0);
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.ITagProcessor#endElement(com.itextpdf.tool.xml.Tag, java.util.List)
          */
-        public IList<IElement> EndElement(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
+        virtual public IList<IElement> EndElement(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
             return new List<IElement>(0);
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.ITagProcessor#isStackOwner()
          */
-        public bool IsStackOwner() {
+        virtual public bool IsStackOwner() {
             return false;
         }
     }

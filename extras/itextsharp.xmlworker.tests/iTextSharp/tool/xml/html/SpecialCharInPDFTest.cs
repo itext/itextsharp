@@ -35,12 +35,12 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         private CssUtils utils = CssUtils.GetInstance();
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             Directory.CreateDirectory(TARGET);
         }
 
         [Test]
-        public void ParseXfaOnlyXML() {
+        virtual public void ParseXfaOnlyXML() {
             StreamReader bis = File.OpenText(RESOURCE_TEST_PATH + SNIPPETS + TEST + "snippet.html");
             Document doc = new Document(PageSize.A4);
             float margin = utils.ParseRelativeValue("10%", PageSize.A4.Width);

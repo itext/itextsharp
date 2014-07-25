@@ -9,24 +9,26 @@ using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.collection;
 using iTextSharp.text.xml.xmp;
+using iTextSharp.xmp.options;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
 using iTextSharp.xmp;
 
 /*
- * $Id: PdfWriter.cs 662 2013-11-28 13:06:15Z asubach $
+ * $Id: PdfWriter.cs 700 2014-02-12 14:06:42Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -152,7 +154,7 @@ namespace iTextSharp.text.pdf {
                     this.generation = generation;
                 }
                 
-                public int Refnum {
+                virtual public int Refnum {
                     get {
                         return refnum;
                     }
@@ -163,7 +165,7 @@ namespace iTextSharp.text.pdf {
                 * @param os
                 * @throws IOException
                 */
-                public void ToPdf(Stream os) {
+                virtual public void ToPdf(Stream os) {
                     String s1 = offset.ToString().PadLeft(10, '0');
                     String s2 = generation.ToString().PadLeft(5, '0');
                     ByteBuffer buf = new ByteBuffer(40);
@@ -182,7 +184,7 @@ namespace iTextSharp.text.pdf {
                 * @param os
                 * @throws IOException
                 */
-                public void ToPdf(int midSize, Stream os) {
+                virtual public void ToPdf(int midSize, Stream os) {
                     os.WriteByte((byte)type);
                     while (--midSize >= 0)
                         os.WriteByte((byte)((offset >> (8 * midSize)) & 0xff));
@@ -193,7 +195,7 @@ namespace iTextSharp.text.pdf {
                 /**
                 * @see java.lang.Comparable#compareTo(java.lang.Object)
                 */
-                public int CompareTo(object o) {
+                virtual public int CompareTo(object o) {
                     PdfCrossReference other = (PdfCrossReference)o;
                     return (refnum < other.refnum ? -1 : (refnum==other.refnum ? 0 : 1));
                 }
@@ -253,7 +255,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             
-            protected PdfWriter.PdfBody.PdfCrossReference AddToObjStm(PdfObject obj, int nObj) {
+            virtual protected PdfWriter.PdfBody.PdfCrossReference AddToObjStm(PdfObject obj, int nObj) {
                 if (numObj >= OBJSINSTREAM)
                     FlushObjStm();
                 if (index == null) {
@@ -322,7 +324,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
             
-            internal protected int IndirectReferenceNumber {
+            virtual internal protected int IndirectReferenceNumber {
                 get {
                     int n = refnum++;
                     xrefs[new PdfCrossReference(n, 0, GENERATION_MAX)] = null;
@@ -380,7 +382,7 @@ namespace iTextSharp.text.pdf {
                 }
             }
 
-            protected internal void Write(PdfIndirectObject indirect, int refNumber, int generation) {
+            virtual protected internal void Write(PdfIndirectObject indirect, int refNumber, int generation) {
                 PdfCrossReference pxref = new PdfCrossReference(refNumber, position, generation);
                 xrefs.Remove(pxref);
                 xrefs[pxref] = null;
@@ -388,7 +390,7 @@ namespace iTextSharp.text.pdf {
                 position = writer.Os.Counter;
             }
 
-            protected internal void Write(PdfIndirectObject indirect, int refNumber)
+            virtual protected internal void Write(PdfIndirectObject indirect, int refNumber)
             {
                 PdfCrossReference pxref = new PdfCrossReference(refNumber, position);
                 xrefs.Remove(pxref);
@@ -403,7 +405,7 @@ namespace iTextSharp.text.pdf {
             * @return       an offset
             */
             
-            public long Offset {
+            virtual public long Offset {
                 get {
                     return position;
                 }
@@ -415,7 +417,7 @@ namespace iTextSharp.text.pdf {
             * @return   a number of objects
             */
             
-            public int Size {
+            virtual public int Size {
                 get {
                     return Math.Max(((PdfCrossReference)xrefs.GetMaxKey()).Refnum + 1, refnum);
                 }
@@ -673,7 +675,7 @@ namespace iTextSharp.text.pdf {
         * change it directly (add keys and values to the info dictionary).
         * @return the info dictionary
         */    
-        public PdfDictionary Info {
+        virtual public PdfDictionary Info {
             get {
                 return ((PdfDocument)document).Info;
             }
@@ -686,7 +688,7 @@ namespace iTextSharp.text.pdf {
         *   terminated. 
         * @return The current vertical page position.
         */
-        public float GetVerticalPosition(bool ensureNewLine) {
+        virtual public float GetVerticalPosition(bool ensureNewLine) {
             return pdf.GetVerticalPosition(ensureNewLine);
         }
 
@@ -697,7 +699,7 @@ namespace iTextSharp.text.pdf {
        * @since   2.1.6
        * @throws  DocumentException       if you try setting the leading after the document was opened.
        */
-        public float InitialLeading {
+        virtual public float InitialLeading {
             set {
                 if (open)
                     throw new DocumentException(MessageLocalization.GetComposedMessage("you.can.t.set.the.initial.leading.if.the.document.is.already.open"));
@@ -774,7 +776,7 @@ namespace iTextSharp.text.pdf {
 
         protected ICC_Profile colorProfile;
 
-        public ICC_Profile ColorProfile {
+        virtual public ICC_Profile ColorProfile {
             get { return colorProfile; }
         }
 
@@ -874,13 +876,13 @@ namespace iTextSharp.text.pdf {
         * will be created in the future.
         * @return the <CODE>PdfIndirectReference</CODE>
         */
-        public PdfIndirectReference PdfIndirectReference {
+        virtual public PdfIndirectReference PdfIndirectReference {
             get {
                 return body.PdfIndirectReference;
             }
         }
         
-        internal protected int IndirectReferenceNumber {
+        virtual internal protected int IndirectReferenceNumber {
             get {
                 return body.IndirectReferenceNumber;
             }
@@ -890,7 +892,7 @@ namespace iTextSharp.text.pdf {
         * Returns the outputStreamCounter.
         * @return the outputStreamCounter
         */
-        public OutputStreamCounter Os {
+        virtual public OutputStreamCounter Os {
             get {
                 return os;
             }
@@ -919,7 +921,7 @@ namespace iTextSharp.text.pdf {
             return catalog;
         }
 
-        protected void BuildStructTreeRootForTagged(PdfDictionary catalog)
+        virtual protected void BuildStructTreeRootForTagged(PdfDictionary catalog)
         {
             if (tagged) {
                 this.StructureTreeRoot.BuildTree();
@@ -939,7 +941,7 @@ namespace iTextSharp.text.pdf {
         * Sets extra keys to the catalog.
         * @return the catalog to change
         */    
-        public PdfDictionary ExtraCatalog {
+        virtual public PdfDictionary ExtraCatalog {
             get {
                 if (extraCatalog == null)
                     extraCatalog = new PdfDictionary();
@@ -978,7 +980,7 @@ namespace iTextSharp.text.pdf {
          * Adds an additional entry for the page dictionary.
          * @since 5.1.0
          */
-        public void AddPageDictEntry(PdfName key, PdfObject obj) {
+        virtual public void AddPageDictEntry(PdfName key, PdfObject obj) {
             pageDictEntries.Put(key, obj);
         }
         
@@ -986,7 +988,7 @@ namespace iTextSharp.text.pdf {
          * Gets the additional pageDictEntries.
          * @since 5.1.0
          */
-        public PdfDictionary PageDictEntries {
+        virtual public PdfDictionary PageDictEntries {
             get {
                 return pageDictEntries;
             }
@@ -996,7 +998,7 @@ namespace iTextSharp.text.pdf {
          * Resets the additional pageDictEntries.
          * @since 5.1.0
          */
-        public void ResetPageDictEntries() {
+        virtual public void ResetPageDictEntries() {
             pageDictEntries = new PdfDictionary();
         }
 
@@ -1005,7 +1007,7 @@ namespace iTextSharp.text.pdf {
         * (every leave is attached directly to the root).
         * Use this method to allow page reordering with method reorderPages.
         */    
-        public void SetLinearPageMode() {
+        virtual public void SetLinearPageMode() {
             root.SetLinearMode(null);
         }
 
@@ -1018,7 +1020,7 @@ namespace iTextSharp.text.pdf {
         * same size as the number of pages.
         * @throws DocumentException if all the pages are not present in the array
         */
-        public int ReorderPages(int[] order) {
+        virtual public int ReorderPages(int[] order) {
             return root.ReorderPages(order);
         }
 
@@ -1059,7 +1061,7 @@ namespace iTextSharp.text.pdf {
         * if you have (re)set the page number previously.
         * @return a page number
         */
-        public int PageNumber {
+        virtual public int PageNumber {
             get {
                 return pdf.PageNumber;
             }
@@ -1082,7 +1084,7 @@ namespace iTextSharp.text.pdf {
          * @param viewport an array consisting of Viewport dictionaries.
          * @since 5.1.0
          */
-        public void SetPageViewport(PdfArray vp) {
+        virtual public void SetPageViewport(PdfArray vp) {
             AddPageDictEntry(PdfName.VP, vp);
         }
         
@@ -1093,7 +1095,7 @@ namespace iTextSharp.text.pdf {
         * or PdfName.W
         * @since	2.1.5
         */
-        public PdfName Tabs {
+        virtual public PdfName Tabs {
             get{
                 return tabs;
             }
@@ -1381,7 +1383,7 @@ namespace iTextSharp.text.pdf {
         * and construct bookmarks.
         * @return the root outline
         */
-        public PdfOutline RootOutline {
+        virtual public PdfOutline RootOutline {
             get {
                 return directContent.RootOutline;
             }
@@ -1394,13 +1396,13 @@ namespace iTextSharp.text.pdf {
         * {@link SimpleBookmark}.
         * @param outlines the bookmarks or <CODE>null</CODE> to remove any
         */    
-        public IList<Dictionary<String, Object>> Outlines {
+        virtual public IList<Dictionary<String, Object>> Outlines {
             set {
                 newBookmarks = value;
             }
         }
 
-        protected internal void WriteOutlines(PdfDictionary catalog, bool namedAsNames) {
+        virtual protected internal void WriteOutlines(PdfDictionary catalog, bool namedAsNames) {
             if (newBookmarks == null || newBookmarks.Count == 0)
                 return;
             PdfDictionary top = new PdfDictionary();
@@ -1455,14 +1457,14 @@ namespace iTextSharp.text.pdf {
         /**
         * @see com.lowagie.text.pdf.interfaces.PdfVersion#setAtLeastPdfVersion(char)
         */
-        public void SetAtLeastPdfVersion(char version) {
+        virtual public void SetAtLeastPdfVersion(char version) {
             pdf_version.SetAtLeastPdfVersion(version);
         }
 
         /**
         * @see com.lowagie.text.pdf.interfaces.PdfVersion#setPdfVersion(com.lowagie.text.pdf.PdfName)
         */
-        public void SetPdfVersion(PdfName version) {
+        virtual public void SetPdfVersion(PdfName version) {
             pdf_version.SetPdfVersion(version);
         }
 
@@ -1470,7 +1472,7 @@ namespace iTextSharp.text.pdf {
          * @see com.lowagie.text.pdf.interfaces.PdfVersion#addDeveloperExtension(com.lowagie.text.pdf.PdfDeveloperExtension)
          * @since   2.1.6
          */
-        public void AddDeveloperExtension(PdfDeveloperExtension de) {
+        virtual public void AddDeveloperExtension(PdfDeveloperExtension de) {
             pdf_version.AddDeveloperExtension(de);
         }
     
@@ -1589,7 +1591,7 @@ namespace iTextSharp.text.pdf {
         *          use this method in combination with PdfCopy).
         * @since    iText 5.0
         */
-        public void AddNamedDestinations(IDictionary<String, String> map, int page_offset) {
+        virtual public void AddNamedDestinations(IDictionary<String, String> map, int page_offset) {
             int page;
             String dest;
             PdfDestination destination;
@@ -1608,7 +1610,7 @@ namespace iTextSharp.text.pdf {
         * @param    dest    an explicit destination
         * @since    iText 5.0
         */
-        public void AddNamedDestination(String name, int page, PdfDestination dest) {
+        virtual public void AddNamedDestination(String name, int page, PdfDestination dest) {
             dest.AddPage(GetPageReference(page));
             pdf.LocalDestination(name, dest);
         }
@@ -1647,7 +1649,7 @@ namespace iTextSharp.text.pdf {
         * @param name The name of the JS Action in the name tree
         * @param js The JavaScript action
         */
-        public void AddJavaScript(String name, PdfAction js) {
+        virtual public void AddJavaScript(String name, PdfAction js) {
             pdf.AddJavaScript(name, js);
         }
          
@@ -1660,7 +1662,7 @@ namespace iTextSharp.text.pdf {
         * Acrobat JavaScript engine does not support unicode,
         * so this may or may not work for you
         */
-        public void AddJavaScript(String name, String code, bool unicode) {
+        virtual public void AddJavaScript(String name, String code, bool unicode) {
             AddJavaScript(name, PdfAction.JavaScript(code, this, unicode));
         }
          
@@ -1670,7 +1672,7 @@ namespace iTextSharp.text.pdf {
         * @param name The name of the JS Action in the name tree
         * @param code the JavaScript code
         */
-        public void AddJavaScript(String name, String code) {
+        virtual public void AddJavaScript(String name, String code) {
             AddJavaScript(name, code, false);
         }
          
@@ -1698,7 +1700,7 @@ namespace iTextSharp.text.pdf {
         /** Adds a file attachment at the document level.
         * @param fs the file specification
         */    
-        public void AddFileAttachment(PdfFileSpecification fs) {
+        virtual public void AddFileAttachment(PdfFileSpecification fs) {
             pdf.AddFileAttachment(null, fs);
         }
 
@@ -1757,7 +1759,7 @@ namespace iTextSharp.text.pdf {
         * Sets the Collection dictionary.
         * @param collection a dictionary of type PdfCollection
         */
-        public PdfCollection Collection {
+        virtual public PdfCollection Collection {
             set {
                 SetAtLeastPdfVersion(VERSION_1_7);
                 pdf.Collection = value;
@@ -1775,7 +1777,7 @@ namespace iTextSharp.text.pdf {
         * @return the <CODE>PdfAcroForm</CODE>
         */
         
-        public PdfAcroForm AcroForm {
+        virtual public PdfAcroForm AcroForm {
             get {
                 return pdf.AcroForm;
             }
@@ -1811,7 +1813,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public void SetLanguage(string language) {
+        virtual public void SetLanguage(string language) {
             pdf.SetLanguage(language);
         }
 
@@ -1824,7 +1826,7 @@ namespace iTextSharp.text.pdf {
         * Sets XMP Metadata.
         * @param xmpMetadata The xmpMetadata to set.
         */
-        public byte[] XmpMetadata {
+        virtual public byte[] XmpMetadata {
             set {
                 this.xmpMetadata = value;
             }
@@ -1837,7 +1839,7 @@ namespace iTextSharp.text.pdf {
         * Use this method to set the XMP Metadata for each page.
         * @param xmpMetadata The xmpMetadata to set.
         */
-        public byte[] PageXmpMetadata {
+        virtual public byte[] PageXmpMetadata {
             set {
                 pdf.XmpMetadata = value;
             }
@@ -1845,7 +1847,7 @@ namespace iTextSharp.text.pdf {
 
         protected XmpWriter xmpWriter = null;
 
-        public XmpWriter XmpWriter {
+        virtual public XmpWriter XmpWriter {
             get { return xmpWriter; }
         }
 
@@ -1857,6 +1859,10 @@ namespace iTextSharp.text.pdf {
         virtual public void CreateXmpMetadata() {
             try {
                 xmpWriter = CreateXmpWriter(null, pdf.Info);
+                if (IsTagged()) {
+                    xmpWriter.XmpMeta.SetPropertyInteger(XmpConst.NS_PDFUA_ID, PdfProperties.PART, 1,
+                        new PropertyOptions(PropertyOptions.SEPARATE_NODE));
+                }
                 xmpMetadata = null;
             } catch (IOException) {}
         }
@@ -1881,7 +1887,7 @@ namespace iTextSharp.text.pdf {
         * must be called before opening the document.
         * @param pdfxConformance the conformance level
         */    
-        public int PDFXConformance {
+        virtual public int PDFXConformance {
             set {
                 if (!(pdfIsoConformance is PdfXConformanceImp))
 			        return;
@@ -1914,7 +1920,7 @@ namespace iTextSharp.text.pdf {
 
 
         /** @see com.lowagie.text.pdf.interfaces.PdfXConformance#isPdfX() */
-        public bool IsPdfX() {
+        virtual public bool IsPdfX() {
             if (pdfIsoConformance is PdfXConformanceImp)
         	    return ((IPdfXConformance)pdfIsoConformance).IsPdfX();
 		    else
@@ -2134,7 +2140,7 @@ namespace iTextSharp.text.pdf {
         * Optionally DO_NOT_ENCRYPT_METADATA can be ored to output the metadata in cleartext
         * @throws DocumentException if the document is already open
         */
-        public void SetEncryption(byte[] userPassword, byte[] ownerPassword, int permissions, int encryptionType) {
+        virtual public void SetEncryption(byte[] userPassword, byte[] ownerPassword, int permissions, int encryptionType) {
             if (pdf.IsOpen())
                 throw new DocumentException(MessageLocalization.GetComposedMessage("encryption.can.only.be.added.before.opening.the.document"));
             crypto = new PdfEncryption();
@@ -2155,7 +2161,7 @@ namespace iTextSharp.text.pdf {
         * @param encryptionType the type of encryption. It can be one of STANDARD_ENCRYPTION_40, STANDARD_ENCRYPTION_128 or ENCRYPTION_AES128.
         * @throws DocumentException if the document is already open
         */
-        public void SetEncryption(X509Certificate[] certs, int[] permissions, int encryptionType) {
+        virtual public void SetEncryption(X509Certificate[] certs, int[] permissions, int encryptionType) {
             if (pdf.IsOpen())
                 throw new DocumentException(MessageLocalization.GetComposedMessage("encryption.can.only.be.added.before.opening.the.document"));
             crypto = new PdfEncryption();
@@ -2180,7 +2186,7 @@ namespace iTextSharp.text.pdf {
         * @param strength128Bits <code>true</code> for 128 bit key length, <code>false</code> for 40 bit key length
         * @throws DocumentException if the document is already open
         */
-        public void SetEncryption(byte[] userPassword, byte[] ownerPassword, int permissions, bool strength128Bits) {
+        virtual public void SetEncryption(byte[] userPassword, byte[] ownerPassword, int permissions, bool strength128Bits) {
             SetEncryption(userPassword, ownerPassword, permissions, strength128Bits ? STANDARD_ENCRYPTION_128 : STANDARD_ENCRYPTION_40);
         }
         
@@ -2197,7 +2203,7 @@ namespace iTextSharp.text.pdf {
         * @param permissions the user permissions
         * @throws DocumentException if the document is already open
         */
-        public void SetEncryption(bool strength, String userPassword, String ownerPassword, int permissions) {
+        virtual public void SetEncryption(bool strength, String userPassword, String ownerPassword, int permissions) {
             SetEncryption(GetISOBytes(userPassword), GetISOBytes(ownerPassword), permissions, strength);
         }
         
@@ -2215,7 +2221,7 @@ namespace iTextSharp.text.pdf {
         * @param permissions the user permissions
         * @throws DocumentException if the document is already open
         */
-        public void SetEncryption(int encryptionType, String userPassword, String ownerPassword, int permissions) {
+        virtual public void SetEncryption(int encryptionType, String userPassword, String ownerPassword, int permissions) {
             SetEncryption(GetISOBytes(userPassword), GetISOBytes(ownerPassword), permissions, encryptionType);
         }
         
@@ -2230,7 +2236,7 @@ namespace iTextSharp.text.pdf {
         * Gets the 1.5 compression status.
         * @return <code>true</code> if the 1.5 compression is on
         */
-        public bool FullCompression {
+        virtual public bool FullCompression {
             get {
                 return this.fullCompression;
             }
@@ -2240,7 +2246,7 @@ namespace iTextSharp.text.pdf {
         * Sets the document's compression to the new 1.5 mode with object streams and xref
         * streams. It can be set at any time but once set it can't be unset.
         */
-        public void SetFullCompression() {
+        virtual public void SetFullCompression() {
             if (open)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("you.can.t.set.the.full.compression.if.the.document.is.already.open"));
             this.fullCompression = true;
@@ -2258,7 +2264,7 @@ namespace iTextSharp.text.pdf {
         * @param compressionLevel a value between 0 (best speed) and 9 (best compression)
         * @since   2.1.3
         */
-        public int CompressionLevel {
+        virtual public int CompressionLevel {
             set {
                 if (value < PdfStream.NO_COMPRESSION || value > PdfStream.BEST_COMPRESSION)
                     compressionLevel = PdfStream.DEFAULT_COMPRESSION;
@@ -2356,7 +2362,7 @@ namespace iTextSharp.text.pdf {
         * @param tp the template to release
         * @throws IOException on error
         */    
-        public void ReleaseTemplate(PdfTemplate tp) {
+        virtual public void ReleaseTemplate(PdfTemplate tp) {
             PdfIndirectReference refi = tp.IndirectReference;
             Object[] objs;
             formXObjects.TryGetValue(refi, out objs);
@@ -2426,7 +2432,7 @@ namespace iTextSharp.text.pdf {
         * and an idea of the current size is needed.
         * @return the approximate size without fonts or templates
         */    
-		public long CurrentDocumentSize {
+		virtual public long CurrentDocumentSize {
             get {
                 return body.Offset + body.Size * 20 + 0x48;
             }
@@ -2544,24 +2550,54 @@ namespace iTextSharp.text.pdf {
         }
         
     //  [F12] tagged PDF
+
+        public const int markAll = 0x00;
+        public const int markInlineElementsOnly = 0x01;
         
-        protected bool tagged = false;        
+        protected bool tagged = false;
+        protected int taggingMode = markInlineElementsOnly;
         protected PdfStructureTreeRoot structureTreeRoot;
 
+
         /**
-        * Mark this document for tagging. It must be called before open.
-        */    
-        public void SetTagged() {
+         * Mark this document for tagging. It must be called before open.
+         */
+        public virtual void SetTagged() {
+            SetTagged(markInlineElementsOnly);
+        }
+
+        public virtual void SetTagged(int taggingMode) {
             if (open)
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("tagging.must.be.set.before.opening.the.document"));
+                throw new ArgumentException(
+                    MessageLocalization.GetComposedMessage("tagging.must.be.set.before.opening.the.document"));
             tagged = true;
+            this.taggingMode = taggingMode;
+        }
+
+        public virtual bool NeedToBeMarkedInContent(IAccessibleElement element) {
+            if ((taggingMode & markInlineElementsOnly) != 0) {
+                if (element.IsInline || PdfName.ARTIFACT.Equals(element.Role)) {
+                    return true;
+                }
+                return false;
+            }
+            return true;
+        }
+
+        public virtual void CheckElementRole(IAccessibleElement element, IAccessibleElement parent) {
+            if (parent != null && (parent.Role == null || PdfName.ARTIFACT.Equals(parent.Role)))
+                element.Role = null;
+            else if ((taggingMode & markInlineElementsOnly) != 0) {
+                if (element.IsInline && element.Role == null && (parent == null || !parent.IsInline))
+                    throw new ArgumentException(MessageLocalization.GetComposedMessage("inline.elements.with.role.null.are.not.allowed"));
+            }
         }
         
         /**
         * Check if the document is marked for tagging.
         * @return <CODE>true</CODE> if the document is marked for tagging
         */    
-        public bool IsTagged() {
+        virtual public bool IsTagged() {
             return tagged;
         }
 
@@ -2580,7 +2616,7 @@ namespace iTextSharp.text.pdf {
         * Gets the structure tree root. If the document is not marked for tagging it will return <CODE>null</CODE>.
         * @return the structure tree root
         */    
-        public PdfStructureTreeRoot StructureTreeRoot {
+        virtual public PdfStructureTreeRoot StructureTreeRoot {
             get {
                 if (tagged && structureTreeRoot == null)
                     structureTreeRoot = new PdfStructureTreeRoot(this);
@@ -2602,7 +2638,7 @@ namespace iTextSharp.text.pdf {
         * at that time.
         * @return the Optional Content Properties Dictionary
         */    
-        public PdfOCProperties OCProperties {
+        virtual public PdfOCProperties OCProperties {
             get {
                 FillOCProperties(true);
                 return vOCProperties;
@@ -2616,7 +2652,7 @@ namespace iTextSharp.text.pdf {
         * ON, all others must be turned OFF.
         * @param group the radio group
         */    
-        public void AddOCGRadioGroup(List<PdfLayer> group) {
+        virtual public void AddOCGRadioGroup(List<PdfLayer> group) {
             PdfArray ar = new PdfArray();
             for (int k = 0; k < group.Count; ++k) {
                 PdfLayer layer = group[k];
@@ -2636,7 +2672,7 @@ namespace iTextSharp.text.pdf {
         * @param layer the layer that needs to be added to the array of locked OCGs
         * @since   2.1.2
         */    
-        public void LockLayer(PdfLayer layer) {
+        virtual public void LockLayer(PdfLayer layer) {
             OCGLocked.Add(layer.Ref);
         }
         
@@ -2680,7 +2716,7 @@ namespace iTextSharp.text.pdf {
             arras.Add(asa);
         }
         
-        protected void FillOCProperties(bool erase) {
+        virtual protected void FillOCProperties(bool erase) {
             if (vOCProperties == null)
                 vOCProperties = new PdfOCProperties();
             if (erase) {
@@ -2760,7 +2796,7 @@ namespace iTextSharp.text.pdf {
         * Gives the size of the media box.
         * @return a Rectangle
         */
-        public Rectangle PageSize {
+        virtual public Rectangle PageSize {
             get {
                 return pdf.PageSize;
             }
@@ -2782,7 +2818,7 @@ namespace iTextSharp.text.pdf {
         * @param boxName the box size
         * @param size the size
         */    
-        public void SetBoxSize(String boxName, Rectangle size) {
+        virtual public void SetBoxSize(String boxName, Rectangle size) {
             pdf.SetBoxSize(boxName, size);
         }
         
@@ -2790,7 +2826,7 @@ namespace iTextSharp.text.pdf {
         * Gives the size of a trim, art, crop or bleed box, or null if not defined.
         * @param boxName crop, trim, art or bleed
         */
-        public Rectangle GetBoxSize(String boxName) {
+        virtual public Rectangle GetBoxSize(String boxName) {
             return pdf.GetBoxSize(boxName);
         }
 
@@ -2805,7 +2841,7 @@ namespace iTextSharp.text.pdf {
          * @param intersectingRectangle the rectangle that intersects the rectangle associated to the boxName
          * @return the intersection of the two rectangles
          */
-        public Rectangle GetBoxSize(String boxName, Rectangle intersectingRectangle) {
+        virtual public Rectangle GetBoxSize(String boxName, Rectangle intersectingRectangle) {
             Rectangle pdfRectangle = pdf.GetBoxSize(boxName);
 
             if ( pdfRectangle == null || intersectingRectangle == null ) { // no intersection
@@ -2835,7 +2871,7 @@ namespace iTextSharp.text.pdf {
         * SetPageEmpty(true) won't have any effect.
         * @param pageEmpty the state
         */
-        public bool PageEmpty {
+        virtual public bool PageEmpty {
             set {
                 if (value)
                     return;
@@ -2903,12 +2939,12 @@ namespace iTextSharp.text.pdf {
         
         /**
         * A group attributes dictionary specifying the attributes
-        * of the page’s page group for use in the transparent
+        * of the pageï¿½s page group for use in the transparent
         * imaging model
         */
         protected PdfDictionary group;
         
-        public PdfDictionary Group {
+        virtual public PdfDictionary Group {
             get {
                 return this.group;
             }
@@ -2988,7 +3024,7 @@ namespace iTextSharp.text.pdf {
         * The maximum UserUnit is 75,000.
         * Remark that this userunit only works starting with PDF1.6!
         */
-        public float Userunit {
+        virtual public float Userunit {
             set {
                 if (value < 1f || value > 75000f) throw new DocumentException(MessageLocalization.GetComposedMessage("userunit.should.be.a.value.between.1.and.75000"));
                 AddPageDictEntry(PdfName.USERUNIT, new PdfNumber(value));
@@ -3006,7 +3042,7 @@ namespace iTextSharp.text.pdf {
         * Gets the default colorspaces.
         * @return the default colorspaces
         */    
-        public PdfDictionary DefaultColorspace {
+        virtual public PdfDictionary DefaultColorspace {
             get {
                 return defaultColorspace;
             }
@@ -3023,7 +3059,7 @@ namespace iTextSharp.text.pdf {
         * or <CODE>PdfName.DEFAULTCMYK</CODE>
         * @param cs the colorspace. A <CODE>null</CODE> or <CODE>PdfNull</CODE> removes any colorspace with the same name
         */    
-        public void SetDefaultColorspace(PdfName key, PdfObject cs) {
+        virtual public void SetDefaultColorspace(PdfName key, PdfObject cs) {
             if (cs == null || cs.IsNull())
                 defaultColorspace.Remove(key);
             defaultColorspace.Put(key, cs);
@@ -3089,7 +3125,7 @@ namespace iTextSharp.text.pdf {
         * @param strictImageSequence new value of property strictImageSequence
         *
         */
-        public bool StrictImageSequence {
+        virtual public bool StrictImageSequence {
             set {
                 pdf.StrictImageSequence = value;
             }
@@ -3103,7 +3139,7 @@ namespace iTextSharp.text.pdf {
         * Method suggested by Pelikan Stephan
         * @throws DocumentException
         */
-        public void ClearTextWrap() {
+        virtual public void ClearTextWrap() {
             pdf.ClearTextWrap();
         }
 
@@ -3121,7 +3157,7 @@ namespace iTextSharp.text.pdf {
         * @throws PdfException on error
         * @throws DocumentException on error
         */
-        public PdfName AddDirectImageSimple(Image image) {
+        virtual public PdfName AddDirectImageSimple(Image image) {
             return AddDirectImageSimple(image, null);
         }
         
@@ -3135,7 +3171,7 @@ namespace iTextSharp.text.pdf {
         * @throws PdfException on error
         * @throws DocumentException on error
         */
-        public PdfName AddDirectImageSimple(Image image, PdfIndirectReference fixedRef) {
+        virtual public PdfName AddDirectImageSimple(Image image, PdfIndirectReference fixedRef) {
             PdfName name;
             // if the images is already added, just retrieve the name
             if (images.ContainsKey(image.MySerialId)) {
@@ -3247,7 +3283,7 @@ namespace iTextSharp.text.pdf {
         * @param   content a byte array that may already been added to the writer inside a stream object.
         * @since  2.1.5
         */
-        protected internal PdfIndirectReference GetReferenceJBIG2Globals(byte[] content) {
+        virtual protected internal PdfIndirectReference GetReferenceJBIG2Globals(byte[] content) {
             if (content == null) return null;
             foreach (PdfStream str in JBIG2Globals.Keys) {
                 if (Org.BouncyCastle.Utilities.Arrays.AreEqual(content, str.GetBytes())) {
@@ -3275,7 +3311,7 @@ namespace iTextSharp.text.pdf {
         * Sets the flag indicating the presence of structure elements that contain user properties attributes.
         * @param userProperties the user properties flag
         */
-        public bool UserProperties {
+        virtual public bool UserProperties {
             set {
                 userProperties = value;
             }
@@ -3298,7 +3334,7 @@ namespace iTextSharp.text.pdf {
         * @param rgbTransparencyBlending <code>true</code> to set the transparency blending colorspace to RGB, <code>false</code>
         * to use the default blending colorspace
         */
-        public bool RgbTransparencyBlending {
+        virtual public bool RgbTransparencyBlending {
             get {
                 return this.rgbTransparencyBlending;
             }
@@ -3394,7 +3430,7 @@ namespace iTextSharp.text.pdf {
          * Gets the list of the standard structure element names (roles).
          * @return
          */
-        public List<PdfName> GetStandardStructElems() {
+        virtual public List<PdfName> GetStandardStructElems() {
             if (pdf_version.Version < VERSION_1_7) {
                 return standardStructElems_1_4;
             } else {

@@ -2,19 +2,20 @@ using com.itextpdf.text.pdf;
 using iTextSharp.text.pdf;
 
 /*
- * $Id: ListItem.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: ListItem.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -231,7 +232,7 @@ namespace iTextSharp.text {
         /// Get/set the listsymbol.
         /// </summary>
         /// <value>a Chunk</value>
-        public Chunk ListSymbol {
+        virtual public Chunk ListSymbol {
             get {
                 return symbol;
             }
@@ -251,7 +252,7 @@ namespace iTextSharp.text {
         *
         * @param	indentation		the new indentation
         */        
-        public void SetIndentationLeft(float indentation, bool autoindent) {
+        virtual public void SetIndentationLeft(float indentation, bool autoindent) {
             if (autoindent) {
             	IndentationLeft = ListSymbol.GetWidthPoint();
             }
@@ -265,13 +266,13 @@ namespace iTextSharp.text {
          * in the list item.
          * @since 5.0.6
          */
-        public void AdjustListSymbolFont() {
+        virtual public void AdjustListSymbolFont() {
             System.Collections.Generic.IList<Chunk> cks = Chunks;
             if (cks.Count != 0 && symbol != null)
                 symbol.Font = cks[0].Font;
         }
 
-        public ListBody ListBody {
+        virtual public ListBody ListBody {
             get
             {
                 if (listBody == null)
@@ -280,7 +281,7 @@ namespace iTextSharp.text {
             }
         }
 
-        public ListLabel ListLabel {
+        virtual public ListLabel ListLabel {
             get
             {
                 if (listLabel == null)

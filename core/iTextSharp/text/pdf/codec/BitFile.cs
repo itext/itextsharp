@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 /*
- * $Id: BitFile.cs 177 2010-05-30 17:30:44Z psoares33 $
+ * $Id: BitFile.cs 676 2013-12-24 13:15:22Z asubach $
  * Copyright 2003-2008 by Paulo Soares.
  *
  * This code was originally released in 2001 by SUN (see class
@@ -74,7 +74,7 @@ namespace iTextSharp.text.pdf.codec {
             bitsLeft_ = 8;
         }
 
-        public void Flush() {
+        virtual public void Flush() {
             int numBytes = index_ + (bitsLeft_ == 8 ? 0 : 1);
             if (numBytes > 0) {
                 if (blocks_)
@@ -86,7 +86,7 @@ namespace iTextSharp.text.pdf.codec {
             }
         }
 
-        public void WriteBits(int bits, int numbits) {
+        virtual public void WriteBits(int bits, int numbits) {
             int bitsWritten = 0;
             int numBytes = 255;		// gif block count
             do {

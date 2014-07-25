@@ -10,25 +10,25 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\AcroFieldsTest\";
 
         [SetUp]
-        public void SetUp()
+        virtual public void SetUp()
         {
             TestResourceUtils.PurgeTempFiles();
         }
 
         [TearDown]
-        public void TearDown()
+        virtual public void TearDown()
         {
             TestResourceUtils.PurgeTempFiles();
         }
 
         [Test]
-        public void TestSetFields()
+        virtual public void TestSetFields()
         {
             SingleTest("register.xfdf");
         }
 
         [Test]
-        public void TestListInSetFields()
+        virtual public void TestListInSetFields()
         {
             SingleTest("list_register.xfdf");
         }
@@ -64,7 +64,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
     };
 
         [Test]
-        public void TestComboboxAppearanceStateOrder()
+        virtual public void TestComboboxAppearanceStateOrder()
         {
             try
             {
@@ -77,7 +77,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void TestComboboxDisplayValues()
+        virtual public void TestComboboxDisplayValues()
         {
             try
             {
@@ -99,7 +99,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void TestComboboxExportValues()
+        virtual public void TestComboboxExportValues()
         {
             try
             {

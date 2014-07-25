@@ -5,15 +5,16 @@ using iTextSharp.text.pdf.interfaces;
  * $Id: PdfAConformanceImp.java 322 2012-07-23 09:58:41Z bruno $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Alexander Chingarev, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -63,7 +64,7 @@ namespace iTextSharp.text.pdf.intern{
             this.writer = writer;
         }
 
-        public void CheckPdfIsoConformance(int key, Object obj1) {
+        virtual public void CheckPdfIsoConformance(int key, Object obj1) {
             pdfAChecker.CheckPdfAConformance(writer, key, obj1);
         }
 
@@ -72,14 +73,14 @@ namespace iTextSharp.text.pdf.intern{
         /**
          * @see com.itextpdf.text.pdf.interfaces.PdfAConformance#getConformanceLevel()
          */
-        public PdfAConformanceLevel ConformanceLevel {
+        virtual public PdfAConformanceLevel ConformanceLevel {
             get { return conformanceLevel; }
         }
 
         /**
          * @see PdfAConformance#setConformanceLevel(com.itextpdf.text.pdf.PdfAConformanceLevel)
          */
-        public void SetConformanceLevel(PdfAConformanceLevel conformanceLevel) {
+        virtual public void SetConformanceLevel(PdfAConformanceLevel conformanceLevel) {
             this.conformanceLevel = conformanceLevel;
             switch(this.conformanceLevel) {
                 case PdfAConformanceLevel.PDF_A_1A:
@@ -105,11 +106,11 @@ namespace iTextSharp.text.pdf.intern{
         /**
          * @see com.itextpdf.text.pdf.interfaces.PdfAConformance#isPdfIso()
          */
-        public bool IsPdfIso() {
+        virtual public bool IsPdfIso() {
             return true;
         }
 
-        public PdfAChecker PdfAChecker {
+        virtual public PdfAChecker PdfAChecker {
             get { return pdfAChecker; }
         }
     }

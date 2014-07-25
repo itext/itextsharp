@@ -9,15 +9,16 @@ using iTextSharp.tool.xml.exceptions;
  * $Id: FileRetrieveImpl.java 122 2011-05-27 12:20:58Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -108,7 +109,7 @@ namespace iTextSharp.tool.xml.net {
          * the given root directories will be set as root path with the given <code>href</code> as
          * file path until a valid file has been found.
          */
-        public void ProcessFromHref(String href, IReadingProcessor processor) {
+        virtual public void ProcessFromHref(String href, IReadingProcessor processor) {
             if (LOGGER.IsLogging(Level.DEBUG)) {
                 LOGGER.Debug(String.Format(LocaleMessages.GetInstance().GetMessage("retrieve.file.from"), href));
             }
@@ -169,7 +170,7 @@ namespace iTextSharp.tool.xml.net {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.net.FileRetrieve#processFromStream(java.io.Stream, com.itextpdf.tool.xml.net.ReadingProcessor)
          */
-        public void ProcessFromStream(Stream inp, IReadingProcessor processor) {
+        virtual public void ProcessFromStream(Stream inp, IReadingProcessor processor) {
             Read(processor, inp);
         }
 
@@ -201,7 +202,7 @@ namespace iTextSharp.tool.xml.net {
          * Add a root directory.
          * @param dir the root directory
          */
-        public void AddRootDir(string dir) {
+        virtual public void AddRootDir(string dir) {
             rootdirs.Add(dir);
         }
 
@@ -209,7 +210,7 @@ namespace iTextSharp.tool.xml.net {
          * Add a root URL.
          * @param url the URL
          */
-        public void AddURL(String url) {
+        virtual public void AddURL(String url) {
             urls.Add(url);
         }
 

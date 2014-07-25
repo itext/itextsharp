@@ -2,15 +2,16 @@ using iTextSharp.text.pdf.intern;
 
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -79,7 +80,7 @@ namespace iTextSharp.text.pdf {
         * Sets the flag whether to apply overprint for stroking.
         * @param ov
         */
-        public bool OverPrintStroking {
+        virtual public bool OverPrintStroking {
             set {
                 Put(PdfName.OP, value ? PdfBoolean.PDFTRUE : PdfBoolean.PDFFALSE);
             }
@@ -89,7 +90,7 @@ namespace iTextSharp.text.pdf {
         * Sets the flag whether to apply overprint for non stroking painting operations.
         * @param ov
         */
-        public bool OverPrintNonStroking {
+        virtual public bool OverPrintNonStroking {
             set {
                 Put(PdfName.op_, value ? PdfBoolean.PDFTRUE : PdfBoolean.PDFFALSE);
             }
@@ -99,7 +100,7 @@ namespace iTextSharp.text.pdf {
         * Sets the flag whether to toggle knockout behavior for overprinted objects.
         * @param ov - accepts 0 or 1
         */
-        public int OverPrintMode {
+        virtual public int OverPrintMode {
             set {
                 Put(PdfName.OPM, new PdfNumber(value == 0 ? 0 : 1));
             }
@@ -111,7 +112,7 @@ namespace iTextSharp.text.pdf {
         * imaging model.
         * @param n
         */
-        public float StrokeOpacity {
+        virtual public float StrokeOpacity {
             set {
                 Put(PdfName.CA, new PdfNumber(value));
             }
@@ -123,7 +124,7 @@ namespace iTextSharp.text.pdf {
         * imaging model.
         * @param n
         */
-        public float FillOpacity {
+        virtual public float FillOpacity {
             set {
                 Put(PdfName.ca, new PdfNumber(value));
             }
@@ -135,7 +136,7 @@ namespace iTextSharp.text.pdf {
         * or opacity values (false). 
         * @param v
         */
-        public bool AlphaIsShape {
+        virtual public bool AlphaIsShape {
             set {
                 Put(PdfName.AIS, value ? PdfBoolean.PDFTRUE : PdfBoolean.PDFFALSE);
             }
@@ -146,7 +147,7 @@ namespace iTextSharp.text.pdf {
         * in the transparent imaging model.
         * @param v
         */
-        public bool TextKnockout {
+        virtual public bool TextKnockout {
             set {
                 Put(PdfName.TK, value ? PdfBoolean.PDFTRUE : PdfBoolean.PDFFALSE);
             }
@@ -156,7 +157,7 @@ namespace iTextSharp.text.pdf {
         * The current blend mode to be used in the transparent imaging model.
         * @param bm
         */
-        public PdfName BlendMode {
+        virtual public PdfName BlendMode {
             set {
                 Put(PdfName.BM, value);
             }
@@ -167,7 +168,7 @@ namespace iTextSharp.text.pdf {
          * PdfName.RELATIVECOLORIMETRIC, PdfName.SATURATION, PdfName.PERCEPTUAL.
          * @param ri
          */
-        public PdfName RenderingIntent {
+        virtual public PdfName RenderingIntent {
             set {
                 Put(PdfName.RI, value);
             }

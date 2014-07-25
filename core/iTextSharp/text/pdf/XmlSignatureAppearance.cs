@@ -1,19 +1,20 @@
-﻿using System;
+using System;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.pdf.security;
 /*
  * $Id: XmlSignatureAppearance.java 5830 2013-05-31 09:29:15Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Pavel Alay, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -73,15 +74,15 @@ namespace iTextSharp.text.pdf
 
 
 
-        public PdfStamperImp GetWriter() {
+        virtual public PdfStamperImp GetWriter() {
             return writer;
         }
 
-        public PdfStamper GetStamper() {
+        virtual public PdfStamper GetStamper() {
             return stamper;
         }
 
-        public void SetStamper(PdfStamper stamper) {
+        virtual public void SetStamper(PdfStamper stamper) {
             this.stamper = stamper;
         }
 
@@ -90,28 +91,28 @@ namespace iTextSharp.text.pdf
          * This certificate doesn't take part in the actual signing process.
          * @param signCertificate the certificate
          */
-        public void SetCertificate(X509Certificate signCertificate) {
+        virtual public void SetCertificate(X509Certificate signCertificate) {
             this.signCertificate = signCertificate;
         }
 
-        public X509Certificate GetCertificate() {
+        virtual public X509Certificate GetCertificate() {
             return signCertificate;
         }
 
 
-        public void SetDescription(String description) {
+        virtual public void SetDescription(String description) {
             this.description = description;
         }
 
-        public String GetDescription() {
+        virtual public String GetDescription() {
             return description;
         }
 
-        public String GetMimeType() {
+        virtual public String GetMimeType() {
             return mimeType;
         }
 
-        public void SetMimeType(String mimeType) {
+        virtual public void SetMimeType(String mimeType) {
             this.mimeType = mimeType;
         }
 
@@ -119,7 +120,7 @@ namespace iTextSharp.text.pdf
          * Gets the signature date.
          * @return the signature date
          */
-        public DateTime GetSignDate() {
+        virtual public DateTime GetSignDate() {
             if(signDate == DateTime.MinValue)
                 signDate = DateTime.Now;
             return signDate;
@@ -129,7 +130,7 @@ namespace iTextSharp.text.pdf
          * Sets the signature date.
          * @param signDate the signature date
          */
-        public void SetSignDate(DateTime signDate) {
+        virtual public void SetSignDate(DateTime signDate) {
             this.signDate = signDate;
         }
 
@@ -137,12 +138,12 @@ namespace iTextSharp.text.pdf
          * Helps to locate xml stream
          * @return XmlLocator, cannot be null.
          */
-        public IXmlLocator GetXmlLocator() {
+        virtual public IXmlLocator GetXmlLocator() {
             return xmlLocator;
         }
 
 
-        public void SetXmlLocator(IXmlLocator xmlLocator) {
+        virtual public void SetXmlLocator(IXmlLocator xmlLocator) {
             this.xmlLocator = xmlLocator;
         }
 
@@ -150,11 +151,11 @@ namespace iTextSharp.text.pdf
          * Constructor for xpath expression in case signing only part of XML document.
          * @return XpathConstructor, can be null
          */
-        public IXpathConstructor GetXpathConstructor() {
+        virtual public IXpathConstructor GetXpathConstructor() {
             return xpathConstructor;
         }
 
-        public void SetXpathConstructor(IXpathConstructor xpathConstructor) {
+        virtual public void SetXpathConstructor(IXpathConstructor xpathConstructor) {
             this.xpathConstructor = xpathConstructor;
         }
 
@@ -163,7 +164,7 @@ namespace iTextSharp.text.pdf
          * @throws IOException
          * @throws DocumentException
          */
-        public void Close() {
+        virtual public void Close() {
             writer.Close(stamper.MoreInfo);
         }
     }

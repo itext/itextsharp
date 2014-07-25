@@ -4,15 +4,16 @@ using iTextSharp.text.pdf;
  * $Id: RichMediaActivation.java 3821 2009-03-25 10:33:52Z blowagie $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -74,7 +75,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * @param   condition   possible values are:
          *      PdfName.XA, PdfName.PO, or PdfName.PV
          */
-        public PdfName Condition {
+        virtual public PdfName Condition {
             set {
                 Put(PdfName.CONDITION, value);
             }
@@ -86,7 +87,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * present in this artwork.
          * @param   animation   a RichMediaAnimation dictionary
          */
-        public RichMediaAnimation Animation {
+        virtual public RichMediaAnimation Animation {
             set {
                 Put(PdfName.ANIMATION, value);
             }
@@ -98,7 +99,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * annotation's RichMediaContent dictionary.
          * @param   view    an indirect reference
          */
-        public PdfIndirectReference View {
+        virtual public PdfIndirectReference View {
             set {
                 Put(PdfName.VIEW, value);
             }
@@ -111,7 +112,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * the RichMediaAnnotation object).
          * @param   configuration   an indirect reference
          */
-        public PdfIndirectReference Configuration {
+        virtual public PdfIndirectReference Configuration {
             set {
                 Put(PdfName.CONFIGURATION, value);
             }
@@ -123,7 +124,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * laid out and drawn.
          * @param   richMediaPresentation   a RichMediaPresentation object
          */
-        public RichMediaPresentation Presentation {
+        virtual public RichMediaPresentation Presentation {
             set {
                 Put(PdfName.PRESENTATION, value);
             }
@@ -135,7 +136,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * be present in the Assets name tree of the RichMediaContent dictionary.
          * @param   scripts a PdfArray
          */
-        public PdfArray Scripts {
+        virtual public PdfArray Scripts {
             set {
                 Put(PdfName.SCRIPTS, value);
             }

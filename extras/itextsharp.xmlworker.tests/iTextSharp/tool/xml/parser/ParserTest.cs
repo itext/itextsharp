@@ -21,12 +21,12 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.parser {
         private const String TARGET = @"ParserTest\";
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
         }
 
         [TearDown]
-        public void TearDown() {
+        virtual public void TearDown() {
             list = null;
             writer = null;
         }
@@ -38,7 +38,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.parser {
 	 */
 
         [Test]
-        public void StickyComment() {
+        virtual public void StickyComment() {
             String html = "<p><!--stickycomment-->sometext  moretext</p>";
             String expected = "<p><!--stickycomment-->sometext  moretext</p>";
             XMLParser p = new XMLParser(false, Encoding.Default);
@@ -54,7 +54,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.parser {
 	 */
 
         [Test]
-        public void SpecialTag() {
+        virtual public void SpecialTag() {
             String html = "<p><?formServer acrobat8.1dynamic defaultPDFRenderFormat?>ohoh</p>";
             XMLParser p = new XMLParser(false, Encoding.GetEncoding("UTF-8"));
             StringBuilder b = Init(html, p);
@@ -64,32 +64,32 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.parser {
         }
 
         private class CustomXMLParserListener : IXMLParserListener {
-            public void UnknownText(String text) {
+            virtual public void UnknownText(String text) {
             }
 
 
-            public void StartElement(String tag, IDictionary<String, String> attributes, String ns) {
+            virtual public void StartElement(String tag, IDictionary<String, String> attributes, String ns) {
             }
 
-            public void Init() {
+            virtual public void Init() {
             }
 
-            public void EndElement(String tag, String ns) {
+            virtual public void EndElement(String tag, String ns) {
             }
 
-            public void Comment(String comment) {
+            virtual public void Comment(String comment) {
             }
 
-            public void Close() {
+            virtual public void Close() {
             }
 
-            public void Text(String text) {
+            virtual public void Text(String text) {
                 list.Add(text);
             }
         }
 
         [Test]
-        public void SpecialChars() {
+        virtual public void SpecialChars() {
             list = new List<String>();
             XMLParser p = new XMLParser(false, new CustomXMLParserListener());
             p.Parse(File.OpenRead(RESOURCES + "parser.xml"), Encoding.GetEncoding("UTF-8"));
@@ -99,17 +99,17 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.parser {
             Assert.AreEqual("e\u00e9\u00e8\u00e7\u00e0\u00f5", list[1]);
         }
 
-        public void ReadBare() {
+        virtual public void ReadBare() {
             StreamReader inpuStreamReader = new StreamReader(RESOURCES + "parser.xml", Encoding.GetEncoding("UTF-8"));
         }
 
         private class CustomAppender : IAppender {
-            public IAppender Append(char c) {
+            virtual public IAppender Append(char c) {
                 writer.Append(c);
                 return this;
             }
 
-            public IAppender Append(String str) {
+            virtual public IAppender Append(String str) {
                 writer.Append(str);
                 return this;
             }

@@ -20,7 +20,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         private WorkerContextImpl workerContextImpl;
 
         [SetUp]
-        public void init() {
+        virtual public void init() {
             h.SetCssAppliers(new CssAppliersImpl());
             workerContextImpl = new WorkerContextImpl();
             workerContextImpl.Put(typeof (HtmlPipeline).FullName, new HtmlPipelineContext(null).AutoBookmark(true));
@@ -32,7 +32,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyContent() {
+        virtual public void VerifyContent() {
             Assert.IsTrue(content[0] is Chunk);
         }
 
@@ -41,7 +41,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyEnd() {
+        virtual public void VerifyEnd() {
             IList<IElement> end = h.End(workerContextImpl, H2, content);
             Assert.IsTrue(end[0] is WritableDirectElement);
             Assert.IsTrue(end[1] is Paragraph);
@@ -52,7 +52,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyIfStackOwner() {
+        virtual public void VerifyIfStackOwner() {
             Assert.IsTrue(h.IsStackOwner());
         }
     }

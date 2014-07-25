@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.util;
 using iTextSharp.text.html;
-using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.css.apply;
 using iTextSharp.tool.xml.exceptions;
 
@@ -13,15 +12,16 @@ using iTextSharp.tool.xml.exceptions;
  * $Id: CssUtils.java 126 2011-05-27 13:02:27Z emielackermann $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -111,7 +111,7 @@ namespace iTextSharp.tool.xml.css {
          *            the post key part
          * @return a map with the parsed properties
          */
-        public IDictionary<String, String> ParseBoxValues(String box,
+        virtual public IDictionary<String, String> ParseBoxValues(String box,
                 String pre, String post) {
             String[] props = box.Split(' ');
             int length = props.Length;
@@ -180,7 +180,7 @@ namespace iTextSharp.tool.xml.css {
          * @return a map of the border property parsed to each property (width,
          *         style, color).
          */
-        public IDictionary<String, String> ParseBorder(String border) {
+        virtual public IDictionary<String, String> ParseBorder(String border) {
             Dictionary<String, String> map = new Dictionary<String, String>(0);
             String[] split = SplitComplexCssStyle(border);
             int length = split.Length;
@@ -212,7 +212,7 @@ namespace iTextSharp.tool.xml.css {
          *            the string to strip
          * @return the string without double spaces
          */
-        public String StripDoubleSpacesAndTrim(String str) {
+        virtual public String StripDoubleSpacesAndTrim(String str) {
             char[] charArray = str.ToCharArray();
             if (str.Contains("  ")) {
                 StringBuilder builder = new StringBuilder();
@@ -232,7 +232,7 @@ namespace iTextSharp.tool.xml.css {
             }
         }
 
-        public String StripDoubleSpacesTrimAndToLowerCase(String str) {
+        virtual public String StripDoubleSpacesTrimAndToLowerCase(String str) {
             return StripDoubleSpacesAndTrim(str).ToLower();
         }
 
@@ -246,7 +246,7 @@ namespace iTextSharp.tool.xml.css {
          *            the string containing the font style value.
          * @return a map with the values of font parsed into each css property.
          */
-        public IDictionary<String, String> ProcessBackground(String background) {
+        virtual public IDictionary<String, String> ProcessBackground(String background) {
             IDictionary<String, String> rules = new Dictionary<String, String>();
             String[] styles = SplitComplexCssStyle(background);
             foreach (String style in styles) {
@@ -286,7 +286,7 @@ namespace iTextSharp.tool.xml.css {
          * @param listStyle the string containing the list style value.
          * @return a map with the values of the parsed list style into each css property.
          */
-        public IDictionary<String, String> ProcessListStyle(String listStyle) {
+        virtual public IDictionary<String, String> ProcessListStyle(String listStyle) {
             IDictionary<String, String> rules = new Dictionary<String, String>();
             String[] styles = SplitComplexCssStyle(listStyle);
             foreach (String style in styles) {
@@ -318,7 +318,7 @@ namespace iTextSharp.tool.xml.css {
          * @param font the string containing the font style value.
          * @return a map with the values of the parsed font into each css property.
          */
-        public IDictionary<String, String> ProcessFont(String font) {
+        virtual public IDictionary<String, String> ProcessFont(String font) {
             IDictionary<String, String> rules = new Dictionary<String, String>();
             String[] styleAndRest = font.Split(whitespace, 2);
             String style = styleAndRest[0];
@@ -365,7 +365,7 @@ namespace iTextSharp.tool.xml.css {
          * @param style the style which needs to be checked.
          * @return float the parsed value of the style or 0f if the value was invalid.
          */
-        public float CheckMetricStyle(Tag t, String style) {
+        virtual public float CheckMetricStyle(Tag t, String style) {
             float? metricValue = CheckMetricStyle(t.CSS, style);
             if (metricValue != null) {
                 return (float)metricValue;
@@ -380,7 +380,7 @@ namespace iTextSharp.tool.xml.css {
          * @param style the style which needs to be checked.
          * @return float the parsed value of the style or 0f if the value was invalid.
          */
-        public float? CheckMetricStyle(IDictionary<String,String> css, String style) {
+        virtual public float? CheckMetricStyle(IDictionary<String,String> css, String style) {
             String value;
             css.TryGetValue(style, out value);
             if (value != null && (IsMetricValue(value) || IsNumericValue(value))) {
@@ -394,7 +394,7 @@ namespace iTextSharp.tool.xml.css {
          * @param value the string that needs to be checked.
          * @return bool true if value contains an allowed metric value.
          */
-        public bool IsMetricValue(String value) {
+        virtual public bool IsMetricValue(String value) {
             return value.Contains(CSS.Value.PX) || value.Contains(CSS.Value.IN) || value.Contains(CSS.Value.CM)
                 || value.Contains(CSS.Value.MM) || value.Contains(CSS.Value.PC) || value.Contains(CSS.Value.PT);
 
@@ -404,7 +404,7 @@ namespace iTextSharp.tool.xml.css {
          * @param value the string that needs to be checked.
          * @return bool true if value contains an allowed metric value.
          */
-        public bool IsRelativeValue(String value) {
+        virtual public bool IsRelativeValue(String value) {
             return value.Contains(CSS.Value.PERCENTAGE) || value.Contains(CSS.Value.EM) || value.Contains(CSS.Value.EX);
 
         }
@@ -417,7 +417,7 @@ namespace iTextSharp.tool.xml.css {
          * @param value the string that needs to be checked.
          * @return bool true if value contains an allowed metric value.
          */
-        public bool IsNumericValue(String value) {
+        virtual public bool IsNumericValue(String value) {
             return numerics1.IsMatch(value) || numerics2.IsMatch(value);
 
         }
@@ -433,7 +433,7 @@ namespace iTextSharp.tool.xml.css {
          * @param baseValue float needed for the calculation of the relative value.
          * @return parsedValue float containing the parsed value in pt.
          */
-        public float ParseValueToPt(String value, float baseValue) {
+        virtual public float ParseValueToPt(String value, float baseValue) {
             float parsedValue = 0;
             if (IsMetricValue(value) || IsNumericValue(value)) {
                 parsedValue = ParsePxInCmMmPcToPt(value);
@@ -449,7 +449,7 @@ namespace iTextSharp.tool.xml.css {
          * @param baseValue the value the returned float is based on.
          * @return the parsed float in the metric unit of the base value.
          */
-        public float ParseRelativeValue(String relativeValue, float baseValue) {
+        virtual public float ParseRelativeValue(String relativeValue, float baseValue) {
             int pos = DeterminePositionBetweenValueAndUnit(relativeValue);
             if (pos == 0)
                 return 0f;
@@ -472,7 +472,7 @@ namespace iTextSharp.tool.xml.css {
          * @param defaultMetric the string containing the metric if it is possible that the length string does not contain one. If null the length is considered to be in px as is default in HTML/CSS.
          * @return
          */
-        public float ParsePxInCmMmPcToPt(String length, String defaultMetric) {
+        virtual public float ParsePxInCmMmPcToPt(String length, String defaultMetric) {
             int pos = DeterminePositionBetweenValueAndUnit(length);
             if (pos == 0)
                 return 0f;
@@ -507,7 +507,7 @@ namespace iTextSharp.tool.xml.css {
          * @param length the string containing the length.
          * @return float the parsed length in pt.
          */
-        public float ParsePxInCmMmPcToPt(String length) {
+        virtual public float ParsePxInCmMmPcToPt(String length) {
             return ParsePxInCmMmPcToPt(length, CSS.Value.PX);
         }
 
@@ -519,7 +519,7 @@ namespace iTextSharp.tool.xml.css {
          * @param string containing a numeric value with a metric unit
          * @return int position between the numeric value and unit or 0 if string is null or string started with a non-numeric value.
          */
-        public int DeterminePositionBetweenValueAndUnit(String str) {
+        virtual public int DeterminePositionBetweenValueAndUnit(String str) {
             if (str == null)
                 return 0;
             int pos = 0;
@@ -554,7 +554,7 @@ namespace iTextSharp.tool.xml.css {
          * @param pageWidth the page width
          * @return float the total horizontal margin.
          */
-        public float GetLeftAndRightMargin(Tag t, float pageWidth) {
+        virtual public float GetLeftAndRightMargin(Tag t, float pageWidth) {
             float horizontalMargin = 0;
             String value;
             t.CSS.TryGetValue(CSS.Property.MARGIN_LEFT, out value);
@@ -573,7 +573,7 @@ namespace iTextSharp.tool.xml.css {
          * @param url the url attribute to parse
          * @return the parsed url. Or original url if not wrappend in Url()
          */
-        public String ExtractUrl(String url) {
+        virtual public String ExtractUrl(String url) {
             String str = null;
             if (url.StartsWith("url")) {
                 String urlString = url.Substring(3).Trim().Replace("(", "").Replace(")", "").Trim();
@@ -598,7 +598,7 @@ namespace iTextSharp.tool.xml.css {
          * @param textHeight the current textHeight based on the content of a tag
          * @return the text height of an element.
          */
-        public float ValidateTextHeight(IDictionary<String, String> css,
+        virtual public float ValidateTextHeight(IDictionary<String, String> css,
                 float textHeight) {
             if (css.ContainsKey("min-height") && textHeight < new CssUtils().ParsePxInCmMmPcToPt(css["min-height"])) {
                 textHeight = new CssUtils().ParsePxInCmMmPcToPt(css["min-height"]);
@@ -618,7 +618,7 @@ namespace iTextSharp.tool.xml.css {
          * @param configuration XmlWorkerConfig containing the last margin bottom.
          * @return an offset
          */
-        public float CalculateMarginTop(String value, float largestFont, IMarginMemory configuration) {
+        virtual public float CalculateMarginTop(String value, float largestFont, IMarginMemory configuration) {
             return CalculateMarginTop(ParseValueToPt(value, largestFont), configuration);
         }
 
@@ -631,7 +631,7 @@ namespace iTextSharp.tool.xml.css {
          * @param configuration XmlWorkerConfig containing the last margin bottom.
          * @return an offset
          */
-        public float CalculateMarginTop(float value, IMarginMemory configuration) {
+        virtual public float CalculateMarginTop(float value, IMarginMemory configuration) {
             float marginTop = value;
             try {
                 float marginBottom = configuration.LastMarginBottom;
@@ -648,7 +648,7 @@ namespace iTextSharp.tool.xml.css {
          * @return trimmed and unquoted string
          */
 
-        public String TrimAndRemoveQuoutes(String s) {
+        virtual public String TrimAndRemoveQuoutes(String s) {
             s = s.Trim();
             if ((s.StartsWith("\"") || s.StartsWith("'")) && s.EndsWith("\"") || s.EndsWith("'")) {
                 s = s.Substring(1, s.Length - 2);
@@ -656,7 +656,7 @@ namespace iTextSharp.tool.xml.css {
             return s;
         }
 
-        public String[] SplitComplexCssStyle(String s) {
+        virtual public String[] SplitComplexCssStyle(String s) {
             s = Regex.Replace(s, "\\s*,\\s*", ",");
             return Regex.Split(s, "\\s");
         }

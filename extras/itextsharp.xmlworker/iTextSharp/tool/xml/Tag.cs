@@ -5,15 +5,16 @@ using System.Collections;
  * $Id: Tag.java 75 2011-05-18 10:21:52Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -130,7 +131,7 @@ namespace iTextSharp.tool.xml {
          *
          * @return the tag name
          */
-        public String Name {
+        virtual public String Name {
             get {
                 return this.tag;
             }
@@ -141,7 +142,7 @@ namespace iTextSharp.tool.xml {
          *
          * @param css set css properties
          */
-        public IDictionary<String, String> CSS {
+        virtual public IDictionary<String, String> CSS {
             set {
                 if (null != css) {
                     this.css = value;
@@ -157,13 +158,13 @@ namespace iTextSharp.tool.xml {
         /**
          * @return the attributes of the tag
          */
-        public IDictionary<String, String> Attributes {
+        virtual public IDictionary<String, String> Attributes {
             get {
                 return attributes;
             }
         }
 
-        public Object LastMarginBottom {
+        virtual public Object LastMarginBottom {
             get { return lastMarginBottom; }
             set { lastMarginBottom = value; }
         }
@@ -184,7 +185,7 @@ namespace iTextSharp.tool.xml {
          *
          * @return the children tags of this tag.
          */
-        public IList<Tag> Children {
+        virtual public IList<Tag> Children {
             get {
                 return this.children;
             }
@@ -196,7 +197,7 @@ namespace iTextSharp.tool.xml {
          *
          * @return the children tags of this tag with the given name.
          */
-        public IList<Tag> GetChildren(String name) {
+        virtual public IList<Tag> GetChildren(String name) {
             List<Tag> named = new List<Tag>();
             foreach (Tag child in this.children) {
                 if(child.Name.Equals(name)) {
@@ -209,7 +210,7 @@ namespace iTextSharp.tool.xml {
         /**
          * @return the ns
          */
-        public String NameSpace {
+        virtual public String NameSpace {
             get {
                 return ns;
             }
@@ -231,7 +232,7 @@ namespace iTextSharp.tool.xml {
          * @param t the tag to compare with
          * @return true if the namespace and tag are the same.
          */
-        public bool CompareTag(Tag t) {
+        virtual public bool CompareTag(Tag t) {
             if (this == t) {
                 return true;
             }
@@ -259,7 +260,7 @@ namespace iTextSharp.tool.xml {
         /**
          * @return the child iterator.
          */
-        public IEnumerator<Tag> GetEnumerator() {
+        virtual public IEnumerator<Tag> GetEnumerator() {
             return children.GetEnumerator();
         }
 
@@ -272,7 +273,7 @@ namespace iTextSharp.tool.xml {
          * @param ns
          * @return the child
          */
-        public Tag GetChild(String name, String ns) {
+        virtual public Tag GetChild(String name, String ns) {
             return GetChild(name, ns, false);
         }
 
@@ -282,7 +283,7 @@ namespace iTextSharp.tool.xml {
          * @param recursive true if the tree should be fully inwards inspected.
          * @return the child if found
          */
-        public Tag GetChild(String name, String ns, bool recursive) {
+        virtual public Tag GetChild(String name, String ns, bool recursive) {
             return RecursiveGetChild(this, name, ns, recursive);
         }
 
@@ -291,7 +292,7 @@ namespace iTextSharp.tool.xml {
          *
          * @return true if there are children
          */
-        public bool HasChildren() {
+        virtual public bool HasChildren() {
             return Children.Count != 0;
         }
 
@@ -300,7 +301,7 @@ namespace iTextSharp.tool.xml {
          *
          * @return true if parent is not <code>null</code>
          */
-        public bool HasParent() {
+        virtual public bool HasParent() {
             return Parent != null;
         }
 
@@ -309,7 +310,7 @@ namespace iTextSharp.tool.xml {
          * @param ns
          * @return true if a child with given name and ns is found
          */
-        public bool HasChild(String name, String ns) {
+        virtual public bool HasChild(String name, String ns) {
             return HasChild(name, ns, false);
         }
 
@@ -320,7 +321,7 @@ namespace iTextSharp.tool.xml {
          * @param recursive true if childrens children children children ... should be inspected too.
          * @return true if a child with the given name and ns is found.
          */
-        public bool HasChild(String name, String ns, bool recursive) {
+        virtual public bool HasChild(String name, String ns, bool recursive) {
             if (recursive) {
                 return RecursiveHasChild(this, name, ns, true);
             } else {

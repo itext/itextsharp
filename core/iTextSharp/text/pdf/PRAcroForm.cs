@@ -1,19 +1,20 @@
 using System;
 using System.Collections.Generic;
 /*
- * $Id: PRAcroForm.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: PRAcroForm.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -72,7 +73,7 @@ namespace iTextSharp.text.pdf {
              * Returns the name of the widget annotation (the /NM entry).
              * @return	a String or null (if there's no /NM key)
              */
-            public String WidgetName {
+            virtual public String WidgetName {
                 get {
                     PdfObject name = info.Get(PdfName.NM);
                     if (name != null)
@@ -80,17 +81,17 @@ namespace iTextSharp.text.pdf {
                     return null;
                 }
             }
-            public String Name {
+            virtual public String Name {
                 get {
                     return fieldName; 
                 }
             }
-            public PdfDictionary Info {
+            virtual public PdfDictionary Info {
                 get {
                     return info; 
                 }
             }
-            public PRIndirectReference Ref {
+            virtual public PRIndirectReference Ref {
                 get {
                     return refi; 
                 }
@@ -122,13 +123,13 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public List<FieldInformation> Fields {
+        virtual public List<FieldInformation> Fields {
             get {
                 return fields;
             }
         }
         
-        public FieldInformation GetField(String name) {
+        virtual public FieldInformation GetField(String name) {
             FieldInformation f;
             fieldByName.TryGetValue(name, out f);
             return f;
@@ -139,7 +140,7 @@ namespace iTextSharp.text.pdf {
         * @param name a string containing the path
         * @return a reference to the field, or null
         */
-        public PRIndirectReference GetRefByName(String name) {
+        virtual public PRIndirectReference GetRefByName(String name) {
             FieldInformation fi = GetField(name);
             if (fi == null) return null;
             return fi.Ref;
@@ -148,7 +149,7 @@ namespace iTextSharp.text.pdf {
         * Read, and comprehend the acroform
         * @param root the docment root
         */
-        public void ReadAcroForm(PdfDictionary root) {
+        virtual public void ReadAcroForm(PdfDictionary root) {
             if (root == null)
                 return;
             hashMap = root.hashMap;
@@ -165,7 +166,7 @@ namespace iTextSharp.text.pdf {
         * @param fieldDict the last field dictionary we encountered (recursively)
         * @param parentPath the pathname of the field, up to this point or null
         */
-        protected void IterateFields(PdfArray fieldlist, PRIndirectReference fieldDict, String parentPath) {
+        virtual protected void IterateFields(PdfArray fieldlist, PRIndirectReference fieldDict, String parentPath) {
             foreach (PRIndirectReference refi in fieldlist.ArrayList) {
                 PdfDictionary dict = (PdfDictionary) PdfReader.GetPdfObjectRelease(refi);
                 
@@ -210,7 +211,7 @@ namespace iTextSharp.text.pdf {
         * @param child the other dictionary
         * @return a merged dictionary
         */
-        protected PdfDictionary MergeAttrib(PdfDictionary parent, PdfDictionary child) {
+        virtual protected PdfDictionary MergeAttrib(PdfDictionary parent, PdfDictionary child) {
             PdfDictionary targ = new PdfDictionary();
             if (parent != null) targ.Merge(parent);
             
@@ -228,7 +229,7 @@ namespace iTextSharp.text.pdf {
         /**
         * stack a level of dictionary. Merge in a dictionary from this level
         */
-        protected void PushAttrib(PdfDictionary dict) {
+        virtual protected void PushAttrib(PdfDictionary dict) {
             PdfDictionary dic = null;
             if (stack.Count != 0) {
                 dic = stack[stack.Count - 1];

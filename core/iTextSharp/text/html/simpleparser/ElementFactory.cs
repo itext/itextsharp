@@ -11,15 +11,16 @@ using iTextSharp.text.pdf.draw;
  * $Id: FactoryProperties.java 4610 2010-11-02 17:28:50Z blowagie $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -77,7 +78,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param provider
          * @since   5.0.6 renamed from setFontImp
          */
-        public IFontProvider FontProvider {
+        virtual public IFontProvider FontProvider {
             set {
                 provider = value;
             }
@@ -91,7 +92,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   chain   chain of properties
          * @return  an iText Font object
          */
-        public Font GetFont(ChainedProperties chain) {
+        virtual public Font GetFont(ChainedProperties chain) {
             
             // [1] font name
             
@@ -171,7 +172,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param chain the hierarchy chain
          * @return a Chunk
          */
-        public Chunk CreateChunk(String content, ChainedProperties chain) {
+        virtual public Chunk CreateChunk(String content, ChainedProperties chain) {
             Font font = GetFont(chain);
             Chunk ck = new Chunk(content, font);
             if (chain.HasProperty(HtmlTags.SUB))
@@ -188,7 +189,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   chain   the hierarchy chain
          * @return  a Paragraph without any content
          */
-        public Paragraph CreateParagraph(ChainedProperties chain) {
+        virtual public Paragraph CreateParagraph(ChainedProperties chain) {
             Paragraph paragraph = new Paragraph();
             UpdateElement(paragraph, chain);
             return paragraph;
@@ -200,7 +201,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   chain   the hierarchy chain
          * @return  a ListItem without any content
          */
-        public ListItem CreateListItem(ChainedProperties chain) {
+        virtual public ListItem CreateListItem(ChainedProperties chain) {
             ListItem item = new ListItem();
             UpdateElement(item, chain);
             return item;
@@ -212,7 +213,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param paragraph
          * @param chain
          */
-        protected void UpdateElement(Paragraph paragraph, ChainedProperties chain) {
+        virtual protected void UpdateElement(Paragraph paragraph, ChainedProperties chain) {
             // Alignment
             String value = chain[HtmlTags.ALIGN];
             paragraph.Alignment = HtmlUtilities.AlignmentValue(value);
@@ -292,7 +293,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @return  a HyphenationEvent
          * @since   2.1.2
          */
-        public IHyphenationEvent GetHyphenation(ChainedProperties chain) {
+        virtual public IHyphenationEvent GetHyphenation(ChainedProperties chain) {
             String value = chain[HtmlTags.HYPHENATION];
             // no hyphenation defined
             if (value == null || value.Length == 0) {
@@ -330,7 +331,7 @@ namespace iTextSharp.text.html.simpleparser {
          * Creates a LineSeparator.
          * @since 5.0.6
          */
-        public LineSeparator CreateLineSeparator(IDictionary<String, String> attrs, float offset) {
+        virtual public LineSeparator CreateLineSeparator(IDictionary<String, String> attrs, float offset) {
             // line thickness
             float lineWidth = 1;
             String size;
@@ -359,7 +360,7 @@ namespace iTextSharp.text.html.simpleparser {
             return new LineSeparator(lineWidth, percentage, lineColor, align, offset);
         }
         
-        public Image CreateImage(
+        virtual public Image CreateImage(
                 String src,
                 IDictionary<String, String> attrs,
                 ChainedProperties chain,
@@ -428,7 +429,7 @@ namespace iTextSharp.text.html.simpleparser {
             return img;
         }
         
-        public List CreateList(String tag, ChainedProperties chain) {
+        virtual public List CreateList(String tag, ChainedProperties chain) {
             List list;
             if (Util.EqualsIgnoreCase(HtmlTags.UL, tag)) {
                 list = new List(List.UNORDERED);

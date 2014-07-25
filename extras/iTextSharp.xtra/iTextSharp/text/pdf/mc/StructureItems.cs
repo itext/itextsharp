@@ -2,15 +2,16 @@
  * $Id: StructureItems.java 5945 2013-08-08 10:27:41Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -107,7 +108,7 @@ namespace iTextSharp.text.pdf.mc
          * @param ref	the reference to the StructElem dictionary
          * @throws DocumentException
          */
-        protected void ProcessStructElems(PdfDictionary structElem, PdfIndirectReference refa) {
+        virtual protected void ProcessStructElems(PdfDictionary structElem, PdfIndirectReference refa) {
             LOGGER.Info(String.Format("addStructureItems({0}, {1})", structElem, refa));
             if (structElem == null)
                 return;
@@ -122,7 +123,7 @@ namespace iTextSharp.text.pdf.mc
          * @param ref			the reference to the StructElem dictionary
          * @param object		the kids object
          */
-        protected void ProcessStructElemKids(PdfDictionary structElem, PdfIndirectReference refa, PdfObject objecta) {
+        virtual protected void ProcessStructElemKids(PdfDictionary structElem, PdfIndirectReference refa, PdfObject objecta) {
             LOGGER.Info(String.Format("addStructureItem({0}, {1}, {2})", structElem, refa, objecta));
             if (objecta == null)
                 return;
@@ -164,7 +165,7 @@ namespace iTextSharp.text.pdf.mc
          * @param	PdfNumber	the number to remove
          */
 
-        public void RemoveFromParentTree(PdfNumber structParent) {
+        virtual public void RemoveFromParentTree(PdfNumber structParent) {
             parentTree.Remove(structParent.IntValue);
         }
 
@@ -177,7 +178,7 @@ namespace iTextSharp.text.pdf.mc
          * @return	a new MCID
          * @throws DocumentException
          */
-        public int ProcessMCID(PdfNumber structParents, PdfIndirectReference refa) {
+        virtual public int ProcessMCID(PdfNumber structParents, PdfIndirectReference refa) {
             if (refa == null)
                 throw new DocumentException(MessageLocalization.GetComposedMessage("can.t.read.document.structure"));
             PdfObject objecta;
@@ -198,7 +199,7 @@ namespace iTextSharp.text.pdf.mc
          * @param writer	The writer to which the StructParents have to be written
          * @throws IOException 
          */
-        public void WriteParentTree(PdfWriter writer) {
+        virtual public void WriteParentTree(PdfWriter writer) {
             if (structTreeRoot == null)
                 return;
             int[] numbers = new int[parentTree.Count];

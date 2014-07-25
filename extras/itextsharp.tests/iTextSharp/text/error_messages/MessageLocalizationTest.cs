@@ -7,7 +7,7 @@ namespace itextsharp.tests.text.error_messages
     public class MessageLocalizationTest
     {
         [Test]
-        public void TestBackslashes()
+        virtual public void TestBackslashes()
         {
             String testPath = "C:\\test\\file.txt";
             String rslt = MessageLocalization.GetComposedMessage("1.not.found.as.file.or.resource", testPath);

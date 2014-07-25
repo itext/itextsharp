@@ -10,6 +10,7 @@ namespace iTextSharp.text.xml.xmp {
         public static readonly String VERSION = "PDFVersion";
         /** The Producer. */
         public static readonly String PRODUCER = "Producer";
+        public static readonly String PART = "part";
 
         /**
          * Adds keywords.

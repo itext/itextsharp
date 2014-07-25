@@ -30,7 +30,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             root = new Tag(ROOTSTR);
             child1NoChildren = new Tag(CHILD1);
             root.AddChild(child1NoChildren);
@@ -45,7 +45,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void GetChild() {
+        virtual public void GetChild() {
             Assert.AreEqual(child1NoChildren, root.GetChild(CHILD1, ""));
         }
 
@@ -54,7 +54,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void GetChildRecursive() {
+        virtual public void GetChildRecursive() {
             Assert.AreEqual(childsChild, root.GetChild(CHILDS_CHILD, "", true));
         }
 
@@ -63,7 +63,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void HasChild() {
+        virtual public void HasChild() {
             Assert.IsTrue(root.HasChild(CHILD1, ""));
         }
 
@@ -72,7 +72,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void HasChildRecursive() {
+        virtual public void HasChildRecursive() {
             Assert.IsTrue(root.HasChild(CHILDS_CHILD, "", true));
         }
 
@@ -81,7 +81,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void HasParent() {
+        virtual public void HasParent() {
             Assert.IsTrue(child1NoChildren.HasParent());
         }
 
@@ -90,7 +90,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
 	 */
 
         [Test]
-        public void HasChildren() {
+        virtual public void HasChildren() {
             Assert.IsTrue(child2WithChild.HasChildren());
         }
     }

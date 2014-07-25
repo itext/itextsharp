@@ -7,15 +7,16 @@ using iTextSharp.text.error_messages;
 
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -83,7 +84,7 @@ namespace iTextSharp.text.pdf.events {
         /**
         * Add a PdfFormField that has to be tied to a generic Chunk.
         */
-        public void AddField(String text, PdfFormField field) {
+        virtual public void AddField(String text, PdfFormField field) {
             genericChunkFields[text] = field;
         }
         
@@ -122,7 +123,7 @@ namespace iTextSharp.text.pdf.events {
         /**
         * @param padding The padding to set.
         */
-        public float Padding {
+        virtual public float Padding {
             set {
                 padding = value;
             }
@@ -134,7 +135,7 @@ namespace iTextSharp.text.pdf.events {
         /**
         * @param parent The parent to set.
         */
-        public PdfFormField Parent {
+        virtual public PdfFormField Parent {
             set {
                 parent = value;
             }
@@ -168,7 +169,7 @@ namespace iTextSharp.text.pdf.events {
         /**
         * @see com.lowagie.text.pdf.PdfPCellEvent#cellLayout(com.lowagie.text.pdf.PdfPCell, com.lowagie.text.Rectangle, com.lowagie.text.pdf.PdfContentByte[])
         */
-        public void CellLayout(PdfPCell cell, Rectangle rect, PdfContentByte[] canvases) {
+        virtual public void CellLayout(PdfPCell cell, Rectangle rect, PdfContentByte[] canvases) {
             if (cellField == null || (fieldWriter == null && parent == null)) throw new ArgumentException(MessageLocalization.GetComposedMessage("you.have.used.the.wrong.constructor.for.this.fieldpositioningevents.class"));
             cellField.Put(PdfName.RECT, new PdfRectangle(rect.GetLeft(padding), rect.GetBottom(padding), rect.GetRight(padding), rect.GetTop(padding)));
             if (parent == null)

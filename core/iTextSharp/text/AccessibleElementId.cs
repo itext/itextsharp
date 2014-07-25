@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace iTextSharp.text
 {
@@ -23,7 +23,7 @@ namespace iTextSharp.text
             return (o is AccessibleElementId) && (id == ((AccessibleElementId) o).id);
         }
 
-        public int CompareTo(AccessibleElementId elementId) {
+        virtual public int CompareTo(AccessibleElementId elementId) {
             if (id < elementId.id)
                 return -1;
             else if (id > elementId.id)

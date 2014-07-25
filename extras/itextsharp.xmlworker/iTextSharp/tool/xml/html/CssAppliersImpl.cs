@@ -2,13 +2,13 @@
  * $Id: CssAppliersImpl.java 265 2012-01-17 12:38:18Z eugenemark $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License version 3 as published by the Free Software Foundation with the addition of the following permission
  * added to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
- * 1T3XT, 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * ITEXT GROUP, ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
@@ -88,7 +88,7 @@ namespace iTextSharp.tool.xml.html {
          * @see com.itextpdf.tool.xml.html.CssAppliers#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag, com.itextpdf.tool.xml.css.apply.MarginMemory, com.itextpdf.tool.xml.css.apply.PageSizeContainable, com.itextpdf.tool.xml.pipeline.html.ImageProvider)
          */
 
-        public IElement Apply(IElement e, Tag t, IMarginMemory mm, IPageSizeContainable psc, IImageProvider ip)
+        virtual public IElement Apply(IElement e, Tag t, IMarginMemory mm, IPageSizeContainable psc, IImageProvider ip)
         {
             // warning, mapping is done by instance of, make sure to add things in the right order when adding more.
             if (e is Chunk)
@@ -130,7 +130,7 @@ namespace iTextSharp.tool.xml.html {
          * @see com.itextpdf.tool.xml.html.CssAppliers#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag, com.itextpdf.tool.xml.pipeline.html.HtmlPipelineContext)
          */
 
-        public IElement Apply(IElement e, Tag t, HtmlPipelineContext ctx)
+        virtual public IElement Apply(IElement e, Tag t, HtmlPipelineContext ctx)
         {
             try
             {
@@ -142,17 +142,17 @@ namespace iTextSharp.tool.xml.html {
             }
         }
 
-        public ChunkCssApplier GetChunkCssAplier()
+        virtual public ChunkCssApplier GetChunkCssAplier()
         {
             return chunk;
         }
 
-        public ChunkCssApplier ChunkCssAplier {
+        virtual public ChunkCssApplier ChunkCssAplier {
             get { return this.chunk; }
             set { this.chunk = value; }
         }
 
-        public CssAppliers Clone()
+        virtual public CssAppliers Clone()
         {
             CssAppliersImpl clone = new CssAppliersImpl();
             clone.chunk = chunk;

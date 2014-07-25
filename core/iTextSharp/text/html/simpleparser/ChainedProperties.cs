@@ -2,15 +2,16 @@ using System;
 using System.Collections.Generic;
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -98,7 +99,7 @@ namespace iTextSharp.text.html.simpleparser {
 	     * @param	key	the key of the property
 	     * @return	true if the key is found
 	     */
-        public bool HasProperty(String key) {
+        virtual public bool HasProperty(String key) {
             for (int k = chain.Count - 1; k >= 0; --k) {
                 TagAttributes p = chain[k];
                 IDictionary<String, String> attrs = p.attrs;
@@ -113,12 +114,12 @@ namespace iTextSharp.text.html.simpleparser {
 	     * @param tag	the tags that needs to be added to the chain
 	     * @param props	the tag's attributes
 	     */
-	    public void AddToChain(String tag, IDictionary<String, String> props) {
+	    virtual public void AddToChain(String tag, IDictionary<String, String> props) {
 		    AdjustFontSize(props);
 		    chain.Add(new TagAttributes(tag, props));
         }
         
-        public void RemoveChain(String tag) {
+        virtual public void RemoveChain(String tag) {
             for (int k = chain.Count - 1; k >= 0; --k) {
                 if (tag.Equals(chain[k].tag)) {
                     chain.RemoveAt(k);
@@ -133,7 +134,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   attrs the attributes that may have to be updated
          * @since 5.0.6 (renamed)
          */
-        protected internal void AdjustFontSize(IDictionary<String, String> attrs) {
+        virtual protected internal void AdjustFontSize(IDictionary<String, String> attrs) {
             // fetch the font size
             String value;
             attrs.TryGetValue(HtmlTags.SIZE, out value);

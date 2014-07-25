@@ -6,7 +6,7 @@ namespace iTextSharp.text.pdf.parser {
             this.deleg = deleg;
         }
 
-        public string GetResultantText() {
+        virtual public string GetResultantText() {
             return deleg.GetResultantText();
         }
     }

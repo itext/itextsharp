@@ -5,15 +5,16 @@ using iTextSharp.text.pdf.interfaces;
 using Org.BouncyCastle.X509;
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -83,7 +84,7 @@ namespace iTextSharp.text.pdf {
         * @param reader the PDF document
         * @throws DocumentException on error
         */    
-        public void AddDocument(PdfReader reader) {
+        virtual public void AddDocument(PdfReader reader) {
             fc.AddDocument(reader);
         }
         
@@ -95,7 +96,7 @@ namespace iTextSharp.text.pdf {
         * @param pagesToKeep the pages to keep
         * @throws DocumentException on error
         */    
-        public void AddDocument(PdfReader reader, IList<int> pagesToKeep) {
+        virtual public void AddDocument(PdfReader reader, IList<int> pagesToKeep) {
             fc.AddDocument(reader, pagesToKeep);
         }
 
@@ -107,7 +108,7 @@ namespace iTextSharp.text.pdf {
         * @param ranges the comma separated ranges as described in {@link SequenceList}
         * @throws DocumentException on error
         */    
-        public void AddDocument(PdfReader reader, String ranges) {
+        virtual public void AddDocument(PdfReader reader, String ranges) {
             fc.AddDocument(reader, SequenceList.Expand(ranges, reader.NumberOfPages));
         }
 
@@ -123,7 +124,7 @@ namespace iTextSharp.text.pdf {
         * @param strength128Bits <code>true</code> for 128 bit key length, <code>false</code> for 40 bit key length
         * @throws DocumentException if the document is already open
         */
-        public void SetEncryption(byte[] userPassword, byte[] ownerPassword, int permissions, bool strength128Bits) {
+        virtual public void SetEncryption(byte[] userPassword, byte[] ownerPassword, int permissions, bool strength128Bits) {
             fc.SetEncryption(userPassword, ownerPassword, permissions, strength128Bits ? PdfWriter.STANDARD_ENCRYPTION_128 : PdfWriter.STANDARD_ENCRYPTION_40);
         }
         
@@ -140,14 +141,14 @@ namespace iTextSharp.text.pdf {
         * @param permissions the user permissions
         * @throws DocumentException if the document is already open
         */
-        public void SetEncryption(bool strength, String userPassword, String ownerPassword, int permissions) {
+        virtual public void SetEncryption(bool strength, String userPassword, String ownerPassword, int permissions) {
             SetEncryption(DocWriter.GetISOBytes(userPassword), DocWriter.GetISOBytes(ownerPassword), permissions, strength);
         }
      
         /**
         * Closes the output document.
         */    
-        public void Close() {
+        virtual public void Close() {
             fc.Close();
         }
 
@@ -155,7 +156,7 @@ namespace iTextSharp.text.pdf {
         * Opens the document. This is usually not needed as AddDocument() will do it
         * automatically.
         */    
-        public void Open() {
+        virtual public void Open() {
             fc.OpenDoc();
         }
 
@@ -163,7 +164,7 @@ namespace iTextSharp.text.pdf {
         * Adds JavaScript to the global document
         * @param js the JavaScript
         */    
-        public void AddJavaScript(String js) {
+        virtual public void AddJavaScript(String js) {
             fc.AddJavaScript(js, !PdfEncodings.IsPdfDocEncoding(js));
         }
 
@@ -172,7 +173,7 @@ namespace iTextSharp.text.pdf {
         * {@link SimpleBookmark}.
         * @param outlines the bookmarks or <CODE>null</CODE> to remove any
         */    
-        public IList<Dictionary<string,object>> Outlines {
+        virtual public IList<Dictionary<string,object>> Outlines {
             set {
                 fc.Outlines = value;
             }
@@ -181,7 +182,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the underlying PdfWriter.
         * @return the underlying PdfWriter
         */    
-        public PdfWriter Writer {
+        virtual public PdfWriter Writer {
             get {
                 return fc;
             }
@@ -191,7 +192,7 @@ namespace iTextSharp.text.pdf {
         * Gets the 1.5 compression status.
         * @return <code>true</code> if the 1.5 compression is on
         */
-        public bool FullCompression {
+        virtual public bool FullCompression {
             get {
                 return fc.FullCompression;
             }
@@ -201,28 +202,28 @@ namespace iTextSharp.text.pdf {
         * Sets the document's compression to the new 1.5 mode with object streams and xref
         * streams. It can be set at any time but once set it can't be unset.
         */
-        public void SetFullCompression() {
+        virtual public void SetFullCompression() {
             fc.SetFullCompression();
         }
     
         /**
         * @see com.lowagie.text.pdf.interfaces.PdfEncryptionSettings#setEncryption(byte[], byte[], int, int)
         */
-        public void SetEncryption(byte[] userPassword, byte[] ownerPassword, int permissions, int encryptionType) {
+        virtual public void SetEncryption(byte[] userPassword, byte[] ownerPassword, int permissions, int encryptionType) {
             fc.SetEncryption(userPassword, ownerPassword, permissions, encryptionType);
         }
 
         /**
         * @see com.lowagie.text.pdf.interfaces.PdfViewerPreferences#addViewerPreference(com.lowagie.text.pdf.PdfName, com.lowagie.text.pdf.PdfObject)
         */
-        public void AddViewerPreference(PdfName key, PdfObject value) {
+        virtual public void AddViewerPreference(PdfName key, PdfObject value) {
             fc.AddViewerPreference(key, value); 
         }
 
         /**
         * @see com.lowagie.text.pdf.interfaces.PdfViewerPreferences#setViewerPreferences(int)
         */
-        public int ViewerPreferences {
+        virtual public int ViewerPreferences {
             set {
                 fc.ViewerPreferences = value;
             }
@@ -231,7 +232,7 @@ namespace iTextSharp.text.pdf {
         /**
         * @see com.lowagie.text.pdf.interfaces.PdfEncryptionSettings#setEncryption(java.security.cert.Certificate[], int[], int)
         */
-        public void SetEncryption(X509Certificate[] certs, int[] permissions, int encryptionType) {
+        virtual public void SetEncryption(X509Certificate[] certs, int[] permissions, int encryptionType) {
             fc.SetEncryption(certs, permissions, encryptionType);
         }    
     }

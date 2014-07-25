@@ -5,19 +5,20 @@ using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: TrueTypeFontUnicode.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: TrueTypeFontUnicode.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -161,7 +162,7 @@ namespace iTextSharp.text.pdf {
          * @throws DocumentException on error
          * @return the stream representing this CMap or <CODE>null</CODE>
          */    
-        public PdfStream GetToUnicode(Object[] metrics) {
+        virtual public PdfStream GetToUnicode(Object[] metrics) {
             if (metrics.Length == 0)
                 return null;
             StringBuilder buf = new StringBuilder(
@@ -222,7 +223,7 @@ namespace iTextSharp.text.pdf {
          * @param metrics the horizontal width metrics
          * @return a stream
          */    
-        public PdfDictionary GetCIDFontType2(PdfIndirectReference fontDescriptor, string subsetPrefix, Object[] metrics) {
+        virtual public PdfDictionary GetCIDFontType2(PdfIndirectReference fontDescriptor, string subsetPrefix, Object[] metrics) {
             PdfDictionary dic = new PdfDictionary(PdfName.FONT);
             // sivan; cff
             if (cff) {
@@ -277,7 +278,7 @@ namespace iTextSharp.text.pdf {
          * @param toUnicode the ToUnicode stream
          * @return the stream
          */    
-        public PdfDictionary GetFontBaseType(PdfIndirectReference descendant, string subsetPrefix, PdfIndirectReference toUnicode) {
+        virtual public PdfDictionary GetFontBaseType(PdfIndirectReference descendant, string subsetPrefix, PdfIndirectReference toUnicode) {
             PdfDictionary dic = new PdfDictionary(PdfName.FONT);
 
             dic.Put(PdfName.SUBTYPE, PdfName.TYPE0);
@@ -298,7 +299,7 @@ namespace iTextSharp.text.pdf {
          * @param o2 the second element
          * @return the comparisation
          */    
-        public int Compare(int[] o1, int[] o2) {
+        virtual public int Compare(int[] o1, int[] o2) {
             int m1 = o1[0];
             int m2 = o2[0];
             if (m1 < m2)

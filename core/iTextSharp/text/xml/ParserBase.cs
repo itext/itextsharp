@@ -4,18 +4,19 @@ using System.Xml;
 using System.Collections;
 
 /*
- * $Id: ParserBase.cs 518 2013-02-20 13:16:32Z pavel-alay $
+ * $Id: ParserBase.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -54,14 +55,14 @@ namespace iTextSharp.text.xml
     /// </summary>
     public abstract class ParserBase
     {
-        public void Parse(XmlDocument xDoc) {
+        virtual public void Parse(XmlDocument xDoc) {
             string xml = xDoc.OuterXml;
             StringReader stringReader = new StringReader(xml);
             XmlTextReader reader = new XmlTextReader(stringReader);
             this.Parse(reader);
         }
 
-        public void Parse(XmlTextReader reader) {
+        virtual public void Parse(XmlTextReader reader) {
             try {
                 while (reader.Read()) {
                     switch (reader.NodeType) {
@@ -109,7 +110,7 @@ namespace iTextSharp.text.xml
         /// Begins the process of processing an XML document
         /// </summary>
         /// <param name="url">the XML document to parse</param>
-        public void Parse(string url) {
+        virtual public void Parse(string url) {
             XmlTextReader reader = null;
             reader = new XmlTextReader(url);
             this.Parse(reader);

@@ -1,17 +1,18 @@
 using System;
 /*
- * $Id: Matrix.cs 318 2012-02-27 22:46:07Z psoares33 $
+ * $Id: Matrix.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -131,7 +132,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param by The matrix to multiply by
          * @return  the resulting matrix
          */
-        public Matrix Multiply(Matrix by){
+        virtual public Matrix Multiply(Matrix by){
             Matrix rslt = new Matrix();
             
             float[] a = vals;
@@ -156,7 +157,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param arg the matrix to subtract from this matrix
          * @return a Matrix object
          */
-        public Matrix Subtract(Matrix arg){
+        virtual public Matrix Subtract(Matrix arg){
             Matrix rslt = new Matrix();
             
             float[] a = vals;
@@ -180,7 +181,7 @@ namespace iTextSharp.text.pdf.parser {
          * Computes the determinant of the matrix.
          * @return the determinant of the matrix
          */
-        public float GetDeterminant(){
+        virtual public float GetDeterminant(){
             // ref http://en.wikipedia.org/wiki/Determinant   
             // note that in PDF, I13 and I23 are always 0 and I33 is always 1
             // so this could be simplified/faster

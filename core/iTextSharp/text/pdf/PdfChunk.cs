@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using iTextSharp.text.pdf.interfaces;
 
 /*
- * $Id: PdfChunk.cs 660 2013-11-27 11:22:32Z asubach $
+ * $Id: PdfChunk.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -318,11 +319,11 @@ namespace iTextSharp.text.pdf {
         * @param c the CID code
         * @return the Unicode equivalent
         */    
-        public int GetUnicodeEquivalent(int c) {
+        virtual public int GetUnicodeEquivalent(int c) {
             return baseFont.GetUnicodeEquivalent(c);
         }
 
-        protected int GetWord(string text, int start) {
+        virtual protected int GetWord(string text, int start) {
             int len = text.Length;
             while (start < len) {
                 if (!char.IsLetter(text[start]))
@@ -624,7 +625,7 @@ namespace iTextSharp.text.pdf {
          * @return <CODE>true</CODE> if the <CODE>PdfChunk</CODE> split was caused by a newline.
          */
     
-        public bool IsNewlineSplit() {
+        virtual public bool IsNewlineSplit() {
             return newlineSplit;
         }
     
@@ -636,7 +637,7 @@ namespace iTextSharp.text.pdf {
          * @return the calculated width
          */
     
-        public float GetWidthCorrected(float charSpacing, float wordSpacing) {
+        virtual public float GetWidthCorrected(float charSpacing, float wordSpacing) {
             if (image != null) {
                 return image.ScaledWidth + charSpacing;
             }
@@ -651,7 +652,7 @@ namespace iTextSharp.text.pdf {
         * Gets the text displacement relatiev to the baseline.
         * @return a displacement in points
         */
-        public float TextRise {
+        virtual public float TextRise {
             get {
                 object f = GetAttribute(Chunk.SUBSUPSCRIPT);
                 if (f != null) {
@@ -666,7 +667,7 @@ namespace iTextSharp.text.pdf {
          * @return the width of the space trimmed, otherwise 0
          */
     
-        public float TrimLastSpace() {
+        virtual public float TrimLastSpace() {
             BaseFont ft = font.Font;
             if (ft.FontType == BaseFont.FONT_TYPE_CJK && ft.GetUnicodeEquivalent(' ') != ' ') {
                 if (value.Length > 1 && value.EndsWith("\u0001")) {
@@ -683,7 +684,7 @@ namespace iTextSharp.text.pdf {
             return 0;
         }
     
-        public float TrimFirstSpace()
+        virtual public float TrimFirstSpace()
         {
             BaseFont ft = font.Font;
             if (ft.FontType == BaseFont.FONT_TYPE_CJK && ft.GetUnicodeEquivalent(' ') != ' ') {
@@ -848,7 +849,7 @@ namespace iTextSharp.text.pdf {
          * Returns a scalePercentage in case the image needs to be scaled.
          * Sets a scale percentage in case the image needs to be scaled.
          */
-        public float ImageScalePercentage
+        virtual public float ImageScalePercentage
         {
             get { return imageScalePercentage; }
             set { imageScalePercentage = value; }
@@ -964,14 +965,14 @@ namespace iTextSharp.text.pdf {
             return str;
         }
 
-        public bool ChangeLeading {
+        virtual public bool ChangeLeading {
             get {
                 return changeLeading;
             }
         }
 
 
-        public float Leading {
+        virtual public float Leading {
             get {
                 return leading;
             }

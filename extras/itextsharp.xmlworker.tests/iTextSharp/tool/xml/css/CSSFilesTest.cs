@@ -17,7 +17,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         public const String RESOURCES = @"..\..\resources\";
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
             files = new CssFilesImpl();
             StyleAttrCSSResolver resolver = new StyleAttrCSSResolver(files);
@@ -28,20 +28,20 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void GetStyle() {
+        virtual public void GetStyle() {
             IDictionary<String, String> css = files.GetCSS(t);
             Assert.IsTrue(css.ContainsKey("font-size"));
             Assert.IsTrue(css.ContainsKey("color"));
         }
 
         [Test]
-        public void Clear() {
+        virtual public void Clear() {
             files.Clear();
             Assert.IsFalse(files.HasFiles(), "files detected");
         }
 
         [Test]
-        public void ClearWithPersistent() {
+        virtual public void ClearWithPersistent() {
             CssFileImpl css = new CssFileImpl();
             css.IsPersistent(true);
             files.Add(css);

@@ -88,14 +88,14 @@ namespace iTextSharp.text.pdf {
         public IntHashtable() : this( 101, 0.75f ) {}
     
         /// Returns the number of elements contained in the hashtable.
-        public int Size {
+        virtual public int Size {
             get {
                 return count;
             }
         }
     
         /// Returns true if the hashtable contains no elements.
-        public bool IsEmpty() {
+        virtual public bool IsEmpty() {
             return count == 0;
         }
     
@@ -105,7 +105,7 @@ namespace iTextSharp.text.pdf {
         // @exception NullPointerException If the value being searched
         // for is equal to null.
         // @see IntHashtable#containsKey
-        public bool Contains( int value ) {
+        virtual public bool Contains( int value ) {
             IntHashtableEntry[] tab = table;
             for ( int i = tab.Length ; i-- > 0 ; ) {
                 for ( IntHashtableEntry e = tab[i] ; e != null ; e = e.next ) {
@@ -119,7 +119,7 @@ namespace iTextSharp.text.pdf {
         /// Returns true if the collection contains an element for the key.
         // @param key the key that we are looking for
         // @see IntHashtable#contains
-        public bool ContainsKey( int key ) {
+        virtual public bool ContainsKey( int key ) {
             IntHashtableEntry[] tab = table;
             int hash = key;
             int index = ( hash & 0x7FFFFFFF ) % tab.Length;
@@ -181,7 +181,7 @@ namespace iTextSharp.text.pdf {
         /// Rehashes the content of the table into a bigger table.
         // This method is called automatically when the hashtable's
         // size exceeds the threshold.
-        protected void Rehash() {
+        virtual protected void Rehash() {
             int oldCapacity = table.Length;
             IntHashtableEntry[] oldTable = table;
         
@@ -207,7 +207,7 @@ namespace iTextSharp.text.pdf {
         // key is not present.
         // @param key the key that needs to be removed
         // @return the value of key, or null if the key was not found.
-        public int Remove( int key ) {
+        virtual public int Remove( int key ) {
             IntHashtableEntry[] tab = table;
                 int hash = key;
             int index = ( hash & 0x7FFFFFFF ) % tab.Length;
@@ -225,14 +225,14 @@ namespace iTextSharp.text.pdf {
         }
     
         /// Clears the hash table so that it has no more elements in it.
-        public void Clear() {
+        virtual public void Clear() {
             IntHashtableEntry[] tab = table;
             for ( int index = tab.Length; --index >= 0; )
                 tab[index] = null;
             count = 0;
         }
     
-        public IntHashtable Clone() {
+        virtual public IntHashtable Clone() {
             IntHashtable t = new IntHashtable();
             t.count = count;
             t.loadFactor = loadFactor;
@@ -245,13 +245,13 @@ namespace iTextSharp.text.pdf {
             return t;
         }
 
-        public int[] ToOrderedKeys() {
+        virtual public int[] ToOrderedKeys() {
             int[] res = GetKeys();
             Array.Sort(res);
             return res;
         }
         
-        public int[] GetKeys() {
+        virtual public int[] GetKeys() {
             int[] res = new int[count];
             int ptr = 0;
             int index = table.Length;
@@ -274,19 +274,19 @@ namespace iTextSharp.text.pdf {
             internal int value;
             internal IntHashtableEntry next;
             
-            public int Key {
+            virtual public int Key {
                 get {
                     return key;
                 }
             }
             
-            public int Value {
+            virtual public int Value {
                 get {
                     return value;
                 }
             }
             
-            protected internal IntHashtableEntry Clone() {
+            virtual protected internal IntHashtableEntry Clone() {
                 IntHashtableEntry entry = new IntHashtableEntry();
                 entry.hash = hash;
                 entry.key = key;
@@ -296,7 +296,7 @@ namespace iTextSharp.text.pdf {
             }
         }    
 
-        public IntHashtableIterator GetEntryIterator() {
+        virtual public IntHashtableIterator GetEntryIterator() {
             return new IntHashtableIterator(table);
         }
         
@@ -311,7 +311,7 @@ namespace iTextSharp.text.pdf {
                 this.index = table.Length;
             }
             
-            public bool HasNext() {
+            virtual public bool HasNext() {
                 if (entry != null) {
                     return true;
                 }
@@ -323,7 +323,7 @@ namespace iTextSharp.text.pdf {
                 return false;
             }
             
-            public IntHashtableEntry Next() {
+            virtual public IntHashtableEntry Next() {
                 if (entry == null) {
                     while ((index-- > 0) && ((entry = table[index]) == null));
                 }

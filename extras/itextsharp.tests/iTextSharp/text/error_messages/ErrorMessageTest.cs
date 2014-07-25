@@ -9,7 +9,7 @@ namespace itextsharp.tests.text.error_messages
          * using 1.unsupported.jpeg.marker.2={1}: unsupported JPEG marker: {2}
          */
         [Test]
-        public void VerifyParamReplacementNoParam()
+        virtual public void VerifyParamReplacementNoParam()
         {
             Assert.AreEqual("{1}: unsupported JPEG marker: {2}",
                     MessageLocalization
@@ -17,7 +17,7 @@ namespace itextsharp.tests.text.error_messages
         }
 
         [Test]
-        public void VerifyParamReplacement1Param()
+        virtual public void VerifyParamReplacement1Param()
         {
             Assert.AreEqual("one: unsupported JPEG marker: {2}",
                     MessageLocalization.GetComposedMessage(
@@ -25,7 +25,7 @@ namespace itextsharp.tests.text.error_messages
         }
 
         [Test]
-        public void VerifyParamReplacement2Param()
+        virtual public void VerifyParamReplacement2Param()
         {
             Assert.AreEqual("one: unsupported JPEG marker: two",
                     MessageLocalization.GetComposedMessage(
@@ -33,7 +33,7 @@ namespace itextsharp.tests.text.error_messages
         }
 
         [Test]
-        public void VerifyParamReplacementXParam()
+        virtual public void VerifyParamReplacementXParam()
         {
             Assert.AreEqual("one: unsupported JPEG marker: two",
                     MessageLocalization.GetComposedMessage(

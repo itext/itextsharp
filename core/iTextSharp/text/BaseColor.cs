@@ -1,17 +1,18 @@
 using System;
 /*
- * $Id: BaseColor.cs 622 2013-10-04 12:47:40Z pavel-alay $
+ * $Id: BaseColor.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -134,35 +135,35 @@ namespace iTextSharp.text {
         /**
          * @return the combined color value
          */
-        public int RGB {
+        virtual public int RGB {
             get { return value; }
         }
         /**
          *
          * @return the value for red
          */
-        public int R {
+        virtual public int R {
             get { return (RGB >> 16) & 0xFF; }
         }
         /**
          *
          * @return the value for green
          */
-        public int G {
+        virtual public int G {
             get { return (RGB >> 8) & 0xFF; }
         }
         /**
          *
          * @return the value for blue
          */
-        public int B {
+        virtual public int B {
             get { return (RGB >> 0) & 0xFF; }
         }
         /**
          *
          * @return the value for the alpha channel
          */
-        public int A {
+        virtual public int A {
             get { return (RGB >> 24) & 0xff; }
         }
 
@@ -170,7 +171,7 @@ namespace iTextSharp.text {
          * Make this BaseColor brighter. Factor used is 0.7.
          * @return the new BaseColor
          */
-        public BaseColor Brighter() {
+        virtual public BaseColor Brighter() {
             int r = R;
             int g = G;
             int b = B;
@@ -195,14 +196,14 @@ namespace iTextSharp.text {
          * Make this color darker. Factor used is 0.7
          * @return the new BaseColor
          */
-        public BaseColor Darker() {
+        virtual public BaseColor Darker() {
             return new BaseColor(Math.Max((int) (R * FACTOR), 0),
                     Math.Max((int) (G * FACTOR), 0),
                     Math.Max((int) (B * FACTOR), 0));
         }
 
         [Obsolete ("Use RGB instead")]
-        public int ToArgb() {
+        virtual public int ToArgb() {
             return value;
         }
 

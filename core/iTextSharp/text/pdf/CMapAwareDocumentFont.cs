@@ -8,15 +8,16 @@ using iTextSharp.text.error_messages;
  * $Id: CMapAwareDocumentFont.java 4320 2010-02-10 05:24:52Z trumpetinc $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -254,7 +255,7 @@ namespace iTextSharp.text.pdf {
          * @return  the unicode String that results from decoding
          * @since 2.1.7
          */
-        public String Decode(byte[] cidbytes, int offset, int len){
+        virtual public String Decode(byte[] cidbytes, int offset, int len){
             StringBuilder sb = new StringBuilder();
             if (toUnicodeCmap == null && byteCid != null) {
                 CMapSequence seq = new CMapSequence(cidbytes, offset, len);
@@ -287,7 +288,7 @@ namespace iTextSharp.text.pdf {
          * @return  a String encoded taking into account if the bytes are in unicode or not.
          * @deprecated method name is not indicative of what it does.  Use <code>decode</code> instead.
          */
-        public String Encode(byte[] bytes, int offset, int len){
+        virtual public String Encode(byte[] bytes, int offset, int len){
             return Decode(bytes, offset, len);    
         }
     }

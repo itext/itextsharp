@@ -9,15 +9,16 @@ using iTextSharp.text.html;
  * $Id: IncCell.java 4635 2010-11-28 17:38:03Z psoares33 $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -97,7 +98,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param	tag		a cell tag
          * @param	chain	the hierarchy chain
          */
-	    public PdfPCell CreatePdfPCell(String tag, ChainedProperties chain) {
+	    virtual public PdfPCell CreatePdfPCell(String tag, ChainedProperties chain) {
 		    PdfPCell cell = new PdfPCell((Phrase)null);
             // colspan
 		    String value = chain[HtmlTags.COLSPAN];
@@ -137,28 +138,28 @@ namespace iTextSharp.text.html.simpleparser {
             return cell;
 	    }
 
-        public bool Add(IElement o) {
+        virtual public bool Add(IElement o) {
             cell.AddElement(o);
             return true;
         }
         
-        public IList<Chunk> Chunks {
+        virtual public IList<Chunk> Chunks {
             get {
                 return null;
             }
         }
         
-        public bool Process(IElementListener listener) {
+        virtual public bool Process(IElementListener listener) {
             return true;
         }
         
-        public int Type {
+        virtual public int Type {
             get {
                 return Element.RECTANGLE;
             }
         }
         
-        public PdfPCell Cell {
+        virtual public PdfPCell Cell {
             get {
                 return cell;
             }
@@ -168,7 +169,7 @@ namespace iTextSharp.text.html.simpleparser {
         * @see com.lowagie.text.Element#isContent()
         * @since   iText 2.0.8
         */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return true;
         }
 
@@ -176,16 +177,16 @@ namespace iTextSharp.text.html.simpleparser {
         * @see com.lowagie.text.Element#isNestable()
         * @since   iText 2.0.8
         */
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             return true;
         }
   
 
-        public float Width {
+        virtual public float Width {
             get { return width; }
         }
 
-        public bool IsPercentage {
+        virtual public bool IsPercentage {
             get {
                 return percentage;
             }

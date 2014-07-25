@@ -1,6 +1,6 @@
 using System;
 /*
- * $Id: TIFFFaxDecompressor.cs 177 2010-05-30 17:30:44Z psoares33 $
+ * $Id: TIFFFaxDecompressor.cs 676 2013-12-24 13:15:22Z asubach $
  * Copyright 2003-2009 by Paulo Soares.
  *
  * This code was originally released in 2001 by SUN (see class
@@ -604,7 +604,7 @@ namespace iTextSharp.text.pdf.codec {
          * Invokes the superclass method and then sets instance variables on
          * the basis of the metadata set on this decompressor.
          */
-        public void SetOptions(int fillOrder, int compression, int t4Options, int t6Options) {
+        virtual public void SetOptions(int fillOrder, int compression, int t4Options, int t6Options) {
             this.fillOrder = fillOrder;
             this.compression = compression;
             this.t4Options = t4Options;
@@ -614,7 +614,7 @@ namespace iTextSharp.text.pdf.codec {
             this.fillBits = (int) ((t4Options & 0x04) >> 2);
         }
 
-        public void DecodeRaw(byte[] buffer, byte[] compData, int w, int h) {
+        virtual public void DecodeRaw(byte[] buffer, byte[] compData, int w, int h) {
 
             this.buffer = buffer;
             this.data = compData;
@@ -646,7 +646,7 @@ namespace iTextSharp.text.pdf.codec {
             }
         }
 
-        public void DecodeRLE() {
+        virtual public void DecodeRLE() {
             for (int i = 0; i < h; i++) {
                 // Decode the line.
                 DecodeNextScanline();
@@ -662,7 +662,7 @@ namespace iTextSharp.text.pdf.codec {
             }
         }
 
-        public void DecodeNextScanline() {
+        virtual public void DecodeNextScanline() {
             int bits = 0, code = 0, isT = 0;
             int current, entry, twoBits;
             bool isWhite = true;
@@ -830,7 +830,7 @@ namespace iTextSharp.text.pdf.codec {
             currChangingElems[changingElemSize++] = bitOffset;
         }
 
-        public void DecodeT4() {
+        virtual public void DecodeT4() {
             int height = h;
 
             int a0, a1, b1, b2;
@@ -997,7 +997,7 @@ namespace iTextSharp.text.pdf.codec {
             } // while (lines < height)
         }
 
-        public void DecodeT6() {
+        virtual public void DecodeT6() {
             int height = h;
 
 

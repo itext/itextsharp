@@ -1,17 +1,18 @@
 /*
- * $Id: PdfObject.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: PdfObject.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -204,7 +205,7 @@ namespace iTextSharp.text.pdf {
          * Can this object be in an object stream?
          * @return true if this object can be in an object stream.
          */
-        public bool CanBeInObjStm() {
+        virtual public bool CanBeInObjStm() {
             switch (type) {
                 case NULL:
                 case BOOLEAN:
@@ -265,7 +266,7 @@ namespace iTextSharp.text.pdf {
          * @return        a length
          */
     
-        public int Length {
+        virtual public int Length {
             get {
                 return ToString().Length;
             }
@@ -277,7 +278,7 @@ namespace iTextSharp.text.pdf {
          * @param        content            the new content of this <CODE>PdfObject</CODE>
          */
     
-        protected string Content {
+        virtual protected string Content {
             set {
                 bytes = PdfEncodings.ConvertToBytes(value, null);
             }
@@ -291,7 +292,7 @@ namespace iTextSharp.text.pdf {
          * @return        a type
          */
     
-        public int Type {
+        virtual public int Type {
             get {
                 return type;
             }
@@ -303,7 +304,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsNull() {
+        virtual public bool IsNull() {
             return (this.type == NULL);
         }
     
@@ -313,7 +314,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsBoolean() {
+        virtual public bool IsBoolean() {
             return (this.type == BOOLEAN);
         }
     
@@ -323,7 +324,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsNumber() {
+        virtual public bool IsNumber() {
             return (this.type == NUMBER);
         }
     
@@ -333,7 +334,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsString() {
+        virtual public bool IsString() {
             return (this.type == STRING);
         }
     
@@ -343,7 +344,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsName() {
+        virtual public bool IsName() {
             return (this.type == NAME);
         }
     
@@ -353,7 +354,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsArray() {
+        virtual public bool IsArray() {
             return (this.type == ARRAY);
         }
     
@@ -363,7 +364,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsDictionary() {
+        virtual public bool IsDictionary() {
             return (this.type == DICTIONARY);
         }
     
@@ -373,7 +374,7 @@ namespace iTextSharp.text.pdf {
          * @return        <CODE>true</CODE> or <CODE>false</CODE>
          */
     
-        public bool IsStream() {
+        virtual public bool IsStream() {
             return (this.type == STREAM);
         }
 
@@ -381,11 +382,11 @@ namespace iTextSharp.text.pdf {
          * Checks if this is an indirect object.
          * @return true if this is an indirect object
          */
-        public bool IsIndirect() {
+        virtual public bool IsIndirect() {
             return (this.type == INDIRECT);
         }
     
-        public PRIndirectReference IndRef {
+        virtual public PRIndirectReference IndRef {
             get {
                 return indRef;
             }
@@ -394,7 +395,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public int CompareTo(PdfObject obj) {
+        virtual public int CompareTo(PdfObject obj) {
             return this.GetHashCode().CompareTo(obj.GetHashCode());
         }
 

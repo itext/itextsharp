@@ -1,17 +1,18 @@
 using System;
 /*
- * $Id: StringTokenizer.cs 318 2012-02-27 22:46:07Z psoares33 $
+ * $Id: StringTokenizer.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -67,7 +68,7 @@ namespace System.util {
             this.pos = 0;
         }
 
-        public bool HasMoreTokens() {
+        virtual public bool HasMoreTokens() {
             if (! retDelims) {
                 while (pos < len && delim.IndexOf(str[pos]) >= 0)
                     pos++;
@@ -75,12 +76,12 @@ namespace System.util {
             return pos < len;
         }
 
-        public String NextToken(String delim) {
+        virtual public String NextToken(String delim) {
             this.delim = delim;
             return NextToken();
         }
 
-        public String NextToken() {
+        virtual public String NextToken() {
             if (pos < len && delim.IndexOf(str[pos]) >= 0) {
                 if (retDelims)
                     return str.Substring(pos++, 1);
@@ -95,7 +96,7 @@ namespace System.util {
             throw new IndexOutOfRangeException();
         }
 
-        public int CountTokens() {
+        virtual public int CountTokens() {
             int count = 0;
             int delimiterCount = 0;
             bool tokenFound = false;

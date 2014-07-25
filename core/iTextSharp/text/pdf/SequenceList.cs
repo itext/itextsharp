@@ -4,15 +4,16 @@ using System.Text;
 using System.util;
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -87,7 +88,7 @@ namespace iTextSharp.text.pdf {
             text = range.ToCharArray();
         }
         
-        protected char NextChar() {
+        virtual protected char NextChar() {
             while (true) {
                 if (ptr >= text.Length)
                     return EOT;
@@ -97,13 +98,13 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected void PutBack() {
+        virtual protected void PutBack() {
             --ptr;
             if (ptr < 0)
                 ptr = 0;
         }
         
-        protected int Type {
+        virtual protected int Type {
             get {
                 StringBuilder buf = new StringBuilder();
                 int state = FIRST;
@@ -170,7 +171,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected bool GetAttributes() {
+        virtual protected bool GetAttributes() {
             low = -1;
             high = -1;
             odd = even = inverse = false;

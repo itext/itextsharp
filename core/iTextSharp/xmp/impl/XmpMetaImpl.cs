@@ -827,7 +827,7 @@ namespace iTextSharp.xmp.impl {
         /// Performs a deep clone of the XMPMeta-object
         /// </summary>
         /// <seealso cref= java.lang.Object#clone() </seealso>
-        public object Clone() {
+        virtual public object Clone() {
             XmpNode clonedTree = (XmpNode) _tree.Clone();
             return new XmpMetaImpl(clonedTree);
         }
@@ -1060,17 +1060,17 @@ namespace iTextSharp.xmp.impl {
 
             #region IXmpProperty Members
 
-            public string Value {
+            virtual public string Value {
                 get { return _itemNode.Value; }
             }
 
 
-            public PropertyOptions Options {
+            virtual public PropertyOptions Options {
                 get { return _itemNode.Options; }
             }
 
 
-            public string Language {
+            virtual public string Language {
                 get { return _itemNode.GetQualifier(1).Value; }
             }
 
@@ -1096,17 +1096,17 @@ namespace iTextSharp.xmp.impl {
 
             #region IXmpProperty Members
 
-            public string Value {
+            virtual public string Value {
                 get { return _value != null ? _value.ToString() : null; }
             }
 
 
-            public PropertyOptions Options {
+            virtual public PropertyOptions Options {
                 get { return _propNode.Options; }
             }
 
 
-            public string Language {
+            virtual public string Language {
                 get { return null; }
             }
 

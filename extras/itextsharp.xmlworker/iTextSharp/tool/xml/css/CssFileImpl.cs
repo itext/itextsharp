@@ -4,15 +4,16 @@ using System.Collections.Generic;
  * $Id: CssFileImpl.java 61 2011-05-16 00:09:30Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -69,7 +70,7 @@ namespace iTextSharp.tool.xml.css {
          * @see com.itextpdf.tool.xml.css.CssFile#add(java.lang.String,
          * java.util.Map)
          */
-        public void Add(String selector, IDictionary<String, String> props) {
+        virtual public void Add(String selector, IDictionary<String, String> props) {
             IDictionary<String, String> currVal;
             map.TryGetValue(selector, out currVal);
             if (currVal != null) {
@@ -84,7 +85,7 @@ namespace iTextSharp.tool.xml.css {
          *
          * @see com.itextpdf.tool.xml.css.CssFile#get(java.lang.String)
          */
-        public IDictionary<String, String> Get(String selector) {
+        virtual public IDictionary<String, String> Get(String selector) {
             IDictionary<String, String> map;
             this.map.TryGetValue(selector, out map);
             return null == map?new Dictionary<String, String>(0):map;
@@ -93,14 +94,14 @@ namespace iTextSharp.tool.xml.css {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.css.CssFile#isPersistent()
          */
-        public bool IsPersistent() {
+        virtual public bool IsPersistent() {
             return persistent;
         }
 
         /**
          * @param isPeristent
          */
-        public void IsPersistent(bool isPeristent) {
+        virtual public void IsPersistent(bool isPeristent) {
             this.persistent = isPeristent;
         }
     }

@@ -85,7 +85,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
          * @ any exception will cause the test to fail
          */
         [Test]
-        public void TestStandardFont()
+        virtual public void TestStandardFont()
         {
             Font font = new Font(Font.FontFamily.TIMES_ROMAN, 12);
             byte[] pdfBytes = CreatePdf(font);
@@ -107,7 +107,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
          * @ any exception will cause the test to fail
          */
         [Test, Ignore("Failing on hudson, not locally")]
-        public void TestEncodedFont()
+        virtual public void TestEncodedFont()
         {
             Font font = GetSomeTTFont("ISO-8859-1", BaseFont.EMBEDDED, 12);
             byte[] pdfBytes = CreatePdf(font);
@@ -122,7 +122,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
          * @ any exception will cause the test to fail
          */
         [Test, Ignore("ailing on hudson, not locally")]
-        public void TestUnicodeFont()
+        virtual public void TestUnicodeFont()
         {
             Font font = GetSomeTTFont(BaseFont.IDENTITY_H, BaseFont.EMBEDDED, 12);
             byte[] pdfBytes = CreatePdf(font);

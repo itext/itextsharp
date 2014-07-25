@@ -7,15 +7,16 @@ using iTextSharp.tool.xml.html;
  * $Id: CssSelector.java 141 2011-05-31 12:58:38Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -67,7 +68,7 @@ namespace iTextSharp.tool.xml.css {
          * @param t the tag
          * @return set of selectors
          */
-        public IDictionary<String,object> CreateAllSelectors(Tag t) {
+        virtual public IDictionary<String,object> CreateAllSelectors(Tag t) {
             IDictionary<String,object> set = new Dictionary<String,object>();
             CssUtils.MapPutAll(set, CreateTagSelectors(t));
             CssUtils.MapPutAll(set, CreateClassSelectors(t));
@@ -75,7 +76,7 @@ namespace iTextSharp.tool.xml.css {
             return set;
         }
 
-        public void CreateSelectors(Tag t, IDictionary<String, object> selectors) {
+        virtual public void CreateSelectors(Tag t, IDictionary<String, object> selectors) {
             IDictionary<String, object> tagNameSet = new Dictionary<String, object>();
             foreach (String selector in selectors.Keys) {
                 tagNameSet[t.Name + (selector.StartsWith(" ") ? "" : " ") + selector] = null;
@@ -170,7 +171,7 @@ namespace iTextSharp.tool.xml.css {
          * @param t the tag to create selectors for.
          * @return all selectors for the given tag.
          */
-        public IDictionary<String,object> CreateTagSelectors(Tag t) {
+        virtual public IDictionary<String,object> CreateTagSelectors(Tag t) {
             IDictionary<String,object> selectors = new Dictionary<String,object>();
             selectors[t.Name] = null;;
             if (null != t.Parent) {
@@ -206,7 +207,7 @@ namespace iTextSharp.tool.xml.css {
          * @param t the tag
          * @return set of Strings
          */
-        public IDictionary<String,object> CreateClassSelectors(Tag t) {
+        virtual public IDictionary<String,object> CreateClassSelectors(Tag t) {
             String classes;
             t.Attributes.TryGetValue(HTML.Attribute.CLASS, out classes);
             IDictionary<String,object> set = new Dictionary<String,object>();
@@ -215,6 +216,9 @@ namespace iTextSharp.tool.xml.css {
                 foreach (String klass in classSplit) {
                     StringBuilder builder = new StringBuilder();
                     builder.Append('.').Append(klass);
+                    set[builder.ToString()] = null;
+                    builder = new StringBuilder();
+                    builder.Append(t.Name).Append('.').Append(klass);
                     set[builder.ToString()] = null;
                 }
             }
@@ -226,13 +230,16 @@ namespace iTextSharp.tool.xml.css {
          * @param t the tag
          * @return set of Strings
          */
-        public IDictionary<String,object> CreateIdSelector(Tag t) {
+        virtual public IDictionary<String,object> CreateIdSelector(Tag t) {
             String id;
             t.Attributes.TryGetValue(HTML.Attribute.ID, out id);
             IDictionary<String,object> set = new Dictionary<String,object>();
             if (null != id) {
                 StringBuilder builder = new StringBuilder();
                 builder.Append('#').Append(id);
+                set[builder.ToString()] = null;
+                builder = new StringBuilder();
+                builder.Append(t.Name).Append('#').Append(id);
                 set[builder.ToString()] = null;
             }
             return set;

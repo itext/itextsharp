@@ -13,15 +13,16 @@ using iTextSharp.xmp.options;
 
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -198,8 +199,9 @@ namespace iTextSharp.text.pdf {
             if (openAction != null) {
                 catalog.Put(PdfName.OPENACTION, openAction);
             }
-            if (pdf.pageLabels != null)
+            if (pdf.pageLabels != null) {
                 catalog.Put(PdfName.PAGELABELS, pdf.pageLabels.GetDictionary(this));
+            }
             // OCG
             if (documentOCG.Count > 0) {
                 FillOCProperties(false);
@@ -223,26 +225,25 @@ namespace iTextSharp.text.pdf {
             }
             // metadata
             int skipInfo = -1;
-            PdfObject oInfo = reader.Trailer.Get(PdfName.INFO);
-            PRIndirectReference iInfo = null;
-            PdfDictionary oldInfo = null;
-            if (oInfo is PRIndirectReference)
-                iInfo = (PRIndirectReference)oInfo;
-            if (iInfo != null)
-                oldInfo = (PdfDictionary)PdfReader.GetPdfObject(iInfo);
-            else if (oInfo is PdfDictionary)
-                oldInfo = (PdfDictionary)oInfo;
-            String producer = null;
-            if (iInfo != null)
+            PdfIndirectReference iInfo = reader.Trailer.GetAsIndirectObject(PdfName.INFO);
+            if (iInfo != null) {
                 skipInfo = iInfo.Number;
-            if (oldInfo != null && oldInfo.Get(PdfName.PRODUCER) != null)
-                producer = oldInfo.GetAsString(PdfName.PRODUCER).ToUnicodeString();
-            Version version = Version.GetInstance();
-            if (producer == null) {
-                producer = version.GetVersion;
             }
-            else if (producer.IndexOf(version.Product) == -1) {
-                StringBuilder buf = new StringBuilder(producer);
+            PdfDictionary oldInfo = reader.Trailer.GetAsDict(PdfName.INFO);
+            String producer = null;
+            if (oldInfo != null && oldInfo.Get(PdfName.PRODUCER) != null) {
+                producer = oldInfo.GetAsString(PdfName.PRODUCER).ToUnicodeString();
+            }
+            Version version = Version.GetInstance();
+            if (producer == null || version.GetVersion.IndexOf(version.Product) == -1) {
+                producer = version.GetVersion;
+            } else {
+                int idx = producer.IndexOf("; modified using");
+                StringBuilder buf;
+                if (idx == -1)
+                    buf = new StringBuilder(producer);
+                else
+                    buf = new StringBuilder(producer.Substring(0, idx));
                 buf.Append("; modified using ");
                 buf.Append(version.GetVersion);
                 producer = buf.ToString();
@@ -269,12 +270,12 @@ namespace iTextSharp.text.pdf {
             newInfo.Put(PdfName.MODDATE, date);
             newInfo.Put(PdfName.PRODUCER, new PdfString(producer, PdfObject.TEXT_UNICODE));
             if (append) {
-                if (iInfo == null)
+                if (iInfo == null) {
                     info = AddToBody(newInfo, false).IndirectReference;
-                else
+                } else {
                     info = AddToBody(newInfo, iInfo.Number, false).IndirectReference;
-            }
-            else {
+                }
+            } else {
                 info = AddToBody(newInfo, false).IndirectReference;
             }
             // XMP
@@ -443,7 +444,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        internal protected void AlterContents() {
+        virtual internal protected void AlterContents() {
             foreach (PageStamp ps in pagesToContent.Values) {
                 PdfDictionary pageN = ps.pageN;
                 MarkUsed(pageN);
@@ -542,7 +543,7 @@ namespace iTextSharp.text.pdf {
         * @param openFile
         * @throws IOException
         */
-        public void RegisterReader(PdfReader reader, bool openFile) {
+        virtual public void RegisterReader(PdfReader reader, bool openFile) {
             if (readers2intrefs.ContainsKey(reader))
                 return;
             readers2intrefs[reader] = new IntHashtable();
@@ -556,7 +557,7 @@ namespace iTextSharp.text.pdf {
         /**
         * @param reader
         */
-        public void UnRegisterReader(PdfReader reader) {
+        virtual public void UnRegisterReader(PdfReader reader) {
             if (!readers2intrefs.ContainsKey(reader))
                 return;
             readers2intrefs.Remove(reader);
@@ -600,7 +601,7 @@ namespace iTextSharp.text.pdf {
         * @param fdf
         * @throws IOException
         */
-        public void AddComments(FdfReader fdf) {
+        virtual public void AddComments(FdfReader fdf) {
             if (readers2intrefs.ContainsKey(fdf))
                 return;
             PdfDictionary catalog = fdf.Catalog;
@@ -850,7 +851,7 @@ namespace iTextSharp.text.pdf {
             return true;
         }
         
-        internal protected void FlatFields() {
+        virtual internal protected void FlatFields() {
             if (append)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("field.flattening.is.not.supported.in.append.mode"));
             GetAcroFields();
@@ -1023,7 +1024,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected void FlatFreeTextFields() {
+        virtual protected void FlatFreeTextFields() {
             if (append)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("freetext.flattening.is.not.supported.in.append.mode"));
             
@@ -1140,7 +1141,7 @@ namespace iTextSharp.text.pdf {
             MarkUsed(fields);
         }
         
-        internal protected void AddFieldResources() {
+        virtual internal protected void AddFieldResources() {
             if (fieldTemplates.Count == 0)
                 return;
             PdfDictionary catalog = reader.Catalog;
@@ -1310,7 +1311,7 @@ namespace iTextSharp.text.pdf {
             MarkUsed(catalog);
         }
         
-        internal protected void SetJavaScript() {
+        virtual internal protected void SetJavaScript() {
             Dictionary<string,PdfObject> djs = pdf.GetDocumentLevelJS();
             if (djs.Count == 0)
                 return;
@@ -1326,7 +1327,7 @@ namespace iTextSharp.text.pdf {
             names.Put(PdfName.JAVASCRIPT, AddToBody(tree).IndirectReference);
         }
             
-        protected void AddFileAttachments() {
+        virtual protected void AddFileAttachments() {
             Dictionary<string,PdfObject> fs = pdf.GetDocumentFileAttachment();
             if (fs.Count == 0)
                 return;
@@ -1369,7 +1370,7 @@ namespace iTextSharp.text.pdf {
             catalog.Put( PdfName.COLLECTION, collection );
         }
 
-        internal protected void SetOutlines() {
+        virtual internal protected void SetOutlines() {
             if (newBookmarks == null)
                 return;
             DeleteOutlines();
@@ -1492,7 +1493,7 @@ namespace iTextSharp.text.pdf {
             MarkUsed(pg);
         }
 
-        public void MarkUsed(PdfObject obj) {
+        virtual public void MarkUsed(PdfObject obj) {
             if (append && obj != null) {
                 PRIndirectReference ref_p = null;
                 if (obj.Type == PdfObject.INDIRECT)
@@ -1504,7 +1505,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected internal void MarkUsed(int num) {
+        virtual protected internal void MarkUsed(int num) {
             if (append)
                 marked[num] = 1;
         }
@@ -1586,7 +1587,7 @@ namespace iTextSharp.text.pdf {
         * Note that the original OCProperties of the existing document can contain more information.
         * @since    2.1.2
         */
-        protected void ReadOCProperties() {
+        virtual protected void ReadOCProperties() {
             if (documentOCG.Count != 0) {
                 return;
             }
@@ -1685,7 +1686,7 @@ namespace iTextSharp.text.pdf {
         * @return   a Map with all the PdfLayers in the document (and the name/title of the layer as key)
         * @since    2.1.2
         */
-        public Dictionary<string,PdfLayer> GetPdfLayers() {
+        virtual public Dictionary<string,PdfLayer> GetPdfLayers() {
             if (documentOCG.Count == 0) {
                 ReadOCProperties();
             }

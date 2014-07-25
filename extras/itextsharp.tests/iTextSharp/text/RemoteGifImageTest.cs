@@ -16,13 +16,13 @@ namespace itextsharp.tests.iTextSharp.text
 
         private String OUTPUTFOLDER = "RemoteGifImageTest\\";
         [SetUp]
-        public void SetUp()
+        virtual public void SetUp()
         {
             Directory.CreateDirectory(OUTPUTFOLDER);
         }
 
         [Test]
-        public void RemoteGifTest()
+        virtual public void RemoteGifTest()
         {
             for (int i = 0; i < GIF_LOCATION.Length; i++)
             {

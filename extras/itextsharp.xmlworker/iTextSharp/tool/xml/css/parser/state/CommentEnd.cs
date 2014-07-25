@@ -23,7 +23,7 @@ namespace iTextSharp.tool.xml.css.parser.state {
          *
          * @see com.itextpdf.tool.xml.css.parser.State#process(char)
          */
-        public void Process(char c) {
+        virtual public void Process(char c) {
             if ('/' == c) {
                 this.controller.Previous();
             } else {

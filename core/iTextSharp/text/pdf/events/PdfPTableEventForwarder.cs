@@ -1,18 +1,19 @@
 using System.Collections.Generic;
 /*
- * $Id: PdfPTableEventForwarder.cs 568 2013-07-25 18:54:37Z pavel-alay $
+ * $Id: PdfPTableEventForwarder.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -62,19 +63,19 @@ namespace iTextSharp.text.pdf.events {
         * Add a page event to the forwarder.
         * @param event an event that has to be added to the forwarder.
         */
-        public void AddTableEvent(IPdfPTableEvent eventa) {
+        virtual public void AddTableEvent(IPdfPTableEvent eventa) {
             events.Add(eventa);
         }
 
         /**
         * @see com.lowagie.text.pdf.PdfPTableEvent#tableLayout(com.lowagie.text.pdf.PdfPTable, float[][], float[], int, int, com.lowagie.text.pdf.PdfContentByte[])
         */
-        public void TableLayout(PdfPTable table, float[][] widths, float[] heights, int headerRows, int rowStart, PdfContentByte[] canvases) {
+        virtual public void TableLayout(PdfPTable table, float[][] widths, float[] heights, int headerRows, int rowStart, PdfContentByte[] canvases) {
             foreach (IPdfPTableEvent eventa in events) {
                 eventa.TableLayout(table, widths, heights, headerRows, rowStart, canvases);
             }
         }
-        public void SplitTable(PdfPTable table) {
+        virtual public void SplitTable(PdfPTable table) {
 		    foreach (IPdfPTableEvent eventa in events) {
 			    if (eventa is IPdfPTableEventSplit)
                     ((IPdfPTableEventSplit)eventa).SplitTable(table);
@@ -84,7 +85,7 @@ namespace iTextSharp.text.pdf.events {
          * @see com.itextpdf.text.pdf.PdfPTableEventAfterSplit#afterSplitTable(com.itextpdf.text.pdf.PdfPTable, com.itextpdf.text.pdf.PdfPRow, int)
          * @since iText 5.4.3
          */
-        public void AfterSplitTable(PdfPTable table, PdfPRow startRow, int startIdx) {
+        virtual public void AfterSplitTable(PdfPTable table, PdfPRow startRow, int startIdx) {
             foreach (IPdfPTableEvent evente in events) {
                 if (evente is IPdfPTableEventAfterSplit)
                     ((IPdfPTableEventAfterSplit)evente).AfterSplitTable(table, startRow, startIdx);

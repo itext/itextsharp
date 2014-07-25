@@ -6,19 +6,20 @@ using iTextSharp.text.html;
 using iTextSharp.text.factories;
 
 /*
- * $Id: Anchor.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: Anchor.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -222,7 +223,7 @@ namespace iTextSharp.text
          * @param localDestination	true if the chunk is a local goto and the reference a local destination
          * @return	the value of notGotoOK or false, if a previous Chunk was used to determine the local destination
          */
-        protected bool ApplyAnchor(Chunk chunk, bool notGotoOK, bool localDestination) {
+        virtual protected bool ApplyAnchor(Chunk chunk, bool notGotoOK, bool localDestination) {
             if (name != null && notGotoOK && !chunk.IsEmpty()) {
                 chunk.SetLocalDestination(name);
                 notGotoOK = false;
@@ -251,7 +252,7 @@ namespace iTextSharp.text
         /// <summary>
         /// Name of this Anchor.
         /// </summary>
-        public string Name {
+        virtual public string Name {
             get {
                 return this.name;
             }
@@ -266,7 +267,7 @@ namespace iTextSharp.text
         /// <summary>
         /// reference of this Anchor.
         /// </summary>
-        public string Reference {
+        virtual public string Reference {
             get {
                 return reference;
             }
@@ -280,7 +281,7 @@ namespace iTextSharp.text
         /// reference of this Anchor.
         /// </summary>
         /// <value>an Uri</value>
-        public Uri Url {
+        virtual public Uri Url {
             get {
                 try {
                     return new Uri(reference);

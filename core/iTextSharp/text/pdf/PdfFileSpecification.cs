@@ -8,15 +8,16 @@ using iTextSharp.text.pdf.intern;
 
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -200,12 +201,11 @@ namespace iTextSharp.text.pdf {
                 if (!param.Contains(PdfName.MODDATE)) {
                     param.Put(PdfName.MODDATE, new PdfDate());
                 }
-                if (fileStore != null) {
+                if (fileStore == null) {
+                    stream.Put(PdfName.PARAMS, refFileLength);
+                } else {
                     param.Put(PdfName.SIZE, new PdfNumber(stream.RawLength));
                     stream.Put(PdfName.PARAMS, param);
-                }
-                else {
-                    stream.Put(PdfName.PARAMS, refFileLength);
                 }
 
                 if (mimeType != null)
@@ -248,7 +248,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @return the indirect reference
         */    
-        public PdfIndirectReference Reference {
+        virtual public PdfIndirectReference Reference {
             get {
                 if (refi != null)
                     return refi;
@@ -263,7 +263,7 @@ namespace iTextSharp.text.pdf {
         * backslash escaped according to the file specification rules
         * @param fileName the file name as a byte array
         */    
-        public byte[] MultiByteFileName {
+        virtual public byte[] MultiByteFileName {
             set {
                 Put(PdfName.F, new PdfString(value).SetHexWriting(true));
             }
@@ -276,7 +276,7 @@ namespace iTextSharp.text.pdf {
         * @param filename  the filename
         * @param unicode   if true, the filename is UTF-16BE encoded; otherwise PDFDocEncoding is used;
         */    
-        public void SetUnicodeFileName(String filename, bool unicode) {
+        virtual public void SetUnicodeFileName(String filename, bool unicode) {
             Put(PdfName.UF, new PdfString(filename, unicode ? PdfObject.TEXT_UNICODE : PdfObject.TEXT_PDFDOCENCODING));
         }
         
@@ -286,7 +286,7 @@ namespace iTextSharp.text.pdf {
         * cache a copy of the file.
         * @param volatile_file if true, the external file should not be cached
         */
-        public bool Volatile {
+        virtual public bool Volatile {
             set {
                 Put(PdfName.V, new PdfBoolean(value));
             }
@@ -297,14 +297,14 @@ namespace iTextSharp.text.pdf {
         * @param description   some text
         * @param unicode       if true, the text is added as a unicode string
         */
-        public void AddDescription(String description, bool unicode) {
+        virtual public void AddDescription(String description, bool unicode) {
             Put(PdfName.DESC, new PdfString(description, unicode ? PdfObject.TEXT_UNICODE : PdfObject.TEXT_PDFDOCENCODING));
         }
         
         /**
         * Adds the Collection item dictionary.
         */
-        public void AddCollectionItem(PdfCollectionItem ci) {
+        virtual public void AddCollectionItem(PdfCollectionItem ci) {
             Put(PdfName.CI, ci);
         }
 

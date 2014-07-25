@@ -4,19 +4,20 @@ using System.Collections.Generic;
 using iTextSharp.text.pdf.intern;
 
 /*
- * $Id: PdfDictionary.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: PdfDictionary.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -151,7 +152,7 @@ namespace iTextSharp.text.pdf {
          * @param        key        key of the entry (a <CODE>PdfName</CODE>)
          * @param        value    value of the entry (a <CODE>PdfObject</CODE>)
          */
-        public void Put(PdfName key, PdfObject value) {
+        virtual public void Put(PdfName key, PdfObject value) {
             if (value == null || value.IsNull())
                 hashMap.Remove(key);
             else
@@ -165,7 +166,7 @@ namespace iTextSharp.text.pdf {
          * @param        key        key of the entry (a <CODE>PdfName</CODE>)
          * @param        value    value of the entry (a <CODE>PdfObject</CODE>)
          */
-        public void PutEx(PdfName key, PdfObject value) {
+        virtual public void PutEx(PdfName key, PdfObject value) {
             if (value == null)
                 return;
             Put(key, value);
@@ -181,7 +182,7 @@ namespace iTextSharp.text.pdf {
          * @param dic The <CODE>PdfDictionary</CODE> with the mappings to be
          *   copied over
          */
-        public void PutAll(PdfDictionary dic) {
+        virtual public void PutAll(PdfDictionary dic) {
             foreach (KeyValuePair<PdfName, PdfObject> item in dic.hashMap) {
                 if (hashMap.ContainsKey(item.Key))
                     hashMap[item.Key] = item.Value;
@@ -195,7 +196,7 @@ namespace iTextSharp.text.pdf {
          *
          * @param        key        key of the entry (a <CODE>PdfName</CODE>)
          */
-        public void Remove(PdfName key) {
+        virtual public void Remove(PdfName key) {
             hashMap.Remove(key);
         }
     
@@ -204,7 +205,7 @@ namespace iTextSharp.text.pdf {
          * <CODE>PdfDictionary</CODE>.
          * @since 5.0.2
          */
-        public void Clear() {
+        virtual public void Clear() {
             hashMap.Clear();
         }
 
@@ -214,7 +215,7 @@ namespace iTextSharp.text.pdf {
          * @param        key        key of the entry (a <CODE>PdfName</CODE>)
          * @return        the previous </CODE>PdfObject</CODE> corresponding with the <VAR>key</VAR>
          */
-        public PdfObject Get(PdfName key) {
+        virtual public PdfObject Get(PdfName key) {
             PdfObject obj;
             if (hashMap.TryGetValue(key, out obj))
                 return obj;
@@ -229,7 +230,7 @@ namespace iTextSharp.text.pdf {
          *
          * @return        <CODE>true</CODE> if it is, <CODE>false</CODE> if it isn't.
          */
-        public bool IsFont() {
+        virtual public bool IsFont() {
             return CheckType(FONT);
         }
     
@@ -238,7 +239,7 @@ namespace iTextSharp.text.pdf {
          *
          * @return        <CODE>true</CODE> if it is, <CODE>false</CODE> if it isn't.
          */
-        public bool IsPage() {
+        virtual public bool IsPage() {
             return CheckType(PAGE);
         }
     
@@ -247,7 +248,7 @@ namespace iTextSharp.text.pdf {
          *
          * @return        <CODE>true</CODE> if it is, <CODE>false</CODE> if it isn't.
          */
-        public bool IsPages() {
+        virtual public bool IsPages() {
             return CheckType(PAGES);
         }
     
@@ -256,7 +257,7 @@ namespace iTextSharp.text.pdf {
          *
          * @return        <CODE>true</CODE> if it is, <CODE>false</CODE> if it isn't.
          */
-        public bool IsCatalog() {
+        virtual public bool IsCatalog() {
             return CheckType(CATALOG);
         }
     
@@ -265,7 +266,7 @@ namespace iTextSharp.text.pdf {
          *
          * @return        <CODE>true</CODE> if it is, <CODE>false</CODE> if it isn't.
          */
-        public bool IsOutlineTree() {
+        virtual public bool IsOutlineTree() {
             return CheckType(OUTLINES);
         }
 
@@ -274,7 +275,7 @@ namespace iTextSharp.text.pdf {
          * @param type the type you're looking for
          * @return true if the type of the dictionary corresponds with the type you're looking for
          */
-        public bool CheckType(PdfName type) {
+        virtual public bool CheckType(PdfName type) {
             if(type == null)
                 return false;
             if(dictionaryType == null)
@@ -283,13 +284,13 @@ namespace iTextSharp.text.pdf {
         }
 
 
-        public void Merge(PdfDictionary other) {
+        virtual public void Merge(PdfDictionary other) {
             foreach (PdfName key in other.hashMap.Keys) {
                 hashMap[key] = other.hashMap[key];
             }
         }
     
-        public void MergeDifferent(PdfDictionary other) {
+        virtual public void MergeDifferent(PdfDictionary other) {
             foreach (PdfName key in other.hashMap.Keys) {
                 if (!hashMap.ContainsKey(key)) {
                     hashMap[key] = other.hashMap[key];
@@ -297,19 +298,19 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public Dictionary<PdfName,PdfObject>.KeyCollection Keys {
+        virtual public Dictionary<PdfName,PdfObject>.KeyCollection Keys {
             get {
                 return hashMap.Keys;
             }
         }
 
-        public int Size {
+        virtual public int Size {
             get {
                 return hashMap.Count;
             }
         }
     
-        public bool Contains(PdfName key) {
+        virtual public bool Contains(PdfName key) {
             return hashMap.ContainsKey(key);
         }
 
@@ -341,7 +342,7 @@ namespace iTextSharp.text.pdf {
         * @param key
         * @return the appropriate object in its final type, or null
         */
-        public PdfDictionary GetAsDict(PdfName key) {
+        virtual public PdfDictionary GetAsDict(PdfName key) {
             PdfDictionary dict = null;
             PdfObject orig = GetDirectObject(key);
             if (orig != null && orig.IsDictionary())
@@ -349,7 +350,7 @@ namespace iTextSharp.text.pdf {
             return dict;
         }
         
-        public PdfArray GetAsArray(PdfName key) {
+        virtual public PdfArray GetAsArray(PdfName key) {
             PdfArray array = null;
             PdfObject orig = GetDirectObject(key);
             if (orig != null && orig.IsArray())
@@ -357,7 +358,7 @@ namespace iTextSharp.text.pdf {
             return array;
         }
         
-        public PdfStream GetAsStream(PdfName key) {
+        virtual public PdfStream GetAsStream(PdfName key) {
             PdfStream stream = null;
             PdfObject orig = GetDirectObject(key);
             if (orig != null && orig.IsStream())
@@ -365,7 +366,7 @@ namespace iTextSharp.text.pdf {
             return stream;
         }
         
-        public PdfString GetAsString(PdfName key) {
+        virtual public PdfString GetAsString(PdfName key) {
             PdfString str = null;
             PdfObject orig = GetDirectObject(key);
             if (orig != null && orig.IsString())
@@ -373,7 +374,7 @@ namespace iTextSharp.text.pdf {
             return str;
         }
         
-        public PdfNumber GetAsNumber(PdfName key) {
+        virtual public PdfNumber GetAsNumber(PdfName key) {
             PdfNumber number = null;
             PdfObject orig = GetDirectObject(key);
             if (orig != null && orig.IsNumber())
@@ -381,7 +382,7 @@ namespace iTextSharp.text.pdf {
             return number;
         }
         
-        public PdfName GetAsName(PdfName key) {
+        virtual public PdfName GetAsName(PdfName key) {
             PdfName name = null;
             PdfObject orig = GetDirectObject(key);
             if (orig != null && orig.IsName())
@@ -389,7 +390,7 @@ namespace iTextSharp.text.pdf {
             return name;
         }
         
-        public PdfBoolean GetAsBoolean(PdfName key) {
+        virtual public PdfBoolean GetAsBoolean(PdfName key) {
             PdfBoolean b = null;
             PdfObject orig = GetDirectObject(key);
             if (orig != null && orig.IsBoolean())
@@ -397,7 +398,7 @@ namespace iTextSharp.text.pdf {
             return b;
         }
         
-        public PdfIndirectReference GetAsIndirectObject( PdfName key ) {
+        virtual public PdfIndirectReference GetAsIndirectObject( PdfName key ) {
             PdfIndirectReference refi = null;
             PdfObject orig = Get(key); // not getDirect this time.
             if (orig != null && orig.IsIndirect())

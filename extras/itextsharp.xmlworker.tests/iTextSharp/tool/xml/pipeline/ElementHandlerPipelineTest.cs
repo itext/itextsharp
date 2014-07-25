@@ -15,13 +15,13 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
         private WorkerContextImpl context;
 
         private class CustomElementHandler : IElementHandler {
-            public void Add(IWritable w) {
+            virtual public void Add(IWritable w) {
                 lst.Add(w);
             }
         }
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             lst = new List<IWritable>();
             IElementHandler elemH = new CustomElementHandler();
 
@@ -39,7 +39,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void RunOpen() {
+        virtual public void RunOpen() {
             p.Open(context, null, po);
             Assert.AreEqual(writable, lst[0]);
         }
@@ -50,7 +50,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void RunContent() {
+        virtual public void RunContent() {
             p.Content(context, null, null, po);
             Assert.AreEqual(writable, lst[0]);
         }
@@ -61,7 +61,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void RunClose() {
+        virtual public void RunClose() {
             p.Close(context, null, po);
             Assert.AreEqual(writable, lst[0]);
         }

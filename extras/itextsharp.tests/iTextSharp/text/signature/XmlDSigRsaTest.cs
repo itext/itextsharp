@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Security.Cryptography;
 using NUnit.Framework;
@@ -21,7 +21,7 @@ namespace itextsharp.tests.resources.text.signature
         AsymmetricKeyParameter privateKey;
 
         [SetUp]
-        public void LoadKey() {
+        virtual public void LoadKey() {
             string import = "";
             using(StreamReader streamReader = new StreamReader(KeyStore))
                 import = streamReader.ReadToEnd();
@@ -38,7 +38,7 @@ namespace itextsharp.tests.resources.text.signature
 
 
         [Test]
-        public void XmlDSigRSAWithPublicKey() {
+        virtual public void XmlDSigRSAWithPublicKey() {
 
             String filename = "xfa.signed.pk.pdf";
             String output = DestDir + filename;
@@ -53,7 +53,7 @@ namespace itextsharp.tests.resources.text.signature
         }
 
         [Test]
-        public void XmlDSigRSAWithKeyInfo() {
+        virtual public void XmlDSigRSAWithKeyInfo() {
 
             String filename = "xfa.signed.ki.pdf";
             String output = DestDir + filename;
@@ -68,7 +68,7 @@ namespace itextsharp.tests.resources.text.signature
         }
 
         [Test]
-        public void XmlDSigRSAWithPublicKeyPackage() {
+        virtual public void XmlDSigRSAWithPublicKeyPackage() {
 
             String filename = "xfa.signed.pk.package.pdf";
             String output = DestDir + filename;
@@ -83,7 +83,7 @@ namespace itextsharp.tests.resources.text.signature
         }
 
         [Test]
-        public void XmlDSigRSAWithKeyInfoPackage() {
+        virtual public void XmlDSigRSAWithKeyInfoPackage() {
 
             String filename = "xfa.signed.ki.package.pdf";
             String output = DestDir + filename;

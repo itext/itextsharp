@@ -4,15 +4,16 @@ using iTextSharp.text.pdf.hyphenation;
 
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -74,7 +75,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the hyphen symbol.
          * @return the hyphen symbol
          */    
-        public string HyphenSymbol {
+        virtual public string HyphenSymbol {
             get {
                 return "-";
             }
@@ -89,7 +90,7 @@ namespace iTextSharp.text.pdf {
          * @return the first part of the hyphenated word including
          * the hyphen symbol, if any
          */    
-        public string GetHyphenatedWordPre(string word, BaseFont font, float fontSize, float remainingWidth) {
+        virtual public string GetHyphenatedWordPre(string word, BaseFont font, float fontSize, float remainingWidth) {
             post = word;
             string hyphen = this.HyphenSymbol;
             float hyphenWidth = font.GetWidthPoint(hyphen, fontSize);
@@ -116,7 +117,7 @@ namespace iTextSharp.text.pdf {
          * after <CODE>getHyphenatedWordPre()</CODE>.
          * @return the second part of the hyphenated word
          */    
-        public string HyphenatedWordPost {
+        virtual public string HyphenatedWordPost {
             get {
                 return post;
             }

@@ -6,19 +6,20 @@ using iTextSharp.text.factories;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: PdfPageLabels.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: PdfPageLabels.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -100,7 +101,7 @@ namespace iTextSharp.text.pdf {
          * @param text the text to prefix the number. Can be <CODE>null</CODE> or empty
          * @param firstPage the first logical page number
          */    
-        public void AddPageLabel(int page, int numberStyle, string text, int firstPage) {
+        virtual public void AddPageLabel(int page, int numberStyle, string text, int firstPage) {
             if (page < 1 || firstPage < 1)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("in.a.page.label.the.page.numbers.must.be.greater.or.equal.to.1"));
             PdfDictionary dic = new PdfDictionary();
@@ -119,7 +120,7 @@ namespace iTextSharp.text.pdf {
          * @param numberStyle the numbering style such as LOWERCASE_ROMAN_NUMERALS
          * @param text the text to prefix the number. Can be <CODE>null</CODE> or empty
          */    
-        public void AddPageLabel(int page, int numberStyle, string text) {
+        virtual public void AddPageLabel(int page, int numberStyle, string text) {
             AddPageLabel(page, numberStyle, text, 1);
         }
     
@@ -128,20 +129,20 @@ namespace iTextSharp.text.pdf {
          * @param page the real page to start the numbering. First page is 1
          * @param numberStyle the numbering style such as LOWERCASE_ROMAN_NUMERALS
          */    
-        public void AddPageLabel(int page, int numberStyle) {
+        virtual public void AddPageLabel(int page, int numberStyle) {
             AddPageLabel(page, numberStyle, null, 1);
         }
     
         /** Adds or replaces a page label.
         */
-        public void AddPageLabel(PdfPageLabelFormat format) {
+        virtual public void AddPageLabel(PdfPageLabelFormat format) {
             AddPageLabel(format.physicalPage, format.numberStyle, format.prefix, format.logicalPage);
         }
 
         /** Removes a page label. The first page lagel can not be removed, only changed.
          * @param page the real page to remove
          */    
-        public void RemovePageLabel(int page) {
+        virtual public void RemovePageLabel(int page) {
             if (page <= 1)
                 return;
             map.Remove(page - 1);
@@ -150,7 +151,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the page label dictionary to insert into the document.
          * @return the page label dictionary
          */    
-        public PdfDictionary GetDictionary(PdfWriter writer) {
+        virtual public PdfDictionary GetDictionary(PdfWriter writer) {
             return PdfNumberTree.WriteTree(map, writer);
         }
 

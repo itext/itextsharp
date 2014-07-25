@@ -2,15 +2,16 @@ using System;
 using iTextSharp.text.pdf;
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -75,7 +76,7 @@ namespace iTextSharp.text.pdf.codec {
         * @param offset the offset into the data
         * @param size the size of the data to be encoded
         */    
-        public void Fax4Encode(byte[] data, int offset, int size) {
+        virtual public void Fax4Encode(byte[] data, int offset, int size) {
             dataBp = data;
             offsetData = offset;
             sizeData = size;
@@ -106,7 +107,7 @@ namespace iTextSharp.text.pdf.codec {
         * @param data the data to be encoded
         * @param height the number of lines to encode
         */    
-        public void Fax4Encode(byte[] data, int height) {
+        virtual public void Fax4Encode(byte[] data, int height) {
             Fax4Encode(data, 0, rowbytes * height);
         }
 
@@ -204,7 +205,7 @@ namespace iTextSharp.text.pdf.codec {
         * Closes the encoder and returns the encoded data.
         * @return the encoded data
         */    
-        public byte[] Close() {
+        virtual public byte[] Close() {
             Fax4PostEncode();
             return outBuf.ToByteArray();
         }

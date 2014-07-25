@@ -111,6 +111,7 @@ namespace iTextSharp.xmp {
         public const string NS_PDFA_TYPE = "http://www.aiim.org/pdfa/ns/type#";
         public const string NS_PDFA_FIELD = "http://www.aiim.org/pdfa/ns/field#";
         public const string NS_PDFA_ID = "http://www.aiim.org/pdfa/ns/id/";
+        public const string NS_PDFUA_ID = "http://www.aiim.org/pdfua/ns/id/";
         public const string NS_PDFA_EXTENSION = "http://www.aiim.org/pdfa/ns/extension/";
 
         /// <summary>

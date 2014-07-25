@@ -6,19 +6,20 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: Rectangle.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: Rectangle.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -308,7 +309,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isContent()
         * @since   iText 2.0.8
         */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return true;
         }
 
@@ -344,7 +345,7 @@ namespace iTextSharp.text {
         /// <param name="top">the top position</param>
         /// <param name="bottom">the bottom position</param>
         /// <returns>a Rectangle</returns>
-        public Rectangle GetRectangle(float top, float bottom) {
+        virtual public Rectangle GetRectangle(float top, float bottom) {
             Rectangle tmp = new Rectangle(this);
             if (this.Top > top) {
                 tmp.Top = top;
@@ -361,7 +362,7 @@ namespace iTextSharp.text {
         /// Swaps the values of urx and ury and of lly and llx in order to rotate the rectangle.
         /// </summary>
         /// <returns>a Rectangle</returns>
-        public Rectangle Rotate() {
+        virtual public Rectangle Rotate() {
             Rectangle rect = new Rectangle(lly, llx, ury, urx);
             rect.Rotation = rotation + 90;
             return rect;
@@ -577,7 +578,7 @@ namespace iTextSharp.text {
         /// Returns the height of the rectangle.
         /// </summary>
         /// <value>a height</value>
-        public float Height {
+        virtual public float Height {
             get {
                 return ury - lly;
             }
@@ -587,7 +588,7 @@ namespace iTextSharp.text {
         /// Indicates if the table has borders.
         /// </summary>
         /// <returns>a bool</returns>
-        public bool HasBorders() {
+        virtual public bool HasBorders() {
             switch (border) {
                 case UNDEFINED:
                 case NO_BORDER:
@@ -603,7 +604,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="type">the type of border</param>
         /// <returns>a bool</returns>
-        public bool HasBorder(int type) {
+        virtual public bool HasBorder(int type) {
             if (border == UNDEFINED)
                 return false;
             return (border & type) == type;

@@ -8,15 +8,16 @@ using iTextSharp.text.html;
  * $Id: IncTable.java 4632 2010-11-24 14:44:42Z blowagie $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -87,7 +88,7 @@ namespace iTextSharp.text.html.simpleparser {
          * Adds a new row to the table.
          * @param row a list of PdfPCell elements
          */
-        public void AddRow(IList<PdfPCell> row) {
+        virtual public void AddRow(IList<PdfPCell> row) {
             if (row != null) {
                 List<PdfPCell> t = new List<PdfPCell>(row);
                 t.Reverse();
@@ -99,7 +100,7 @@ namespace iTextSharp.text.html.simpleparser {
          * Setter for the column widths
          * @since iText 5.0.6
          */
-        public float[] ColWidths {
+        virtual public float[] ColWidths {
             set { colWidths = value; }
         }
 
@@ -108,7 +109,7 @@ namespace iTextSharp.text.html.simpleparser {
          * in the table stub.
          * @return  a PdfPTable
          */
-        public PdfPTable CreateTable() {
+        virtual public PdfPTable CreateTable() {
             // no rows = simplest table possible
             if (rows.Count == 0)
                 return new PdfPTable(1);
@@ -157,25 +158,25 @@ namespace iTextSharp.text.html.simpleparser {
 
         // these Element methods are irrelevant for a table stub.
         
-        public bool Process(IElementListener listener) {
+        virtual public bool Process(IElementListener listener) {
             return false;
         }
 
-        public int Type {
+        virtual public int Type {
             get { 
                 return 0;
             }
         }
 
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return false;
         }
 
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             return false;
         }
 
-        public IList<Chunk> Chunks {
+        virtual public IList<Chunk> Chunks {
             get {
                 return null;    
             }

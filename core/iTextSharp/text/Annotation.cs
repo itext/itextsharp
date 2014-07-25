@@ -4,19 +4,20 @@ using System.util;
 using iTextSharp.text.factories;
 
 /*
- * $Id: Annotation.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: Annotation.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -297,7 +298,7 @@ namespace iTextSharp.text {
         /// <summary>
         /// Gets the type of the text element
         /// </summary>
-        public int Type {
+        virtual public int Type {
             get {
                 return Element.ANNOTATION;
             }
@@ -311,7 +312,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="listener">an IElementListener</param>
         /// <returns>true if the element was process successfully</returns>
-        public bool Process(IElementListener listener) {
+        virtual public bool Process(IElementListener listener) {
             try {
                 return listener.Add(this);
             }
@@ -324,7 +325,7 @@ namespace iTextSharp.text {
         /// Gets all the chunks in this element.
         /// </summary>
         /// <value>an ArrayList</value>
-        public IList<Chunk> Chunks {
+        virtual public IList<Chunk> Chunks {
             get {
                 return new List<Chunk>();
             }
@@ -339,7 +340,7 @@ namespace iTextSharp.text {
         /// <param name="lly">the lower left y-value</param>
         /// <param name="urx">the upper right x-value</param>
         /// <param name="ury">the upper right y-value</param>
-        public void SetDimensions(float llx, float lly, float urx, float ury) {
+        virtual public void SetDimensions(float llx, float lly, float urx, float ury) {
             this.llx = llx;
             this.lly = lly;
             this.urx = urx;
@@ -352,7 +353,7 @@ namespace iTextSharp.text {
         /// Returns the lower left x-value.
         /// </summary>
         /// <returns>a value</returns>
-        public float GetLlx() {
+        virtual public float GetLlx() {
             return llx;
         }
 
@@ -360,7 +361,7 @@ namespace iTextSharp.text {
         /// Returns the lower left y-value.
         /// </summary>
         /// <returns>a value</returns>
-        public float GetLly() {
+        virtual public float GetLly() {
             return lly;
         }
 
@@ -368,7 +369,7 @@ namespace iTextSharp.text {
         /// Returns the uppper right x-value.
         /// </summary>
         /// <returns>a value</returns>
-        public float GetUrx() {
+        virtual public float GetUrx() {
             return urx;
         }
 
@@ -376,7 +377,7 @@ namespace iTextSharp.text {
         /// Returns the uppper right y-value.
         /// </summary>
         /// <returns>a value</returns>
-        public float GetUry() {
+        virtual public float GetUry() {
             return ury;
         }
 
@@ -385,7 +386,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="def">the default value</param>
         /// <returns>a value</returns>
-        public float GetLlx(float def) {
+        virtual public float GetLlx(float def) {
             if (float.IsNaN(llx))
                 return def;
             return llx;
@@ -396,7 +397,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="def">the default value</param>
         /// <returns>a value</returns>
-        public float GetLly(float def) {
+        virtual public float GetLly(float def) {
             if (float.IsNaN(lly))
                 return def;
             return lly;
@@ -407,7 +408,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="def">the default value</param>
         /// <returns>a value</returns>
-        public float GetUrx(float def) {
+        virtual public float GetUrx(float def) {
             if (float.IsNaN(urx))
                 return def;
             return urx;
@@ -418,7 +419,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="def">the default value</param>
         /// <returns>a value</returns>
-        public float GetUry(float def) {
+        virtual public float GetUry(float def) {
             if (float.IsNaN(ury))
                 return def;
             return ury;
@@ -428,7 +429,7 @@ namespace iTextSharp.text {
         /// Returns the type of this Annotation.
         /// </summary>
         /// <value>a type</value>
-        public int AnnotationType {
+        virtual public int AnnotationType {
             get {
                 return annotationtype;
             }
@@ -438,7 +439,7 @@ namespace iTextSharp.text {
         /// Returns the title of this Annotation.
         /// </summary>
         /// <value>a name</value>
-        public string Title {
+        virtual public string Title {
             get {
                 if (annotationAttributes.ContainsKey(TITLE))
                     return (string)annotationAttributes[TITLE];
@@ -451,7 +452,7 @@ namespace iTextSharp.text {
         /// Gets the content of this Annotation.
         /// </summary>
         /// <value>a reference</value>
-        public string Content {
+        virtual public string Content {
             get {
                 if (annotationAttributes.ContainsKey(CONTENT))
                     return (string)annotationAttributes[CONTENT];
@@ -464,7 +465,7 @@ namespace iTextSharp.text {
         /// Gets the content of this Annotation.
         /// </summary>
         /// <value>a reference</value>
-        public Dictionary<string, object> Attributes {
+        virtual public Dictionary<string, object> Attributes {
             get {
                 return annotationAttributes;
             }
@@ -474,7 +475,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isContent()
         * @since   iText 2.0.8
         */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return true;
         }
 
@@ -482,7 +483,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isNestable()
         * @since   iText 2.0.8
         */
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             return true;
         }
 

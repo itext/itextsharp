@@ -1,17 +1,18 @@
 /*
  * 
- * $Id: LineSeparator.cs 660 2013-11-27 11:22:32Z asubach $
+ * $Id: LineSeparator.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -113,7 +114,7 @@ namespace iTextSharp.text.pdf.draw {
         * @param rightX the right x coordindate
         * @param y          the y coordinate
         */
-        public void DrawLine(PdfContentByte canvas, float leftX, float rightX, float y) {
+        virtual public void DrawLine(PdfContentByte canvas, float leftX, float rightX, float y) {
             float w;
             if (Percentage < 0)
                 w = -Percentage;
@@ -143,7 +144,7 @@ namespace iTextSharp.text.pdf.draw {
         * Setter for the line width.
         * @param lineWidth  the thickness of the line that will be drawn.
         */
-        public float LineWidth {
+        virtual public float LineWidth {
             get {
                 return lineWidth;
             }
@@ -156,7 +157,7 @@ namespace iTextSharp.text.pdf.draw {
         * Setter for the width as a percentage of the available width.
         * @return   a width percentage
         */
-        public float Percentage {
+        virtual public float Percentage {
             get {
                 return percentage;
             }
@@ -170,7 +171,7 @@ namespace iTextSharp.text.pdf.draw {
         * @param color  a color
         */
 
-        public BaseColor LineColor {
+        virtual public BaseColor LineColor {
             get {
                 return lineColor;
             }
@@ -183,7 +184,7 @@ namespace iTextSharp.text.pdf.draw {
         * Setter for the alignment of the line.
         * @param align  an alignment value
         */
-        public int Alignment {
+        virtual public int Alignment {
             get {
                 return alignment;
             }

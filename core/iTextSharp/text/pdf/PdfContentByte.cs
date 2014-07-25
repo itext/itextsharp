@@ -9,19 +9,20 @@ using iTextSharp.text.pdf.intern;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: PdfContentByte.cs 640 2013-11-01 14:31:50Z asubach $
+ * $Id: PdfContentByte.cs 700 2014-02-12 14:06:42Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -274,7 +275,7 @@ namespace iTextSharp.text.pdf {
          * Gets the internal buffer.
          * @return the internal buffer
          */
-        public ByteBuffer InternalBuffer {
+        virtual public ByteBuffer InternalBuffer {
             get {
                 return content;
             }
@@ -286,7 +287,7 @@ namespace iTextSharp.text.pdf {
          * @return a <CODE>byte</CODE> array with the representation
          */
     
-        public byte[] ToPdf(PdfWriter writer) {
+        virtual public byte[] ToPdf(PdfWriter writer) {
             SanityCheck();
             return content.ToByteArray();
         }
@@ -299,7 +300,7 @@ namespace iTextSharp.text.pdf {
          * @param       other       another <CODE>PdfByteContent</CODE>-object
          */
     
-        public void Add(PdfContentByte other) {
+        virtual public void Add(PdfContentByte other) {
             if (other.writer != null && writer != other.writer)
                 throw new Exception(MessageLocalization.GetComposedMessage("inconsistent.writers.are.you.mixing.two.documents"));
             content.Append(other.content);
@@ -311,7 +312,7 @@ namespace iTextSharp.text.pdf {
          *
          * @return the x position of the text line matrix
          */
-        public float XTLM {
+        virtual public float XTLM {
             get {
                 return state.xTLM;
             }
@@ -322,7 +323,7 @@ namespace iTextSharp.text.pdf {
          *
          * @return the y position of the text line matrix
          */
-        public float YTLM {
+        virtual public float YTLM {
             get {
                 return state.yTLM;
             }
@@ -333,7 +334,7 @@ namespace iTextSharp.text.pdf {
         *
         * @return the current character spacing
         */
-        public float CharacterSpacing {
+        virtual public float CharacterSpacing {
             get {
                 return state.charSpace;
             }
@@ -344,7 +345,7 @@ namespace iTextSharp.text.pdf {
         *
         * @return the current word spacing
         */
-        public float WordSpacing {
+        virtual public float WordSpacing {
             get {
                 return state.wordSpace;
             }
@@ -355,7 +356,7 @@ namespace iTextSharp.text.pdf {
         *
         * @return the current character spacing
         */
-        public float HorizontalScaling {
+        virtual public float HorizontalScaling {
             get {
                 return state.scale;
             }
@@ -366,13 +367,13 @@ namespace iTextSharp.text.pdf {
          *
          * @return the current text leading
          */
-        public float Leading {
+        virtual public float Leading {
             get {
                 return state.leading;
             }
         }
 
-        public void SetLeading(float v) {
+        virtual public void SetLeading(float v) {
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
@@ -389,7 +390,7 @@ namespace iTextSharp.text.pdf {
          * @param       flatness        a value
          */
     
-        public void SetFlatness(float value) {
+        virtual public void SetFlatness(float value) {
             if (value >= 0 && value <= 100) {
                 content.Append(value).Append(" i").Append_i(separator);
             }
@@ -405,7 +406,7 @@ namespace iTextSharp.text.pdf {
          * @param       style       a value
          */
     
-        public void SetLineCap(int value) {
+        virtual public void SetLineCap(int value) {
             if (value >= 0 && value <= 2) {
                 content.Append(value).Append(" J").Append_i(separator);
             }
@@ -422,7 +423,7 @@ namespace iTextSharp.text.pdf {
          * @param       phase       the value of the phase
          */
     
-        public void SetLineDash(float value) {
+        virtual public void SetLineDash(float value) {
             content.Append("[] ").Append(value).Append(" d").Append_i(separator);
         }
     
@@ -438,7 +439,7 @@ namespace iTextSharp.text.pdf {
          * @param       unitsOn     the number of units that must be 'on' (equals the number of units that must be 'off').
          */
     
-        public void SetLineDash(float unitsOn, float phase) {
+        virtual public void SetLineDash(float unitsOn, float phase) {
             content.Append('[').Append(unitsOn).Append("] ").Append(phase).Append(" d").Append_i(separator);
         }
     
@@ -455,7 +456,7 @@ namespace iTextSharp.text.pdf {
          * @param       unitsOff    the number of units that must be 'off'
          */
     
-        public void SetLineDash(float unitsOn, float unitsOff, float phase) {
+        virtual public void SetLineDash(float unitsOn, float unitsOff, float phase) {
             content.Append('[').Append(unitsOn).Append(' ').Append(unitsOff).Append("] ").Append(phase).Append(" d").Append_i(separator);
         }
     
@@ -490,7 +491,7 @@ namespace iTextSharp.text.pdf {
          * @param       style       a value
          */
     
-        public void SetLineJoin(int value) {
+        virtual public void SetLineJoin(int value) {
             if (value >= 0 && value <= 2) {
                 content.Append(value).Append(" j").Append_i(separator);
             }
@@ -505,7 +506,7 @@ namespace iTextSharp.text.pdf {
          * @param       w           a width
          */
     
-        public void SetLineWidth(float value) {
+        virtual public void SetLineWidth(float value) {
             content.Append(value).Append(" w").Append_i(separator);
         }
     
@@ -520,7 +521,7 @@ namespace iTextSharp.text.pdf {
          * @param       miterLimit      a miter limit
          */
     
-        public void SetMiterLimit(float value) {
+        virtual public void SetMiterLimit(float value) {
             if (value > 1) {
                 content.Append(value).Append(" M").Append_i(separator);
             }
@@ -532,7 +533,7 @@ namespace iTextSharp.text.pdf {
          * path.
          */
     
-        public void Clip() {
+        virtual public void Clip() {
             if (inText && IsTagged()) {
                 EndText();
             }
@@ -544,7 +545,7 @@ namespace iTextSharp.text.pdf {
          * even-odd rule to determine which regions lie inside the clipping path.
          */
     
-        public void EoClip() {
+        virtual public void EoClip() {
             if (inText && IsTagged()) {
                 EndText();
             }
@@ -774,7 +775,7 @@ namespace iTextSharp.text.pdf {
          * @param       y               new y-coordinate
          */
     
-        public void MoveTo(float x, float y) {
+        virtual public void MoveTo(float x, float y) {
             if (inText) {
                 if (IsTagged()) {
                     EndText();
@@ -794,7 +795,7 @@ namespace iTextSharp.text.pdf {
          * @param       y               new y-coordinate
          */
     
-        public void LineTo(float x, float y) {
+        virtual public void LineTo(float x, float y) {
             if (inText) {
                 if (IsTagged()) {
                     EndText();
@@ -817,7 +818,7 @@ namespace iTextSharp.text.pdf {
          * @param       y3      y-coordinaat of the ending point (= new current point)
          */
     
-        public void CurveTo(float x1, float y1, float x2, float y2, float x3, float y3) {
+        virtual public void CurveTo(float x1, float y1, float x2, float y2, float x3, float y3) {
             if (inText) {
                 if (IsTagged()) {
                     EndText();
@@ -838,7 +839,7 @@ namespace iTextSharp.text.pdf {
          * @param       y3      y-coordinaat of the ending point (= new current point)
          */
     
-        public void CurveTo(float x2, float y2, float x3, float y3) {
+        virtual public void CurveTo(float x2, float y2, float x3, float y3) {
             if (inText) {
                 if (IsTagged()) {
                     EndText();
@@ -859,7 +860,7 @@ namespace iTextSharp.text.pdf {
          * @param       y3      y-coordinaat of the ending point (= new current point)
          */
     
-        public void CurveFromTo(float x1, float y1, float x3, float y3) {
+        virtual public void CurveFromTo(float x1, float y1, float x3, float y3) {
             if (inText) {
                 if (IsTagged()) {
                     EndText();
@@ -877,7 +878,7 @@ namespace iTextSharp.text.pdf {
          * @param y y center of circle
          * @param r radius of circle
          */
-        public void Circle(float x, float y, float r) {
+        virtual public void Circle(float x, float y, float r) {
             float b = 0.5523f;
             MoveTo(x + r, y);
             CurveTo(x + r, y + r * b, x + r * b, y + r, x, y + r);
@@ -897,7 +898,7 @@ namespace iTextSharp.text.pdf {
          * @param       h       height
          */
     
-        public void Rectangle(float x, float y, float w, float h) {
+        virtual public void Rectangle(float x, float y, float w, float h) {
             if (inText) {
                 if (IsTagged()) {
                     EndText();
@@ -925,7 +926,7 @@ namespace iTextSharp.text.pdf {
         * = true.
         * @param rect a <CODE>Rectangle</CODE>
         */
-        public void VariableRectangle(Rectangle rect) {
+        virtual public void VariableRectangle(Rectangle rect) {
             float t = rect.Top;
             float b = rect.Bottom;
             float r = rect.Right;
@@ -1061,7 +1062,7 @@ namespace iTextSharp.text.pdf {
         * @param        rectangle        a <CODE>Rectangle</CODE>
         */
         
-        public void Rectangle(Rectangle rectangle) {
+        virtual public void Rectangle(Rectangle rectangle) {
             // the coordinates of the border are retrieved
             float x1 = rectangle.Left;
             float y1 = rectangle.Bottom;
@@ -1138,7 +1139,7 @@ namespace iTextSharp.text.pdf {
          * to the starting point of the subpath.
          */
     
-        public void ClosePath() {
+        virtual public void ClosePath() {
             if (inText) {
                 if (IsTagged()) {
                     EndText();
@@ -1154,7 +1155,7 @@ namespace iTextSharp.text.pdf {
          * Ends the path without filling or stroking it.
          */
     
-        public void NewPath() {
+        virtual public void NewPath() {
             if (inText) {
                 if (IsTagged()) {
                     EndText();
@@ -1170,7 +1171,7 @@ namespace iTextSharp.text.pdf {
          * Strokes the path.
          */
     
-        public void Stroke() {
+        virtual public void Stroke() {
             if (inText) {
                 if (IsTagged())
                 {
@@ -1189,7 +1190,7 @@ namespace iTextSharp.text.pdf {
          * Closes the path and strokes it.
          */
     
-        public void ClosePathStroke() {
+        virtual public void ClosePathStroke() {
             if (inText) {
                 if (IsTagged())
                 {
@@ -1208,7 +1209,7 @@ namespace iTextSharp.text.pdf {
          * Fills the path, using the non-zero winding number rule to determine the region to fill.
          */
     
-        public void Fill() {
+        virtual public void Fill() {
             if (inText) {
                 if (IsTagged())
                 {
@@ -1227,7 +1228,7 @@ namespace iTextSharp.text.pdf {
          * Fills the path, using the even-odd rule to determine the region to fill.
          */
     
-        public void EoFill() {
+        virtual public void EoFill() {
             if (inText) {
                 if (IsTagged())
                 {
@@ -1246,7 +1247,7 @@ namespace iTextSharp.text.pdf {
          * Fills the path using the non-zero winding number rule to determine the region to fill and strokes it.
          */
     
-        public void FillStroke() {
+        virtual public void FillStroke() {
             if (inText) {
                 if (IsTagged())
                 {
@@ -1266,7 +1267,7 @@ namespace iTextSharp.text.pdf {
          * Closes the path, fills it using the non-zero winding number rule to determine the region to fill and strokes it.
          */
     
-        public void ClosePathFillStroke() {
+        virtual public void ClosePathFillStroke() {
             if (inText) {
                 if (IsTagged())
                 {
@@ -1286,7 +1287,7 @@ namespace iTextSharp.text.pdf {
          * Fills the path, using the even-odd rule to determine the region to fill and strokes it.
          */
     
-        public void EoFillStroke() {
+        virtual public void EoFillStroke() {
             if (inText) {
                 if (IsTagged())
                 {
@@ -1306,7 +1307,7 @@ namespace iTextSharp.text.pdf {
          * Closes the path, fills it using the even-odd rule to determine the region to fill and strokes it.
          */
     
-        public void ClosePathEoFillStroke() {
+        virtual public void ClosePathEoFillStroke() {
             if (inText) {
                 if (IsTagged())
                 {
@@ -1370,7 +1371,7 @@ namespace iTextSharp.text.pdf {
          * @param image image to add
          * @param transform transform to apply to the template prior to adding it.
          */
-        public void AddImage(Image image, AffineTransform transform) {
+        virtual public void AddImage(Image image, AffineTransform transform) {
     	    double[] matrix = new double[6];
     	    transform.GetMatrix(matrix);
     	    AddImage(image, (float)matrix[0], (float)matrix[1], (float)matrix[2],
@@ -1409,8 +1410,28 @@ namespace iTextSharp.text.pdf {
         public virtual void AddImage(Image image, float a, float b, float c, float d, float e, float f, bool inlineImage) {
             if (image.Layer != null)
                 BeginLayer(image.Layer);
-            if (inText && IsTagged()){
-                EndText();
+            if (IsTagged()) {
+                if (inText)
+                    EndText();
+                AffineTransform transform = new AffineTransform(a, b, c, d, e, f);
+                Point2D[] src = new Point2D.Float[] { new Point2D.Float(0, 0), new Point2D.Float(1, 0), new Point2D.Float(1, 1), new Point2D.Float(0, 1) };
+                Point2D[] dst = new Point2D.Float[4];
+                transform.Transform(src, 0, dst, 0, 4);
+                float left = float.MaxValue;
+                float right = float.MinValue;
+                float bottom = float.MaxValue;
+                float top = float.MinValue;
+                for (int i = 0; i < 4; i++) {
+                    if (dst[i].GetX() < left)
+                        left = (float) dst[i].GetX();
+                    if (dst[i].GetX() > right)
+                        right = (float) dst[i].GetX();
+                    if (dst[i].GetY() < bottom)
+                        bottom = (float) dst[i].GetY();
+                    if (dst[i].GetY() > top)
+                        top = (float) dst[i].GetY();
+                }
+                image.SetAccessibleAttribute(PdfName.BBOX, new PdfArray(new float[] {left, bottom, right, top}));
             }
             if (writer != null && image.IsImgTemplate()) {
                 writer.AddDirectImageSimple(image);
@@ -1524,7 +1545,7 @@ namespace iTextSharp.text.pdf {
         * Makes this <CODE>PdfContentByte</CODE> empty.
         * Calls <code>reset( true )</code>
         */
-        public void Reset() {
+        virtual public void Reset() {
             Reset( true );
         }
 
@@ -1533,7 +1554,7 @@ namespace iTextSharp.text.pdf {
         * @param validateContent will call <code>sanityCheck()</code> if true.
         * @since 2.1.6
         */
-        public void Reset( bool validateContent ) {
+        virtual public void Reset( bool validateContent ) {
             content.Reset();
             markedContentSize = 0;
             if (validateContent) {
@@ -1547,7 +1568,7 @@ namespace iTextSharp.text.pdf {
          * Starts the writing of text.
          * @param restoreTM indicates if to restore text matrix of the previous text block.
          */
-        protected internal void BeginText(bool restoreTM)
+        virtual protected internal void BeginText(bool restoreTM)
         {
             if (inText) {
                 if (IsTagged()) {
@@ -1583,14 +1604,14 @@ namespace iTextSharp.text.pdf {
         /**
          * Starts the writing of text.
          */
-        public void BeginText() {
+        virtual public void BeginText() {
             BeginText(false);
         }
     
         /**
          * Ends the writing of text and makes the current font invalid.
          */
-        public void EndText() {
+        virtual public void EndText() {
             if (!inText) {
                 if (IsTagged()) {
 
@@ -1617,7 +1638,7 @@ namespace iTextSharp.text.pdf {
          * Saves the graphic state. <CODE>saveState</CODE> and
          * <CODE>restoreState</CODE> must be balanced.
          */
-        public void SaveState() {
+        virtual public void SaveState() {
             PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_CANVAS, "q");
             if (inText && IsTagged()) {
                 EndText();
@@ -1630,7 +1651,7 @@ namespace iTextSharp.text.pdf {
          * Restores the graphic state. <CODE>saveState</CODE> and
          * <CODE>restoreState</CODE> must be balanced.
          */
-        public void RestoreState() {
+        virtual public void RestoreState() {
             PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_CANVAS, "Q");
             if (inText && IsTagged()) {
                 EndText();
@@ -1648,7 +1669,7 @@ namespace iTextSharp.text.pdf {
          *
          * @param       charSpace           a parameter
          */
-        public void SetCharacterSpacing(float value) {
+        virtual public void SetCharacterSpacing(float value) {
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
@@ -1661,7 +1682,7 @@ namespace iTextSharp.text.pdf {
          *
          * @param       wordSpace           a parameter
          */
-        public void SetWordSpacing(float value) {
+        virtual public void SetWordSpacing(float value) {
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
@@ -1674,7 +1695,7 @@ namespace iTextSharp.text.pdf {
          *
          * @param       scale               a parameter
          */
-        public void SetHorizontalScaling(float value) {
+        virtual public void SetHorizontalScaling(float value) {
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
@@ -1708,7 +1729,7 @@ namespace iTextSharp.text.pdf {
          *
          * @param       rendering               a parameter
          */
-        public void SetTextRenderingMode(int value) {
+        virtual public void SetTextRenderingMode(int value) {
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
@@ -1723,7 +1744,7 @@ namespace iTextSharp.text.pdf {
          *
          * @param       rise                a parameter
          */
-        public void SetTextRise(float value) {
+        virtual public void SetTextRise(float value) {
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
@@ -1748,7 +1769,7 @@ namespace iTextSharp.text.pdf {
          *
          * @param text the text to write
          */
-        public void ShowText(string text) {
+        virtual public void ShowText(string text) {
             CheckState();
             if (!inText && IsTagged()) {
                 BeginText(true);
@@ -1793,7 +1814,7 @@ namespace iTextSharp.text.pdf {
         *
         * @param text the text to write
         */
-        public void ShowTextKerned(String text) {
+        virtual public void ShowTextKerned(String text) {
             if (state.fontDetails == null)
                 throw new ArgumentNullException(MessageLocalization.GetComposedMessage("font.and.size.must.be.set.before.writing.any.text"));
             BaseFont bf = state.fontDetails.BaseFont;
@@ -1808,7 +1829,7 @@ namespace iTextSharp.text.pdf {
          *
          * @param text the text to write
          */
-        public void NewlineShowText(string text) {
+        virtual public void NewlineShowText(string text) {
             CheckState();
             if (!inText && IsTagged()) {
                 BeginText(true);
@@ -1827,7 +1848,7 @@ namespace iTextSharp.text.pdf {
          * @param       charSpacing     a parameter
          * @param text the text to write
          */
-        public void NewlineShowText(float wordSpacing, float charSpacing, string text) {
+        virtual public void NewlineShowText(float wordSpacing, float charSpacing, string text) {
             CheckState();
             if (!inText && IsTagged()) {
                 BeginText(true);
@@ -1857,7 +1878,7 @@ namespace iTextSharp.text.pdf {
          * @param       x           operand 3,1 in the matrix
          * @param       y           operand 3,2 in the matrix
          */
-        public void SetTextMatrix(float a, float b, float c, float d, float x, float y) {
+        virtual public void SetTextMatrix(float a, float b, float c, float d, float x, float y) {
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
@@ -1878,7 +1899,7 @@ namespace iTextSharp.text.pdf {
          * <P>
          * @param transform overwrite the current text matrix with this one
          */
-        public void SetTextMatrix(AffineTransform transform) {
+        virtual public void SetTextMatrix(AffineTransform transform) {
     	    double[] matrix = new double[6];
     	    transform.GetMatrix(matrix);
     	    SetTextMatrix((float)matrix[0], (float)matrix[1], (float)matrix[2],
@@ -1908,7 +1929,7 @@ namespace iTextSharp.text.pdf {
          * @param       x           operand 3,1 in the matrix
          * @param       y           operand 3,2 in the matrix
          */
-        public void SetTextMatrix(float x, float y) {
+        virtual public void SetTextMatrix(float x, float y) {
             SetTextMatrix(1, 0, 0, 1, x, y);
         }
     
@@ -1918,7 +1939,7 @@ namespace iTextSharp.text.pdf {
          * @param       x           x-coordinate of the new current point
          * @param       y           y-coordinate of the new current point
          */
-        public void MoveText(float x, float y) {
+        virtual public void MoveText(float x, float y) {
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
@@ -1939,7 +1960,7 @@ namespace iTextSharp.text.pdf {
          * @param       x           offset of the new current point
          * @param       y           y-coordinate of the new current point
          */
-        public void MoveTextWithLeading(float x, float y) {
+        virtual public void MoveTextWithLeading(float x, float y) {
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
@@ -1956,7 +1977,7 @@ namespace iTextSharp.text.pdf {
         /**
          * Moves to the start of the next line.
          */
-        public void NewlineText() {
+        virtual public void NewlineText() {
             if (!inText && IsTagged()) {
                 BeginText(true);
             }
@@ -2039,7 +2060,7 @@ namespace iTextSharp.text.pdf {
          * @param outline the outline
          * @param name the name for the local destination
          */
-        public void AddOutline(PdfOutline outline, string name) {
+        virtual public void AddOutline(PdfOutline outline, string name) {
             CheckWriter();
             pdf.AddOutline(outline, name);
         }
@@ -2048,7 +2069,7 @@ namespace iTextSharp.text.pdf {
          *
          * @return the root outline
          */
-        public PdfOutline RootOutline {
+        virtual public PdfOutline RootOutline {
             get {
                 CheckWriter();
                 return pdf.RootOutline;
@@ -2066,7 +2087,7 @@ namespace iTextSharp.text.pdf {
         * @return the width
         */
 
-        public float GetEffectiveStringWidth(String text, bool kerned) {
+        virtual public float GetEffectiveStringWidth(String text, bool kerned) {
             BaseFont bf = state.fontDetails.BaseFont;
             
             float w;
@@ -2133,7 +2154,7 @@ namespace iTextSharp.text.pdf {
         * @param y the y pivot position
         * @param rotation the rotation to be applied in degrees counterclockwise
         */
-        public void ShowTextAligned(int alignment, String text, float x, float y, float rotation) {
+        virtual public void ShowTextAligned(int alignment, String text, float x, float y, float rotation) {
             ShowTextAligned(alignment, text, x, y, rotation, false);
         }
         
@@ -2189,7 +2210,7 @@ namespace iTextSharp.text.pdf {
         * @param y the y pivot position
         * @param rotation the rotation to be applied in degrees counterclockwise
         */
-        public void ShowTextAlignedKerned(int alignment, String text, float x, float y, float rotation) {
+        virtual public void ShowTextAlignedKerned(int alignment, String text, float x, float y, float rotation) {
             ShowTextAligned(alignment, text, x, y, rotation, true);
         }
 
@@ -2217,7 +2238,7 @@ namespace iTextSharp.text.pdf {
          * @param e an element of the transformation matrix
          * @param f an element of the transformation matrix
          **/
-        public void ConcatCTM(float a, float b, float c, float d, float e, float f) {
+        virtual public void ConcatCTM(float a, float b, float c, float d, float e, float f) {
             if (inText && IsTagged()) {
                 EndText();
             }
@@ -2230,7 +2251,7 @@ namespace iTextSharp.text.pdf {
          * Concatenate a matrix to the current transformation matrix.
          * @param transform added to the Current Transformation Matrix
          */
-        public void ConcatCTM(AffineTransform transform) {
+        virtual public void ConcatCTM(AffineTransform transform) {
     	    double[] matrix = new double[6];
     	    transform.GetMatrix(matrix);
     	    ConcatCTM((float) matrix[0], (float) matrix[1], (float) matrix[2],
@@ -2348,7 +2369,7 @@ namespace iTextSharp.text.pdf {
          * @param startAng starting angle in degrees
          * @param extent angle extent in degrees
          */
-        public void Arc(float x1, float y1, float x2, float y2, float startAng, float extent) {
+        virtual public void Arc(float x1, float y1, float x2, float y2, float startAng, float extent) {
             List<float[]> ar = BezierArc(x1, y1, x2, y2, startAng, extent);
             if (ar.Count == 0)
                 return;
@@ -2368,7 +2389,7 @@ namespace iTextSharp.text.pdf {
          * @param x2 a corner of the enclosing rectangle
          * @param y2 a corner of the enclosing rectangle
          */
-        public void Ellipse(float x1, float y1, float x2, float y2) {
+        virtual public void Ellipse(float x1, float y1, float x2, float y2) {
             Arc(x1, y1, x2, y2, 0f, 360f);
         }
     
@@ -2383,7 +2404,7 @@ namespace iTextSharp.text.pdf {
          * May be either positive or negative, but not zero.
          * @return the <CODE>PdfPatternPainter</CODE> where the pattern will be created
          */
-        public PdfPatternPainter CreatePattern(float width, float height, float xstep, float ystep) {
+        virtual public PdfPatternPainter CreatePattern(float width, float height, float xstep, float ystep) {
             CheckWriter();
             if ( xstep == 0.0f || ystep == 0.0f )
                 throw new Exception(MessageLocalization.GetComposedMessage("xstep.or.ystep.can.not.be.zero"));
@@ -2403,7 +2424,7 @@ namespace iTextSharp.text.pdf {
          * @param height the height of the pattern
          * @return the <CODE>PdfPatternPainter</CODE> where the pattern will be created
          */
-        public PdfPatternPainter CreatePattern(float width, float height) {
+        virtual public PdfPatternPainter CreatePattern(float width, float height) {
             return CreatePattern(width, height, width, height);
         }
     
@@ -2419,7 +2440,7 @@ namespace iTextSharp.text.pdf {
          * @param color the default color. Can be <CODE>null</CODE>
          * @return the <CODE>PdfPatternPainter</CODE> where the pattern will be created
          */
-        public PdfPatternPainter CreatePattern(float width, float height, float xstep, float ystep, BaseColor color) {
+        virtual public PdfPatternPainter CreatePattern(float width, float height, float xstep, float ystep, BaseColor color) {
             CheckWriter();
             if ( xstep == 0.0f || ystep == 0.0f )
                 throw new Exception(MessageLocalization.GetComposedMessage("xstep.or.ystep.can.not.be.zero"));
@@ -2441,7 +2462,7 @@ namespace iTextSharp.text.pdf {
          * @param color the default color. Can be <CODE>null</CODE>
          * @return the <CODE>PdfPatternPainter</CODE> where the pattern will be created
          */
-        public PdfPatternPainter CreatePattern(float width, float height, BaseColor color) {
+        virtual public PdfPatternPainter CreatePattern(float width, float height, BaseColor color) {
             return CreatePattern(width, height, width, height, color);
         }
     
@@ -2457,7 +2478,7 @@ namespace iTextSharp.text.pdf {
          * @param height the bounding box height
          * @return the templated created
          */
-        public PdfTemplate CreateTemplate(float width, float height) {
+        virtual public PdfTemplate CreateTemplate(float width, float height) {
             return CreateTemplate(width, height, null);
         }
         
@@ -2477,7 +2498,7 @@ namespace iTextSharp.text.pdf {
          * @param height the bounding box height
          * @return the appearance created
          */
-        public PdfAppearance CreateAppearance(float width, float height) {
+        virtual public PdfAppearance CreateAppearance(float width, float height) {
             return CreateAppearance(width, height, null);
         }
         
@@ -2495,7 +2516,7 @@ namespace iTextSharp.text.pdf {
         *
         * @param psobject the object
         */
-        public void AddPSXObject(PdfPSXObject psobject) {
+        virtual public void AddPSXObject(PdfPSXObject psobject) {
             if (inText && IsTagged()) {
                 EndText();
             }
@@ -2534,7 +2555,7 @@ namespace iTextSharp.text.pdf {
          * @param tagContent <code>true</code> - template content will be tagged(all that will be added after), <code>false</code> - only a Do operator will be tagged.
          *                   taken into account only if <code>isTagged()</code> - <code>true</code>.
          */
-        public void AddTemplate(PdfTemplate template, float a, float b, float c, float d, float e, float f, bool tagContent) {
+        virtual public void AddTemplate(PdfTemplate template, float a, float b, float c, float d, float e, float f, bool tagContent) {
             CheckWriter();
             CheckNoPattern(template);
             PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_FORM_XOBJ, template);
@@ -2580,7 +2601,7 @@ namespace iTextSharp.text.pdf {
          * @param template template to add
          * @param transform transform to apply to the template prior to adding it.
          */
-        public void AddTemplate(PdfTemplate template, AffineTransform transform) {
+        virtual public void AddTemplate(PdfTemplate template, AffineTransform transform) {
             AddTemplate(template, transform, false);
         }
 
@@ -2591,7 +2612,7 @@ namespace iTextSharp.text.pdf {
          * @param tagContent <code>true</code> - template content will be tagged(all that will be added after), <code>false</code> - only a Do operator will be tagged.
          *                   taken into account only if <code>isTagged()</code> - <code>true</code>.
          */
-        public void AddTemplate(PdfTemplate template, AffineTransform transform, bool tagContent) {
+        virtual public void AddTemplate(PdfTemplate template, AffineTransform transform, bool tagContent) {
     	    double[] matrix = new double[6];
     	    transform.GetMatrix(matrix);
     	    AddTemplate(template, (float) matrix[0], (float) matrix[1], (float) matrix[2],
@@ -2649,11 +2670,11 @@ namespace iTextSharp.text.pdf {
          * @param x the x location of this template
          * @param y the y location of this template
          */
-        public void AddTemplate(PdfTemplate template, float x, float y) {
+        virtual public void AddTemplate(PdfTemplate template, float x, float y) {
             AddTemplate(template, 1, 0, 0, 1, x, y);
         }
 
-        public void AddTemplate(PdfTemplate template, float x, float y, bool tagContent) {
+        virtual public void AddTemplate(PdfTemplate template, float x, float y, bool tagContent) {
             AddTemplate(template, 1, 0, 0, 1, x, y, tagContent);
         }
 
@@ -3056,7 +3077,7 @@ namespace iTextSharp.text.pdf {
          * Show an array of text.
          * @param text array of text
          */
-        public void ShowText(PdfTextArray text) {
+        virtual public void ShowText(PdfTextArray text) {
             CheckState();
             if (!inText && IsTagged()) {
                 BeginText(true);
@@ -3088,7 +3109,7 @@ namespace iTextSharp.text.pdf {
          * Gets the <CODE>PdfWriter</CODE> in use by this object.
          * @return the <CODE>PdfWriter</CODE> in use by this object
          */
-        public PdfWriter PdfWriter {
+        virtual public PdfWriter PdfWriter {
             get {
                 return writer;
             }
@@ -3098,7 +3119,7 @@ namespace iTextSharp.text.pdf {
          * Gets the <CODE>PdfDocument</CODE> in use by this object.
          * @return the <CODE>PdfDocument</CODE> in use by this object
          */
-        public PdfDocument PdfDocument {
+        virtual public PdfDocument PdfDocument {
             get {
                 return pdf;
             }
@@ -3113,7 +3134,7 @@ namespace iTextSharp.text.pdf {
          * @param urx the upper right x corner of the activation area
          * @param ury the upper right y corner of the activation area
          */
-        public void LocalGoto(string name, float llx, float lly, float urx, float ury) {
+        virtual public void LocalGoto(string name, float llx, float lly, float urx, float ury) {
             pdf.LocalGoto(name, llx, lly, urx, ury);
         }
     
@@ -3126,7 +3147,7 @@ namespace iTextSharp.text.pdf {
          * <CODE>false</CODE> if a local destination with the same name
          * already exists
          */
-        public bool LocalDestination(string name, PdfDestination destination) {
+        virtual public bool LocalDestination(string name, PdfDestination destination) {
             return pdf.LocalDestination(name, destination);
         }
     
@@ -3144,7 +3165,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public PdfContentByte GetDuplicate(bool inheritGraphicState) {
+        virtual public PdfContentByte GetDuplicate(bool inheritGraphicState) {
             PdfContentByte cb = this.Duplicate;
             if(inheritGraphicState) {
                 cb.state = state;
@@ -3164,7 +3185,7 @@ namespace iTextSharp.text.pdf {
          * @param urx the upper right x corner of the activation area
          * @param ury the upper right y corner of the activation area
          */
-        public void RemoteGoto(string filename, string name, float llx, float lly, float urx, float ury) {
+        virtual public void RemoteGoto(string filename, string name, float llx, float lly, float urx, float ury) {
             pdf.RemoteGoto(filename, name, llx, lly, urx, ury);
         }
     
@@ -3177,7 +3198,7 @@ namespace iTextSharp.text.pdf {
          * @param urx the upper right x corner of the activation area
          * @param ury the upper right y corner of the activation area
          */
-        public void RemoteGoto(string filename, int page, float llx, float lly, float urx, float ury) {
+        virtual public void RemoteGoto(string filename, int page, float llx, float lly, float urx, float ury) {
             pdf.RemoteGoto(filename, page, llx, lly, urx, ury);
         }
         /**
@@ -3189,7 +3210,7 @@ namespace iTextSharp.text.pdf {
          * @param h height
          * @param r radius of the arc corner
          */
-        public void RoundRectangle(float x, float y, float w, float h, float r) {
+        virtual public void RoundRectangle(float x, float y, float w, float h, float r) {
             if (w < 0) {
                 x += w;
                 w = -w;
@@ -3226,21 +3247,21 @@ namespace iTextSharp.text.pdf {
         /** Outputs a <CODE>string</CODE> directly to the content.
          * @param s the <CODE>string</CODE>
          */    
-        public void SetLiteral(string s) {
+        virtual public void SetLiteral(string s) {
             content.Append(s);
         }
     
         /** Outputs a <CODE>char</CODE> directly to the content.
          * @param c the <CODE>char</CODE>
          */    
-        public void SetLiteral(char c) {
+        virtual public void SetLiteral(char c) {
             content.Append(c);
         }
     
         /** Outputs a <CODE>float</CODE> directly to the content.
          * @param n the <CODE>float</CODE>
          */    
-        public void SetLiteral(float n) {
+        virtual public void SetLiteral(float n) {
             content.Append(n);
         }
     
@@ -3256,7 +3277,7 @@ namespace iTextSharp.text.pdf {
          * Draws a TextField.
          */
     
-        public void DrawRadioField(float llx, float lly, float urx, float ury, bool on) {
+        virtual public void DrawRadioField(float llx, float lly, float urx, float ury, bool on) {
             if (llx > urx) { float x = llx; llx = urx; urx = x; }
             if (lly > ury) { float y = lly; lly = ury; ury = y; }
             SaveState();
@@ -3293,7 +3314,7 @@ namespace iTextSharp.text.pdf {
          * Draws a TextField.
          */
     
-        public void DrawTextField(float llx, float lly, float urx, float ury) {
+        virtual public void DrawTextField(float llx, float lly, float urx, float ury) {
             if (llx > urx) { float x = llx; llx = urx; urx = x; }
             if (lly > ury) { float y = lly; lly = ury; ury = y; }
             SaveState();
@@ -3340,7 +3361,7 @@ namespace iTextSharp.text.pdf {
          * Draws a button.
          */
     
-        public void DrawButton(float llx, float lly, float urx, float ury, string text, BaseFont bf, float size) {
+        virtual public void DrawButton(float llx, float lly, float urx, float ury, string text, BaseFont bf, float size) {
             if (llx > urx) { float x = llx; llx = urx; urx = x; }
             if (lly > ury) { float y = lly; lly = ury; ury = y; }
             SaveState();
@@ -3390,7 +3411,7 @@ namespace iTextSharp.text.pdf {
         /** Sets the graphic state
         * @param gstate the graphic state
         */    
-        public void SetGState(PdfGState gstate) {
+        virtual public void SetGState(PdfGState gstate) {
             PdfObject[] obj = writer.AddSimpleExtGState(gstate);
             PageResources prs = PageResources;
             PdfName name = prs.AddExtGState((PdfName)obj[0], (PdfIndirectReference)obj[1]);
@@ -3406,7 +3427,7 @@ namespace iTextSharp.text.pdf {
         * is built in.
         * @param layer the layer
         */    
-        public void BeginLayer(IPdfOCG layer) {
+        virtual public void BeginLayer(IPdfOCG layer) {
             if ((layer is PdfLayer) && ((PdfLayer)layer).Title != null)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("a.title.is.not.a.layer"));
             if (layerDepth == null)
@@ -3438,7 +3459,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Ends a layer controled graphic block. It will end the most recent open block.
         */    
-        public void EndLayer() {
+        virtual public void EndLayer() {
             int n = 1;
             if (layerDepth != null && layerDepth.Count > 0) {
                 n = layerDepth[layerDepth.Count - 1];
@@ -3479,7 +3500,7 @@ namespace iTextSharp.text.pdf {
          * matrix.
          * @param af the transformation
          */
-        public void Transform(AffineTransform af) {
+        virtual public void Transform(AffineTransform af) {
             if (inText && IsTagged()) {
                 EndText();
             }
@@ -3507,7 +3528,7 @@ namespace iTextSharp.text.pdf {
         * but is in a different location, like the same paragraph crossing to another page, for example.
         * @param struc the tagging structure
         */    
-        public void BeginMarkedContentSequence(PdfStructureElement struc) {        
+        virtual public void BeginMarkedContentSequence(PdfStructureElement struc) {        
             PdfObject obj = struc.Get(PdfName.K);
             int[] structParentMarkPoint = pdf.GetStructParentIndexAndNextMarkPoint(CurrentPage);
             int structParent = structParentMarkPoint[0];
@@ -3550,7 +3571,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Ends a marked content sequence
         */    
-        public void EndMarkedContentSequence() {
+        virtual public void EndMarkedContentSequence() {
             if (GetMcDepth() == 0) {
                 throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.begin.end.marked.content.operators"));
             }
@@ -3568,7 +3589,7 @@ namespace iTextSharp.text.pdf {
         * @param inline <CODE>true</CODE> to include the property in the content or <CODE>false</CODE>
         * to include the property in the resource dictionary with the possibility of reusing
         */    
-        public void BeginMarkedContentSequence(PdfName tag, PdfDictionary property, bool inline) {
+        virtual public void BeginMarkedContentSequence(PdfName tag, PdfDictionary property, bool inline) {
             int contentSize = content.Size;
             if (property == null) {
                 content.Append(tag.GetBytes()).Append(" BMC").Append_i(separator);
@@ -3598,7 +3619,7 @@ namespace iTextSharp.text.pdf {
         * This is just a shorthand to <CODE>beginMarkedContentSequence(tag, null, false)</CODE>.
         * @param tag the tag
         */    
-        public void BeginMarkedContentSequence(PdfName tag) {
+        virtual public void BeginMarkedContentSequence(PdfName tag) {
             BeginMarkedContentSequence(tag, null, false);
         }
 
@@ -3613,7 +3634,7 @@ namespace iTextSharp.text.pdf {
         * @since 2.1.6
         * @throws IllegalPdfSyntaxException (a runtime exception)
         */
-        public void SanityCheck() {
+        virtual public void SanityCheck() {
             if (GetMcDepth() != 0) {
                 throw new IllegalPdfSyntaxException(MessageLocalization.GetComposedMessage("unbalanced.marked.content.operators"));
             }
@@ -3632,7 +3653,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public void OpenMCBlock(IAccessibleElement element)
+        virtual public void OpenMCBlock(IAccessibleElement element)
         {
             if (IsTagged())
             {
@@ -3669,18 +3690,13 @@ namespace iTextSharp.text.pdf {
                 IAccessibleElement parent = null;
                 if (GetMcElements().Count > 0)
                     parent = GetMcElements()[GetMcElements().Count - 1];
-                if(parent != null && (parent.Role == null || PdfName.ARTIFACT.Equals(parent.Role)))
-                    element.Role = null;
+                writer.CheckElementRole(element, parent);
                 if (element.Role != null) {
                     if(!PdfName.ARTIFACT.Equals(element.Role)) {
                         if(!pdf.structElements.TryGetValue(element.ID, out structureElement)) {
                             structureElement = new PdfStructureElement(GetParentStructureElement(), element.Role);
-                            structureElement.WriteAttributes(element);
                         }
                     }
-                    bool inTextLocal = inText;
-                    if (inText)
-                        EndText();
                     if (PdfName.ARTIFACT.Equals(element.Role)) {
                         Dictionary<PdfName, PdfObject> properties = element.GetAccessibleAttributes();
                         PdfDictionary propertiesDict = null;
@@ -3692,20 +3708,29 @@ namespace iTextSharp.text.pdf {
                                 propertiesDict.Put(entry.Key, entry.Value);
                             }
                         }
+                        bool inTextLocal = inText;
+                        if (inText)
+                            EndText();
                         BeginMarkedContentSequence(element.Role, propertiesDict, true);
+                        if (inTextLocal)
+                            BeginText(true);
                     }
                     else {
-                        BeginMarkedContentSequence(structureElement);
+                        if (writer.NeedToBeMarkedInContent(element)) {
+                            bool inTextLocal = inText;
+                            if (inText)
+                                EndText();
+                            BeginMarkedContentSequence(structureElement);
+                            if (inTextLocal)
+                                BeginText(true);
+                        }
                     }
-
-                    if (inTextLocal)
-                        BeginText(true);
                 }
             }
             return structureElement;
         }
 
-        public void CloseMCBlock(IAccessibleElement element)
+        virtual public void CloseMCBlock(IAccessibleElement element)
         {
             if (IsTagged() && element != null /*&& element.Role != null*/)
             {
@@ -3716,15 +3741,21 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        private void CloseMCBlockInt(IAccessibleElement element)
-        {
+        private void CloseMCBlockInt(IAccessibleElement element) {
             if (IsTagged() && element.Role != null) {
-                bool inTextLocal = inText;
-                if (inText)
-                    EndText();
-                EndMarkedContentSequence();
-                if (inTextLocal)
-                    BeginText(true);
+                PdfStructureElement structureElement = null;
+                pdf.structElements.TryGetValue(element.ID, out structureElement);
+                if (structureElement != null) {
+                    structureElement.WriteAttributes(element);
+                }
+                if (writer.NeedToBeMarkedInContent(element)) {
+                    bool inTextLocal = inText;
+                    if (inText)
+                        EndText();
+                    EndMarkedContentSequence();
+                    if (inTextLocal)
+                        BeginText(true);
+                }
             }
         }
 
@@ -3868,11 +3899,11 @@ namespace iTextSharp.text.pdf {
 
         }
 
-        protected internal bool InText {
+        virtual protected internal bool InText {
             get {return inText;}
         }
 
-        protected void CheckState() {
+        virtual protected void CheckState() {
             bool stroke = false;
             bool fill = false;
             if (state.textRenderMode == TEXT_RENDER_MODE_FILL) {

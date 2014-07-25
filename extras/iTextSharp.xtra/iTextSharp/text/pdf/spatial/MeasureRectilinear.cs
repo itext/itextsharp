@@ -5,15 +5,16 @@ using iTextSharp.text.pdf.spatial.objects;
  * $Id: $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Balder Van Camp, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -70,7 +71,7 @@ namespace iTextSharp.text.pdf.spatial {
          * 
          * @param scaleratio
          */
-        public void SetScaleRatio(PdfString scaleratio) {
+        virtual public void SetScaleRatio(PdfString scaleratio) {
             Put(new PdfName("R"), scaleratio);
         }
 
@@ -86,7 +87,7 @@ namespace iTextSharp.text.pdf.spatial {
          * 
          * @param x
          */
-        public void SetX(NumberFormatArray x) {
+        virtual public void SetX(NumberFormatArray x) {
             Put(new PdfName("X"), x);
         }
 
@@ -99,7 +100,7 @@ namespace iTextSharp.text.pdf.spatial {
          * 
          * @param y
          */
-        public void SetY(NumberFormatArray y) {
+        virtual public void SetY(NumberFormatArray y) {
             Put(new PdfName("Y"), y);
         }
 
@@ -113,7 +114,7 @@ namespace iTextSharp.text.pdf.spatial {
          * 
          * @param d
          */
-        public void SetD(NumberFormatArray d) {
+        virtual public void SetD(NumberFormatArray d) {
             Put(new PdfName("D"), d);
         }
 
@@ -127,7 +128,7 @@ namespace iTextSharp.text.pdf.spatial {
          * 
          * @param a
          */
-        public void SetA(NumberFormatArray a) {
+        virtual public void SetA(NumberFormatArray a) {
             Put(new PdfName("A"), a);
         }
 
@@ -140,7 +141,7 @@ namespace iTextSharp.text.pdf.spatial {
          * 
          * @param t a PdfArray containing PdfNumber objects
          */
-        public void SetT(NumberFormatArray t) {
+        virtual public void SetT(NumberFormatArray t) {
             Put(new PdfName("T"), t);
         }
 
@@ -154,7 +155,7 @@ namespace iTextSharp.text.pdf.spatial {
          * 
          * @param s a PdfArray containing PdfNumber objects
          */
-        public void SetS(NumberFormatArray s) {
+        virtual public void SetS(NumberFormatArray s) {
             Put(new PdfName("S"), s);
         }
 
@@ -168,7 +169,7 @@ namespace iTextSharp.text.pdf.spatial {
          * 
          * @param o an XYArray
          */
-        public void SetO(XYArray o) {
+        virtual public void SetO(XYArray o) {
             Put(new PdfName("O"), o);
         }
 
@@ -183,7 +184,7 @@ namespace iTextSharp.text.pdf.spatial {
          * 
          * @param cyx
          */
-        public void SetCYX(PdfNumber cyx) {
+        virtual public void SetCYX(PdfNumber cyx) {
             Put(PdfName.CYX, cyx);
         }
     }

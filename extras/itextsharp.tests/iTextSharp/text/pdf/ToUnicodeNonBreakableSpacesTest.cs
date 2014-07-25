@@ -13,7 +13,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         private const string TARGET = @"ToUnicodeNonBreakableSpacesTest\";
 
         [SetUp]
-        public void SetUp()
+        virtual public void SetUp()
         {
             Directory.CreateDirectory(TARGET);
 
@@ -34,7 +34,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void WriteTextWithWordSpacing()
+        virtual public void WriteTextWithWordSpacing()
         {
             Document document = new Document();
             FileStream output = new FileStream(TARGET + "textWithWorldSpacing.pdf", FileMode.Create);

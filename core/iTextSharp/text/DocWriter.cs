@@ -4,19 +4,20 @@ using System.Collections;
 using System.util;
 using iTextSharp.text.pdf;
 /*
- * $Id: DocWriter.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: DocWriter.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -251,7 +252,7 @@ namespace iTextSharp.text {
         * @return       <CODE>true</CODE> if writing temporarely has to be paused, <CODE>false</CODE> otherwise.
         */
         
-        public bool IsPaused() {
+        virtual public bool IsPaused() {
             return pause;
         }
 
@@ -273,7 +274,7 @@ namespace iTextSharp.text {
         /// Writes a string to the stream.
         /// </summary>
         /// <param name="str">the string to write</param>
-        protected void Write(string str) {
+        virtual protected void Write(string str) {
             byte[] tmp = GetISOBytes(str);
             os.Write(tmp, 0, tmp.Length);
         }
@@ -282,7 +283,7 @@ namespace iTextSharp.text {
         /// Writes a number of tabs.
         /// </summary>
         /// <param name="indent">the number of tabs to add</param>
-        protected void AddTabs(int indent) {
+        virtual protected void AddTabs(int indent) {
             os.WriteByte(NEWLINE);
             for (int i = 0; i < indent; i++) {
                 os.WriteByte(TAB);
@@ -294,7 +295,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="key">the name of an attribute</param>
         /// <param name="value">the value of an attribute</param>
-        protected void Write(string key, string value) {
+        virtual protected void Write(string key, string value) {
             os.WriteByte(SPACE);
             Write(key);
             os.WriteByte(EQUALS);
@@ -307,7 +308,7 @@ namespace iTextSharp.text {
         /// Writes a starttag to the stream.
         /// </summary>
         /// <param name="tag">the name of the tag</param>
-        protected void WriteStart(string tag) {
+        virtual protected void WriteStart(string tag) {
             os.WriteByte(LT);
             Write(tag);
         }
@@ -316,7 +317,7 @@ namespace iTextSharp.text {
         /// Writes an endtag to the stream.
         /// </summary>
         /// <param name="tag">the name of the tag</param>
-        protected void WriteEnd(string tag) {
+        virtual protected void WriteEnd(string tag) {
             os.WriteByte(LT);
             os.WriteByte(FORWARD);
             Write(tag);
@@ -326,7 +327,7 @@ namespace iTextSharp.text {
         /// <summary>
         /// Writes an endtag to the stream.
         /// </summary>
-        protected void WriteEnd() {
+        virtual protected void WriteEnd() {
             os.WriteByte(SPACE);
             os.WriteByte(FORWARD);
             os.WriteByte(GT);
@@ -338,7 +339,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="mAtt">the MarkupAttributes to write.</param>
         /// <returns></returns>
-        protected bool WriteMarkupAttributes(Properties markup) {
+        virtual protected bool WriteMarkupAttributes(Properties markup) {
             if (markup == null) return false;
             foreach (String name in markup.Keys) {
                 Write(name, markup[name]);

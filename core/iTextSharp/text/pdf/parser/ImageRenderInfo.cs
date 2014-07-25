@@ -2,18 +2,19 @@ using System;
 using System.IO;
 using iTextSharp.text.pdf;
 /*
- * $Id: ImageRenderInfo.cs 318 2012-02-27 22:46:07Z psoares33 $
+ * $Id: ImageRenderInfo.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -105,7 +106,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return an object containing the image dictionary and byte[]
          * @since 5.0.2
          */
-        public PdfImageObject GetImage() {
+        virtual public PdfImageObject GetImage() {
             PrepareImageObject();
             return imageObject;
         }
@@ -125,7 +126,7 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @return a vector in User space representing the start point of the xobject
          */
-        public Vector GetStartPoint(){ 
+        virtual public Vector GetStartPoint(){ 
             return new Vector(0, 0, 1).Cross(ctm); 
         }
 
@@ -133,14 +134,14 @@ namespace iTextSharp.text.pdf.parser {
          * @return The coordinate transformation matrix active when this image was rendered.  Coordinates are in User space.
          * @since 5.0.3
          */
-        public Matrix GetImageCTM(){
+        virtual public Matrix GetImageCTM(){
             return ctm;
         }
         
         /**
          * @return the size of the image, in User space units
          */
-        public float GetArea(){
+        virtual public float GetArea(){
             // the image space area is 1, so we multiply that by the determinant of the CTM to get the transformed area
             return ctm.GetDeterminant();
         }
@@ -149,7 +150,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return an indirect reference to the image
          * @since 5.0.2
          */
-        public PdfIndirectReference GetRef() {
+        virtual public PdfIndirectReference GetRef() {
             return refi;
         }
     }

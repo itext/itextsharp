@@ -56,7 +56,7 @@ namespace iTextSharp.tool.xml.css {
          * @param tag to get the font size of.
          * @return float font size of the content of the tag in pt.
          */
-        public float TranslateFontSize(Tag tag) {
+        virtual public float TranslateFontSize(Tag tag) {
             float size = Font.UNDEFINED;
             if (tag.CSS.ContainsKey(CSS.Property.FONT_SIZE)) {
                 String value = tag.CSS[CSS.Property.FONT_SIZE];
@@ -141,7 +141,7 @@ namespace iTextSharp.tool.xml.css {
          * @param tag the tag to get the font-size from.
          * @return the font size
          */
-        public float GetFontSize(Tag tag) {
+        virtual public float GetFontSize(Tag tag) {
             String str;
             tag.CSS.TryGetValue(CSS.Property.FONT_SIZE, out str);
             if (null != str) {

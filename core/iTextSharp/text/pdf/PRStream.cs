@@ -4,19 +4,20 @@ using System.IO;
 using System.util.zlib;
 
 /*
- * $Id: PRStream.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: PRStream.cs 696 2014-02-11 01:14:42Z rafhens $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -121,7 +122,7 @@ public class PRStream : PdfStream {
      * @param compress true if you want the stream to be compresssed.
      * @since   iText 2.1.1
      */
-    public void SetData(byte[] data, bool compress) {
+    virtual public void SetData(byte[] data, bool compress) {
         SetData(data, compress, DEFAULT_COMPRESSION);
     }
     
@@ -135,7 +136,7 @@ public class PRStream : PdfStream {
      * @param compressionLevel  a value between -1 and 9 (ignored if compress == false)
      * @since   iText 2.1.3
      */
-    public void SetData(byte[] data, bool compress, int compressionLevel) {
+    virtual public void SetData(byte[] data, bool compress, int compressionLevel) {
         Remove(PdfName.FILTER);
         this.offset = -1;
         if (Document.Compress && compress) {
@@ -152,10 +153,26 @@ public class PRStream : PdfStream {
         Length = bytes.Length;
     }
 
+    /**
+     * Sets the data associated with the stream, as-is.  This method will not
+     * remove or change any existing filter: the data has to match an existing
+     * filter or an appropriate filter has to be set.
+     *
+     * @param data data, possibly encrypted and/or compressed
+     * @since 5.5.0
+     */
+    virtual public void SetDataRaw(byte[] data)
+    {
+        this.offset = -1;
+        bytes = data;
+        Length = bytes.Length;
+    }
+
+
     /**Sets the data associated with the stream
      * @param data raw data, decrypted and uncompressed.
      */
-    public void SetData(byte[] data) {
+    virtual public void SetData(byte[] data) {
         SetData(data, true);
     }
 
@@ -169,13 +186,13 @@ public class PRStream : PdfStream {
         }
     }
     
-	public long Offset {
+	virtual public long Offset {
         get {
             return offset;
         }
     }
     
-    public PdfReader Reader {
+    virtual public PdfReader Reader {
         get {
             return reader;
         }
@@ -185,7 +202,7 @@ public class PRStream : PdfStream {
         return bytes;
     }
     
-    public int ObjNum {
+    virtual public int ObjNum {
         get {
             return objNum;
         }
@@ -194,7 +211,7 @@ public class PRStream : PdfStream {
         }
     }
     
-    public int ObjGen {
+    virtual public int ObjGen {
         get {
             return objGen;
         }

@@ -15,7 +15,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
 
         [SetUp]
-        public void SetUp()
+        virtual public void SetUp()
         {
             TestResourceUtils.PurgeTempFiles();
             dataFile = TestResourceUtils.GetResourceAsTempFile(TEST_RESOURCES_PATH, "RomeoJuliet.pdf");
@@ -23,13 +23,13 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [TearDown]
-        public void TearDown()
+        virtual public void TearDown()
         {
             TestResourceUtils.PurgeTempFiles();
         }
 
         [Test]
-        public void Test()
+        virtual public void Test()
         {
             PdfReader reader = new PdfReader(dataFile);
             try

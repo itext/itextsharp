@@ -3,19 +3,20 @@ using System.IO;
 using System.Collections.Generic;
 
 /*
- * $Id: Properties.cs 570 2013-07-26 08:07:55Z pavel-alay $
+ * $Id: Properties.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -64,18 +65,18 @@ namespace System.util
             _col = new Dictionary<string,string>();
         }
 
-        public string Remove(string key) {
+        virtual public string Remove(string key) {
             string retval;
             _col.TryGetValue(key, out retval);
             _col.Remove(key);
             return retval;
         }
 
-        public Dictionary<string,string>.Enumerator GetEnumerator() {
+        virtual public Dictionary<string,string>.Enumerator GetEnumerator() {
             return _col.GetEnumerator();
         }
 
-        public bool ContainsKey(string key) {
+        virtual public bool ContainsKey(string key) {
             return _col.ContainsKey(key);            
         }
 
@@ -83,13 +84,13 @@ namespace System.util
             _col[key] = value;        
         }
 
-        public void AddAll(Properties col) {
+        virtual public void AddAll(Properties col) {
             foreach (string itm in col.Keys) {
                 _col[itm] = col[itm];
             }
         }
 
-        public int Count {
+        virtual public int Count {
             get {
                 return _col.Count;
             }
@@ -107,17 +108,17 @@ namespace System.util
             }
         }
 
-        public Dictionary<string,string>.KeyCollection Keys {
+        virtual public Dictionary<string,string>.KeyCollection Keys {
             get {
                 return _col.Keys;
             }
         }
 
-        public void Clear() {
+        virtual public void Clear() {
             _col.Clear();
         }
 
-        public void Load(Stream inStream) {
+        virtual public void Load(Stream inStream) {
             StreamReader inp = new StreamReader(inStream, Encoding.GetEncoding(1252));
             while (true) {
                 // Get next line

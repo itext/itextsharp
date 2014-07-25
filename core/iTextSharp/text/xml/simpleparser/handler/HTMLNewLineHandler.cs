@@ -35,7 +35,7 @@ namespace iTextSharp.text.xml.simpleparser.handler {
          * com.itextpdf.text.xml.simpleparser.NewLineHandler#isNewLineTag(java.lang
          * .String)
          */
-        public bool IsNewLineTag(String tag) {
+        virtual public bool IsNewLineTag(String tag) {
             return newLineTags.ContainsKey(tag);
         }
 

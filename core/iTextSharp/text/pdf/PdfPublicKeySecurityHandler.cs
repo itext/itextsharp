@@ -12,18 +12,19 @@ using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Security;
 
 /*
- * $Id: PdfPublicKeySecurityHandler.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: PdfPublicKeySecurityHandler.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -114,19 +115,19 @@ namespace iTextSharp.text.pdf {
         }
 
 
-        public void AddRecipient(PdfPublicKeyRecipient recipient) {
+        virtual public void AddRecipient(PdfPublicKeyRecipient recipient) {
             recipients.Add(recipient);
         }
         
-        protected internal byte[] GetSeed() {
+        virtual protected internal byte[] GetSeed() {
             return (byte[])seed.Clone();
         }
         
-        public int GetRecipientsSize() {
+        virtual public int GetRecipientsSize() {
             return recipients.Count;
         }
         
-        public byte[] GetEncodedRecipient(int index) {
+        virtual public byte[] GetEncodedRecipient(int index) {
             //Certificate certificate = recipient.GetX509();
             PdfPublicKeyRecipient recipient = recipients[index];
             byte[] cms = recipient.Cms;
@@ -170,7 +171,7 @@ namespace iTextSharp.text.pdf {
             return cms;    
         }
         
-        public PdfArray GetEncodedRecipients() {
+        virtual public PdfArray GetEncodedRecipients() {
             PdfArray EncodedRecipients = new PdfArray();
             byte[] cms = null;
             for (int i=0; i<recipients.Count; i++) {

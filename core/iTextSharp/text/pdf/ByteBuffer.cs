@@ -5,19 +5,20 @@ using System.Globalization;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: ByteBuffer.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: ByteBuffer.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -176,7 +177,7 @@ namespace iTextSharp.text.pdf {
          * @param b the int to be appended
          * @return a reference to this <CODE>ByteBuffer</CODE> object
          */
-        public ByteBuffer Append_i(int b) {
+        virtual public ByteBuffer Append_i(int b) {
             int newcount = count + 1;
             if (newcount > buf.Length) {
                 byte[] newbuf = new byte[Math.Max(buf.Length << 1, newcount)];
@@ -196,7 +197,7 @@ namespace iTextSharp.text.pdf {
          * @param len the length of bytes to Append
          * @return a reference to this <CODE>ByteBuffer</CODE> object
          */
-        public ByteBuffer Append(byte[] b, int off, int len) {
+        virtual public ByteBuffer Append(byte[] b, int off, int len) {
             if ((off < 0) || (off > b.Length) || (len < 0) ||
                 ((off + len) > b.Length) || ((off + len) < 0) || len == 0)
                 return this;
@@ -216,7 +217,7 @@ namespace iTextSharp.text.pdf {
          * @param b the array to be appended
          * @return a reference to this <CODE>ByteBuffer</CODE> object
          */
-        public ByteBuffer Append(byte[] b) {
+        virtual public ByteBuffer Append(byte[] b) {
             return Append(b, 0, b.Length);
         }
     
@@ -226,7 +227,7 @@ namespace iTextSharp.text.pdf {
          * @param str the <CODE>string</CODE> to be appended
          * @return a reference to this <CODE>ByteBuffer</CODE> object
          */
-        public ByteBuffer Append(string str) {
+        virtual public ByteBuffer Append(string str) {
             if (str != null)
                 return Append(DocWriter.GetISOBytes(str));
             return this;
@@ -238,7 +239,7 @@ namespace iTextSharp.text.pdf {
          * @param c the <CODE>char</CODE> to be appended
          * @return a reference to this <CODE>ByteBuffer</CODE> object
          */
-        public ByteBuffer Append(char c) {
+        virtual public ByteBuffer Append(char c) {
             return Append_i(c);
         }
     
@@ -247,7 +248,7 @@ namespace iTextSharp.text.pdf {
          * @param buf the <CODE>ByteBuffer</CODE> to be appended
          * @return a reference to this <CODE>ByteBuffer</CODE> object
          */
-        public ByteBuffer Append(ByteBuffer buf) {
+        virtual public ByteBuffer Append(ByteBuffer buf) {
             return Append(buf.buf, 0, buf.count);
         }
     
@@ -256,7 +257,7 @@ namespace iTextSharp.text.pdf {
          * @param i the <CODE>int</CODE> to be appended
          * @return a reference to this <CODE>ByteBuffer</CODE> object
          */
-        public ByteBuffer Append(int i) {
+        virtual public ByteBuffer Append(int i) {
             return Append((double)i);
         }
     
@@ -265,15 +266,15 @@ namespace iTextSharp.text.pdf {
          * @param i the <CODE>long</CODE> to be appended
          * @return a reference to this <CODE>ByteBuffer</CODE> object
          */
-        public ByteBuffer Append(long i) {
+        virtual public ByteBuffer Append(long i) {
             return Append(i.ToString(CultureInfo.InvariantCulture));
         }
         
-        public ByteBuffer Append(byte b) {
+        virtual public ByteBuffer Append(byte b) {
             return Append_i(b);
         }
     
-        public ByteBuffer AppendHex(byte b) {
+        virtual public ByteBuffer AppendHex(byte b) {
             Append(bytes[(b >> 4) & 0x0f]);
             return Append(bytes[b & 0x0f]);
         }
@@ -284,7 +285,7 @@ namespace iTextSharp.text.pdf {
          * @param i the <CODE>float</CODE> to be appended
          * @return a reference to this <CODE>ByteBuffer</CODE> object
          */
-        public ByteBuffer Append(float i) {
+        virtual public ByteBuffer Append(float i) {
             return Append((double)i);
         }
     
@@ -294,7 +295,7 @@ namespace iTextSharp.text.pdf {
          * @param d the <CODE>double</CODE> to be appended
          * @return a reference to this <CODE>ByteBuffer</CODE> object
          */
-        public ByteBuffer Append(double d) {
+        virtual public ByteBuffer Append(double d) {
             Append(FormatDouble(d, this));
             return this;
         }
@@ -539,7 +540,7 @@ namespace iTextSharp.text.pdf {
         /**
          * Sets the size to zero.
          */
-        public void Reset() {
+        virtual public void Reset() {
             count = 0;
         }
     
@@ -550,7 +551,7 @@ namespace iTextSharp.text.pdf {
          *
          * @return  the current contents of this output stream, as a byte array.
          */
-        public byte[] ToByteArray() {
+        virtual public byte[] ToByteArray() {
             byte[] newbuf = new byte[count];
             Array.Copy(buf, 0, newbuf, 0, count);
             return newbuf;
@@ -561,7 +562,7 @@ namespace iTextSharp.text.pdf {
          *
          * @return the value of the <code>count</code> field, which is the number of valid bytes in this byte buffer.
          */
-        public int Size {
+        virtual public int Size {
             get {
                 return count;
             }
@@ -604,7 +605,7 @@ namespace iTextSharp.text.pdf {
          * @param      out   the output stream to which to write the data.
          * @exception  IOException  if an I/O error occurs.
          */
-        public void WriteTo(Stream str) {
+        virtual public void WriteTo(Stream str) {
             str.Write(buf, 0, count);
         }
 
@@ -616,7 +617,7 @@ namespace iTextSharp.text.pdf {
             return retVal;
         }
 
-        public byte[] Buffer {
+        virtual public byte[] Buffer {
             get {
                 return buf;
             }

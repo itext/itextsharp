@@ -6,7 +6,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
     class MatrixTest
     {
         [Test]
-        public void TestMultiply()
+        virtual public void TestMultiply()
         {
             Matrix m1 = new Matrix(2, 3, 4, 5, 6, 7);
             Matrix m2 = new Matrix(8, 9, 10, 11, 12, 13);
@@ -17,7 +17,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestDeterminant()
+        virtual public void TestDeterminant()
         {
             Matrix m = new Matrix(2, 3, 4, 5, 6, 7);
             Assert.AreEqual(-2f, m.GetDeterminant(), .001f);

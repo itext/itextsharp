@@ -2,7 +2,7 @@ using System;
 using System.Text;
 
 /*
- * $Id: Hyphenation.cs 106 2009-12-07 12:23:50Z psoares33 $
+ * $Id: Hyphenation.cs 676 2013-12-24 13:15:22Z asubach $
  * Copyright (C) 2001 The Apache Software Foundation. All rights reserved.
  * For details on use and redistribution please refer to the
  * LICENSE file included with these sources.
@@ -36,7 +36,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         /**
          * @return the number of hyphenation points in the word
          */
-        public int Length {
+        virtual public int Length {
             get {
                 return len;
             }
@@ -45,21 +45,21 @@ namespace iTextSharp.text.pdf.hyphenation {
         /**
          * @return the pre-break text, not including the hyphen character
          */
-        public string GetPreHyphenText(int index) {
+        virtual public string GetPreHyphenText(int index) {
             return word.Substring(0, hyphenPoints[index]);
         }
 
         /**
          * @return the post-break text
          */
-        public string GetPostHyphenText(int index) {
+        virtual public string GetPostHyphenText(int index) {
             return word.Substring(hyphenPoints[index]);
         }
 
         /**
          * @return the hyphenation points
          */
-        public int[] HyphenationPoints {
+        virtual public int[] HyphenationPoints {
             get {
                 return hyphenPoints;
             }

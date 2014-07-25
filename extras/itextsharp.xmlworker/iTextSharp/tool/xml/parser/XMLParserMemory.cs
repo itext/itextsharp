@@ -5,15 +5,16 @@ using System.Text;
  * $Id: XMLParserMemory.java 112 2011-05-26 13:44:09Z emielackermann $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -77,7 +78,7 @@ namespace iTextSharp.tool.xml.parser {
          * Set the encountered tag.
          * @param content the tag
          */
-        public void CurrentTag(String content) {
+        virtual public void CurrentTag(String content) {
             this.currentTag = content;
             this.wsTag = content;
             this.attr.Clear();
@@ -87,7 +88,7 @@ namespace iTextSharp.tool.xml.parser {
          * Sets the encountered attribute.
          * @param attr the attribute
          */
-        public void CurrentAttr(String attr) {
+        virtual public void CurrentAttr(String attr) {
             this.currentAttr = attr;
         }
 
@@ -95,7 +96,7 @@ namespace iTextSharp.tool.xml.parser {
          * true if there is a currentAttribute
          * @return true or false
          */
-        public bool HasCurrentAttribute() {
+        virtual public bool HasCurrentAttribute() {
             return null != this.currentAttr;
         }
         /**
@@ -104,7 +105,7 @@ namespace iTextSharp.tool.xml.parser {
          *
          * @param content the current attributes value.
          */
-        public void PutCurrentAttrValue(String content) {
+        virtual public void PutCurrentAttrValue(String content) {
             if (null != this.currentAttr) {
                 if (isHtml) {
                     attr[this.currentAttr.ToLower()] = content;
@@ -120,7 +121,7 @@ namespace iTextSharp.tool.xml.parser {
          *
          * @return current text buffer
          */
-        public StringBuilder Current() {
+        virtual public StringBuilder Current() {
             return baos;
         }
 
@@ -128,7 +129,7 @@ namespace iTextSharp.tool.xml.parser {
          * Returns the current tag.
          * @return the currentTag
          */
-        public String GetCurrentTag() {
+        virtual public String GetCurrentTag() {
             return this.currentTag;
         }
 
@@ -136,7 +137,7 @@ namespace iTextSharp.tool.xml.parser {
          * Returns a map of all attributes and their value found on the current tag.
          * @return the attributes of the current tag
          */
-        public IDictionary<String, String> GetAttributes() {
+        virtual public IDictionary<String, String> GetAttributes() {
             return new Dictionary<String, String>(this.attr);
         }
 
@@ -144,7 +145,7 @@ namespace iTextSharp.tool.xml.parser {
          * Returns the current entity buffer.
          * @return a StringBuilder for the current entity
          */
-        public StringBuilder CurrentEntity() {
+        virtual public StringBuilder CurrentEntity() {
             return this.currentEntity;
         }
 
@@ -153,7 +154,7 @@ namespace iTextSharp.tool.xml.parser {
          *
          * @return comment
          */
-        public StringBuilder Comment() {
+        virtual public StringBuilder Comment() {
             return this.comment;
         }
 
@@ -162,7 +163,7 @@ namespace iTextSharp.tool.xml.parser {
          * Used by {@link InsideTagHTMLState}, only for HTML processing.
          * @return tag
          */
-        public String WhitespaceTag() {
+        virtual public String WhitespaceTag() {
             return this.wsTag ;
         }
 
@@ -171,7 +172,7 @@ namespace iTextSharp.tool.xml.parser {
          * Used by {@link InsideTagHTMLState}, only for HTML processing.
          * @param tag the tag
          */
-        public void WhitespaceTag(String tag) {
+        virtual public void WhitespaceTag(String tag) {
             this.wsTag = tag;
         }
 
@@ -179,14 +180,14 @@ namespace iTextSharp.tool.xml.parser {
          * Sets the current namespace.
          * @param ns the current namespace
          */
-        public void Namespace(String ns) {
+        virtual public void Namespace(String ns) {
             this.currentNameSpace = ns;
         }
 
         /**
          * Flushes the namespace memory.
          */
-        public void FlushNameSpace() {
+        virtual public void FlushNameSpace() {
             this.currentNameSpace = "";
         }
 
@@ -194,18 +195,18 @@ namespace iTextSharp.tool.xml.parser {
          * Get the current namespace.
          * @return the current namespace or empty String if no namespace
          */
-        public String GetNameSpace() {
+        virtual public String GetNameSpace() {
             return this.currentNameSpace;
         }
 
         /**
          * Resets the MemoryStream of this class.
          */
-        public void ResetBuffer() {
+        virtual public void ResetBuffer() {
             baos.Length = 0;
         }
 
-        public char LastChar {
+        virtual public char LastChar {
             get {
                 return lastChar;
             }

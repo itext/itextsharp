@@ -12,15 +12,16 @@ using iTextSharp.text.pdf.draw;
 using iTextSharp.text.xml.simpleparser;
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -104,7 +105,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param tags
          * @since 5.0.6
          */
-        public void SetSupportedTags(IDictionary<String, IHTMLTagProcessor> tags) {
+        virtual public void SetSupportedTags(IDictionary<String, IHTMLTagProcessor> tags) {
             if (tags == null)
                 tags = new HTMLTagProcessors();
             this.tags = tags;
@@ -114,7 +115,7 @@ namespace iTextSharp.text.html.simpleparser {
          * Setter for the StyleSheet
          * @param style the StyleSheet
          */
-        public void SetStyleSheet(StyleSheet style) {
+        virtual public void SetStyleSheet(StyleSheet style) {
             if (style == null)
                 style = new StyleSheet();
             this.style = style;
@@ -125,7 +126,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param reader    the content
          * @throws IOException
          */
-        public void Parse(TextReader reader) {
+        virtual public void Parse(TextReader reader) {
             LOGGER.Info("Please note, there is a more extended version of the HTMLWorker available in the iText XMLWorker");
             SimpleXMLParser.Parse(this, null, reader, true);
         }
@@ -228,7 +229,7 @@ namespace iTextSharp.text.html.simpleparser {
          * Adds a new line to the currentParagraph.
          * @since 5.0.6
          */
-        public void NewLine() {
+        virtual public void NewLine() {
             if (currentParagraph == null) {
                 currentParagraph = new Paragraph();
             }
@@ -242,7 +243,7 @@ namespace iTextSharp.text.html.simpleparser {
          * Otherwise the Paragraph is added to the stack.
          * @since 5.0.6
          */
-        public void CarriageReturn() {
+        virtual public void CarriageReturn() {
             if (currentParagraph == null)
                 return;
             if (stack.Count == 0)
@@ -263,7 +264,7 @@ namespace iTextSharp.text.html.simpleparser {
          * a new span.
          * @since 5.0.6
          */
-        public void FlushContent() {
+        virtual public void FlushContent() {
             PushToStack(currentParagraph);
             currentParagraph = new Paragraph();
         }
@@ -273,7 +274,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param element
          * @since 5.0.6
          */
-        public void PushToStack(IElement element) {
+        virtual public void PushToStack(IElement element) {
             if (element != null)
                 stack.Push(element);
         }
@@ -284,7 +285,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param attrs the corresponding attributes
          * @since 5.0.6
          */
-        public void UpdateChain(String tag, IDictionary<String, String> attrs) {
+        virtual public void UpdateChain(String tag, IDictionary<String, String> attrs) {
             chain.AddToChain(tag, attrs);
         }
 
@@ -293,7 +294,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param tag   the new tag
          * @since 5.0.6
          */
-        public void UpdateChain(String tag) {
+        virtual public void UpdateChain(String tag) {
             chain.RemoveChain(tag);
         }
 
@@ -347,7 +348,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param providers a IDictionary with different providers
          * @since 5.0.6
          */
-        public void SetProviders(IDictionary<String, Object> providers) {
+        virtual public void SetProviders(IDictionary<String, Object> providers) {
             if (providers == null)
                 return;
             this.providers = providers;
@@ -372,7 +373,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @return  a Chunk with content
          * @since 5.0.6
          */
-        public Chunk CreateChunk(String content) {
+        virtual public Chunk CreateChunk(String content) {
             return factory.CreateChunk(content, chain);
         }
         /**
@@ -380,7 +381,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @return  a Paragraph without any content
          * @since 5.0.6
          */
-        public Paragraph CreateParagraph() {
+        virtual public Paragraph CreateParagraph() {
             return factory.CreateParagraph(chain);
         }
         /**
@@ -389,7 +390,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @return  a List object
          * @since 5.0.6
          */
-        public List CreateList(String tag) {
+        virtual public List CreateList(String tag) {
             return factory.CreateList(tag, chain);
         }
         /**
@@ -397,7 +398,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @return a ListItem object
          * @since 5.0.6
          */
-        public ListItem CreateListItem() {
+        virtual public ListItem CreateListItem() {
             return factory.CreateListItem(chain);
         }
         /**
@@ -406,7 +407,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @return a LineSeparator object
          * @since 5.0.6
          */
-        public LineSeparator CreateLineSeparator(IDictionary<String, String> attrs) {
+        virtual public LineSeparator CreateLineSeparator(IDictionary<String, String> attrs) {
             return factory.CreateLineSeparator(attrs, currentParagraph.Leading / 2);
         }
 
@@ -418,7 +419,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @throws IOException
          * @since 5.0.6
          */
-        public Image CreateImage(IDictionary<String, String> attrs) {
+        virtual public Image CreateImage(IDictionary<String, String> attrs) {
             String src;
             attrs.TryGetValue(HtmlTags.SRC, out src);
             if (src == null)
@@ -437,7 +438,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @return  a CellWrapper object
          * @since 5.0.6
          */
-        public CellWrapper CreateCell(String tag) {
+        virtual public CellWrapper CreateCell(String tag) {
             return new CellWrapper(tag, chain);
         }
 
@@ -447,7 +448,7 @@ namespace iTextSharp.text.html.simpleparser {
          * Adds a link to the current paragraph.
          * @since 5.0.6
          */
-        public void ProcessLink() {
+        virtual public void ProcessLink() {
             if (currentParagraph == null) {
                 currentParagraph = new Paragraph();
             }
@@ -483,7 +484,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @throws DocumentException
          * @since 5.0.6
          */
-        public void ProcessList() {
+        virtual public void ProcessList() {
             if (stack.Count == 0)
                 return;
             IElement obj = stack.Pop();
@@ -503,7 +504,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @throws DocumentException
          * @since 5.0.6
          */
-        public void ProcessListItem() {
+        virtual public void ProcessListItem() {
             if (stack.Count == 0)
                 return;
             IElement obj = stack.Pop();
@@ -533,7 +534,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @throws DocumentException
          * @since   5.0.6
          */
-        public void ProcessImage(Image img, IDictionary<String, String> attrs) {
+        virtual public void ProcessImage(Image img, IDictionary<String, String> attrs) {
             IImageProcessor processor = null;
             if (providers.ContainsKey(IMG_PROCESSOR))
                 processor = (IImageProcessor)providers[IMG_PROCESSOR];
@@ -559,7 +560,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @throws DocumentException
          * @since 5.0.6
          */
-        public void ProcessTable() {
+        virtual public void ProcessTable() {
             TableWrapper table = (TableWrapper) stack.Pop();
             PdfPTable tb = table.CreateTable();
             tb.SplitRows = true;
@@ -573,7 +574,7 @@ namespace iTextSharp.text.html.simpleparser {
          * Gets the TableWrapper from the Stack and adds a new row.
          * @since 5.0.6
          */
-        public void ProcessRow() {
+        virtual public void ProcessRow() {
             List<PdfPCell> row = new List<PdfPCell>();
             List<float> cellWidths = new List<float>();
             bool percentage = false;
@@ -655,7 +656,7 @@ namespace iTextSharp.text.html.simpleparser {
          * to a state stack.
          * @since 5.0.6
          */
-        public void PushTableState() {
+        virtual public void PushTableState() {
             tableState.Push(new bool[] { pendingTR, pendingTD });
         }
 
@@ -664,7 +665,7 @@ namespace iTextSharp.text.html.simpleparser {
          * from a state stack.
          * @since 5.0.6
          */
-        public void PopTableState() {
+        virtual public void PopTableState() {
             bool[] state = tableState.Pop();
             pendingTR = state[0];
             pendingTD = state[1];
@@ -674,7 +675,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @return the pendingTR
          * @since 5.0.6
          */
-        public bool IsPendingTR() {
+        virtual public bool IsPendingTR() {
             return pendingTR;
         }
 
@@ -682,7 +683,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param pendingTR the pendingTR to set
          * @since 5.0.6
          */
-        public void SetPendingTR(bool pendingTR) {
+        virtual public void SetPendingTR(bool pendingTR) {
             this.pendingTR = pendingTR;
         }
 
@@ -690,7 +691,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @return the pendingTD
          * @since 5.0.6
          */
-        public bool IsPendingTD() {
+        virtual public bool IsPendingTD() {
             return pendingTD;
         }
 
@@ -698,7 +699,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param pendingTD the pendingTD to set
          * @since 5.0.6
          */
-        public void SetPendingTD(bool pendingTD) {
+        virtual public void SetPendingTD(bool pendingTD) {
             this.pendingTD = pendingTD;
         }
 
@@ -706,7 +707,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @return the pendingLI
          * @since 5.0.6
          */
-        public bool IsPendingLI() {
+        virtual public bool IsPendingLI() {
             return pendingLI;
         }
 
@@ -714,7 +715,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param pendingLI the pendingLI to set
          * @since 5.0.6
          */
-        public void SetPendingLI(bool pendingLI) {
+        virtual public void SetPendingLI(bool pendingLI) {
             this.pendingLI = pendingLI;
         }
 
@@ -722,7 +723,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @return the insidePRE
          * @since 5.0.6
          */
-        public bool IsInsidePRE() {
+        virtual public bool IsInsidePRE() {
             return insidePRE;
         }
 
@@ -730,7 +731,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param insidePRE the insidePRE to set
          * @since 5.0.6
          */
-        public void SetInsidePRE(bool insidePRE) {
+        virtual public void SetInsidePRE(bool insidePRE) {
             this.insidePRE = insidePRE;
         }
 
@@ -738,7 +739,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @return the skipText
          * @since 5.0.6
          */
-        public bool IsSkipText() {
+        virtual public bool IsSkipText() {
             return skipText;
         }
 
@@ -746,7 +747,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param skipText the skipText to set
          * @since 5.0.6
          */
-        public void SetSkipText(bool skipText) {
+        virtual public void SetSkipText(bool skipText) {
             this.skipText = skipText;
         }
 
@@ -804,7 +805,7 @@ namespace iTextSharp.text.html.simpleparser {
         /**
          * @see com.itextpdf.text.ElementListener#add(com.itextpdf.text.Element)
          */
-        public bool Add(IElement element) {
+        virtual public bool Add(IElement element) {
             objectList.Add(element);
             return true;
         }
@@ -812,32 +813,32 @@ namespace iTextSharp.text.html.simpleparser {
         /**
          * @see com.itextpdf.text.DocListener#close()
          */
-        public void Close() {
+        virtual public void Close() {
         }
 
         /**
          * @see com.itextpdf.text.DocListener#newPage()
          */
-        public bool NewPage() {
+        virtual public bool NewPage() {
             return true;
         }
 
         /**
          * @see com.itextpdf.text.DocListener#open()
          */
-        public void Open() {
+        virtual public void Open() {
         }
 
         /**
          * @see com.itextpdf.text.DocListener#resetPageCount()
          */
-        public void ResetPageCount() {
+        virtual public void ResetPageCount() {
         }
 
         /**
          * @see com.itextpdf.text.DocListener#setMarginMirroring(bool)
          */
-        public bool SetMarginMirroring(bool marginMirroring) {
+        virtual public bool SetMarginMirroring(bool marginMirroring) {
             return false;
         }
 
@@ -845,14 +846,14 @@ namespace iTextSharp.text.html.simpleparser {
          * @see com.itextpdf.text.DocListener#setMarginMirroring(bool)
          * @since   2.1.6
          */
-        public bool SetMarginMirroringTopBottom(bool marginMirroring) {
+        virtual public bool SetMarginMirroringTopBottom(bool marginMirroring) {
             return false;
         }
 
         /**
          * @see com.itextpdf.text.DocListener#setMargins(float, float, float, float)
          */
-        public bool SetMargins(float marginLeft, float marginRight,
+        virtual public bool SetMargins(float marginLeft, float marginRight,
                 float marginTop, float marginBottom) {
             return true;
         }
@@ -860,7 +861,7 @@ namespace iTextSharp.text.html.simpleparser {
         /**
          * @see com.itextpdf.text.DocListener#setPageCount(int)
          */
-        public int PageCount {
+        virtual public int PageCount {
             set {
             }
         }
@@ -868,7 +869,7 @@ namespace iTextSharp.text.html.simpleparser {
         /**
          * @see com.itextpdf.text.DocListener#setPageSize(com.itextpdf.text.Rectangle)
          */
-        public bool SetPageSize(Rectangle pageSize) {
+        virtual public bool SetPageSize(Rectangle pageSize) {
             return true;
         }
 
@@ -878,14 +879,14 @@ namespace iTextSharp.text.html.simpleparser {
          * Sets the providers.
          * @deprecated use SetProviders() instead
          */
-        public void SetInterfaceProps(Dictionary<String, Object> providers) {
+        virtual public void SetInterfaceProps(Dictionary<String, Object> providers) {
             SetProviders(providers);
         }
         /**
          * Gets the providers
          * @deprecated use GetProviders() instead
          */
-        public IDictionary<String, Object> GetInterfaceProps() {
+        virtual public IDictionary<String, Object> GetInterfaceProps() {
             return providers;
         }
 

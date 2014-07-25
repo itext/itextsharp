@@ -17,13 +17,13 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         private const string RESOURCES = @"..\..\resources\";
 
         private class CustomElementHandler : IElementHandler {
-            public void Add(IWritable w) {
+            virtual public void Add(IWritable w) {
                 elementList.AddRange(((WritableElement) w).Elements());
             }
         }
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
             TextReader bis = File.OpenText(RESOURCES + "/snippets/xfa-hor-vert_snippet.html");
             XMLWorkerHelper helper = XMLWorkerHelper.GetInstance();
@@ -32,17 +32,17 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [TearDown]
-        public void TearDown() {
+        virtual public void TearDown() {
             elementList = null;
         }
 
         [Test]
-        public void ResolveNumberOfElements() {
+        virtual public void ResolveNumberOfElements() {
             Assert.AreEqual(4, elementList.Count);
         }
 
         [Test]
-        public void ResolveFontSize() {
+        virtual public void ResolveFontSize() {
             Assert.AreEqual(12, elementList[0].Chunks[0].Font.Size, 0);
             Assert.AreEqual(16, elementList[1].Chunks[0].Font.Size, 0);
             Assert.AreEqual(16*1.5, elementList[1].Chunks[2].Font.Size, 0);
@@ -52,7 +52,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [Test]
-        public void ResolveScaling() {
+        virtual public void ResolveScaling() {
             Assert.AreEqual(1, elementList[1].Chunks[0].HorizontalScaling, 0);
             Assert.AreEqual(1/1.5f, elementList[1].Chunks[2].HorizontalScaling, 1e-7);
             Assert.AreEqual(1, elementList[2].Chunks[0].HorizontalScaling, 0);

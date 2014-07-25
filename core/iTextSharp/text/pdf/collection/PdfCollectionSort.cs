@@ -3,18 +3,19 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: PdfCollectionSort.cs 637 2013-10-29 15:39:04Z asubach $
+ * $Id: PdfCollectionSort.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -74,7 +75,7 @@ namespace iTextSharp.text.pdf.collection {
         * Defines the sort order of the field (ascending or descending).
         * @param ascending true is the default, use false for descending order
         */
-        public void SetSortOrder(bool ascending) {
+        virtual public void SetSortOrder(bool ascending) {
             PdfObject o = (PdfObject)Get(PdfName.S);
             if (o is PdfName) {
                 Put(PdfName.A, new PdfBoolean(ascending));
@@ -88,7 +89,7 @@ namespace iTextSharp.text.pdf.collection {
         * Defines the sort order of the field (ascending or descending).
         * @param ascending an array with every element corresponding with a name of a field.
         */
-        public void SetSortOrder(bool[] ascending) {
+        virtual public void SetSortOrder(bool[] ascending) {
             PdfObject o = (PdfObject)Get(PdfName.S);
             if (o is PdfArray) {
                 if (((PdfArray)o).Size != ascending.Length) {

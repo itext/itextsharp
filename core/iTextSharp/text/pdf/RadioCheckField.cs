@@ -3,15 +3,16 @@ using iTextSharp.text.error_messages;
 
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -158,7 +159,7 @@ namespace iTextSharp.text.pdf {
         * Sets the value when the field is checked.
         * @param onValue the value when the field is checked
         */
-        public string OnValue {
+        virtual public string OnValue {
             get {
                 return onValue;
             }
@@ -172,7 +173,7 @@ namespace iTextSharp.text.pdf {
         * @param checked the state of the field, <CODE>true</CODE> for checked
         * and <CODE>false</CODE> for unchecked
         */
-        public bool Checked {
+        virtual public bool Checked {
             get {
                 return vchecked;
             }
@@ -243,7 +244,7 @@ namespace iTextSharp.text.pdf {
         * otherwise
         * @return the appearance
         */    
-        public PdfAppearance GetAppearanceRadioCircle(bool on) {
+        virtual public PdfAppearance GetAppearanceRadioCircle(bool on) {
             PdfAppearance app = PdfAppearance.CreateAppearance(writer, box.Width, box.Height);
             switch (rotation) {
                 case 90:
@@ -297,7 +298,7 @@ namespace iTextSharp.text.pdf {
         * (the same behavior as HTML radio buttons)
         * @return the radio group
         */    
-        public PdfFormField GetRadioGroup(bool noToggleToOff, bool radiosInUnison) {
+        virtual public PdfFormField GetRadioGroup(bool noToggleToOff, bool radiosInUnison) {
             PdfFormField field = PdfFormField.CreateRadioButton(writer, noToggleToOff);
             if (radiosInUnison)
                 field.SetFieldFlags(PdfFormField.FF_RADIOSINUNISON);
@@ -317,7 +318,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @throws DocumentException on error
         */    
-        public PdfFormField RadioField {
+        virtual public PdfFormField RadioField {
             get {
                 return GetField(true);
             }
@@ -329,7 +330,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException on error
         * @throws DocumentException on error
         */    
-        public PdfFormField CheckField {
+        virtual public PdfFormField CheckField {
             get {
                 return GetField(false);
             }

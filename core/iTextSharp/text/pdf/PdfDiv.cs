@@ -3,15 +3,16 @@
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -127,148 +128,148 @@ namespace iTextSharp.text.pdf {
         protected AccessibleElementId id = new AccessibleElementId();
 
 
-        public float? Left
+        virtual public float? Left
         {
             get { return left; }
             set { left = value; }
         }
 
-        public float? Top
+        virtual public float? Top
         {
             get { return top; }
             set { top = value; }
         }
 
-        public float? Right
+        virtual public float? Right
         {
             get { return right; }
             set { right = value; }
         }
 
-        public float? Bottom
+        virtual public float? Bottom
         {
             get { return bottom; }
             set { bottom = value; }
         }
 
-        public float? Width
+        virtual public float? Width
         {
             get { return width; }
             set { width = value; }
         }
 
-        public float? Height
+        virtual public float? Height
         {
             get { return height; }
             set { height = value; }
         }
 
-        public float? PercentageHeight
+        virtual public float? PercentageHeight
         {
             get { return percentageHeight; }
             set { percentageHeight = value; }
         }
 
-        public float? PercentageWidth
+        virtual public float? PercentageWidth
         {
             get { return percentageWidth; }
             set { percentageWidth = value; }
         }
 
-        public float ContentWidth
+        virtual public float ContentWidth
         {
             get { return contentWidth; }
             set { contentWidth = value; }
         }
 
-        public float ContentHeight
+        virtual public float ContentHeight
         {
             get { return contentHeight; }
             set { contentHeight = value; }
         }
 
-        public float getActualHeight()
+        virtual public float getActualHeight()
         {
             return height != null && height >= contentHeight ? (float) height : contentHeight;
         }
 
-        public float getActualWidth()
+        virtual public float getActualWidth()
         {
             return width != null && width >= contentWidth ? (float) width : contentWidth;
         }
 
-        public int TextAlignment
+        virtual public int TextAlignment
         {
             get { return textAlignment; }
             set { textAlignment = value; }
         }
 
-        public float PaddingLeft
+        virtual public float PaddingLeft
         {
             get { return paddingLeft; }
             set { paddingLeft = value; }
         }
 
-        public float PaddingRight
+        virtual public float PaddingRight
         {
             get { return paddingRight; }
             set { paddingRight = value; }
         }
 
-        public float PaddingTop
+        virtual public float PaddingTop
         {
             get { return paddingTop; }
             set { paddingTop = value; }
         }
 
-        public float PaddingBottom
+        virtual public float PaddingBottom
         {
             get { return paddingBottom; }
             set { paddingBottom = value; }
         }
 
-        public FloatType Float
+        virtual public FloatType Float
         {
             get { return floatType; }
             set { floatType = value; }
         }
 
-        public PositionType Position
+        virtual public PositionType Position
         {
             get { return position; }
             set { position = value; }
         }
 
-        public FloatLayout FloatLayout
+        virtual public FloatLayout FloatLayout
         {
             get { return floatLayout; }
             set { floatLayout = value; }
         }
 
-        public BaseColor BackgroundColor
+        virtual public BaseColor BackgroundColor
         {
             get { return backgroundColor; }
             set { backgroundColor = value; }
         }
 
-        public float YLine
+        virtual public float YLine
         {
             get { return yLine; }
         }
 
-        public float SpacingBefore
+        virtual public float SpacingBefore
         {
             get { return spacingBefore; }
             set { spacingBefore = value; }
         }
 
-        public float SpacingAfter
+        virtual public float SpacingAfter
         {
             get { return spacingAfter; }
             set { spacingAfter = value; }
         }
 
-        public List<IElement> Content
+        virtual public List<IElement> Content
         {
             get { return content; }
         }
@@ -284,7 +285,7 @@ namespace iTextSharp.text.pdf {
          * @return	an <CODE>ArrayList</CODE>
          */
 
-        public IList<Chunk> Chunks
+        virtual public IList<Chunk> Chunks
         {
             get { return new List<Chunk>(); }
         }
@@ -295,7 +296,7 @@ namespace iTextSharp.text.pdf {
          * @return	a type
          */
 
-        public int Type
+        virtual public int Type
         {
             get { return Element.DIV; }
         }
@@ -304,7 +305,7 @@ namespace iTextSharp.text.pdf {
          * @see com.itextpdf.text.Element#isContent()
          * @since	iText 2.0.8
          */
-        public bool IsContent()
+        virtual public bool IsContent()
         {
             return true;
         }
@@ -313,7 +314,7 @@ namespace iTextSharp.text.pdf {
          * @see com.itextpdf.text.Element#isNestable()
          * @since	iText 2.0.8
          */
-        public bool IsNestable()
+        virtual public bool IsNestable()
         {
             return true;
         }
@@ -325,7 +326,7 @@ namespace iTextSharp.text.pdf {
          * @param	listener	an <CODE>ElementListener</CODE>
          * @return	<CODE>true</CODE> if the element was processed successfully
          */
-        public bool Process(IElementListener listener)
+        virtual public bool Process(IElementListener listener)
         {
             try
             {
@@ -337,12 +338,12 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public void AddElement(IElement element)
+        virtual public void AddElement(IElement element)
         {
             content.Add(element);
         }
 
-        public int Layout(PdfContentByte canvas, bool useAscender, bool simulate, float llx, float lly, float urx, float ury)
+        virtual public int Layout(PdfContentByte canvas, bool useAscender, bool simulate, float llx, float lly, float urx, float ury)
         {
             float leftX = Math.Min(llx, urx);
             float maxY = Math.Max(lly, ury);
@@ -419,7 +420,10 @@ namespace iTextSharp.text.pdf {
                     {
                         Rectangle background = new Rectangle(leftX, maxY - backgroundHeight, leftX + backgroundWidth, maxY);
                         background.BackgroundColor = backgroundColor;
+                        PdfArtifact artifact = new PdfArtifact();
+                        canvas.OpenMCBlock(artifact);
                         canvas.Rectangle(background);
+                        canvas.CloseMCBlock(artifact);
                     }
                 }
             }
@@ -464,7 +468,7 @@ namespace iTextSharp.text.pdf {
             return contentCutByFixedHeight ? ColumnText.NO_MORE_TEXT : status;
         }
 
-        public PdfObject GetAccessibleAttribute(PdfName key)
+        virtual public PdfObject GetAccessibleAttribute(PdfName key)
         {
             PdfObject result;
             if (accessibleAttributes != null && accessibleAttributes.TryGetValue(key, out result))
@@ -473,28 +477,28 @@ namespace iTextSharp.text.pdf {
                 return null;
         }
 
-        public void SetAccessibleAttribute(PdfName key, PdfObject value)
-        {
+        public virtual void SetAccessibleAttribute(PdfName key, PdfObject value) {
             if (accessibleAttributes == null)
                 accessibleAttributes = new Dictionary<PdfName, PdfObject>();
             accessibleAttributes[key] = value;
         }
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes()
-        {
+        public virtual Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             return accessibleAttributes;
         }
 
-        public PdfName Role
-        {
+        public virtual PdfName Role {
             get { return role; }
             set { role = value; }
         }
 
-        public AccessibleElementId ID
-        {
+        public virtual AccessibleElementId ID {
             get { return id; }
             set { id = value; }
+        }
+
+        public virtual bool IsInline {
+            get { return false; }
         }
     }
 }

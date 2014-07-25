@@ -25,7 +25,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         private HtmlPipelineContext configuration;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             parent = new Tag("body");
             parent.CSS[CSS.Property.FONT_FAMILY] = "Helvetica";
             parent.CSS[CSS.Property.FONT_SIZE] = "12pt";
@@ -56,7 +56,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveAlignment() {
+        virtual public void ResolveAlignment() {
             Assert.AreEqual(Element.ALIGN_LEFT, firstPara.Alignment, 0);
 
             first.CSS["text-align"] = "right";
@@ -73,7 +73,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveFirstLineIndent() {
+        virtual public void ResolveFirstLineIndent() {
             Assert.AreEqual(0f, firstPara.FirstLineIndent, 0);
 
             first.CSS["text-indent"] = "16pt";
@@ -82,7 +82,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveIndentationLeft() {
+        virtual public void ResolveIndentationLeft() {
             Assert.AreEqual(0f, firstPara.IndentationLeft, 0);
 
             first.CSS["margin-left"] = "10pt";
@@ -91,7 +91,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveIndentationRight() {
+        virtual public void ResolveIndentationRight() {
             Assert.AreEqual(0f, firstPara.IndentationRight, 0);
 
             first.CSS["margin-right"] = "10pt";
@@ -101,7 +101,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
 
         [Test]
         [Ignore("We need possibility to detect that line-height undefined;")]
-        public void ResolveLeading() {
+        virtual public void ResolveLeading() {
             Assert.AreEqual(18f, firstPara.Leading, 0);
 
             first.CSS["line-height"] = "25pt";
@@ -118,7 +118,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveSpacingAfter() {
+        virtual public void ResolveSpacingAfter() {
             Assert.AreEqual(0, firstPara.SpacingBefore, 0);
             second.CSS["margin-bottom"] = "25pt";
 
@@ -127,7 +127,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveSpacingBeforeIs10() {
+        virtual public void ResolveSpacingBeforeIs10() {
             parent.AddChild(second);
             first.CSS["margin-bottom"] = "12pt";
             second.CSS["margin-top"] = "22pt";
@@ -138,7 +138,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveSpacingBeforeIs5() {
+        virtual public void ResolveSpacingBeforeIs5() {
             parent.AddChild(second);
             first.CSS["margin-bottom"] = "25pt";
             second.CSS["margin-top"] = "30pt";
@@ -149,7 +149,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveSpacingBeforeIs0() {
+        virtual public void ResolveSpacingBeforeIs0() {
             parent.AddChild(second);
             first.CSS["margin-bottom"] = "35pt";
             second.CSS["margin-top"] = "30pt";
@@ -161,7 +161,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveSpacingBeforeIs6() {
+        virtual public void ResolveSpacingBeforeIs6() {
             parent.AddChild(second);
             first.CSS["margin-bottom"] = "2em";
             second.CSS["margin-top"] = "30pt";
@@ -172,7 +172,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveSpacingBeforeIs24() {
+        virtual public void ResolveSpacingBeforeIs24() {
             parent.AddChild(second);
             first.CSS["margin-bottom"] = "2em";
             first.CSS[CSS.Property.FONT_SIZE] = "18";
@@ -186,7 +186,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveSpacingBeforeIs12() {
+        virtual public void ResolveSpacingBeforeIs12() {
             parent.AddChild(second);
             first.CSS["margin-bottom"] = "2em";
             first.CSS[CSS.Property.FONT_SIZE] = "2em";

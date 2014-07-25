@@ -1,17 +1,17 @@
 using System;
 using System.IO;
 /*
- * $Id: RASInputStream.cs 493 2012-12-09 20:58:18Z psoares33 $
+ * $Id: RASInputStream.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT
+ * Copyright (c) 1998-2014 iText Group NV
  * BVBA Authors: Kevin Day, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General License version 3 as published by the
  * Free Software Foundation with the addition of the following permission added
  * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT, 1T3XT DISCLAIMS THE WARRANTY OF NON
+ * IN WHICH THE COPYRIGHT IS OWNED BY ITEXT GROUP, ITEXT GROUP DISCLAIMS THE WARRANTY OF NON
  * INFRINGEMENT OF THIRD PARTY RIGHTS.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT

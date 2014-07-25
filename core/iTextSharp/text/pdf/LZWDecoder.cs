@@ -80,7 +80,7 @@ namespace iTextSharp.text.pdf {
          * @param data            The compressed data.
          * @param uncompData      Array to return the uncompressed data in.
          */
-        public void Decode(byte[] data, Stream uncompData) {
+        virtual public void Decode(byte[] data, Stream uncompData) {
         
             if (data[0] == (byte)0x00 && data[1] == (byte)0x01) {
                 throw new Exception(MessageLocalization.GetComposedMessage("lzw.flavour.not.supported"));
@@ -140,7 +140,7 @@ namespace iTextSharp.text.pdf {
         /**
          * Initialize the string table.
          */
-        public void InitializeStringTable() {
+        virtual public void InitializeStringTable() {
         
             stringTable = new byte[8192][];
         
@@ -156,14 +156,14 @@ namespace iTextSharp.text.pdf {
         /**
          * Write out the string just uncompressed.
          */
-        public void WriteString(byte[] str) {
+        virtual public void WriteString(byte[] str) {
             uncompData.Write(str, 0, str.Length);
         }
     
         /**
          * Add a new string to the string table.
          */
-        public void AddStringToTable(byte[] oldstring, byte newstring) {
+        virtual public void AddStringToTable(byte[] oldstring, byte newstring) {
             int length = oldstring.Length;
             byte[] str = new byte[length + 1];
             Array.Copy(oldstring, 0, str, 0, length);
@@ -184,7 +184,7 @@ namespace iTextSharp.text.pdf {
         /**
          * Add a new string to the string table.
          */
-        public void AddStringToTable(byte[] str) {
+        virtual public void AddStringToTable(byte[] str) {
         
             // Add this new string to the table
             stringTable[tableIndex++] = str;
@@ -201,7 +201,7 @@ namespace iTextSharp.text.pdf {
         /**
          * Append <code>newstring</code> to the end of <code>oldstring</code>.
          */
-        public byte[] ComposeString(byte[] oldstring, byte newstring) {
+        virtual public byte[] ComposeString(byte[] oldstring, byte newstring) {
             int length = oldstring.Length;
             byte[] str = new byte[length + 1];
             Array.Copy(oldstring, 0, str, 0, length);
@@ -211,7 +211,7 @@ namespace iTextSharp.text.pdf {
         }
     
         // Returns the next 9, 10, 11 or 12 bits
-        public int NextCode {
+        virtual public int NextCode {
             get {
                 // Attempt to get the next code. The exception is caught to make
                 // this robust to cases wherein the EndOfInformation code has been

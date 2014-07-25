@@ -1,17 +1,18 @@
 using System;
 /*
- * $Id: ARCFOUREncryption.cs 318 2012-02-27 22:46:07Z psoares33 $
+ * $Id: ARCFOUREncryption.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -54,11 +55,11 @@ namespace iTextSharp.text.pdf.crypto {
         public ARCFOUREncryption() {
         }
         
-        public void PrepareARCFOURKey(byte[] key) {
+        virtual public void PrepareARCFOURKey(byte[] key) {
             PrepareARCFOURKey(key, 0, key.Length);
         }
 
-        public void PrepareARCFOURKey(byte[] key, int off, int len) {
+        virtual public void PrepareARCFOURKey(byte[] key, int off, int len) {
             int index1 = 0;
             int index2 = 0;
             for (int k = 0; k < 256; ++k)
@@ -75,7 +76,7 @@ namespace iTextSharp.text.pdf.crypto {
             }
         }
 
-        public void EncryptARCFOUR(byte[] dataIn, int off, int len, byte[] dataOut, int offOut) {
+        virtual public void EncryptARCFOUR(byte[] dataIn, int off, int len, byte[] dataOut, int offOut) {
             int length = len + off;
             byte tmp;
             for (int k = off; k < length; ++k) {
@@ -88,15 +89,15 @@ namespace iTextSharp.text.pdf.crypto {
             }
         }
 
-        public void EncryptARCFOUR(byte[] data, int off, int len) {
+        virtual public void EncryptARCFOUR(byte[] data, int off, int len) {
             EncryptARCFOUR(data, off, len, data, off);
         }
 
-        public void EncryptARCFOUR(byte[] dataIn, byte[] dataOut) {
+        virtual public void EncryptARCFOUR(byte[] dataIn, byte[] dataOut) {
             EncryptARCFOUR(dataIn, 0, dataIn.Length, dataOut, 0);
         }
 
-        public void EncryptARCFOUR(byte[] data) {
+        virtual public void EncryptARCFOUR(byte[] data) {
             EncryptARCFOUR(data, 0, data.Length, data, 0);
         }   
     }

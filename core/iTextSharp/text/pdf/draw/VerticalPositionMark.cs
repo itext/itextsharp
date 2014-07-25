@@ -5,18 +5,19 @@ using iTextSharp.text.pdf;
 
 /*
  * 
- * $Id: VerticalPositionMark.cs 318 2012-02-27 22:46:07Z psoares33 $
+ * $Id: VerticalPositionMark.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -95,7 +96,7 @@ namespace iTextSharp.text.pdf.draw {
         /**
         * @see com.lowagie.text.Element#process(com.lowagie.text.ElementListener)
         */
-        public bool Process(IElementListener listener) {
+        virtual public bool Process(IElementListener listener) {
             try {
                 return listener.Add(this);
             } catch (DocumentException) {
@@ -106,7 +107,7 @@ namespace iTextSharp.text.pdf.draw {
         /**
         * @see com.lowagie.text.Element#type()
         */
-        public int Type {
+        virtual public int Type {
             get {
                 return Element.YMARK;
             }
@@ -115,21 +116,21 @@ namespace iTextSharp.text.pdf.draw {
         /**
         * @see com.lowagie.text.Element#isContent()
         */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return true;
         }
 
         /**
         * @see com.lowagie.text.Element#isNestable()
         */
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             return false;
         }
 
         /**
         * @see com.lowagie.text.Element#getChunks()
         */
-        public IList<Chunk> Chunks {
+        virtual public IList<Chunk> Chunks {
             get {
                 List<Chunk> list = new List<Chunk>();
                 list.Add(new Chunk(this, true));

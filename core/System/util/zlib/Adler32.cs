@@ -1,6 +1,6 @@
 using System;
 /*
- * $Id: Adler32.cs 106 2009-12-07 12:23:50Z psoares33 $
+ * $Id: Adler32.cs 676 2013-12-24 13:15:22Z asubach $
  *
 Copyright (c) 2000,2001,2002,2003 ymnk, JCraft,Inc. All rights reserved.
 

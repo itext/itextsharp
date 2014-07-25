@@ -1,17 +1,18 @@
 /*
- * $Id: MetaPen.cs 622 2013-10-04 12:47:40Z pavel-alay $
+ * $Id: MetaPen.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -62,26 +63,26 @@ namespace iTextSharp.text.pdf.codec.wmf {
             type = META_PEN;
         }
 
-        public void Init(InputMeta meta) {
+        virtual public void Init(InputMeta meta) {
             style = meta.ReadWord();
             penWidth = meta.ReadShort();
             meta.ReadWord();
             color = meta.ReadColor();
         }
     
-        public int Style {
+        virtual public int Style {
             get {
                 return style;
             }
         }
     
-        public int PenWidth {
+        virtual public int PenWidth {
             get {
                 return penWidth;
             }
         }
     
-        public BaseColor Color {
+        virtual public BaseColor Color {
             get {
                 return color;
             }

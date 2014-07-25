@@ -1,17 +1,18 @@
 using System.util;
 /*
- * $Id: TextMarginFinder.cs 622 2013-10-04 12:47:40Z pavel-alay $
+ * $Id: TextMarginFinder.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -57,7 +58,7 @@ namespace iTextSharp.text.pdf.parser {
          * We'll use this object to obtain coordinates.
          * @see com.itextpdf.text.pdf.parser.RenderListener#renderText(com.itextpdf.text.pdf.parser.TextRenderInfo)
          */
-        public void RenderText(TextRenderInfo renderInfo) {
+        virtual public void RenderText(TextRenderInfo renderInfo) {
             if (textRectangle == null)
                 textRectangle = renderInfo.GetDescentLine().GetBoundingRectange();
             else
@@ -71,7 +72,7 @@ namespace iTextSharp.text.pdf.parser {
          * Getter for the left margin.
          * @return the X position of the left margin
          */
-        public float GetLlx() {
+        virtual public float GetLlx() {
             return textRectangle.X;
         }
 
@@ -79,7 +80,7 @@ namespace iTextSharp.text.pdf.parser {
          * Getter for the bottom margin.
          * @return the Y position of the bottom margin
          */
-        public float GetLly() {
+        virtual public float GetLly() {
             return textRectangle.Y;
         }
 
@@ -87,7 +88,7 @@ namespace iTextSharp.text.pdf.parser {
          * Getter for the right margin.
          * @return the X position of the right margin
          */
-        public float GetUrx() {
+        virtual public float GetUrx() {
             return textRectangle.X + textRectangle.Width;
         }
 
@@ -95,7 +96,7 @@ namespace iTextSharp.text.pdf.parser {
          * Getter for the top margin.
          * @return the Y position of the top margin
          */
-        public float GetUry() {
+        virtual public float GetUry() {
             return textRectangle.Y + textRectangle.Height;
         }
 
@@ -103,7 +104,7 @@ namespace iTextSharp.text.pdf.parser {
          * Gets the width of the text block.
          * @return a width
          */
-        public float GetWidth() {
+        virtual public float GetWidth() {
             return textRectangle.Width;
         }
         
@@ -111,28 +112,28 @@ namespace iTextSharp.text.pdf.parser {
          * Gets the height of the text block.
          * @return a height
          */
-        public float GetHeight() {
+        virtual public float GetHeight() {
             return textRectangle.Height;
         }
         
         /**
          * @see com.itextpdf.text.pdf.parser.RenderListener#beginTextBlock()
          */
-        public void BeginTextBlock() {
+        virtual public void BeginTextBlock() {
             // do nothing
         }
 
         /**
          * @see com.itextpdf.text.pdf.parser.RenderListener#endTextBlock()
          */
-        public void EndTextBlock() {
+        virtual public void EndTextBlock() {
             // do nothing
         }
 
         /**
          * @see com.itextpdf.text.pdf.parser.RenderListener#renderImage(com.itextpdf.text.pdf.parser.ImageRenderInfo)
          */
-        public void RenderImage(ImageRenderInfo renderInfo) {
+        virtual public void RenderImage(ImageRenderInfo renderInfo) {
             // do nothing
         }
     }

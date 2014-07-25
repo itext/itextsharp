@@ -6,15 +6,16 @@ using iTextSharp.text;
  * $Id: StackKeeper.java 94 2011-05-23 23:38:48Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -71,14 +72,14 @@ namespace iTextSharp.tool.xml.pipeline.html {
          *
          * @param content the element to add
          */
-        public void Add(IElement content) {
+        virtual public void Add(IElement content) {
             this.stack.Add(content);
         }
 
         /**
          * @return the elements in this stack
          */
-        public IList<IElement> GetElements() {
+        virtual public IList<IElement> GetElements() {
             return this.stack;
 
         }
@@ -88,7 +89,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          *
          * @param elements collection of Element
          */
-        public void Add<K>(ICollection<K> elements) where K : IElement{
+        virtual public void Add<K>(ICollection<K> elements) where K : IElement{
             foreach (IElement e in elements) {
                 this.stack.Add(e);
             }
@@ -97,7 +98,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
         /**
          * @return the tag
          */
-        public Tag GetTag() {
+        virtual public Tag GetTag() {
             return tag;
         }
     }

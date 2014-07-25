@@ -11,13 +11,13 @@ namespace itextsharp.tests.iTextSharp.text.pdf
     class PdfReaderTest
     {
         [SetUp]
-        public void SetUp()
+        virtual public void SetUp()
         {
             TestResourceUtils.PurgeTempFiles();
         }
 
         [TearDown]
-        public void TearDown()
+        virtual public void TearDown()
         {
             TestResourceUtils.PurgeTempFiles();
         }
@@ -25,7 +25,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\PdfReaderTest\";
 
         [Test, Ignore("validity of test needs to be resolved")]
-        public void TestGetLink()
+        virtual public void TestGetLink()
         {
             string testFile = TestResourceUtils.GetResourceAsTempFile(TEST_RESOURCES_PATH, "getLinkTest1.pdf");
             PdfReader currentReader = new PdfReader(testFile);
@@ -42,7 +42,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void testGetLink2()
+        virtual public void testGetLink2()
         {
             string testFile = TestResourceUtils.GetResourceAsTempFile(TEST_RESOURCES_PATH, "getLinkTest2.pdf");
             string filename = testFile;
@@ -55,7 +55,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void testPageResources()
+        virtual public void testPageResources()
         {
             string testFile = TestResourceUtils.GetResourceAsTempFile(TEST_RESOURCES_PATH, "getLinkTest2.pdf");
             String filename = testFile;

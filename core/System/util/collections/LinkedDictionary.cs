@@ -2,19 +2,20 @@ using System.Collections.Generic;
 using System.Collections;
 
 /*
- * $Id: LinkedDictionary.cs 518 2013-02-20 13:16:32Z pavel-alay $
+ * $Id: LinkedDictionary.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -56,23 +57,23 @@ namespace System.util.collections {
             link = new LinkedList<KeyValuePair<TKey,TValue>>();
         }
 
-        public void Add(TKey key, TValue value) {
+        virtual public void Add(TKey key, TValue value) {
             LinkedListNode<KeyValuePair<TKey,TValue>> v = new LinkedListNode<KeyValuePair<TKey,TValue>>(new KeyValuePair<TKey,TValue>(key, value));
             dic.Add(key, v);
             link.AddLast(v);
         }
 
-        public bool ContainsKey(TKey key) {
+        virtual public bool ContainsKey(TKey key) {
             return dic.ContainsKey(key);
         }
 
-        public ICollection<TKey> Keys {
+        virtual public ICollection<TKey> Keys {
             get {
                 return new KeyCollection(link, dic);
             }
         }
 
-        public bool Remove(TKey key) {
+        virtual public bool Remove(TKey key) {
             if (dic.ContainsKey(key)) {
                 link.Remove(dic[key]);
                 dic.Remove(key);
@@ -82,7 +83,7 @@ namespace System.util.collections {
                 return false;
         }
 
-        public bool TryGetValue(TKey key, out TValue value) {
+        virtual public bool TryGetValue(TKey key, out TValue value) {
             if (dic.ContainsKey(key)) {
                 value = dic[key].Value.Value;
                 return true;
@@ -93,7 +94,7 @@ namespace System.util.collections {
             }
         }
 
-        public ICollection<TValue> Values {
+        virtual public ICollection<TValue> Values {
             get {
                 return new ValueCollection(link);
             }

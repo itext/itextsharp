@@ -9,7 +9,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
     class TextMarginFinderTest
     {
         [Test]
-        public void TestBasics()
+        virtual public void TestBasics()
         {
             Rectangle rToDraw = new Rectangle(1.42f * 72f, 2.42f * 72f, 7.42f * 72f, 10.42f * 72f);
             rToDraw.Border = Rectangle.BOX;

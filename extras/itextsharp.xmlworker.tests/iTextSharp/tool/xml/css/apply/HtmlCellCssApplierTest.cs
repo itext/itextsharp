@@ -22,7 +22,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         private HtmlPipelineContext config;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             cells = new List<Element>();
             tag = new Tag("td", new Dictionary<String, String>());
             basicPara = new NoNewLineParagraph();
@@ -44,13 +44,13 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
 
         /*Disabled as long as the default borders are enabled*/
 
-        public void ResolveNoBorder() {
+        virtual public void ResolveNoBorder() {
             applier.Apply(cell, tag, config, config);
             Assert.AreEqual(Rectangle.NO_BORDER, cell.Border);
         }
 
         [Test]
-        public void ResolveColspan() {
+        virtual public void ResolveColspan() {
             Assert.AreEqual(1, cell.Colspan, 0);
             tag.Attributes["colspan"] = "2";
             applier.Apply(cell, tag, config, config);
@@ -58,7 +58,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveRowspan() {
+        virtual public void ResolveRowspan() {
             Assert.AreEqual(1, cell.Rowspan, 0);
             tag.Attributes["rowspan"] = "3";
             applier.Apply(cell, tag, config, config);
@@ -66,7 +66,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveFixedWidth() {
+        virtual public void ResolveFixedWidth() {
             HtmlCell fixedWidthCell = new HtmlCell();
             tag.Attributes["width"] = "90pt";
             fixedWidthCell = applier.Apply(fixedWidthCell, tag, config, config);
@@ -74,7 +74,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveBorderWidth() {
+        virtual public void ResolveBorderWidth() {
             Assert.AreEqual(0.5, cell.BorderWidthTop, 0);
             tag.CSS["border-width-top"] = "5pt";
             tag.CSS["border-width-left"] = "6pt";
@@ -88,7 +88,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css.apply {
         }
 
         [Test]
-        public void ResolveBorderColor() {
+        virtual public void ResolveBorderColor() {
             Assert.AreEqual(null, cell.BorderColorTop);
             tag.CSS["border-color-top"] = "red";
             tag.CSS["border-color-left"] = "#0f0";

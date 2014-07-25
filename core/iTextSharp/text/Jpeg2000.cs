@@ -8,19 +8,20 @@ using System.util;
 using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 /*
- * $Id: Jpeg2000.cs 642 2013-11-04 12:43:32Z asubach $
+ * $Id: Jpeg2000.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -159,7 +160,7 @@ namespace iTextSharp.text
             return v;
         }
 
-        public void Jp2_read_boxhdr()
+        virtual public void Jp2_read_boxhdr()
         {
             boxLength = Cio_read(4);
             boxType = Cio_read(4);
@@ -330,17 +331,17 @@ namespace iTextSharp.text
             return colr;
         }
 
-        public int GetNumOfComps()
+        virtual public int GetNumOfComps()
         {
             return numOfComps;
         }
 
-        public byte[] GetBpcBoxData()
+        virtual public byte[] GetBpcBoxData()
         {
             return bpcBoxData;
         }
 
-        public List<ColorSpecBox> GetColorSpecBoxes()
+        virtual public List<ColorSpecBox> GetColorSpecBoxes()
         {
             return colorSpecBoxes;
         }
@@ -348,7 +349,7 @@ namespace iTextSharp.text
         /**
          * @return <code>true</code> if the image is JP2, <code>false</code> if a codestream.
          */
-        public bool IsJp2()
+        virtual public bool IsJp2()
         {
             return isJp2;
         }
@@ -357,24 +358,24 @@ namespace iTextSharp.text
         {
             private byte[] colorProfile;
 
-            public int? GetMeth()
+            virtual public int? GetMeth()
             {
                 return this.Count > 0 ? this[0] : null;
             }
 
-            public int? GetPrec() {
+            virtual public int? GetPrec() {
                 return this.Count > 1 ? this[1] : null;
             }
 
-            public int? GetApprox() {
+            virtual public int? GetApprox() {
                 return this.Count > 2 ? this[2] : null;
             }
 
-            public int? GetEnumCs() {
+            virtual public int? GetEnumCs() {
                 return this.Count > 3 ? this[3] : null;
             }
 
-            public byte[] GetColorProfile() {
+            virtual public byte[] GetColorProfile() {
                 return colorProfile;
             }
 

@@ -15,14 +15,14 @@ using iTextSharp.tool.xml.pipeline.html;
 /*
  * $Id: XMLWorkerHelper.java 144 2011-06-03 22:52:42Z redlab_b $
  *
- * This file is part of the iText (R) project. Copyright (c) 1998-2011 1T3XT
+ * This file is part of the iText (R) project. Copyright (c) 1998-2014 iText Group NV
  * BVBA Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General Public License version 3 as published by
  * the Free Software Foundation with the addition of the following permission
  * added to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED
- * WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT, 1T3XT DISCLAIMS THE WARRANTY
+ * WORK IN WHICH THE COPYRIGHT IS OWNED BY ITEXT GROUP, ITEXT GROUP DISCLAIMS THE WARRANTY
  * OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
@@ -110,7 +110,7 @@ namespace iTextSharp.tool.xml {
             return cssFile;
         }
 
-        public ICssFile GetDefaultCSS() {
+        virtual public ICssFile GetDefaultCSS() {
             if (defaultCssFile == null) {
                 defaultCssFile = GetCSS(Assembly.GetExecutingAssembly().GetManifestResourceStream("iTextSharp.tool.xml.css.default.css"));
             }
@@ -127,7 +127,7 @@ namespace iTextSharp.tool.xml {
          * @param in the reader
          * @throws IOException thrown when something went wrong with the IO
          */
-        public void ParseXHtml(IElementHandler d, TextReader inp) {
+        virtual public void ParseXHtml(IElementHandler d, TextReader inp) {
             CssFilesImpl cssFiles = new CssFilesImpl();
             cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
@@ -151,7 +151,7 @@ namespace iTextSharp.tool.xml {
          * @param inp the reader
          * @throws IOException thrown when something went wrong with the IO
          */
-        public void ParseXHtml(PdfWriter writer, Document doc, TextReader inp) {
+        virtual public void ParseXHtml(PdfWriter writer, Document doc, TextReader inp) {
             CssFilesImpl cssFiles = new CssFilesImpl();
             cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
@@ -165,7 +165,7 @@ namespace iTextSharp.tool.xml {
             p.Parse(inp);
         }
 
-        public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, Encoding charset, IFontProvider fontProvider) {
+        virtual public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, Encoding charset, IFontProvider fontProvider) {
             CssFilesImpl cssFiles = new CssFilesImpl();
             if (inCssFile != null)
                 cssFiles.Add(GetCSS(inCssFile));
@@ -185,21 +185,21 @@ namespace iTextSharp.tool.xml {
             }
         }
 
-        public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile) {
+        virtual public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile) {
             ParseXHtml(writer, doc, inp, inCssFile, null, new XMLWorkerFontProvider());
         }
 
-        public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, Encoding charset) {
+        virtual public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, Encoding charset) {
             ParseXHtml(writer, doc, inp, inCssFile, charset, new XMLWorkerFontProvider());
         }
 
-        public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Encoding charset) {
+        virtual public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Encoding charset) {
             ParseXHtml(writer, doc, inp,
                 Assembly.GetExecutingAssembly().GetManifestResourceStream("iTextSharp.tool.xml.css.default.css"),
                 charset);
         }
 
-        public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, IFontProvider fontProvider) {
+        virtual public void ParseXHtml(PdfWriter writer, Document doc, Stream inp, Stream inCssFile, IFontProvider fontProvider) {
             ParseXHtml(writer, doc, inp, inCssFile, null, fontProvider);
         }
 
@@ -208,7 +208,7 @@ namespace iTextSharp.tool.xml {
          * @param inp the Stream
          * @throws IOException if something went seriously wrong with IO.
          */
-        public void ParseXHtml(IElementHandler d, Stream inp, Encoding charset) {
+        virtual public void ParseXHtml(IElementHandler d, Stream inp, Encoding charset) {
             CssFilesImpl cssFiles = new CssFilesImpl();
             cssFiles.Add(GetDefaultCSS());
             StyleAttrCSSResolver cssResolver = new StyleAttrCSSResolver(cssFiles);
@@ -232,7 +232,7 @@ namespace iTextSharp.tool.xml {
          * @return the default CSSResolver
          *
          */
-        public ICSSResolver GetDefaultCssResolver(bool addDefaultCss) {
+        virtual public ICSSResolver GetDefaultCssResolver(bool addDefaultCss) {
             ICSSResolver resolver = new StyleAttrCSSResolver();
             if (addDefaultCss) {
                 resolver.AddCss(GetDefaultCSS());
@@ -247,7 +247,7 @@ namespace iTextSharp.tool.xml {
          * @return a
          *         <code>DefaultTagProcessorFactory<code> that maps HTML tags to {@link TagProcessor}s
          */
-        protected internal ITagProcessorFactory GetDefaultTagProcessorFactory() {
+        virtual protected internal ITagProcessorFactory GetDefaultTagProcessorFactory() {
             if (null == tpf) {
                 tpf = Tags.GetHtmlTagProcessorFactory();
             }

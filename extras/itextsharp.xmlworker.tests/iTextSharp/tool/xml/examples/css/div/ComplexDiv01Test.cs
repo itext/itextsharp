@@ -18,7 +18,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.css.div {
             return "complexDiv01";
         }
 
-        protected override void TransformHtml2Pdf() {
+        protected override void MakePdf(string outPdf) {
             Document doc = new Document(PageSize.A3.Rotate());
 
             PdfWriter pdfWriter = PdfWriter.GetInstance(doc, new FileStream(outPdf, FileMode.Create));

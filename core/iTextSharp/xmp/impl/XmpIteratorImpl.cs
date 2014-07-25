@@ -255,7 +255,7 @@ namespace iTextSharp.xmp.impl {
 
             #region IEnumerator Members
 
-            public object Current {
+            virtual public object Current {
                 get { return _returnProperty; }
             }
 
@@ -395,7 +395,7 @@ namespace iTextSharp.xmp.impl {
 
                 #region IXmpPropertyInfo Members
 
-                public string Namespace {
+                virtual public string Namespace {
                     get {
                         if (!_node.Options.SchemaNode) {
                             // determine namespace of leaf node
@@ -406,19 +406,19 @@ namespace iTextSharp.xmp.impl {
                     }
                 }
 
-                public string Path {
+                virtual public string Path {
                     get { return _path; }
                 }
 
-                public string Value {
+                virtual public string Value {
                     get { return _value; }
                 }
 
-                public PropertyOptions Options {
+                virtual public PropertyOptions Options {
                     get { return _node.Options; }
                 }
 
-                public string Language {
+                virtual public string Language {
                     get {
                         // the language is not reported
                         return null;

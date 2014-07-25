@@ -383,7 +383,7 @@ namespace iTextSharp.text.pdf.codec {
         }
         
         /** Returns the number of directory entries. */
-        public int GetNumEntries() {
+        virtual public int GetNumEntries() {
             return numEntries;
         }
         
@@ -391,7 +391,7 @@ namespace iTextSharp.text.pdf.codec {
         * Returns the value of a given tag as a TIFFField,
         * or null if the tag is not present.
         */
-        public TIFFField GetField(int tag) {
+        virtual public TIFFField GetField(int tag) {
             int i;
             if (fieldIndex.TryGetValue(tag, out i))
                 return fields[i];
@@ -402,7 +402,7 @@ namespace iTextSharp.text.pdf.codec {
         /**
         * Returns true if a tag appears in the directory.
         */
-        public bool IsTagPresent(int tag) {
+        virtual public bool IsTagPresent(int tag) {
             return fieldIndex.ContainsKey(tag);
         }
         
@@ -410,7 +410,7 @@ namespace iTextSharp.text.pdf.codec {
         * Returns an ordered array of ints indicating the tag
         * values.
         */
-        public int[] GetTags() {
+        virtual public int[] GetTags() {
             int[] tags = new int[fieldIndex.Count];
             fieldIndex.Keys.CopyTo(tags, 0);
             return tags;
@@ -420,7 +420,7 @@ namespace iTextSharp.text.pdf.codec {
         * Returns an array of TIFFFields containing all the fields
         * in this directory.
         */
-        public TIFFField[] GetFields() {
+        virtual public TIFFField[] GetFields() {
             return fields;
         }
         
@@ -430,7 +430,7 @@ namespace iTextSharp.text.pdf.codec {
         * present and has type TIFFField.TIFF_SBYTE, TIFF_BYTE, or
         * TIFF_UNDEFINED.
         */
-        public byte GetFieldAsByte(int tag, int index) {
+        virtual public byte GetFieldAsByte(int tag, int index) {
             int i = fieldIndex[tag];
             byte[] b = fields[i].GetAsBytes();
             return b[index];
@@ -442,7 +442,7 @@ namespace iTextSharp.text.pdf.codec {
         * present and has  type TIFFField.TIFF_SBYTE, TIFF_BYTE, or
         * TIFF_UNDEFINED.
         */
-        public byte GetFieldAsByte(int tag) {
+        virtual public byte GetFieldAsByte(int tag) {
             return GetFieldAsByte(tag, 0);
         }
         
@@ -452,7 +452,7 @@ namespace iTextSharp.text.pdf.codec {
         * present and has type TIFF_BYTE, TIFF_SBYTE, TIFF_UNDEFINED,
         * TIFF_SHORT, TIFF_SSHORT, TIFF_SLONG or TIFF_LONG.
         */
-        public long GetFieldAsLong(int tag, int index) {
+        virtual public long GetFieldAsLong(int tag, int index) {
             int i = fieldIndex[tag];
             return fields[i].GetAsLong(index);
         }
@@ -463,7 +463,7 @@ namespace iTextSharp.text.pdf.codec {
         * present and has type TIFF_BYTE, TIFF_SBYTE, TIFF_UNDEFINED,
         * TIFF_SHORT, TIFF_SSHORT, TIFF_SLONG or TIFF_LONG.
         */
-        public long GetFieldAsLong(int tag) {
+        virtual public long GetFieldAsLong(int tag) {
             return GetFieldAsLong(tag, 0);
         }
         
@@ -473,7 +473,7 @@ namespace iTextSharp.text.pdf.codec {
         * present and has numeric type (all but TIFF_UNDEFINED and
         * TIFF_ASCII).
         */
-        public float GetFieldAsFloat(int tag, int index) {
+        virtual public float GetFieldAsFloat(int tag, int index) {
             int i = fieldIndex[tag];
             return fields[i].GetAsFloat(index);
         }
@@ -483,7 +483,7 @@ namespace iTextSharp.text.pdf.codec {
         * caller is responsible for ensuring that the tag is present and
         * has numeric type (all but TIFF_UNDEFINED and TIFF_ASCII).
         */
-        public float GetFieldAsFloat(int tag) {
+        virtual public float GetFieldAsFloat(int tag) {
             return GetFieldAsFloat(tag, 0);
         }
         
@@ -493,7 +493,7 @@ namespace iTextSharp.text.pdf.codec {
         * present and has numeric type (all but TIFF_UNDEFINED and
         * TIFF_ASCII).
         */
-        public double GetFieldAsDouble(int tag, int index) {
+        virtual public double GetFieldAsDouble(int tag, int index) {
             int i = fieldIndex[tag];
             return fields[i].GetAsDouble(index);
         }
@@ -503,7 +503,7 @@ namespace iTextSharp.text.pdf.codec {
         * caller is responsible for ensuring that the tag is present and
         * has numeric type (all but TIFF_UNDEFINED and TIFF_ASCII).
         */
-        public double GetFieldAsDouble(int tag) {
+        virtual public double GetFieldAsDouble(int tag) {
             return GetFieldAsDouble(tag, 0);
         }
         
@@ -641,7 +641,7 @@ namespace iTextSharp.text.pdf.codec {
         * the TIFF file is big-endian (i.e. whether the byte order is from
         * the most significant to the least significant)
         */
-        public bool IsBigEndian() {
+        virtual public bool IsBigEndian() {
             return isBigEndian;
         }
         
@@ -649,7 +649,7 @@ namespace iTextSharp.text.pdf.codec {
         * Returns the offset of the IFD corresponding to this
         * <code>TIFFDirectory</code>.
         */
-        public long GetIFDOffset() {
+        virtual public long GetIFDOffset() {
             return IFDOffset;
         }
         
@@ -657,7 +657,7 @@ namespace iTextSharp.text.pdf.codec {
         * Returns the offset of the next IFD after the IFD corresponding to this
         * <code>TIFFDirectory</code>.
         */
-        public long GetNextIFDOffset() {
+        virtual public long GetNextIFDOffset() {
             return nextIFDOffset;
         }
     }

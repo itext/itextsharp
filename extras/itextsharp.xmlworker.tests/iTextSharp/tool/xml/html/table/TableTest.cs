@@ -33,7 +33,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.table {
         private HtmlCell cell3Row2 = new HtmlCell();
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
             tag.Parent = new Tag("defaultRoot");
             basicPara.Add(basic);
@@ -65,7 +65,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.table {
         }
 
         [Test]
-        public void ResolveBuild() {
+        virtual public void ResolveBuild() {
             AbstractTagProcessor table2 = new Table();
             table2.SetCssAppliers(new CssAppliersImpl());
             WorkerContextImpl context = new WorkerContextImpl();
@@ -76,18 +76,18 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.table {
         }
 
         [Test]
-        public void ResolveNumberOfCells() {
+        virtual public void ResolveNumberOfCells() {
             Assert.AreEqual(4, ((TableRowElement) rows[0]).Content.Count);
             Assert.AreEqual(2, ((TableRowElement) rows[1]).Content.Count);
         }
 
         [Test]
-        public void ResolveColspan() {
+        virtual public void ResolveColspan() {
             Assert.AreEqual(2, (((TableRowElement) rows[1]).Content[1]).Colspan);
         }
 
         [Test]
-        public void ResolveRowspan() {
+        virtual public void ResolveRowspan() {
             Assert.AreEqual(2, (((TableRowElement) rows[0]).Content[3]).Rowspan);
         }
     }

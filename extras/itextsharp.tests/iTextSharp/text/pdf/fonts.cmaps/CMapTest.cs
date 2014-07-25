@@ -16,7 +16,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.fonts.cmaps
         }
 
         [Test, Ignore]
-        public void TestHighOrderBytes()
+        virtual public void TestHighOrderBytes()
         {
             CheckInsertAndRetrieval(new byte[] { (byte)0x91 }, "\u2018");
             CheckInsertAndRetrieval(new byte[] { (byte)0x91, (byte)0x92 }, "\u2018");

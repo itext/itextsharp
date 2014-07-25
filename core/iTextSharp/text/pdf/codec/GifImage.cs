@@ -8,15 +8,16 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -167,7 +168,7 @@ namespace iTextSharp.text.pdf.codec {
         /** Gets the number of frames the gif has.
         * @return the number of frames the gif has
         */    
-        public int GetFrameCount() {
+        virtual public int GetFrameCount() {
             return frames.Count;
         }
         
@@ -175,7 +176,7 @@ namespace iTextSharp.text.pdf.codec {
         * @param frame the frame to get the image from
         * @return the image
         */    
-        public Image GetImage(int frame) {
+        virtual public Image GetImage(int frame) {
             GifFrame gf = frames[frame - 1];
             return gf.image;
         }
@@ -185,7 +186,7 @@ namespace iTextSharp.text.pdf.codec {
         * @param frame the frame
         * @return the [x,y] position of the frame
         */    
-        public int[] GetFramePosition(int frame) {
+        virtual public int[] GetFramePosition(int frame) {
             GifFrame gf = frames[frame - 1];
             return new int[]{gf.ix, gf.iy};
             
@@ -196,7 +197,7 @@ namespace iTextSharp.text.pdf.codec {
         * No image will be be bigger that this.
         * @return the logical screen dimensions as [x,y]
         */    
-        public int[] GetLogicalScreen() {
+        virtual public int[] GetLogicalScreen() {
             return new int[]{width, height};
         }
         
@@ -211,7 +212,7 @@ namespace iTextSharp.text.pdf.codec {
         /**
         * Reads GIF file header information.
         */
-        protected void ReadHeader() {
+        virtual protected void ReadHeader() {
             StringBuilder id = new StringBuilder();
             for (int i = 0; i < 6; i++)
                 id.Append((char)inp.ReadByte());
@@ -228,7 +229,7 @@ namespace iTextSharp.text.pdf.codec {
         /**
         * Reads Logical Screen Descriptor
         */
-        protected void ReadLSD() {
+        virtual protected void ReadLSD() {
             
             // logical screen size
             width = ReadShort();
@@ -245,7 +246,7 @@ namespace iTextSharp.text.pdf.codec {
         /**
         * Reads next 16-bit value, LSB first
         */
-        protected int ReadShort() {
+        virtual protected int ReadShort() {
             // read 16-bit value, LSB first
             return inp.ReadByte() | (inp.ReadByte() << 8);
         }
@@ -255,7 +256,7 @@ namespace iTextSharp.text.pdf.codec {
         *
         * @return number of bytes stored in "buffer"
         */
-        protected int ReadBlock() {
+        virtual protected int ReadBlock() {
             blockSize = inp.ReadByte();
             if (blockSize <= 0)
                 return blockSize = 0;
@@ -263,7 +264,7 @@ namespace iTextSharp.text.pdf.codec {
             return blockSize;
         }
 
-        protected byte[] ReadColorTable(int bpc) {
+        virtual protected byte[] ReadColorTable(int bpc) {
             int ncolors = 1 << bpc;
             int nbytes = 3*ncolors;
             bpc = NewBpc(bpc);
@@ -287,7 +288,7 @@ namespace iTextSharp.text.pdf.codec {
             return bpc;
         }
         
-        protected void ReadContents() {
+        virtual protected void ReadContents() {
             // read GIF file content blocks
             bool done = false;
             while (!done) {
@@ -327,7 +328,7 @@ namespace iTextSharp.text.pdf.codec {
         /**
         * Reads next frame image
         */
-        protected void ReadImage() {
+        virtual protected void ReadImage() {
             ix = ReadShort();    // (sub)image position & size
             iy = ReadShort();
             iw = ReadShort();
@@ -386,7 +387,7 @@ namespace iTextSharp.text.pdf.codec {
             
         }
         
-        protected bool DecodeImageData() {
+        virtual protected bool DecodeImageData() {
             int NullCode = -1;
             int npix = iw * ih;
             int available, clear, code_mask, code_size, end_of_information, in_code, old_code,
@@ -539,7 +540,7 @@ namespace iTextSharp.text.pdf.codec {
         }
         
         
-        protected void SetPixel(int x, int y, int v) {
+        virtual protected void SetPixel(int x, int y, int v) {
             if (m_bpc == 8) {
                 int pos = x + iw * y;
                 m_out[pos] = (byte)v;
@@ -554,13 +555,13 @@ namespace iTextSharp.text.pdf.codec {
         /**
         * Resets frame state for reading next image.
         */
-        protected void ResetFrame() {
+        virtual protected void ResetFrame() {
         }
 
         /**
         * Reads Graphics Control Extension values
         */
-        protected void ReadGraphicControlExt() {
+        virtual protected void ReadGraphicControlExt() {
             inp.ReadByte();    // block size
             int packed = inp.ReadByte();   // packed fields
             dispose = (packed & 0x1c) >> 2;   // disposal method
@@ -576,7 +577,7 @@ namespace iTextSharp.text.pdf.codec {
         * Skips variable length blocks up to and including
         * next zero length block.
         */
-        protected void Skip() {
+        virtual protected void Skip() {
             do {
                 ReadBlock();
             } while (blockSize > 0);

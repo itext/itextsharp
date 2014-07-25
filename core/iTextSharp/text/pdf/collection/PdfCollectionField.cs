@@ -3,18 +3,19 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: PdfCollectionField.cs 318 2012-02-27 22:46:07Z psoares33 $
+ * $Id: PdfCollectionField.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -113,7 +114,7 @@ namespace iTextSharp.text.pdf.collection {
         * The relative order of the field name. Fields are sorted in ascending order.
         * @param i a number indicating the order of the field
         */
-        public int Order {
+        virtual public int Order {
             set {
                 Put(PdfName.O, new PdfNumber(value));
             }
@@ -123,7 +124,7 @@ namespace iTextSharp.text.pdf.collection {
         * Sets the initial visibility of the field.
         * @param visible   the default is true (visible)
         */
-        public bool Visible {
+        virtual public bool Visible {
             set {
                 Put(PdfName.V, new PdfBoolean(value));
             }
@@ -133,7 +134,7 @@ namespace iTextSharp.text.pdf.collection {
         * Indication if the field value should be editable in the viewer.
         * @param editable  the default is false (not editable)
         */
-        public bool Editable {
+        virtual public bool Editable {
             set {
                 Put(PdfName.E, new PdfBoolean(value));
             }
@@ -142,7 +143,7 @@ namespace iTextSharp.text.pdf.collection {
         /**
         * Checks if the type of the field is suitable for a Collection Item.
         */
-        public bool IsCollectionItem() {
+        virtual public bool IsCollectionItem() {
             switch (fieldType) {
             case TEXT:
             case DATE:
@@ -157,7 +158,7 @@ namespace iTextSharp.text.pdf.collection {
         * Returns a PdfObject that can be used as the value of a Collection Item.
         * @param String    value   the value that has to be changed into a PdfObject (PdfString, PdfDate or PdfNumber) 
         */
-        public PdfObject GetValue(String v) {
+        virtual public PdfObject GetValue(String v) {
             switch (fieldType) {
             case TEXT:
                 return new PdfString(v, PdfObject.TEXT_UNICODE);

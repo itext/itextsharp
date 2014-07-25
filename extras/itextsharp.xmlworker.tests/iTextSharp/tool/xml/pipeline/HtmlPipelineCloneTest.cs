@@ -18,34 +18,34 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             ctx = new HtmlPipelineContext(null);
             ctx.SetImageProvider(new CustomAbstractImageProvider());
             clone = (HtmlPipelineContext) ctx.Clone();
         }
 
         [Test]
-        public void VerifyNewImageProvider() {
+        virtual public void VerifyNewImageProvider() {
             Assert.AreNotSame(ctx.GetImageProvider(), clone.GetImageProvider());
         }
 
         [Test]
-        public void VerifyNewRoottags() {
+        virtual public void VerifyNewRoottags() {
             Assert.AreNotSame(ctx.GetRootTags(), clone.GetRootTags());
         }
 
         [Test]
-        public void VerifyNewPageSize() {
+        virtual public void VerifyNewPageSize() {
             Assert.AreNotSame(ctx.PageSize, clone.PageSize);
         }
 
         [Test]
-        public void VerifyNewMemory() {
+        virtual public void VerifyNewMemory() {
             Assert.AreNotSame(ctx.GetMemory(), clone.GetMemory());
         }
 
         [Test]
-        public void VerifySameLinkProvider() {
+        virtual public void VerifySameLinkProvider() {
             Assert.AreEqual(ctx.GetLinkProvider(), clone.GetLinkProvider());
         }
     }

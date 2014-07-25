@@ -14,14 +14,14 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\parser\PdfContentStreamProcessorTest\";
 
         [SetUp]
-        public void SetUp()
+        virtual public void SetUp()
         {
             _renderListener = new DebugRenderListener();
         }
 
         // Replicates iText bug 2817030
         [Test]
-        public void TestPositionAfterTstar()
+        virtual public void TestPositionAfterTstar()
         {
             ProcessBytes("yaxiststar.pdf", 1);
         }
@@ -86,7 +86,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         {
             private float _lastY = float.MaxValue;
 
-            public void RenderText(TextRenderInfo renderInfo)
+            virtual public void RenderText(TextRenderInfo renderInfo)
             {
                 Vector start = renderInfo.GetBaseline().GetStartPoint();
                 float x = start[Vector.I1];
@@ -100,16 +100,16 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
 
             }
 
-            public void BeginTextBlock()
+            virtual public void BeginTextBlock()
             {
                 _lastY = float.MaxValue;
             }
 
-            public void EndTextBlock()
+            virtual public void EndTextBlock()
             {
             }
 
-            public void RenderImage(ImageRenderInfo renderInfo)
+            virtual public void RenderImage(ImageRenderInfo renderInfo)
             {
             }
 

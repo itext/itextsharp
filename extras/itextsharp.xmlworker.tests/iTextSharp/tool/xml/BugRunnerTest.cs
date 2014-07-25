@@ -19,7 +19,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
         }
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             list.Add("3353957.html");
             list.Add("ol-test.html");
             list.Add("processing-instructions.html");
@@ -28,7 +28,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml {
         }
 
         [Test]
-        public void RunBugSamples() {
+        virtual public void RunBugSamples() {
             bool success = true;
             foreach (String str in list) {
                 try {

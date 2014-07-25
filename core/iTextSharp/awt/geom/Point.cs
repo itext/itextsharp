@@ -1,4 +1,4 @@
-﻿namespace iTextSharp.awt.geom
+namespace iTextSharp.awt.geom
 {
     public class Point : Point2D
     {
@@ -44,15 +44,15 @@
             return y;
         }
 
-        public Point GetLocation() {
+        virtual public Point GetLocation() {
             return new Point(x, y);
         }
 
-        public void SetLocation(Point p) {
+        virtual public void SetLocation(Point p) {
             SetLocation(p.x, p.y);
         }
 
-        public void SetLocation(int x, int y) {
+        virtual public void SetLocation(int x, int y) {
             SetLocation((double)x, (double)y);
         }
 
@@ -61,18 +61,18 @@
     	    this.y = y;
         }
 
-        public void Move(int x, int y) {
+        virtual public void Move(int x, int y) {
             Move((double)x, (double)y);
         }
 
-        public void Move(double x, double y) {
+        virtual public void Move(double x, double y) {
             SetLocation(x, y);
         }
 
-        public void Translate(int dx, int dy) {
+        virtual public void Translate(int dx, int dy) {
             Translate((double)x, (double)y);
         }
-        public void Translate(double dx, double dy) {
+        virtual public void Translate(double dx, double dy) {
             x += dx;
             y += dy;
         } 

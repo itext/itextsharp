@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using iTextSharp.text.pdf.draw;
 
 namespace iTextSharp.text
@@ -64,31 +64,31 @@ namespace iTextSharp.text
         {
         }
 
-	    public float Position
+	    virtual public float Position
 	    {
 	        get { return position; }
 	        set { position = value; }
 	    }
 
-	    public Alignment Align
+	    virtual public Alignment Align
 	    {
 	        get { return alignment; }
 	        set { alignment = value; }
 	    }
 
-	    public IDrawInterface Leader
+	    virtual public IDrawInterface Leader
 	    {
 	        get { return leader; }
 	        set { leader = value; }
 	    }
 
-	    public char AnchorChar
+	    virtual public char AnchorChar
 	    {
 	        get { return anchorChar; }
 	        set { anchorChar = value; }
 	    }
 
-	    public float GetPosition(float tabPosition, float currentPosition, float anchorPosition)
+	    virtual public float GetPosition(float tabPosition, float currentPosition, float anchorPosition)
         {
             float newPosition = position;
             float textWidth = currentPosition - tabPosition;

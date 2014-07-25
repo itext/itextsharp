@@ -2,18 +2,19 @@ using System;
 using iTextSharp.text.pdf.codec;
 using System.Collections.Generic;
 /*
- * $Id: BarcodeDatamatrix.cs 622 2013-10-04 12:47:40Z pavel-alay $
+ * $Id: BarcodeDatamatrix.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -666,7 +667,7 @@ namespace iTextSharp.text.pdf {
         * <CODE>DM_ERROR_EXTENSION</CODE> - an error was while parsing an extension.
         * @throws java.io.UnsupportedEncodingException on error
         */
-        public int Generate(String text) {
+        virtual public int Generate(String text) {
             byte[] t = System.Text.Encoding.GetEncoding(1252).GetBytes(text);
             return Generate(t, 0, t.Length);
         }
@@ -683,7 +684,7 @@ namespace iTextSharp.text.pdf {
         * <CODE>DM_ERROR_INVALID_SQUARE</CODE> - the dimensions given for the symbol are illegal.<br>
         * <CODE>DM_ERROR_EXTENSION</CODE> - an error was while parsing an extension.
         */
-        public int Generate(byte[] text, int textOffset, int textSize) {
+        virtual public int Generate(byte[] text, int textOffset, int textSize) {
             int extCount, e, k, full;
             DmParams dm, last;
             byte[] data = new byte[2500];
@@ -740,7 +741,7 @@ namespace iTextSharp.text.pdf {
         * @return the barcode <CODE>Image</CODE>
         * @throws BadElementException on error
         */    
-        public Image CreateImage() {
+        virtual public Image CreateImage() {
             if (image == null)
                 return null;
             byte[] g4 = CCITTG4Encoder.Compress(image, width + 2 * ws, height + 2 * ws);
@@ -793,7 +794,7 @@ namespace iTextSharp.text.pdf {
             internal int dataSize;
             internal int dataBlock;
             internal int errorBlock;
-        };
+        }
 
         /**
         * Gets the generated image. The image is represented as a stream of bytes, each byte representing
@@ -802,7 +803,7 @@ namespace iTextSharp.text.pdf {
         * plus 2 * ws.
         * @return the generated image
         */
-        public byte[] BitImage {
+        virtual public byte[] BitImage {
             get {
                 return image;
             }
@@ -844,7 +845,7 @@ namespace iTextSharp.text.pdf {
         * 144, 144<br>
         * @param height the height of the barcode
         */
-        public int Height {
+        virtual public int Height {
             get {
                 return height;
             }
@@ -889,7 +890,7 @@ namespace iTextSharp.text.pdf {
         * 144, 144<br>
         * @param width the width of the barcode
         */
-        public int Width {
+        virtual public int Width {
             get {
                 return width;
             }
@@ -902,7 +903,7 @@ namespace iTextSharp.text.pdf {
         * Gets/sets the whitespace border around the barcode.
         * @param ws the whitespace border around the barcode
         */
-        public int Ws {
+        virtual public int Ws {
             get {
                 return ws;
             }
@@ -938,7 +939,7 @@ namespace iTextSharp.text.pdf {
         * <CODE>DM_TEST</CODE> - doesn't generate the image but returns all the other information.
         * @param options the barcode options
         */
-        public int Options {
+        virtual public int Options {
             get {
                 return options;
             }

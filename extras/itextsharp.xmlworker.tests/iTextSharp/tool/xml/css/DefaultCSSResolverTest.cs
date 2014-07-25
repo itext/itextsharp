@@ -21,7 +21,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
 	 */
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
             css = new StyleAttrCSSResolver();
             Dictionary<String, String> pAttr = new Dictionary<String, String>();
@@ -38,7 +38,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
 	 */
 
         [Test]
-        public void ResolveTagCss() {
+        virtual public void ResolveTagCss() {
             css.ResolveStyles(parent);
             IDictionary<String, String> css2 = parent.CSS;
             Assert.IsTrue(css2.ContainsKey("fontk"), "font not found");
@@ -52,7 +52,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
 	 */
 
         [Test]
-        public void ResolveChildTagCss() {
+        virtual public void ResolveChildTagCss() {
             css.ResolveStyles(parent);
             css.ResolveStyles(child);
             IDictionary<String, String> css2 = child.CSS;
@@ -65,11 +65,11 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         private class CustomCssInheritanceRulesOne : ICssInheritanceRules {
-            public bool InheritCssTag(String tag) {
+            virtual public bool InheritCssTag(String tag) {
                 return !"child".Equals(tag);
             }
 
-            public bool InheritCssSelector(Tag tag, String key) {
+            virtual public bool InheritCssSelector(Tag tag, String key) {
                 return true;
             }
         }
@@ -79,7 +79,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
 	 */
 
         [Test]
-        public void CssTagLevelInheritance() {
+        virtual public void CssTagLevelInheritance() {
             css.SetCssInheritance(new CustomCssInheritanceRulesOne());
             css.ResolveStyles(parent);
             css.ResolveStyles(child);
@@ -92,11 +92,11 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         private class CustomCssInheritanceRulesTwo : ICssInheritanceRules {
-            public bool InheritCssTag(String tag) {
+            virtual public bool InheritCssTag(String tag) {
                 return true;
             }
 
-            public bool InheritCssSelector(Tag tag, String key) {
+            virtual public bool InheritCssSelector(Tag tag, String key) {
                 return "child".Equals(tag.Name) && "color".Equals(key);
             }
         }
@@ -106,7 +106,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
 	 */
 
         [Test]
-        public void CssTagStyleLevelInheritance() {
+        virtual public void CssTagStyleLevelInheritance() {
             css.SetCssInheritance(new CustomCssInheritanceRulesTwo());
             css.ResolveStyles(parent);
             css.ResolveStyles(child);

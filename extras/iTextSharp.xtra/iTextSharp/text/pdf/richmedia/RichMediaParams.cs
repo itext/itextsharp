@@ -4,15 +4,16 @@ using iTextSharp.text.pdf;
  * $Id: PdfAnnotationsImp.java 4113 2009-12-01 11:08:59Z blowagie $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -65,7 +66,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * to the Flash Player context when activated.
          * @param   flashVars   a String with the Flash variables
          */
-        public string FlashVars {
+        virtual public string FlashVars {
             set {
                 Put(PdfName.FLASHVARS, new PdfString(value));
             }
@@ -76,7 +77,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * @param   binding possible values:
          * PdfName.NONE, PdfName.FOREGROUND, PdfName.BACKGROUND, PdfName.MATERIAL
          */
-        public PdfName Binding {
+        virtual public PdfName Binding {
             set {
                 Put(PdfName.BINDING, value);
             }
@@ -87,7 +88,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * Required if Binding value is Material.
          * @param   bindingMaterialName a material name
          */
-        public PdfString BindingMaterialName {
+        virtual public PdfString BindingMaterialName {
             set {
                 Put(PdfName.BINDINGMATERIALNAME, value);
             }
@@ -98,7 +99,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * in time within a Flash animation.
          * @param   cuePoints   a PdfArray with CuePoint objects
          */
-        public PdfArray CuePoints {
+        virtual public PdfArray CuePoints {
             set {
                 Put(PdfName.CUEPOINTS, value);
             }
@@ -110,7 +111,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * by the scripting run time.
          * @param   settings    a PdfString
          */
-        public PdfString Settings {
+        virtual public PdfString Settings {
             set {
                 Put(PdfName.SETTINGS, value);
             }

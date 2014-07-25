@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using iTextSharp.text.pdf;
 using iTextSharp.text;
 /*
- * $Id: PdfAnnotationsImp.cs 505 2012-12-21 12:16:05Z dkoleda $
+ * $Id: PdfAnnotationsImp.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -75,7 +76,7 @@ namespace iTextSharp.text.pdf.intern {
         /**
         * Checks if the AcroForm is valid.
         */
-        public bool HasValidAcroForm() {
+        virtual public bool HasValidAcroForm() {
             return acroForm.IsValid();
         }
         
@@ -83,23 +84,23 @@ namespace iTextSharp.text.pdf.intern {
         * Gets the AcroForm object.
         * @return the PdfAcroform object of the PdfDocument
         */
-        public PdfAcroForm AcroForm {
+        virtual public PdfAcroForm AcroForm {
             get {
                 return acroForm;
             }
         }
         
-        public int SigFlags {
+        virtual public int SigFlags {
             set {
                 acroForm.SigFlags = value;
             }
         }
         
-        public void AddCalculationOrder(PdfFormField formField) {
+        virtual public void AddCalculationOrder(PdfFormField formField) {
             acroForm.AddCalculationOrder(formField);
         }
         
-        public void AddAnnotation(PdfAnnotation annot) {
+        virtual public void AddAnnotation(PdfAnnotation annot) {
             if (annot.IsForm()) {
                 PdfFormField field = (PdfFormField)annot;
                 if (field.Parent == null)
@@ -109,7 +110,7 @@ namespace iTextSharp.text.pdf.intern {
                 annotations.Add(annot);
         }
         
-        public void AddPlainAnnotation(PdfAnnotation annot) {
+        virtual public void AddPlainAnnotation(PdfAnnotation annot) {
             annotations.Add(annot);
         }
         
@@ -122,16 +123,16 @@ namespace iTextSharp.text.pdf.intern {
             }
         }
         
-        public bool HasUnusedAnnotations() {
+        virtual public bool HasUnusedAnnotations() {
             return annotations.Count > 0;
         }
 
-        public void ResetAnnotations() {
+        virtual public void ResetAnnotations() {
             annotations = delayedAnnotations;
             delayedAnnotations = new List<PdfAnnotation>();
         }
         
-        public PdfArray RotateAnnotations(PdfWriter writer, Rectangle pageSize) {
+        virtual public PdfArray RotateAnnotations(PdfWriter writer, Rectangle pageSize) {
             PdfArray array = new PdfArray();
             int rotation = pageSize.Rotation % 360;
             int currentPage = writer.CurrentPageNumber;

@@ -6,15 +6,16 @@ using System.Text;
  * $Id: TiffWriter.java 4509 2010-05-13 23:06:03Z psoares33 $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -53,15 +54,15 @@ namespace iTextSharp.text.pdf.codec {
     public class TiffWriter {
         private SortedDictionary<int,FieldBase> ifd = new SortedDictionary<int,FieldBase>();
 
-        public void AddField(FieldBase field) {
+        virtual public void AddField(FieldBase field) {
             ifd[field.GetTag()] = field;
         }
 
-        public int GetIfdSize() {
+        virtual public int GetIfdSize() {
             return 6 + ifd.Count * 12;
         }
 
-        public void WriteFile(Stream stream) {
+        virtual public void WriteFile(Stream stream) {
             stream.WriteByte(0x4d);
             stream.WriteByte(0x4d);
             stream.WriteByte(0);
@@ -96,19 +97,19 @@ namespace iTextSharp.text.pdf.codec {
                 this.count = count;
             }
 
-            public int GetValueSize() {
+            virtual public int GetValueSize() {
                 return (int)((data.Length + 1) & 0xfffffffe);
             }
 
-            public int GetTag() {
+            virtual public int GetTag() {
                 return tag;
             }
 
-            public void SetOffset(int offset) {
+            virtual public void SetOffset(int offset) {
                 this.offset = offset;
             }
 
-            public void WriteField(Stream stream) {
+            virtual public void WriteField(Stream stream) {
                 WriteShort(tag, stream);
                 WriteShort(fieldType, stream);
                 WriteLong(count, stream);
@@ -123,7 +124,7 @@ namespace iTextSharp.text.pdf.codec {
                 }
             }
 
-            public void WriteValue(Stream stream) {
+            virtual public void WriteValue(Stream stream) {
                 if (data.Length <= 4)
                     return;
                 stream.Write(data, 0, data.Length);

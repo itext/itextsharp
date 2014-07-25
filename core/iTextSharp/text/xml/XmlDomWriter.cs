@@ -53,12 +53,12 @@ namespace iTextSharp.text.xml {
         //
         
         /** Sets whether output is canonical. */
-        public void SetCanonical(bool canonical) {
+        virtual public void SetCanonical(bool canonical) {
             fCanonical = canonical;
         } // SetCanonical(bool)
         
         /** Sets the output stream for printing. */
-        public void SetOutput(Stream stream, String encoding) {
+        virtual public void SetOutput(Stream stream, String encoding) {
             Encoding enc;
             if (encoding == null)
                 enc = new UTF8Encoding(false);
@@ -70,13 +70,13 @@ namespace iTextSharp.text.xml {
         } // SetOutput(Stream,String)
         
         /** Sets the output writer. */
-        public void SetOutput(TextWriter writer) {
+        virtual public void SetOutput(TextWriter writer) {
             
             fOut = writer;
         } // SetOutput(java.io.Writer)
         
         /** Writes the specified node, recursively. */
-        public void Write(XmlNode node) {
+        virtual public void Write(XmlNode node) {
             
             // is there anything to do?
             if (node == null) {
@@ -224,7 +224,7 @@ namespace iTextSharp.text.xml {
         } // Write(Node)
         
         /** Returns a sorted list of attributes. */
-        protected XmlAttribute[] SortAttributes(XmlAttributeCollection attrs) {
+        virtual protected XmlAttribute[] SortAttributes(XmlAttributeCollection attrs) {
             
             int len = (attrs != null) ? attrs.Count : 0;
             XmlAttribute[] array = new XmlAttribute[len];
@@ -257,7 +257,7 @@ namespace iTextSharp.text.xml {
         //
         
         /** Normalizes and prints the given string. */
-        protected void NormalizeAndPrint(String s, bool isAttValue) {
+        virtual protected void NormalizeAndPrint(String s, bool isAttValue) {
             
             int len = (s != null) ? s.Length : 0;
             for (int i = 0; i < len; i++) {
@@ -268,7 +268,7 @@ namespace iTextSharp.text.xml {
         } // NormalizeAndPrint(String,bool)
         
         /** Normalizes and print the given character. */
-        protected void NormalizeAndPrint(char c, bool isAttValue) {
+        virtual protected void NormalizeAndPrint(char c, bool isAttValue) {
             
             switch (c) {
                 case '<': {

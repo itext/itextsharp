@@ -1,19 +1,20 @@
 using System;
 
 /*
- * $Id: MetaFont.cs 318 2012-02-27 22:46:07Z psoares33 $
+ * $Id: MetaFont.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -89,7 +90,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
             type = META_FONT;
         }
 
-        public void Init(InputMeta meta) {
+        virtual public void Init(InputMeta meta) {
             height = Math.Abs(meta.ReadShort());
             meta.Skip(2);
             angle = (float)(meta.ReadShort() / 1800.0 * Math.PI);
@@ -119,7 +120,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
             faceName = faceName.ToLower(System.Globalization.CultureInfo.InvariantCulture);
         }
     
-        public BaseFont Font {
+        virtual public BaseFont Font {
             get {
                 if (font != null)
                     return font;
@@ -180,21 +181,21 @@ namespace iTextSharp.text.pdf.codec.wmf {
             }
         }
     
-        public float Angle {
+        virtual public float Angle {
             get {
                 return angle;
             }
         }
     
-        public bool IsUnderline() {
+        virtual public bool IsUnderline() {
             return underline;
         }
     
-        public bool IsStrikeout() {
+        virtual public bool IsStrikeout() {
             return strikeout;
         }
     
-        public float GetFontSize(MetaState state) {
+        virtual public float GetFontSize(MetaState state) {
             return Math.Abs(state.TransformY(height) - state.TransformY(0)) * Document.WmfFontCorrection;
         }
     }

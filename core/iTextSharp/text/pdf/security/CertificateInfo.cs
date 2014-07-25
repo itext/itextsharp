@@ -7,18 +7,19 @@ using System.Text;
 using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
 /*
- * $Id: CertificateInfo.cs 522 2013-02-25 20:57:07Z psoares33 $
+ * $Id: CertificateInfo.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -224,7 +225,7 @@ namespace iTextSharp.text.pdf.security {
                 }                
             }
             
-            public String GetField(String name) {
+            virtual public String GetField(String name) {
                 List<string> vs;
                 if (values.TryGetValue(name, out vs))
                     return vs.Count == 0 ? null : vs[0];
@@ -237,7 +238,7 @@ namespace iTextSharp.text.pdf.security {
             * @param name
             * @return an ArrayList
             */
-            public List<string> GetFieldArray(String name) {
+            virtual public List<string> GetFieldArray(String name) {
                 List<string> vs;
                 if (values.TryGetValue(name, out vs))
                     return vs;
@@ -249,7 +250,7 @@ namespace iTextSharp.text.pdf.security {
             * getter for values
             * @return a Hashtable with the fields of the X509 name
             */
-            public Dictionary<string,List<string>> GetFields() {
+            virtual public Dictionary<string,List<string>> GetFields() {
                 return values;
             }
             
@@ -278,11 +279,11 @@ namespace iTextSharp.text.pdf.security {
                 this.index = -1;
             }
             
-            public bool HasMoreTokens() {
+            virtual public bool HasMoreTokens() {
                 return (index != oid.Length);
             }
             
-            public String NextToken() {
+            virtual public String NextToken() {
                 if (index == oid.Length) {
                     return null;
                 }

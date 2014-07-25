@@ -6,19 +6,20 @@ using System.Collections.Generic;
 using iTextSharp.text;
 
 /*
- * $Id: PdfOutline.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: PdfOutline.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -305,7 +306,7 @@ namespace iTextSharp.text.pdf {
          * @return      the <CODE>PdfIndirectReference</CODE> to this outline.
          */
     
-        public PdfIndirectReference IndirectReference {
+        virtual public PdfIndirectReference IndirectReference {
             get {
                 return reference;
             }
@@ -321,7 +322,7 @@ namespace iTextSharp.text.pdf {
          * @return      the <CODE>PdfOutline</CODE> that is the parent of this outline.
          */
     
-        public PdfOutline Parent {
+        virtual public PdfOutline Parent {
             get {
                 return parent;
             }
@@ -334,7 +335,7 @@ namespace iTextSharp.text.pdf {
          * @return <CODE>true</CODE> if this page was set as the <CODE>PdfDestination</CODE>-page.
          */
     
-        public bool SetDestinationPage(PdfIndirectReference pageReference) {
+        virtual public bool SetDestinationPage(PdfIndirectReference pageReference) {
             if (destination == null) {
                 return false;
             }
@@ -345,7 +346,7 @@ namespace iTextSharp.text.pdf {
          * Gets the destination for this outline.
          * @return the destination
          */
-        public PdfDestination PdfDestination {
+        virtual public PdfDestination PdfDestination {
             get {
                 return destination;
             }
@@ -367,7 +368,7 @@ namespace iTextSharp.text.pdf {
          * @return      a level
          */
     
-        public int Level {
+        virtual public int Level {
             get {
                 if (parent == null) {
                     return 0;
@@ -409,11 +410,11 @@ namespace iTextSharp.text.pdf {
             base.ToPdf(writer, os);
         }
     
-        public void AddKid(PdfOutline outline) {
+        virtual public void AddKid(PdfOutline outline) {
             kids.Add(outline);
         }
     
-        public List<PdfOutline> Kids {
+        virtual public List<PdfOutline> Kids {
             get {
                 return kids;
             }
@@ -426,7 +427,7 @@ namespace iTextSharp.text.pdf {
         /** Getter for property tag.
          * @return Value of property tag.
          */
-        public string Tag {
+        virtual public string Tag {
             get {
                 return tag;
             }
@@ -436,7 +437,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public string Title {
+        virtual public string Title {
             get {
                 PdfString title = (PdfString)Get(PdfName.TITLE);
                 return title.ToString();
@@ -450,7 +451,7 @@ namespace iTextSharp.text.pdf {
         /** Setter for property open.
          * @param open New value of property open.
          */
-        public bool Open {
+        virtual public bool Open {
             set {
                 this.open = value;
             }
@@ -459,7 +460,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public BaseColor Color {
+        virtual public BaseColor Color {
             get {
                 return color;
             }
@@ -468,7 +469,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public int Style {
+        virtual public int Style {
             get {
                 return style;
             }

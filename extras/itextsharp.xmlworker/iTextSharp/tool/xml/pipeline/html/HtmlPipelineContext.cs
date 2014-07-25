@@ -10,15 +10,16 @@ using iTextSharp.tool.xml.html;
  * $Id: HtmlPipelineContext.java 144 2011-06-03 22:52:42Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -100,7 +101,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @return a ITagProcessor
          */
 
-        protected internal ITagProcessor ResolveProcessor(String tag, String nameSpace)
+        virtual protected internal ITagProcessor ResolveProcessor(String tag, String nameSpace)
         {
             ITagProcessor tp = tagFactory.GetProcessor(tag, nameSpace);
             if (tp is CssAppliersAware)
@@ -115,7 +116,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @param stackKeeper the {@link StackKeeper}
          */
 
-        protected internal void AddFirst(StackKeeper stackKeeper)
+        virtual protected internal void AddFirst(StackKeeper stackKeeper)
         {
             this.queue.AddFirst(stackKeeper);
 
@@ -127,7 +128,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @throws NoStackException if there are no elements on the stack
          */
 
-        protected internal StackKeeper Peek()
+        virtual protected internal StackKeeper Peek()
         {
             if (queue.Count == 0)
                 throw new NoStackException();
@@ -138,7 +139,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @return the current content of elements.
          */
 
-        protected internal IList<IElement> CurrentContent()
+        virtual protected internal IList<IElement> CurrentContent()
         {
             return ctn;
         }
@@ -156,7 +157,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @return returns true if the stack is empty
          */
 
-        protected internal bool IsEmpty()
+        virtual protected internal bool IsEmpty()
         {
             return queue.Count == 0;
         }
@@ -167,7 +168,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
          * @throws NoStackException if there are no elements on the stack
          */
 
-        protected internal StackKeeper Poll()
+        virtual protected internal StackKeeper Poll()
         {
             try
             {

@@ -2,19 +2,20 @@ using System;
 using System.Collections.Generic;
 
 /*
- * $Id: MetaState.cs 622 2013-10-04 12:47:40Z pavel-alay $
+ * $Id: MetaState.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -98,7 +99,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
             metaState = state;
         }
     
-        public MetaState metaState {
+        virtual public MetaState metaState {
             set {
                 savedStates = value.savedStates;
                 MetaObjects = value.MetaObjects;
@@ -121,7 +122,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
             }
         }
 
-        public void AddMetaObject(MetaObject obj) {
+        virtual public void AddMetaObject(MetaObject obj) {
             for (int k = 0; k < MetaObjects.Count; ++k) {
                 if (MetaObjects[k] == null) {
                     MetaObjects[k] = obj;
@@ -131,7 +132,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
             MetaObjects.Add(obj);
         }
     
-        public void SelectMetaObject(int index, PdfContentByte cb) {
+        virtual public void SelectMetaObject(int index, PdfContentByte cb) {
             MetaObject obj = MetaObjects[index];
             if (obj == null)
                 return;
@@ -183,17 +184,17 @@ namespace iTextSharp.text.pdf.codec.wmf {
             }
         }
     
-        public void DeleteMetaObject(int index) {
+        virtual public void DeleteMetaObject(int index) {
             MetaObjects[index] =  null;
         }
     
-        public void SaveState(PdfContentByte cb) {
+        virtual public void SaveState(PdfContentByte cb) {
             cb.SaveState();
             MetaState state = new MetaState(this);
             savedStates.Push(state);
         }
 
-        public void RestoreState(int index, PdfContentByte cb) {
+        virtual public void RestoreState(int index, PdfContentByte cb) {
             int pops;
             if (index < 0)
                 pops = Math.Min(-index, savedStates.Count);
@@ -209,62 +210,62 @@ namespace iTextSharp.text.pdf.codec.wmf {
             metaState = state;
         }
     
-        public void Cleanup(PdfContentByte cb) {
+        virtual public void Cleanup(PdfContentByte cb) {
             int k = savedStates.Count;
             while (k-- > 0)
                 cb.RestoreState();
         }
 
-        public float TransformX(int x) {
+        virtual public float TransformX(int x) {
             return ((float)x - offsetWx) * scalingX / extentWx;
         }
 
-        public float TransformY(int y) {
+        virtual public float TransformY(int y) {
             return (1f - ((float)y - offsetWy) / extentWy) * scalingY;
         }
     
-        public float ScalingX {
+        virtual public float ScalingX {
             set {
                 this.scalingX = value;
             }
         }
     
-        public float ScalingY {
+        virtual public float ScalingY {
             set {
                 this.scalingY = value;
             }
         }
     
-        public int OffsetWx {
+        virtual public int OffsetWx {
             set {
                 this.offsetWx = value;
             }
         }
     
-        public int OffsetWy {
+        virtual public int OffsetWy {
             set {
                 this.offsetWy = value;
             }
         }
     
-        public int ExtentWx {
+        virtual public int ExtentWx {
             set {
                 this.extentWx = value;
             }
         }
     
-        public int ExtentWy {
+        virtual public int ExtentWy {
             set {
                 this.extentWy = value;
             }
         }
     
-        public float TransformAngle(float angle) {
+        virtual public float TransformAngle(float angle) {
             float ta = scalingY < 0 ? -angle : angle;
             return (float)(scalingX < 0 ? Math.PI - ta : ta);
         }
         
-        public Point CurrentPoint {
+        virtual public Point CurrentPoint {
             get {
                 return currentPoint;
             }
@@ -274,19 +275,19 @@ namespace iTextSharp.text.pdf.codec.wmf {
             }
         }
     
-        public MetaBrush CurrentBrush {
+        virtual public MetaBrush CurrentBrush {
             get {
                 return currentBrush;
             }
         }
 
-        public MetaPen CurrentPen {
+        virtual public MetaPen CurrentPen {
             get {
                 return currentPen;
             }
         }
 
-        public MetaFont CurrentFont {
+        virtual public MetaFont CurrentFont {
             get {
                 return currentFont;
             }
@@ -295,7 +296,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
         /** Getter for property currentBackgroundColor.
          * @return Value of property currentBackgroundColor.
          */
-        public BaseColor CurrentBackgroundColor {
+        virtual public BaseColor CurrentBackgroundColor {
             get {
                 return currentBackgroundColor;
             }
@@ -308,7 +309,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
         /** Getter for property currentTextColor.
          * @return Value of property currentTextColor.
          */
-        public BaseColor CurrentTextColor {
+        virtual public BaseColor CurrentTextColor {
             get {
                 return currentTextColor;
             }
@@ -321,7 +322,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
         /** Getter for property backgroundMode.
          * @return Value of property backgroundMode.
          */
-        public int BackgroundMode {
+        virtual public int BackgroundMode {
             get {
                 return backgroundMode;
             }
@@ -334,7 +335,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
         /** Getter for property textAlign.
          * @return Value of property textAlign.
          */
-        public int TextAlign {
+        virtual public int TextAlign {
             get {
                 return textAlign;
             }
@@ -347,7 +348,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
         /** Getter for property polyFillMode.
          * @return Value of property polyFillMode.
          */
-        public int PolyFillMode {
+        virtual public int PolyFillMode {
             get {
                 return polyFillMode;
             }
@@ -357,7 +358,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
             }
         }
     
-        public PdfContentByte LineJoinRectangle {
+        virtual public PdfContentByte LineJoinRectangle {
             set {
                 if (lineJoin != 0) {
                     lineJoin = 0;
@@ -366,7 +367,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
             }
         }
     
-        public PdfContentByte LineJoinPolygon {
+        virtual public PdfContentByte LineJoinPolygon {
             set {
                 if (lineJoin == 0) {
                     lineJoin = 1;
@@ -375,7 +376,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
             }
         }
     
-        public bool LineNeutral {
+        virtual public bool LineNeutral {
             get {
                 return (lineJoin == 0);
             }

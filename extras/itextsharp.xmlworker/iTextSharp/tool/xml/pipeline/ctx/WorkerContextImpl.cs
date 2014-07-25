@@ -5,15 +5,16 @@ using iTextSharp.tool.xml.exceptions;
  * $Id: WorkerContextImpl.java 160 2011-06-07 09:34:57Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -68,7 +69,7 @@ namespace iTextSharp.tool.xml.pipeline.ctx {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.pipeline.WorkerContext#get(java.lang.Class)
          */
-        public ICustomContext Get(String klass) {
+        virtual public ICustomContext Get(String klass) {
              Object c = mc[klass];
              if (c != null) {
                  return (ICustomContext) c;
@@ -80,21 +81,21 @@ namespace iTextSharp.tool.xml.pipeline.ctx {
          * @param key the key to store the CustomContext for.
          * @param context the CustomContext to store.
          */
-        public void Put(String key, ICustomContext context) {
+        virtual public void Put(String key, ICustomContext context) {
             mc[key] = context;
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.WorkerContext#setCurrentTag()
          */
-        public void SetCurrentTag(Tag t) {
+        virtual public void SetCurrentTag(Tag t) {
             this.tag = t;
 
         }
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.WorkerContext#getCurrentTag()
          */
-        public Tag GetCurrentTag() {
+        virtual public Tag GetCurrentTag() {
             return tag;
         }
     }

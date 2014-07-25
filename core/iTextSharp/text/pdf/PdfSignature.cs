@@ -1,14 +1,15 @@
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -55,7 +56,7 @@ namespace iTextSharp.text.pdf {
             Put(PdfName.SUBFILTER, subFilter);
         }
         
-        public int[] ByteRange {
+        virtual public int[] ByteRange {
             set {
                 PdfArray array = new PdfArray();
                 for (int k = 0; k < value.Length; ++k)
@@ -64,37 +65,37 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public byte[] Contents {
+        virtual public byte[] Contents {
             set {
                 Put(PdfName.CONTENTS, new PdfString(value).SetHexWriting(true));
             }
         }
         
-        public byte[] Cert {
+        virtual public byte[] Cert {
             set {
                 Put(PdfName.CERT, new PdfString(value));
             }
         }
         
-        public string Name {
+        virtual public string Name {
             set {
                 Put(PdfName.NAME, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
         }
 
-        public PdfDate Date {
+        virtual public PdfDate Date {
             set {
                 Put(PdfName.M, value);
             }
         }
 
-        public string Location {
+        virtual public string Location {
             set {
                 Put(PdfName.LOCATION, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
         }
 
-        public string Reason {
+        virtual public string Reason {
             set {
                 Put(PdfName.REASON, new PdfString(value, PdfObject.TEXT_UNICODE));
             }
@@ -106,7 +107,7 @@ namespace iTextSharp.text.pdf {
          * 
          * @param name
          */
-        public string SignatureCreator {
+        virtual public string SignatureCreator {
             set {
                 if (value != null) {
                     PdfSignatureBuildProperties.SignatureCreator = value;
@@ -131,7 +132,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public string Contact {
+        virtual public string Contact {
             set {
                 Put(PdfName.CONTACTINFO, new PdfString(value, PdfObject.TEXT_UNICODE));
             }

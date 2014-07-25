@@ -7,15 +7,16 @@ using iTextSharp.text.log;
 
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -75,6 +76,7 @@ namespace iTextSharp.text.pdf {
         private List<Object> calculationOrderRefs;
         private bool hasSignature;
         private bool needAppearances = false;
+        private Dictionary<Object, object> mergedRadioButtons = new Dictionary<object, object>();
         
         protected ICounter COUNTER = CounterFactory.GetCounter(typeof(PdfCopyFields));
         protected override ICounter GetCounter() {
@@ -155,7 +157,7 @@ namespace iTextSharp.text.pdf {
             return name;
         }
         
-        protected internal void UpdateCalculationOrder(PdfReader reader) {
+        virtual protected internal void UpdateCalculationOrder(PdfReader reader) {
             PdfDictionary catalog = reader.Catalog;
             PdfDictionary acro = catalog.GetAsDict(PdfName.ACROFORM);
             if (acro == null)
@@ -257,7 +259,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        protected PdfArray BranchForm(Dictionary<string,object> level, PdfIndirectReference parent, String fname) {
+        virtual protected PdfArray BranchForm(Dictionary<string,object> level, PdfIndirectReference parent, String fname) {
             PdfArray arr = new PdfArray();
             foreach (KeyValuePair<string,object> entry in level) {
                 String name = entry.Key;
@@ -293,6 +295,8 @@ namespace iTextSharp.text.pdf {
                         AdjustTabOrder(annots, ind, nn);
                     }
                     else {
+                        PdfDictionary field = (PdfDictionary) list[0];
+                        PdfName v = field.GetAsName(PdfName.V);
                         PdfArray kids = new PdfArray();
                         for (int k = 1; k < list.Count; k += 2) {
                             int page = (int)list[k];
@@ -303,10 +307,25 @@ namespace iTextSharp.text.pdf {
                                 pageDic.Put(PdfName.ANNOTS, annots);
                             }
                             PdfDictionary widget = new PdfDictionary();
-                            widget.Merge((PdfDictionary)list[k + 1]);
+                            widget.Merge((PdfDictionary) list[k + 1]);
                             widget.Put(PdfName.PARENT, ind);
-                            PdfNumber nn = (PdfNumber)widget.Get(iTextTag);
+                            PdfNumber nn = (PdfNumber) widget.Get(iTextTag);
                             widget.Remove(iTextTag);
+                            if (PdfCopy.IsCheckButton(field)) {
+                                PdfName _as = widget.GetAsName(PdfName.AS);
+                                if (v != null && _as != null)
+                                    widget.Put(PdfName.AS, v);
+                            } else if (PdfCopy.IsRadioButton(field)) {
+                                PdfName _as = widget.GetAsName(PdfName.AS);
+                                if (v != null && _as != null && !_as.Equals(GetOffStateName(widget))) {
+                                    if (!mergedRadioButtons.ContainsKey(list)) {
+                                        mergedRadioButtons[list] = null;
+                                        widget.Put(PdfName.AS, v);
+                                    } else {
+                                        widget.Put(PdfName.AS, GetOffStateName(widget));
+                                    }
+                                }
+                            }
                             PdfIndirectReference wref = AddToBody(widget).IndirectReference;
                             AdjustTabOrder(annots, wref, nn);
                             kids.Add(wref);
@@ -321,8 +340,12 @@ namespace iTextSharp.text.pdf {
             }
             return arr;
         }
+
+        virtual protected PdfName GetOffStateName(PdfDictionary widget) {
+            return PdfName.Off_;
+        }
         
-        protected void CreateAcroForms() {
+        virtual protected void CreateAcroForms() {
             if (fieldTree.Count == 0)
                 return;
             form = new PdfDictionary();
@@ -358,7 +381,7 @@ namespace iTextSharp.text.pdf {
             CloseIt();
         }
         
-        protected void CloseIt() {
+        virtual protected void CloseIt() {
             for (int k = 0; k < readers.Count; ++k) {
                 readers[k].RemoveFields();
             }
@@ -536,7 +559,7 @@ namespace iTextSharp.text.pdf {
             return cat;
         }
 
-        protected PdfIndirectReference GetNewReference(PRIndirectReference refi) {
+        virtual protected PdfIndirectReference GetNewReference(PRIndirectReference refi) {
             return new PdfIndirectReference(0, GetNewObjectNumber(refi.Reader, refi.Number, 0));
         }
         
@@ -555,7 +578,7 @@ namespace iTextSharp.text.pdf {
         * @param   ref the reference that needs to be set to "visited"
         * @return  true if the reference was set to visited
         */
-        protected internal bool SetVisited(PRIndirectReference refi) {
+        virtual protected internal bool SetVisited(PRIndirectReference refi) {
             IntHashtable refs;
             if (visited.TryGetValue(refi.Reader, out refs)) {
                 int old = refs[refi.Number];
@@ -571,7 +594,7 @@ namespace iTextSharp.text.pdf {
         * @param   ref the reference that needs to be checked
         * @return  true if the reference was already visited
         */
-        protected internal bool IsVisited(PRIndirectReference refi) {
+        virtual protected internal bool IsVisited(PRIndirectReference refi) {
             IntHashtable refs;
             if (visited.TryGetValue(refi.Reader, out refs))
                 return refs.ContainsKey(refi.Number);
@@ -579,7 +602,7 @@ namespace iTextSharp.text.pdf {
                 return false;
         }
         
-        protected internal bool IsVisited(PdfReader reader, int number, int generation) {
+        virtual protected internal bool IsVisited(PdfReader reader, int number, int generation) {
             IntHashtable refs = readers2intrefs[reader];
             return refs.ContainsKey(number);
         }
@@ -589,7 +612,7 @@ namespace iTextSharp.text.pdf {
         * @param   ref the reference that needs to be checked
         * @return  true is the reference refers to a page object.
         */
-        protected internal bool IsPage(PRIndirectReference refi) {
+        virtual protected internal bool IsPage(PRIndirectReference refi) {
             IntHashtable refs;
             if (pages2intrefs.TryGetValue(refi.Reader, out refs))
                 return refs.ContainsKey(refi.Number);
@@ -601,7 +624,7 @@ namespace iTextSharp.text.pdf {
             return file;
         }
 
-        public void OpenDoc() {
+        virtual public void OpenDoc() {
             if (!nd.IsOpen())
                 nd.Open();
         }    

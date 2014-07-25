@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Text;
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -152,7 +153,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         * @return A <code>PdfAppearance</code>
         */
-        public PdfAppearance GetAppearance() {
+        virtual public PdfAppearance GetAppearance() {
             PdfAppearance app = GetBorderAppearance();
             app.BeginVariableText();
             if (text == null || text.Length == 0) {
@@ -367,7 +368,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         * @return a new text field
         */    
-        public PdfFormField GetTextField() {
+        virtual public PdfFormField GetTextField() {
             if (maxCharacterLength <= 0)
                 options &= ~COMB;
             if ((options & COMB) != 0)
@@ -442,7 +443,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         * @return a new combo field
         */    
-        public PdfFormField GetComboField() {
+        virtual public PdfFormField GetComboField() {
             return GetChoiceField(false);
         }
         
@@ -451,7 +452,7 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         * @return a new list field
         */    
-        public PdfFormField GetListField() {
+        virtual public PdfFormField GetListField() {
             return GetChoiceField(true);
         }
 
@@ -471,7 +472,7 @@ namespace iTextSharp.text.pdf {
     	    return topChoice;
         }
 
-        protected PdfFormField GetChoiceField(bool isList) {
+        virtual protected PdfFormField GetChoiceField(bool isList) {
             options &= (~MULTILINE) & (~COMB);
             String[] uchoices = choices;
             if (uchoices == null)
@@ -594,7 +595,7 @@ namespace iTextSharp.text.pdf {
         /** Sets the default text. It is only meaningful for text fields.
         * @param defaultText the default text
         */
-        public string DefaultText {
+        virtual public string DefaultText {
             get {
                 return defaultText;
             }
@@ -607,7 +608,7 @@ namespace iTextSharp.text.pdf {
         * fields.
         * @param choices the choices to be presented to the user
         */
-        public string[] Choices {
+        virtual public string[] Choices {
             get {
                 return choices;
             }
@@ -621,7 +622,7 @@ namespace iTextSharp.text.pdf {
         * as the export values.
         * @param choiceExports the export values in list/combo fields
         */
-        public string[] ChoiceExports {
+        virtual public string[] ChoiceExports {
             get {
                 return choiceExports;
             }
@@ -633,7 +634,7 @@ namespace iTextSharp.text.pdf {
         /** Sets the zero based index of the selected item.
         * @param choiceSelection the zero based index of the selected item
         */
-        public int ChoiceSelection {
+        virtual public int ChoiceSelection {
             get {
                 return GetTopChoice();
             }
@@ -643,7 +644,7 @@ namespace iTextSharp.text.pdf {
             }
         }
         
-        public List<int> ChoiceSelections {
+        virtual public List<int> ChoiceSelections {
             get {
                 return choiceSelections;
             }
@@ -667,7 +668,7 @@ namespace iTextSharp.text.pdf {
         * This doesn't do anything unless this.options & MUTLISELECT != 0 
         * @param selection new selection
         */
-        public void AddChoiceSelection(int selection) {
+        virtual public void AddChoiceSelection(int selection) {
             if ((this.options & BaseField.MULTISELECT) != 0) {
                 choiceSelections.Add(selection);
             }
@@ -684,7 +685,7 @@ namespace iTextSharp.text.pdf {
         * @param extraMarginLeft the extra marging left
         * @param extraMarginTop the extra margin top
         */    
-        public void SetExtraMargin(float extraMarginLeft, float extraMarginTop) {
+        virtual public void SetExtraMargin(float extraMarginLeft, float extraMarginTop) {
             this.extraMarginLeft = extraMarginLeft;
             this.extraMarginTop = extraMarginTop;
         }
@@ -699,7 +700,7 @@ namespace iTextSharp.text.pdf {
         * font doesn't contain the needed glyphs.
         * @param substitutionFonts the list
         */
-        public List<BaseFont> SubstitutionFonts {
+        virtual public List<BaseFont> SubstitutionFonts {
             set {
                 substitutionFonts = value;
             }
@@ -718,7 +719,7 @@ namespace iTextSharp.text.pdf {
         * substitution fonts. It may be <code>null</code>.
         * @param extensionFont New value of property extensionFont.
         */
-        public BaseFont ExtensionFont {
+        virtual public BaseFont ExtensionFont {
             set {
                 extensionFont = value;
             }

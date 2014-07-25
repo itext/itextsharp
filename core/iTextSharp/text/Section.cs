@@ -8,19 +8,20 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.interfaces;
 
 /*
- * $Id: Section.cs 656 2013-11-22 12:55:57Z asubach $
+ * $Id: Section.cs 689 2014-01-30 12:21:56Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -196,7 +197,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="listener">the IElementListener</param>
         /// <returns>true if the element was processed successfully</returns>
-        public bool Process(IElementListener listener) {
+        virtual public bool Process(IElementListener listener) {
             try {
                 foreach (IElement ele in this) {
                     listener.Add(ele);
@@ -222,7 +223,7 @@ namespace iTextSharp.text {
         /// Gets all the chunks in this element.
         /// </summary>
         /// <value>an ArrayList</value>
-        public IList<Chunk> Chunks {
+        virtual public IList<Chunk> Chunks {
             get {
                 List<Chunk> tmp = new List<Chunk>();
                 foreach (IElement ele in this) {
@@ -236,7 +237,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isContent()
         * @since   iText 2.0.8
         */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return true;
         }
 
@@ -256,7 +257,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="index">index at which the specified element is to be inserted</param>
         /// <param name="o">an object of type Paragraph, List or Table</param>
-        public void Add(int index, IElement element) {
+        virtual public void Add(int index, IElement element) {
             if (AddedCompletely) {
                 throw new InvalidOperationException(MessageLocalization.GetComposedMessage("this.largeelement.has.already.been.added.to.the.document"));
             }
@@ -313,7 +314,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="collection">a collection of Paragraphs, Lists and/or Tables</param>
         /// <returns>true if the action succeeded, false if not.</returns>
-        public bool AddAll<T>(ICollection<T> collection) where T : IElement {
+        virtual public bool AddAll<T>(ICollection<T> collection) where T : IElement {
             if (collection.Count == 0)
                 return false;
             foreach (IElement itm in collection) {
@@ -364,7 +365,7 @@ namespace iTextSharp.text {
         /**
         * Adds a marked section. For use in class MarkedSection only!
         */
-        public MarkedSection AddMarkedSection() {
+        virtual public MarkedSection AddMarkedSection() {
             MarkedSection section = new MarkedSection(new Section(null, numberDepth + 1));
             Add(section);
             return section;
@@ -438,7 +439,7 @@ namespace iTextSharp.text {
         /// Get/set the title of this section
         /// </summary>
         /// <value>a Paragraph</value>
-        public Paragraph Title {
+        virtual public Paragraph Title {
             get {
                 return ConstructTitle(title, numbers, numberDepth, numberStyle);
             }
@@ -454,7 +455,7 @@ namespace iTextSharp.text {
         * or NUMBERSTYLE_DOTTED_WITHOUT_FINAL_DOT: 1.2.3
         * @since    iText 2.0.8
         */
-        public int NumberStyle {
+        virtual public int NumberStyle {
             set {
                 numberStyle = value;
             }
@@ -502,7 +503,7 @@ namespace iTextSharp.text {
         /// true if it is a Chapter,
         /// false if it is a Section
         /// </returns>
-        public bool IsChapter() {
+        virtual public bool IsChapter() {
             return Type == Element.CHAPTER;
         }
     
@@ -513,7 +514,7 @@ namespace iTextSharp.text {
         /// true if it is a Section,
         /// false if it is a Chapter.
         /// </returns>
-        public bool IsSection() {
+        virtual public bool IsSection() {
             return Type == Element.SECTION;
         }
     
@@ -521,7 +522,7 @@ namespace iTextSharp.text {
         /// Get/set the numberdepth of this Section.
         /// </summary>
         /// <value>a int</value>
-        public int NumberDepth {
+        virtual public int NumberDepth {
             get {
                 return numberDepth;
             }
@@ -535,7 +536,7 @@ namespace iTextSharp.text {
         /// Get/set the indentation of this Section on the left side.
         /// </summary>
         /// <value>the indentation</value>
-        public float IndentationLeft {
+        virtual public float IndentationLeft {
             get {
                 return indentationLeft;
             }
@@ -549,7 +550,7 @@ namespace iTextSharp.text {
         /// Get/set the indentation of this Section on the right side.
         /// </summary>
         /// <value>the indentation</value>
-        public float IndentationRight {
+        virtual public float IndentationRight {
             get {
                 return indentationRight;
             }
@@ -563,7 +564,7 @@ namespace iTextSharp.text {
         /// Get/set the indentation of the content of this Section.
         /// </summary>
         /// <value>the indentation</value>
-        public float Indentation {
+        virtual public float Indentation {
             get {
                 return indentation;
             }
@@ -577,7 +578,7 @@ namespace iTextSharp.text {
         /// Returns the depth of this section.
         /// </summary>
         /// <value>the depth</value>
-        public int Depth {
+        virtual public int Depth {
             get {
                 return numbers.Count;
             }
@@ -587,7 +588,7 @@ namespace iTextSharp.text {
         /// Get/set the bookmark
         /// </summary>
         /// <value>a bool</value>
-        public bool BookmarkOpen {
+        virtual public bool BookmarkOpen {
             get {
                 return bookmarkOpen;
             }
@@ -601,7 +602,7 @@ namespace iTextSharp.text {
         * Gets the bookmark title.
         * @return the bookmark title
         */    
-        public Paragraph GetBookmarkTitle() {
+        virtual public Paragraph GetBookmarkTitle() {
             if (bookmarkTitle == null)
                 return Title;
             else
@@ -613,7 +614,7 @@ namespace iTextSharp.text {
         * can be changed with this method.
         * @param bookmarkTitle the bookmark title
         */    
-        public String BookmarkTitle {
+        virtual public String BookmarkTitle {
             set {
                 this.bookmarkTitle = value;
             }
@@ -635,7 +636,7 @@ namespace iTextSharp.text {
         /**
         * Changes the Chapter number.
         */
-        public void SetChapterNumber(int number) {
+        virtual public void SetChapterNumber(int number) {
             numbers[numbers.Count - 1] = number;
             foreach (IElement s in this) {
                 if (s is Section) {
@@ -649,7 +650,7 @@ namespace iTextSharp.text {
         * @since   iText2.0.8
         * @return  true if the section wasn't added yet
         */
-        public bool NotAddedYet {
+        virtual public bool NotAddedYet {
             get {
                 return notAddedYet;
             }
@@ -662,7 +663,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.LargeElement#isAddedCompletely()
         * @since   iText 2.0.8
         */
-        protected bool AddedCompletely {
+        virtual protected bool AddedCompletely {
             get {
                 return addedCompletely;
             }
@@ -675,7 +676,7 @@ namespace iTextSharp.text {
         * @since   iText 2.0.8
         * @see com.lowagie.text.LargeElement#flushContent()
         */
-        public void FlushContent() {
+        virtual public void FlushContent() {
             NotAddedYet = false;
             title = null;
             for (int k = 0; k < Count; ++k) {
@@ -699,7 +700,7 @@ namespace iTextSharp.text {
         * @since   iText 2.0.8
         * @see com.lowagie.text.LargeElement#isComplete()
         */
-        public bool ElementComplete {
+        virtual public bool ElementComplete {
             get {
                 return complete;
             }
@@ -712,30 +713,34 @@ namespace iTextSharp.text {
         * Adds a new page to the section.
         * @since   2.1.1
         */
-        public void NewPage() {
+        virtual public void NewPage() {
             this.Add(Chunk.NEXTPAGE);
         }
 
-        public PdfObject GetAccessibleAttribute(PdfName key) {
+        virtual public PdfObject GetAccessibleAttribute(PdfName key) {
             return title.GetAccessibleAttribute(key);
         }
 
-        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+        virtual public void SetAccessibleAttribute(PdfName key, PdfObject value) {
             title.SetAccessibleAttribute(key, value);
         }
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+        virtual public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             return title.GetAccessibleAttributes();
         }
 
-        public PdfName Role {
+        virtual public PdfName Role {
             get { return title.Role; }
             set { title.Role = value; }
         }
 
-        public AccessibleElementId ID {
+        virtual public AccessibleElementId ID {
             get { return title.ID; }
             set { title.ID = value; }
+        }
+
+        public virtual bool IsInline {
+            get { return false; }
         }
     }
 }

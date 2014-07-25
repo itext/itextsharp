@@ -4,19 +4,20 @@ using System.util;
 using iTextSharp.text.pdf;
 
 /*
- * $Id: Font.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: Font.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -257,7 +258,7 @@ namespace iTextSharp.text {
         /// Gets the family of this font.
         /// </summary>
         /// <value>the value of the family</value>
-        public FontFamily Family {
+        virtual public FontFamily Family {
             get {
                 return family;
             }
@@ -354,7 +355,7 @@ namespace iTextSharp.text {
         /** Gets the size that can be used with the calculated <CODE>BaseFont</CODE>.
         * @return the size that can be used with the calculated <CODE>BaseFont</CODE>
         */    
-        public float CalculatedSize {
+        virtual public float CalculatedSize {
             get {
                 float s = this.size;
                 if (s == UNDEFINED) {
@@ -371,7 +372,7 @@ namespace iTextSharp.text {
         *            a certain linespacing
         * @return the height of a line
         */
-        public float GetCalculatedLeading(float linespacing) {
+        virtual public float GetCalculatedLeading(float linespacing) {
             return linespacing * CalculatedSize;
         }
 
@@ -381,7 +382,7 @@ namespace iTextSharp.text {
         /// Gets the style of this font.
         /// </summary>
         /// <value>the style of this font</value>
-        public int Style {
+        virtual public int Style {
             get {
                 return style;
             }
@@ -390,7 +391,7 @@ namespace iTextSharp.text {
         /** Gets the style that can be used with the calculated <CODE>BaseFont</CODE>.
         * @return the style that can be used with the calculated <CODE>BaseFont</CODE>
         */    
-        public int CalculatedStyle {
+        virtual public int CalculatedStyle {
             get {
                 int style = this.style;
                 if (style == UNDEFINED) {
@@ -409,7 +410,7 @@ namespace iTextSharp.text {
         /// checks if this font is Bold.
         /// </summary>
         /// <returns>a boolean</returns>
-        public bool IsBold() {
+        virtual public bool IsBold() {
             if (style == UNDEFINED) {
                 return false;
             }
@@ -420,7 +421,7 @@ namespace iTextSharp.text {
         /// checks if this font is Bold.
         /// </summary>
         /// <returns>a boolean</returns>
-        public bool IsItalic() {
+        virtual public bool IsItalic() {
             if (style == UNDEFINED) {
                 return false;
             }
@@ -431,7 +432,7 @@ namespace iTextSharp.text {
         /// checks if this font is underlined.
         /// </summary>
         /// <returns>a boolean</returns>
-        public bool IsUnderlined() {
+        virtual public bool IsUnderlined() {
             if (style == UNDEFINED) {
                 return false;
             }
@@ -442,7 +443,7 @@ namespace iTextSharp.text {
         /// checks if the style of this font is STRIKETHRU.
         /// </summary>
         /// <returns>a boolean</returns>
-        public bool IsStrikethru() {
+        virtual public bool IsStrikethru() {
             if (style == UNDEFINED) {
                 return false;
             }
@@ -529,7 +530,7 @@ namespace iTextSharp.text {
         /// Gets the BaseFont inside this object.
         /// </summary>
         /// <value>the BaseFont</value>
-        public BaseFont BaseFont {
+        virtual public BaseFont BaseFont {
             get {
                 return baseFont;
             }
@@ -541,7 +542,7 @@ namespace iTextSharp.text {
         * <CODE>false</CODE> to always use <CODE>Cp1252</CODE>
         * @return the <CODE>BaseFont</CODE> this class represents
         */    
-        public BaseFont GetCalculatedBaseFont(bool specialEncoding) {
+        virtual public BaseFont GetCalculatedBaseFont(bool specialEncoding) {
             if (baseFont != null)
                 return baseFont;
             int style = this.style;

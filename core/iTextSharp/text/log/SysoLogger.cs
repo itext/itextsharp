@@ -3,14 +3,14 @@ using System.Text;
 /*
  * $Id: Logger.java 4847 2011-05-05 19:46:13Z redlab_b $
  *
- * This file is part of the iText (R) project. Copyright (c) 1998-2011 1T3XT
+ * This file is part of the iText (R) project. Copyright (c) 1998-2014 iText Group NV
  * BVBA Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU Affero General License version 3 as published by the
  * Free Software Foundation with the addition of the following permission added
  * to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK
- * IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT, 1T3XT DISCLAIMS THE WARRANTY OF NON
+ * IN WHICH THE COPYRIGHT IS OWNED BY ITEXT GROUP, ITEXT GROUP DISCLAIMS THE WARRANTY OF NON
  * INFRINGEMENT OF THIRD PARTY RIGHTS.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT
@@ -75,22 +75,22 @@ namespace iTextSharp.text.log {
             this.name = klass;
         }
 
-        public ILogger GetLogger(Type klass) {
+        virtual public ILogger GetLogger(Type klass) {
             return new SysoLogger(klass.FullName, shorten);
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.text.log.Logger#getLogger(java.lang.String)
          */
-        public ILogger GetLogger(String name) {
+        virtual public ILogger GetLogger(String name) {
             return new SysoLogger("[itext]", 0);
         }
 
-        public bool IsLogging(Level level) {
+        virtual public bool IsLogging(Level level) {
             return true;
         }
 
-        public void Warn(String message) {
+        virtual public void Warn(String message) {
             Console.Out.WriteLine("{0} WARN  {1}", Shorten(name), message);
         }
 
@@ -116,23 +116,23 @@ namespace iTextSharp.text.log {
             return className;
         }
 
-        public void Trace(String message) {
+        virtual public void Trace(String message) {
             Console.Out.WriteLine("{0} TRACE {1}", Shorten(name), message);
         }
 
-        public void Debug(String message) {
+        virtual public void Debug(String message) {
             Console.Out.WriteLine("{0} DEBUG {1}", Shorten(name), message);
         }
 
-        public void Info(String message) {
+        virtual public void Info(String message) {
             Console.Out.WriteLine("{0} INFO  {1}", Shorten(name), message);
         }
 
-        public void Error(String message) {
+        virtual public void Error(String message) {
             Console.Out.WriteLine("{0} ERROR {1}", name, message);
         }
 
-        public void Error(String message, Exception e) {
+        virtual public void Error(String message, Exception e) {
             Console.Out.WriteLine("{0} ERROR {1}", name, message);
             Console.Out.WriteLine(e.StackTrace);
         }

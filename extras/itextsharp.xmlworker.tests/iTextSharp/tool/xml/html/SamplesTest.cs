@@ -23,7 +23,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             Directory.CreateDirectory(TARGET);
 
             list.Add("widthTable_");
@@ -56,7 +56,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [Test]
-        public void CreateAllSamples() {
+        virtual public void CreateAllSamples() {
             bool success = true;
             foreach (String str in list) {
                 try {

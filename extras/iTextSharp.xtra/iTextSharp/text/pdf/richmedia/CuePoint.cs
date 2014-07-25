@@ -5,15 +5,16 @@ using iTextSharp.text.exceptions;
  * $Id: CuePoint.java 3821 2009-03-25 10:33:52Z blowagie $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -77,7 +78,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * Flash content and for display purposes.
          * @param   name    the name of the cue point
          */
-        public PdfString Name {
+        virtual public PdfString Name {
             set {
                 Put(PdfName.NAME, value);
             }
@@ -88,7 +89,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * the cue point within Flash content and for display purposes.
          * @param   time    the time value of the cue point
          */
-        public int Time {
+        virtual public int Time {
             set {
                 Put(PdfName.TIME, new PdfNumber(value));
             }
@@ -100,7 +101,7 @@ namespace iTextSharp.text.pdf.richmedia {
          * reached the matching cue point during its playback.
          * @param   action  an action
          */
-        public PdfObject Action {
+        virtual public PdfObject Action {
             set {
                 if (value is PdfDictionary || value is PdfIndirectReference)
                     Put(PdfName.A, value);

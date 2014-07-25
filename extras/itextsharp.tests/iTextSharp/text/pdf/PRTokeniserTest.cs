@@ -7,12 +7,12 @@ namespace itextsharp.tests.iTextSharp.text.pdf
     class PRTokeniserTest
     {
         [SetUp]
-        public void SetUp()
+        virtual public void SetUp()
         {
         }
 
         [TearDown]
-        public void TearDown()
+        virtual public void TearDown()
         {
         }
 
@@ -37,7 +37,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void TestOneNumber()
+        virtual public void TestOneNumber()
         {
             CheckTokenTypes(
                     "/Name1 70",
@@ -48,7 +48,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void TestTwoNumbers()
+        virtual public void TestTwoNumbers()
         {
             CheckTokenTypes(
                     "/Name1 70/Name 2",
@@ -61,7 +61,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         }
 
         [Test]
-        public void Test()
+        virtual public void Test()
         {
             CheckTokenTypes(
                     "<</Size 70/Root 46 0 R/Info 44 0 R/ID[<8C2547D58D4BD2C6F3D32B830BE3259D><8F69587888569A458EB681A4285D5879>]/Prev 116 >>",

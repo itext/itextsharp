@@ -6,15 +6,16 @@ using iTextSharp.text.error_messages;
 /*
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -104,7 +105,7 @@ namespace iTextSharp.text.pdf {
         * with the field content.
         * @return all the fields
         */    
-        public Dictionary<string,string> Fields {
+        virtual public Dictionary<string,string> Fields {
             get {
                 return fields;
             }
@@ -114,7 +115,7 @@ namespace iTextSharp.text.pdf {
         * @param name the fully qualified field name
         * @return the field's value
         */    
-        public String GetField(String name) {
+        virtual public String GetField(String name) {
             if (fields.ContainsKey(name))
                 return fields[name];
             else
@@ -126,7 +127,7 @@ namespace iTextSharp.text.pdf {
         * @param name the fully qualified field name
         * @return the field value or <CODE>null</CODE>
         */    
-        public String GetFieldValue(String name) {
+        virtual public String GetFieldValue(String name) {
             return GetField(name);
         }
         
@@ -137,7 +138,7 @@ namespace iTextSharp.text.pdf {
         * @return the field values or <CODE>null</CODE>
         * @since   2.1.4
         */    
-        public List<string> GetListValues(String name) {
+        virtual public List<string> GetListValues(String name) {
             if (listFields.ContainsKey(name))
                 return listFields[name];
             else
@@ -147,7 +148,7 @@ namespace iTextSharp.text.pdf {
         /** Gets the PDF file specification contained in the FDF.
         * @return the PDF file specification contained in the FDF
         */    
-        public String FileSpec {
+        virtual public String FileSpec {
             get {
                 return fileSpec;
             }
@@ -158,7 +159,7 @@ namespace iTextSharp.text.pdf {
         * @param tag the tag name
         * @param h the tag's attributes
         */    
-        public void StartElement(String tag, IDictionary<string,string> h) {
+        virtual public void StartElement(String tag, IDictionary<string,string> h) {
             if ( !foundRoot ) {
                 if (!tag.Equals("xfdf"))
                     throw new Exception(MessageLocalization.GetComposedMessage("root.element.is.not.xfdf.1", tag));
@@ -185,7 +186,7 @@ namespace iTextSharp.text.pdf {
         * Called when an end tag is found.
         * @param tag the tag name
         */    
-        public void EndElement(String tag) {
+        virtual public void EndElement(String tag) {
             if ( tag.Equals("value") ) {
                 String  fName = "";
                 for (int k = 0; k < fieldNames.Count; ++k) {
@@ -217,14 +218,14 @@ namespace iTextSharp.text.pdf {
         /**
         * Called when the document starts to be parsed.
         */    
-        public void StartDocument()
+        virtual public void StartDocument()
         {
             fileSpec = "";  // and this too...
         }
         /**
         * Called after the document is parsed.
         */    
-        public void EndDocument()
+        virtual public void EndDocument()
         {
             
         }
@@ -232,7 +233,7 @@ namespace iTextSharp.text.pdf {
         * Called when a text element is found.
         * @param str the text element, probably a fragment.
         */    
-        public void Text(String str)
+        virtual public void Text(String str)
         {
             if (fieldNames.Count == 0 || fieldValues.Count == 0)
                 return;

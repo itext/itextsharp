@@ -61,11 +61,11 @@ namespace iTextSharp.text.pdf.qrcode {
             this.encodingName = encodingName;
         }
 
-        public String GetEncodingName() {
+        virtual public String GetEncodingName() {
             return encodingName;
         }
 
-        public int GetValue() {
+        virtual public int GetValue() {
             return value;
         }
 

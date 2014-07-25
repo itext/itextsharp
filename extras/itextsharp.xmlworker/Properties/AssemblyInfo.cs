@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("iTextSharp XML Worker")]
 [assembly: AssemblyDescription("Parses XML to PDF, with CSS support, using iTextSharp")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("1T3XT BVBA")]
+[assembly: AssemblyCompany("iText Group NV")]
 [assembly: AssemblyProduct("itextsharp.xmlworker")]
 [assembly: AssemblyCopyright("Copyright (C) 2013 by Bruno Lowagie and Paulo Soares. All Rights Reserved.")]
 [assembly: AssemblyTrademark("")]
@@ -32,4 +32,4 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("5.4.5")]
+[assembly: AssemblyVersion("5.5.0")]

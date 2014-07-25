@@ -5,18 +5,19 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: Phrase.cs 652 2013-11-12 13:51:50Z asubach $
+ * $Id: Phrase.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -226,7 +227,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isContent()
         * @since   iText 2.0.8
         */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return true;
         }
 
@@ -234,7 +235,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isNestable()
         * @since   iText 2.0.8
         */
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             return true;
         }
 
@@ -283,7 +284,7 @@ namespace iTextSharp.text {
          * @return  a boolean
          * @since 5.0.1
          */
-        public bool Add(String s) {
+        virtual public bool Add(String s) {
             if (s == null) {
                 return false;
             }
@@ -341,7 +342,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="collection">a collection of Chunks, Anchors and Phrases.</param>
         /// <returns>true if the action succeeded, false if not.</returns>
-        public bool AddAll<T>(ICollection<T> collection) where T : IElement {
+        virtual public bool AddAll<T>(ICollection<T> collection) where T : IElement {
             if (collection.Count == 0)
                 return false;
             foreach (IElement itm in collection) {
@@ -359,7 +360,7 @@ namespace iTextSharp.text {
         /// </remarks>
         /// <param name="chunk">a Chunk</param>
         /// <returns>a bool</returns>
-        protected bool AddChunk(Chunk chunk) {
+        virtual protected bool AddChunk(Chunk chunk) {
     	    Font f = chunk.Font;
     	    String c = chunk.Content;
             if (font != null && !font.IsStandardFont()) {
@@ -396,7 +397,7 @@ namespace iTextSharp.text {
         /// Adds a Object to the Paragraph.
         /// </summary>
         /// <param name="obj">the object to add.</param>
-        public void AddSpecial(IElement obj) {
+        virtual public void AddSpecial(IElement obj) {
             base.Add(obj);
         }
     
@@ -411,7 +412,7 @@ namespace iTextSharp.text {
         /// false if the Phrase
         /// contains more than one or more non-emptyChunks.
         /// </returns>
-        public bool IsEmpty() {
+        virtual public bool IsEmpty() {
             switch (Count) {
                 case 0:
                     return true;
@@ -426,7 +427,7 @@ namespace iTextSharp.text {
             }
         }
     
-        public bool HasLeading() {
+        virtual public bool HasLeading() {
             if (float.IsNaN(leading)) {
                 return false;
             }
@@ -440,7 +441,7 @@ namespace iTextSharp.text {
          * @param fixedLeading the fixed leading
          * @param multipliedLeading the variable leading
          */
-        public void SetLeading(float fixedLeading, float multipliedLeading) {
+        virtual public void SetLeading(float fixedLeading, float multipliedLeading) {
             this.leading = fixedLeading;
             this.multipliedLeading = multipliedLeading;
         }
@@ -455,7 +456,7 @@ namespace iTextSharp.text {
          * size of the biggest font in the line.
          * @param multipliedLeading the variable leading
          */
-        public float MultipliedLeading {
+        virtual public float MultipliedLeading {
             get {
                 return multipliedLeading;
             }
@@ -504,7 +505,7 @@ namespace iTextSharp.text {
         /// Gets the font of the first Chunk that appears in this Phrase.
         /// </summary>
         /// <value>a Font</value>
-        public Font Font {
+        virtual public Font Font {
             get {
                 return font;
             }
@@ -517,7 +518,7 @@ namespace iTextSharp.text {
         * Returns the content as a String object.
         * This method differs from toString because toString will return an ArrayList with the toString value of the Chunks in this Phrase.
         */
-        public String Content {
+        virtual public String Content {
             get {
     	        StringBuilder buf = new StringBuilder();
                 foreach (Chunk obj in Chunks)
@@ -531,7 +532,7 @@ namespace iTextSharp.text {
         * @param   hyphenation a HyphenationEvent instance
         * @since   2.1.2
         */
-        public IHyphenationEvent Hyphenation {
+        virtual public IHyphenationEvent Hyphenation {
             set {
                 hyphenation = value;
             }
@@ -546,7 +547,7 @@ namespace iTextSharp.text {
         * @since   5.4.1
         */
 
-        public TabSettings TabSettings
+        virtual public TabSettings TabSettings
         {
             get { return tabSettings; }
             set { tabSettings = value; }
@@ -617,7 +618,7 @@ namespace iTextSharp.text {
     	    return p;
         }
 
-        public bool Trim() {
+        virtual public bool Trim() {
             while (this.Count > 0) {
                 IElement firstChunk = this[0];
                 if (firstChunk is Chunk && ((Chunk)firstChunk).IsWhitespace()) {

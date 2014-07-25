@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.XmlDiffPatch;
@@ -11,8 +11,6 @@ using List = iTextSharp.text.List;
 
 namespace itextsharp.tests.text.pdf {
     public class TaggedPdfTest {
-        public const String NO_PARENT_TREE = "the.document.does.not.contain.parenttree";
-        public const String NO_STRUCT_TREE_ROOT = "no.StructTreeRoot.found";
 
         private const String text = "Lorem ipsum dolor sit amet," +
                                     "consectetur adipiscing elit." +
@@ -57,7 +55,7 @@ namespace itextsharp.tests.text.pdf {
 
 
         [SetUp]
-        public void Initialize() {
+        virtual public void Initialize() {
             Directory.CreateDirectory(TARGET + "pdf");
             Directory.CreateDirectory(TARGET + "xml");
             Document.Compress = false;
@@ -77,17 +75,16 @@ namespace itextsharp.tests.text.pdf {
 
             //Required for PDF/UA
             writer.ViewerPreferences = PdfWriter.DisplayDocTitle;
-            writer.CreateXmpMetadata();
             document.AddLanguage("en-US");
             document.AddTitle("Some title");
+            writer.CreateXmpMetadata();
             Chunk c = new Chunk("Document Header", new Font(Font.FontFamily.HELVETICA, 14, Font.BOLD, BaseColor.BLUE));
-            c.Role = null;
             h1 = new Paragraph(c);
             h1.Role = PdfName.H1;
         }
 
         [Test]
-        public void CreateTaggedPdf0() {
+        virtual public void CreateTaggedPdf0() {
             InitializeDocument("0");
             Paragraph paragraph = new Paragraph();
             Chunk c = new Chunk(" Hello ");
@@ -140,7 +137,7 @@ namespace itextsharp.tests.text.pdf {
 
 
         [Test]
-        public void CreateTaggedPdf1() {
+        virtual public void CreateTaggedPdf1() {
             InitializeDocument("1");
             Paragraph paragraph = new Paragraph(text);
             paragraph.Font = new Font(Font.FontFamily.HELVETICA, 8, Font.NORMAL, BaseColor.RED);
@@ -152,13 +149,11 @@ namespace itextsharp.tests.text.pdf {
             columnText.SetSimpleColumn(300, 36, 500, 800);
             columnText.Go();
             document.Close();
-            int[] nums = new int[] {77};
-            CheckNums(nums);
             CompareResults("1");
         }
 
         [Test]
-        public void CreateTaggedPdf2() {
+        virtual public void CreateTaggedPdf2() {
             InitializeDocument("2");
             Paragraph paragraph = new Paragraph(text);
             ColumnText columnText = new ColumnText(writer.DirectContent);
@@ -171,25 +166,21 @@ namespace itextsharp.tests.text.pdf {
             columnText.SetSimpleColumn(36, 36, 400, 800);
             columnText.Go();
             document.Close();
-            //        int[] nums = new int[]{237, 47} ;
-            //        CheckNums("2", nums);
             CompareResults("2");
         }
 
         [Test]
-        public void CreateTaggedPdf3() {
+        virtual public void CreateTaggedPdf3() {
             InitializeDocument("3");
             Paragraph paragraph = new Paragraph(text);
             document.Add(h1);
             document.Add(paragraph);
             document.Close();
-            int[] nums = new int[] {43, 6};
-            CheckNums(nums);
             CompareResults("3");
         }
 
         [Test]
-        public void CreateTaggedPdf4() {
+        virtual public void CreateTaggedPdf4() {
             InitializeDocument("4");
             Paragraph p = new Paragraph();
             PdfName nParagraph = new PdfName("Paragraph");
@@ -220,13 +211,11 @@ namespace itextsharp.tests.text.pdf {
             document.Add(h1);
             document.Add(p);
             document.Close();
-            int[] nums = new int[] {7};
-            CheckNums(nums);
             CompareResults("4");
         }
 
         [Test]
-        public void CreateTaggedPdf5() {
+        virtual public void CreateTaggedPdf5() {
             InitializeDocument("5");
             List list = new List(true);
             try {
@@ -242,13 +231,11 @@ namespace itextsharp.tests.text.pdf {
                 listItem = new ListItem(c);
                 list.Add(listItem);
                 listItem = new ListItem(new Chunk("jumped over a lazy"));
-                listItem.ListLabel.TagLabelContent = false;
                 list.Add(listItem);
                 i = Image.GetInstance(RESOURCES + "img\\dog.bmp");
                 c = new Chunk(i, 0, 0);
                 c.SetAccessibleAttribute(PdfName.ALT, new PdfString("Dog image"));
                 listItem = new ListItem(c);
-                listItem.ListLabel.TagLabelContent = false;
                 list.Add(listItem);
             }
             catch (Exception) {
@@ -257,13 +244,11 @@ namespace itextsharp.tests.text.pdf {
             document.Add(list);
             document.Close();
 
-            int[] nums = new int[] {22};
-            CheckNums(nums);
             CompareResults("5");
         }
 
         [Test]
-        public void CreateTaggedPdf6() {
+        virtual public void CreateTaggedPdf6() {
             InitializeDocument("6");
 
             ColumnText columnText = new ColumnText(writer.DirectContent);
@@ -296,13 +281,11 @@ namespace itextsharp.tests.text.pdf {
             columnText.AddElement(list);
             columnText.Go();
             document.Close();
-            int[] nums = new int[] {24};
-            CheckNums(nums);
             CompareResults("6");
         }
 
         [Test]
-        public void CreateTaggedPdf7() {
+        virtual public void CreateTaggedPdf7() {
             InitializeDocument("7");
             List list = new List(true);
             try {
@@ -333,13 +316,11 @@ namespace itextsharp.tests.text.pdf {
             document.Add(list);
             document.Close();
 
-            int[] nums = new int[] {63, 14};
-            CheckNums(nums);
             CompareResults("7");
         }
 
         [Test]
-        public void CreateTaggedPdf8() {
+        virtual public void CreateTaggedPdf8() {
             InitializeDocument("8");
 
             ColumnText columnText = new ColumnText(writer.DirectContent);
@@ -378,13 +359,11 @@ namespace itextsharp.tests.text.pdf {
             columnText.Go();
             document.Close();
 
-            int[] nums = new int[] {64, 35};
-            CheckNums(nums);
             CompareResults("8");
         }
 
         [Test]
-        public void CreateTaggedPdf9() {
+        virtual public void CreateTaggedPdf9() {
             InitializeDocument("9");
             PdfPTable table = new PdfPTable(2);
             try {
@@ -409,13 +388,11 @@ namespace itextsharp.tests.text.pdf {
                 new Paragraph(
                     "Extra paragraph at the end of the document. Please make sure that this is really last portion of page content."));
             document.Close();
-            int[] nums = new int[] {16, 70, 62};
-            CheckNums(nums);
             CompareResults("9");
         }
 
         [Test]
-        public void CreateTaggedPdf10() {
+        virtual public void CreateTaggedPdf10() {
             InitializeDocument("10");
             PdfPTable table = new PdfPTable(2);
             try {
@@ -453,13 +430,11 @@ namespace itextsharp.tests.text.pdf {
             document.Add(table);
             document.Close();
 
-            int[] nums = new int[] {16, 87, 128, 74, 74, 74, 26};
-            CheckNums(nums);
             CompareResults("10");
         }
 
         [Test]
-        public void CreateTaggedPdf11() {
+        virtual public void CreateTaggedPdf11() {
             InitializeDocument("11");
 
             Chapter c =
@@ -665,13 +640,11 @@ namespace itextsharp.tests.text.pdf {
 
             document.Close();
 
-            int[] nums = new int[] {114, 63};
-            CheckNums(nums);
             CompareResults("11");
         }
 
         [Test]
-        public void CreateTaggedPdf12() {
+        virtual public void CreateTaggedPdf12() {
             InitializeDocument("12");
 
             PdfPTable table = new PdfPTable(2);
@@ -700,13 +673,11 @@ namespace itextsharp.tests.text.pdf {
             document.Add(table);
             document.Close();
 
-            int[] nums = new int[] {237, 47};
-            CheckNums(nums);
             CompareResults("12");
         }
 
         [Test]
-        public void CreateTaggedPdf13() {
+        virtual public void CreateTaggedPdf13() {
             InitializeDocument("13");
 
             Paragraph p = new Paragraph();
@@ -721,13 +692,11 @@ namespace itextsharp.tests.text.pdf {
             p.Add(new Chunk(" for more details."));
             document.Add(p);
             document.Close();
-//            int[] nums = new int[] {5};
-//            CheckNums(nums);
             CompareResults("13");
         }
 
         [Test]
-        public void CreateTaggedPdf14() {
+        virtual public void CreateTaggedPdf14() {
             InitializeDocument("14");
             Paragraph paragraph = new Paragraph("Document MUST contain 1 page only!");
             document.NewPage();
@@ -737,15 +706,12 @@ namespace itextsharp.tests.text.pdf {
             columnText.Go();
             document.Close();
 
-            int[] nums = new int[] {3};
-            CheckNums(nums);
-
             PdfReader reader = new PdfReader(OUT + "14.pdf");
             Assert.AreEqual(1, reader.NumberOfPages);
         }
 
         [Test]
-        public void CreateTaggedPdf15() {
+        virtual public void CreateTaggedPdf15() {
             InitializeDocument("15");
 
             Paragraph p = new Paragraph();
@@ -757,13 +723,11 @@ namespace itextsharp.tests.text.pdf {
 
             document.Add(p);
             document.Close();
-            int[] nums = new int[] {3};
-            CheckNums(nums);
             CompareResults("15");
         }
 
         [Test]
-        public void CreateTaggedPdf16() {
+        virtual public void CreateTaggedPdf16() {
             InitializeDocument("16");
 
             Paragraph p = new Paragraph();
@@ -784,13 +748,11 @@ namespace itextsharp.tests.text.pdf {
 
 
             document.Close();
-            int[] nums = new int[] {48, 7};
-            CheckNums(nums);
             CompareResults("16");
         }
 
         [Test]
-        public void CreateTaggedPdf17() {
+        virtual public void CreateTaggedPdf17() {
             InitializeDocument("17");
 
             PdfPTable table = new PdfPTable(2);
@@ -833,13 +795,11 @@ namespace itextsharp.tests.text.pdf {
             }
             document.Add(table);
             document.Close();
-            int[] nums = new int[] {27};
-            CheckNums(nums);
             CompareResults("17");
         }
 
         [Test]
-        public void CreateTaggedPdf18() {
+        virtual public void CreateTaggedPdf18() {
             InitializeDocument("18");
 
             PdfDiv div = new PdfDiv();
@@ -852,14 +812,12 @@ namespace itextsharp.tests.text.pdf {
             div.AddElement(paragraph);
             document.Add(div);
             document.Close();
-            int[] nums = new int[] {32};
-            CheckNums(nums);
             CompareResults("18");
         }
 
 
         [Test]
-        public void CreateTaggedPdf19() {
+        virtual public void CreateTaggedPdf19() {
             InitializeDocument("19");
 
             PdfDiv div = new PdfDiv();
@@ -880,7 +838,7 @@ namespace itextsharp.tests.text.pdf {
         }
 
         [Test]
-        public void CreateTaggedPdf20() {
+        virtual public void CreateTaggedPdf20() {
             InitializeDocument("20");
 
             Paragraph paragraph = new Paragraph();
@@ -957,7 +915,7 @@ namespace itextsharp.tests.text.pdf {
         }
 
         [Test]
-        public void CreateTaggedPdf21() {
+        virtual public void CreateTaggedPdf21() {
             try {
                 InitializeDocument("21");
 
@@ -986,7 +944,7 @@ namespace itextsharp.tests.text.pdf {
         }
 
         [Test]
-        public void CreateTaggedPdf22() {
+        virtual public void CreateTaggedPdf22() {
             InitializeDocument("22", PdfWriter.VERSION_1_4);
             Paragraph p = new Paragraph();
             PdfName nParagraph = new PdfName("Paragraph");
@@ -1017,13 +975,11 @@ namespace itextsharp.tests.text.pdf {
             document.Add(h1);
             document.Add(p);
             document.Close();
-            int[] nums = new int[] {7};
-            CheckNums(nums);
             CompareResults("22");
         }
 
         [Test]
-        public void CreateTaggedPdf23() {
+        virtual public void CreateTaggedPdf23() {
             InitializeDocument("23", PdfWriter.VERSION_1_4);
 
             PdfPTable table = new PdfPTable(2);
@@ -1052,41 +1008,66 @@ namespace itextsharp.tests.text.pdf {
             document.Add(table);
             document.Close();
 
-            int[] nums = new int[] {234, 44};
-            CheckNums(nums);
             CompareResults("23");
         }
 
-        private void CheckNums(int[] nums) {
-            PdfReader reader = new PdfReader(output);
-            PdfDictionary structTreeRoot =
-                VerifyIsDictionary(reader.Catalog.GetDirectObject(PdfName.STRUCTTREEROOT), NO_STRUCT_TREE_ROOT);
-            VerifyArraySize(structTreeRoot.Get(PdfName.K), 1, "Invalid count of kids in StructTreeRoot");
-            PdfObject obj = PdfStructTreeController.GetDirectObject(structTreeRoot.Get(PdfName.PARENTTREE));
-            VerifyIsDictionary(obj, NO_PARENT_TREE);
-            PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
-            VerifyArraySize(array, nums.Length*2, "nums");
-            for (int i = 0; i < nums.Length; ++i)
-                VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
-                                "Nums of page " + (i + 1));
-            reader.Close();
-        }
+        [Test]
+        public virtual void CreateTaggedPdf24() {
+            Document document = new Document(PageSize.LETTER);
 
-        private PdfArray VerifyArraySize(PdfObject obj, int size, String message) {
-            if (obj == null || !obj.IsArray()) Assert.Fail(message + " is not array");
-            if (((PdfArray) obj).Size != size)
-                Assert.Fail(message + " has wrong size");
-            return (PdfArray) obj;
-        }
+            MemoryStream baos = new MemoryStream();
 
-        private PdfDictionary VerifyIsDictionary(PdfObject obj, String message) {
-            if (obj == null || !obj.IsDictionary())
-                Assert.Fail(message);
-            return (PdfDictionary) obj;
+            PdfWriter writer = PdfWriter.GetInstance(document, baos);
+
+            writer.ViewerPreferences = PdfWriter.DisplayDocTitle;
+
+//set more document properties
+
+            writer.PdfVersion = PdfWriter.VERSION_1_7;
+            writer.SetTagged(PdfWriter.markInlineElementsOnly);
+            PdfDictionary info = writer.Info;
+            info.Put(PdfName.TITLE, new PdfString("Testing"));
+
+            writer.CreateXmpMetadata();
+
+
+// step 3
+
+            document.Open();
+            document.AddLanguage("en_US");
+            document.SetAccessibleAttribute(PdfName.LANG, new PdfString("en_US"));
+
+// step 4
+
+            Paragraph p = new Paragraph("Paragraph testing testing");
+            p.SetAccessibleAttribute(PdfName.ACTUALTEXT, new PdfString("Paragraph ALT Text"));
+            p.SetAccessibleAttribute(PdfName.ALT, new PdfString("Paragraph ALT Text"));
+            document.Add(p);
+
+
+            Chunk ck = new Chunk("Span testing testing", FontFactory.GetFont(RESOURCES + @"..\FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12));
+            ck.SetAccessibleAttribute(PdfName.ACTUALTEXT, new PdfString("Span ALT Text"));
+            ck.SetAccessibleAttribute(PdfName.ALT, new PdfString("Span ALT Text"));
+            p = new Paragraph(ck);
+
+            document.Add(p);
+
+// step 5
+            document.Close();
+
+            FileStream fos = new FileStream("TaggedPdfTest/pdf/out24.pdf", FileMode.Create);
+
+            byte[] buff = baos.ToArray();
+            fos.Write(buff, 0, buff.Length);
+
+            fos.Flush();
+
+            fos.Close();
+            CompareResults("24");
         }
 
         [TearDown]
-        public void Compress() {
+        virtual public void Compress() {
             Document.Compress = true;
         }
 

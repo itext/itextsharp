@@ -12,17 +12,17 @@ using NUnit.Framework;
 namespace itextsharp.xmlworker.tests.examples {
     internal class XMLWorkerHTMLExample : Setup {
         /**
-	 * This method shows you how to setup the processing yourself. This is how
-	 * it's done in the {@link XMLWorkerHelper}
-	 *
-	 * @throws IOException if something with IO went wrong.
-	 * @throws DocumentException if something with the document goes wrong.
-	 */
+	     * This method shows you how to setup the processing yourself. This is how
+	     * it's done in the {@link XMLWorkerHelper}
+	     *
+	     * @throws IOException if something with IO went wrong.
+	     * @throws DocumentException if something with the document goes wrong.
+	     */
         private const string TARGET = @"";
         private const string RESOURCES = @"..\..\resources\";
 
         [Test]
-        public void SetupDefaultProcessingYourself() {
+        virtual public void SetupDefaultProcessingYourself() {
             Document doc = new Document(PageSize.A4);
             PdfWriter writer = PdfWriter.GetInstance(doc,
                 new FileStream(TARGET + "columbus2.pdf", FileMode.Create));
@@ -45,15 +45,14 @@ namespace itextsharp.xmlworker.tests.examples {
         }
 
         /**
-	 * Define an ImageRoot. You'll see that the document columbus3.pdf now has
-	 * images.
-	 *
-	 * @throws IOException if something with IO went wrong.
-	 * @throws DocumentException if something with the document goes wrong.
-	 */
-
+	     * Define an ImageRoot. You'll see that the document columbus3.pdf now has
+	     * images.
+	     *
+	     * @throws IOException if something with IO went wrong.
+	     * @throws DocumentException if something with the document goes wrong.
+	     */
         [Test]
-        public void AddingAnImageRoot() {
+        virtual public void AddingAnImageRoot() {
             Document doc = new Document(PageSize.A4);
             PdfWriter writer = PdfWriter.GetInstance(doc,
                 new FileStream(TARGET + "columbus3.pdf", FileMode.Create));
@@ -71,21 +70,20 @@ namespace itextsharp.xmlworker.tests.examples {
 
 
         private class CustomLinkProvider : ILinkProvider {
-            public string GetLinkRoot() {
+            virtual public string GetLinkRoot() {
                 return "http://www.gutenberg.org/dirs/1/8/0/6/18066/18066-h/";
             }
         }
 
         /**
-	 * Define a LinProvider. You'll see that the document columbus3.pdf now
-	 * links that point to the right url.
-	 *
-	 * @throws IOException if something with IO went wrong.
-	 * @throws DocumentException if something with the document goes wrong.
-	 */
-
+	     * Define a LinProvider. You'll see that the document columbus3.pdf now
+	     * links that point to the right url.
+	     *
+	     * @throws IOException if something with IO went wrong.
+	     * @throws DocumentException if something with the document goes wrong.
+	     */
         [Test]
-        public void AddingALinkProvider() {
+        virtual public void AddingALinkProvider() {
             Document doc = new Document(PageSize.A4);
             PdfWriter writer = PdfWriter.GetInstance(doc, new FileStream(TARGET + "columbus3.pdf", FileMode.Create));
             doc.Open();

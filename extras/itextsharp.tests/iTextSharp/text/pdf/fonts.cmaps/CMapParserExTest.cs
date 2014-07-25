@@ -9,17 +9,17 @@ namespace itextsharp.tests.iTextSharp.text.pdf.fonts.cmaps
         private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\fonts\cmaps\CMapParserExTest\";
 
         [SetUp]
-        public void SetUp()
+        virtual public void SetUp()
         {
         }
 
         [TearDown]
-        public void TearDown()
+        virtual public void TearDown()
         {
         }
 
         [Test]
-        public void TestCMapWithDefDictionaryKey()
+        virtual public void TestCMapWithDefDictionaryKey()
         {
             byte[] touni = TestResourceUtils.GetResourceAsByteArray(TEST_RESOURCES_PATH, "cmap_with_def_dictionary_key.txt");
             CidLocationFromByte lb = new CidLocationFromByte(touni);

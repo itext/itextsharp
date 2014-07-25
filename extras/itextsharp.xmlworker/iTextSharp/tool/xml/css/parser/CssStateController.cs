@@ -47,7 +47,7 @@ namespace iTextSharp.tool.xml.css.parser {
          * Appends a character to the buffer.
          * @param c the char to append to the buffer.
          */
-        public void Append(char c) {
+        virtual public void Append(char c) {
             this.buffer.Append(c);
 
         }
@@ -55,7 +55,7 @@ namespace iTextSharp.tool.xml.css.parser {
         /**
          * Sets the state to the previous state
          */
-        public void Previous() {
+        virtual public void Previous() {
             this.current = previous;
         }
 
@@ -64,7 +64,7 @@ namespace iTextSharp.tool.xml.css.parser {
          *
          * @param c a character that needs to be processed
          */
-        public void Process(char c) {
+        virtual public void Process(char c) {
             current.Process(c);
         }
 
@@ -98,21 +98,21 @@ namespace iTextSharp.tool.xml.css.parser {
         /**
          *
          */
-        public void StateCommentEnd() {
+        virtual public void StateCommentEnd() {
             SetState(commentEnd);
         }
 
         /**
          *
          */
-        public void StateCommentInside() {
+        virtual public void StateCommentInside() {
             SetState(commentInside);
         }
 
         /**
          *
          */
-        public void StateCommentStart() {
+        virtual public void StateCommentStart() {
             SetPrevious();
             SetState(commentStart);
         }
@@ -120,7 +120,7 @@ namespace iTextSharp.tool.xml.css.parser {
         /**
          *
          */
-        public void StateProperties() {
+        virtual public void StateProperties() {
             previous = current;
             SetState(properties);
         }
@@ -128,21 +128,21 @@ namespace iTextSharp.tool.xml.css.parser {
         /**
          *
          */
-        public void StateUnknown() {
+        virtual public void StateUnknown() {
             SetState(unknown);
         }
 
         /**
          *
          */
-        public void StateRule() {
+        virtual public void StateRule() {
             SetState(rule);
         }
 
         /**
          *
          */
-        public void StoreSelector() {
+        virtual public void StoreSelector() {
             this.currentSelector = buffer.ToString();
             buffer.Length = 0;
         }
@@ -150,7 +150,7 @@ namespace iTextSharp.tool.xml.css.parser {
         /**
          *
          */
-        public void StoreProperties() {
+        virtual public void StoreProperties() {
             ProcessProps(buffer.ToString());
             buffer.Length = 0;
         }

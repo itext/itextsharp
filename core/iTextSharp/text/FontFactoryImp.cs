@@ -8,19 +8,20 @@ using iTextSharp.text.log;
 using iTextSharp.text;
 
 /*
- * $Id: FontFactoryImp.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: FontFactoryImp.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -218,7 +219,7 @@ namespace iTextSharp.text {
         /// <param name="size">the size of this font</param>
         /// <param name="style">the style of this font</param>
         /// <returns>a Font object</returns>
-        public Font GetFont(string fontname, string encoding, bool embedded, float size, int style) {
+        virtual public Font GetFont(string fontname, string encoding, bool embedded, float size, int style) {
             return GetFont(fontname, encoding, embedded, size, style, null);
         }
     
@@ -350,7 +351,7 @@ namespace iTextSharp.text {
         * @param fullName the font name
         * @param path the font path
         */
-        public void RegisterFamily(String familyName, String fullName, String path) {
+        virtual public void RegisterFamily(String familyName, String fullName, String path) {
             if (path != null)
                 trueTypeFonts[fullName] = path;
             List<string> tmp;
@@ -479,7 +480,7 @@ namespace iTextSharp.text {
         * @return the number of fonts registered
         * @since 2.1.2
         */
-        public int RegisterDirectory(String dir, bool scanSubdirectories) {
+        virtual public int RegisterDirectory(String dir, bool scanSubdirectories) {
             if (LOGGER.IsLogging(Level.DEBUG)) {
                 LOGGER.Debug(String.Format("Registering directory {0}, looking for fonts", dir));
             }

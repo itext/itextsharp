@@ -2,13 +2,13 @@
  * $Id: CssFilesImpl.java 287 2012-02-27 16:56:22Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA Authors: Balder Van Camp, Emiel
+ * Copyright (c) 1998-2014 iText Group NV Authors: Balder Van Camp, Emiel
  * Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify it under the terms of the GNU Affero General
  * Public License version 3 as published by the Free Software Foundation with the addition of the following permission
  * added to Section 15 as permitted in Section 7(a): FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
- * 1T3XT, 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * ITEXT GROUP, ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
  *
  * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
  * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License for more
@@ -72,7 +72,7 @@ namespace iTextSharp.tool.xml.css {
          * @see com.itextpdf.tool.xml.css.CssFiles#hasFiles()
          */
 
-        public bool HasFiles() {
+        virtual public bool HasFiles() {
             return this.files.Count > 0;
         }
 
@@ -87,7 +87,7 @@ namespace iTextSharp.tool.xml.css {
          * </ul>
          */
 
-        public IDictionary<String, String> GetCSS(Tag t) {
+        virtual public IDictionary<String, String> GetCSS(Tag t) {
             IDictionary<String, String> aggregatedProps = new Dictionary<String, String>();
             IDictionary<String, Object> childSelectors = select.CreateAllSelectors(t);
             foreach (String selector in childSelectors.Keys)
@@ -102,14 +102,14 @@ namespace iTextSharp.tool.xml.css {
          * @param selector the selector to search for.
          */
 
-        public void PopulateCss(IDictionary<String, String> aggregatedProps, String selector) {
+        virtual public void PopulateCss(IDictionary<String, String> aggregatedProps, String selector) {
             foreach (ICssFile cssFile in this.files)
             {
                 PopulateOneCss(cssFile, aggregatedProps, selector);
             }
         }
 
-        public void PopulateOneCss(ICssFile cssFile, IDictionary<String, String> aggregatedProps, String selector)
+        virtual public void PopulateOneCss(ICssFile cssFile, IDictionary<String, String> aggregatedProps, String selector)
         {
             IDictionary<String, String> t = cssFile.Get(selector);
             IDictionary<String, String> css = new Dictionary<String, String>();
@@ -159,13 +159,13 @@ namespace iTextSharp.tool.xml.css {
             CssUtils.MapPutAll(aggregatedProps, css);
         }
 
-        public void Add(ICssFile css) {
+        virtual public void Add(ICssFile css) {
             if (css != null) {
                 this.files.Add(css);
             }
         }
 
-        public void Clear() {
+        virtual public void Clear() {
             for (int k = 0; k < files.Count; ++k) {
                 if (!files[k].IsPersistent()) {
                     files.RemoveAt(k);

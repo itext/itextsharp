@@ -18,14 +18,14 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         private const string RESOURCES = @"..\..\resources\";
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
             proc = new CssFileProcessor();
             retriever = new FileRetrieveImpl();
         }
 
         [Test]
-        public void ParseCSS() {
+        virtual public void ParseCSS() {
             retriever.ProcessFromStream(File.OpenRead(RESOURCES + "/css/test.css"), proc);
             ICssFile file = proc.GetCss();
             IDictionary<String, String> map = file.Get("body");

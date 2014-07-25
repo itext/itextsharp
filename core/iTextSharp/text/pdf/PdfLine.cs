@@ -3,19 +3,20 @@ using System.Text;
 using System.Collections.Generic;
 
 /*
- * $Id: PdfLine.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: PdfLine.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -264,7 +265,7 @@ namespace iTextSharp.text.pdf {
          * @return    a value
          */
     
-        public int Size {
+        virtual public int Size {
             get {
                 return line.Count;
             }
@@ -276,7 +277,7 @@ namespace iTextSharp.text.pdf {
          * @return    an <CODE>Iterator</CODE>
          */
     
-        public IEnumerator<PdfChunk> GetEnumerator() {
+        virtual public IEnumerator<PdfChunk> GetEnumerator() {
             return line.GetEnumerator();
         }
     
@@ -328,7 +329,7 @@ namespace iTextSharp.text.pdf {
          * @return    <CODE>true</CODE> if the alignment equals <VAR>ALIGN_JUSTIFIED</VAR> and there is some width left.
          */
     
-        public bool HasToBeJustified() {
+        virtual public bool HasToBeJustified() {
             return ((alignment == Element.ALIGN_JUSTIFIED && !newlineSplit) || alignment == Element.ALIGN_JUSTIFIED_ALL) && width != 0;
         }
     
@@ -339,7 +340,7 @@ namespace iTextSharp.text.pdf {
          * that has to be justified, has to be reset to <VAR>ALIGN_LEFT</VAR>.
          */
     
-        public void ResetAlignment() {
+        virtual public void ResetAlignment() {
             if (alignment == Element.ALIGN_JUSTIFIED) {
                 alignment = Element.ALIGN_LEFT;
             }
@@ -398,7 +399,7 @@ namespace iTextSharp.text.pdf {
          * @param listItem the list symbol
          */
     
-        public ListItem ListItem {
+        virtual public ListItem ListItem {
             set {
                 this.listItem = value;
                 //this.listSymbol = value.ListSymbol;
@@ -413,7 +414,7 @@ namespace iTextSharp.text.pdf {
          * @return    a <CODE>PdfChunk</CODE> if the line has a listsymbol; <CODE>null</CODE> otherwise
          */
     
-        public Chunk ListSymbol {
+        virtual public Chunk ListSymbol {
             get {
                 return listItem != null ? listItem.ListSymbol : null;
             }
@@ -425,7 +426,7 @@ namespace iTextSharp.text.pdf {
          * @return    a value
          */
     
-        public float ListIndent {
+        virtual public float ListIndent {
             get {
                 return listItem != null ? listItem.IndentationLeft : 0;
             }
@@ -445,7 +446,7 @@ namespace iTextSharp.text.pdf {
             return tmp.ToString();
         }
     
-        public int GetLineLengthUtf32() {
+        virtual public int GetLineLengthUtf32() {
             int total = 0;
             foreach (PdfChunk c in line) {
                 total += c.LengthUtf32;
@@ -457,7 +458,7 @@ namespace iTextSharp.text.pdf {
          * Checks if a newline caused the line split.
          * @return <CODE>true</CODE> if a newline caused the line split
          */
-        public bool NewlineSplit {
+        virtual public bool NewlineSplit {
             get {
                 return newlineSplit && (alignment != Element.ALIGN_JUSTIFIED_ALL);
             }
@@ -467,7 +468,7 @@ namespace iTextSharp.text.pdf {
          * Gets the index of the last <CODE>PdfChunk</CODE> with metric attributes
          * @return the last <CODE>PdfChunk</CODE> with metric attributes
          */
-        public int LastStrokeChunk {
+        virtual public int LastStrokeChunk {
             get {
                 int lastIdx = line.Count - 1;
                 for (; lastIdx >= 0; --lastIdx) {
@@ -484,7 +485,7 @@ namespace iTextSharp.text.pdf {
          * @param idx the index
          * @return the <CODE>PdfChunk</CODE> or null if beyond the array
          */
-        public PdfChunk GetChunk(int idx) {
+        virtual public PdfChunk GetChunk(int idx) {
             if (idx < 0 || idx >= line.Count)
                 return null;
             return line[idx];
@@ -494,7 +495,7 @@ namespace iTextSharp.text.pdf {
          * Gets the original width of the line.
          * @return the original width of the line
          */
-        public float OriginalWidth {
+        virtual public float OriginalWidth {
             get {
                 return originalWidth;
             }
@@ -557,7 +558,7 @@ namespace iTextSharp.text.pdf {
             return s;
         }
 
-        public float GetWidthCorrected(float charSpacing, float wordSpacing) {
+        virtual public float GetWidthCorrected(float charSpacing, float wordSpacing) {
             float total = 0;
             for (int k = 0; k < line.Count; ++k) {
                 PdfChunk ck = line[k];
@@ -571,7 +572,7 @@ namespace iTextSharp.text.pdf {
         * in this line.
         * @return maximum size of all the ascenders used in this line
         */
-        public float Ascender {
+        virtual public float Ascender {
             get {
                 float ascender = 0;
                 foreach (PdfChunk ck in line) {
@@ -592,7 +593,7 @@ namespace iTextSharp.text.pdf {
         * in this line.  Note that this is a negative number.
         * @return maximum size of all the ascenders used in this line
         */
-        public float Descender {
+        virtual public float Descender {
             get {
                 float descender = 0;
                 foreach (PdfChunk ck in line) {
@@ -608,7 +609,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public void Flush()
+        virtual public void Flush()
         {
             if (tabStop != null)
             {

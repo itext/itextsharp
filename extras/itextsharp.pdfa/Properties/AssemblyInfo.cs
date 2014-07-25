@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("iTextSharp.pda")]
 [assembly: AssemblyDescription("PDFA functionality for iTextSharp, a free PDF library ported from Java iText.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("1T3XT BVBA")]
+[assembly: AssemblyCompany("iText Group NV")]
 [assembly: AssemblyProduct("iTextSharp.pdfa")]
-[assembly: AssemblyCopyright("Copyright (C) 1999-2013 by Bruno Lowagie and Paulo Soares. All Rights Reserved.")]
+[assembly: AssemblyCopyright("Copyright (C) 1999-2014 by Bruno Lowagie and Paulo Soares. All Rights Reserved.")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -31,4 +31,4 @@ using System.Runtime.InteropServices;
 //
 // You can specify all the values or you can default the Revision and Build Numbers 
 // by using the '*' as shown below:
-[assembly: AssemblyVersion("5.4.5")]
+[assembly: AssemblyVersion("5.5.0")]

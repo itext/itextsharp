@@ -5,15 +5,16 @@ using iTextSharp.tool.xml.exceptions;
  * $Id: DefaultTagProcessorFactory.java 151 2011-06-06 10:52:12Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -91,7 +92,7 @@ namespace iTextSharp.tool.xml.html {
              *
              * @return the className
              */
-            public String ClassName {
+            virtual public String ClassName {
                 get {
                     return this.className;
                 }
@@ -100,7 +101,7 @@ namespace iTextSharp.tool.xml.html {
             /**
              * @return return the processor
              */
-            public ITagProcessor Processor {
+            virtual public ITagProcessor Processor {
                 get {
                     if (null == this.proc) {
                         this.proc = parent.Load(this.className);
@@ -136,7 +137,7 @@ namespace iTextSharp.tool.xml.html {
         /**
          * @throws NoTagProcessorException when the processor was not found for the given tag.
          */
-        public ITagProcessor GetProcessor(String tag, String nameSpace) {
+        virtual public ITagProcessor GetProcessor(String tag, String nameSpace) {
             FactoryObject fo;
             if (map.TryGetValue(tag, out fo) && fo != null) {
                 return fo.Processor;
@@ -150,7 +151,7 @@ namespace iTextSharp.tool.xml.html {
          * @param tag the tag the processor with the given className maps to
          * @param className the fully qualified class name (class has to be found on classpath, will be loaded with Class.ForName()
          */
-        public void AddProcessor(String tag, String className) {
+        virtual public void AddProcessor(String tag, String className) {
             map[tag] = new FactoryObject(className, this);
         }
 
@@ -160,14 +161,14 @@ namespace iTextSharp.tool.xml.html {
          * @param tag the tag the processor with the given className maps to
          * @param processor the ITagProcessor
          */
-        public void AddProcessor(String tag, ITagProcessor processor) {
+        virtual public void AddProcessor(String tag, ITagProcessor processor) {
             map[tag] = new FactoryObject(processor.GetType().FullName, processor, this);
 
         }
         /**
          *
          */
-        public void AddProcessor( ITagProcessor processor, String[] tags) {
+        virtual public void AddProcessor( ITagProcessor processor, String[] tags) {
             foreach (String tag in tags) {
                 AddProcessor(tag, processor);
             }
@@ -177,7 +178,7 @@ namespace iTextSharp.tool.xml.html {
          * @param className the fully qualified class name (class has to be found on classpath)
          * @param tags list of tags this processor maps to.
          */
-        public void AddProcessor( String className, String[] tags) {
+        virtual public void AddProcessor( String className, String[] tags) {
             foreach (String tag in tags) {
                 AddProcessor(tag, className);
             }
@@ -186,7 +187,7 @@ namespace iTextSharp.tool.xml.html {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.html.TagProcessorFactory#removeProcessor(java.lang.String)
          */
-        public void RemoveProcessor(String tag) {
+        virtual public void RemoveProcessor(String tag) {
             map.Remove(tag);
         }
     }

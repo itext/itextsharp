@@ -6,19 +6,20 @@ using System.util.zlib;
 using iTextSharp.text.pdf.intern;
 
 /*
- * $Id: PdfStream.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: PdfStream.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -175,7 +176,7 @@ namespace iTextSharp.text.pdf {
          * @throws IOException on error
          * @see #PdfStream(InputStream,PdfWriter)
          */
-        public void WriteLength() {
+        virtual public void WriteLength() {
             if (inputStream == null)
                 throw new PdfException(MessageLocalization.GetComposedMessage("writelength.can.only.be.called.in.a.contructed.pdfstream.inputstream.pdfwriter"));
             if (inputStreamLength == -1)
@@ -183,7 +184,7 @@ namespace iTextSharp.text.pdf {
             writer.AddToBody(new PdfNumber(inputStreamLength), iref, false);
         }
     
-        public int RawLength {
+        virtual public int RawLength {
             get {
                 return rawLength;
             }
@@ -194,7 +195,7 @@ namespace iTextSharp.text.pdf {
         /**
         * Compresses the stream.
         */
-        public void FlateCompress() {
+        virtual public void FlateCompress() {
             FlateCompress(DEFAULT_COMPRESSION);
         }
         
@@ -203,7 +204,7 @@ namespace iTextSharp.text.pdf {
         * @param compressionLevel the compression level (0 = best speed, 9 = best compression, -1 is default)
         * @since   2.1.3
         */
-        public void FlateCompress(int compressionLevel) {
+        virtual public void FlateCompress(int compressionLevel) {
             if (!Document.Compress)
                 return;
             // check if the flateCompress-method has already been used
@@ -338,7 +339,7 @@ namespace iTextSharp.text.pdf {
         * @param os the destination to write to
         * @throws IOException on error
         */    
-        public void WriteContent(Stream os) {
+        virtual public void WriteContent(Stream os) {
             if (streamBytes != null)
                 streamBytes.WriteTo(os);
             else if (bytes != null)

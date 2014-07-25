@@ -1,18 +1,19 @@
 using System;
 /*
- * $Id: DublinCoreSchema.cs 600 2013-09-12 10:09:12Z eugenemark $
+ * $Id: DublinCoreSchema.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -99,7 +100,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds a title.
         * @param title
         */
-        public void AddTitle(String title) {
+        virtual public void AddTitle(String title) {
             XmpArray array = new XmpArray(XmpArray.ALTERNATIVE);
             array.Add(title);
             SetProperty(TITLE, array);
@@ -109,7 +110,7 @@ namespace iTextSharp.text.xml.xmp {
          * Adds a title.
          * @param title
          */
-        public void AddTitle(LangAlt title) {
+        virtual public void AddTitle(LangAlt title) {
             SetProperty(TITLE, title);
         }
 
@@ -119,7 +120,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds a description.
         * @param desc
         */
-        public void AddDescription(String desc) {
+        virtual public void AddDescription(String desc) {
             XmpArray array = new XmpArray(XmpArray.ALTERNATIVE);
             array.Add(desc);
             SetProperty(DESCRIPTION, array);
@@ -129,7 +130,7 @@ namespace iTextSharp.text.xml.xmp {
          * Adds a description.
          * @param desc
          */
-        public void AddDescription(LangAlt desc) {
+        virtual public void AddDescription(LangAlt desc) {
             SetProperty(DESCRIPTION, desc);
         }
 
@@ -138,7 +139,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds a subject.
         * @param subject
         */
-        public void AddSubject(String subject) {
+        virtual public void AddSubject(String subject) {
             XmpArray array = new XmpArray(XmpArray.UNORDERED);
             array.Add(subject);
             SetProperty(SUBJECT, array);
@@ -149,7 +150,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds a subject.
         * @param subject array of subjects
         */
-        public void AddSubject(String[] subject) {
+        virtual public void AddSubject(String[] subject) {
             XmpArray array = new XmpArray(XmpArray.UNORDERED);
             for (int i = 0; i < subject.Length; i++) {
                 array.Add(subject[i]);
@@ -161,7 +162,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds a single author.
         * @param author
         */
-        public void AddAuthor(String author) {
+        virtual public void AddAuthor(String author) {
             XmpArray array = new XmpArray(XmpArray.ORDERED);
             array.Add(author);
             SetProperty(CREATOR, array);
@@ -171,7 +172,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds an array of authors.
         * @param author
         */
-        public void AddAuthor(String[] author) {
+        virtual public void AddAuthor(String[] author) {
             XmpArray array = new XmpArray(XmpArray.ORDERED);
             for (int i = 0; i < author.Length; i++) {
                 array.Add(author[i]);
@@ -183,7 +184,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds a single publisher.
         * @param publisher
         */
-        public void AddPublisher(String publisher) {
+        virtual public void AddPublisher(String publisher) {
             XmpArray array = new XmpArray(XmpArray.ORDERED);
             array.Add(publisher);
             SetProperty(PUBLISHER, array);
@@ -193,7 +194,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds an array of publishers.
         * @param publisher
         */
-        public void AddPublisher(String[] publisher) {
+        virtual public void AddPublisher(String[] publisher) {
             XmpArray array = new XmpArray(XmpArray.ORDERED);
             for (int i = 0; i < publisher.Length; i++) {
                 array.Add(publisher[i]);

@@ -14,19 +14,19 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         String TEXT2;
 
         [SetUp]
-        public void SetUp()
+        virtual public void SetUp()
         {
             TEXT1 = "TEXT1 TEXT1";
             TEXT2 = "TEXT2 TEXT2";
         }
 
-        public ITextExtractionStrategy CreateRenderListenerForTest()
+        virtual public ITextExtractionStrategy CreateRenderListenerForTest()
         {
             return new SimpleTextExtractionStrategy();
         }
 
         [Test]
-        public void TestCoLinnearText()
+        virtual public void TestCoLinnearText()
         {
             byte[] bytes = CreatePdfWithRotatedText(TEXT1, TEXT2, 0, false, 0);
 
@@ -34,7 +34,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestCoLinnearTextWithSpace()
+        virtual public void TestCoLinnearTextWithSpace()
         {
             byte[] bytes = CreatePdfWithRotatedText(TEXT1, TEXT2, 0, false, 2);
             //saveBytesToFile(bytes, new File("c:/temp/test.pdf"));
@@ -43,7 +43,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestCoLinnearTextEndingWithSpaceCharacter()
+        virtual public void TestCoLinnearTextEndingWithSpaceCharacter()
         {
             // in this case, we shouldn't be inserting an extra space
             TEXT1 = TEXT1 + " ";
@@ -55,7 +55,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
 
         }
         [Test]
-        public void TestUnRotatedText()
+        virtual public void TestUnRotatedText()
         {
 
             byte[] bytes = CreatePdfWithRotatedText(TEXT1, TEXT2, 0, true, -20);
@@ -66,7 +66,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
 
 
         [Test]
-        public void TestRotatedText()
+        virtual public void TestRotatedText()
         {
 
             byte[] bytes = CreatePdfWithRotatedText(TEXT1, TEXT2, -90, true, -20);
@@ -76,7 +76,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestRotatedText2()
+        virtual public void TestRotatedText2()
         {
 
             byte[] bytes = CreatePdfWithRotatedText(TEXT1, TEXT2, 90, true, -20);
@@ -87,7 +87,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestPartiallyRotatedText()
+        virtual public void TestPartiallyRotatedText()
         {
 
             byte[] bytes = CreatePdfWithRotatedText(TEXT1, TEXT2, 33, true, -20);
@@ -97,7 +97,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestWordSpacingCausedByExplicitGlyphPositioning()
+        virtual public void TestWordSpacingCausedByExplicitGlyphPositioning()
         {
             byte[] bytes = CreatePdfWithArrayText(TEXT1, TEXT2, 250);
 
@@ -106,7 +106,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
 
 
         [Test]
-        public void TestWordSpacingCausedByExplicitGlyphPositioning2()
+        virtual public void TestWordSpacingCausedByExplicitGlyphPositioning2()
         {
 
             byte[] bytes = CreatePdfWithArrayText("[(S)3.2(an)-255.0(D)13.0(i)8.3(e)-10.1(g)1.6(o)-247.5(C)2.4(h)5.8(ap)3.0(t)10.7(er)]TJ");
@@ -116,7 +116,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
 
 
         [Test]
-        public void TestTrailingSpace()
+        virtual public void TestTrailingSpace()
         {
             byte[] bytes = CreatePdfWithRotatedText(TEXT1 + " ", TEXT2, 0, false, 6);
 
@@ -124,7 +124,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestLeadingSpace()
+        virtual public void TestLeadingSpace()
         {
             byte[] bytes = CreatePdfWithRotatedText(TEXT1, " " + TEXT2, 0, false, 6);
 
@@ -132,7 +132,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
         }
 
         [Test]
-        public void TestExtractXObjectText()
+        virtual public void TestExtractXObjectText()
         {
             String text1 = "X";
             byte[] bytes = CreatePdfWithXObject(text1);

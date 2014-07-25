@@ -15,7 +15,7 @@ namespace iTextSharp.text.xml.xmp {
         public static String CMP_FOLDER = @"../../resources/text/xml/xmp/";
 
         [TestFixtureSetUp]
-        public void Init() {
+        virtual public void Init() {
             if (Directory.Exists(OUT_FOLDER)) {
                 foreach (String path in Directory.GetFiles(OUT_FOLDER))
                     if (File.Exists(path))
@@ -25,7 +25,7 @@ namespace iTextSharp.text.xml.xmp {
         }
 
         [Test]
-        public void CreatePdfTest() {
+        virtual public void CreatePdfTest() {
             String fileName = "xmp_metadata.pdf";
             // step 1
             Document document = new Document();
@@ -36,11 +36,11 @@ namespace iTextSharp.text.xml.xmp {
             writer.CreateXmpMetadata();
             XmpWriter xmp = writer.XmpWriter;
 
-            DublinCoreProperties.AddSubject(xmp.XmpMeta, "Subject1");
-            DublinCoreProperties.AddSubject(xmp.XmpMeta, "Subject2");
-            DublinCoreProperties.AddSubject(xmp.XmpMeta, "Subject3");
+            DublinCoreProperties.AddSubject(xmp.XmpMeta, "Hello World");
+            DublinCoreProperties.AddSubject(xmp.XmpMeta, "XMP & Metadata");
+            DublinCoreProperties.AddSubject(xmp.XmpMeta, "Metadata");
 
-            PdfProperties.SetKeywords(xmp.XmpMeta, "Keywords");
+            PdfProperties.SetKeywords(xmp.XmpMeta, "Hello World, XMP & Metadata, Metadata");
             PdfProperties.SetVersion(xmp.XmpMeta, "1.4");
 
             // step 3
@@ -63,7 +63,7 @@ namespace iTextSharp.text.xml.xmp {
         }
 
         [Test]
-        public void CreatePdfAutomaticTest() {
+        virtual public void CreatePdfAutomaticTest() {
             String fileName = "xmp_metadata_automatic.pdf";
             // step 1
             Document document = new Document();
@@ -94,7 +94,7 @@ namespace iTextSharp.text.xml.xmp {
         }
 
         [Test]
-        public void ManipulatePdfTest() {
+        virtual public void ManipulatePdfTest() {
             String fileName = "xmp_metadata_added.pdf";
             PdfReader reader = new PdfReader(CMP_FOLDER + "pdf_metadata.pdf");
             PdfStamper stamper = new PdfAStamper(reader, new FileStream(OUT_FOLDER + fileName, FileMode.Create),
@@ -112,7 +112,7 @@ namespace iTextSharp.text.xml.xmp {
         }
 
         [Test]
-        public void ManipulatePdf2Test() {
+        virtual public void ManipulatePdf2Test() {
             String fileName = "xmp_metadata_added2.pdf";
             PdfReader reader = new PdfReader(CMP_FOLDER + "pdf_metadata.pdf");
             PdfStamper stamper = new PdfAStamper(reader, new FileStream(OUT_FOLDER + fileName, FileMode.Create),
@@ -132,7 +132,7 @@ namespace iTextSharp.text.xml.xmp {
         }
 
         [Test]
-        public void ManipulatePdfAutomaticTest() {
+        virtual public void ManipulatePdfAutomaticTest() {
             String fileName = "xmp_metadata_updated.pdf";
             PdfReader reader = new PdfReader(CMP_FOLDER + "pdf_metadata.pdf");
             PdfStamper stamper = new PdfAStamper(reader, new FileStream(OUT_FOLDER + fileName, FileMode.Create),
@@ -144,7 +144,7 @@ namespace iTextSharp.text.xml.xmp {
         }
 
         [Test]
-        public void DeprecatedLogicTest() {
+        virtual public void DeprecatedLogicTest() {
             String fileName = "xmp_metadata_deprecated.pdf";
             // step 1
             Document document = new Document();
@@ -155,13 +155,13 @@ namespace iTextSharp.text.xml.xmp {
             XmpWriter xmp = new PdfAXmpWriter(os, PdfAConformanceLevel.PDF_A_2B);
             XmpSchema dc = new DublinCoreSchema();
             XmpArray subject = new XmpArray(XmpArray.UNORDERED);
-            subject.Add("Subject1");
-            subject.Add("Subject2");
-            subject.Add("Subject3");
+            subject.Add("Hello World");
+            subject.Add("XMP & Metadata");
+            subject.Add("Metadata");
             dc.SetProperty(DublinCoreSchema.SUBJECT, subject);
             xmp.AddRdfDescription(dc.Xmlns, dc.ToString());
             PdfSchema pdf = new PdfSchema();
-            pdf.AddKeywords("Keywords");
+            pdf.AddKeywords("Hello World, XMP & Metadata, Metadata");
             pdf.AddVersion("1.4");
             xmp.AddRdfDescription(pdf);
             xmp.Close();
@@ -182,7 +182,7 @@ namespace iTextSharp.text.xml.xmp {
             writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
             // step 5
             document.Close();
-            CompareResults("xmp_metadata.pdf", fileName);
+            CompareResults("xmp_metadata_deprecated.pdf", fileName);
         }
 
         private void CompareResults(String orig, String curr) {

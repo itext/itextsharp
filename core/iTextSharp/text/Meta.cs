@@ -4,19 +4,20 @@ using System.Collections.Generic;
 using System.util;
 
 /*
- * $Id: Meta.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: Meta.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -143,7 +144,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="listener">the IElementListener</param>
         /// <returns>true if the element was processed successfully</returns>
-        public bool Process(IElementListener listener) {
+        virtual public bool Process(IElementListener listener) {
             try {
                 return listener.Add(this);
             }
@@ -156,7 +157,7 @@ namespace iTextSharp.text {
         /// Gets the type of the text element.
         /// </summary>
         /// <value>a type</value>
-        public int Type {
+        virtual public int Type {
             get {
                 return type;
             }
@@ -166,7 +167,7 @@ namespace iTextSharp.text {
         /// Gets all the chunks in this element.
         /// </summary>
         /// <value>an ArrayList</value>
-        public IList<Chunk> Chunks {
+        virtual public IList<Chunk> Chunks {
             get {
                 return new List<Chunk>();
             }
@@ -176,7 +177,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isContent()
         * @since   iText 2.0.8
         */
-        public bool IsContent() {
+        virtual public bool IsContent() {
             return false;
         }
 
@@ -184,7 +185,7 @@ namespace iTextSharp.text {
         * @see com.lowagie.text.Element#isNestable()
         * @since   iText 2.0.8
         */
-        public bool IsNestable() {
+        virtual public bool IsNestable() {
             return false;
         }
 
@@ -195,7 +196,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="str">a string</param>
         /// <returns>a StringBuilder</returns>
-        public StringBuilder Append(string str) {
+        virtual public StringBuilder Append(string str) {
             return content.Append(str);
         }
     
@@ -205,7 +206,7 @@ namespace iTextSharp.text {
         /// Returns the content of the meta information.
         /// </summary>
         /// <value>a string</value>
-        public string Content {
+        virtual public string Content {
             get {
                 return content.ToString();
             }

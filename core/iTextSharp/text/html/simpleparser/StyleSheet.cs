@@ -4,15 +4,16 @@ using System.Globalization;
 using System.util;
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -76,7 +77,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   tag     the name of the HTML/XML tag
          * @param   attrs   a map containing styles
          */
-        public void LoadTagStyle(String tag, IDictionary<String, String> attrs) {
+        virtual public void LoadTagStyle(String tag, IDictionary<String, String> attrs) {
             tagMap[tag.ToLowerInvariant()] = attrs;
         }
 
@@ -87,7 +88,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   key     the key specifying a specific style
          * @param   value   the value defining the style
          */
-        public void LoadTagStyle(String tag, String key, String value) {
+        virtual public void LoadTagStyle(String tag, String key, String value) {
             tag = tag.ToLowerInvariant();
             IDictionary<String, String> styles;
             tagMap.TryGetValue(tag, out styles);
@@ -103,7 +104,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   className   the value of the class attribute
          * @param   attrs       a map containing styles
          */
-        public void LoadStyle(String className, Dictionary<String, String> attrs) {
+        virtual public void LoadStyle(String className, Dictionary<String, String> attrs) {
             classMap[className.ToLowerInvariant()] = attrs;
         }
 
@@ -114,7 +115,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   key         the key specifying a specific style
          * @param   value       the value defining the style
          */
-        public void LoadStyle(String className, String key, String value) {
+        virtual public void LoadStyle(String className, String key, String value) {
             className = className.ToLowerInvariant();
             IDictionary<String, String> styles;
             classMap.TryGetValue(className, out styles);
@@ -131,7 +132,7 @@ namespace iTextSharp.text.html.simpleparser {
          * @param   tag     the tag that needs to be resolved
          * @param   attrs   existing style map that will be updated
          */
-        public void ApplyStyle(String tag, IDictionary<String, String> attrs) {
+        virtual public void ApplyStyle(String tag, IDictionary<String, String> attrs) {
             // first fetch the styles corresponding with the tag name
             IDictionary<String, String> map;
             tagMap.TryGetValue(tag.ToLowerInvariant(), out map);

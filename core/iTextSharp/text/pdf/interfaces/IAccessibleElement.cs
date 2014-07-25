@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 namespace iTextSharp.text.pdf.interfaces
@@ -32,5 +31,7 @@ namespace iTextSharp.text.pdf.interfaces
         PdfName Role { get; set; }
 
         AccessibleElementId ID { get; set; }
+
+        bool IsInline { get; }
     }
 }

@@ -1,18 +1,19 @@
 using System;
 using iTextSharp.text.pdf;
 /*
- * $Id: GraphicsState.cs 568 2013-07-25 18:54:37Z pavel-alay $
+ * $Id: GraphicsState.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -55,21 +56,21 @@ namespace iTextSharp.text.pdf.parser {
         /** The current character spacing. */
         internal float characterSpacing;
 
-        public float CharacterSpacing {
+        virtual public float CharacterSpacing {
             get { return characterSpacing; }
         }
 
         /** The current word spacing. */
         internal float wordSpacing;
 
-        public float WordSpacing { 
+        virtual public float WordSpacing { 
 			get { return wordSpacing; } 
 		}
 
         /** The current horizontal scaling */
         internal float horizontalScaling;
 
-        public float HorizontalScaling {
+        virtual public float HorizontalScaling {
             get { return horizontalScaling; }
         }
 
@@ -78,14 +79,14 @@ namespace iTextSharp.text.pdf.parser {
         /** The active font. */
         internal CMapAwareDocumentFont font;
 
-        public CMapAwareDocumentFont Font {
+        virtual public CMapAwareDocumentFont Font {
             get { return font; }
         }
 
         /** The current font size. */
         internal float fontSize;
 
-        public float FontSize {
+        virtual public float FontSize {
             get { return fontSize; }
         }
 
@@ -152,7 +153,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the ctm
          * @since iText 5.0.1
          */
-        public Matrix GetCtm() {
+        virtual public Matrix GetCtm() {
             return ctm;
         }
 
@@ -161,7 +162,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the character spacing
          * @since iText 5.0.1
          */
-        public float GetCharacterSpacing() {
+        virtual public float GetCharacterSpacing() {
             return characterSpacing;
         }
 
@@ -170,7 +171,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the word spacing
          * @since iText 5.0.1
          */
-        public float GetWordSpacing() {
+        virtual public float GetWordSpacing() {
             return wordSpacing;
         }
 
@@ -179,7 +180,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the horizontal scaling
          * @since iText 5.0.1
          */
-        public float GetHorizontalScaling() {
+        virtual public float GetHorizontalScaling() {
             return horizontalScaling;
         }
 
@@ -188,7 +189,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the leading
          * @since iText 5.0.1
          */
-        public float GetLeading() {
+        virtual public float GetLeading() {
             return leading;
         }
 
@@ -197,7 +198,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the font
          * @since iText 5.0.1
          */
-        public CMapAwareDocumentFont GetFont() {
+        virtual public CMapAwareDocumentFont GetFont() {
             return font;
         }
 
@@ -206,7 +207,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the font size
          * @since iText 5.0.1
          */
-        public float GetFontSize() {
+        virtual public float GetFontSize() {
             return fontSize;
         }
 
@@ -215,7 +216,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the renderMode
          * @since iText 5.0.1
          */
-        public int GetRenderMode() {
+        virtual public int GetRenderMode() {
             return renderMode;
         }
 
@@ -224,7 +225,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the text rise
          * @since iText 5.0.1
          */
-        public float GetRise() {
+        virtual public float GetRise() {
             return rise;
         }
 
@@ -233,14 +234,14 @@ namespace iTextSharp.text.pdf.parser {
          * @return the knockout
          * @since iText 5.0.1
          */
-        public bool IsKnockout() {
+        virtual public bool IsKnockout() {
             return knockout;
         }
 
         /**
          * Gets the current color space for fill operations
          */
-        public PdfName ColorSpaceFill
+        virtual public PdfName ColorSpaceFill
         {
             get { return colorSpaceFill; }
         }
@@ -248,7 +249,7 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * Gets the current color space for stroke operations
          */
-        public PdfName ColorSpaceStroke
+        virtual public PdfName ColorSpaceStroke
         {
             get { return colorSpaceStroke; }
         }
@@ -257,7 +258,7 @@ namespace iTextSharp.text.pdf.parser {
          * Gets the current fill color
          * @return a BaseColor
          */
-        public BaseColor FillColor
+        virtual public BaseColor FillColor
         {
             get { return fillColor; }
         }
@@ -266,7 +267,7 @@ namespace iTextSharp.text.pdf.parser {
          * Gets the current stroke color
          * @return a BaseColor
          */
-        public BaseColor StrokeColor
+        virtual public BaseColor StrokeColor
         {
             get { return strokeColor; }
         }

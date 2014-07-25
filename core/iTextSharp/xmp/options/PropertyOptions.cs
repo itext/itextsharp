@@ -56,6 +56,10 @@ namespace iTextSharp.xmp.options {
         /// <summary>
         /// may be used in the future </summary>
         public const uint DELETE_EXISTING = 0x20000000;
+        /// <summary>
+        /// Updated by iText. Indicates if the property should be writted as a separate node
+        /// </summary>
+        public const int SEPARATE_NODE = 0x40000000;
 
 
         /// <summary>
@@ -190,7 +194,7 @@ namespace iTextSharp.xmp.options {
         protected internal override uint ValidOptions {
             get {
                 return URI | HAS_QUALIFIERS | QUALIFIER | HAS_LANGUAGE | HAS_TYPE | STRUCT | ARRAY | ARRAY_ORDERED |
-                       ARRAY_ALTERNATE | ARRAY_ALT_TEXT | SCHEMA_NODE;
+                       ARRAY_ALTERNATE | ARRAY_ALT_TEXT | SCHEMA_NODE | SEPARATE_NODE;
             }
         }
 

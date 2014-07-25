@@ -1,19 +1,20 @@
 using System;
 
 /*
- * $Id: PdfSchema.cs 600 2013-09-12 10:09:12Z eugenemark $
+ * $Id: PdfSchema.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -75,7 +76,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds keywords.
         * @param keywords
         */
-        public void AddKeywords(String keywords) {
+        virtual public void AddKeywords(String keywords) {
             this[KEYWORDS] = keywords;
         }
         
@@ -83,7 +84,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds the producer.
         * @param producer
         */
-        public void AddProducer(String producer) {
+        virtual public void AddProducer(String producer) {
             this[PRODUCER] = producer;
         }
 
@@ -91,7 +92,7 @@ namespace iTextSharp.text.xml.xmp {
         * Adds the version.
         * @param version
         */
-        public void AddVersion(String version) {
+        virtual public void AddVersion(String version) {
             this[VERSION] = version;
         }
     }

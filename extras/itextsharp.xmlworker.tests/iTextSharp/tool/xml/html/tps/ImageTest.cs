@@ -11,10 +11,9 @@ using Image = iTextSharp.tool.xml.html.Image;
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
     /**
- * @author itextpdf.com
- *
- */
-
+     * @author itextpdf.com
+     *
+     */
     internal class ImageTest {
         static ImageTest() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(5));
@@ -26,7 +25,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         private const String RESOURCES = @"..\..\resources\";
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             i.SetCssAppliers(new CssAppliersImpl());
             I.Attributes[HTML.Attribute.SRC] = RESOURCES + "images.jpg";
             workerContextImpl = new WorkerContextImpl();
@@ -34,11 +33,10 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         }
 
         /**
-	 * Verifies that the call to end of {@link Image} returns a List<IElement> containing a Chunk with a Image in it.
-	 */
-
+	     * Verifies that the call to end of {@link Image} returns a List<IElement> containing a Chunk with a Image in it.
+	     */
         [Test]
-        public void VerifyEnd() {
+        virtual public void VerifyEnd() {
             IList<IElement> content = i.End(workerContextImpl, I, null);
             Assert.IsTrue(content[0] is Chunk);
             Dictionary<String, Object> attributes = ((Chunk) content[0]).Attributes;
@@ -46,11 +44,10 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
         }
 
         /**
-	 * Verifies if {@link Image} is a stack owner. Should be false.
-	 */
-
+	     * Verifies if {@link Image} is a stack owner. Should be false.
+	     */
         [Test]
-        public void VerifyIfStackOwner() {
+        virtual public void VerifyIfStackOwner() {
             Assert.IsFalse(i.IsStackOwner());
         }
     }

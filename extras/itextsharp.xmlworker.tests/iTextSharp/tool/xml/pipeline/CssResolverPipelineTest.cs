@@ -11,7 +11,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
         private IDictionary<String, String> css2;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             StyleAttrCSSResolver css = new StyleAttrCSSResolver();
             css.AddCss("dummy { key1: value1; key2: value2 } .aklass { key3: value3;} #dumid { key4: value4}", true);
             CssResolverPipeline p = new CssResolverPipeline(css, null);
@@ -32,7 +32,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void VerifyCssResolvedTag() {
+        virtual public void VerifyCssResolvedTag() {
             Assert.AreEqual("value1", css2["key1"]);
         }
 
@@ -44,7 +44,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void VerifyCssResolvedTag2() {
+        virtual public void VerifyCssResolvedTag2() {
             Assert.AreEqual("value2", css2["key2"]);
         }
 
@@ -56,7 +56,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void VerifyCssResolvedClass() {
+        virtual public void VerifyCssResolvedClass() {
             Assert.AreEqual("value3", css2["key3"]);
         }
 
@@ -68,7 +68,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 	 */
 
         [Test]
-        public void VerifyCssResolvedId() {
+        virtual public void VerifyCssResolvedId() {
             Assert.AreEqual("value4", css2["key4"]);
         }
     }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using NUnit.Framework;
@@ -19,7 +19,7 @@ namespace itextsharp.tests.resources.text.signature {
 
 
         [Test]
-        public void XadesBesRsa() {
+        virtual public void XadesBesRsa() {
             Directory.CreateDirectory(DestDirBes);
 
             String filename = "xfa.signed.bes.pdf";
@@ -59,7 +59,7 @@ namespace itextsharp.tests.resources.text.signature {
         }
 
         [Test]
-        public void XadesBesRsaPackage() {
+        virtual public void XadesBesRsaPackage() {
 
             Directory.CreateDirectory(DestDirBes);
 
@@ -100,7 +100,7 @@ namespace itextsharp.tests.resources.text.signature {
         }
 
         [Test]
-        public void XadesEpesRsa() {
+        virtual public void XadesEpesRsa() {
             Directory.CreateDirectory(DestDirEpes);
 
             String filename = "xfa.signed.epes.pdf";
@@ -138,7 +138,7 @@ namespace itextsharp.tests.resources.text.signature {
         }
 
         [Test]
-        public void XadesEpesRsaPackage() {
+        virtual public void XadesEpesRsaPackage() {
 
             Directory.CreateDirectory(DestDirEpes);
 

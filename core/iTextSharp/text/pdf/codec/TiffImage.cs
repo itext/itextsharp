@@ -7,15 +7,16 @@ using System.util.zlib;
 using iTextSharp.text.error_messages;
 /*
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -87,7 +88,7 @@ namespace iTextSharp.text.pdf.codec {
         * every time
         * @return the <CODE>Image</CODE>
         */    
-        public static Image GetTiffImage(RandomAccessFileOrArray s, bool handleIncorrectImage, int page, bool direct) {
+        public static Image GetTiffImage(RandomAccessFileOrArray s, bool recoverFromImageError, int page, bool direct) {
             if (page < 1)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("the.page.number.must.be.gt.eq.1"));
             TIFFDirectory dir = new TIFFDirectory(s, page - 1);
@@ -197,7 +198,7 @@ namespace iTextSharp.text.pdf.codec {
                     s.ReadFully(im);
                     int height = Math.Min(rowsStrip, rowsLeft);
                     TIFFFaxDecoder decoder = new TIFFFaxDecoder(fillOrder, w, height);
-                    decoder.HandleIncorrectImage = handleIncorrectImage;
+                    decoder.RecoverFromImageError = recoverFromImageError;
                     byte[] outBuf = new byte[(w + 7) / 8 * height];
                     switch (compression) {
                         case TIFFConstants.COMPRESSION_CCITTRLEW:
@@ -214,9 +215,24 @@ namespace iTextSharp.text.pdf.codec {
                                 tiffT4Options ^= TIFFConstants.GROUP3OPT_FILLBITS;
                                 try {
                                     decoder.Decode2D(outBuf, im, 0, height, tiffT4Options);
-                                }
-                                catch {
-                                    throw e;
+                                } catch (Exception e2) {
+                                    if (!recoverFromImageError)
+                                        throw e;
+                                    if (rowsStrip == 1)
+                                        throw e;
+                                    // repeat of reading the tiff directly (the if section of this if else structure)
+                                    // copy pasted to avoid making a method with 10 parameters
+                                    im = new byte[(int) size[0]];
+                                    s.Seek(offset[0]);
+                                    s.ReadFully(im);
+                                    img = Image.GetInstance(w, h, false, imagecomp, paramsn, im);
+                                    img.Inverted = true;
+                                    img.SetDpi(dpiX, dpiY);
+                                    img.XYRatio = XYRatio;
+                                    img.OriginalType = Image.ORIGINAL_TIFF;
+                                    if (rotation != 0)
+                                        img.InitialRotation = rotation;
+                                    return img;
                                 }
                             }
                             g4.Fax4Encode(outBuf, height);
@@ -226,7 +242,7 @@ namespace iTextSharp.text.pdf.codec {
                                 decoder.DecodeT6(outBuf, im, 0, height, tiffT6Options);
                             }
                             catch (InvalidImageException e) {
-                                if (!handleIncorrectImage)
+                                if (!recoverFromImageError)
                                     throw e;
                             }
                             g4.Fax4Encode(outBuf, height);
@@ -256,8 +272,8 @@ namespace iTextSharp.text.pdf.codec {
             return img;
         }
 
-        public static Image GetTiffImage(RandomAccessFileOrArray s, bool handleIncorrectImage, int page) {
-            return GetTiffImage(s, handleIncorrectImage, page, false);
+        public static Image GetTiffImage(RandomAccessFileOrArray s, bool recoverFromImageError, int page) {
+            return GetTiffImage(s, recoverFromImageError, page, false);
         }
 
         /** Reads a page from a TIFF image. Direct mode is not used.

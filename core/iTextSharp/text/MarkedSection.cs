@@ -4,19 +4,20 @@ using System.util;
 using System.Collections.Generic;
 using iTextSharp.text.api;
 /*
- * $Id: MarkedSection.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: MarkedSection.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -84,7 +85,7 @@ namespace iTextSharp.text {
         * @throws  ClassCastException if the object is not a <CODE>Paragraph</CODE>, <CODE>List</CODE> or <CODE>Table</CODE>
         */
          
-        public void Add(int index, IElement o) {
+        virtual public void Add(int index, IElement o) {
             ((Section)element).Add(index, o);
         }
             
@@ -97,7 +98,7 @@ namespace iTextSharp.text {
         * @throws  ClassCastException if the object is not a <CODE>Paragraph</CODE>, <CODE>List</CODE>, <CODE>Table</CODE> or <CODE>Section</CODE>
         */
             
-        public bool Add(IElement o) {
+        virtual public bool Add(IElement o) {
             return ((Section)element).Add(o);
         }
 
@@ -129,7 +130,7 @@ namespace iTextSharp.text {
         * @throws  ClassCastException if one of the objects isn't a <CODE>Paragraph</CODE>, <CODE>List</CODE>, <CODE>Table</CODE>
         */
             
-        public bool AddAll<T>(ICollection<T> collection) where T : IElement {
+        virtual public bool AddAll<T>(ICollection<T> collection) where T : IElement {
             return ((Section)element).AddAll(collection);
         }
             
@@ -141,7 +142,7 @@ namespace iTextSharp.text {
         * @return  a new Section object
         */
             
-        public MarkedSection AddSection(float indentation, int numberDepth) {
+        virtual public MarkedSection AddSection(float indentation, int numberDepth) {
             MarkedSection section = ((Section)element).AddMarkedSection();
             section.Indentation = indentation;
             section.NumberDepth = numberDepth;
@@ -155,7 +156,7 @@ namespace iTextSharp.text {
         * @return  a new Section object
         */
             
-        public MarkedSection AddSection(float indentation) {
+        virtual public MarkedSection AddSection(float indentation) {
             MarkedSection section = ((Section)element).AddMarkedSection();
             section.Indentation = indentation;
             return section;
@@ -167,7 +168,7 @@ namespace iTextSharp.text {
         * @param   numberDepth the numberDepth of the section
         * @return  a new Section object
         */
-        public MarkedSection AddSection(int numberDepth) {
+        virtual public MarkedSection AddSection(int numberDepth) {
             MarkedSection section = ((Section)element).AddMarkedSection();
             section.NumberDepth = numberDepth;
             return section;
@@ -178,7 +179,7 @@ namespace iTextSharp.text {
         *
         * @return  a new Section object
         */
-        public MarkedSection AddSection() {
+        virtual public MarkedSection AddSection() {
             return ((Section)element).AddMarkedSection();
         }
             
@@ -189,7 +190,7 @@ namespace iTextSharp.text {
         *
         * @param   title   the new title
         */
-        public MarkedObject Title {
+        virtual public MarkedObject Title {
             set {
                 if (value.element is Paragraph)
                     this.title = value;
@@ -211,7 +212,7 @@ namespace iTextSharp.text {
         *
         * @param   numberDepth     the new numberDepth
         */
-        public int NumberDepth {
+        virtual public int NumberDepth {
             set {
                 ((Section)element).NumberDepth = value;
             }
@@ -222,7 +223,7 @@ namespace iTextSharp.text {
         *
         * @param   indentation     the indentation
         */
-        public float IndentationLeft {
+        virtual public float IndentationLeft {
             get {
                 return ((Section)element).IndentationLeft;
             }
@@ -237,7 +238,7 @@ namespace iTextSharp.text {
         * @param   indentation     the indentation
         */
             
-        public float IndentationRight {
+        virtual public float IndentationRight {
             get {
                 return ((Section)element).IndentationRight;
             }
@@ -251,7 +252,7 @@ namespace iTextSharp.text {
         *
         * @param   indentation     the indentation
         */
-        public float Indentation {
+        virtual public float Indentation {
             set {
                 ((Section)element).Indentation = value;
             }
@@ -261,7 +262,7 @@ namespace iTextSharp.text {
         * @param bookmarkOpen false if the bookmark children are not
         * visible.
         */
-        public bool BookmarkOpen {
+        virtual public bool BookmarkOpen {
             set {
                 ((Section)element).BookmarkOpen = value;
             }
@@ -271,7 +272,7 @@ namespace iTextSharp.text {
         * Setter for property triggerNewPage.
         * @param triggerNewPage true if a new page has to be triggered.
         */
-        public bool TriggerNewPage {
+        virtual public bool TriggerNewPage {
             set {
                 ((Section)element).TriggerNewPage = value;
             }
@@ -282,7 +283,7 @@ namespace iTextSharp.text {
         * can be changed with this method.
         * @param bookmarkTitle the bookmark title
         */    
-        public String BookmarkTitle {
+        virtual public String BookmarkTitle {
             set {
                 ((Section)element).BookmarkTitle = value;
             }
@@ -292,7 +293,7 @@ namespace iTextSharp.text {
         * Adds a new page to the section.
         * @since    2.1.1
         */
-        public void NewPage() {
+        virtual public void NewPage() {
             ((Section)element).NewPage();
         }
     }

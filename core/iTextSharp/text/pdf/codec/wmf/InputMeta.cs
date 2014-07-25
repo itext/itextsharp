@@ -3,19 +3,20 @@ using System.IO;
 using iTextSharp.text;
 
 /*
- * $Id: InputMeta.cs 318 2012-02-27 22:46:07Z psoares33 $
+ * $Id: InputMeta.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -60,7 +61,7 @@ namespace iTextSharp.text.pdf.codec.wmf {
             this.sr = istr;
         }
 
-        public int ReadWord() {
+        virtual public int ReadWord() {
             length += 2;
             int k1 = sr.ReadByte();
             if (k1 < 0)
@@ -68,14 +69,14 @@ namespace iTextSharp.text.pdf.codec.wmf {
             return (k1 + (sr.ReadByte() << 8)) & 0xffff;
         }
 
-        public int ReadShort() {
+        virtual public int ReadShort() {
             int k = ReadWord();
             if (k > 0x7fff)
                 k -= 0x10000;
             return k;
         }
 
-        public Int32 ReadInt() {
+        virtual public Int32 ReadInt() {
             length += 4;
             int k1 = sr.ReadByte();
             if (k1 < 0)
@@ -85,23 +86,23 @@ namespace iTextSharp.text.pdf.codec.wmf {
             return k1 + k2 + k3 + (sr.ReadByte() << 24);
         }
     
-        public int ReadByte() {
+        virtual public int ReadByte() {
             ++length;
             return sr.ReadByte() & 0xff;
         }
     
-        public void Skip(int len) {
+        virtual public void Skip(int len) {
             length += len;
             Utilities.Skip(sr, len);
         }
     
-        public int Length {
+        virtual public int Length {
             get {
                 return length;
             }
         }
     
-        public BaseColor ReadColor() {
+        virtual public BaseColor ReadColor() {
             int red = ReadByte();
             int green = ReadByte();
             int blue = ReadByte();

@@ -2,15 +2,16 @@ using System;
 using iTextSharp.text.pdf;
 /*
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -56,22 +57,22 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
 
         private int supplement;
 
-        public int Supplement {
+        virtual public int Supplement {
             get { return supplement; }
             set { supplement = value; }
         }
         
-        public String Name {
+        virtual public String Name {
             get { return cmapName; }
             set { cmapName = value; }
         }
 
-        public String Ordering {
+        virtual public String Ordering {
             get { return ordering; }
             set { ordering = value; }
         }
         
-        public String Registry {
+        virtual public String Registry {
             get { return registry; }
             set { registry = value; }
         }
@@ -116,7 +117,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             return br;
         }
 
-        public String DecodeStringToUnicode(PdfString ps) {
+        virtual public String DecodeStringToUnicode(PdfString ps) {
             if (ps.IsHexWriting())
                 return PdfEncodings.ConvertToString(ps.GetBytes(), "UnicodeBigUnmarked");
             else

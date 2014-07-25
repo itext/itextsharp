@@ -10,7 +10,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
 
     internal class HtmlUtilsTest {
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
         }
 
@@ -25,12 +25,12 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
 //	}
 
         [Test]
-        public void TestRTN() {
+        virtual public void TestRTN() {
             Assert.AreEqual(" ", HTMLUtils.Sanitize("\r\n\t", false)[0].ToString());
         }
 
         [Test]
-        public void TestRTNinline() {
+        virtual public void TestRTNinline() {
             Assert.AreEqual(" ", HTMLUtils.SanitizeInline("\r\n\t", false)[0].ToString());
         }
     }

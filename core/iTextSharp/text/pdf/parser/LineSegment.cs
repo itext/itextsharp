@@ -1,18 +1,19 @@
 using System;
 using System.util;
 /*
- * $Id: LineSegment.cs 622 2013-10-04 12:47:40Z pavel-alay $
+ * $Id: LineSegment.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Kevin Day, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -69,14 +70,14 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @return the start point
          */
-        public Vector GetStartPoint() {
+        virtual public Vector GetStartPoint() {
             return startPoint;
         }
 
         /**
          * @return the end point
          */
-        public Vector GetEndPoint() {
+        virtual public Vector GetEndPoint() {
             return endPoint;
         }
         
@@ -84,7 +85,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the length of this line segment
          * @since 5.0.2
          */
-        public float GetLength(){
+        virtual public float GetLength(){
             return endPoint.Subtract(startPoint).Length;
         }
         
@@ -96,7 +97,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the bounding rectangle
          * @since 5.0.2
          */
-        public RectangleJ GetBoundingRectange(){
+        virtual public RectangleJ GetBoundingRectange(){
             float x1 = GetStartPoint()[Vector.I1];
             float y1 = GetStartPoint()[Vector.I2];
             float x2 = GetEndPoint()[Vector.I1];
@@ -110,7 +111,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param m the matrix for the transformation
          * @return the transformed segment
          */
-        public LineSegment TransformBy(Matrix m){
+        virtual public LineSegment TransformBy(Matrix m){
             Vector newStart = startPoint.Cross(m);
             Vector newEnd = endPoint.Cross(m);
             return new LineSegment(newStart, newEnd);

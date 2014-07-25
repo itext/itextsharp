@@ -5,18 +5,19 @@ using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf.codec;
 using iTextSharp.text.exceptions;
 /*
- * $Id: PdfImageObject.cs 622 2013-10-04 12:47:40Z pavel-alay $
+ * $Id: PdfImageObject.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Kevin Day, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -122,14 +123,14 @@ namespace iTextSharp.text.pdf.parser {
          */
         private ImageBytesType streamContentType = null;
 
-        public string GetFileType() {
+        virtual public string GetFileType() {
             return streamContentType.FileExtension;
         }
 
         /**
          * @return the type of image data that is returned by getImageBytes()
          */
-        public ImageBytesType GetImageBytesType(){
+        virtual public ImageBytesType GetImageBytesType(){
             return streamContentType;
         }
         
@@ -184,7 +185,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param key a key
          * @return the value
          */
-        public PdfObject Get(PdfName key) {
+        virtual public PdfObject Get(PdfName key) {
             return dictionary.Get(key);
         }
         
@@ -192,7 +193,7 @@ namespace iTextSharp.text.pdf.parser {
          * Returns the image dictionary.
          * @return the dictionary
          */
-        public PdfDictionary GetDictionary() {
+        virtual public PdfDictionary GetDictionary() {
             return dictionary;
         }
 
@@ -366,7 +367,7 @@ namespace iTextSharp.text.pdf.parser {
          * @throws IOException
          * @since 5.0.4
          */
-        public byte[] GetImageAsBytes() {
+        virtual public byte[] GetImageAsBytes() {
             return imageBytes; 
         }
 

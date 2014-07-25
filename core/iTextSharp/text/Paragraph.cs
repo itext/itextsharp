@@ -5,19 +5,20 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.interfaces;
 
 /*
- * $Id: Paragraph.cs 652 2013-11-12 13:51:50Z asubach $
+ * $Id: Paragraph.cs 689 2014-01-30 12:21:56Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -223,7 +224,7 @@ namespace iTextSharp.text {
          * Breaks this Paragraph up in different parts, separating paragraphs, lists and tables from each other.
          * @return
          */
-        public IList<IElement> BreakUp() {
+        virtual public IList<IElement> BreakUp() {
             IList<IElement> list = new List<IElement>();
             Paragraph tmp = null;
             foreach (IElement e in this) {
@@ -337,7 +338,7 @@ namespace iTextSharp.text {
         /// Get/set the alignment of this paragraph.
         /// </summary>
         /// <value>a integer</value>
-        public int Alignment{
+        virtual public int Alignment{
             get {
                 return alignment;
             }
@@ -350,7 +351,7 @@ namespace iTextSharp.text {
         /// Get/set the indentation of this paragraph on the left side.
         /// </summary>
         /// <value>a float</value>
-        public float IndentationLeft {
+        virtual public float IndentationLeft {
             get {
                 return indentationLeft;
             }
@@ -364,7 +365,7 @@ namespace iTextSharp.text {
         /// Get/set the indentation of this paragraph on the right side.
         /// </summary>
         /// <value>a float</value>
-        public float IndentationRight {
+        virtual public float IndentationRight {
             get {
                 return indentationRight;
             }
@@ -374,7 +375,7 @@ namespace iTextSharp.text {
             }
         }
     
-        public float SpacingBefore {
+        virtual public float SpacingBefore {
             get {
                 return spacingBefore;
             }
@@ -383,7 +384,7 @@ namespace iTextSharp.text {
             }
         }
 
-        public float SpacingAfter {
+        virtual public float SpacingAfter {
             get {
                 return spacingAfter;
             }
@@ -396,7 +397,7 @@ namespace iTextSharp.text {
         /// Set/get if this paragraph has to be kept together on one page.
         /// </summary>
         /// <value>a bool</value>
-        public bool KeepTogether {
+        virtual public bool KeepTogether {
             get {
                 return keeptogether;
             }
@@ -405,7 +406,7 @@ namespace iTextSharp.text {
             }
         }    
 
-        public float FirstLineIndent {
+        virtual public float FirstLineIndent {
             get {
                 return this.firstLineIndent;
             }
@@ -414,7 +415,7 @@ namespace iTextSharp.text {
             }
         }
 
-        public float ExtraParagraphSpace {
+        virtual public float ExtraParagraphSpace {
             get {
                 return this.extraParagraphSpace;
             }
@@ -423,7 +424,7 @@ namespace iTextSharp.text {
             }
         }
 
-        public PdfObject GetAccessibleAttribute(PdfName key) {
+        virtual public PdfObject GetAccessibleAttribute(PdfName key) {
             if (accessibleAttributes != null) {
                 PdfObject value;
                 accessibleAttributes.TryGetValue(key, out value);
@@ -432,7 +433,7 @@ namespace iTextSharp.text {
                 return null;
         }
 
-        public void SetAccessibleAttribute(PdfName key, PdfObject value) {
+        virtual public void SetAccessibleAttribute(PdfName key, PdfObject value) {
             if (accessibleAttributes == null)
                 accessibleAttributes = new Dictionary<PdfName, PdfObject>();
             accessibleAttributes[key] = value;
@@ -440,16 +441,16 @@ namespace iTextSharp.text {
 
 
 
-        public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+        virtual public Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
             return accessibleAttributes;
         }
 
-        public PdfName Role {
+        virtual public PdfName Role {
             get { return role; }
             set { this.role = value; }
         }
 
-        public AccessibleElementId ID {
+        virtual public AccessibleElementId ID {
             get
             {
                 if (id == null)
@@ -457,6 +458,10 @@ namespace iTextSharp.text {
                 return id;
             }
             set { id = value; }
+        }
+
+        public virtual bool IsInline {
+            get { return false; }
         }
     }
 }

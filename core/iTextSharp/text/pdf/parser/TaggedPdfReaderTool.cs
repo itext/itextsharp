@@ -5,18 +5,19 @@ using System.Text;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.xml;
 /*
- * $Id: TaggedPdfReaderTool.cs 597 2013-09-11 13:05:49Z pavel-alay $
+ * $Id: TaggedPdfReaderTool.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -94,7 +95,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param os
          *            the Stream to which the resulting xml will be written
          */
-        public void ConvertToXml(PdfReader reader, Stream os) {
+        virtual public void ConvertToXml(PdfReader reader, Stream os) {
             ConvertToXml(reader, os, Encoding.Default);
         }
 
@@ -106,7 +107,7 @@ namespace iTextSharp.text.pdf.parser {
          *            the child to inspect
          * @throws IOException
          */
-        public void InspectChild(PdfObject k) {
+        virtual public void InspectChild(PdfObject k) {
             if (k == null)
                 return;
             if (k is PdfArray)
@@ -122,7 +123,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param k
          *            the child array to inspect
          */
-        public void InspectChildArray(PdfArray k) {
+        virtual public void InspectChildArray(PdfArray k) {
             if (k == null)
                 return;
             for (int i = 0; i < k.Size; i++) {
@@ -148,7 +149,7 @@ namespace iTextSharp.text.pdf.parser {
          * @param k
          *            the child dictionary to inspect
          */
-        public void InspectChildDictionary(PdfDictionary k, bool inspectAttributes) {
+        virtual public void InspectChildDictionary(PdfDictionary k, bool inspectAttributes) {
             if (k == null)
                 return;
             PdfName s = k.GetAsName(PdfName.S);
@@ -184,7 +185,7 @@ namespace iTextSharp.text.pdf.parser {
                 InspectChild(k.GetDirectObject(PdfName.K));
         }
 
-        protected String XmlName(PdfName name)
+        virtual protected String XmlName(PdfName name)
         {
             String oldName = name.ToString();
             String xmlName = oldName.Remove(oldName.IndexOf("/"), 1);

@@ -88,14 +88,14 @@ namespace iTextSharp.text.pdf {
         public LongHashtable() : this( 101, 0.75f ) {}
     
         /// Returns the number of elements contained in the hashtable.
-        public int Size {
+        virtual public int Size {
             get {
                 return count;
             }
         }
     
         /// Returns true if the hashtable contains no elements.
-        public bool IsEmpty() {
+        virtual public bool IsEmpty() {
             return count == 0;
         }
     
@@ -105,7 +105,7 @@ namespace iTextSharp.text.pdf {
         // @exception NullPointerException If the value being searched
         // for is equal to null.
         // @see LongHashtable#containsKey
-        public bool Contains( long value ) {
+        virtual public bool Contains( long value ) {
             LongHashtableEntry[] tab = table;
             for ( int i = tab.Length ; i-- > 0 ; ) {
                 for ( LongHashtableEntry e = tab[i] ; e != null ; e = e.next ) {
@@ -119,7 +119,7 @@ namespace iTextSharp.text.pdf {
         /// Returns true if the collection contains an element for the key.
         // @param key the key that we are looking for
         // @see LongHashtable#contains
-        public bool ContainsKey( long key ) {
+        virtual public bool ContainsKey( long key ) {
             LongHashtableEntry[] tab = table;
             int hash = key.GetHashCode();
             int index = ( hash & 0x7FFFFFFF ) % tab.Length;
@@ -181,7 +181,7 @@ namespace iTextSharp.text.pdf {
         /// Rehashes the content of the table into a bigger table.
         // This method is called automatically when the hashtable's
         // size exceeds the threshold.
-        protected void Rehash() {
+        virtual protected void Rehash() {
             int oldCapacity = table.Length;
             LongHashtableEntry[] oldTable = table;
         
@@ -207,7 +207,7 @@ namespace iTextSharp.text.pdf {
         // key is not present.
         // @param key the key that needs to be removed
         // @return the value of key, or null if the key was not found.
-        public long Remove( long key ) {
+        virtual public long Remove( long key ) {
             LongHashtableEntry[] tab = table;
             int hash = key.GetHashCode();
             int index = ( hash & 0x7FFFFFFF ) % tab.Length;
@@ -225,14 +225,14 @@ namespace iTextSharp.text.pdf {
         }
     
         /// Clears the hash table so that it has no more elements in it.
-        public void Clear() {
+        virtual public void Clear() {
             LongHashtableEntry[] tab = table;
             for ( int index = tab.Length; --index >= 0; )
                 tab[index] = null;
             count = 0;
         }
     
-        public LongHashtable Clone() {
+        virtual public LongHashtable Clone() {
             LongHashtable t = new LongHashtable();
             t.count = count;
             t.loadFactor = loadFactor;
@@ -245,13 +245,13 @@ namespace iTextSharp.text.pdf {
             return t;
         }
 
-        public long[] ToOrderedKeys() {
+        virtual public long[] ToOrderedKeys() {
             long[] res = GetKeys();
             Array.Sort(res);
             return res;
         }
         
-        public long[] GetKeys() {
+        virtual public long[] GetKeys() {
             long[] res = new long[count];
             int ptr = 0;
             int index = table.Length;
@@ -274,19 +274,19 @@ namespace iTextSharp.text.pdf {
             internal long value;
             internal LongHashtableEntry next;
             
-            public long Key {
+            virtual public long Key {
                 get {
                     return key;
                 }
             }
             
-            public long Value {
+            virtual public long Value {
                 get {
                     return value;
                 }
             }
             
-            protected internal LongHashtableEntry Clone() {
+            virtual protected internal LongHashtableEntry Clone() {
                 LongHashtableEntry entry = new LongHashtableEntry();
                 entry.hash = hash;
                 entry.key = key;
@@ -296,7 +296,7 @@ namespace iTextSharp.text.pdf {
             }
         }    
 
-        public LongHashtableIterator GetEntryIterator() {
+        virtual public LongHashtableIterator GetEntryIterator() {
             return new LongHashtableIterator(table);
         }
         
@@ -311,7 +311,7 @@ namespace iTextSharp.text.pdf {
                 this.index = table.Length;
             }
             
-            public bool HasNext() {
+            virtual public bool HasNext() {
                 if (entry != null) {
                     return true;
                 }
@@ -323,7 +323,7 @@ namespace iTextSharp.text.pdf {
                 return false;
             }
             
-            public LongHashtableEntry Next() {
+            virtual public LongHashtableEntry Next() {
                 if (entry == null) {
                     while ((index-- > 0) && ((entry = table[index]) == null));
                 }

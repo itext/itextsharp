@@ -64,7 +64,7 @@ namespace System.util.collections {
         /// <value>The number of key/value pairs.</value>
         /// <returns>The number of key/value pairs contained in the
         /// <see cref="T:ReadOnlyDictionary`2"></see>.</returns>
-        public int Count {
+        virtual public int Count {
             get { return this.source.Count; }
         }
 
@@ -77,7 +77,7 @@ namespace System.util.collections {
         /// containing the keys in the
         /// <see cref="Dictionary{TKey,TValue}"></see>.
         /// </returns>
-        public ICollection<TKey> Keys {
+        virtual public ICollection<TKey> Keys {
             get { return this.source.Keys; }
         }
 
@@ -86,7 +86,7 @@ namespace System.util.collections {
         /// <see cref="T:ReadOnlyDictionary`2"/>.
         /// </summary>
         /// <value>The collection of values.</value>
-        public ICollection<TValue> Values {
+        virtual public ICollection<TValue> Values {
             get { return this.source.Values; }
         }
 
@@ -166,7 +166,7 @@ namespace System.util.collections {
         /// <exception cref="T:System.ArgumentNullException">
         /// Thrown when the key is null.
         /// </exception>
-        public bool ContainsKey(TKey key) {
+        virtual public bool ContainsKey(TKey key) {
             return this.source.ContainsKey(key);
         }
 
@@ -194,7 +194,7 @@ namespace System.util.collections {
         /// <b>true</b> if the <see cref="T:ReadOnlyDictionary`2" /> contains
         /// an element with the specified key; otherwise, <b>false</b>.
         /// </returns>
-        public bool TryGetValue(TKey key, out TValue value) {
+        virtual public bool TryGetValue(TKey key, out TValue value) {
             return this.source.TryGetValue(key, out value);
         }
 

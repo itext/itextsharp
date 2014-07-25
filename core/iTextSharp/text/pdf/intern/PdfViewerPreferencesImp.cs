@@ -3,18 +3,19 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.interfaces;
 
 /*
- * $Id: PdfViewerPreferencesImp.cs 318 2012-02-27 22:46:07Z psoares33 $
+ * $Id: PdfViewerPreferencesImp.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -107,7 +108,7 @@ namespace iTextSharp.text.pdf.intern {
         /**
         * Returns the page layout and page mode value.
         */
-        public int PageLayoutAndMode {
+        virtual public int PageLayoutAndMode {
             get {
                 return pageLayoutAndMode;
             }
@@ -116,7 +117,7 @@ namespace iTextSharp.text.pdf.intern {
         /**
         * Returns the viewer preferences.
         */
-        public PdfDictionary GetViewerPreferences() {
+        virtual public PdfDictionary GetViewerPreferences() {
             return viewerPreferences;
         }
         
@@ -127,7 +128,7 @@ namespace iTextSharp.text.pdf.intern {
         *            the viewer preferences
         * @see PdfWriter#setViewerPreferences
         */
-        public int ViewerPreferences {
+        virtual public int ViewerPreferences {
             set {
                 int preferences = value;
                 this.pageLayoutAndMode |= preferences;
@@ -262,7 +263,7 @@ namespace iTextSharp.text.pdf.intern {
         * 
         * @param catalog
         */
-        public void AddToCatalog(PdfDictionary catalog) {
+        virtual public void AddToCatalog(PdfDictionary catalog) {
             // Page Layout
             catalog.Remove(PdfName.PAGELAYOUT);
             if ((pageLayoutAndMode & PdfWriter.PageLayoutSinglePage) != 0)

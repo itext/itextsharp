@@ -1,4 +1,4 @@
-﻿namespace iTextSharp.text.pdf.codec.wmf
+namespace iTextSharp.text.pdf.codec.wmf
 {
     public class Point {
         public int x;

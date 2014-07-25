@@ -4,15 +4,16 @@ using iTextSharp.text;
  * $Id: TableStyleValues.java 122 2011-05-27 12:20:58Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -54,73 +55,73 @@ namespace iTextSharp.tool.xml.html.table {
     public class TableStyleValues {
         private float horBorderSpacing;
 
-        public float HorBorderSpacing {
+        virtual public float HorBorderSpacing {
             get { return horBorderSpacing; }
             set { horBorderSpacing = value; }
         }
         private float verBorderSpacing;
 
-        public float VerBorderSpacing {
+        virtual public float VerBorderSpacing {
             get { return verBorderSpacing; }
             set { verBorderSpacing = value; }
         }
         private float borderLeftWidth;
 
-        public float BorderWidthLeft {
+        virtual public float BorderWidthLeft {
             get { return borderLeftWidth; }
             set { borderLeftWidth = value; }
         }
         private BaseColor borderLeftColor;
 
-        public BaseColor BorderColorLeft {
+        virtual public BaseColor BorderColorLeft {
             get { return borderLeftColor; }
             set { borderLeftColor = value; }
         }
         private float borderRightWidth;
 
-        public float BorderWidthRight {
+        virtual public float BorderWidthRight {
             get { return borderRightWidth; }
             set { borderRightWidth = value; }
         }
         private BaseColor borderRightColor;
 
-        public BaseColor BorderColorRight {
+        virtual public BaseColor BorderColorRight {
             get { return borderRightColor; }
             set { borderRightColor = value; }
         }
         private float borderTopWidth;
 
-        public float BorderWidthTop {
+        virtual public float BorderWidthTop {
             get { return borderTopWidth; }
             set { borderTopWidth = value; }
         }
         private BaseColor borderTopColor;
 
-        public BaseColor BorderColorTop {
+        virtual public BaseColor BorderColorTop {
             get { return borderTopColor; }
             set { borderTopColor = value; }
         }
         private float borderBottomWidth;
 
-        public float BorderWidthBottom {
+        virtual public float BorderWidthBottom {
             get { return borderBottomWidth; }
             set { borderBottomWidth = value; }
         }
         private BaseColor borderBottomColor;
 
-        public BaseColor BorderColorBottom {
+        virtual public BaseColor BorderColorBottom {
             get { return borderBottomColor; }
             set { borderBottomColor = value; }
         }
         private bool isLastInRow = false;
 
-        public bool IsLastInRow {
+        virtual public bool IsLastInRow {
             get { return isLastInRow; }
             set { isLastInRow = value; }
         }
         private BaseColor background;
 
-        public BaseColor Background {
+        virtual public BaseColor Background {
             get { return background; }
             set { background = value; }
         }
@@ -134,7 +135,7 @@ namespace iTextSharp.tool.xml.html.table {
          * Sets the border width for the entire table or cell.
          * @param width float.
          */
-        public float BorderWidth {
+        virtual public float BorderWidth {
             set {
                 borderBottomWidth = value;
                 borderLeftWidth = value;
@@ -146,7 +147,7 @@ namespace iTextSharp.tool.xml.html.table {
          * Sets the border color for the entire table or cell.
          * @param color BaseColor.
          */
-        public BaseColor BorderColor {
+        virtual public BaseColor BorderColor {
             set {
                 borderBottomColor = value;
                 borderLeftColor = value;

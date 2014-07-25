@@ -1,16 +1,17 @@
 /*
- * $Id: XmpWriter.cs 600 2013-09-12 10:09:12Z eugenemark $
+ * $Id: XmpWriter.cs 699 2014-02-11 14:46:33Z asubach $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -164,13 +165,13 @@ namespace iTextSharp.text.xml.xmp {
             }
         }
 
-        public IXmpMeta XmpMeta {
+        virtual public IXmpMeta XmpMeta {
             get { return xmpMeta; }
         }
 
         /** Sets the XMP to read-only */
 
-        public bool ReadOnly {
+        virtual public bool ReadOnly {
             get { return serializeOptions.ReadOnlyPacket; }
             set { serializeOptions.ReadOnlyPacket = value; }
         }
@@ -179,7 +180,7 @@ namespace iTextSharp.text.xml.xmp {
          * @param about The about to set.
          */
 
-        public String About {
+        virtual public String About {
             get { return xmpMeta.ObjectName; }
             set { xmpMeta.ObjectName = value; }
         }
@@ -192,7 +193,7 @@ namespace iTextSharp.text.xml.xmp {
          */
 
         [Obsolete]
-        public void AddRdfDescription(String xmlns, String content) {
+        virtual public void AddRdfDescription(String xmlns, String content) {
             try {
                 String str = "<rdf:RDF xmlns:rdf=\"" + XmpConst.NS_RDF + "\">" +
                              "<rdf:Description rdf:about=\"" + xmpMeta.ObjectName +
@@ -217,7 +218,7 @@ namespace iTextSharp.text.xml.xmp {
          */
 
         [Obsolete]
-        public void AddRdfDescription(XmpSchema s) {
+        virtual public void AddRdfDescription(XmpSchema s) {
             try {
                 String str = "<rdf:RDF xmlns:rdf=\"" + XmpConst.NS_RDF + "\">" +
                              "<rdf:Description rdf:about=\"" + xmpMeta.ObjectName +
@@ -246,7 +247,7 @@ namespace iTextSharp.text.xml.xmp {
          * @throws XMPException Wraps all errors and exceptions that may occur.
          */
 
-        public void SetProperty(String schemaNS, String propName, Object value) {
+        virtual public void SetProperty(String schemaNS, String propName, Object value) {
             xmpMeta.SetProperty(schemaNS, propName, value);
         }
 
@@ -262,7 +263,7 @@ namespace iTextSharp.text.xml.xmp {
          * @throws XMPException Wraps all errors and exceptions that may occur.
          */
 
-        public void AppendArrayItem(String schemaNS, String arrayName, String value) {
+        virtual public void AppendArrayItem(String schemaNS, String arrayName, String value) {
             xmpMeta.AppendArrayItem(schemaNS, arrayName, new PropertyOptions(PropertyOptions.ARRAY), value, null);
         }
 
@@ -278,7 +279,7 @@ namespace iTextSharp.text.xml.xmp {
          * @throws XMPException Wraps all errors and exceptions that may occur.
          */
 
-        public void AppendOrderedArrayItem(String schemaNS, String arrayName, String value) {
+        virtual public void AppendOrderedArrayItem(String schemaNS, String arrayName, String value) {
             xmpMeta.AppendArrayItem(schemaNS, arrayName, new PropertyOptions(PropertyOptions.ARRAY_ORDERED), value, null);
         }
 
@@ -294,7 +295,7 @@ namespace iTextSharp.text.xml.xmp {
          * @throws XMPException Wraps all errors and exceptions that may occur.
          */
 
-        public void AppendAlternateArrayItem(String schemaNS, String arrayName, String value) {
+        virtual public void AppendAlternateArrayItem(String schemaNS, String arrayName, String value) {
             xmpMeta.AppendArrayItem(schemaNS, arrayName, new PropertyOptions(PropertyOptions.ARRAY_ALTERNATE), value,
                                     null);
         }
@@ -304,7 +305,7 @@ namespace iTextSharp.text.xml.xmp {
          * @throws IOException
          */
 
-        public void Serialize(Stream externalOutputStream) {
+        virtual public void Serialize(Stream externalOutputStream) {
             XmpMetaFactory.Serialize(xmpMeta, externalOutputStream, serializeOptions);
         }
 
@@ -313,7 +314,7 @@ namespace iTextSharp.text.xml.xmp {
          * @throws IOException
          */
 
-        public void Close() {
+        virtual public void Close() {
             if (outputStream == null)
                 return;
             try {
@@ -325,7 +326,7 @@ namespace iTextSharp.text.xml.xmp {
             }
         }
 
-        public void AddDocInfoProperty(Object key, String value) {
+        virtual public void AddDocInfoProperty(Object key, String value) {
             if (key is String)
                 key = new PdfName((String) key);
             if (PdfName.TITLE.Equals(key)) {
@@ -335,11 +336,11 @@ namespace iTextSharp.text.xml.xmp {
                 xmpMeta.AppendArrayItem(XmpConst.NS_DC, DublinCoreProperties.CREATOR,
                                         new PropertyOptions(PropertyOptions.ARRAY_ORDERED), value, null);
             } else if (PdfName.SUBJECT.Equals(key)) {
-                xmpMeta.AppendArrayItem(XmpConst.NS_DC, DublinCoreProperties.SUBJECT,
-                                        new PropertyOptions(PropertyOptions.ARRAY), value, null);
                 xmpMeta.SetLocalizedText(XmpConst.NS_DC, DublinCoreProperties.DESCRIPTION, XmpConst.X_DEFAULT,
                                          XmpConst.X_DEFAULT, value);
             } else if (PdfName.KEYWORDS.Equals(key)) {
+            foreach (String v in value.Split(',', ';'))
+                xmpMeta.AppendArrayItem(XmpConst.NS_DC, DublinCoreProperties.SUBJECT, new PropertyOptions(PropertyOptions.ARRAY), v.Trim(), null);
                 xmpMeta.SetProperty(XmpConst.NS_PDF, PdfProperties.KEYWORDS, value);
             } else if (PdfName.PRODUCER.Equals(key)) {
                 xmpMeta.SetProperty(XmpConst.NS_PDF, PdfProperties.PRODUCER, value);

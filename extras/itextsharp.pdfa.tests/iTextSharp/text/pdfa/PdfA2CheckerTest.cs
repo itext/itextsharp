@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -14,14 +14,14 @@ namespace iTextSharp.text.pdfa {
 
 
         [SetUp]
-        public void Initialize() {
+        virtual public void Initialize() {
             Directory.CreateDirectory(TARGET + "pdf");
             Directory.CreateDirectory(TARGET + "xml");
             Document.Compress = false;
         }
 
         [Test]
-        public void MetadaCheckTest() {
+        virtual public void MetadaCheckTest() {
             FileStream fos = new FileStream(OUT + "metadaPDFA2CheckTest1.pdf", FileMode.Create);
             Document document = new Document();
             PdfWriter writer = PdfAWriter.GetInstance(document, fos, PdfAConformanceLevel.PDF_A_2B);
@@ -54,7 +54,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void TransparencyCheckTest1() {
+        virtual public void TransparencyCheckTest1() {
             string filename = OUT + "pdfa2TransparencyCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
@@ -100,7 +100,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void TransparencyCheckTest2() {
+        virtual public void TransparencyCheckTest2() {
             Document document = new Document();
             try {
                 // step 2
@@ -202,7 +202,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void TransparencyCheckTest3() {
+        virtual public void TransparencyCheckTest3() {
             Document document = new Document();
             try {
                 // step 2
@@ -285,7 +285,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void TransparencyCheckTest4() {
+        virtual public void TransparencyCheckTest4() {
             // step 1
             Document document = new Document(new Rectangle(850, 600));
             // step 2
@@ -350,7 +350,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void ImageCheckTest1() {
+        virtual public void ImageCheckTest1() {
             string filename = OUT + "ImageCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
@@ -384,7 +384,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void ImageCheckTest2() {
+        virtual public void ImageCheckTest2() {
             string filename = OUT + "ImageCheckTest2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
@@ -435,7 +435,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void LayerCheckTest1() {
+        virtual public void LayerCheckTest1() {
             string filename = OUT + "LayerCheckTest1.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
@@ -465,7 +465,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void LayerCheckTest2() {
+        virtual public void LayerCheckTest2() {
             string filename = OUT + "LayerCheckTest2.pdf";
             FileStream fos = new FileStream(filename, FileMode.Create);
             Document document = new Document();
@@ -502,7 +502,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void EgsCheckTest1() {
+        virtual public void EgsCheckTest1() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document,
                 new FileStream(OUT + "pdfa2egsCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
@@ -544,7 +544,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void EgsCheckTest2() {
+        virtual public void EgsCheckTest2() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document,
                 new FileStream(OUT + "EgsCheckTest2.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
@@ -573,7 +573,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void EgsCheckTest3() {
+        virtual public void EgsCheckTest3() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document,
                 new FileStream(OUT + "pdfa2EgsCheckTest3.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
@@ -603,7 +603,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void EgsCheckTest4() {
+        virtual public void EgsCheckTest4() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2egsCheckTest4.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -644,7 +644,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void CanvasCheckTest1() {
+        virtual public void CanvasCheckTest1() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "canvasCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_1B);
             writer.CreateXmpMetadata();
@@ -681,7 +681,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void CanvasCheckTest2() {
+        virtual public void CanvasCheckTest2() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "canvasCheckTestt2.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_1B);
             writer.CreateXmpMetadata();
@@ -707,7 +707,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void AnnotationCheckTest1() {
+        virtual public void AnnotationCheckTest1() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -740,7 +740,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void AnnotationCheckTest2() {
+        virtual public void AnnotationCheckTest2() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest2.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -772,7 +772,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void AnnotationCheckTest2_1() {
+        virtual public void AnnotationCheckTest2_1() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest2_1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -795,7 +795,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void AnnotationCheckTest2_2() {
+        virtual public void AnnotationCheckTest2_2() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest2_2.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -820,7 +820,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void AnnotationCheckTest2_3() {
+        virtual public void AnnotationCheckTest2_3() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest2_3.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -855,7 +855,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void AnnotationCheckTest3() {
+        virtual public void AnnotationCheckTest3() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest3.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -890,7 +890,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void AnnotationCheckTest4() {
+        virtual public void AnnotationCheckTest4() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest4.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -925,7 +925,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void AnnotationCheckTest5() {
+        virtual public void AnnotationCheckTest5() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest5.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -966,7 +966,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void AnnotationCheckTest6() {
+        virtual public void AnnotationCheckTest6() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest6.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -1008,7 +1008,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void AnnotationCheckTest7() {
+        virtual public void AnnotationCheckTest7() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest7.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -1049,7 +1049,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void AnnotationCheckTest8() {
+        virtual public void AnnotationCheckTest8() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest8.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -1078,7 +1078,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void AnnotationCheckTest9() {
+        virtual public void AnnotationCheckTest9() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest9.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -1106,7 +1106,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void AnnotationCheckTest10() {
+        virtual public void AnnotationCheckTest10() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest10.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
             writer.CreateXmpMetadata();
@@ -1141,7 +1141,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void AnnotationCheckTest11() {
+        virtual public void AnnotationCheckTest11() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "annotationCheckTest11.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2A);
             writer.CreateXmpMetadata();
@@ -1172,7 +1172,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void ColorCheckTest1() {
+        virtual public void ColorCheckTest1() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2ColorCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -1212,7 +1212,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void ColorCheckTest2() {
+        virtual public void ColorCheckTest2() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2ColorCheckTest2.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -1249,7 +1249,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void ColorCheckTest3() {
+        virtual public void ColorCheckTest3() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2ColorCheckTest3.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -1305,7 +1305,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void ColorCheckTest4() {
+        virtual public void ColorCheckTest4() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2ColorCheckTest4.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -1349,7 +1349,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void ColorCheckTest5() {
+        virtual public void ColorCheckTest5() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2ColorCheckTest5.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -1396,7 +1396,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void ColorCheckTest6() {
+        virtual public void ColorCheckTest6() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "pdfa2ColorCheckTest6.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -1436,7 +1436,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void FontCheckTest1() {
+        virtual public void FontCheckTest1() {
             bool exceptionThrown = false;
             try {
                 Document document = new Document();
@@ -1551,7 +1551,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void FileSpecCheckTest1() {
+        virtual public void FileSpecCheckTest1() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "fileSpecCheckTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -1574,7 +1574,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void FileSpecCheckTest2() {
+        virtual public void FileSpecCheckTest2() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "fileSpecCheckTest2.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();
@@ -1602,7 +1602,7 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
-        public void FileSpecCheckTest3() {
+        virtual public void FileSpecCheckTest3() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "fileSpecCheckTest3.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_2B);
             writer.CreateXmpMetadata();

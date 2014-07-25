@@ -6,15 +6,16 @@ using iTextSharp.tool.xml.parser;
  * $Id: ParserListenerWriter.java 131 2011-05-30 07:28:46Z redlab_b $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Balder Van Camp, Emiel Ackermann, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -74,14 +75,14 @@ namespace iTextSharp.tool.xml.parser.io {
         public ParserListenerWriter(IAppender writer) : this(writer, true) {
         }
 
-        public void UnknownText(String str) {
+        virtual public void UnknownText(String str) {
         }
 
-        public void Text(string text) {
+        virtual public void Text(string text) {
             writer.Append(text);
         }
 
-        public void StartElement(String currentTag, IDictionary<String, String> attributes, String ns) {
+        virtual public void StartElement(String currentTag, IDictionary<String, String> attributes, String ns) {
             String myns = (ns.Length > 0)?ns+":":ns;
             if ( attributes.Count >0) {
                 writer.Append("<").Append(myns ).Append(currentTag).Append(" ");
@@ -94,7 +95,7 @@ namespace iTextSharp.tool.xml.parser.io {
             }
         }
 
-        public void EndElement(String curentTag, String ns) {
+        virtual public void EndElement(String curentTag, String ns) {
             String myns = (ns.Length > 0)?ns+":":ns;
             writer.Append("</").Append(myns).Append(curentTag).Append('>');
             if (formatted) {
@@ -105,19 +106,19 @@ namespace iTextSharp.tool.xml.parser.io {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.parser.ParserListener#comment(java.lang.String)
          */
-        public void Comment(String comment) {
+        virtual public void Comment(String comment) {
             writer.Append("<!--").Append(comment).Append("-->");
         }
 
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.parser.XMLParserListener#init()
          */
-        public void Init() {
+        virtual public void Init() {
         }
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.parser.XMLParserListener#close()
          */
-        public void Close() {
+        virtual public void Close() {
         }
     }
 }

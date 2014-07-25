@@ -3,19 +3,20 @@ using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 /*
- * $Id: PdfPCellEventForwarder.cs 318 2012-02-27 22:46:07Z psoares33 $
+ * $Id: PdfPCellEventForwarder.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -65,14 +66,14 @@ namespace iTextSharp.text.pdf.events {
         * Add a page event to the forwarder.
         * @param event an event that has to be added to the forwarder.
         */
-        public void AddCellEvent(IPdfPCellEvent eventa) {
+        virtual public void AddCellEvent(IPdfPCellEvent eventa) {
             events.Add(eventa);
         }
 
         /**
         * @see com.lowagie.text.pdf.PdfPCellEvent#cellLayout(com.lowagie.text.pdf.PdfPCell, com.lowagie.text.Rectangle, com.lowagie.text.pdf.PdfContentByte[])
         */
-        public void CellLayout(PdfPCell cell, Rectangle position, PdfContentByte[] canvases) {
+        virtual public void CellLayout(PdfPCell cell, Rectangle position, PdfContentByte[] canvases) {
             foreach (IPdfPCellEvent eventa in events) {
                 eventa.CellLayout(cell, position, canvases);
             }

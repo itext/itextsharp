@@ -1,18 +1,19 @@
-﻿using System.Xml;
+using System.Xml;
 using iTextSharp.text.pdf.security;
 /*
  * $Id: XfaXmlLocator.java 5830 2013-05-31 09:29:15Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Pavel Alay, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -59,14 +60,14 @@ namespace iTextSharp.text.pdf
         private XfaForm xfaForm;
         private string encoding;
 
-        protected void CreateXfaForm() {
+        virtual protected void CreateXfaForm() {
             xfaForm = new XfaForm(stamper.Reader);
         }
 
         /**
          * Gets Document to sign
          */
-        public XmlDocument GetDocument() {
+        virtual public XmlDocument GetDocument() {
             return xfaForm.DomDocument;
         }
 
@@ -76,7 +77,7 @@ namespace iTextSharp.text.pdf
          * @throws IOException
          * @throws DocumentException
          */
-        public void SetDocument(XmlDocument document) {
+        virtual public void SetDocument(XmlDocument document) {
             byte[] outerXml = System.Text.Encoding.UTF8.GetBytes(document.OuterXml);
             //Create PdfStream
             PdfIndirectReference iref = stamper.Writer.
@@ -84,11 +85,11 @@ namespace iTextSharp.text.pdf
             stamper.Reader.AcroForm.Put(PdfName.XFA, iref);
         }
 
-        public string GetEncoding() {
+        virtual public string GetEncoding() {
             return encoding;
         }
 
-        public void SetEncoding(string encoding) {
+        virtual public void SetEncoding(string encoding) {
             this.encoding = encoding;
         }
     }

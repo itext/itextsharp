@@ -139,6 +139,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\color\list\Color_list01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\color\table\Color_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\color\text\Color_text01.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\color\text\Color_text02.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Blocks001Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\ComplexDiv01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\ComplexDiv02Test.cs" />

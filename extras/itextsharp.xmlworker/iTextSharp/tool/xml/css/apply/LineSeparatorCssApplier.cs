@@ -22,7 +22,7 @@ namespace iTextSharp.tool.xml.css.apply {
         /* (non-Javadoc)
          * @see com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag)
          */
-        public LineSeparator Apply(LineSeparator ls, Tag t, IPageSizeContainable psc) {
+        virtual public LineSeparator Apply(LineSeparator ls, Tag t, IPageSizeContainable psc) {
             float lineWidth = 1;
             IDictionary<String, String> css = t.CSS;
             if (css.ContainsKey(CSS.Property.HEIGHT)) {

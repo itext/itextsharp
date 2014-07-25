@@ -5,15 +5,16 @@ using iTextSharp.text.pdf.spatial.units;
  * $Id: $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Balder Van Camp, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -67,7 +68,7 @@ namespace iTextSharp.text.pdf.spatial {
          *
          * @param bounds
          */
-        public void SetBounds(NumberArray bounds) {
+        virtual public void SetBounds(NumberArray bounds) {
             base.Put(PdfName.BOUNDS, bounds);
         }
 
@@ -76,7 +77,7 @@ namespace iTextSharp.text.pdf.spatial {
          *
          * @param cs
          */
-        public void SetCoordinateSystem(CoordinateSystem cs) {
+        virtual public void SetCoordinateSystem(CoordinateSystem cs) {
             base.Put(PdfName.GCS, cs);
         }
 
@@ -90,7 +91,7 @@ namespace iTextSharp.text.pdf.spatial {
          *
          * @param cs
          */
-        public void SetDisplayCoordinateSystem(GeographicCoordinateSystem cs) {
+        virtual public void SetDisplayCoordinateSystem(GeographicCoordinateSystem cs) {
             base.Put(PdfName.DCS, cs);
         }
 
@@ -102,7 +103,7 @@ namespace iTextSharp.text.pdf.spatial {
          * @param s
          * @param a
          */
-        public void SetDisplayUnits(Linear l, Square s, Angular a) {
+        virtual public void SetDisplayUnits(Linear l, Square s, Angular a) {
             PdfArray arr = new PdfArray();
             arr.Add(DecodeUnits.Decode(l));
             arr.Add(DecodeUnits.Decode(s));
@@ -118,7 +119,7 @@ namespace iTextSharp.text.pdf.spatial {
          *
          * @param pairedpoints
          */
-        public void SetGPTS(NumberArray pairedpoints) {
+        virtual public void SetGPTS(NumberArray pairedpoints) {
             Put(PdfName.GPTS, pairedpoints);
         }
 
@@ -132,7 +133,7 @@ namespace iTextSharp.text.pdf.spatial {
          *
          * @param pairedpoints
          */
-        public void SetLPTS(NumberArray pairedpoints) {
+        virtual public void SetLPTS(NumberArray pairedpoints) {
             Put(PdfName.LPTS, pairedpoints);
         }
     }

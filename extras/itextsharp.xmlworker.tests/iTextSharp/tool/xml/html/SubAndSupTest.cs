@@ -18,13 +18,13 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         private const string RESOURCES = @"..\..\resources\";
 
         private class CustomElementHandler : IElementHandler {
-            public void Add(IWritable w) {
+            virtual public void Add(IWritable w) {
                 elementList.AddRange(((WritableElement) w).Elements());
             }
         }
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
             StreamReader bis = File.OpenText(RESOURCES + "/snippets/br-sub-sup_snippet.html");
             XMLWorkerHelper helper = XMLWorkerHelper.GetInstance();
@@ -33,24 +33,24 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [TearDown]
-        public void TearDown() {
+        virtual public void TearDown() {
             elementList = null;
         }
 
         [Test]
-        public void ResolveNumberOfElements() {
+        virtual public void ResolveNumberOfElements() {
             Assert.AreEqual(8, elementList.Count); // Br's count for one element(Chunk.NEWLINE).
         }
 
         [Test]
-        public void ResolveNewLines() {
+        virtual public void ResolveNewLines() {
             Assert.AreEqual(Chunk.NEWLINE.Content, elementList[1].Chunks[0].Content);
             Assert.AreEqual(8f, elementList[1].Chunks[0].Font.Size, 0);
             Assert.AreEqual(Chunk.NEWLINE.Content, elementList[4].Chunks[1].Content);
         }
 
         [Test]
-        public void ResolveFontSize() {
+        virtual public void ResolveFontSize() {
             Assert.AreEqual(12, elementList[5].Chunks[0].Font.Size, 0);
             Assert.AreEqual(9.75f, elementList[5].Chunks[2].Font.Size, 0);
             Assert.AreEqual(24, elementList[6].Chunks[0].Font.Size, 0);
@@ -58,7 +58,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [Test]
-        public void ResolveTextRise() {
+        virtual public void ResolveTextRise() {
             Assert.AreEqual(-9.75f/2, elementList[5].Chunks[2].GetTextRise(), 0);
             Assert.AreEqual(-9.75f/2, elementList[5].Chunks[4].GetTextRise(), 0);
             Assert.AreEqual(18/2 + 0.5, elementList[6].Chunks[2].GetTextRise(), 0);
@@ -70,7 +70,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html {
         }
 
         [Test]
-        public void ResolvePhraseLeading() {
+        virtual public void ResolvePhraseLeading() {
             Assert.IsTrue(Math.Abs(1.2f - ((Paragraph) elementList[5]).MultipliedLeading) < 0.0001);
             Assert.IsTrue(Math.Abs(1.2f - ((Paragraph) elementList[6]).MultipliedLeading) < 0.0001);
         }

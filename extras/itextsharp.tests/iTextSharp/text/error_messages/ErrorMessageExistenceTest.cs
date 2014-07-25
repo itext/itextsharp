@@ -16,7 +16,7 @@ namespace itextsharp.tests.iTextSharp.text.error_messages {
         private Regex pattern;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             pattern = new Regex("MessageLocalization.GetComposedMessage\\(\"([^\"]*)\"");
             sourceFiles = new List<string>();
             nonLozalizedMessageErrors = new List<String>();
@@ -25,7 +25,7 @@ namespace itextsharp.tests.iTextSharp.text.error_messages {
         }
 
         [Test]
-        public void Test() {
+        virtual public void Test() {
             foreach (String language in LANGUAGES) {
                 TestSingleLanguageLocalization(language);
             }

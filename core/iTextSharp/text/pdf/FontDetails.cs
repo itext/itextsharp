@@ -4,19 +4,20 @@ using System.util;
 using iTextSharp.text;
 
 /*
- * $Id: FontDetails.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: FontDetails.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -239,7 +240,7 @@ namespace iTextSharp.text.pdf {
         /** Writes the font definition to the document.
          * @param writer the <CODE>PdfWriter</CODE> of this document
          */    
-        public void WriteFont(PdfWriter writer) {
+        virtual public void WriteFont(PdfWriter writer) {
             switch (fontType) {
                 case BaseFont.FONT_TYPE_T3:
                     baseFont.WriteFont(writer, indirectReference, null);
@@ -277,7 +278,7 @@ namespace iTextSharp.text.pdf {
          * to include all.
          * @param subset new value of property subset
          */
-        public bool Subset {
+        virtual public bool Subset {
             set {
                 this.subset = value;
             }

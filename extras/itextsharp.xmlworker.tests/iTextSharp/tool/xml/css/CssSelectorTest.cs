@@ -18,7 +18,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         private Tag idroot;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             LoggerFactory.GetInstance().SetLogger(new SysoLogger(3));
             css = new CssSelector();
             root = new Tag("root");
@@ -36,14 +36,14 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ValidateRootSelector() {
+        virtual public void ValidateRootSelector() {
             IDictionary<String, object> rootSelectors = css.CreateTagSelectors(root);
             Assert.IsTrue(rootSelectors.ContainsKey("root"), "Not found root");
             Assert.AreEqual(1, rootSelectors.Count, "Too many entries");
         }
 
         [Test]
-        public void ValidateChildSelectors() {
+        virtual public void ValidateChildSelectors() {
             IDictionary<String, object> rootSelectors = css.CreateTagSelectors(root);
             IDictionary<String, object> childSelectors = css.CreateTagSelectors(rChild);
             Assert.IsTrue(rootSelectors.ContainsKey("root"), "Not found root");
@@ -58,20 +58,20 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.css {
         }
 
         [Test]
-        public void ValidateIdRootSelector() {
+        virtual public void ValidateIdRootSelector() {
             IDictionary<String, object> rootSelectors = css.CreateAllSelectors(idroot);
             Assert.IsTrue(rootSelectors.ContainsKey("root"), "Not found root");
             Assert.IsTrue(rootSelectors.ContainsKey("#rootId"), "Not found rootId");
             Assert.IsTrue(rootSelectors.ContainsKey(".rootClass"), "Not found rootClass");
-            Assert.AreEqual(3, rootSelectors.Count, "Too many entries");
+            Assert.AreEqual(5, rootSelectors.Count, "Too many entries");
         }
 
         [Test]
-        public void CreateClassSelectorsMultipleCSSClasses() {
+        virtual public void CreateClassSelectorsMultipleCSSClasses() {
             Tag t = new Tag("dummy");
             t.Attributes["class"] = "klass1 klass2 klass3";
             IDictionary<String, object> set = css.CreateClassSelectors(t);
-            Assert.AreEqual(3, set.Count, "should have found 3 selectors");
+            Assert.AreEqual(6, set.Count, "should have found 6 selectors");
         }
     }
 }

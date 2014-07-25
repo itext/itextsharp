@@ -174,14 +174,14 @@ namespace iTextSharp.text.pdf.hyphenation {
         /**
         * @param min
         */
-        public void SetMinRemainCharCount(int min) {
+        virtual public void SetMinRemainCharCount(int min) {
             remainCharCount = min;
         }
 
         /**
         * @param min
         */
-        public void SetMinPushCharCount(int min) {
+        virtual public void SetMinPushCharCount(int min) {
             pushCharCount = min;
         }
 
@@ -189,7 +189,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         * @param lang
         * @param country
         */
-        public void SetLanguage(String lang, String country) {
+        virtual public void SetLanguage(String lang, String country) {
             hyphenTree = GetHyphenationTree(lang, country);
         }
 
@@ -199,7 +199,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         * @param len
         * @return a hyphenation object
         */
-        public Hyphenation Hyphenate(char[] word, int offset, int len) {
+        virtual public Hyphenation Hyphenate(char[] word, int offset, int len) {
             if (hyphenTree == null) {
                 return null;
             }
@@ -211,7 +211,7 @@ namespace iTextSharp.text.pdf.hyphenation {
         * @param word
         * @return a hyphenation object
         */
-        public Hyphenation Hyphenate(String word) {
+        virtual public Hyphenation Hyphenate(String word) {
             if (hyphenTree == null) {
                 return null;
             }

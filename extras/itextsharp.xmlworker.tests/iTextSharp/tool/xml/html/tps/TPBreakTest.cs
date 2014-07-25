@@ -18,7 +18,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyBreakChunk() {
+        virtual public void VerifyBreakChunk() {
             Break br = new Break();
             WorkerContextImpl workerContextImpl = new WorkerContextImpl();
             CssAppliersImpl cssAppliers = new CssAppliersImpl();
@@ -33,7 +33,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.html.tps {
 	 */
 
         [Test]
-        public void VerifyIfStackOwner() {
+        virtual public void VerifyIfStackOwner() {
             Assert.IsFalse(new Break().IsStackOwner());
         }
     }

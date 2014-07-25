@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 /*
- * $Id: LZWCompressor.cs 177 2010-05-30 17:30:44Z psoares33 $
+ * $Id: LZWCompressor.cs 676 2013-12-24 13:15:22Z asubach $
  * Copyright 2003-2008 by Paulo Soares.
  *
  * This code was originally released in 2001 by SUN (see class
@@ -109,7 +109,7 @@ namespace iTextSharp.text.pdf.codec {
          * @param buf data to be compressed to output stream
          * @exception IOException if underlying output stream error
          **/
-        public void Compress(byte[] buf, int offset, int length) {
+        virtual public void Compress(byte[] buf, int offset, int length) {
             int idx;
             byte c;
             short index;
@@ -145,7 +145,7 @@ namespace iTextSharp.text.pdf.codec {
          *
          * @exception IOException if underlying output stream error
          **/
-        public void Flush() {
+        virtual public void Flush() {
             if (prefix_ != -1)
                 bf_.WriteBits(prefix_, numBits_);
 

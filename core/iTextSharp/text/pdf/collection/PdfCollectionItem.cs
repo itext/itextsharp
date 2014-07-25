@@ -3,18 +3,19 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: PdfCollectionItem.cs 318 2012-02-27 22:46:07Z psoares33 $
+ * $Id: PdfCollectionItem.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -64,7 +65,7 @@ namespace iTextSharp.text.pdf.collection {
         * Sets the value of the collection item.
         * @param value
         */
-        public void AddItem(String key, String value) {
+        virtual public void AddItem(String key, String value) {
             PdfName fieldname = new PdfName(key);
             PdfCollectionField field = (PdfCollectionField)schema.Get(fieldname);
             Put(fieldname, field.GetValue(value));
@@ -74,7 +75,7 @@ namespace iTextSharp.text.pdf.collection {
         * Sets the value of the collection item.
         * @param value
         */
-        public void AddItem(String key, PdfString value) {
+        virtual public void AddItem(String key, PdfString value) {
             PdfName fieldname = new PdfName(key);
             PdfCollectionField field = (PdfCollectionField)schema.Get(fieldname);
             if (field.fieldType == PdfCollectionField.TEXT) {
@@ -86,7 +87,7 @@ namespace iTextSharp.text.pdf.collection {
         * Sets the value of the collection item.
         * @param value
         */
-        public void AddItem(String key, PdfDate d) {
+        virtual public void AddItem(String key, PdfDate d) {
             PdfName fieldname = new PdfName(key);
             PdfCollectionField field = (PdfCollectionField)schema.Get(fieldname);
             if (field.fieldType == PdfCollectionField.DATE) {
@@ -98,7 +99,7 @@ namespace iTextSharp.text.pdf.collection {
         * Sets the value of the collection item.
         * @param value
         */
-        public void AddItem(String key, PdfNumber n) {
+        virtual public void AddItem(String key, PdfNumber n) {
             PdfName fieldname = new PdfName(key);
             PdfCollectionField field = (PdfCollectionField)schema.Get(fieldname);
             if (field.fieldType == PdfCollectionField.NUMBER) {
@@ -110,7 +111,7 @@ namespace iTextSharp.text.pdf.collection {
         * Sets the value of the collection item.
         * @param value
         */
-        public void AddItem(String key, DateTime c) {
+        virtual public void AddItem(String key, DateTime c) {
             AddItem(key, new PdfDate(c));
         }
         
@@ -118,7 +119,7 @@ namespace iTextSharp.text.pdf.collection {
         * Sets the value of the collection item.
         * @param value
         */
-        public void AddItem(String key, int i) {
+        virtual public void AddItem(String key, int i) {
             AddItem(key, new PdfNumber(i));
         }
         
@@ -126,7 +127,7 @@ namespace iTextSharp.text.pdf.collection {
         * Sets the value of the collection item.
         * @param value
         */
-        public void AddItem(String key, float f) {
+        virtual public void AddItem(String key, float f) {
             AddItem(key, new PdfNumber(f));
         }
         
@@ -134,7 +135,7 @@ namespace iTextSharp.text.pdf.collection {
         * Sets the value of the collection item.
         * @param value
         */
-        public void AddItem(String key, double d) {
+        virtual public void AddItem(String key, double d) {
             AddItem(key, new PdfNumber(d));
         }
         
@@ -143,7 +144,7 @@ namespace iTextSharp.text.pdf.collection {
         * You can only use this method after you have set the value of the item.
         * @param prefix    a prefix
         */
-        public void SetPrefix(String key, String prefix) {
+        virtual public void SetPrefix(String key, String prefix) {
             PdfName fieldname = new PdfName(key);
             PdfObject o = Get(fieldname);
             if (o == null)

@@ -7,19 +7,20 @@ using iTextSharp.text.error_messages;
 using iTextSharp.text;
 
 /*
- * $Id: TrueTypeFontSubSet.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: TrueTypeFontSubSet.cs 679 2014-01-06 20:11:16Z asubach $
  * 
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -127,7 +128,7 @@ namespace iTextSharp.text.pdf {
          * @throws DocumentException on error
          * @return the subset font
          */    
-        public byte[] Process() {
+        virtual public byte[] Process() {
             try {
                 rf.ReOpen();
                 CreateTableDirectory();
@@ -148,7 +149,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        protected void AssembleFont() {
+        virtual protected void AssembleFont() {
             int[] tableLocation;
             int fullFontSize = 0;
             string[] tableNames;
@@ -229,7 +230,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        protected void CreateTableDirectory() {
+        virtual protected void CreateTableDirectory() {
             tableDirectory = new Dictionary<string,int[]>();
             rf.Seek(directoryOffset);
             int id = rf.ReadInt();
@@ -247,7 +248,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        protected void ReadLoca() {
+        virtual protected void ReadLoca() {
             int[] tableLocation;
             tableDirectory.TryGetValue("head", out tableLocation);
             if (tableLocation == null)
@@ -272,7 +273,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        protected void CreateNewGlyphTables() {
+        virtual protected void CreateNewGlyphTables() {
             newLocaTable = new int[locaTable.Length];
             int[] activeGlyphs = new int[glyphsInList.Count];
             for (int k = 0; k < activeGlyphs.Length; ++k)
@@ -304,7 +305,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        protected void LocaTobytes() {
+        virtual protected void LocaTobytes() {
             if (locaShortTable)
                 locaTableRealSize = newLocaTable.Length * 2;
             else
@@ -321,7 +322,7 @@ namespace iTextSharp.text.pdf {
         
         }
     
-        protected void FlatGlyphs() {
+        virtual protected void FlatGlyphs() {
             int[] tableLocation;
             tableDirectory.TryGetValue("glyf", out tableLocation);
             if (tableLocation == null)
@@ -338,7 +339,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        protected void CheckGlyphComposite(int glyph) {
+        virtual protected void CheckGlyphComposite(int glyph) {
             int start = locaTable[glyph];
             if (start == locaTable[glyph + 1]) // no contour
                 return;
@@ -377,31 +378,31 @@ namespace iTextSharp.text.pdf {
          * @return the <CODE>string</CODE> read
          * @throws IOException the font file could not be read
          */
-        protected string ReadStandardString(int length) {
+        virtual protected string ReadStandardString(int length) {
             byte[] buf = new byte[length];
             rf.ReadFully(buf);
             return System.Text.Encoding.GetEncoding(1252).GetString(buf);
         }
     
-        protected void WriteFontShort(int n) {
+        virtual protected void WriteFontShort(int n) {
             outFont[fontPtr++] = (byte)(n >> 8);
             outFont[fontPtr++] = (byte)(n);
         }
 
-        protected void WriteFontInt(int n) {
+        virtual protected void WriteFontInt(int n) {
             outFont[fontPtr++] = (byte)(n >> 24);
             outFont[fontPtr++] = (byte)(n >> 16);
             outFont[fontPtr++] = (byte)(n >> 8);
             outFont[fontPtr++] = (byte)(n);
         }
 
-        protected void WriteFontString(string s) {
+        virtual protected void WriteFontString(string s) {
             byte[] b = PdfEncodings.ConvertToBytes(s, BaseFont.WINANSI);
             Array.Copy(b, 0, outFont, fontPtr, b.Length);
             fontPtr += b.Length;
         }
     
-        protected int CalculateChecksum(byte[] b) {
+        virtual protected int CalculateChecksum(byte[] b) {
             int len = b.Length / 4;
             int v0 = 0;
             int v1 = 0;

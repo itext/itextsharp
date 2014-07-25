@@ -6,15 +6,16 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.error_messages;
 /*
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -91,7 +92,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
          * @param seq
          * @return the cid code or -1 for end
          */
-        public int DecodeSingle(CMapSequence seq) {
+        virtual public int DecodeSingle(CMapSequence seq) {
             int end = seq.off + seq.len;
             int currentPlane = 0;
             while (seq.off < end) {
@@ -108,7 +109,7 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             return -1;
         }
 
-        public String DecodeSequence(CMapSequence seq) {
+        virtual public String DecodeSequence(CMapSequence seq) {
             StringBuilder sb = new StringBuilder();
             int cid = 0;
             while ((cid = DecodeSingle(seq)) >= 0) {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 
 namespace iTextSharp.text.pdf.security
 {

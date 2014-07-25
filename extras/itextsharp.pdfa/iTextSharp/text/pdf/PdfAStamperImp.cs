@@ -13,15 +13,16 @@ using iTextSharp.xmp.properties;
  * $Id: PdfAStamperImp.java 5870 2013-06-25 12:34:21Z achingarev $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Alexander Chingarev, Bruno Lowagie, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -126,7 +127,7 @@ namespace iTextSharp.text.pdf {
          * Always throws an exception since PDF/X conformance level cannot be set for PDF/A conformant documents.
          * @param pdfx
          */
-        public void SetPDFXConformance(int pdfx) {
+        virtual public void SetPDFXConformance(int pdfx) {
             throw new PdfAConformanceException(MessageLocalization.GetComposedMessage("pdfx.conformance.cannot.be.set.for.PdfAStamperImp.instance"));
         }
 
@@ -191,5 +192,46 @@ namespace iTextSharp.text.pdf {
                     break;
             }
         }
+
+        public override PdfIndirectObject AddToBody(PdfObject objecti) {
+            PdfIndirectObject iobj = base.AddToBody(objecti);
+            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject objecti, bool inObjStm) {
+            PdfIndirectObject iobj = base.AddToBody(objecti, inObjStm);
+            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject objecti, PdfIndirectReference refi, bool inObjStm) {
+            PdfIndirectObject iobj = base.AddToBody(objecti, refi, inObjStm);
+            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject objecti, PdfIndirectReference refi) {
+            PdfIndirectObject iobj = base.AddToBody(objecti, refi);
+            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject objecti, int refNumber) {
+            PdfIndirectObject iobj = base.AddToBody(objecti, refNumber);
+            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        public override PdfIndirectObject AddToBody(PdfObject objecti, int refNumber, bool inObjStm) {
+            PdfIndirectObject iobj = base.AddToBody(objecti, refNumber, inObjStm);
+            PdfAChecker.CacheObject(iobj.IndirectReference, iobj.objecti);
+            return iobj;
+        }
+
+        private PdfAChecker PdfAChecker {
+            get { return ((PdfAConformanceImp) pdfIsoConformance).PdfAChecker; }
+        }
+
     }
 }

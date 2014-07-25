@@ -5,15 +5,16 @@ using iTextSharp.text.pdf.draw;
 /*
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -119,17 +120,17 @@ namespace iTextSharp.text.pdf {
             arabicOptions = org.arabicOptions;
         }
         
-        public bool IsEmpty() {
+        virtual public bool IsEmpty() {
             return (currentChar >= totalTextLength && indexChunk >= chunks.Count);
         }
     
-        public void ClearChunks() {
+        virtual public void ClearChunks() {
             chunks.Clear();
             totalTextLength = 0;
             currentChar = 0;
         }
 
-        public bool GetParagraph(int runDirection) {
+        virtual public bool GetParagraph(int runDirection) {
             this.runDirection = runDirection;
             currentChar = 0;
             totalTextLength = 0;
@@ -193,15 +194,15 @@ namespace iTextSharp.text.pdf {
             return true;
         }
     
-        public void AddChunk(PdfChunk chunk) {
+        virtual public void AddChunk(PdfChunk chunk) {
             chunks.Add(chunk);
         }
     
-        public void AddChunks(List<PdfChunk> chunks) {
+        virtual public void AddChunks(List<PdfChunk> chunks) {
             this.chunks.AddRange(chunks);
         }
     
-        public void AddPiece(char c, PdfChunk chunk) {
+        virtual public void AddPiece(char c, PdfChunk chunk) {
             if (totalTextLength >= pieceSize) {
                 char[] tempText = text;
                 PdfChunk[] tempDetailChunks = detailChunks;
@@ -215,7 +216,7 @@ namespace iTextSharp.text.pdf {
             detailChunks[totalTextLength++] = chunk;
         }
     
-        public void Save() {
+        virtual public void Save() {
             if (indexChunk > 0) {
                 if (indexChunk >= chunks.Count)
                     chunks.Clear();
@@ -250,7 +251,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public void Restore() {
+        virtual public void Restore() {
             runDirection = storedRunDirection;
             totalTextLength = storedTotalTextLength;
             indexChunk = storedIndexChunk;
@@ -267,7 +268,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public void MirrorGlyphs() {
+        virtual public void MirrorGlyphs() {
             for (int k = 0; k < totalTextLength; ++k) {
                 if ((orderLevels[k] & 1) == 1) {
                     int mirror = mirrorChars[text[k]];
@@ -277,7 +278,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public void DoArabicShapping() {
+        virtual public void DoArabicShapping() {
             int src = 0;
             int dest = 0;
             for (;;) {
@@ -318,7 +319,7 @@ namespace iTextSharp.text.pdf {
             }
         }
 
-        public PdfLine ProcessLine(float leftX, float width, int alignment, int runDirection, int arabicOptions, float minY, float yLine, float descender) {
+        virtual public PdfLine ProcessLine(float leftX, float width, int alignment, int runDirection, int arabicOptions, float minY, float yLine, float descender) {
             this.arabicOptions = arabicOptions;
             Save();
             bool isRTL = (runDirection == PdfWriter.RUN_DIRECTION_RTL);
@@ -524,7 +525,7 @@ namespace iTextSharp.text.pdf {
          * @param lastIdx the last inclusive index to calculate
          * @return the sum of all widths
          */    
-        public float GetWidth(int startIdx, int lastIdx) {
+        virtual public float GetWidth(int startIdx, int lastIdx) {
             char c = (char)0;
             PdfChunk ck = null;
             float width = 0;
@@ -584,11 +585,11 @@ namespace iTextSharp.text.pdf {
             return width;
         }
     
-        public List<PdfChunk> CreateArrayOfPdfChunks(int startIdx, int endIdx) {
+        virtual public List<PdfChunk> CreateArrayOfPdfChunks(int startIdx, int endIdx) {
             return CreateArrayOfPdfChunks(startIdx, endIdx, null);
         }
         
-        public List<PdfChunk> CreateArrayOfPdfChunks(int startIdx, int endIdx, PdfChunk extraPdfChunk) {
+        virtual public List<PdfChunk> CreateArrayOfPdfChunks(int startIdx, int endIdx, PdfChunk extraPdfChunk) {
             bool bidi = (runDirection == PdfWriter.RUN_DIRECTION_LTR || runDirection == PdfWriter.RUN_DIRECTION_RTL);
             if (bidi)
                 Reorder(startIdx, endIdx);
@@ -632,7 +633,7 @@ namespace iTextSharp.text.pdf {
             return ar;
         }
     
-        public int[] GetWord(int startIdx, int idx) {
+        virtual public int[] GetWord(int startIdx, int idx) {
             int last = idx;
             int first = idx;
             // forward
@@ -651,7 +652,7 @@ namespace iTextSharp.text.pdf {
             return new int[]{first, last};
         }
         
-        public int TrimRight(int startIdx, int endIdx) {
+        virtual public int TrimRight(int startIdx, int endIdx) {
             int idx = endIdx;
             char c;
             for (; idx >= startIdx; --idx) {
@@ -662,7 +663,7 @@ namespace iTextSharp.text.pdf {
             return idx;
         }
     
-        public int TrimLeft(int startIdx, int endIdx) {
+        virtual public int TrimLeft(int startIdx, int endIdx) {
             int idx = startIdx;
             char c;
             for (; idx <= endIdx; ++idx) {
@@ -673,7 +674,7 @@ namespace iTextSharp.text.pdf {
             return idx;
         }
     
-        public int TrimRightEx(int startIdx, int endIdx) {
+        virtual public int TrimRightEx(int startIdx, int endIdx) {
             int idx = endIdx;
             char c = (char)0;
             for (; idx >= startIdx; --idx) {
@@ -695,7 +696,7 @@ namespace iTextSharp.text.pdf {
             return idx;
         }
     
-        public int TrimLeftEx(int startIdx, int endIdx) {
+        virtual public int TrimLeftEx(int startIdx, int endIdx) {
             int idx = startIdx;
             char c = (char)0;
             for (; idx <= endIdx; ++idx) {
@@ -717,7 +718,7 @@ namespace iTextSharp.text.pdf {
             return idx;
         }
     
-        public void Reorder(int start, int end) {
+        virtual public void Reorder(int start, int end) {
             byte maxLevel = orderLevels[start];
             byte minLevel = maxLevel;
             byte onlyOddLevels = maxLevel;
@@ -758,7 +759,7 @@ namespace iTextSharp.text.pdf {
             }
         }
     
-        public void Flip(int start, int end) {
+        virtual public void Flip(int start, int end) {
             int mid = (start + end) / 2;
             --end;
             for (; start < mid; ++start, --end) {

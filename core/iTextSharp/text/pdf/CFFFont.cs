@@ -3,18 +3,19 @@ using System.Text;
 using System.Collections.Generic;
 
 /*
- * $Id: CFFFont.cs 605 2013-09-12 14:01:48Z pavel-alay $
+ * $Id: CFFFont.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2013 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -143,7 +144,7 @@ namespace iTextSharp.text.pdf {
         };
         
         //private String[] strings;
-        public String GetString(char sid) {
+        virtual public String GetString(char sid) {
             if (sid < standardStrings.Length) return standardStrings[sid];
             if (sid >= standardStrings.Length+(stringOffsets.Length-1)) return null;
             int j = sid - standardStrings.Length;
@@ -231,7 +232,7 @@ namespace iTextSharp.text.pdf {
         protected Object[] args      = new Object[48];
         protected int      arg_count = 0;
         
-        protected void GetDictItem() {
+        virtual protected void GetDictItem() {
             for (int i=0; i<arg_count; i++) args[i]=null;
             arg_count = 0;
             key = null;
@@ -340,7 +341,7 @@ namespace iTextSharp.text.pdf {
             /** set the value of an offset item that was initially unknown.
             * It will be fixed up latex by a call to xref on some marker.
             */
-            public void Set(int offset) { this.value = offset; }
+            virtual public void Set(int offset) { this.value = offset; }
         }
         
         
@@ -631,7 +632,7 @@ namespace iTextSharp.text.pdf {
         */
         
         
-        public byte[] GetCID(String fontName)
+        virtual public byte[] GetCID(String fontName)
         //throws java.io.FileNotFoundException
         {
             int j;
@@ -885,14 +886,14 @@ namespace iTextSharp.text.pdf {
         }
         
         
-        public bool IsCID(String fontName) {
+        virtual public bool IsCID(String fontName) {
             int j;
             for (j=0; j<fonts.Length; j++)
                 if (fontName.Equals(fonts[j].name)) return fonts[j].isCID;
             return false;
         }
         
-        public bool Exists(String fontName) {
+        virtual public bool Exists(String fontName) {
             int j;
             for (j=0; j<fonts.Length; j++)
                 if (fontName.Equals(fonts[j].name)) return true;
@@ -900,7 +901,7 @@ namespace iTextSharp.text.pdf {
         }
         
         
-        public String[] GetNames() {
+        virtual public String[] GetNames() {
             String[] names = new String[ fonts.Length ];
             for (int i=0; i<fonts.Length; i++)
                 names[i] = fonts[i].name;

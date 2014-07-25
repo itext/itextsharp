@@ -25,7 +25,7 @@ namespace System.util {
             height = rect.Height;
         }
 
-        public float X {
+        virtual public float X {
             get {
                 return this.x;
             }
@@ -33,7 +33,7 @@ namespace System.util {
                 this.x = value;
             }
         }
-        public float Y {
+        virtual public float Y {
             get {
                 return this.y;
             }
@@ -41,7 +41,7 @@ namespace System.util {
                 this.y = value;
             }
         }
-        public float Width {
+        virtual public float Width {
             get {
                 return this.width;
             }
@@ -49,7 +49,7 @@ namespace System.util {
                 this.width = value;
             }
         }
-        public float Height {
+        virtual public float Height {
             get {
                 return this.height;
             }
@@ -58,7 +58,7 @@ namespace System.util {
             }
         }
 
-        public void Add(RectangleJ rect) {
+        virtual public void Add(RectangleJ rect) {
             float x1 = Math.Min(Math.Min(x, x + width), Math.Min(rect.x, rect.x + rect.width));
             float x2 = Math.Max(Math.Max(x, x + width), Math.Max(rect.x, rect.x + rect.width));
             float y1 = Math.Min(Math.Min(y, y + height), Math.Min(rect.y, rect.y + rect.height));
@@ -69,7 +69,7 @@ namespace System.util {
             height = y2 - y1;
         }
 
-        public int Outcode(double x, double y) {
+        virtual public int Outcode(double x, double y) {
             int outp = 0;
             if (this.width <= 0) {
                 outp |= OUT_LEFT | OUT_RIGHT;
@@ -92,7 +92,7 @@ namespace System.util {
             return outp;
         }
 
-        public bool IntersectsLine(double x1, double y1, double x2, double y2) {
+        virtual public bool IntersectsLine(double x1, double y1, double x2, double y2) {
             int out1, out2;
             if ((out2 = Outcode(x2, y2)) == 0) {
                 return true;
@@ -121,7 +121,7 @@ namespace System.util {
             return true;
         }
 
-        public RectangleJ Intersection(RectangleJ r) {
+        virtual public RectangleJ Intersection(RectangleJ r) {
             float x1 = Math.Max(x, r.x);
             float y1 = Math.Max(y, r.y);
             float x2 = Math.Min(x + width, r.x + r.width);
@@ -129,7 +129,7 @@ namespace System.util {
             return new RectangleJ(x1, y1, x2 - x1, y2 - y1);
         }
 
-        public bool IsEmpty() {
+        virtual public bool IsEmpty() {
             return width <= 0 || height <= 0;
         }
     }

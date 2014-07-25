@@ -1,18 +1,19 @@
 using System;
 using iTextSharp.text.pdf;
 /*
- * $Id: MarkedContentInfo.cs 318 2012-02-27 22:46:07Z psoares33 $
+ * $Id: MarkedContentInfo.cs 679 2014-01-06 20:11:16Z asubach $
  *
  * This file is part of the iText project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Kevin Day, Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -62,7 +63,7 @@ namespace iTextSharp.text.pdf.parser {
          * Get the tag of this marked content
          * @return the tag of this marked content
          */
-        public PdfName GetTag(){
+        virtual public PdfName GetTag(){
             return tag;
         }
         
@@ -70,7 +71,7 @@ namespace iTextSharp.text.pdf.parser {
          * Determine if an MCID is available
          * @return true if the MCID is available, false otherwise
          */
-        public bool HasMcid(){
+        virtual public bool HasMcid(){
             return dictionary.Contains(PdfName.MCID);
         }
         
@@ -80,7 +81,7 @@ namespace iTextSharp.text.pdf.parser {
          * @return the MCID value
          * @throws NullPointerException if there is no MCID (see {@link MarkedContentInfo#hasMcid()})
          */
-        public int GetMcid(){
+        virtual public int GetMcid(){
             PdfNumber id = dictionary.GetAsNumber(PdfName.MCID);
             if (id == null)
                 throw new InvalidOperationException("MarkedContentInfo does not contain MCID");

@@ -1,6 +1,6 @@
 using System;
 /*
- * $Id: InfCodes.cs 229 2011-02-18 22:05:59Z psoares33 $
+ * $Id: InfCodes.cs 676 2013-12-24 13:15:22Z asubach $
  *
 Copyright (c) 2000,2001,2002,2003 ymnk, JCraft,Inc. All rights reserved.
 

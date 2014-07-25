@@ -2,15 +2,16 @@
  * $Id: OCSPVerifier.java 5465 2012-10-07 12:37:23Z blowagie $
  *
  * This file is part of the iText (R) project.
- * Copyright (c) 1998-2012 1T3XT BVBA
+ * Copyright (c) 1998-2014 iText Group NV
  * Authors: Bruno Lowagie, Paulo Soares, et al.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License version 3
  * as published by the Free Software Foundation with the addition of the
  * following permission added to Section 15 as permitted in Section 7(a):
- * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY 1T3XT,
- * 1T3XT DISCLAIMS THE WARRANTY OF NON INFRINGEMENT OF THIRD PARTY RIGHTS.
+ * FOR ANY PART OF THE COVERED WORK IN WHICH THE COPYRIGHT IS OWNED BY
+ * ITEXT GROUP. ITEXT GROUP DISCLAIMS THE WARRANTY OF NON INFRINGEMENT
+ * OF THIRD PARTY RIGHTS
  *
  * This program is distributed in the hope that it will be useful, but
  * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
@@ -119,7 +120,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @throws GeneralSecurityException
 	     * @throws IOException
 	     */
-	    public bool Verify(BasicOcspResp ocspResp, X509Certificate signCert, X509Certificate issuerCert, DateTime signDate) {
+	    virtual public bool Verify(BasicOcspResp ocspResp, X509Certificate signCert, X509Certificate issuerCert, DateTime signDate) {
 		    if (ocspResp == null)
 			    return false;
 		    // Getting the responses
@@ -169,7 +170,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @throws GeneralSecurityException
 	     * @throws IOException
 	     */
-	    public void IsValidResponse(BasicOcspResp ocspResp, X509Certificate issuerCert) {
+	    virtual public void IsValidResponse(BasicOcspResp ocspResp, X509Certificate issuerCert) {
 		    // by default the OCSP responder certificate is the issuer certificate
 		    X509Certificate responderCert = issuerCert;
 		    // check if there's a responder certificate
@@ -197,7 +198,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @param responderCert	the certificate that may be used to sign the response
 	     * @return	true if the response can be trusted
 	     */
-	    public bool VerifyResponse(BasicOcspResp ocspResp, X509Certificate responderCert) {
+	    virtual public bool VerifyResponse(BasicOcspResp ocspResp, X509Certificate responderCert) {
 		    // testing using the responder certificate
 		    if (IsSignatureValid(ocspResp, responderCert))
 			    return true;
@@ -225,7 +226,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @param responderCert	the responder certificate
 	     * @return	true if the OCSP response verifies against the responder certificate
 	     */
-        public bool IsSignatureValid(BasicOcspResp ocspResp, X509Certificate responderCert) {
+        virtual public bool IsSignatureValid(BasicOcspResp ocspResp, X509Certificate responderCert) {
 		    try {
 			    return ocspResp.Verify(responderCert.GetPublicKey());
 		    } catch (OcspException) {
@@ -240,7 +241,7 @@ namespace iTextSharp.text.pdf.security {
 	     * @param issuerCert	the issuer certificate
 	     * @return an OCSP response
 	     */
-	    public BasicOcspResp GetOcspResponse(X509Certificate signCert, X509Certificate issuerCert) {
+	    virtual public BasicOcspResp GetOcspResponse(X509Certificate signCert, X509Certificate issuerCert) {
 		    if (signCert == null && issuerCert == null) {
 			    return null;
 		    }

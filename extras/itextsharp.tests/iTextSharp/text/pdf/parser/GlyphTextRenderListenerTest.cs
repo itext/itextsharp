@@ -10,7 +10,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser {
         private const string TEST_RESOURCES_PATH = @"..\..\resources\text\pdf\parser\GlyphTextRenderListenerTest\";
 
         [Test]
-        public void Test1() {
+        virtual public void Test1() {
             PdfReader pdfReader = TestResourceUtils.GetResourceAsPdfReader(TEST_RESOURCES_PATH, "test.pdf");
             PdfReaderContentParser parser = new PdfReaderContentParser(pdfReader);
 
@@ -28,7 +28,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser {
         }
 
         [Test]
-        public void Test2() {
+        virtual public void Test2() {
             PdfReader pdfReader = TestResourceUtils.GetResourceAsPdfReader(TEST_RESOURCES_PATH, "Sample.pdf");
 
             PdfReaderContentParser parser = new PdfReaderContentParser(pdfReader);
@@ -41,7 +41,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser {
         }
 
         [Test]
-        public void TestWithMultiFilteredRenderListener() {
+        virtual public void TestWithMultiFilteredRenderListener() {
             PdfReader pdfReader = TestResourceUtils.GetResourceAsPdfReader(TEST_RESOURCES_PATH, "test.pdf");
             PdfReaderContentParser parser = new PdfReaderContentParser(pdfReader);
 

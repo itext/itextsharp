@@ -16,7 +16,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.parser {
         private char accent;
 
         [SetUp]
-        public void SetUp() {
+        virtual public void SetUp() {
             parser = new XMLParser();
             scState = new SpecialCharState(parser);
             itState = new InsideTagHTMLState(parser);
@@ -29,7 +29,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.parser {
         }
 
         [Test]
-        public void TestIntCode() {
+        virtual public void TestIntCode() {
             itState.Process((char) hex);
             String str = parser.Memory().Current().ToString();
             Console.WriteLine(str);
@@ -37,7 +37,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.parser {
         }
 
         [Test]
-        public void TestHtmlChar() {
+        virtual public void TestHtmlChar() {
             scState.Process('r');
             scState.Process('e');
             scState.Process('g');
@@ -47,7 +47,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.parser {
         }
 
         [Test]
-        public void TestEacuteCcedilleEtc() {
+        virtual public void TestEacuteCcedilleEtc() {
             for (int i = 0; i < e.Length; i++) {
                 itState.Process((char) e[i]);
             }
