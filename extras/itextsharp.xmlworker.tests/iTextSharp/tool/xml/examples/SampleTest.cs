@@ -14,7 +14,7 @@ using iTextSharp.tool.xml.pipeline.html;
 using NUnit.Framework;
 
 namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
-    internal class SampleTest : ITextTest {
+    public class SampleTest : ITextTest {
         protected String inputPath;
         protected static String testPath;
         protected static String testName;

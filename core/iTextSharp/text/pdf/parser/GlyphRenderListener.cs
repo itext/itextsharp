@@ -1,5 +1,5 @@
 namespace iTextSharp.text.pdf.parser {
-    internal class GlyphRenderListener : IRenderListener {
+    public class GlyphRenderListener : IRenderListener {
         private IRenderListener deleg;
 
         public GlyphRenderListener(IRenderListener deleg) {

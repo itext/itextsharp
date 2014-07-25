@@ -1,10 +1,8 @@
-using System;
 using System.IO;
 using System.Collections.Generic;
-using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
- * $Id: PdfCopyFormsImp.cs 679 2014-01-06 20:11:16Z asubach $
+ * $Id: PdfCopyFormsImp.cs 767 2014-05-29 11:36:04Z asubach $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -33,8 +31,8 @@ using iTextSharp.text.error_messages;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -84,6 +82,9 @@ namespace iTextSharp.text.pdf {
             }
             reader.ShuffleSubsetNames();
             readers2intrefs[reader] = new IntHashtable();
+
+            visited[reader] = new IntHashtable();
+
             fields.Add(reader.AcroFields);
             UpdateCalculationOrder(reader);
         }

@@ -5,7 +5,7 @@ using System.Reflection;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: PdfName.cs 697 2014-02-11 11:28:16Z michaeldemey $
+ * $Id: PdfName.cs 744 2014-05-15 17:11:29Z rafhens $
  * 
  *
  * This file is part of the iText project.
@@ -35,8 +35,8 @@ using iTextSharp.text.error_messages;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -402,6 +402,7 @@ namespace iTextSharp.text.pdf {
          * @since 5.3.4
          */
         public static readonly PdfName COLOR = new PdfName("Color");
+        public static readonly PdfName COLORANTS = new PdfName("Colorants");
         /** A name */
         public static readonly PdfName COLORS = new PdfName("Colors");
         /** A name */
@@ -1264,6 +1265,7 @@ namespace iTextSharp.text.pdf {
          * @since 2.1.6
          */
         public static readonly PdfName NAVIGATIONPANE = new PdfName("NavigationPane");
+        public static readonly PdfName NCHANNEL = new PdfName("NChannel");
         /**
          * A name
          * @since 2.1.6
@@ -1341,7 +1343,7 @@ namespace iTextSharp.text.pdf {
         /** A name */
         public static readonly PdfName OFF = new PdfName("OFF");
         /** A name */
-        public static readonly PdfName ON = new PdfName("ON");
+        public static readonly PdfName ON = new PdfName("on");
         /** A name */
         public static readonly PdfName ONECOLUMN = new PdfName("OneColumn");
         /** A name */
@@ -1482,7 +1484,7 @@ namespace iTextSharp.text.pdf {
          * A name
          * @since 5.0.2
          */
-        public static readonly PdfName POLYLINE = new PdfName("Polyline");
+        public static readonly PdfName POLYLINE = new PdfName("PolyLine");
         /** A name */
         public static readonly PdfName POPUP = new PdfName("Popup");
         /**
@@ -1850,6 +1852,8 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName STARTINDENT = new PdfName("StartIndent");
         /** A name */
         public static readonly PdfName STATE = new PdfName("State");
+        /** A name */
+        public static readonly PdfName STATUS = new PdfName("Status");
         /** A name */
         public static readonly PdfName STDCF = new PdfName("StdCF");
         /** A name */

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using iTextSharp.awt.geom;
@@ -9,7 +10,7 @@ using iTextSharp.text.pdf.intern;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: PdfContentByte.cs 700 2014-02-12 14:06:42Z asubach $
+ * $Id: PdfContentByte.cs 748 2014-05-19 09:15:01Z asubach $
  * 
  *
  * This file is part of the iText project.
@@ -39,8 +40,8 @@ using iTextSharp.text.error_messages;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -411,7 +412,16 @@ namespace iTextSharp.text.pdf {
                 content.Append(value).Append(" J").Append_i(separator);
             }
         }
-    
+
+        /**
+         * Set the rendering intent, possible values are: PdfName.ABSOLUTECOLORIMETRIC,
+         * PdfName.RELATIVECOLORIMETRIC, PdfName.SATURATION, PdfName.PERCEPTUAL.
+         * @param ri
+         */
+        virtual public void SetRenderingIntent(PdfName ri) {
+            content.Append(ri.GetBytes()).Append(" ri").Append_i(separator);
+        }
+        
         /**
          * Changes the value of the <VAR>line dash pattern</VAR>.
          * <P>
@@ -1436,6 +1446,11 @@ namespace iTextSharp.text.pdf {
             if (writer != null && image.IsImgTemplate()) {
                 writer.AddDirectImageSimple(image);
                 PdfTemplate template = image.TemplateData;
+                if (image.GetAccessibleAttributes() != null) {
+                    foreach (PdfName key in image.GetAccessibleAttributes().Keys) {
+                        template.SetAccessibleAttribute(key, image.GetAccessibleAttribute(key));
+                    }
+                }
                 float w = template.Width;
                 float h = template.Height;
                 AddTemplate(template, a / w, b / w, c / h, d / h, e, f);
@@ -2812,6 +2827,16 @@ namespace iTextSharp.text.pdf {
                     SetShadingStroke(shading.PdfShadingPattern);
                     break;
                 }
+                case ExtendedColor.TYPE_DEVICEN: {
+                    DeviceNColor devicen = (DeviceNColor) value;
+                    SetColorStroke(devicen.PdfDeviceNColor, devicen.Tints);
+                    break;
+                }
+                case ExtendedColor.TYPE_LAB: {
+                    LabColor lab = (LabColor) value;
+                    SetColorStroke(lab.LabColorSpace, lab.L, lab.A, lab.B);
+                    break;
+                }
                 default:
                     SetRGBColorStroke(value.R, value.G, value.B);
                     break;
@@ -2849,6 +2874,16 @@ namespace iTextSharp.text.pdf {
                     SetShadingFill(shading.PdfShadingPattern);
                     break;
                 }
+                case ExtendedColor.TYPE_DEVICEN: {
+                    DeviceNColor devicen = (DeviceNColor) value;
+                    SetColorFill(devicen.PdfDeviceNColor, devicen.Tints);
+                    break;
+                }
+                case ExtendedColor.TYPE_LAB: {
+                    LabColor lab = (LabColor) value;
+                    SetColorFill(lab.LabColorSpace, lab.L, lab.A, lab.B);
+                    break;
+                }
                 default:
                     SetRGBColorFill(value.R, value.G, value.B);
                     break;
@@ -2864,10 +2899,36 @@ namespace iTextSharp.text.pdf {
             CheckWriter();
             state.colorDetails = writer.AddSimple(sp);
             PageResources prs = PageResources;
-            PdfName name = state.colorDetails.ColorName;
+            PdfName name = state.colorDetails.ColorSpaceName;
             name = prs.AddColor(name, state.colorDetails.IndirectReference);
             SaveColor(new SpotColor(sp, tint), true);
             content.Append(name.GetBytes()).Append(" cs ").Append(tint).Append(" scn").Append_i(separator);
+        }
+
+        public virtual void SetColorFill(PdfDeviceNColor dn, float[] tints) {
+            CheckWriter();
+            state.colorDetails = writer.AddSimple(dn);
+            PageResources prs = PageResources;
+            PdfName name = state.colorDetails.ColorSpaceName;
+            name = prs.AddColor(name, state.colorDetails.IndirectReference);
+            SaveColor(new DeviceNColor(dn, tints), true);
+            content.Append(name.GetBytes()).Append(" cs ");
+            foreach (float tint in tints)
+                content.Append(tint.ToString(NumberFormatInfo.InvariantInfo) + " ");
+            content.Append("scn").Append_i(separator);
+        }
+
+        public virtual void SetColorFill(PdfLabColor lab, float l, float a, float b) {
+            CheckWriter();
+            state.colorDetails = writer.AddSimple(lab);
+            PageResources prs = PageResources;
+            PdfName name = state.colorDetails.ColorSpaceName;
+            name = prs.AddColor(name, state.colorDetails.IndirectReference);
+            SaveColor(new LabColor(lab, l, a, b), true);
+            content.Append(name.GetBytes()).Append(" cs ");
+            content.Append(l.ToString(NumberFormatInfo.InvariantInfo) + " " + a.ToString(NumberFormatInfo.InvariantInfo) +
+                           " " + b.ToString(NumberFormatInfo.InvariantInfo) + " ");
+            content.Append("scn").Append_i(separator);
         }
     
         /** Sets the stroke color to a spot color.
@@ -2879,12 +2940,37 @@ namespace iTextSharp.text.pdf {
             CheckWriter();
             state.colorDetails = writer.AddSimple(sp);
             PageResources prs = PageResources;
-            PdfName name = state.colorDetails.ColorName;
+            PdfName name = state.colorDetails.ColorSpaceName;
             name = prs.AddColor(name, state.colorDetails.IndirectReference);
             SaveColor(new SpotColor(sp, tint), false);
             content.Append(name.GetBytes()).Append(" CS ").Append(tint).Append(" SCN").Append_i(separator);
         }
-    
+
+        public virtual void SetColorStroke(PdfDeviceNColor sp, float[] tints) {
+            CheckWriter();
+            state.colorDetails = writer.AddSimple(sp);
+            PageResources prs = PageResources;
+            PdfName name = state.colorDetails.ColorSpaceName;
+            name = prs.AddColor(name, state.colorDetails.IndirectReference);
+            SaveColor(new DeviceNColor(sp, tints), true);
+            content.Append(name.GetBytes()).Append(" CS ");
+            foreach (float tint in tints)
+                content.Append(tint.ToString(NumberFormatInfo.InvariantInfo) + " ");
+            content.Append("SCN").Append_i(separator);
+        }
+
+        public virtual void SetColorStroke(PdfLabColor lab, float l, float a, float b) {
+            CheckWriter();
+            state.colorDetails = writer.AddSimple(lab);
+            PageResources prs = PageResources;
+            PdfName name = state.colorDetails.ColorSpaceName;
+            name = prs.AddColor(name, state.colorDetails.IndirectReference);
+            SaveColor(new LabColor(lab, l, a, b), true);
+            content.Append(name.GetBytes()).Append(" CS ");
+            content.Append(l + " " + a + " " + b + " ");
+            content.Append("SCN").Append_i(separator);
+        }
+
         /** Sets the fill color to a pattern. The pattern can be
          * colored or uncolored.
          * @param p the pattern
@@ -2958,7 +3044,7 @@ namespace iTextSharp.text.pdf {
             PdfName name = writer.AddSimplePattern(p);
             name = prs.AddPattern(name, p.IndirectReference);
             ColorDetails csDetail = writer.AddSimplePatternColorspace(color);
-            PdfName cName = prs.AddColor(csDetail.ColorName, csDetail.IndirectReference);
+            PdfName cName = prs.AddColor(csDetail.ColorSpaceName, csDetail.IndirectReference);
             SaveColor(new UncoloredPattern(p, color, tint), true);
             content.Append(cName.GetBytes()).Append(" cs").Append_i(separator);
             OutputColorNumbers(color, tint);
@@ -2989,7 +3075,7 @@ namespace iTextSharp.text.pdf {
             PdfName name = writer.AddSimplePattern(p);
             name = prs.AddPattern(name, p.IndirectReference);
             ColorDetails csDetail = writer.AddSimplePatternColorspace(color);
-            PdfName cName = prs.AddColor(csDetail.ColorName, csDetail.IndirectReference);
+            PdfName cName = prs.AddColor(csDetail.ColorSpaceName, csDetail.IndirectReference);
             SaveColor(new UncoloredPattern(p, color, tint), false);
             content.Append(cName.GetBytes()).Append(" CS").Append_i(separator);
             OutputColorNumbers(color, tint);
@@ -3024,7 +3110,7 @@ namespace iTextSharp.text.pdf {
             content.Append(name.GetBytes()).Append(" sh").Append_i(separator);
             ColorDetails details = shading.ColorDetails;
             if (details != null)
-                prs.AddColor(details.ColorName, details.IndirectReference);
+                prs.AddColor(details.ColorSpaceName, details.IndirectReference);
         }
         
         /**
@@ -3047,7 +3133,7 @@ namespace iTextSharp.text.pdf {
             content.Append(PdfName.PATTERN.GetBytes()).Append(" cs ").Append(name.GetBytes()).Append(" scn").Append_i(separator);
             ColorDetails details = shading.ColorDetails;
             if (details != null)
-                prs.AddColor(details.ColorName, details.IndirectReference);
+                prs.AddColor(details.ColorSpaceName, details.IndirectReference);
         }
         
         /**
@@ -3062,7 +3148,7 @@ namespace iTextSharp.text.pdf {
             content.Append(PdfName.PATTERN.GetBytes()).Append(" CS ").Append(name.GetBytes()).Append(" SCN").Append_i(separator);
             ColorDetails details = shading.ColorDetails;
             if (details != null)
-                prs.AddColor(details.ColorName, details.IndirectReference);
+                prs.AddColor(details.ColorSpaceName, details.IndirectReference);
         }
 
         /** Check if we have a valid PdfWriter.
@@ -3174,6 +3260,10 @@ namespace iTextSharp.text.pdf {
             return cb;
         }
 
+        public virtual void InheritGraphicState(PdfContentByte parentCanvas) {
+            this.state = parentCanvas.state;
+            this.stateList = parentCanvas.stateList;
+        }
 
 
         /**
@@ -3470,19 +3560,32 @@ namespace iTextSharp.text.pdf {
             while (n-- > 0)
                 content.Append("EMC").Append_i(separator);
         }
-        
+
         internal virtual void AddAnnotation(PdfAnnotation annot) {
+            bool needToTag = IsTagged() && annot.Role != null && (!(annot is PdfFormField) || ((PdfFormField) annot).Kids == null);
+            if (needToTag) {
+                OpenMCBlock(annot);
+            }
             writer.AddAnnotation(annot);
+            if (needToTag) {
+                PdfStructureElement strucElem = null;
+                pdf.structElements.TryGetValue(annot.ID, out strucElem);
+                if (strucElem != null) {
+                    int structParent = pdf.GetStructParentIndex(annot);
+                    annot.Put(PdfName.STRUCTPARENT, new PdfNumber(structParent));
+                    strucElem.SetAnnotation(annot, CurrentPage);
+                    writer.StructureTreeRoot.SetAnnotationMark(structParent, strucElem.Reference);
+                }
+                CloseMCBlock(annot);
+            }
         }
 
-        internal void AddAnnotation(PdfAnnotation annot, bool applyCTM)
-        {
+        public virtual void AddAnnotation(PdfAnnotation annot, bool applyCTM) {
             if (applyCTM && !state.CTM.IsIdentity()) {
                 annot.ApplyCTM(state.CTM);
             }
             AddAnnotation(annot);
         }
-
 
 
         /**

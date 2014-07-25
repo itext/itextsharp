@@ -1,4 +1,5 @@
 using System;
+using itextsharp.pdfa.iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.interfaces;
 
 /*
@@ -96,6 +97,9 @@ namespace iTextSharp.text.pdf.intern{
                 case PdfAConformanceLevel.PDF_A_3B:
                 case PdfAConformanceLevel.PDF_A_3U:
                     pdfAChecker = new PdfA3Checker(conformanceLevel);
+                    break;
+                case PdfAConformanceLevel.ZUGFeRD:
+                    pdfAChecker = new ZugferdChecker(conformanceLevel);
                     break;
                 default:
                     pdfAChecker = new PdfA1Checker(conformanceLevel);

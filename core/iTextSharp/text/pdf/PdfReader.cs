@@ -15,7 +15,7 @@ using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.io;
 /*
- * $Id: PdfReader.cs 679 2014-01-06 20:11:16Z asubach $
+ * $Id: PdfReader.cs 744 2014-05-15 17:11:29Z rafhens $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -44,8 +44,8 @@ using iTextSharp.text.io;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -1273,7 +1273,7 @@ namespace iTextSharp.text.pdf {
                 long pos;
                 while (true) {
                     pos = tokens.FilePointer;
-                    if (!tokens.ReadLineSegment(tline))
+                    if (!tokens.ReadLineSegment(tline, false)) // added boolean because of mailing list issue (17 Feb. 2014)
                         break;
                     if (Equalsn(tline, endstream)) {
                         streamLength = pos - start;
@@ -1300,6 +1300,7 @@ namespace iTextSharp.text.pdf {
         }
         
         virtual protected internal void ReadObjStm(PRStream stream, IntHashtable map) {
+            if (stream == null) return;
             int first = stream.GetAsNumber(PdfName.FIRST).IntValue;
             int n = stream.GetAsNumber(PdfName.N).IntValue;
             byte[] b = GetStreamBytes(stream, tokens.File);
@@ -1612,7 +1613,7 @@ namespace iTextSharp.text.pdf {
             byte[] line = new byte[64];
             for (;;) {
 				long pos = tokens.FilePointer;
-                if (!tokens.ReadLineSegment(line))
+                if (!tokens.ReadLineSegment(line, true)) // added boolean because of mailing list issue (17 Feb. 2014)
                     break;
                 if (line[0] == 't') {
                     if (!PdfEncodings.ConvertToString(line, null).StartsWith("trailer"))

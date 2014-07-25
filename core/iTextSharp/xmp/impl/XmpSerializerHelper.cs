@@ -30,7 +30,8 @@
 
 using System;
 using System.IO;
-using System.Text;
+using iTextSharp.text.xml.simpleparser;
+using iTextSharp.text.xml.xmp;
 using iTextSharp.xmp.options;
 
 namespace iTextSharp.xmp.impl {
@@ -80,7 +81,7 @@ namespace iTextSharp.xmp.impl {
             Serialize(xmp, @out, options);
 
             try {
-                return Encoding.GetEncoding(options.Encoding).GetString(@out.GetBuffer());
+                return new EncodingNoPreamble(IanaEncodings.GetEncodingEncoding(options.Encoding)).GetString(@out.GetBuffer());
             }
             catch (Exception) {
                 // cannot happen as UTF-8/16LE/BE is required to be implemented in

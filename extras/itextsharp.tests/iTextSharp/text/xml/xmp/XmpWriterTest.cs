@@ -172,7 +172,7 @@ namespace iTextSharp.text.xml.xmp {
 
                 outStream = new FileStream(OUT_FOLDER + currXmlName, FileMode.Create);
                 outStream.Write(outBytes, 0, outBytes.Length);
-                Assert.Fail("The XMP packages are different!!!");
+                Assert.Fail("The XMP packages are different!");
             }
         }
     }

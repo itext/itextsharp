@@ -1,6 +1,6 @@
 using System.Globalization;
 /*
- * $Id: Util.cs 679 2014-01-06 20:11:16Z asubach $
+ * $Id: Util.cs 748 2014-05-19 09:15:01Z asubach $
  * 
  *
  * This file is part of the iText project.
@@ -45,13 +45,11 @@ using System.Globalization;
  * address: sales@itextpdf.com
  */
 
-namespace System.util
-{
+namespace System.util {
     /// <summary>
     /// Summary description for Util.
     /// </summary>
-    public static class Util
-    {
+    public static class Util {
         public static int USR(int op1, int op2) {        
             if (op2 < 1) {
                 return op1;
@@ -85,6 +83,40 @@ namespace System.util
             locale.DateTimeFormat.LongDatePattern = "dddd, MMMM dd, yyyy";
             locale.DateTimeFormat.YearMonthPattern = "MMMM, yyyy";
             return locale;
+        }
+
+        public static int GetArrayHashCode<T>(T[] a) {
+            if (a == null)
+                return 0;
+
+            int result = 1;
+            
+            foreach (T element in a) {
+                result = 31*result + (element == null ? 0 : element.GetHashCode());
+            }
+
+            return result;
+        }
+
+        public static bool ArraysAreEqual<T>(T[] a, T[] b) {
+            if (a == b)
+                return true;
+
+            if (a == null || b == null)
+                return false;
+
+            int length = a.Length;
+            if (b.Length != length)
+                return false;
+
+            for (int i = 0; i < length; i++) {
+                Object o1 = a[i];
+                Object o2 = b[i];
+                if (!(o1 == null ? o2 == null : o1.Equals(o2)))
+                    return false;
+            }
+
+            return true;
         }
     }
 }

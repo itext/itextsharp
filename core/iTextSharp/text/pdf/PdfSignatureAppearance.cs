@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using iTextSharp.text.pdf.security;
 using iTextSharp.text.io;
 /*
- * $Id: PdfSignatureAppearance.cs 679 2014-01-06 20:11:16Z asubach $
+ * $Id: PdfSignatureAppearance.cs 732 2014-05-06 13:03:32Z asubach $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -360,18 +360,6 @@ namespace iTextSharp.text.pdf {
             name += step;
             return name;
         }
-
-        /** Indicates if a new field was created. */
-        private bool newField;
-        
-        /**
-         * Checks if a new field was created.
-         * @return <CODE>true</CODE> if a new field was created, <CODE>false</CODE> if signing
-         * an existing field or if the signature is invisible
-         */
-        virtual public bool IsNewField() {
-            return this.newField;
-        }
         
         /**
          * The page where the signature will appear.
@@ -448,7 +436,6 @@ namespace iTextSharp.text.pdf {
             this.pageRect.Normalize();
             rect = new Rectangle(this.pageRect.Width, this.pageRect.Height);
             this.page = page;
-            newField = true;
         }
 
         /**
@@ -1186,7 +1173,7 @@ namespace iTextSharp.text.pdf {
             preClosed = true;
             AcroFields af = writer.GetAcroFields();
             String name = FieldName;
-            bool fieldExists = !(IsInvisible() || IsNewField());
+            bool fieldExists = af.DoesSignatureFieldExist(name);
             PdfIndirectReference refSig = writer.PdfIndirectReference;
             writer.SigFlags = 3;
             PdfDictionary fieldLock = null;

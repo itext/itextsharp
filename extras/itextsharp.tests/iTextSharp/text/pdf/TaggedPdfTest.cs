@@ -824,7 +824,7 @@ namespace itextsharp.tests.text.pdf {
             writer.DirectContent.OpenMCBlock(div);
 
             PdfArtifact artifact = new PdfArtifact();
-            artifact.Type = new PdfString("Rectangle");
+            artifact.Type = new PdfString("Background");
             writer.DirectContent.OpenMCBlock(artifact);
             writer.DirectContent.SetColorFill(BaseColor.RED);
             writer.DirectContent.Rectangle(100, 100, 400, 400);

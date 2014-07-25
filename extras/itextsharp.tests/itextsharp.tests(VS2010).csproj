@@ -86,7 +86,10 @@
     <Compile Include="iTextSharp\text\pdf\AcroFieldsTest.cs" />
     <Compile Include="iTextSharp\text\pdf\BookmarksTest.cs" />
     <Compile Include="iTextSharp\text\pdf\CMapAwareDocumentFontTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\cs\DeviceNColorSpaceTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\cs\LabColorSpaceTest.cs" />
     <Compile Include="iTextSharp\text\pdf\DocumentFontTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\FlatteningTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts.cmaps\CMapParserExTest.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts.cmaps\CMapTest.cs" />
     <Compile Include="iTextSharp\text\pdf\IndicLigatures.cs" />
@@ -110,6 +113,7 @@
     <Compile Include="iTextSharp\text\pdf\PdfReaderTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PRTokeniserTest.cs" />
     <Compile Include="iTextSharp\text\pdf\RandomAccessFileOrArrayTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\table\RowspanTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TestPdfCopyAndStamp.cs" />
     <Compile Include="iTextSharp\text\pdf\ToUnicodeNonBreakableSpacesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\UnbalancedOperatorsTest.cs" />

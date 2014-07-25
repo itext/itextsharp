@@ -3,7 +3,7 @@ using System;
 using iTextSharp.text;
 
 /*
- * $Id: IPdfPageEvent.cs 690 2014-01-30 14:49:02Z asubach $
+ * $Id: IPdfPageEvent.cs 744 2014-05-15 17:11:29Z rafhens $
  * 
  *
  * This file is part of the iText project.
@@ -33,8 +33,8 @@ using iTextSharp.text;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you

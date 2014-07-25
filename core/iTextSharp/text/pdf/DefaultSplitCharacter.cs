@@ -1,7 +1,7 @@
 using System;
 
 /*
- * $Id: DefaultSplitCharacter.cs 681 2014-01-10 15:53:51Z asubach $
+ * $Id: DefaultSplitCharacter.cs 744 2014-05-15 17:11:29Z rafhens $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -30,8 +30,8 @@ using System;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you

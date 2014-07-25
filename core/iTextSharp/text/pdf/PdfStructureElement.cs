@@ -7,7 +7,7 @@ using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.intern;
 
 /*
- * $Id: PdfStructureElement.cs 695 2014-02-06 11:44:19Z asubach $
+ * $Id: PdfStructureElement.cs 744 2014-05-15 17:11:29Z rafhens $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -36,8 +36,8 @@ using iTextSharp.text.pdf.intern;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -194,11 +194,28 @@ namespace iTextSharp.text.pdf
                 return parent;
         }
 
-        internal void SetPageMark(int page, int mark)
-        {
+        internal virtual void SetPageMark(int page, int mark) {
             if (mark >= 0)
                 Put(PdfName.K, new PdfNumber(mark));
             top.SetPageMark(page, reference);
+        }
+
+        internal virtual void SetAnnotation(PdfAnnotation annot, PdfIndirectReference currentPage) {
+            PdfArray kArray = GetAsArray(PdfName.K);
+            if (kArray == null) {
+                kArray = new PdfArray();
+                PdfObject k = Get(PdfName.K);
+                if (k != null) {
+                    kArray.Add(k);
+                }
+                Put(PdfName.K, kArray);
+            }
+            PdfDictionary dict = new PdfDictionary();
+            dict.Put(PdfName.TYPE, PdfName.OBJR);
+            dict.Put(PdfName.OBJ, annot.IndirectReference);
+            if (annot.Role == PdfName.FORM)
+                dict.Put(PdfName.PG, currentPage);
+            kArray.Add(dict);
         }
 
         /**

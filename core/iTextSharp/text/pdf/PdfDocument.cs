@@ -9,7 +9,7 @@ using iTextSharp.text.pdf.collection;
 using iTextSharp.text.error_messages;
 /*
  * 
- * $Id: PdfDocument.cs 689 2014-01-30 12:21:56Z asubach $
+ * $Id: PdfDocument.cs 746 2014-05-15 17:49:20Z rafhens $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -38,8 +38,8 @@ using iTextSharp.text.error_messages;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -524,7 +524,7 @@ namespace iTextSharp.text.pdf {
                     
                     CarriageReturn();
                     // we don't want to make orphans/widows
-                    if (currentHeight + line.Height + leading > IndentTop - IndentBottom) {
+                    if (currentHeight + CalculateLineHeight() > IndentTop - IndentBottom) {
                         NewPage();
                     }
 
@@ -728,12 +728,12 @@ namespace iTextSharp.text.pdf {
                 case Element.IMGRAW:
                 case Element.IMGTEMPLATE: {
                     //carriageReturn(); suggestion by Marc Campforts
-                    if(IsTagged(writer)) {
+                    if(IsTagged(writer) && !((Image)element).IsImgTemplate()) {
                         FlushLines();
                         text.OpenMCBlock((Image)element);
                     }
                     Add((Image)element);
-                    if(IsTagged(writer)) {
+                    if(IsTagged(writer) && !((Image)element).IsImgTemplate()) {
                         FlushLines();
                         text.CloseMCBlock((Image)element);
                     }
@@ -1152,13 +1152,29 @@ namespace iTextSharp.text.pdf {
             }
             line = new PdfLine(IndentLeft, IndentRight, alignment, leading);
         }
+
+        /**
+         * line.height() is usually the same as the leading
+         * We should take leading into account if it is not the same as the line.height
+         *
+         * @return float combined height of the line
+         * @since 5.5.1
+         */
+        protected virtual float CalculateLineHeight() {
+            float tempHeight = line.Height;
+
+            if (tempHeight != leading) {
+                tempHeight += leading;
+            }
+
+            return tempHeight;
+        }
         
         /**
         * If the current line is not empty or null, it is added to the arraylist
         * of lines and a new empty line is added.
         * @throws DocumentException on error
         */
-        
         virtual protected internal void CarriageReturn() {
             // the arraylist with lines may not be null
             if (lines == null) {
@@ -1167,7 +1183,7 @@ namespace iTextSharp.text.pdf {
             // If the current line is not null or empty
             if (line != null && line.Size > 0) {
                 // we check if the end of the page is reached (bugfix by Francois Gravel)
-                if (currentHeight + line.Height + leading > IndentTop - IndentBottom) {
+                if (currentHeight + CalculateLineHeight() > IndentTop - IndentBottom) {
                     // if the end of the line is reached, we start a newPage which will flush existing lines
                     // then move to next page but before then we need to exclude the current one that does not fit
                     // After the new page we add the current line back in
@@ -1511,24 +1527,12 @@ namespace iTextSharp.text.pdf {
                             }
                             text.AddAnnotation(annot, true);
                             if (IsTagged(writer) && chunk.accessibleElement != null) {
-                                int structParent = GetStructParentIndex(annot);
-                                annot.Put(PdfName.STRUCTPARENT, new PdfNumber(structParent));
                                 PdfStructureElement strucElem;
                                 structElements.TryGetValue(chunk.accessibleElement.ID, out strucElem);
                                 if (strucElem != null) {
-                                    PdfArray kArray = strucElem.GetAsArray(PdfName.K);
-                                    if (kArray == null) {
-                                        kArray = new PdfArray();
-                                        PdfObject k = strucElem.Get(PdfName.K);
-                                        if (k != null) {
-                                            kArray.Add(k);
-                                        }
-                                        strucElem.Put(PdfName.K, kArray);
-                                    }
-                                    PdfDictionary dict = new PdfDictionary();
-                                    dict.Put(PdfName.TYPE, PdfName.OBJR);
-                                    dict.Put(PdfName.OBJ, annot.IndirectReference);
-                                    kArray.Add(dict);
+                                    int structParent = GetStructParentIndex(annot);
+                                    annot.Put(PdfName.STRUCTPARENT, new PdfNumber(structParent));
+                                    strucElem.SetAnnotation(annot, writer.CurrentPage);
                                     writer.StructureTreeRoot.SetAnnotationMark(structParent, strucElem.Reference);
                                 }
                             }
@@ -1826,7 +1830,12 @@ namespace iTextSharp.text.pdf {
         virtual protected internal void AddSpacing(float extraspace, float oldleading, Font f) {
             if (extraspace == 0) return;
             if (pageEmpty) return;
-            if (currentHeight + line.Height + leading > IndentTop - IndentBottom) return;
+
+            if (currentHeight + CalculateLineHeight() > IndentTop - IndentBottom) {
+                NewPage();
+                return;
+            }
+
             leading = extraspace;
             CarriageReturn();
             if (f.IsUnderlined() || f.IsStrikethru()) {

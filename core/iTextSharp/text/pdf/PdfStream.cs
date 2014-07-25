@@ -6,7 +6,7 @@ using System.util.zlib;
 using iTextSharp.text.pdf.intern;
 
 /*
- * $Id: PdfStream.cs 679 2014-01-06 20:11:16Z asubach $
+ * $Id: PdfStream.cs 744 2014-05-15 17:11:29Z rafhens $
  * 
  *
  * This file is part of the iText project.
@@ -36,8 +36,8 @@ using iTextSharp.text.pdf.intern;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -249,7 +249,7 @@ namespace iTextSharp.text.pdf {
             }
             else {
                 PdfArray filters = new PdfArray(filter);
-                filters.Add(PdfName.FLATEDECODE);
+                filters.Add(0, PdfName.FLATEDECODE);
                 Put(PdfName.FILTER, filters);
             }
             compressed = true;

@@ -1,5 +1,5 @@
 /*
- * $Id: XmpWriter.cs 699 2014-02-11 14:46:33Z asubach $
+ * $Id: XmpWriter.cs 763 2014-05-27 10:32:15Z eugenemark $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -46,7 +46,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using iTextSharp.text.pdf;
 using iTextSharp.xmp;
 using iTextSharp.xmp.options;
@@ -202,7 +201,6 @@ namespace iTextSharp.text.xml.xmp {
                              ">" +
                              content +
                              "</rdf:Description></rdf:RDF>\n";
-                byte[] bytes = Encoding.Convert(Encoding.UTF8, Encoding.ASCII, Encoding.UTF8.GetBytes(str));
                 IXmpMeta extMeta = XmpMetaFactory.ParseFromString(str);
                 XmpUtils.AppendProperties(extMeta, xmpMeta, true, true);
             }
@@ -339,8 +337,9 @@ namespace iTextSharp.text.xml.xmp {
                 xmpMeta.SetLocalizedText(XmpConst.NS_DC, DublinCoreProperties.DESCRIPTION, XmpConst.X_DEFAULT,
                                          XmpConst.X_DEFAULT, value);
             } else if (PdfName.KEYWORDS.Equals(key)) {
-            foreach (String v in value.Split(',', ';'))
-                xmpMeta.AppendArrayItem(XmpConst.NS_DC, DublinCoreProperties.SUBJECT, new PropertyOptions(PropertyOptions.ARRAY), v.Trim(), null);
+                foreach (String v in value.Split(',', ';'))
+                    if (v.Trim().Length > 0)
+                        xmpMeta.AppendArrayItem(XmpConst.NS_DC, DublinCoreProperties.SUBJECT, new PropertyOptions(PropertyOptions.ARRAY), v.Trim(), null);
                 xmpMeta.SetProperty(XmpConst.NS_PDF, PdfProperties.KEYWORDS, value);
             } else if (PdfName.PRODUCER.Equals(key)) {
                 xmpMeta.SetProperty(XmpConst.NS_PDF, PdfProperties.PRODUCER, value);

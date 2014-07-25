@@ -5,7 +5,7 @@ using System.Text;
 using iTextSharp.text;
 using iTextSharp.text.error_messages;
 /*
- * $Id: PdfImage.cs 679 2014-01-06 20:11:16Z asubach $
+ * $Id: PdfImage.cs 744 2014-05-15 17:11:29Z rafhens $
  * 
  *
  * This file is part of the iText project.
@@ -35,8 +35,8 @@ using iTextSharp.text.error_messages;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -254,6 +254,8 @@ namespace iTextSharp.text.pdf {
                     default:
                         throw new IOException(MessageLocalization.GetComposedMessage("1.is.an.unknown.image.format", errorID));
                 }
+                if (image.CompressionLevel > NO_COMPRESSION)
+                    FlateCompress(image.CompressionLevel);
                 Put(PdfName.LENGTH, new PdfNumber(streamBytes.Length));
             }
             finally {

@@ -33,8 +33,8 @@ using System.IO;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -47,6 +47,7 @@ using System.IO;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+using System.util;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 
@@ -63,7 +64,7 @@ public class CompareTool {
     private const String gsFailed = "GhostScript failed for <filename>.";
     private const String unexpectedNumberOfPages = "Unexpected number of pages for <filename>.";
     private const String differentPages = "File <filename> differs on page <pagenumber>.";
-    private const String undefinedGsPath = "Path to GhostScript is not specified. Please use -DgsExec=<path_to_ghostscript> (e.g. -DgsExec=\"C:/Program Files/gs/gs8.64/bin/gswin32c.exe\")";
+    private const String undefinedGsPath = "Path to GhostScript is not specified. Please use -DgsExec=<path_to_ghostscript> (e.g. -DgsExec=\"C:/Program Files/gs/gs9.14/bin/gswin32c.exe\")";
 
     private const String ignoredAreasPrefix = "ignored_areas_";
 
@@ -78,16 +79,22 @@ public class CompareTool {
     public CompareTool(String outPdf, String cmpPdf) {
         gsExec = Environment.GetEnvironmentVariable("gsExec");
         compareExec = Environment.GetEnvironmentVariable("compareExec");
-        init(outPdf, cmpPdf);
+        Init(outPdf, cmpPdf);
     }
 
     virtual public String Compare(String outPath, String differenceImagePrefix) {
         return Compare(outPath, differenceImagePrefix, null);
     }
 
-    virtual public String Compare(String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas) {
-        if (gsExec == null || !File.Exists(gsExec)) {
+    public virtual String Compare(String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas) {
+        return Compare(outPath, differenceImagePrefix, ignoredAreas, null);
+    }
+
+    virtual public String Compare(String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas, IList<int> equalPages) {
+        if (gsExec == null)
             return undefinedGsPath;
+        if (!File.Exists(gsExec)) {
+            return gsExec + " does not exist";
         }
 
         try {
@@ -144,7 +151,7 @@ public class CompareTool {
                 outReader.Close();
                 cmpReader.Close();
 
-                init(outPath + ignoredAreasPrefix + outPdfName, outPath + ignoredAreasPrefix + cmpPdfName);
+                Init(outPath + ignoredAreasPrefix + outPdfName, outPath + ignoredAreasPrefix + cmpPdfName);
             }
 
             String gsParams = CompareTool.gsParams.Replace("<outputfile>", outPath + cmpImage).Replace("<inputfile>", cmpPdf);
@@ -200,6 +207,8 @@ public class CompareTool {
                     Array.Sort(cmpImageFiles, new ImageNameComparator());
                     String differentPagesFail = null;
                     for (int i = 0; i < cnt; i++) {
+                        if (equalPages != null && equalPages.Contains(i))
+                            continue;
                         Console.Out.WriteLine("Comparing page " + (i + 1).ToString() + " (" + imageFiles[i].FullName + ")...");
                         FileStream is1 = new FileStream(imageFiles[i].FullName, FileMode.Open);
                         FileStream is2 = new FileStream(cmpImageFiles[i].FullName, FileMode.Open);
@@ -270,16 +279,183 @@ public class CompareTool {
     }
 
     virtual public String Compare(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas) {
-        init(outPdf, cmpPdf);
+        Init(outPdf, cmpPdf);
         return Compare(outPath, differenceImagePrefix, ignoredAreas);
     }
 
     virtual public String Compare(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix) {
-        init(outPdf, cmpPdf);
+        Init(outPdf, cmpPdf);
         return Compare(outPath, differenceImagePrefix, null);
     }
 
-    private void init(String outPdf, String cmpPdf) {
+    private IList<PdfDictionary> outPages;
+    private IList<RefKey> outPagesRef;
+    private IList<PdfDictionary> cmpPages;
+    private IList<RefKey> cmpPagesRef;
+
+    public virtual String CompareByContent(String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas) {
+        PdfReader outReader = new PdfReader(outPdf);
+        outPages = new List<PdfDictionary>();
+        outPagesRef = new List<RefKey>();
+        LoadPagesFromReader(outReader, outPages, outPagesRef);
+
+        PdfReader cmpReader = new PdfReader(cmpPdf);
+        cmpPages = new List<PdfDictionary>();
+        cmpPagesRef = new List<RefKey>();
+        LoadPagesFromReader(cmpReader, cmpPages, cmpPagesRef);
+
+        if (outPages.Count != cmpPages.Count)
+            return Compare(outPath, differenceImagePrefix, ignoredAreas);
+
+        IList<int> equalPages = new List<int>(cmpPages.Count);
+        for (int i = 0; i < cmpPages.Count; i++) {
+            if (ObjectsIsEquals(outPages[i], cmpPages[i]))
+                equalPages.Add(i);
+        }
+        outReader.Close();
+        cmpReader.Close();
+
+
+        if (equalPages.Count == cmpPages.Count) {
+            return null;
+        } else {
+            String message = Compare(outPath, differenceImagePrefix, ignoredAreas, equalPages);
+            if (message == null || message.Length == 0)
+                return "Compare by content fails. No visual differences";
+            return message;
+        }
+    }
+
+    public virtual String CompareByContent(String outPath, String differenceImagePrefix) {
+        return CompareByContent(outPath, differenceImagePrefix, null);
+    }
+
+    public virtual String CompareByContent(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix, IDictionary<int, IList<Rectangle>> ignoredAreas) {
+        Init(outPdf, cmpPdf);
+        return CompareByContent(outPath, differenceImagePrefix, ignoredAreas);
+    }
+
+    public virtual String compareByContent(String outPdf, String cmpPdf, String outPath, String differenceImagePrefix) {
+        return CompareByContent(outPdf, cmpPdf, outPath, differenceImagePrefix, null);
+    }
+
+    private void LoadPagesFromReader(PdfReader reader, IList<PdfDictionary> pages, IList<RefKey> pagesRef) {
+        PdfObject pagesDict = reader.Catalog.Get(PdfName.PAGES);
+        AddPagesFromDict(pagesDict, pages, pagesRef);
+    }
+
+    private void AddPagesFromDict(PdfObject dictRef, IList<PdfDictionary> pages, IList<RefKey> pagesRef) {
+        PdfDictionary dict = (PdfDictionary)PdfReader.GetPdfObject(dictRef);
+        if (dict.IsPages()) {
+            PdfArray kids = dict.GetAsArray(PdfName.KIDS);
+            if (kids == null) return;
+            foreach (PdfObject kid in kids) {
+                AddPagesFromDict(kid, pages, pagesRef);
+            }
+        } else if(dict.IsPage()) {
+            pages.Add(dict);
+            pagesRef.Add(new RefKey((PRIndirectReference)dictRef));
+        }
+    }
+
+    private bool ObjectsIsEquals(PdfDictionary outDict, PdfDictionary cmpDict) {
+        foreach (PdfName key in cmpDict.Keys) {
+            if (key.CompareTo(PdfName.PARENT) == 0) continue;
+            if (key.CompareTo(PdfName.BASEFONT) == 0 || key.CompareTo(PdfName.FONTNAME) == 0) {
+                PdfObject cmpObj = cmpDict.GetDirectObject(key);
+                if (cmpObj.IsName() && cmpObj.ToString().IndexOf('+') > 0) {
+                    PdfObject outObj = outDict.GetDirectObject(key);
+                    if (!outObj.IsName())
+                        return false;
+                    String cmpName = cmpObj.ToString().Substring(cmpObj.ToString().IndexOf('+'));
+                    String outName = outObj.ToString().Substring(outObj.ToString().IndexOf('+'));
+                    if (!cmpName.Equals(outName))
+                        return false;
+                    continue;
+                }
+            }
+            if (!ObjectsIsEquals(outDict.Get(key), cmpDict.Get(key)))
+                return false;
+        }
+        return true;
+    }
+
+    private bool ObjectsIsEquals(PdfObject outObj, PdfObject cmpObj) {
+        PdfObject outDirectObj = PdfReader.GetPdfObject(outObj);
+        PdfObject cmpDirectObj = PdfReader.GetPdfObject(cmpObj);
+
+        if (outDirectObj == null || cmpDirectObj.Type != outDirectObj.Type)
+            return false;
+        if (cmpDirectObj.IsDictionary()) {
+            PdfDictionary cmpDict = (PdfDictionary)cmpDirectObj;
+            PdfDictionary outDict = (PdfDictionary)outDirectObj;
+            if (cmpDict.IsPage()) {
+                if (!outDict.IsPage())
+                    return false;
+                RefKey cmpRefKey = new RefKey((PRIndirectReference)cmpObj);
+                RefKey outRefKey = new RefKey((PRIndirectReference)outObj);
+                if (cmpPagesRef.Contains(cmpRefKey) && cmpPagesRef.IndexOf(cmpRefKey) == outPagesRef.IndexOf(outRefKey))
+                    return true;
+                return false;
+            }
+            if (!ObjectsIsEquals(outDict, cmpDict))
+                return false;
+        } else if (cmpDirectObj.IsStream()) {
+            if (!ObjectsIsEquals((PRStream)outDirectObj, (PRStream)cmpDirectObj))
+                return false;
+        } else if (cmpDirectObj.IsArray()) {
+            if (!ObjectsIsEquals((PdfArray)outDirectObj, (PdfArray)cmpDirectObj))
+                return false;
+        } else if (cmpDirectObj.IsName()) {
+            if (!ObjectsIsEquals((PdfName)outDirectObj, (PdfName)cmpDirectObj))
+                return false;
+        } else if (cmpDirectObj.IsNumber()) {
+            if (!ObjectsIsEquals((PdfNumber)outDirectObj, (PdfNumber)cmpDirectObj))
+                return false;
+        } else if (cmpDirectObj.IsString()) {
+            if (!ObjectsIsEquals((PdfString)outDirectObj, (PdfString)cmpDirectObj))
+                return false;
+        } else if (cmpDirectObj.IsBoolean()) {
+            if (!ObjectsIsEquals((PdfBoolean)outDirectObj, (PdfBoolean)cmpDirectObj))
+                return false;
+        } else {
+            throw new InvalidOperationException();
+        }
+        return true;
+    }
+
+    private bool ObjectsIsEquals(PRStream outStream, PRStream cmpStream) {
+        return Util.ArraysAreEqual(PdfReader.GetStreamBytesRaw(outStream), PdfReader.GetStreamBytesRaw(cmpStream));
+    }
+
+    private bool ObjectsIsEquals(PdfArray outArray, PdfArray cmpArray) {
+        if (outArray == null || outArray.Size != cmpArray.Size)
+            return false;
+        for (int i = 0; i < cmpArray.Size; i++) {
+            if (!ObjectsIsEquals(outArray[i], cmpArray[i]))
+                return false;
+        }
+
+        return true;
+    }
+
+    private bool ObjectsIsEquals(PdfName outName, PdfName cmpName) {
+        return cmpName.CompareTo(outName) == 0;
+    }
+
+    private bool ObjectsIsEquals(PdfNumber outNumber, PdfNumber cmpNumber) {
+        return cmpNumber.DoubleValue == outNumber.DoubleValue;
+    }
+
+    private bool ObjectsIsEquals(PdfString outString, PdfString cmpString) {
+        return Util.ArraysAreEqual(cmpString.GetBytes(), outString.GetBytes());
+    }
+
+    private bool ObjectsIsEquals(PdfBoolean outBoolean, PdfBoolean cmpBoolean) {
+        return Util.ArraysAreEqual(cmpBoolean.GetBytes(), outBoolean.GetBytes());
+    }
+    
+    private void Init(String outPdf, String cmpPdf) {
         this.outPdf = outPdf;
         this.cmpPdf = cmpPdf;
         outPdfName = Path.GetFileName(outPdf);
@@ -313,6 +489,67 @@ public class CompareTool {
 
         }
         return true;
+    }
+
+    private bool LinksAreSame(PdfAnnotation.PdfImportedLink cmpLink, PdfAnnotation.PdfImportedLink outLink) {
+        // Compare link boxes, page numbers the links refer to, and simple parameters (non-indirect, non-arrays, non-dictionaries)
+
+        if (cmpLink.GetDestinationPage() != outLink.GetDestinationPage())
+            return false;
+        if (!cmpLink.GetRect().ToString().Equals(outLink.GetRect().ToString()))
+            return false;
+
+        IDictionary<PdfName, PdfObject> cmpParams = cmpLink.GetParameters();
+        IDictionary<PdfName, PdfObject> outParams = outLink.GetParameters();
+        if (cmpParams.Count != outParams.Count)
+            return false;
+
+        foreach (KeyValuePair<PdfName, PdfObject> cmpEntry in cmpParams) {
+            PdfObject cmpObj = cmpEntry.Value;
+            if (!outParams.ContainsKey(cmpEntry.Key))
+                return false;
+            PdfObject outObj = outParams[cmpEntry.Key];
+            if (cmpObj.Type != outObj.Type)
+                return false;
+
+            switch (cmpObj.Type) {
+                case PdfObject.NULL:
+                case PdfObject.BOOLEAN:
+                case PdfObject.NUMBER:
+                case PdfObject.STRING:
+                case PdfObject.NAME:
+                    if (!cmpObj.ToString().Equals(outObj.ToString()))
+                        return false;
+                    break;
+            }
+        }
+
+        return true;
+    }
+
+    virtual public String CompareLinks(String outPdf, String cmpPdf) {
+        Console.Out.WriteLine("Comparing link annotations...");
+        String message = null;
+        PdfReader outReader = new PdfReader(outPdf);
+        PdfReader cmpReader = new PdfReader(cmpPdf);
+        for (int i = 0; i < outReader.NumberOfPages && i < cmpReader.NumberOfPages; i++) {
+            List<PdfAnnotation.PdfImportedLink> outLinks = outReader.GetLinks(i + 1);
+            List<PdfAnnotation.PdfImportedLink> cmpLinks = cmpReader.GetLinks(i + 1);
+            if (cmpLinks.Count != outLinks.Count) {
+                message = String.Format("Different number of links on page {0}.", i + 1);
+                break;
+            }
+            for (int j = 0; j < cmpLinks.Count; j++) {
+                if (!LinksAreSame(cmpLinks[j], outLinks[j])) {
+                    message = String.Format("Different links on page {0}.\n{1}\n{2}", i + 1, cmpLinks[j].ToString(),
+                        outLinks[j].ToString());
+                    break;
+                }
+            }
+        }
+        outReader.Close();
+        cmpReader.Close();
+        return message;
     }
 
     private bool PngPredicate(FileSystemInfo pathname) {

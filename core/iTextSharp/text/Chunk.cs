@@ -8,7 +8,7 @@ using iTextSharp.text.pdf.draw;
 using iTextSharp.text.pdf.interfaces;
 
 /*
- * $Id: Chunk.cs 689 2014-01-30 12:21:56Z asubach $
+ * $Id: Chunk.cs 744 2014-05-15 17:11:29Z rafhens $
  * 
  *
  * This file is part of the iText project.
@@ -38,8 +38,8 @@ using iTextSharp.text.pdf.interfaces;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -717,7 +717,9 @@ namespace iTextSharp.text {
         /// <returns>this Chunk</returns>
         virtual public Chunk SetAnchor(Uri url) {
             Role = PdfName.LINK;
-            return SetAttribute(ACTION, new PdfAction(url));
+            String urlStr = url.AbsoluteUri;
+            SetAccessibleAttribute(PdfName.ALT, new PdfString(urlStr));
+            return SetAttribute(ACTION, new PdfAction(urlStr));
         }
 
         /// <summary>
@@ -727,6 +729,7 @@ namespace iTextSharp.text {
         /// <returns>this Chunk</returns>
         virtual public Chunk SetAnchor(string url) {
             Role = PdfName.LINK;
+            SetAccessibleAttribute(PdfName.ALT, new PdfString(url));
             return SetAttribute(ACTION, new PdfAction(url));
         }
 

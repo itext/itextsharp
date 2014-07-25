@@ -38,8 +38,8 @@ using iTextSharp.text.io;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -1446,7 +1446,11 @@ namespace iTextSharp.text.pdf {
                     valDict.Put(PdfName.V, vt);
                     merged.Put(PdfName.V, vt);
                     MarkUsed(widget);
-                    if (IsInAP(widget,  vt)) {
+                    PdfDictionary appDic = widget.GetAsDict(PdfName.AP);
+                    if (appDic == null)
+                        return false;
+                    PdfDictionary normal = appDic.GetAsDict(PdfName.N);
+                    if (IsInAP(normal, vt) || normal == null) {
                         merged.Put(PdfName.AS, vt);
                         widget.Put(PdfName.AS, vt);
                     }
@@ -1507,12 +1511,8 @@ namespace iTextSharp.text.pdf {
             return true;
         }
 
-        internal bool IsInAP(PdfDictionary dic, PdfName check) {
-            PdfDictionary appDic = dic.GetAsDict(PdfName.AP);
-            if (appDic == null)
-                return false;
-            PdfDictionary NDic = appDic.GetAsDict(PdfName.N);
-            return (NDic != null && NDic.Get(check) != null);
+        internal bool IsInAP(PdfDictionary nDic, PdfName check) {
+            return nDic != null && nDic.Get(check) != null;
         }
         
         /** Gets all the fields. The fields are keyed by the fully qualified field name and
@@ -2577,6 +2577,16 @@ namespace iTextSharp.text.pdf {
                 MarkUsed(widgets);
             }
             return true;
+        }
+
+        /**
+         * Checks whether a name exists as a signature field or not. It checks both signed fields and blank signatures.
+         * @param name String
+         * @return boolean does the signature field exist
+         * @since 5.5.1
+         */
+        public virtual bool DoesSignatureFieldExist(String name) {
+            return GetBlankSignatureNames().Contains(name) || GetSignatureNames().Contains(name);
         }
 
         /**

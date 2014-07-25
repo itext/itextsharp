@@ -3,7 +3,7 @@ using System;
 using iTextSharp.text;
 
 /*
- * $Id: ExtendedColor.cs 679 2014-01-06 20:11:16Z asubach $
+ * $Id: ExtendedColor.cs 748 2014-05-19 09:15:01Z asubach $
  * 
  *
  * This file is part of the iText project.
@@ -33,8 +33,8 @@ using iTextSharp.text;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -56,12 +56,14 @@ namespace iTextSharp.text.pdf {
      */
     public abstract class ExtendedColor : BaseColor {
     
-        internal const int TYPE_RGB = 0;
-        internal const int TYPE_GRAY = 1;
-        internal const int TYPE_CMYK = 2;
-        internal const int TYPE_SEPARATION = 3;
-        internal const int TYPE_PATTERN = 4;
-        internal const int TYPE_SHADING = 5;
+        public const int TYPE_RGB = 0;
+        public const int TYPE_GRAY = 1;
+        public const int TYPE_CMYK = 2;
+        public const int TYPE_SEPARATION = 3;
+        public const int TYPE_PATTERN = 4;
+        public const int TYPE_SHADING = 5;
+        public const int TYPE_DEVICEN = 6;
+        public const int TYPE_LAB = 7;
     
         protected int type;
 

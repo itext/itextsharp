@@ -12,7 +12,7 @@ using iTextSharp.text.xml;
 namespace itextsharp.tests.iTextSharp.text.pdf.mc {
     class AcroFieldsFlattenTest {
         public const String CMP_FOLDER = @"..\..\resources\text\pdf\mc\";
-        public const String OUT_FOLDER = @"..\..\target\text\pdf\mc\";
+        public const String OUT_FOLDER = @"AcroFieldsFlattenTest\";
 
         [SetUp]
         virtual public void Initialize() {

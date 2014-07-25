@@ -4,10 +4,11 @@ using System.IO;
 using System.Text;
 using iTextSharp.awt.geom;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.intern;
 
 /*
- * $Id: PdfAnnotation.cs 679 2014-01-06 20:11:16Z asubach $
+ * $Id: PdfAnnotation.cs 744 2014-05-15 17:11:29Z rafhens $
  * 
  *
  * This file is part of the iText project.
@@ -37,8 +38,8 @@ using iTextSharp.text.pdf.intern;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -58,7 +59,7 @@ namespace iTextSharp.text.pdf {
      *
      * @see     PdfDictionary
      */
-    public class PdfAnnotation : PdfDictionary {
+    public class PdfAnnotation : PdfDictionary, IAccessibleElement {
     
         public static readonly PdfName HIGHLIGHT_NONE = PdfName.N;
         public static readonly PdfName HIGHLIGHT_INVERT = PdfName.I;
@@ -74,6 +75,8 @@ namespace iTextSharp.text.pdf {
         public const int FLAGS_READONLY = 64;
         public const int FLAGS_LOCKED = 128;
         public const int FLAGS_TOGGLENOVIEW = 256;
+        /** flagvalue PDF 1.7*/
+        public const int FLAGS_LOCKEDCONTENTS = 512;
         public static readonly PdfName APPEARANCE_NORMAL = PdfName.N;
         public static readonly PdfName APPEARANCE_ROLLOVER = PdfName.R;
         public static readonly PdfName APPEARANCE_DOWN = PdfName.D;
@@ -103,6 +106,10 @@ namespace iTextSharp.text.pdf {
     
         /** Holds value of property placeInPage. */
         private int placeInPage = -1;
+
+        protected PdfName role = null;
+        protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
+        private AccessibleElementId id = null;
     
         // constructors
         public PdfAnnotation(PdfWriter writer, Rectangle rect) {
@@ -114,7 +121,6 @@ namespace iTextSharp.text.pdf {
         /**
          * Constructs a new <CODE>PdfAnnotation</CODE> of subtype text.
          */
-    
         public PdfAnnotation(PdfWriter writer, float llx, float lly, float urx, float ury, PdfString title, PdfString content) {
             this.writer = writer;
             Put(PdfName.SUBTYPE, PdfName.TEXT);
@@ -126,7 +132,6 @@ namespace iTextSharp.text.pdf {
         /**
          * Constructs a new <CODE>PdfAnnotation</CODE> of subtype link (Action).
          */
-    
         public PdfAnnotation(PdfWriter writer, float llx, float lly, float urx, float ury, PdfAction action) {
             this.writer = writer;
             Put(PdfName.SUBTYPE, PdfName.LINK);
@@ -794,6 +799,7 @@ namespace iTextSharp.text.pdf {
             Dictionary<PdfName, PdfObject> parameters;
             PdfArray destination = null;
             int newPage=0;
+            PdfArray rect;
             
             internal PdfImportedLink(PdfDictionary annotation) {
                 parameters = new Dictionary<PdfName,PdfObject>(annotation.hashMap);
@@ -813,6 +819,16 @@ namespace iTextSharp.text.pdf {
                 lly = rc.GetAsNumber(1).FloatValue;
                 urx = rc.GetAsNumber(2).FloatValue;
                 ury = rc.GetAsNumber(3).FloatValue;
+
+                rect = new PdfArray(rc);
+            }
+
+            virtual public IDictionary<PdfName, PdfObject> GetParameters() {
+                return new Dictionary<PdfName, PdfObject>(parameters);
+            }
+
+            virtual public PdfArray GetRect() {
+                return new PdfArray(rect);
             }
             
             virtual public bool IsInternal() {
@@ -900,6 +916,41 @@ namespace iTextSharp.text.pdf {
         public override void ToPdf(PdfWriter writer, Stream os) {
             PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_ANNOTATION, this);
             base.ToPdf(writer, os);
+        }
+
+        public virtual PdfObject GetAccessibleAttribute(PdfName key) {
+            if (accessibleAttributes != null)
+                return accessibleAttributes.ContainsKey(key) ? accessibleAttributes[key] : null;
+            else
+                return null;
+        }
+
+        public virtual void SetAccessibleAttribute(PdfName key, PdfObject value) {
+            if (accessibleAttributes == null)
+                accessibleAttributes = new Dictionary<PdfName, PdfObject>();
+            accessibleAttributes[key] = value;
+        }
+
+        public virtual Dictionary<PdfName, PdfObject> GetAccessibleAttributes() {
+            return accessibleAttributes;
+        }
+
+        public virtual PdfName Role {
+            get { return role; }
+            set { role = value; }
+        }
+
+        public virtual AccessibleElementId ID {
+            get {
+                if (id == null)
+                    id = new AccessibleElementId();
+                return id;
+            }
+            set { id = value; }
+        }
+
+        public virtual bool IsInline {
+            get { return false; }
         }
     }
 }

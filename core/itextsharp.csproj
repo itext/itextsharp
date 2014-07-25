@@ -710,6 +710,7 @@
     <Compile Include="iTextSharp\text\pdf\PdfDeveloperExtension.cs">
       <SubType>Code</SubType>
     </Compile>
+	<Compile Include="iTextSharp\text\pdf\PdfDeviceNColor.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfDictionary.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -764,6 +765,7 @@
     <Compile Include="iTextSharp\text\pdf\PdfIndirectReference.cs">
       <SubType>Code</SubType>
     </Compile>
+	<Compile Include="iTextSharp\text\pdf\PdfLabColor.cs" />
     <Compile Include="iTextSharp\text\pdf\PdfLayer.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -4103,6 +4105,7 @@
     <Compile Include="iTextSharp\text\pdf\codec\LZWCompressor.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\LZWStringTable.cs" />
     <Compile Include="iTextSharp\text\pdf\codec\wmf\Point.cs" />
+	<Compile Include="iTextSharp\text\pdf\DeviceNColor.cs" />
     <Compile Include="iTextSharp\testutils\CompareTool.cs" />
     <Compile Include="iTextSharp\text\pdf\FloatLayout.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\AbstractCMap.cs" />
@@ -4118,11 +4121,14 @@
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\CMapUniCid.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\ICidLocation.cs" />
     <Compile Include="iTextSharp\text\pdf\fonts\cmaps\IdentityToUnicode.cs" />
+	<Compile Include="iTextSharp\text\pdf\ICachedColorSpace.cs" />
     <Compile Include="iTextSharp\text\pdf\interfaces\IAccessibleElement.cs" />
     <Compile Include="iTextSharp\text\pdf\interfaces\IAlternateDescription.cs" />
     <Compile Include="iTextSharp\text\pdf\interfaces\IPdfIsoConformance.cs" />
     <Compile Include="iTextSharp\text\pdf\interfaces\IPdfStructureElement.cs" />
     <Compile Include="iTextSharp\text\pdf\intern\PdfIsoKeys.cs" />
+	<Compile Include="iTextSharp\text\pdf\IPdfSpecialColorSpace.cs" />
+	<Compile Include="iTextSharp\text\pdf\LabColor.cs" />
     <Compile Include="iTextSharp\text\pdf\languages\ArabicLigaturizer.cs" />
     <Compile Include="iTextSharp\text\pdf\languages\DevanagariLigaturizer.cs" />
     <Compile Include="iTextSharp\text\pdf\languages\GujaratiLigaturizer.cs" />

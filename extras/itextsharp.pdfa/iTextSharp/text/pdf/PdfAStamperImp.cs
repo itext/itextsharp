@@ -142,11 +142,11 @@ namespace iTextSharp.text.pdf {
         }
 
         override internal XmpWriter CreateXmpWriter(MemoryStream baos, PdfDictionary info) {
-            return new PdfAXmpWriter(baos, info, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel);
+            return new PdfAXmpWriter(baos, info, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel, this);
         }
 
         override internal XmpWriter CreateXmpWriter(MemoryStream baos, IDictionary<String, String> info) {
-            return new PdfAXmpWriter(baos, info, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel);
+            return new PdfAXmpWriter(baos, info, ((IPdfAConformance) pdfIsoConformance).ConformanceLevel, this);
         }
 
         override public IPdfIsoConformance InitPdfIsoConformance() {
@@ -233,5 +233,9 @@ namespace iTextSharp.text.pdf {
             get { return ((PdfAConformanceImp) pdfIsoConformance).PdfAChecker; }
         }
 
+        protected internal override void Close(IDictionary<string, string> moreInfo) {
+            base.Close(moreInfo);
+            PdfAChecker.Close(this);
+        }
     }
 }

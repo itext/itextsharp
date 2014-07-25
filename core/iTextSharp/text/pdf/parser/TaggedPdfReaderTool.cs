@@ -2,10 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.xml;
 /*
- * $Id: TaggedPdfReaderTool.cs 679 2014-01-06 20:11:16Z asubach $
+ * $Id: TaggedPdfReaderTool.cs 744 2014-05-15 17:11:29Z rafhens $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -34,8 +35,8 @@ using iTextSharp.text.xml;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -96,7 +97,7 @@ namespace iTextSharp.text.pdf.parser {
          *            the Stream to which the resulting xml will be written
          */
         virtual public void ConvertToXml(PdfReader reader, Stream os) {
-            ConvertToXml(reader, os, Encoding.Default);
+            ConvertToXml(reader, os, Encoding.UTF8);
         }
 
         /**
@@ -174,6 +175,12 @@ namespace iTextSharp.text.pdf.parser {
                     }
                 }
                 outp.Write(">");
+                PdfObject alt = k.Get(PdfName.ALT);
+                if (alt != null && alt.ToString() != null) {
+                    outp.Write("<alt><![CDATA[");
+                    outp.Write(Regex.Replace(alt.ToString(), "[\\000]*", ""));
+                    outp.Write("]]></alt>");
+                }
                 PdfDictionary dict = k.GetAsDict(PdfName.PG);
                 if (dict != null)
                     ParseTag(tagN, k.GetDirectObject(PdfName.K), dict);

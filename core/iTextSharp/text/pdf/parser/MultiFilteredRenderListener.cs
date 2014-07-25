@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
 namespace iTextSharp.text.pdf.parser {
-    internal class MultiFilteredRenderListener : IRenderListener {
+    public class MultiFilteredRenderListener : IRenderListener {
         private List<IRenderListener> delegates;
         private List<RenderFilter[]> filters;
 

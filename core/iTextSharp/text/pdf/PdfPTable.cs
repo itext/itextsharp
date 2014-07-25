@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using iTextSharp.text.error_messages;
-
 using iTextSharp.text.api;
 using iTextSharp.text.log;
 using iTextSharp.text.pdf.events;
@@ -35,8 +34,8 @@ using iTextSharp.text.pdf.interfaces;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -268,9 +267,8 @@ namespace iTextSharp.text.pdf {
         * @param sourceTable
         * @since 2.1.6 private is now protected
         */
-
-        virtual protected internal void CopyFormat(PdfPTable sourceTable)
-        {
+        protected internal virtual void CopyFormat(PdfPTable sourceTable) {
+            rowsNotChecked = sourceTable.rowsNotChecked;
             relativeWidths = new float[sourceTable.NumberOfColumns];
             absoluteWidths = new float[sourceTable.NumberOfColumns];
             System.Array.Copy(sourceTable.relativeWidths, 0, relativeWidths, 0, NumberOfColumns);
@@ -281,7 +279,7 @@ namespace iTextSharp.text.pdf {
             tableEvent = sourceTable.tableEvent;
             runDirection = sourceTable.runDirection;
             if (sourceTable.defaultCell is PdfPHeaderCell)
-                defaultCell = new PdfPHeaderCell((PdfPHeaderCell)sourceTable.defaultCell);
+                defaultCell = new PdfPHeaderCell((PdfPHeaderCell) sourceTable.defaultCell);
             else
                 defaultCell = new PdfPCell(sourceTable.defaultCell);
             currentRow = new PdfPCell[sourceTable.currentRow.Length];
@@ -1354,14 +1352,12 @@ namespace iTextSharp.text.pdf {
          * Defines where the table may be broken (if necessary).
          *
          * @param breakPoints int[]
+         * @throws System.IndexOutOfRangeException if a row index is passed that is out of bounds
          */
 
         virtual public void SetBreakPoints(int[] breakPoints)
         {
-            for (int i = 0; i < rows.Count; i++)
-            {
-                GetRow(i).MayNotBreak = true;
-            }
+            KeepRowsTogether(0, rows.Count); // sets all rows as unbreakable
 
             for (int i = 0; i < breakPoints.Length; i++)
             {
@@ -1373,6 +1369,7 @@ namespace iTextSharp.text.pdf {
          * Defines which rows should not allow a page break (if possible).
          *
          * @param rows int[]
+         * @throws System.IndexOutOfRangeException if a row index is passed that is out of bounds
          */
 
         virtual public void KeepRowsTogether(int[] rows)
@@ -1388,6 +1385,7 @@ namespace iTextSharp.text.pdf {
          *
          * @param start int
          * @param end int
+         * @throws System.IndexOutOfRangeException if a row index is passed that is out of bounds
          */
 
         virtual public void KeepRowsTogether(int start, int end)
@@ -1404,19 +1402,15 @@ namespace iTextSharp.text.pdf {
 
         /**
          * Defines a range of rows (from the parameter to the last row) that should not allow a page break (if possible).
+         * The equivalent of calling {@link #keepRowsTogether(int,int) keepRowsTogether(start, rows.size()}.
          *
          * @param start int
+         * @throws System.IndexOutOfRangeException if a row index is passed that is out of bounds
          */
 
         virtual public void KeepRowsTogether(int start)
         {
-            if (start < rows.Count)
-            {
-                for (int i = start; i < rows.Count; i++)
-                {
-                    GetRow(i).MayNotBreak = true;
-                }
-            }
+            KeepRowsTogether(start, rows.Count);
         }
 
         /**

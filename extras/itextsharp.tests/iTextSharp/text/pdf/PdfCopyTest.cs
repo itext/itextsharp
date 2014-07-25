@@ -228,6 +228,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
         [Test]
         public virtual void TestFullCompression1() {
+            Directory.CreateDirectory("PdfCopyTest/");
             String outfile = "PdfCopyTest/out-noforms.pdf";
             String first = RESOURCES + "hello.pdf";
             String second = RESOURCES + "hello_memory.pdf";
@@ -253,6 +254,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf
 
         [Test]
         public virtual void TestFullCompression2() {
+            Directory.CreateDirectory("PdfCopyTest/");
             String outfile = "PdfCopyTest/out-forms.pdf";
             String first = RESOURCES + "subscribe.pdf";
             String second = RESOURCES + "filled_form_1.pdf";

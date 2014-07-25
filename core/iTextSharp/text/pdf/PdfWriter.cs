@@ -15,7 +15,7 @@ using iTextSharp.text.error_messages;
 using iTextSharp.xmp;
 
 /*
- * $Id: PdfWriter.cs 700 2014-02-12 14:06:42Z asubach $
+ * $Id: PdfWriter.cs 748 2014-05-19 09:15:01Z asubach $
  * 
  *
  * This file is part of the iText project.
@@ -45,8 +45,8 @@ using iTextSharp.xmp;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -1339,7 +1339,7 @@ namespace iTextSharp.text.pdf {
             currentPdfReaderInstance = null;
             // add the color
             foreach (ColorDetails color in documentColors.Values) {
-                AddToBody(color.GetSpotColor(this), color.IndirectReference);
+                AddToBody(color.GetPdfObject(this), color.IndirectReference);
             }
             // add the pattern
             foreach (PdfPatternPainter pat in documentPatterns.Keys) {
@@ -2454,7 +2454,7 @@ namespace iTextSharp.text.pdf {
     //  [F6] spot colors
 
         /** The colors of this document */
-        protected Dictionary<PdfSpotColor, ColorDetails> documentColors = new Dictionary<PdfSpotColor,ColorDetails>();
+        protected Dictionary<ICachedColorSpace, ColorDetails> documentColors = new Dictionary<ICachedColorSpace, ColorDetails>();
 
         /** The color number counter for the colors in the document. */
         protected int colorNumber = 1;
@@ -2469,11 +2469,14 @@ namespace iTextSharp.text.pdf {
         * @return an <CODE>Object[]</CODE> where position 0 is a <CODE>PdfName</CODE>
         * and position 1 is an <CODE>PdfIndirectReference</CODE>
         */
-        internal ColorDetails AddSimple(PdfSpotColor spc) {
+        internal virtual ColorDetails AddSimple(ICachedColorSpace spc) {
             ColorDetails ret;
             documentColors.TryGetValue(spc, out ret);
             if (ret == null) {
                 ret = new ColorDetails(GetColorspaceName(), body.PdfIndirectReference, spc);
+                if (spc is IPdfSpecialColorSpace) {
+                    ((IPdfSpecialColorSpace)spc).GetColorantDetails(this);
+                }
                 documentColors[spc] = ret;
             }
             return ret;
@@ -2487,7 +2490,7 @@ namespace iTextSharp.text.pdf {
         /** The patten number counter for the colors in the document. */
         protected int patternNumber = 1;
         
-        internal PdfName AddSimplePattern(PdfPatternPainter painter) {
+        internal virtual PdfName AddSimplePattern(PdfPatternPainter painter) {
             PdfName name;
             documentPatterns.TryGetValue(painter, out name);
             if (name == null) {

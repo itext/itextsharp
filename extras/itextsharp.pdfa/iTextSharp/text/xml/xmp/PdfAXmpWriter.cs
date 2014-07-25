@@ -45,6 +45,7 @@
 
 /**
  * Subclass of XmpWriter that adds info about the PDF/A level.
+ * 
  * @see XmpWriter
  */
 
@@ -57,16 +58,115 @@ using iTextSharp.xmp;
 namespace iTextSharp.text.xml.xmp {
 
     public class PdfAXmpWriter : XmpWriter {
+        private const String pdfUaExtension =
+            "    <x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" +
+            "      <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+            "        <rdf:Description rdf:about=\"\" xmlns:pdfaExtension=\"http://www.aiim.org/pdfa/ns/extension/\" xmlns:pdfaSchema=\"http://www.aiim.org/pdfa/ns/schema#\" xmlns:pdfaProperty=\"http://www.aiim.org/pdfa/ns/property#\">\n" +
+            "          <pdfaExtension:schemas>\n" +
+            "            <rdf:Bag>\n" +
+            "              <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                <pdfaSchema:namespaceURI>http://www.aiim.org/pdfua/ns/id/</pdfaSchema:namespaceURI>\n" +
+            "                <pdfaSchema:prefix>pdfuaid</pdfaSchema:prefix>\n" +
+            "                <pdfaSchema:schema>PDF/UA identification schema</pdfaSchema:schema>\n" +
+            "                <pdfaSchema:property>\n" +
+            "                  <rdf:Seq>\n" +
+            "                    <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                      <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                      <pdfaProperty:description>PDF/UA version identifier</pdfaProperty:description>\n" +
+            "                      <pdfaProperty:name>part</pdfaProperty:name>\n" +
+            "                      <pdfaProperty:valueType>Integer</pdfaProperty:valueType>\n" +
+            "                    </rdf:li>\n" +
+            "                    <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                      <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                      <pdfaProperty:description>PDF/UA amendment identifier</pdfaProperty:description>\n" +
+            "                      <pdfaProperty:name>amd</pdfaProperty:name>\n" +
+            "                      <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                    </rdf:li>\n" +
+            "                    <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                      <pdfaProperty:category>internal</pdfaProperty:category>\n" +
+            "                      <pdfaProperty:description>PDF/UA corrigenda identifier</pdfaProperty:description>\n" +
+            "                      <pdfaProperty:name>corr</pdfaProperty:name>\n" +
+            "                      <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                    </rdf:li>\n" +
+            "                  </rdf:Seq>\n" +
+            "                </pdfaSchema:property>\n" +
+            "              </rdf:li>\n" +
+            "            </rdf:Bag>\n" +
+            "          </pdfaExtension:schemas>\n" +
+            "        </rdf:Description>\n" +
+            "      </rdf:RDF>\n" +
+            "    </x:xmpmeta>";
+
+        private const String zugferdExtension =
+            "    <x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" +
+            "      <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
+            "        <rdf:Description rdf:about=\"\" xmlns:zf=\"urn:ferd:pdfa:invoice:rc#\">\n" +
+            "          <zf:ConformanceLevel>COMFORT</zf:ConformanceLevel>\n" +
+            "          <zf:DocumentFileName>ZUGFeRD-invoice.xml</zf:DocumentFileName>\n" +
+            "          <zf:DocumentType>INVOICE</zf:DocumentType>\n" +
+            "          <zf:Version>RC</zf:Version>\n" +
+            "        </rdf:Description>\n" +
+            "        <rdf:Description rdf:about=\"\" xmlns:pdfaExtension=\"http://www.aiim.org/pdfa/ns/extension/\" xmlns:pdfaSchema=\"http://www.aiim.org/pdfa/ns/schema#\" xmlns:pdfaProperty=\"http://www.aiim.org/pdfa/ns/property#\">\n" +
+            "          <pdfaExtension:schemas>\n" +
+            "            <rdf:Bag>\n" +
+            "              <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                <pdfaSchema:schema>ZUGFeRD PDFA Extension Schema</pdfaSchema:schema>\n" +
+            "                <pdfaSchema:namespaceURI>urn:ferd:pdfa:invoice:rc#</pdfaSchema:namespaceURI>\n" +
+            "                <pdfaSchema:prefix>zf</pdfaSchema:prefix>\n" +
+            "                <pdfaSchema:property>\n" +
+            "                  <rdf:Seq>\n" +
+            "                    <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                      <pdfaProperty:name>DocumentFileName</pdfaProperty:name>\n" +
+            "                      <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                      <pdfaProperty:category>external</pdfaProperty:category>\n" +
+            "                      <pdfaProperty:description>name of the embedded XML invoice file</pdfaProperty:description>\n" +
+            "                    </rdf:li>\n" +
+            "                    <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                      <pdfaProperty:name>DocumentType</pdfaProperty:name>\n" +
+            "                      <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                      <pdfaProperty:category>external</pdfaProperty:category>\n" +
+            "                      <pdfaProperty:description>INVOICE</pdfaProperty:description>\n" +
+            "                    </rdf:li>\n" +
+            "                    <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                      <pdfaProperty:name>Version</pdfaProperty:name>\n" +
+            "                      <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                      <pdfaProperty:category>external</pdfaProperty:category>\n" +
+            "                      <pdfaProperty:description>The actual version of the ZUGFeRD data</pdfaProperty:description>\n" +
+            "                    </rdf:li>\n" +
+            "                    <rdf:li rdf:parseType=\"Resource\">\n" +
+            "                      <pdfaProperty:name>ConformanceLevel</pdfaProperty:name>\n" +
+            "                      <pdfaProperty:valueType>Text</pdfaProperty:valueType>\n" +
+            "                      <pdfaProperty:category>external</pdfaProperty:category>\n" +
+            "                      <pdfaProperty:description>The conformance level of the ZUGFeRD data</pdfaProperty:description>\n" +
+            "                    </rdf:li>\n" +
+            "                  </rdf:Seq>\n" +
+            "                </pdfaSchema:property>\n" +
+            "              </rdf:li>\n" +
+            "            </rdf:Bag>\n" +
+            "          </pdfaExtension:schemas>\n" +
+            "        </rdf:Description>\n" +
+            "      </rdf:RDF>\n" +
+            "    </x:xmpmeta>\n";
+
+
+        private PdfWriter writer;
+
+        public const String zugferdSchemaNS = "urn:ferd:pdfa:invoice:rc#";
+        public const String zugferdConformanceLevel = "ConformanceLevel";
+        public const String zugferdDocumentFileName = "DocumentFileName";
+        public const String zugferdDocumentType = "DocumentType";
+        public const String zugferdVersion = "Version";
 
         /**
          * Creates and XMP writer that adds info about the PDF/A conformance level.
+         * 
          * @param os
          * @param conformanceLevel
          * @throws IOException
          */
-
-        public PdfAXmpWriter(Stream os, PdfAConformanceLevel conformanceLevel)
+        public PdfAXmpWriter(Stream os, PdfAConformanceLevel conformanceLevel, PdfWriter writer)
             : base(os) {
+            this.writer = writer;
             try {
                 AddRdfDescription(conformanceLevel);
             }
@@ -77,14 +177,15 @@ namespace iTextSharp.text.xml.xmp {
 
         /**
          * Creates and XMP writer that adds info about the PDF/A conformance level.
+         * 
          * @param os
          * @param info
          * @param conformanceLevel
          * @throws IOException
          */
-
-        public PdfAXmpWriter(Stream os, PdfDictionary info, PdfAConformanceLevel conformanceLevel)
+        public PdfAXmpWriter(Stream os, PdfDictionary info, PdfAConformanceLevel conformanceLevel, PdfWriter writer)
             : base(os, info) {
+            this.writer = writer;
             try {
                 AddRdfDescription(conformanceLevel);
             }
@@ -95,14 +196,15 @@ namespace iTextSharp.text.xml.xmp {
 
         /**
          * Creates and XMP writer that adds info about the PDF/A conformance level.
+         * 
          * @param os
          * @param info
          * @param conformanceLevel
          * @throws IOException
          */
-
-        public PdfAXmpWriter(Stream os, IDictionary<String, String> info, PdfAConformanceLevel conformanceLevel)
+        public PdfAXmpWriter(Stream os, IDictionary<String, String> info, PdfAConformanceLevel conformanceLevel, PdfWriter writer)
             : base(os, info) {
+            this.writer = writer;
             try {
                 AddRdfDescription(conformanceLevel);
             }
@@ -113,10 +215,10 @@ namespace iTextSharp.text.xml.xmp {
 
         /**
          * Adds information about the PDF/A conformance level to the XMP metadata.
+         * 
          * @param conformanceLevel
          * @throws IOException
          */
-
         private void AddRdfDescription(PdfAConformanceLevel conformanceLevel) {
             switch (conformanceLevel) {
                 case PdfAConformanceLevel.PDF_A_1A:
@@ -151,8 +253,18 @@ namespace iTextSharp.text.xml.xmp {
                     xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.PART, "3");
                     xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.CONFORMANCE, "U");
                     break;
+                case PdfAConformanceLevel.ZUGFeRD:
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.PART, "3");
+                    xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.CONFORMANCE, "B");
+                    IXmpMeta taggedExtensionMeta = XmpMetaFactory.ParseFromString(zugferdExtension);
+                    XmpUtils.AppendProperties(taggedExtensionMeta, xmpMeta, true, false);
+                    break;
                 default:
                     break;
+            }
+            if (writer.IsTagged()) {
+                IXmpMeta taggedExtensionMeta = XmpMetaFactory.ParseFromString(pdfUaExtension);
+                XmpUtils.AppendProperties(taggedExtensionMeta, xmpMeta, true, false);
             }
         }
     }

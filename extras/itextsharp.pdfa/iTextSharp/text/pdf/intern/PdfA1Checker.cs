@@ -83,6 +83,9 @@ namespace iTextSharp.text.pdf.intern
         protected bool cmykUsed = false;
         protected bool grayUsed = false;
 
+        protected String pdfaOutputIntentColorSpace = null;
+        protected PdfObject pdfaDestOutputIntent = null;
+
         internal PdfA1Checker(PdfAConformanceLevel conformanceLevel)
             :base(conformanceLevel) {
         }
@@ -291,59 +294,34 @@ namespace iTextSharp.text.pdf.intern
                             throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("document.catalog.dictionary.should.contain.lang.entry"));
                         }
                     }
-
-                    PdfArray outputIntents = GetDirectArray(dictionary.Get(PdfName.OUTPUTINTENTS));
-                    bool pdfa1OutputIntentFound = false;
-                    if (outputIntents != null && outputIntents.Size > 0) {
-                        for (int i = 0; i < outputIntents.Size; i++) {
-                            PdfDictionary outputIntentDictionary = GetDirectDictionary(outputIntents[i]);
-                            PdfName gts = outputIntentDictionary.GetAsName(PdfName.S);
-                            if (PdfName.GTS_PDFA1.Equals(gts)) {
-                                if (pdfa1OutputIntentFound)
-                                    throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("a.pdfa.file.may.have.only.one.pdfa.outputintent"));
-                                pdfa1OutputIntentFound = true;
-                            }
-                            if (outputIntentDictionary != null) {
-                                PdfObject destOutputIntent = outputIntentDictionary.Get(PdfName.DESTOUTPUTPROFILE);
-                                if (destOutputIntent == null && PdfName.GTS_PDFA1.Equals(gts))
-                                    throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("outputintent.shall.have.gtspdfa1.and.destoutputintent"));
-                            }
-                        }
-                    }
-
-                    if ((rgbUsed || cmykUsed || grayUsed) && !pdfa1OutputIntentFound) {
-                        throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("if.device.rgb.cmyk.gray.used.in.file.that.file.shall.contain.pdfa.outputintent"));
-                    }
                 }
                 else if (PdfName.PAGE.Equals(type)) {
                     if (dictionary.Contains(PdfName.AA)) {
                         throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("page.dictionary.shall.not.include.aa.entry"));
                     }
-                }
-                else if (PdfName.OUTPUTINTENT.Equals(type)) {
-                    PdfObject iccProfileStream = dictionary.Get(PdfName.DESTOUTPUTPROFILE);
-                    String inputColorSpace = "";
-                    if (iccProfileStream != null) {
-                        ICC_Profile icc_profile = writer.ColorProfile;
-                        inputColorSpace = Encoding.GetEncoding("US-ASCII").GetString(icc_profile.Data, 16, 4);
+                } else if (PdfName.OUTPUTINTENT.Equals(type)) {
+                    PdfObject destOutputIntent = dictionary.Get(PdfName.DESTOUTPUTPROFILE);
+                    if (destOutputIntent != null && pdfaDestOutputIntent != null) {
+                        if (pdfaDestOutputIntent.IndRef != destOutputIntent.IndRef)
+                            throw new PdfAConformanceException(obj1,
+                                MessageLocalization.GetComposedMessage(
+                                    "if.outputintents.array.more.than.one.entry.the.same.indirect.object"));
+                    } else {
+                        pdfaDestOutputIntent = destOutputIntent;
                     }
+
                     PdfName gts = dictionary.GetAsName(PdfName.S);
-                    if (!PdfName.GTS_PDFA1.Equals(gts)) {
+                    if (pdfaDestOutputIntent != null) {
+                        if (PdfName.GTS_PDFA1.Equals(gts)) {
+                            if (pdfaOutputIntentColorSpace != null)
+                                throw new PdfAConformanceException(obj1,
+                                    MessageLocalization.GetComposedMessage("a.pdfa.file.may.have.only.one.pdfa.outputintent"));
+                            pdfaOutputIntentColorSpace = "";
+                            ICC_Profile icc_profile = writer.ColorProfile;
+                            pdfaOutputIntentColorSpace = Encoding.GetEncoding("US-ASCII").GetString(icc_profile.Data, 16, 4);
+                        }
+                    } else {
                         throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("outputintent.shall.have.gtspdfa1.and.destoutputintent"));
-                    }
-                    if ("RGB ".Equals(inputColorSpace)) {
-                        if (cmykUsed)
-                            throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("devicecmyk.may.be.used.only.if.the.file.has.a.cmyk.pdfa.outputIntent"));
-                    }
-                    else if ("CMYK".Equals(inputColorSpace)) {
-                        if (rgbUsed)
-                            throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("devicergb.may.be.used.only.if.the.file.has.a.rgb.pdfa.outputIntent"));
-                    }
-                    else {
-                        if (cmykUsed)
-                            throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("devicecmyk.may.be.used.only.if.the.file.has.a.cmyk.pdfa.outputIntent"));
-                        if (rgbUsed)
-                            throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("devicergb.may.be.used.only.if.the.file.has.a.rgb.pdfa.outputIntent"));
                     }
                 }
             }
@@ -518,6 +496,33 @@ namespace iTextSharp.text.pdf.intern
         protected override void CheckOutputIntent(PdfWriter writer, int key, Object obj1) {
             if (writer is PdfAStamperImp && writer.ColorProfile != null)
                 throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("outputintent.shall.not.be.updated"));
+        }
+
+        public override void Close(PdfWriter writer) {
+                    if ((rgbUsed || cmykUsed || grayUsed) && pdfaOutputIntentColorSpace == null) {
+            throw new PdfAConformanceException(null, MessageLocalization.GetComposedMessage("if.device.rgb.cmyk.gray.used.in.file.that.file.shall.contain.pdfa.outputintent"));
+        }
+
+            if ("RGB ".Equals(pdfaOutputIntentColorSpace)) {
+                if (cmykUsed)
+                    throw new PdfAConformanceException(null,
+                        MessageLocalization.GetComposedMessage(
+                            "devicecmyk.may.be.used.only.if.the.file.has.a.cmyk.pdfa.outputIntent"));
+            } else if ("CMYK".Equals(pdfaOutputIntentColorSpace)) {
+                if (rgbUsed)
+                    throw new PdfAConformanceException(null,
+                        MessageLocalization.GetComposedMessage(
+                            "devicergb.may.be.used.only.if.the.file.has.a.rgb.pdfa.outputIntent"));
+            } else {
+                if (cmykUsed)
+                    throw new PdfAConformanceException(null,
+                        MessageLocalization.GetComposedMessage(
+                            "devicecmyk.may.be.used.only.if.the.file.has.a.cmyk.pdfa.outputIntent"));
+                if (rgbUsed)
+                    throw new PdfAConformanceException(null,
+                        MessageLocalization.GetComposedMessage(
+                            "devicergb.may.be.used.only.if.the.file.has.a.rgb.pdfa.outputIntent"));
+            }
         }
     }
 }

@@ -118,7 +118,7 @@ namespace iTextSharp.text.xml.xmp {
             PdfStamper stamper = new PdfAStamper(reader, new FileStream(OUT_FOLDER + fileName, FileMode.Create),
                                                  PdfAConformanceLevel.PDF_A_1A);
             MemoryStream os = new MemoryStream();
-            XmpWriter xmp = new PdfAXmpWriter(os, reader.Info, PdfAConformanceLevel.PDF_A_1A);
+            XmpWriter xmp = new PdfAXmpWriter(os, reader.Info, PdfAConformanceLevel.PDF_A_1A, stamper.Writer);
             DublinCoreProperties.AddSubject(xmp.XmpMeta, "Hello World");
             DublinCoreProperties.AddSubject(xmp.XmpMeta, "XMP & Metadata");
             DublinCoreProperties.AddSubject(xmp.XmpMeta, "Metadata");
@@ -152,7 +152,7 @@ namespace iTextSharp.text.xml.xmp {
             PdfWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT_FOLDER + fileName, FileMode.Create),
                                                       PdfAConformanceLevel.PDF_A_2B);
             MemoryStream os = new MemoryStream();
-            XmpWriter xmp = new PdfAXmpWriter(os, PdfAConformanceLevel.PDF_A_2B);
+            XmpWriter xmp = new PdfAXmpWriter(os, PdfAConformanceLevel.PDF_A_2B, writer);
             XmpSchema dc = new DublinCoreSchema();
             XmpArray subject = new XmpArray(XmpArray.UNORDERED);
             subject.Add("Hello World");
@@ -183,6 +183,41 @@ namespace iTextSharp.text.xml.xmp {
             // step 5
             document.Close();
             CompareResults("xmp_metadata_deprecated.pdf", fileName);
+        }
+
+        [Test]
+        virtual public void XmpEncodingTest() {
+            String fileName = "xmp_utf-8_encoding";
+            Document document = new Document();
+            PdfSmartCopy copy = new PdfSmartCopy(document, new FileStream(OUT_FOLDER + fileName, FileMode.Create));
+
+            document.Open();
+
+            PdfReader reader = new PdfReader(CMP_FOLDER + "pdf_metadata.pdf");
+            int pageCount = reader.NumberOfPages;
+
+            for (int currentPage = 1; currentPage <= pageCount; currentPage++) {
+                PdfImportedPage page = copy.GetImportedPage(reader, currentPage);
+                copy.AddPage(page);
+            }
+
+
+            PdfAConformanceLevel pdfaLevel = PdfAConformanceLevel.PDF_A_1B;
+            MemoryStream os = new MemoryStream();
+            PdfAXmpWriter xmp = new PdfAXmpWriter(os, copy.Info, pdfaLevel, copy);
+            xmp.Close();
+
+            copy.XmpMetadata = os.ToArray();
+
+            string metadataXml = System.Text.Encoding.GetEncoding("UTF-8").GetString(copy.XmpMetadata);
+
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(metadataXml);  //<-- This is where the exception is thrown
+
+            
+            document.Close();
+            copy.Close();
+            reader.Close();
         }
 
         private void CompareResults(String orig, String curr) {

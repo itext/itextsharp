@@ -1,7 +1,5 @@
-using System;
-
 /*
- * $Id: ColorDetails.cs 679 2014-01-06 20:11:16Z asubach $
+ * $Id: ColorDetails.cs 748 2014-05-19 09:15:01Z asubach $
  * 
  *
  * This file is part of the iText project.
@@ -31,8 +29,8 @@ using System;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -48,7 +46,7 @@ using System;
 
 namespace iTextSharp.text.pdf {
 
-    /** Each spotcolor in the document will have an instance of this class
+    /** Each colorSpace in the document will have an instance of this class
      *
      * @author Phillip Pan (phillip@formstar.com)
      */
@@ -59,20 +57,20 @@ namespace iTextSharp.text.pdf {
         PdfIndirectReference indirectReference;
         /** The color name that appears in the document body stream
          */
-        PdfName colorName;
+        PdfName colorSpaceName;
         /** The color
          */
-        PdfSpotColor spotcolor;
+        ICachedColorSpace colorSpace;
 
         /** Each spot color used in a document has an instance of this class.
          * @param colorName the color name
          * @param indirectReference the indirect reference to the font
          * @param scolor the <CODE>PDfSpotColor</CODE>
          */
-        internal ColorDetails(PdfName colorName, PdfIndirectReference indirectReference, PdfSpotColor scolor) {
-            this.colorName = colorName;
+        internal ColorDetails(PdfName colorName, PdfIndirectReference indirectReference, ICachedColorSpace scolor) {
+            this.colorSpaceName = colorName;
             this.indirectReference = indirectReference;
-            this.spotcolor = scolor;
+            this.colorSpace = scolor;
         }
 
         /** Gets the indirect reference to this color.
@@ -87,17 +85,17 @@ namespace iTextSharp.text.pdf {
         /** Gets the color name as it appears in the document body.
          * @return the color name
          */
-        internal PdfName ColorName {
+        internal virtual PdfName ColorSpaceName {
             get {
-                return colorName;
+                return colorSpaceName;
             }
         }
 
         /** Gets the <CODE>SpotColor</CODE> object.
          * @return the <CODE>PdfSpotColor</CODE>
          */
-        virtual public PdfObject GetSpotColor(PdfWriter writer) {
-            return spotcolor.GetSpotObject(writer);
+        virtual public PdfObject GetPdfObject(PdfWriter writer) {
+            return colorSpace.GetPdfObject(writer);
         }
     }
 }

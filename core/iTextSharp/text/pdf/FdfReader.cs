@@ -32,8 +32,8 @@ using iTextSharp.text.log;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -92,19 +92,9 @@ namespace iTextSharp.text.pdf {
 
         protected internal override void ReadPdf() {
             fields = new Dictionary<string,PdfDictionary>();
-            try {
-                tokens.CheckFdfHeader();
-                RebuildXref();
-                ReadDocObj();
-            }
-            finally {
-                try {
-                    tokens.Close();
-                }
-                catch  {
-                    // empty on purpose
-                }
-            }
+            tokens.CheckFdfHeader();
+            RebuildXref();
+            ReadDocObj();
             ReadFields();
         }
         

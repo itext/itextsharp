@@ -1,6 +1,6 @@
 using System;
 /*
- * $Id: BaseColor.cs 679 2014-01-06 20:11:16Z asubach $
+ * $Id: BaseColor.cs 748 2014-05-19 09:15:01Z asubach $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -29,8 +29,8 @@ using System;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -65,7 +65,7 @@ namespace iTextSharp.text {
         public static readonly BaseColor CYAN = new BaseColor(0, 255, 255);
         public static readonly BaseColor BLUE = new BaseColor(0, 0, 255);
         private const double FACTOR = 0.7;
-        private readonly int value;
+        private int value;
 
         /**
          * Construct a new BaseColor.
@@ -75,11 +75,7 @@ namespace iTextSharp.text {
          * @param alpha the value for the alpha gamma
          */
         public BaseColor(int red, int green, int blue, int alpha) {
-            Validate(red);
-            Validate(green);
-            Validate(blue);
-            Validate(alpha);
-            value = ((alpha & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 0);
+            SetValue(red, green, blue, alpha);
         }
 
         /**
@@ -213,6 +209,14 @@ namespace iTextSharp.text {
 
         public override int GetHashCode() {
             return value;
+        }
+
+        protected internal virtual void SetValue(int red, int green, int blue, int alpha) {
+            Validate(red);
+            Validate(green);
+            Validate(blue);
+            Validate(alpha);
+            value = ((alpha & 0xFF) << 24) | ((red & 0xFF) << 16) | ((green & 0xFF) << 8) | ((blue & 0xFF) << 0);
         }
 
         private static void Validate(int value) {

@@ -36,8 +36,8 @@ using iTextSharp.text.xml.xmp;
  * Section 5 of the GNU Affero General Public License.
  *
  * In accordance with Section 7(b) of the GNU Affero General Public License,
- * you must retain the producer line in every PDF that is created or manipulated
- * using iText.
+ * a covered work must retain the producer line in every PDF that is created
+ * or manipulated using iText.
  *
  * You can be released from the requirements of the license by purchasing
  * a commercial license. Buying such a license is mandatory as soon as you
@@ -483,6 +483,15 @@ namespace iTextSharp.text.pdf {
             set {
                 stamper.AddJavaScript(value, !PdfEncodings.IsPdfDocEncoding(value));
             }
+        }
+
+        /** Adds a JavaScript action at the document level. When the document
+         * opens all this JavaScript runs. The existing JavaScript will be replaced.
+         * @param name the name for the JavaScript snippet in the name tree
+         * @param js the JavaScript code
+         */
+        public virtual void AddJavaScript(String name, String js) {
+            stamper.AddJavaScript(name, PdfAction.JavaScript(js, stamper, !PdfEncodings.IsPdfDocEncoding(js)));
         }
         
         /** Adds a file attachment at the document level. Existing attachments will be kept.

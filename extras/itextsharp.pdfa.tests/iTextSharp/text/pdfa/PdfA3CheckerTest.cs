@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using iTextSharp.text.pdf;
+using iTextSharp.text.xml.xmp;
 using NUnit.Framework;
 
 namespace iTextSharp.text.pdfa {
@@ -207,5 +208,82 @@ namespace iTextSharp.text.pdfa {
             stamper.Close();
             reader.Close();
         }
+
+        [Test]
+        public void BarcodesTest1() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new
+                FileStream(OUT + "barcodesTest1.pdf", FileMode.Create), PdfAConformanceLevel.PDF_A_3A);
+
+            writer.SetTagged();
+            document.Open();
+            writer.ViewerPreferences = PdfWriter.DisplayDocTitle;
+            document.AddTitle("Some title");
+            document.AddLanguage("en-us");
+            writer.CreateXmpMetadata();
+
+            document.NewPage();
+
+            // Set output intent. PDF/A requirement.
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open,
+                FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            // All fonts shall be embedded. PDF/A requirement.
+            Font normal9 = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 9);
+            Font normal8 = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 8);
+
+            BaseColor color = new BaseColor(111, 211, 11);
+            normal8.Color = color;
+
+            PdfContentByte cb = writer.DirectContent;
+
+            String code = "119716-500023718";
+            Barcode barcode = new Barcode39();
+            barcode.Code = code;
+            barcode.StartStopText = false;
+            barcode.Font = normal9.BaseFont;
+            barcode.Extended = true;
+
+            Image image = barcode.CreateImageWithBarcode(cb, color, color);
+            image.Alt = "Bla Bla";
+            document.Add(image);
+
+            document.Close();
+        }
+
+        [Test]
+        public void ZugferdInvoiceTest() {
+            Document document = new Document();
+            PdfAWriter writer = PdfAWriter.GetInstance(document, new FileStream(OUT + "zugferdInvoiceTest.pdf", FileMode.Create),
+                PdfAConformanceLevel.ZUGFeRD);
+            writer.CreateXmpMetadata();
+            writer.XmpWriter.SetProperty(PdfAXmpWriter.zugferdSchemaNS, PdfAXmpWriter.zugferdDocumentFileName, "invoice.xml");
+            document.Open();
+
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            document.Add(new Paragraph("Hello World", font));
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open,
+                FileAccess.Read, FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+            writer.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+
+            PdfDictionary parameters = new PdfDictionary();
+            parameters.Put(PdfName.MODDATE, new PdfDate());
+            PdfFileSpecification fileSpec = PdfFileSpecification.FileEmbedded(
+                writer, RESOURCES + "invoice.xml",
+                "invoice.xml", null, "application/xml", parameters, 0);
+            fileSpec.Put(PdfName.AFRELATIONSHIP, AFRelationshipValue.Alternative);
+            writer.AddFileAttachment("invoice.xml", fileSpec);
+            PdfArray array = new PdfArray();
+            array.Add(fileSpec.Reference);
+            writer.ExtraCatalog.Put(new PdfName("AF"), array);
+
+            document.Close();
+        }
+
     }
 }
