@@ -142,7 +142,7 @@ namespace iTextSharp.text.pdf {
         private static readonly PdfName iTextTag = new PdfName("_iTextTag_");
         internal static int zero = 0;
         private Dictionary<Object, Object> mergedRadioButtons = new Dictionary<object, object>();
-        private Dictionary<Object, PdfObject> mergedTextFields = new Dictionary<Object, PdfObject>();
+        private Dictionary<Object, PdfString> mergedTextFields = new Dictionary<Object, PdfString>();
 
         private HashSet2<PdfReader> readersWithImportedStructureTreeRootKids = new HashSet2<PdfReader>();
 
@@ -1576,10 +1576,17 @@ namespace iTextSharp.text.pdf {
                                 PdfObject ap = widget.Get(PdfName.AP);
                                 if (v != null && ap != null) {
                                     if (!mergedTextFields.ContainsKey(list)) {
-                                        mergedTextFields[list] = ap;
+                                        mergedTextFields[list] = v;
                                     } else {
-                                        PdfObject ap1 = mergedTextFields[list];
-                                        widget.Put(PdfName.AP, CopyObject(ap1));
+                                        TextField tx = new TextField(this, null, null);
+                                        fields[0].DecodeGenericDictionary(widget, tx);
+                                        Rectangle box = PdfReader.GetNormalizedRectangle(widget.GetAsArray(PdfName.RECT));
+                                        if (tx.Rotation == 90 || tx.Rotation == 270)
+                                            box = box.Rotate();
+                                        tx.Box = box;
+                                        tx.Text = mergedTextFields[list].ToUnicodeString();
+                                        PdfAppearance app = tx.GetAppearance();
+                                        ((PdfDictionary)ap).Put(PdfName.N, app.IndirectReference);
                                     }
                                 }
                             } else if (PdfCopy.IsCheckButton(field)) {
