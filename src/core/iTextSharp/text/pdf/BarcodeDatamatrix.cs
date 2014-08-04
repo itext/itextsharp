@@ -370,17 +370,37 @@ namespace iTextSharp.text.pdf {
                             break;
                         data[dataOffset + ptrOut++] = (byte)(edi >> 16);
                         data[dataOffset + ptrOut++] = (byte)(edi >> 8);
-                        data[dataOffset + ptrOut++] = (byte)edi;
+                        data[dataOffset + ptrOut++] = (byte) edi;
                         edi = 0;
                         pedi = 18;
-                    }
-                    else
+                    } else
                         pedi -= 6;
-                }
-                else {
-                    if (!ascii) {
+                } else {
+                    int dataSize = int.MaxValue;
+                    for (int i = 0; i < dmSizes.Length; ++i) {
+                        if (dmSizes[i].dataSize >= dataOffset + ptrOut + (3 - pedi/6)) {
+                            dataSize = dmSizes[i].dataSize;
+                            break;
+                        }
+                    }
+
+                    if (dataSize - dataOffset - ptrOut <= 2 && pedi >= 6) {
+                        //have to write up to 2 bytes and up to 2 symbols
+                        if (pedi <= 12) {
+                            byte val = (byte) ((edi >> 18) & 0x3F);
+                            if ((val & 0x20) == 0)
+                                val |= 0x40;
+                            data[dataOffset + ptrOut++] = (byte) (val + 1);
+                        }
+                        if (pedi <= 6) {
+                            byte val = (byte) ((edi >> 12) & 0x3F);
+                            if ((val & 0x20) == 0)
+                                val |= 0x40;
+                            data[dataOffset + ptrOut++] = (byte) (val + 1);
+                        }
+                    } else if (!ascii) {
                         edi |= ('_' & 0x3f) << pedi;
-                        if (ptrOut + (3 - pedi / 8) > dataLength)
+                        if (ptrOut + (3 - pedi/8) > dataLength)
                             break;
                         data[dataOffset + ptrOut++] = (byte)(edi >> 16);
                         if (pedi <= 12)
