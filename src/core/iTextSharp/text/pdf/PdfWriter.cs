@@ -3232,8 +3232,8 @@ namespace iTextSharp.text.pdf {
                         iccArray.Add(iccRef);
                         PdfArray colorspace = i.GetAsArray(PdfName.COLORSPACE);
                         if (colorspace != null) {
-                            if (colorspace.Size > 1 && PdfName.INDEXED.Equals(colorspace[0]))
-                                colorspace[1] = iccArray;
+                            if (colorspace.Size > 1 && PdfName.INDEXED.Equals(colorspace.GetPdfObject(0)))
+                                colorspace.Set(1, iccArray);
                             else
                                 i.Put(PdfName.COLORSPACE, iccArray);
                         }

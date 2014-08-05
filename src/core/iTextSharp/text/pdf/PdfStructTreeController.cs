@@ -42,8 +42,7 @@ namespace iTextSharp.text.pdf
             nullReference = null;
         }
 
-        static public bool CheckTagged(PdfReader reader)
-        {
+        static public bool CheckTagged(PdfReader reader) {
             PdfObject obj = reader.Catalog.Get(PdfName.STRUCTTREEROOT);
             obj = GetDirectObject(obj);
             if (obj == null || !obj.IsDictionary())
@@ -84,7 +83,7 @@ namespace iTextSharp.text.pdf
                 int cur = kids.Size/2;
                 int begin = 0;
                 while (true) {
-                    PdfDictionary kidTree = (PdfDictionary)GetDirectObject(kids[cur + begin]);
+                    PdfDictionary kidTree = (PdfDictionary)GetDirectObject(kids.GetPdfObject(cur + begin));
                     switch (CopyPageMarks(kidTree,arrayNumber,newArrayNumber)) {
                         case ReturnType.FOUND:
                             return ReturnType.FOUND;
@@ -125,7 +124,7 @@ namespace iTextSharp.text.pdf
             while (true) {
                 curNumber = pages.GetAsNumber((begin + cur)*2).IntValue;
                 if (curNumber == arrayNumber) {
-                    PdfObject obj = pages[(begin + cur)*2 + 1];
+                    PdfObject obj = pages.GetPdfObject((begin + cur)*2 + 1);
                     PdfObject obj1 = obj;
                     while (obj.IsIndirect())
                         obj = PdfReader.GetPdfObjectRelease(obj);
@@ -234,7 +233,7 @@ namespace iTextSharp.text.pdf
         private static PdfArray GetDirectArray(PdfArray input) {
             PdfArray output = new PdfArray();
             for (int i = 0; i < input.Size; ++i) {
-                PdfObject value = GetDirectObject(input[i]);
+                PdfObject value = GetDirectObject(input.GetPdfObject(i));
                 if (value == null)
                     continue;
                 if (value.IsArray()) {
@@ -309,7 +308,7 @@ namespace iTextSharp.text.pdf
                 if (array1.Size != array2.Size)
                     return false;
                 for (int i = 0; i < array1.Size; ++i)
-                    if (!CompareObjects(array1[i],array2[i]))
+                    if (!CompareObjects(array1.GetPdfObject(i),array2.GetPdfObject(i)))
                         return false;
                 return true;
             }
@@ -336,7 +335,7 @@ namespace iTextSharp.text.pdf
                 if (curClass.IsArray()) {
                     PdfArray array = (PdfArray)curClass;
                     for (int i = 0; i < array.Size; ++i) {
-                        AddClass(array[i]);
+                        AddClass(array.GetPdfObject(i));
                     }
                 } else if (curClass.IsName())
                     AddClass(curClass);

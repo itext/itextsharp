@@ -164,7 +164,7 @@ namespace iTextSharp.text.pdf {
 
         private void NodeProcess(PdfDictionary struc, PdfIndirectReference reference) {
             PdfObject obj = struc.Get(PdfName.K);
-            if (obj != null && obj.IsArray()/* && !((PdfArray)obj)[0].IsNumber()*/) {
+            if (obj != null && obj.IsArray()) {
                 PdfArray ar = (PdfArray)obj;
                 for (int k = 0; k < ar.Size; ++k) {
                     PdfDictionary dictionary = ar.GetAsDict(k);
@@ -172,9 +172,11 @@ namespace iTextSharp.text.pdf {
                         continue;
                     if (!PdfName.STRUCTELEM.Equals(dictionary.Get(PdfName.TYPE)))
                         continue;
-                    PdfStructureElement e = (PdfStructureElement)dictionary;
-                    ar[k] = e.Reference;
-                    NodeProcess(e, e.Reference);
+                    if (ar.GetPdfObject(k) is PdfStructureElement) {
+                        PdfStructureElement e = (PdfStructureElement) dictionary;
+                        ar.Set(k, e.Reference);
+                        NodeProcess(e, e.Reference);
+                    }
                 }
             }
             if (reference != null)
@@ -195,7 +197,7 @@ namespace iTextSharp.text.pdf {
                         PdfArray newArray = new PdfArray();
                         PdfArray array = (PdfArray)value;
                         for (int i = 0; i < array.Size; ++i) {
-                            if (array[i].IsDictionary())
+                            if (array.GetPdfObject(i).IsDictionary())
                                 newArray.Add(writer.AddToBody(array.GetAsDict(i)).IndirectReference);
                         }
                         classMap.Put(entry.Key,newArray);
