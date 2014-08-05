@@ -184,7 +184,7 @@ namespace iTextSharp.text.pdf {
          * @param idx The index of the <CODE>PdfObject</CODE> to be returned
          * @return A <CODE>PdfObject</CODE>
          */
-        public PdfObject GetPdfObject(int idx) {
+        public virtual PdfObject GetPdfObject(int idx) {
             return arrayList[idx];
         }
 
@@ -198,7 +198,7 @@ namespace iTextSharp.text.pdf {
          * @return the previous value
          * @since 2.1.5
          */
-        public PdfObject Set(int idx, PdfObject obj) {
+        public virtual PdfObject Set(int idx, PdfObject obj) {
             return arrayList[idx] = obj;
         }
 
