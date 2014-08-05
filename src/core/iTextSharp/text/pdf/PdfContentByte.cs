@@ -1486,9 +1486,9 @@ namespace iTextSharp.text.pdf {
                             PdfArray ar = (PdfArray)value;
                             if (ar.Size == 4 
                                 && PdfName.INDEXED.Equals(ar.GetAsName(0)) 
-                                && ar[1].IsName()
-                                && ar[2].IsNumber()
-                                && ar[3].IsString()
+                                && ar.GetPdfObject(1).IsName()
+                                && ar.GetPdfObject(2).IsNumber()
+                                && ar.GetPdfObject(3).IsString()
                             ) {
                                 check = false;
                             }

@@ -883,7 +883,7 @@ namespace iTextSharp.text.pdf {
                 PdfAnnotation annotation = new PdfAnnotation(writer, new Rectangle(llx, lly, urx, ury));
                 if (newPage != 0) {
                     PdfIndirectReference refi = writer.GetPageReference(newPage);
-                    destination[0] = refi;
+                    destination.Set(0, refi);
                 }
                 if (destination != null) annotation.Put(PdfName.DEST, destination);
                 foreach (PdfName key in parameters.Keys)

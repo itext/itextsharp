@@ -174,6 +174,35 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
+         * Returns the <CODE>PdfObject</CODE> with the specified index.
+         *
+         * A possible indirect references is not resolved, so the returned
+         * <CODE>PdfObject</CODE> may be either a direct object or an indirect
+         * reference, depending on how the object is stored in the
+         * <CODE>PdfArray</CODE>.
+         *
+         * @param idx The index of the <CODE>PdfObject</CODE> to be returned
+         * @return A <CODE>PdfObject</CODE>
+         */
+        public PdfObject GetPdfObject(int idx) {
+            return arrayList[idx];
+        }
+
+        /**
+         * Overwrites a specified location of the array, returning the previous
+         * value
+         *
+         * @param idx The index of the element to be overwritten
+         * @param obj new value for the specified index
+         * @throws IndexOutOfBoundsException if the specified position doesn't exist
+         * @return the previous value
+         * @since 2.1.5
+         */
+        public PdfObject Set(int idx, PdfObject obj) {
+            return arrayList[idx] = obj;
+        }
+
+        /**
          * Remove the element at the specified position from the array.
          * 
          * Shifts any subsequent elements to the left (subtracts one from their

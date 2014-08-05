@@ -73,7 +73,7 @@ namespace iTextSharp.text.pdf {
 
         /** Creates a PdfSmartCopy instance. */
         public PdfSmartCopy(Document document, Stream os) : base(document, os) {
-            this.streamMap = new Dictionary<ByteStore,PdfIndirectReference>();
+            this.streamMap = new Dictionary<ByteStore, PdfIndirectReference>();
         }
         /**
         * Translate a PRIndirectReference to a PdfIndirectReference
@@ -101,7 +101,7 @@ namespace iTextSharp.text.pdf {
             } else if (srcObj.IsDictionary()) {
                 streamKey = new ByteStore((PdfDictionary)srcObj, serialized);
                 validStream = true;
-                PdfIndirectReference streamRef = null;
+                PdfIndirectReference streamRef;
                 if (streamMap.TryGetValue(streamKey, out streamRef)) {
                     return streamRef;
                 }
@@ -121,7 +121,7 @@ namespace iTextSharp.text.pdf {
                 iRef = new IndirectReferences(theRef);
                 indirects[key] = iRef;
             }
-            if (srcObj != null && srcObj.IsDictionary()) {
+            if (srcObj.IsDictionary()) {
                 PdfObject type = PdfReader.GetPdfObjectRelease(((PdfDictionary)srcObj).Get(PdfName.TYPE));
                 if (type != null && PdfName.PAGE.Equals(type)) {
                     return theRef;
