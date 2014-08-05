@@ -1228,7 +1228,7 @@ namespace iTextSharp.text.pdf {
                     PdfObject o = array.GetPdfObject(i);
                     if (o is PdfIndirectReference) {
                         foreach (PdfIndirectObject entry in unmergedSet) {
-                            if (entry.IndirectReference.ToString().Equals(o.ToString())) {
+                            if (entry.IndirectReference.Number == ((PdfIndirectReference)o).Number && entry.IndirectReference.Generation == ((PdfIndirectReference)o).Generation) {
                                 if (entry.objecti.IsDictionary()) {
                                     PdfNumber annotId = ((PdfDictionary)entry.objecti).GetAsNumber(PdfCopy.annotId);
                                     if (annotId != null) {
