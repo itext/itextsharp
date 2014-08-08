@@ -115,7 +115,7 @@ namespace iTextSharp.text.pdf {
         protected internal bool consolidateNamedDestinations = false;
         protected bool remoteToLocalNamedDestinations = false;
         protected internal int rValue;
-        protected internal int pValue;
+        protected internal long pValue;
         private int objNum;
         private int objGen;
         private long fileLength;
@@ -709,7 +709,7 @@ namespace iTextSharp.text.pdf {
                 o = enc.Get(PdfName.P);
                 if (!o.IsNumber())
                     throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.p.value"));
-                pValue = ((PdfNumber)o).IntValue;
+                pValue = ((PdfNumber)o).LongValue;
 
                 o = enc.Get(PdfName.R);
                 if (!o.IsNumber())
@@ -2583,7 +2583,7 @@ namespace iTextSharp.text.pdf {
         * <CODE>PdfWriter.SetEncryption()</CODE>.
         * @return the encryption permissions
         */    
-        virtual public int Permissions {
+        virtual public long Permissions {
             get {
                 return pValue;
             }
