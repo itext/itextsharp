@@ -96,7 +96,7 @@ public class PdfEncryption {
     internal byte[] perms;
     /** The public key security handler for certificate encryption */
     protected PdfPublicKeySecurityHandler publicKeyHandler = null;
-    internal int permissions;
+    internal long permissions;
     internal byte[] documentID;
     internal static long seq = DateTime.Now.Ticks + Environment.TickCount;
     private int revision;
@@ -176,7 +176,7 @@ public class PdfEncryption {
         return encryptMetadata;
     }
 
-    virtual public int GetPermissions() {
+    virtual public long GetPermissions() {
         return permissions;
     }
 
@@ -234,7 +234,7 @@ public class PdfEncryption {
      *
      * ownerKey, documentID must be setuped
      */
-    private void SetupGlobalEncryptionKey(byte[] documentID, byte[] userPad, byte[] ownerKey, int permissions) {
+    private void SetupGlobalEncryptionKey(byte[] documentID, byte[] userPad, byte[] ownerKey, long permissions) {
         this.documentID = documentID;
         this.ownerKey = ownerKey;
         this.permissions = permissions;
@@ -446,24 +446,24 @@ public class PdfEncryption {
         return DigestAlgorithms.Digest("MD5", b);
     }
 
-    virtual public void SetupByUserPassword(byte[] documentID, byte[] userPassword, byte[] ownerKey, int permissions) {
+    virtual public void SetupByUserPassword(byte[] documentID, byte[] userPassword, byte[] ownerKey, long permissions) {
         SetupByUserPad(documentID, PadPassword(userPassword), ownerKey, permissions);
     }
 
     /**
      */
-    private void SetupByUserPad(byte[] documentID, byte[] userPad, byte[] ownerKey, int permissions) {
+    private void SetupByUserPad(byte[] documentID, byte[] userPad, byte[] ownerKey, long permissions) {
         SetupGlobalEncryptionKey(documentID, userPad, ownerKey, permissions);
         SetupUserKey();
     }
 
     /**
      */
-    virtual public void SetupByOwnerPassword(byte[] documentID, byte[] ownerPassword, byte[] userKey, byte[] ownerKey, int permissions) {
+    virtual public void SetupByOwnerPassword(byte[] documentID, byte[] ownerPassword, byte[] userKey, byte[] ownerKey, long permissions) {
         SetupByOwnerPad(documentID, PadPassword(ownerPassword), userKey, ownerKey, permissions);
     }
 
-    private void SetupByOwnerPad(byte[] documentID, byte[] ownerPad, byte[] userKey, byte[] ownerKey, int permissions) {
+    private void SetupByOwnerPad(byte[] documentID, byte[] ownerPad, byte[] userKey, byte[] ownerKey, long permissions) {
         byte[] userPad = ComputeOwnerKey(ownerKey, ownerPad); //userPad will be set in this.ownerKey
         SetupGlobalEncryptionKey(documentID, userPad, ownerKey, permissions); //step 3
         SetupUserKey();
