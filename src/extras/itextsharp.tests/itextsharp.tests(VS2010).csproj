@@ -117,6 +117,7 @@
     <Compile Include="iTextSharp\text\pdf\RandomAccessFileOrArrayTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\RowspanTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TestPdfCopyAndStamp.cs" />
+    <Compile Include="iTextSharp\text\pdf\TextFieldTest.cs" />
     <Compile Include="iTextSharp\text\pdf\ToUnicodeNonBreakableSpacesTest.cs" />
     <Compile Include="iTextSharp\text\pdf\UnbalancedOperatorsTest.cs" />
     <Compile Include="iTextSharp\text\RemoteGifImageTest.cs" />
