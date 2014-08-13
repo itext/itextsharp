@@ -57,6 +57,10 @@ namespace iTextSharp.text {
     public sealed class Version {
 
 	    // membervariables
+
+        /** The iText version instance. */
+        private static Version version = null;
+
 	    /**
 	     * This String contains the name of the product.
 	     * iText is a registered trademark by iText Group NV.
@@ -70,11 +74,6 @@ namespace iTextSharp.text {
 	     */
         static private String release = "5.5.3-SNAPSHOT";
 
-        /**
-         * The license key.
-         */
-        private String key = null;
-
 	    /**
 	     * This String contains the iText version as shown in the producer line.
 	     * iText is a product developed by iText Group NV.
@@ -83,79 +82,63 @@ namespace iTextSharp.text {
 	     */
 	    private String iTextVersion = iText + " " + release + " \u00a92000-2014 iText Group NV";
 
-	    /** The iText version instance. */
-	    private static Version version = null;
+        /**
+         * The license key.
+         */
+        private String key = null;
     	
 	    /**
 	     * Gets an instance of the iText version that is currently used.
 	     * Note that iText Group requests that you retain the iText producer line
 	     * in every PDF that is created or manipulated using iText.
 	     */
-	    public static Version GetInstance() {
-		    if (version == null) {
-			    version = new Version();
-			    try {
-                    Type type = Type.GetType("iTextSharp.license.LicenseKey, itextsharp.LicenseKey");
-                    MethodInfo m = type.GetMethod("GetLicenseeInfo");
-                    String[] info = (String[])m.Invoke(Activator.CreateInstance(type), null);
-                    if (info[3] != null && info[3].Trim().Length > 0)
-                    {
-                        version.key = info[3];
-                    }
-                    else
-                    {
-                        version.key = "Trial version ";
-                        if (info[5] == null)
-                        {
-                            version.key += "unauthorised";
+        public static Version GetInstance() {
+            if (version == null) {
+                version = new Version();
+                lock (version) {
+                    try {
+                        Type type = Type.GetType("iTextSharp.license.LicenseKey, itextsharp.LicenseKey");
+                        MethodInfo m = type.GetMethod("GetLicenseeInfo");
+                        String[] info = (String[]) m.Invoke(Activator.CreateInstance(type), null);
+                        if (info[3] != null && info[3].Trim().Length > 0) {
+                            version.key = info[3];
+                        } else {
+                            version.key = "Trial version ";
+                            if (info[5] == null) {
+                                version.key += "unauthorised";
+                            } else {
+                                version.key += info[5];
+                            }
                         }
-                        else
-                        {
-                            version.key += info[5];
+                        if (info[4] != null && info[4].Trim().Length > 0) {
+                            version.iTextVersion = info[4];
+                        } else if (info[2] != null && info[2].Trim().Length > 0) {
+                            version.iTextVersion += " (" + info[2];
+                            if (!version.key.ToLower().StartsWith("trial")) {
+                                version.iTextVersion += "; licensed version)";
+                            } else {
+                                version.iTextVersion += "; " + version.key + ")";
+                            }
+                        } else if (info[0] != null && info[0].Trim().Length > 0) {
+                            // fall back to contact name, if company name is unavailable
+                            version.iTextVersion += " (" + info[0];
+                            if (!version.key.ToLower().StartsWith("trial")) {
+                                // we shouldn't have a licensed version without company name,
+                                // but let's account for it anyway
+                                version.iTextVersion += "; licensed version)";
+                            } else {
+                                version.iTextVersion += "; " + version.key + ")";
+                            }
+                        } else {
+                            throw new Exception();
                         }
+                    } catch (Exception) {
+                        version.iTextVersion += " (AGPL-version)";
                     }
-                    if (info[4] != null && info[4].Trim().Length > 0)
-                    {
-                        version.iTextVersion = info[4];
-                    }
-                    else if (info[2] != null && info[2].Trim().Length > 0)
-                    {
-                        version.iTextVersion += " (" + info[2];
-                        if (!version.key.ToLower().StartsWith("trial"))
-                        {
-                            version.iTextVersion += "; licensed version)";
-                        }
-                        else
-                        {
-                            version.iTextVersion += "; " + version.key + ")";
-                        }
-                    }
-                    // fall back to contact name, if company name is unavailable
-                    else if (info[0] != null && info[0].Trim().Length > 0)
-                    {
-                        version.iTextVersion += " (" + info[0];
-                        if (!version.key.ToLower().StartsWith("trial"))
-                        {
-                            // we shouldn't have a licensed version without company name,
-                            // but let's account for it anyway
-                            version.iTextVersion += "; licensed version)";
-                        }
-                        else
-                        {
-                            version.iTextVersion += "; " + version.key + ")";
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception();
-                    }
-
-			    } catch (Exception) {
-				    version.iTextVersion += " (AGPL-version)";
-			    }
-		    }
-		    return version;
-	    }
+                }
+            }
+            return version;
+        }
     	
 	    /**
 	     * Gets the product name.
