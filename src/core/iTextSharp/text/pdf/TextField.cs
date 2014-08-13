@@ -65,6 +65,9 @@ namespace iTextSharp.text.pdf {
         
         private int topFirst;
 
+        /** Represents the /TI value */
+        private int visibleTopChoice = -1;
+
         private float extraMarginLeft;
         private float extraMarginTop;
 
@@ -465,7 +468,11 @@ namespace iTextSharp.text.pdf {
         	
     	    int topChoice = 0;
     	    if (choices != null) {
-    		    topChoice = firstValue;
+    	        if (visibleTopChoice != -1) {
+    	            return visibleTopChoice;
+    	        }
+
+    	        topChoice = firstValue;
     		    topChoice = Math.Min( topChoice, choices.Length );
     		    topChoice = Math.Max( 0, topChoice);
     	    } // else topChoice still 0
@@ -664,7 +671,32 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
-        * adds another (or a first I suppose) selection to a MULTISELECT list.
+         * Sets the top visible choice for lists;
+         *
+         * @since 5.5.3
+         * @param visibleTopChoice index of the first visible item (zero-based array)
+         */
+        /**
+         * Returns the index of the top visible choice of a list. Default is -1.
+         * @return the index of the top visible choice
+         */
+        public virtual int VisibleTopChoice {
+            get { return visibleTopChoice; }
+            set {
+                if (value < 0) {
+                    return;
+                }
+
+                if (choices != null) {
+                    if (value < choices.Length) {
+                        this.visibleTopChoice = value;
+                    }
+                }
+            }
+        }
+
+        /**
+        * Adds another (or a first I suppose) selection to a MULTISELECT list.
         * This doesn't do anything unless this.options & MUTLISELECT != 0 
         * @param selection new selection
         */
