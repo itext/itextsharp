@@ -885,6 +885,23 @@ namespace iTextSharp.text.pdf {
         internal override void FlushAcroFields() {
             if (mergeFields) {
                 try {
+                    //save annotations that appear just at page level (comments, popups)
+                    foreach (ImportedPage page in importedPages) {
+                        PdfDictionary pageDict = page.reader.GetPageN(page.pageNumber);
+                        if (pageDict != null) {
+                            PdfArray pageFields = pageDict.GetAsArray(PdfName.ANNOTS);
+                            if (pageFields == null || pageFields.Size == 0)
+                                continue;
+                            foreach (AcroFields.Item items in page.reader.AcroFields.Fields.Values) {
+                                foreach (PdfIndirectReference @ref in items.widget_refs) {
+                                    pageFields.ArrayList.Remove(@ref);
+                                }
+                            }
+                            foreach (PdfObject @ref in pageFields.ArrayList)
+                                page.mergedFields.Add(CopyObject(@ref));
+                        }
+                    }
+                    //ok, remove old fields and build create new one
                     foreach (PdfReader reader in indirectMap.Keys) {
                         reader.RemoveFields();
                     }
@@ -1164,7 +1181,8 @@ namespace iTextSharp.text.pdf {
             foreach (KeyValuePair<RefKey, PdfIndirectObject> entry in indirectObjects) {
                 if (entry.Value != null)
                     WriteObjectToBody(entry.Value);
-                else inactives.Add(entry.Key);
+                else
+                    inactives.Add(entry.Key);
             }
             List<PdfBody.PdfCrossReference> xrefs = new List<PdfBody.PdfCrossReference>();
             foreach (PdfBody.PdfCrossReference xref in body.xrefs.Keys)
@@ -1226,7 +1244,7 @@ namespace iTextSharp.text.pdf {
                 PdfArray array = (PdfArray)obj;
                 for (int i = 0; i < array.Size; i++) {
                     PdfObject o = array.GetPdfObject(i);
-                    if (o is PdfIndirectReference) {
+                    if (o != null && o.Type == 0) {
                         foreach (PdfIndirectObject entry in unmergedSet) {
                             if (entry.IndirectReference.Number == ((PdfIndirectReference)o).Number && entry.IndirectReference.Generation == ((PdfIndirectReference)o).Generation) {
                                 if (entry.objecti.IsDictionary()) {
@@ -1249,9 +1267,10 @@ namespace iTextSharp.text.pdf {
                 List<PdfName> keys = new List<PdfName>(dictionary.Keys);
                 foreach (PdfName key in keys) {
                     PdfObject o = dictionary.Get(key);
-                    if (o != null && o.Type  == 0) {
+                    if (o != null && o.Type == 0) {
                         foreach (PdfIndirectObject entry in unmergedSet) {
-                            if (entry.IndirectReference.ToString().Equals(o.ToString())) {
+                            if (entry.IndirectReference.Number == ((PdfIndirectReference) o).Number &&
+                                entry.IndirectReference.Generation == ((PdfIndirectReference) o).Generation) {
                                 if (entry.objecti.IsDictionary()) {
                                     PdfNumber annotId = ((PdfDictionary)entry.objecti).GetAsNumber(PdfCopy.annotId);
                                     if (annotId != null) {
@@ -1452,8 +1471,14 @@ namespace iTextSharp.text.pdf {
         }
 
         private void CreateAcroForms() {
-            if (fieldTree.Count == 0)
+            if (fieldTree.Count == 0) {
+                //write annotations that appear just at page level (comments, popups)
+                foreach (ImportedPage importedPage in importedPages) {
+                    if (importedPage.mergedFields.Size > 0)
+                        AddToBody(importedPage.mergedFields, importedPage.annotsIndirectReference);
+                }
                 return;
+            }
             PdfDictionary form = new PdfDictionary();
             form.Put(PdfName.DR, Propagate(resources));
 

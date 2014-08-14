@@ -305,5 +305,41 @@ namespace itextsharp.tests.iTextSharp.text.pdf
                 Assert.Fail(errorMessage);
             }
         }
+
+        [Test]
+        public virtual void CopyFields2Test() {
+            Document pdfDocument = new Document();
+            Directory.CreateDirectory("PdfCopyTest/");
+            PdfCopy copier = new PdfCopy(pdfDocument, new FileStream("PdfCopyTest/copyFields2.pdf", FileMode.Create));
+            copier.SetMergeFields();
+            pdfDocument.Open();
+
+            PdfReader reader = new PdfReader(RESOURCES + "hello_with_comments.pdf");
+            copier.AddDocument(reader);
+            copier.Close();
+            CompareTool compareTool = new CompareTool("PdfCopyTest/copyFields2.pdf", RESOURCES + "cmp_copyFields2.pdf");
+            String errorMessage = compareTool.CompareByContent("PdfCopyTest/", "diff");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
+
+        [Test]
+        public virtual void CopyFields3Test() {
+            Document pdfDocument = new Document();
+            Directory.CreateDirectory("PdfCopyTest/");
+            PdfCopy copier = new PdfCopy(pdfDocument, new FileStream("PdfCopyTest/copyFields3.pdf", FileMode.Create));
+            copier.SetMergeFields();
+            pdfDocument.Open();
+
+            PdfReader reader = new PdfReader(RESOURCES + "hello2_with_comments.pdf");
+            copier.AddDocument(reader);
+            copier.Close();
+            CompareTool compareTool = new CompareTool("PdfCopyTest/copyFields3.pdf", RESOURCES + "cmp_copyFields3.pdf");
+            String errorMessage = compareTool.CompareByContent("PdfCopyTest/", "diff");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
     }
 }
