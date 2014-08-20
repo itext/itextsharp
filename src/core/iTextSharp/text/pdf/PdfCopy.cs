@@ -673,6 +673,7 @@ namespace iTextSharp.text.pdf {
             root.AddPage(newPage);
             iPage.SetCopied();
             ++currentPageNumber;
+            pdf.PageCount = currentPageNumber;
             structTreeRootReference = null;
         }
 
@@ -693,6 +694,7 @@ namespace iTextSharp.text.pdf {
             page.Put(PdfName.TABS, Tabs);
             root.AddPage(page);
             ++currentPageNumber;
+            pdf.PageCount = currentPageNumber;
         }
 
         virtual public void AddDocument(PdfReader reader, List<int> pagesToKeep) {
