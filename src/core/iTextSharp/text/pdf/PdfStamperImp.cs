@@ -862,6 +862,14 @@ namespace iTextSharp.text.pdf {
                         flags = ff.IntValue;
                     int page = item.GetPage(k);
                     PdfDictionary appDic = merged.GetAsDict(PdfName.AP);
+                    if ((appDic == null || appDic.Get(PdfName.N) == null) && acroFields.GenerateAppearances) {
+                        try {
+                            acroFields.RegenerateField(name);
+                            appDic = acroFields.GetFieldItem(name).GetMerged(k).GetAsDict(PdfName.AP);
+                        }
+                        // if we can't create appearances for some reason, we'll just continue
+                        catch (DocumentException) {}
+                    }
                     if (appDic != null && (flags & PdfFormField.FLAGS_PRINT) != 0 && (flags & PdfFormField.FLAGS_HIDDEN) == 0) {
                         PdfObject obj = appDic.Get(PdfName.N);
                         PdfAppearance app = null;
