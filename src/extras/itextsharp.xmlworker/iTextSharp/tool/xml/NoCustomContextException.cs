@@ -50,6 +50,7 @@ namespace iTextSharp.tool.xml {
      * @author redlab_b
      *
      */
+    [Serializable]
     public class NoCustomContextException : Exception {
         /**
          *
@@ -75,5 +76,7 @@ namespace iTextSharp.tool.xml {
          */
         public NoCustomContextException(String arg0, Exception arg1) : base(arg0, arg1) {
         }
+
+        protected NoCustomContextException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

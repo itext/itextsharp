@@ -45,6 +45,7 @@ using iTextSharp.text.error_messages;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+using iTextSharp.text.exceptions;
 
 namespace iTextSharp.text.pdf {
 

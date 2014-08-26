@@ -49,6 +49,7 @@ namespace iTextSharp.tool.xml.exceptions {
      * @author redlab_b
      *
      */
+    [Serializable]
     public class CssResolverException : Exception {
 
         /**
@@ -75,5 +76,7 @@ namespace iTextSharp.tool.xml.exceptions {
          */
         public CssResolverException(Exception cause) : base("", cause) {
         }
+
+        protected CssResolverException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

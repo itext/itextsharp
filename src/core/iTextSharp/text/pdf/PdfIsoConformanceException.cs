@@ -46,6 +46,7 @@ using System;
 
 namespace iTextSharp.text.pdf{
 
+    [Serializable]
     public class PdfIsoConformanceException : Exception
     {
         /** Serial version UID */
@@ -64,5 +65,7 @@ namespace iTextSharp.text.pdf{
         public PdfIsoConformanceException(String s) : base(s)
         {            
         }
+
+        protected PdfIsoConformanceException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

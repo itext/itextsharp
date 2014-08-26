@@ -59,9 +59,12 @@ namespace iTextSharp.text.pdf.parser {
          * inline images vs other exceptions 
          * @since 5.0.4
          */
+		[Serializable]
         public class InlineImageParseException : IOException {
             public InlineImageParseException(String message) : base(message) {
             }
+
+			protected InlineImageParseException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
         }
         
         /**

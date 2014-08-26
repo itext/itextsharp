@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.util;
 using iTextSharp.text.error_messages;
+using iTextSharp.text.exceptions;
 using iTextSharp.text.log;
 
 /*

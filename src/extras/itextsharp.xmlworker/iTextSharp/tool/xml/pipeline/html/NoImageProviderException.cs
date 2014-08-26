@@ -49,7 +49,11 @@ namespace iTextSharp.tool.xml.pipeline.html {
      * @author itextpdf.com
      *
      */
+    [Serializable]
     public class NoImageProviderException : Exception {
+        public NoImageProviderException()
+        { }
 
+        protected NoImageProviderException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }
