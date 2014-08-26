@@ -28,17 +28,18 @@ namespace itextsharp.tests.iTextSharp.text.pdf.fonts {
             p = new Paragraph(new Chunk(origText, new Font(f, 16)));
             doc.Add(p);
             doc.Close();
+
+            PdfReader reader = new PdfReader("fonts/SymbolFontTest/textWithSymbolEncoding.pdf");
+            String text = PdfTextExtractor.GetTextFromPage(reader, 1, new SimpleTextExtractionStrategy());
+            reader.Close();
+            Assert.AreEqual(origText, text);
+
             CompareTool compareTool = new CompareTool("fonts/SymbolFontTest/textWithSymbolEncoding.pdf",
                 TEST_RESOURCES_PATH + "cmp_textWithSymbolEncoding.pdf");
             String errorMessage = compareTool.CompareByContent("fonts/SymbolFontTest/", "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
-
-            PdfReader reader = new PdfReader("fonts/SymbolFontTest/textWithSymbolEncoding.pdf");
-            String text = PdfTextExtractor.GetTextFromPage(reader, 1, new SimpleTextExtractionStrategy());
-            reader.Close();
-            Assert.AreEqual(origText, text);
         }
     }
 }

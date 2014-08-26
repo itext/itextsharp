@@ -3,6 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Text;
 using System.util;
+using System.util.collections;
 using iTextSharp.text.log;
 using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.collection;
@@ -69,10 +70,10 @@ namespace iTextSharp.text.pdf {
         protected bool flat = false;
         protected bool flatFreeText = false;
         protected int[] namePtr = {0};
-        protected Dictionary<string,object> partialFlattening = new Dictionary<string,object>();
+        protected HashSet2<string> partialFlattening = new HashSet2<string>();
         protected bool useVp = false;
         protected PdfViewerPreferencesImp viewerPreferences = new PdfViewerPreferencesImp();
-        protected Dictionary<PdfTemplate,object> fieldTemplates = new Dictionary<PdfTemplate,object>();
+        protected HashSet2<PdfTemplate> fieldTemplates = new HashSet2<PdfTemplate>();
         protected bool fieldsAdded = false;
         protected int sigFlags = 0;
         protected internal bool append;
@@ -830,18 +831,18 @@ namespace iTextSharp.text.pdf {
                 throw new InvalidOperationException(MessageLocalization.GetComposedMessage("partial.form.flattening.is.not.supported.with.xfa.forms"));
             if (!acroFields.Fields.ContainsKey(name))
                 return false;
-            partialFlattening[name] = null;
+            partialFlattening.Add(name);
             return true;
         }
-        
+
         virtual internal protected void FlatFields() {
             if (append)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("field.flattening.is.not.supported.in.append.mode"));
             GetAcroFields();
-            IDictionary<string,AcroFields.Item> fields = acroFields.Fields;
-            if (fieldsAdded && partialFlattening.Count == 0) {
-                foreach (string obf in fields.Keys) {
-                    partialFlattening[obf] = null;
+            IDictionary<String, AcroFields.Item> fields = acroFields.Fields;
+            if (fieldsAdded && partialFlattening.IsEmpty()) {
+                foreach (String obf in fields.Keys) {
+                    partialFlattening.Add(obf);
                 }
             }
             PdfDictionary acroForm = reader.Catalog.GetAsDict(PdfName.ACROFORM);
@@ -849,9 +850,9 @@ namespace iTextSharp.text.pdf {
             if (acroForm != null) {
                 acroFds = (PdfArray)PdfReader.GetPdfObject(acroForm.Get(PdfName.FIELDS), acroForm);
             }
-            foreach (KeyValuePair<string,AcroFields.Item> entry in fields) {
+            foreach (KeyValuePair<String, AcroFields.Item> entry in fields) {
                 String name = entry.Key;
-                if (partialFlattening.Count != 0 && !partialFlattening.ContainsKey(name))
+                if (!partialFlattening.IsEmpty() && !partialFlattening.Contains(name))
                     continue;
                 AcroFields.Item item = entry.Value;
                 for (int k = 0; k < item.Size; ++k) {
@@ -861,14 +862,35 @@ namespace iTextSharp.text.pdf {
                     if (ff != null)
                         flags = ff.IntValue;
                     int page = item.GetPage(k);
+                    if (page < 1)
+                	    continue;
                     PdfDictionary appDic = merged.GetAsDict(PdfName.AP);
-                    if ((appDic == null || appDic.Get(PdfName.N) == null) && acroFields.GenerateAppearances) {
-                        try {
-                            acroFields.RegenerateField(name);
-                            appDic = acroFields.GetFieldItem(name).GetMerged(k).GetAsDict(PdfName.AP);
+
+                    if (acroFields.GenerateAppearances) {
+                        bool regenerate = false;
+                        PdfObject as_;
+                        if (appDic == null || (as_ = appDic.GetDirectObject(PdfName.N)) == null) {
+                            regenerate = true;
+                        } else if (as_.IsStream()){
+                            PdfArray bbox = ((PdfDictionary)as_).GetAsArray(PdfName.BBOX);
+                            PdfArray rect = merged.GetAsArray(PdfName.RECT);
+                            if (bbox != null && rect != null) {
+                                float widthDiff = (bbox.GetAsNumber(2).FloatValue - bbox.GetAsNumber(0).FloatValue) -
+                                        (rect.GetAsNumber(2).FloatValue - rect.GetAsNumber(0).FloatValue);
+                                float heightDiff = (bbox.GetAsNumber(3).FloatValue - bbox.GetAsNumber(1).FloatValue) -
+                                        (rect.GetAsNumber(3).FloatValue - rect.GetAsNumber(1).FloatValue);
+                                if (Math.Abs(widthDiff) > 1 || Math.Abs(heightDiff) > 1)
+                                    regenerate = true;
+                            }
                         }
-                        // if we can't create appearances for some reason, we'll just continue
-                        catch (DocumentException) {}
+                        if (regenerate) {
+                            try {
+                                acroFields.RegenerateField(name);
+                                appDic = acroFields.GetFieldItem(name).GetMerged(k).GetAsDict(PdfName.AP);
+                            }
+                            // if we can't create appearances for some reason, we'll just continue
+                            catch (DocumentException) {}
+                        }
                     }
                     if (appDic != null && (flags & PdfFormField.FLAGS_PRINT) != 0 && (flags & PdfFormField.FLAGS_HIDDEN) == 0) {
                         PdfObject obj = appDic.Get(PdfName.N);
@@ -905,14 +927,14 @@ namespace iTextSharp.text.pdf {
                             cb.SetLiteral("q ");
                         }
                     }
-                    if (partialFlattening.Count == 0)
+                    if (partialFlattening.IsEmpty())
                         continue;
                     PdfDictionary pageDic = reader.GetPageN(page);
                     PdfArray annots = pageDic.GetAsArray(PdfName.ANNOTS);
                     if (annots == null)
                         continue;
                     for (int idx = 0; idx < annots.Size; ++idx) {
-                        PdfObject ran = annots[idx];
+                        PdfObject ran = annots.GetPdfObject(idx);
                         if (!ran.IsIndirect())
                             continue;
                         PdfObject ran2 = item.GetWidgetRef(k);
@@ -927,7 +949,7 @@ namespace iTextSharp.text.pdf {
                                 PdfReader.KillIndirect(wdref);
                                 if (parentRef == null) { // reached AcroForm
                                     for (int fr = 0; fr < acroFds.Size; ++fr) {
-                                        PdfObject h = acroFds[fr];
+                                        PdfObject h = acroFds.GetPdfObject(fr);
                                         if (h.IsIndirect() && ((PRIndirectReference)h).Number == wdref.Number) {
                                             acroFds.Remove(fr);
                                             --fr;
@@ -938,7 +960,7 @@ namespace iTextSharp.text.pdf {
                                 PdfDictionary parent = (PdfDictionary)PdfReader.GetPdfObject(parentRef);
                                 PdfArray kids = parent.GetAsArray(PdfName.KIDS);
                                 for (int fr = 0; fr < kids.Size; ++fr) {
-                                    PdfObject h = kids[fr];
+                                    PdfObject h = kids.GetPdfObject(fr);
                                     if (h.IsIndirect() && ((PRIndirectReference)h).Number == wdref.Number) {
                                         kids.Remove(fr);
                                         --fr;
@@ -956,7 +978,7 @@ namespace iTextSharp.text.pdf {
                     }
                 }
             }
-            if (!fieldsAdded && partialFlattening.Count == 0) {
+            if (!fieldsAdded && partialFlattening.IsEmpty()) {
                 for (int page = 1; page <= reader.NumberOfPages; ++page) {
                     PdfDictionary pageDic = reader.GetPageN(page);
                     PdfArray annots = pageDic.GetAsArray(PdfName.ANNOTS);
@@ -1001,7 +1023,7 @@ namespace iTextSharp.text.pdf {
     //        PdfReader.KillIndirect(acro);
     //        reader.GetCatalog().Remove(PdfName.ACROFORM);
         }
-        
+
         internal void SweepKids(PdfObject obj) {
             PdfObject oo = PdfReader.KillIndirect(obj);
             if (oo == null || !oo.IsDictionary())
@@ -1011,7 +1033,7 @@ namespace iTextSharp.text.pdf {
             if (kids == null)
                 return;
             for (int k = 0; k < kids.Size; ++k) {
-                SweepKids(kids[k]);
+                SweepKids(kids.GetPdfObject(k));
             }
         }
         
@@ -1149,7 +1171,7 @@ namespace iTextSharp.text.pdf {
                 MarkUsed(acroForm);
             }
             MarkUsed(dr);
-            foreach (PdfTemplate template in fieldTemplates.Keys) {
+            foreach (PdfTemplate template in fieldTemplates) {
                 PdfFormField.MergeResources(dr, (PdfDictionary)template.Resources, this);
             }
 //            if (dr.Get(PdfName.ENCODING) == null)
@@ -1206,14 +1228,11 @@ namespace iTextSharp.text.pdf {
                 annot = allAnnots[k];
                 if (annot.PlaceInPage > 0)
                     pageN = reader.GetPageN(annot.PlaceInPage);
-                if (annot.IsForm()) {
+                if (annot.IsForm()) { 
                     if (!annot.IsUsed()) {
-                        Dictionary<PdfTemplate,object> templates = annot.Templates;
-                        if (templates != null) {
-                            foreach (PdfTemplate tpl in templates.Keys) {
-                                fieldTemplates[tpl] = null;
-                            }
-                        }
+                        HashSet2<PdfTemplate> templates = annot.GetTemplates();
+                        if (templates != null)
+                            fieldTemplates.AddAll(templates);
                     }
                     PdfFormField field = (PdfFormField)annot;
                     if (field.Parent == null)
