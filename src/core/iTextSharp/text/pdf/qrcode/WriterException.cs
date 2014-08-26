@@ -23,6 +23,7 @@ namespace iTextSharp.text.pdf.qrcode {
      *
      * @author dswitkin@google.com (Daniel Switkin)
      */
+	[Serializable]
     public sealed class WriterException : Exception {
 
         public WriterException()
@@ -32,5 +33,7 @@ namespace iTextSharp.text.pdf.qrcode {
         public WriterException(String message)
             : base(message) {
         }
+
+		protected WriterException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

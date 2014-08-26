@@ -55,6 +55,7 @@ namespace iTextSharp.text {
     /// <seealso cref="T:iTextSharp.text.Document"/>
     /// <seealso cref="T:iTextSharp.text.DocWriter"/>
     /// <seealso cref="T:iTextSharp.text.IDocListener"/>
+	[Serializable]
     public class DocumentException : Exception {
         /// <summary>
         /// Constructs a new DocumentException
@@ -69,5 +70,7 @@ namespace iTextSharp.text {
         /// </summary>
         /// <param name="message">error message</param>
         public DocumentException(string message) : base(message) {}
+
+		protected DocumentException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

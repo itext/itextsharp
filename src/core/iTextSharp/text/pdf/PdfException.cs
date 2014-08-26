@@ -56,9 +56,12 @@ namespace iTextSharp.text.pdf {
      * @see        BadPdfFormatException
      */
 
+	[Serializable]
     public class PdfException : DocumentException {    
         public PdfException() : base() {}
 
         public PdfException(string message) : base(message) {}
+
+		protected PdfException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

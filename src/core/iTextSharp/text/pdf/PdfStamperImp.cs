@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.util;
 using System.util.collections;
+using iTextSharp.text.exceptions;
 using iTextSharp.text.log;
 using iTextSharp.text.pdf.intern;
 using iTextSharp.text.pdf.collection;

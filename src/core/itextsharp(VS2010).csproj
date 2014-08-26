@@ -381,9 +381,6 @@
     <Compile Include="iTextSharp\text\pdf\languages\ArabicLigaturizer.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="iTextSharp\text\pdf\BadPasswordException.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="iTextSharp\text\pdf\BadPdfFormatException.cs">
       <SubType>Code</SubType>
     </Compile>

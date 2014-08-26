@@ -51,6 +51,7 @@ namespace iTextSharp.tool.xml.exceptions {
      * @author redlab_b
      *
      */
+    [Serializable]
     public class RuntimeWorkerException : Exception {
 
         /**
@@ -77,5 +78,7 @@ namespace iTextSharp.tool.xml.exceptions {
          */
         public RuntimeWorkerException(Exception cause) : base("", cause) {
         }
+
+        protected RuntimeWorkerException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

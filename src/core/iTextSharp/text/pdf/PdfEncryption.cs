@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Text;
 using System.IO;
+using iTextSharp.text.exceptions;
 using iTextSharp.text.pdf.crypto;
 using iTextSharp.text.pdf.security;
 using Org.BouncyCastle.X509;
