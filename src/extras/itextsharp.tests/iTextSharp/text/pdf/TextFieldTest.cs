@@ -3,6 +3,7 @@ using System.IO;
 using iTextSharp.testutils;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+using iTextSharp.text.pdf.events;
 using NUnit.Framework;
 
 namespace itextsharp.tests.iTextSharp.text.pdf {
@@ -63,6 +64,49 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             writer.AddAnnotation(field);
 
             document.Close();
+
+            // compare
+            CompareTool compareTool = new CompareTool(OUTPUT_FOLDER + file, CMP_FOLDER + file);
+            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER, "diff");
+            if (errorMessage != null) {
+                Assert.Fail(errorMessage);
+            }
+        }
+
+        [Test]
+        public void TestRegeneratingFields() {
+            String file = "regenerateField.pdf";
+
+            Document doc = new Document(PageSize.A4);
+            MemoryStream fs = new MemoryStream();
+            PdfWriter writer = PdfWriter.GetInstance(doc, fs);
+            writer.CloseStream = false;
+
+            doc.Open();
+            PdfPTable myTable = new PdfPTable(1);
+            myTable.TotalWidth = 300f;
+            myTable.LockedWidth = true;
+            myTable.HorizontalAlignment = 0;
+
+            //Create the textfield that will sit on a cell in the table
+            TextField tf = new TextField(writer, new Rectangle(0, 0, 70, 200), "cellTextBox");
+            tf.Text = "text field";
+            //Create the table cell
+            PdfPCell tbCell = new PdfPCell(new Phrase(" "));
+            FieldPositioningEvents events = new FieldPositioningEvents(writer, tf.GetTextField());
+            tbCell.CellEvent = events;
+            myTable.AddCell(tbCell);
+            PdfContentByte cb = writer.DirectContent;
+            //Write out the table to the middle of the document
+            myTable.WriteSelectedRows(0, -1, 0, -1, 20, 700, cb);
+            doc.Close();
+
+            fs.Position = 0;
+            PdfReader reader = new PdfReader(fs);
+            PdfStamper stamper = new PdfStamper(reader, new FileStream(OUTPUT_FOLDER + file.Clone(), FileMode.Create));
+            stamper.FormFlattening = true;
+            stamper.Close();
+            reader.Close();
 
             // compare
             CompareTool compareTool = new CompareTool(OUTPUT_FOLDER + file, CMP_FOLDER + file);
