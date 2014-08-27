@@ -866,31 +866,65 @@ namespace iTextSharp.text.pdf {
                     if (page < 1)
                 	    continue;
                     PdfDictionary appDic = merged.GetAsDict(PdfName.AP);
-
-                    if (acroFields.GenerateAppearances) {
-                        bool regenerate = false;
-                        PdfObject as_;
-                        if (appDic == null || (as_ = appDic.GetDirectObject(PdfName.N)) == null) {
-                            regenerate = true;
-                        } else if (as_.IsStream()){
-                            PdfArray bbox = ((PdfDictionary)as_).GetAsArray(PdfName.BBOX);
-                            PdfArray rect = merged.GetAsArray(PdfName.RECT);
-                            if (bbox != null && rect != null) {
-                                float widthDiff = (bbox.GetAsNumber(2).FloatValue - bbox.GetAsNumber(0).FloatValue) -
-                                        (rect.GetAsNumber(2).FloatValue - rect.GetAsNumber(0).FloatValue);
-                                float heightDiff = (bbox.GetAsNumber(3).FloatValue - bbox.GetAsNumber(1).FloatValue) -
-                                        (rect.GetAsNumber(3).FloatValue - rect.GetAsNumber(1).FloatValue);
-                                if (Math.Abs(widthDiff) > 1 || Math.Abs(heightDiff) > 1)
-                                    regenerate = true;
-                            }
-                        }
-                        if (regenerate) {
-                            try {
+                    PdfObject as_n;
+                    if (acroFields.GenerateAppearances)
+                    {
+                        if (appDic == null || (as_n = appDic.GetDirectObject(PdfName.N)) == null)
+                        {
+                            try
+                            {
                                 acroFields.RegenerateField(name);
                                 appDic = acroFields.GetFieldItem(name).GetMerged(k).GetAsDict(PdfName.AP);
                             }
                             // if we can't create appearances for some reason, we'll just continue
-                            catch (DocumentException) {}
+                            catch (DocumentException) { }
+                        }
+                        else if (as_n.IsStream())
+                        {
+                            PdfStream stream = (PdfStream)as_n;
+                            PdfArray bbox = stream.GetAsArray(PdfName.BBOX);
+                            PdfArray rect = merged.GetAsArray(PdfName.RECT);
+                            if (bbox != null && rect != null)
+                            {
+                                float rectWidth = rect.GetAsNumber(2).FloatValue - rect.GetAsNumber(0).FloatValue;
+                                float bboxWidth = bbox.GetAsNumber(2).FloatValue - bbox.GetAsNumber(0).FloatValue;
+                                float rectHeight = rect.GetAsNumber(3).FloatValue - rect.GetAsNumber(1).FloatValue;
+                                float bboxHeight = bbox.GetAsNumber(3).FloatValue - bbox.GetAsNumber(1).FloatValue;
+                                float widthCoef = Math.Abs(bboxWidth != 0 ? rectWidth / bboxWidth : float.MaxValue);
+                                float heightCoef = Math.Abs(bboxHeight != 0 ? rectHeight / bboxHeight : float.MaxValue);
+
+                                if (widthCoef != 1 || heightCoef != 1)
+                                {
+                                    NumberArray array = new NumberArray(widthCoef, 0, 0, heightCoef, 0, 0);
+                                    stream.Put(PdfName.MATRIX, array);
+                                    MarkUsed(stream);
+                                }
+                            }
+                        }
+                    }
+                    else if (appDic != null && (as_n = appDic.GetDirectObject(PdfName.N)) != null)
+                    {
+                        PdfArray bbox = ((PdfDictionary)as_n).GetAsArray(PdfName.BBOX);
+                        PdfArray rect = merged.GetAsArray(PdfName.RECT);
+                        if (bbox != null && rect != null)
+                        {
+                            float widthDiff = (bbox.GetAsNumber(2).FloatValue - bbox.GetAsNumber(0).FloatValue) -
+                                    (rect.GetAsNumber(2).FloatValue - rect.GetAsNumber(0).FloatValue);
+                            float heightDiff = (bbox.GetAsNumber(3).FloatValue - bbox.GetAsNumber(1).FloatValue) -
+                                    (rect.GetAsNumber(3).FloatValue - rect.GetAsNumber(1).FloatValue);
+                            if (Math.Abs(widthDiff) > 1 || Math.Abs(heightDiff) > 1)
+                            {
+                                try
+                                {
+                                    //simulate Adobe behavior.
+                                    acroFields.GenerateAppearances = true;
+                                    acroFields.RegenerateField(name);
+                                    acroFields.GenerateAppearances = false;
+                                    appDic = acroFields.GetFieldItem(name).GetMerged(k).GetAsDict(PdfName.AP);
+                                }
+                                // if we can't create appearances for some reason, we'll just continue
+                                catch (DocumentException) { }
+                            }
                         }
                     }
                     if (appDic != null && (flags & PdfFormField.FLAGS_PRINT) != 0 && (flags & PdfFormField.FLAGS_HIDDEN) == 0) {
