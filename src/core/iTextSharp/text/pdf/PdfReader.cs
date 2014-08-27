@@ -572,7 +572,11 @@ namespace iTextSharp.text.pdf {
             PdfDictionary markInfo = catalog.GetAsDict(PdfName.MARKINFO);
             if(markInfo == null)
                 return false;
-            return PdfBoolean.PDFTRUE.Equals(markInfo.GetAsBoolean(PdfName.MARKED));
+            if (PdfBoolean.PDFTRUE.Equals(markInfo.GetAsBoolean(PdfName.MARKED))) {
+                return catalog.GetAsDict(PdfName.STRUCTTREEROOT) == null;
+            } else {
+                return false;
+            }
         }
 
         /**
