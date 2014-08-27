@@ -211,6 +211,8 @@
     <None Include="resources\text\pdf\FlatteningTest\input\imdb0948530.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\noappearances-needapp-false.pdf" />
     <None Include="resources\text\pdf\FlatteningTest\noappearances-needapp-true.pdf" />
+    <None Include="resources\text\pdf\FlatteningTest\regenerateFieldFalse.pdf" />
+    <None Include="resources\text\pdf\FlatteningTest\regenerateFieldTrue.pdf" />
     <None Include="resources\text\pdf\fonts\cmaps\CMapParserExTest\cmap_results_in_empty_map.cmap" />
     <None Include="resources\text\pdf\mc\SF2809.pdf" />
     <None Include="resources\text\pdf\mc\SF2809_alt.pdf" />
@@ -260,7 +262,6 @@
     <None Include="resources\text\pdf\PdfReaderTest\RomeoJuliet.pdf" />
     <None Include="resources\text\pdf\table\RowspanTest\nestedtabletest.pdf" />
     <None Include="resources\text\pdf\table\RowspanTest\rowspantest.pdf" />
-    <None Include="resources\text\pdf\TextFieldTest\regenerateField.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-0.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-1.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-2.pdf" />
