@@ -57,9 +57,7 @@ namespace iTextSharp.tool.xml.css.apply {
      * @author itextpdf.com
      */
 
-    public class ParagraphCssApplier
-    {
-
+    public class ParagraphCssApplier {
 
         private CssAppliers appliers;
 
@@ -68,8 +66,7 @@ namespace iTextSharp.tool.xml.css.apply {
          *
          */
 
-        public ParagraphCssApplier(CssAppliers appliers)
-        {
+        public ParagraphCssApplier(CssAppliers appliers) {
             this.appliers = appliers;
         }
 
@@ -82,8 +79,7 @@ namespace iTextSharp.tool.xml.css.apply {
          * @return a styled {@link Paragraph}
          */
 
-        virtual public Paragraph Apply(Paragraph p, Tag t, IMarginMemory configuration)
-        {
+        virtual public Paragraph Apply(Paragraph p, Tag t, IMarginMemory configuration) {
             /*MaxLeadingAndSize m = new MaxLeadingAndSize();
             if (configuration.GetRootTags().Contains(t.GetName())) {
                 m.SetLeading(t);
@@ -98,84 +94,67 @@ namespace iTextSharp.tool.xml.css.apply {
             float lmb = 0;
             bool hasLMB = false;
             IDictionary<String, String> css = t.CSS;
-            foreach (KeyValuePair<String, String> entry in css)
-            {
+            foreach (KeyValuePair<String, String> entry in css) {
                 String key = entry.Key;
                 String value = entry.Value;
-                if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_TOP, key))
-                {
+                if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_TOP, key)) {
                     p.SpacingBefore = p.SpacingBefore + utils.CalculateMarginTop(value, fontSize, configuration);
-                }
-                else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_TOP, key))
-                {
+                } else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_TOP, key)) {
                     p.SpacingBefore = p.SpacingBefore + utils.ParseValueToPt(value, fontSize);
-                }
-                else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_BOTTOM, key))
-                {
+                } else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_BOTTOM, key)) {
                     float after = utils.ParseValueToPt(value, fontSize);
                     p.SpacingAfter = p.SpacingAfter + after;
                     lmb = after;
                     hasLMB = true;
-                }
-                else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_BOTTOM, key))
-                {
+                } else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_BOTTOM, key)) {
                     p.SpacingAfter = p.SpacingAfter + utils.ParseValueToPt(value, fontSize);
-                }
-                else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_LEFT, key))
-                {
+                } else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_LEFT, key)) {
                     p.IndentationLeft = p.IndentationLeft + utils.ParseValueToPt(value, fontSize);
-                }
-                else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_RIGHT, key))
-                {
+                } else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_RIGHT, key)) {
                     p.IndentationRight = p.IndentationRight + utils.ParseValueToPt(value, fontSize);
-                }
-                else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_LEFT, key))
-                {
+                } else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_LEFT, key)) {
                     p.IndentationLeft = p.IndentationLeft + utils.ParseValueToPt(value, fontSize);
-                }
-                else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_RIGHT, key))
-                {
+                } else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_RIGHT, key)) {
                     p.IndentationRight = p.IndentationRight + utils.ParseValueToPt(value, fontSize);
-                }
-                else if (Util.EqualsIgnoreCase(CSS.Property.TEXT_ALIGN, key))
-                {
-                    if (Util.EqualsIgnoreCase(CSS.Value.RIGHT, value))
-                    {
+                } else if (Util.EqualsIgnoreCase(CSS.Property.TEXT_ALIGN, key)) {
+                    if (Util.EqualsIgnoreCase(CSS.Value.RIGHT, value)) {
                         p.Alignment = Element.ALIGN_RIGHT;
-                    }
-                    else if (Util.EqualsIgnoreCase(CSS.Value.CENTER, value))
-                    {
+                    } else if (Util.EqualsIgnoreCase(CSS.Value.CENTER, value)) {
                         p.Alignment = Element.ALIGN_CENTER;
-                    }
-                    else if (Util.EqualsIgnoreCase(CSS.Value.LEFT, value))
-                    {
+                    } else if (Util.EqualsIgnoreCase(CSS.Value.LEFT, value)) {
                         p.Alignment = Element.ALIGN_LEFT;
-                    }
-                    else if (Util.EqualsIgnoreCase(CSS.Value.JUSTIFY, value))
-                    {
+                    } else if (Util.EqualsIgnoreCase(CSS.Value.JUSTIFY, value)) {
                         p.Alignment = Element.ALIGN_JUSTIFIED;
                     }
-                }
-                else if (Util.EqualsIgnoreCase(CSS.Property.TEXT_INDENT, key))
-                {
+                } else if (Util.EqualsIgnoreCase(CSS.Property.TEXT_INDENT, key)) {
                     p.FirstLineIndent = utils.ParseValueToPt(value, fontSize);
-                }
-                else if (Util.EqualsIgnoreCase(CSS.Property.LINE_HEIGHT, key))
-                {
-                    if (utils.IsNumericValue(value))
-                    {
+                } else if (Util.EqualsIgnoreCase(CSS.Property.LINE_HEIGHT, key)) {
+                    if (utils.IsNumericValue(value)) {
                         p.Leading = float.Parse(value)*fontSize;
-                    }
-                    else if (utils.IsRelativeValue(value))
-                    {
+                    } else if (utils.IsRelativeValue(value)) {
                         p.Leading = utils.ParseRelativeValue(value, fontSize);
-                    }
-                    else if (utils.IsMetricValue(value))
-                    {
+                    } else if (utils.IsMetricValue(value)) {
                         p.Leading = utils.ParsePxInCmMmPcToPt(value);
                     }
                 }
             }
+
+            if (t.Attributes.ContainsKey(HTML.Attribute.ALIGN)) {
+                String value = t.Attributes[HTML.Attribute.ALIGN];
+
+                if (value != null) {
+                    if (Util.EqualsIgnoreCase(value, CSS.Value.RIGHT)) {
+                        p.Alignment = Element.ALIGN_RIGHT;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.LEFT)) {
+                        p.Alignment = Element.ALIGN_LEFT;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.CENTER)) {
+                        p.Alignment = Element.ALIGN_CENTER;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.JUSTIFY)) {
+                        p.Alignment = Element.ALIGN_JUSTIFIED;
+                    }
+                }
+            }
+
             // setDefaultMargin to largestFont if no margin-bottom is set and p-tag is child of the root tag.
             /*if (null != t.GetParent()) {
                 String parent = t.GetParent().GetName();

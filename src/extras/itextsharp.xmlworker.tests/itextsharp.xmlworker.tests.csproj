@@ -479,6 +479,11 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\Table31Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Table32Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Table33Test.cs" />
+	<Compile Include="iTextSharp\tool\xml\examples\html\Table34Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\Table35Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\Table36Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\Table37Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\Table38Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Tt01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\U01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Var01Test.cs" />
