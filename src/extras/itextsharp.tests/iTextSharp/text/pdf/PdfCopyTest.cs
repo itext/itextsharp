@@ -64,12 +64,10 @@ namespace itextsharp.tests.iTextSharp.text.pdf
         {
             MemoryStream byteStream = new MemoryStream();
 
-
             Document document = new Document();
             document.SetPageSize(PageSize.LETTER);
 
             document.Open();
-
 
             System.Drawing.Bitmap awtImg = new System.Drawing.Bitmap(100, 100, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
             System.Drawing.Graphics g = System.Drawing.Graphics.FromImage(awtImg);
@@ -115,7 +113,6 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             reader.Close();
         }
 
-
         [Test]
         public virtual void TestNeedAppearances() {
             String f1 = RESOURCES + "appearances1.pdf";
@@ -134,9 +131,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf
                 copy.AddDocument(r);
             }
             copy.Close();
-            CompareTool compareTool = new CompareTool("PdfCopyTest/appearances.pdf",
-                RESOURCES + "cmp_appearances.pdf");
-            String errorMessage = compareTool.CompareByContent("PdfCopyTest/", "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent("PdfCopyTest/appearances.pdf", RESOURCES + "cmp_appearances.pdf", "PdfCopyTest/", "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
@@ -162,9 +158,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             }
             copy.Close();
             CompareTool compareTool =
-                new CompareTool("PdfCopyTest/appearances(needAppearancesFalse).pdf",
-                    RESOURCES + "cmp_appearances(needAppearancesFalse).pdf");
-            String errorMessage = compareTool.CompareByContent("PdfCopyTest/", "diff");
+                new CompareTool();
+            String errorMessage = compareTool.CompareByContent("PdfCopyTest/appearances(needAppearancesFalse).pdf", RESOURCES + "cmp_appearances(needAppearancesFalse).pdf", "PdfCopyTest/", "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
@@ -189,10 +184,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf
                 copy.AddDocument(r);
             }
             copy.Close();
-            CompareTool compareTool =
-                new CompareTool("PdfCopyTest/appearances(needAppearancesFalseWithStreams).pdf",
-                    RESOURCES + "cmp_appearances(needAppearancesFalseWithStreams).pdf");
-            String errorMessage = compareTool.CompareByContent("PdfCopyTest/", "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent("PdfCopyTest/appearances(needAppearancesFalseWithStreams).pdf", RESOURCES + "cmp_appearances(needAppearancesFalseWithStreams).pdf", "PdfCopyTest/", "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
@@ -217,9 +210,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf
                 copy.AddDocument(r);
             }
             copy.Close();
-            CompareTool compareTool = new CompareTool("PdfCopyTest/appearances(mixed).pdf",
-                RESOURCES + "cmp_appearances(mixed).pdf");
-            String errorMessage = compareTool.CompareByContent("PdfCopyTest/", "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent("PdfCopyTest/appearances(mixed).pdf", RESOURCES + "cmp_appearances(mixed).pdf", "PdfCopyTest/", "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
@@ -299,8 +291,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             readerMain.Close();
             secondSourceReader.Close();
             thirdReader.Close();
-            CompareTool compareTool = new CompareTool("PdfCopyTest/copyFields.pdf", RESOURCES + "cmp_copyFields.pdf");
-            String errorMessage = compareTool.CompareByContent("PdfCopyTest/", "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent("PdfCopyTest/copyFields.pdf", RESOURCES + "cmp_copyFields.pdf", "PdfCopyTest/", "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
@@ -317,8 +309,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             PdfReader reader = new PdfReader(RESOURCES + "hello_with_comments.pdf");
             copier.AddDocument(reader);
             copier.Close();
-            CompareTool compareTool = new CompareTool("PdfCopyTest/copyFields2.pdf", RESOURCES + "cmp_copyFields2.pdf");
-            String errorMessage = compareTool.CompareByContent("PdfCopyTest/", "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent("PdfCopyTest/copyFields2.pdf", RESOURCES + "cmp_copyFields2.pdf", "PdfCopyTest/", "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
@@ -335,8 +327,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             PdfReader reader = new PdfReader(RESOURCES + "hello2_with_comments.pdf");
             copier.AddDocument(reader);
             copier.Close();
-            CompareTool compareTool = new CompareTool("PdfCopyTest/copyFields3.pdf", RESOURCES + "cmp_copyFields3.pdf");
-            String errorMessage = compareTool.CompareByContent("PdfCopyTest/", "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent("PdfCopyTest/copyFields3.pdf", RESOURCES + "cmp_copyFields3.pdf", "PdfCopyTest/", "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }

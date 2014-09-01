@@ -71,12 +71,12 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples {
 
         protected override void ComparePdf(String outPdf, String cmpPdf) {
             if (!DetectCrashesAndHangUpsOnly()) {
-                CompareTool compareTool = new CompareTool(outPdf, cmpPdf);
+                CompareTool compareTool = new CompareTool();
                 String errorMessage = null;
                 if (CompareByContent())
-                    errorMessage = compareTool.CompareByContent(outPath, differenceImagePrefix);
+                    errorMessage = compareTool.CompareByContent(outPdf, cmpPdf, outPath, differenceImagePrefix);
                 else
-                    errorMessage = compareTool.Compare(outPath, differenceImagePrefix);
+                    errorMessage = compareTool.Compare(outPdf, cmpPdf, outPath, differenceImagePrefix);
                 if (errorMessage != null) {
                     Assert.Fail(errorMessage);
                 }

@@ -66,8 +66,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             document.Close();
 
             // compare
-            CompareTool compareTool = new CompareTool(OUTPUT_FOLDER + file, CMP_FOLDER + file);
-            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER, "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, CMP_FOLDER + file, OUTPUT_FOLDER, "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
