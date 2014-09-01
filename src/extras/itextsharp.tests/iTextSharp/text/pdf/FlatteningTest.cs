@@ -81,8 +81,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
                 stamper.Close();
 
                 // compare
-                CompareTool compareTool = new CompareTool(OUTPUT_FOLDER + Path.GetFileName(file), CMP_FOLDER + Path.GetFileName(file));
-                String errorMessage = compareTool.Compare(OUTPUT_FOLDER, "diff");
+                CompareTool compareTool = new CompareTool();
+                String errorMessage = compareTool.Compare(OUTPUT_FOLDER + Path.GetFileName(file), CMP_FOLDER + Path.GetFileName(file), OUTPUT_FOLDER, "diff");
                 if (errorMessage != null)
                 {
                     Assert.Fail(errorMessage);
@@ -100,8 +100,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             const string OUT = "noappearances-needapp-false_override-false.pdf";
             TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-false.pdf", OUTPUT_FOLDER + OUT, false);
 
-            CompareTool compareTool = new CompareTool(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT);
-            String errorMessage = compareTool.Compare(OUTPUT_FOLDER, "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT, OUTPUT_FOLDER, "diff");
             if (errorMessage != null)
             {
                 Assert.Fail(errorMessage);
@@ -117,8 +117,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             const string OUT = "noappearances-needapp-false_override-true.pdf";
             TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-false.pdf", OUTPUT_FOLDER + OUT, true);
 
-            CompareTool compareTool = new CompareTool(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT);
-            String errorMessage = compareTool.Compare(OUTPUT_FOLDER, "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT, OUTPUT_FOLDER, "diff");
             if (errorMessage != null)
             {
                 Assert.Fail(errorMessage);
@@ -134,8 +134,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             const string OUT = "noappearances-needapp-false_override-none.pdf";
             TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-false.pdf", OUTPUT_FOLDER + OUT, null);
 
-            CompareTool compareTool = new CompareTool(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT);
-            String errorMessage = compareTool.Compare(OUTPUT_FOLDER, "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT, OUTPUT_FOLDER, "diff");
             if (errorMessage != null)
             {
                 Assert.Fail(errorMessage);
@@ -151,8 +151,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             const string OUT = "noappearances-needapp-true_override-false.pdf";
             TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-true.pdf", OUTPUT_FOLDER + OUT, false);
 
-            CompareTool compareTool = new CompareTool(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT);
-            String errorMessage = compareTool.Compare(OUTPUT_FOLDER, "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT, OUTPUT_FOLDER, "diff");
             if (errorMessage != null)
             {
                 Assert.Fail(errorMessage);
@@ -168,8 +168,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             const string OUT = "noappearances-needapp-true_override-true.pdf";
             TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-true.pdf", OUTPUT_FOLDER + OUT, true);
 
-            CompareTool compareTool = new CompareTool(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT);
-            String errorMessage = compareTool.Compare(OUTPUT_FOLDER, "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT, OUTPUT_FOLDER, "diff");
             if (errorMessage != null)
             {
                 Assert.Fail(errorMessage);
@@ -185,8 +185,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             const string OUT = "noappearances-needapp-true_override-none.pdf";
             TestFlatteningGenerateAppearance(RESOURCES_FOLDER + "noappearances-needapp-true.pdf", OUTPUT_FOLDER + OUT, null);
 
-            CompareTool compareTool = new CompareTool(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT);
-            String errorMessage = compareTool.Compare(OUTPUT_FOLDER, "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.Compare(OUTPUT_FOLDER + OUT, RESOURCES_FOLDER + "cmp_" + OUT, OUTPUT_FOLDER, "diff");
             if (errorMessage != null)
             {
                 Assert.Fail(errorMessage);
@@ -247,8 +247,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             reader.Close();
 
             // compare
-            CompareTool compareTool = new CompareTool(OUTPUT_FOLDER + file, RESOURCES_FOLDER + file);
-            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER, "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, RESOURCES_FOLDER + file, OUTPUT_FOLDER, "diff");
             if (errorMessage != null)
             {
                 Assert.Fail(errorMessage);
@@ -299,8 +299,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             reader.Close();
 
             // compare
-            CompareTool compareTool = new CompareTool(OUTPUT_FOLDER + file, RESOURCES_FOLDER + file);
-            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER, "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent(OUTPUT_FOLDER + file, RESOURCES_FOLDER + file, OUTPUT_FOLDER, "diff");
             if (errorMessage != null)
             {
                 Assert.Fail(errorMessage);

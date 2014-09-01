@@ -34,9 +34,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf.fonts {
             reader.Close();
             Assert.AreEqual(origText, text);
 
-            CompareTool compareTool = new CompareTool("fonts/SymbolFontTest/textWithSymbolEncoding.pdf",
-                TEST_RESOURCES_PATH + "cmp_textWithSymbolEncoding.pdf");
-            String errorMessage = compareTool.CompareByContent("fonts/SymbolFontTest/", "diff");
+            CompareTool compareTool = new CompareTool();
+            String errorMessage = compareTool.CompareByContent("fonts/SymbolFontTest/textWithSymbolEncoding.pdf", TEST_RESOURCES_PATH + "cmp_textWithSymbolEncoding.pdf", "fonts/SymbolFontTest/", "diff");
             if (errorMessage != null) {
                 Assert.Fail(errorMessage);
             }
