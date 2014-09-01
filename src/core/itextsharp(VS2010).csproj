@@ -1230,6 +1230,7 @@
     <Compile Include="iTextSharp\text\pdf\StandardDecryption.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\StringUtils.cs" />
     <Compile Include="iTextSharp\text\pdf\TextField.cs">
       <SubType>Code</SubType>
     </Compile>
