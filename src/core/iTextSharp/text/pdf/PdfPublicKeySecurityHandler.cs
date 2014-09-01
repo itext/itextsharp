@@ -177,7 +177,7 @@ namespace iTextSharp.text.pdf {
             for (int i=0; i<recipients.Count; i++) {
                 try {
                     cms = GetEncodedRecipient(i);
-                    EncodedRecipients.Add(new PdfLiteral(PdfContentByte.EscapeString(cms)));
+                    EncodedRecipients.Add(new PdfLiteral(StringUtils.EscapeString(cms)));
                 } catch {
                     EncodedRecipients = null;
                 }

@@ -148,7 +148,7 @@ namespace iTextSharp.text.pdf {
                 os.Write(buf.ToByteArray(), 0, buf.Size);
             }
             else {
-                b = PdfContentByte.EscapeString(b);
+                b = StringUtils.EscapeString(b);
                 os.Write(b, 0, b.Length);
             }
         }

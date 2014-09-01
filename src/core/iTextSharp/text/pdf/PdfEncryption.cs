@@ -602,8 +602,8 @@ public class PdfEncryption {
                 SetupByEncryptionKey(mdResult, keyLength);              
         } else {
             dic.Put(PdfName.FILTER, PdfName.STANDARD);
-            dic.Put(PdfName.O, new PdfLiteral(PdfContentByte.EscapeString(ownerKey)));
-            dic.Put(PdfName.U, new PdfLiteral(PdfContentByte.EscapeString(userKey)));
+            dic.Put(PdfName.O, new PdfLiteral(StringUtils.EscapeString(ownerKey)));
+            dic.Put(PdfName.U, new PdfLiteral(StringUtils.EscapeString(userKey)));
             dic.Put(PdfName.P, new PdfNumber(permissions));
             dic.Put(PdfName.R, new PdfNumber(revision));
             if (revision == STANDARD_ENCRYPTION_40) {
@@ -617,9 +617,9 @@ public class PdfEncryption {
             else if (revision == AES_256) {
                 if (!encryptMetadata)
                     dic.Put(PdfName.ENCRYPTMETADATA, PdfBoolean.PDFFALSE);
-                dic.Put(PdfName.OE, new PdfLiteral(PdfContentByte.EscapeString(oeKey)));
-                dic.Put(PdfName.UE, new PdfLiteral(PdfContentByte.EscapeString(ueKey)));
-                dic.Put(PdfName.PERMS, new PdfLiteral(PdfContentByte.EscapeString(perms)));
+                dic.Put(PdfName.OE, new PdfLiteral(StringUtils.EscapeString(oeKey)));
+                dic.Put(PdfName.UE, new PdfLiteral(StringUtils.EscapeString(ueKey)));
+                dic.Put(PdfName.PERMS, new PdfLiteral(StringUtils.EscapeString(perms)));
                 dic.Put(PdfName.V, new PdfNumber(revision));
                 dic.Put(PdfName.LENGTH, new PdfNumber(256));
                 PdfDictionary stdcf = new PdfDictionary();
