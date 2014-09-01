@@ -206,6 +206,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
         [Test]
         public void TestRegeneratingFieldsTrue()
         {
+            Directory.CreateDirectory(OUTPUT_FOLDER);
+
             String file = "regenerateFieldTrue.pdf";
 
             Document doc = new Document(PageSize.A4);
@@ -258,6 +260,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
         [Test]
         public void TestRegeneratingFieldsFalse()
         {
+            Directory.CreateDirectory(OUTPUT_FOLDER);
+            
             String file = "regenerateFieldFalse.pdf";
 
             Document doc = new Document(PageSize.A4);
