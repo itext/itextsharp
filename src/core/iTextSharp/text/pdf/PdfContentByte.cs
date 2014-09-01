@@ -2025,7 +2025,7 @@ namespace iTextSharp.text.pdf {
          * @param b the <CODE>byte</CODE> array to escape
          * @return an escaped <CODE>byte</CODE> array
          */
-        internal static byte[] EscapeString(byte[] b) {
+        public static byte[] EscapeString(byte[] b) {
             ByteBuffer content = new ByteBuffer();
             EscapeString(b, content);
             return content.ToByteArray();
@@ -2036,7 +2036,7 @@ namespace iTextSharp.text.pdf {
          *
          * @param b the <CODE>byte</CODE> array to escape
          */
-        internal static void EscapeString(byte[] b, ByteBuffer content) {
+        public static void EscapeString(byte[] b, ByteBuffer content) {
             content.Append_i('(');
             for (int k = 0; k < b.Length; ++k) {
                 byte c = b[k];

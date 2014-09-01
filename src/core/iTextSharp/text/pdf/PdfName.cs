@@ -992,6 +992,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName IDENTITY = new PdfName("Identity");
         /** A name */
         public static readonly PdfName IF = new PdfName("IF");
+        /**
+         * A name
+         * @since 5.5.3
+         */
+        public static readonly PdfName IM = new PdfName("IM");
         /** A name */
         public static readonly PdfName IMAGE = new PdfName("Image");
         /** A name */
