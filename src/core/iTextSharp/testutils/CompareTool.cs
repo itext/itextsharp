@@ -48,12 +48,8 @@ using System.IO;
  * address: sales@itextpdf.com
  */
 using System.util;
-using System.Xml;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using iTextSharp.text.xml.xmp;
-using iTextSharp.xmp;
-using iTextSharp.xmp.options;
 
 namespace iTextSharp.testutils {
 
@@ -425,7 +421,14 @@ public class CompareTool {
     }
 
     private bool ObjectsAreEqual(PRStream outStream, PRStream cmpStream) {
-        return Util.ArraysAreEqual(PdfReader.GetStreamBytesRaw(outStream), PdfReader.GetStreamBytesRaw(cmpStream));
+        bool decodeStreams = PdfName.FLATEDECODE.Equals(outStream.Get(PdfName.FILTER));
+        byte[] outStreamBytes = PdfReader.GetStreamBytesRaw(outStream);
+        byte[] cmpStreamBytes = PdfReader.GetStreamBytesRaw(cmpStream);
+        if (decodeStreams) {
+            outStreamBytes = PdfReader.DecodeBytes(outStreamBytes, outStream);
+            cmpStreamBytes = PdfReader.DecodeBytes(cmpStreamBytes, cmpStream);
+        }
+        return Util.ArraysAreEqual(outStreamBytes, cmpStreamBytes);
     }
 
     private bool ObjectsAreEqual(PdfArray outArray, PdfArray cmpArray) {
