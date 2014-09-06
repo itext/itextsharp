@@ -98,6 +98,7 @@
     <Compile Include="iTextSharp\text\pdf\mc\AcroFieldsFlattenTest.cs" />
     <Compile Include="iTextSharp\text\pdf\MetaDataTest.cs" />
     <Compile Include="iTextSharp\text\pdf\MultithreadedTtfTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\ocg\OcgRemovalTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\FilteredTextRenderListenerTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\GlyphTextRenderListenerTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\LocationTextExtractionStrategyTest.cs" />

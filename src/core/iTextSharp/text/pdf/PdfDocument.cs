@@ -559,13 +559,16 @@ namespace iTextSharp.text.pdf {
                             line.SetExtraIndent(paragraph.FirstLineIndent);
                             element.Process(this);
                             CarriageReturn();
-                            AddSpacing(paragraph.SpacingAfter, paragraph.TotalLeading, paragraph.Font);
+                            AddSpacing(paragraph.SpacingAfter, paragraph.TotalLeading, paragraph.Font, true);
                         }
 
                         if (pageEvent != null && !isSectionTitle)
                             pageEvent.OnParagraphEnd(writer, this, IndentTop - currentHeight);
 
                         alignment = Element.ALIGN_LEFT;
+                        if (floatingElements != null && floatingElements.Count != 0) {
+                            FlushFloatingElements();
+                        }
                         indentation.indentLeft -= paragraph.IndentationLeft;
                         indentation.indentRight -= paragraph.IndentationRight;
                         CarriageReturn();
@@ -682,7 +685,7 @@ namespace iTextSharp.text.pdf {
                         // we process the item
                         element.Process(this);
 
-                        AddSpacing(listItem.SpacingAfter, listItem.TotalLeading, listItem.Font);
+                        AddSpacing(listItem.SpacingAfter, listItem.TotalLeading, listItem.Font, true);
 
                         // if the last line is justified, it should be aligned to the left
                         if (line.HasToBeJustified()) {
@@ -1824,16 +1827,34 @@ namespace iTextSharp.text.pdf {
                 return GetBottom(indentation.indentBottom);
             }
         }
-        
+
+        /**
+         * Calls addSpacing(float, float, Font, boolean (false)).
+         */
+        protected internal virtual void AddSpacing(float extraspace, float oldleading, Font f) {
+            AddSpacing(extraspace, oldleading, f, false);
+        }
+
         /**
         * Adds extra space.
-        * This method should probably be rewritten.
         */
-        virtual protected internal void AddSpacing(float extraspace, float oldleading, Font f) {
-            if (extraspace == 0) return;
-            if (pageEmpty) return;
+        // this method should probably be rewritten
+        virtual protected internal void AddSpacing(float extraspace, float oldleading, Font f, bool spacingAfter) {
+            if (extraspace == 0) 
+                return;
 
-            if (currentHeight + CalculateLineHeight() > IndentTop - IndentBottom) {
+            if (pageEmpty) 
+                return;
+
+            if (spacingAfter && !pageEmpty) {
+                if (lines.Count == 0 && line.Size == 0) {
+                    return;
+                }
+            }
+
+            float height = spacingAfter ? extraspace : CalculateLineHeight();
+
+            if (currentHeight + height > IndentTop - IndentBottom) {
                 NewPage();
                 return;
             }
@@ -1848,8 +1869,12 @@ namespace iTextSharp.text.pdf {
                 f.SetStyle(style);
             }
             Chunk space = new Chunk(" ", f);
+            if (spacingAfter && pageEmpty) {
+                space = new Chunk("", f);
+            }
             space.Process(this);
             CarriageReturn();
+
             leading = oldleading;
         }
         
@@ -2339,10 +2364,11 @@ namespace iTextSharp.text.pdf {
         * @param boxName crop, trim, art or bleed
         */
         internal Rectangle GetBoxSize(String boxName) {
-            if (thisBoxSize.ContainsKey(boxName))
-                return thisBoxSize[boxName].Rectangle;
-            else
-                return null;
+            PdfRectangle r;
+            thisBoxSize.TryGetValue(boxName, out r);
+            if (r != null)
+                return r.Rectangle;
+            return null;
         }
         
     //	[U2] empty pages
@@ -2620,6 +2646,7 @@ namespace iTextSharp.text.pdf {
                 FloatLayout fl = new FloatLayout(cachedFloatingElements, false);
                 int loop = 0;
                 while (true) {
+                    float left = IndentLeft;
                     fl.SetSimpleColumn(IndentLeft, IndentBottom, IndentRight, IndentTop - currentHeight);
                     try {
                         int status = fl.Layout(IsTagged(writer) ? text : writer.DirectContent, false);
