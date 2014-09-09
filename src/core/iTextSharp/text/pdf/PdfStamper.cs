@@ -400,6 +400,18 @@ namespace iTextSharp.text.pdf {
                 stamper.FreeTextFlattening = value;
             }
         }
+
+        /**
+        * Flatten annotations with an appearance stream on close().
+        *
+        * @param flat boolean to indicate whether iText should flatten annotations or not.
+        */
+        public virtual bool AnnotationFlattening {
+            set {
+                stamper.FlatAnnotations = value;
+            }
+        }
+
         /**
         * Adds an annotation of form field in a specific page. This page number
         * can be overridden with {@link PdfAnnotation#setPlaceInPage(int)}.

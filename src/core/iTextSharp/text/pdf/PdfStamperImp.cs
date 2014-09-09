@@ -70,6 +70,7 @@ namespace iTextSharp.text.pdf {
         protected AcroFields acroFields;
         protected bool flat = false;
         protected bool flatFreeText = false;
+        protected bool flatannotations = false;
         protected int[] namePtr = {0};
         protected HashSet2<string> partialFlattening = new HashSet2<string>();
         protected bool useVp = false;
@@ -164,23 +165,30 @@ namespace iTextSharp.text.pdf {
         }
 
         virtual internal protected void Close(IDictionary<String, String> moreInfo) {
-            if (closed)
+            if (closed) {
                 return;
+            }
             if (useVp) {
                 SetViewerPreferences();
             }
-            if (flat)
+            if (flat) {
                 FlatFields();
-            if (flatFreeText)
+            }
+            if (flatFreeText) {
                 FlatFreeTextFields();
+            }
+            if (flatannotations) {
+                FlattenAnnotations();
+            }
             AddFieldResources();
             PdfDictionary catalog = reader.Catalog;
             GetPdfVersion().AddToCatalog(catalog);
             PdfDictionary acroForm = (PdfDictionary)PdfReader.GetPdfObject(catalog.Get(PdfName.ACROFORM), reader.Catalog);
             if (acroFields != null && acroFields.Xfa.Changed) {
                 MarkUsed(acroForm);
-                if (!flat)
+                if (!flat) {
                     acroFields.Xfa.SetXfa(this);
+                }
             }
             if (sigFlags != 0) {
                 if (acroForm != null) {
@@ -1071,55 +1079,88 @@ namespace iTextSharp.text.pdf {
                 SweepKids(kids.GetPdfObject(k));
             }
         }
-        
-        virtual protected void FlatFreeTextFields() {
-            if (append)
-                throw new ArgumentException(MessageLocalization.GetComposedMessage("freetext.flattening.is.not.supported.in.append.mode"));
-            
+
+        /**
+         * If true, annotations with an appearance stream will be flattened.
+         *
+         * @since 5.5.3
+         * @param flatAnnotations boolean
+         */
+        public virtual bool FlatAnnotations {
+            set {
+                this.flatannotations = value;
+            }
+        }
+
+        protected internal virtual void FlattenAnnotations() {
+            FlattenAnnotations(false);
+        }
+
+        private void FlattenAnnotations(bool flattenFreeTextAnnotations) {
+            if (append) {
+                if (flattenFreeTextAnnotations) {
+                    throw new ArgumentException(
+                        MessageLocalization.GetComposedMessage("freetext.flattening.is.not.supported.in.append.mode"));
+                } else {
+                    throw new ArgumentException(
+                        MessageLocalization.GetComposedMessage("annotation.flattening.is.not.supported.in.append.mode"));
+                }
+            }
+
             for (int page = 1; page <= reader.NumberOfPages; ++page) {
                 PdfDictionary pageDic = reader.GetPageN(page);
                 PdfArray annots = pageDic.GetAsArray(PdfName.ANNOTS);
-                if (annots == null)
+
+                if (annots == null) {
                     continue;
+                }
+
                 for (int idx = 0; idx < annots.Size; ++idx) {
                     PdfObject annoto = annots.GetDirectObject(idx);
-                    if ((annoto is PdfIndirectReference) && !annoto.IsIndirect())
+                    if (annoto is PdfIndirectReference && !annoto.IsIndirect())
                         continue;
-                    
-                    PdfDictionary annDic = (PdfDictionary)annoto;
-                    if (!(annDic.Get(PdfName.SUBTYPE)). Equals(PdfName.FREETEXT)) 
-                        continue;
-                    PdfNumber ff = annDic.GetAsNumber(PdfName.F);
-                    int flags = (ff != null) ? ff.IntValue : 0;
-                
-                    if ( (flags & PdfFormField.FLAGS_PRINT) != 0 && (flags & PdfFormField.FLAGS_HIDDEN) == 0) {
-                        PdfObject obj1 = annDic.Get(PdfName.AP);
-                        if (obj1 == null) 
+
+                    PdfDictionary annDic = (PdfDictionary) annoto;
+                    if (flattenFreeTextAnnotations) {
+                        if (!(annDic.Get(PdfName.SUBTYPE)).Equals(PdfName.FREETEXT)) {
                             continue;
-                        PdfDictionary appDic = (obj1 is PdfIndirectReference) ?
-                            (PdfDictionary) PdfReader.GetPdfObject(obj1) : (PdfDictionary) obj1;         
+                        }
+                    } else {
+                        if ((annDic.Get(PdfName.SUBTYPE)).Equals(PdfName.WIDGET)) {
+                            // skip widgets
+                            continue;
+                        }
+                    }
+
+                    PdfNumber ff = annDic.GetAsNumber(PdfName.F);
+                    int flags = ff != null ? ff.IntValue : 0;
+
+                    if ((flags & PdfFormField.FLAGS_PRINT) != 0 && (flags & PdfFormField.FLAGS_HIDDEN) == 0) {
+                        PdfObject obj1 = annDic.Get(PdfName.AP);
+                        if (obj1 == null)
+                            continue;
+                        PdfDictionary appDic = obj1 is PdfIndirectReference
+                            ? (PdfDictionary) PdfReader.GetPdfObject(obj1)
+                            : (PdfDictionary) obj1;
                         PdfObject obj = appDic.Get(PdfName.N);
                         PdfAppearance app = null;
-                        if (obj != null) {
-                            PdfObject objReal = PdfReader.GetPdfObject(obj);
-                            
-                            if (obj is PdfIndirectReference && !obj.IsIndirect())
-                                app = new PdfAppearance((PdfIndirectReference)obj);
-                            else if (objReal is PdfStream) {
-                                ((PdfDictionary)objReal).Put(PdfName.SUBTYPE, PdfName.FORM);
-                                app = new PdfAppearance((PdfIndirectReference)obj);
-                            }
-                            else {
-                                if (objReal.IsDictionary()) {
-                                    PdfName as_p = appDic.GetAsName(PdfName.AS);
-                                    if (as_p != null) {
-                                        PdfIndirectReference iref = (PdfIndirectReference)((PdfDictionary)objReal).Get(as_p);
-                                        if (iref != null) {
-                                            app = new PdfAppearance(iref);
-                                            if (iref.IsIndirect()) {
-                                                objReal = PdfReader.GetPdfObject(iref);
-                                                ((PdfDictionary)objReal).Put(PdfName.SUBTYPE, PdfName.FORM);
-                                            }
+                        PdfObject objReal = PdfReader.GetPdfObject(obj);
+
+                        if (obj is PdfIndirectReference && !obj.IsIndirect()) {
+                            app = new PdfAppearance((PdfIndirectReference) obj);
+                        } else if (objReal is PdfStream) {
+                            ((PdfDictionary) objReal).Put(PdfName.SUBTYPE, PdfName.FORM);
+                            app = new PdfAppearance((PdfIndirectReference) obj);
+                        } else {
+                            if (objReal.IsDictionary()) {
+                                PdfName as_p = appDic.GetAsName(PdfName.AS);
+                                if (as_p != null) {
+                                    PdfIndirectReference iref = (PdfIndirectReference) ((PdfDictionary) objReal).Get(as_p);
+                                    if (iref != null) {
+                                        app = new PdfAppearance(iref);
+                                        if (iref.IsIndirect()) {
+                                            objReal = PdfReader.GetPdfObject(iref);
+                                            ((PdfDictionary) objReal).Put(PdfName.SUBTYPE, PdfName.FORM);
                                         }
                                     }
                                 }
@@ -1127,22 +1168,17 @@ namespace iTextSharp.text.pdf {
                         }
                         if (app != null) {
                             Rectangle box = PdfReader.GetNormalizedRectangle(annDic.GetAsArray(PdfName.RECT));
-                            PdfContentByte cb = this.GetOverContent(page);
+                            PdfContentByte cb = GetOverContent(page);
                             cb.SetLiteral("Q ");
                             cb.AddTemplate(app, box.Left, box.Bottom);
                             cb.SetLiteral("q ");
-                        }
-                    }
-                }
-                for (int idx = 0; idx < annots.Size; ++idx) {
-                    PdfDictionary annot = annots.GetAsDict(idx);
-                    if (annot != null) {
-                        if (PdfName.FREETEXT.Equals(annot.Get(PdfName.SUBTYPE))) {
+
                             annots.Remove(idx);
                             --idx;
                         }
                     }
                 }
+
                 if (annots.IsEmpty()) {
                     PdfReader.KillIndirect(pageDic.Get(PdfName.ANNOTS));
                     pageDic.Remove(PdfName.ANNOTS);
@@ -1150,6 +1186,10 @@ namespace iTextSharp.text.pdf {
             }
         }
 
+        protected internal virtual void FlatFreeTextFields() {
+            FlattenAnnotations(true);
+        }
+        
         /**
         * @see com.lowagie.text.pdf.PdfWriter#getPageReference(int)
         */
