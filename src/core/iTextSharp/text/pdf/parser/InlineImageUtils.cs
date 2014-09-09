@@ -353,21 +353,16 @@ namespace iTextSharp.text.pdf.parser {
                     found++;
                     accumulated.WriteByte((byte)ch);
                 } else if (found == 3 && PRTokeniser.IsWhitespace(ch)){
-                    try
-                    {
-                        byte[] tmp = baos.ToArray();
-                        new PdfImageObject(imageDictionary, tmp, colorSpaceDic);
+                    byte[] tmp = baos.ToArray();
+                    if (InlineImageStreamBytesAreComplete(tmp, imageDictionary)) {
                         return tmp;
                     }
-                    catch (Exception)
-                    {
-                        byte[] tmp = accumulated.ToArray();
-                        baos.Write(tmp, 0, tmp.Length);
-                        accumulated.SetLength(0);
+                    byte[] accumulatedArr = accumulated.ToArray();
+                    baos.Write(accumulatedArr, 0, accumulatedArr.Length);
+                    accumulated.SetLength(0);
 
-                        baos.WriteByte((byte)ch);
-                        found = 0;
-                    }
+                    baos.WriteByte((byte) ch);
+                    found = 0;
 
                 } else {
                     baos.Write(ff = accumulated.ToArray(), 0, ff.Length);
@@ -378,6 +373,15 @@ namespace iTextSharp.text.pdf.parser {
                 }
             }
             throw new InlineImageParseException("Could not find image data or EI");
+        }
+
+        private static bool InlineImageStreamBytesAreComplete(byte[] samples, PdfDictionary imageDictionary) {
+            try {
+                PdfReader.DecodeBytes(samples, imageDictionary, FilterHandlers.GetDefaultFilterHandlers());
+                return true;
+            } catch (IOException e) {
+                return false;
+            }
         }
     }
 }
