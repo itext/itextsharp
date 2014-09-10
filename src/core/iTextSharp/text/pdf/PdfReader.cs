@@ -573,7 +573,7 @@ namespace iTextSharp.text.pdf {
             if(markInfo == null)
                 return false;
             if (PdfBoolean.PDFTRUE.Equals(markInfo.GetAsBoolean(PdfName.MARKED))) {
-                return catalog.GetAsDict(PdfName.STRUCTTREEROOT) == null;
+                return catalog.GetAsDict(PdfName.STRUCTTREEROOT) != null;
             } else {
                 return false;
             }
