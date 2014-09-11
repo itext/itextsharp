@@ -294,6 +294,25 @@ namespace iTextSharp.text.pdf {
             return dic;
         }
 
+        public virtual int GetCharFromGlyphId(int gid) {
+            if (glyphIdToChar == null) {
+                int[] g2 = new int[maxGlyphId];
+                Dictionary<int, int[]> map = null;
+                if (cmapExt != null) {
+                    map = cmapExt;
+                } else if (cmap31 != null) {
+                    map = cmap31;
+                }
+                if (map != null) {
+                    foreach (KeyValuePair<int, int[]> entry in map) {
+                        g2[entry.Value[0]] = entry.Key;
+                    }
+                }
+                glyphIdToChar = g2;
+            }
+            return glyphIdToChar[gid];
+        }
+
         /** The method used to sort the metrics array.
          * @param o1 the first element
          * @param o2 the second element

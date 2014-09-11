@@ -199,12 +199,14 @@ namespace iTextSharp.text.pdf {
          */
         protected Dictionary<int, int[]> cmap31;
 
-
         /// <summary>
         /// By James for unicode Ext.B
         /// </summary>
         protected Dictionary<int, int[]> cmapExt;
 
+        protected int[] glyphIdToChar;
+
+        protected int maxGlyphId;
 
         /** The map containing the kerning information. It represents the content of
         * table 'kern'. The key is an <CODE>Integer</CODE> where the top 16 bits
@@ -213,6 +215,7 @@ namespace iTextSharp.text.pdf {
         * normalized 1000 units as an <CODE>Integer</CODE>. This value is usually negative.
         */
         protected IntHashtable kerning = new IntHashtable();
+
         /**
          * The font name.
          * This name is usually extracted from the table 'name' with
@@ -405,10 +408,10 @@ namespace iTextSharp.text.pdf {
             else
                 return name.Substring(0, idx + 4);
         }
-    
-    
+
+
         /**
-         * Reads the tables 'head', 'hhea', 'OS/2' and 'post' filling several variables.
+         * Reads the tables 'head', 'hhea', 'OS/2', 'post' and 'maxp' filling several variables.
          * @throws DocumentException the font is invalid
          * @throws IOException the font file could not be read
          */
@@ -486,22 +489,29 @@ namespace iTextSharp.text.pdf {
             if (version > 1) {
                 rf.SkipBytes(2);
                 os_2.sCapHeight = rf.ReadShort();
-            }
-            else
-                os_2.sCapHeight = (int)(0.7 * head.unitsPerEm);
-        
+            } else
+                os_2.sCapHeight = (int) (0.7*head.unitsPerEm);
+
             tables.TryGetValue("post", out table_location);
             if (table_location == null) {
-                italicAngle = -Math.Atan2(hhea.caretSlopeRun, hhea.caretSlopeRise) * 180 / Math.PI;
-                return;
+                italicAngle = -Math.Atan2(hhea.caretSlopeRun, hhea.caretSlopeRise)*180/Math.PI;
+            } else {
+                rf.Seek(table_location[0] + 4);
+                short mantissa = rf.ReadShort();
+                int fraction = rf.ReadUnsignedShort();
+                italicAngle = mantissa + fraction/16384.0d;
+                underlinePosition = rf.ReadShort();
+                underlineThickness = rf.ReadShort();
+                isFixedPitch = rf.ReadInt() != 0;
             }
-            rf.Seek(table_location[0] + 4);
-            short mantissa = rf.ReadShort();
-            int fraction = rf.ReadUnsignedShort();
-            italicAngle = (double)mantissa + (double)fraction / 16384.0;
-            underlinePosition = rf.ReadShort();
-            underlineThickness = rf.ReadShort();
-            isFixedPitch = rf.ReadInt() != 0;
+
+            tables.TryGetValue("maxp", out table_location);
+            if (table_location == null) {
+                maxGlyphId = 65536;
+            } else {
+                rf.Seek(table_location[0] + 4);
+                maxGlyphId = rf.ReadUnsignedShort();
+            }
         }
     
         /**
@@ -743,7 +753,7 @@ namespace iTextSharp.text.pdf {
          * @param glyph the glyph to get the width of
          * @return the width of the glyph in normalized 1000 units
          */
-        virtual protected int GetGlyphWidth(int glyph) {
+        virtual protected internal int GetGlyphWidth(int glyph) {
             if (glyph >= glyphWidthsByIndex.Length)
                 glyph = glyphWidthsByIndex.Length - 1;
             return glyphWidthsByIndex[glyph];

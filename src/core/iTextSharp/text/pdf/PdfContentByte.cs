@@ -1793,6 +1793,20 @@ namespace iTextSharp.text.pdf {
             UpdateTx(text, 0);
             content.Append("Tj").Append_i(separator);
         }
+
+        public virtual void ShowTextGid(String gids) {
+            CheckState();
+            if (!inText && IsTagged()) {
+                BeginText(true);
+            }
+            if (state.fontDetails == null)
+                throw new NullReferenceException(
+                    MessageLocalization.GetComposedMessage("font.and.size.must.be.set.before.writing.any.text"));
+            Object[] objs = state.fontDetails.ConvertToBytesGid(gids);
+            StringUtils.EscapeString((byte[]) objs[0], content);
+            state.tx += ((int?) objs[2]).Value*0.001f*state.size;
+            content.Append("Tj").Append_i(separator);
+        }
         
         /**
         * Constructs a kern array for a text in a certain font
