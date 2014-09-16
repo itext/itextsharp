@@ -874,26 +874,26 @@ namespace iTextSharp.text.pdf {
                     if (page < 1)
                 	    continue;
                     PdfDictionary appDic = merged.GetAsDict(PdfName.AP);
-                    PdfObject as_n;
-                    if (acroFields.GenerateAppearances)
-                    {
-                        if (appDic == null || (as_n = appDic.GetDirectObject(PdfName.N)) == null)
-                        {
-                            try
-                            {
+                    PdfObject as_n = null;
+                    if (appDic != null) {
+                        as_n = appDic.GetAsStream(PdfName.N);
+                        if (as_n == null)
+                            as_n = appDic.GetAsDict(PdfName.N);
+                    }
+                    if (acroFields.GenerateAppearances) {
+                        if (appDic == null || as_n == null) {
+                            try {
                                 acroFields.RegenerateField(name);
                                 appDic = acroFields.GetFieldItem(name).GetMerged(k).GetAsDict(PdfName.AP);
                             }
                             // if we can't create appearances for some reason, we'll just continue
-                            catch (DocumentException) { }
-                        }
-                        else if (as_n.IsStream())
-                        {
-                            PdfStream stream = (PdfStream)as_n;
+                            catch (DocumentException) {
+                            }
+                        } else if (as_n.IsStream()) {
+                            PdfStream stream = (PdfStream) as_n;
                             PdfArray bbox = stream.GetAsArray(PdfName.BBOX);
                             PdfArray rect = merged.GetAsArray(PdfName.RECT);
-                            if (bbox != null && rect != null)
-                            {
+                            if (bbox != null && rect != null) {
                                 float rectWidth = rect.GetAsNumber(2).FloatValue - rect.GetAsNumber(0).FloatValue;
                                 float bboxWidth = bbox.GetAsNumber(2).FloatValue - bbox.GetAsNumber(0).FloatValue;
                                 float rectHeight = rect.GetAsNumber(3).FloatValue - rect.GetAsNumber(1).FloatValue;
@@ -909,21 +909,16 @@ namespace iTextSharp.text.pdf {
                                 }
                             }
                         }
-                    }
-                    else if (appDic != null && (as_n = appDic.GetDirectObject(PdfName.N)) != null)
-                    {
-                        PdfArray bbox = ((PdfDictionary)as_n).GetAsArray(PdfName.BBOX);
+                    } else if (appDic != null && as_n != null) {
+                        PdfArray bbox = ((PdfDictionary) as_n).GetAsArray(PdfName.BBOX);
                         PdfArray rect = merged.GetAsArray(PdfName.RECT);
-                        if (bbox != null && rect != null)
-                        {
+                        if (bbox != null && rect != null) {
                             float widthDiff = (bbox.GetAsNumber(2).FloatValue - bbox.GetAsNumber(0).FloatValue) -
-                                    (rect.GetAsNumber(2).FloatValue - rect.GetAsNumber(0).FloatValue);
+                                              (rect.GetAsNumber(2).FloatValue - rect.GetAsNumber(0).FloatValue);
                             float heightDiff = (bbox.GetAsNumber(3).FloatValue - bbox.GetAsNumber(1).FloatValue) -
-                                    (rect.GetAsNumber(3).FloatValue - rect.GetAsNumber(1).FloatValue);
-                            if (Math.Abs(widthDiff) > 1 || Math.Abs(heightDiff) > 1)
-                            {
-                                try
-                                {
+                                               (rect.GetAsNumber(3).FloatValue - rect.GetAsNumber(1).FloatValue);
+                            if (Math.Abs(widthDiff) > 1 || Math.Abs(heightDiff) > 1) {
+                                try {
                                     //simulate Adobe behavior.
                                     acroFields.GenerateAppearances = true;
                                     acroFields.RegenerateField(name);
