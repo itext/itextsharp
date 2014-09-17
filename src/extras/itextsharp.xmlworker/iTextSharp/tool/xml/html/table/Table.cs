@@ -128,11 +128,9 @@ namespace iTextSharp.tool.xml.html.table {
                         return o1.RowPlace.Repeated.CompareTo(o2.RowPlace.Repeated);
                     });
                 }
-                PdfPTable table = new PdfPTable(numberOfColumns);
-                table.HeaderRows = headerRows+footerRows;
+                PdfPTable table = IntPdfPTable(numberOfColumns);
+                table.HeaderRows = headerRows + footerRows;
                 table.FooterRows = footerRows;
-                table.HorizontalAlignment = Element.ALIGN_LEFT;
-                table.SplitLate = false;
                 TableStyleValues styleValues = SetStyleValues(tag);
                 table.TableEvent = new TableBorderEvent(styleValues);
                 SetVerticalMargin(table, tag, styleValues, ctx);
@@ -443,6 +441,15 @@ namespace iTextSharp.tool.xml.html.table {
             } catch (NoCustomContextException e) {
                 throw new RuntimeWorkerException(LocaleMessages.GetInstance().GetMessage(LocaleMessages.NO_CUSTOM_CONTEXT), e);
             }
+        }
+
+        protected internal virtual PdfPTable IntPdfPTable(int numberOfColumn) {
+            PdfPTable table = new PdfPTable(numberOfColumn);
+
+            table.HorizontalAlignment = Element.ALIGN_LEFT;
+            table.SplitLate = false;
+
+            return table;
         }
 
         /**

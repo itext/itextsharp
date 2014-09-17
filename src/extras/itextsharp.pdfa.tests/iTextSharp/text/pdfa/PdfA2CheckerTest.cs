@@ -1632,5 +1632,28 @@ namespace iTextSharp.text.pdfa {
             if (!exceptionThrown)
                 Assert.Fail("PdfAConformanceException with correct message should be thrown.");
         }
+
+        [Test]
+        public virtual void TextFieldTest() {
+            Document d = new Document();
+            PdfWriter w = PdfAWriter.GetInstance(d, new FileStream(OUT + "textField.pdf", FileMode.Create),
+                PdfAConformanceLevel.PDF_A_2B);
+            w.CreateXmpMetadata();
+            d.Open();
+
+            FileStream iccProfileFileStream = File.Open(RESOURCES + "sRGB Color Space Profile.icm", FileMode.Open, FileAccess.Read,
+                FileShare.Read);
+            ICC_Profile icc = ICC_Profile.GetInstance(iccProfileFileStream);
+            iccProfileFileStream.Close();
+
+            w.SetOutputIntents("Custom", "", "http://www.color.org", "sRGB IEC61966-2.1", icc);
+            TextField text = new TextField(w, new Rectangle(50, 700, 150, 750), "text1");
+            Font font = FontFactory.GetFont(RESOURCES + "FreeMonoBold.ttf", BaseFont.WINANSI, BaseFont.EMBEDDED, 12);
+            text.Font = font.BaseFont;
+            text.Text = "test";
+            PdfFormField field = text.GetTextField();
+            w.AddAnnotation(field);
+            d.Close();
+        }
     }
 }

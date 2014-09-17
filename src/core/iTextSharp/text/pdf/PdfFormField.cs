@@ -358,7 +358,7 @@ namespace iTextSharp.text.pdf {
             if (templates == null)
                 return;
             PdfDictionary dic = new PdfDictionary();
-            foreach (PdfTemplate template in templates.Keys) {
+            foreach (PdfTemplate template in templates) {
                 MergeResources(dic, (PdfDictionary)template.Resources);
             }
             Put(PdfName.DR, dic);

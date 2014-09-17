@@ -47,7 +47,6 @@ using System;
 using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf.draw;
-using iTextSharp.tool.xml.css.apply;
 using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.html.pdfelement;
 using iTextSharp.tool.xml.pipeline.html;
@@ -126,7 +125,9 @@ namespace iTextSharp.tool.xml.html.table {
                 }
 
                 if (e is Paragraph) {
-                    ((Paragraph)e).Alignment = cell.HorizontalAlignment;
+                    if (((Paragraph) e).Alignment == Element.ALIGN_UNDEFINED) {
+                        ((Paragraph) e).Alignment = cell.HorizontalAlignment;
+                    }
                 }
 
 			    cell.AddElement(e);

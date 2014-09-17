@@ -1,6 +1,6 @@
 using System;
 /*
- * $Id: UnsupportedPdfException.cs 744 2014-05-15 17:11:29Z rafhens $
+ * $Id: UnsupportedPdfException.cs 812 2014-08-26 11:05:07Z pavel-alay $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -54,6 +54,7 @@ namespace iTextSharp.text.exceptions {
      * supported in iText yet).
      * @since 2.1.5
      */
+	[Serializable]
     public class UnsupportedPdfException : InvalidPdfException {
 
         /**
@@ -62,5 +63,7 @@ namespace iTextSharp.text.exceptions {
          */
         public UnsupportedPdfException(String message) : base(message) {
         }
-    }
+
+		protected UnsupportedPdfException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+	}
 }

@@ -737,13 +737,13 @@ namespace iTextSharp.text.pdf.intern
                     PdfObject n = GetDirectObject(ap.Get(PdfName.N));
                     if (PdfName.WIDGET.Equals(annot.GetAsName(PdfName.SUBTYPE)) &&
                         new PdfName("Btn").Equals(annot.GetAsName(PdfName.FT))) {
-                        if (n == null || !n.IsDictionary())
+                        if (n == null || (!n.IsDictionary() && n.Type != 0))
                             throw new PdfAConformanceException(obj1,
                                 MessageLocalization.GetComposedMessage(
                                     "appearance.dictionary.of.widget.subtype.and.btn.field.type.shall.contain.only.the.n.key.with.dictionary.value"));
                     }
                     else {
-                        if (n == null || !n.IsStream())
+                        if (n == null || (!n.IsStream() && n.Type != 0))
                             throw new PdfAConformanceException(obj1,
                                 MessageLocalization.GetComposedMessage(
                                     "appearance.dictionary.shall.contain.only.the.n.key.with.stream.value"));

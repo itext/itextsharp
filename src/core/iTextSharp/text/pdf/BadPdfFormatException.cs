@@ -1,7 +1,7 @@
 using System;
 
 /*
- * $Id: BadPdfFormatException.cs 744 2014-05-15 17:11:29Z rafhens $
+ * $Id: BadPdfFormatException.cs 812 2014-08-26 11:05:07Z pavel-alay $
  * 
  *
  * This file is part of the iText project.
@@ -60,9 +60,13 @@ namespace iTextSharp.text.pdf
      * @see        PdfFont
      */
 
+	[Serializable]
     public class BadPdfFormatException : Exception
     {
         public BadPdfFormatException() : base() {}
+
         public BadPdfFormatException(string message) : base(message) {}
+
+		protected BadPdfFormatException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

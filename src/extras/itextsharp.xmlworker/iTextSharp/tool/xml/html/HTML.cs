@@ -318,7 +318,8 @@ namespace iTextSharp.tool.xml.html {
             public const String ALIGN  = "align";
             public const String FACE  = "face";
             public const String SIZE  = "size";
-            public const String COLOR  = "color";
+            public const String COLOR = "color";
+            public const String START = "start";
 
             /**
              * Possible attribute values.

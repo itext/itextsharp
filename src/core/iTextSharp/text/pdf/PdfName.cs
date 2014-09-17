@@ -5,7 +5,7 @@ using System.Reflection;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: PdfName.cs 785 2014-07-12 11:00:58Z asubach $
+ * $Id: PdfName.cs 815 2014-09-01 05:26:24Z asubach $
  * 
  *
  * This file is part of the iText project.
@@ -992,6 +992,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName IDENTITY = new PdfName("Identity");
         /** A name */
         public static readonly PdfName IF = new PdfName("IF");
+        /**
+         * A name
+         * @since 5.5.3
+         */
+        public static readonly PdfName IM = new PdfName("IM");
         /** A name */
         public static readonly PdfName IMAGE = new PdfName("Image");
         /** A name */

@@ -34,6 +34,12 @@ namespace System.util.collections
             set[item] = null;
         }
 
+        virtual public void AddAll(IEnumerable<T> set)
+        {
+            foreach (T item in set)
+                Add(item);
+        }
+
         virtual public void Clear()
         {
             set.Clear();
@@ -58,6 +64,11 @@ namespace System.util.collections
         {
             get { return set.Count; }
         }
+
+        virtual public bool IsEmpty()
+        {
+            return set.Count == 0;
+        }
         virtual public bool IsReadOnly
         {
             get { return false; }
@@ -76,6 +87,12 @@ namespace System.util.collections
             }
 	        return modified;
         }
+
+        virtual internal Dictionary<T, object> InternalSet
+        {
+            get { return set; }
+        }
+
 //        public boolean retainAll(Collection<?> c) {
 //	        boolean modified = false;
 //	        Iterator<E> e = iterator();

@@ -197,6 +197,15 @@ namespace iTextSharp.tool.xml.css.apply {
             leftIndent += css.ContainsKey(CSS.Property.MARGIN_LEFT)?utils.ParseValueToPt(css[CSS.Property.MARGIN_LEFT],fontSize):0;
             leftIndent += css.ContainsKey(CSS.Property.PADDING_LEFT)?utils.ParseValueToPt(css[CSS.Property.PADDING_LEFT],fontSize):0;
             lst.IndentationLeft = leftIndent;
+            String startAtr = null;
+            t.Attributes.TryGetValue(HTML.Attribute.START, out startAtr);
+            if (startAtr != null) {
+                try {
+                    int start = int.Parse(startAtr);
+                    lst.First = start;
+                } catch (FormatException exc) {
+                }
+            }
             return lst;
         }
 

@@ -52,6 +52,7 @@ namespace iTextSharp.text.exceptions
      * Should only be thrown/not caught when ignoring invalid images.
      * @since 5.4.2
      */
+	[Serializable]
     public class InvalidImageException : Exception
     {
         public InvalidImageException() { }

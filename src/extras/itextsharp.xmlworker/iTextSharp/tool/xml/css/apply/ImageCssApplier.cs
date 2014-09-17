@@ -1,7 +1,6 @@
 using System;
-using System.Globalization;
-using iTextSharp.tool.xml;
-using iTextSharp.tool.xml.css;
+using System.Collections.Generic;
+using iTextSharp.text.html;
 /*
  * $Id: ImageCssApplier.java 28 2011-05-05 20:33:36Z redlab_b $
  *
@@ -52,38 +51,45 @@ using Image = iTextSharp.text.Image;
 namespace iTextSharp.tool.xml.css.apply {
 
     /**
-     * @author redlab_b
+     * Class that applies the parsed CSS to an Image object.
      *
+     * @author redlab_b
      */
     public class ImageCssApplier {
 
-        /* (non-Javadoc)
-         * @see com.itextpdf.tool.xml.css.CssApplier#apply(com.itextpdf.text.Element, com.itextpdf.tool.xml.Tag)
+        /**
+         * Applies CSS to an Image. Currently supported:
+         * - width
+         * - height
+         * - borders (color, width)
+         * - spacing before and after
+         *
+         * @param img the image
+         * @param tag the tag with the css
+         * @return a styled Image
          */
         virtual public Image Apply(Image img, Tag tag) {
-            String widthValue;
-            tag.CSS.TryGetValue(HTML.Attribute.WIDTH, out widthValue);
-            if (widthValue == null)
-            {
+            IDictionary<String, String> cssMap = tag.CSS;
+
+            String widthValue = null;
+            cssMap.TryGetValue(HTML.Attribute.WIDTH, out widthValue);
+            if (widthValue == null) {
                 tag.Attributes.TryGetValue(HTML.Attribute.WIDTH, out widthValue);
             }
 
-            String heightValue;
-            tag.CSS.TryGetValue(HTML.Attribute.HEIGHT, out heightValue);
-            if (heightValue == null)
-            {
+            String heightValue = null;
+            cssMap.TryGetValue(HTML.Attribute.HEIGHT, out heightValue);
+            if (heightValue == null) {
                 tag.Attributes.TryGetValue(HTML.Attribute.HEIGHT, out heightValue);
             }
 
-            if (widthValue == null)
+            if (widthValue == null) {
                 img.ScaleToFitLineWhenOverflow = true;
-            else
+            } else {
                 img.ScaleToFitLineWhenOverflow = false;
+            }
 
-            if (heightValue == null)
-                img.ScaleToFitHeight = true;
-            else
-                img.ScaleToFitHeight = false;
+            img.ScaleToFitHeight = false;
 
 
             CssUtils utils = CssUtils.GetInstance();
@@ -106,16 +112,67 @@ namespace iTextSharp.tool.xml.css.apply {
                 img.ScaleAbsolute(widthInPoints, heightInPoints);
             }
 
-            String before;
-            tag.CSS.TryGetValue(CSS.Property.BEFORE, out before);
+            // apply border CSS
+            String borderTopColor = null;
+            cssMap.TryGetValue(CSS.Property.BORDER_TOP_COLOR, out borderTopColor);
+            if (borderTopColor != null) {
+                img.BorderColorTop = HtmlUtilities.DecodeColor(borderTopColor);
+            }
+
+            String borderTopWidth = null;
+            cssMap.TryGetValue(CSS.Property.BORDER_TOP_WIDTH, out borderTopWidth);
+            if (borderTopWidth != null) {
+                img.BorderWidthTop = utils.ParseValueToPt(borderTopWidth, 1f);
+            }
+
+            String borderRightColor = null;
+            cssMap.TryGetValue(CSS.Property.BORDER_RIGHT_COLOR, out borderRightColor);
+            if (borderRightColor != null) {
+                img.BorderColorRight = HtmlUtilities.DecodeColor(borderRightColor);
+            }
+
+            String borderRightWidth = null;
+            cssMap.TryGetValue(CSS.Property.BORDER_RIGHT_WIDTH, out borderRightWidth);
+            if (borderRightWidth != null) {
+                img.BorderWidthRight = utils.ParseValueToPt(borderRightWidth, 1f);
+            }
+
+            String borderBottomColor = null;
+            cssMap.TryGetValue(CSS.Property.BORDER_BOTTOM_COLOR, out borderBottomColor);
+            if (borderBottomColor != null) {
+                img.BorderColorBottom = HtmlUtilities.DecodeColor(borderBottomColor);
+            }
+
+            String borderBottomWidth = null;
+            cssMap.TryGetValue(CSS.Property.BORDER_BOTTOM_WIDTH, out borderBottomWidth);
+            if (borderBottomWidth != null) {
+                img.BorderWidthBottom = utils.ParseValueToPt(borderBottomWidth, 1f);
+            }
+
+            String borderLeftColor = null;
+            cssMap.TryGetValue(CSS.Property.BORDER_LEFT_COLOR, out borderLeftColor);
+            if (borderLeftColor != null) {
+                img.BorderColorLeft = HtmlUtilities.DecodeColor(borderLeftColor);
+            }
+
+            String borderLeftWidth = null;
+            cssMap.TryGetValue(CSS.Property.BORDER_LEFT_WIDTH, out borderLeftWidth);
+            if (borderLeftWidth != null) {
+                img.BorderWidthLeft = utils.ParseValueToPt(borderLeftWidth, 1f);
+            }
+            // end of border CSS
+
+            String before = null;
+            cssMap.TryGetValue(CSS.Property.BEFORE, out before);
             if (before != null) {
-                img.SpacingBefore = float.Parse(before, CultureInfo.InvariantCulture);
+                img.SpacingBefore = float.Parse(before);
             }
-            String after;
-            tag.CSS.TryGetValue(CSS.Property.AFTER, out after);
+            String after = null;
+            cssMap.TryGetValue(CSS.Property.AFTER, out after);
             if (after != null) {
-                img.SpacingAfter = float.Parse(after, CultureInfo.InvariantCulture);
+                img.SpacingAfter = float.Parse(after);
             }
+
             img.WidthPercentage = 0;
             return img;
         }

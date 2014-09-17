@@ -3,7 +3,7 @@ using System;
 using iTextSharp.text;
 
 /*
- * $Id: PdfException.cs 744 2014-05-15 17:11:29Z rafhens $
+ * $Id: PdfException.cs 812 2014-08-26 11:05:07Z pavel-alay $
  * 
  *
  * This file is part of the iText project.
@@ -56,9 +56,12 @@ namespace iTextSharp.text.pdf {
      * @see        BadPdfFormatException
      */
 
+	[Serializable]
     public class PdfException : DocumentException {    
         public PdfException() : base() {}
 
         public PdfException(string message) : base(message) {}
+
+		protected PdfException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

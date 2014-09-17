@@ -111,8 +111,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf.cs {
             // step 5
             document.Close();
 
-            CompareTool compareTool = new CompareTool(dest_file, TEST_RESOURCES_PATH +  "cmp_lab_spot_based_gradient.pdf");
-            String error = compareTool.Compare(DEST_FOLDER, "diff");
+            CompareTool compareTool = new CompareTool();
+            String error = compareTool.Compare(dest_file, TEST_RESOURCES_PATH +  "cmp_lab_spot_based_gradient.pdf", DEST_FOLDER, "diff");
             if (error != null) {
                 Assert.Fail(error);
             }

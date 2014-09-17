@@ -15,7 +15,7 @@ using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.io;
 /*
- * $Id: PdfReader.cs 744 2014-05-15 17:11:29Z rafhens $
+ * $Id: PdfReader.cs 823 2014-09-10 12:20:26Z michaeldemey $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -115,7 +115,7 @@ namespace iTextSharp.text.pdf {
         protected internal bool consolidateNamedDestinations = false;
         protected bool remoteToLocalNamedDestinations = false;
         protected internal int rValue;
-        protected internal int pValue;
+        protected internal long pValue;
         private int objNum;
         private int objGen;
         private long fileLength;
@@ -556,10 +556,10 @@ namespace iTextSharp.text.pdf {
         * @return a normalized <CODE>Rectangle</CODE>
         */    
         public static Rectangle GetNormalizedRectangle(PdfArray box) {
-            float llx = ((PdfNumber)GetPdfObjectRelease(box[0])).FloatValue;
-            float lly = ((PdfNumber)GetPdfObjectRelease(box[1])).FloatValue;
-            float urx = ((PdfNumber)GetPdfObjectRelease(box[2])).FloatValue;
-            float ury = ((PdfNumber)GetPdfObjectRelease(box[3])).FloatValue;
+            float llx = ((PdfNumber)GetPdfObjectRelease(box.GetPdfObject(0))).FloatValue;
+            float lly = ((PdfNumber)GetPdfObjectRelease(box.GetPdfObject(1))).FloatValue;
+            float urx = ((PdfNumber)GetPdfObjectRelease(box.GetPdfObject(2))).FloatValue;
+            float ury = ((PdfNumber)GetPdfObjectRelease(box.GetPdfObject(3))).FloatValue;
             return new Rectangle(Math.Min(llx, urx), Math.Min(lly, ury),
             Math.Max(llx, urx), Math.Max(lly, ury));
         }
@@ -572,7 +572,11 @@ namespace iTextSharp.text.pdf {
             PdfDictionary markInfo = catalog.GetAsDict(PdfName.MARKINFO);
             if(markInfo == null)
                 return false;
-            return PdfBoolean.PDFTRUE.Equals(markInfo.GetAsBoolean(PdfName.MARKED));
+            if (PdfBoolean.PDFTRUE.Equals(markInfo.GetAsBoolean(PdfName.MARKED))) {
+                return catalog.GetAsDict(PdfName.STRUCTTREEROOT) != null;
+            } else {
+                return false;
+            }
         }
 
         /**
@@ -674,12 +678,12 @@ namespace iTextSharp.text.pdf {
             PdfArray documentIDs = trailer.GetAsArray(PdfName.ID);
             byte[] documentID = null;
             if (documentIDs != null) {
-                o = documentIDs[0];
+                o = documentIDs.GetPdfObject(0);
                 strings.Remove((PdfString)o);
                 s = o.ToString();
                 documentID = DocWriter.GetISOBytes(s);
                 if (documentIDs.Size > 1)
-                    strings.Remove((PdfString)documentIDs[1]);
+                    strings.Remove((PdfString)documentIDs.GetPdfObject(1));
             }
             // just in case we have a broken producer
             if (documentID == null)
@@ -709,7 +713,7 @@ namespace iTextSharp.text.pdf {
                 o = enc.Get(PdfName.P);
                 if (!o.IsNumber())
                     throw new InvalidPdfException(MessageLocalization.GetComposedMessage("illegal.p.value"));
-                pValue = ((PdfNumber)o).IntValue;
+                pValue = ((PdfNumber)o).LongValue;
 
                 o = enc.Get(PdfName.R);
                 if (!o.IsNumber())
@@ -813,7 +817,7 @@ namespace iTextSharp.text.pdf {
                 }
                 for (int i = 0; i<recipients.Size; i++)
                 {
-                    PdfObject recipient = recipients[i];
+                    PdfObject recipient = recipients.GetPdfObject(i);
                     if (recipient is PdfString)
                         strings.Remove((PdfString)recipient);
                     
@@ -840,7 +844,7 @@ namespace iTextSharp.text.pdf {
                     sh = DigestUtilities.GetDigest("SHA-1");
                 sh.BlockUpdate(envelopedData, 0, 20);
                 for (int i=0; i<recipients.Size; i++) {
-                    byte[] encodedRecipient = recipients[i].GetBytes();  
+                    byte[] encodedRecipient = recipients.GetPdfObject(i).GetBytes();  
                     sh.BlockUpdate(encodedRecipient, 0, encodedRecipient.Length);
                 }
                 if ((cryptoMode & PdfWriter.DO_NOT_ENCRYPT_METADATA) != 0)
@@ -2128,7 +2132,7 @@ namespace iTextSharp.text.pdf {
                 PdfArray array = (PdfArray)contents;
                 bout = new MemoryStream();
                 for (int k = 0; k < array.Size; ++k) {
-                    PdfObject item = GetPdfObjectRelease(array[k]);
+                    PdfObject item = GetPdfObjectRelease(array.GetPdfObject(k));
                     if (item == null || !item.IsStream())
                         continue;
                     byte[] b = GetStreamBytes((PRStream)item, file);
@@ -2167,7 +2171,7 @@ namespace iTextSharp.text.pdf {
                     PdfArray array = (PdfArray)contents;
                     MemoryStream bout = new MemoryStream();
                     for (int k = 0; k < array.Size; ++k) {
-                        PdfObject item = GetPdfObjectRelease(array[k]);
+                        PdfObject item = GetPdfObjectRelease(array.GetPdfObject(k));
                         if (item == null || !item.IsStream())
                             continue;
                         if (rf == null) {
@@ -2245,7 +2249,7 @@ namespace iTextSharp.text.pdf {
                 case PdfObject.ARRAY: {
                     PdfArray t = (PdfArray)obj;
                     for (int i = 0; i < t.Size; ++i)
-                        KillXref(t[i]);
+                        KillXref(t.GetPdfObject(i));
                     break;
                 }
                 case PdfObject.STREAM:
@@ -2469,7 +2473,7 @@ namespace iTextSharp.text.pdf {
                 else if (contents.IsArray()) {
                     PdfArray array = (PdfArray)contents;
                     for (int j = 0; j < array.Size; ++j) {
-                        PRIndirectReference refi = (PRIndirectReference)array[j];
+                        PRIndirectReference refi = (PRIndirectReference)array.GetPdfObject(j);
                         if (visited.ContainsKey(refi.Number)) {
                             // need to duplicate
                             newRefs.Add(refi);
@@ -2583,7 +2587,7 @@ namespace iTextSharp.text.pdf {
         * <CODE>PdfWriter.SetEncryption()</CODE>.
         * @return the encryption permissions
         */    
-        virtual public int Permissions {
+        virtual public long Permissions {
             get {
                 return pValue;
             }
@@ -2872,7 +2876,7 @@ namespace iTextSharp.text.pdf {
                     continue;
                 }
                 for (int j = 0; j < annots.Size; ++j) {
-                    PdfObject obj = GetPdfObjectRelease((PdfObject)annots[j]);
+                    PdfObject obj = GetPdfObjectRelease((PdfObject)annots.GetPdfObject(j));
                     if (obj == null || !obj.IsDictionary())
                         continue;
                     PdfDictionary annot = (PdfDictionary)obj;
@@ -2911,7 +2915,7 @@ namespace iTextSharp.text.pdf {
             if (pageDic.Get(PdfName.ANNOTS) != null) {
                 PdfArray annots = pageDic.GetAsArray(PdfName.ANNOTS);
                 for (int j = 0; j < annots.Size; ++j) {
-                    PdfDictionary annot = (PdfDictionary)GetPdfObjectRelease(annots[j]);
+                    PdfDictionary annot = (PdfDictionary)GetPdfObjectRelease(annots.GetPdfObject(j));
                   
                     if (PdfName.LINK.Equals(annot.Get(PdfName.SUBTYPE))) {
                         result.Add(new PdfAnnotation.PdfImportedLink(annot));
@@ -2958,7 +2962,7 @@ namespace iTextSharp.text.pdf {
                 }
                 bool commitAnnots = false;
                 for (int an = 0; an < annots.Size; ++an) {
-                    PdfObject objRef = annots[an];
+                    PdfObject objRef = annots.GetPdfObject(an);
                     if (ConvertNamedDestination(objRef, names) && !objRef.IsIndirect())
                         commitAnnots = true;
                 }
@@ -3033,7 +3037,7 @@ namespace iTextSharp.text.pdf {
                 }
                 bool commitAnnots = false;
                 for (int an = 0; an < annots.Size; ++an) {
-                    PdfObject objRef = annots[an];
+                    PdfObject objRef = annots.GetPdfObject(an);
                     if (ReplaceNamedDestination(objRef, names) && !objRef.IsIndirect())
                         commitAnnots = true;
                 }
@@ -3658,7 +3662,7 @@ namespace iTextSharp.text.pdf {
                     page.Put(PdfName.TYPE, PdfName.PAGES);
                     PushPageAttributes(page);
                     for (int k = 0; k < kidsPR.Size; ++k){
-                        PdfObject obj = kidsPR[k];
+                        PdfObject obj = kidsPR.GetPdfObject(k);
                         if (!obj.IsIndirect()) {
                             while (k < kidsPR.Size)
                                 kidsPR.Remove(k);

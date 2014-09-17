@@ -6,7 +6,7 @@ using System.util;
 using iTextSharp.text.pdf.intern;
 
 /*
- * $Id: PdfArray.cs 744 2014-05-15 17:11:29Z rafhens $
+ * $Id: PdfArray.cs 801 2014-08-05 13:14:36Z asubach $
  * 
  *
  * This file is part of the iText project.
@@ -171,6 +171,35 @@ namespace iTextSharp.text.pdf {
             set {
                 arrayList[idx] = value;
             }
+        }
+
+        /**
+         * Returns the <CODE>PdfObject</CODE> with the specified index.
+         *
+         * A possible indirect references is not resolved, so the returned
+         * <CODE>PdfObject</CODE> may be either a direct object or an indirect
+         * reference, depending on how the object is stored in the
+         * <CODE>PdfArray</CODE>.
+         *
+         * @param idx The index of the <CODE>PdfObject</CODE> to be returned
+         * @return A <CODE>PdfObject</CODE>
+         */
+        public virtual PdfObject GetPdfObject(int idx) {
+            return arrayList[idx];
+        }
+
+        /**
+         * Overwrites a specified location of the array, returning the previous
+         * value
+         *
+         * @param idx The index of the element to be overwritten
+         * @param obj new value for the specified index
+         * @throws IndexOutOfBoundsException if the specified position doesn't exist
+         * @return the previous value
+         * @since 2.1.5
+         */
+        public virtual PdfObject Set(int idx, PdfObject obj) {
+            return arrayList[idx] = obj;
         }
 
         /**

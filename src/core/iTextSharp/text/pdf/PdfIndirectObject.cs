@@ -1,7 +1,6 @@
 using System.IO;
-
 /*
- * $Id: PdfIndirectObject.cs 744 2014-05-15 17:11:29Z rafhens $
+ * $Id: PdfIndirectObject.cs 800 2014-08-05 12:52:43Z pavel-alay $
  * 
  *
  * This file is part of the iText project.
@@ -45,6 +44,7 @@ using System.IO;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+using System.Text;
 
 namespace iTextSharp.text.pdf
 {
@@ -156,6 +156,10 @@ namespace iTextSharp.text.pdf
             os.Write(STARTOBJ, 0, STARTOBJ.Length);
             objecti.ToPdf(writer, os);
             os.Write(ENDOBJ, 0, ENDOBJ.Length);
+        }
+
+        public override string ToString() {
+            return new StringBuilder().Append(number).Append(' ').Append(generation).Append(" R: ").Append(objecti != null ? objecti.ToString(): "null").ToString();
         }
     }
 }

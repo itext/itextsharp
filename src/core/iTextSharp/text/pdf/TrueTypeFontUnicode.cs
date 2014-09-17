@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: TrueTypeFontUnicode.cs 744 2014-05-15 17:11:29Z rafhens $
+ * $Id: TrueTypeFontUnicode.cs 824 2014-09-11 18:09:01Z asubach $
  * 
  *
  * This file is part of the iText project.
@@ -292,6 +292,25 @@ namespace iTextSharp.text.pdf {
             if (toUnicode != null)
                 dic.Put(PdfName.TOUNICODE, toUnicode);  
             return dic;
+        }
+
+        public virtual int GetCharFromGlyphId(int gid) {
+            if (glyphIdToChar == null) {
+                int[] g2 = new int[maxGlyphId];
+                Dictionary<int, int[]> map = null;
+                if (cmapExt != null) {
+                    map = cmapExt;
+                } else if (cmap31 != null) {
+                    map = cmap31;
+                }
+                if (map != null) {
+                    foreach (KeyValuePair<int, int[]> entry in map) {
+                        g2[entry.Value[0]] = entry.Key;
+                    }
+                }
+                glyphIdToChar = g2;
+            }
+            return glyphIdToChar[gid];
         }
 
         /** The method used to sort the metrics array.

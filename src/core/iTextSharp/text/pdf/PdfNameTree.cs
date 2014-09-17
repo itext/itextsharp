@@ -135,20 +135,20 @@ namespace iTextSharp.text.pdf {
                 for (int k = 0; k < nn.Size; ++k) {
                     PdfString s;
                     if (leftOverString == null)
-                        s = (PdfString)PdfReader.GetPdfObjectRelease(nn[k++]);
+                        s = (PdfString)PdfReader.GetPdfObjectRelease(nn.GetPdfObject(k++));
                     else {
                         // this is the leftover string from the previous loop
                         s = leftOverString;
                         leftOverString = null;
                     }
                     if (k < nn.Size) // could have a mistake int the pdf file
-                        items[PdfEncodings.ConvertToString(s.GetBytes(), null)] = nn[k];
+                        items[PdfEncodings.ConvertToString(s.GetBytes(), null)] = nn.GetPdfObject(k);
                     else
                         return s;
                 }
             } else if ((nn = (PdfArray)PdfReader.GetPdfObjectRelease(dic.Get(PdfName.KIDS))) != null) {
                 for (int k = 0; k < nn.Size; ++k) {
-                    PdfDictionary kid = (PdfDictionary)PdfReader.GetPdfObjectRelease(nn[k]);
+                    PdfDictionary kid = (PdfDictionary)PdfReader.GetPdfObjectRelease(nn.GetPdfObject(k));
                     leftOverString = IterateItems(kid, items, leftOverString);
                 }
             }

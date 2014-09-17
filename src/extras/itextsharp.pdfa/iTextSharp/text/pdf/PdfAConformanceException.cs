@@ -48,6 +48,7 @@ namespace iTextSharp.text.pdf
     /**
      * @see PdfIsoConformanceException
      */
+    [Serializable]
     public class PdfAConformanceException : PdfIsoConformanceException
     {
         protected Object obj = null;
@@ -58,6 +59,8 @@ namespace iTextSharp.text.pdf
             : base(message) {
             this.obj = obj;
         }
+
+        protected PdfAConformanceException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
 
         /**
          * @see PdfIsoConformanceException#PdfIsoConformanceException(String)

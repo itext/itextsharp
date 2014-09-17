@@ -1,6 +1,6 @@
 using System;
 /*
- * $Id: IllegalPdfSyntaxException.cs 744 2014-05-15 17:11:29Z rafhens $
+ * $Id: IllegalPdfSyntaxException.cs 812 2014-08-26 11:05:07Z pavel-alay $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -50,6 +50,7 @@ namespace iTextSharp.text.exceptions {
      * Typed exception used when creating PDF syntax that isn't valid.
      * @since 2.1.6
      */
+	[Serializable]
     public class IllegalPdfSyntaxException : ArgumentException {
 
         /**
@@ -58,5 +59,7 @@ namespace iTextSharp.text.exceptions {
          */
         public IllegalPdfSyntaxException(String message) : base(message) {
         }
+
+		protected IllegalPdfSyntaxException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

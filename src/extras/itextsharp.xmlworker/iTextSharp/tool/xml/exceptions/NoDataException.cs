@@ -50,12 +50,8 @@ namespace iTextSharp.tool.xml.exceptions {
      * @author redlab_b
      *
      */
+    [Serializable]
     public class NoDataException : Exception {
-
-
-        /**
-         *
-         */
         public NoDataException() {
         }
 
@@ -77,5 +73,7 @@ namespace iTextSharp.tool.xml.exceptions {
          */
         public NoDataException(String message, Exception cause) : base(message, cause) {
         }
+
+        protected NoDataException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

@@ -129,13 +129,13 @@ namespace iTextSharp.text.pdf {
             PdfArray nn = (PdfArray)PdfReader.GetPdfObjectRelease(dic.Get(PdfName.NUMS));
             if (nn != null) {
                 for (int k = 0; k < nn.Size; ++k) {
-                    PdfNumber s = (PdfNumber)PdfReader.GetPdfObjectRelease(nn[k++]);
-                    items[s.IntValue] = nn[k];
+                    PdfNumber s = (PdfNumber)PdfReader.GetPdfObjectRelease(nn.GetPdfObject(k++));
+                    items[s.IntValue] = nn.GetPdfObject(k);
                 }
             }
             else if ((nn = (PdfArray)PdfReader.GetPdfObjectRelease(dic.Get(PdfName.KIDS))) != null) {
                 for (int k = 0; k < nn.Size; ++k) {
-                    PdfDictionary kid = (PdfDictionary)PdfReader.GetPdfObjectRelease(nn[k]);
+                    PdfDictionary kid = (PdfDictionary)PdfReader.GetPdfObjectRelease(nn.GetPdfObject(k));
                     IterateItems(kid, items);
                 }
             }

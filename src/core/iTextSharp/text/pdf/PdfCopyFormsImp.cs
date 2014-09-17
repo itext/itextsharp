@@ -2,7 +2,7 @@ using System.IO;
 using System.Collections.Generic;
 using iTextSharp.text.error_messages;
 /*
- * $Id: PdfCopyFormsImp.cs 776 2014-06-23 08:52:59Z asubach $
+ * $Id: PdfCopyFormsImp.cs 812 2014-08-26 11:05:07Z pavel-alay $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -45,6 +45,7 @@ using iTextSharp.text.error_messages;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+using iTextSharp.text.exceptions;
 
 namespace iTextSharp.text.pdf {
 

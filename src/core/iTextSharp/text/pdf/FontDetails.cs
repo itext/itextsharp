@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using System.util;
+using System.Xml.Schema;
 using iTextSharp.text;
 
 /*
- * $Id: FontDetails.cs 744 2014-05-15 17:11:29Z rafhens $
+ * $Id: FontDetails.cs 824 2014-09-11 18:09:01Z asubach $
  * 
  *
  * This file is part of the iText project.
@@ -144,6 +146,29 @@ namespace iTextSharp.text.pdf {
         internal BaseFont BaseFont {
             get {
                 return baseFont;
+            }
+        }
+
+        internal virtual Object[] ConvertToBytesGid(String gids) {
+            if (fontType != BaseFont.FONT_TYPE_TTUNI)
+                throw new ArgumentException("GID require TT Unicode");
+            try {
+                StringBuilder sb = new StringBuilder();
+                int totalWidth = 0;
+                foreach (char gid in gids.ToCharArray()) {
+                    int width = ttu.GetGlyphWidth(gid);
+                    totalWidth += width;
+                    int vchar = ttu.GetCharFromGlyphId(gid);
+                    if (vchar != 0) {
+                        sb.Append(Utilities.ConvertFromUtf32(vchar));
+                    }
+                    int gl = gid;
+                    if (!longTag.ContainsKey(gl))
+                        longTag[gl] = new int[] {gid, width, vchar};
+                }
+                return new Object[] {Encoding.GetEncoding(CJKFont.CJK_ENCODING).GetBytes(gids), sb.ToString(), totalWidth};
+            } catch (Exception e) {
+                throw;
             }
         }
     

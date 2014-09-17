@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 /*
- * $Id: BadPasswordException.cs 744 2014-05-15 17:11:29Z rafhens $
+ * $Id: BadPasswordException.cs 812 2014-08-26 11:05:07Z pavel-alay $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -52,6 +52,7 @@ namespace iTextSharp.text.exceptions {
      * Gets thrown when the document isn't a valid PDF document.
      * @since 2.1.5 It was written for iText 2.0.8, but moved to another package
      */
+	[Serializable]
     public class BadPasswordException : IOException {
 
         /**
@@ -59,5 +60,7 @@ namespace iTextSharp.text.exceptions {
          */
         public BadPasswordException(String message) : base(message) {
         }
-    }
+
+		protected BadPasswordException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+	}
 }

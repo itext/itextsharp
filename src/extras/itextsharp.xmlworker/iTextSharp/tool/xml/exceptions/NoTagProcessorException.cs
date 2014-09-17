@@ -52,6 +52,7 @@ namespace iTextSharp.tool.xml.exceptions {
      * @author redlab_b
      *
      */
+    [Serializable]
     public class NoTagProcessorException : Exception {
 
         /**
@@ -67,5 +68,7 @@ namespace iTextSharp.tool.xml.exceptions {
          */
         public NoTagProcessorException(String tag, Exception e) : base(tag, e) {
         }
+
+        protected NoTagProcessorException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

@@ -49,6 +49,7 @@ namespace iTextSharp.tool.xml.exceptions {
      * Due to support for Java 1.5, a NotImplementedException
      *
      */
+    [Serializable]
     public class NotImplementedException : Exception {
 
         /**
@@ -75,5 +76,7 @@ namespace iTextSharp.tool.xml.exceptions {
          */
         public NotImplementedException(String arg0, Exception arg1) : base(arg0, arg1) {
         }
+
+        protected NotImplementedException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

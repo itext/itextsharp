@@ -50,6 +50,7 @@ namespace iTextSharp.tool.xml.exceptions {
      * @author Emiel Ackermann
      *
      */
+    [Serializable]
     public class NoSiblingException : Exception {
 
          /**
@@ -74,5 +75,7 @@ namespace iTextSharp.tool.xml.exceptions {
          */
         public NoSiblingException(String s, Exception e) : base(s, e) {
         }
+
+        protected NoSiblingException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

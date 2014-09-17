@@ -50,6 +50,7 @@ namespace iTextSharp.tool.xml {
      * @author redlab_b
      *
      */
+    [Serializable]
     public class PipelineException : Exception {
 
         /**
@@ -70,5 +71,7 @@ namespace iTextSharp.tool.xml {
          */
         public PipelineException(String msg) : base(msg) {
         }
+
+        protected PipelineException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

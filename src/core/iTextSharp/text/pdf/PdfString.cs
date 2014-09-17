@@ -3,7 +3,7 @@ using System.IO;
 using iTextSharp.text.pdf.intern;
 
 /*
- * $Id: PdfString.cs 744 2014-05-15 17:11:29Z rafhens $
+ * $Id: PdfString.cs 817 2014-09-01 07:04:32Z asubach $
  * 
  *
  * This file is part of the iText project.
@@ -148,7 +148,7 @@ namespace iTextSharp.text.pdf {
                 os.Write(buf.ToByteArray(), 0, buf.Size);
             }
             else {
-                b = PdfContentByte.EscapeString(b);
+                b = StringUtils.EscapeString(b);
                 os.Write(b, 0, b.Length);
             }
         }

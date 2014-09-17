@@ -10,11 +10,8 @@ namespace iTextSharp.tool.xml.pipeline.html {
      * @author itextpdf.com
      *
      */
+    [Serializable]
     public class NoStackException : Exception {
-
-	    /**
-	     *
-	     */
 	    public NoStackException() {
 	    }
 
@@ -37,5 +34,6 @@ namespace iTextSharp.tool.xml.pipeline.html {
 	    public NoStackException(String message, Exception cause) : base(message, cause) {
 	    }
 
+        protected NoStackException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

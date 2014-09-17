@@ -727,7 +727,7 @@ namespace iTextSharp.text.pdf {
                 String[] choices = new String[opt.Size];
                 String[] choicesExp = new String[opt.Size];
                 for (int k = 0; k < opt.Size; ++k) {
-                    PdfObject obj = opt[k];
+                    PdfObject obj = opt.GetPdfObject(k);
                     if (obj.IsString()) {
                             choices[k] = choicesExp[k] = ((PdfString)obj).ToUnicodeString();
                     }
@@ -1621,7 +1621,7 @@ namespace iTextSharp.text.pdf {
                 return array.Size;
             PdfIndirectReference refi = (PdfIndirectReference)refo;
             for (int j = 0; j < array.Size; ++j) {
-                PdfObject obj = array[j];
+                PdfObject obj = array.GetPdfObject(j);
                 if (!obj.IsIndirect())
                     continue;
                 if (((PdfIndirectReference)obj).Number == refi.Number)

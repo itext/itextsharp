@@ -2,13 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.util.collections;
 using iTextSharp.awt.geom;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.intern;
 
 /*
- * $Id: PdfAnnotation.cs 769 2014-05-30 09:46:00Z asubach $
+ * $Id: PdfAnnotation.cs 811 2014-08-26 09:13:46Z pavel-alay $
  * 
  *
  * This file is part of the iText project.
@@ -97,7 +98,7 @@ namespace iTextSharp.text.pdf {
         public const int MARKUP_SQUIGGLY = 3;
         protected internal PdfWriter writer;
         protected internal PdfIndirectReference reference;
-        protected internal Dictionary<PdfTemplate,object> templates;
+        protected internal HashSet2<PdfTemplate> templates;
         protected internal bool form = false;
         protected internal bool annotation = true;
     
@@ -421,8 +422,8 @@ namespace iTextSharp.text.pdf {
             if (!form)
                 return;
             if (templates == null)
-                templates = new Dictionary<PdfTemplate,object>();
-            templates[template] = null;
+                templates = new HashSet2<PdfTemplate>();
+            templates.Add(template);
         }
 
         virtual public void SetAppearance(PdfName ap, string state, PdfTemplate template) {
@@ -442,8 +443,8 @@ namespace iTextSharp.text.pdf {
             if (!form)
                 return;
             if (templates == null)
-                templates = new Dictionary<PdfTemplate,object>();
-            templates[template] = null;
+                templates = new HashSet2<PdfTemplate>();
+            templates.Add(template);
         }
 
         virtual public string AppearanceState {
@@ -504,10 +505,16 @@ namespace iTextSharp.text.pdf {
             used = true;
         }
     
+        [Obsolete("Use GetTemplates() instead")]
         virtual public Dictionary<PdfTemplate,object> Templates {
             get {
-                return templates;
+                return templates != null ? templates.InternalSet : null;
             }
+        }
+
+        virtual public HashSet2<PdfTemplate> GetTemplates()
+        {
+            return templates;
         }
     
         /** Getter for property form.
@@ -883,7 +890,7 @@ namespace iTextSharp.text.pdf {
                 PdfAnnotation annotation = new PdfAnnotation(writer, new Rectangle(llx, lly, urx, ury));
                 if (newPage != 0) {
                     PdfIndirectReference refi = writer.GetPageReference(newPage);
-                    destination[0] = refi;
+                    destination.Set(0, refi);
                 }
                 if (destination != null) annotation.Put(PdfName.DEST, destination);
                 foreach (PdfName key in parameters.Keys)

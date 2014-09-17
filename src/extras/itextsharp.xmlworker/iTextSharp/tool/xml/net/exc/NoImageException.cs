@@ -50,6 +50,7 @@ namespace iTextSharp.tool.xml.net.exc {
      * @author redlab_b
      *
      */
+    [Serializable]
     public class NoImageException : Exception {
 
         /**
@@ -64,5 +65,7 @@ namespace iTextSharp.tool.xml.net.exc {
          */
         public NoImageException(String src, Exception e) : base(String.Format(LocaleMessages.GetInstance().GetMessage(LocaleMessages.IMG_SRC_NOTCONVERTED), src), e) {
         }
+
+        protected NoImageException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

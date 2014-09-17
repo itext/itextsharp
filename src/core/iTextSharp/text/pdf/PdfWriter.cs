@@ -15,7 +15,7 @@ using iTextSharp.text.error_messages;
 using iTextSharp.xmp;
 
 /*
- * $Id: PdfWriter.cs 770 2014-06-06 10:48:37Z asubach $
+ * $Id: PdfWriter.cs 800 2014-08-05 12:52:43Z pavel-alay $
  * 
  *
  * This file is part of the iText project.
@@ -3232,8 +3232,8 @@ namespace iTextSharp.text.pdf {
                         iccArray.Add(iccRef);
                         PdfArray colorspace = i.GetAsArray(PdfName.COLORSPACE);
                         if (colorspace != null) {
-                            if (colorspace.Size > 1 && PdfName.INDEXED.Equals(colorspace[0]))
-                                colorspace[1] = iccArray;
+                            if (colorspace.Size > 1 && PdfName.INDEXED.Equals(colorspace.GetPdfObject(0)))
+                                colorspace.Set(1, iccArray);
                             else
                                 i.Put(PdfName.COLORSPACE, iccArray);
                         }

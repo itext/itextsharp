@@ -10,7 +10,7 @@ using iTextSharp.text.pdf.intern;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: PdfContentByte.cs 779 2014-06-30 13:37:11Z asubach $
+ * $Id: PdfContentByte.cs 824 2014-09-11 18:09:01Z asubach $
  * 
  *
  * This file is part of the iText project.
@@ -1486,9 +1486,9 @@ namespace iTextSharp.text.pdf {
                             PdfArray ar = (PdfArray)value;
                             if (ar.Size == 4 
                                 && PdfName.INDEXED.Equals(ar.GetAsName(0)) 
-                                && ar[1].IsName()
-                                && ar[2].IsNumber()
-                                && ar[3].IsString()
+                                && ar.GetPdfObject(1).IsName()
+                                && ar.GetPdfObject(2).IsNumber()
+                                && ar.GetPdfObject(3).IsString()
                             ) {
                                 check = false;
                             }
@@ -1776,7 +1776,7 @@ namespace iTextSharp.text.pdf {
             if (state.fontDetails == null)
                 throw new Exception(MessageLocalization.GetComposedMessage("font.and.size.must.be.set.before.writing.any.text"));
             byte[] b = state.fontDetails.ConvertToBytes(text);
-            EscapeString(b, content);
+            StringUtils.EscapeString(b, content);
         }
     
         /**
@@ -1791,6 +1791,20 @@ namespace iTextSharp.text.pdf {
             }
             ShowText2(text);
             UpdateTx(text, 0);
+            content.Append("Tj").Append_i(separator);
+        }
+
+        public virtual void ShowTextGid(String gids) {
+            CheckState();
+            if (!inText && IsTagged()) {
+                BeginText(true);
+            }
+            if (state.fontDetails == null)
+                throw new NullReferenceException(
+                    MessageLocalization.GetComposedMessage("font.and.size.must.be.set.before.writing.any.text"));
+            Object[] objs = state.fontDetails.ConvertToBytesGid(gids);
+            StringUtils.EscapeString((byte[]) objs[0], content);
+            state.tx += ((int?) objs[2]).Value*0.001f*state.size;
             content.Append("Tj").Append_i(separator);
         }
         
@@ -2017,56 +2031,6 @@ namespace iTextSharp.text.pdf {
                 return content.Size;
             else
                 return content.Size - markedContentSize;
-        }
-    
-        /**
-         * Escapes a <CODE>byte</CODE> array according to the PDF conventions.
-         *
-         * @param b the <CODE>byte</CODE> array to escape
-         * @return an escaped <CODE>byte</CODE> array
-         */
-        internal static byte[] EscapeString(byte[] b) {
-            ByteBuffer content = new ByteBuffer();
-            EscapeString(b, content);
-            return content.ToByteArray();
-        }
-    
-        /**
-         * Escapes a <CODE>byte</CODE> array according to the PDF conventions.
-         *
-         * @param b the <CODE>byte</CODE> array to escape
-         */
-        internal static void EscapeString(byte[] b, ByteBuffer content) {
-            content.Append_i('(');
-            for (int k = 0; k < b.Length; ++k) {
-                byte c = b[k];
-                switch ((int)c) {
-                    case '\r':
-                        content.Append("\\r");
-                        break;
-                    case '\n':
-                        content.Append("\\n");
-                        break;
-                    case '\t':
-                        content.Append("\\t");
-                        break;
-                    case '\b':
-                        content.Append("\\b");
-                        break;
-                    case '\f':
-                        content.Append("\\f");
-                        break;
-                    case '(':
-                    case ')':
-                    case '\\':
-                        content.Append_i('\\').Append_i(c);
-                        break;
-                    default:
-                        content.Append_i(c);
-                        break;
-                }
-            }
-            content.Append(')');
         }
     
         /**

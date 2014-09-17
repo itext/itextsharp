@@ -1,7 +1,7 @@
 using System;
 using System.IO;
 /*
- * $Id: InvalidPdfException.cs 744 2014-05-15 17:11:29Z rafhens $
+ * $Id: InvalidPdfException.cs 812 2014-08-26 11:05:07Z pavel-alay $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -52,6 +52,7 @@ namespace iTextSharp.text.exceptions {
      * Gets thrown when the document isn't a valid PDF document.
      * @since 2.1.5
      */
+	[Serializable]
     public class InvalidPdfException : IOException {
 
         private readonly Exception cause;
@@ -72,5 +73,7 @@ namespace iTextSharp.text.exceptions {
         {
             this.cause = cause;
         }
+
+		protected InvalidPdfException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
 }

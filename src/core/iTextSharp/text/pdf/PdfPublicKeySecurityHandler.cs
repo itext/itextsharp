@@ -12,7 +12,7 @@ using Org.BouncyCastle.Asn1.X509;
 using Org.BouncyCastle.Security;
 
 /*
- * $Id: PdfPublicKeySecurityHandler.cs 744 2014-05-15 17:11:29Z rafhens $
+ * $Id: PdfPublicKeySecurityHandler.cs 817 2014-09-01 07:04:32Z asubach $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -177,7 +177,7 @@ namespace iTextSharp.text.pdf {
             for (int i=0; i<recipients.Count; i++) {
                 try {
                     cms = GetEncodedRecipient(i);
-                    EncodedRecipients.Add(new PdfLiteral(PdfContentByte.EscapeString(cms)));
+                    EncodedRecipients.Add(new PdfLiteral(StringUtils.EscapeString(cms)));
                 } catch {
                     EncodedRecipients = null;
                 }
