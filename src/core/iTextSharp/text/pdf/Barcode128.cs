@@ -231,6 +231,33 @@ namespace iTextSharp.text.pdf {
             codeType = CODE128;
         }
 
+        public enum Barcode128CodeSet {
+            A,
+            B,
+            C,
+            AUTO
+        }
+
+        public static char GetStartSymbol(Barcode128CodeSet codeSet) {
+            switch (codeSet) {
+                case Barcode128CodeSet.A:
+                    return START_A;
+                case Barcode128CodeSet.B:
+                    return START_B;
+                case Barcode128CodeSet.C:
+                    return START_C;
+                default:
+                    return START_B;
+            }
+        }
+
+        public virtual Barcode128CodeSet CodeSet {
+            get { return codeSet; }
+            set { codeSet = value; }
+        }
+
+        private Barcode128CodeSet codeSet = Barcode128CodeSet.AUTO;
+
         /**
         * Removes the FNC1 codes in the text.
         * @param code the text to clean
@@ -348,19 +375,20 @@ namespace iTextSharp.text.pdf {
             }
             return (char)(textIndex - start) + outs.ToString();
         }
-        
+
         /** Converts the human readable text to the characters needed to
-        * create a barcode. Some optimization is done to get the shortest code.
-        * @param text the text to convert
-        * @param ucc <CODE>true</CODE> if it is an UCC/EAN-128. In this case
-        * the character FNC1 is added
-        * @return the code ready to be fed to GetBarsCode128Raw()
-        */    
-        public static string GetRawText(string text, bool ucc) {
+         * create a barcode using the specified code set.
+         * @param text the text to convert
+         * @param ucc <CODE>true</CODE> if it is an UCC/EAN-128. In this case
+         * the character FNC1 is added
+         * @param codeSet forced code set, or AUTO for optimized barcode.
+         * @return the code ready to be fed to getBarsCode128Raw()
+         */
+        public static string GetRawText(string text, bool ucc, Barcode128CodeSet codeSet) {
             String outs = "";
             int tLen = text.Length;
             if (tLen == 0) {
-                outs += START_B;
+                outs += GetStartSymbol(codeSet);
                 if (ucc)
                     outs += FNC1_INDEX;
                 return outs;
@@ -374,7 +402,7 @@ namespace iTextSharp.text.pdf {
             c = text[0];
             char currentCode = START_B;
             int index = 0;
-            if (IsNextDigits(text, index, 2)) {
+            if ((codeSet == Barcode128CodeSet.AUTO || codeSet == Barcode128CodeSet.C) && IsNextDigits(text, index, 2)) {
                 currentCode = START_C;
                 outs += currentCode;
                 if (ucc)
@@ -401,66 +429,60 @@ namespace iTextSharp.text.pdf {
                     outs += (char)(c - ' ');
                 ++index;
             }
+            if (currentCode != GetStartSymbol(codeSet))
+                throw new Exception(MessageLocalization.GetComposedMessage("there.are.illegal.characters.for.barcode.128.in.1", text));
             while (index < tLen) {
                 switch (currentCode) {
-                    case START_A:
-                        {
-                            if (IsNextDigits(text, index, 4)) {
-                                currentCode = START_C;
-                                outs += CODE_AB_TO_C;
-                                String out2 = GetPackedRawDigits(text, index, 4);
-                                index += (int)out2[0];
-                                outs += out2.Substring(1);
-                            }
-                            else {
-                                c = text[index++];
-                                if (c == FNC1)
-                                    outs += FNC1_INDEX;
-                                else if (c > '_') {
-                                    currentCode = START_B;
-                                    outs += CODE_AC_TO_B;
-                                    outs += (char)(c - ' ');
-                                }
-                                else if (c < ' ')
-                                    outs += (char)(c + 64);
-                                else
-                                    outs += (char)(c - ' ');
+                    case START_A: {
+                        if (codeSet == Barcode128CodeSet.AUTO && IsNextDigits(text, index, 4)) {
+                            currentCode = START_C;
+                            outs += CODE_AB_TO_C;
+                            String out2 = GetPackedRawDigits(text, index, 4);
+                            index += (int) out2[0];
+                            outs += out2.Substring(1);
+                        } else {
+                            c = text[index++];
+                            if (c == FNC1)
+                                outs += FNC1_INDEX;
+                            else if (c > '_') {
+                                currentCode = START_B;
+                                outs += CODE_AC_TO_B;
+                                outs += (char) (c - ' ');
+                            } else if (c < ' ')
+                                outs += (char) (c + 64);
+                            else
+                                outs += (char) (c - ' ');
+                        }
+                    }
+                        break;
+                    case START_B: {
+                        if (codeSet == Barcode128CodeSet.AUTO && IsNextDigits(text, index, 4)) {
+                            currentCode = START_C;
+                            outs += CODE_AB_TO_C;
+                            String out2 = GetPackedRawDigits(text, index, 4);
+                            index += (int) out2[0];
+                            outs += out2.Substring(1);
+                        } else {
+                            c = text[index++];
+                            if (c == FNC1)
+                                outs += FNC1_INDEX;
+                            else if (c < ' ') {
+                                currentCode = START_A;
+                                outs += CODE_BC_TO_A;
+                                outs += (char) (c + 64);
+                            } else {
+                                outs += (char) (c - ' ');
                             }
                         }
+                    }
                         break;
-                    case START_B:
-                        {
-                            if (IsNextDigits(text, index, 4)) {
-                                currentCode = START_C;
-                                outs += CODE_AB_TO_C;
-                                String out2 = GetPackedRawDigits(text, index, 4);
-                                index += (int)out2[0];
-                                outs += out2.Substring(1);
-                            }
-                            else {
-                                c = text[index++];
-                                if (c == FNC1)
-                                    outs += FNC1_INDEX;
-                                else if (c < ' ') {
-                                    currentCode = START_A;
-                                    outs += CODE_BC_TO_A;
-                                    outs += (char)(c + 64);
-                                }
-                                else {
-                                    outs += (char)(c - ' ');
-                                }
-                            }
-                        }
-                        break;
-                    case START_C:
-                        {
-                            if (IsNextDigits(text, index, 2)) {
-                                String out2 = GetPackedRawDigits(text, index, 2);
-                                index += (int)out2[0];
-                                outs += out2.Substring(1);
-                            }
-                            else {
-                                c = text[index++];
+                    case START_C: {
+                        if (IsNextDigits(text, index, 2)) {
+                            String out2 = GetPackedRawDigits(text, index, 2);
+                            index += (int) out2[0];
+                            outs += out2.Substring(1);
+                        } else {
+                            c = text[index++];
                                 if (c == FNC1)
                                     outs += FNC1_INDEX;
                                 else if (c < ' ') {
@@ -471,14 +493,28 @@ namespace iTextSharp.text.pdf {
                                 else {
                                     currentCode = START_B;
                                     outs += CODE_AC_TO_B;
-                                    outs += (char)(c - ' ');
+                                    outs += (char) (c - ' ');
                                 }
-                            }
                         }
+                    }
                         break;
                 }
+                if (codeSet != Barcode128CodeSet.AUTO && currentCode != GetStartSymbol(codeSet))
+                    throw new Exception(MessageLocalization.GetComposedMessage("there.are.illegal.characters.for.barcode.128.in.1", text));
+
             }
             return outs;
+        }
+
+        /** Converts the human readable text to the characters needed to
+         * create a barcode. Some optimization is done to get the shortest code.
+         * @param text the text to convert
+         * @param ucc <CODE>true</CODE> if it is an UCC/EAN-128. In this case
+         * the character FNC1 is added
+         * @return the code ready to be fed to getBarsCode128Raw()
+         */
+        public static String GetRawText(String text, bool ucc) {
+            return GetRawText(text, ucc, Barcode128CodeSet.AUTO);
         }
         
         /** Generates the bars. The input has the actual barcodes, not
@@ -538,7 +574,7 @@ namespace iTextSharp.text.pdf {
                         fullCode = code;
                 }
                 else {
-                    fullCode = GetRawText(code, codeType == CODE128_UCC);
+                    fullCode = GetRawText(code, codeType == CODE128_UCC, codeSet);
                 }
                 int len = fullCode.Length;
                 float fullWidth = (len + 2) * 11 * x + 2 * x;
@@ -610,7 +646,7 @@ namespace iTextSharp.text.pdf {
                     bCode = code;
             }
             else {
-                bCode = GetRawText(code, codeType == CODE128_UCC);
+                bCode = GetRawText(code, codeType == CODE128_UCC, codeSet);
             }
             int len = bCode.Length;
             float fullWidth = (len + 2) * 11 * x + 2 * x;
