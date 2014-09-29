@@ -167,6 +167,8 @@ namespace iTextSharp.text.pdf {
         /** The chunks that form the text. */
     //    protected ArrayList chunks = new ArrayList();
         protected BidiLine bidiLine;
+
+        protected bool isWordSplit;
     
         /** The current y line location. Text will be written at this line minus the leading. */
         protected float yLine;
@@ -829,6 +831,7 @@ namespace iTextSharp.text.pdf {
         }
 
         virtual public int Go(bool simulate, IElement elementToGo) {
+            isWordSplit = false;
             if (composite)
                 return GoComposite(simulate);
 
@@ -883,27 +886,23 @@ namespace iTextSharp.text.pdf {
             PdfLine line;
             float x1;
             int status = 0;
-            while (true)
-            {
+            while (true) {
                 firstIndent = (lastWasNewline ? indent : followingIndent); //
-                if (rectangularMode)
-                {
-                    if (rectangularWidth <= firstIndent + rightIndent)
-                    {
+                if (rectangularMode) {
+                    if (rectangularWidth <= firstIndent + rightIndent) {
                         status = NO_MORE_COLUMN;
                         if (bidiLine.IsEmpty())
                             status |= NO_MORE_TEXT;
                         break;
                     }
-                    if (bidiLine.IsEmpty())
-                    {
+                    if (bidiLine.IsEmpty()) {
                         status = NO_MORE_TEXT;
                         break;
                     }
                     line = bidiLine.ProcessLine(leftX, rectangularWidth - firstIndent - rightIndent, alignment,
-                                                localRunDirection, arabicOptions, minY, yLine, descender);
-                    if (line == null)
-                    {
+                        localRunDirection, arabicOptions, minY, yLine, descender);
+                    isWordSplit |= bidiLine.IsWordSplit();
+                    if (line == null) {
                         status = NO_MORE_TEXT;
                         break;
                     }
@@ -912,8 +911,7 @@ namespace iTextSharp.text.pdf {
                         currentLeading = line.Ascender;
                     else
                         currentLeading = Math.Max(maxSize[0], maxSize[1] - descender);
-                    if (yLine > maxY || yLine - currentLeading < minY)
-                    {
+                    if (yLine > maxY || yLine - currentLeading < minY) {
                         status = NO_MORE_COLUMN;
                         bidiLine.Restore();
                         break;
@@ -1006,6 +1004,14 @@ namespace iTextSharp.text.pdf {
                     canvas.Add(text);
             }
             return status;
+        }
+
+        /**
+         * Call this after go() to know if any word was split into several lines.
+         * @return
+         */
+        public virtual bool IsWordSplit() {
+            return isWordSplit;
         }
     
         /**
@@ -1332,6 +1338,7 @@ namespace iTextSharp.text.pdf {
                         yLine = compositeColumn.yLine;
                         linesWritten += compositeColumn.linesWritten;
                         descender = compositeColumn.descender;
+                        isWordSplit |= compositeColumn.IsWordSplit();
                     }
                     currentLeading = compositeColumn.currentLeading;
                     if ((status & NO_MORE_TEXT) != 0) {

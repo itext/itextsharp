@@ -120,11 +120,11 @@ namespace iTextSharp.tool.xml.html.table {
                     }
                 }
                 if(repeatFooter == null || !Util.EqualsIgnoreCase(repeatFooter, "yes")) {
-                    SortUtil.InsertionSort<TableRowElement>(tableRows, delegate(TableRowElement o1, TableRowElement o2) {
+                    SortUtil.MergeSort<TableRowElement>(tableRows, delegate(TableRowElement o1, TableRowElement o2) {
                         return o1.RowPlace.Normal.CompareTo(o2.RowPlace.Normal);
                     });
                 } else {
-                    SortUtil.InsertionSort<TableRowElement>(tableRows, delegate(TableRowElement o1, TableRowElement o2) {
+                    SortUtil.MergeSort<TableRowElement>(tableRows, delegate(TableRowElement o1, TableRowElement o2) {
                         return o1.RowPlace.Repeated.CompareTo(o2.RowPlace.Repeated);
                     });
                 }
