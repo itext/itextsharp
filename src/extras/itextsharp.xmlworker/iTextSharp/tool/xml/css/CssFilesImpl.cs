@@ -96,7 +96,7 @@ namespace iTextSharp.tool.xml.css {
                 rules.AddRange(cssFile.Get(t));
             }
             // C#-specific code: use stable sort
-            SortUtil.InsertionSort(rules);
+            SortUtil.MergeSort(rules);
             foreach (CssRule rule in rules)
                 PopulateOneCss(aggregatedProps, rule.NormalDeclarations);
             foreach (CssRule rule in rules)
