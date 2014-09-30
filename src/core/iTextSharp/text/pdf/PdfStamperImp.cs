@@ -1114,6 +1114,8 @@ namespace iTextSharp.text.pdf {
                     PdfObject annoto = annots.GetDirectObject(idx);
                     if (annoto is PdfIndirectReference && !annoto.IsIndirect())
                         continue;
+                    if (!(annoto is PdfDictionary))
+                        continue;
 
                     PdfDictionary annDic = (PdfDictionary) annoto;
                     if (flattenFreeTextAnnotations) {
