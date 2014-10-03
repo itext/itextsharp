@@ -155,8 +155,7 @@ namespace iTextSharp.text.pdf {
         */
         public static PdfAnnotation CreateScreen(PdfWriter writer, Rectangle rect, String clipTitle, PdfFileSpecification fs,
                                                 String mimeType, bool playOnDisplay) {
-            PdfAnnotation ann = new PdfAnnotation(writer, rect);
-            ann.Put(PdfName.SUBTYPE, PdfName.SCREEN);
+            PdfAnnotation ann = writer.CreateAnnotation(rect, PdfName.SCREEN);
             ann.Put (PdfName.F, new PdfNumber(FLAGS_PRINT));
             ann.Put(PdfName.TYPE, PdfName.ANNOT);
             ann.SetPage();
@@ -184,8 +183,7 @@ namespace iTextSharp.text.pdf {
         }
     
         public static PdfAnnotation CreateText(PdfWriter writer, Rectangle rect, string title, string contents, bool open, string icon) {
-            PdfAnnotation annot = new PdfAnnotation(writer, rect);
-            annot.Put(PdfName.SUBTYPE, PdfName.TEXT);
+            PdfAnnotation annot = writer.CreateAnnotation(rect, PdfName.TEXT);
             if (title != null)
                 annot.Put(PdfName.T, new PdfString(title, PdfObject.TEXT_UNICODE));
             if (contents != null)
@@ -199,8 +197,7 @@ namespace iTextSharp.text.pdf {
         }
     
         protected static PdfAnnotation CreateLink(PdfWriter writer, Rectangle rect, PdfName highlight) {
-            PdfAnnotation annot = new PdfAnnotation(writer, rect);
-            annot.Put(PdfName.SUBTYPE, PdfName.LINK);
+            PdfAnnotation annot = writer.CreateAnnotation(rect, PdfName.LINK);
             if (!highlight.Equals(HIGHLIGHT_INVERT))
                 annot.Put(PdfName.H, highlight);
             return annot;
@@ -227,16 +224,14 @@ namespace iTextSharp.text.pdf {
         }
     
         public static PdfAnnotation CreateFreeText(PdfWriter writer, Rectangle rect, string contents, PdfContentByte defaultAppearance) {
-            PdfAnnotation annot = new PdfAnnotation(writer, rect);
-            annot.Put(PdfName.SUBTYPE, PdfName.FREETEXT);
+            PdfAnnotation annot = writer.CreateAnnotation(rect, PdfName.FREETEXT);
             annot.Put(PdfName.CONTENTS, new PdfString(contents, PdfObject.TEXT_UNICODE));
             annot.DefaultAppearanceString = defaultAppearance;
             return annot;
         }
 
         public static PdfAnnotation CreateLine(PdfWriter writer, Rectangle rect, string contents, float x1, float y1, float x2, float y2) {
-            PdfAnnotation annot = new PdfAnnotation(writer, rect);
-            annot.Put(PdfName.SUBTYPE, PdfName.LINE);
+            PdfAnnotation annot = writer.CreateAnnotation(rect, PdfName.LINE);
             annot.Put(PdfName.CONTENTS, new PdfString(contents, PdfObject.TEXT_UNICODE));
             PdfArray array = new PdfArray(new PdfNumber(x1));
             array.Add(new PdfNumber(y1));
@@ -247,17 +242,16 @@ namespace iTextSharp.text.pdf {
         }
 
         public static PdfAnnotation CreateSquareCircle(PdfWriter writer, Rectangle rect, string contents, bool square) {
-            PdfAnnotation annot = new PdfAnnotation(writer, rect);
+            PdfAnnotation annot;
             if (square)
-                annot.Put(PdfName.SUBTYPE, PdfName.SQUARE);
+                annot = writer.CreateAnnotation(rect, PdfName.SQUARE);
             else
-                annot.Put(PdfName.SUBTYPE, PdfName.CIRCLE);
+                annot = writer.CreateAnnotation(rect, PdfName.CIRCLE);
             annot.Put(PdfName.CONTENTS, new PdfString(contents, PdfObject.TEXT_UNICODE));
             return annot;
         }
 
         public static PdfAnnotation CreateMarkup(PdfWriter writer, Rectangle rect, string contents, int type, float[] quadPoints) {
-            PdfAnnotation annot = new PdfAnnotation(writer, rect);
             PdfName name = PdfName.HIGHLIGHT;
             switch (type) {
                 case MARKUP_UNDERLINE:
@@ -270,7 +264,7 @@ namespace iTextSharp.text.pdf {
                     name = PdfName.SQUIGGLY;
                     break;
             }
-            annot.Put(PdfName.SUBTYPE, name);
+            PdfAnnotation annot = writer.CreateAnnotation(rect, name);
             annot.Put(PdfName.CONTENTS, new PdfString(contents, PdfObject.TEXT_UNICODE));
             PdfArray array = new PdfArray();
             for (int k = 0; k < quadPoints.Length; ++k)
@@ -280,16 +274,14 @@ namespace iTextSharp.text.pdf {
         }
 
         public static PdfAnnotation CreateStamp(PdfWriter writer, Rectangle rect, string contents, string name) {
-            PdfAnnotation annot = new PdfAnnotation(writer, rect);
-            annot.Put(PdfName.SUBTYPE, PdfName.STAMP);
+            PdfAnnotation annot = writer.CreateAnnotation(rect, PdfName.STAMP);
             annot.Put(PdfName.CONTENTS, new PdfString(contents, PdfObject.TEXT_UNICODE));
             annot.Put(PdfName.NAME, new PdfName(name));
             return annot;
         }
 
         public static PdfAnnotation CreateInk(PdfWriter writer, Rectangle rect, string contents, float[][] inkList) {
-            PdfAnnotation annot = new PdfAnnotation(writer, rect);
-            annot.Put(PdfName.SUBTYPE, PdfName.INK);
+            PdfAnnotation annot = writer.CreateAnnotation(rect, PdfName.INK);
             annot.Put(PdfName.CONTENTS, new PdfString(contents, PdfObject.TEXT_UNICODE));
             PdfArray outer = new PdfArray();
             for (int k = 0; k < inkList.Length; ++k) {
@@ -328,8 +320,7 @@ namespace iTextSharp.text.pdf {
         * @throws IOException
         */
         public static PdfAnnotation CreateFileAttachment(PdfWriter writer, Rectangle rect, String contents, PdfFileSpecification fs) {
-            PdfAnnotation annot = new PdfAnnotation(writer, rect);
-            annot.Put(PdfName.SUBTYPE, PdfName.FILEATTACHMENT);
+            PdfAnnotation annot = writer.CreateAnnotation(rect, PdfName.FILEATTACHMENT);
             if (contents != null)
                 annot.Put(PdfName.CONTENTS, new PdfString(contents, PdfObject.TEXT_UNICODE));
             annot.Put(PdfName.FS, fs.Reference);
@@ -337,8 +328,7 @@ namespace iTextSharp.text.pdf {
         }
 
         public static PdfAnnotation CreatePopup(PdfWriter writer, Rectangle rect, string contents, bool open) {
-            PdfAnnotation annot = new PdfAnnotation(writer, rect);
-            annot.Put(PdfName.SUBTYPE, PdfName.POPUP);
+            PdfAnnotation annot = writer.CreateAnnotation(rect, PdfName.POPUP);
             if (contents != null)
                 annot.Put(PdfName.CONTENTS, new PdfString(contents, PdfObject.TEXT_UNICODE));
             if (open)
@@ -357,11 +347,11 @@ namespace iTextSharp.text.pdf {
          */
         public static PdfAnnotation CreatePolygonPolyline(
             PdfWriter writer, Rectangle rect, String contents, bool polygon, PdfArray vertices) {
-            PdfAnnotation annot = new PdfAnnotation(writer, rect);
+            PdfAnnotation annot = null;
             if (polygon)
-                annot.Put(PdfName.SUBTYPE, PdfName.POLYGON);
+                annot = writer.CreateAnnotation(rect, PdfName.POLYGON);
             else
-                annot.Put(PdfName.SUBTYPE, PdfName.POLYLINE);
+                annot = writer.CreateAnnotation(rect, PdfName.POLYLINE);
             annot.Put(PdfName.CONTENTS, new PdfString(contents, PdfObject.TEXT_UNICODE));
             annot.Put(PdfName.VERTICES, new PdfArray(vertices));
             return annot;
@@ -564,7 +554,7 @@ namespace iTextSharp.text.pdf {
                 dupField.kids = srcField.kids;
             }
             else
-                dup = new PdfAnnotation(annot.writer, null);
+                dup = annot.writer.CreateAnnotation(null, (PdfName)annot.Get(PdfName.SUBTYPE));
             dup.Merge(annot);
             dup.form = annot.form;
             dup.annotation = annot.annotation;
@@ -887,7 +877,7 @@ namespace iTextSharp.text.pdf {
             }
             
             virtual public PdfAnnotation CreateAnnotation(PdfWriter writer) {
-                PdfAnnotation annotation = new PdfAnnotation(writer, new Rectangle(llx, lly, urx, ury));
+                PdfAnnotation annotation = writer.CreateAnnotation(new Rectangle(llx, lly, urx, ury), null);
                 if (newPage != 0) {
                     PdfIndirectReference refi = writer.GetPageReference(newPage);
                     destination.Set(0, refi);

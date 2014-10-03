@@ -319,6 +319,27 @@ namespace iTextSharp.text.pdf {
             base.Close();
             GetPdfAChecker().Close(this);
         }
+
+        public override PdfAnnotation CreateAnnotation(Rectangle rect, PdfName subtype) {
+            PdfAnnotation a = base.CreateAnnotation(rect, subtype);
+            if (!PdfName.POPUP.Equals(subtype))
+                a.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            return a;
+        }
+
+        public override PdfAnnotation CreateAnnotation(float llx, float lly, float urx, float ury, PdfString title, PdfString content, PdfName subtype) {
+            PdfAnnotation a = base.CreateAnnotation(llx, lly, urx, ury, title, content, subtype);
+            if (!PdfName.POPUP.Equals(subtype))
+                a.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            return a;
+        }
+
+        public override PdfAnnotation CreateAnnotation(float llx, float lly, float urx, float ury, PdfAction action, PdfName subtype) {
+            PdfAnnotation a = base.CreateAnnotation(llx, lly, urx, ury, action, subtype);
+            if (!PdfName.POPUP.Equals(subtype))
+                a.Put(PdfName.F, new PdfNumber(PdfAnnotation.FLAGS_PRINT));
+            return a;
+        }
     }
 
 }

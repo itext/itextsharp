@@ -1518,8 +1518,7 @@ namespace iTextSharp.text.pdf {
                                 graphics.BeginText(true);
                             }
                         }
-                        if (chunk.IsAttribute(Chunk.ACTION))
-                        {
+                        if (chunk.IsAttribute(Chunk.ACTION)) {
                             float subtract = lastBaseFactor;
                             if (nextChunk != null && nextChunk.IsAttribute(Chunk.ACTION))
                                 subtract = 0;
@@ -1527,10 +1526,10 @@ namespace iTextSharp.text.pdf {
                                 subtract += hangingCorrection;
                             PdfAnnotation annot = null;
                             if (chunk.IsImage()) {
-                                annot = new PdfAnnotation(writer, xMarker, yMarker + chunk.ImageOffsetY, xMarker + width - subtract, yMarker + chunk.ImageHeight + chunk.ImageOffsetY, (PdfAction)chunk.GetAttribute(Chunk.ACTION));
+                                annot = writer.CreateAnnotation(xMarker, yMarker + chunk.ImageOffsetY, xMarker + width - subtract, yMarker + chunk.ImageHeight + chunk.ImageOffsetY, (PdfAction)chunk.GetAttribute(Chunk.ACTION), null);
                             }
                             else {
-                        	    annot = new PdfAnnotation(writer, xMarker, yMarker + descender + chunk.TextRise, xMarker + width - subtract, yMarker + ascender + chunk.TextRise, (PdfAction)chunk.GetAttribute(Chunk.ACTION));
+                                annot = writer.CreateAnnotation(xMarker, yMarker + descender + chunk.TextRise, xMarker + width - subtract, yMarker + ascender + chunk.TextRise, (PdfAction)chunk.GetAttribute(Chunk.ACTION), null);
                             }
                             text.AddAnnotation(annot, true);
                             if (IsTagged(writer) && chunk.accessibleElement != null) {
@@ -2084,7 +2083,7 @@ namespace iTextSharp.text.pdf {
         */
         internal void LocalGoto(String name, float llx, float lly, float urx, float ury) {
             PdfAction action = GetLocalGotoAction(name);
-            annotationsImp.AddPlainAnnotation(new PdfAnnotation(writer, llx, lly, urx, ury, action));
+            annotationsImp.AddPlainAnnotation(writer.CreateAnnotation(llx, lly, urx, ury, action, null));
         }
         
         /**
@@ -2097,7 +2096,7 @@ namespace iTextSharp.text.pdf {
         * @param ury the upper right y corner of the activation area
         */
         internal void RemoteGoto(String filename, String name, float llx, float lly, float urx, float ury) {
-            annotationsImp.AddPlainAnnotation(new PdfAnnotation(writer, llx, lly, urx, ury, new PdfAction(filename, name)));
+            annotationsImp.AddPlainAnnotation(writer.CreateAnnotation(llx, lly, urx, ury, new PdfAction(filename, name), null));
         }
         
         /**
@@ -2110,7 +2109,7 @@ namespace iTextSharp.text.pdf {
         * @param ury the upper right y corner of the activation area
         */
         internal void RemoteGoto(String filename, int page, float llx, float lly, float urx, float ury) {
-            AddAnnotation(new PdfAnnotation(writer, llx, lly, urx, ury, new PdfAction(filename, page)));
+            AddAnnotation(writer.CreateAnnotation(llx, lly, urx, ury, new PdfAction(filename, page), null));
         }
         
         /** Implements an action in an area.
@@ -2121,7 +2120,7 @@ namespace iTextSharp.text.pdf {
         * @param ury the upper right y corner of the activation area
         */
         internal void SetAction(PdfAction action, float llx, float lly, float urx, float ury) {
-            AddAnnotation(new PdfAnnotation(writer, llx, lly, urx, ury, action));
+            AddAnnotation(writer.CreateAnnotation(llx, lly, urx, ury, action, null));
         }
         
         /**

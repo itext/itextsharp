@@ -202,11 +202,11 @@ namespace iTextSharp.text.pdf.intern {
         public static PdfAnnotation ConvertAnnotation(PdfWriter writer, Annotation annot, Rectangle defaultRect) {
             switch (annot.AnnotationType) {
                 case Annotation.URL_NET:
-                    return new PdfAnnotation(writer, annot.GetLlx(), annot.GetLly(), annot.GetUrx(), annot.GetUry(), new PdfAction((Uri) annot.Attributes[Annotation.URL]));
+                    return writer.CreateAnnotation(annot.GetLlx(), annot.GetLly(), annot.GetUrx(), annot.GetUry(), new PdfAction((Uri)annot.Attributes[Annotation.URL]), null);
                 case Annotation.URL_AS_STRING:
-                    return new PdfAnnotation(writer, annot.GetLlx(), annot.GetLly(), annot.GetUrx(), annot.GetUry(), new PdfAction((String) annot.Attributes[Annotation.FILE]));
+                    return writer.CreateAnnotation(annot.GetLlx(), annot.GetLly(), annot.GetUrx(), annot.GetUry(), new PdfAction((String)annot.Attributes[Annotation.FILE]), null);
                 case Annotation.FILE_DEST:
-                    return new PdfAnnotation(writer, annot.GetLlx(), annot.GetLly(), annot.GetUrx(), annot.GetUry(), new PdfAction((String) annot.Attributes[Annotation.FILE], (String) annot.Attributes[Annotation.DESTINATION]));
+                    return writer.CreateAnnotation(annot.GetLlx(), annot.GetLly(), annot.GetUrx(), annot.GetUry(), new PdfAction((String)annot.Attributes[Annotation.FILE], (String)annot.Attributes[Annotation.DESTINATION]), null);
                 case Annotation.SCREEN:
                     bool[] sparams = (bool[])annot.Attributes[Annotation.PARAMETERS];
                     String fname = (String) annot.Attributes[Annotation.FILE];
@@ -220,13 +220,13 @@ namespace iTextSharp.text.pdf.intern {
                             fname, fs, mimetype, sparams[1]);
                     return ann;
                 case Annotation.FILE_PAGE:
-                    return new PdfAnnotation(writer, annot.GetLlx(), annot.GetLly(), annot.GetUrx(), annot.GetUry(), new PdfAction((String) annot.Attributes[Annotation.FILE], (int)annot.Attributes[Annotation.PAGE]));
+                    return writer.CreateAnnotation(annot.GetLlx(), annot.GetLly(), annot.GetUrx(), annot.GetUry(), new PdfAction((String)annot.Attributes[Annotation.FILE], ((int?)annot.Attributes[Annotation.PAGE]).Value), null);
                 case Annotation.NAMED_DEST:
-                    return new PdfAnnotation(writer, annot.GetLlx(), annot.GetLly(), annot.GetUrx(), annot.GetUry(), new PdfAction((int) annot.Attributes[Annotation.NAMED]));
+                    return writer.CreateAnnotation(annot.GetLlx(), annot.GetLly(), annot.GetUrx(), annot.GetUry(), new PdfAction(((int?)annot.Attributes[Annotation.NAMED]).Value), null);
                 case Annotation.LAUNCH:
-                    return new PdfAnnotation(writer, annot.GetLlx(), annot.GetLly(), annot.GetUrx(), annot.GetUry(), new PdfAction((String) annot.Attributes[Annotation.APPLICATION],(String) annot.Attributes[Annotation.PARAMETERS],(String) annot.Attributes[Annotation.OPERATION],(String) annot.Attributes[Annotation.DEFAULTDIR]));
+                    return writer.CreateAnnotation(annot.GetLlx(), annot.GetLly(), annot.GetUrx(), annot.GetUry(), new PdfAction((String)annot.Attributes[Annotation.APPLICATION], (String)annot.Attributes[Annotation.PARAMETERS], (String)annot.Attributes[Annotation.OPERATION], (String)annot.Attributes[Annotation.DEFAULTDIR]), null);
                 default:
-                    return new PdfAnnotation(writer, defaultRect.Left, defaultRect.Bottom, defaultRect.Right, defaultRect.Top, new PdfString(annot.Title, PdfObject.TEXT_UNICODE), new PdfString(annot.Content, PdfObject.TEXT_UNICODE));
+                    return writer.CreateAnnotation(defaultRect.Left, defaultRect.Bottom, defaultRect.Right, defaultRect.Top, new PdfString(annot.Title, PdfObject.TEXT_UNICODE), new PdfString(annot.Content, PdfObject.TEXT_UNICODE), null);
             }
         }
     }

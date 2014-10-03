@@ -1300,12 +1300,14 @@ namespace iTextSharp.text.pdf {
             reference.Put(PdfName.TRANSFORMMETHOD, PdfName.DOCMDP);
             reference.Put(PdfName.TYPE, PdfName.SIGREF);
             reference.Put(PdfName.TRANSFORMPARAMS, transformParams);
-            reference.Put(new PdfName("DigestValue"), new PdfString("aa"));
-            PdfArray loc = new PdfArray();
-            loc.Add(new PdfNumber(0));
-            loc.Add(new PdfNumber(0));
-            reference.Put(new PdfName("DigestLocation"), loc);
-            reference.Put(new PdfName("DigestMethod"), new PdfName("MD5"));
+            if (writer.GetPdfVersion().Version < PdfWriter.VERSION_1_6) {
+                reference.Put(new PdfName("DigestValue"), new PdfString("aa"));
+                PdfArray loc = new PdfArray();
+                loc.Add(new PdfNumber(0));
+                loc.Add(new PdfNumber(0));
+                reference.Put(new PdfName("DigestLocation"), loc);
+                reference.Put(new PdfName("DigestMethod"), new PdfName("MD5"));
+            }
             reference.Put(PdfName.DATA, writer.reader.Trailer.Get(PdfName.ROOT));
             PdfArray types = new PdfArray();
             types.Add(reference);
