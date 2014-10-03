@@ -501,7 +501,7 @@ namespace iTextSharp.text.pdf.intern
                                 if (signatureDict != null) {
                                     PdfArray references = GetDirectArray(signatureDict.Get(PdfName.REFERENCE));
                                     if (references != null) {
-                                        for (int i = 0; i < references.Length; i++) {
+                                        for (int i = 0; i < references.Size; i++) {
                                             PdfDictionary referenceDict = GetDirectDictionary(references[i]);
                                             if (referenceDict.Contains(DIGESTLOCATION)
                                                     || referenceDict.Contains(DIGESTMETHOD)
