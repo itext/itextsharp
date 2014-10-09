@@ -305,7 +305,7 @@ public class CompareTool {
 
         IList<int> equalPages = new List<int>(cmpPages.Count);
         for (int i = 0; i < cmpPages.Count; i++) {
-            if (ObjectsAreEqual(outPages[i], cmpPages[i]))
+            if (CompareDictionaries(outPages[i], cmpPages[i]))
                 equalPages.Add(i);
         }
         outReader.Close();
@@ -354,29 +354,7 @@ public class CompareTool {
         }
     }
 
-    private bool ObjectsAreEqual(PdfDictionary outDict, PdfDictionary cmpDict) {
-        foreach (PdfName key in cmpDict.Keys) {
-            if (key.CompareTo(PdfName.PARENT) == 0) continue;
-            if (key.CompareTo(PdfName.BASEFONT) == 0 || key.CompareTo(PdfName.FONTNAME) == 0) {
-                PdfObject cmpObj = cmpDict.GetDirectObject(key);
-                if (cmpObj.IsName() && cmpObj.ToString().IndexOf('+') > 0) {
-                    PdfObject outObj = outDict.GetDirectObject(key);
-                    if (!outObj.IsName() || outObj.ToString().IndexOf('+') == -1)
-                        return false;
-                    String cmpName = cmpObj.ToString().Substring(cmpObj.ToString().IndexOf('+'));
-                    String outName = outObj.ToString().Substring(outObj.ToString().IndexOf('+'));
-                    if (!cmpName.Equals(outName))
-                        return false;
-                    continue;
-                }
-            }
-            if (!ObjectsAreEqual(outDict.Get(key), cmpDict.Get(key)))
-                return false;
-        }
-        return true;
-    }
-
-    private bool ObjectsAreEqual(PdfObject outObj, PdfObject cmpObj) {
+    private bool CompareObjects(PdfObject outObj, PdfObject cmpObj) {
         PdfObject outDirectObj = PdfReader.GetPdfObject(outObj);
         PdfObject cmpDirectObj = PdfReader.GetPdfObject(cmpObj);
 
@@ -394,25 +372,25 @@ public class CompareTool {
                     return true;
                 return false;
             }
-            if (!ObjectsAreEqual(outDict, cmpDict))
+            if (!CompareDictionaries(outDict, cmpDict))
                 return false;
         } else if (cmpDirectObj.IsStream()) {
-            if (!ObjectsAreEqual((PRStream)outDirectObj, (PRStream)cmpDirectObj))
+            if (!CompareStreams((PRStream)outDirectObj, (PRStream)cmpDirectObj))
                 return false;
         } else if (cmpDirectObj.IsArray()) {
-            if (!ObjectsAreEqual((PdfArray)outDirectObj, (PdfArray)cmpDirectObj))
+            if (!CompareArrays((PdfArray)outDirectObj, (PdfArray)cmpDirectObj))
                 return false;
         } else if (cmpDirectObj.IsName()) {
-            if (!ObjectsAreEqual((PdfName)outDirectObj, (PdfName)cmpDirectObj))
+            if (!CompareNames((PdfName)outDirectObj, (PdfName)cmpDirectObj))
                 return false;
         } else if (cmpDirectObj.IsNumber()) {
-            if (!ObjectsAreEqual((PdfNumber)outDirectObj, (PdfNumber)cmpDirectObj))
+            if (!CompareNumbers((PdfNumber)outDirectObj, (PdfNumber)cmpDirectObj))
                 return false;
         } else if (cmpDirectObj.IsString()) {
-            if (!ObjectsAreEqual((PdfString)outDirectObj, (PdfString)cmpDirectObj))
+            if (!CompareStrings((PdfString)outDirectObj, (PdfString)cmpDirectObj))
                 return false;
         } else if (cmpDirectObj.IsBoolean()) {
-            if (!ObjectsAreEqual((PdfBoolean)outDirectObj, (PdfBoolean)cmpDirectObj))
+            if (!CompareBooleans((PdfBoolean)outDirectObj, (PdfBoolean)cmpDirectObj))
                 return false;
         } else {
             throw new InvalidOperationException();
@@ -420,7 +398,29 @@ public class CompareTool {
         return true;
     }
 
-    private bool ObjectsAreEqual(PRStream outStream, PRStream cmpStream) {
+    public bool CompareDictionaries(PdfDictionary outDict, PdfDictionary cmpDict) {
+        foreach (PdfName key in cmpDict.Keys) {
+            if (key.CompareTo(PdfName.PARENT) == 0) continue;
+            if (key.CompareTo(PdfName.BASEFONT) == 0 || key.CompareTo(PdfName.FONTNAME) == 0) {
+                PdfObject cmpObj = cmpDict.GetDirectObject(key);
+                if (cmpObj.IsName() && cmpObj.ToString().IndexOf('+') > 0) {
+                    PdfObject outObj = outDict.GetDirectObject(key);
+                    if (!outObj.IsName() || outObj.ToString().IndexOf('+') == -1)
+                        return false;
+                    String cmpName = cmpObj.ToString().Substring(cmpObj.ToString().IndexOf('+'));
+                    String outName = outObj.ToString().Substring(outObj.ToString().IndexOf('+'));
+                    if (!cmpName.Equals(outName))
+                        return false;
+                    continue;
+                }
+            }
+            if (!CompareObjects(outDict.Get(key), cmpDict.Get(key)))
+                return false;
+        }
+        return true;
+    }
+
+    public virtual bool CompareStreams(PRStream outStream, PRStream cmpStream) {
         bool decodeStreams = PdfName.FLATEDECODE.Equals(outStream.Get(PdfName.FILTER));
         byte[] outStreamBytes = PdfReader.GetStreamBytesRaw(outStream);
         byte[] cmpStreamBytes = PdfReader.GetStreamBytesRaw(cmpStream);
@@ -431,30 +431,30 @@ public class CompareTool {
         return Util.ArraysAreEqual(outStreamBytes, cmpStreamBytes);
     }
 
-    private bool ObjectsAreEqual(PdfArray outArray, PdfArray cmpArray) {
+    public virtual bool CompareArrays(PdfArray outArray, PdfArray cmpArray) {
         if (outArray == null || outArray.Size != cmpArray.Size)
             return false;
         for (int i = 0; i < cmpArray.Size; i++) {
-            if (!ObjectsAreEqual(outArray[i], cmpArray[i]))
+            if (!CompareObjects(outArray[i], cmpArray[i]))
                 return false;
         }
 
         return true;
     }
 
-    private bool ObjectsAreEqual(PdfName outName, PdfName cmpName) {
+    public virtual bool CompareNames(PdfName outName, PdfName cmpName) {
         return cmpName.CompareTo(outName) == 0;
     }
 
-    private bool ObjectsAreEqual(PdfNumber outNumber, PdfNumber cmpNumber) {
+    public virtual bool CompareNumbers(PdfNumber outNumber, PdfNumber cmpNumber) {
         return cmpNumber.DoubleValue == outNumber.DoubleValue;
     }
 
-    private bool ObjectsAreEqual(PdfString outString, PdfString cmpString) {
+    public virtual bool CompareStrings(PdfString outString, PdfString cmpString) {
         return Util.ArraysAreEqual(cmpString.GetBytes(), outString.GetBytes());
     }
 
-    private bool ObjectsAreEqual(PdfBoolean outBoolean, PdfBoolean cmpBoolean) {
+    public virtual bool CompareBooleans(PdfBoolean outBoolean, PdfBoolean cmpBoolean) {
         return Util.ArraysAreEqual(cmpBoolean.GetBytes(), outBoolean.GetBytes());
     }
     
