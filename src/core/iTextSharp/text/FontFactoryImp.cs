@@ -180,34 +180,40 @@ namespace iTextSharp.text {
             }
             BaseFont basefont = null;
             try {
-                try {
-                    // the font is a type 1 font or CJK font
-                    basefont = BaseFont.CreateFont(fontname, encoding, embedded, cached, null, null, true);
-                }
-                catch (DocumentException) {
-                }
+                basefont = GetBaseFont(fontname, encoding, embedded, cached);
                 if (basefont == null) {
-                    // the font is a true type font or an unknown font
-                    trueTypeFonts.TryGetValue(fontname.ToLower(CultureInfo.InvariantCulture), out fontname);
                     // the font is not registered as truetype font
-                    if (fontname == null) return new Font(Font.FontFamily.UNDEFINED, size, style, color);
-                    // the font is registered as truetype font
-                    basefont = BaseFont.CreateFont(fontname, encoding, embedded, cached, null, null);
+                    return new Font(Font.FontFamily.UNDEFINED, size, style, color);
                 }
-            }
-            catch (DocumentException de) {
+            } catch (DocumentException de) {
                 // this shouldn't happen
                 throw de;
-            }
-            catch (System.IO.IOException) {
+            } catch (System.IO.IOException) {
                 // the font is registered as a true type font, but the path was wrong
                 return new Font(Font.FontFamily.UNDEFINED, size, style, color);
-            }
-            catch {
+            } catch {
                 // null was entered as fontname and/or encoding
                 return new Font(Font.FontFamily.UNDEFINED, size, style, color);
             }
             return new Font(basefont, size, style, color);
+        }
+
+        protected virtual BaseFont GetBaseFont(String fontname, String encoding, bool embedded, bool cached) {
+            BaseFont basefont = null;
+            try {
+                // the font is a type 1 font or CJK font
+                basefont = BaseFont.CreateFont(fontname, encoding, embedded, cached, null, null, true);
+            } catch (DocumentException de) {
+            }
+            if (basefont == null) {
+                // the font is a true type font or an unknown font
+                trueTypeFonts.TryGetValue(fontname.ToLowerInvariant(), out fontname);
+                // the font is not registered as truetype font
+                if (fontname != null)
+                    basefont = BaseFont.CreateFont(fontname, encoding, embedded, cached, null, null);
+            }
+
+            return basefont;
         }
     
         /// <summary>
