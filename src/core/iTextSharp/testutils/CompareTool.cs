@@ -392,6 +392,8 @@ public class CompareTool {
         } else if (cmpDirectObj.IsBoolean()) {
             if (!CompareBooleans((PdfBoolean)outDirectObj, (PdfBoolean)cmpDirectObj))
                 return false;
+        } else if (outDirectObj.IsNull() && cmpDirectObj.IsNull()) {
+            
         } else {
             throw new InvalidOperationException();
         }

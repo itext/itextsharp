@@ -893,7 +893,7 @@ namespace iTextSharp.text.pdf {
             }
             else {
                 int total = 0;
-                byte[] mbytes = ConvertToBytes((char)char1);
+                byte[] mbytes = ConvertToBytes(/*(char)*/char1);
                 for (int k = 0; k < mbytes.Length; ++k)
                     total += widths[0xff & mbytes[k]];
                 return total;

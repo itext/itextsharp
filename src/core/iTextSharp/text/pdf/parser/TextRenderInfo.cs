@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-
 /*
  * $Id$
  *
@@ -46,36 +45,41 @@ using System.Collections.Generic;
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+using System.Text;
+
 namespace iTextSharp.text.pdf.parser {
 
     /**
      * Provides information and calculations needed by render listeners
      * to display/evaluate text render operations.
      * <br><br>
-     * This is passed between the {@link PdfContentStreamProcessor} and 
+     * This is passed between the {@link PdfContentStreamProcessor} and
      * {@link RenderListener} objects as text rendering operations are
      * discovered
      */
     public class TextRenderInfo {
-        
-        private String text;
+
+        private readonly PdfString @string;
+        private String text = null;
         private Matrix textToUserSpaceTransformMatrix;
         private GraphicsState gs;
+        private float? unscaledWidth = null;
+
         /**
          * Array containing marked content info for the text.
          * @since 5.0.2
          */
         private ICollection<MarkedContentInfo> markedContentInfos;
-        
+
         /**
          * Creates a new TextRenderInfo object
-         * @param text the text that should be displayed
+         * @param string the PDF string that should be displayed
          * @param gs the graphics state (note: at this time, this is not immutable, so don't cache it)
          * @param textMatrix the text matrix at the time of the render operation
          * @param markedContentInfo the marked content sequence, if available
          */
-        internal TextRenderInfo(String text, GraphicsState gs, Matrix textMatrix, ICollection markedContentInfo) {
-            this.text = text;
+        internal TextRenderInfo(PdfString @string, GraphicsState gs, Matrix textMatrix, ICollection markedContentInfo) {
+            this.@string = @string;
             this.textToUserSpaceTransformMatrix = textMatrix.Multiply(gs.ctm);
             this.gs = gs;
             this.markedContentInfos = new List<MarkedContentInfo>();
@@ -87,13 +91,12 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * Used for creating sub-TextRenderInfos for each individual character
          * @param parent the parent TextRenderInfo
-         * @param charIndex the index of the character that this TextRenderInfo will represent
+         * @param string the content of a TextRenderInfo
          * @param horizontalOffset the unscaled horizontal offset of the character that this TextRenderInfo represents
          * @since 5.3.3
          */
-        private TextRenderInfo(TextRenderInfo parent, int charIndex, float horizontalOffset)
-        {
-            this.text = parent.text.Substring(charIndex, 1);
+        private TextRenderInfo(TextRenderInfo parent, PdfString @string, float horizontalOffset) {
+            this.@string = @string;
             this.textToUserSpaceTransformMatrix = new Matrix(horizontalOffset, 0).Multiply(parent.textToUserSpaceTransformMatrix);
             this.gs = parent.gs;
             this.markedContentInfos = parent.markedContentInfos;
@@ -102,8 +105,17 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @return the text to render
          */
-        virtual public String GetText(){ 
-            return text; 
+        virtual public String GetText(){
+            if (text == null)
+                text = Decode(@string);
+            return text;
+        }
+
+        /**
+         * @return original PDF string
+         */
+        public virtual PdfString PdfString {
+            get { return @string; }
         }
 
         /**
@@ -158,8 +170,10 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @return the unscaled (i.e. in Text space) width of the text
          */
-        internal float GetUnscaledWidth(){ 
-            return GetStringWidth(text); 
+        internal float GetUnscaledWidth() {
+            if (unscaledWidth == null)
+                unscaledWidth = GetPdfStringWidth(@string, false);
+            return unscaledWidth.Value;
         }
         
         /**
@@ -195,7 +209,8 @@ namespace iTextSharp.text.pdf.parser {
             return GetUnscaledBaselineWithOffset(descent + gs.rise).TransformBy(textToUserSpaceTransformMatrix);
         }
         
-        private LineSegment GetUnscaledBaselineWithOffset(float yOffset){
+        private LineSegment GetUnscaledBaselineWithOffset(float yOffset) {
+
             // we need to correct the width so we don't have an extra character spacing value at the end.  The extra character space is important for tracking relative text coordinate systems, but should not be part of the baseline
             float correctedUnscaledWidth = GetUnscaledWidth() - gs.characterSpacing * gs.horizontalScaling;
 
@@ -235,15 +250,14 @@ namespace iTextSharp.text.pdf.parser {
          * @return The Rise for the text draw operation, in user space units (Ts value, scaled to user space)
          * @since 5.3.3
          */
-        virtual public float GetRise()
-        {
+        public virtual float GetRise() {
             if (gs.rise == 0) return 0; // optimize the common case
 
             return ConvertHeightFromTextSpaceToUserSpace(gs.rise);
         }
 
         /**
-         * 
+         *
          * @param width the width, in text space
          * @return the width in user space
          * @since 5.3.3
@@ -256,7 +270,7 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
-         * 
+         *
          * @param height the height, in text space
          * @return the height in user space
          * @since 5.3.3
@@ -267,8 +281,6 @@ namespace iTextSharp.text.pdf.parser {
             LineSegment userSpace = textSpace.TransformBy(textToUserSpaceTransformMatrix);
             return userSpace.GetLength();
         }
-
-	
 
         /**
          * @return The width, in user space units, of a single space character in the current font
@@ -297,16 +309,14 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
-         * Returns the current fill color.
-         * @param a BaseColor
+         * @return the current fill color.
          */
         virtual public BaseColor GetFillColor() {
             return gs.fillColor;
         }
 
         /**
-         * Returns the current stroke color.
-         * @param a BaseColor
+         * @return the current stroke color.
          */
         virtual public BaseColor GetStrokeColor() {
             return gs.strokeColor;
@@ -324,50 +334,128 @@ namespace iTextSharp.text.pdf.parser {
                 charToUse = '\u00A0';
             return GetStringWidth(charToUse.ToString());
         }
-        
+
         /**
          * Gets the width of a String in text space units
          * @param string    the string that needs measuring
-         * @return  the width of a String in text space units
+         * @return          the width of a String in text space units
          */
-        private float GetStringWidth(String str){
-            DocumentFont font = gs.font;
-            char[] chars = str.ToCharArray();
+        private float GetStringWidth(String @string){
             float totalWidth = 0;
-            for (int i = 0; i < chars.Length; i++) {
-                float w = font.GetWidth(chars[i]) / 1000.0f;
-                float wordSpacing = chars[i] == 32 ? gs.wordSpacing : 0f;
+            for (int i = 0; i < @string.Length; i++) {
+                char c = @string[i];
+                float w = gs.font.GetWidth(c) / 1000.0f;
+                float wordSpacing = c == 32 ? gs.wordSpacing : 0f;
                 totalWidth += (w * gs.fontSize + gs.characterSpacing + wordSpacing) * gs.horizontalScaling;
             }
-            
             return totalWidth;
         }
 
         /**
-         * Provides detail useful if a listener needs access to the position of each individual glyph in the text render operation
-         * @return A list of {@link TextRenderInfo} objects that represent each glyph used in the draw operation. The next effect is if there was a separate Tj opertion for each character in the rendered string
-         * @since 5.3.3
+         * Gets the width of a PDF string in text space units
+         * @param string        the string that needs measuring
+         * @return  the width of a String in text space units
          */
-        virtual public List<TextRenderInfo> GetCharacterRenderInfos()
-        {
-            List<TextRenderInfo> rslt = new List<TextRenderInfo>(text.Length);
-
-            DocumentFont font = gs.font;
-            char[] chars = text.ToCharArray();
-            float totalWidth = 0;
-            for (int i = 0; i < chars.Length; i++)
-            {
-                float w = font.GetWidth(chars[i]) / 1000.0f;
-                float wordSpacing = chars[i] == 32 ? gs.wordSpacing : 0f;
-
-                TextRenderInfo subInfo = new TextRenderInfo(this, i, totalWidth);
-                rslt.Add(subInfo);
-
-                totalWidth += (w * gs.fontSize + gs.characterSpacing + wordSpacing) * gs.horizontalScaling;
-
+        private float GetPdfStringWidth(PdfString @string, bool singleCharString) {
+            if (singleCharString) {
+                float[] widthAndWordSpacing = GetWidthAndWordSpacing(@string, singleCharString);
+                return (widthAndWordSpacing[0]*gs.fontSize + gs.characterSpacing + widthAndWordSpacing[1])*gs.horizontalScaling;
+            } else {
+                float totalWidth = 0;
+                foreach (PdfString str in SplitString(@string)) {
+                    totalWidth += GetPdfStringWidth(str, true);
+                }
+                return totalWidth;
             }
+        }
 
+        /**
+         * Provides detail useful if a listener needs access to the position of each individual glyph in the text render operation
+         * @return  A list of {@link TextRenderInfo} objects that represent each glyph used in the draw operation. The next effect is if there was a separate Tj opertion for each character in the rendered string
+         * @since   5.3.3
+         */
+        public virtual IList<TextRenderInfo> GetCharacterRenderInfos() {
+            IList<TextRenderInfo> rslt = new List<TextRenderInfo>(@string.Length);
+            PdfString[] strings = SplitString(@string);
+            float totalWidth = 0;
+            for (int i = 0; i < strings.Length; i++) {
+                float[] widthAndWordSpacing = GetWidthAndWordSpacing(strings[i], true);
+                TextRenderInfo subInfo = new TextRenderInfo(this, strings[i], totalWidth);
+                rslt.Add(subInfo);
+                totalWidth += (widthAndWordSpacing[0]*gs.fontSize + gs.characterSpacing + widthAndWordSpacing[1])*
+                              gs.horizontalScaling;
+            }
+            foreach (TextRenderInfo tri in rslt)
+                tri.GetUnscaledWidth();
             return rslt;
+        }
+
+        /**
+         * Calculates width and word spacing of a single character PDF string.
+         * @param string            a character to calculate width.
+         * @param singleCharString  true if PDF string represents single character, false otherwise.
+         * @return                  array of 2 items: first item is a character width, second item is a calculated word spacing.
+         */
+        private float[] GetWidthAndWordSpacing(PdfString @string, bool singleCharString) {
+            if (singleCharString == false)
+                throw new InvalidOperationException();
+            float[] result = new float[2];
+            String decoded = Decode(@string);
+            result[0] = gs.font.GetWidth(GetCharCode(decoded))/1000.0f;
+            result[1] = decoded.Equals(" ") ? gs.wordSpacing : 0;
+            return result;
+        }
+
+        /**
+         * Decodes a PdfString (which will contain glyph ids encoded in the font's encoding)
+         * based on the active font, and determine the unicode equivalent
+         * @param in	the String that needs to be encoded
+         * @return	    the encoded String
+         */
+        private String Decode(PdfString @in) {
+            byte[] bytes = @in.GetBytes();
+            return gs.font.Decode(bytes, 0, bytes.Length);
+        }
+
+        /**
+         * Converts a single character string to char code.
+         *
+         * @param string single character string to convert to.
+         * @return char code.
+         */
+        private int GetCharCode(String @string) {
+            try {
+                byte[] b = Encoding.GetEncoding("UTF-16BE").GetBytes(@string);
+                int value = 0;
+                for (int i = 0; i < b.Length - 1; i++) {
+                    value += b[i] & 0xff;
+                    value <<= 8;
+                }
+                value += b[b.Length - 1] & 0xff;
+                return value;
+            } catch (ArgumentException e) {
+            }
+            return 0;
+        }
+
+        /**
+         * Split PDF string into array of single character PDF strings.
+         * @param string    PDF string to be splitted.
+         * @return          splitted PDF string.
+         */
+        private PdfString[] SplitString(PdfString @string) {
+            List<PdfString> strings = new List<PdfString>();
+            String stringValue = @string.ToString();
+            for (int i = 0; i < stringValue.Length; i++) {
+                PdfString newString = new PdfString(stringValue.Substring(i, 1), @string.Encoding);
+                String text = Decode(newString);
+                if (text.Length == 0 && i < stringValue.Length - 1) {
+                    newString = new PdfString(stringValue.Substring(i, 2), @string.Encoding);
+                    i++;
+                }
+                strings.Add(newString);
+            }
+            return strings.ToArray();
         }
     }
 }
