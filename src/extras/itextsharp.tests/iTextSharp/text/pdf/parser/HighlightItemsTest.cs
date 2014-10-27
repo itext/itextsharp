@@ -24,7 +24,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser {
             String output = outputPath + "page229.pdf";
             String cmp = inputPath + "cmp_page229.pdf";
             ParseAndHighlight(input, output, false);
-            Assert.AreEqual(null, new CompareTool().CompareByContent(output, cmp, outputPath, "diff"));
+            Assert.AreEqual(null, new CompareTool().Compare(output, cmp, outputPath, "diff"));
         }
 
         [Test]
@@ -33,7 +33,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser {
             String output = outputPath + "page229_characters.pdf";
             String cmp = inputPath + "cmp_page229_characters.pdf";
             ParseAndHighlight(input, output, true);
-            Assert.AreEqual(null, new CompareTool().CompareByContent(output, cmp, outputPath, "diff"));
+            Assert.AreEqual(null, new CompareTool().Compare(output, cmp, outputPath, "diff"));
         }
 
         [Test]
