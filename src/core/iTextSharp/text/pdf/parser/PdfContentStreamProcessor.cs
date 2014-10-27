@@ -269,18 +269,6 @@ namespace iTextSharp.text.pdf.parser {
         private void EndMarkedContent() {
             markedContentStack.Pop();
         }
-        
-        /**
-         * Decodes a PdfString (which will contain glyph ids encoded in the font's encoding)
-         * based on the active font, and determine the unicode equivalent
-         * @param in    the String that needs to be encoded
-         * @return  the encoded String
-         * @since 2.1.7
-         */
-        private String Decode(PdfString inp){
-            byte[] bytes = inp.GetBytes();
-            return Gs().font.Decode(bytes, 0, bytes.Length);
-        }
 
         /**
          * Used to trigger beginTextBlock on the renderListener
@@ -300,11 +288,9 @@ namespace iTextSharp.text.pdf.parser {
          * Displays text.
          * @param string    the text to display
          */
-        private void DisplayPdfString(PdfString str){
+        private void DisplayPdfString(PdfString str) {
 
-            String unicode = Decode(str);
-
-            TextRenderInfo renderInfo = new TextRenderInfo(unicode, Gs(), textMatrix, markedContentStack);
+            TextRenderInfo renderInfo = new TextRenderInfo(str, Gs(), textMatrix, markedContentStack);
 
             renderListener.RenderText(renderInfo);
 

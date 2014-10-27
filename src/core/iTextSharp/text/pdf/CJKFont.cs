@@ -198,17 +198,14 @@ namespace iTextSharp.text.pdf {
         public static String GetCompatibleFont(String enc) {
             LoadProperties();
             String registry = null;
-            foreach (KeyValuePair<String,Dictionary<String,object>> e in registryNames) {
+            foreach (KeyValuePair<String, Dictionary<String, object>> e in registryNames) {
                 if (e.Value.ContainsKey(enc)) {
                     registry = e.Key;
-                    break;
+                    foreach (KeyValuePair<String, Dictionary<String, Object>> e1 in allFonts) {
+                        if (registry.Equals(e1.Value["Registry"]))
+                            return e1.Key;
+                    }
                 }
-            }
-            if (registry == null)
-                return null;
-            foreach (KeyValuePair<String, Dictionary<String, Object>> e in allFonts) {
-                if (registry.Equals(e.Value["Registry"]))
-                    return e.Key;
             }
             return null;
         }

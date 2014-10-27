@@ -74,6 +74,7 @@
     <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GlobalSetUp.cs" />
     <Compile Include="iTextSharp\testutils\TestResourceUtils.cs" />
     <Compile Include="iTextSharp\text\ChunkTest.cs" />
     <Compile Include="iTextSharp\text\error_messages\ErrorMessageExistenceTest.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="iTextSharp\text\pdf\ocg\OcgRemovalTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\FilteredTextRenderListenerTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\GlyphTextRenderListenerTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\HighlightItemsTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\LocationTextExtractionStrategyTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\MatrixTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\MultiFilteredRenderListenerTest.cs" />
@@ -300,6 +302,10 @@
     <ProjectReference Include="..\..\core\itextsharp%28VS2010%29.csproj">
       <Project>{84C4FDD9-3ED7-453B-B9DA-B3ED52CB071C}</Project>
       <Name>itextsharp%28VS2010%29</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\iTextAsian\iTextAsian%28VS2010%29.csproj">
+      <Project>{2f467830-a94b-4c44-b17b-0a81cbdb8cb2}</Project>
+      <Name>iTextAsian%28VS2010%29</Name>
     </ProjectReference>
     <ProjectReference Include="..\itextsharp.pdfa\itextsharp.pdfa%28VS2010%29.csproj">
       <Project>{C892FA61-C495-4F30-8799-A198F89F23F4}</Project>
