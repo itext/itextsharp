@@ -82,13 +82,19 @@ namespace iTextSharp.tool.xml.html.table {
 			    bool percentage = false;
                 String widthValue = null;
                 tag.CSS.TryGetValue(HTML.Attribute.WIDTH, out widthValue);
-			    if (!tag.CSS.TryGetValue(HTML.Attribute.WIDTH, out widthValue)
-                    && !tag.Attributes.TryGetValue(HTML.Attribute.WIDTH, out widthValue)) {
-			        widthValue = null;
-			    }
+                if (widthValue == null) {
+                    tag.Attributes.TryGetValue(HTML.Attribute.WIDTH, out widthValue);
+                }
 			    if(widthValue != null && widthValue.Trim().EndsWith("%")) {
 				    percentage = true;
 			    }
+
+                String dirValue = null;
+                tag.CSS.TryGetValue(CSS.Property.DIR, out dirValue);
+                if (dirValue == null) {
+                    tag.Attributes.TryGetValue(CSS.Property.DIR, out dirValue);
+                }
+
                 int numberOfColumns = 0;
                 List<TableRowElement> tableRows = new List<TableRowElement>(currentContent.Count);
                 IList<IElement> invalidRowElements = new List<IElement>(1);
@@ -131,6 +137,9 @@ namespace iTextSharp.tool.xml.html.table {
                 PdfPTable table = IntPdfPTable(numberOfColumns);
                 table.HeaderRows = headerRows + footerRows;
                 table.FooterRows = footerRows;
+                if (Util.EqualsIgnoreCase(CSS.Value.RTL, dirValue)) {
+                    table.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+                }
                 TableStyleValues styleValues = SetStyleValues(tag);
                 table.TableEvent = new TableBorderEvent(styleValues);
                 SetVerticalMargin(table, tag, styleValues, ctx);

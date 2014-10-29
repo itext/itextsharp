@@ -300,12 +300,13 @@ namespace iTextSharp.text.pdf {
             get {
                 if (isRTL) {
                     switch (alignment) {
-                        case Element.ALIGN_LEFT:
-                            return left + width;
                         case Element.ALIGN_CENTER:
-                            return left + (width / 2f);
-                        default:
+                            return left + width / 2f;
+                        case Element.ALIGN_RIGHT:
                             return left;
+                        case Element.ALIGN_LEFT:
+                        default:
+                            return left + width;
                     }
                 }
                 else if (this.GetSeparatorCount() <= 0) {

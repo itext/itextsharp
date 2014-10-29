@@ -1271,6 +1271,7 @@ namespace iTextSharp.text.pdf {
             linesWritten = 0;
             descender = 0;
             bool firstPass = true;
+            bool isRTL = runDirection == PdfWriter.RUN_DIRECTION_RTL;
             main_loop:
             while (true) {
                 if (compositeElements.Count == 0)
@@ -1459,8 +1460,10 @@ namespace iTextSharp.text.pdf {
                     if (!IsTagged(canvas)) {
                         if (!float.IsNaN(compositeColumn.firstLineY) && !compositeColumn.firstLineYDone) {
                             if (!simulate) {
-                                ShowTextAligned(canvas, Element.ALIGN_LEFT, new Phrase(item.ListSymbol),
-                                                compositeColumn.leftX + listIndentation, compositeColumn.firstLineY, 0);
+                                if (isRTL)
+                                    ShowTextAligned(canvas, Element.ALIGN_RIGHT, new Phrase(item.ListSymbol), compositeColumn.lastX + item.IndentationLeft, compositeColumn.firstLineY, 0, runDirection, arabicOptions);
+                                else
+                                    ShowTextAligned(canvas, Element.ALIGN_LEFT, new Phrase(item.ListSymbol), compositeColumn.leftX + listIndentation, compositeColumn.firstLineY, 0);
                             }
                             compositeColumn.firstLineYDone = true;
                         }
@@ -1633,13 +1636,17 @@ namespace iTextSharp.text.pdf {
                     if (!simulate) {
                         // set the alignment
                         switch (table.HorizontalAlignment) {
-                            case Element.ALIGN_LEFT:
-                                break;
                             case Element.ALIGN_RIGHT:
-                                x1 += rectangularWidth - tableWidth;
+                                if (!isRTL)
+                                    x1 += rectangularWidth - tableWidth;
                                 break;
+                            case Element.ALIGN_CENTER:
+                                x1 += (rectangularWidth - tableWidth)/2f;
+                                break;
+                            case Element.ALIGN_LEFT:
                             default:
-                                x1 += (rectangularWidth - tableWidth) / 2f;
+                                if (isRTL)
+                                    x1 += rectangularWidth - tableWidth;
                                 break;
                         }
                         // copy the rows that fit on the page in a new table nt

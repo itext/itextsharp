@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
+
 /*
  * $Id:  $
  *
@@ -43,24 +44,26 @@ using iTextSharp.text.pdf;
  * For more information, please contact iText Software Corp. at this address:
  * sales@itextpdf.com
  */
-namespace iTextSharp.tool.xml {
 
+namespace iTextSharp.tool.xml {
 /**
  *
  */
 
-    public class XMLWorkerFontProvider : FontFactoryImp
-    {
+    public class XMLWorkerFontProvider : FontFactoryImp {
         public const String DONTLOOKFORFONTS = "\ufffc";
 
         protected Dictionary<String, String> fontSubstitutionMap = new Dictionary<String, String>();
 
-        public XMLWorkerFontProvider():this(null, null){}
+        protected bool useUnicode = true;
 
-        public XMLWorkerFontProvider(String fontsPath) : this(fontsPath, null){}
+        public XMLWorkerFontProvider() : this(null, null) {
+        }
 
-        public XMLWorkerFontProvider(String fontsPath, Dictionary<String, String> fontSubstitutionMap)
-        {
+        public XMLWorkerFontProvider(String fontsPath) : this(fontsPath, null) {
+        }
+
+        public XMLWorkerFontProvider(String fontsPath, Dictionary<String, String> fontSubstitutionMap) {
             if (string.IsNullOrEmpty(fontsPath)) {
                 base.RegisterDirectories();
             } else if (!fontsPath.Equals(DONTLOOKFORFONTS)) {
@@ -72,13 +75,16 @@ namespace iTextSharp.tool.xml {
             }
         }
 
-        virtual public void AddFontSubstitute(String font, String substitute) {
+        public virtual void AddFontSubstitute(String font, String substitute) {
             fontSubstitutionMap[font] = substitute;
         }
 
+        public virtual bool UseUnicode {
+            set { useUnicode = value; }
+        }
+
         public override Font GetFont(String fontname, String encoding, bool embedded, float size, int style,
-                                     BaseColor color)
-        {
+            BaseColor color) {
             Font font = GetFont(fontname, encoding, size, style);
             if (color != null) {
                 font.SetColor(color.R, color.G, color.B);
@@ -86,10 +92,8 @@ namespace iTextSharp.tool.xml {
             return font;
         }
 
-        public override Font GetFont(String fontname, String encoding, float size, int style)
-        {
-            if (fontname == null)
-            {
+        public override Font GetFont(String fontname, String encoding, float size, int style) {
+            if (fontname == null) {
                 return new Font(Font.FontFamily.UNDEFINED, size, style);
             }
 
@@ -97,40 +101,33 @@ namespace iTextSharp.tool.xml {
             return unicodeFont;
         }
 
-        private Font GetUnicodeFont(String fontName, String encoding, float size, int style)
-        {
+        private Font GetUnicodeFont(String fontName, String encoding, float size, int style) {
             Font font = null;
-            try
-            {
+            try {
                 BaseFont baseFont = null;
-                font = base.GetFont(fontName, BaseFont.IDENTITY_H, BaseFont.EMBEDDED, size, style, null);
+                font = base.GetFont(fontName, useUnicode ? BaseFont.IDENTITY_H : encoding, BaseFont.EMBEDDED, size, style, null);
 
-                if (font != null)
-                {
+                if (font != null) {
                     baseFont = font.BaseFont;
                 }
 
-                if (baseFont == null)
-                {
+                if (baseFont == null) {
                     String substFontName = fontSubstitutionMap[fontName];
-                    if (!string.IsNullOrEmpty(substFontName))
-                    {
-                        font = base.GetFont(substFontName, BaseFont.IDENTITY_H, BaseFont.EMBEDDED, size, style, null);
+                    if (!string.IsNullOrEmpty(substFontName)) {
+                        font = base.GetFont(substFontName, useUnicode ? BaseFont.IDENTITY_H : encoding, BaseFont.EMBEDDED, size,
+                            style, null);
                     }
                 }
             } catch {
                 BaseFont baseFont = null;
                 font = base.GetFont(fontName, encoding, BaseFont.EMBEDDED, size, style, null);
 
-                if (font != null)
-                {
+                if (font != null) {
                     baseFont = font.BaseFont;
                 }
-                if (baseFont == null)
-                {
+                if (baseFont == null) {
                     String substFontName;
-                    if (fontSubstitutionMap.TryGetValue(fontName, out substFontName) && !String.IsNullOrEmpty(substFontName))
-                    {
+                    if (fontSubstitutionMap.TryGetValue(fontName, out substFontName) && !String.IsNullOrEmpty(substFontName)) {
                         font = base.GetFont(substFontName, encoding, BaseFont.EMBEDDED, size, style, null);
                     }
                 }
