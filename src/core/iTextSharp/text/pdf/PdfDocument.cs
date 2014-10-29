@@ -2593,6 +2593,7 @@ namespace iTextSharp.text.pdf {
         */
         internal void AddPTable(PdfPTable ptable) {
             ColumnText ct = new ColumnText(writer.DirectContent);
+            ct.RunDirection = ptable.RunDirection;
             // if the table prefers to be on a single page, and it wouldn't
             //fit on the current page, start a new page.
             if (ptable.KeepTogether && !FitsPage(ptable, 0f) && currentHeight > 0)  {

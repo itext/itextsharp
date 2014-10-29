@@ -141,6 +141,7 @@ namespace iTextSharp.tool.xml.css {
             public const String RIGHT = "right";
             public const String BOTTOM = "bottom";
             public const String FLOAT = "float";
+            public const String DIR = "dir";
         }
 
         /**
@@ -223,6 +224,8 @@ namespace iTextSharp.tool.xml.css {
 		    public const String BLOCK = "block";
             public const String SEPARATE = "separate";
             public const String COLLAPSE = "collapse";
+            public const String RTL = "rtl";
+            public const String LTR = "ltr";
         }
     }
 }
