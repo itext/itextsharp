@@ -304,12 +304,13 @@ namespace iTextSharp.text.pdf {
                             return left + width / 2f;
                         case Element.ALIGN_RIGHT:
                             return left;
+                        case Element.ALIGN_JUSTIFIED:
+                            return left + (HasToBeJustified() ? 0 : width);
                         case Element.ALIGN_LEFT:
                         default:
                             return left + width;
                     }
-                }
-                else if (this.GetSeparatorCount() <= 0) {
+                } else if (this.GetSeparatorCount() <= 0) {
                     switch (alignment) {
                         case Element.ALIGN_RIGHT:
                             return left + width;
