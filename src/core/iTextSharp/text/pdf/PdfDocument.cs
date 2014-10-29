@@ -1377,8 +1377,7 @@ namespace iTextSharp.text.pdf {
                     baseCharacterSpacing = baseFactor;
                     lastBaseFactor = baseFactor;
                 }
-            }
-            else if (line.alignment == Element.ALIGN_LEFT || line.alignment == Element.ALIGN_UNDEFINED) {
+            } else if (line.alignment == Element.ALIGN_LEFT || line.alignment == Element.ALIGN_UNDEFINED) {
                 lastX -= line.WidthLeft;
             }
             
