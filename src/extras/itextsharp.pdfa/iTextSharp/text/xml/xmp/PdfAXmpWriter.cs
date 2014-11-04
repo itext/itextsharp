@@ -100,18 +100,18 @@ namespace iTextSharp.text.xml.xmp {
         private const String zugferdExtension =
             "    <x:xmpmeta xmlns:x=\"adobe:ns:meta/\">\n" +
             "      <rdf:RDF xmlns:rdf=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#\">\n" +
-            "        <rdf:Description rdf:about=\"\" xmlns:zf=\"urn:ferd:pdfa:invoice:rc#\">\n" +
-            "          <zf:ConformanceLevel>COMFORT</zf:ConformanceLevel>\n" +
+            "        <rdf:Description rdf:about=\"\" xmlns:zf=\"urn:ferd:pdfa:invoice:1p0#\">\n" +
+            "          <zf:ConformanceLevel>%s</zf:ConformanceLevel>\n" +
             "          <zf:DocumentFileName>ZUGFeRD-invoice.xml</zf:DocumentFileName>\n" +
             "          <zf:DocumentType>INVOICE</zf:DocumentType>\n" +
-            "          <zf:Version>RC</zf:Version>\n" +
+            "          <zf:Version>1.0</zf:Version>\n" +
             "        </rdf:Description>\n" +
             "        <rdf:Description rdf:about=\"\" xmlns:pdfaExtension=\"http://www.aiim.org/pdfa/ns/extension/\" xmlns:pdfaSchema=\"http://www.aiim.org/pdfa/ns/schema#\" xmlns:pdfaProperty=\"http://www.aiim.org/pdfa/ns/property#\">\n" +
             "          <pdfaExtension:schemas>\n" +
             "            <rdf:Bag>\n" +
             "              <rdf:li rdf:parseType=\"Resource\">\n" +
             "                <pdfaSchema:schema>ZUGFeRD PDFA Extension Schema</pdfaSchema:schema>\n" +
-            "                <pdfaSchema:namespaceURI>urn:ferd:pdfa:invoice:rc#</pdfaSchema:namespaceURI>\n" +
+            "                <pdfaSchema:namespaceURI>urn:ferd:pdfa:invoice:1p0#</pdfaSchema:namespaceURI>\n" +
             "                <pdfaSchema:prefix>zf</pdfaSchema:prefix>\n" +
             "                <pdfaSchema:property>\n" +
             "                  <rdf:Seq>\n" +
@@ -151,7 +151,7 @@ namespace iTextSharp.text.xml.xmp {
 
         private PdfWriter writer;
 
-        public const String zugferdSchemaNS = "urn:ferd:pdfa:invoice:rc#";
+        public const String zugferdSchemaNS = "urn:ferd:pdfa:invoice:1p0#";
         public const String zugferdConformanceLevel = "ConformanceLevel";
         public const String zugferdDocumentFileName = "DocumentFileName";
         public const String zugferdDocumentType = "DocumentType";
@@ -254,10 +254,13 @@ namespace iTextSharp.text.xml.xmp {
                     xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.CONFORMANCE, "U");
                     break;
                 case PdfAConformanceLevel.ZUGFeRD:
+                case PdfAConformanceLevel.ZUGFeRDBasic:
+                case PdfAConformanceLevel.ZUGFeRDComfort:
+                case PdfAConformanceLevel.ZUGFeRDExtended:
                     xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.PART, "3");
                     xmpMeta.SetProperty(XmpConst.NS_PDFA_ID, PdfAProperties.CONFORMANCE, "B");
-                    IXmpMeta taggedExtensionMeta = XmpMetaFactory.ParseFromString(zugferdExtension);
-                    XmpUtils.AppendProperties(taggedExtensionMeta, xmpMeta, true, false);
+                    IXmpMeta taggedExtensionMetaComfort = XmpMetaFactory.ParseFromString(getZugfredExtension(conformanceLevel));
+                    XmpUtils.AppendProperties(taggedExtensionMetaComfort, xmpMeta, true, false);
                     break;
                 default:
                     break;
@@ -265,6 +268,20 @@ namespace iTextSharp.text.xml.xmp {
             if (writer.IsTagged()) {
                 IXmpMeta taggedExtensionMeta = XmpMetaFactory.ParseFromString(pdfUaExtension);
                 XmpUtils.AppendProperties(taggedExtensionMeta, xmpMeta, true, false);
+            }
+        }
+
+        private String getZugfredExtension(PdfAConformanceLevel conformanceLevel) {
+            switch (conformanceLevel) {
+                case PdfAConformanceLevel.ZUGFeRD:
+                case PdfAConformanceLevel.ZUGFeRDBasic:
+                    return String.Format(zugferdExtension, "BASIC");
+                case PdfAConformanceLevel.ZUGFeRDComfort:
+                    return String.Format(zugferdExtension, "COMFORT");
+                case PdfAConformanceLevel.ZUGFeRDExtended:
+                    return String.Format(zugferdExtension, "EXTENDED");
+                default:
+                    return null;
             }
         }
     }
