@@ -2566,7 +2566,7 @@ namespace iTextSharp.text.pdf {
                 widgets.Remove(buttonRemove[k]);
             }
             foreach (PdfName key in button.Keys) {
-                if (key.Equals(PdfName.T) || key.Equals(PdfName.RECT))
+                if (key.Equals(PdfName.T))
                     continue;
                 if (key.Equals(PdfName.FF))
                     values.Put(key, button.Get(key));
