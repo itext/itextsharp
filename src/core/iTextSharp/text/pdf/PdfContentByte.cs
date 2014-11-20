@@ -2579,19 +2579,21 @@ namespace iTextSharp.text.pdf {
          * Adds a form XObject to this content.
          *
          * @param formXObj the form XObject
-         * @param name the name of form XObject in content stream
+         * @param name the name of form XObject in content stream. The name is changed, if if it already exists in page resources
          * @param a an element of the transformation matrix
          * @param b an element of the transformation matrix
          * @param c an element of the transformation matrix
          * @param d an element of the transformation matrix
          * @param e an element of the transformation matrix
          * @param f an element of the transformation matrix
+         * 
+         * @return Name under which XObject was stored in resources. See <code>name</code> parameter
          */
-        public virtual void AddFormXObj(PdfStream formXObj, PdfName name, float a, float b, float c, float d, float e, float f) {
+        public virtual PdfName AddFormXObj(PdfStream formXObj, PdfName name, float a, float b, float c, float d, float e, float f) {
             CheckWriter();
             PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_STREAM, formXObj);
             PageResources prs = PageResources;
-            prs.AddXObject(name, writer.AddToBody(formXObj).IndirectReference);
+            PdfName translatedName = prs.AddXObject(name, writer.AddToBody(formXObj).IndirectReference);
             PdfArtifact artifact = null;
             if (IsTagged()) {
                 if (inText)
@@ -2607,11 +2609,13 @@ namespace iTextSharp.text.pdf {
             content.Append(d).Append(' ');
             content.Append(e).Append(' ');
             content.Append(f).Append(" cm ");
-            content.Append(name.GetBytes()).Append(" Do Q").Append_i(separator);
+            content.Append(translatedName.GetBytes()).Append(" Do Q").Append_i(separator);
 
             if (IsTagged()) {
                 CloseMCBlock(artifact);
             }
+
+            return translatedName;
         }
 
         /**

@@ -1611,6 +1611,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName RECIPIENTS = new PdfName("Recipients");
         /** A name */
         public static readonly PdfName RECT = new PdfName("Rect");
+        /**
+         * A name
+         * @since 5.4.4
+         */
+        public static readonly PdfName REDACT = new PdfName("Redact");
         /** A name */
         public static readonly PdfName REFERENCE = new PdfName("Reference");
         /** A name */
@@ -1711,6 +1716,11 @@ namespace iTextSharp.text.pdf {
          * @since 5.4.4
          */
         public static readonly PdfName ROLE = new PdfName("Role");
+        /**
+         * A name
+         * @since 5.4.4
+         */
+        public static readonly PdfName RO = new PdfName("RO");
         /** A name */
         public static readonly PdfName ROLEMAP = new PdfName("RoleMap");
         /** A name */
