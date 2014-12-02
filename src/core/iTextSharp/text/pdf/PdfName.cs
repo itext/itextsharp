@@ -1390,6 +1390,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName OUTPUTINTENT = new PdfName("OutputIntent");
         /** A name */
         public static readonly PdfName OUTPUTINTENTS = new PdfName("OutputIntents");
+        /**
+         * A name
+         * @since 5.5.4
+         */
+        public static readonly PdfName OVERLAYTEXT = new PdfName("OverlayText");
         /** A name */
         public static readonly PdfName P = new PdfName("P");
         /** A name */
@@ -1629,6 +1634,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName RELATIVECOLORIMETRIC = new PdfName("RelativeColorimetric");
         /** A name */
         public static readonly PdfName RENDITION = new PdfName("Rendition");
+        /**
+         * A name
+         * @since 5.5.4
+         */
+        public static readonly PdfName REPEAT = new PdfName("Repeat");
         /** A name */
         public static readonly PdfName RESETFORM = new PdfName("ResetForm");
         /** A name */
