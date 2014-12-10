@@ -1908,6 +1908,8 @@ namespace iTextSharp.text.pdf {
         /** A name */
         public static readonly PdfName SUBTYPE = new PdfName("Subtype");
         /** A name */
+        public static readonly PdfName SUMMARY = new PdfName("Summary");
+        /** A name */
         public static readonly PdfName SUPPLEMENT = new PdfName("Supplement");
         /** A name */
         public static readonly PdfName SV = new PdfName("SV");

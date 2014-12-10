@@ -560,6 +560,8 @@ namespace iTextSharp.text.pdf
         {
             if (table != null)
             {
+                this.SetAttribute(PdfName.O, PdfName.TABLE);
+
                 // Setting non-inheritable attributes
                 if (table.SpacingBefore > float.Epsilon)
                     this.SetAttribute(PdfName.SPACEBEFORE, new PdfNumber(table.SpacingBefore));
@@ -572,6 +574,10 @@ namespace iTextSharp.text.pdf
                     this.SetAttribute(PdfName.HEIGHT, new PdfNumber(table.TotalHeight));
                 if (table.TotalWidth > 0)
                     this.SetAttribute(PdfName.WIDTH, new PdfNumber(table.TotalWidth));
+
+                if (table.Summary != null) {
+                    this.SetAttribute(PdfName.SUMMARY, new PdfString(table.Summary));
+                }
             }
         }
 
