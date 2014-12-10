@@ -126,6 +126,11 @@ namespace iTextSharp.text.pdf {
                 else
                     base.PdfVersion = pdfVersion;
             }
+
+            if (reader.IsTagged()) {
+                this.SetTagged();
+            }
+
             base.Open();
             pdf.AddWriter(this);
             if (append) {
