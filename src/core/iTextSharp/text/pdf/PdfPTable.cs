@@ -132,6 +132,9 @@ namespace iTextSharp.text.pdf {
         /** The spacing after the table. */
         protected float spacingAfter;
 
+        /** A textual summary of the table's contents, in Tagged PDF. */
+        private String summary;
+
         /**
         * Holds value of property extendLastRow.
         */
@@ -1616,6 +1619,12 @@ namespace iTextSharp.text.pdf {
         {
             get { return spacingAfter; }
             set { spacingAfter = value; }
+        }
+
+        virtual public String Summary 
+        {
+            get { return summary; }
+            set { summary = value; }
         }
 
         virtual public bool ExtendLastRow

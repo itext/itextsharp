@@ -1,15 +1,15 @@
 <Document><H1 o="/Layout" color="[0, 0, 1]"><Span>Document Header</Span>
 </H1>
-<Table width="418.4" height="1640.17"><TBody><TR o="/Table"><TD width="209.2" o="/Table"><Span>Quick brown fox jumped over a lazy
+<Table o="/Table" width="418.4" height="1640.17"><TBody><TR o="/Table"><TD width="209.2" o="/Table"><Span>Quick brown fox jumped over a lazy
 dog. A very long line appears here
 because we need new line.</Span>
 </TD>
-<TD width="209.2" o="/Table"><Figure bBox="[299.5, 664.91, 504.7, 783]" width="106" o="/Layout" height="61"><alt><![CDATA[Fox image]]></alt></Figure>
+<TD width="209.2" o="/Table"><Figure bBox="[299.5, 664.91, 504.7, 783]" width="106" o="/Layout" height="61"><alt>Fox image</alt></Figure>
 </TD>
 </TR>
 <TR o="/Table"><TD width="209.2" o="/Table"><Span>jumped over a lazy</Span>
 </TD>
-<TD width="209.2" o="/Table"><Figure bBox="[299.5, 542.83, 504.7, 660.91]" width="106" o="/Layout" height="61"><alt><![CDATA[Dog image]]></alt></Figure>
+<TD width="209.2" o="/Table"><Figure bBox="[299.5, 542.83, 504.7, 660.91]" width="106" o="/Layout" height="61"><alt>Dog image</alt></Figure>
 </TD>
 </TR>
 <TR o="/Table"><TD width="209.2" o="/Table" height="770"><Span>Hello World</Span>
