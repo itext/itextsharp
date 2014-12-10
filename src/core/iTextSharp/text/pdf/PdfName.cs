@@ -429,7 +429,7 @@ namespace iTextSharp.text.pdf {
          * A name
          * @since 5.4.0
          */
-        public static readonly PdfName COLSPAN = new PdfName("Colspan");
+        public static readonly PdfName COLSPAN = new PdfName("ColSpan");
         /**
          * A name
          * @since 5.4.0
