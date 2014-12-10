@@ -1299,6 +1299,10 @@ namespace iTextSharp.text.pdf {
                 tokens.Seek(pos - 1);
                 if(tokens.Read() == 10)
                     streamLength--;
+
+                if (streamLength < 0) {
+                    streamLength = 0;
+                }
             }
             stream.Length = (int)streamLength;
         }
