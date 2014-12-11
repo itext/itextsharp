@@ -130,38 +130,74 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
-         * Returns the result so far.
-         * @return  a String with the resulting text.
+         * Filters the provided list with the provided filter
+         * @param textChunks a list of all TextChunks that this strategy found during processing
+         * @param filter the filter to apply.  If null, filtering will be skipped.
+         * @return the filtered list
+         * @since 5.3.3
          */
-        public virtual String GetResultantText(){
+        private List<TextChunk> filterTextChunks(List<TextChunk> textChunks, ITextChunkFilter filter){
+            if (filter == null) {
+                return textChunks;
+            }
 
-            if (DUMP_STATE) DumpState();
-            
-            locationalResult.Sort();
+            List<TextChunk> filtered = new List<TextChunk>();
+
+            foreach (TextChunk textChunk in textChunks) {
+                if (filter.Accept(textChunk)) {
+                    filtered.Add(textChunk);
+                }
+            }
+
+    	    return filtered;
+        }
+
+        /**
+         * Gets text that meets the specified filter
+         * If multiple text extractions will be performed for the same page (i.e. for different physical regions of the page), 
+         * filtering at this level is more efficient than filtering using {@link FilteredRenderListener} - but not nearly as powerful
+         * because most of the RenderInfo state is not captured in {@link TextChunk}
+         * @param chunkFilter the filter to to apply
+         * @return the text results so far, filtered using the specified filter
+         */
+        public virtual String GetResultantText(ITextChunkFilter chunkFilter){
+            if (DUMP_STATE) {
+                DumpState();
+            }
+
+            List<TextChunk> filteredTextChunks = filterTextChunks(locationalResult, chunkFilter);
+            filteredTextChunks.Sort();
 
             StringBuilder sb = new StringBuilder();
             TextChunk lastChunk = null;
-            foreach (TextChunk chunk in locationalResult) {
+            foreach (TextChunk chunk in filteredTextChunks) {
 
                 if (lastChunk == null){
-                    sb.Append(chunk.text);
+                    sb.Append(chunk.Text);
                 } else {
                     if (chunk.SameLine(lastChunk)){
                         // we only insert a blank space if the trailing character of the previous string wasn't a space, and the leading character of the current string isn't a space
-                        if(IsChunkAtWordBoundary(chunk, lastChunk) && !StartsWithSpace(chunk.text) && !EndsWithSpace(lastChunk.text))
+                        if(IsChunkAtWordBoundary(chunk, lastChunk) && !StartsWithSpace(chunk.Text) && !EndsWithSpace(lastChunk.Text))
                             sb.Append(' ');
 
-                        sb.Append(chunk.text);
+                        sb.Append(chunk.Text);
                     } else {
                         sb.Append('\n');
-                        sb.Append(chunk.text);
+                        sb.Append(chunk.Text);
                     }
                 }
                 lastChunk = chunk;
             }
 
             return sb.ToString();
+        }
 
+        /**
+         * Returns the result so far.
+         * @return  a String with the resulting text.
+         */
+        public virtual String GetResultantText() {
+            return GetResultantText(null);
         }
 
         /** Used for debugging only */
@@ -195,26 +231,26 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * Represents a chunk of text, it's orientation, and location relative to the orientation vector
          */
-        protected class TextChunk : IComparable<TextChunk>{
+        public class TextChunk : IComparable<TextChunk>{
             /** the text of the chunk */
-            internal String text;
+            private readonly String text;
             /** the starting location of the chunk */
-            internal Vector startLocation;
+            private readonly Vector startLocation;
             /** the ending location of the chunk */
-            internal Vector endLocation;
+            private readonly Vector endLocation;
             /** unit vector in the orientation of the chunk */
-            internal Vector orientationVector;
+            private readonly Vector orientationVector;
             /** the orientation as a scalar for quick sorting */
-            internal int orientationMagnitude;
+            private readonly int orientationMagnitude;
             /** perpendicular distance to the orientation unit vector (i.e. the Y position in an unrotated coordinate system)
              * we round to the nearest integer to handle the fuzziness of comparing floats */
-            internal int distPerpendicular;
+            private readonly int distPerpendicular;
             /** distance of the start of the chunk parallel to the orientation unit vector (i.e. the X position in an unrotated coordinate system) */
-            internal float distParallelStart;
+            private readonly float distParallelStart;
             /** distance of the end of the chunk parallel to the orientation unit vector (i.e. the X position in an unrotated coordinate system) */
-            internal float distParallelEnd;
+            private readonly float distParallelEnd;
             /** the width of a single space character in the font of the chunk */
-            internal float charSpaceWidth;
+            private readonly float charSpaceWidth;
             
             public TextChunk(String str, Vector startLocation, Vector endLocation, float charSpaceWidth) {
                 this.text = str;
@@ -252,6 +288,20 @@ namespace iTextSharp.text.pdf.parser {
              */
             virtual public float CharSpaceWidth {
                 get { return charSpaceWidth; }
+            }
+
+            /**
+             * @return the start location of the text
+             */
+            virtual public Vector StartLocation {
+                get { return startLocation; }
+            }
+
+            /**
+             * @return the end location of the text
+             */
+            virtual public Vector EndLocation {
+                get { return endLocation; }
             }
 
 
@@ -327,6 +377,19 @@ namespace iTextSharp.text.pdf.parser {
          */
         public virtual void RenderImage(ImageRenderInfo renderInfo) {
             // do nothing
+        }
+
+        /**
+         * Specifies a filter for filtering {@link TextChunk} objects during text extraction 
+         * @see LocationTextExtractionStrategy#getResultantText(TextChunkFilter)
+         * @since 5.3.3
+         */
+        public interface ITextChunkFilter {
+            /**
+             * @param textChunk the chunk to check
+             * @return true if the chunk should be allowed
+             */
+            bool Accept(TextChunk textChunk);
         }
     }
 }
