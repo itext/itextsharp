@@ -89,12 +89,6 @@ namespace iTextSharp.tool.xml.html.table {
 				    percentage = true;
 			    }
 
-                String dirValue = null;
-                tag.CSS.TryGetValue(CSS.Property.DIR, out dirValue);
-                if (dirValue == null) {
-                    tag.Attributes.TryGetValue(CSS.Property.DIR, out dirValue);
-                }
-
                 int numberOfColumns = 0;
                 List<TableRowElement> tableRows = new List<TableRowElement>(currentContent.Count);
                 IList<IElement> invalidRowElements = new List<IElement>(1);
@@ -137,9 +131,13 @@ namespace iTextSharp.tool.xml.html.table {
                 PdfPTable table = IntPdfPTable(numberOfColumns);
                 table.HeaderRows = headerRows + footerRows;
                 table.FooterRows = footerRows;
-                if (Util.EqualsIgnoreCase(CSS.Value.RTL, dirValue)) {
-                    table.RunDirection = PdfWriter.RUN_DIRECTION_RTL;
+
+                int direction = GetRunDirection(tag);
+
+                if (direction != PdfWriter.RUN_DIRECTION_DEFAULT) {
+                    table.RunDirection = direction;
                 }
+
                 TableStyleValues styleValues = SetStyleValues(tag);
                 table.TableEvent = new TableBorderEvent(styleValues);
                 SetVerticalMargin(table, tag, styleValues, ctx);
