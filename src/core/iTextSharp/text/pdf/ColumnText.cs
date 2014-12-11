@@ -1527,6 +1527,14 @@ namespace iTextSharp.text.pdf {
 
                     // do we need to skip the header?
                     bool skipHeader = table.SkipFirstHeader && rowIdx <= realHeaderRows && (table.ElementComplete || rowIdx != realHeaderRows);
+
+                    if (!table.Complete) {
+                        if (table.TotalHeight - headerHeight > yTemp - minY) {
+                            table.SkipFirstHeader = false;
+                            return NO_MORE_COLUMN;
+                        }
+                    }
+
                     // if not, we wan't to be able to add more than just a header and a footer
                     if (!skipHeader) {
                         yTemp -= headerHeight;
@@ -1733,6 +1741,10 @@ namespace iTextSharp.text.pdf {
                             {
                                 canvas.CloseMCBlock(table);
                             }
+                        }
+
+                        if (!table.Complete) {
+                            table.AddNumberOfRowsWritten(k);
                         }
 
                         // if the row was split, we copy the content of the last row

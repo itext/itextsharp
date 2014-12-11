@@ -186,6 +186,8 @@ namespace iTextSharp.text.pdf {
         private PdfPTableBody body = null;
         private PdfPTableFooter footer = null;
 
+        private int numberOfWrittenRows;
+
         protected PdfPTable()
         {
         }
@@ -1718,7 +1720,15 @@ namespace iTextSharp.text.pdf {
         virtual public void FlushContent()
         {
             DeleteBodyRows();
-            SkipFirstHeader = true;
+
+            // SkipFirstHeader shouldn't be set to true if the table hasn't been added yet.
+            if (this.numberOfWrittenRows > 0) {
+                SkipFirstHeader = true;
+            }
+        }
+
+        internal virtual void AddNumberOfRowsWritten(int numberOfWrittenRows) {
+            this.numberOfWrittenRows += numberOfWrittenRows;
         }
 
         /**
