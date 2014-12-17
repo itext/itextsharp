@@ -126,6 +126,11 @@ namespace iTextSharp.text.pdf {
                 else
                     base.PdfVersion = pdfVersion;
             }
+
+            if (reader.IsTagged()) {
+                this.SetTagged();
+            }
+
             base.Open();
             pdf.AddWriter(this);
             if (append) {
@@ -1113,6 +1118,8 @@ namespace iTextSharp.text.pdf {
                 for (int idx = 0; idx < annots.Size; ++idx) {
                     PdfObject annoto = annots.GetDirectObject(idx);
                     if (annoto is PdfIndirectReference && !annoto.IsIndirect())
+                        continue;
+                    if (!(annoto is PdfDictionary))
                         continue;
 
                     PdfDictionary annDic = (PdfDictionary) annoto;

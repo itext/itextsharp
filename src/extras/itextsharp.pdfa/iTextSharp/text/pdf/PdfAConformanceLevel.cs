@@ -92,6 +92,21 @@ namespace iTextSharp.text.pdf
         /**
          * ZUGFeRD
          */
-        ZUGFeRD
+        ZUGFeRD,
+
+        /**
+         * ZUGFeRDBasic Version 
+         */
+        ZUGFeRDBasic,
+
+        /**
+         * ZUGFeRDComfort Version
+         */
+        ZUGFeRDComfort,
+
+        /**
+         * ZUGFeRDExtended Version
+         */
+        ZUGFeRDExtended
     }
 }

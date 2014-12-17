@@ -165,8 +165,7 @@ namespace iTextSharp.text.pdf {
             float rightWidth = 0;
 
             ColumnText currentCompositeColumn = compositeColumn;
-            if (simulate)
-            {
+            if (simulate) {
                 currentCompositeColumn = ColumnText.Duplicate(compositeColumn);
             }
 
@@ -197,80 +196,89 @@ namespace iTextSharp.text.pdf {
                     }
                     minYLine = Math.Min(minYLine, yLine - floatingElement.getActualHeight());
                 } else {
-                     if (nextElement is ISpaceable) {
-                        yLine -= ((ISpaceable) nextElement).SpacingBefore;
-                    }
-                    if (simulate) {
-                        if (nextElement is PdfPTable)
-                            currentCompositeColumn.AddElement(new PdfPTable((PdfPTable)nextElement));
-                        else
-                            currentCompositeColumn.AddElement(nextElement);
-                    } else {
-                        currentCompositeColumn.AddElement(nextElement);
-                    }
-                    if (yLine > minYLine)
-                        currentCompositeColumn.SetSimpleColumn(floatLeftX, yLine, floatRightX, minYLine);
-                    else
-                        currentCompositeColumn.SetSimpleColumn(floatLeftX, yLine, floatRightX, minY);
-
-                    currentCompositeColumn.FilledWidth = 0;
-
-                    status = currentCompositeColumn.Go(simulate);
-                    if (yLine > minYLine && (floatLeftX > leftX || floatRightX < rightX) && (status & ColumnText.NO_MORE_TEXT) == 0) {
-                        yLine = minYLine;
-                        floatLeftX = leftX;
-                        floatRightX = rightX;
-                        if (leftWidth != 0 && rightWidth != 0) {
-                            filledWidth = rightX - leftX;
-                        } else {
-                            if (leftWidth > filledWidth) {
-                                filledWidth = leftWidth;
-                            }
-                            if (rightWidth > filledWidth) {
-                                filledWidth = rightWidth;
-                            }
-                        }
-
-                        leftWidth = 0;
-                        rightWidth = 0;                    
-                        if (simulate && nextElement is PdfPTable) {
-                            currentCompositeColumn.AddElement(new PdfPTable((PdfPTable)nextElement));
-                        }
-
-                        currentCompositeColumn.SetSimpleColumn(floatLeftX, yLine, floatRightX, minY);
-                        status = currentCompositeColumn.Go(simulate);
-                        minYLine = currentCompositeColumn.YLine + currentCompositeColumn.Descender;
-                        yLine = minYLine;
-                        if (compositeColumn.FilledWidth > filledWidth) {
-                            filledWidth = compositeColumn.FilledWidth;
-                        }
-                    } else {
-                        if (rightWidth > 0) {
-                            rightWidth += currentCompositeColumn.FilledWidth;
-                        } else if (leftWidth > 0) {
-                            leftWidth += currentCompositeColumn.FilledWidth;
-                        } else if (currentCompositeColumn.FilledWidth > filledWidth) {
-                            filledWidth = currentCompositeColumn.FilledWidth;
-                        }
-                        minYLine = Math.Min(currentCompositeColumn.YLine + currentCompositeColumn.Descender, minYLine);
-                        yLine = currentCompositeColumn.YLine + currentCompositeColumn.Descender;
-                    }
-
-                    if ((status & ColumnText.NO_MORE_TEXT) == 0) {
-                        if (!simulate) {
-                             floatingElements.InsertRange(0, currentCompositeColumn.CompositeElements);
-                             currentCompositeColumn.CompositeElements.Clear();
-                        } else {
-                             floatingElements.Insert(0, nextElement);
-                             currentCompositeColumn.SetText(null);
-                        }
+                    if (minY > minYLine) {
+                        status = ColumnText.NO_MORE_COLUMN;
+                        floatingElements.Insert(0, nextElement);
+                        if (currentCompositeColumn != null)
+                            currentCompositeColumn.SetText(null);
                         break;
                     } else {
-                        currentCompositeColumn.SetText(null);
+                        if (nextElement is ISpaceable) {
+                            yLine -= ((ISpaceable) nextElement).SpacingBefore;
+                        }
+                        if (simulate) {
+                            if (nextElement is PdfPTable)
+                                currentCompositeColumn.AddElement(new PdfPTable((PdfPTable) nextElement));
+                            else
+                                currentCompositeColumn.AddElement(nextElement);
+                        } else {
+                            currentCompositeColumn.AddElement(nextElement);
+                        }
+
+                        if (yLine > minYLine)
+                            currentCompositeColumn.SetSimpleColumn(floatLeftX, yLine, floatRightX, minYLine);
+                        else
+                            currentCompositeColumn.SetSimpleColumn(floatLeftX, yLine, floatRightX, minY);
+
+                        currentCompositeColumn.FilledWidth = 0;
+
+                        status = currentCompositeColumn.Go(simulate);
+                        if (yLine > minYLine && (floatLeftX > leftX || floatRightX < rightX) &&
+                            (status & ColumnText.NO_MORE_TEXT) == 0) {
+                            yLine = minYLine;
+                            floatLeftX = leftX;
+                            floatRightX = rightX;
+                            if (leftWidth != 0 && rightWidth != 0) {
+                                filledWidth = rightX - leftX;
+                            } else {
+                                if (leftWidth > filledWidth) {
+                                    filledWidth = leftWidth;
+                                }
+                                if (rightWidth > filledWidth) {
+                                    filledWidth = rightWidth;
+                                }
+                            }
+
+                            leftWidth = 0;
+                            rightWidth = 0;
+                            if (simulate && nextElement is PdfPTable) {
+                                currentCompositeColumn.AddElement(new PdfPTable((PdfPTable) nextElement));
+                            }
+
+                            currentCompositeColumn.SetSimpleColumn(floatLeftX, yLine, floatRightX, minY);
+                            status = currentCompositeColumn.Go(simulate);
+                            minYLine = currentCompositeColumn.YLine + currentCompositeColumn.Descender;
+                            yLine = minYLine;
+                            if (currentCompositeColumn.FilledWidth > filledWidth) {
+                                filledWidth = currentCompositeColumn.FilledWidth;
+                            }
+                        } else {
+                            if (rightWidth > 0) {
+                                rightWidth += currentCompositeColumn.FilledWidth;
+                            } else if (leftWidth > 0) {
+                                leftWidth += currentCompositeColumn.FilledWidth;
+                            } else if (currentCompositeColumn.FilledWidth > filledWidth) {
+                                filledWidth = currentCompositeColumn.FilledWidth;
+                            }
+                            minYLine = Math.Min(currentCompositeColumn.YLine + currentCompositeColumn.Descender, minYLine);
+                            yLine = currentCompositeColumn.YLine + currentCompositeColumn.Descender;
+                        }
+
+                        if ((status & ColumnText.NO_MORE_TEXT) == 0) {
+                            if (!simulate) {
+                                floatingElements.InsertRange(0, currentCompositeColumn.CompositeElements);
+                                currentCompositeColumn.CompositeElements.Clear();
+                            } else {
+                                floatingElements.Insert(0, nextElement);
+                                currentCompositeColumn.SetText(null);
+                            }
+                            break;
+                        } else {
+                            currentCompositeColumn.SetText(null);
+                        }
                     }
                 }
             }
-
 
             if (leftWidth != 0 && rightWidth != 0) {
                 filledWidth = rightX - leftX;

@@ -82,13 +82,13 @@ namespace iTextSharp.tool.xml.html.table {
 			    bool percentage = false;
                 String widthValue = null;
                 tag.CSS.TryGetValue(HTML.Attribute.WIDTH, out widthValue);
-			    if (!tag.CSS.TryGetValue(HTML.Attribute.WIDTH, out widthValue)
-                    && !tag.Attributes.TryGetValue(HTML.Attribute.WIDTH, out widthValue)) {
-			        widthValue = null;
-			    }
+                if (widthValue == null) {
+                    tag.Attributes.TryGetValue(HTML.Attribute.WIDTH, out widthValue);
+                }
 			    if(widthValue != null && widthValue.Trim().EndsWith("%")) {
 				    percentage = true;
 			    }
+
                 int numberOfColumns = 0;
                 List<TableRowElement> tableRows = new List<TableRowElement>(currentContent.Count);
                 IList<IElement> invalidRowElements = new List<IElement>(1);
@@ -120,17 +120,24 @@ namespace iTextSharp.tool.xml.html.table {
                     }
                 }
                 if(repeatFooter == null || !Util.EqualsIgnoreCase(repeatFooter, "yes")) {
-                    SortUtil.InsertionSort<TableRowElement>(tableRows, delegate(TableRowElement o1, TableRowElement o2) {
+                    SortUtil.MergeSort<TableRowElement>(tableRows, delegate(TableRowElement o1, TableRowElement o2) {
                         return o1.RowPlace.Normal.CompareTo(o2.RowPlace.Normal);
                     });
                 } else {
-                    SortUtil.InsertionSort<TableRowElement>(tableRows, delegate(TableRowElement o1, TableRowElement o2) {
+                    SortUtil.MergeSort<TableRowElement>(tableRows, delegate(TableRowElement o1, TableRowElement o2) {
                         return o1.RowPlace.Repeated.CompareTo(o2.RowPlace.Repeated);
                     });
                 }
                 PdfPTable table = IntPdfPTable(numberOfColumns);
                 table.HeaderRows = headerRows + footerRows;
                 table.FooterRows = footerRows;
+
+                int direction = GetRunDirection(tag);
+
+                if (direction != PdfWriter.RUN_DIRECTION_DEFAULT) {
+                    table.RunDirection = direction;
+                }
+
                 TableStyleValues styleValues = SetStyleValues(tag);
                 table.TableEvent = new TableBorderEvent(styleValues);
                 SetVerticalMargin(table, tag, styleValues, ctx);

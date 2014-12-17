@@ -281,7 +281,7 @@ namespace iTextSharp.text.pdf {
         }
 
         public virtual bool SetFieldAsJavascript(String field, PdfName jsTrigName, String js) {
-            PdfAnnotation dict = new PdfAnnotation(wrt, null);
+            PdfAnnotation dict = wrt.CreateAnnotation(null, null);
             PdfAction javascript = PdfAction.JavaScript(js, wrt);
             dict.Put(jsTrigName, javascript);
             return SetField(field, dict);

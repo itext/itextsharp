@@ -7,7 +7,7 @@ using iTextSharp.text.pdf.interfaces;
 using iTextSharp.text.pdf.intern;
 
 /*
- * $Id: PdfStructureElement.cs 744 2014-05-15 17:11:29Z rafhens $
+ * $Id: PdfStructureElement.cs 851 2014-12-10 19:22:34Z pmitrofanov $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -267,8 +267,11 @@ namespace iTextSharp.text.pdf
 
         virtual public void WriteAttributes(IAccessibleElement element)
         {
-            if(top.Writer.GetPdfVersion().Version < PdfWriter.VERSION_1_7)
-                return;
+            // I do remember that these lines were necessary to avoid creation of files which are not valid from Acrobat 10 preflight perspective.
+            // Now it seems that in Acrobat 11 there's no such problem (I think Acrobat 10 behavior can be considered as a bug) and we can remove those lines.
+            // if(top.Writer.GetPdfVersion().Version < PdfWriter.VERSION_1_7)
+            //    return;
+
             if (element is ListItem)
                 WriteAttributes((ListItem) element);
             else if (element is Paragraph)
@@ -557,6 +560,8 @@ namespace iTextSharp.text.pdf
         {
             if (table != null)
             {
+                this.SetAttribute(PdfName.O, PdfName.TABLE);
+
                 // Setting non-inheritable attributes
                 if (table.SpacingBefore > float.Epsilon)
                     this.SetAttribute(PdfName.SPACEBEFORE, new PdfNumber(table.SpacingBefore));
@@ -569,6 +574,10 @@ namespace iTextSharp.text.pdf
                     this.SetAttribute(PdfName.HEIGHT, new PdfNumber(table.TotalHeight));
                 if (table.TotalWidth > 0)
                     this.SetAttribute(PdfName.WIDTH, new PdfNumber(table.TotalWidth));
+
+                if (table.Summary != null) {
+                    this.SetAttribute(PdfName.SUMMARY, new PdfString(table.Summary));
+                }
             }
         }
 

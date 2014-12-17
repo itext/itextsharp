@@ -92,8 +92,7 @@ namespace iTextSharp.text.pdf.richmedia {
          */
         public RichMediaAnnotation(PdfWriter writer, Rectangle rect) {
             this.writer = writer;
-            annot = new PdfAnnotation(writer, rect);
-            annot.Put(PdfName.SUBTYPE, PdfName.RICHMEDIA);
+            annot = writer.CreateAnnotation(rect, PdfName.RICHMEDIA);
             richMediaContent = new PdfDictionary(PdfName.RICHMEDIACONTENT);
             assetsmap = new Dictionary<string,PdfIndirectReference>();
             configurations = new PdfArray();
@@ -112,8 +111,7 @@ namespace iTextSharp.text.pdf.richmedia {
             this.richMediaContentReference = richMediaContentReference;
             richMediaContent = null;
             this.writer = writer;
-            annot = new PdfAnnotation(writer, rect);
-            annot.Put(PdfName.SUBTYPE, PdfName.RICHMEDIA);
+            annot = writer.CreateAnnotation(rect, PdfName.RICHMEDIA);
         }
 
         /**

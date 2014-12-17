@@ -301,6 +301,7 @@ namespace iTextSharp.tool.xml.html {
          */
         public static class Attribute {
 
+            public const String ALT = "alt";
             public const String CELLPADDING = "cellpadding";
             public const String CELLSPACING = "cellspacing";
             public const String STYLE = "style";

@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.util;
 using iTextSharp.text;
+using iTextSharp.text.pdf;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.html;
+using iTextSharp.tool.xml.html.pdfelement;
 using iTextSharp.tool.xml.html.table;
 /*
  * $Id: TableRow.java 94 2011-05-23 23:38:48Z redlab_b $
@@ -72,6 +74,15 @@ namespace iTextSharp.tool.xml.html.table {
             } else {
                 row = new TableRowElement(currentContent, TableRowElement.Place.BODY);
             }
+
+            int direction = GetRunDirection(tag);
+
+            if (direction != PdfWriter.RUN_DIRECTION_DEFAULT) {
+                foreach (HtmlCell cell in row.Content) {
+                    cell.RunDirection = direction;
+                }
+            }
+
             l.Add(row);
             return l;
         }

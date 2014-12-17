@@ -54,7 +54,7 @@ namespace iTextSharp.text.pdf {
         }
         
         public override void SetAction(PdfAction action, float llx, float lly, float urx, float ury) {
-            ((PdfStamperImp)writer).AddAnnotation(new PdfAnnotation(writer, llx, lly, urx, ury, action), ps.pageN);
+            ((PdfStamperImp)writer).AddAnnotation(writer.CreateAnnotation(llx, lly, urx, ury, action, null), ps.pageN);
         }
 
         /**

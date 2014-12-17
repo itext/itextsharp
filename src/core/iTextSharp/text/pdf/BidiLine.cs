@@ -80,6 +80,8 @@ namespace iTextSharp.text.pdf {
         protected int storedIndexChunk = 0;
         protected int storedIndexChunkChar = 0;
         protected int storedCurrentChar = 0;
+
+        protected bool isWordSplit = false;
     
         protected bool shortStore;
         protected static IntHashtable mirrorChars = new IntHashtable();
@@ -320,6 +322,7 @@ namespace iTextSharp.text.pdf {
         }
 
         virtual public PdfLine ProcessLine(float leftX, float width, int alignment, int runDirection, int arabicOptions, float minY, float yLine, float descender) {
+            isWordSplit = false;
             this.arabicOptions = arabicOptions;
             Save();
             bool isRTL = (runDirection == PdfWriter.RUN_DIRECTION_RTL);
@@ -506,6 +509,8 @@ namespace iTextSharp.text.pdf {
                     }
                 }
             }
+            if (lastSplit == -1)
+                isWordSplit = true;
             if (lastSplit == -1 || lastSplit >= newCurrentChar) {
                 // no split point or split point ahead of end
                 return new PdfLine(0, originalWidth, width + GetWidth(newCurrentChar + 1, currentChar - 1), alignment, false, CreateArrayOfPdfChunks(oldCurrentChar, newCurrentChar), isRTL);
@@ -518,6 +523,14 @@ namespace iTextSharp.text.pdf {
                 newCurrentChar = currentChar - 1;
             }
             return new PdfLine(0, originalWidth, originalWidth - GetWidth(oldCurrentChar, newCurrentChar), alignment, false, CreateArrayOfPdfChunks(oldCurrentChar, newCurrentChar), isRTL);
+        }
+
+        /**
+        * Call this after processLine() to know if any word was split into several lines.
+        * @return
+        */
+        public virtual bool IsWordSplit() {
+            return isWordSplit;
         }
     
         /** Gets the width of a range of characters.

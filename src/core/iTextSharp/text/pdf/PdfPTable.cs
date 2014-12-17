@@ -132,6 +132,9 @@ namespace iTextSharp.text.pdf {
         /** The spacing after the table. */
         protected float spacingAfter;
 
+        /** A textual summary of the table's contents, in Tagged PDF. */
+        private String summary;
+
         /**
         * Holds value of property extendLastRow.
         */
@@ -182,6 +185,8 @@ namespace iTextSharp.text.pdf {
         private PdfPTableHeader header = null;
         private PdfPTableBody body = null;
         private PdfPTableFooter footer = null;
+
+        private int numberOfWrittenRows;
 
         protected PdfPTable()
         {
@@ -1618,6 +1623,12 @@ namespace iTextSharp.text.pdf {
             set { spacingAfter = value; }
         }
 
+        virtual public String Summary 
+        {
+            get { return summary; }
+            set { summary = value; }
+        }
+
         virtual public bool ExtendLastRow
         {
             get { return extendLastRow[0]; }
@@ -1709,7 +1720,15 @@ namespace iTextSharp.text.pdf {
         virtual public void FlushContent()
         {
             DeleteBodyRows();
-            SkipFirstHeader = true;
+
+            // SkipFirstHeader shouldn't be set to true if the table hasn't been added yet.
+            if (this.numberOfWrittenRows > 0) {
+                SkipFirstHeader = true;
+            }
+        }
+
+        internal virtual void AddNumberOfRowsWritten(int numberOfWrittenRows) {
+            this.numberOfWrittenRows += numberOfWrittenRows;
         }
 
         /**

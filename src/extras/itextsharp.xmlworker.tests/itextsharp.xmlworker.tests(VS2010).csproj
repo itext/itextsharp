@@ -500,6 +500,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\Var01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\SampleTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\table\ColRowSpanTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\table\TableRunDirectionTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\AlignAndMarginTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\FontAndColorTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\HorAndVertScalingTest.cs" />
@@ -1362,6 +1363,9 @@
       <Project>{96647204-4A3E-41D7-BC74-B1608D6D1857}</Project>
       <Name>itextsharp.xmlworker%28VS2010%29</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="resources\com\itextpdf\tool\xml\examples\table\run_direction\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

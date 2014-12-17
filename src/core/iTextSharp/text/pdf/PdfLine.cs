@@ -3,7 +3,7 @@ using System.Text;
 using System.Collections.Generic;
 
 /*
- * $Id: PdfLine.cs 785 2014-07-12 11:00:58Z asubach $
+ * $Id: PdfLine.cs 839 2014-10-29 14:01:37Z asubach $
  * 
  *
  * This file is part of the iText project.
@@ -300,15 +300,17 @@ namespace iTextSharp.text.pdf {
             get {
                 if (isRTL) {
                     switch (alignment) {
-                        case Element.ALIGN_LEFT:
-                            return left + width;
                         case Element.ALIGN_CENTER:
-                            return left + (width / 2f);
-                        default:
+                            return left + width / 2f;
+                        case Element.ALIGN_RIGHT:
                             return left;
+                        case Element.ALIGN_JUSTIFIED:
+                            return left + (HasToBeJustified() ? 0 : width);
+                        case Element.ALIGN_LEFT:
+                        default:
+                            return left + width;
                     }
-                }
-                else if (this.GetSeparatorCount() <= 0) {
+                } else if (this.GetSeparatorCount() <= 0) {
                     switch (alignment) {
                         case Element.ALIGN_RIGHT:
                             return left + width;

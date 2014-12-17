@@ -12,6 +12,8 @@ using iTextSharp.tool.xml.pipeline.css;
 using iTextSharp.tool.xml.pipeline.ctx;
 using iTextSharp.tool.xml.pipeline.html;
 using System.util;
+using iTextSharp.text.pdf;
+
 /*
  * $Id: AbstractTagProcessor.java 160 2011-06-07 09:34:57Z redlab_b $
  *
@@ -143,7 +145,26 @@ namespace iTextSharp.tool.xml.html {
             return new List<IElement>(0);
         }
 
-        virtual protected List<IElement> TextContent(IWorkerContext ctx, Tag tag, String content) {
+        protected virtual int GetRunDirection(Tag tag) {
+            String dirValue;
+            tag.CSS.TryGetValue(CSS.Property.DIR, out dirValue);
+
+            if (dirValue == null) {
+                tag.Attributes.TryGetValue(CSS.Property.DIR, out dirValue);
+            }
+
+            if (Util.EqualsIgnoreCase(CSS.Value.RTL, dirValue)) {
+                return PdfWriter.RUN_DIRECTION_RTL;
+            }
+
+            if (Util.EqualsIgnoreCase(CSS.Value.LTR, dirValue)) {
+                return PdfWriter.RUN_DIRECTION_LTR;
+            }
+
+            return PdfWriter.RUN_DIRECTION_DEFAULT;
+        }
+
+        protected virtual List<IElement> TextContent(IWorkerContext ctx, Tag tag, String content) {
 		    List<Chunk> sanitizedChunks = HTMLUtils.Sanitize(content, false);
 		    List<IElement> l = new List<IElement>(1);
             foreach (Chunk sanitized in sanitizedChunks) {

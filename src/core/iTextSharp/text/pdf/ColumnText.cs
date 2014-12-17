@@ -167,6 +167,8 @@ namespace iTextSharp.text.pdf {
         /** The chunks that form the text. */
     //    protected ArrayList chunks = new ArrayList();
         protected BidiLine bidiLine;
+
+        protected bool isWordSplit;
     
         /** The current y line location. Text will be written at this line minus the leading. */
         protected float yLine;
@@ -829,6 +831,7 @@ namespace iTextSharp.text.pdf {
         }
 
         virtual public int Go(bool simulate, IElement elementToGo) {
+            isWordSplit = false;
             if (composite)
                 return GoComposite(simulate);
 
@@ -883,27 +886,23 @@ namespace iTextSharp.text.pdf {
             PdfLine line;
             float x1;
             int status = 0;
-            while (true)
-            {
+            while (true) {
                 firstIndent = (lastWasNewline ? indent : followingIndent); //
-                if (rectangularMode)
-                {
-                    if (rectangularWidth <= firstIndent + rightIndent)
-                    {
+                if (rectangularMode) {
+                    if (rectangularWidth <= firstIndent + rightIndent) {
                         status = NO_MORE_COLUMN;
                         if (bidiLine.IsEmpty())
                             status |= NO_MORE_TEXT;
                         break;
                     }
-                    if (bidiLine.IsEmpty())
-                    {
+                    if (bidiLine.IsEmpty()) {
                         status = NO_MORE_TEXT;
                         break;
                     }
                     line = bidiLine.ProcessLine(leftX, rectangularWidth - firstIndent - rightIndent, alignment,
-                                                localRunDirection, arabicOptions, minY, yLine, descender);
-                    if (line == null)
-                    {
+                        localRunDirection, arabicOptions, minY, yLine, descender);
+                    isWordSplit |= bidiLine.IsWordSplit();
+                    if (line == null) {
                         status = NO_MORE_TEXT;
                         break;
                     }
@@ -912,8 +911,7 @@ namespace iTextSharp.text.pdf {
                         currentLeading = line.Ascender;
                     else
                         currentLeading = Math.Max(maxSize[0], maxSize[1] - descender);
-                    if (yLine > maxY || yLine - currentLeading < minY)
-                    {
+                    if (yLine > maxY || yLine - currentLeading < minY) {
                         status = NO_MORE_COLUMN;
                         bidiLine.Restore();
                         break;
@@ -1006,6 +1004,14 @@ namespace iTextSharp.text.pdf {
                     canvas.Add(text);
             }
             return status;
+        }
+
+        /**
+         * Call this after go() to know if any word was split into several lines.
+         * @return
+         */
+        public virtual bool IsWordSplit() {
+            return isWordSplit;
         }
     
         /**
@@ -1265,6 +1271,7 @@ namespace iTextSharp.text.pdf {
             linesWritten = 0;
             descender = 0;
             bool firstPass = true;
+            bool isRTL = runDirection == PdfWriter.RUN_DIRECTION_RTL;
             main_loop:
             while (true) {
                 if (compositeElements.Count == 0)
@@ -1332,6 +1339,7 @@ namespace iTextSharp.text.pdf {
                         yLine = compositeColumn.yLine;
                         linesWritten += compositeColumn.linesWritten;
                         descender = compositeColumn.descender;
+                        isWordSplit |= compositeColumn.IsWordSplit();
                     }
                     currentLeading = compositeColumn.currentLeading;
                     if ((status & NO_MORE_TEXT) != 0) {
@@ -1452,8 +1460,10 @@ namespace iTextSharp.text.pdf {
                     if (!IsTagged(canvas)) {
                         if (!float.IsNaN(compositeColumn.firstLineY) && !compositeColumn.firstLineYDone) {
                             if (!simulate) {
-                                ShowTextAligned(canvas, Element.ALIGN_LEFT, new Phrase(item.ListSymbol),
-                                                compositeColumn.leftX + listIndentation, compositeColumn.firstLineY, 0);
+                                if (isRTL)
+                                    ShowTextAligned(canvas, Element.ALIGN_RIGHT, new Phrase(item.ListSymbol), compositeColumn.lastX + item.IndentationLeft, compositeColumn.firstLineY, 0, runDirection, arabicOptions);
+                                else
+                                    ShowTextAligned(canvas, Element.ALIGN_LEFT, new Phrase(item.ListSymbol), compositeColumn.leftX + listIndentation, compositeColumn.firstLineY, 0);
                             }
                             compositeColumn.firstLineYDone = true;
                         }
@@ -1517,6 +1527,14 @@ namespace iTextSharp.text.pdf {
 
                     // do we need to skip the header?
                     bool skipHeader = table.SkipFirstHeader && rowIdx <= realHeaderRows && (table.ElementComplete || rowIdx != realHeaderRows);
+
+                    if (!table.Complete) {
+                        if (table.TotalHeight - headerHeight > yTemp - minY) {
+                            table.SkipFirstHeader = false;
+                            return NO_MORE_COLUMN;
+                        }
+                    }
+
                     // if not, we wan't to be able to add more than just a header and a footer
                     if (!skipHeader) {
                         yTemp -= headerHeight;
@@ -1626,13 +1644,17 @@ namespace iTextSharp.text.pdf {
                     if (!simulate) {
                         // set the alignment
                         switch (table.HorizontalAlignment) {
-                            case Element.ALIGN_LEFT:
-                                break;
                             case Element.ALIGN_RIGHT:
-                                x1 += rectangularWidth - tableWidth;
+                                if (!isRTL)
+                                    x1 += rectangularWidth - tableWidth;
                                 break;
+                            case Element.ALIGN_CENTER:
+                                x1 += (rectangularWidth - tableWidth)/2f;
+                                break;
+                            case Element.ALIGN_LEFT:
                             default:
-                                x1 += (rectangularWidth - tableWidth) / 2f;
+                                if (isRTL)
+                                    x1 += rectangularWidth - tableWidth;
                                 break;
                         }
                         // copy the rows that fit on the page in a new table nt
@@ -1719,6 +1741,10 @@ namespace iTextSharp.text.pdf {
                             {
                                 canvas.CloseMCBlock(table);
                             }
+                        }
+
+                        if (!table.Complete) {
+                            table.AddNumberOfRowsWritten(k);
                         }
 
                         // if the row was split, we copy the content of the last row

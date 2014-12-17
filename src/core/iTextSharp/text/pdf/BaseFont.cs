@@ -6,7 +6,7 @@ using iTextSharp.text.xml.simpleparser;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: BaseFont.cs 744 2014-05-15 17:11:29Z rafhens $
+ * $Id: BaseFont.cs 836 2014-10-27 08:14:06Z asubach $
  * 
  *
  * This file is part of the iText project.
@@ -893,7 +893,7 @@ namespace iTextSharp.text.pdf {
             }
             else {
                 int total = 0;
-                byte[] mbytes = ConvertToBytes((char)char1);
+                byte[] mbytes = ConvertToBytes(/*(char)*/char1);
                 for (int k = 0; k < mbytes.Length; ++k)
                     total += widths[0xff & mbytes[k]];
                 return total;

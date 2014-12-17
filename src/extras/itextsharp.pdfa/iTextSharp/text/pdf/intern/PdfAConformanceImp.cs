@@ -99,6 +99,9 @@ namespace iTextSharp.text.pdf.intern{
                     pdfAChecker = new PdfA3Checker(conformanceLevel);
                     break;
                 case PdfAConformanceLevel.ZUGFeRD:
+                case PdfAConformanceLevel.ZUGFeRDComfort:
+                case PdfAConformanceLevel.ZUGFeRDBasic:
+                case PdfAConformanceLevel.ZUGFeRDExtended:
                     pdfAChecker = new ZugferdChecker(conformanceLevel);
                     break;
                 default:

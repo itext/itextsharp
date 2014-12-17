@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using iTextSharp.text.pdf.security;
 using iTextSharp.text.io;
 /*
- * $Id: PdfSignatureAppearance.cs 732 2014-05-06 13:03:32Z asubach $
+ * $Id: PdfSignatureAppearance.cs 833 2014-10-03 16:35:59Z asubach $
  *
  * This file is part of the iText (R) project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -1300,12 +1300,14 @@ namespace iTextSharp.text.pdf {
             reference.Put(PdfName.TRANSFORMMETHOD, PdfName.DOCMDP);
             reference.Put(PdfName.TYPE, PdfName.SIGREF);
             reference.Put(PdfName.TRANSFORMPARAMS, transformParams);
-            reference.Put(new PdfName("DigestValue"), new PdfString("aa"));
-            PdfArray loc = new PdfArray();
-            loc.Add(new PdfNumber(0));
-            loc.Add(new PdfNumber(0));
-            reference.Put(new PdfName("DigestLocation"), loc);
-            reference.Put(new PdfName("DigestMethod"), new PdfName("MD5"));
+            if (writer.GetPdfVersion().Version < PdfWriter.VERSION_1_6) {
+                reference.Put(new PdfName("DigestValue"), new PdfString("aa"));
+                PdfArray loc = new PdfArray();
+                loc.Add(new PdfNumber(0));
+                loc.Add(new PdfNumber(0));
+                reference.Put(new PdfName("DigestLocation"), loc);
+                reference.Put(new PdfName("DigestMethod"), new PdfName("MD5"));
+            }
             reference.Put(PdfName.DATA, writer.reader.Trailer.Get(PdfName.ROOT));
             PdfArray types = new PdfArray();
             types.Add(reference);

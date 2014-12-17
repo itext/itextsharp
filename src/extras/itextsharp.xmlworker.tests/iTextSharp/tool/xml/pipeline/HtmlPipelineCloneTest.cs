@@ -26,7 +26,7 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
 
         [Test]
         virtual public void VerifyNewImageProvider() {
-            Assert.AreNotSame(ctx.GetImageProvider(), clone.GetImageProvider());
+            Assert.AreSame(ctx.GetImageProvider(), clone.GetImageProvider());
         }
 
         [Test]

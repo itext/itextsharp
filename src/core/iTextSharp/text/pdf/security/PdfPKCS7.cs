@@ -75,7 +75,7 @@ namespace iTextSharp.text.pdf.security {
          * Assembles all the elements needed to create a signature, except for the data.
          * @param privKey the private key
          * @param certChain the certificate chain
-         * @param crlList the certificate revocation list
+         * @param interfaceDigest the interface digest
          * @param hashAlgorithm the hash algorithm
          * @param provider the provider or <code>null</code> for the default provider
          * @param hasRSAdata <CODE>true</CODE> if the sub-filter is adbe.pkcs7.sha1
@@ -133,28 +133,35 @@ namespace iTextSharp.text.pdf.security {
          * Use this constructor if you want to verify a signature using the sub-filter adbe.x509.rsa_sha1.
          * @param contentsKey the /Contents key
          * @param certsKey the /Cert key
-         * @param provider the provider or <code>null</code> for the default provider
          */
         public PdfPKCS7(byte[] contentsKey, byte[] certsKey) {
             X509CertificateParser cf = new X509CertificateParser();
             certs = new List<X509Certificate>();
+
             foreach (X509Certificate cc in cf.ReadCertificates(certsKey)) {
                 if (signCert != null)
                     signCert = cc;
                 certs.Add(cc);
             }
+
             signCerts = certs;
             crls = new List<X509Crl>();
+
             Asn1InputStream inp = new Asn1InputStream(new MemoryStream(contentsKey));
             digest = ((Asn1OctetString)inp.ReadObject()).GetOctets();
+
             sig = SignerUtilities.GetSigner("SHA1withRSA");
             sig.Init(false, signCert.GetPublicKey());
+
+            // setting the oid to SHA1withRSA
+            digestAlgorithmOid = "1.2.840.10040.4.3";
+            digestEncryptionAlgorithmOid = "1.3.36.3.3.1.2";
         }
 
         /**
          * Use this constructor if you want to verify a signature.
          * @param contentsKey the /Contents key
-         * @param tsp set to true if there's a PAdES LTV time stamp.
+         * @param filterSubtype the filtersubtype
          * @param provider the provider or <code>null</code> for the default provider
          */
         public PdfPKCS7(byte[] contentsKey, PdfName filterSubtype) {

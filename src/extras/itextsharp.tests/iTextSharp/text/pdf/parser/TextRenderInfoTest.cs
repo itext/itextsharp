@@ -6,13 +6,10 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.parser;
 using NUnit.Framework;
 
-namespace itextsharp.tests.iTextSharp.text.pdf.parser
-{
-    class TextRenderInfoTest
-    {
+namespace itextsharp.tests.iTextSharp.text.pdf.parser {
+    public class TextRenderInfoTest {
         [Test]
-        virtual public void TestCharacterRenderInfos()
-        {
+        public virtual void TestCharacterRenderInfos() {
             byte[] bytes = CreateSimplePdf(PageSize.LETTER.Rotate().Rotate(), "ABCD");
             //TestResourceUtils.saveBytesToFile(bytes, new File("C:/temp/out.pdf"));
 
@@ -20,61 +17,48 @@ namespace itextsharp.tests.iTextSharp.text.pdf.parser
 
             PdfReaderContentParser parser = new PdfReaderContentParser(r);
             parser.ProcessContent(1, new CharacterPositionRenderListener());
-
         }
 
-        private class CharacterPositionRenderListener : ITextExtractionStrategy
-        {
-
-            virtual public void BeginTextBlock()
-            {
+        private class CharacterPositionRenderListener : ITextExtractionStrategy {
+            public virtual void BeginTextBlock() {
             }
 
-            virtual public void RenderText(TextRenderInfo renderInfo)
-            {
-                List<TextRenderInfo> subs = renderInfo.GetCharacterRenderInfos();
+            public virtual void RenderText(TextRenderInfo renderInfo) {
+                IList<TextRenderInfo> subs = renderInfo.GetCharacterRenderInfos();
                 TextRenderInfo previousCharInfo = subs[0];
 
-                for (int i = 1; i < subs.Count; i++)
-                {
+                for (int i = 1; i < subs.Count; i++) {
                     TextRenderInfo charInfo = subs[i];
                     Vector previousEndPoint = previousCharInfo.GetBaseline().GetEndPoint();
                     Vector currentStartPoint = charInfo.GetBaseline().GetStartPoint();
                     AssertVectorsEqual(previousEndPoint, currentStartPoint, charInfo.GetText());
                     previousCharInfo = charInfo;
                 }
-
             }
 
-            private void AssertVectorsEqual(Vector v1, Vector v2, String message)
-            {
-                Assert.AreEqual(v1[0], v2[0], 1 / 72f, message);
-                Assert.AreEqual(v1[1], v2[1], 1 / 72f, message);
-            }
-            virtual public void EndTextBlock()
-            {
+            private void AssertVectorsEqual(Vector v1, Vector v2, String message) {
+                Assert.AreEqual(v1[0], v2[0], 1/72f, message);
+                Assert.AreEqual(v1[1], v2[1], 1/72f, message);
             }
 
-            virtual public void RenderImage(ImageRenderInfo renderInfo)
-            {
+            public virtual void EndTextBlock() {
             }
 
-            virtual public String GetResultantText()
-            {
+            public virtual void RenderImage(ImageRenderInfo renderInfo) {
+            }
+
+            public virtual String GetResultantText() {
                 return null;
             }
-
         }
 
-        private byte[] CreateSimplePdf(Rectangle pageSize, params string[] text)
-        {
+        private byte[] CreateSimplePdf(Rectangle pageSize, params string[] text) {
             MemoryStream byteStream = new MemoryStream();
 
             Document document = new Document(pageSize);
             PdfWriter.GetInstance(document, byteStream);
             document.Open();
-            foreach (string str in text)
-            {
+            foreach (string str in text) {
                 document.Add(new Paragraph(str));
                 document.NewPage();
             }

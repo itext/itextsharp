@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using iTextSharp.text;
 using iTextSharp.text.log;
+using iTextSharp.text.pdf;
 using iTextSharp.text.xml;
 using iTextSharp.tool.xml.css;
 using iTextSharp.tool.xml.exceptions;
@@ -103,6 +104,13 @@ namespace iTextSharp.tool.xml.html {
                 }
                 if (null != img) {
                     try {
+                        String alt;
+                        attributes.TryGetValue(HTML.Attribute.ALT, out alt);
+
+                        if (alt != null) {
+                            img.SetAccessibleAttribute(PdfName.ALT, new PdfString(attributes[HTML.Attribute.ALT]));
+                        }
+
                         HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
                         l.Add(GetCssAppliers().Apply(new Chunk((iTextSharp.text.Image) GetCssAppliers().Apply(img, tag, htmlPipelineContext), 0, 0, true), tag, htmlPipelineContext));
                     } catch (NoCustomContextException e) {

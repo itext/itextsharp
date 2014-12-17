@@ -15,7 +15,7 @@ using Org.BouncyCastle.X509;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.io;
 /*
- * $Id: PdfReader.cs 823 2014-09-10 12:20:26Z michaeldemey $
+ * $Id: PdfReader.cs 850 2014-12-10 11:54:45Z pmitrofanov $
  *
  * This file is part of the iText project.
  * Copyright (c) 1998-2014 iText Group NV
@@ -1299,6 +1299,10 @@ namespace iTextSharp.text.pdf {
                 tokens.Seek(pos - 1);
                 if(tokens.Read() == 10)
                     streamLength--;
+
+                if (streamLength < 0) {
+                    streamLength = 0;
+                }
             }
             stream.Length = (int)streamLength;
         }

@@ -5,7 +5,7 @@ using System.Reflection;
 using iTextSharp.text.error_messages;
 
 /*
- * $Id: PdfName.cs 815 2014-09-01 05:26:24Z asubach $
+ * $Id: PdfName.cs 851 2014-12-10 19:22:34Z pmitrofanov $
  * 
  *
  * This file is part of the iText project.
@@ -429,7 +429,7 @@ namespace iTextSharp.text.pdf {
          * A name
          * @since 5.4.0
          */
-        public static readonly PdfName COLSPAN = new PdfName("Colspan");
+        public static readonly PdfName COLSPAN = new PdfName("ColSpan");
         /**
          * A name
          * @since 5.4.0
@@ -1390,6 +1390,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName OUTPUTINTENT = new PdfName("OutputIntent");
         /** A name */
         public static readonly PdfName OUTPUTINTENTS = new PdfName("OutputIntents");
+        /**
+         * A name
+         * @since 5.5.4
+         */
+        public static readonly PdfName OVERLAYTEXT = new PdfName("OverlayText");
         /** A name */
         public static readonly PdfName P = new PdfName("P");
         /** A name */
@@ -1611,6 +1616,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName RECIPIENTS = new PdfName("Recipients");
         /** A name */
         public static readonly PdfName RECT = new PdfName("Rect");
+        /**
+         * A name
+         * @since 5.4.4
+         */
+        public static readonly PdfName REDACT = new PdfName("Redact");
         /** A name */
         public static readonly PdfName REFERENCE = new PdfName("Reference");
         /** A name */
@@ -1624,6 +1634,11 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName RELATIVECOLORIMETRIC = new PdfName("RelativeColorimetric");
         /** A name */
         public static readonly PdfName RENDITION = new PdfName("Rendition");
+        /**
+         * A name
+         * @since 5.5.4
+         */
+        public static readonly PdfName REPEAT = new PdfName("Repeat");
         /** A name */
         public static readonly PdfName RESETFORM = new PdfName("ResetForm");
         /** A name */
@@ -1711,6 +1726,11 @@ namespace iTextSharp.text.pdf {
          * @since 5.4.4
          */
         public static readonly PdfName ROLE = new PdfName("Role");
+        /**
+         * A name
+         * @since 5.4.4
+         */
+        public static readonly PdfName RO = new PdfName("RO");
         /** A name */
         public static readonly PdfName ROLEMAP = new PdfName("RoleMap");
         /** A name */
@@ -1887,6 +1907,8 @@ namespace iTextSharp.text.pdf {
         public static readonly PdfName SUBMITFORM = new PdfName("SubmitForm");
         /** A name */
         public static readonly PdfName SUBTYPE = new PdfName("Subtype");
+        /** A name */
+        public static readonly PdfName SUMMARY = new PdfName("Summary");
         /** A name */
         public static readonly PdfName SUPPLEMENT = new PdfName("Supplement");
         /** A name */

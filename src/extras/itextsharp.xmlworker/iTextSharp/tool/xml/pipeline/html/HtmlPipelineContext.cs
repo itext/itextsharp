@@ -289,8 +289,7 @@ namespace iTextSharp.tool.xml.pipeline.html {
             HtmlPipelineContext newCtx = new HtmlPipelineContext(cloneCssApliers);
             if (this.imageProvider != null)
             {
-                String rootPath = imageProvider.GetImageRootPath();
-                newCtx.SetImageProvider(new CloneImageProvider(rootPath));
+                newCtx.SetImageProvider(imageProvider);
             }
             if (null != this.charset)
             {
@@ -300,18 +299,6 @@ namespace iTextSharp.tool.xml.pipeline.html {
                 .SetRootTags(new List<String>(this.roottags)).AutoBookmark(this.autoBookmark)
                 .SetTagFactory(this.tagFactory).SetAcceptUnknown(this.acceptUnknown);
             return newCtx;
-        }
-
-        private class CloneImageProvider : AbstractImageProvider {
-            private string rootPath;
-
-            public CloneImageProvider(string rootPath) {
-                this.rootPath = rootPath;
-            }
-
-            public override String GetImageRootPath() {
-                return rootPath;
-            }
         }
 
     /**

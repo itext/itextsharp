@@ -15,7 +15,7 @@ using iTextSharp.text.error_messages;
 using iTextSharp.xmp;
 
 /*
- * $Id: PdfWriter.cs 800 2014-08-05 12:52:43Z pavel-alay $
+ * $Id: PdfWriter.cs 833 2014-10-03 16:35:59Z asubach $
  * 
  *
  * This file is part of the iText project.
@@ -3379,6 +3379,61 @@ namespace iTextSharp.text.pdf {
 
         protected internal virtual XmpWriter CreateXmpWriter(MemoryStream baos, IDictionary<String, String> info) {
             return new XmpWriter(baos, info);
+        }
+
+        /**
+         * A wrapper around PdfAnnotation constructor.
+         * It is recommended to use this wrapper instead of direct constructor as this is a convenient way to override PdfAnnotation construction when needed.
+         *
+         * @param rect
+         * @param subtype
+         * @return
+         */
+        public virtual PdfAnnotation CreateAnnotation(Rectangle rect, PdfName subtype) {
+            PdfAnnotation a = new PdfAnnotation(this, rect);
+            if (subtype != null)
+                a.Put(PdfName.SUBTYPE, subtype);
+            return a;
+        }
+
+        /**
+         * A wrapper around PdfAnnotation constructor.
+         * It is recommended to use this wrapper instead of direct constructor as this is a convenient way to override PdfAnnotation construction when needed.
+         *
+         * @param llx
+         * @param lly
+         * @param urx
+         * @param ury
+         * @param title
+         * @param content
+         * @param subtype
+         * @return
+         */
+        public virtual PdfAnnotation CreateAnnotation(float llx, float lly, float urx, float ury, PdfString title,
+            PdfString content, PdfName subtype) {
+            PdfAnnotation a = new PdfAnnotation(this, llx, lly, urx, ury, title, content);
+            if (subtype != null)
+                a.Put(PdfName.SUBTYPE, subtype);
+            return a;
+        }
+
+        /**
+         * A wrapper around PdfAnnotation constructor.
+         * It is recommended to use this wrapper instead of direct constructor as this is a convenient way to override PdfAnnotation construction when needed.
+         *
+         * @param llx
+         * @param lly
+         * @param urx
+         * @param ury
+         * @param action
+         * @param subtype
+         * @return
+         */
+        public virtual PdfAnnotation CreateAnnotation(float llx, float lly, float urx, float ury, PdfAction action, PdfName subtype) {
+            PdfAnnotation a = new PdfAnnotation(this, llx, lly, urx, ury, action);
+            if (subtype != null)
+                a.Put(PdfName.SUBTYPE, subtype);
+            return a;
         }
 
         public static void CheckPdfIsoConformance(PdfWriter writer, int key, Object obj1) {

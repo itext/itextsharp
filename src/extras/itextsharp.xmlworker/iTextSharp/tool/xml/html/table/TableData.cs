@@ -46,6 +46,7 @@
 using System;
 using System.Collections.Generic;
 using iTextSharp.text;
+using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.draw;
 using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.html.pdfelement;
@@ -73,6 +74,12 @@ namespace iTextSharp.tool.xml.html.table {
 	     */
 	    public override IList<IElement> End(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
 		    HtmlCell cell = new HtmlCell();
+            int direction = GetRunDirection(tag);
+
+            if (direction != PdfWriter.RUN_DIRECTION_DEFAULT) {
+                cell.RunDirection = direction;
+            }
+
             try {
                 HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
                 cell = (HtmlCell) GetCssAppliers().Apply(cell, tag, htmlPipelineContext);
