@@ -57,29 +57,62 @@ namespace iTextSharp.text.pdf {
     public class PdfDestination : PdfArray {
     
         // public static member-variables
-    
-        /** This is a possible destination type */
+
+        /** 
+         * (left, top, zoom)
+         * Display the page so its upper-left corner is offset reliave to the
+         * window (left, top) and the contents of the page magnified (zoom). 
+         * A zero or null value for any parameter indicates no change. 
+         */
         public const int XYZ = 0;
-    
-        /** This is a possible destination type */
+
+        /** 
+         * Display the page to fit the entire page within the window.   
+         */
         public const int FIT = 1;
-    
-        /** This is a possible destination type */
+
+        /** 
+         * (top)
+         * Display the page so it fits the entire width of the window and the 
+         * page is offset relative to the window (top). 
+         * A zero or null value for any parameter indicates no change. 
+         */
         public const int FITH = 2;
-    
-        /** This is a possible destination type */
+
+        /** 
+         * (left)
+         * Display the page so it fits the entire height of the window and the
+         * page is offset relative to the window (left).
+         * A zero or null value for any parameter indicates no change. 
+         */
         public const int FITV = 3;
-    
-        /** This is a possible destination type */
+
+        /** 
+         * (left, bottom, right, top)
+         * Display the page with so it fits into the specified rectangle 
+         * A zero or null value for any parameter indicates no change. 
+         */
         public const int FITR = 4;
-    
-        /** This is a possible destination type */
+
+        /** 
+         * Display the page to fit its bounding box entirely in the window.
+         */
         public const int FITB = 5;
-    
-        /** This is a possible destination type */
+
+        /** 
+         * (top)
+         * Display the page so its bounding box fits the entire width of the 
+         * window and the page is offset relative to the window (top). 
+         * A zero or null value for any parameter indicates no change. 
+         */
         public const int FITBH = 6;
-    
-        /** This is a possible destination type */
+
+        /** 
+         * (left)
+         * Display the page so its bounding box fits the entire height of the
+         * window and the page is offset relative to the window (left).
+         * A zero or null value for any parameter indicates no change. 
+         */
         public const int FITBV = 7;
     
         // member variables
