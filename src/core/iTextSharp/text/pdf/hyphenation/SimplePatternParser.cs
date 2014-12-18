@@ -208,7 +208,13 @@ namespace iTextSharp.text.pdf.hyphenation {
                 if (token.Length > 0) {
                     exception.Add(token.ToString());
                 }
-                exception.Add(new Hyphen(h["pre"], h["no"], h["post"]));
+                string pre;
+                h.TryGetValue("pre", out pre);
+                string no;
+                h.TryGetValue("no", out no);
+                string post;
+                h.TryGetValue("post", out post);
+                exception.Add(new Hyphen(pre, no, post));
                 currElement = ELEM_HYPHEN;
             }
             token.Length = 0;
