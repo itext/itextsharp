@@ -683,6 +683,21 @@ namespace iTextSharp.text.pdf {
         }
 
         internal PdfAppearance GetAppearance(PdfDictionary merged, String[] values, String fieldName) {
+            PdfName fieldType = merged.GetAsName(PdfName.FT);
+
+            if (PdfName.BTN.Equals(fieldType)) {
+                RadioCheckField field = new RadioCheckField(writer, null, null, null);
+                DecodeGenericDictionary(merged, field);
+                //rect
+                PdfArray rect = merged.GetAsArray(PdfName.RECT);
+                Rectangle box = PdfReader.GetNormalizedRectangle(rect);
+                if (field.Rotation == 90 || field.Rotation == 270)
+                    box = box.Rotate();
+                field.Box = box;
+                field.CheckType = RadioCheckField.TYPE_CROSS;
+                return field.GetAppearance(false, !(merged.GetAsName(PdfName.AS).Equals(PdfName.Off_)));
+            }
+
             topFirst = 0;
             String text = (values.Length > 0) ? values[0] : null;
             TextField tx = null;
@@ -705,7 +720,7 @@ namespace iTextSharp.text.pdf {
                 tx = fieldCache[fieldName];
                 tx.Writer = writer;
             }
-            PdfName fieldType = merged.GetAsName(PdfName.FT);
+
             if (PdfName.TX.Equals(fieldType)) {
                 if (values.Length > 0 && values[0] != null) {
                     tx.Text = values[0];
@@ -1457,6 +1472,14 @@ namespace iTextSharp.text.pdf {
                     else {
                         merged.Put(PdfName.AS, PdfName.Off_);
                         widget.Put(PdfName.AS, PdfName.Off_);
+                    }
+                    if (generateAppearances) {
+                        PdfAppearance app = GetAppearance(merged, display, name);
+                        if (normal != null)
+                            normal.Put(merged.GetAsName(PdfName.AS), app.IndirectReference);
+                        else
+                            appDic.Put(PdfName.N, app.IndirectReference);
+                        writer.ReleaseTemplate(app);
                     }
                 }
                 return true;
