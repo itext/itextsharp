@@ -110,6 +110,14 @@ namespace iTextSharp.tool.xml.css {
                 String value = utils.StripDoubleSpacesAndTrim(e.Value);
                 if (Util.EqualsIgnoreCase(CSS.Property.BORDER, key)) {
                     CssUtils.MapPutAll(css, utils.ParseBorder(value));
+                } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_TOP, key)) {
+                    CssUtils.MapPutAll(css, utils.ParseBorder(value, CSS.Property.BORDER_TOP));
+                } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_BOTTOM, key)) {
+                    CssUtils.MapPutAll(css, utils.ParseBorder(value, CSS.Property.BORDER_BOTTOM));
+                } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_LEFT, key)) {
+                    CssUtils.MapPutAll(css, utils.ParseBorder(value, CSS.Property.BORDER_LEFT));
+                } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_RIGHT, key)) {
+                    CssUtils.MapPutAll(css, utils.ParseBorder(value, CSS.Property.BORDER_RIGHT));
                 } else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN, key)) {
                     IDictionary<String, String> margins = utils.ParseBoxValues(value, "margin-", "");
                     foreach (String marginKey in margins.Keys) {

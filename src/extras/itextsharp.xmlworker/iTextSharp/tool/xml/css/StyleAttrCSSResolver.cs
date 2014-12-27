@@ -314,6 +314,14 @@ namespace iTextSharp.tool.xml.css {
         private void SplitRules(IDictionary<String, String> css, String key, String value) {
             if (Util.EqualsIgnoreCase(CSS.Property.BORDER, key)) {
                 CssUtils.MapPutAll(css, utils.ParseBorder(value));
+            } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_TOP, key)) {
+                CssUtils.MapPutAll(css, utils.ParseBorder(value, CSS.Property.BORDER_TOP));
+            } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_BOTTOM, key)) {
+                CssUtils.MapPutAll(css, utils.ParseBorder(value, CSS.Property.BORDER_BOTTOM));
+            } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_LEFT, key)) {
+                CssUtils.MapPutAll(css, utils.ParseBorder(value, CSS.Property.BORDER_LEFT));
+            } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_RIGHT, key)) {
+                CssUtils.MapPutAll(css, utils.ParseBorder(value, CSS.Property.BORDER_RIGHT));
             } else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN, key)) {
                 CssUtils.MapPutAll(css, utils.ParseBoxValues(value, "margin-", ""));
             } else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_WIDTH, key)) {

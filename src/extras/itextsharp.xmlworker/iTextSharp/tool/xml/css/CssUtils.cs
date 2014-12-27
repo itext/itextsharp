@@ -111,32 +111,54 @@ namespace iTextSharp.tool.xml.css {
          *            the post key part
          * @return a map with the parsed properties
          */
+        public virtual IDictionary<String, String> ParseBoxValues(String box,
+                                                                  String pre, String post) {
+            return ParseBoxValues(box, pre, post, null);
+        }
+
         virtual public IDictionary<String, String> ParseBoxValues(String box,
-                String pre, String post) {
+                                                                  String pre, String post, String preKey) {
             String[] props = box.Split(' ');
             int length = props.Length;
             IDictionary<String, String> map = new Dictionary<String, String>(4);
             if (length == 1) {
                 String value = props[0];
-                map[string.Format(_0_TOP_1, pre, post)] = value;
-                map[string.Format(_0_BOTTOM_1, pre, post)] = value;
-                map[string.Format(_0_RIGHT_1, pre, post)] = value;
-                map[string.Format(_0_LEFT_1, pre, post)] = value;
+
+                if (preKey == null) {
+                    map[string.Format(_0_TOP_1, pre, post)] = value;
+                    map[string.Format(_0_BOTTOM_1, pre, post)] = value;
+                    map[string.Format(_0_RIGHT_1, pre, post)] = value;
+                    map[string.Format(_0_LEFT_1, pre, post)] = value;
+                } else {
+                    map[string.Format(preKey + "{0}", post)] = value;
+                }
             } else if (length == 2) {
-                map[string.Format(_0_TOP_1, pre, post)] = props[0];
-                map[string.Format(_0_BOTTOM_1, pre, post)] = props[0];
-                map[string.Format(_0_RIGHT_1, pre, post)] = props[1];
-                map[string.Format(_0_LEFT_1, pre, post)] = props[1];
+                if (preKey == null) {
+                    map[string.Format(_0_TOP_1, pre, post)] = props[0];
+                    map[string.Format(_0_BOTTOM_1, pre, post)] = props[0];
+                    map[string.Format(_0_RIGHT_1, pre, post)] = props[1];
+                    map[string.Format(_0_LEFT_1, pre, post)] = props[1];
+                } else {
+                    map[string.Format(preKey + "{0}", post)] = props[0];
+                }
             } else if (length == 3) {
-                map[string.Format(_0_TOP_1, pre, post)] = props[0];
-                map[string.Format(_0_BOTTOM_1, pre, post)] = props[2];
-                map[string.Format(_0_RIGHT_1, pre, post)] = props[1];
-                map[string.Format(_0_LEFT_1, pre, post)] = props[1];
+                if (preKey == null) {
+                    map[string.Format(_0_TOP_1, pre, post)] = props[0];
+                    map[string.Format(_0_BOTTOM_1, pre, post)] = props[2];
+                    map[string.Format(_0_RIGHT_1, pre, post)] = props[1];
+                    map[string.Format(_0_LEFT_1, pre, post)] = props[1];
+                } else {
+                    map[string.Format(preKey + "{0}", post)] = props[0];
+                }
             } else if (length == 4) {
-                map[string.Format(_0_TOP_1, pre, post)] = props[0];
-                map[string.Format(_0_BOTTOM_1, pre, post)] = props[2];
-                map[string.Format(_0_RIGHT_1, pre, post)] = props[1];
-                map[string.Format(_0_LEFT_1, pre, post)] = props[3];
+                if (preKey == null) {
+                    map[string.Format(_0_TOP_1, pre, post)] = props[0];
+                    map[string.Format(_0_BOTTOM_1, pre, post)] = props[2];
+                    map[string.Format(_0_RIGHT_1, pre, post)] = props[1];
+                    map[string.Format(_0_LEFT_1, pre, post)] = props[3];
+                } else {
+                    map[string.Format(preKey + "{0}", post)] = props[0];
+                }
             }
             return map;
         }
@@ -180,25 +202,30 @@ namespace iTextSharp.tool.xml.css {
          * @return a map of the border property parsed to each property (width,
          *         style, color).
          */
-        virtual public IDictionary<String, String> ParseBorder(String border) {
+
+        public virtual IDictionary<String, String> ParseBorder(String border) {
+            return ParseBorder(border, null);
+        }
+
+        public virtual IDictionary<String, String> ParseBorder(String border, String borderKey) {
             Dictionary<String, String> map = new Dictionary<String, String>(0);
             String[] split = SplitComplexCssStyle(border);
             int length = split.Length;
             if (length == 1) {
                 if (borderwidth.ContainsKey(split[0]) || IsNumericValue(split[0]) || IsMetricValue(split[0])) {
-                    MapPutAll(map, ParseBoxValues(split[0], BORDER2, WIDTH));
+                    MapPutAll(map, ParseBoxValues(split[0], BORDER2, WIDTH, borderKey));
                 } else {
-                    MapPutAll(map, ParseBoxValues(split[0], BORDER2, STYLE));
+                    MapPutAll(map, ParseBoxValues(split[0], BORDER2, STYLE, borderKey));
                 }
             } else {
                 for (int i = 0 ; i<length ; i++) {
                     String value = split[i];
                     if (borderwidth.ContainsKey(value) || IsNumericValue(value) || IsMetricValue(value)) {
-                        MapPutAll(map, ParseBoxValues(value, BORDER2, WIDTH));
+                        MapPutAll(map, ParseBoxValues(value, BORDER2, WIDTH, borderKey));
                     } else if (borderstyle.ContainsKey(value)){
-                        MapPutAll(map, ParseBoxValues(value, BORDER2, STYLE));
+                        MapPutAll(map, ParseBoxValues(value, BORDER2, STYLE, borderKey));
                     } else if (value.Contains("rgb(") || value.Contains("#") || WebColors.NAMES.ContainsKey(value.ToLowerInvariant())){
-                        MapPutAll(map, ParseBoxValues(value, BORDER2, COLOR));
+                        MapPutAll(map, ParseBoxValues(value, BORDER2, COLOR, borderKey));
                     }
                 }
             }

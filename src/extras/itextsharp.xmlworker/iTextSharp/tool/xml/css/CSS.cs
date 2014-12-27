@@ -73,6 +73,10 @@ namespace iTextSharp.tool.xml.css {
             public const String MARGIN_TOP = "margin-top";
             public const String MARGIN_BOTTOM = "margin-bottom";
             public const String BORDER = "border";
+            public const String BORDER_LEFT = "border-left";
+            public const String BORDER_TOP = "border-top";
+            public const String BORDER_RIGHT = "border-right";
+            public const String BORDER_BOTTOM = "border-bottom";
             public const String BORDER_WIDTH = "border-width";
             public const String BORDER_STYLE = "border-style";
             public const String BORDER_COLOR = "border-color";
