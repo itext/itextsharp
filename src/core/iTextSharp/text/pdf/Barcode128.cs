@@ -429,7 +429,7 @@ namespace iTextSharp.text.pdf {
                     outs += (char)(c - ' ');
                 ++index;
             }
-            if (currentCode != GetStartSymbol(codeSet))
+            if (codeSet != Barcode128CodeSet.AUTO && currentCode != GetStartSymbol(codeSet))
                 throw new Exception(MessageLocalization.GetComposedMessage("there.are.illegal.characters.for.barcode.128.in.1", text));
             while (index < tLen) {
                 switch (currentCode) {
