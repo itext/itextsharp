@@ -500,6 +500,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\Var01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\SampleTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\table\ColRowSpanTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\table\ColspanFixedWidthTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\table\TableRunDirectionTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\AlignAndMarginTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\FontAndColorTest.cs" />

@@ -171,16 +171,18 @@ namespace iTextSharp.tool.xml.html.table {
                         int colspan = cell.Colspan;
                         if (cell.FixedWidth != 0) {
                             float fixedWidth = cell.FixedWidth + GetCellStartWidth(cell);
-                            fixedWidth /= colspan;
-                            for (int i = 0; i < colspan; i++) {
-                                int c = column + i;
-                                // Contribution made by Arnost Havelka (Asseco)
-                                if (c > numberOfColumns - 1) {
-                                    break;
-                                }
-                                if (fixedWidth > fixedWidths[c]) {
-                                    fixedWidths[c] = fixedWidth;
-                                    columnWidths[c] = fixedWidth;
+                            float colSpanWidthSum = 0;
+                            int nonZeroColspanCols = 0;
+                            // Contribution made by Arnost Havelka (Asseco) (modified)
+                            for (int c = column; c < column + colspan && c < numberOfColumns; c++) {
+                                colSpanWidthSum += fixedWidths[c];
+                                if (fixedWidths[c] != 0)
+                                    nonZeroColspanCols++;
+                            }
+                            for (int c = column; c < column + colspan && c < numberOfColumns; c++) {
+                                if (fixedWidths[c] == 0) {
+                                    fixedWidths[c] = (fixedWidth - colSpanWidthSum)/(colspan - nonZeroColspanCols);
+                                    columnWidths[c] = (fixedWidth - colSpanWidthSum)/(colspan - nonZeroColspanCols);
                                 }
                             }
                         }
