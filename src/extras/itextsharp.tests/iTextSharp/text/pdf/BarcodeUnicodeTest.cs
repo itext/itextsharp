@@ -12,7 +12,7 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
         private const String OUT_DIR = "com/itextpdf/test/pdf/BarcodeUnicodeTest/";
 
         [SetUp]
-        public void setUp() {
+        public void SetUp() {
             Directory.CreateDirectory(OUT_DIR);
         }
 
@@ -29,8 +29,9 @@ namespace itextsharp.tests.iTextSharp.text.pdf {
             String str = "\u6D4B";
 
             document.Add(new Paragraph("QR code unicode"));
-            BarcodeQRCode q = new BarcodeQRCode(str, 100, 100,
-                new Dictionary<EncodeHintType, Object>() {{EncodeHintType.CHARACTER_SET, "UTF-8"}});
+            IDictionary<EncodeHintType, Object> hints = new Dictionary<EncodeHintType, object>();
+            hints[EncodeHintType.CHARACTER_SET] = "UTF-8";
+            BarcodeQRCode q = new BarcodeQRCode(str, 100, 100, hints);
             document.Add(q.GetImage());
 
             // step 5
