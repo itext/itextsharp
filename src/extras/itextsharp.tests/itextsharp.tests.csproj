@@ -71,6 +71,7 @@
     <Compile Include="iTextSharp\text\io\GroupedRandomAccessSourceTest.cs" />
     <Compile Include="iTextSharp\text\io\WindowRandomAccessSourceTest.cs" />
     <Compile Include="iTextSharp\text\pdf\AcroFieldsTest.cs" />
+	<Compile Include="iTextSharp\text\pdf\BarcodeUnicodeTest.cs" />
     <Compile Include="iTextSharp\text\pdf\BookmarksTest.cs" />
     <Compile Include="iTextSharp\text\pdf\CMapAwareDocumentFontTest.cs" />
 	<Compile Include="iTextSharp\text\pdf\cs\DeviceNColorSpaceTest.cs" />
