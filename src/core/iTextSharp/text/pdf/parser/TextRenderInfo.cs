@@ -431,7 +431,11 @@ namespace iTextSharp.text.pdf.parser {
                     value += b[i] & 0xff;
                     value <<= 8;
                 }
-                value += b[b.Length - 1] & 0xff;
+
+                if (b.Length > 0) {
+                    value += b[b.Length - 1] & 0xff;
+                }
+
                 return value;
             } catch (ArgumentException e) {
             }
