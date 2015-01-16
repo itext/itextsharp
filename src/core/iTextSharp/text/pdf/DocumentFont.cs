@@ -121,6 +121,7 @@ namespace iTextSharp.text.pdf {
                 // For instance: the character a could be mapped to an image of a dog, the character b to an image of a cat
                 // When parsing a document that shows a cat and a dog, you shouldn't expect seeing a cat and a dog. Instead you'll get b and a.
                 FillEncoding(null);
+                FillDiffMap(font.GetAsDict(PdfName.ENCODING), null);
             } else {
                 PdfName encodingName = font.GetAsName(PdfName.ENCODING);
                 if (encodingName != null){
@@ -299,7 +300,7 @@ namespace iTextSharp.text.pdf {
                 toUnicode = ProcessToUnicode();
                 if (toUnicode != null) {
                     IDictionary<int, int> rm = toUnicode.CreateReverseMapping();
-                    foreach (KeyValuePair<int,int> kv in rm) {
+                    foreach (KeyValuePair<int, int> kv in rm) {
                         uni2byte[kv.Key] = kv.Value;
                         byte2uni[kv.Value] = kv.Key;
                     }
@@ -307,47 +308,15 @@ namespace iTextSharp.text.pdf {
             }
             else {
                 if (enc.IsName())
-                    FillEncoding((PdfName)enc);
+                    FillEncoding((PdfName) enc);
                 else if (enc.IsDictionary()) {
-                    PdfDictionary encDic = (PdfDictionary)enc;
+                    PdfDictionary encDic = (PdfDictionary) enc;
                     enc = PdfReader.GetPdfObject(encDic.Get(PdfName.BASEENCODING));
                     if (enc == null)
                         FillEncoding(null);
                     else
-                        FillEncoding((PdfName)enc);
-                    PdfArray diffs = encDic.GetAsArray(PdfName.DIFFERENCES);
-                    if (diffs != null) {
-                        diffmap = new IntHashtable();
-                        int currentNumber = 0;
-                        for (int k = 0; k < diffs.Size; ++k) {
-                            PdfObject obj = diffs[k];
-                            if (obj.IsNumber())
-                                currentNumber = ((PdfNumber)obj).IntValue;
-                            else {
-                                int[] c = GlyphList.NameToUnicode(PdfName.DecodeName(((PdfName)obj).ToString()));
-                                if (c != null && c.Length > 0) {
-                                    uni2byte[c[0]] = currentNumber;
-                                    byte2uni[currentNumber] = c[0];
-                                    diffmap[c[0]] = currentNumber;
-                                }
-                                else {
-                                    if (toUnicode == null) {
-                                        toUnicode = ProcessToUnicode();
-                                        if (toUnicode == null) {
-                                            toUnicode = new CMapToUnicode();
-                                        }
-                                    }
-                                    string unicode = toUnicode.Lookup(new byte[]{(byte) currentNumber}, 0, 1);
-                                    if ((unicode != null) && (unicode.Length == 1)) {
-                                        this.uni2byte[unicode[0]] = currentNumber;
-                                        this.byte2uni[currentNumber] = unicode[0];
-                                        this.diffmap[unicode[0]] = currentNumber;
-                                    }
-                                }
-                                ++currentNumber;
-                            }
-                        }
-                    }
+                        FillEncoding((PdfName) enc);
+                    FillDiffMap(encDic, toUnicode);
                 }
             }
             PdfArray newWidths = font.GetAsArray(PdfName.WIDTHS);
@@ -391,6 +360,42 @@ namespace iTextSharp.text.pdf {
                 }
             }
             FillFontDesc(font.GetAsDict(PdfName.FONTDESCRIPTOR));
+        }
+
+        private void FillDiffMap(PdfDictionary encDic, CMapToUnicode toUnicode) {
+            PdfArray diffs = encDic.GetAsArray(PdfName.DIFFERENCES);
+            if (diffs != null) {
+                diffmap = new IntHashtable();
+                int currentNumber = 0;
+                for (int k = 0; k < diffs.Size; ++k) {
+                    PdfObject obj = diffs[k];
+                    if (obj.IsNumber())
+                        currentNumber = ((PdfNumber)obj).IntValue;
+                    else {
+                        int[] c = GlyphList.NameToUnicode(PdfName.DecodeName(((PdfName)obj).ToString()));
+                        if (c != null && c.Length > 0) {
+                            uni2byte[c[0]] = currentNumber;
+                            byte2uni[currentNumber] = c[0];
+                            diffmap[c[0]] = currentNumber;
+                        }
+                        else {
+                            if (toUnicode == null) {
+                                toUnicode = ProcessToUnicode();
+                                if (toUnicode == null) {
+                                    toUnicode = new CMapToUnicode();
+                                }
+                            }
+                            string unicode = toUnicode.Lookup(new byte[]{(byte) currentNumber}, 0, 1);
+                            if ((unicode != null) && (unicode.Length == 1)) {
+                                this.uni2byte[unicode[0]] = currentNumber;
+                                this.byte2uni[currentNumber] = unicode[0];
+                                this.diffmap[unicode[0]] = currentNumber;
+                            }
+                        }
+                        ++currentNumber;
+                    }
+                }
+            }
         }
         
         private CMapToUnicode ProcessToUnicode() {
