@@ -1,7 +1,7 @@
 ﻿namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.examples.table {
-    internal class TableRunDirectionTest : SampleTest {
+    internal class TableRunDirectionCssTest : SampleTest {
         protected override string GetTestName() {
-            return "run_direction";
+            return "basic_rtl_scenarios_css";
         }
     }
 }
