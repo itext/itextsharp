@@ -1595,5 +1595,28 @@ namespace iTextSharp.text.pdf {
                 }
             }
         }
+
+        public virtual void PlaceBarcode(PdfContentByte cb, BaseColor foreground, float moduleHeight, float moduleWidth) {
+            PaintCode();
+            int stride = (bitColumns + 7)/8;
+            cb.SetColorFill(foreground);
+            for (int k = 0; k < codeRows; ++k) {
+                int p = k*stride;
+                for (int j = 0; j < bitColumns; ++j) {
+                    int b = outBits[p + j/8] & 0xff;
+                    b <<= j%8;
+                    if ((b & 0x80) != 0) {
+                        cb.Rectangle(j*moduleWidth, (codeRows - k - 1)*moduleHeight, moduleWidth, moduleHeight);
+                    }
+                }
+            }
+            cb.Fill();
+        }
+
+        /** Gets the size of the barcode grid. */
+        public virtual Rectangle GetBarcodeSize() {
+            PaintCode();
+            return new Rectangle(0, 0, bitColumns, codeRows);
+        }
     }
 }
