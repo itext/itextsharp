@@ -145,7 +145,7 @@ namespace iTextSharp.tool.xml.css {
             public const String RIGHT = "right";
             public const String BOTTOM = "bottom";
             public const String FLOAT = "float";
-            public const String DIR = "dir";
+            public const String DIRECTION = "direction";
         }
 
         /**

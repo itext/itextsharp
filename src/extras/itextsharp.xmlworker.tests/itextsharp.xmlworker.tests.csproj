@@ -127,7 +127,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\color\list\Color_list01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\color\table\Color_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\color\text\Color_text01.cs" />
-	<Compile Include="iTextSharp\tool\xml\examples\css\color\text\Color_text02.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\color\text\Color_text02.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Blocks001Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\ComplexDiv01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\ComplexDiv02Test.cs" />
@@ -138,7 +138,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Match005Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Match006Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Overflow02Test.cs" />
-	<Compile Include="iTextSharp\tool\xml\examples\css\div\PageOverflow01Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\div\PageOverflow01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Same002Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Shorthand001Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\div\Shorthand002Test.cs" />
@@ -311,7 +311,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\list\Decoration_list01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\table\Decoration_table01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\text\Decoration_text01.cs" />
-	<Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\text\Decoration_text02.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\css\text\decoration\text\Decoration_text02.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\indent\cell\Indent_cell01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\indent\div\Indent_div01.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\css\text\indent\list\Indent_list01.cs" />
@@ -386,14 +386,14 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\Address01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\B01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Big01Test.cs" />
-	<Compile Include="iTextSharp\tool\xml\examples\html\Big02Test.cs" />
-	<Compile Include="iTextSharp\tool\xml\examples\html\Blockquote01Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\Big02Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\Blockquote01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Cite01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Code01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Del01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Del02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Del03Test.cs" />
-	<Compile Include="iTextSharp\tool\xml\examples\html\DelUnderlineTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\DelUnderlineTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Dfn01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Div01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Div02Test.cs" />
@@ -438,7 +438,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\S01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Samp01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Small01Test.cs" />
-	<Compile Include="iTextSharp\tool\xml\examples\html\Small02Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\Small02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Span01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Span02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Strike01Test.cs" />
@@ -479,7 +479,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\Table31Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Table32Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Table33Test.cs" />
-	<Compile Include="iTextSharp\tool\xml\examples\html\Table34Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\Table34Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Table35Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Table36Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Table37Test.cs" />
@@ -488,8 +488,13 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\U01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Var01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\SampleTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\table\BasicTableRunDirectionTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\table\ColRowSpanTest.cs" />
-	<Compile Include="iTextSharp\tool\xml\examples\table\ColspanFixedWidthTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\table\ColspanFixedWidthTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\table\NestedTableRunDirectionAttributeTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\table\NestedTableRunDirectionCssTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\table\TableRunDirectionAttributeTest.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\table\TableRunDirectionCssTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\AlignAndMarginTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\FontAndColorTest.cs" />
     <Compile Include="iTextSharp\tool\xml\html\HorAndVertScalingTest.cs" />
@@ -985,6 +990,12 @@
     <Content Include="resources\com\itextpdf\tool\xml\examples\html\var01\var01.html" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\sampleTest.css" />
     <Content Include="resources\com\itextpdf\tool\xml\examples\table\3_8-BF-06\3_8-BF-06.html" />
+    <Content Include="resources\com\itextpdf\tool\xml\examples\table\advanced_rtl_scenarios_nesting\advanced_rtl_scenarios_nesting.html" />
+    <Content Include="resources\com\itextpdf\tool\xml\examples\table\advanced_rtl_scenarios_nesting_css\advanced_rtl_scenarios_nesting_css.html" />
+    <Content Include="resources\com\itextpdf\tool\xml\examples\table\basic_rtl_scenarios\basic_rtl_scenarios.html" />
+    <Content Include="resources\com\itextpdf\tool\xml\examples\table\basic_rtl_scenarios_css\basic_rtl_scenarios_css.html" />
+    <Content Include="resources\com\itextpdf\tool\xml\examples\table\colspan_fixed_width\colspan_fixed_width.html" />
+    <Content Include="resources\com\itextpdf\tool\xml\examples\table\run_direction\run_direction.html" />
     <Content Include="resources\com\itextpdf\tool\xml\parser\parser.xml" />
     <Content Include="resources\css\style.css" />
     <Content Include="resources\css\test.css" />
@@ -1029,6 +1040,7 @@
     <Content Include="resources\snippets\xfa-support_snippet.html" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="itextsharp.snk" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\background\background_color\cell\background_color_cell01\background_color_cell01.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\css\background\background_color\cell\background_color_cell02\background_color_cell02.pdf" />
@@ -1350,6 +1362,12 @@
     <None Include="resources\com\itextpdf\tool\xml\examples\html\u01\u01.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\html\var01\var01.pdf" />
     <None Include="resources\com\itextpdf\tool\xml\examples\table\3_8-BF-06\3_8-BF-06.pdf" />
+    <None Include="resources\com\itextpdf\tool\xml\examples\table\advanced_rtl_scenarios_nesting\advanced_rtl_scenarios_nesting.pdf" />
+    <None Include="resources\com\itextpdf\tool\xml\examples\table\advanced_rtl_scenarios_nesting_css\advanced_rtl_scenarios_nesting_css.pdf" />
+    <None Include="resources\com\itextpdf\tool\xml\examples\table\basic_rtl_scenarios\basic_rtl_scenarios.pdf" />
+    <None Include="resources\com\itextpdf\tool\xml\examples\table\basic_rtl_scenarios_css\basic_rtl_scenarios_css.pdf" />
+    <None Include="resources\com\itextpdf\tool\xml\examples\table\colspan_fixed_width\colspan_fixed_width.pdf" />
+    <None Include="resources\com\itextpdf\tool\xml\examples\table\run_direction\run_direction.pdf" />
     <None Include="resources\examples\tiger.svg" />
     <None Include="resources\multiple.demo" />
   </ItemGroup>

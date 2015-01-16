@@ -56,21 +56,35 @@ namespace iTextSharp.tool.xml.util {
 
     public class ParentTreeUtil
     {
-
         /**
          * creates a parentTree of all parents of a given Tag
          * 
          * @param t Tag the tag where you want to know it's parentTree of
          * @return parentTree a arrayList<String> containing the parents of Tag t
          */
-
-        virtual public IList<String> GetParentTree(Tag t)
-        {
+        public IList<String> GetParentTree(Tag t){
             IList<String> parentTree = new List<String>();
-            while (t.Parent != null && !(t.Parent.Name.Equals(HTML.Tag.BODY)))
-            {
-                parentTree.Add(t.Parent.Name);
-                t = t.Parent;
+            Tag parent = t.Parent;
+            while(parent!=null&&!(parent.Name.Equals(HTML.Tag.BODY))){
+                parentTree.Add(parent.Name);
+                parent = parent.Parent;
+            }
+            return parentTree;
+        }
+
+        /**
+         * creates a parentTree of all parent Tag objects of a given Tag
+         * 
+         * @param tag Tag the tag where you want to know it's parentTree of
+         * @param tree
+         * @return parentTree arrayList<Tag> containing the parent tags of Tag t
+         */
+        public IList<Tag> GetParentTagTree(Tag tag, IList<Tag> tree) {
+            IList<Tag> parentTree = new List<Tag>();
+            Tag parent = tag.Parent;
+            while (parent != null && !(parent.Name.Equals(HTML.Tag.HTML))) {
+                parentTree.Add(parent);
+                parent = parent.Parent;
             }
             return parentTree;
         }

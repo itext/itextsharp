@@ -13,6 +13,7 @@ using iTextSharp.tool.xml.pipeline.ctx;
 using iTextSharp.tool.xml.pipeline.html;
 using System.util;
 using iTextSharp.text.pdf;
+using iTextSharp.tool.xml.util;
 
 /*
  * $Id: AbstractTagProcessor.java 160 2011-06-07 09:34:57Z redlab_b $
@@ -145,12 +146,37 @@ namespace iTextSharp.tool.xml.html {
             return new List<IElement>(0);
         }
 
+        private String GetParentDirection() {
+            String result = null;
+            foreach (Tag tag in tree) {
+                tag.Attributes.TryGetValue(HTML.Attribute.DIR, out result);
+
+                if (result != null) break;
+                // Nested tables need this check
+                tag.CSS.TryGetValue(CSS.Property.DIRECTION, out result);
+                if (result != null) break;
+            }
+            return result;
+        }
+
+        private IList<Tag> tree;
+
         protected virtual int GetRunDirection(Tag tag) {
+            /* CSS should get precedence, but a dir attribute defined on the tag
+               itself should take precedence over an inherited style tag
+            */
             String dirValue;
-            tag.CSS.TryGetValue(CSS.Property.DIR, out dirValue);
+            tag.Attributes.TryGetValue(HTML.Attribute.DIR, out dirValue);
 
             if (dirValue == null) {
-                tag.Attributes.TryGetValue(CSS.Property.DIR, out dirValue);
+                // using CSS is actually discouraged, but still supported
+                tag.CSS.TryGetValue(CSS.Property.DIRECTION, out dirValue);
+
+                if (dirValue == null) {
+                    // dir attribute is inheritable in HTML but gets trumped by CSS
+                    tree = new ParentTreeUtil().GetParentTagTree(tag, tree);
+                    dirValue = GetParentDirection();
+                }// */
             }
 
             if (Util.EqualsIgnoreCase(CSS.Value.RTL, dirValue)) {

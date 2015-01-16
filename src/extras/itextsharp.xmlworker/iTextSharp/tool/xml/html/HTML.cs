@@ -321,6 +321,7 @@ namespace iTextSharp.tool.xml.html {
             public const String SIZE  = "size";
             public const String COLOR = "color";
             public const String START = "start";
+            public const String DIR = "dir";
 
             /**
              * Possible attribute values.
