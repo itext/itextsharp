@@ -343,14 +343,14 @@ namespace iTextSharp.text.pdf
 
                         // Setting inheritable attributes
                         IPdfStructureElement parent = (IPdfStructureElement) this.GetParent(true);
-                        PdfObject obj = parent.GetAttribute(PdfName.COLOR);
+                        PdfObject obj = GetParentAttribute(parent, PdfName.COLOR);
                         if ((chunk.Font != null) && (chunk.Font.Color != null))
                         {
                             BaseColor c = chunk.Font.Color;
                             SetColorAttribute(c, obj, PdfName.COLOR);
                         }
-                        PdfObject decorThickness = parent.GetAttribute(PdfName.TEXTDECORATIONTHICKNESS);
-                        PdfObject decorColor = parent.GetAttribute(PdfName.TEXTDECORATIONCOLOR);
+                        PdfObject decorThickness = GetParentAttribute(parent, PdfName.TEXTDECORATIONTHICKNESS);
+                        PdfObject decorColor = GetParentAttribute(parent, PdfName.TEXTDECORATIONCOLOR);
                         if (attr.ContainsKey(Chunk.UNDERLINE))
                         {
                             Object[][] unders = (Object[][]) attr[Chunk.UNDERLINE];
@@ -376,7 +376,7 @@ namespace iTextSharp.text.pdf
                         if (attr.ContainsKey(Chunk.LINEHEIGHT))
                         {
                             float height = (float) attr[Chunk.LINEHEIGHT];
-                            PdfObject parentLH = parent.GetAttribute(PdfName.LINEHEIGHT);
+                            PdfObject parentLH = GetParentAttribute(parent, PdfName.LINEHEIGHT);
                             if (parentLH is PdfNumber)
                             {
                                 float pLH = ((PdfNumber) parentLH).FloatValue;
@@ -432,12 +432,12 @@ namespace iTextSharp.text.pdf
 
                 // Setting inheritable attributes
                 IPdfStructureElement parent = (IPdfStructureElement) this.GetParent(true);
-                PdfObject obj = parent.GetAttribute(PdfName.COLOR);
+                PdfObject obj = GetParentAttribute(parent, PdfName.COLOR);
                 if ((paragraph.Font != null) && (paragraph.Font.Color != null)) {
                     BaseColor c = paragraph.Font.Color;
                     SetColorAttribute(c, obj, PdfName.COLOR);
                 }
-                obj = parent.GetAttribute(PdfName.TEXTINDENT);
+                obj = GetParentAttribute(parent, PdfName.TEXTINDENT);
                 if (paragraph.FirstLineIndent.CompareTo(0f) != 0) {
                     bool writeIndent = true;
                     if (obj is PdfNumber) {
@@ -447,7 +447,7 @@ namespace iTextSharp.text.pdf
                     if (writeIndent)
                         this.SetAttribute(PdfName.TEXTINDENT, new PdfNumber(paragraph.FirstLineIndent));
                 }
-                obj = parent.GetAttribute(PdfName.STARTINDENT);
+                obj = GetParentAttribute(parent, PdfName.STARTINDENT);
                 if (obj is PdfNumber) {
                     float startIndent = ((PdfNumber) obj).FloatValue;
                     if (startIndent.CompareTo(paragraph.IndentationLeft) != 0)
@@ -457,7 +457,7 @@ namespace iTextSharp.text.pdf
                         this.SetAttribute(PdfName.STARTINDENT, new PdfNumber(paragraph.IndentationLeft));
                 }
 
-                obj = parent.GetAttribute(PdfName.ENDINDENT);
+                obj = GetParentAttribute(parent, PdfName.ENDINDENT);
                 if (obj is PdfNumber) {
                     float endIndent = ((PdfNumber) obj).FloatValue;
                     if (endIndent.CompareTo(paragraph.IndentationRight) != 0)
@@ -491,7 +491,7 @@ namespace iTextSharp.text.pdf
                             this.SetAttribute(PdfName.LISTNUMBERING, PdfName.UPPERALPHA);
                     }
                 }
-                PdfObject obj = parent.GetAttribute(PdfName.STARTINDENT);
+                PdfObject obj = GetParentAttribute(parent, PdfName.STARTINDENT);
                 if (obj is PdfNumber) {
                     float startIndent = ((PdfNumber) obj).FloatValue;
                     if (startIndent != list.IndentationLeft)
@@ -501,7 +501,7 @@ namespace iTextSharp.text.pdf
                         this.SetAttribute(PdfName.STARTINDENT, new PdfNumber(list.IndentationLeft));
                 }
 
-                obj = parent.GetAttribute(PdfName.ENDINDENT);
+                obj = GetParentAttribute(parent, PdfName.ENDINDENT);
                 if (obj is PdfNumber) {
                     float endIndent = ((PdfNumber) obj).FloatValue;
                     if (endIndent != list.IndentationRight)
@@ -515,7 +515,7 @@ namespace iTextSharp.text.pdf
 
         private void WriteAttributes(ListItem listItem) {
             if (listItem != null) {
-                PdfObject obj = parent.GetAttribute(PdfName.STARTINDENT);
+                PdfObject obj = parent.GetParentAttribute(parent, PdfName.STARTINDENT);
                 if (obj is PdfNumber) {
                     float startIndent = ((PdfNumber) obj).FloatValue;
                     if (startIndent.CompareTo(listItem.IndentationLeft) != 0)
@@ -525,7 +525,7 @@ namespace iTextSharp.text.pdf
                         this.SetAttribute(PdfName.STARTINDENT, new PdfNumber(listItem.IndentationLeft));
                 }
 
-                obj = parent.GetAttribute(PdfName.ENDINDENT);
+                obj = GetParentAttribute(parent, PdfName.ENDINDENT);
                 if (obj is PdfNumber) {
                     float endIndent = ((PdfNumber) obj).FloatValue;
                     if (endIndent.CompareTo(listItem.IndentationRight) != 0)
@@ -544,7 +544,7 @@ namespace iTextSharp.text.pdf
 
         private void WriteAttributes(ListLabel listLabel) {
             if (listLabel != null) {
-                PdfObject obj = parent.GetAttribute(PdfName.STARTINDENT);
+                PdfObject obj = GetParentAttribute(parent, PdfName.STARTINDENT);
                 if (obj is PdfNumber) {
                     float startIndent = ((PdfNumber) obj).FloatValue;
                     if (startIndent != listLabel.Indentation)
@@ -736,7 +736,7 @@ namespace iTextSharp.text.pdf
                     align = PdfName.JUSTIFY;
                     break;
             }
-            PdfObject obj = parent.GetAttribute(PdfName.TEXTALIGN);
+            PdfObject obj = GetParentAttribute(parent, PdfName.TEXTALIGN);
             if (obj is PdfName)
             {
                 PdfName textAlign = ((PdfName) obj);
@@ -753,6 +753,14 @@ namespace iTextSharp.text.pdf
         public override void ToPdf(PdfWriter writer, Stream os) {
             PdfWriter.CheckPdfIsoConformance(writer, PdfIsoKeys.PDFISOKEY_STRUCTELEM, this);
             base.ToPdf(writer, os);
+        }
+
+        private PdfObject GetParentAttribute(IPdfStructureElement parent, PdfName name) {
+            if (parent == null) {
+                return null;
+            }
+
+            return parent.GetAttribute(name);
         }
     }
 }
