@@ -249,7 +249,7 @@ namespace iTextSharp.tool.xml.html.table {
                 float max = htmlPipelineContext.PageSize.Width - outerWidth;
                 bool tableWidthFixed = false;
                 if (tag.Attributes.ContainsKey(CSS.Property.WIDTH) || tag.CSS.ContainsKey(CSS.Property.WIDTH)) {
-                    targetWidth = new WidthCalculator().GetWidth(tag, htmlPipelineContext.GetRootTags(), htmlPipelineContext.PageSize.Width);
+                    targetWidth = new WidthCalculator().GetWidth(tag, htmlPipelineContext.GetRootTags(), htmlPipelineContext.PageSize.Width, initialTotalWidth);
                     if (targetWidth > max) {
                         targetWidth = max;
                     }
