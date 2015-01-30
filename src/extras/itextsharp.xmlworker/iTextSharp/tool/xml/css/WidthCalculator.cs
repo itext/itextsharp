@@ -56,14 +56,20 @@ namespace iTextSharp.tool.xml.css {
 
         private CssUtils utils = CssUtils.GetInstance();
 
+        private const float TOLERANCE = 0.00000000000001f;
+
         /**
          * Tries to calculate a width from a tag and it's ancestors.
          * @param tag the tag to use
-         * @param roottags the root tags,
-         * @param pagewidth the page width
+         * @param rootTags the root tags,
+         * @param pageWidth the page width
          * @return the width
          */
-        virtual public float GetWidth(Tag tag, IList<String> roottags, float pagewidth){
+        public virtual float GetWidth(Tag tag, IList<String> rootTags, float pageWidth) {
+            return GetWidth(tag, rootTags, pageWidth, -1);
+        }
+
+        public virtual float GetWidth(Tag tag, IList<String> rootTags, float pageWidth, float initialTotalWidth) {
             float width = 0;
             String widthValue;
             tag.CSS.TryGetValue(HTML.Attribute.WIDTH, out widthValue);
@@ -78,17 +84,22 @@ namespace iTextSharp.tool.xml.css {
                     float firstAncestorsWidth = 0;
                     while (firstAncestorsWidth == 0 && ancestor.Parent != null) {
                         ancestor = ancestor.Parent;
-                        firstAncestorsWidth = GetWidth(ancestor, roottags, pagewidth);
+                        firstAncestorsWidth = GetWidth(ancestor, rootTags, pageWidth, initialTotalWidth);
                     }
                     if (firstAncestorsWidth == 0) {
-                        width = utils.ParseRelativeValue(widthValue, pagewidth);
+                        width = utils.ParseRelativeValue(widthValue, pageWidth);
                     } else {
                         width = utils.ParseRelativeValue(widthValue, firstAncestorsWidth);
                     }
                 }
-            } else if (roottags.Contains(tag.Name)){
-                width = pagewidth;
+            } else if (rootTags.Contains(tag.Name)){
+                if (Math.Abs(initialTotalWidth - (-1)) < TOLERANCE) {
+                    width = pageWidth;
+                } else {
+                    width = initialTotalWidth;
+                }
             }
+
             return width;
         }
     }

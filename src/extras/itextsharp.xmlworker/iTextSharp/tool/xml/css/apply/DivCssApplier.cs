@@ -115,6 +115,41 @@ namespace iTextSharp.tool.xml.css.apply {
                         div.Position = PdfDiv.PositionType.RELATIVE;
                     }
                 }
+                else if (Util.EqualsIgnoreCase(key, CSS.Property.DISPLAY)) {
+                    if (Util.EqualsIgnoreCase(value, CSS.Value.BLOCK)) {
+                        div.Display = PdfDiv.DisplayType.BLOCK;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.INLINE)) {
+                        div.Display = PdfDiv.DisplayType.INLINE;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.INLINE_BLOCK)) {
+                        div.Display = PdfDiv.DisplayType.INLINE_BLOCK;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.INLINE_TABLE)) {
+                        div.Display = PdfDiv.DisplayType.INLINE_TABLE;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.LIST_ITEM)) {
+                        div.Display = PdfDiv.DisplayType.LIST_ITEM;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.NONE)) {
+                        div.Display = PdfDiv.DisplayType.NONE;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.RUN_IN)) {
+                        div.Display = PdfDiv.DisplayType.RUN_IN;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.TABLE)) {
+                        div.Display = PdfDiv.DisplayType.TABLE;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.TABLE_CAPTION)) {
+                        div.Display = PdfDiv.DisplayType.TABLE_CAPTION;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.TABLE_CELL)) {
+                        div.Display = PdfDiv.DisplayType.TABLE_CELL;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.TABLE_COLUMN_GROUP)) {
+                        div.Display = PdfDiv.DisplayType.TABLE_COLUMN_GROUP;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.TABLE_COLUMN)) {
+                        div.Display = PdfDiv.DisplayType.TABLE_COLUMN;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.TABLE_FOOTER_GROUP)) {
+                        div.Display = PdfDiv.DisplayType.TABLE_FOOTER_GROUP;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.TABLE_HEADER_GROUP)) {
+                        div.Display = PdfDiv.DisplayType.TABLE_HEADER_GROUP;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.TABLE_ROW)) {
+                        div.Display = PdfDiv.DisplayType.TABLE_ROW;
+                    } else if (Util.EqualsIgnoreCase(value, CSS.Value.TABLE_ROW_GROUP)) {
+                        div.Display = PdfDiv.DisplayType.TABLE_ROW_GROUP;
+                    }
+                } 
 
                 //TODO: border, background properties.
             }

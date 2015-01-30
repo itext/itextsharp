@@ -69,6 +69,11 @@ namespace iTextSharp.text.pdf {
             RELATIVE
         };
 
+        public enum DisplayType {
+            DEFAULT_NULL_VALUE, NONE, BLOCK, INLINE, INLINE_BLOCK, INLINE_TABLE, LIST_ITEM, RUN_IN, TABLE, TABLE_CAPTION, TABLE_CELL, TABLE_COLUMN_GROUP, TABLE_COLUMN, TABLE_FOOTER_GROUP,
+            TABLE_HEADER_GROUP, TABLE_ROW, TABLE_ROW_GROUP
+        };
+
         private List<IElement> content;
 
         private float? left = null;
@@ -116,6 +121,8 @@ namespace iTextSharp.text.pdf {
         private FloatType floatType = FloatType.NONE;
 
         private PositionType position = PositionType.STATIC;
+
+        private DisplayType display = DisplayType.DEFAULT_NULL_VALUE;
 
         private FloatLayout floatLayout = null;
 
@@ -246,6 +253,12 @@ namespace iTextSharp.text.pdf {
             set { floatLayout = value; }
         }
 
+        virtual public DisplayType Display 
+        {
+            get { return display;  }
+            set { display = value; }
+        }
+
         virtual public BaseColor BackgroundColor
         {
             get { return backgroundColor; }
@@ -363,6 +376,15 @@ namespace iTextSharp.text.pdf {
             {
                 contentWidth = (rightX - leftX)*(float) percentageWidth;
                 rightX = leftX + contentWidth;
+            }
+            else if (percentageWidth == null) 
+            {
+                if (this.floatType == FloatType.NONE && (this.display == DisplayType.DEFAULT_NULL_VALUE ||
+                    this.display == DisplayType.BLOCK || this.display == DisplayType.LIST_ITEM ||
+                    this.display == DisplayType.RUN_IN)) 
+                {
+                    contentWidth = rightX - leftX;
+                }
             }
 
             if (height != null && height > 0)

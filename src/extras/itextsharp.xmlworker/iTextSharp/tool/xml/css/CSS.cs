@@ -230,6 +230,19 @@ namespace iTextSharp.tool.xml.css {
             public const String COLLAPSE = "collapse";
             public const String RTL = "rtl";
             public const String LTR = "ltr";
+            public const String INLINE_BLOCK = "inline-block";
+		    public const String INLINE_TABLE = "inline-table";
+		    public const String LIST_ITEM = "list-item";
+		    public const String RUN_IN = "run-in";
+		    public const String TABLE = "table";
+		    public const String TABLE_CAPTION = "table-caption";
+		    public const String TABLE_CELL = "table-cell";
+		    public const String TABLE_COLUMN_GROUP = "table-column-group";
+		    public const String TABLE_COLUMN = "table-column";
+		    public const String TABLE_FOOTER_GROUP = "table-footer-group";
+		    public const String TABLE_HEADER_GROUP = "table-header-group";
+		    public const String TABLE_ROW = "table-row";
+		    public const String TABLE_ROW_GROUP = "table-row-group";
         }
     }
 }

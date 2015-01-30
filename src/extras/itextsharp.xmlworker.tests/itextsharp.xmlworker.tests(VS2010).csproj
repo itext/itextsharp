@@ -409,6 +409,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\Div01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Div02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Div03Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\Div04Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\DivPagination01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\DivPagination02Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Dl01Test.cs" />
