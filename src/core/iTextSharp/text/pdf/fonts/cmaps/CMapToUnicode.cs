@@ -162,5 +162,13 @@ namespace iTextSharp.text.pdf.fonts.cmaps {
             }
             return retval;
         }
+
+        public static CMapToUnicode GetIdentity() {
+            CMapToUnicode uni = new CMapToUnicode();
+            for (int i = 0; i < 65537; i++) {
+                uni.AddChar(i, Utilities.ConvertFromUtf32(i));
+            }
+            return uni;
+        }
     }
 }
