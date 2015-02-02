@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
-using iTextSharp.tool.xml;
+using System.util;
 using iTextSharp.tool.xml.html;
+
 /*
  * $Id: WidthCalculator.java 170 2011-06-08 10:06:43Z emielackermann $
  *
@@ -93,7 +94,7 @@ namespace iTextSharp.tool.xml.css {
                     }
                 }
             } else if (rootTags.Contains(tag.Name)){
-                if (Math.Abs(initialTotalWidth - (-1)) < TOLERANCE) {
+                if (Util.compare(initialTotalWidth, -1) == 0) {
                     width = pageWidth;
                 } else {
                     width = initialTotalWidth;
