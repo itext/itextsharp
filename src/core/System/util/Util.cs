@@ -98,6 +98,21 @@ namespace System.util {
             return result;
         }
 
+        public static int compare(float f1, float f2) {
+            if (f1 < f2) {
+                return -1;
+            }
+
+            if (f1 > f2) {
+                return 1;
+            }
+
+            int f1Bits = BitConverter.ToInt32(BitConverter.GetBytes(f1), 0);
+            int f2Bits = BitConverter.ToInt32(BitConverter.GetBytes(f2), 0);
+
+            return (f1Bits == f2Bits ? 0 : (f1Bits < f2Bits ? -1 : 1));                         
+        }
+
         public static bool ArraysAreEqual<T>(T[] a, T[] b) {
             if (a == b)
                 return true;
