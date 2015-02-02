@@ -110,6 +110,7 @@
     <Compile Include="iTextSharp\text\pdf\parser\PdfContentStreamProcessorTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\PdfImageObjectTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\PdfTextExtractorEncodingsTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\PdfTextExtractorUnicodeIdentityTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\SimpleTextExtractionStrategyTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\TextMarginFinderTest.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\TextRenderInfoTest.cs" />
@@ -242,6 +243,7 @@
     <None Include="resources\text\pdf\parser\PdfImageObjectTest\flatedecode_runlengthdecode.pdf" />
     <None Include="resources\text\pdf\parser\PdfImageObjectTest\jbig2decode.pdf" />
     <None Include="resources\text\pdf\parser\PdfImageObjectTest\multistagefilter1.pdf" />
+    <None Include="resources\text\pdf\parser\PdfTextExtractorUnicodeIdentityTest\user10.pdf" />
     <None Include="resources\text\pdf\parser\SimpleTextExtractionStrategyTest\ISO-TC171-SC2_N0896_SC2WG5_Edinburgh_Agenda.pdf" />
     <None Include="resources\text\pdf\parser\SimpleTextExtractionStrategyTest\page229.pdf" />
     <None Include="resources\text\pdf\parser\TextRenderInfoTest\japanese_text.pdf" />

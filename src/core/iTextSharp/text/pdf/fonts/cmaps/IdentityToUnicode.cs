@@ -7,6 +7,7 @@ public class IdentityToUnicode {
     private static CMapToUnicode identityJapan;
     private static CMapToUnicode identityKorea;
     private static CMapToUnicode identityGB;
+    private static CMapToUnicode identityH;
     
     public static CMapToUnicode GetMapFromOrdering(String ordering){
         if (ordering.Equals("CNS1")) {
@@ -44,6 +45,12 @@ public class IdentityToUnicode {
                 identityGB = uni.ExportToUnicode();
             }
             return identityGB;
+        }
+        else if (ordering.Equals("Identity")) {
+            if (identityH == null) {
+                identityH = CMapToUnicode.GetIdentity();
+            }
+            return identityH;
         }
         return null;
     }

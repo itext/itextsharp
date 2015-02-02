@@ -170,6 +170,8 @@ namespace iTextSharp.text.pdf {
             FillFontDesc(fontDesc);
             if (toUniObject is PRStream){
                 FillMetrics(PdfReader.GetStreamBytes((PRStream)toUniObject), widths, dw);
+            } else if (new PdfName("Identity-H").Equals(toUniObject)) {
+                FillMetricsIdentity(widths, dw);
             }
         }
         
@@ -202,6 +204,15 @@ namespace iTextSharp.text.pdf {
                 return PdfEncodings.ConvertToString(ps.GetBytes(), "UnicodeBigUnmarked");
             else
                 return ps.ToUnicodeString();
+        }
+
+        private void FillMetricsIdentity(IntHashtable widths, int dw) {
+            for (int i = 0; i < 65536; i++) {
+                int w = dw;
+                if (widths.ContainsKey(i))
+                    w = widths[i];
+                metrics.Add(i, new int[] { i, w });
+            }
         }
         
         private void FillMetrics(byte[] touni, IntHashtable widths, int dw) {
