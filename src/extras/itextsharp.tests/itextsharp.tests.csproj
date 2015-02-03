@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalSetUp.cs" />
+    <Compile Include="iTextSharp\testutils\CompareToolTest.cs" />
     <Compile Include="iTextSharp\testutils\TestResourceUtils.cs" />
     <Compile Include="iTextSharp\text\ChunkTest.cs" />
     <Compile Include="iTextSharp\text\error_messages\ErrorMessageExistenceTest.cs" />
@@ -157,6 +158,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="itextsharp.snk" />
+    <None Include="resources\testutils\CompareToolTest\cmp_simple_pdf.pdf" />
+    <None Include="resources\testutils\CompareToolTest\cmp_tagged_pdf.pdf" />
+    <None Include="resources\testutils\CompareToolTest\simple_pdf.pdf" />
+    <None Include="resources\testutils\CompareToolTest\tagged_pdf.pdf" />
     <None Include="resources\text\ChunkTest\source11.pdf" />
     <None Include="resources\text\ChunkTest\source12.pdf" />
     <None Include="resources\text\ChunkTest\source13.pdf" />
