@@ -545,14 +545,14 @@ namespace iTextSharp.text.pdf {
                 if (dab[DA_COLOR] != null)
                     tx.TextColor = (BaseColor)dab[DA_COLOR];
                 if (dab[DA_FONT] != null) {
-                    PdfDictionary font = merged.GetAsDict(PdfName.DR);
-                    if (font != null) {
-                        font = font.GetAsDict(PdfName.FONT);
+                    PdfDictionary dr = merged.GetAsDict(PdfName.DR);
+                    if (dr != null) {
+                        PdfDictionary font = dr.GetAsDict(PdfName.FONT);
                         if (font != null) {
                             PdfObject po = font.Get(new PdfName((String)dab[DA_FONT]));
                             if (po != null && po.Type == PdfObject.INDIRECT) {
                                 PRIndirectReference por = (PRIndirectReference)po;
-                                BaseFont bp = new DocumentFont((PRIndirectReference)po);
+                                BaseFont bp = new DocumentFont((PRIndirectReference) po, dr.GetAsDict(PdfName.ENCODING));
                                 tx.Font = bp;
                                 int porkey = por.Number;
                                 BaseFont porf;
