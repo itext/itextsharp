@@ -105,6 +105,20 @@ namespace iTextSharp.text.pdf {
             Init();
         }
 
+        /** Creates a new instance of DocumentFont */
+        internal DocumentFont(PRIndirectReference refFont, PdfDictionary drEncoding) {
+        this.refFont = refFont;
+        font = (PdfDictionary) PdfReader.GetPdfObject(refFont);
+        if (font.GetAsName(PdfName.ENCODING) == null
+                && drEncoding != null) {
+            foreach (PdfName key in drEncoding.Keys) {
+                font.Put(PdfName.ENCODING, drEncoding.Get(key));
+            }
+        }
+
+        Init();
+    }
+
         private void Init() {
             encoding = "";
             fontSpecific = false;
