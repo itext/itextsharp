@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Globalization;
 /*
  * $Id$
@@ -129,6 +130,23 @@ namespace System.util {
                 Object o2 = b[i];
                 if (!(o1 == null ? o2 == null : o1.Equals(o2)))
                     return false;
+            }
+
+            return true;
+        }
+
+        public static bool AreEqual<T>(Stack<T> s1, Stack<T> s2) {
+            if (s1.Count != s2.Count) {
+                return false;
+            }
+
+            IEnumerator<T> e1 = s1.GetEnumerator();
+            IEnumerator<T> e2 = s2.GetEnumerator();
+
+            while (e1.MoveNext() && e2.MoveNext()) {
+                if (!e1.Current.Equals(e2.Current)) {
+                    return false;
+                }
             }
 
             return true;

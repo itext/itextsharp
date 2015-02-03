@@ -75,6 +75,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalSetUp.cs" />
+    <Compile Include="iTextSharp\testutils\CompareToolTest.cs" />
     <Compile Include="iTextSharp\testutils\TestResourceUtils.cs" />
     <Compile Include="iTextSharp\text\ChunkTest.cs" />
     <Compile Include="iTextSharp\text\error_messages\ErrorMessageExistenceTest.cs" />
@@ -181,6 +182,10 @@
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test7.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test8.xml" />
     <Content Include="resources\text\pdf\TaggedPdfTest\xml\test9.xml" />
+    <None Include="resources\testutils\CompareToolTest\cmp_simple_pdf.pdf" />
+    <None Include="resources\testutils\CompareToolTest\cmp_tagged_pdf.pdf" />
+    <None Include="resources\testutils\CompareToolTest\simple_pdf.pdf" />
+    <None Include="resources\testutils\CompareToolTest\tagged_pdf.pdf" />
     <None Include="resources\text\pdf\AcroFieldsTest\acroform.pdf" />
     <None Include="resources\text\pdf\AcroFieldsTest\choice_field_order.pdf" />
     <None Include="resources\text\pdf\AcroFieldsTest\choice_field_order_export.pdf" />
