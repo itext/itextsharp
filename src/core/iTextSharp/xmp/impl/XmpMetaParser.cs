@@ -308,7 +308,7 @@ namespace iTextSharp.xmp.impl {
 
         private static XmlReader GetSecureXmlReader(String str)
         {
-            return XmlReader.Create(str, GetSecureReaderSettings());
+            return XmlReader.Create(new StringReader(str), GetSecureReaderSettings());
         }
 
         
