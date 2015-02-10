@@ -143,7 +143,7 @@ namespace iTextSharp.xmp.impl {
         private static XmlDocument ParseXmlFromInputStream(Stream stream, ParseOptions options) {
             if (!options.AcceptLatin1 && !options.FixControlChars) {
                 XmlDocument doc = new XmlDocument();
-                doc.Load(stream);
+                doc.Load(GetSecureXmlReader(stream));
                 return doc;
             }
             // load stream into bytebuffer
@@ -168,7 +168,7 @@ namespace iTextSharp.xmp.impl {
         private static XmlDocument ParseXmlFromBytebuffer(ByteBuffer buffer, ParseOptions options) {
             try {
                 XmlDocument doc = new XmlDocument();
-                doc.Load(buffer.ByteStream);
+                doc.Load(GetSecureXmlReader(buffer.ByteStream));
                 return doc;
             } catch (XmlException e) {
                 XmlDocument doc = new XmlDocument();
@@ -180,7 +180,7 @@ namespace iTextSharp.xmp.impl {
                     try {
                         StreamReader streamReader = new StreamReader(buffer.ByteStream, Encoding.GetEncoding(buffer.Encoding));
                         FixAsciiControlsReader fixReader = new FixAsciiControlsReader(streamReader);
-                        doc.Load(fixReader);
+                        doc.Load(GetSecureXmlReader(fixReader));
                         return doc;
                     } catch (Exception) {
                         // can normally not happen as the encoding is provided by a util function
@@ -203,14 +203,15 @@ namespace iTextSharp.xmp.impl {
         /// <exception cref="XmpException"> Thrown when the parsing fails. </exception>
         private static XmlDocument ParseXmlFromString(string input, ParseOptions options) {
             try {
+
                 XmlDocument doc = new XmlDocument();
-                doc.Load(new StringReader(input));
+                doc.Load(GetSecureXmlReader(input));
                 return doc;
             }
             catch (XmpException e) {
                 if (e.ErrorCode == XmpError.BADXML && options.FixControlChars) {
                     XmlDocument doc = new XmlDocument();
-                    doc.Load(new FixAsciiControlsReader(new StringReader(input)));
+                    doc.Load(GetSecureXmlReader(new FixAsciiControlsReader(new StringReader(input))));
                     return doc;
                 }
                 throw e;
@@ -286,5 +287,31 @@ namespace iTextSharp.xmp.impl {
             return null;
             //     is extracted here in the C++ Toolkit		
         }
+
+
+        //Security stuff. Protecting against XEE attacks as described here: https://www.owasp.org/index.php/XML_External_Entity_%28XXE%29_Processing
+        private static XmlReaderSettings GetSecureReaderSettings()
+        {
+            XmlReaderSettings settings = new XmlReaderSettings();
+            settings.ProhibitDtd = true;
+            return settings;
+        }
+
+        private static XmlReader GetSecureXmlReader(Stream stream) {
+            return XmlReader.Create(stream, GetSecureReaderSettings());
+        }
+
+        private static XmlReader GetSecureXmlReader(TextReader textReader)
+        {
+            return XmlReader.Create(textReader, GetSecureReaderSettings());
+        }
+
+        private static XmlReader GetSecureXmlReader(String str)
+        {
+            return XmlReader.Create(str, GetSecureReaderSettings());
+        }
+
+        
+
     }
 }
