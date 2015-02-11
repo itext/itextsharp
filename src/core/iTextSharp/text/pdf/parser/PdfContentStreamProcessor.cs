@@ -59,7 +59,7 @@ namespace iTextSharp.text.pdf.parser {
          */
         public const String DEFAULTOPERATOR = "DefaultOperator";
         
-        /** A map with all supported operators operators (PDF syntax). */
+        /** A map with all supported operators (PDF syntax). */
         private IDictionary<String, IContentOperator> operators;
         /** Resources for the content stream. */
         private ResourceDictionary resources;
@@ -886,7 +886,7 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
-         * A content oper implementation (BMC).
+         * A content oper implementation (EMC).
          * @since 5.0.2
          */
         private class EndMarkedContentC : IContentOperator{

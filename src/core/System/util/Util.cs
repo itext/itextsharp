@@ -144,12 +144,48 @@ namespace System.util {
             IEnumerator<T> e2 = s2.GetEnumerator();
 
             while (e1.MoveNext() && e2.MoveNext()) {
-                if (!e1.Current.Equals(e2.Current)) {
+                if (e1.Current == null && e2.Current == null) {
+                    continue;
+                }
+
+                if (e1 == null || !e1.Current.Equals(e2.Current)) {
                     return false;
                 }
             }
 
             return true;
+        }
+
+        public static T Min<T>(T[] array) {
+            if (array.Length == 0) {
+                throw new InvalidOperationException();
+            }
+
+            T result = array[0];
+
+            for (int i = 1; i < array.Length; ++i) {
+                if (Comparer<T>.Default.Compare(result, array[i]) > 0) {
+                    result = array[i];
+                }
+            }
+
+            return result;
+        }
+
+        public static T Max<T>(T[] array) {
+            if (array.Length == 0) {
+                throw new InvalidOperationException();
+            }
+
+            T result = array[0];
+
+            for (int i = 1; i < array.Length; ++i) {
+                if (Comparer<T>.Default.Compare(result, array[i]) < 0) {
+                    result = array[i];
+                }
+            }
+
+            return result;
         }
     }
 }

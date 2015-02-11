@@ -186,6 +186,10 @@ namespace iTextSharp.text.pdf.parser {
             return GetUnscaledBaselineWithOffset(0 + gs.rise).TransformBy(textToUserSpaceTransformMatrix);
         }
 
+        virtual public LineSegment GetUnscaledBaseline() {
+            return GetUnscaledBaselineWithOffset(0 + gs.rise);
+        }
+
         /**
          * Gets the ascentline for the text (i.e. the line that represents the topmost extent that a string of the current font could have)
          * This value includes the Rise of the draw operation - see {@link #getRise()} for the amount added by Rise
@@ -208,11 +212,14 @@ namespace iTextSharp.text.pdf.parser {
             float descent = gs.GetFont().GetFontDescriptor(BaseFont.DESCENT, gs.GetFontSize());
             return GetUnscaledBaselineWithOffset(descent + gs.rise).TransformBy(textToUserSpaceTransformMatrix);
         }
-        
-        private LineSegment GetUnscaledBaselineWithOffset(float yOffset) {
 
-            // we need to correct the width so we don't have an extra character spacing value at the end.  The extra character space is important for tracking relative text coordinate systems, but should not be part of the baseline
-            float correctedUnscaledWidth = GetUnscaledWidth() - gs.characterSpacing * gs.horizontalScaling;
+        private LineSegment GetUnscaledBaselineWithOffset(float yOffset) {
+            // we need to correct the width so we don't have an extra character and word spaces at the end.  The extra character and word spaces
+            // are important for tracking relative text coordinate systems, but should not be part of the baseline
+            String unicodeStr = @string.ToUnicodeString();
+
+            float correctedUnscaledWidth = GetUnscaledWidth() - (gs.characterSpacing +
+                    (unicodeStr.Length > 0 && unicodeStr[unicodeStr.Length - 1] == ' ' ? gs.wordSpacing : 0)) * gs.horizontalScaling;
 
             return new LineSegment(new Vector(0, yOffset, 1), new Vector(correctedUnscaledWidth, yOffset, 1));
         }
