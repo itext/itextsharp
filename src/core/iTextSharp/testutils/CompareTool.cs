@@ -304,7 +304,7 @@ public class CompareTool {
     private String gsExec;
     private String compareExec;
     private const String gsParams = " -dNOPAUSE -dBATCH -sDEVICE=png16m -r150 -sOutputFile=<outputfile> <inputfile>";
-    private const String compareParams = " <image1> <image2> <difference>";
+    private const String compareParams = " \"<image1>\" \"<image2>\" \"<difference>\"";
 
     private const String cannotOpenTarGetDirectory = "Cannot open tarGet directory for <filename>.";
     private const String gsFailed = "GhostScript failed for <filename>.";
