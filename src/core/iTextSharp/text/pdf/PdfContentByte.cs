@@ -1418,12 +1418,14 @@ namespace iTextSharp.text.pdf {
         * @throws DocumentException on error
         */
         public virtual void AddImage(Image image, float a, float b, float c, float d, float e, float f, bool inlineImage) {
+            AffineTransform transform = new AffineTransform(a, b, c, d, e, f);
+
             if (image.Layer != null)
                 BeginLayer(image.Layer);
             if (IsTagged()) {
                 if (inText)
                     EndText();
-                AffineTransform transform = new AffineTransform(a, b, c, d, e, f);
+
                 Point2D[] src = new Point2D.Float[] { new Point2D.Float(0, 0), new Point2D.Float(1, 0), new Point2D.Float(1, 1), new Point2D.Float(0, 1) };
                 Point2D[] dst = new Point2D.Float[4];
                 transform.Transform(src, 0, dst, 0, 4);
@@ -1457,12 +1459,16 @@ namespace iTextSharp.text.pdf {
             }
             else {
                 content.Append("q ");
-                content.Append(a).Append(' ');
-                content.Append(b).Append(' ');
-                content.Append(c).Append(' ');
-                content.Append(d).Append(' ');
-                content.Append(e).Append(' ');
-                content.Append(f).Append(" cm");
+
+                if (!transform.IsIdentity()) {
+                    content.Append(a).Append(' ');
+                    content.Append(b).Append(' ');
+                    content.Append(c).Append(' ');
+                    content.Append(d).Append(' ');
+                    content.Append(e).Append(' ');
+                    content.Append(f).Append(" cm");
+                }
+
                 if (inlineImage) {
                     content.Append("\nBI\n");
                     PdfImage pimage = new PdfImage(image, "", null);

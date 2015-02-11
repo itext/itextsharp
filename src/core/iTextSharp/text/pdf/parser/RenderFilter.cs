@@ -62,7 +62,7 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * 
          * @param renderInfo
-         * @return true is the image render operation should be performed
+         * @return true if the image render operation should be performed
          */
         public virtual bool AllowImage(ImageRenderInfo renderInfo){
             return true;

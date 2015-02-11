@@ -57,6 +57,15 @@
     <Compile Include="iTextSharp\text\pdf\mc\StructureObject.cs" />
     <Compile Include="iTextSharp\text\pdf\ocg\OCGParser.cs" />
     <Compile Include="iTextSharp\text\pdf\ocg\OCGRemover.cs" />
+    <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpContentChunk.cs" />
+    <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpContentOperator.cs" />
+    <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpContext.cs" />
+    <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpCoveredArea.cs" />
+    <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpGraphicsState.cs" />
+    <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpLocation.cs" />
+    <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpProcessor.cs" />
+    <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpRegionFilter.cs" />
+    <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpRenderListener.cs" />
     <Compile Include="iTextSharp\text\pdf\richmedia\CuePoint.cs" />
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaActivation.cs" />
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaAnimation.cs" />
