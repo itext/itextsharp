@@ -607,8 +607,8 @@ namespace iTextSharp.text.pdf
                         this.SetAttribute(PdfName.HEADERS, headers);
                 }
 
-                if (cell.FixedHeight > 0)
-                    this.SetAttribute(PdfName.HEIGHT, new PdfNumber(cell.FixedHeight));
+                if (cell.CalculatedHeight > 0)
+                    this.SetAttribute(PdfName.HEIGHT, new PdfNumber(cell.CalculatedHeight));
 
                 if (cell.Width > 0)
                     this.SetAttribute(PdfName.WIDTH, new PdfNumber(cell.Width));

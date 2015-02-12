@@ -449,11 +449,13 @@ namespace iTextSharp.text.pdf {
                 element = t;
             }
             if (element.Type == Element.CHUNK) {
-                element = new Paragraph((Chunk)element);
+                element = new Paragraph((Chunk) element);
+            } else if (element.Type == Element.PHRASE) {
+                element = new Paragraph((Phrase) element);
+            } else if (element.Type == Element.PTABLE) {
+                ((PdfPTable) element).Init();
             }
-            else if (element.Type == Element.PHRASE) {
-                element = new Paragraph((Phrase)element);
-            }
+
             if (element.Type != Element.PARAGRAPH && element.Type != Element.LIST && element.Type != Element.PTABLE && element.Type != Element.YMARK && element.Type != Element.DIV)
                 throw new ArgumentException(MessageLocalization.GetComposedMessage("element.not.allowed"));
             if (!composite) {
@@ -1478,10 +1480,10 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 else if (element.Type == Element.PTABLE) {
-                    // INITIALISATIONS
 
+                    // INITIALISATIONS
                     // get the PdfPTable element
-                    PdfPTable table = (PdfPTable)element;
+                    PdfPTable table = (PdfPTable) element;
                 
                     // tables without a body are dismissed
                     if (table.Size <= table.HeaderRows) {
