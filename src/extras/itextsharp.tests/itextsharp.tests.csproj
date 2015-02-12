@@ -75,7 +75,6 @@
     <Compile Include="iTextSharp\text\pdf\BarcodeUnicodeTest.cs" />
     <Compile Include="iTextSharp\text\pdf\BookmarksTest.cs" />
     <Compile Include="iTextSharp\text\pdf\CMapAwareDocumentFontTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\CompareToolTest.cs" />
     <Compile Include="iTextSharp\text\pdf\cs\DeviceNColorSpaceTest.cs" />
     <Compile Include="iTextSharp\text\pdf\cs\LabColorSpaceTest.cs" />
     <Compile Include="iTextSharp\text\pdf\DocumentFontTest.cs" />
@@ -118,7 +117,6 @@
     <Compile Include="iTextSharp\text\signature\XmlDSigKSTest.cs" />
     <Compile Include="iTextSharp\text\signature\XmlDSigRsaTest.cs" />
     <Compile Include="iTextSharp\text\signature\XmlDSigTest.cs" />
-    <Compile Include="iTextSharp\text\TestResourceUtils.cs" />
     <Compile Include="iTextSharp\text\xml\simpleparser\SimpleXMLParserTest.cs" />
     <Compile Include="iTextSharp\text\xml\xmp\XmpWriterTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
