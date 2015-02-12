@@ -311,7 +311,7 @@ namespace iTextSharp.text.pdf
                 foreach (PdfName key in element.GetAccessibleAttributes().Keys)
                 {
                     if (key.Equals(PdfName.LANG) || key.Equals(PdfName.ALT) || key.Equals(PdfName.ACTUALTEXT) ||
-                        key.Equals(PdfName.E))
+                        key.Equals(PdfName.E) || key.Equals(PdfName.T))
                         Put(key, element.GetAccessibleAttribute(key));
                     else
                         SetAttribute(key, element.GetAccessibleAttribute(key));
