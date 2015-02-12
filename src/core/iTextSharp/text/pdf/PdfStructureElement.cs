@@ -574,10 +574,6 @@ namespace iTextSharp.text.pdf
                     this.SetAttribute(PdfName.HEIGHT, new PdfNumber(table.TotalHeight));
                 if (table.TotalWidth > 0)
                     this.SetAttribute(PdfName.WIDTH, new PdfNumber(table.TotalWidth));
-
-                if (table.Summary != null) {
-                    this.SetAttribute(PdfName.SUMMARY, new PdfString(table.Summary));
-                }
             }
         }
 
