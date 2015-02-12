@@ -73,6 +73,11 @@ namespace iTextSharp.text.pdf {
         
         /** Holds value of property fixedHeight. */
         private float fixedHeight = 0;
+
+        /**
+         * Fixed height of the cell.
+         */
+        private float calculatedHeight = 0;
         
         /** Holds value of property noWrap. */
         private bool noWrap = false;
@@ -491,7 +496,16 @@ namespace iTextSharp.text.pdf {
                 column.ExtraParagraphSpace = value;
             }
         }
-        
+
+        public virtual float CalculatedHeight {
+            get { return calculatedHeight; }
+            set { calculatedHeight = value; }
+        }
+
+        public virtual bool HasCalculatedHeight() {
+            return calculatedHeight > 0;
+        }
+
         /**
         * Getter for property fixedHeight.
         * @return Value of property fixedHeight.
@@ -797,7 +811,7 @@ namespace iTextSharp.text.pdf {
                         right = NoWrap ? PdfPRow.RIGHT_LIMIT : Right - EffectivePaddingRight;
                         top = Top - EffectivePaddingTop;
                         left = Left + EffectivePaddingLeft;
-                        bottom = HasFixedHeight() ? Top + EffectivePaddingBottom - FixedHeight : PdfPRow.BOTTOM_LIMIT;
+                        bottom = HasCalculatedHeight() ? Top + EffectivePaddingBottom - CalculatedHeight : PdfPRow.BOTTOM_LIMIT;
                     }
                     PdfPRow.SetColumn(ct, left, bottom, right, top);
                     ct.Go(true);

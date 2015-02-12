@@ -245,12 +245,34 @@ namespace iTextSharp.text.pdf {
                     break;
                 currentRow[k] = new PdfPCell(table.currentRow[k]);
             }
-            for (int k = 0; k < table.rows.Count; ++k)
-            {
+            for (int k = 0; k < table.rows.Count; ++k) {
                 PdfPRow row = table.rows[k];
-                if (row != null)
+
+                if (row != null) {
                     row = new PdfPRow(row);
+                }
+
                 rows.Add(row);
+            }
+        }
+
+        public virtual void Init() {
+            LOGGER.Info("Initialize row and cell heights");
+
+            foreach (PdfPRow row in Rows) {
+                if (row == null) {
+                    continue;
+                }
+
+                row.calculated = false;
+
+                foreach (PdfPCell cell in row.GetCells()) {
+                    if (cell == null) {
+                        continue;
+                    }
+
+                    cell.CalculatedHeight = 0;
+                }
             }
         }
 
@@ -1897,6 +1919,7 @@ namespace iTextSharp.text.pdf {
          * @since iText 5.4.3
          */
         virtual public FittingRows GetFittingRows(float availableHeight, int startIdx) {
+            LOGGER.Info(String.Format("GetFittingRows({0}, {1})", availableHeight, startIdx));
             System.Diagnostics.Debug.Assert (GetRow(startIdx).GetCells()[0] != null); // top left cell of current page may not be null
             int cols = NumberOfColumns;
             ColumnMeasurementState[] states = new ColumnMeasurementState[cols];
@@ -1920,6 +1943,8 @@ namespace iTextSharp.text.pdf {
                         state.ConsumeRowspan(completedRowsHeight, rowHeight);
                     } else {
                         state.BeginCell(cell, completedRowsHeight, rowHeight);
+                        LOGGER.Info(String.Format("Height after BeginCell: {0} (cell: {1})", state.height, cell.GetMaxHeight()));
+                
                     }
                     if (state.CellEnds() && state.height > maxCompletedRowsHeight) {
                         maxCompletedRowsHeight = state.height;

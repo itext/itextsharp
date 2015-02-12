@@ -78,9 +78,9 @@ namespace iTextSharp.text.pdf {
         */
         protected float[] extraHeights;
 
-        protected float maxHeight = 0;
+        protected internal float maxHeight = 0;
         
-        protected bool calculated = false;
+        protected internal bool calculated = false;
         protected bool adjusted = false;
         
         private int[] canvasesPos;
@@ -201,11 +201,13 @@ namespace iTextSharp.text.pdf {
          */
         virtual protected internal void CalculateHeights() {
             maxHeight = 0;
+            LOGGER.Info("CalculateHeights");
             for (int k = 0; k < cells.Length; ++k) {
                 PdfPCell cell = cells[k];
                 float height = 0;
                 if (cell != null) {
-                    height = cell.GetMaxHeight();
+                    height = cell.HasCalculatedHeight() ? cell.CalculatedHeight : cell.GetMaxHeight();
+
                     if ((height > maxHeight) && (cell.Rowspan == 1))
                         maxHeight = height;
                 }
@@ -653,6 +655,7 @@ namespace iTextSharp.text.pdf {
             LOGGER.Info("Splitting " + rowIndex + " " + new_height);
             // second part of the row
             PdfPCell[] newCells = new PdfPCell[cells.Length];
+            float[] calHs = new float[cells.Length];
             float[] fixHs = new float[cells.Length];
             float[] minHs = new float[cells.Length];
             bool allEmpty = true;
@@ -676,6 +679,7 @@ namespace iTextSharp.text.pdf {
                     }
                     continue;
                 }
+                calHs[k] = cell.CalculatedHeight;
                 fixHs[k] = cell.FixedHeight;
                 minHs[k] = cell.MinimumHeight;
                 Image img = cell.Image;
@@ -719,13 +723,17 @@ namespace iTextSharp.text.pdf {
                     allEmpty = (allEmpty && thisEmpty);
                 }
                 newCells[k] = newCell;
-                cell.FixedHeight = newHeight;
+                cell.CalculatedHeight = newHeight;
             }
             if (allEmpty) {
                 for (int k = 0; k < cells.Length; ++k) {
                     PdfPCell cell = cells[k];
-                    if (cell == null)
+                    if (cell == null) {
                         continue;
+                    }
+
+                    cell.CalculatedHeight = calHs[k];
+
                     if (fixHs[k] > 0)
                         cell.FixedHeight = fixHs[k];
                     else
