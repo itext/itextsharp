@@ -26,21 +26,18 @@ namespace itextsharp.tests.iTextSharp.text.pdf.pdfcleanup {
         }
 
         private static object[] TestData() {
-            IList<PdfCleanUpLocation> cleanUpLocations1 = new List<PdfCleanUpLocation>() {
-                new PdfCleanUpLocation(1, new Rectangle(240.0f, 602.3f, 275.7f, 614.8f), BaseColor.GRAY),
-                new PdfCleanUpLocation(1, new Rectangle(171.3f, 550.3f, 208.4f, 562.8f), BaseColor.GRAY),
-                new PdfCleanUpLocation(1, new Rectangle(270.7f, 459.2f, 313.1f, 471.7f), BaseColor.GRAY),
-                new PdfCleanUpLocation(1, new Rectangle(249.9f, 329.3f, 279.6f, 341.8f), BaseColor.GRAY),
-                new PdfCleanUpLocation(1, new Rectangle(216.2f, 303.3f, 273.0f, 315.8f), BaseColor.GRAY)
-            };
+            IList<PdfCleanUpLocation> cleanUpLocations1 = new List<PdfCleanUpLocation>(); 
+            cleanUpLocations1.Add(new PdfCleanUpLocation(1, new Rectangle(240.0f, 602.3f, 275.7f, 614.8f), BaseColor.GRAY));
+            cleanUpLocations1.Add(new PdfCleanUpLocation(1, new Rectangle(171.3f, 550.3f, 208.4f, 562.8f), BaseColor.GRAY));
+            cleanUpLocations1.Add(new PdfCleanUpLocation(1, new Rectangle(270.7f, 459.2f, 313.1f, 471.7f), BaseColor.GRAY));
+            cleanUpLocations1.Add(new PdfCleanUpLocation(1, new Rectangle(249.9f, 329.3f, 279.6f, 341.8f), BaseColor.GRAY));
+            cleanUpLocations1.Add(new PdfCleanUpLocation(1, new Rectangle(216.2f, 303.3f, 273.0f, 315.8f), BaseColor.GRAY));
 
-            IList<PdfCleanUpLocation> cleanUpLocations2 = new List<PdfCleanUpLocation>() {
-                new PdfCleanUpLocation(1, new Rectangle(97f, 405f, 480f, 445f), BaseColor.GRAY)
-            };
+            IList<PdfCleanUpLocation> cleanUpLocations2 = new List<PdfCleanUpLocation>();
+            cleanUpLocations2.Add(new PdfCleanUpLocation(1, new Rectangle(97f, 405f, 480f, 445f), BaseColor.GRAY));
 
-            IList<PdfCleanUpLocation> cleanUpLocations3 = new List<PdfCleanUpLocation>() {
-                new PdfCleanUpLocation(1, new Rectangle(97f, 605f, 480f, 645f), BaseColor.GRAY)
-            };
+            IList<PdfCleanUpLocation> cleanUpLocations3 = new List<PdfCleanUpLocation>();
+            cleanUpLocations3.Add(new PdfCleanUpLocation(1, new Rectangle(97f, 605f, 480f, 645f), BaseColor.GRAY));
 
             return new object[] {
                 new object[] {"page229.pdf", "page229_01.pdf", "cmp_page229_01.pdf", cleanUpLocations1},

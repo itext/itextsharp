@@ -20,16 +20,14 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         static private readonly byte[] TJ = DocWriter.GetISOBytes("] TJ\n");
         static private readonly byte[] Tc = DocWriter.GetISOBytes(" Tc\n");
 
-        private static readonly HashSet2<string> textShowingOperators = new HashSet2<string>() {
-            "TJ", "Tj", "'", "\""
-        };
+        private static readonly HashSet2<string> textShowingOperators;
 
         protected PdfCleanUpRenderListener cleanUpStrategy;
         protected IContentOperator originalContentOperator;
 
         public static void PopulateOperators(PdfContentStreamProcessor contentProcessor,
                                              PdfCleanUpRenderListener pdfCleanUpRenderListener) {
-            String[] operators = {
+            String[] operators = new String[] {
                     PdfContentStreamProcessor.DEFAULTOPERATOR, "q", "Q", "g", "G", "rg", "RG", "k", "K",
                     "cs", "CS", "sc", "SC", "scn", "SCN", "cm", "gs", "Tc", "Tw", "Tz", "TL", "Tf", "Tr",
                     "Ts", "BT", "ET", "BMC", "BDC", "EMC", "Td", "TD", "Tm", "T*", "Tj", "'", "\"", "TJ", "Do"
@@ -39,6 +37,14 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                 PdfCleanUpContentOperator contentOperator = new PdfCleanUpContentOperator(pdfCleanUpRenderListener);
                 contentOperator.originalContentOperator = contentProcessor.RegisterContentOperator(@operator, contentOperator);
             }
+        }
+
+        static PdfCleanUpContentOperator() {
+            textShowingOperators = new HashSet2<string>();
+            textShowingOperators.Add("TJ");
+            textShowingOperators.Add("Tj");
+            textShowingOperators.Add("'");
+            textShowingOperators.Add("\"");
         }
 
         public PdfCleanUpContentOperator(PdfCleanUpRenderListener cleanUpStrategy) {
