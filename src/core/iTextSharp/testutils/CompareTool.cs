@@ -56,6 +56,7 @@ using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.xmp.impl;
 using System.util;
+using System.util.collections;
 
 namespace iTextSharp.testutils {
 
@@ -537,8 +538,14 @@ public class CompareTool {
         return Compare(outPath, differenceImagePrefix, null);
     }
 
-    public virtual void SetCompareByContentErrorsLimit(int compareByContentMaxErrorCount) {
+    /**
+     * Sets the maximum errors count which will be returned as the result of the comparison.
+     * @param compareByContentMaxErrorCount the errors count.
+     * @return Returns this.
+     */
+    public virtual CompareTool SetCompareByContentErrorsLimit(int compareByContentMaxErrorCount) {
         this.compareByContentErrorsLimit = compareByContentMaxErrorCount;
+        return this;
     }
 
     public virtual void SetGenerateCompareByContentXmlReport(bool generateCompareByContentXmlReport) {
@@ -570,9 +577,15 @@ public class CompareTool {
 
         PdfObject outStructTree = outReader.Catalog.Get(PdfName.STRUCTTREEROOT);
         PdfObject cmpStructTree = cmpReader.Catalog.Get(PdfName.STRUCTTREEROOT);
-        RefKey outStructTreeRef = outStructTree == null ? null : new RefKey((PdfIndirectReference)cmpStructTree);
-        RefKey cmpStructTreeRef = cmpStructTree == null ? null : new RefKey((PdfIndirectReference)outStructTree);
+        RefKey outStructTreeRef = outStructTree == null ? null : new RefKey((PdfIndirectReference) outStructTree);
+        RefKey cmpStructTreeRef = cmpStructTree == null ? null : new RefKey((PdfIndirectReference) cmpStructTree);
         CompareObjects(outStructTree, cmpStructTree, new ObjectPath(outStructTreeRef, cmpStructTreeRef), compareResult);
+
+        PdfObject outOcProperties = outReader.Catalog.Get(PdfName.OCPROPERTIES);
+        PdfObject cmpOcProperties = cmpReader.Catalog.Get(PdfName.OCPROPERTIES);
+        RefKey outOcPropertiesRef = outOcProperties == null ? null : new RefKey((PdfIndirectReference)outOcProperties);
+        RefKey cmpOcPropertiesRef = cmpOcProperties == null ? null : new RefKey((PdfIndirectReference)cmpOcProperties);
+        CompareObjects(outOcProperties, cmpOcProperties, new ObjectPath(outOcPropertiesRef, cmpOcPropertiesRef), compareResult);
 
 
         outReader.Close();
@@ -635,15 +648,18 @@ public class CompareTool {
         PdfObject outDirectObj = PdfReader.GetPdfObject(outObj);
         PdfObject cmpDirectObj = PdfReader.GetPdfObject(cmpObj);
 
-        if (cmpDirectObj == null && outDirectObj == null)
+        if (cmpDirectObj == null && outDirectObj == null) {
             return true;
+        }
 
         if (outDirectObj == null) {
-            compareResult.AddError(currentPath, "Found null.");
+            compareResult.AddError(currentPath, "Expected object was not found.");
             return false;
-        }
-        else if (cmpDirectObj.Type != outDirectObj.Type) {
-            compareResult.AddError(currentPath, String.Format("Types do not match. Expected: {0}. Found: {1}.", cmpDirectObj.Type, outDirectObj.Type));
+        } else if (cmpDirectObj == null) {
+            compareResult.AddError(currentPath, "Found object which was not expected to be found.");
+            return false;
+        } else if (cmpDirectObj.Type != outDirectObj.Type) {
+            compareResult.AddError(currentPath, String.Format("Types do not match. Expected: {0}. Found: {1}.", cmpDirectObj.GetType().Name, outDirectObj.GetType().Name));
             return false;
         }
 
@@ -707,9 +723,15 @@ public class CompareTool {
             compareResult.AddError(currentPath, "One of the dictionaries is null, the other is not.");
             return false;
         }
+
         bool dictsAreSame = true;
-        foreach (PdfName key in cmpDict.Keys) {
+
+        // Iterate through the union of the keys of the cmp and out dictionaries!
+        HashSet2<PdfName> mergedKeys = new HashSet2<PdfName>(cmpDict.Keys);
+        mergedKeys.AddAll(outDict.Keys);
+        foreach (PdfName key in mergedKeys) {
             if (key.CompareTo(PdfName.PARENT) == 0 || key.CompareTo(PdfName.P) == 0) continue;
+            if (outDict.IsStream() && cmpDict.IsStream() && (key.Equals(PdfName.FILTER) || key.Equals(PdfName.LENGTH))) continue;
             if (key.CompareTo(PdfName.BASEFONT) == 0 || key.CompareTo(PdfName.FONTNAME) == 0) {
                 PdfObject cmpObj = cmpDict.GetDirectObject(key);
                 if (cmpObj.IsName() && cmpObj.ToString().IndexOf('+') > 0) {
@@ -737,6 +759,7 @@ public class CompareTool {
             if (!dictsAreSame && (currentPath == null || compareResult == null || compareResult.IsMessageLimitReached()))
                 return false;
         }
+
         return dictsAreSame;
     }
 
@@ -753,7 +776,7 @@ public class CompareTool {
             cmpStreamBytes = PdfReader.DecodeBytes(cmpStreamBytes, cmpStream);
         }
         if (Util.ArraysAreEqual(outStreamBytes, cmpStreamBytes)) {
-            return true;
+            return CompareDictionariesExtended(outStream, cmpStream, currentPath, compareResult);
         } else {
             if (cmpStreamBytes.Length != outStreamBytes.Length) {
                 if (compareResult != null && currentPath != null) {
