@@ -101,6 +101,11 @@ namespace iTextSharp.text.pdf {
             filledWidth = 0;
         }
 
+        public int RunDirection {
+            get { return compositeColumn.RunDirection; }
+            set { compositeColumn.RunDirection = value; }
+        }
+
         virtual public int Layout(PdfContentByte canvas, bool simulate) {
             compositeColumn.Canvas = canvas;
             int status = ColumnText.NO_MORE_TEXT;

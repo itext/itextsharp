@@ -92,6 +92,12 @@ namespace iTextSharp.tool.xml.html {
             try {
                 Paragraph p = null;
                 PdfDiv div = (PdfDiv)GetCssAppliers().Apply(new PdfDiv(), tag, GetHtmlPipelineContext(ctx));
+                int direction = GetRunDirection(tag);
+
+                if (direction != PdfWriter.RUN_DIRECTION_DEFAULT) {
+                    div.RunDirection = direction;
+                }
+
 			    foreach (IElement e in currentContent) {
 				    if (e is Paragraph || e is PdfPTable || e is PdfDiv) {
 					    if (p != null) {
@@ -104,11 +110,31 @@ namespace iTextSharp.tool.xml.html {
                     } else {
 					    if (p == null) {
 						    p = new Paragraph();
+                            p.Alignment = div.TextAlignment;
+
+                            if (direction == PdfWriter.RUN_DIRECTION_RTL) {
+                                switch (p.Alignment) {
+                                    case Element.ALIGN_UNDEFINED:
+                                    case Element.ALIGN_CENTER:
+                                    case Element.ALIGN_JUSTIFIED:
+                                    case Element.ALIGN_JUSTIFIED_ALL:
+                                        break;
+                                    case Element.ALIGN_RIGHT:
+                                        p.Alignment = Element.ALIGN_LEFT;
+                                        break;
+                                    default:
+                                        p.Alignment = Element.ALIGN_RIGHT;
+                                        break;
+                                }
+                            }
+
                             p.MultipliedLeading = 1.2f;
 					    }
+
 					    p.Add(e);
 				    }
 			    }
+
 			    if (p != null && p.Trim()) {
                     div.AddElement(p);
 			    }
