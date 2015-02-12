@@ -128,6 +128,8 @@ namespace iTextSharp.text.pdf {
 
         private float yLine;
 
+        protected int runDirection = PdfWriter.RUN_DIRECTION_DEFAULT;
+
         protected PdfName role = PdfName.DIV;
 
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
@@ -268,6 +270,11 @@ namespace iTextSharp.text.pdf {
         virtual public float YLine
         {
             get { return yLine; }
+        }
+
+        public virtual int RunDirection {
+            get { return runDirection; }
+            set { runDirection = value; }
         }
 
         virtual public float SpacingBefore
@@ -467,13 +474,16 @@ namespace iTextSharp.text.pdf {
                 if (floatLayout == null) {
                     List<IElement> floatingElements = new List<IElement>(content);
                     floatLayout = new FloatLayout(floatingElements, useAscender);
+                    floatLayout.RunDirection = runDirection;
                 }
 
                 floatLayout.SetSimpleColumn(leftX, minY, rightX, yLine);
                 status = floatLayout.Layout(canvas, simulate);
                 yLine = floatLayout.YLine;
-                if (percentageWidth == null && contentWidth < floatLayout.FilledWidth)
+
+                if (percentageWidth == null && contentWidth < floatLayout.FilledWidth) {
                     contentWidth = floatLayout.FilledWidth;
+                }
             }
 
 
