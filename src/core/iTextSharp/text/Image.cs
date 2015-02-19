@@ -260,6 +260,8 @@ namespace iTextSharp.text {
         /** The spacing after the image. */
         protected float spacingAfter;
 
+        protected float paddingTop;
+
         /**
         * Holds value of property widthPercentage.
         */
@@ -1563,6 +1565,12 @@ namespace iTextSharp.text {
             set {
                 spacingAfter = value;
             }
+        }
+
+        virtual public float PaddingTop
+        {
+            get { return paddingTop; }
+            set { paddingTop = value; }
         }
 
         virtual public float WidthPercentage {

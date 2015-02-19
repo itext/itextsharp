@@ -831,6 +831,9 @@
     <Compile Include="iTextSharp\text\pdf\PdfArtifact.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="iTextSharp\text\pdf\PdfBody.cs">
+      <SubType>Code</SubType>
+	</Compile>
     <Compile Include="iTextSharp\text\pdf\PdfBoolean.cs">
       <SubType>Code</SubType>
     </Compile>

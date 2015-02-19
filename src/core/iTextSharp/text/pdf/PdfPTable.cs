@@ -132,6 +132,8 @@ namespace iTextSharp.text.pdf {
         /** The spacing after the table. */
         protected float spacingAfter;
 
+        protected float paddingTop;
+
         /**
         * Holds value of property extendLastRow.
         */
@@ -1640,6 +1642,12 @@ namespace iTextSharp.text.pdf {
         {
             get { return spacingAfter; }
             set { spacingAfter = value; }
+        }
+
+        virtual public float PaddingTop
+        {
+            get { return paddingTop; }
+            set { paddingTop = value; }
         }
 
         virtual public String Summary 

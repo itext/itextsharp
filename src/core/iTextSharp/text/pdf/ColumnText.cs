@@ -262,6 +262,8 @@ namespace iTextSharp.text.pdf {
          */
         private bool inheritGraphicState = false;
 
+        private bool ignoreSpacingBefore = true;
+
         /**
          * Creates a <CODE>ColumnText</CODE>.
          * @param text the place where the text will be written to. Can
@@ -347,6 +349,7 @@ namespace iTextSharp.text.pdf {
             filledWidth = org.filledWidth;
             adjustFirstLine = org.adjustFirstLine;
             inheritGraphicState = org.inheritGraphicState;
+            ignoreSpacingBefore = org.ignoreSpacingBefore;
         }
     
         private void AddWaitingPhrase() {
@@ -809,6 +812,12 @@ namespace iTextSharp.text.pdf {
         {
             get { return inheritGraphicState; }
             set { inheritGraphicState = value; }
+        }
+
+        virtual public bool IgnoreSpacingBefore
+        {
+            get { return ignoreSpacingBefore; }
+            set { ignoreSpacingBefore = value; }
         }
 
         /**
@@ -1834,6 +1843,7 @@ namespace iTextSharp.text.pdf {
 
                     FloatLayout fl = new FloatLayout(floatingElements, useAscender);
                     fl.SetSimpleColumn(leftX, minY, rightX, yLine);
+                    fl.compositeColumn.IgnoreSpacingBefore = ignoreSpacingBefore;
                     int status = fl.Layout(canvas, simulate);
 
                     //firstPass = false;

@@ -74,6 +74,19 @@ namespace iTextSharp.text.pdf {
             TABLE_HEADER_GROUP, TABLE_ROW, TABLE_ROW_GROUP
         };
 
+        public enum BorderTopStyle
+        {
+            NONE,
+            DOTTED, 
+            DASHED, 
+            SOLID, 
+            DOUBLE, 
+            GROOVE, 
+            RIDGE, 
+            INSET, 
+            OUTSET
+        };
+
         private List<IElement> content;
 
         private float? left = null;
@@ -125,6 +138,8 @@ namespace iTextSharp.text.pdf {
         private DisplayType display = DisplayType.DEFAULT_NULL_VALUE;
 
         private FloatLayout floatLayout = null;
+
+        private BorderTopStyle borderTopStyle = BorderTopStyle.NONE;
 
         private float yLine;
 
@@ -292,6 +307,12 @@ namespace iTextSharp.text.pdf {
         virtual public List<IElement> Content
         {
             get { return content; }
+        }
+
+        virtual public BorderTopStyle BorderStyle
+        {
+            get { return borderTopStyle; }
+            set { borderTopStyle = value; }
         }
 
         public PdfDiv()
@@ -478,6 +499,8 @@ namespace iTextSharp.text.pdf {
                 }
 
                 floatLayout.SetSimpleColumn(leftX, minY, rightX, yLine);
+                if (borderTopStyle != BorderTopStyle.NONE)
+                    floatLayout.compositeColumn.IgnoreSpacingBefore = false;
                 status = floatLayout.Layout(canvas, simulate);
                 yLine = floatLayout.YLine;
 

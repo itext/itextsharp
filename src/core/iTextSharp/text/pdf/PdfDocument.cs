@@ -362,6 +362,8 @@ namespace iTextSharp.text.pdf {
          */
         private Stack<float> leadingStack = new Stack<float>();
 
+        private PdfBody body;
+
         /**
          * Save current @leading
          */
@@ -771,6 +773,10 @@ namespace iTextSharp.text.pdf {
                         pageEmpty = false;
                         //newLine();
                         break;
+                    case Element.BODY:
+                        body = (PdfBody)element;
+                        graphics.Rectangle(body);
+                        break;
                     default:
                         return false;
                 }
@@ -969,6 +975,10 @@ namespace iTextSharp.text.pdf {
             if (IsTagged(writer)) {
                 writer.DirectContentUnder.RestoreMCBlocks(mcBlocks);
             }
+
+            if (body != null && body.BackgroundColor != null)
+                graphics.Rectangle(body);
+
             return true;
         }
 

@@ -151,6 +151,41 @@ namespace iTextSharp.tool.xml.css.apply {
                     } else if (Util.EqualsIgnoreCase(value, CSS.Value.TABLE_ROW_GROUP)) {
                         div.Display = PdfDiv.DisplayType.TABLE_ROW_GROUP;
                     }
+                }
+                else if (Util.EqualsIgnoreCase(CSS.Property.BORDER_TOP_STYLE, key))
+                {
+                    if (Util.EqualsIgnoreCase(CSS.Value.DOTTED, value))
+                    {
+                        div.BorderStyle = PdfDiv.BorderTopStyle.DOTTED;
+                    }
+                    else if (Util.EqualsIgnoreCase(CSS.Value.DASHED, value))
+                    {
+                        div.BorderStyle = PdfDiv.BorderTopStyle.DASHED;
+                    }
+                    else if (Util.EqualsIgnoreCase(CSS.Value.SOLID, value))
+                    {
+                        div.BorderStyle = PdfDiv.BorderTopStyle.SOLID;
+                    }
+                    else if (Util.EqualsIgnoreCase(CSS.Value.DOUBLE, value))
+                    {
+                        div.BorderStyle = PdfDiv.BorderTopStyle.DOUBLE;
+                    }
+                    else if (Util.EqualsIgnoreCase(CSS.Value.GROOVE, value))
+                    {
+                        div.BorderStyle = PdfDiv.BorderTopStyle.GROOVE;
+                    }
+                    else if (Util.EqualsIgnoreCase(CSS.Value.RIDGE, value))
+                    {
+                        div.BorderStyle = PdfDiv.BorderTopStyle.RIDGE;
+                    }
+                    else if (Util.EqualsIgnoreCase(value, CSS.Value.INSET))
+                    {
+                        div.BorderStyle = PdfDiv.BorderTopStyle.INSET;
+                    }
+                    else if (Util.EqualsIgnoreCase(value, CSS.Value.OUTSET))
+                    {
+                        div.BorderStyle = PdfDiv.BorderTopStyle.OUTSET;
+                    }
                 } 
 
                 //TODO: border, background properties.

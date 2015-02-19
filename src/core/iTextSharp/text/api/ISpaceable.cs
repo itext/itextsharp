@@ -63,5 +63,7 @@ namespace iTextSharp.text.api {
          * @param   spacing     the new spacing
          */
         float SpacingAfter {get;set;}
+
+        float PaddingTop { get;set;}
     }
 }
