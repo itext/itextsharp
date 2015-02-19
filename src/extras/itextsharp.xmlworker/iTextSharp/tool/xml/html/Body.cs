@@ -4,6 +4,11 @@ using iTextSharp.text;
 using iTextSharp.tool.xml;
 using iTextSharp.tool.xml.exceptions;
 using iTextSharp.tool.xml.html.pdfelement;
+using iTextSharp.tool.xml.css;
+using iTextSharp.tool.xml.pipeline.ctx;
+using iTextSharp.tool.xml.pipeline.end;
+using iTextSharp.text.html;
+using iTextSharp.text.pdf;
 /*
  * $Id: Body.java 118 2011-05-27 11:10:19Z redlab_b $
  *
@@ -66,8 +71,28 @@ namespace iTextSharp.tool.xml.html {
 		    return l;
         }
 
-        public override IList<IElement> End(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
-            return CurrentContentToParagraph(currentContent, true, true, tag, ctx);
+        public override IList<IElement> Start(IWorkerContext ctx, Tag tag)
+        {
+            List<IElement> l = new List<IElement>(1);
+            IDictionary<String, String> css = tag.CSS;
+            if (css.ContainsKey(CSS.Property.BACKGROUND_COLOR))
+            {
+                Type type = typeof(PdfWriterPipeline);
+                MapContext pipeline = (MapContext)ctx.Get(type.FullName);
+                if (pipeline != null)
+                {
+                    Document document = (Document) pipeline[PdfWriterPipeline.DOCUMENT];
+                    if (document != null)
+                    {
+                        Rectangle rectangle = new Rectangle(document.Left, document.Bottom, document.Right, document.Top, document.PageSize.Rotation);
+                        rectangle.BackgroundColor = HtmlUtilities.DecodeColor(css[CSS.Property.BACKGROUND_COLOR]);
+                        PdfBody body = new PdfBody(rectangle);
+                        l.Add(body);
+                    }
+                }
+                //Document document = (Document) pipeline.
+            }
+            return l;
         }
     }
 }

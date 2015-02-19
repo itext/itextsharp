@@ -347,40 +347,40 @@ namespace iTextSharp.tool.xml.css {
          */
         virtual public IDictionary<String, String> ProcessFont(String font) {
             IDictionary<String, String> rules = new Dictionary<String, String>();
-            String[] styleAndRest = font.Split(whitespace, 2);
-            String style = styleAndRest[0];
-            String rest = styleAndRest[1];
-            for (int i = 0 ; i<3 ; i++) {
-                if (Util.EqualsIgnoreCase(style, HtmlTags.ITALIC) || Util.EqualsIgnoreCase(style, HtmlTags.OBLIQUE)) {
-                    rules[HtmlTags.FONTSTYLE] = style;
-                    styleAndRest = rest.Split(whitespace, 2);
-                    style = styleAndRest[0];
-                    rest = styleAndRest[1];
-                }
-                if (Util.EqualsIgnoreCase(style, "small-caps")) {
-                    rules["font-variant"] = style; // normal, small-caps, inherit need to be implemented.
-                    styleAndRest = rest.Split(whitespace, 2);
-                    style = styleAndRest[0];
-                    rest = styleAndRest[1];
-                }
-                if (Util.EqualsIgnoreCase(style, HtmlTags.BOLD)) { // enum for all possible font-weight values?
-                    rules[HtmlTags.FONTWEIGHT] = style;
-                    styleAndRest = rest.Split(whitespace, 2);
-                    style = styleAndRest[0];
-                    rest = styleAndRest[1];
-                }
-            }
+            String[] styleAndRest = font.Split(whitespace);
 
-            if (IsMetricValue(style) || IsNumericValue(style)) {
-                if (style.Contains("/")) {
-                    String[] sizeAndLineHeight = style.Split('/');
-                    style = sizeAndLineHeight[0]; // assuming font-size always is the first parameter
-                    rules[HtmlTags.LINEHEIGHT] = sizeAndLineHeight[1];
+            for (int i = 0; i < styleAndRest.Length; i++)
+            {
+                String style = styleAndRest[i];
+                if (Util.EqualsIgnoreCase(style, HtmlTags.ITALIC) || Util.EqualsIgnoreCase(style, HtmlTags.OBLIQUE))
+                {
+                    rules[HtmlTags.FONTSTYLE] = style;
+                } 
+                else if (Util.EqualsIgnoreCase(style, "small-caps"))
+                {
+                    rules["font-variant"] = style;
                 }
-                rules[HtmlTags.FONTSIZE] = style;
-                rest = rest.Replace("\"", "");
-                rest = rest.Replace("'", "");
-                rules[HtmlTags.FONTFAMILY] = rest;
+                else if (Util.EqualsIgnoreCase(style, HtmlTags.BOLD))
+                {
+                    rules[HtmlTags.FONTWEIGHT] = style;
+                }
+                else if (IsMetricValue(style) || IsNumericValue(style))
+                {
+                    if (style.Contains("/"))
+                    {
+                        String[] sizeAndLineHeight = style.Split('/');
+                        style = sizeAndLineHeight[0]; // assuming font-size always is the first parameter
+                        rules[HtmlTags.LINEHEIGHT] = sizeAndLineHeight[1];
+                    }
+                    rules[HtmlTags.FONTSIZE] = style;
+                    if (i != styleAndRest.Length - 1)
+                    {
+                        string rest = styleAndRest[i + 1];
+                        rest = rest.Replace("\"", "");
+                        rest = rest.Replace("'", "");
+                        rules[HtmlTags.FONTFAMILY] = rest;
+                    }
+                }
             }
             return rules;
         }

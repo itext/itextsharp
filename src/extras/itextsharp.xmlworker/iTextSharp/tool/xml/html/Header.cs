@@ -130,6 +130,7 @@ namespace iTextSharp.tool.xml.html {
                 this.tag = tag;
                 this.header = header;
                 this.title = title;
+                base.directElementType = DIRECT_ELEMENT_TYPE_HEADER;
             }
             public override void Write(PdfWriter writer, Document doc) {
                 PdfDestination destination = new PdfDestination(PdfDestination.XYZ, 20,

@@ -103,6 +103,7 @@ namespace iTextSharp.text {
         
         ///<summary> Does the paragraph has to be kept together on 1 page. </summary>
         protected bool keeptogether = false;
+        protected float paddingTop;
         protected PdfName role = PdfName.P;
         protected Dictionary<PdfName, PdfObject> accessibleAttributes = null;
         protected AccessibleElementId id = new AccessibleElementId();
@@ -462,6 +463,12 @@ namespace iTextSharp.text {
 
         public virtual bool IsInline {
             get { return false; }
+        }
+
+        public virtual float PaddingTop
+        {
+            get { return paddingTop; }
+            set { paddingTop = value; } 
         }
     }
 }

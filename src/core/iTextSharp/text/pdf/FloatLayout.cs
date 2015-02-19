@@ -174,6 +174,8 @@ namespace iTextSharp.text.pdf {
                 currentCompositeColumn = ColumnText.Duplicate(compositeColumn);
             }
 
+            bool ignoreSpacingBefore = maxY == yLine;
+
             while (floatingElements.Count > 0) {
                 IElement nextElement = floatingElements[0];
                 floatingElements.RemoveAt(0);
@@ -208,7 +210,8 @@ namespace iTextSharp.text.pdf {
                             currentCompositeColumn.SetText(null);
                         break;
                     } else {
-                        if (nextElement is ISpaceable) {
+                        if (nextElement is ISpaceable && (!ignoreSpacingBefore || !currentCompositeColumn.IgnoreSpacingBefore || ((ISpaceable)nextElement).PaddingTop != 0))
+                        {
                             yLine -= ((ISpaceable) nextElement).SpacingBefore;
                         }
                         if (simulate) {
@@ -283,6 +286,25 @@ namespace iTextSharp.text.pdf {
                         }
                     }
                 }
+                if (ignoreSpacingBefore && nextElement.Chunks.Count == 0)
+                {
+                    if (nextElement is Paragraph)
+                    {
+                        Paragraph p = (Paragraph)nextElement;
+                        IElement e = p[0];
+                        if (e is WritableDirectElement)
+                        {
+                            WritableDirectElement writableDirectElement = (WritableDirectElement)e;
+                            if (writableDirectElement.DirectElemenType != WritableDirectElement.DIRECT_ELEMENT_TYPE_HEADER)
+                                ignoreSpacingBefore = false;
+                        }
+                    }
+                    else if (nextElement is ISpaceable)
+                        ignoreSpacingBefore = false;
+                }
+                else               
+                    ignoreSpacingBefore = false;
+                
             }
 
             if (leftWidth != 0 && rightWidth != 0) {

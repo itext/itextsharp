@@ -101,6 +101,7 @@ namespace iTextSharp.tool.xml.css.apply {
                     p.SpacingBefore = p.SpacingBefore + utils.CalculateMarginTop(value, fontSize, configuration);
                 } else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_TOP, key)) {
                     p.SpacingBefore = p.SpacingBefore + utils.ParseValueToPt(value, fontSize);
+                    p.PaddingTop = utils.ParseValueToPt(value, fontSize);
                 } else if (Util.EqualsIgnoreCase(CSS.Property.MARGIN_BOTTOM, key)) {
                     float after = utils.ParseValueToPt(value, fontSize);
                     p.SpacingAfter = p.SpacingAfter + after;

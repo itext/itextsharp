@@ -60,6 +60,26 @@ namespace iTextSharp.text {
      */
     public abstract class WritableDirectElement : IElement, IWriterOperation {
 
+
+        public static readonly int DIRECT_ELEMENT_TYPE_UNKNOWN = 0;
+        public static readonly int DIRECT_ELEMENT_TYPE_HEADER = 1;
+
+        protected int directElementType = DIRECT_ELEMENT_TYPE_UNKNOWN;
+
+        public int DirectElemenType
+        {
+            get { return directElementType; }
+        }
+
+        public WritableDirectElement()
+        {
+        }
+
+        public WritableDirectElement(int directElementType)
+        {
+            this.directElementType = directElementType;
+        }
+
         /*
          * (non-Javadoc)
          *

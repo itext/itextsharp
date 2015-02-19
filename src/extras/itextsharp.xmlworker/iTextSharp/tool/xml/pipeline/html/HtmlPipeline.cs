@@ -111,6 +111,13 @@ namespace iTextSharp.tool.xml.pipeline.html {
                     } else {
                         foreach (IElement elem in content) {
                             hcc.CurrentContent().Add(elem);
+                            if (elem.Type == Element.BODY)
+                            {
+                                WritableElement writableElement = new WritableElement();
+                                writableElement.Add(elem);
+                                po.Add(writableElement);
+                                hcc.CurrentContent().Remove(elem);
+                            }
                         }
                     }
                 }

@@ -836,7 +836,11 @@ namespace iTextSharp.tool.xml.html.table {
                     float marginBottom = utils.ParseValueToPt(value, fst.GetFontSize(t));
                     spacingAfter += marginBottom;
                     GetHtmlPipelineContext(ctx).GetMemory()[HtmlPipelineContext.LAST_MARGIN_BOTTOM] = marginBottom;
+                } else if (Util.EqualsIgnoreCase(CSS.Property.PADDING_TOP, key))
+                {
+                    table.PaddingTop = utils.ParseValueToPt(value, fst.GetFontSize(t));
                 }
+
             }
             table.SpacingBefore = spacingBefore;
             table.SpacingAfter = spacingAfter;
