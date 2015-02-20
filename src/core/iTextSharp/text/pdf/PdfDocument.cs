@@ -1489,7 +1489,7 @@ namespace iTextSharp.text.pdf {
                                 graphics.BeginText(true);
                             }
                         }
-                        if (chunk.IsAttribute(Chunk.UNDERLINE) && !chunk.IsNewlineSplit()) {
+                        if (chunk.IsAttribute(Chunk.UNDERLINE)) {
                             bool inText = graphics.InText;
                             if (inText && IsTagged(writer)) {
                                 graphics.EndText();
