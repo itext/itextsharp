@@ -10,6 +10,7 @@ namespace iTextSharp.tool.xml.css.parser.state {
     public class Rule : IState {
 
         private CssStateController controller;
+        private bool isCss3AtRule;
 
         /**
          * @param cssStateController the controller
@@ -22,8 +23,18 @@ namespace iTextSharp.tool.xml.css.parser.state {
          * @see com.itextpdf.tool.xml.css.parser.State#process(char)
          */
         virtual public void Process(char c) {
-            if (';' == c) {
+            if ('}' == c && isCss3AtRule) 
+            {
                 controller.StateUnknown();
+                isCss3AtRule = false;
+            } 
+            else if (';' == c && !isCss3AtRule)
+            {
+                controller.StateUnknown();
+            }
+            else if ('{' == c)
+            {
+                isCss3AtRule = true;
             }
         }
     }
