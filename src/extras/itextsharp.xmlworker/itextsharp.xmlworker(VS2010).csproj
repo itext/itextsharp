@@ -184,6 +184,7 @@
     <Compile Include="iTextSharp\tool\xml\parser\state\AttributeValueState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\CdataState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\CloseCommentState.cs" />
+    <Compile Include="iTextSharp\tool\xml\parser\state\CloseStarCommentState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\ClosingTagState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\CommentState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\DocTypeState.cs" />
@@ -194,6 +195,7 @@
     <Compile Include="iTextSharp\tool\xml\parser\state\SelfClosingTagState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\SingleQuotedAttrValueState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\SpecialCharState.cs" />
+    <Compile Include="iTextSharp\tool\xml\parser\state\StarCommentState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\TagAttributeState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\TagEncounteredState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\UnknownState.cs" />

@@ -97,28 +97,53 @@ namespace iTextSharp.tool.xml.parser.state {
             } else if (character == '&') {
                 this.parser.SelectState().SpecialChar();
             } else  {
-                String tag = this.parser.CurrentTag();
-                TagState state = this.parser.CurrentTagState();
-                if (noSanitize.Contains(tag) && TagState.OPEN == state) {
-                    this.parser.Append(character);
-                } else {
-                    if (this.parser.Memory().WhitespaceTag().Length != 0) {
-                        if (ignoreLastChars.Contains(this.parser.Memory().WhitespaceTag().ToLower())) {
-                            parser.Memory().LastChar = ' ';
-                        }
-                        this.parser.Memory().WhitespaceTag("");
+                if (character == '*' && this.parser.Memory().LastChar == '/')
+                {
+                    this.parser.SelectState().StarComment();
+                    this.parser.Memory()
+                        .Current()
+                        .Remove(this.parser.Memory().Current().Length-1, 1);
+                    if (this.parser.BufferSize() > 0)
+                    {
+                        this.parser.Memory().StoredString = this.parser.Current();
                     }
-                    bool whitespace = HTMLUtils.IsWhiteSpace(parser.Memory().LastChar);
-                    bool noWhiteSpace = !HTMLUtils.IsWhiteSpace(character);
-                    if (!whitespace || (whitespace && noWhiteSpace)) {
-                        if (noWhiteSpace) {
-                            this.parser.Append(character);
-                        } else {
-                            this.parser.Append(' ');
-                        }
-                    }
-                    parser.Memory().LastChar = character;
+                    this.parser.Flush();
                 }
+                else
+                {
+                    String tag = this.parser.CurrentTag();
+                    TagState state = this.parser.CurrentTagState();
+                    if (noSanitize.Contains(tag) && TagState.OPEN == state)
+                    {
+                        this.parser.Append(character);
+                    }
+                    else
+                    {
+                        if (this.parser.Memory().WhitespaceTag().Length != 0)
+                        {
+                            if (ignoreLastChars.Contains(this.parser.Memory().WhitespaceTag().ToLower()))
+                            {
+                                parser.Memory().LastChar = ' ';
+                            }
+                            this.parser.Memory().WhitespaceTag("");
+                        }
+                        bool whitespace = HTMLUtils.IsWhiteSpace(parser.Memory().LastChar);
+                        bool noWhiteSpace = !HTMLUtils.IsWhiteSpace(character);
+                        if (!whitespace || (whitespace && noWhiteSpace))
+                        {
+                            if (noWhiteSpace)
+                            {
+                                this.parser.Append(character);
+                            }
+                            else
+                            {
+                                this.parser.Append(' ');
+                            }
+                        }
+                        parser.Memory().LastChar = character;
+                    }    
+                }
+                
             }
         }
     }

@@ -65,6 +65,7 @@ namespace iTextSharp.tool.xml.parser {
         private String currentNameSpace = "";
         private char lastChar;
         private bool isHtml;
+        private String storedString;
 
         /**
          *
@@ -213,6 +214,12 @@ namespace iTextSharp.tool.xml.parser {
             set {
                 lastChar = value;
             }
+        }
+
+        virtual public string StoredString
+        {
+            get { return storedString; }
+            set { storedString = value; }
         }
     }
 }
