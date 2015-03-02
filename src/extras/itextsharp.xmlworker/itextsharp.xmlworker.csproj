@@ -66,7 +66,7 @@
     <Compile Include="iTextSharp\tool\xml\css\CssFileProcessor.cs" />
     <Compile Include="iTextSharp\tool\xml\css\CssFilesImpl.cs" />
     <Compile Include="iTextSharp\tool\xml\css\CSSFileWrapper.cs" />
-	<Compile Include="iTextSharp\tool\xml\css\CssRule.cs" />
+    <Compile Include="iTextSharp\tool\xml\css\CssRule.cs" />
     <Compile Include="iTextSharp\tool\xml\css\CssSelector.cs" />
     <Compile Include="iTextSharp\tool\xml\css\CssUtils.cs" />
     <Compile Include="iTextSharp\tool\xml\css\DefaultCssInheritanceRules.cs" />
@@ -75,7 +75,7 @@
     <Compile Include="iTextSharp\tool\xml\css\ICssFile.cs" />
     <Compile Include="iTextSharp\tool\xml\css\ICssFiles.cs" />
     <Compile Include="iTextSharp\tool\xml\css\ICssInheritanceRules.cs" />
-	<Compile Include="iTextSharp\tool\xml\css\ICssSelectorItem.cs" />
+    <Compile Include="iTextSharp\tool\xml\css\ICssSelectorItem.cs" />
     <Compile Include="iTextSharp\tool\xml\css\parser\CssSelectorParser.cs" />
     <Compile Include="iTextSharp\tool\xml\css\parser\CssStateController.cs" />
     <Compile Include="iTextSharp\tool\xml\css\parser\IState.cs" />
@@ -158,6 +158,7 @@
     <Compile Include="iTextSharp\tool\xml\parser\state\AttributeValueState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\CdataState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\CloseCommentState.cs" />
+    <Compile Include="iTextSharp\tool\xml\parser\state\CloseStarCommentState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\ClosingTagState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\CommentState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\DocTypeState.cs" />
@@ -168,6 +169,7 @@
     <Compile Include="iTextSharp\tool\xml\parser\state\SelfClosingTagState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\SingleQuotedAttrValueState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\SpecialCharState.cs" />
+    <Compile Include="iTextSharp\tool\xml\parser\state\StarCommentState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\TagAttributeState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\TagEncounteredState.cs" />
     <Compile Include="iTextSharp\tool\xml\parser\state\UnknownState.cs" />
@@ -200,7 +202,7 @@
     <Compile Include="iTextSharp\tool\xml\Tag.cs" />
     <Compile Include="iTextSharp\tool\xml\TagUtils.cs" />
     <Compile Include="iTextSharp\tool\xml\util\ParentTreeUtil.cs" />
-	<Compile Include="iTextSharp\tool\xml\util\SortUtil.cs" />
+    <Compile Include="iTextSharp\tool\xml\util\SortUtil.cs" />
     <Compile Include="iTextSharp\tool\xml\XMLWorker.cs" />
     <Compile Include="iTextSharp\tool\xml\XMLWorkerFontProvider.cs" />
     <Compile Include="iTextSharp\tool\xml\XMLWorkerHelper.cs" />

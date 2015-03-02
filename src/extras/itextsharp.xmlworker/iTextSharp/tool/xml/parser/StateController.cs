@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Remoting.Messaging;
 using iTextSharp.tool.xml.parser.state;
 /*
  * $Id: StateController.java 35 2011-05-06 14:24:25Z redlab_b $
@@ -73,6 +74,8 @@ namespace iTextSharp.tool.xml.parser {
         private XMLParser parser;
         private IState currentState;
         private IState previousState;
+        private IState starComment;
+        private IState closeStarComment;
 
         /**
          * Constructs a StateController with the given parser.
@@ -100,6 +103,8 @@ namespace iTextSharp.tool.xml.parser {
             processingInstruction = new ProcessingInstructionEncounteredState(parser);
             previousState = null;
             currentState = null;
+            starComment = new StarCommentState(parser);
+            closeStarComment = new CloseStarCommentState(parser);
         }
         /**
          *  Changes the state.
@@ -257,6 +262,24 @@ namespace iTextSharp.tool.xml.parser {
         virtual public XMLParser UnquotedAttr() {
             return SetState(unquoted);
 
+        }
+
+        /**
+	     * set Parser state to {@link StarCommentState}.
+	     * @return Parser
+	     */
+        public XMLParser StarComment()
+        {
+            return SetState(this.starComment);
+        }
+
+        /**
+         * set Parser state to {@link CloseStarCommentState}.
+         * @return Parser
+         */
+        public XMLParser CloseStarComment()
+        {
+            return SetState(this.closeStarComment);
         }
     }
 }

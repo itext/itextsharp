@@ -74,24 +74,29 @@ namespace iTextSharp.tool.xml.html {
         public override IList<IElement> Start(IWorkerContext ctx, Tag tag)
         {
             List<IElement> l = new List<IElement>(1);
-            IDictionary<String, String> css = tag.CSS;
-            if (css.ContainsKey(CSS.Property.BACKGROUND_COLOR))
+            try
             {
-                Type type = typeof(PdfWriterPipeline);
-                MapContext pipeline = (MapContext)ctx.Get(type.FullName);
-                if (pipeline != null)
+                IDictionary<String, String> css = tag.CSS;
+                if (css.ContainsKey(CSS.Property.BACKGROUND_COLOR))
                 {
-                    Document document = (Document) pipeline[PdfWriterPipeline.DOCUMENT];
-                    if (document != null)
+                    Type type = typeof(PdfWriterPipeline);
+                    MapContext pipeline = (MapContext)ctx.Get(type.FullName);
+                    if (pipeline != null)
                     {
-                        Rectangle rectangle = new Rectangle(document.Left, document.Bottom, document.Right, document.Top, document.PageSize.Rotation);
-                        rectangle.BackgroundColor = HtmlUtilities.DecodeColor(css[CSS.Property.BACKGROUND_COLOR]);
-                        PdfBody body = new PdfBody(rectangle);
-                        l.Add(body);
+                        Document document = (Document)pipeline[PdfWriterPipeline.DOCUMENT];
+                        if (document != null)
+                        {
+                            Rectangle rectangle = new Rectangle(document.Left, document.Bottom, document.Right, document.Top, document.PageSize.Rotation);
+                            rectangle.BackgroundColor = HtmlUtilities.DecodeColor(css[CSS.Property.BACKGROUND_COLOR]);
+                            PdfBody body = new PdfBody(rectangle);
+                            l.Add(body);
+                        }
                     }
                 }
-                //Document document = (Document) pipeline.
             }
+            catch (NoCustomContextException e)
+            {}
+            
             return l;
         }
     }
