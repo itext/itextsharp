@@ -41,9 +41,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
         /**
-         * Calculates intersection of the image and the render filter region in the coordinate system relative to image.
-         * The transformed coordinate system here is the coordinate system center of which is in (image.leftX, image.topY) and
-         * y' = -y
+         * Calculates intersection of the image and the render filter region in the coordinate system relative to the image.
          *
          * @return intersection
          */
@@ -58,7 +56,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             Rectangle transformedIntersection = null;
 
             if (intersectionRect != null) {
-                transformedIntersection = ShearCoordinatesAndInverseY(imageRect.Left, imageRect.Top, intersectionRect);
+                transformedIntersection = TransformIntersection(renderInfo.GetImageCTM(), intersectionRect); 
             }
 
             return new PdfCleanUpCoveredArea(transformedIntersection, imageRect.Equals(intersectionRect));
@@ -84,15 +82,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             Point2D p3 = t.Transform(new Point(1, 0), null);
             Point2D p4 = t.Transform(new Point(1, 1), null);
 
-            double[] xs = {p1.GetX(), p2.GetX(), p3.GetX(), p4.GetX()};
-            double[] ys = {p1.GetY(), p2.GetY(), p3.GetY(), p4.GetY()};
-
-            double left = Util.Min(xs);
-            double bottom = Util.Min(ys);
-            double right = Util.Max(xs);
-            double top = Util.Max(ys);
-
-            return new Rectangle((float) left, (float) bottom, (float) right, (float) top);
+            return GetRectangle(p1, p2, p3, p4);
         }
 
         /**
@@ -106,14 +96,44 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return awtIntersection.IsEmpty() ? null : new Rectangle(awtIntersection);
         }
 
-        private Rectangle ShearCoordinatesAndInverseY(float dx, float dy, Rectangle rect) {
-            AffineTransform affineTransform = new AffineTransform(1, 0, 0, -1, -dx, dy);
+        /**
+         * Transforms the given Rectangle into the image coordinate system which is [0,1]x[0,1] by default
+         */
+        private Rectangle TransformIntersection(Matrix imageCTM, Rectangle rect) {
+            AffineTransform t = new AffineTransform(imageCTM[Matrix.I11], imageCTM[Matrix.I12],
+                                                    imageCTM[Matrix.I21], imageCTM[Matrix.I22],
+                                                    imageCTM[Matrix.I31], imageCTM[Matrix.I32]);
+            Point2D p1;
+            Point2D p2;
+            Point2D p3;
+            Point2D p4;
 
-            Point2D leftBottom = affineTransform.Transform(new Point(rect.Left, rect.Bottom), null);
-            Point2D rightTop = affineTransform.Transform(new Point(rect.Right, rect.Top), null);
+            try
+            {
+                p1 = t.InverseTransform(new Point(rect.Left, rect.Bottom), null);
+                p2 = t.InverseTransform(new Point(rect.Left, rect.Top), null);
+                p3 = t.InverseTransform(new Point(rect.Right, rect.Bottom), null);
+                p4 = t.InverseTransform(new Point(rect.Right, rect.Top), null);
+            }
+            catch (InvalidOperationException e)
+            {
+                throw new SystemException(e.Message, e);
+            }
 
-            return new Rectangle((float) leftBottom.GetX(), (float) leftBottom.GetY(),
-                                 (float) rightTop.GetX(), (float) rightTop.GetY());
+            return GetRectangle(p1, p2, p3, p4);
+        }
+
+        private Rectangle GetRectangle(Point2D p1, Point2D p2, Point2D p3, Point2D p4) {
+            double[] xs = { p1.GetX(), p2.GetX(), p3.GetX(), p4.GetX() };
+            double[] ys = { p1.GetY(), p2.GetY(), p3.GetY(), p4.GetY() };
+
+            double left = Util.Min(xs);
+            double bottom = Util.Min(ys);
+            double right = Util.Max(xs);
+            double top = Util.Max(ys);
+
+            return new Rectangle((float)left, (float)bottom, (float)right, (float)top);
+
         }
     }
 }

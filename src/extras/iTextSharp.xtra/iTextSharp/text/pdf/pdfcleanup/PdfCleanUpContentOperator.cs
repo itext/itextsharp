@@ -240,8 +240,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
                     shift = convertedCharacterSpacing + (IsSpace(chunk) ? convertedWordSpacing : 0);
                 } else {
-                    float unscaledChunkWidth = GetUnscaledChunkWidth(chunk);
-                    shift += unscaledChunkWidth;
+                    shift += GetUnscaledChunkWidth(chunk);
                 }
 
                 prevChunk = chunk;
@@ -266,7 +265,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
         /**
          * We get into this method when the current chunk is not visible.
-         * Here we are calculating Tj coefficient for previous chunk
+         * Here we are calculating a piece of the Tj coefficient for a previous visible chunk.
          * For details see PDF spec., Text Space Details, formula for "tx" coefficient
          * and TextRenderInfo class (getUnscaledBaseline)
          */
@@ -277,7 +276,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             float wordSpacing = context.WordSpacing;
             float horizontalScaling = context.HorizontalScaling;
 
-            // we should multiply by 100 because iText stores horizontal scaling as the value in [0, 1] interval;
+            // We should multiply by 100 because iText stores horizontal scaling as the value in [0, 1] interval;
             // also we need to add character and word spaces because TextRenderInfo class truncates them from the end of the string
             // (single character string in our case is also truncated)
             float scaledChunkWidth = (chunk.EndX - chunk.StartX) * 100f +
