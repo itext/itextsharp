@@ -163,11 +163,18 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
         private void CleanImage(SharpImage image, IList<Rectangle> areasToBeCleaned) {
             using (Graphics graphics = Graphics.FromImage(image)) {
+
+                // A rectangle in the areasToBeCleaned list is treated to be in standard [0, 1]x[0,1] coordinate system
+                // (y varies from bottom to top and x from left to right), so we should scale the rectangle and also
+                // invert and shear the y axe
                 foreach (Rectangle rect in areasToBeCleaned) {
-                    int x = (int) Math.Ceiling(rect.Left);
-                    int y = (int) Math.Ceiling(rect.Top);
-                    int width = (int) Math.Floor(rect.Right) - x;
-                    int height = (int) Math.Floor(rect.Bottom) - y;
+                    int scaledBottomY = (int)Math.Ceiling(rect.Bottom * image.Height);
+                    int scaledTopY = (int)Math.Floor(rect.Top * image.Height);
+
+                    int x = (int)Math.Ceiling(rect.Left * image.Width);
+                    int y = scaledTopY * -1 + image.Height;
+                    int width = (int)Math.Floor(rect.Right * image.Width) - x;
+                    int height = scaledTopY - scaledBottomY;
 
                     graphics.FillRectangle(new SolidBrush(CLEANED_AREA_FILL_COLOR), x, y, width, height);
                 }
