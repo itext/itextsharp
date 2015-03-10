@@ -482,13 +482,11 @@ namespace iTextSharp.text.pdf {
                         type = TokType.NUMBER;
                         if (ch == '-') {
                             // Take care of number like "--234". If Acrobat can read them so must we.
-                            bool minus = false;
+                            // -- is still minus, removed minus = !minus logic
                             do {
-                                minus = !minus;
                                 ch = file.Read();
                             } while (ch == '-');
-                            if (minus)
-                                outBuf.Append('-');
+                            outBuf.Append('-');
                         }
                         else {
                             outBuf.Append((char)ch);
