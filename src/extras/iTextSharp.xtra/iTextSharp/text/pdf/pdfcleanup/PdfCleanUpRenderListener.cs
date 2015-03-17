@@ -168,13 +168,18 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                 // (y varies from bottom to top and x from left to right), so we should scale the rectangle and also
                 // invert and shear the y axe
                 foreach (Rectangle rect in areasToBeCleaned) {
-                    int scaledBottomY = (int)Math.Ceiling(rect.Bottom * image.Height);
-                    int scaledTopY = (int)Math.Floor(rect.Top * image.Height);
+                    float scaledBottom = rect.Bottom*image.Height;
+                    float scaledTop = rect.Top*image.Height;
+                    float scaledLeft = rect.Left*image.Width;
+                    float scaledRight = rect.Right*image.Width;
 
-                    int x = (int)Math.Ceiling(rect.Left * image.Width);
-                    int y = scaledTopY * -1 + image.Height;
-                    int width = (int)Math.Floor(rect.Right * image.Width) - x;
-                    int height = scaledTopY - scaledBottomY;
+                    int bottomY = (int)Math.Ceiling(scaledBottom);
+                    int topY = (int)Math.Floor(scaledTop);
+
+                    int x = (int)Math.Ceiling(scaledLeft);
+                    int y = topY * -1 + image.Height;
+                    int width = (int)Math.Floor(scaledRight) - x;
+                    int height = topY - bottomY;
 
                     graphics.FillRectangle(new SolidBrush(CLEANED_AREA_FILL_COLOR), x, y, width, height);
                 }
