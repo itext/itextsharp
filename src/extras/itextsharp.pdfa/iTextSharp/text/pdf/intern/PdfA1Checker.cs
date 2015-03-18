@@ -423,6 +423,7 @@ namespace iTextSharp.text.pdf.intern
                     ICC_Profile colorProfile = ((PdfAWriter) writer).ColorProfile;
                     String cs = "";
                     cs = System.Text.Encoding.ASCII.GetString(colorProfile.Data, 16, 4);
+                    cs = cs.Trim();
                     if (!"RGB".Equals(cs.ToUpper())) {
                         throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("destoutputprofile.in.the.pdfa1.outputintent.dictionary.shall.be.rgb"));
                     }
