@@ -86,11 +86,7 @@ namespace iTextSharp.tool.xml.html {
                     if (logger.IsLogging(Level.TRACE)) {
                         logger.Trace(String.Format(LocaleMessages.GetInstance().GetMessage(LocaleMessages.HTML_IMG_USE), src));
                     }
-                    try {
-                        img = new ImageRetrieve(GetHtmlPipelineContext(ctx).GetImageProvider()).RetrieveImage(src);
-                    } catch (NoImageProviderException) {
-                        img = new ImageRetrieve().RetrieveImage(src);
-                    }
+                    img = new ImageRetrieve(GetHtmlPipelineContext(ctx).GetImageProvider()).RetrieveImage(src);
                 } catch (IOException e) {
                     if (logger.IsLogging(Level.ERROR)) {
                         logger.Error(String.Format(LocaleMessages.GetInstance().GetMessage(LocaleMessages.HTML_IMG_RETRIEVE_FAIL), src), e);
