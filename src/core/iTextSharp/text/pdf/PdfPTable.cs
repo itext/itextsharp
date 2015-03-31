@@ -399,7 +399,7 @@ namespace iTextSharp.text.pdf {
             SetWidths(columnWidth);
         }
 
-        /** Sets the percentage width of the table from the absolute column width.
+        /** Sets the percentage width of the table from the absolute column width.  Warning: Don't use this with setLockedWidth(true). These two settings don't mix.
         * @param columnWidth the absolute width of each column
         * @param pageSize    the page size
         * @throws DocumentException
