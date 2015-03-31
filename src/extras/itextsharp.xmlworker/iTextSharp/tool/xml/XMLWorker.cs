@@ -60,9 +60,9 @@ namespace iTextSharp.tool.xml {
      */
     public class XMLWorker : IXMLParserListener {
 
-        private IPipeline rootpPipe;
+        protected IPipeline rootpPipe;
         private static LocalDataStoreSlot context = Thread.AllocateDataSlot();
-        private bool parseHtml;
+        protected bool parseHtml;
 
         static XMLWorker() {
             Thread.SetData(context, new WorkerContextImpl());

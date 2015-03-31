@@ -56,15 +56,5 @@ namespace itextsharp.xmlworker.tests.iTextSharp.tool.xml.pipeline {
             Assert.NotNull(ctx.GetMemory());
         }
 
-        /**
-	 * Verifies that NoImageProviderException is thrown
-	 * @throws NoImageProviderException
-	 */
-
-        [Test]
-        [ExpectedException(typeof (NoImageProviderException))]
-        virtual public void VerifyNoImageProvider() {
-            ctx.GetImageProvider();
-        }
     }
 }
