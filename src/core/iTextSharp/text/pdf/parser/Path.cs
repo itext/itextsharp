@@ -86,7 +86,7 @@ namespace iTextSharp.text.pdf.parser {
             Point2D thirdPoint = new Point2D.Float(x2, y2);
             Point2D fourthPoint = new Point2D.Float(x3, y3);
 
-            IList<Point2D> controlPoints = new List<Point2D>(new[] {currentPoint, secondPoint, thirdPoint, fourthPoint});
+            IList<Point2D> controlPoints = new List<Point2D>(new Point2D[] {currentPoint, secondPoint, thirdPoint, fourthPoint});
             this.LastSubpath.AddSegment(new BezierCurve(controlPoints));
 
             currentPoint = fourthPoint;

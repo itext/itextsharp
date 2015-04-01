@@ -29,12 +29,12 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private static readonly byte[] n = DocWriter.GetISOBytes("n\n");
         private static readonly byte[] W = DocWriter.GetISOBytes("W\n");
 
-        private static readonly HashSet2<String> textShowingOperators = new HashSet2<String>(new [] {"TJ", "Tj", "'", "\""});
-        private static readonly HashSet2<String> pathConstructionOperators = new HashSet2<String>(new [] {"m", "l", "c", "v", "y", "h", "re"});
-        private static readonly HashSet2<String> strokeOperators = new HashSet2<String>(new [] {"S", "s", "B", "B*", "b", "b*"});
-        private static readonly HashSet2<String> fillOperators = new HashSet2<String>(new [] {"f", "F", "f*", "B", "B*", "b", "b*"});
+        private static readonly HashSet2<String> textShowingOperators = new HashSet2<String>(new string[] {"TJ", "Tj", "'", "\""});
+        private static readonly HashSet2<String> pathConstructionOperators = new HashSet2<String>(new string[] {"m", "l", "c", "v", "y", "h", "re"});
+        private static readonly HashSet2<String> strokeOperators = new HashSet2<String>(new string[] {"S", "s", "B", "B*", "b", "b*"});
+        private static readonly HashSet2<String> fillOperators = new HashSet2<String>(new string[] {"f", "F", "f*", "B", "B*", "b", "b*"});
         private static readonly HashSet2<String> pathPaintingOperators; // initialized in the static constructor
-        private static readonly HashSet2<String> clippingPathOperators = new HashSet2<String>(new [] {"W", "W*"});
+        private static readonly HashSet2<String> clippingPathOperators = new HashSet2<String>(new string[] {"W", "W*"});
 
         protected PdfCleanUpRenderListener cleanUpStrategy;
         protected IContentOperator originalContentOperator;

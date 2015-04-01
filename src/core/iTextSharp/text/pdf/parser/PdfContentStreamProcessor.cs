@@ -984,7 +984,7 @@ namespace iTextSharp.text.pdf.parser {
             public virtual void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 float x = ((PdfNumber) operands[0]).FloatValue;
                 float y = ((PdfNumber) operands[1]).FloatValue;
-                processor.ModifyPath(PathConstructionRenderInfo.MOVETO, new List<float>(new[] {x, y}));
+                processor.ModifyPath(PathConstructionRenderInfo.MOVETO, new List<float>(new float[] {x, y}));
             }
         }
 
@@ -998,7 +998,7 @@ namespace iTextSharp.text.pdf.parser {
             public virtual void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
                 float x = ((PdfNumber) operands[0]).FloatValue;
                 float y = ((PdfNumber) operands[1]).FloatValue;
-                processor.ModifyPath(PathConstructionRenderInfo.LINETO, new List<float>(new[] {x, y}));
+                processor.ModifyPath(PathConstructionRenderInfo.LINETO, new List<float>(new float[] {x, y}));
             }
         }
 
@@ -1016,7 +1016,7 @@ namespace iTextSharp.text.pdf.parser {
                 float y2 = ((PdfNumber) operands[3]).FloatValue;
                 float x3 = ((PdfNumber) operands[4]).FloatValue;
                 float y3 = ((PdfNumber) operands[5]).FloatValue;
-                processor.ModifyPath(PathConstructionRenderInfo.CURVE_123, new List<float>(new[] {x1, y1, x2, y2, x3, y3}));
+                processor.ModifyPath(PathConstructionRenderInfo.CURVE_123, new List<float>(new float[] {x1, y1, x2, y2, x3, y3}));
             }
         }
 
@@ -1032,7 +1032,7 @@ namespace iTextSharp.text.pdf.parser {
                 float y2 = ((PdfNumber) operands[1]).FloatValue;
                 float x3 = ((PdfNumber) operands[2]).FloatValue;
                 float y3 = ((PdfNumber) operands[3]).FloatValue;
-                processor.ModifyPath(PathConstructionRenderInfo.CURVE_23, new List<float>(new[] {x2, y2, x3, y3}));
+                processor.ModifyPath(PathConstructionRenderInfo.CURVE_23, new List<float>(new float[] {x2, y2, x3, y3}));
             }
         }
 
@@ -1048,7 +1048,7 @@ namespace iTextSharp.text.pdf.parser {
                 float y1 = ((PdfNumber) operands[1]).FloatValue;
                 float x3 = ((PdfNumber) operands[2]).FloatValue;
                 float y3 = ((PdfNumber) operands[3]).FloatValue;
-                processor.ModifyPath(PathConstructionRenderInfo.CURVE_13, new List<float>(new[] {x1, y1, x3, y3}));
+                processor.ModifyPath(PathConstructionRenderInfo.CURVE_13, new List<float>(new float[] {x1, y1, x3, y3}));
             }
         }
 
@@ -1076,7 +1076,7 @@ namespace iTextSharp.text.pdf.parser {
                 float y = ((PdfNumber) operands[1]).FloatValue;
                 float w = ((PdfNumber) operands[2]).FloatValue;
                 float h = ((PdfNumber) operands[3]).FloatValue;
-                processor.ModifyPath(PathConstructionRenderInfo.RECT, new List<float>(new[] {x, y, w, h}));
+                processor.ModifyPath(PathConstructionRenderInfo.RECT, new List<float>(new float[] {x, y, w, h}));
             }
         }
 
