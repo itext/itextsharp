@@ -5,7 +5,7 @@ using System.Text;
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
     /**
-     * Represents subset of graphics state parameters
+     * Represents subset of graphics state parameters.
      */
     class PdfCleanUpGraphicsState {
 

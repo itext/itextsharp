@@ -19,9 +19,6 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
         /**
          * Checks if the text is inside render filter region.
-         *
-         * @param renderInfo
-         * @return
          */
         public override bool AllowText(TextRenderInfo renderInfo) {
             LineSegment ascent = renderInfo.GetAscentLine();
@@ -42,8 +39,6 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
         /**
          * Calculates intersection of the image and the render filter region in the coordinate system relative to the image.
-         *
-         * @return intersection
          */
         protected internal virtual PdfCleanUpCoveredArea Intersection(ImageRenderInfo renderInfo) {
             Rectangle imageRect = CalcImageRect(renderInfo);
@@ -120,6 +115,9 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                     r1.Bottom < r2.Top && r1.Top > r2.Bottom);
         }
 
+        /**
+         * @return Image boundary rectangle in device space.
+         */
         private Rectangle CalcImageRect(ImageRenderInfo renderInfo) {
             Matrix ctm = renderInfo.GetImageCTM();
 

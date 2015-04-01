@@ -33,7 +33,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private static readonly HashSet2<String> pathConstructionOperators = new HashSet2<String>(new [] {"m", "l", "c", "v", "y", "h", "re"});
         private static readonly HashSet2<String> strokeOperators = new HashSet2<String>(new [] {"S", "s", "B", "B*", "b", "b*"});
         private static readonly HashSet2<String> fillOperators = new HashSet2<String>(new [] {"f", "F", "f*", "B", "B*", "b", "b*"});
-        private static readonly HashSet2<String> pathPaintingOperators; // initialized in static constructor
+        private static readonly HashSet2<String> pathPaintingOperators; // initialized in the static constructor
         private static readonly HashSet2<String> clippingPathOperators = new HashSet2<String>(new [] {"W", "W*"});
 
         protected PdfCleanUpRenderListener cleanUpStrategy;
@@ -128,6 +128,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                     operands[1].ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
                     canvas.InternalBuffer.Append(TcTStar);
 
+                    cleanUpStrategy.Context.WordSpacing = ((PdfNumber) operands[0]).FloatValue;
                     cleanUpStrategy.Context.CharacterSpacing = ((PdfNumber) operands[1]).FloatValue;
                 } else if ("TJ" == operatorStr) {
                     structuredTJoperands = StructureTJarray((PdfArray) operands[0]);
@@ -194,6 +195,14 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             }
         }
 
+        /**
+         * Example.
+         *      TJ = [(h) 3 4 (q) 7 (w) (e)]
+         *      Result = {0:0, 1:7, 2:7, 3:0, 4:0}
+         *
+         * @return Map whose key is an ordinal number of the string in the TJ array and value
+         *         is the position adjustment.
+         */
         private IDictionary<int, float> StructureTJarray(PdfArray array) {
             IDictionary<int, float> structuredTJoperands = new Dictionary<int, float>();
 
@@ -219,6 +228,9 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return structuredTJoperands;
         }
 
+        /**
+         * Writes parts of text which are visible into a content stream.
+         */
         private void WriteTextChunks(IDictionary<int, float> structuredTJoperands, IList<PdfCleanUpContentChunk> chunks, PdfContentByte canvas) {
             canvas.SetCharacterSpacing(0);
             canvas.SetWordSpacing(0);
