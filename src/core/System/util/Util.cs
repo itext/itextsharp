@@ -187,5 +187,11 @@ namespace System.util {
 
             return result;
         }
+
+        public static void AddAll<T>(ICollection<T> to, ICollection<T> from) {
+            foreach (T elem in from) {
+                to.Add(elem);
+            }
+        }
     }
 }
