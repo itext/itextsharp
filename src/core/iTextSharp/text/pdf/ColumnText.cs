@@ -1386,14 +1386,12 @@ namespace iTextSharp.text.pdf {
                             k = -1;
                             continue;
                         }
-                        if (k == items.Count - 1) {
-                            if (stack.Count > 0) {
-                                Object[] objs = stack.Pop();
-                                list = (List)objs[0];
-                                items = list.Items;
-                                k = (int)objs[1];
-                                listIndentation = (float)objs[2];
-                            }
+                        while (k == items.Count - 1 && stack.Count > 0) {
+                            Object[] objs = stack.Pop();
+                            list = (List) objs[0];
+                            items = list.Items;
+                            k = (int) objs[1];
+                            listIndentation = (float) objs[2];
                         }
                     }
                     int status = 0;
