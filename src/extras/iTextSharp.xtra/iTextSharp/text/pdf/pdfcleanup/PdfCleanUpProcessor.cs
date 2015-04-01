@@ -11,6 +11,11 @@ using iTextSharp.text.pdf.parser;
 
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
+    /**
+     * Represents the main mechanism for cleaning a PDF document.
+     *
+     * @since 5.5.5
+     */
     public class PdfCleanUpProcessor {
 
         private static readonly String XOBJ_NAME_PREFIX = "Fm";
@@ -20,17 +25,25 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
         private int currentXObjNum = 0;
 
-        private IDictionary<int, IList<PdfCleanUpLocation>> pdfCleanUpLocations; // key - page number
         private PdfStamper pdfStamper;
 
-        private IDictionary<int, HashSet2<string>> redactAnnotIndirRefs; // key - number of page containing redact annotations
+        // key - page number, value - list of locations related to the page
+        private IDictionary<int, IList<PdfCleanUpLocation>> pdfCleanUpLocations;
+
+        // key - number of page containing redact annotations, value - look at variable name
+        private IDictionary<int, HashSet2<string>> redactAnnotIndirRefs;
+
+        // stores list of rectangles for annotation identified by it's index in Annots array
         private IDictionary<int, IList<Rectangle>> clippingRects; // stores list of rectangles for annotation identified by it's index in Annots array
 
         /**
-         * Create clean up processor.
+         * Creates a {@link com.itextpdf.text.pdf.pdfcleanup.PdfCleanUpProcessor} object based on the
+         * given {@link java.util.List} of {@link com.itextpdf.text.pdf.pdfcleanup.PdfCleanUpLocation}s
+         * representing regions to be erased from the document.
          *
          * @param pdfCleanUpLocations list of locations to be cleaned up {@see PdfCleanUpLocation}
-         * @param pdfStamper
+         * @param pdfStamper          A{@link com.itextpdf.text.pdf.PdfStamper} object representing the document which redaction
+         *                            applies to.
          */
         public PdfCleanUpProcessor(IList<PdfCleanUpLocation> pdfCleanUpLocations, PdfStamper pdfStamper) {
             this.pdfCleanUpLocations = OrganizeLocationsByPage(pdfCleanUpLocations);
@@ -38,9 +51,11 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
         /**
-         * CleanUp locations are extracted from Redact annotations.
+         * Creates a {@link com.itextpdf.text.pdf.pdfcleanup.PdfCleanUpProcessor} object. Regions to be erased from
+         * the document are extracted from the redact annotations contained inside the given document.
          *
-         * @param pdfStamper
+         * @param pdfStamper A{@link com.itextpdf.text.pdf.PdfStamper} object representing the document which redaction
+         *                   applies to.
          */
         public PdfCleanUpProcessor(PdfStamper pdfStamper) {
             this.redactAnnotIndirRefs = new Dictionary<int, HashSet2<string>>();
@@ -49,6 +64,12 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             ExtractLocationsFromRedactAnnots();
         }
 
+        /**
+         * Cleans the document by erasing all the provided areas from it.
+         *
+         * @throws IOException
+         * @throws DocumentException
+         */
         public void CleanUp() {
             foreach (KeyValuePair<int, IList<PdfCleanUpLocation>> entry in pdfCleanUpLocations) {
                 CleanUpPage(entry.Key, entry.Value);
@@ -137,6 +158,9 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return organizedLocations;
         }
 
+        /**
+         * Extracts locations from the redact annotations contained in the document.
+         */
         private void ExtractLocationsFromRedactAnnots() {
             this.pdfCleanUpLocations = new Dictionary<int, IList<PdfCleanUpLocation>>();
             PdfReader reader = pdfStamper.Reader;
@@ -147,6 +171,9 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             }
         }
 
+        /**
+         * Extracts locations from the redact annotations contained in the document and applied to the given page.
+         */
         private IList<PdfCleanUpLocation> ExtractLocationsFromRedactAnnots(int page, PdfDictionary pageDict) {
             List<PdfCleanUpLocation> locations = new List<PdfCleanUpLocation>();
 
@@ -176,13 +203,18 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             redactAnnotIndirRefs[page].Add(indRefStr);
         }
 
+        /**
+         * Extracts locations from the concrete annotation.
+         * Note: annotation can consist not only of one area specified by the RECT entry, but also of multiple areas specified
+         * by the QuadPoints entry in the annotation dictionary.
+         */
         private IList<PdfCleanUpLocation> ExtractLocationsFromRedactAnnot(int page, int annotIndex, PdfDictionary annotDict) {
             IList<PdfCleanUpLocation> locations = new List<PdfCleanUpLocation>();
             List<Rectangle> markedRectangles = new List<Rectangle>();
             PdfArray quadPoints = annotDict.GetAsArray(PdfName.QUADPOINTS);
 
             if (quadPoints.Size != 0) {
-                markedRectangles.AddRange( QuadPointsToRectangles(quadPoints) );
+                markedRectangles.AddRange(TranslateQuadPointsToRectangles(quadPoints));
             } else {
                 PdfArray annotRect = annotDict.GetAsArray(PdfName.RECT);
                 markedRectangles.Add(new Rectangle(annotRect.GetAsNumber(0).FloatValue,
@@ -212,7 +244,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return locations;
         }
 
-        private IList<Rectangle> QuadPointsToRectangles(PdfArray quadPoints) {
+        private IList<Rectangle> TranslateQuadPointsToRectangles(PdfArray quadPoints) {
             IList<Rectangle> rectangles = new List<Rectangle>();
 
             for (int i = 0; i < quadPoints.Size; i += 8) {
@@ -225,6 +257,9 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return rectangles;
         }
 
+        /**
+         * Deletes redact annotations from the page and substitutes them with either OverlayText or RO object if it's needed.
+         */
         private void deleteRedactAnnots(int pageNum) {
             HashSet2<String> indirRefs;
             redactAnnotIndirRefs.TryGetValue(pageNum, out indirRefs);
@@ -239,7 +274,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             PdfArray annotsArray = pageDict.GetAsArray(PdfName.ANNOTS);
 
             // j is for access annotRect (i can be decreased, so we need to store additional index,
-            // indicating current position in array in case if we don't remove anything
+            // indicating current position in ANNOTS array in case if we don't remove anything
             for (int i = 0, j = 0; i < annotsArray.Size; ++i, ++j) {
                 PdfIndirectReference annotIndRef = annotsArray.GetAsIndirectObject(i);
                 PdfDictionary annotDict = annotsArray.GetAsDict(i);

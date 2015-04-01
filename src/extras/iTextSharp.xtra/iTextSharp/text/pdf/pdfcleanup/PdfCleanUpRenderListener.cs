@@ -24,7 +24,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private IList<PdfCleanUpRegionFilter> filters;
         private IList<PdfCleanUpContentChunk> chunks = new List<PdfCleanUpContentChunk>();
         private Stack<PdfCleanUpContext> contextStack = new Stack<PdfCleanUpContext>();
-        private int strNumber = 1; // Represents number of string under processing. Needed for processing TJ operator.
+        private int strNumber = 1; // Represents ordinal number of string under processing. Needed for processing TJ operator.
 
         private Path unfilteredCurrentPath = new Path(); // Represents current path as if there were no segments to cut
         private Path currentStrokePath = new Path(); // Represents actual current path ("actual" means that it is filtered current path)
@@ -243,7 +243,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private void CleanImage(SharpImage image, IList<Rectangle> areasToBeCleaned) {
             using (Graphics graphics = Graphics.FromImage(image)) {
 
-                // A rectangle in the areasToBeCleaned list is treated to be in standard [0, 1]x[0,1] coordinate system
+                // A rectangle in the areasToBeCleaned list is treated to be in standard [0, 1]x[0,1] image space
                 // (y varies from bottom to top and x from left to right), so we should scale the rectangle and also
                 // invert and shear the y axe
                 foreach (Rectangle rect in areasToBeCleaned) {
