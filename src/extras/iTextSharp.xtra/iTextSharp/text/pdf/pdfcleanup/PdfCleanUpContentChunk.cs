@@ -1,63 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using iTextSharp.text.pdf;
+﻿using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.parser;
 
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
-    class PdfCleanUpContentChunk {
+    /**
+     * Represents a chunk of a pdf content stream which is under cleanup processing. E.g. image, text.
+     */
+    abstract class PdfCleanUpContentChunk {
 
         private bool visible;
 
-        private PdfString text;
-        private float startX;
-        private float endX;
-        private int numOfStrChunkBelongsTo;
-
-        private bool image;
-        private byte[] newImageData;
-
-        public PdfCleanUpContentChunk(PdfString text, Vector startLocation, Vector endLocation, bool visible, int numOfStrChunkBelongsTo) {
-            this.text = text;
-            this.startX = startLocation[0];
-            this.endX = endLocation[0];
+        public PdfCleanUpContentChunk(bool visible) {
             this.visible = visible;
-            this.numOfStrChunkBelongsTo = numOfStrChunkBelongsTo;
         }
 
-        public PdfCleanUpContentChunk(bool visible, byte[] newImageData) {
-            this.image = true;
-            this.visible = visible;
-            this.newImageData = newImageData;
+        public virtual bool Visible {
+            get { return visible; }
         }
 
-        public virtual PdfString Text {
-            get { return text; }
+        /**
+         * Represents a text fragment from a pdf content stream.
+         */
+        public class Text : PdfCleanUpContentChunk {
+
+            private PdfString text;
+            private float startX;
+            private float endX;
+            private int numOfStrTextBelongsTo;
+
+            public Text(PdfString text, Vector startLocation, Vector endLocation, bool visible, int numOfStrTextBelongsTo) : base(visible) {
+                this.text = text;
+                this.startX = startLocation[0];
+                this.endX = endLocation[0];
+                this.numOfStrTextBelongsTo = numOfStrTextBelongsTo;
+            }
+
+            public virtual PdfString GetText() {
+                return text;
+            }
+
+            public virtual float StartX {
+                get { return startX; }
+            }
+
+            public virtual float EndX {
+                get { return endX; }
+            }
+
+            public virtual int NumOfStrTextBelongsTo {
+                get { return numOfStrTextBelongsTo; }
+            }
         }
 
-        public virtual bool IsVisible() {
-            return visible;
-        }
+        /**
+         * Represents an image used in a pdf content stream.
+         */
+        public class Image : PdfCleanUpContentChunk {
 
-        public virtual bool IsImage() {
-            return image;
-        }
+            private byte[] newImageData;
 
-        public virtual float StartX {
-            get { return startX; }
-        }
+            public Image(bool visible, byte[] newImageData) : base(visible) {
+                this.newImageData = newImageData;
+            }
 
-        public virtual float EndX {
-            get { return endX; }
-        }
-
-        public virtual byte[] NewImageData {
-            get { return newImageData;  }
-        }
-
-        public virtual int NumOfStrChunkBelongsTo {
-            get { return numOfStrChunkBelongsTo; }
+            public virtual byte[] NewImageData {
+                get { return newImageData; }
+            }
         }
     }
 }

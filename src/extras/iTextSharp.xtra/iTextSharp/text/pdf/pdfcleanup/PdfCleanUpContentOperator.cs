@@ -9,52 +9,59 @@ using System.Collections.Generic;
 using System.IO;
 using System.util;
 using System.util.collections;
+using Path = iTextSharp.text.pdf.parser.Path;
 
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
     class PdfCleanUpContentOperator : IContentOperator {
 
-        static private readonly byte[] TStar = DocWriter.GetISOBytes("T*\n");
-        static private readonly byte[] Tw = DocWriter.GetISOBytes(" Tw ");
-        static private readonly byte[] TcTStar = DocWriter.GetISOBytes(" Tc T*\n");
-        static private readonly byte[] TJ = DocWriter.GetISOBytes("] TJ\n");
-        static private readonly byte[] Tc = DocWriter.GetISOBytes(" Tc\n");
+        private static readonly byte[] TStar = DocWriter.GetISOBytes("T*\n");
+        private static readonly byte[] Tw = DocWriter.GetISOBytes(" Tw ");
+        private static readonly byte[] TcTStar = DocWriter.GetISOBytes(" Tc T*\n");
+        private static readonly byte[] TJ = DocWriter.GetISOBytes("] TJ\n");
+        private static readonly byte[] Tc = DocWriter.GetISOBytes(" Tc\n");
+        private static readonly byte[] m = DocWriter.GetISOBytes(" m\n");
+        private static readonly byte[] l = DocWriter.GetISOBytes(" l\n");
+        private static readonly byte[] c = DocWriter.GetISOBytes(" c\n");
+        private static readonly byte[] h = DocWriter.GetISOBytes("h\n");
+        private static readonly byte[] S = DocWriter.GetISOBytes("S\n");
+        private static readonly byte[] f = DocWriter.GetISOBytes("f\n");
+        private static readonly byte[] n = DocWriter.GetISOBytes("n\n");
+        private static readonly byte[] W = DocWriter.GetISOBytes("W\n");
 
-        private static readonly HashSet2<string> textShowingOperators;
+        private static readonly HashSet2<String> textShowingOperators = new HashSet2<String>(new [] {"TJ", "Tj", "'", "\""});
+        private static readonly HashSet2<String> pathConstructionOperators = new HashSet2<String>(new [] {"m", "l", "c", "v", "y", "h", "re"});
+        private static readonly HashSet2<String> strokeOperators = new HashSet2<String>(new [] {"S", "s", "B", "B*", "b", "b*"});
+        private static readonly HashSet2<String> fillOperators = new HashSet2<String>(new [] {"f", "F", "f*", "B", "B*", "b", "b*"});
+        private static readonly HashSet2<String> pathPaintingOperators; // initialized in static constructor
+        private static readonly HashSet2<String> clippingPathOperators = new HashSet2<String>(new [] {"W", "W*"});
 
         protected PdfCleanUpRenderListener cleanUpStrategy;
         protected IContentOperator originalContentOperator;
-
-        public static void PopulateOperators(PdfContentStreamProcessor contentProcessor,
-                                             PdfCleanUpRenderListener pdfCleanUpRenderListener) {
-            String[] operators = new String[] {
-                    PdfContentStreamProcessor.DEFAULTOPERATOR, "q", "Q", "g", "G", "rg", "RG", "k", "K",
-                    "cs", "CS", "sc", "SC", "scn", "SCN", "cm", "gs", "Tc", "Tw", "Tz", "TL", "Tf", "Tr",
-                    "Ts", "BT", "ET", "BMC", "BDC", "EMC", "Td", "TD", "Tm", "T*", "Tj", "'", "\"", "TJ", "Do"
-            };
-
-            foreach (String @operator in operators) {
-                PdfCleanUpContentOperator contentOperator = new PdfCleanUpContentOperator(pdfCleanUpRenderListener);
-                contentOperator.originalContentOperator = contentProcessor.RegisterContentOperator(@operator, contentOperator);
-            }
-        }
-
-        static PdfCleanUpContentOperator() {
-            textShowingOperators = new HashSet2<string>();
-            textShowingOperators.Add("TJ");
-            textShowingOperators.Add("Tj");
-            textShowingOperators.Add("'");
-            textShowingOperators.Add("\"");
-        }
 
         public PdfCleanUpContentOperator(PdfCleanUpRenderListener cleanUpStrategy) {
             this.cleanUpStrategy = cleanUpStrategy;
         }
 
-        public void Invoke(PdfContentStreamProcessor pdfContentStreamProcessor, PdfLiteral @operator, List<PdfObject> operands) {
-            String operatorStr = @operator.ToString();
+        static PdfCleanUpContentOperator() {
+            pathPaintingOperators = new HashSet2<string>(strokeOperators);
+            pathPaintingOperators.AddAll(fillOperators);
+            pathPaintingOperators.Add("n");
+        }
+
+        public static void PopulateOperators(PdfContentStreamProcessor contentProcessor,
+                                     PdfCleanUpRenderListener pdfCleanUpRenderListener) {
+            foreach (String oper in contentProcessor.RegisteredOperatorStrings) {
+                PdfCleanUpContentOperator contentOperator = new PdfCleanUpContentOperator(pdfCleanUpRenderListener);
+                contentOperator.originalContentOperator = contentProcessor.RegisterContentOperator(oper, contentOperator);
+            }
+        }
+
+        public virtual void Invoke(PdfContentStreamProcessor pdfContentStreamProcessor, PdfLiteral oper, List<PdfObject> operands) {
+            String operatorStr = oper.ToString();
             PdfContentByte canvas = cleanUpStrategy.Context.Canvas;
             PRStream xFormStream = null;
+            bool disableOutput = pathConstructionOperators.Contains(operatorStr) || pathPaintingOperators.Contains(operatorStr) || clippingPathOperators.Contains(operatorStr);
 
             // key - number of a string in the TJ operator, value - number following the string; the first number without string (if it's presented) is stored under 0.
             // BE AWARE: zero-length strings are ignored!!!
@@ -76,9 +83,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                 }
             }
 
-            originalContentOperator.Invoke(pdfContentStreamProcessor, @operator, operands);
+            originalContentOperator.Invoke(pdfContentStreamProcessor, oper, operands);
             IList<PdfCleanUpContentChunk> chunks = cleanUpStrategy.Chunks;
-            bool disableOutput = false;
 
             if (xFormStream != null) {
                 xFormStream.SetData(cleanUpStrategy.Context.Canvas.ToPdf(cleanUpStrategy.Context.Canvas.PdfWriter));
@@ -87,13 +93,13 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             }
 
             if ("Do" == operatorStr) {
-                if (chunks.Count > 0 && chunks[0].IsImage()) {
-                    PdfCleanUpContentChunk chunk = chunks[0];
+                if (chunks.Count > 0 && chunks[0] is PdfCleanUpContentChunk.Image) {
+                    PdfCleanUpContentChunk.Image chunk = (PdfCleanUpContentChunk.Image) chunks[0];
 
-                    if (chunk.IsVisible()) {
+                    if (chunk.Visible) {
                         PdfDictionary xObjResources = cleanUpStrategy.Context.Resources.GetAsDict(PdfName.XOBJECT);
                         PRStream imageStream = (PRStream) xObjResources.GetAsStream((PdfName) operands[0]);
-                        UpdateImage(imageStream, chunk.NewImageData);
+                        UpdateImageStream(imageStream, chunk.NewImageData);
                     } else {
                         disableOutput = true;
                     }
@@ -127,9 +133,12 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                     structuredTJoperands = StructureTJarray((PdfArray) operands[0]);
                 }
 
-                RenderChunks(structuredTJoperands, chunks, canvas);
+                WriteTextChunks(structuredTJoperands, chunks, canvas);
             } else if ("\"" == operatorStr) {
+                cleanUpStrategy.Context.WordSpacing = ((PdfNumber) operands[0]).FloatValue;
                 cleanUpStrategy.Context.CharacterSpacing = ((PdfNumber) operands[1]).FloatValue;
+            } else if (pathPaintingOperators.Contains(operatorStr)) {
+                WritePath(operatorStr, canvas);
             }
 
             if (!disableOutput) {
@@ -146,7 +155,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
         private bool AllChunksAreVisible(IList<PdfCleanUpContentChunk> chunks) {
             foreach (PdfCleanUpContentChunk chunk in chunks) {
-                if (!chunk.IsVisible()) {
+                if (!chunk.Visible) {
                     return false;
                 }
             }
@@ -155,9 +164,9 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
         /** 
-         * Overriding standard PdfObject.toPdf because we need sorted PdfDictionaries.
+         * Overriding standard PdfObject.ToPdf because we need sorted PdfDictionaries.
          */
-        static private void ToPdf(PdfObject @object, PdfWriter writer, ByteBuffer os) {
+        private static void ToPdf(PdfObject @object, PdfWriter writer, ByteBuffer os) {
             if (@object is PdfDictionary) {
                 os.Append('<');
                 os.Append('<');
@@ -210,7 +219,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return structuredTJoperands;
         }
 
-        private void RenderChunks(IDictionary<int, float> structuredTJoperands, IList<PdfCleanUpContentChunk> chunks, PdfContentByte canvas) {
+        private void WriteTextChunks(IDictionary<int, float> structuredTJoperands, IList<PdfCleanUpContentChunk> chunks, PdfContentByte canvas) {
             canvas.SetCharacterSpacing(0);
             canvas.SetWordSpacing(0);
             canvas.InternalBuffer.Append((byte) '[');
@@ -222,28 +231,30 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             float convertedWordSpacing = -wordSpacing * 1000f / cleanUpStrategy.Context.FontSize;
 
             float shift = structuredTJoperands != null ? structuredTJoperands[0] : 0;
-            PdfCleanUpContentChunk prevChunk = null;
+            PdfCleanUpContentChunk.Text prevChunk = null;
 
             foreach (PdfCleanUpContentChunk chunk in chunks) {
-                if (prevChunk != null && prevChunk.NumOfStrChunkBelongsTo != chunk.NumOfStrChunkBelongsTo &&
+                PdfCleanUpContentChunk.Text textChunk = (PdfCleanUpContentChunk.Text) chunk;
+
+                if (prevChunk != null && prevChunk.NumOfStrTextBelongsTo != textChunk.NumOfStrTextBelongsTo &&
                         structuredTJoperands != null) {
-                    shift += structuredTJoperands[prevChunk.NumOfStrChunkBelongsTo];
+                    shift += structuredTJoperands[prevChunk.NumOfStrTextBelongsTo];
                 }
 
-                if (chunk.IsVisible()) {
+                if (textChunk.Visible) {
                     if (Util.compare(shift, 0.0f) != 0 && Util.compare(shift, -0.0f) != 0) {
                         canvas.InternalBuffer.Append(shift).Append(' ');
                     }
 
-                    chunk.Text.ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
+                    textChunk.GetText().ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
                     canvas.InternalBuffer.Append(' ');
 
-                    shift = convertedCharacterSpacing + (IsSpace(chunk) ? convertedWordSpacing : 0);
+                    shift = convertedCharacterSpacing + (IsSpace(textChunk) ? convertedWordSpacing : 0);
                 } else {
-                    shift += GetUnscaledChunkWidth(chunk);
+                    shift += GetUnscaledTextChunkWidth(textChunk);
                 }
 
-                prevChunk = chunk;
+                prevChunk = textChunk;
             }
 
             if (Util.compare(shift, 0) != 0 && Util.compare(shift, -0.0f) != 0) {
@@ -269,7 +280,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
          * For details see PDF spec., Text Space Details, formula for "tx" coefficient
          * and TextRenderInfo class (getUnscaledBaseline)
          */
-        private float GetUnscaledChunkWidth(PdfCleanUpContentChunk chunk) {
+        private float GetUnscaledTextChunkWidth(PdfCleanUpContentChunk.Text chunk) {
             PdfCleanUpContext context = cleanUpStrategy.Context;
             float fontSize = context.FontSize;
             float characterSpacing = context.CharacterSpacing;
@@ -285,11 +296,11 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return -scaledChunkWidth * 1000f / (horizontalScaling * fontSize);
         }
 
-        private bool IsSpace(PdfCleanUpContentChunk chunk) {
-            return chunk.Text.ToUnicodeString() == " ";
+        private bool IsSpace(PdfCleanUpContentChunk.Text chunk) {
+            return chunk.GetText().ToUnicodeString() == " ";
         }
 
-        private void UpdateImage(PRStream imageStream, byte[] newData) {
+        private void UpdateImageStream(PRStream imageStream, byte[] newData) {
             PdfImage image = new PdfImage(Image.GetInstance(newData), "", null);
 
             if (imageStream.Contains(PdfName.SMASK)) {
@@ -307,6 +318,99 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             imageStream.Clear();
             imageStream.PutAll(image);
             imageStream.SetDataRaw(image.GetBytes());
+        }
+
+        private void WritePath(String operatorStr, PdfContentByte canvas) { // TODO: refactor
+            if (cleanUpStrategy.Clipped) {
+                WritePath(cleanUpStrategy.CurrentFillPath, null, canvas);
+                canvas.InternalBuffer.Append(W);
+
+                if ("n".Equals(operatorStr)) {
+                    canvas.InternalBuffer.Append(n);
+                    cleanUpStrategy.Clipped = false;
+                    return;
+                }
+            }
+
+            if (fillOperators.Contains(operatorStr) && cleanUpStrategy.Clipped) {
+                canvas.InternalBuffer.Append(f);
+            } else if (fillOperators.Contains(operatorStr)) {
+                WritePath(cleanUpStrategy.CurrentFillPath, f, canvas);
+            }
+
+            if (strokeOperators.Contains(operatorStr)) {
+                if (!fillOperators.Contains(operatorStr) && cleanUpStrategy.Clipped) {
+                    canvas.InternalBuffer.Append(n);
+                }
+
+                WritePath(cleanUpStrategy.CurrentStrokePath, S, canvas);
+            }
+
+            cleanUpStrategy.Clipped = false;
+        }
+
+        private void WritePath(Path path, byte[] pathPaintingOperator, PdfContentByte canvas) {
+            if (path.Subpaths.Count == 0) {
+                return;
+            }
+
+            foreach (Subpath subpath in path.Subpaths) {
+                WriteMoveTo(subpath.GetStartPoint(), canvas);
+
+                foreach (IShape segment in subpath.GetSegments()) {
+                    if (segment is BezierCurve) {
+                        WriteBezierCurve((BezierCurve) segment, canvas);
+                    } else {
+                        writeLine((Line) segment, canvas);
+                    }
+                }
+            }
+
+            if (pathPaintingOperator != null) {
+                canvas.InternalBuffer.Append(pathPaintingOperator);
+            }
+        }
+
+        private void WriteMoveTo(Point2D destinationPoint, PdfContentByte canvas) {
+            new PdfNumber(destinationPoint.GetX()).ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
+            canvas.InternalBuffer.Append(' ');
+            new PdfNumber(destinationPoint.GetY()).ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
+            canvas.InternalBuffer.Append(m);
+        }
+
+        private void WriteBezierCurve(BezierCurve curve, PdfContentByte canvas) {
+            IList<Point2D> basePoints = curve.GetBasePoints();
+            Point2D p2 = basePoints[1];
+            Point2D p3 = basePoints[2];
+            Point2D p4 = basePoints[3];
+
+            new PdfNumber(p2.GetX()).ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
+            canvas.InternalBuffer.Append(' ');
+
+            new PdfNumber(p2.GetY()).ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
+            canvas.InternalBuffer.Append(' ');
+
+            new PdfNumber(p3.GetX()).ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
+            canvas.InternalBuffer.Append(' ');
+
+            new PdfNumber(p3.GetY()).ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
+            canvas.InternalBuffer.Append(' ');
+
+            new PdfNumber(p4.GetX()).ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
+            canvas.InternalBuffer.Append(' ');
+
+            new PdfNumber(p4.GetY()).ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
+            canvas.InternalBuffer.Append(c);
+        }
+
+        private void writeLine(Line line, PdfContentByte canvas) {
+            Point2D destination = line.GetBasePoints()[1];
+
+            new PdfNumber(destination.GetX()).ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
+            canvas.InternalBuffer.Append(' ');
+
+            new PdfNumber(destination.GetY()).ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
+            canvas.InternalBuffer.Append(l);
         }
     }
 }
