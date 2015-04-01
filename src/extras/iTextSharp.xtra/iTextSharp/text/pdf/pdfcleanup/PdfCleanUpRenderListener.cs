@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.util;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.parser;
@@ -11,10 +12,11 @@ using Image = iTextSharp.text.Image;
 using Rectangle = iTextSharp.text.Rectangle;
 using SharpImage = System.Drawing.Image;
 using Encoder = System.Drawing.Imaging.Encoder;
+using Path = iTextSharp.text.pdf.parser.Path;
 
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
     
-    class PdfCleanUpRenderListener : IRenderListener {
+    class PdfCleanUpRenderListener : IExtRenderListener {
 
         private static readonly Color CLEANED_AREA_FILL_COLOR = Color.White;
 
@@ -24,12 +26,23 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private Stack<PdfCleanUpContext> contextStack = new Stack<PdfCleanUpContext>();
         private int strNumber = 1; // Represents number of string under processing. Needed for processing TJ operator.
 
+        private Path unfilteredCurrentPath = new Path(); // Represents current path as if there were no segments to cut
+        private Path currentStrokePath = new Path(); // Represents actual current path ("actual" means that it is filtered current path)
+
+        /**
+         * Represents actual current path to be filled. In general case in context of cleanup tool it completely differs from
+         * the current path with implicitly closed subpaths.
+         */
+        private Path currentFillPath = new Path();
+
+        private bool clipPath = false;
+
         public PdfCleanUpRenderListener(PdfStamper pdfStamper, IList<PdfCleanUpRegionFilter> filters) {
             this.pdfStamper = pdfStamper;
             this.filters = filters;
         }
 
-        public void RenderText(TextRenderInfo renderInfo) {
+        public virtual void RenderText(TextRenderInfo renderInfo) {
             if (renderInfo.PdfString.ToUnicodeString().Length == 0) {
                 return;
             }
@@ -38,17 +51,17 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                 bool textIsInsideRegion = TextIsInsideRegion(ri);
                 LineSegment baseline = ri.GetUnscaledBaseline();
 
-                chunks.Add(new PdfCleanUpContentChunk(ri.PdfString, baseline.GetStartPoint(), baseline.GetEndPoint(), !textIsInsideRegion, strNumber));
+                chunks.Add(new PdfCleanUpContentChunk.Text(ri.PdfString, baseline.GetStartPoint(), baseline.GetEndPoint(), !textIsInsideRegion, strNumber));
             }
 
             ++strNumber;
         }
 
-        public void RenderImage(ImageRenderInfo renderInfo) {
+        public virtual void RenderImage(ImageRenderInfo renderInfo) {
             IList<Rectangle> areasToBeCleaned = GetImageAreasToBeCleaned(renderInfo);
 
             if (areasToBeCleaned == null) {
-                chunks.Add(new PdfCleanUpContentChunk(false, null));
+                chunks.Add(new PdfCleanUpContentChunk.Image(false, null));
             } else {
                 PdfImageObject pdfImage = renderInfo.GetImage();
                 byte[] imageBytes = ProcessImage(pdfImage.GetImageAsBytes(), areasToBeCleaned);
@@ -69,35 +82,101 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                     PdfContentByte canvas = Context.Canvas;
                     canvas.AddImage(image, 1, 0, 0, 1, 0, 0, true);
                 } else if (pdfImage != null && imageBytes != pdfImage.GetImageAsBytes()) {
-                    chunks.Add(new PdfCleanUpContentChunk(true, imageBytes));
+                    chunks.Add(new PdfCleanUpContentChunk.Image(true, imageBytes));
                 }
             }
         }
 
-        public void BeginTextBlock() {
+        public virtual void BeginTextBlock() {
         }
 
-        public void EndTextBlock() {
+        public virtual void EndTextBlock() {
         }
 
-        public IList<PdfCleanUpContentChunk> Chunks {
+        public virtual void ModifyPath(PathConstructionRenderInfo renderInfo) {
+            IList<float> segmentData = renderInfo.SegmentData;
+
+            switch (renderInfo.Operation) {
+                case PathConstructionRenderInfo.MOVETO:
+                    unfilteredCurrentPath.MoveTo(segmentData[0], segmentData[1]);
+                    break;
+
+                case PathConstructionRenderInfo.LINETO:
+                    unfilteredCurrentPath.LineTo(segmentData[0], segmentData[1]);
+                    break;
+
+                case PathConstructionRenderInfo.CURVE_123:
+                    unfilteredCurrentPath.CurveTo(segmentData[0], segmentData[1], segmentData[2],
+                                                  segmentData[3], segmentData[4], segmentData[5]);
+                    break;
+
+                case PathConstructionRenderInfo.CURVE_23:
+                    unfilteredCurrentPath.CurveTo(segmentData[0], segmentData[1], segmentData[2], segmentData[3]);
+                    break;
+
+                case PathConstructionRenderInfo.CURVE_13:
+                    unfilteredCurrentPath.CurveFromTo(segmentData[0], segmentData[1], segmentData[2], segmentData[3]);
+                    break;
+
+                case PathConstructionRenderInfo.CLOSE:
+                    unfilteredCurrentPath.CloseSubpath();
+                    break;
+
+                case PathConstructionRenderInfo.RECT:
+                    unfilteredCurrentPath.Rectangle(segmentData[0], segmentData[1], segmentData[2], segmentData[3]);
+                    break;
+            }
+        }
+
+        public virtual Path RenderPath(PathPaintingRenderInfo renderInfo) {
+            if ((renderInfo.Operation & PathPaintingRenderInfo.STROKE) != 0) {
+                currentStrokePath = FilterCurrentPath(renderInfo.Ctm, true);
+            }
+
+            if ((renderInfo.Operation & PathPaintingRenderInfo.FILL) != 0 || clipPath) {
+                currentFillPath = FilterCurrentPath(renderInfo.Ctm, false);
+            }
+
+            unfilteredCurrentPath = new Path();
+            return currentFillPath;
+        }
+
+        public virtual void ClipPath(int rule) {
+            clipPath = true;
+        }
+
+        public virtual bool Clipped {
+            get { return clipPath; }
+            set { clipPath = value; }
+        }
+
+        public virtual Path CurrentStrokePath {
+            get { return currentStrokePath; }
+        }
+
+        public virtual Path CurrentFillPath {
+            get { return currentFillPath; }
+        }
+
+
+        public virtual IList<PdfCleanUpContentChunk> Chunks {
             get { return chunks; }
         }
 
-        public PdfCleanUpContext Context {
+        public virtual PdfCleanUpContext Context {
             get { return contextStack.Peek(); }
         }
 
-        public void RegisterNewContext(PdfDictionary resources, PdfContentByte canvas) {
+        public virtual void RegisterNewContext(PdfDictionary resources, PdfContentByte canvas) {
             canvas = canvas ?? new PdfContentByte(pdfStamper.Writer);
             contextStack.Push(new PdfCleanUpContext(resources, canvas));
         }
 
-        public void PopContext() {
+        public virtual void PopContext() {
             contextStack.Pop();
         }
 
-        public void ClearChunks() {
+        public virtual void ClearChunks() {
             chunks.Clear();
             strNumber = 1;
         }
@@ -195,6 +274,28 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             }
 
             return null;
+        }
+
+        private Path FilterCurrentPath(Matrix ctm, bool isContour) {
+            Queue<Subpath> filteredSubpaths = new Queue<Subpath>(unfilteredCurrentPath.Subpaths);
+
+            foreach (PdfCleanUpRegionFilter filter in filters) {
+                int queueSize = filteredSubpaths.Count;
+
+                while (queueSize-- != 0) {
+                    Subpath subpath = filteredSubpaths.Dequeue();
+
+                    if (!isContour) {
+                        subpath = new Subpath(subpath);
+                        subpath.Closed = true;
+                    }
+
+                    IList<Subpath> filteredSubpath = filter.FilterSubpath(subpath, ctm, isContour);
+                    Util.AddAll(filteredSubpaths, filteredSubpath);
+                }
+            }
+
+            return new Path(new List<Subpath>(filteredSubpaths));
         }
     }
 }

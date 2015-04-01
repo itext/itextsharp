@@ -248,14 +248,14 @@ namespace iTextSharp.text.pdf.parser {
          * @return {@link java.util.Collection} containing all the registered operators strings
          * @since 5.5.6
          */
-        public virtual ICollection<String> GetRegisteredOperatorStrings() {
-            return operators.Keys;
+        public virtual ICollection<String> RegisteredOperatorStrings {
+            get { return new List<string>(operators.Keys); }
         }
 
         /**
          * Resets the graphics state stack, matrices and resources.
          */
-        virtual public void Reset(){
+        virtual public void Reset() {
             gsStack.Clear();
             gsStack.Push(new GraphicsState());
             textMatrix = null;
@@ -267,7 +267,7 @@ namespace iTextSharp.text.pdf.parser {
          * Returns the current graphics state.
          * @return  the graphics state
          */
-        private GraphicsState Gs(){
+        private GraphicsState Gs() {
             return gsStack.Peek();
         }
 
@@ -329,10 +329,6 @@ namespace iTextSharp.text.pdf.parser {
 
             textMatrix = new Matrix(renderInfo.GetUnscaledWidth(), 0).Multiply(textMatrix);
         }
-
-
-
-
         
         /**
          * Displays an XObject using the registered handler for this XObject's subtype

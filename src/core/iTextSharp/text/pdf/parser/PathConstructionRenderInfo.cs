@@ -14,37 +14,37 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * See {@link com.itextpdf.text.pdf.parser.Path#moveTo(float, float)}
          */
-        public static readonly int MOVETO = 1;
+        public const int MOVETO = 1;
 
         /**
          * See {@link com.itextpdf.text.pdf.parser.Path#lineTo(float, float)}
          */
-        public static readonly int LINETO = 2;
+        public const int LINETO = 2;
 
         /**
          * See {@link com.itextpdf.text.pdf.parser.Path#curveTo(float, float, float, float, float, float)}
          */
-        public static readonly int CURVE_123 = 3;
+        public const int CURVE_123 = 3;
 
         /**
          * See {@link com.itextpdf.text.pdf.parser.Path#curveTo(float, float, float, float)}
          */
-        public static readonly int CURVE_23 = 4;
+        public const int CURVE_23 = 4;
 
         /**
          * See {@link com.itextpdf.text.pdf.parser.Path#curveFromTo(float, float, float, float)}
          */
-        public static readonly int CURVE_13 = 5;
+        public const int CURVE_13 = 5;
 
         /**
          * See {@link com.itextpdf.text.pdf.parser.Path#closeSubpath()}
          */
-        public static readonly int CLOSE = 6;
+        public const int CLOSE = 6;
 
         /**
          * See {@link com.itextpdf.text.pdf.parser.Path#rectangle(float, float, float, float)}
          */
-        public static readonly int RECT = 7;
+        public const int RECT = 7;
 
         private int operation;
         private IList<float> segmentData;
@@ -71,8 +71,8 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @return construction operation should be performed on the current path.
          */
-        public virtual int GetOperation() {
-            return operation;
+        public virtual int Operation {
+            get { return operation; }
         }
 
         /**
@@ -80,15 +80,15 @@ namespace iTextSharp.text.pdf.parser {
          *         x, y for line etc.) if the specified operation relates to adding the segment to the
          *         current path, <CODE>null</CODE> otherwise.
          */
-        public virtual IList<float> GetSegmentData() {
-            return segmentData;
+        public virtual IList<float> SegmentData {
+            get { return segmentData; }
         }
 
         /**
          * @return Current transformation matrix.
          */
-        public virtual Matrix GetCtm() {
-            return ctm;
+        public virtual Matrix Ctm {
+            get { return ctm; }
         }
     }
 }

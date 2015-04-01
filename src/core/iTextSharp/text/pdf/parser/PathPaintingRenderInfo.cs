@@ -21,7 +21,7 @@ namespace iTextSharp.text.pdf.parser {
          *
          * For more details see PDF spec.
          */
-        public static readonly int NONZERO_WINDING_RULE = 1;
+        public const int NONZERO_WINDING_RULE = 1;
 
         /**
          * The even-odd rule determines whether a point is inside a path by drawing a ray from that point in
@@ -30,24 +30,24 @@ namespace iTextSharp.text.pdf.parser {
          *
          * For more details see PDF spec.
          */
-        public static readonly int EVEN_ODD_RULE = 2;
+        public const int EVEN_ODD_RULE = 2;
 
         /**
          * End the path object without filling or stroking it. This operator shall be a path-painting no-op,
          * used primarily for the side effect of changing the current clipping path
          */
-        public static readonly int NO_OP = 0;
+        public const int NO_OP = 0;
 
         /**
          * Value specifying stroke operation to perform on the current path.
          */
-        public static readonly int STROKE = 1;
+        public const int STROKE = 1;
 
         /**
          * Value specifying fill operation to perform on the current path. When the fill operation
          * is performed it should use either nonzero winding or even-odd rule.
          */
-        public static readonly int FILL = 2;
+        public const int FILL = 2;
 
         private int operation;
         private int rule;
@@ -77,22 +77,22 @@ namespace iTextSharp.text.pdf.parser {
          * @return <CODE>int</CODE> value which is either {@link #NO_OP} or one of possible
          * combinations of {@link #STROKE} and {@link #FILL}
          */
-        public virtual int GetOperation() {
-            return operation;
+        public virtual int Operation {
+            get { return operation; }
         }
 
         /**
          * @return Either {@link #NONZERO_WINDING_RULE} or {@link #EVEN_ODD_RULE}.
          */
-        public virtual int GetRule() {
-            return rule;
+        public virtual int Rule {
+            get { return rule; }
         }
 
         /**
          * @return Current transformation matrix.
          */
-        public virtual Matrix GetCtm() {
-            return ctm;
+        public virtual Matrix Ctm {
+            get { return ctm; }
         }
     }
 }

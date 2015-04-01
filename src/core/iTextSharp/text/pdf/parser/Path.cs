@@ -23,7 +23,7 @@ namespace iTextSharp.text.pdf.parser {
         public Path() {
         }
 
-        public Path(ICollection<Subpath> subpaths) {
+        public Path(IList<Subpath> subpaths) {
             if (subpaths.Count > 0) {
                 Util.AddAll(this.subpaths, subpaths);
                 currentPoint = this.subpaths[subpaths.Count - 1].GetLastPoint();
@@ -33,8 +33,8 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * @return A {@link java.util.List} of subpaths forming this path.
          */
-        public virtual IList<Subpath> GetSubpaths() {
-            return subpaths;
+        public virtual IList<Subpath> Subpaths {
+            get { return subpaths; }
         }
 
         /**
@@ -42,8 +42,8 @@ namespace iTextSharp.text.pdf.parser {
          *
          * @return The current point.
          */
-        public virtual Point2D GetCurrentPoint() {
-            return currentPoint;
+        public virtual Point2D CurrentPoint {
+            get { return currentPoint; }
         }
 
         /**
@@ -51,7 +51,7 @@ namespace iTextSharp.text.pdf.parser {
          */
         public virtual void MoveTo(float x, float y) {
             currentPoint = new Point2D.Float(x, y);
-            Subpath lastSubpath = GetLastSubpath();
+            Subpath lastSubpath = this.LastSubpath;
 
             if (lastSubpath != null && lastSubpath.IsSinglePointOpen()) {
                 lastSubpath.SetStartPoint(currentPoint);
@@ -69,7 +69,7 @@ namespace iTextSharp.text.pdf.parser {
             }
 
             Point2D targetPoint = new Point2D.Float(x, y);
-            GetLastSubpath().AddSegment(new Line(currentPoint, targetPoint));
+            this.LastSubpath.AddSegment(new Line(currentPoint, targetPoint));
             currentPoint = targetPoint;
         }
 
@@ -87,7 +87,7 @@ namespace iTextSharp.text.pdf.parser {
             Point2D fourthPoint = new Point2D.Float(x3, y3);
 
             IList<Point2D> controlPoints = new List<Point2D>(new[] {currentPoint, secondPoint, thirdPoint, fourthPoint});
-            GetLastSubpath().AddSegment(new BezierCurve(controlPoints));
+            this.LastSubpath.AddSegment(new BezierCurve(controlPoints));
 
             currentPoint = fourthPoint;
         }
@@ -134,15 +134,15 @@ namespace iTextSharp.text.pdf.parser {
          * point to the starting point of the subpath.
          */
         public virtual void CloseSubpath() {
-            Subpath lastSubpath = GetLastSubpath();
+            Subpath lastSubpath = this.LastSubpath;
             lastSubpath.Closed = true;
 
             Point2D startPoint = lastSubpath.GetStartPoint();
             MoveTo((float) startPoint.GetX(), (float) startPoint.GetY());
         }
 
-        private Subpath GetLastSubpath() {
-            return subpaths.Count > 0 ? subpaths[subpaths.Count - 1] : null;
+        private Subpath LastSubpath {
+            get { return subpaths.Count > 0 ? subpaths[subpaths.Count - 1] : null; }
         }
     }
 }

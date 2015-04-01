@@ -188,9 +188,15 @@ namespace System.util {
             return result;
         }
 
-        public static void AddAll<T>(ICollection<T> to, ICollection<T> from) {
+        public static void AddAll<T>(ICollection<T> to, IEnumerable<T> from) {
             foreach (T elem in from) {
                 to.Add(elem);
+            }
+        }
+
+        public static void AddAll<T>(Queue<T> to, IEnumerable<T> from) {
+            foreach (T elem in from) {
+                to.Enqueue(elem);
             }
         }
     }
