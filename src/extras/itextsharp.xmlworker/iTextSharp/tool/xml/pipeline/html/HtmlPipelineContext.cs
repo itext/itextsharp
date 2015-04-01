@@ -201,19 +201,13 @@ namespace iTextSharp.tool.xml.pipeline.html {
         }
 
         /**
-         * @return the image provider.
-         * @throws NoImageProviderException if there is no {@link IImageProvide}
+         * @return the image provider or null if there is no {@link IImageProvider}
          *
          */
 
         virtual public IImageProvider GetImageProvider()
         {
-            if (null == this.imageProvider)
-            {
-                throw new NoImageProviderException();
-            }
             return this.imageProvider;
-
         }
 
         /**

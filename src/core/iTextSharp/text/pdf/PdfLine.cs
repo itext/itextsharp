@@ -178,7 +178,7 @@ namespace iTextSharp.text.pdf {
 							width = 0;
                         } else {
                             chunk.TabStop = tabStop;
-                            if (tabStop.Align == TabStop.Alignment.LEFT) {
+                            if (!isRTL && tabStop.Align == TabStop.Alignment.LEFT) {
                                 width = originalWidth - tabStop.Position;
                                 tabStop = null;
                                 tabPosition = float.NaN;
@@ -617,7 +617,10 @@ namespace iTextSharp.text.pdf {
                 width = originalWidth - tabStopPosition - textWidth;
                 if (width < 0)
                     tabStopPosition += width;
-                tabStop.Position = tabStopPosition;
+                if (!isRTL)
+                    tabStop.Position = tabStopPosition;
+                else
+                    tabStop.Position = originalWidth - width - tabPosition;
                 tabStop = null;
                 tabPosition = float.NaN;
             }

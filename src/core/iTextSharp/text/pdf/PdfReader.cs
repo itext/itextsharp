@@ -1067,7 +1067,7 @@ namespace iTextSharp.text.pdf {
             if(catalog == null)
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("the.document.has.no.catalog.object"));
             rootPages = catalog.GetAsDict(PdfName.PAGES);
-            if(rootPages == null)
+            if(rootPages == null || !PdfName.PAGES.Equals(rootPages.Get(PdfName.TYPE)))
                 throw new InvalidPdfException(MessageLocalization.GetComposedMessage("the.document.has.no.page.root"));
 
             pageRefs = new PageRefs(this);
