@@ -77,6 +77,8 @@
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaPresentation.cs" />
     <Compile Include="iTextSharp\text\pdf\richmedia\RichMediaWindow.cs" />
     <Compile Include="iTextSharp\text\pdf\spatial\units\SpacialUnits.cs" />
+    <Compile Include="iTextSharp\text\pdf\util\PdfResourceCounter.cs" />
+    <Compile Include="iTextSharp\text\pdf\util\SmartPdfSplitter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

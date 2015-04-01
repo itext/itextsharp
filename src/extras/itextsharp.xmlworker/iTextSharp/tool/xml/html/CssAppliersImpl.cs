@@ -132,14 +132,7 @@ namespace iTextSharp.tool.xml.html {
 
         virtual public IElement Apply(IElement e, Tag t, HtmlPipelineContext ctx)
         {
-            try
-            {
-                return this.Apply(e, t, ctx, ctx, ctx.GetImageProvider());
-            }
-            catch (NoImageProviderException)
-            {
-                return this.Apply(e, t, ctx, ctx, null);
-            }
+            return this.Apply(e, t, ctx, ctx, ctx.GetImageProvider());
         }
 
         virtual public ChunkCssApplier GetChunkCssAplier()

@@ -394,6 +394,7 @@ namespace iTextSharp.text.pdf {
                     if (ck.IsAttribute(Chunk.TABSETTINGS))
                     {
                         lastSplit = currentChar;
+                        float currentWidth = width;
                         if (tabStop != null)
                         {
                             float tabStopPosition = tabStop.GetPosition(tabPosition, originalWidth - width, tabStopAnchorPosition);
@@ -413,7 +414,7 @@ namespace iTextSharp.text.pdf {
                             break;
                         }
                         ck.TabStop = tabStop;
-                        if (tabStop.Align == TabStop.Alignment.LEFT)
+                        if (!isRTL && tabStop.Align == TabStop.Alignment.LEFT)
                         {
                             width = originalWidth - tabStop.Position;
                             tabStop = null;
@@ -481,7 +482,10 @@ namespace iTextSharp.text.pdf {
                     tabStopPosition += width;
                     width = 0;
                 }
-                tabStop.Position = tabStopPosition;
+                if (!isRTL)
+                    tabStop.Position = tabStopPosition;
+                else 
+                    tabStop.Position = originalWidth - width - tabPosition;
             }
 
             if (currentChar >= totalTextLength) {

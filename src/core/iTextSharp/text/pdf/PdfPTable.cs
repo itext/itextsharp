@@ -399,7 +399,7 @@ namespace iTextSharp.text.pdf {
             SetWidths(columnWidth);
         }
 
-        /** Sets the percentage width of the table from the absolute column width.
+        /** Sets the percentage width of the table from the absolute column width.  Warning: Don't use this with setLockedWidth(true). These two settings don't mix.
         * @param columnWidth the absolute width of each column
         * @param pageSize    the page size
         * @throws DocumentException
@@ -1925,7 +1925,9 @@ namespace iTextSharp.text.pdf {
          */
         virtual public FittingRows GetFittingRows(float availableHeight, int startIdx) {
             LOGGER.Info(String.Format("GetFittingRows({0}, {1})", availableHeight, startIdx));
-            System.Diagnostics.Debug.Assert (GetRow(startIdx).GetCells()[0] != null); // top left cell of current page may not be null
+            if (startIdx > 0 && startIdx < rows.Count) {
+                System.Diagnostics.Debug.Assert(GetRow(startIdx).GetCells()[0] != null); // top left cell of current page may not be null
+            }
             int cols = NumberOfColumns;
             ColumnMeasurementState[] states = new ColumnMeasurementState[cols];
             for (int i = 0; i < cols; ++i) {
