@@ -261,7 +261,7 @@ namespace iTextSharp.text.pdf.intern
             } else if (obj1 is PdfArray) {
                 PdfArray array = (PdfArray) obj1;
                 if (array.Size > maxArrayLength) {
-                    throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("pdf.array.is.out.of.bounds"));
+                    throw new PdfAConformanceException(obj1, MessageLocalization.GetComposedMessage("pdf.array.exceeds.length.set.by.PDFA1.standard", array.Length.ToString()));
                 }
             } else if (obj1 is PdfDictionary) {
                 PdfDictionary dictionary = (PdfDictionary) obj1;
