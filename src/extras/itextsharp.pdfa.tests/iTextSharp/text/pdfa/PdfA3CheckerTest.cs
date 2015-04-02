@@ -210,6 +210,11 @@ namespace iTextSharp.text.pdfa {
         }
 
         [Test]
+        public void PdfObjectCheckTest() {
+            PdfA1CheckerTest.PdfObjectCheck(OUT + "pdfObjectCheckTest.pdf", PdfAConformanceLevel.PDF_A_3B, false);
+        }
+
+        [Test]
         public void BarcodesTest1() {
             Document document = new Document();
             PdfAWriter writer = PdfAWriter.GetInstance(document, new
