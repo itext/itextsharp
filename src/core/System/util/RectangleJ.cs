@@ -1,3 +1,5 @@
+using iTextSharp.awt.geom;
+
 namespace System.util {
     public class RectangleJ {
         public const int OUT_LEFT = 1;
@@ -131,6 +133,25 @@ namespace System.util {
 
         virtual public bool IsEmpty() {
             return width <= 0 || height <= 0;
+        }
+
+        public virtual bool Contains(Point2D point) {
+            return Contains(point.GetX(), point.GetY());
+        }
+
+        public virtual bool Contains(double x, double y) {
+            if (IsEmpty()) {
+                return false;
+            }
+
+            if (x < this.x || y < this.y) {
+                return false;
+            }
+
+            x -= this.x;
+            y -= this.y;
+
+            return x < width && y < height;
         }
     }
 }

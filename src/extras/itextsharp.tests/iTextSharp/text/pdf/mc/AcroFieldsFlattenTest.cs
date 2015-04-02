@@ -8,6 +8,7 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.mc;
 using iTextSharp.text.pdf.parser;
 using iTextSharp.text.xml;
+using Path = System.IO.Path;
 
 namespace itextsharp.tests.iTextSharp.text.pdf.mc {
     class AcroFieldsFlattenTest {
