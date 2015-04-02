@@ -128,10 +128,10 @@ namespace iTextSharp.tool.xml.html {
     virtual protected void ProcessParagraphItems(IWorkerContext ctx, Tag tag, IList<IElement> paragraphItems, IList<IElement> l) {
                 Paragraph p = new Paragraph();
         p.MultipliedLeading = 1.2f;
-        IElement lastElement = paragraphItems[paragraphItems.Count - 1];
-        if (lastElement is Chunk && Chunk.NEWLINE.Content.Equals(((Chunk)lastElement).Content)) {
-            paragraphItems.RemoveAt(paragraphItems.Count - 1);
-        }
+//        IElement lastElement = paragraphItems[paragraphItems.Count - 1];
+//        if (lastElement is Chunk && Chunk.NEWLINE.Content.Equals(((Chunk)lastElement).Content)) {
+//            paragraphItems.RemoveAt(paragraphItems.Count - 1);
+//        }
         IDictionary<String, String> css = tag.CSS;
         if (css.ContainsKey(CSS.Property.TAB_INTERVAL)) {
             AddTabIntervalContent(ctx, tag, paragraphItems, p, css[CSS.Property.TAB_INTERVAL]);

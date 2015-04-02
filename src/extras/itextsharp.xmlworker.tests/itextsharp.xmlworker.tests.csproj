@@ -435,6 +435,7 @@
     <Compile Include="iTextSharp\tool\xml\examples\html\List05Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\List06Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\P01Test.cs" />
+    <Compile Include="iTextSharp\tool\xml\examples\html\ParagraphNewlineTest.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Pre01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\S01Test.cs" />
     <Compile Include="iTextSharp\tool\xml\examples\html\Samp01Test.cs" />
