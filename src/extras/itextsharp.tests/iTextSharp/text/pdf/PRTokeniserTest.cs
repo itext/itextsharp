@@ -36,6 +36,14 @@ namespace itextsharp.tests.iTextSharp.text.pdf
             }
         }
 
+        private void CheckNumberValue(String data, String expectedValue) {
+            PRTokeniser tok = new PRTokeniser(new RandomAccessFileOrArray(GetBytes(data)));
+
+            tok.NextValidToken();
+            Assert.AreEqual(PRTokeniser.TokType.NUMBER, tok.TokenType, "Wrong type");
+            Assert.AreEqual(expectedValue, tok.StringValue, "Wrong multiple minus signs number handling");
+        }
+
         [Test]
         virtual public void TestOneNumber()
         {
@@ -59,6 +67,18 @@ namespace itextsharp.tests.iTextSharp.text.pdf
                     PRTokeniser.TokType.ENDOFFILE
             );
         }
+
+
+        [Test]
+        public void TestMultipleMinusSignsRealNumber() {
+            CheckNumberValue("----40.25", "-40.25");
+        }
+
+        [Test]
+        public void TestMultipleMinusSignsIntegerNumber() {
+            CheckNumberValue("--9", "0");
+        }
+
 
         [Test]
         virtual public void Test()
