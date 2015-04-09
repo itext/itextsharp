@@ -139,5 +139,19 @@ namespace iTextSharp.text.pdf.parser {
             // the second clause is for case when we have single point
             return segments.Count > 0 || closed;
         }
+
+        public virtual IList<Point2D> GetPiecewiseLinearApproximation() {
+            IList<Point2D> result = new List<Point2D>();
+
+            foreach (IShape segment in segments) {
+                if (segment is Line) {
+                    Util.AddAll(result, segment.GetBasePoints());
+                } else {
+                    Util.AddAll(result, ((BezierCurve) segment).GetPiecewiseLinearApproximation());
+                }
+            }
+
+            return result;
+        }
     }
 }
