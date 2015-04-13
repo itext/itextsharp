@@ -6,6 +6,7 @@ using iTextSharp.awt.geom;
 using iTextSharp.text;
 using iTextSharp.text.pdf.parser;
 using System.util;
+using iTextSharp.text.pdf.parser.clipper;
 
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
@@ -57,56 +58,99 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return new PdfCleanUpCoveredArea(transformedIntersection, imageRect.Equals(intersectionRect));
         }
 
-        // Current implementation is for completely covered line arts only.
-        protected internal virtual IList<Subpath> FilterSubpath(Subpath subpath, Matrix ctm, bool isContour) {
-            IList<Subpath> filteredSubpaths = new List<Subpath>();
-            RectangleJ rect = new RectangleJ(rectangle);
+        /**
+         * @param fillingRule If the subpath is contour, pass any value.
+         */
+        protected internal virtual Path FilterPath(Path path, Matrix ctm, Boolean isContour, int fillingRule) {
+            Point2D[] transfRectVertices = TransformPoints(ctm, false, GetVertices(rectangle));
+            PolyFillType fillType = PolyFillType.pftNonZero;
 
-            if (subpath.IsSinglePointClosed()) {
-                Point2D transformedStartPoint = TransformPoints(ctm, false, subpath.GetStartPoint())[0];
-
-                if (!ContainsAll(rect, transformedStartPoint)) {
-                    filteredSubpaths.Add(subpath);
-                }
-
-                return filteredSubpaths;
-            } else if (subpath.IsSinglePointOpen()) {
-                return filteredSubpaths;
+            if (fillingRule == PathPaintingRenderInfo.EVEN_ODD_RULE) {
+                fillType = PolyFillType.pftEvenOdd;
             }
 
-            Subpath newSubpath = new Subpath();
-            IList<IShape> subpathSegments = new List<IShape>(subpath.GetSegments());
+            Clipper clipper = new Clipper();
+            AddPath(clipper, path);
+            AddRect(clipper, transfRectVertices);
 
-            // Create the line which is implicitly added by PDF, when you use 'h' operator
-            if (subpath.Closed) {
-                IShape lastSegment = subpathSegments[subpathSegments.Count - 1];
-                IList<Point2D> segmentBasePoints = lastSegment.GetBasePoints();
-                subpathSegments.Add(new Line(segmentBasePoints[segmentBasePoints.Count - 1], subpath.GetStartPoint()));
-            }
+            PolyTree resultTree = new PolyTree();
+            clipper.Execute(ClipType.ctDifference, resultTree, fillType, PolyFillType.pftNonZero);
 
-            foreach (IShape segment in subpathSegments) {
-                Point2D[] transformedSegBasePoints = TransformPoints(ctm, false, segment.GetBasePoints());
+            return ConvertToPath(resultTree);
+        }
 
-                if (ContainsAll(rect, transformedSegBasePoints)) {
-                    if (!newSubpath.IsEmpty()) {
-                        filteredSubpaths.Add(newSubpath);
-                        newSubpath = new Subpath();
-                    }
-                } else {
-                    newSubpath.AddSegment(segment);
-
-                    // if it's filled area and we have got here, then it isn't completely covered
-                    if (!isContour) {
-                        break;
-                    }
+        private static void AddPath(Clipper clipper, Path path) {
+            foreach (Subpath subpath in path.Subpaths) {
+                if (!subpath.IsSinglePointClosed() && !subpath.IsSinglePointOpen()) {
+                    IList<Point2D> linearApproxPoints = subpath.GetPiecewiseLinearApproximation();
+                    clipper.AddPath(ConvertToIntPoints(linearApproxPoints), PolyType.ptSubject, subpath.Closed);
                 }
             }
+        }
 
-            if (!newSubpath.IsEmpty()) {
-                filteredSubpaths.Add( !isContour ? subpath : newSubpath );
+        private static void AddRect(Clipper clipper, Point2D[] rectVertices) {
+            clipper.AddPath(ConvertToIntPoints(new List<Point2D>(rectVertices)), PolyType.ptClip, true);
+        }
+
+        private static List<IntPoint> ConvertToIntPoints(IList<Point2D> points) {
+            List<IntPoint> convertedPoints = new List<IntPoint>(points.Count);
+
+            foreach (Point2D point in points) {
+                convertedPoints.Add(new IntPoint(PdfCleanUpProcessor.FloatMultiplier * point.GetX(), 
+                                                 PdfCleanUpProcessor.FloatMultiplier * point.GetY()));
             }
 
-            return filteredSubpaths;
+            return convertedPoints;
+        }
+
+        private static IList<Point2D> ConvertToFloatPoints(IList<IntPoint> points) {
+            IList<Point2D> convertedPoints = new List<Point2D>(points.Count);
+
+            foreach (IntPoint point in points) {
+                convertedPoints.Add(new Point2D.Double(point.X / PdfCleanUpProcessor.FloatMultiplier,
+                                                       point.Y / PdfCleanUpProcessor.FloatMultiplier));
+            }
+
+            return convertedPoints;
+        }
+
+        private static Path ConvertToPath(PolyTree result) {
+            Path path = new Path();
+            PolyNode node = result.GetFirst();
+
+            while (node != null) {
+                AddContour(path, node.Contour, !node.IsOpen);
+                node = node.GetNext();
+            }
+
+            return path;
+        }
+
+        private static void AddContour(Path path, List<IntPoint> contour, Boolean close) {
+            IList<Point2D> floatContour = ConvertToFloatPoints(contour);
+
+            Point2D point = floatContour[0];
+            path.MoveTo((float) point.GetX(), (float) point.GetY());
+
+            for (int i = 1; i < floatContour.Count; ++i) {
+                point = floatContour[i];
+                path.LineTo((float) point.GetX(), (float) point.GetY());
+            }
+
+            if (close) {
+                path.CloseSubpath();
+            }
+        }
+
+        private Point2D[] GetVertices(Rectangle rect) {
+            Point2D[] points = {
+                new Point2D.Double(rect.Left, rect.Bottom),
+                new Point2D.Double(rect.Right, rect.Bottom),
+                new Point2D.Double(rect.Right, rect.Top),
+                new Point2D.Double(rect.Left, rect.Top)
+            };
+
+            return points;
         }
 
 
