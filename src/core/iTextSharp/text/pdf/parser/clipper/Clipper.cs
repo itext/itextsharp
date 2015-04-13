@@ -70,7 +70,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
         public double X;
         public double Y;
 
-        public DoublePoint(double x = 0, double y = 0) {
+        public DoublePoint(double x, double y) {
             this.X = x;
             this.Y = y;
         }
@@ -128,6 +128,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
         internal JoinType m_jointype;
         internal EndType m_endtype;
         internal List<PolyNode> m_Childs = new List<PolyNode>();
+        internal bool isOpen;
 
         private bool IsHoleNode() {
             bool result = true;
@@ -182,7 +183,10 @@ namespace iTextSharp.text.pdf.parser.clipper {
             get { return IsHoleNode(); }
         }
 
-        public bool IsOpen { get; set; }
+        public bool IsOpen {
+            get { return isOpen; }
+            set { isOpen = value; }
+        }
     }
 
 
@@ -524,12 +528,13 @@ namespace iTextSharp.text.pdf.parser.clipper {
         internal List<List<TEdge>> m_edges = new List<List<TEdge>>();
         internal bool m_UseFullRange;
         internal bool m_HasOpenPaths;
+        internal bool preserveCollinear;
 
         //------------------------------------------------------------------------------
 
         public bool PreserveCollinear {
-            get;
-            set;
+            get { return preserveCollinear; }
+            set { preserveCollinear = value; }
         }
         //------------------------------------------------------------------------------
 
@@ -1141,12 +1146,18 @@ namespace iTextSharp.text.pdf.parser.clipper {
         private List<Join> m_Joins;
         private List<Join> m_GhostJoins;
         private bool m_UsingPolyTree;
+        private bool reverseSolution;
+        private bool strictlySimple;
 #if use_xyz
       public delegate void ZFillCallback(IntPoint bot1, IntPoint top1, 
         IntPoint bot2, IntPoint top2, ref IntPoint pt);
       public ZFillCallback ZFillFunction { get; set; }
 #endif
-        public Clipper(int InitOptions = 0)
+
+        public Clipper(): this(0) {
+        }
+
+        public Clipper(int InitOptions)
             : base() //constructor
         {
             m_Scanbeam = null;
@@ -1237,25 +1248,33 @@ namespace iTextSharp.text.pdf.parser.clipper {
         //------------------------------------------------------------------------------
 
         public bool ReverseSolution {
-            get;
-            set;
+            get { return reverseSolution; }
+            set { reverseSolution = value; }
         }
         //------------------------------------------------------------------------------
 
         public bool StrictlySimple {
-            get;
-            set;
+            get { return strictlySimple; }
+            set { strictlySimple = value; }
         }
         //------------------------------------------------------------------------------
 
-        public bool Execute(ClipType clipType, Paths solution,
-            PolyFillType FillType = PolyFillType.pftEvenOdd) {
+        public bool Execute(ClipType clipType, Paths solution) {
+            return Execute(clipType, solution, PolyFillType.pftEvenOdd);
+        }
+        //------------------------------------------------------------------------------
+
+        public bool Execute(ClipType clipType, Paths solution, PolyFillType FillType) {
             return Execute(clipType, solution, FillType, FillType);
         }
         //------------------------------------------------------------------------------
 
-        public bool Execute(ClipType clipType, PolyTree polytree,
-            PolyFillType FillType = PolyFillType.pftEvenOdd) {
+        public bool Execute(ClipType clipType, PolyTree polytree) {
+            return Execute(clipType, polytree, PolyFillType.pftEvenOdd);
+        }
+        //------------------------------------------------------------------------------
+
+        public bool Execute(ClipType clipType, PolyTree polytree, PolyFillType FillType) {
             return Execute(clipType, polytree, FillType, FillType);
         }
         //------------------------------------------------------------------------------
@@ -3026,7 +3045,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
         //------------------------------------------------------------------------------
 
         public static void ReversePaths(Paths polys) {
-            foreach (var poly in polys) { poly.Reverse(); }
+            foreach (List<IntPoint> poly in polys) { poly.Reverse(); }
         }
         //------------------------------------------------------------------------------
 
@@ -3762,9 +3781,13 @@ namespace iTextSharp.text.pdf.parser.clipper {
         // SimplifyPolygon functions ...
         // Convert self-intersecting polygons into simple polygons
         //------------------------------------------------------------------------------
+       
+        public static Paths SimplifyPolygon(Path poly) {
+            return SimplifyPolygon(poly, PolyFillType.pftEvenOdd);
+        }
+        //------------------------------------------------------------------------------
 
-        public static Paths SimplifyPolygon(Path poly,
-              PolyFillType fillType = PolyFillType.pftEvenOdd) {
+        public static Paths SimplifyPolygon(Path poly, PolyFillType fillType) {
             Paths result = new Paths();
             Clipper c = new Clipper();
             c.StrictlySimple = true;
@@ -3774,8 +3797,12 @@ namespace iTextSharp.text.pdf.parser.clipper {
         }
         //------------------------------------------------------------------------------
 
-        public static Paths SimplifyPolygons(Paths polys,
-            PolyFillType fillType = PolyFillType.pftEvenOdd) {
+        public static Paths SimplifyPolygons(Paths polys) {
+            return SimplifyPolygons(polys, PolyFillType.pftEvenOdd);
+        }
+        //------------------------------------------------------------------------------
+
+        public static Paths SimplifyPolygons(Paths polys, PolyFillType fillType) {
             Paths result = new Paths();
             Clipper c = new Clipper();
             c.StrictlySimple = true;
@@ -3846,7 +3873,12 @@ namespace iTextSharp.text.pdf.parser.clipper {
         }
         //------------------------------------------------------------------------------
 
-        public static Path CleanPolygon(Path path, double distance = 1.415) {
+        public static Path CleanPolygon(Path path) {
+            return CleanPolygon(path, 1.415);
+        }
+        //------------------------------------------------------------------------------
+
+        public static Path CleanPolygon(Path path, double distance) {
             //distance = proximity in units/pixels below which vertices will be stripped. 
             //Default ~= sqrt(2) so when adjacent vertices or semi-adjacent vertices have 
             //both x & y coords within 1 unit, then the second vertex will be stripped.
@@ -3898,8 +3930,12 @@ namespace iTextSharp.text.pdf.parser.clipper {
         }
         //------------------------------------------------------------------------------
 
-        public static Paths CleanPolygons(Paths polys,
-            double distance = 1.415) {
+        public static Paths CleanPolygons(Paths polys) {
+            return CleanPolygons(polys, 1.415);
+        }
+        //------------------------------------------------------------------------------
+
+        public static Paths CleanPolygons(Paths polys, double distance) {
             Paths result = new Paths(polys.Count);
             for (int i = 0; i < polys.Count; i++)
                 result.Add(CleanPolygon(polys[i], distance));
@@ -4042,18 +4078,28 @@ namespace iTextSharp.text.pdf.parser.clipper {
         private List<DoublePoint> m_normals = new List<DoublePoint>();
         private double m_delta, m_sinA, m_sin, m_cos;
         private double m_miterLim, m_StepsPerRad;
+        private double arcTolerance;
+        private double miterLimit;
 
         private IntPoint m_lowest;
         private PolyNode m_polyNodes = new PolyNode();
 
-        public double ArcTolerance { get; set; }
-        public double MiterLimit { get; set; }
+        public double ArcTolerance {
+            get { return arcTolerance; }
+            set { arcTolerance = value; }
+        }
+        public double MiterLimit {
+            get { return miterLimit; }
+            set { miterLimit = value; }
+        }
 
         private const double two_pi = Math.PI * 2;
         private const double def_arc_tolerance = 0.25;
 
-        public ClipperOffset(
-          double miterLimit = 2.0, double arcTolerance = def_arc_tolerance) {
+        public ClipperOffset(): this(2.0, def_arc_tolerance) {
+        }
+
+        public ClipperOffset(double miterLimit, double arcTolerance) {
             MiterLimit = miterLimit;
             ArcTolerance = arcTolerance;
             m_lowest.X = -1;

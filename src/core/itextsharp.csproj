@@ -4139,6 +4139,7 @@
     <Compile Include="iTextSharp\text\pdf\FilterHandlers.cs" />
     <Compile Include="iTextSharp\text\pdf\NumberArray.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\BezierCurve.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\clipper\Clipper.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\GlyphRenderListener.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\GlyphTextRenderListener.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\IExtRenderListener.cs" />
