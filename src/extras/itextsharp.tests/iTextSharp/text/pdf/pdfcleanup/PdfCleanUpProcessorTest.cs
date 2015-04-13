@@ -55,7 +55,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf.pdfcleanup {
                 new object[] {"multiUseImage.pdf", "multiUseImage.pdf", "cmp_multiUseImage.pdf", cleanUpLocations2},
                 new object[] {"smaskImage.pdf", "smaskImage.pdf", "cmp_smaskImage.pdf", cleanUpLocations2},
                 new object[] {"rotatedImg.pdf", "rotatedImg.pdf", "cmp_rotatedImg.pdf", cleanUpLocations2},
-                new object[]{"lineArtsCompletely.pdf", "lineArtsCompletely.pdf", "cmp_LineArtsCompletely.pdf", null}
+                new object[]{"lineArtsCompletely.pdf", "lineArtsCompletely.pdf", "cmp_LineArtsCompletely.pdf", null},
+                new object[]{"lineArtsPartially.pdf", "lineArtsPartially.pdf", "cmp_lineArtsPartially.pdf", null}
             };
         }
 
