@@ -1,10 +1,10 @@
 ﻿/*******************************************************************************
 *                                                                              *
 * Author    :  Angus Johnson                                                   *
-* Version   :  6.2.1                                                           *
-* Date      :  31 October 2014                                                 *
+* Version   :  6.2.9                                                           *
+* Date      :  16 February 2015                                                *
 * Website   :  http://www.angusj.com                                           *
-* Copyright :  Angus Johnson 2010-2014                                         *
+* Copyright :  Angus Johnson 2010-2015                                         *
 *                                                                              *
 * License:                                                                     *
 * Use, modification & distribution is subject to Boost Software License Ver 1. *
@@ -47,9 +47,6 @@
 
 //use_lines: Enables open path clipping. Adds a very minor cost to performance.
 #define use_lines
-
-//use_deprecated: Enables temporary support for the obsolete functions
-//#define use_deprecated
 
 
 using System;
@@ -95,9 +92,8 @@ namespace iTextSharp.text.pdf.parser.clipper {
     public class PolyTree : PolyNode {
         internal List<PolyNode> m_AllPolys = new List<PolyNode>();
 
-        ~PolyTree() {
-            Clear();
-        }
+        //The GC probably handles this cleanup more efficiently ...
+        //~PolyTree(){Clear();}
 
         public void Clear() {
             for (int i = 0; i < m_AllPolys.Count; i++)
@@ -479,6 +475,12 @@ namespace iTextSharp.text.pdf.parser.clipper {
         internal Scanbeam Next;
     };
 
+    internal class Maxima {
+        internal cInt X;
+        internal Maxima Next;
+        internal Maxima Prev;
+    };
+
     internal class OutRec {
         internal int Idx;
         internal bool IsHole;
@@ -756,14 +758,12 @@ namespace iTextSharp.text.pdf.parser.clipper {
                     EStart = E.Prev;
                 else
                     EStart = E.Next;
-                if (EStart.OutIdx != Skip) {
-                    if (EStart.Dx == horizontal) //ie an adjoining horizontal skip edge
-          {
-                        if (EStart.Bot.X != E.Bot.X && EStart.Top.X != E.Bot.X)
-                            ReverseHorizontal(E);
-                    } else if (EStart.Bot.X != E.Bot.X)
+                if (EStart.Dx == horizontal) //ie an adjoining horizontal skip edge
+        {
+                    if (EStart.Bot.X != E.Bot.X && EStart.Top.X != E.Bot.X)
                         ReverseHorizontal(E);
-                }
+                } else if (EStart.Bot.X != E.Bot.X)
+                    ReverseHorizontal(E);
             }
 
             EStart = E;
@@ -777,10 +777,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
                     Horz = Result;
                     while (Horz.Prev.Dx == horizontal)
                         Horz = Horz.Prev;
-                    if (Horz.Prev.Top.X == Result.Next.Top.X) {
-                        if (!LeftBoundIsForward)
-                            Result = Horz.Prev;
-                    } else if (Horz.Prev.Top.X > Result.Next.Top.X)
+                    if (Horz.Prev.Top.X > Result.Next.Top.X)
                         Result = Horz.Prev;
                 }
                 while (E != Result) {
@@ -799,10 +796,8 @@ namespace iTextSharp.text.pdf.parser.clipper {
                     Horz = Result;
                     while (Horz.Next.Dx == horizontal)
                         Horz = Horz.Next;
-                    if (Horz.Next.Top.X == Result.Prev.Top.X) {
-                        if (!LeftBoundIsForward)
-                            Result = Horz.Next;
-                    } else if (Horz.Next.Top.X > Result.Prev.Top.X)
+                    if (Horz.Next.Top.X == Result.Prev.Top.X ||
+                        Horz.Next.Top.X > Result.Prev.Top.X)
                         Result = Horz.Next;
                 }
 
@@ -919,8 +914,6 @@ namespace iTextSharp.text.pdf.parser.clipper {
                 if (Closed)
                     return false;
                 E.Prev.OutIdx = Skip;
-                if (E.Prev.Bot.X < E.Prev.Top.X)
-                    ReverseHorizontal(E.Prev);
                 LocalMinima locMin = new LocalMinima();
                 locMin.Next = null;
                 locMin.Y = E.Bot.Y;
@@ -928,10 +921,12 @@ namespace iTextSharp.text.pdf.parser.clipper {
                 locMin.RightBound = E;
                 locMin.RightBound.Side = EdgeSide.esRight;
                 locMin.RightBound.WindDelta = 0;
-                while (E.Next.OutIdx != Skip) {
-                    E.NextInLML = E.Next;
+                for (; ; ) {
                     if (E.Bot.X != E.Prev.Top.X)
                         ReverseHorizontal(E);
+                    if (E.Next.OutIdx == Skip)
+                        break;
+                    E.NextInLML = E.Next;
                     E = E.Next;
                 }
                 InsertLocalMinima(locMin);
@@ -1135,6 +1130,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
         private List<OutRec> m_PolyOuts;
         private ClipType m_ClipType;
         private Scanbeam m_Scanbeam;
+        private Maxima m_Maxima;
         private TEdge m_ActiveEdges;
         private TEdge m_SortedEdges;
         private List<IntersectNode> m_IntersectList;
@@ -1154,6 +1150,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
             : base() //constructor
         {
             m_Scanbeam = null;
+            m_Maxima = null;
             m_ActiveEdges = null;
             m_SortedEdges = null;
             m_IntersectList = new List<IntersectNode>();
@@ -1172,41 +1169,8 @@ namespace iTextSharp.text.pdf.parser.clipper {
         }
         //------------------------------------------------------------------------------
 
-        void DisposeScanbeamList() {
-            while (m_Scanbeam != null) {
-                Scanbeam sb2 = m_Scanbeam.Next;
-                m_Scanbeam = null;
-                m_Scanbeam = sb2;
-            }
-        }
-        //------------------------------------------------------------------------------
-
-        protected override void Reset() {
-            base.Reset();
-            m_Scanbeam = null;
-            m_ActiveEdges = null;
-            m_SortedEdges = null;
-            LocalMinima lm = m_MinimaList;
-            while (lm != null) {
-                InsertScanbeam(lm.Y);
-                lm = lm.Next;
-            }
-        }
-        //------------------------------------------------------------------------------
-
-        public bool ReverseSolution {
-            get;
-            set;
-        }
-        //------------------------------------------------------------------------------
-
-        public bool StrictlySimple {
-            get;
-            set;
-        }
-        //------------------------------------------------------------------------------
-
         private void InsertScanbeam(cInt Y) {
+            //single-linked list: sorted descending, ignoring dups.
             if (m_Scanbeam == null) {
                 m_Scanbeam = new Scanbeam();
                 m_Scanbeam.Next = null;
@@ -1230,13 +1194,79 @@ namespace iTextSharp.text.pdf.parser.clipper {
         }
         //------------------------------------------------------------------------------
 
+        private void InsertMaxima(cInt X) {
+            //double-linked list: sorted ascending, ignoring dups.
+            Maxima newMax = new Maxima();
+            newMax.X = X;
+            if (m_Maxima == null) {
+                m_Maxima = newMax;
+                m_Maxima.Next = null;
+                m_Maxima.Prev = null;
+            } else if (X < m_Maxima.X) {
+                newMax.Next = m_Maxima;
+                newMax.Prev = null;
+                m_Maxima = newMax;
+            } else {
+                Maxima m = m_Maxima;
+                while (m.Next != null && (X >= m.Next.X))
+                    m = m.Next;
+                if (X == m.X)
+                    return; //ie ignores duplicates (& CG to clean up newMax)
+                //insert newMax between m and m.Next ...
+                newMax.Next = m.Next;
+                newMax.Prev = m;
+                if (m.Next != null)
+                    m.Next.Prev = newMax;
+                m.Next = newMax;
+            }
+        }
+        //------------------------------------------------------------------------------
+
+        protected override void Reset() {
+            base.Reset();
+            m_Scanbeam = null;
+            m_Maxima = null;
+            m_ActiveEdges = null;
+            m_SortedEdges = null;
+            LocalMinima lm = m_MinimaList;
+            while (lm != null) {
+                InsertScanbeam(lm.Y);
+                lm = lm.Next;
+            }
+        }
+        //------------------------------------------------------------------------------
+
+        public bool ReverseSolution {
+            get;
+            set;
+        }
+        //------------------------------------------------------------------------------
+
+        public bool StrictlySimple {
+            get;
+            set;
+        }
+        //------------------------------------------------------------------------------
+
+        public bool Execute(ClipType clipType, Paths solution,
+            PolyFillType FillType = PolyFillType.pftEvenOdd) {
+            return Execute(clipType, solution, FillType, FillType);
+        }
+        //------------------------------------------------------------------------------
+
+        public bool Execute(ClipType clipType, PolyTree polytree,
+            PolyFillType FillType = PolyFillType.pftEvenOdd) {
+            return Execute(clipType, polytree, FillType, FillType);
+        }
+        //------------------------------------------------------------------------------
+
         public bool Execute(ClipType clipType, Paths solution,
             PolyFillType subjFillType, PolyFillType clipFillType) {
             if (m_ExecuteLocked)
                 return false;
             if (m_HasOpenPaths)
                 throw
-                    new ClipperException("Error: PolyTree struct is need for open path clipping.");
+                    new ClipperException("Error: PolyTree struct is needed for open path clipping.");
 
             m_ExecuteLocked = true;
             solution.Clear();
@@ -1281,18 +1311,6 @@ namespace iTextSharp.text.pdf.parser.clipper {
         }
         //------------------------------------------------------------------------------
 
-        public bool Execute(ClipType clipType, Paths solution) {
-            return Execute(clipType, solution,
-                PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
-        }
-        //------------------------------------------------------------------------------
-
-        public bool Execute(ClipType clipType, PolyTree polytree) {
-            return Execute(clipType, polytree,
-                PolyFillType.pftEvenOdd, PolyFillType.pftEvenOdd);
-        }
-        //------------------------------------------------------------------------------
-
         internal void FixHoleLinkage(OutRec outRec) {
             //skip if an outermost polygon or
             //already already points to the correct FirstLeft ...
@@ -1317,8 +1335,8 @@ namespace iTextSharp.text.pdf.parser.clipper {
                 cInt botY = PopScanbeam();
                 do {
                     InsertLocalMinimaIntoAEL(botY);
+                    ProcessHorizontals();
                     m_GhostJoins.Clear();
-                    ProcessHorizontals(false);
                     if (m_Scanbeam == null)
                         break;
                     cInt topY = PopScanbeam();
@@ -1341,7 +1359,11 @@ namespace iTextSharp.text.pdf.parser.clipper {
 
                 for (int i = 0; i < m_PolyOuts.Count; i++) {
                     OutRec outRec = m_PolyOuts[i];
-                    if (outRec.Pts != null && !outRec.IsOpen)
+                    if (outRec.Pts == null)
+                        continue;
+                    else if (outRec.IsOpen)
+                        FixupOutPolyline(outRec);
+                    else
                         FixupOutPolygon(outRec);
                 }
 
@@ -1909,7 +1931,6 @@ namespace iTextSharp.text.pdf.parser.clipper {
         //------------------------------------------------------------------------------
 
         private OutPt AddOutPt(TEdge e, IntPoint pt) {
-            bool ToFront = (e.Side == EdgeSide.esLeft);
             if (e.OutIdx < 0) {
                 OutRec outRec = CreateOutRec();
                 outRec.IsOpen = (e.WindDelta == 0);
@@ -1927,6 +1948,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
                 OutRec outRec = m_PolyOuts[e.OutIdx];
                 //OutRec.Pts is the 'Left-most' point & OutRec.Pts.Prev is the 'Right-most'
                 OutPt op = outRec.Pts;
+                bool ToFront = (e.Side == EdgeSide.esLeft);
                 if (ToFront && pt == op.Pt)
                     return op;
                 else if (!ToFront && pt == op.Prev.Pt)
@@ -1943,6 +1965,15 @@ namespace iTextSharp.text.pdf.parser.clipper {
                     outRec.Pts = newOp;
                 return newOp;
             }
+        }
+        //------------------------------------------------------------------------------
+
+        private OutPt GetLastOutPt(TEdge e) {
+            OutRec outRec = m_PolyOuts[e.OutIdx];
+            if (e.Side == EdgeSide.esLeft)
+                return outRec.Pts;
+            else
+                return outRec.Pts.Prev;
         }
         //------------------------------------------------------------------------------
 
@@ -2451,11 +2482,11 @@ namespace iTextSharp.text.pdf.parser.clipper {
         }
         //------------------------------------------------------------------------------
 
-        private void ProcessHorizontals(bool isTopOfScanbeam) {
+        private void ProcessHorizontals() {
             TEdge horzEdge = m_SortedEdges;
             while (horzEdge != null) {
                 DeleteFromSEL(horzEdge);
-                ProcessHorizontal(horzEdge, isTopOfScanbeam);
+                ProcessHorizontal(horzEdge);
                 horzEdge = m_SortedEdges;
             }
         }
@@ -2474,9 +2505,10 @@ namespace iTextSharp.text.pdf.parser.clipper {
         }
         //------------------------------------------------------------------------
 
-        private void ProcessHorizontal(TEdge horzEdge, bool isTopOfScanbeam) {
+        private void ProcessHorizontal(TEdge horzEdge) {
             Direction dir;
             cInt horzLeft, horzRight;
+            bool IsOpen = horzEdge.OutIdx >= 0 && m_PolyOuts[horzEdge.OutIdx].IsOpen;
 
             GetHorzDirection(horzEdge, out dir, out horzLeft, out horzRight);
 
@@ -2486,69 +2518,125 @@ namespace iTextSharp.text.pdf.parser.clipper {
             if (eLastHorz.NextInLML == null)
                 eMaxPair = GetMaximaPair(eLastHorz);
 
-            for (; ; ) {
+            Maxima currMax = m_Maxima;
+            if (currMax != null) {
+                //get the first maxima in range (X) ...
+                if (dir == Direction.dLeftToRight) {
+                    while (currMax != null && currMax.X <= horzEdge.Bot.X)
+                        currMax = currMax.Next;
+                    if (currMax != null && currMax.X >= eLastHorz.Top.X)
+                        currMax = null;
+                } else {
+                    while (currMax.Next != null && currMax.Next.X < horzEdge.Bot.X)
+                        currMax = currMax.Next;
+                    if (currMax.X <= eLastHorz.Top.X)
+                        currMax = null;
+                }
+            }
+
+            OutPt op1 = null;
+            for (; ; ) //loop through consec. horizontal edges
+        {
                 bool IsLastHorz = (horzEdge == eLastHorz);
                 TEdge e = GetNextInAEL(horzEdge, dir);
                 while (e != null) {
-                    //Break if we've got to the end of an intermediate horizontal edge ...
+
+                    //this code block inserts extra coords into horizontal edges (in output
+                    //polygons) whereever maxima touch these horizontal edges. This helps
+                    //'simplifying' polygons (ie if the Simplify property is set).
+                    if (currMax != null) {
+                        if (dir == Direction.dLeftToRight) {
+                            while (currMax != null && currMax.X < e.Curr.X) {
+                                if (horzEdge.OutIdx >= 0 && !IsOpen)
+                                    AddOutPt(horzEdge, new IntPoint(currMax.X, horzEdge.Bot.Y));
+                                currMax = currMax.Next;
+                            }
+                        } else {
+                            while (currMax != null && currMax.X > e.Curr.X) {
+                                if (horzEdge.OutIdx >= 0 && !IsOpen)
+                                    AddOutPt(horzEdge, new IntPoint(currMax.X, horzEdge.Bot.Y));
+                                currMax = currMax.Prev;
+                            }
+                        }
+                    };
+
+                    if ((dir == Direction.dLeftToRight && e.Curr.X > horzRight) ||
+                      (dir == Direction.dRightToLeft && e.Curr.X < horzLeft))
+                        break;
+
+                    //Also break if we've got to the end of an intermediate horizontal edge ...
                     //nb: Smaller Dx's are to the right of larger Dx's ABOVE the horizontal.
                     if (e.Curr.X == horzEdge.Top.X && horzEdge.NextInLML != null &&
                       e.Dx < horzEdge.NextInLML.Dx)
                         break;
 
-                    TEdge eNext = GetNextInAEL(e, dir); //saves eNext for later
-
-                    if ((dir == Direction.dLeftToRight && e.Curr.X <= horzRight) ||
-                      (dir == Direction.dRightToLeft && e.Curr.X >= horzLeft)) {
-                        //so far we're still in range of the horizontal Edge  but make sure
-                        //we're at the last of consec. horizontals when matching with eMaxPair
-                        if (e == eMaxPair && IsLastHorz) {
-                            if (horzEdge.OutIdx >= 0) {
-                                OutPt op1 = AddOutPt(horzEdge, horzEdge.Top);
-                                TEdge eNextHorz = m_SortedEdges;
-                                while (eNextHorz != null) {
-                                    if (eNextHorz.OutIdx >= 0 &&
-                                      HorzSegmentsOverlap(horzEdge.Bot.X,
-                                      horzEdge.Top.X, eNextHorz.Bot.X, eNextHorz.Top.X)) {
-                                        OutPt op2 = AddOutPt(eNextHorz, eNextHorz.Bot);
-                                        AddJoin(op2, op1, eNextHorz.Top);
-                                    }
-                                    eNextHorz = eNextHorz.NextInSEL;
-                                }
-                                AddGhostJoin(op1, horzEdge.Bot);
-                                AddLocalMaxPoly(horzEdge, eMaxPair, horzEdge.Top);
+                    if (horzEdge.OutIdx >= 0 && !IsOpen)  //note: may be done multiple times
+              {
+                        op1 = AddOutPt(horzEdge, e.Curr);
+                        TEdge eNextHorz = m_SortedEdges;
+                        while (eNextHorz != null) {
+                            if (eNextHorz.OutIdx >= 0 &&
+                              HorzSegmentsOverlap(horzEdge.Bot.X,
+                              horzEdge.Top.X, eNextHorz.Bot.X, eNextHorz.Top.X)) {
+                                OutPt op2 = GetLastOutPt(eNextHorz);
+                                AddJoin(op2, op1, eNextHorz.Top);
                             }
-                            DeleteFromAEL(horzEdge);
-                            DeleteFromAEL(eMaxPair);
-                            return;
-                        } else if (dir == Direction.dLeftToRight) {
-                            IntPoint Pt = new IntPoint(e.Curr.X, horzEdge.Curr.Y);
-                            IntersectEdges(horzEdge, e, Pt);
-                        } else {
-                            IntPoint Pt = new IntPoint(e.Curr.X, horzEdge.Curr.Y);
-                            IntersectEdges(e, horzEdge, Pt);
+                            eNextHorz = eNextHorz.NextInSEL;
                         }
-                        SwapPositionsInAEL(horzEdge, e);
-                    } else if ((dir == Direction.dLeftToRight && e.Curr.X >= horzRight) ||
-                        (dir == Direction.dRightToLeft && e.Curr.X <= horzLeft))
-                        break;
-                    e = eNext;
-                } //end while
+                        AddGhostJoin(op1, horzEdge.Bot);
+                    }
 
-                if (horzEdge.NextInLML != null && IsHorizontal(horzEdge.NextInLML)) {
-                    UpdateEdgeIntoAEL(ref horzEdge);
-                    if (horzEdge.OutIdx >= 0)
-                        AddOutPt(horzEdge, horzEdge.Bot);
-                    GetHorzDirection(horzEdge, out dir, out horzLeft, out horzRight);
-                } else
+                    //OK, so far we're still in range of the horizontal Edge  but make sure
+                    //we're at the last of consec. horizontals when matching with eMaxPair
+                    if (e == eMaxPair && IsLastHorz) {
+                        if (horzEdge.OutIdx >= 0)
+                            AddLocalMaxPoly(horzEdge, eMaxPair, horzEdge.Top);
+                        DeleteFromAEL(horzEdge);
+                        DeleteFromAEL(eMaxPair);
+                        return;
+                    }
+
+                    if (dir == Direction.dLeftToRight) {
+                        IntPoint Pt = new IntPoint(e.Curr.X, horzEdge.Curr.Y);
+                        IntersectEdges(horzEdge, e, Pt);
+                    } else {
+                        IntPoint Pt = new IntPoint(e.Curr.X, horzEdge.Curr.Y);
+                        IntersectEdges(e, horzEdge, Pt);
+                    }
+                    TEdge eNext = GetNextInAEL(e, dir);
+                    SwapPositionsInAEL(horzEdge, e);
+                    e = eNext;
+                } //end while(e != null)
+
+                //Break out of loop if HorzEdge.NextInLML is not also horizontal ...
+                if (horzEdge.NextInLML == null || !IsHorizontal(horzEdge.NextInLML))
                     break;
+
+                UpdateEdgeIntoAEL(ref horzEdge);
+                if (horzEdge.OutIdx >= 0)
+                    AddOutPt(horzEdge, horzEdge.Bot);
+                GetHorzDirection(horzEdge, out dir, out horzLeft, out horzRight);
+
             } //end for (;;)
+
+            if (horzEdge.OutIdx >= 0 && op1 == null) {
+                op1 = GetLastOutPt(horzEdge);
+                TEdge eNextHorz = m_SortedEdges;
+                while (eNextHorz != null) {
+                    if (eNextHorz.OutIdx >= 0 &&
+                      HorzSegmentsOverlap(horzEdge.Bot.X,
+                      horzEdge.Top.X, eNextHorz.Bot.X, eNextHorz.Top.X)) {
+                        OutPt op2 = GetLastOutPt(eNextHorz);
+                        AddJoin(op2, op1, eNextHorz.Top);
+                    }
+                    eNextHorz = eNextHorz.NextInSEL;
+                }
+                AddGhostJoin(op1, horzEdge.Top);
+            }
 
             if (horzEdge.NextInLML != null) {
                 if (horzEdge.OutIdx >= 0) {
-                    OutPt op1 = AddOutPt(horzEdge, horzEdge.Top);
-                    if (isTopOfScanbeam)
-                        AddGhostJoin(op1, horzEdge.Bot);
+                    op1 = AddOutPt(horzEdge, horzEdge.Top);
 
                     UpdateEdgeIntoAEL(ref horzEdge);
                     if (horzEdge.WindDelta == 0)
@@ -2814,6 +2902,8 @@ namespace iTextSharp.text.pdf.parser.clipper {
                 }
 
                 if (IsMaximaEdge) {
+                    if (StrictlySimple)
+                        InsertMaxima(e.Top.X);
                     TEdge ePrev = e.PrevInAEL;
                     DoMaxima(e);
                     if (ePrev == null)
@@ -2832,6 +2922,8 @@ namespace iTextSharp.text.pdf.parser.clipper {
                         e.Curr.Y = topY;
                     }
 
+                    //When StrictlySimple and 'e' is being touched by another edge, then
+                    //make sure both edges have a vertex here ...
                     if (StrictlySimple) {
                         TEdge ePrev = e.PrevInAEL;
                         if ((e.OutIdx >= 0) && (e.WindDelta != 0) && ePrev != null &&
@@ -2852,7 +2944,8 @@ namespace iTextSharp.text.pdf.parser.clipper {
             }
 
             //3. Process horizontals at the Top of the scanbeam ...
-            ProcessHorizontals(true);
+            ProcessHorizontals();
+            m_Maxima = null;
 
             //4. Promote intermediate vertices ...
             e = m_ActiveEdges;
@@ -3018,12 +3111,32 @@ namespace iTextSharp.text.pdf.parser.clipper {
         }
         //------------------------------------------------------------------------------
 
+        private void FixupOutPolyline(OutRec outrec) {
+            OutPt pp = outrec.Pts;
+            OutPt lastPP = pp.Prev;
+            while (pp != lastPP) {
+                pp = pp.Next;
+                if (pp.Pt == pp.Prev.Pt) {
+                    if (pp == lastPP)
+                        lastPP = pp.Prev;
+                    OutPt tmpPP = pp.Prev;
+                    tmpPP.Next = pp.Next;
+                    pp.Next.Prev = tmpPP;
+                    pp = tmpPP;
+                }
+            }
+            if (pp == pp.Prev)
+                outrec.Pts = null;
+        }
+        //------------------------------------------------------------------------------
+
         private void FixupOutPolygon(OutRec outRec) {
             //FixupOutPolygon() - removes duplicate points and simplifies consecutive
             //parallel edges by removing the middle vertex.
             OutPt lastOK = null;
             outRec.BottomPt = null;
             OutPt pp = outRec.Pts;
+            bool preserveCol = PreserveCollinear || StrictlySimple;
             for (; ; ) {
                 if (pp.Prev == pp || pp.Prev == pp.Next) {
                     outRec.Pts = null;
@@ -3032,7 +3145,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
                 //test for duplicate points and collinear edges ...
                 if ((pp.Pt == pp.Next.Pt) || (pp.Pt == pp.Prev.Pt) ||
                   (SlopesEqual(pp.Prev.Pt, pp.Pt, pp.Next.Pt, m_UseFullRange) &&
-                  (!PreserveCollinear || !Pt2IsBetweenPt1AndPt3(pp.Prev.Pt, pp.Pt, pp.Next.Pt)))) {
+                  (!preserveCol || !Pt2IsBetweenPt1AndPt3(pp.Prev.Pt, pp.Pt, pp.Next.Pt)))) {
                     lastOK = null;
                     pp.Prev.Next = pp.Next;
                     pp.Next.Prev = pp.Prev;
@@ -3164,7 +3277,7 @@ namespace iTextSharp.text.pdf.parser.clipper {
             OutPt op2 = j.OutPt2, op2b;
 
             //There are 3 kinds of joins for output polygons ...
-            //1. Horizontal joins where Join.OutPt1 & Join.OutPt2 are a vertices anywhere
+            //1. Horizontal joins where Join.OutPt1 & Join.OutPt2 are vertices anywhere
             //along (horizontal) collinear edges (& Join.OffPt is on the same horizontal).
             //2. Non-horizontal joins where Join.OutPt1 & Join.OutPt2 are at the same
             //location at the Bottom of the overlapping segment (& Join.OffPt is above).
@@ -3359,10 +3472,10 @@ namespace iTextSharp.text.pdf.parser.clipper {
         }
         //------------------------------------------------------------------------------
 
+        //See "The Point in Polygon Problem for Arbitrary Polygons" by Hormann & Agathos
+        //http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.88.5498&rep=rep1&type=pdf
         private static int PointInPolygon(IntPoint pt, OutPt op) {
             //returns 0 if false, +1 if true, -1 if pt ON polygon boundary
-            //See "The Point in Polygon Problem for Arbitrary Polygons" by Hormann & Agathos
-            //http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.88.5498&rep=rep1&type=pdf
             int result = 0;
             OutPt startOp = op;
             cInt ptx = pt.X, pty = pt.Y;
@@ -3456,6 +3569,8 @@ namespace iTextSharp.text.pdf.parser.clipper {
                 OutRec outRec2 = GetOutRec(join.OutPt2.Idx);
 
                 if (outRec1.Pts == null || outRec2.Pts == null)
+                    continue;
+                if (outRec1.IsOpen || outRec2.IsOpen)
                     continue;
 
                 //get the polygon fragment with the correct hole state (FirstLeft)

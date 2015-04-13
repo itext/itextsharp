@@ -130,8 +130,7 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
-         * Close the current subpath by appending a straight line segment from the current
-         * point to the starting point of the subpath.
+         * Closes the current subpath
          */
         public virtual void CloseSubpath() {
             Subpath lastSubpath = this.LastSubpath;
@@ -139,6 +138,33 @@ namespace iTextSharp.text.pdf.parser {
 
             Point2D startPoint = lastSubpath.GetStartPoint();
             MoveTo((float) startPoint.GetX(), (float) startPoint.GetY());
+        }
+
+        /**
+         * Closes all subpathes contained in this path.
+         */ 
+        public virtual void CloseAllSubpaths() {
+            foreach (Subpath subpath in subpaths) {
+                subpath.Closed = true;
+            }
+        }
+
+        /**
+         * DO NOT USE THIS METHOD! IT'S TEMPORARY WORKAROUND
+         * IT WILL BE DELETED IN THE FUTURE
+         * 
+         * Adds additional line to each closed subpath and makes the subpath unclosed. 
+         * The line connects the last and the first points of the subpaths.
+         */
+
+        [Obsolete("DO NOT USE! It will be deleted!")]
+        public virtual void ReplaceCloseWithLine() {
+            foreach (Subpath subpath in subpaths) {
+                if (subpath.Closed) {
+                    subpath.Closed = false;
+                    subpath.AddSegment(new Line(subpath.GetLastPoint(), subpath.GetStartPoint()));
+                }
+            }
         }
 
         private Subpath LastSubpath {
