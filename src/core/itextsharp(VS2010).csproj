@@ -730,6 +730,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\BezierCurve.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\clipper\Clipper.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\ContentByteUtils.cs">
       <SubType>Code</SubType>
     </Compile>

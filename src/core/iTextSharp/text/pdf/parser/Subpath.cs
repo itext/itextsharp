@@ -140,7 +140,13 @@ namespace iTextSharp.text.pdf.parser {
             return segments.Count > 0 || closed;
         }
 
+        /**
+         * @return {@link java.util.List} containing points of piecewise linear approximation
+         *         for this subpath.
+         * @since 5.5.6
+         */
         public virtual IList<Point2D> GetPiecewiseLinearApproximation() {
+            // TODO: at this moment it duplicates points in the resultant approximation. Fix this. 
             IList<Point2D> result = new List<Point2D>();
 
             foreach (IShape segment in segments) {

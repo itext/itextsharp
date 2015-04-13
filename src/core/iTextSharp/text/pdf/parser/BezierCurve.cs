@@ -51,6 +51,15 @@ namespace iTextSharp.text.pdf.parser {
             return controlPoints;
         }
 
+        /**
+         * You can adjust precision of the approximation by variating the following 
+         * parameters: {@link #curveCollinearityEpsilon}, {@link #distanceToleranceSquare}, 
+         * {@link #distanceToleranceManhattan}
+         * 
+         * @return {@link java.util.List} containing points of piecewise linear approximation
+         *         for this bezier curve.
+         * @since 5.5.6
+         */
         public virtual IList<Point2D> GetPiecewiseLinearApproximation() {
             IList<Point2D> points = new List<Point2D>();
             points.Add(controlPoints[0]);
