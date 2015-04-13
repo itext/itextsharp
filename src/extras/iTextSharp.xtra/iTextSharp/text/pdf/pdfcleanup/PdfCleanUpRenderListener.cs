@@ -26,16 +26,22 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private Stack<PdfCleanUpContext> contextStack = new Stack<PdfCleanUpContext>();
         private int strNumber = 1; // Represents ordinal number of string under processing. Needed for processing TJ operator.
 
-        private Path unfilteredCurrentPath = new Path(); // Represents current path as if there were no segments to cut
-        private Path currentStrokePath = new Path(); // Represents actual current path ("actual" means that it is filtered current path)
+        // Represents current path as if there were no segments to cut
+        private Path unfilteredCurrentPath = new Path();
 
-        /**
-         * Represents actual current path to be filled. In general case in context of cleanup tool it completely differs from
-         * the current path with implicitly closed subpaths.
-         */
+        // Represents actual current path to be stroked ("actual" means that it is filtered current path)
+        private Path currentStrokePath = new Path();
+
+        // Represents actual current path to be filled.
         private Path currentFillPath = new Path();
 
-        private bool clipPath = false;
+        // Represents new clipping path 
+        // In general case, after redaction, it isn't the same as the currentFillPath because of the
+        // possibility to apply different filling rules for clipping and filling.
+        private Path newClippingPath;
+
+        private bool clipPath;
+        private int clippingRule;
 
         public PdfCleanUpRenderListener(PdfStamper pdfStamper, IList<PdfCleanUpRegionFilter> filters) {
             this.pdfStamper = pdfStamper;
@@ -129,25 +135,41 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
         public virtual Path RenderPath(PathPaintingRenderInfo renderInfo) {
-            if ((renderInfo.Operation & PathPaintingRenderInfo.STROKE) != 0) {
-                currentStrokePath = FilterCurrentPath(renderInfo.Ctm, true);
+            bool stroke = (renderInfo.Operation & PathPaintingRenderInfo.STROKE) != 0;
+            bool fill = (renderInfo.Operation & PathPaintingRenderInfo.FILL) != 0;
+
+            if (stroke) {
+                currentStrokePath = FilterCurrentPath(renderInfo.Ctm, true, -1);
             }
 
-            if ((renderInfo.Operation & PathPaintingRenderInfo.FILL) != 0 || clipPath) {
-                currentFillPath = FilterCurrentPath(renderInfo.Ctm, false);
+            if (fill) {
+                currentFillPath = FilterCurrentPath(renderInfo.Ctm, false, renderInfo.Rule);
+            } 
+            
+            if (clipPath) {
+                if (fill && renderInfo.Rule == clippingRule) {
+                    newClippingPath = currentFillPath;
+                } else {
+                    newClippingPath = FilterCurrentPath(renderInfo.Ctm, false, clippingRule);
+                }
             }
 
             unfilteredCurrentPath = new Path();
-            return currentFillPath;
+            return newClippingPath;
         }
 
         public virtual void ClipPath(int rule) {
             clipPath = true;
+            clippingRule = rule;
         }
 
         public virtual bool Clipped {
             get { return clipPath; }
             set { clipPath = value; }
+        }
+
+        public virtual int ClippingRule {
+            get { return clippingRule; }
         }
 
         public virtual Path CurrentStrokePath {
@@ -156,6 +178,10 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
         public virtual Path CurrentFillPath {
             get { return currentFillPath; }
+        }
+
+        public virtual Path NewClipPath {
+            get { return newClippingPath; }
         }
 
 
@@ -276,26 +302,24 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return null;
         }
 
-        private Path FilterCurrentPath(Matrix ctm, bool isContour) {
-            Queue<Subpath> filteredSubpaths = new Queue<Subpath>(unfilteredCurrentPath.Subpaths);
+        /**
+         * @param fillingRule If the path is contour, pass any value.
+         */
+        private Path FilterCurrentPath(Matrix ctm, bool isContour, int fillingRule) {
+            Path path = new Path(unfilteredCurrentPath.Subpaths);
 
-            foreach (PdfCleanUpRegionFilter filter in filters) {
-                int queueSize = filteredSubpaths.Count;
-
-                while (queueSize-- != 0) {
-                    Subpath subpath = filteredSubpaths.Dequeue();
-
-                    if (!isContour) {
-                        subpath = new Subpath(subpath);
-                        subpath.Closed = true;
-                    }
-
-                    IList<Subpath> filteredSubpath = filter.FilterSubpath(subpath, ctm, isContour);
-                    Util.AddAll(filteredSubpaths, filteredSubpath);
-                }
+            if (isContour) {
+                // TODO: This block is going to be replaced in the future
+                path.ReplaceCloseWithLine();
+            } else {
+                path.CloseAllSubpaths();
             }
 
-            return new Path(new List<Subpath>(filteredSubpaths));
+            foreach (PdfCleanUpRegionFilter filter in filters) {
+                path = filter.FilterPath(path, ctm, isContour, fillingRule);
+            }
+
+            return path;
         }
     }
 }

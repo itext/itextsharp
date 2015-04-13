@@ -26,14 +26,19 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private static readonly byte[] h = DocWriter.GetISOBytes("h\n");
         private static readonly byte[] S = DocWriter.GetISOBytes("S\n");
         private static readonly byte[] f = DocWriter.GetISOBytes("f\n");
+        private static readonly byte[] eoF = DocWriter.GetISOBytes("f*\n");
         private static readonly byte[] n = DocWriter.GetISOBytes("n\n");
         private static readonly byte[] W = DocWriter.GetISOBytes("W\n");
+        private static readonly byte[] eoW = DocWriter.GetISOBytes("W*\n");
 
         private static readonly HashSet2<String> textShowingOperators = new HashSet2<String>(new string[] {"TJ", "Tj", "'", "\""});
         private static readonly HashSet2<String> pathConstructionOperators = new HashSet2<String>(new string[] {"m", "l", "c", "v", "y", "h", "re"});
+
         private static readonly HashSet2<String> strokeOperators = new HashSet2<String>(new string[] {"S", "s", "B", "B*", "b", "b*"});
-        private static readonly HashSet2<String> fillOperators = new HashSet2<String>(new string[] {"f", "F", "f*", "B", "B*", "b", "b*"});
+        private static readonly HashSet2<String> nwFillOperators = new HashSet2<string>(new string[] {"f", "F", "B", "b"});
+        private static readonly HashSet2<String> eoFillOperators = new HashSet2<string>(new string[] {"f*", "B*", "b*"}); 
         private static readonly HashSet2<String> pathPaintingOperators; // initialized in the static constructor
+
         private static readonly HashSet2<String> clippingPathOperators = new HashSet2<String>(new string[] {"W", "W*"});
 
         protected PdfCleanUpRenderListener cleanUpStrategy;
@@ -45,7 +50,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
         static PdfCleanUpContentOperator() {
             pathPaintingOperators = new HashSet2<string>(strokeOperators);
-            pathPaintingOperators.AddAll(fillOperators);
+            pathPaintingOperators.AddAll(nwFillOperators);
+            pathPaintingOperators.AddAll(eoFillOperators);
             pathPaintingOperators.Add("n");
         }
 
@@ -332,10 +338,10 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             imageStream.SetDataRaw(image.GetBytes());
         }
 
-        private void WritePath(String operatorStr, PdfContentByte canvas) { // TODO: refactor
+        private void WritePath(String operatorStr, PdfContentByte canvas) {
             if (cleanUpStrategy.Clipped) {
-                WritePath(cleanUpStrategy.CurrentFillPath, null, canvas);
-                canvas.InternalBuffer.Append(W);
+                byte[] clippingOperator = (cleanUpStrategy.ClippingRule == PathPaintingRenderInfo.NONZERO_WINDING_RULE) ? W : eoW;
+                WritePath(cleanUpStrategy.NewClipPath, clippingOperator, canvas);
 
                 if ("n".Equals(operatorStr)) {
                     canvas.InternalBuffer.Append(n);
@@ -344,17 +350,17 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                 }
             }
 
-            if (fillOperators.Contains(operatorStr) && cleanUpStrategy.Clipped) {
-                canvas.InternalBuffer.Append(f);
-            } else if (fillOperators.Contains(operatorStr)) {
-                WritePath(cleanUpStrategy.CurrentFillPath, f, canvas);
+            if (nwFillOperators.Contains(operatorStr)) {
+                WriteFillAfterClip(canvas, cleanUpStrategy.CurrentFillPath, f, 
+                                   cleanUpStrategy.ClippingRule, PathPaintingRenderInfo.NONZERO_WINDING_RULE);
+            } else if (eoFillOperators.Contains(operatorStr)) {
+                WriteFillAfterClip(canvas, cleanUpStrategy.CurrentFillPath, eoF,
+                                   cleanUpStrategy.ClippingRule, PathPaintingRenderInfo.EVEN_ODD_RULE);
+            } else if (cleanUpStrategy.Clipped) {
+                canvas.InternalBuffer.Append(n);
             }
 
             if (strokeOperators.Contains(operatorStr)) {
-                if (!fillOperators.Contains(operatorStr) && cleanUpStrategy.Clipped) {
-                    canvas.InternalBuffer.Append(n);
-                }
-
                 WritePath(cleanUpStrategy.CurrentStrokePath, S, canvas);
             }
 
@@ -373,8 +379,12 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                     if (segment is BezierCurve) {
                         WriteBezierCurve((BezierCurve) segment, canvas);
                     } else {
-                        writeLine((Line) segment, canvas);
+                        WriteLine((Line) segment, canvas);
                     }
+                }
+
+                if (subpath.Closed) {
+                    canvas.InternalBuffer.Append(h);
                 }
             }
 
@@ -415,7 +425,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             canvas.InternalBuffer.Append(c);
         }
 
-        private void writeLine(Line line, PdfContentByte canvas) {
+        private void WriteLine(Line line, PdfContentByte canvas) {
             Point2D destination = line.GetBasePoints()[1];
 
             new PdfNumber(destination.GetX()).ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
@@ -423,6 +433,15 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
             new PdfNumber(destination.GetY()).ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
             canvas.InternalBuffer.Append(l);
+        }
+
+        private void WriteFillAfterClip(PdfContentByte canvas, Path path, byte[] fillOperator, int clippingRule, int fillRule) {
+            if (clippingRule == fillRule) {
+                canvas.InternalBuffer.Append(fillOperator);
+            } else {
+                canvas.InternalBuffer.Append(n);
+                WritePath(path, fillOperator, canvas);
+            }
         }
     }
 }
