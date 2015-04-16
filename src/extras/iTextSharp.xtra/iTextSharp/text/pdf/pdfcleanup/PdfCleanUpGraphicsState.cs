@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection.Emit;
 using System.Text;
+using iTextSharp.text.pdf;
 
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
@@ -13,6 +15,11 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private float horizontalScaling = 100; // in percents
         private float characterSpacing;
         private float wordSpacing;
+        private float lineWidth = 1.0f;
+        private int lineCapStyle = PdfContentByte.LINE_CAP_BUTT;
+        private int lineJoinStyle = PdfContentByte.LINE_JOIN_MITER;
+        private float miterLimit = 10.0f;
+        private LineDashPattern lineDashPattern;
 
         public PdfCleanUpGraphicsState() {
         }
@@ -49,6 +56,59 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         public virtual float WordSpacing {
             get { return wordSpacing; }
             set { wordSpacing = value; }
+        }
+
+        public float LineWidth {
+            get { return lineWidth; }
+            set { lineWidth = value; }
+        }
+
+        public int LineCapStyle {
+            get { return lineCapStyle; }
+            set { lineCapStyle = value; }
+        }
+
+        public int LineJoinStyle {
+            get { return lineJoinStyle; }
+            set { lineJoinStyle = value; }
+        }
+
+        public float MiterLimit {
+            get { return miterLimit; }
+            set { miterLimit = value; }
+        }
+
+        /**
+         * @return {@link LineDashPattern} object, describing the dash pattern which should be applied.
+         *         If no pattern should be applied (i.e. solid line), then returns <CODE>null</CODE>.
+         */
+        public virtual LineDashPattern GetLineDashPattern() {
+            return lineDashPattern;
+        }
+
+        public virtual void SetLineDashPattern(LineDashPattern lineDashPattern) {
+            this.lineDashPattern = lineDashPattern;
+        }
+
+        public class LineDashPattern {
+
+            private PdfArray dashArray;
+            private float dashPhase;
+
+            public LineDashPattern(PdfArray dashArray, float dashPhase) {
+                this.dashArray = new PdfArray(dashArray);
+                this.dashPhase = dashPhase;
+            }
+
+            public PdfArray DashArray {
+                get { return dashArray; }
+                set { dashArray = value; }
+            }
+
+            public float DashPhase {
+                get { return dashPhase; }
+                set { dashPhase = value; }
+            }
         }
     }
 }

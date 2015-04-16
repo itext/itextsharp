@@ -305,18 +305,25 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         /**
          * @param fillingRule If the path is contour, pass any value.
          */
-        private Path FilterCurrentPath(Matrix ctm, bool isContour, int fillingRule) {
+
+        private Path FilterCurrentPath(Matrix ctm, bool stroke, int fillingRule) {
             Path path = new Path(unfilteredCurrentPath.Subpaths);
 
-            if (isContour) {
-                // TODO: This block is going to be replaced in the future
-                path.ReplaceCloseWithLine();
-            } else {
+            IEnumerator<PdfCleanUpRegionFilter> enumerator = filters.GetEnumerator();
+            PdfCleanUpRegionFilter filter = null;
+
+            if (!stroke) {
                 path.CloseAllSubpaths();
+            } else if (enumerator.MoveNext()) {
+                filter = enumerator.Current;
+                // The following statements converts path from stroke to fill, so we need to call FilterStrokePath only once.
+                path = filter.FilterStrokePath(path, ctm, Context.LineWidth, Context.LineCapStyle,
+                                        Context.LineJoinStyle, Context.MiterLimit, Context.GetLineDashPattern());
             }
 
-            foreach (PdfCleanUpRegionFilter filter in filters) {
-                path = filter.FilterPath(path, ctm, isContour, fillingRule);
+            while (enumerator.MoveNext()) {
+                filter = enumerator.Current;
+                path = filter.FilterFillPath(path, ctm, fillingRule);
             }
 
             return path;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using iTextSharp.text.pdf;
+using LineDashPattern = iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup.PdfCleanUpGraphicsState.LineDashPattern;
 
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
@@ -51,6 +52,38 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         public virtual float WordSpacing {
             get { return graphicsStateStack.Peek().WordSpacing; }
             set { graphicsStateStack.Peek().WordSpacing = value; }
+        }
+
+        public float LineWidth {
+            get { return graphicsStateStack.Peek().LineWidth; }
+            set { graphicsStateStack.Peek().LineWidth = value; }
+        }
+
+        public int LineCapStyle {
+            get { return graphicsStateStack.Peek().LineCapStyle; }
+            set { graphicsStateStack.Peek().LineCapStyle = value; }
+        }
+
+        public int LineJoinStyle {
+            get { return graphicsStateStack.Peek().LineJoinStyle; }
+            set { graphicsStateStack.Peek().LineJoinStyle = value; }
+        }
+
+        public float MiterLimit {
+            get { return graphicsStateStack.Peek().MiterLimit; }
+            set { graphicsStateStack.Peek().MiterLimit = value; }
+        }
+
+        /**
+         * @return {@link LineDashPattern} object, describing the dash pattern which should be applied.
+         *         If no pattern should be applied (i.e. solid line), then returns <CODE>null</CODE>.
+         */
+        public virtual LineDashPattern GetLineDashPattern() {
+            return graphicsStateStack.Peek().GetLineDashPattern();
+        }
+
+        public virtual void SetLineDashPattern(LineDashPattern lineDashPattern) {
+            graphicsStateStack.Peek().SetLineDashPattern(lineDashPattern);
         }
 
         public void SaveGraphicsState() {
