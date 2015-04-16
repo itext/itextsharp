@@ -58,6 +58,7 @@ namespace iTextSharp.text.pdf {
         private PdfDictionary classMap;
         internal Dictionary<PdfName, PdfObject> classes;
         private Dictionary<int, PdfIndirectReference> numTree = null;
+        private Dictionary<string, PdfObject> idTreeMap;
 
         /**
         * Holds value of property writer.
@@ -107,6 +108,12 @@ namespace iTextSharp.text.pdf {
                 classes = new Dictionary<PdfName, PdfObject>();
             }
             classes.Add(name,obj);
+        }
+
+        virtual internal void PutIDTree(string record, PdfObject reference) {
+            if (idTreeMap == null)
+                idTreeMap = new Dictionary<string, PdfObject>();
+            idTreeMap.Add(record, reference);
         }
 
         virtual public PdfObject GetMappedClass(PdfName name) {
@@ -204,6 +211,10 @@ namespace iTextSharp.text.pdf {
                     }
                 }
                 Put(PdfName.CLASSMAP, writer.AddToBody(classMap).IndirectReference);
+            }
+            if (idTreeMap != null && idTreeMap.Count > 0) {
+                PdfDictionary dic = PdfNameTree.WriteTree(idTreeMap, writer);
+                this.Put(PdfName.IDTREE, dic);
             }
             NodeProcess(this, reference);
         }
