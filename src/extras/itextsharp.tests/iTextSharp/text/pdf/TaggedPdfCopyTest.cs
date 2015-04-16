@@ -22,6 +22,8 @@ namespace itextsharp.tests.text.pdf
         public const String NO_CLASS_MAP = "The document does not contain ClassMap";
         public const String NO_ROLE_MAP = "The document does not contain RoleMap";
         public const String NO_STRUCT_TREE_ROOT = "No StructTreeRoot found";
+        public const String NO_ID_TREE = "The document does not contain ID Tree";
+        public const String EMPTY_ID_TREE = "The document's ID Tree is empty";
 
         public const String RESOURCES = @"..\..\resources\text\pdf\TaggedPdfCopyTest\";
         public const String SOURCE4 =  RESOURCES + "pdf\\source4.pdf";
@@ -44,6 +46,7 @@ namespace itextsharp.tests.text.pdf
         public const String SOURCE64 = RESOURCES + "pdf\\source64.pdf";
         public const String SOURCE72 = RESOURCES + "pdf\\source72.pdf";
         public const String SOURCE73 = RESOURCES + "pdf\\source73.pdf";
+        public const String SOURCE81 = RESOURCES + "pdf\\source81.pdf";
         public const String DEV_805 = RESOURCES + "pdf\\dev-805.pdf";
         public const String SOURCE_CF_11 = RESOURCES + "pdf/sourceCf11.pdf";
         public const String SOURCE_CF_12 = RESOURCES + "pdf/sourceCf12.pdf";
@@ -857,6 +860,14 @@ namespace itextsharp.tests.text.pdf
             copy.FreeReader(reader);
             document.Close();
             reader.Close();
+        }
+
+        [Test]
+        public void CopyTaggedPdf23() {
+            PdfReader reader = new PdfReader(SOURCE81);
+            PdfDictionary structTreeRoot = VerifyIsDictionary(reader.Catalog.GetDirectObject(PdfName.STRUCTTREEROOT), NO_STRUCT_TREE_ROOT);
+            PdfDictionary idTree = VerifyIsDictionary(PdfStructTreeController.GetDirectObject(structTreeRoot.Get(PdfName.IDTREE)), NO_ID_TREE);
+            Assert.IsTrue(idTree.hashMap.Count > 0, EMPTY_ID_TREE);
         }
 
         [Test]
