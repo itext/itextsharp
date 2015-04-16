@@ -68,9 +68,20 @@ namespace iTextSharp.tool.xml.html {
         public override IList<IElement> End(IWorkerContext ctx, Tag tag, IList<IElement> currentContent) {
             IList<IElement> l = new List<IElement>(1);
             ListItem li = new ListItem();
+            float maxSize = -1;
             foreach (IElement e in currentContent) {
-                    li.Add(e);
+                li.Add(e);
+                //finding max leading among list item elements
+                foreach (Chunk chunk in e.Chunks) {
+                    // here we use 4f/3 multiplied leading value to simulate leading which is used with default font size
+                    float currFontSize = chunk.Font.GetCalculatedLeading(4f/3);
+                    if (maxSize < currFontSize) {
+                        maxSize = currFontSize;
+                    }
+                }
             }
+            if (li.Leading < maxSize)
+                li.Leading = maxSize;
             if (li.Trim()) {
                 l.Add(li); // css applying is handled in the OrderedUnorderedList Class.
             }
