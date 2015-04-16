@@ -10,6 +10,7 @@ using System.IO;
 using System.util;
 using System.util.collections;
 using Path = iTextSharp.text.pdf.parser.Path;
+using LineDashPattern = iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup.PdfCleanUpGraphicsState.LineDashPattern;
 
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
@@ -40,6 +41,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private static readonly HashSet2<String> pathPaintingOperators; // initialized in the static constructor
 
         private static readonly HashSet2<String> clippingPathOperators = new HashSet2<String>(new string[] {"W", "W*"});
+
+        private static readonly HashSet2<String> lineStyleOperators = new HashSet2<String>(new string[] {"w", "J", "j", "M", "d"}); 
 
         protected PdfCleanUpRenderListener cleanUpStrategy;
         protected IContentOperator originalContentOperator;
@@ -122,6 +125,21 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                 cleanUpStrategy.Context.WordSpacing = ((PdfNumber) operands[0]).FloatValue;
             } else if ("Tz" == operatorStr) {
                 cleanUpStrategy.Context.HorizontalScaling = ((PdfNumber) operands[0]).FloatValue;
+            } else if (lineStyleOperators.Contains(operatorStr)) {
+                if ("w" == operatorStr) {
+                    cleanUpStrategy.Context.LineWidth = ((PdfNumber) operands[0]).FloatValue;
+                } else if ("J" == operatorStr) {
+                    cleanUpStrategy.Context.LineCapStyle = ((PdfNumber) operands[0]).IntValue;
+                } else if ("j" == operatorStr) {
+                    cleanUpStrategy.Context.LineJoinStyle = ((PdfNumber) operands[0]).IntValue;
+                } else if ("M" == operatorStr) {
+                    cleanUpStrategy.Context.MiterLimit = ((PdfNumber) operands[0]).FloatValue;
+                } else if ("d" == operatorStr) {
+                    cleanUpStrategy.Context.SetLineDashPattern(new LineDashPattern(((PdfArray) operands[0]), 
+                                                                                   ((PdfNumber) operands[1]).FloatValue));
+                }
+
+                disableOutput = true;
             } else if (textShowingOperators.Contains(operatorStr) && !AllChunksAreVisible(cleanUpStrategy.Chunks)) {
                 disableOutput = true;
 
@@ -361,7 +379,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             }
 
             if (strokeOperators.Contains(operatorStr)) {
-                WritePath(cleanUpStrategy.CurrentStrokePath, S, canvas);
+                WritePath(cleanUpStrategy.CurrentStrokePath, f, canvas);
             }
 
             cleanUpStrategy.Clipped = false;

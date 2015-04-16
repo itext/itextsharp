@@ -6,7 +6,9 @@ using iTextSharp.awt.geom;
 using iTextSharp.text;
 using iTextSharp.text.pdf.parser;
 using System.util;
+using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.parser.clipper;
+using LineDashPattern = iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup.PdfCleanUpGraphicsState.LineDashPattern;
 
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
@@ -58,10 +60,24 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return new PdfCleanUpCoveredArea(transformedIntersection, imageRect.Equals(intersectionRect));
         }
 
+        protected internal virtual Path FilterStrokePath(Path path, Matrix ctm, float lineWidth, int lineCapStyle,
+                                                int lineJoinStyle, float miterLimit, LineDashPattern lineDashPattern) {
+            JoinType joinType = GetJoinType(lineJoinStyle);
+            EndType endType = GetEndType(lineCapStyle);
+
+            ClipperOffset offset = new ClipperOffset(miterLimit, PdfCleanUpProcessor.ArcTolerance * PdfCleanUpProcessor.FloatMultiplier);
+            AddPath(offset, path, joinType, endType);
+
+            PolyTree resultTree = new PolyTree();
+            offset.Execute(ref resultTree, lineWidth * PdfCleanUpProcessor.FloatMultiplier / 2);
+
+            return FilterFillPath(ConvertToPath(resultTree), ctm, PathPaintingRenderInfo.NONZERO_WINDING_RULE);
+        }
+
         /**
          * @param fillingRule If the subpath is contour, pass any value.
          */
-        protected internal virtual Path FilterPath(Path path, Matrix ctm, Boolean isContour, int fillingRule) {
+        protected internal virtual Path FilterFillPath(Path path, Matrix ctm, int fillingRule) {
             Point2D[] transfRectVertices = TransformPoints(ctm, false, GetVertices(rectangle));
             PolyFillType fillType = PolyFillType.pftNonZero;
 
@@ -77,6 +93,44 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             clipper.Execute(ClipType.ctDifference, resultTree, fillType, PolyFillType.pftNonZero);
 
             return ConvertToPath(resultTree);
+        }
+
+        private static JoinType GetJoinType(int lineJoinStyle) {
+            switch (lineJoinStyle) {
+                case PdfContentByte.LINE_JOIN_BEVEL:
+                    return JoinType.jtSquare;
+
+                case PdfContentByte.LINE_JOIN_MITER:
+                    return JoinType.jtMiter;
+            }
+
+            return JoinType.jtRound;
+        }
+
+        private static EndType GetEndType(int lineCapStyle) {
+            switch (lineCapStyle) {
+                case PdfContentByte.LINE_CAP_BUTT:
+                    return EndType.etOpenButt;
+
+                case PdfContentByte.LINE_CAP_PROJECTING_SQUARE:
+                    return EndType.etOpenSquare;
+            }
+
+            return EndType.etOpenRound;
+        }
+
+        private static void AddPath(ClipperOffset offset, Path path, JoinType joinType, EndType endType) {
+            foreach (Subpath subpath in path.Subpaths) {
+                if (!subpath.IsSinglePointClosed() && !subpath.IsSinglePointOpen()) {
+                    // Offsetting is never used for path to be filled
+                    if (subpath.Closed) {
+                        endType = EndType.etClosedLine;
+                    }
+
+                    IList<Point2D> linearApproxPoints = subpath.GetPiecewiseLinearApproximation();
+                    offset.AddPath(ConvertToIntPoints(linearApproxPoints), joinType, endType);
+                }
+            }
         }
 
         private static void AddPath(Clipper clipper, Path path) {

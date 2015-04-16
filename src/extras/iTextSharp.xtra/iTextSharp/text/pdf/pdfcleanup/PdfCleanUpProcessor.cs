@@ -26,6 +26,12 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
          */
         public static double FloatMultiplier = Math.Pow(10, 14);
 
+        /**
+         * Used as the criterion of a good approximation of rounded line joins
+         * and line caps.
+         */
+        public static double ArcTolerance = 0.0025;
+
         private static readonly String XOBJ_NAME_PREFIX = "Fm";
 
         private static readonly String STROKE_COLOR = "StrokeColor";
