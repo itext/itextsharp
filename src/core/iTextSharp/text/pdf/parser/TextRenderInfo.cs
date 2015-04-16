@@ -64,6 +64,7 @@ namespace iTextSharp.text.pdf.parser {
         private Matrix textToUserSpaceTransformMatrix;
         private GraphicsState gs;
         private float? unscaledWidth = null;
+        private double[] fontMatrix = null;
 
         /**
          * Array containing marked content info for the text.
@@ -86,6 +87,7 @@ namespace iTextSharp.text.pdf.parser {
             foreach (MarkedContentInfo m in markedContentInfo) {
                 this.markedContentInfos.Add(m);
             }
+            this.fontMatrix = gs.font.GetFontMatrix();
         }
 
         /**
@@ -100,6 +102,7 @@ namespace iTextSharp.text.pdf.parser {
             this.textToUserSpaceTransformMatrix = new Matrix(horizontalOffset, 0).Multiply(parent.textToUserSpaceTransformMatrix);
             this.gs = parent.gs;
             this.markedContentInfos = parent.markedContentInfos;
+            this.fontMatrix = gs.font.GetFontMatrix();
         }
         
         /**
@@ -408,7 +411,7 @@ namespace iTextSharp.text.pdf.parser {
                 throw new InvalidOperationException();
             float[] result = new float[2];
             String decoded = Decode(@string);
-            result[0] = gs.font.GetWidth(GetCharCode(decoded))/1000.0f;
+            result[0] = (float) (gs.font.GetWidth(GetCharCode(decoded)) * fontMatrix[0]);
             result[1] = decoded.Equals(" ") ? gs.wordSpacing : 0;
             return result;
         }
