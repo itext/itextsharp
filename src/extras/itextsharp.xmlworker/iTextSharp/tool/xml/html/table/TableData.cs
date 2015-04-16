@@ -80,6 +80,9 @@ namespace iTextSharp.tool.xml.html.table {
                 cell.RunDirection = direction;
             }
 
+            if (HTML.Tag.TH.Equals(tag.Name, StringComparison.OrdinalIgnoreCase)) {
+                cell.Role = PdfName.TH;
+            }
             try {
                 HtmlPipelineContext htmlPipelineContext = GetHtmlPipelineContext(ctx);
                 cell = (HtmlCell) GetCssAppliers().Apply(cell, tag, htmlPipelineContext);
