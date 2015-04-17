@@ -136,7 +136,7 @@ namespace iTextSharp.text.pdf {
         private List<String> calculationOrder;
         private Dictionary<String, Object> fieldTree;
         private Dictionary<int, PdfIndirectObject> unmergedMap;
-        private HashSet2<PdfIndirectObject> unmergedSet;
+        private Dictionary<RefKey, PdfIndirectObject> unmergedIndirectRefsMap;
         private Dictionary<int, PdfIndirectObject> mergedMap;
         private HashSet2<PdfIndirectObject> mergedSet;
         private bool mergeFieldsInternalCall = false;
@@ -226,7 +226,7 @@ namespace iTextSharp.text.pdf {
             calculationOrder = new List<String>();
             fieldTree = new Dictionary<string, object>();
             unmergedMap = new Dictionary<int, PdfIndirectObject>();
-            unmergedSet = new HashSet2<PdfIndirectObject>();
+            unmergedIndirectRefsMap = new Dictionary<RefKey, PdfIndirectObject>();
             mergedMap = new Dictionary<int, PdfIndirectObject>();
             mergedSet = new HashSet2<PdfIndirectObject>();
         }
@@ -856,7 +856,7 @@ namespace iTextSharp.text.pdf {
                         mergedSet.Add(iobj);
                     } else {
                         unmergedMap[annotId.IntValue] = iobj;
-                        unmergedSet.Add(iobj);
+                        unmergedIndirectRefsMap.Add(new RefKey(iobj.Number, iobj.Generation), iobj);
                     }
                 }
             }
@@ -1207,7 +1207,7 @@ namespace iTextSharp.text.pdf {
                 UpdateAnnotationReferences(objecta.objecti);
                 if (objecta.objecti.IsDictionary() || objecta.objecti.IsStream()) {
                     PdfDictionary dictionary = (PdfDictionary)objecta.objecti;
-                    if (unmergedSet.Contains(objecta)) {
+                    if (unmergedIndirectRefsMap.ContainsKey(new RefKey(objecta.Number, objecta.Generation))) {
                         PdfNumber annotId = dictionary.GetAsNumber(PdfCopy.annotId);
                         if (annotId != null && mergedMap.ContainsKey(annotId.IntValue))
                             skipWriting = true;
@@ -1248,15 +1248,15 @@ namespace iTextSharp.text.pdf {
                 for (int i = 0; i < array.Size; i++) {
                     PdfObject o = array.GetPdfObject(i);
                     if (o != null && o.Type == 0) {
-                        foreach (PdfIndirectObject entry in unmergedSet) {
-                            if (entry.IndirectReference.Number == ((PdfIndirectReference)o).Number && entry.IndirectReference.Generation == ((PdfIndirectReference)o).Generation) {
-                                if (entry.objecti.IsDictionary()) {
-                                    PdfNumber annotId = ((PdfDictionary)entry.objecti).GetAsNumber(PdfCopy.annotId);
-                                    if (annotId != null) {
-                                        PdfIndirectObject merged;
-                                        if (mergedMap.TryGetValue(annotId.IntValue, out merged)) {
-                                            array.Set(i, merged.IndirectReference);
-                                        }
+                        PdfIndirectObject entry;
+                        bool contains = unmergedIndirectRefsMap.TryGetValue(new RefKey((PdfIndirectReference) o), out entry);
+                        if (contains) {
+                            if (entry.objecti.IsDictionary()) {
+                                PdfNumber annotId = ((PdfDictionary) entry.objecti).GetAsNumber(PdfCopy.annotId);
+                                if (annotId != null) {
+                                    PdfIndirectObject merged;
+                                    if (mergedMap.TryGetValue(annotId.IntValue, out merged)) {
+                                        array.Set(i, merged.IndirectReference);
                                     }
                                 }
                             }
@@ -1271,16 +1271,15 @@ namespace iTextSharp.text.pdf {
                 foreach (PdfName key in keys) {
                     PdfObject o = dictionary.Get(key);
                     if (o != null && o.Type == 0) {
-                        foreach (PdfIndirectObject entry in unmergedSet) {
-                            if (entry.IndirectReference.Number == ((PdfIndirectReference) o).Number &&
-                                entry.IndirectReference.Generation == ((PdfIndirectReference) o).Generation) {
-                                if (entry.objecti.IsDictionary()) {
-                                    PdfNumber annotId = ((PdfDictionary)entry.objecti).GetAsNumber(PdfCopy.annotId);
-                                    if (annotId != null) {
-                                        PdfIndirectObject merged;
-                                        if (mergedMap.TryGetValue(annotId.IntValue, out merged)) {
-                                            dictionary.Put(key, merged.IndirectReference);
-                                        }
+                        PdfIndirectObject entry;
+                        bool contains = unmergedIndirectRefsMap.TryGetValue(new RefKey((PdfIndirectReference) o), out entry);
+                        if (contains) {
+                            if (entry.objecti.IsDictionary()) {
+                                PdfNumber annotId = ((PdfDictionary) entry.objecti).GetAsNumber(PdfCopy.annotId);
+                                if (annotId != null) {
+                                    PdfIndirectObject merged;
+                                    if (mergedMap.TryGetValue(annotId.IntValue, out merged)) {
+                                        dictionary.Put(key, merged.IndirectReference);
                                     }
                                 }
                             }
