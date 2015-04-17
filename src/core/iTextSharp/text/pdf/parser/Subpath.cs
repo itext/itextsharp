@@ -146,14 +146,23 @@ namespace iTextSharp.text.pdf.parser {
          * @since 5.5.6
          */
         public virtual IList<Point2D> GetPiecewiseLinearApproximation() {
-            // TODO: at this moment it duplicates points in the resultant approximation. Fix this. 
             IList<Point2D> result = new List<Point2D>();
 
-            foreach (IShape segment in segments) {
-                if (segment is Line) {
-                    Util.AddAll(result, segment.GetBasePoints());
+            if (segments.Count == 0) {
+                return result;
+            }
+
+            if (segments[0] is BezierCurve) {
+                Util.AddAll(result, ((BezierCurve) segments[0]).GetPiecewiseLinearApproximation());
+            } else {
+                Util.AddAll(result, segments[0].GetBasePoints());
+            }
+
+            for (int i = 1; i < segments.Count; ++i) {
+                if (segments[i] is BezierCurve) {                 
+                    Util.AddAll(result, ((BezierCurve) segments[i]).GetPiecewiseLinearApproximation(), 1);
                 } else {
-                    Util.AddAll(result, ((BezierCurve) segment).GetPiecewiseLinearApproximation());
+                    Util.AddAll(result, segments[i].GetBasePoints(), 1);
                 }
             }
 

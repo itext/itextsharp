@@ -150,14 +150,9 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
-         * DO NOT USE THIS METHOD! IT'S TEMPORARY WORKAROUND
-         * IT WILL BE DELETED IN THE FUTURE
-         * 
          * Adds additional line to each closed subpath and makes the subpath unclosed. 
          * The line connects the last and the first points of the subpaths.
          */
-
-        [Obsolete("DO NOT USE! It will be deleted!")]
         public virtual void ReplaceCloseWithLine() {
             foreach (Subpath subpath in subpaths) {
                 if (subpath.Closed) {
