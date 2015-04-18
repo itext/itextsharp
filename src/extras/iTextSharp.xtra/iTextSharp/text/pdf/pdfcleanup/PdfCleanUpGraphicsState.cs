@@ -89,26 +89,5 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         public virtual void SetLineDashPattern(LineDashPattern lineDashPattern) {
             this.lineDashPattern = lineDashPattern;
         }
-
-        public class LineDashPattern {
-
-            private PdfArray dashArray;
-            private float dashPhase;
-
-            public LineDashPattern(PdfArray dashArray, float dashPhase) {
-                this.dashArray = new PdfArray(dashArray);
-                this.dashPhase = dashPhase;
-            }
-
-            public PdfArray DashArray {
-                get { return dashArray; }
-                set { dashArray = value; }
-            }
-
-            public float DashPhase {
-                get { return dashPhase; }
-                set { dashPhase = value; }
-            }
-        }
     }
 }
