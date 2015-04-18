@@ -10,7 +10,6 @@ using System.IO;
 using System.util;
 using System.util.collections;
 using Path = iTextSharp.text.pdf.parser.Path;
-using LineDashPattern = iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup.PdfCleanUpGraphicsState.LineDashPattern;
 
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 

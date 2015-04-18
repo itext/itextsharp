@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text;
 using iTextSharp.text.pdf;
-using LineDashPattern = iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup.PdfCleanUpGraphicsState.LineDashPattern;
 
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 

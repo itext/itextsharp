@@ -54,6 +54,7 @@
     <Compile Include="iTextSharp\text\pdf\ocg\OCGRemover.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="iTextSharp\text\pdf\pdfcleanup\LineDashPattern.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpContentChunk.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpContentOperator.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpContext.cs" />
