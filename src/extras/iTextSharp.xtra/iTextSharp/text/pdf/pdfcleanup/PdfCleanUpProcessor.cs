@@ -26,6 +26,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
          */
         public static double FloatMultiplier = Math.Pow(10, 14);
 
+        public static bool FillCleanedArea = true;
+
         /**
          * Used as the criterion of a good approximation of rounded line joins
          * and line caps.
@@ -135,9 +137,11 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
         private void ColorCleanedLocations(PdfContentByte canvas, IList<PdfCleanUpLocation> cleanUpLocations) {
-            foreach (PdfCleanUpLocation location in cleanUpLocations) {
-                if (location.CleanUpColor != null) {
-                    AddColoredRectangle(canvas, location);
+            if (FillCleanedArea) {
+                foreach (PdfCleanUpLocation location in cleanUpLocations) {
+                    if (location.CleanUpColor != null) {
+                        AddColoredRectangle(canvas, location);
+                    }
                 }
             }
         }
@@ -297,7 +301,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                     PdfStream formXObj = annotDict.GetAsStream(PdfName.RO);
                     PdfString overlayText = annotDict.GetAsString(PdfName.OVERLAYTEXT);
 
-                    if (formXObj != null) {
+                    if (FillCleanedArea && formXObj != null) {
                         PdfArray rectArray = annotDict.GetAsArray(PdfName.RECT);
                         Rectangle annotRect = new Rectangle(rectArray.GetAsNumber(0).FloatValue,
                                                             rectArray.GetAsNumber(1).FloatValue,
@@ -305,7 +309,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                                                             rectArray.GetAsNumber(3).FloatValue);
 
                         InsertFormXObj(canvas, pageDict, formXObj, clippingRects[j], annotRect);
-                    } else if (overlayText != null && overlayText.ToUnicodeString().Length > 0) {
+                    } else if (FillCleanedArea && overlayText != null && overlayText.ToUnicodeString().Length > 0) {
                         DrawOverlayText(canvas, clippingRects[j], overlayText,
                                         annotDict.GetAsString(PdfName.DA),
                                         annotDict.GetAsNumber(PdfName.Q),
