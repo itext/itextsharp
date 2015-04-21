@@ -759,6 +759,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="iTextSharp\text\pdf\parser\Line.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\LineDashPattern.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\LineSegment.cs">
       <SubType>Code</SubType>
     </Compile>

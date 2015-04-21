@@ -5,7 +5,7 @@ using iTextSharp.text.pdf;
 
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
-    class LineDashPattern {
+    public class LineDashPattern {
 
         private PdfArray dashArray;
         private float dashPhase;
