@@ -4147,6 +4147,7 @@
     <Compile Include="iTextSharp\text\pdf\parser\InlineImageUtils.cs" />
     <Compile Include="iTextSharp\text\pdf\IPdfPTableEventSplit.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\Line.cs" />
+    <Compile Include="iTextSharp\text\pdf\parser\LineDashPattern.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\MultiFilteredRenderListener.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\Path.cs" />
     <Compile Include="iTextSharp\text\pdf\parser\PathConstructionRenderInfo.cs" />
