@@ -121,7 +121,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             ColorCleanedLocations(canvas, cleanUpLocations);
 
             if (redactAnnotIndirRefs != null) { // if it isn't null, then we are in "extract locations from redact annots" mode
-                deleteRedactAnnots(pageNum);
+                DeleteRedactAnnots(pageNum);
             }
         }
 
@@ -278,7 +278,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         /**
          * Deletes redact annotations from the page and substitutes them with either OverlayText or RO object if it's needed.
          */
-        private void deleteRedactAnnots(int pageNum) {
+        private void DeleteRedactAnnots(int pageNum) {
             HashSet2<String> indirRefs;
             redactAnnotIndirRefs.TryGetValue(pageNum, out indirRefs);
 

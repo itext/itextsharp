@@ -14,7 +14,19 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private PdfDictionary resources;
         private PdfContentByte canvas;
 
-        public PdfCleanUpContext(PdfDictionary resources, PdfContentByte canvas) {
+        /**
+         * PdfContentStreamProcessor is able to process only Device* color spaces,
+         * so I had to add this workaround.
+         */
+        private Stack<IList<PdfObject>> strokeColorOperands;
+
+        public PdfCleanUpContext() {
+            IList<PdfObject> initialStrokeColor = new List<PdfObject>(new PdfObject[] { PdfName.DEVICEGRAY, new PdfLiteral("CS") });
+            strokeColorOperands = new Stack<IList<PdfObject>>();
+            strokeColorOperands.Push(initialStrokeColor);
+        }
+
+        public PdfCleanUpContext(PdfDictionary resources, PdfContentByte canvas) : this() {
             this.resources = resources;
             this.canvas = canvas;
         }
@@ -27,6 +39,22 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         public PdfContentByte Canvas {
             get { return canvas; }
             set { canvas = value; }
+        }
+
+        public void PushStrokeColor(IList<PdfObject> strokeColorOperands) {
+            this.strokeColorOperands.Push(strokeColorOperands);
+        }
+
+        public IList<PdfObject> PeekStrokeColor() {
+            if (strokeColorOperands.Count == 0) {
+                return null;
+            } else {
+                return strokeColorOperands.Peek();
+            }
+        }
+
+        public IList<PdfObject> PopStrokeColor() {
+            return strokeColorOperands.Pop();
         }
     }
 }

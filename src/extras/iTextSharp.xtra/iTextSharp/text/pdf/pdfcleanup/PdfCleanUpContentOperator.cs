@@ -32,18 +32,6 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private static readonly byte[] eoW = DocWriter.GetISOBytes("W*\n");
         private static readonly byte[] q = DocWriter.GetISOBytes("q\n");
         private static readonly byte[] Q = DocWriter.GetISOBytes("Q\n");
-        private static readonly byte[] CS = DocWriter.GetISOBytes("CS\n");
-        private static readonly byte[] cs = DocWriter.GetISOBytes("cs\n");
-        private static readonly byte[] SC = DocWriter.GetISOBytes("SC\n");
-        private static readonly byte[] SCN = DocWriter.GetISOBytes("SCN\n");
-        private static readonly byte[] sc = DocWriter.GetISOBytes("sc\n");
-        private static readonly byte[] scn = DocWriter.GetISOBytes("scn\n");
-        private static readonly byte[] G = DocWriter.GetISOBytes("G\n");
-        private static readonly byte[] g = DocWriter.GetISOBytes("g\n");
-        private static readonly byte[] RG = DocWriter.GetISOBytes("RG\n");
-        private static readonly byte[] rg = DocWriter.GetISOBytes("rg\n");
-        private static readonly byte[] K = DocWriter.GetISOBytes("K\n");
-        private static readonly byte[] k = DocWriter.GetISOBytes("k\n");
 
         private static readonly HashSet2<String> textShowingOperators = new HashSet2<String>(new string[] {"TJ", "Tj", "'", "\""});
         private static readonly HashSet2<String> pathConstructionOperators = new HashSet2<String>(new string[] {"m", "l", "c", "v", "y", "h", "re"});
@@ -56,6 +44,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private static readonly HashSet2<String> clippingPathOperators = new HashSet2<String>(new string[] {"W", "W*"});
 
         private static readonly HashSet2<String> lineStyleOperators = new HashSet2<String>(new string[] {"w", "J", "j", "M", "d"}); 
+
+        private static readonly HashSet2<String> strokeColorOperators = new HashSet2<string>(new string[] {"CS", "SC", "SCN", "G", "RG", "K"}); 
 
         protected PdfCleanUpRenderListener cleanUpStrategy;
         protected IContentOperator originalContentOperator;
@@ -149,18 +139,30 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                     gs.FontSize, gs.HorizontalScaling);
             } else if (pathPaintingOperators.Contains(operatorStr)) {
                 WritePath(operatorStr, canvas);
+            } else if (strokeColorOperators.Contains(operatorStr)) {
+                // Replace current color with the new one.
+                cleanUpStrategy.Context.PopStrokeColor();
+                cleanUpStrategy.Context.PushStrokeColor(operands);
+            } else if ("q" == operatorStr) {
+                cleanUpStrategy.Context.PushStrokeColor(cleanUpStrategy.Context.PeekStrokeColor());
+            } else if ("Q" == operatorStr) {
+                cleanUpStrategy.Context.PopStrokeColor();
             }
 
             if (!disableOutput) {
-                int index = 0;
-
-                foreach (PdfObject o in operands) {
-                    ToPdf(o, canvas.PdfWriter, canvas.InternalBuffer);
-                    canvas.InternalBuffer.Append(operands.Count > ++index ? (byte) ' ' : (byte) '\n');
-                }
+                WriteOperands(canvas, operands);
             }
 
             cleanUpStrategy.ClearChunks();
+        }
+
+        private void WriteOperands(PdfContentByte canvas, IList<PdfObject> operands) {
+            int index = 0;
+
+            foreach (PdfObject o in operands) {
+                ToPdf(o, canvas.PdfWriter, canvas.InternalBuffer);
+                canvas.InternalBuffer.Append(operands.Count > ++index ? (byte) ' ' : (byte) '\n');
+            }
         }
 
         private bool AllChunksAreVisible(IList<PdfCleanUpContentChunk> chunks) {
@@ -348,17 +350,21 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             }
 
             if (nwFillOperators.Contains(operatorStr)) {
-                WriteFillAfterClip(canvas, cleanUpStrategy.CurrentFillPath, f, 
-                                   cleanUpStrategy.ClippingRule, PathPaintingRenderInfo.NONZERO_WINDING_RULE);
+                /* If clipping path isn't applied, then clippingRule will never be equal 
+                   to PathPaintingRenderInfo.NONZERO_WINDING_RULE and the path will be
+                   written to the content stream. */
+                int clippingRule = cleanUpStrategy.Clipped ? cleanUpStrategy.ClippingRule : PathPaintingRenderInfo.NONZERO_WINDING_RULE + 1;
+                WriteFillAfterClip(canvas, cleanUpStrategy.CurrentFillPath, f, clippingRule, PathPaintingRenderInfo.NONZERO_WINDING_RULE);
             } else if (eoFillOperators.Contains(operatorStr)) {
-                WriteFillAfterClip(canvas, cleanUpStrategy.CurrentFillPath, eoF,
-                                   cleanUpStrategy.ClippingRule, PathPaintingRenderInfo.EVEN_ODD_RULE);
+                // Similarly to the previous.
+                int clippingRule = cleanUpStrategy.Clipped ? cleanUpStrategy.ClippingRule : PathPaintingRenderInfo.EVEN_ODD_RULE + 1;
+                WriteFillAfterClip(canvas, cleanUpStrategy.CurrentFillPath, eoF, clippingRule, PathPaintingRenderInfo.EVEN_ODD_RULE);
             } else if (cleanUpStrategy.Clipped) {
                 canvas.InternalBuffer.Append(n);
             }
 
             if (strokeOperators.Contains(operatorStr)) {
-                WritePath(cleanUpStrategy.CurrentStrokePath, f, canvas);
+                WriteStroke(canvas, cleanUpStrategy.CurrentStrokePath);
             }
 
             cleanUpStrategy.Clipped = false;
@@ -439,6 +445,20 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                 canvas.InternalBuffer.Append(n);
                 WritePath(path, fillOperator, canvas);
             }
+        }
+
+        private void WriteStroke(PdfContentByte canvas, Path path) {
+            canvas.InternalBuffer.Append(q);
+
+            IList<PdfObject> strokeColorOperands = cleanUpStrategy.Context.PeekStrokeColor();
+            String strokeOperatorStr = strokeColorOperands[strokeColorOperands.Count - 1].ToString();
+            // Below expression converts stroke color operator to its fill analogue.
+            strokeColorOperands[strokeColorOperands.Count - 1] = new PdfLiteral(strokeOperatorStr.ToLower());
+            WriteOperands(canvas, strokeColorOperands);
+
+            WritePath(cleanUpStrategy.CurrentStrokePath, f, canvas);
+
+            canvas.InternalBuffer.Append(Q);
         }
     }
 }
