@@ -56,7 +56,11 @@ namespace itextsharp.tests.iTextSharp.text.pdf.pdfcleanup {
                 new object[] {"smaskImage.pdf", "smaskImage.pdf", "cmp_smaskImage.pdf", cleanUpLocations2},
                 new object[] {"rotatedImg.pdf", "rotatedImg.pdf", "cmp_rotatedImg.pdf", cleanUpLocations2},
                 new object[]{"lineArtsCompletely.pdf", "lineArtsCompletely.pdf", "cmp_LineArtsCompletely.pdf", null},
-                new object[]{"lineArtsPartially.pdf", "lineArtsPartially.pdf", "cmp_lineArtsPartially.pdf", null}
+                new object[]{"lineArtsPartially.pdf", "lineArtsPartially.pdf", "cmp_lineArtsPartially.pdf", null},
+                new object[]{"dashedStyledClosedBezier.pdf", "dashedStyledClosedBezier.pdf", "cmp_dashedStyledClosedBezier.pdf", null},
+                new object[]{"styledLineArts.pdf", "styledLineArts.pdf", "cmp_styledLineArts.pdf", null},
+                new object[]{"dashedBezier.pdf", "dashedBezier.pdf", "cmp_dashedBezier.pdf", null},
+                new object[]{"closedBezier.pdf", "closedBezier.pdf", "cmp_closedBezier.pdf", null}
             };
         }
 

@@ -138,19 +138,28 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             bool stroke = (renderInfo.Operation & PathPaintingRenderInfo.STROKE) != 0;
             bool fill = (renderInfo.Operation & PathPaintingRenderInfo.FILL) != 0;
 
+            float lineWidth = renderInfo.LineWidth;
+            int lineCapStyle = renderInfo.LineCapStyle;
+            int lineJoinStyle = renderInfo.LineJoinStyle;
+            float miterLimit = renderInfo.MiterLimit;
+            LineDashPattern lineDashPattern = renderInfo.LineDashPattern;
+
             if (stroke) {
-                currentStrokePath = FilterCurrentPath(renderInfo.Ctm, true, -1);
+                currentStrokePath = FilterCurrentPath(renderInfo.Ctm, true, -1, 
+                    lineWidth, lineCapStyle, lineJoinStyle, miterLimit, lineDashPattern);
             }
 
             if (fill) {
-                currentFillPath = FilterCurrentPath(renderInfo.Ctm, false, renderInfo.Rule);
+                currentFillPath = FilterCurrentPath(renderInfo.Ctm, false, renderInfo.Rule, 
+                    lineWidth, lineCapStyle, lineJoinStyle, miterLimit, lineDashPattern);
             } 
             
             if (clipPath) {
                 if (fill && renderInfo.Rule == clippingRule) {
                     newClippingPath = currentFillPath;
                 } else {
-                    newClippingPath = FilterCurrentPath(renderInfo.Ctm, false, clippingRule);
+                    newClippingPath = FilterCurrentPath(renderInfo.Ctm, false, clippingRule, 
+                        lineWidth, lineCapStyle, lineJoinStyle, miterLimit, lineDashPattern);
                 }
             }
 
@@ -305,18 +314,25 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         /**
          * @param fillingRule If the path is contour, pass any value.
          */
-        private Path FilterCurrentPath(Matrix ctm, bool isContour, int fillingRule) {
+
+        private Path FilterCurrentPath(Matrix ctm, bool stroke, int fillingRule, float lineWidth, int lineCapStyle, 
+                                       int lineJoinStyle, float miterLimit, LineDashPattern lineDashPattern) {
             Path path = new Path(unfilteredCurrentPath.Subpaths);
 
-            if (isContour) {
-                // TODO: This block is going to be replaced in the future
-                path.ReplaceCloseWithLine();
-            } else {
+            IEnumerator<PdfCleanUpRegionFilter> enumerator = filters.GetEnumerator();
+            PdfCleanUpRegionFilter filter = null;
+
+            if (!stroke) {
                 path.CloseAllSubpaths();
+            } else if (enumerator.MoveNext()) {
+                filter = enumerator.Current;
+                // The following statements converts path from stroke to fill, so we need to call FilterStrokePath only once.
+                path = filter.FilterStrokePath(path, ctm, lineWidth, lineCapStyle, lineJoinStyle, miterLimit, lineDashPattern);
             }
 
-            foreach (PdfCleanUpRegionFilter filter in filters) {
-                path = filter.FilterPath(path, ctm, isContour, fillingRule);
+            while (enumerator.MoveNext()) {
+                filter = enumerator.Current;
+                path = filter.FilterFillPath(path, ctm, fillingRule);
             }
 
             return path;
