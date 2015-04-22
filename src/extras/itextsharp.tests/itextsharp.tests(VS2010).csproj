@@ -123,7 +123,6 @@
     <Compile Include="iTextSharp\text\pdf\PdfReaderTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PRTokeniserTest.cs" />
     <Compile Include="iTextSharp\text\pdf\RandomAccessFileOrArrayTest.cs" />
-    <Compile Include="iTextSharp\text\pdf\table\LargeTableTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\RowspanTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TestPdfCopyAndStamp.cs" />
     <Compile Include="iTextSharp\text\pdf\TextFieldTest.cs" />
@@ -259,10 +258,14 @@
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\BigImage-png.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\BigImage-tif-lzw.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\BigImage-tif.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\closedBezier.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_BigImage-jpg.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_BigImage-png.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_BigImage-tif-lzw.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_BigImage-tif.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_closedBezier.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_dashedBezier.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_dashedStyledClosedBezier.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_hello_05.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_LineArtsCompletely.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_lineArtsPartially.pdf" />
@@ -276,6 +279,9 @@
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_simpleImmediate-tm.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_simpleImmediate.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_smaskImage.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_styledLineArts.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\dashedBezier.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\dashedStyledClosedBezier.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\hello_05.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\lineArtsCompletely.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\lineArtsPartially.pdf" />
@@ -289,6 +295,7 @@
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\simpleImmediate-tm.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\simpleImmediate.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\smaskImage.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\styledLineArts.pdf" />
     <None Include="resources\text\pdf\PdfCopyTest\appearances1%28needAppearancesFalse%29.pdf" />
     <None Include="resources\text\pdf\PdfCopyTest\appearances1%28needAppearancesFalseWithStreams%29.pdf" />
     <None Include="resources\text\pdf\PdfCopyTest\appearances1.pdf" />
