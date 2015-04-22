@@ -30,6 +30,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private static readonly byte[] n = DocWriter.GetISOBytes("n\n");
         private static readonly byte[] W = DocWriter.GetISOBytes("W\n");
         private static readonly byte[] eoW = DocWriter.GetISOBytes("W*\n");
+        private static readonly byte[] q = DocWriter.GetISOBytes("q\n");
+        private static readonly byte[] Q = DocWriter.GetISOBytes("Q\n");
 
         private static readonly HashSet2<String> textShowingOperators = new HashSet2<String>(new string[] {"TJ", "Tj", "'", "\""});
         private static readonly HashSet2<String> pathConstructionOperators = new HashSet2<String>(new string[] {"m", "l", "c", "v", "y", "h", "re"});
@@ -40,6 +42,10 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private static readonly HashSet2<String> pathPaintingOperators; // initialized in the static constructor
 
         private static readonly HashSet2<String> clippingPathOperators = new HashSet2<String>(new string[] {"W", "W*"});
+
+        private static readonly HashSet2<String> lineStyleOperators = new HashSet2<String>(new string[] {"w", "J", "j", "M", "d"}); 
+
+        private static readonly HashSet2<String> strokeColorOperators = new HashSet2<string>(new string[] {"CS", "SC", "SCN", "G", "RG", "K"}); 
 
         protected PdfCleanUpRenderListener cleanUpStrategy;
         protected IContentOperator originalContentOperator;
@@ -110,18 +116,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                         disableOutput = true;
                     }
                 }
-            } else if ("q" == operatorStr) {
-                cleanUpStrategy.Context.SaveGraphicsState();
-            } else if ("Q" == operatorStr) {
-                cleanUpStrategy.Context.RestoreGraphicsState();
-            } else if ("Tf" == operatorStr) {
-                cleanUpStrategy.Context.FontSize = ((PdfNumber) operands[1]).FloatValue;
-            } else if ("Tc" == operatorStr) {
-                cleanUpStrategy.Context.CharacterSpacing= ((PdfNumber) operands[0]).FloatValue;
-            } else if ("Tw" == operatorStr) {
-                cleanUpStrategy.Context.WordSpacing = ((PdfNumber) operands[0]).FloatValue;
-            } else if ("Tz" == operatorStr) {
-                cleanUpStrategy.Context.HorizontalScaling = ((PdfNumber) operands[0]).FloatValue;
+            } else if (lineStyleOperators.Contains(operatorStr)) {
+                disableOutput = true;
             } else if (textShowingOperators.Contains(operatorStr) && !AllChunksAreVisible(cleanUpStrategy.Chunks)) {
                 disableOutput = true;
 
@@ -133,31 +129,40 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
                     operands[1].ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
                     canvas.InternalBuffer.Append(TcTStar);
-
-                    cleanUpStrategy.Context.WordSpacing = ((PdfNumber) operands[0]).FloatValue;
-                    cleanUpStrategy.Context.CharacterSpacing = ((PdfNumber) operands[1]).FloatValue;
                 } else if ("TJ" == operatorStr) {
                     structuredTJoperands = StructureTJarray((PdfArray) operands[0]);
                 }
 
-                WriteTextChunks(structuredTJoperands, chunks, canvas);
-            } else if ("\"" == operatorStr) {
-                cleanUpStrategy.Context.WordSpacing = ((PdfNumber) operands[0]).FloatValue;
-                cleanUpStrategy.Context.CharacterSpacing = ((PdfNumber) operands[1]).FloatValue;
+                GraphicsState gs = pdfContentStreamProcessor.Gs();
+
+                WriteTextChunks(structuredTJoperands, chunks, canvas, gs.CharacterSpacing, gs.WordSpacing, 
+                    gs.FontSize, gs.HorizontalScaling);
             } else if (pathPaintingOperators.Contains(operatorStr)) {
                 WritePath(operatorStr, canvas);
+            } else if (strokeColorOperators.Contains(operatorStr)) {
+                // Replace current color with the new one.
+                cleanUpStrategy.Context.PopStrokeColor();
+                cleanUpStrategy.Context.PushStrokeColor(operands);
+            } else if ("q" == operatorStr) {
+                cleanUpStrategy.Context.PushStrokeColor(cleanUpStrategy.Context.PeekStrokeColor());
+            } else if ("Q" == operatorStr) {
+                cleanUpStrategy.Context.PopStrokeColor();
             }
 
             if (!disableOutput) {
-                int index = 0;
-
-                foreach (PdfObject o in operands) {
-                    ToPdf(o, canvas.PdfWriter, canvas.InternalBuffer);
-                    canvas.InternalBuffer.Append(operands.Count > ++index ? (byte) ' ' : (byte) '\n');
-                }
+                WriteOperands(canvas, operands);
             }
 
             cleanUpStrategy.ClearChunks();
+        }
+
+        private void WriteOperands(PdfContentByte canvas, IList<PdfObject> operands) {
+            int index = 0;
+
+            foreach (PdfObject o in operands) {
+                ToPdf(o, canvas.PdfWriter, canvas.InternalBuffer);
+                canvas.InternalBuffer.Append(operands.Count > ++index ? (byte) ' ' : (byte) '\n');
+            }
         }
 
         private bool AllChunksAreVisible(IList<PdfCleanUpContentChunk> chunks) {
@@ -237,16 +242,14 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         /**
          * Writes parts of text which are visible into a content stream.
          */
-        private void WriteTextChunks(IDictionary<int, float> structuredTJoperands, IList<PdfCleanUpContentChunk> chunks, PdfContentByte canvas) {
+        private void WriteTextChunks(IDictionary<int, float> structuredTJoperands, IList<PdfCleanUpContentChunk> chunks, PdfContentByte canvas, 
+                                     float characterSpacing, float wordSpacing, float fontSize, float horizontalScaling) {
             canvas.SetCharacterSpacing(0);
             canvas.SetWordSpacing(0);
             canvas.InternalBuffer.Append((byte) '[');
 
-            float characterSpacing = cleanUpStrategy.Context.CharacterSpacing;
-            float convertedCharacterSpacing = -characterSpacing * 1000f / cleanUpStrategy.Context.FontSize;
-
-            float wordSpacing = cleanUpStrategy.Context.WordSpacing;
-            float convertedWordSpacing = -wordSpacing * 1000f / cleanUpStrategy.Context.FontSize;
+            float convertedCharacterSpacing = -characterSpacing * 1000f / fontSize;
+            float convertedWordSpacing = -wordSpacing * 1000f / fontSize;
 
             float shift = structuredTJoperands != null ? structuredTJoperands[0] : 0;
             PdfCleanUpContentChunk.Text prevChunk = null;
@@ -269,7 +272,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
                     shift = convertedCharacterSpacing + (IsSpace(textChunk) ? convertedWordSpacing : 0);
                 } else {
-                    shift += GetUnscaledTextChunkWidth(textChunk);
+                    shift += GetUnscaledTextChunkWidth(textChunk, characterSpacing, wordSpacing, 
+                        fontSize, horizontalScaling);
                 }
 
                 prevChunk = textChunk;
@@ -298,20 +302,15 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
          * For details see PDF spec., Text Space Details, formula for "tx" coefficient
          * and TextRenderInfo class (getUnscaledBaseline)
          */
-        private float GetUnscaledTextChunkWidth(PdfCleanUpContentChunk.Text chunk) {
-            PdfCleanUpContext context = cleanUpStrategy.Context;
-            float fontSize = context.FontSize;
-            float characterSpacing = context.CharacterSpacing;
-            float wordSpacing = context.WordSpacing;
-            float horizontalScaling = context.HorizontalScaling;
-
+        private float GetUnscaledTextChunkWidth(PdfCleanUpContentChunk.Text chunk, float characterSpacing, 
+                                                float wordSpacing, float fontSize, float horizontalScaling) {
             // We should multiply by 100 because iText stores horizontal scaling as the value in [0, 1] interval;
             // also we need to add character and word spaces because TextRenderInfo class truncates them from the end of the string
             // (single character string in our case is also truncated)
             float scaledChunkWidth = (chunk.EndX - chunk.StartX) * 100f +
-                    (characterSpacing + (IsSpace(chunk) ? wordSpacing : 0)) * horizontalScaling;
+                    (characterSpacing + (IsSpace(chunk) ? wordSpacing : 0)) * horizontalScaling * 100f;
 
-            return -scaledChunkWidth * 1000f / (horizontalScaling * fontSize);
+            return -scaledChunkWidth * 1000f / (horizontalScaling * 100f * fontSize);
         }
 
         private bool IsSpace(PdfCleanUpContentChunk.Text chunk) {
@@ -351,17 +350,21 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             }
 
             if (nwFillOperators.Contains(operatorStr)) {
-                WriteFillAfterClip(canvas, cleanUpStrategy.CurrentFillPath, f, 
-                                   cleanUpStrategy.ClippingRule, PathPaintingRenderInfo.NONZERO_WINDING_RULE);
+                /* If clipping path isn't applied, then clippingRule will never be equal 
+                   to PathPaintingRenderInfo.NONZERO_WINDING_RULE and the path will be
+                   written to the content stream. */
+                int clippingRule = cleanUpStrategy.Clipped ? cleanUpStrategy.ClippingRule : PathPaintingRenderInfo.NONZERO_WINDING_RULE + 1;
+                WriteFillAfterClip(canvas, cleanUpStrategy.CurrentFillPath, f, clippingRule, PathPaintingRenderInfo.NONZERO_WINDING_RULE);
             } else if (eoFillOperators.Contains(operatorStr)) {
-                WriteFillAfterClip(canvas, cleanUpStrategy.CurrentFillPath, eoF,
-                                   cleanUpStrategy.ClippingRule, PathPaintingRenderInfo.EVEN_ODD_RULE);
+                // Similarly to the previous.
+                int clippingRule = cleanUpStrategy.Clipped ? cleanUpStrategy.ClippingRule : PathPaintingRenderInfo.EVEN_ODD_RULE + 1;
+                WriteFillAfterClip(canvas, cleanUpStrategy.CurrentFillPath, eoF, clippingRule, PathPaintingRenderInfo.EVEN_ODD_RULE);
             } else if (cleanUpStrategy.Clipped) {
                 canvas.InternalBuffer.Append(n);
             }
 
             if (strokeOperators.Contains(operatorStr)) {
-                WritePath(cleanUpStrategy.CurrentStrokePath, S, canvas);
+                WriteStroke(canvas, cleanUpStrategy.CurrentStrokePath);
             }
 
             cleanUpStrategy.Clipped = false;
@@ -442,6 +445,20 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                 canvas.InternalBuffer.Append(n);
                 WritePath(path, fillOperator, canvas);
             }
+        }
+
+        private void WriteStroke(PdfContentByte canvas, Path path) {
+            canvas.InternalBuffer.Append(q);
+
+            IList<PdfObject> strokeColorOperands = cleanUpStrategy.Context.PeekStrokeColor();
+            String strokeOperatorStr = strokeColorOperands[strokeColorOperands.Count - 1].ToString();
+            // Below expression converts stroke color operator to its fill analogue.
+            strokeColorOperands[strokeColorOperands.Count - 1] = new PdfLiteral(strokeOperatorStr.ToLower());
+            WriteOperands(canvas, strokeColorOperands);
+
+            WritePath(cleanUpStrategy.CurrentStrokePath, f, canvas);
+
+            canvas.InternalBuffer.Append(Q);
         }
     }
 }

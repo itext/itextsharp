@@ -47,7 +47,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
-	<Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="iTextSharp\text\pdf\mc\MCFieldFlattener.cs" />
@@ -62,7 +62,6 @@
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpContentOperator.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpContext.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpCoveredArea.cs" />
-    <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpGraphicsState.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpLocation.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpProcessor.cs" />
     <Compile Include="iTextSharp\text\pdf\pdfcleanup\PdfCleanUpRegionFilter.cs" />

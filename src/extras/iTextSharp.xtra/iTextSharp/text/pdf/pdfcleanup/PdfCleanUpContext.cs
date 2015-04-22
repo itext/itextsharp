@@ -14,13 +14,21 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private PdfDictionary resources;
         private PdfContentByte canvas;
 
-        private Stack<PdfCleanUpGraphicsState> graphicsStateStack = new Stack<PdfCleanUpGraphicsState>();
+        /**
+         * PdfContentStreamProcessor is able to process only Device* color spaces,
+         * so I had to add this workaround.
+         */
+        private Stack<IList<PdfObject>> strokeColorOperands;
 
-        public PdfCleanUpContext(PdfDictionary resources, PdfContentByte canvas) {
+        public PdfCleanUpContext() {
+            IList<PdfObject> initialStrokeColor = new List<PdfObject>(new PdfObject[] { PdfName.DEVICEGRAY, new PdfLiteral("CS") });
+            strokeColorOperands = new Stack<IList<PdfObject>>();
+            strokeColorOperands.Push(initialStrokeColor);
+        }
+
+        public PdfCleanUpContext(PdfDictionary resources, PdfContentByte canvas) : this() {
             this.resources = resources;
             this.canvas = canvas;
-
-            graphicsStateStack.Push(new PdfCleanUpGraphicsState());
         }
 
         public PdfDictionary Resources {
@@ -33,32 +41,20 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             set { canvas = value; }
         }
 
-        public virtual float FontSize {
-            get { return graphicsStateStack.Peek().FontSize; }
-            set { graphicsStateStack.Peek().FontSize = value; }
+        public void PushStrokeColor(IList<PdfObject> strokeColorOperands) {
+            this.strokeColorOperands.Push(strokeColorOperands);
         }
 
-        public virtual float HorizontalScaling {
-            get { return graphicsStateStack.Peek().HorizontalScaling; }
-            set { graphicsStateStack.Peek().HorizontalScaling = value; }
+        public IList<PdfObject> PeekStrokeColor() {
+            if (strokeColorOperands.Count == 0) {
+                return null;
+            } else {
+                return strokeColorOperands.Peek();
+            }
         }
 
-        public virtual float CharacterSpacing {
-            get { return graphicsStateStack.Peek().CharacterSpacing; }
-            set { graphicsStateStack.Peek().CharacterSpacing = value; }
-        }
-
-        public virtual float WordSpacing {
-            get { return graphicsStateStack.Peek().WordSpacing; }
-            set { graphicsStateStack.Peek().WordSpacing = value; }
-        }
-
-        public void SaveGraphicsState() {
-            graphicsStateStack.Push(new PdfCleanUpGraphicsState(graphicsStateStack.Peek()));
-        }
-
-        public void RestoreGraphicsState() {
-            graphicsStateStack.Pop();
+        public IList<PdfObject> PopStrokeColor() {
+            return strokeColorOperands.Pop();
         }
     }
 }

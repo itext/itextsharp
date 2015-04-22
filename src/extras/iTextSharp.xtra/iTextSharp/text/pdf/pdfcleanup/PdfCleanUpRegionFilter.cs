@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.util;
@@ -6,6 +7,8 @@ using iTextSharp.awt.geom;
 using iTextSharp.text;
 using iTextSharp.text.pdf.parser;
 using System.util;
+using System.util.collections;
+using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.parser.clipper;
 
 namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
@@ -58,11 +61,35 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             return new PdfCleanUpCoveredArea(transformedIntersection, imageRect.Equals(intersectionRect));
         }
 
+        protected internal virtual Path FilterStrokePath(Path path, Matrix ctm, float lineWidth, int lineCapStyle,
+                                                int lineJoinStyle, float miterLimit, LineDashPattern lineDashPattern) {
+            JoinType joinType = GetJoinType(lineJoinStyle);
+            EndType endType = GetEndType(lineCapStyle);
+
+            if (lineDashPattern != null) {
+                if (IsZeroDash(lineDashPattern)) {
+                    return new Path();
+                }
+                
+                if (!IsSolid(lineDashPattern)) {
+                    path = ApplyDashPattern(path, lineDashPattern);
+                }
+            }
+
+            ClipperOffset offset = new ClipperOffset(miterLimit, PdfCleanUpProcessor.ArcTolerance * PdfCleanUpProcessor.FloatMultiplier);
+            AddPath(offset, path, joinType, endType);
+
+            PolyTree resultTree = new PolyTree();
+            offset.Execute(ref resultTree, lineWidth * PdfCleanUpProcessor.FloatMultiplier / 2);
+
+            return FilterFillPath(ConvertToPath(resultTree), ctm, PathPaintingRenderInfo.NONZERO_WINDING_RULE);
+        }
+
         /**
          * @param fillingRule If the subpath is contour, pass any value.
          */
-        protected internal virtual Path FilterPath(Path path, Matrix ctm, Boolean isContour, int fillingRule) {
-            Point2D[] transfRectVertices = TransformPoints(ctm, false, GetVertices(rectangle));
+        protected internal virtual Path FilterFillPath(Path path, Matrix ctm, int fillingRule) {
+            Point2D[] transfRectVertices = TransformPoints(ctm, true, GetVertices(rectangle));
             PolyFillType fillType = PolyFillType.pftNonZero;
 
             if (fillingRule == PathPaintingRenderInfo.EVEN_ODD_RULE) {
@@ -77,6 +104,48 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             clipper.Execute(ClipType.ctDifference, resultTree, fillType, PolyFillType.pftNonZero);
 
             return ConvertToPath(resultTree);
+        }
+
+        private static JoinType GetJoinType(int lineJoinStyle) {
+            switch (lineJoinStyle) {
+                case PdfContentByte.LINE_JOIN_BEVEL:
+                    return JoinType.jtSquare;
+
+                case PdfContentByte.LINE_JOIN_MITER:
+                    return JoinType.jtMiter;
+            }
+
+            return JoinType.jtRound;
+        }
+
+        private static EndType GetEndType(int lineCapStyle) {
+            switch (lineCapStyle) {
+                case PdfContentByte.LINE_CAP_BUTT:
+                    return EndType.etOpenButt;
+
+                case PdfContentByte.LINE_CAP_PROJECTING_SQUARE:
+                    return EndType.etOpenSquare;
+            }
+
+            return EndType.etOpenRound;
+        }
+
+        private static void AddPath(ClipperOffset offset, Path path, JoinType joinType, EndType endType) {
+            foreach (Subpath subpath in path.Subpaths) {
+                if (!subpath.IsSinglePointClosed() && !subpath.IsSinglePointOpen()) {
+                    EndType et;
+
+                    if (subpath.Closed) {
+                        // Offsetting is never used for path being filled
+                        et = EndType.etClosedLine;
+                    } else {
+                        et = endType;
+                    }
+
+                    IList<Point2D> linearApproxPoints = subpath.GetPiecewiseLinearApproximation();
+                    offset.AddPath(ConvertToIntPoints(linearApproxPoints), joinType, et);
+                }
+            }
         }
 
         private static void AddPath(Clipper clipper, Path path) {
@@ -107,8 +176,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             IList<Point2D> convertedPoints = new List<Point2D>(points.Count);
 
             foreach (IntPoint point in points) {
-                convertedPoints.Add(new Point2D.Double(point.X / PdfCleanUpProcessor.FloatMultiplier,
-                                                       point.Y / PdfCleanUpProcessor.FloatMultiplier));
+                convertedPoints.Add(new Point2D.Float((float) (point.X / PdfCleanUpProcessor.FloatMultiplier),
+                                                      (float) (point.Y / PdfCleanUpProcessor.FloatMultiplier)));
             }
 
             return convertedPoints;
@@ -206,6 +275,111 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             double top = Util.Max(ys);
 
             return new Rectangle((float)left, (float)bottom, (float)right, (float)top);
+        }
+
+        private static bool IsZeroDash(LineDashPattern lineDashPattern) {
+            PdfArray dashArray = lineDashPattern.DashArray;
+            float total = 0;
+
+            // We should only iterate over the numbers specifying lengths of dashes
+            for (int i = 0; i < dashArray.Size; i += 2) {
+                float currentDash = ((PdfNumber) dashArray[i]).FloatValue;
+                // Should be nonnegative according to spec.
+                if (currentDash < 0) {
+                    currentDash = 0;
+                }
+
+                total += currentDash;
+            }
+
+            return Util.compare(total, 0) == 0;
+        }
+
+        private static bool IsSolid(LineDashPattern lineDashPattern) {
+            return lineDashPattern.DashArray.IsEmpty();
+        }
+
+        private static Path ApplyDashPattern(Path path, LineDashPattern lineDashPattern) {
+            path.ReplaceCloseWithLine();
+            Path dashedPath = new Path();
+
+            foreach (Subpath subpath in path.Subpaths) {
+                IList<Point2D> subpathApprox = subpath.GetPiecewiseLinearApproximation();
+
+                if (subpathApprox.Count > 1) {
+                    dashedPath.MoveTo((float) subpathApprox[0].GetX(), (float) subpathApprox[0].GetY());
+                    float remainingDist = 0;
+                    bool remainingIsGap = false;
+
+                    for (int i = 1; i < subpathApprox.Count; ++i) {
+                        Point2D nextPoint = null;
+
+                        if (remainingDist != 0) {
+                            nextPoint = GetNextPoint(subpathApprox[i - 1], subpathApprox[i], remainingDist);
+                            remainingDist = ApplyDash(dashedPath, subpathApprox[i - 1], subpathApprox[i], nextPoint, remainingIsGap);
+                        }
+
+                        while ((Util.compare(remainingDist, 0) == 0) && !dashedPath.CurrentPoint.Equals(subpathApprox[i])) {
+                            LineDashPattern.DashArrayElem currentElem = lineDashPattern.Next();
+                            nextPoint = GetNextPoint(nextPoint ?? subpathApprox[i - 1], subpathApprox[i], currentElem.Value);
+                            remainingDist = ApplyDash(dashedPath, subpathApprox[i - 1], subpathApprox[i], nextPoint, currentElem.IsGap);
+                            remainingIsGap = currentElem.IsGap;
+                        }
+                    }
+                }
+
+                // According to PDF spec. line dash pattern should be restarted for each new subpath.
+                lineDashPattern.Reset();
+            }
+
+            return dashedPath;
+        }
+
+        private static Point2D GetNextPoint(Point2D segStart, Point2D segEnd, float dist) {
+            Point2D vector = ComponentwiseDiff(segEnd, segStart);
+            Point2D unitVector = GetUnitVector(vector);
+
+            return new Point2D.Float((float) (segStart.GetX() + dist * unitVector.GetX()),
+                                     (float) (segStart.GetY() + dist * unitVector.GetY()));
+        }
+
+        private static Point2D ComponentwiseDiff(Point2D minuend, Point2D subtrahend) {
+            return new Point2D.Float((float) (minuend.GetX() - subtrahend.GetX()),
+                                     (float) (minuend.GetY() - subtrahend.GetY()));
+        }
+
+        private static Point2D GetUnitVector(Point2D vector) {
+            double vectorLength = GetVectorEuclideanNorm(vector);
+            return new Point2D.Float((float) (vector.GetX() / vectorLength),
+                                     (float) (vector.GetY() / vectorLength));
+        }
+
+        private static double GetVectorEuclideanNorm(Point2D vector) {
+            return vector.Distance(0, 0);
+        }
+
+        private static float ApplyDash(Path dashedPath, Point2D segStart, Point2D segEnd, Point2D dashTo, bool isGap) {
+            float remainingDist = 0;
+
+            if (!LiesOnSegment(segStart, segEnd, dashTo)) {
+                remainingDist = (float) dashTo.Distance(segEnd);
+                dashTo = segEnd;
+            }
+
+            if (isGap) {
+                dashedPath.MoveTo((float) dashTo.GetX(), (float) dashTo.GetY());
+            } else {
+                dashedPath.LineTo((float) dashTo.GetX(), (float) dashTo.GetY());
+            }
+
+            return remainingDist;
+        }
+
+        private static bool LiesOnSegment(Point2D segStart, Point2D segEnd, Point2D point) {
+            return point.GetX() >= Math.Min(segStart.GetX(), segEnd.GetX()) &&
+                   point.GetX() <= Math.Max(segStart.GetX(), segEnd.GetX()) &&
+                   point.GetY() >= Math.Min(segStart.GetY(), segEnd.GetY()) &&
+                   point.GetY() <= Math.Max(segStart.GetY(), segEnd.GetY());
         }
 
         private static bool ContainsAll(RectangleJ rect, params Point2D[] points) {

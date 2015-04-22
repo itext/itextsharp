@@ -42,6 +42,9 @@
  * For more information, please contact iText Software Corp. at this
  * address: sales@itextpdf.com
  */
+
+using iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup;
+
 namespace iTextSharp.text.pdf.parser {
 
     /**
@@ -102,6 +105,12 @@ namespace iTextSharp.text.pdf.parser {
         internal BaseColor fillColor;
         /** The current stroke color. */
         internal BaseColor strokeColor;
+
+        private float lineWidth;
+        private int lineCapStyle;
+        private int lineJoinStyle;
+        private float miterLimit;
+        private LineDashPattern lineDashPattern;
         
         /**
          * Constructs a new Graphics State object with the default values.
@@ -121,6 +130,10 @@ namespace iTextSharp.text.pdf.parser {
             colorSpaceStroke = null;
             fillColor = null;
             strokeColor = null;
+            lineWidth = 1.0f;
+            lineCapStyle = PdfContentByte.LINE_CAP_BUTT;
+            lineJoinStyle = PdfContentByte.LINE_JOIN_MITER;
+            miterLimit = 10.0f;
         }
         
         /**
@@ -144,6 +157,14 @@ namespace iTextSharp.text.pdf.parser {
             colorSpaceStroke = source.colorSpaceStroke;
             fillColor = source.fillColor;
             strokeColor = source.strokeColor;
+            lineWidth = source.lineWidth;
+            lineCapStyle = source.lineCapStyle;
+            lineJoinStyle = source.lineJoinStyle;
+            miterLimit = source.miterLimit;
+
+            if (source.lineDashPattern != null) {
+                lineDashPattern = new LineDashPattern(source.lineDashPattern.DashArray, source.lineDashPattern.DashPhase);
+            }
         }
 
         /**
@@ -268,6 +289,38 @@ namespace iTextSharp.text.pdf.parser {
         virtual public BaseColor StrokeColor
         {
             get { return strokeColor; }
+        }
+
+        public float LineWidth {
+            get { return lineWidth; }
+            set { lineWidth = value; }
+        }
+
+        public int LineCapStyle {
+            get { return lineCapStyle; }
+            set { lineCapStyle = value; }
+        }
+
+        public int LineJoinStyle {
+            get { return lineJoinStyle; }
+            set { lineJoinStyle = value; }
+        }
+
+        public float MiterLimit {
+            get { return miterLimit; }
+            set { miterLimit = value; }
+        }
+
+        /**
+         * @return {@link LineDashPattern} object, describing the dash pattern which should be applied.
+         *         If no pattern should be applied (i.e. solid line), then returns <CODE>null</CODE>.
+         */
+        public virtual LineDashPattern GetLineDashPattern() {
+            return lineDashPattern;
+        }
+
+        public virtual void SetLineDashPattern(LineDashPattern lineDashPattern) {
+            this.lineDashPattern = new LineDashPattern(lineDashPattern.DashArray, lineDashPattern.DashPhase);
         }
     }
 }
