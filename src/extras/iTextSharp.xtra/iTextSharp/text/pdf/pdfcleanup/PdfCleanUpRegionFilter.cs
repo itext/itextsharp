@@ -89,7 +89,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
          * @param fillingRule If the subpath is contour, pass any value.
          */
         protected internal virtual Path FilterFillPath(Path path, Matrix ctm, int fillingRule) {
-            Point2D[] transfRectVertices = TransformPoints(ctm, false, GetVertices(rectangle));
+            Point2D[] transfRectVertices = TransformPoints(ctm, true, GetVertices(rectangle));
             PolyFillType fillType = PolyFillType.pftNonZero;
 
             if (fillingRule == PathPaintingRenderInfo.EVEN_ODD_RULE) {
@@ -133,13 +133,17 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private static void AddPath(ClipperOffset offset, Path path, JoinType joinType, EndType endType) {
             foreach (Subpath subpath in path.Subpaths) {
                 if (!subpath.IsSinglePointClosed() && !subpath.IsSinglePointOpen()) {
-                    // Offsetting is never used for path to be filled
+                    EndType et;
+
                     if (subpath.Closed) {
-                        endType = EndType.etClosedLine;
+                        // Offsetting is never used for path being filled
+                        et = EndType.etClosedLine;
+                    } else {
+                        et = endType;
                     }
 
                     IList<Point2D> linearApproxPoints = subpath.GetPiecewiseLinearApproximation();
-                    offset.AddPath(ConvertToIntPoints(linearApproxPoints), joinType, endType);
+                    offset.AddPath(ConvertToIntPoints(linearApproxPoints), joinType, et);
                 }
             }
         }
