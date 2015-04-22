@@ -448,7 +448,7 @@ namespace iTextSharp.text.pdf {
                         // we try to add the chunk to the line, until we succeed
                         {
                             PdfChunk overflow;
-                            while ((overflow = line.Add(chunk)) != null) {
+                            while ((overflow = line.Add(chunk, leading)) != null) {
                                 CarriageReturn();
                                 bool newlineSplit = chunk.IsNewlineSplit();
                                 chunk = overflow;
