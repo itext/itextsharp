@@ -368,12 +368,12 @@ namespace iTextSharp.text {
         /**
         * Gets the leading that can be used with this font.
         * 
-        * @param linespacing
-        *            a certain linespacing
+        * @param multipliedLeading
+        *            a certain multipliedLeading
         * @return the height of a line
         */
-        virtual public float GetCalculatedLeading(float linespacing) {
-            return linespacing * CalculatedSize;
+        virtual public float GetCalculatedLeading(float multipliedLeading) {
+            return multipliedLeading * CalculatedSize;
         }
 
         // STYLE
