@@ -10,6 +10,7 @@ using NUnit.Framework;
 using Org.BouncyCastle.Utilities;
 
 namespace itextsharp.tests.iTextSharp.text.pdf.pdfcleanup {
+
     class PdfCleanUpProcessorTest {
 
         private static readonly string INPUT_PATH = @"..\..\resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\";
@@ -60,7 +61,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf.pdfcleanup {
                 new object[]{"dashedStyledClosedBezier.pdf", "dashedStyledClosedBezier.pdf", "cmp_dashedStyledClosedBezier.pdf", null},
                 new object[]{"styledLineArts.pdf", "styledLineArts.pdf", "cmp_styledLineArts.pdf", null},
                 new object[]{"dashedBezier.pdf", "dashedBezier.pdf", "cmp_dashedBezier.pdf", null},
-                new object[]{"closedBezier.pdf", "closedBezier.pdf", "cmp_closedBezier.pdf", null}
+                new object[]{"closedBezier.pdf", "closedBezier.pdf", "cmp_closedBezier.pdf", null},
+                new object[]{"clippingNWRule.pdf", "clippingNWRule.pdf", "cmp_clippingNWRule.pdf", null}
             };
         }
 

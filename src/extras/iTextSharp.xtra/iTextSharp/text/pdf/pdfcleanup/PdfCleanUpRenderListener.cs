@@ -35,9 +35,11 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         // Represents actual current path to be filled.
         private Path currentFillPath = new Path();
 
-        // Represents new clipping path 
-        // In general case, after redaction, it isn't the same as the currentFillPath because of the
-        // possibility to apply different filling rules for clipping and filling.
+        // Represents the latest path used as a new clipping path. If the new path from the source document
+        // is cleaned, then you should treat it as an empty set. Then the intersection (current clipping path)
+        // between previous clipping path and the new one is also empty set, which means that there is no visible 
+        // content at all. But we also can't write invisible content, which wasn't cleaned, to the resultant document, 
+        // because in this case it will become visible. The latter case is incorrect from user's point of view.
         private Path newClippingPath;
 
         private bool clipPath;
@@ -46,6 +48,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         public PdfCleanUpRenderListener(PdfStamper pdfStamper, IList<PdfCleanUpRegionFilter> filters) {
             this.pdfStamper = pdfStamper;
             this.filters = filters;
+            InitClippingPath();
         }
 
         public virtual void RenderText(TextRenderInfo renderInfo) {
@@ -53,11 +56,19 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                 return;
             }
 
-            foreach (TextRenderInfo ri in renderInfo.GetCharacterRenderInfos()) {
-                bool textIsInsideRegion = TextIsInsideRegion(ri);
-                LineSegment baseline = ri.GetUnscaledBaseline();
+            // if true, than clipping path was completely cleaned
+            if (newClippingPath.IsEmpty()) {
+                LineSegment baseline = renderInfo.GetUnscaledBaseline();
+                chunks.Add(new PdfCleanUpContentChunk.Text(renderInfo.PdfString, baseline.GetStartPoint(), 
+                    baseline.GetEndPoint(), false, strNumber));
+            } else {
+                foreach (TextRenderInfo ri in renderInfo.GetCharacterRenderInfos()) {
+                    bool textIsInsideRegion = TextIsInsideRegion(ri);
+                    LineSegment baseline = ri.GetUnscaledBaseline();
 
-                chunks.Add(new PdfCleanUpContentChunk.Text(ri.PdfString, baseline.GetStartPoint(), baseline.GetEndPoint(), !textIsInsideRegion, strNumber));
+                    chunks.Add(new PdfCleanUpContentChunk.Text(ri.PdfString, baseline.GetStartPoint(),
+                        baseline.GetEndPoint(), !textIsInsideRegion, strNumber));
+                }
             }
 
             ++strNumber;
@@ -66,7 +77,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         public virtual void RenderImage(ImageRenderInfo renderInfo) {
             IList<Rectangle> areasToBeCleaned = GetImageAreasToBeCleaned(renderInfo);
 
-            if (areasToBeCleaned == null) {
+            if (areasToBeCleaned == null || newClippingPath.IsEmpty()) {
                 chunks.Add(new PdfCleanUpContentChunk.Image(false, null));
             } else {
                 PdfImageObject pdfImage = renderInfo.GetImage();
@@ -100,6 +111,11 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
         public virtual void ModifyPath(PathConstructionRenderInfo renderInfo) {
+            // See the comment on the newClippingPath field.
+            if (newClippingPath.IsEmpty()) {
+                return;
+            }
+
             IList<float> segmentData = renderInfo.SegmentData;
 
             switch (renderInfo.Operation) {
@@ -135,6 +151,14 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
         public virtual Path RenderPath(PathPaintingRenderInfo renderInfo) {
+            // If previous clipping is empty, then we shouldn't compute the new one
+            // because their intersection is empty.
+            if (newClippingPath.IsEmpty()) {
+                currentStrokePath = new Path();
+                currentFillPath = currentStrokePath;
+                return newClippingPath;
+            }
+
             bool stroke = (renderInfo.Operation & PathPaintingRenderInfo.STROKE) != 0;
             bool fill = (renderInfo.Operation & PathPaintingRenderInfo.FILL) != 0;
 
@@ -214,6 +238,14 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         public virtual void ClearChunks() {
             chunks.Clear();
             strNumber = 1;
+        }
+
+        private void InitClippingPath() {
+            /* For our purposes it is enough to initialize clipping path as arbitrary !non-empty! path.
+               In other cases, initially, it shall include the entire page as it stated in PDF spec. */
+            newClippingPath = new Path();
+            newClippingPath.MoveTo(30, 30);
+            newClippingPath.LineTo(30, 40);
         }
 
         private bool TextIsInsideRegion(TextRenderInfo renderInfo) {
