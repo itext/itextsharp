@@ -67,6 +67,12 @@ namespace iTextSharp.text.pdf.parser {
         private double[] fontMatrix = null;
 
         /**
+         * ! .NET SPECIFIC ! 
+         * is used for caching "UTF-16BE" encoding to improve performance
+         */
+        private static Encoding utf_16BeEncoding;
+
+        /**
          * Array containing marked content info for the text.
          * @since 5.0.2
          */
@@ -84,8 +90,10 @@ namespace iTextSharp.text.pdf.parser {
             this.textToUserSpaceTransformMatrix = textMatrix.Multiply(gs.ctm);
             this.gs = gs;
             this.markedContentInfos = new List<MarkedContentInfo>();
-            foreach (MarkedContentInfo m in markedContentInfo) {
-                this.markedContentInfos.Add(m);
+            if (markedContentInfo.Count > 0) { // check for performance purposes, as markedContentInfo.GetEnumerator is a costly operation for some reason
+                foreach (MarkedContentInfo m in markedContentInfo) {
+                    this.markedContentInfos.Add(m);
+                }
             }
             this.fontMatrix = gs.font.GetFontMatrix();
         }
@@ -410,7 +418,7 @@ namespace iTextSharp.text.pdf.parser {
             if (singleCharString == false)
                 throw new InvalidOperationException();
             float[] result = new float[2];
-            String decoded = Decode(@string);
+            String decoded = DecodeSingleCharacter(@string);
             result[0] = (float) (gs.font.GetWidth(GetCharCode(decoded)) * fontMatrix[0]);
             result[1] = decoded.Equals(" ") ? gs.wordSpacing : 0;
             return result;
@@ -428,6 +436,17 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
+         * Decodes a single character PdfString (which will contain glyph ids encoded in the font's encoding)
+         * based on the active font, and determine the unicode equivalent
+         * @param in	the String that needs to be encoded
+         * @return	    the encoded String
+         */
+        private String DecodeSingleCharacter(PdfString @in) {
+            byte[] bytes = @in.GetBytes();
+            return gs.font.DecodeSingleCharacter(bytes, 0, bytes.Length);
+        }
+
+        /**
          * Converts a single character string to char code.
          *
          * @param string single character string to convert to.
@@ -435,7 +454,7 @@ namespace iTextSharp.text.pdf.parser {
          */
         private int GetCharCode(String @string) {
             try {
-                byte[] b = Encoding.GetEncoding("UTF-16BE").GetBytes(@string);
+                byte[] b = Utf_16BeEncoding.GetBytes(@string);
                 int value = 0;
                 for (int i = 0; i < b.Length - 1; i++) {
                     value += b[i] & 0xff;
@@ -462,7 +481,7 @@ namespace iTextSharp.text.pdf.parser {
             String stringValue = @string.ToString();
             for (int i = 0; i < stringValue.Length; i++) {
                 PdfString newString = new PdfString(stringValue.Substring(i, 1), @string.Encoding);
-                String text = Decode(newString);
+                String text = DecodeSingleCharacter(newString);
                 if (text.Length == 0 && i < stringValue.Length - 1) {
                     newString = new PdfString(stringValue.Substring(i, 2), @string.Encoding);
                     i++;
@@ -470,6 +489,14 @@ namespace iTextSharp.text.pdf.parser {
                 strings.Add(newString);
             }
             return strings.ToArray();
+        }
+
+        private Encoding Utf_16BeEncoding {
+            get {
+                if (utf_16BeEncoding != null)
+                    return utf_16BeEncoding;
+                else return utf_16BeEncoding = Encoding.GetEncoding("UTF-16BE");
+            }
         }
     }
 }
