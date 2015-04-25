@@ -162,6 +162,13 @@ namespace iTextSharp.text.pdf.parser {
             }
         }
 
+        /**
+         * Path is empty if it contains no subpaths.
+         */
+        public virtual bool IsEmpty() {
+            return subpaths.Count == 0;
+        }
+
         private Subpath LastSubpath {
             get { return subpaths.Count > 0 ? subpaths[subpaths.Count - 1] : null; }
         }

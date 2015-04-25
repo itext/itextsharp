@@ -338,40 +338,26 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
         private void WritePath(String operatorStr, PdfContentByte canvas) {
-            if (cleanUpStrategy.Clipped) {
-                byte[] clippingOperator = (cleanUpStrategy.ClippingRule == PathPaintingRenderInfo.NONZERO_WINDING_RULE) ? W : eoW;
-                WritePath(cleanUpStrategy.NewClipPath, clippingOperator, canvas);
-
-                if ("n".Equals(operatorStr)) {
-                    canvas.InternalBuffer.Append(n);
-                    cleanUpStrategy.Clipped = false;
-                    return;
-                }
-            }
-
             if (nwFillOperators.Contains(operatorStr)) {
-                /* If clipping path isn't applied, then clippingRule will never be equal 
-                   to PathPaintingRenderInfo.NONZERO_WINDING_RULE and the path will be
-                   written to the content stream. */
-                int clippingRule = cleanUpStrategy.Clipped ? cleanUpStrategy.ClippingRule : PathPaintingRenderInfo.NONZERO_WINDING_RULE + 1;
-                WriteFillAfterClip(canvas, cleanUpStrategy.CurrentFillPath, f, clippingRule, PathPaintingRenderInfo.NONZERO_WINDING_RULE);
+                WritePath(cleanUpStrategy.CurrentFillPath, f, canvas);
             } else if (eoFillOperators.Contains(operatorStr)) {
-                // Similarly to the previous.
-                int clippingRule = cleanUpStrategy.Clipped ? cleanUpStrategy.ClippingRule : PathPaintingRenderInfo.EVEN_ODD_RULE + 1;
-                WriteFillAfterClip(canvas, cleanUpStrategy.CurrentFillPath, eoF, clippingRule, PathPaintingRenderInfo.EVEN_ODD_RULE);
-            } else if (cleanUpStrategy.Clipped) {
-                canvas.InternalBuffer.Append(n);
+                WritePath(cleanUpStrategy.CurrentFillPath, eoF, canvas);
             }
 
             if (strokeOperators.Contains(operatorStr)) {
                 WriteStroke(canvas, cleanUpStrategy.CurrentStrokePath);
             }
 
-            cleanUpStrategy.Clipped = false;
+            if (cleanUpStrategy.Clipped && !cleanUpStrategy.NewClipPath.IsEmpty()) {
+                byte[] clippingOperator = (cleanUpStrategy.ClippingRule == PathPaintingRenderInfo.NONZERO_WINDING_RULE) ? W : eoW;
+                WritePath(cleanUpStrategy.NewClipPath, clippingOperator, canvas);
+                canvas.InternalBuffer.Append(n);
+                cleanUpStrategy.Clipped = false;
+            }
         }
 
         private void WritePath(Path path, byte[] pathPaintingOperator, PdfContentByte canvas) {
-            if (path.Subpaths.Count == 0) {
+            if (path.IsEmpty()) {
                 return;
             }
 
@@ -436,15 +422,6 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
             new PdfNumber(destination.GetY()).ToPdf(canvas.PdfWriter, canvas.InternalBuffer);
             canvas.InternalBuffer.Append(l);
-        }
-
-        private void WriteFillAfterClip(PdfContentByte canvas, Path path, byte[] fillOperator, int clippingRule, int fillRule) {
-            if (clippingRule == fillRule) {
-                canvas.InternalBuffer.Append(fillOperator);
-            } else {
-                canvas.InternalBuffer.Append(n);
-                WritePath(path, fillOperator, canvas);
-            }
         }
 
         private void WriteStroke(PdfContentByte canvas, Path path) {
