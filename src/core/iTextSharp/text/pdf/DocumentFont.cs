@@ -53,6 +53,7 @@ namespace iTextSharp.text.pdf {
         private String fontName;
         private PRIndirectReference refFont;
         private PdfDictionary font;
+        private double[] fontMatrix;
         private IntHashtable uni2byte = new IntHashtable();
         private IntHashtable byte2uni = new IntHashtable();
         private IntHashtable diffmap;
@@ -90,6 +91,7 @@ namespace iTextSharp.text.pdf {
             8212,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
             0,198,0,170,0,0,0,0,321,216,338,186,0,0,0,0,
             0,230,0,0,0,305,0,0,322,248,339,223,0,0,0,0};
+
 
         /** Creates a new instance of DocumentFont */
         internal DocumentFont(PdfDictionary font) {
@@ -819,10 +821,11 @@ namespace iTextSharp.text.pdf {
 
 
         public override double[] GetFontMatrix() {
-            if (font.GetAsArray(PdfName.FONTMATRIX) != null)
-                return font.GetAsArray(PdfName.FONTMATRIX).AsDoubleArray();
-            else
-                return DEFAULT_FONT_MATRIX;
+            if (fontMatrix == null) {
+                PdfArray array = font.GetAsArray(PdfName.FONTMATRIX);
+                fontMatrix = array != null ? array.AsDoubleArray() : DEFAULT_FONT_MATRIX;
+            }
+            return fontMatrix;
         }
 
         public override bool SetKerning(int char1, int char2, int kern) {
