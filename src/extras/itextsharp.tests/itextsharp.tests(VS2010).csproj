@@ -268,6 +268,7 @@
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_clippingNWRule.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_closedBezier.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_dashedBezier.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_dashedClosedRotatedTriangles.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_dashedStyledClosedBezier.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_hello_05.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_LineArtsCompletely.pdf" />
@@ -284,6 +285,7 @@
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_smaskImage.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\cmp_styledLineArts.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\dashedBezier.pdf" />
+    <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\dashedClosedRotatedTriangles.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\dashedStyledClosedBezier.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\hello_05.pdf" />
     <None Include="resources\text\pdf\pdfcleanup\PdfCleanUpProcessorTest\lineArtsCompletely.pdf" />
