@@ -81,7 +81,7 @@ namespace iTextSharp.text.pdf.parser {
             if (currentPoint == null) {
                 throw new Exception(START_PATH_ERR_MSG);
             }
-            // numbered in natural order
+            // Numbered in natural order
             Point2D secondPoint = new Point2D.Float(x1, y1);
             Point2D thirdPoint = new Point2D.Float(x2, y2);
             Point2D fourthPoint = new Point2D.Float(x3, y3);
@@ -152,14 +152,28 @@ namespace iTextSharp.text.pdf.parser {
         /**
          * Adds additional line to each closed subpath and makes the subpath unclosed. 
          * The line connects the last and the first points of the subpaths.
+         * 
+         * @returns Indices of modified subpaths.
          */
-        public virtual void ReplaceCloseWithLine() {
+        public virtual IList<int> ReplaceCloseWithLine() {
+            IList<int> modifiedSubpathsIndeces = new List<int>();
+            int i = 0;
+
+            /* It could be replaced with "for" cycle, because IList in C# provides effective 
+             * access by index. In Java List interface has at least one implementation (LinkedList)
+             * which is "bad" for access elements by index.
+             */
             foreach (Subpath subpath in subpaths) {
                 if (subpath.Closed) {
                     subpath.Closed = false;
                     subpath.AddSegment(new Line(subpath.GetLastPoint(), subpath.GetStartPoint()));
+                    modifiedSubpathsIndeces.Add(i);
                 }
+
+                ++i;
             }
+
+            return modifiedSubpathsIndeces;
         }
 
         /**
