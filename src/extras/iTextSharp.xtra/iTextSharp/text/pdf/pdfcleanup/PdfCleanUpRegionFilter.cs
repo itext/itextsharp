@@ -300,8 +300,9 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
         private static Path ApplyDashPattern(Path path, LineDashPattern lineDashPattern) {
-            path.ReplaceCloseWithLine();
+            HashSet2<int> modifiedSubpaths = new HashSet2<int>(path.ReplaceCloseWithLine());
             Path dashedPath = new Path();
+            int currentSubpath = 0;
 
             foreach (Subpath subpath in path.Subpaths) {
                 IList<Point2D> subpathApprox = subpath.GetPiecewiseLinearApproximation();
@@ -326,10 +327,22 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                             remainingIsGap = currentElem.IsGap;
                         }
                     }
+
+                    // If true, then the line closing the subpath was explicitly added (see Path.ReplaceCloseWithLine).
+                    // This causes a loss of a visual effect of line join style parameter, so in this clause
+                    // we simply add overlapping dash (or gap, no matter), which continues the last dash and equals to 
+                    // the first dash (or gap) of the path.
+                    if (modifiedSubpaths.Contains(currentSubpath)) {
+                        lineDashPattern.Reset();
+                        LineDashPattern.DashArrayElem currentElem = lineDashPattern.Next();
+                        Point2D nextPoint = GetNextPoint(subpathApprox[0], subpathApprox[1], currentElem.Value);
+                        ApplyDash(dashedPath, subpathApprox[0], subpathApprox[1], nextPoint, currentElem.IsGap);
+                    }
                 }
 
                 // According to PDF spec. line dash pattern should be restarted for each new subpath.
                 lineDashPattern.Reset();
+                ++currentSubpath;
             }
 
             return dashedPath;

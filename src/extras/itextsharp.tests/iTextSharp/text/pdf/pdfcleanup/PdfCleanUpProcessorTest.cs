@@ -62,7 +62,8 @@ namespace itextsharp.tests.iTextSharp.text.pdf.pdfcleanup {
                 new object[]{"styledLineArts.pdf", "styledLineArts.pdf", "cmp_styledLineArts.pdf", null},
                 new object[]{"dashedBezier.pdf", "dashedBezier.pdf", "cmp_dashedBezier.pdf", null},
                 new object[]{"closedBezier.pdf", "closedBezier.pdf", "cmp_closedBezier.pdf", null},
-                new object[]{"clippingNWRule.pdf", "clippingNWRule.pdf", "cmp_clippingNWRule.pdf", null}
+                new object[]{"clippingNWRule.pdf", "clippingNWRule.pdf", "cmp_clippingNWRule.pdf", null},
+                new object[]{"dashedClosedRotatedTriangles.pdf", "dashedClosedRotatedTriangles.pdf", "cmp_dashedClosedRotatedTriangles.pdf", null}
             };
         }
 
