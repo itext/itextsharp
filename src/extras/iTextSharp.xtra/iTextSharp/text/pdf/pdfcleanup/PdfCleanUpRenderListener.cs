@@ -21,7 +21,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private static readonly Color CLEANED_AREA_FILL_COLOR = Color.White;
 
         private PdfStamper pdfStamper;
-        private IList<PdfCleanUpRegionFilter> filters;
+        private PdfCleanUpRegionFilter filter;
         private IList<PdfCleanUpContentChunk> chunks = new List<PdfCleanUpContentChunk>();
         private Stack<PdfCleanUpContext> contextStack = new Stack<PdfCleanUpContext>();
         private int strNumber = 1; // Represents ordinal number of string under processing. Needed for processing TJ operator.
@@ -45,9 +45,9 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private bool clipPath;
         private int clippingRule;
 
-        public PdfCleanUpRenderListener(PdfStamper pdfStamper, IList<PdfCleanUpRegionFilter> filters) {
+        public PdfCleanUpRenderListener(PdfStamper pdfStamper, PdfCleanUpRegionFilter filter) {
             this.pdfStamper = pdfStamper;
-            this.filters = filters;
+            this.filter = filter;
             InitClippingPath();
         }
 
@@ -63,11 +63,11 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                     baseline.GetEndPoint(), false, strNumber));
             } else {
                 foreach (TextRenderInfo ri in renderInfo.GetCharacterRenderInfos()) {
-                    bool textIsInsideRegion = TextIsInsideRegion(ri);
+                    bool isAllowed = filter.AllowText(ri);
                     LineSegment baseline = ri.GetUnscaledBaseline();
 
                     chunks.Add(new PdfCleanUpContentChunk.Text(ri.PdfString, baseline.GetStartPoint(),
-                        baseline.GetEndPoint(), !textIsInsideRegion, strNumber));
+                        baseline.GetEndPoint(), isAllowed, strNumber));
                 }
             }
 
@@ -248,34 +248,12 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             newClippingPath.LineTo(30, 40);
         }
 
-        private bool TextIsInsideRegion(TextRenderInfo renderInfo) {
-            foreach (PdfCleanUpRegionFilter filter in filters) {
-                if (filter.AllowText(renderInfo)) {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
         /**
          * @return null if the image is not allowed (either it is fully covered or ctm == null).
          * List of covered image areas otherwise.
          */
         private IList<Rectangle> GetImageAreasToBeCleaned(ImageRenderInfo renderInfo) {
-            IList<Rectangle> areasToBeCleaned = new List<Rectangle>();
-
-            foreach (PdfCleanUpRegionFilter filter in filters) {
-                PdfCleanUpCoveredArea coveredArea = filter.Intersection(renderInfo);
-
-                if (coveredArea == null || coveredArea.MatchesObjRect) {
-                    return null;
-                } else if (coveredArea.Rect != null) {
-                    areasToBeCleaned.Add(coveredArea.Rect);
-                }
-            }
-
-            return areasToBeCleaned;
+            return filter.GetCoveredAreas(renderInfo);
         }
 
         private byte[] ProcessImage(byte[] imageBytes, IList<Rectangle> areasToBeCleaned) {
@@ -351,23 +329,13 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                                        int lineJoinStyle, float miterLimit, LineDashPattern lineDashPattern) {
             Path path = new Path(unfilteredCurrentPath.Subpaths);
 
-            IEnumerator<PdfCleanUpRegionFilter> enumerator = filters.GetEnumerator();
-            PdfCleanUpRegionFilter filter = null;
-
-            if (!stroke) {
+            if (stroke) {
+                return filter.FilterStrokePath(path, ctm, lineWidth, lineCapStyle, lineJoinStyle,
+                    miterLimit, lineDashPattern);
+            } else {
                 path.CloseAllSubpaths();
-            } else if (enumerator.MoveNext()) {
-                filter = enumerator.Current;
-                // The following statements converts path from stroke to fill, so we need to call FilterStrokePath only once.
-                path = filter.FilterStrokePath(path, ctm, lineWidth, lineCapStyle, lineJoinStyle, miterLimit, lineDashPattern);
+                return filter.FilterFillPath(path, ctm, fillingRule);
             }
-
-            while (enumerator.MoveNext()) {
-                filter = enumerator.Current;
-                path = filter.FilterFillPath(path, ctm, fillingRule);
-            }
-
-            return path;
         }
     }
 }

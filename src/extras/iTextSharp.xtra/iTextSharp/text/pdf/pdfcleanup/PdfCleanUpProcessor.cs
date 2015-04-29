@@ -107,8 +107,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
             canvas.SaveState();
 
-            IList<PdfCleanUpRegionFilter> filters = CreateFilters(cleanUpLocations);
-            PdfCleanUpRenderListener pdfCleanUpRenderListener = new PdfCleanUpRenderListener(pdfStamper, filters);
+            PdfCleanUpRegionFilter filter = CreateFilter(cleanUpLocations);
+            PdfCleanUpRenderListener pdfCleanUpRenderListener = new PdfCleanUpRenderListener(pdfStamper, filter);
             pdfCleanUpRenderListener.RegisterNewContext(pdfReader.GetPageResources(page), canvas);
 
             PdfContentStreamProcessor contentProcessor = new PdfContentStreamProcessor(pdfCleanUpRenderListener);
@@ -125,15 +125,14 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
             }
         }
 
-        private IList<PdfCleanUpRegionFilter> CreateFilters(IList<PdfCleanUpLocation> cleanUpLocations) {
-            IList<PdfCleanUpRegionFilter> filters = new List<PdfCleanUpRegionFilter>();
+        private PdfCleanUpRegionFilter CreateFilter(IList<PdfCleanUpLocation> cleanUpLocations) {
+            IList<Rectangle> regions = new List<Rectangle>(cleanUpLocations.Count);
 
-            foreach (PdfCleanUpLocation cleanUpLocation in cleanUpLocations) {
-                Rectangle region = cleanUpLocation.Region;
-                filters.Add(new PdfCleanUpRegionFilter(region));
+            foreach (PdfCleanUpLocation location in cleanUpLocations) {
+                regions.Add(location.Region);
             }
 
-            return filters;
+            return new PdfCleanUpRegionFilter(regions);
         }
 
         private void ColorCleanedLocations(PdfContentByte canvas, IList<PdfCleanUpLocation> cleanUpLocations) {

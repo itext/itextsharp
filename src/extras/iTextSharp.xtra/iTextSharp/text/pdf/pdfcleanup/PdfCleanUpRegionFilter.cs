@@ -15,15 +15,12 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
     class PdfCleanUpRegionFilter : RenderFilter {
 
-        private Rectangle rectangle;
+        private IList<Rectangle> rectangles;
 
-        public PdfCleanUpRegionFilter(Rectangle rectangle) {
-            this.rectangle = rectangle;
+        public PdfCleanUpRegionFilter(IList<Rectangle> rectangles) {
+            this.rectangles = rectangles;
         }
 
-        /**
-         * Checks if the text is inside render filter region.
-         */
         public override bool AllowText(TextRenderInfo renderInfo) {
             LineSegment ascent = renderInfo.GetAscentLine();
             LineSegment descent = renderInfo.GetDescentLine();
@@ -32,9 +29,14 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                                          descent.GetStartPoint()[1],
                                          Math.Max(descent.GetStartPoint()[0], descent.GetEndPoint()[0]),
                                          ascent.GetEndPoint()[1]);
-            Rectangle r2 = rectangle;
 
-            return Intersect(r1, r2);
+            foreach (Rectangle rectangle in rectangles) {
+                if (Intersect(r1, rectangle)) {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
         public override bool AllowImage(ImageRenderInfo renderInfo) {
@@ -43,22 +45,32 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
         /**
          * Calculates intersection of the image and the render filter region in the coordinate system relative to the image.
+         * 
+         * @return <code>null</code> if the image is not allowed, {@link java.util.List} of 
+         *         {@link com.itextpdf.text.Rectangle} objects otherwise.
          */
-        protected internal virtual PdfCleanUpCoveredArea Intersection(ImageRenderInfo renderInfo) {
+        protected internal virtual IList<Rectangle> GetCoveredAreas(ImageRenderInfo renderInfo) {
             Rectangle imageRect = CalcImageRect(renderInfo);
+            IList<Rectangle> coveredAreas = new List<Rectangle>();
 
             if (imageRect == null) {
                 return null;
             }
 
-            Rectangle intersectionRect = Intersection(imageRect, rectangle);
-            Rectangle transformedIntersection = null;
+            foreach (Rectangle rectangle in rectangles) {
+                Rectangle intersectionRect = Intersection(imageRect, rectangle);
 
-            if (intersectionRect != null) {
-                transformedIntersection = TransformIntersection(renderInfo.GetImageCTM(), intersectionRect); 
+                if (intersectionRect != null) {
+                    // True if the image is completely covered
+                    if (imageRect.Equals(intersectionRect)) {
+                        return null;
+                    }
+                    
+                    coveredAreas.Add(TransformIntersection(renderInfo.GetImageCTM(), intersectionRect));
+                }
             }
 
-            return new PdfCleanUpCoveredArea(transformedIntersection, imageRect.Equals(intersectionRect));
+            return coveredAreas;
         }
 
         protected internal virtual Path FilterStrokePath(Path path, Matrix ctm, float lineWidth, int lineCapStyle,
@@ -89,16 +101,19 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
          * @param fillingRule If the subpath is contour, pass any value.
          */
         protected internal virtual Path FilterFillPath(Path path, Matrix ctm, int fillingRule) {
-            Point2D[] transfRectVertices = TransformPoints(ctm, true, GetVertices(rectangle));
+            Clipper clipper = new Clipper();
+            AddPath(clipper, path);
+
+            foreach (Rectangle rectangle in rectangles) {
+                Point2D[] transfRectVertices = TransformPoints(ctm, true, GetVertices(rectangle));
+                AddRect(clipper, transfRectVertices);
+            }
+
             PolyFillType fillType = PolyFillType.pftNonZero;
 
             if (fillingRule == PathPaintingRenderInfo.EVEN_ODD_RULE) {
                 fillType = PolyFillType.pftEvenOdd;
             }
-
-            Clipper clipper = new Clipper();
-            AddPath(clipper, path);
-            AddRect(clipper, transfRectVertices);
 
             PolyTree resultTree = new PolyTree();
             clipper.Execute(ClipType.ctDifference, resultTree, fillType, PolyFillType.pftNonZero);
