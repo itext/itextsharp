@@ -162,7 +162,9 @@ namespace iTextSharp.text.pdf {
             }
             else
                 ar = (PdfArray)parentTree[page];
-            ar.Add(struc);
+            if (!ar.Contains(struc)) {
+                ar.Add(struc);
+            }
         }
 
         internal void SetAnnotationMark(int structParentIndex, PdfIndirectReference struc) { 
