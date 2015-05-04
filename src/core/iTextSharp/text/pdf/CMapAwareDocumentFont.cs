@@ -281,6 +281,7 @@ namespace iTextSharp.text.pdf {
         }
 
         /**
+         * ! .NET SPECIFIC; this method is used to avoid unecessary using of StringBuilder because it is slow in .NET !
          * Decodes a single character string of bytes (encoded in the font's encoding) into a unicode string
          * This will use the ToUnicode map of the font, if available, otherwise it uses
          * the font's encoding
