@@ -124,6 +124,7 @@
     <Compile Include="iTextSharp\text\pdf\PdfReaderTest.cs" />
     <Compile Include="iTextSharp\text\pdf\PRTokeniserTest.cs" />
     <Compile Include="iTextSharp\text\pdf\RandomAccessFileOrArrayTest.cs" />
+    <Compile Include="iTextSharp\text\pdf\table\KeepTogetherTest.cs" />
     <Compile Include="iTextSharp\text\pdf\table\RowspanTest.cs" />
     <Compile Include="iTextSharp\text\pdf\TestPdfCopyAndStamp.cs" />
     <Compile Include="iTextSharp\text\pdf\TextFieldTest.cs" />
@@ -333,6 +334,10 @@
     <None Include="resources\text\pdf\PdfReaderTest\getLinkTest1.pdf" />
     <None Include="resources\text\pdf\PdfReaderTest\getLinkTest2.pdf" />
     <None Include="resources\text\pdf\PdfReaderTest\RomeoJuliet.pdf" />
+    <None Include="resources\text\pdf\table\keeptogether\tagged_false-keeptogether_false.pdf" />
+    <None Include="resources\text\pdf\table\keeptogether\tagged_false-keeptogether_true.pdf" />
+    <None Include="resources\text\pdf\table\keeptogether\tagged_true-keeptogether_false.pdf" />
+    <None Include="resources\text\pdf\table\keeptogether\tagged_true-keeptogether_true.pdf" />
     <None Include="resources\text\pdf\table\RowspanTest\nestedtabletest.pdf" />
     <None Include="resources\text\pdf\table\RowspanTest\rowspantest.pdf" />
     <None Include="resources\text\pdf\TextFieldTest\textfield-top-visible-0.pdf" />
