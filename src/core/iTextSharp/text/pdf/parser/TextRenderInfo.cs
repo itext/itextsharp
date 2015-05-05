@@ -436,6 +436,7 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
+         * ! .NET SPECIFIC; this method is used to avoid unecessary using of StringBuilder because it is slow in .NET !
          * Decodes a single character PdfString (which will contain glyph ids encoded in the font's encoding)
          * based on the active font, and determine the unicode equivalent
          * @param in	the String that needs to be encoded

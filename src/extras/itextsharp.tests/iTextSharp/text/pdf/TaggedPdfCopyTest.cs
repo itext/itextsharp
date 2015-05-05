@@ -177,7 +177,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
 
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
-            int[] nums = new int[] { 44, 0, 65, 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81 };
+            int[] nums = new int[] { 31, 0, 33, 40, 0, 0, 0, 0, 0, 0, 0, 0, 0, 81 };
             for (int i = 0; i < n; ++i)
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
                                 "Nums of page " + (i + 1), true);
@@ -287,7 +287,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, 2, "Nums");
-            VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(1)), 7, "Nums of page 1");
+            VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(1)), 4, "Nums of page 1");
             reader.Close();
             CompareResults("2");
         }
@@ -311,7 +311,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, n*2, "Nums");
-            int[] nums = new int[] {16, 87, 128, 74, 74, 74, 26};
+            int[] nums = new int[] { 14, 19, 14, 12, 12, 12, 12 };
             for (int i = 0; i < n; ++i)
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
                                 "Nums of page " + (i + 1));
@@ -339,7 +339,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, n*2, "Nums");
-            int[] nums = new int[] {26, 74, 74, 74, 128, 87, 16};
+            int[] nums = new int[] { 12, 12, 12, 12, 14, 19, 14 };
             for (int i = 0; i < n; ++i)
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
                                 "Nums of page " + (i + 1));
@@ -368,7 +368,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, n*2, "Nums");
-            int[] nums = new int[] {16, 128, 26};
+            int[] nums = new int[] { 14, 14, 12 };
             for (int i = 0; i < n; ++i)
                 //nums[i] = ((PdfArray)PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2+1))).size();
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
@@ -403,7 +403,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, n*2, "Nums");
-            int[] nums = new int[] { 5, 0, 33, 12, 0, 48, 35, 182, 0, 0, 17, 37 };
+            int[] nums = new int[] { 4, 0, 19, 10, 0, 26, 16, 92, 0, 0, 14, 19 };
             for (int i = 0; i < n; ++i)
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
                                 "Nums of page " + (i + 1), true);
@@ -460,7 +460,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, n*2, "Nums");
-            int[] nums = new int[] {48, 48, 7, 7, 48, 7, 48, 7};
+            int[] nums = new int[] {9, 9, 4, 4, 9, 4, 9, 4};
             for (int i = 0; i < n; ++i)
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
                                 "Nums of page " + (i + 1));
@@ -547,12 +547,11 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, n*2, "Nums");
-            int[] nums = new int[] { 7, 87, 128, 26, 135, 0, 0, 83, 7, 135, 0, 0, 0, 0, 0, 0, 83, 116, 26, 128, 74, 16, 12, 0, 0, 38, 54, 61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 26 }; 
+            int[] nums = new int[] { 7, 19, 14, 12, 135, 0, 0, 83, 7, 135, 0, 0, 0, 0, 0, 0, 83, 116, 26, 14, 12, 14, 12, 0, 0, 38, 52, 61, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 12 }; 
             for (int i = 0; i < n; ++i)
                 //            nums[i] = ((PdfArray)PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2+1))).size();
                 VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(i*2 + 1)), nums[i],
                                 "Nums of page " + (i + 1), true);
-
             reader.Close();
             CompareResults("9");
         }
@@ -575,7 +574,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary) obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, 2, "Nums");
-            VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(1)), 7, "Nums of page 1");
+            VerifyArraySize(PdfStructTreeController.GetDirectObject(array.GetDirectObject(1)), 4, "Nums of page 1");
             reader.Close();
             CompareResults("10");
         }
@@ -691,7 +690,7 @@ namespace itextsharp.tests.text.pdf
             VerifyIsDictionary(obj, NO_PARENT_TREE);
             PdfArray array = ((PdfDictionary)obj).GetAsArray(PdfName.NUMS);
             VerifyArraySize(array, 8, "Nums");
-            VerifyArraySize(PdfStructTreeController.GetDirectObject(array[1]), 20, "Nums of page 1");
+            VerifyArraySize(PdfStructTreeController.GetDirectObject(array[1]), 15, "Nums of page 1");
             reader.Close();
         }
 
