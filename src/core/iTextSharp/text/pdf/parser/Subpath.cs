@@ -21,6 +21,10 @@ namespace iTextSharp.text.pdf.parser {
         public Subpath() {
         }
 
+        /**
+         * Copy constuctor.
+         * @param subpath
+         */
         public Subpath(Subpath subpath) {
             this.startPoint = subpath.startPoint;
             Util.AddAll(this.segments, subpath.GetSegments());
@@ -40,18 +44,33 @@ namespace iTextSharp.text.pdf.parser {
             this.startPoint = new Point2D.Float(startPointX, startPointY);
         }
 
+        /**
+         * Sets the start point of the subpath.
+         * @param startPoint
+         */
         public virtual void SetStartPoint(Point2D startPoint) {
             SetStartPoint((float) startPoint.GetX(), (float) startPoint.GetY());
         }
 
+        /**
+         * Sets the start point of the subpath.
+         * @param x
+         * @param y
+         */
         public virtual void SetStartPoint(float x, float y) {
             this.startPoint = new Point2D.Float(x, y);
         }
 
+        /**
+         * @return The point this subpath starts at.
+         */
         public virtual Point2D GetStartPoint() {
             return startPoint;
         }
 
+        /**
+         * @return The last point of the subpath.
+         */
         public virtual Point2D GetLastPoint() {
             Point2D lastPoint = null;
 
@@ -68,6 +87,11 @@ namespace iTextSharp.text.pdf.parser {
             return lastPoint;
         }
 
+        /**
+         * Adds a segment to the subpath.
+         * Note: each new segment shall start at the end of the previous segment.
+         * @param segment new segment.
+         */
         public virtual void AddSegment(IShape segment) {
             if (closed) {
                 return;
@@ -80,10 +104,18 @@ namespace iTextSharp.text.pdf.parser {
             segments.Add(segment);
         }
 
+        /**
+         * @return {@link java.util.List} comprising all the segments
+         *         the subpath made on.
+         */
         public virtual IList<IShape> GetSegments() {
             return segments;
         }
 
+        /**
+         * Checks whether subpath is empty or not.
+         * @return true if the subpath is empty, false otherwise.
+         */
         public virtual bool IsEmpty() {
             return startPoint == null;
         }

@@ -43,10 +43,17 @@ namespace iTextSharp.text.pdf.parser {
 
         private readonly IList<Point2D> controlPoints;
 
+        /**
+         * Constructs new bezier curve.
+         * @param controlPoints Curve's control points.
+         */
         public BezierCurve(IList<Point2D> controlPoints) {
             this.controlPoints = controlPoints;
         }
 
+        /**
+         * {@inheritDoc}
+         */
         public virtual IList<Point2D> GetBasePoints() {
             return controlPoints;
         }

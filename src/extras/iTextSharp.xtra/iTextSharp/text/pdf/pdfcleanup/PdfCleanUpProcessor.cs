@@ -81,7 +81,8 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         }
 
         /**
-         * Cleans the document by erasing all the provided areas from it.
+         * Cleans the document by erasing all the areas which are either provided or
+         * extracted from redaction annotations.
          *
          * @throws IOException
          * @throws DocumentException

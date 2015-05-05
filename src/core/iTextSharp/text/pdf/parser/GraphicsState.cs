@@ -104,10 +104,25 @@ namespace iTextSharp.text.pdf.parser {
         /** The current stroke color. */
         internal BaseColor strokeColor;
 
+        /** The line width for stroking operations */
         private float lineWidth;
+
+        /**
+         * The line cap style. For possible values
+         * see {@link PdfContentByte}
+         */
         private int lineCapStyle;
+
+        /**
+         * The line join style. For possible values
+         * see {@link PdfContentByte}
+         */
         private int lineJoinStyle;
+
+        /** The mitir limit value */
         private float miterLimit;
+
+        /** The line dash pattern */
         private LineDashPattern lineDashPattern;
         
         /**
@@ -289,34 +304,63 @@ namespace iTextSharp.text.pdf.parser {
             get { return strokeColor; }
         }
 
+
+        /**
+         * Getter  and setter for the line width.
+         * @return The line width
+         * @since 5.5.6
+         */
         public float LineWidth {
             get { return lineWidth; }
             set { lineWidth = value; }
         }
 
+        /**
+         * Getter and setter for the line cap style.
+         * For possible values see {@link PdfContentByte}
+         * @return The line cap style.
+         * @since 5.5.6
+         */
         public int LineCapStyle {
             get { return lineCapStyle; }
             set { lineCapStyle = value; }
         }
 
+        /**
+         * Getter and setter for the line join style.
+         * For possible values see {@link PdfContentByte}
+         * @return The line join style.
+         * @since 5.5.6
+         */
         public int LineJoinStyle {
             get { return lineJoinStyle; }
             set { lineJoinStyle = value; }
         }
 
+        /**
+         * Getter and setter for the miter limit value.
+         * @return The miter limit.
+         * @since 5.5.6
+         */
         public float MiterLimit {
             get { return miterLimit; }
             set { miterLimit = value; }
         }
 
         /**
-         * @return {@link LineDashPattern} object, describing the dash pattern which should be applied.
-         *         If no pattern should be applied (i.e. solid line), then returns <CODE>null</CODE>.
+         * Getter for the line dash pattern.
+         * @return The line dash pattern.
+         * @since 5.5.6
          */
         public virtual LineDashPattern GetLineDashPattern() {
             return lineDashPattern;
         }
 
+        /**
+         * Setter for the line dash pattern.
+         * @param lineDashPattern New line dash pattern.
+         * @since 5.5.6
+         */
         public virtual void SetLineDashPattern(LineDashPattern lineDashPattern) {
             this.lineDashPattern = new LineDashPattern(lineDashPattern.DashArray, lineDashPattern.DashPhase);
         }
