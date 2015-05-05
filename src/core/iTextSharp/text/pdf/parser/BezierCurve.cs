@@ -52,7 +52,7 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
-         * You can adjust precision of the approximation by variating the following 
+         * You can adjust precision of the approximation by varying the following 
          * parameters: {@link #curveCollinearityEpsilon}, {@link #distanceToleranceSquare}, 
          * {@link #distanceToleranceManhattan}
          * 

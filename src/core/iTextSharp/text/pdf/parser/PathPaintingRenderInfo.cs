@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup;
 
 namespace iTextSharp.text.pdf.parser {
 
@@ -69,7 +68,7 @@ namespace iTextSharp.text.pdf.parser {
          * If the operation is {@link #NO_OP} then the rule is ignored,
          * otherwise {@link #NONZERO_WINDING_RULE} is used by default.
          *
-         * See {@link #PathPaintingRenderInfo(int, int, Matrix)}
+         * See {@link #PathPaintingRenderInfo(int, int, GraphicsState)}
          */
         public PathPaintingRenderInfo(int operation, GraphicsState gs) : this(operation, NONZERO_WINDING_RULE, gs) {
         }

@@ -298,7 +298,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
             // We should only iterate over the numbers specifying lengths of dashes
             for (int i = 0; i < dashArray.Size; i += 2) {
-                float currentDash = ((PdfNumber) dashArray[i]).FloatValue;
+                float currentDash = dashArray.GetAsNumber(i).FloatValue;
                 // Should be nonnegative according to spec.
                 if (currentDash < 0) {
                     currentDash = 0;
