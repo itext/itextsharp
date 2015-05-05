@@ -982,6 +982,9 @@ namespace iTextSharp.text.pdf.parser {
             }
         }
 
+        /**
+         * A content operator implementation (w).
+         */
         private class SetLineWidth : IContentOperator {
 
             public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
@@ -990,6 +993,9 @@ namespace iTextSharp.text.pdf.parser {
             }
         }
 
+        /**
+         * A content operator implementation (J).
+         */
         private class SetLineCap : IContentOperator {
 
             public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
@@ -998,6 +1004,9 @@ namespace iTextSharp.text.pdf.parser {
             }
         }
 
+        /**
+         * A content operator implementation (j).
+         */
         private class SetLineJoin : IContentOperator {
 
             public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
@@ -1006,6 +1015,9 @@ namespace iTextSharp.text.pdf.parser {
             }
         }
 
+        /**
+         * A content operator implementation (M).
+         */
         private class SetMiterLimit : IContentOperator {
 
             public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
@@ -1014,6 +1026,9 @@ namespace iTextSharp.text.pdf.parser {
             }
         }
 
+        /**
+         * A content operator implementation (d).
+         */
         private class SetLineDashPattern : IContentOperator {
 
             public void Invoke(PdfContentStreamProcessor processor, PdfLiteral oper, List<PdfObject> operands) {
