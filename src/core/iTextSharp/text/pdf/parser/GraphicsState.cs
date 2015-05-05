@@ -43,8 +43,6 @@
  * address: sales@itextpdf.com
  */
 
-using iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup;
-
 namespace iTextSharp.text.pdf.parser {
 
     /**

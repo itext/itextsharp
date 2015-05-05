@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using iTextSharp.text.pdf;
-
-namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
+﻿namespace iTextSharp.text.pdf.parser {
 
     public class LineDashPattern {
 
@@ -35,7 +30,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
 
             if (dashArray.Size > 0) {
                 currentIndex = (currentIndex + 1) % DashArray.Size;
-                currentElem = new DashArrayElem(((PdfNumber) dashArray[currentIndex]).FloatValue,
+                currentElem = new DashArrayElem(dashArray.GetAsNumber(currentIndex).FloatValue,
                     IsEven(++elemOrdinalNumber));
             }
 
@@ -51,7 +46,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
         private void InitFirst(float phase) {
             if (dashArray.Size > 0) {
                 while (phase > 0) {
-                    phase -= ((PdfNumber) dashArray[currentIndex]).FloatValue;
+                    phase -= dashArray.GetAsNumber(currentIndex).FloatValue;
                     currentIndex = (currentIndex + 1) % DashArray.Size;
                     elemOrdinalNumber++;
                 }
@@ -61,7 +56,7 @@ namespace iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup {
                     --currentIndex;
                     currentElem = new DashArrayElem(-phase, IsEven(elemOrdinalNumber));
                 } else {
-                    currentElem = new DashArrayElem(((PdfNumber) dashArray[currentIndex]).FloatValue, 
+                    currentElem = new DashArrayElem(dashArray.GetAsNumber(currentIndex).FloatValue, 
                         IsEven(elemOrdinalNumber));
                 }
             }

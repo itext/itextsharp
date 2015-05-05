@@ -130,7 +130,7 @@ namespace iTextSharp.text.pdf.parser {
         }
 
         /**
-         * Closes the current subpath
+         * Closes the current subpath.
          */
         public virtual void CloseSubpath() {
             Subpath lastSubpath = this.LastSubpath;
@@ -156,7 +156,7 @@ namespace iTextSharp.text.pdf.parser {
          * @returns Indices of modified subpaths.
          */
         public virtual IList<int> ReplaceCloseWithLine() {
-            IList<int> modifiedSubpathsIndeces = new List<int>();
+            IList<int> modifiedSubpathsIndices = new List<int>();
             int i = 0;
 
             /* It could be replaced with "for" cycle, because IList in C# provides effective 
@@ -167,13 +167,13 @@ namespace iTextSharp.text.pdf.parser {
                 if (subpath.Closed) {
                     subpath.Closed = false;
                     subpath.AddSegment(new Line(subpath.GetLastPoint(), subpath.GetStartPoint()));
-                    modifiedSubpathsIndeces.Add(i);
+                    modifiedSubpathsIndices.Add(i);
                 }
 
                 ++i;
             }
 
-            return modifiedSubpathsIndeces;
+            return modifiedSubpathsIndices;
         }
 
         /**

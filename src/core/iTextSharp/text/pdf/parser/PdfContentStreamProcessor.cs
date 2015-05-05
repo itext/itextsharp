@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using iTextSharp.text.error_messages;
 using iTextSharp.text.io;
-using iTextSharp.xtra.iTextSharp.text.pdf.pdfcleanup;
 
 /*
  * $Id$
